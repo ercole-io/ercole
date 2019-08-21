@@ -645,7 +645,7 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	SELECT"
 		+ "		hb.dbName,"
 		+ "		hb.hostname,"
-		+ "		( CASE WHEN jsonb_typeof(segmentAdvisor->'Reclaimable') = 'number' THEN"
+		+ "		( CASE WHEN (jsonb_typeof(segmentAdvisor->'Reclaimable') = 'number') OR (jsonb_typeof(segmentAdvisor->'Reclaimable') = 'string' AND segmentAdvisor->>'Reclaimable' ~ '^[+-]?([0-9]*[.])?[0-9]+$') THEN"
 		+ "			CAST((segmentAdvisor->>'Reclaimable') AS real)"
 		+ "	      WHEN jsonb_typeof(segmentAdvisor->'Reclaimable') = 'string' THEN"
 		+ "			0.5"
