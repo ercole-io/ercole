@@ -1,0 +1,54 @@
+os: linux
+dist: trusty
+language: java
+jdk:
+  - openjdk11
+  - openjdk8
+
+env:
+  global:
+    - PACKAGE_BUILD_IMAGE=sorintdev/rpmbuild-centos7
+    - WORKSPACE='/project'
+    - DIST=rhel7 
+
+service:
+  - docker
+
+sudo: required
+ 
+before_install:
+  - sudo docker pull ${PACKAGE_BUILD_IMAGE}
+  - export VERSION=`cat pom.xml | grep "version" | cut -d'>' -f2 | cut -d'<' -f1 | head -n 2 | tail -n 1`
+install:
+  - sudo docker run -d --rm -it -e WORKSPACE="${WORKSPACE}" -e TRAVIS_REPO_SLUG="${TRAVIS_REPO_SLUG}" -e TRAVIS_BUILD_NUMBER="${TRAVIS_BUILD_NUMBER}" -v $PWD:"${WORKSPACE}" --name package_builder ${PACKAGE_BUILD_IMAGE} /bin/cat
+
+script:
+  - mkdir dist
+  - mvn -X clean package 2>&1 > dist/ercole-server-${VERSION}-build-log.txt
+  - cp target/ercole-server-${VERSION}.jar dist/
+  - find target > dist/ercole-server-${VERSION}-target-lists.txt
+  - sed -i "s|ERCOLE_VERSION|${VERSION}|g" package/rhel7/ercole-server.spec
+  - docker exec -it package_builder /bin/sh -c "mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}"
+  - docker exec -it package_builder /bin/sh -c "ln -s ${WORKSPACE} ~/rpmbuild/SOURCES/ercole-server-${VERSION}"
+  - docker exec -it package_builder /bin/sh -c "cd ${WORKSPACE} && rpmbuild -bb package/${DIST}/ercole-server.spec"
+  - docker exec -it package_builder /bin/sh -c "cd ${WORKSPACE} && cp ~/rpmbuild/RPMS/x86_64/ercole-server-${VERSION}-1.el*.x86_64.rpm dist/"
+  - sudo chmod -R a+rwx .
+  - ls -al target
+  - whoami
+  - ls target/ercole-server-*.*
+after_failure:
+  - find .
+  - docker exec -it package_builder /bin/sh -c "find ~/rpmbuild"
+
+
+deploy:
+  provider: releases
+  api_key:
+    secure: VNxiU0UNYVWmbihCwsdNdjRzhislocHPBNbnRkcK9V+rqJbDd8xOxr/rBGmxmJ+o65wF35nWhZhq5uqIMDwWmPr/Fyk91OaASrDXTe/UM2DBuwBxo5k4O8OFMDCbNYdafESogIXG6H4JDDlqHc0XL86I195qGIqm2zIyUlo2HgWyyybEzfYoqIznaVDPLcZjY4leBfOYwnyDvwNED+Unk3WmVZegh/Y19dyTrOSlnIDcGhsx7DZHIkhVvumsfiF8Ac6rampt6rQxza7ZEZ7dMz97IfcUG4b22ZB0pnhHMR/djxh4AMk2ACwgkzOFPYZAyiouGasrYnPEACWTDPww8XUXIhyzkHqV5ZvDx2k22fr5eWEVxBlxchV23JxT3U/mmMQt+ihp/AO+ttg+3ybsxJlGRrKSAiAByZhxYZQNtsJa28ENfNfBrAU09pgBhXwhY1NsRTDkHSlhpRX/qdz0QQAcDj6NvJAx6PvOASgvg9qb038FyBZ18SE0twTiKzga+mc4yGERhqdqQTjySyJF6RMyMKb0yWCN/Db85NqYoXpqjOO7Uiid6LunysirKZJTNiXbb76rozeCgGqgaOqWG4gNNKkEQUxKZnrzzKdLe9abEnvvGeswGlcDN1NMwmF+W+fYz48qxWqQF0dA9FttWqEvNspuQzidKMBiM/5hs1Q=
+  file_glob: true
+  file: dist/*
+  skip_cleanup: true
+  on:
+    repo: ercole-io/ercole-server
+    jdk: openjdk11
+    tags: true

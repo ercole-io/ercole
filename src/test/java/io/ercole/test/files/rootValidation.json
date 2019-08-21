@@ -1,0 +1,37 @@
+
+{	
+	"title": "Macchina set",
+    "type": "array",
+    "items": {
+	    "title": "Macchina",
+	    "type": "object",
+	    "description": "Una macchina singola",
+	    "properties": {
+	        "id": {
+	            "type": "integer"   
+	        },
+	        "hostname": {
+	            "type": "string"
+	        },
+	        "dbUniqueName": {
+	            "type":"string"
+	        },
+	        "extra": {
+	            "type":"string"
+	        },
+	        "licences": {
+	        	"type":"string"
+	        },
+	        "specificheHost": {
+	        	"type":"string"
+	        },
+	        "ultimoAggiornamento": {
+	        	"type":"string"
+	        },
+	        "valida": {
+	        	"type":"boolean"
+	        }
+	    },
+	    "required": ["id", "hostname", "ultimoAggiornamento", "valida"]
+	    }
+}

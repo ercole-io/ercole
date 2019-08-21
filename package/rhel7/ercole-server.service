@@ -1,0 +1,13 @@
+[Unit]
+Description=Ercole Server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/ercole-server/
+User=ercole
+ExecStart=/usr/bin/java -jar /opt/ercole-server/ercole-server.jar
+PIDFile=/opt/ercole-server/run/ercole-server.pid
+
+[Install]
+WantedBy=multi-user.target

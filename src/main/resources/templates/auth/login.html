@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Ercole - Login</title>
+	<link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+	<style>
+		body {
+			background-color: #f1f1f2;
+		}
+
+		.custom-navbar {
+			background-color: #262c30;
+		}
+
+		.custom-form {
+			margin-top: 90px;
+		}
+	</style>
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-lg custom-navbar">
+		<a class="navbar-brand" href="#">
+			<img src="/assets/imgs/ercole.png" alt="">
+		</a>
+	</nav>
+	<div class="container">
+		<div class="row justify-content-center align-items-center">
+			<div class="col-6">
+				<div layout:fragment="content" class="custom-panel">
+					<form name="f" th:action="@{/login}" method="post" class="form-signin custom-form">
+						<h2 class="form-signin-heading">Login</h2>
+						<div th:if="${param.error}" class="alert alert-danger">
+							Username e password non validi.
+						</div>
+						<div th:if="${param.logout}" class="alert alert-success">
+							E' stato effettuato il logout.
+						</div>
+						<div class="form-group">
+							<label for="username">Username</label>
+							<input type="text" id="username" name="username" class="form-control" placeholder="Username" required="true" />
+						</div>
+						<div class="form-group">
+							<label for="password">Password</label>
+							<input type="password" id="password" name="password" class="form-control" placeholder="Password" required="true" />
+						</div>
+						<div class="form-group form-check">
+							<input id="remember-me" class="form-check-input" name="remember-me" type="checkbox" />
+							<label class="form-check-label" for="remember-me">Remember Me</label>
+						</div>
+						<button class="btn btn-primary" type="submit">Sign in</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>

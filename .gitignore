@@ -1,0 +1,21 @@
+/.metadata
+/RemoteSystemsTempFiles
+
+### Eclipse ###
+/.classpath
+/.project
+/.settings/
+/target/
+/.checkstyle
+
+### IntelliJ IDEA ###
+/.idea/
+*.iws
+*.iml
+*.ipr
+
+### VsCode ###
+.vscode
+.sts4-cache
+log
+/bin/

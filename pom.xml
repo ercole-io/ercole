@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>io.ercole</groupId>
+	<artifactId>ercole-server</artifactId>
+	<version>1.5.0zd</version> 
+
+	<properties>
+    	<ercole-web.version>1.5.0zd</ercole-web.version>
+		<rpm5.version>1.5.0m</rpm5.version>
+		<rpm6.version>1.5.0m</rpm6.version>
+		<rpm7.version>1.5.0m</rpm7.version>
+		<win.version>1.5.0m</win.version>
+		<virtualization-rpm7.version>1.5.0h</virtualization-rpm7.version>
+	</properties>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.1.6.RELEASE</version>
+	</parent>
+
+	<dependencies>
+	
+		<!-- Qui dipendenze Testing -->
+		<dependency>
+      	    <groupId>io.rest-assured</groupId>
+	        <artifactId>rest-assured</artifactId>
+	        <scope>test</scope>
+	 	</dependency>
+	  
+	    <dependency>
+      		<groupId>io.rest-assured</groupId>
+      		<artifactId>json-path</artifactId>
+		</dependency>
+		
+		<dependency>
+      		<groupId>io.rest-assured</groupId>
+      		<artifactId>json-schema-validator</artifactId>
+      		<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+      		<groupId>io.rest-assured</groupId>
+      		<artifactId>spring-mock-mvc</artifactId>
+		    <scope>test</scope>
+		</dependency>
+		
+		<dependency>
+	      <groupId>org.powermock</groupId>
+	      <artifactId>powermock-module-junit4</artifactId>
+	      <version>2.0.0-beta.5</version>
+	      <scope>test</scope>
+	   </dependency>
+	   
+	   <dependency>
+	      <groupId>org.powermock</groupId>
+	      <artifactId>powermock-api-mockito2</artifactId>
+	      <version>2.0.0-beta.5</version>
+	      <scope>test</scope>
+	   </dependency>
+
+		<!-- fine dipendenze testing -->
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+		</dependency>
+		
+		<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+		
+		<dependency>
+        	<groupId>org.springframework.ldap</groupId>
+        	<artifactId>spring-ldap-core</artifactId>
+	    </dependency>
+
+	    <dependency>
+	        <groupId>org.springframework.security</groupId>
+	        <artifactId>spring-security-ldap</artifactId>
+	    </dependency>
+	    
+	    <dependency>
+	        <groupId>com.unboundid</groupId>
+	        <artifactId>unboundid-ldapsdk</artifactId>
+	    </dependency>
+	    
+	    <dependency>
+		    <groupId>org.apache.directory.server</groupId>
+    		<artifactId>apacheds-all</artifactId>
+   			<version>2.0.0-M24</version>
+		</dependency>
+
+	    <dependency>
+	        <groupId>org.springframework.security</groupId>
+	        <artifactId>spring-security-test</artifactId>
+	        <scope>test</scope>
+	    </dependency>
+		
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-rest</artifactId>
+		</dependency>
+
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-undertow</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.6</version>
+		</dependency>
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20180813</version>
+        </dependency>	
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.vaadin.external.google</groupId>
+                    <artifactId>android-json</artifactId>
+                </exclusion>
+            </exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>		
+		
+		<dependency>
+		    <groupId>org.thymeleaf</groupId>
+		    <artifactId>thymeleaf</artifactId>
+		</dependency>
+
+        <!-- <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity4</artifactId>
+        </dependency> -->
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+	</dependencies>
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <folders>
+                        <folder>target/ercole-web</folder>
+                    </folders>
+                </configuration>
+			</plugin>
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <id>install-ercole-web</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>true</overwrite>
+                            <url>https://github.com/ercole-io/ercole-web/releases/download/${ercole-web.version}/ercole-web-${ercole-web.version}.tar.gz</url>
+                            <unpack>true</unpack>
+                            <outputDirectory>${project.build.directory}/ercole-web</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-rhel7</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>false</overwrite>
+                            <url>https://github.com/ercole-io/ercole-agent/releases/download/${rpm7.version}/ercole-agent-${rpm7.version}-1.el7.x86_64.rpm</url>
+                            <unpack>false</unpack>
+                            <outputDirectory>${project.build.directory}/ercole-web/packages</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-rhel6</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>false</overwrite>
+                            <url>https://github.com/ercole-io/ercole-agent/releases/download/${rpm6.version}/ercole-agent-${rpm6.version}-1.el6.x86_64.rpm</url>
+                            <unpack>false</unpack>
+                            <outputDirectory>${project.build.directory}/ercole-web/packages</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-rhel5</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>false</overwrite>
+                            <url>https://github.com/ercole-io/ercole-agent-rhel5/releases/download/${rpm5.version}/ercole-agent-${rpm5.version}-1.x86_64.rpm</url>
+                            <unpack>false</unpack>
+                            <outputDirectory>${project.build.directory}/ercole-web/packages</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-win</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>false</overwrite>
+                            <url>https://github.com/ercole-io/ercole-agent/releases/download/${win.version}/ercole-agent-setup-${win.version}.exe</url>
+                            <unpack>false</unpack>
+                            <outputDirectory>${project.build.directory}/ercole-web/packages</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-rhel7-virtualization</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>false</overwrite>
+                            <url>https://github.com/ercole-io/ercole-agent-virtualization/releases/download/${virtualization-rpm7.version}/ercole-agent-virtualization-${virtualization-rpm7.version}-1.el7.x86_64.rpm</url>
+                            <unpack>false</unpack>
+                            <outputDirectory>${project.build.directory}/ercole-web/packages</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                        <outputDirectory>${project.build.directory}/classes/static</outputDirectory>
+                        <resources>          
+                            <resource>
+                                <directory>${project.build.directory}/ercole-web</directory>
+                                <filtering>false</filtering>
+                            </resource>
+                        </resources>              
+                        </configuration>            
+                    </execution>
+                </executions>
+            </plugin>
+		</plugins>
+	</build>
+
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>sorintlab-snapshot</id>
+			<url>https://nexus.sorintdev.it/repository/sorintlab-snapshot</url>
+		</snapshotRepository>
+		<repository>
+			<id>sorintlab-release</id>
+			<url>https://nexus.sorintdev.it/repository/sorintlab-release</url>
+		</repository>
+	</distributionManagement>
+
+	<profiles>
+        <profile>
+            <id>quality-assurance</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <jacoco.percentage.instruction>0.00</jacoco.percentage.instruction>
+                <jacoco.max.missed.count>100</jacoco.max.missed.count>
+            </properties>
+            <build>
+
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.puppycrawl.tools</groupId>
+                                <artifactId>checkstyle</artifactId>
+                                <version>8.23</version>
+                            </dependency>
+                        </dependencies>
+                        <configuration>
+                            <skip>${skip.qa.checkstyle}</skip>
+                            <configLocation>checkstyle-rules.xml</configLocation>
+                            <encoding>UTF-8</encoding>
+                            <consoleOutput>true</consoleOutput>
+                            <failsOnError>true</failsOnError>
+                            <linkXRef>false</linkXRef>
+                            <outputFile>${project.build.directory}/qa/checkstyle/checkstyle-result.xml</outputFile>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>validate</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>findbugs-maven-plugin</artifactId>
+                        <version>3.0.5</version>
+                        <configuration>
+                            <skip>${skip.qa.findbugs}</skip>
+                            <effort>Maximal</effort>
+                            <omitVisitors>FindReturnRef</omitVisitors>
+                            <xmlOutput>true</xmlOutput>
+                            <xmlOutputDirectory>${project.build.directory}/qa/findbugs</xmlOutputDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                        <version>3.9.0</version>
+                        <configuration>
+                            <skip>${skip.qa.pmd}</skip>
+                            <linkXRef>false</linkXRef>
+                            <outputDirectory>${project.build.directory}/qa/pmd</outputDirectory>
+                            <sourceEncoding>UTF-8</sourceEncoding>
+                            <minimumTokens>75</minimumTokens>
+                            <targetJdk>${java.version}</targetJdk>
+                            <rulesets>
+                                <ruleset>/rulesets/java/braces.xml</ruleset>
+                            </rulesets>
+                            <analysisCache>${qa.pmd.cache}</analysisCache>
+                            <analysisCacheLocation>${project.build.directory}/qa/pmd/pmd.cache</analysisCacheLocation>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                    <goal>cpd-check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.8.1</version>
+                        <configuration>
+                            <skip>${skip.qa.jacoco}</skip>
+                            <outputDirectory>${project.build.directory}/qa/jacoco</outputDirectory>
+                            <destFile>${project.build.directory}/qa/jacoco/jacoco.exec</destFile>
+                            <dataFile>${project.build.directory}/qa/jacoco/jacoco.exec</dataFile>
+                            <output>file</output>
+                            <append>true</append>
+                        </configuration>
+                        <executions>
+                            <!-- Unit tests -->
+                            <execution>
+                                <id>pre-unit-test</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${skip.unit.tests}</skip>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>post-unit-test</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${skip.unit.tests}</skip>
+                                </configuration>
+                            </execution>
+                            <!-- End -->
+
+                            <!-- Integration tests -->
+                            <execution>
+                                <id>pre-integration-test</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${skip.integration.tests}</skip>
+                                    <destFile>jacoco-it.exec</destFile>
+                                    <propertyName>failsafe.argLine</propertyName>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>post-integration-test</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${skip.integration.tests}</skip>
+                                    <dataFile>jacoco-it.exec</dataFile>
+                                </configuration>
+                            </execution>
+                            <!-- End -->
+
+                            <execution>
+                                <id>default-check</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <configuration>
+                                    <excludes>
+                                        <exclude>**/*Application.class</exclude>
+                                    </excludes>
+                                    <rules>
+                                        <rule>
+                                            <element>BUNDLE</element>
+                                            <limits>
+                                                <limit>
+                                                    <counter>INSTRUCTION</counter>
+                                                    <value>COVEREDRATIO</value>
+                                                    <minimum>${jacoco.percentage.instruction}</minimum>
+                                                </limit>
+                                                <limit>
+                                                    <counter>LINE</counter>
+                                                    <value>COVEREDRATIO</value>
+                                                    <minimum>${jacoco.percentage.instruction}</minimum>
+                                                </limit>
+                                                <limit>
+                                                    <counter>BRANCH</counter>
+                                                    <value>COVEREDRATIO</value>
+                                                    <minimum>${jacoco.percentage.instruction}</minimum>
+                                                </limit>
+                                                <limit>
+                                                    <counter>CLASS</counter>
+                                                    <value>MISSEDCOUNT</value>
+                                                    <maximum>${jacoco.max.missed.count}</maximum>
+                                                </limit>
+                                            </limits>
+                                        </rule>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>unit-tests</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <skip.integration.tests>true</skip.integration.tests>
+                <skip.unit.tests>false</skip.unit.tests>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <useSystemClassLoader>false</useSystemClassLoader>
+                            <argLine>@{argLine}</argLine>
+                            <skipTests>${skip.unit.tests}</skipTests>
+                            <forkCount>0</forkCount>
+                            <reuseForks>true</reuseForks>
+                            <excludes>
+                                <exclude>**/IT*.java</exclude>
+                                <exclude>**/*IT.java</exclude>
+                                <exclude>**/*ITCase.java</exclude>
+                                <exclude>**/*IntegrationTest.java</exclude>
+                                <exclude>**/integration-tests/**.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>integration-tests</id>
+            <properties>
+                <skip.integration.tests>false</skip.integration.tests>
+                <skip.unit.tests>true</skip.unit.tests>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.21.0</version>
+                        <configuration>
+                            <useSystemClassLoader>false</useSystemClassLoader>
+                            <parallel>methods</parallel>
+                            <threadCount>10</threadCount>
+                            <argLine>${failsafe.argLine}</argLine>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <skipTests>${skip.integration.tests}</skipTests>
+                                    <excludes>
+                                        <exclude>**/Test*.java</exclude>
+                                        <exclude>***/*Test.java</exclude>
+                                        <exclude>**/*TestCase.java</exclude>
+                                    </excludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>	
+	</profiles>
+
+</project>
