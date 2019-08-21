@@ -5,15 +5,15 @@
 
 	<groupId>io.ercole</groupId>
 	<artifactId>ercole-server</artifactId>
-	<version>1.5.0zd</version> 
+	<version>1.5.0</version> 
 
 	<properties>
-    	<ercole-web.version>1.5.0zd</ercole-web.version>
-		<rpm5.version>1.5.0m</rpm5.version>
-		<rpm6.version>1.5.0m</rpm6.version>
-		<rpm7.version>1.5.0m</rpm7.version>
-		<win.version>1.5.0m</win.version>
-		<virtualization-rpm7.version>1.5.0h</virtualization-rpm7.version>
+    	<ercole-web.version>1.5.0</ercole-web.version>
+		<rpm5.version>1.5.0</rpm5.version>
+		<rpm6.version>1.5.0</rpm6.version>
+		<rpm7.version>1.5.0</rpm7.version>
+		<win.version>1.5.0</win.version>
+		<virtualization-rpm7.version>1.5.0</virtualization-rpm7.version>
 	</properties>
 
 	<parent>
