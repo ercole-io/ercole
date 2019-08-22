@@ -5,10 +5,10 @@
 
 	<groupId>io.ercole</groupId>
 	<artifactId>ercole-server</artifactId>
-	<version>1.5.2</version> 
+	<version>1.5.3</version> 
 
 	<properties>
-    	<ercole-web.version>1.5.3</ercole-web.version>
+    	<ercole-web.version>1.5.4</ercole-web.version>
 		<rpm5.version>1.5.2</rpm5.version>
 		<rpm6.version>1.5.2</rpm6.version>
 		<rpm7.version>1.5.2</rpm7.version>
