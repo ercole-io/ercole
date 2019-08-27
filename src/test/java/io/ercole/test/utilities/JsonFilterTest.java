@@ -86,7 +86,7 @@ public class JsonFilterTest {
 				+ "\"Status\": \"OPEN\"}]}}");
 		
 		Date data = new Date(1l);
-		CurrentHost host = new CurrentHost(1l, "testing", "TST", "Italy", "oracledb", "pippo Pluto", "REMOTE_SCHEDULER_AGENT "
+		CurrentHost host = new CurrentHost(1l, "testing", "TST", "Italy", "oracledb", "", "", "pippo Pluto", "REMOTE_SCHEDULER_AGENT "
 				+ "SYS$UMF GGSYS DBSFWUSER SYSRAC REMOTE_SCHEDULER_AGENT SYS$UMF GGSYSDBSFWUSER SYSRAC", "{"
 						+ "\"Databases\": [{\"Name\": \"db1\","
 						+ "\"UniqueName\": \"db1\","

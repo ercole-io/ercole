@@ -37,6 +37,16 @@ public interface NoExtraInfo {
 	 */
 	String getLocation();
 	/**
+	 * @return the version
+	 */
+	String getVersion();
+
+		/**
+	 * @return the serverVersion
+	 */
+	String getServerVersion();
+
+	/**
 	 * @return the hostType
 	 */
 	String getHostType();
