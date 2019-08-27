@@ -47,6 +47,8 @@ public abstract class Host {
 	
 	private String environment;
 	private String location;
+	private String version;
+	private String serverVersion;
 	private String hostType;
 	
 	@Lob
@@ -86,6 +88,8 @@ public abstract class Host {
 	 * @param name the hostname
 	 * @param envir the environment
 	 * @param loc the location
+	 * @param ver the version
+	 * @param serverVer server version
 	 * @param hostType the type of use (oracle, virtualization,...)
 	 * @param data the databases
 	 * @param schem the schemas
@@ -95,7 +99,7 @@ public abstract class Host {
 	 * @param updat the updated
 	 */
 	public Host(final Long ident, final @NotEmpty String name, final String envir, 
-			final String loc, final String hostType,
+			final String loc, final String ver, final String serverVer, final String hostType,
 			final String data, final String schem, final String extra, 
 			final String associatedClusterName, final String host, final Date updat) {
 		super();
@@ -103,6 +107,8 @@ public abstract class Host {
 		this.hostname = name;
 		this.environment = envir;
 		this.location = loc;
+		this.version = ver;
+		this.serverVersion = serverVer;
 		this.hostType = hostType;
 		this.databases = data;
 		this.schemas = schem;
@@ -190,6 +196,41 @@ public abstract class Host {
 		this.location = location;
 	}
 
+	/**
+	 * Gets the version.
+	 *
+	 * @return the version
+	 */
+	public String getVersion() {
+		return version;
+	}
+
+	/**
+	 * Sets the version.
+	 *
+	 * @param version the new version
+	 */
+	public void setVersion(final String version) {
+		this.version = version;
+	}
+
+	/**
+	 * Gets the server version.
+	 *
+	 * @return the server version
+	 */
+	public String getServerVersion() {
+		return this.serverVersion;
+	}
+
+	/**
+	 * Sets the server version.
+	 *
+	 * @param version the new version
+	 */
+	public void setServerVersion(final String version) {
+		this.serverVersion = version;
+	}
 
 	/** Gets the hostType.
 	 * @return the hostType

@@ -39,6 +39,8 @@ public class CurrentHost extends Host {
 	 * @param hostname 
 	 * @param environment 
 	 * @param location 
+	 * @param version the version
+	 * @param serverVersion the serverVersion
 	 * @param hostType The HostType
 	 * @param databases 
 	 * @param schemas 
@@ -48,10 +50,10 @@ public class CurrentHost extends Host {
 	 * @param updated 
 	 */
 	public CurrentHost(final Long id, final @NotEmpty String hostname, final String environment,
-			final String location, final String hostType,
+			final String location, final String version, final String serverVersion, final String hostType,
 			final String databases, final String schemas, final String extraInfo,
 			final String associatedClusterName, final String hostInfo, final Date updated) {
-		super(id, hostname, environment, location, hostType, databases, schemas,
+		super(id, hostname, environment, location, version, serverVersion, hostType, databases, schemas,
 				extraInfo, associatedClusterName, hostInfo, updated);
 	}
 }

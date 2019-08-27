@@ -66,6 +66,9 @@ public class HostService {
 	@Value("${agent.update.rate}")
 	private int updateRate;
 
+	@Value("${application.version}")
+	private String version;
+
 	@Autowired
 	private CurrentHostRepository currentRepo;
 
@@ -99,7 +102,6 @@ public class HostService {
 
 		String hostname = object.getString(HOSTNAME);
 		CurrentHost oldCurrent = currentRepo.findByHostname(hostname);
-		
 		if (oldCurrent != null && (DateUtility.isValidUpdateRange(oldCurrent.getUpdated(), 
 				updateRate))) {		
 			
@@ -122,6 +124,7 @@ public class HostService {
 	private boolean processUpdate(final JSONObject object, final CurrentHost oldCurrent) throws ParseException {
 		String hostname = object.getString(HOSTNAME);
 		CurrentHost newHost = JsonFilter.buildCurrentHostFromJSON(object);
+		newHost.setServerVersion(version);
 		fixAssociatedClusterName(newHost);
 		moveFromCurrentToHistorical(newHost, oldCurrent);
 		AlertFactory generator = new AlertFactory();
@@ -194,7 +197,8 @@ public class HostService {
 	private void archiveHost(final CurrentHost current) {
 		HistoricalHost historical = new HistoricalHost(current.getId(), 
 				current.getHostname(), current.getEnvironment(),
-				current.getLocation(), current.getHostType(), 
+				current.getLocation(), current.getVersion(), 
+				current.getServerVersion(), current.getHostType(), 
 				current.getDatabases(), current.getSchemas(), 
 				current.getExtraInfo(), current.getAssociatedClusterName(), current.getHostInfo(), 
 				current.getUpdated());
@@ -206,6 +210,7 @@ public class HostService {
 	private boolean processInsert(final JSONObject object) {
 		String hostname = object.getString(HOSTNAME);
 		CurrentHost host = JsonFilter.buildCurrentHostFromJSON(object);
+		host.setServerVersion(version);
 		fixAssociatedClusterName(host);
 
 		//Security check!
