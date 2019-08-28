@@ -158,7 +158,7 @@ public final class JsonFilter {
 		if (object.has("Version")) {
 			host.setVersion(object.getString("Version"));
 		} else {
-			host.setVersion("1.5.0");
+			host.setVersion("unknown");
 		}
 		host.setServerVersion("<ERROR>");
 
