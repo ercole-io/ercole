@@ -36,19 +36,26 @@ script:
   - ls -al target
   - whoami
   - ls target/ercole-server-*.*
+  - docker build -t quay.io/amreo/ercole-server:latest .
+  - if [ -z ${TRAVIS_TAG} ]; then docker tag quay.io/amreo/ercole-server:latest quay.io/amreo/ercole-server:${VERSION}; fi
+  - if [ -z ${TRAVIS_TAG} ]; then docker tag quay.io/amreo/ercole-server:latest quay.io/amreo/ercole-server:latest-stable; fi
 after_failure:
   - find .
   - docker exec -it package_builder /bin/sh -c "find ~/rpmbuild"
-
-
+  - cat dist/ercole-server-${VERSION}-build-log.txt
 deploy:
-  provider: releases
-  api_key:
-    secure: VNxiU0UNYVWmbihCwsdNdjRzhislocHPBNbnRkcK9V+rqJbDd8xOxr/rBGmxmJ+o65wF35nWhZhq5uqIMDwWmPr/Fyk91OaASrDXTe/UM2DBuwBxo5k4O8OFMDCbNYdafESogIXG6H4JDDlqHc0XL86I195qGIqm2zIyUlo2HgWyyybEzfYoqIznaVDPLcZjY4leBfOYwnyDvwNED+Unk3WmVZegh/Y19dyTrOSlnIDcGhsx7DZHIkhVvumsfiF8Ac6rampt6rQxza7ZEZ7dMz97IfcUG4b22ZB0pnhHMR/djxh4AMk2ACwgkzOFPYZAyiouGasrYnPEACWTDPww8XUXIhyzkHqV5ZvDx2k22fr5eWEVxBlxchV23JxT3U/mmMQt+ihp/AO+ttg+3ybsxJlGRrKSAiAByZhxYZQNtsJa28ENfNfBrAU09pgBhXwhY1NsRTDkHSlhpRX/qdz0QQAcDj6NvJAx6PvOASgvg9qb038FyBZ18SE0twTiKzga+mc4yGERhqdqQTjySyJF6RMyMKb0yWCN/Db85NqYoXpqjOO7Uiid6LunysirKZJTNiXbb76rozeCgGqgaOqWG4gNNKkEQUxKZnrzzKdLe9abEnvvGeswGlcDN1NMwmF+W+fYz48qxWqQF0dA9FttWqEvNspuQzidKMBiM/5hs1Q=
-  file_glob: true
-  file: dist/*
-  skip_cleanup: true
-  on:
-    repo: ercole-io/ercole-server
-    jdk: openjdk11
-    tags: true
+  - provider: releases
+    api_key:
+      secure: VNxiU0UNYVWmbihCwsdNdjRzhislocHPBNbnRkcK9V+rqJbDd8xOxr/rBGmxmJ+o65wF35nWhZhq5uqIMDwWmPr/Fyk91OaASrDXTe/UM2DBuwBxo5k4O8OFMDCbNYdafESogIXG6H4JDDlqHc0XL86I195qGIqm2zIyUlo2HgWyyybEzfYoqIznaVDPLcZjY4leBfOYwnyDvwNED+Unk3WmVZegh/Y19dyTrOSlnIDcGhsx7DZHIkhVvumsfiF8Ac6rampt6rQxza7ZEZ7dMz97IfcUG4b22ZB0pnhHMR/djxh4AMk2ACwgkzOFPYZAyiouGasrYnPEACWTDPww8XUXIhyzkHqV5ZvDx2k22fr5eWEVxBlxchV23JxT3U/mmMQt+ihp/AO+ttg+3ybsxJlGRrKSAiAByZhxYZQNtsJa28ENfNfBrAU09pgBhXwhY1NsRTDkHSlhpRX/qdz0QQAcDj6NvJAx6PvOASgvg9qb038FyBZ18SE0twTiKzga+mc4yGERhqdqQTjySyJF6RMyMKb0yWCN/Db85NqYoXpqjOO7Uiid6LunysirKZJTNiXbb76rozeCgGqgaOqWG4gNNKkEQUxKZnrzzKdLe9abEnvvGeswGlcDN1NMwmF+W+fYz48qxWqQF0dA9FttWqEvNspuQzidKMBiM/5hs1Q=
+    file_glob: true
+    file: dist/*
+    skip_cleanup: true
+    on:
+      repo: ercole-io/ercole-server
+      jdk: openjdk11
+      tags: true
+  - provider: script
+    skip_cleanup: true
+    script: script/docker-deploy.sh
+    on:
+      jdk: openjdk11
