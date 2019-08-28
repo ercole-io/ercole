@@ -85,7 +85,7 @@ public class HostServiceTest {
 				+ "\"Environment\":\"\",\"Location\":\"\",\"Schemas\":\"\"}");
 		
 		Date firstEntry = new Date(15000000000l);
-		CurrentHost currentHost1 = new CurrentHost(Long.valueOf("1"), "host2", "PRD", "Italia", "oracledb", "DB1", 
+		CurrentHost currentHost1 = new CurrentHost(Long.valueOf("1"), "host2", "PRD", "Italia", "oracledb", "", "", "DB1", 
 				"ADMIN", "{\"Databases\":["
 						+ "{\"prova\":\"prova\","
 						+ "\"Name\":\"DB1\","
@@ -109,14 +109,14 @@ public class HostServiceTest {
 		
 		
 		Date firstEntry = new Date(15000000000l);
-		CurrentHost currentHost1 = new CurrentHost(Long.valueOf("1"), "host2", "PRD", "Italia", "oracledb", "DB1", 
+		CurrentHost currentHost1 = new CurrentHost(Long.valueOf("1"), "host2", "PRD", "Italia", "oracledb", "", "", "DB1", 
 				"ADMIN", "{\"Databases\":["
 						+ "{\"prova\":\"prova\","
 						+ "\"Name\":\"DB1\","
 						+ "\"Features\":[{\"Status\":false,\"Name\":\"WebLogic Server Management Pack Enterprise Edition\"}]"
 						+ "}]}", null, "info", firstEntry);
 		
-		CurrentHost currentHost2 = new CurrentHost(Long.valueOf("1"), "host2", "PRD", "Italia", "oracledb", "DB2", 
+		CurrentHost currentHost2 = new CurrentHost(Long.valueOf("1"), "host2", "PRD", "Italia", "oracledb", "", "", "DB2",
 				"ADMIN", "{\"Databases\":["
 						+ "{\"prova\":\"prova\","
 						+ "\"Name\":\"DB2\","
@@ -154,14 +154,14 @@ public class HostServiceTest {
 		
 		
 		Date firstEntry = new Date(15000000000l);
-		CurrentHost currentHost1 = new CurrentHost(Long.valueOf("1"), "host2", "PRD", "Italia", "oracledb", "DB1", 
+		CurrentHost currentHost1 = new CurrentHost(Long.valueOf("1"), "host2", "PRD", "Italia", "oracledb", "", "", "DB1", 
 				"ADMIN", "{\"Databases\":["
 						+ "{\"prova\":\"prova\","
 						+ "\"Name\":\"DB1\","
 						+ "\"Features\":[{\"Status\":false,\"Name\":\"WebLogic Server Management Pack Enterprise Edition\"}]"
 						+ "}]}", null,  "info", firstEntry);
 		
-		CurrentHost currentHost2 = new CurrentHost(Long.valueOf("1"), "host2", "PRD", "Italia", "oracledb", "DB2", 
+		CurrentHost currentHost2 = new CurrentHost(Long.valueOf("1"), "host2", "PRD", "Italia", "oracledb", "", "", "DB2", 
 				"ADMIN", "{\"Databases\":["
 						+ "{\"prova\":\"prova\","
 						+ "\"Name\":\"DB2\","
@@ -200,12 +200,6 @@ public class HostServiceTest {
 		assertEquals("updated", status1);
 	}
 	
-	
-	
-
-	
-	
-	
 	@Test
 	public void updateWithAgentNewHostnameResultsINSERTED() throws ParseException {
 		JSONObject json = new JSONObject("{\"Hostname\":\"host2\",\"Databases\":\"DB1 DB2\",\"Info\":{},\"Extra\":{\"Databases\":["
@@ -237,7 +231,7 @@ public class HostServiceTest {
 				+ "\"Environment\":\"\",\"Location\":\"\",\"Schemas\":\"\"}");
 		
 		Date wrongUpdate = new Date();
-		CurrentHost currentHost3 = new CurrentHost(Long.valueOf("1"), "host3", "PRD", "Italia", "oracledb", "BRB CCC", 
+		CurrentHost currentHost3 = new CurrentHost(Long.valueOf("1"), "host3", "PRD", "Italia", "oracledb", "", "", "BRB CCC", 
 				"ADMIN",  "info", null, "info", wrongUpdate);
 
 		when(currentRepo.findByHostname((String) json3.get("Hostname"))).thenReturn(currentHost3);
@@ -261,7 +255,7 @@ public class HostServiceTest {
 	@Test
 	public void getHistoricalLogsFromYesHistory() {	
 		Date date = new Date(150000000000l);
-		HistoricalHost historical1 = new HistoricalHost(1l, "hostname1", "PRD", "Italy", "oracledb", "DB1", "ADMIN", "extraInfo", null, "hostInfo", new Date());
+		HistoricalHost historical1 = new HistoricalHost(1l, "hostname1", "PRD", "Italy", "oracledb", "", "", "DB1", "ADMIN", "extraInfo", null, "hostInfo", new Date());
 		List<HistoricalHost> list = new LinkedList<>();
 		list.add(historical1);
 		
