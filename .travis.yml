@@ -1,5 +1,5 @@
 os: linux
-dist: trusty
+dist: xenial
 language: java
 jdk:
   - openjdk11
@@ -37,8 +37,8 @@ script:
   - whoami
   - ls target/ercole-server-*.*
   - docker build -t quay.io/amreo/ercole-server:latest .
-  - if [ -z ${TRAVIS_TAG} ]; then docker tag quay.io/amreo/ercole-server:latest quay.io/amreo/ercole-server:${VERSION}; fi
-  - if [ -z ${TRAVIS_TAG} ]; then docker tag quay.io/amreo/ercole-server:latest quay.io/amreo/ercole-server:latest-stable; fi
+  - if [ ${TRAVIS_TAG} -ge 0 ]; then docker tag quay.io/amreo/ercole-server:latest quay.io/amreo/ercole-server:${VERSION}; fi
+  - if [ ${TRAVIS_TAG} -ge 0 ]; then docker tag quay.io/amreo/ercole-server:latest quay.io/amreo/ercole-server:latest-stable; fi
 after_failure:
   - find .
   - docker exec -it package_builder /bin/sh -c "find ~/rpmbuild"
