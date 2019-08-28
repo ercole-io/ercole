@@ -73,7 +73,8 @@ public class TaskScheduler {
 		
 		for (CurrentHost current : currentRepository.findAllNotUpdated(lowerLimit)) {
 			HistoricalHost historical = new HistoricalHost(current.getId(), current.getHostname(),
-					current.getEnvironment(), current.getLocation(),
+					current.getEnvironment(), current.getLocation(), 
+					current.getVersion(), current.getServerVersion(),
 					current.getHostType(), current.getDatabases(),
 					current.getSchemas(), current.getExtraInfo(), current.getHostInfo(), null,
 					current.getUpdated());

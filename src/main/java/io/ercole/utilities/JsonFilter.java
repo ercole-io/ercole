@@ -155,6 +155,13 @@ public final class JsonFilter {
 		host.setHostname(object.getString("Hostname"));
 		host.setEnvironment(object.getString("Environment"));
 		host.setLocation(object.getString("Location"));
+		if (object.has("Version")) {
+			host.setVersion(object.getString("Version"));
+		} else {
+			host.setVersion("unknown");
+		}
+		host.setServerVersion("<ERROR>");
+
 		if (object.has("HostType")) {
 			host.setHostType(object.getString("HostType"));
 		} else {
