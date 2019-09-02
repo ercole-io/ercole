@@ -60,3 +60,4 @@ deploy:
     script: script/docker-deploy.sh
     on:
       jdk: openjdk11
+      repo: ercole-io/ercole-server
