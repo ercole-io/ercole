@@ -1,11 +1,11 @@
 # ercole-server
-[![Build Status](https://travis-ci.org/ercole-io/ercole-server.svg?branch=master)](https://travis-ci.org/ercole-io/ercole-server) [![Join the chat at https://gitter.im/ercole-server/community](https://badges.gitter.im/ercole-server/community.svg)](https://gitter.im/ercole-server/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Docker Repository on Quay](https://quay.io/repository/amreo/ercole-server/status "Docker Repository on Quay")](https://quay.io/repository/amreo/ercole-server)
+[![Build Status](https://travis-ci.org/ercole-io/ercole-server.svg?branch=master)](https://travis-ci.org/ercole-io/ercole-server) [![Join the chat at https://gitter.im/ercole-server/community](https://badges.gitter.im/ercole-server/community.svg)](https://gitter.im/ercole-server/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-This is the server component for the Ercole project. Documentation available [here](https://ercole.netlify.com).
+This is the server component for the Ercole project. Documentation available [here](https://ercole.io).
 
 ## Requirements
 
-- Java Developement Kit 8.
+- Java Developement Kit 11
 - PostgreSQL server 9.6 or greater
 - The ercole-web and ercole-packages should be available on your local or remote maven repository
 
