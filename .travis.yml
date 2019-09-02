@@ -2,45 +2,45 @@ os: linux
 dist: trusty
 language: java
 jdk:
-  - openjdk11
-  - openjdk8
-
+- openjdk11
+- openjdk8
 env:
   global:
-    - PACKAGE_BUILD_IMAGE=sorintdev/rpmbuild-centos7
-    - WORKSPACE='/project'
-    - DIST=rhel7 
-
+  - PACKAGE_BUILD_IMAGE=sorintdev/rpmbuild-centos7
+  - WORKSPACE='/project'
+  - DIST=rhel7
+  - secure: bNHHM7oyp9rDyGCJXv7mg8alT+BzxpKkuCQPwOyHXUTGbaxXq8UA+ONzSDeUoLq0B0B/+s75il/F83ZWOluXjXgFJZoBe6NMplCiZLBNi46gAFPmondwNTkPpXiWOQLxti+ut9poNCoeVRSkB2U/27W2kaYXVii/TryN23l1vsaFk1Dr/7XUWk08kEwrBmr/yGfeAwQIOClhrKoCIqJxSKz8EvDzsmaDyEtmyl0daJ2EG8HcrG5XPgVme+s6OhA+piH1cWKJInA0bFoUf4Gvh11oqlBsXw3aK7Mx4qQkpq5Uz7ipWiKMqysNGTJmW224TBAi18wuhQzIktd+/D6Na3n4BjEW/by5DT0KlcgGULh7vbLIpR8am4VghabIYFhroDFvYz0rikfYZ5HvLkUymUuAanDR+D/QdO+T8s8fl/8YhNE/r9bhNhO6+4AB2VOINw/e8Olx7JEjH5U8E57tu45mSNaUxfwN9ijyHL84X/B+kxdMLQS6NQrUHMO6NkMb2J/I5gtYv0Kd0BcEDhssEnSEzxQexoZ60Zg8jD8rnXRv9rWqeA8XxryXeelmKCv1d398wZDWl15JXFnf+iIqSpHl5Ra1txQe4T7XjtgEc7J5pomNq3TM80xmqe/lMCpa6Xnskfl1NxynIeVMDozber2amIIbeCnXnTr33DCz7l8=
+  - secure: Y6g93aDymkPP6/WQ6/J1JXXGPBjccgAiUMbDxkJ4xHLT1zz39/m/GpG2ozXwXNbeLT52h9baq8JtpEuC7KkmRufI2X4CB3K5XB6M3VCQ8sqlnDfmV0y1aiUngYlVEoc7DkPjvDUrGqIU1/zhM9sP3duobmwH0ZYs9z1hxl8SdnMHDnrUp7MiQ8rTqW9/q5WF6HoPDaoUebYf//dY1BM+F2mXUBumyypwoq0KNCguYVTFZWrpe2hQLiR0l6cMMmqlRnzKlk6MVlofpGTE42Wjl2XEDEo5si/AVA2YqSolcwK/QGAzwjoTQMCGa7NfHtOE3Fx4CfiJptLFkgoiaV4BcfS56QWsxnbu51WlyTFOZC6BB8gc3Y/v3i3cTQ50HDlB4WMn8rKcw8rCrbZvN3weh5Zi33YLQmDz0miOYkR80LZrfTRNsgifC52+VOH1s5/QLF6yTejUhCbuhaDTrdpgu65BotikDBDXQLpJ/ANVV5R2mZSqZOuVoU8yAPFHTjeN2aj9toLY2hk4jgLBm+iE6JFs3DjtB2pEQ184hkFyREoqWYG3zQ+rWnrT1GJHrOJGDv28jgUrtuf3vP3pAc4jAt5RUpCed0a/D+FE4JFFHvquqO5oaTs0JK5GNi9GANATmpzLJJhgsvdWBC/wVGzxJ/RFGSTqhovQ1boeagA3vqY=
+  - secure: TvzBgrI9VCxBeDG7LhtYo5d/d5JejMupTzwkanCVwnnALKk8XZdTpks39ziOJbcgazxRZ+8c5WAQBWOCut0awwJdNbjk0uE4BZjKvBv02bSIR6UMGhVW9w3mMWkk587ZDWyMeayxVjN7NmXGeQDDGTBn4bNfXdpB0evN+2/YltI8hxF0JvQZtQ0OXzXwwPe135sS7wCwmn98hdKDVvXSs/+9y5tyhw7TcToJeJAobBAJK+SqO5hJDKhwzEwPAlI+B2/qeYeMjTDGrSzApDlEC14EEmxzN3tWCR6PnXcz3FmWraQXmNq4qcu5aH6CW/nPrHWdmK6AdBrsKzA8mEgm/yhx8jVeBREBURP5DzOUApRw7Xo3vuCpvn0JdRUIVF/MilqC9/aO8xnKDvBpAf5bI9bP1tspjQy3RcJXhimmSrmTWT1n2dvCy5U9CmXW4sAIhZVF/FWFJvIpOujxJ/l/6pCiHjdbhQGwlduaA/q1eZO71MAADz+WR91NhTxiM7boJweK68lzRjQHQ2RWYLA6CfENn1/KlUbpXGkPI7Vu2YpYD0yqAzDitzKiGC61Q5oErpy+cBjIeEncMRCPBCqftFk7p2u3Ry3W2d3nFIVDVzAIzl9M5AhJlQvP2ajP7Mb6DsnXlb8hP5YvkPEJVkbShCHdg8SH0oVgN4/NJ2j7ZEM=
 service:
-  - docker
-
+- docker
 sudo: required
- 
 before_install:
-  - sudo docker pull ${PACKAGE_BUILD_IMAGE}
-  - export VERSION=`cat pom.xml | grep "version" | cut -d'>' -f2 | cut -d'<' -f1 | head -n 2 | tail -n 1`
+- sudo docker pull ${PACKAGE_BUILD_IMAGE}
+- export VERSION=`cat pom.xml | grep "version" | cut -d'>' -f2 | cut -d'<' -f1 | head
+  -n 2 | tail -n 1`
 install:
-  - sudo docker run -d --rm -it -e WORKSPACE="${WORKSPACE}" -e TRAVIS_REPO_SLUG="${TRAVIS_REPO_SLUG}" -e TRAVIS_BUILD_NUMBER="${TRAVIS_BUILD_NUMBER}" -v $PWD:"${WORKSPACE}" --name package_builder ${PACKAGE_BUILD_IMAGE} /bin/cat
-
+- sudo docker run -d --rm -it -e WORKSPACE="${WORKSPACE}" -e TRAVIS_REPO_SLUG="${TRAVIS_REPO_SLUG}"
+  -e TRAVIS_BUILD_NUMBER="${TRAVIS_BUILD_NUMBER}" -v $PWD:"${WORKSPACE}" --name package_builder
+  ${PACKAGE_BUILD_IMAGE} /bin/cat
 script:
-  - mkdir dist
-  - mvn -X clean package 2>&1 > dist/ercole-server-${VERSION}-build-log.txt
-  - cp target/ercole-server-${VERSION}.jar dist/
-  - find target > dist/ercole-server-${VERSION}-target-lists.txt
-  - sed -i "s|ERCOLE_VERSION|${VERSION}|g" package/rhel7/ercole-server.spec
-  - docker exec -it package_builder /bin/sh -c "mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}"
-  - docker exec -it package_builder /bin/sh -c "ln -s ${WORKSPACE} ~/rpmbuild/SOURCES/ercole-server-${VERSION}"
-  - docker exec -it package_builder /bin/sh -c "cd ${WORKSPACE} && rpmbuild -bb package/${DIST}/ercole-server.spec"
-  - docker exec -it package_builder /bin/sh -c "cd ${WORKSPACE} && cp ~/rpmbuild/RPMS/x86_64/ercole-server-${VERSION}-1.el*.x86_64.rpm dist/"
-  - sudo chmod -R a+rwx .
-  - ls -al target
-  - whoami
-  - ls target/ercole-server-*.*
+- mkdir dist
+- mvn -X clean package 2>&1 > dist/ercole-server-${VERSION}-build-log.txt
+- cp target/ercole-server-${VERSION}.jar dist/
+- find target > dist/ercole-server-${VERSION}-target-lists.txt
+- sed -i "s|ERCOLE_VERSION|${VERSION}|g" package/rhel7/ercole-server.spec
+- docker exec -it package_builder /bin/sh -c "mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}"
+- docker exec -it package_builder /bin/sh -c "ln -s ${WORKSPACE} ~/rpmbuild/SOURCES/ercole-server-${VERSION}"
+- docker exec -it package_builder /bin/sh -c "cd ${WORKSPACE} && rpmbuild -bb package/${DIST}/ercole-server.spec"
+- docker exec -it package_builder /bin/sh -c "cd ${WORKSPACE} && cp ~/rpmbuild/RPMS/x86_64/ercole-server-${VERSION}-1.el*.x86_64.rpm
+  dist/"
+- sudo chmod -R a+rwx .
+- ls -al target
+- whoami
+- ls target/ercole-server-*.*
 after_failure:
-  - find .
-  - docker exec -it package_builder /bin/sh -c "find ~/rpmbuild"
-
-
+- find .
+- docker exec -it package_builder /bin/sh -c "find ~/rpmbuild"
 deploy:
   provider: releases
   api_key:
