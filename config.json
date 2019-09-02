@@ -1,0 +1,13 @@
+{
+	"HttpServer": {
+		"Listen": "0.0.0.0:9081",
+		"LogHttpRequest": true,
+		"AgentUsername": "user",
+		"AgentPassword": "password"
+	},
+	"Mongodb": {
+		"URI": "mongodb://localhost:32769/ercole",
+		"DBName": "ercole",
+		"Migrate": true
+	}
+}
