@@ -218,7 +218,7 @@ public class UserController {
 	 * @return a JSON Array of counted All kind of Licenses
 	 */
 	@GetMapping(value = "/getallhostusinglicense")
-	List<String> getAllHostUsingLicense(@RequestParam final String license) {
+	List<Map<String, Object>> getAllHostUsingLicense(@RequestParam final String license) {
 		return dashService.getAllHostUsingLicense(license);
 	}
 

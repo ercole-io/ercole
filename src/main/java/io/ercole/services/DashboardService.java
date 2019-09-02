@@ -249,7 +249,7 @@ public class DashboardService {
 	 * @return a JSON Array of All hosts
 	 */
 	@Transactional
-	public List<String> getAllHostUsingLicense(final String license) {
+	public List<Map<String, Object>> getAllHostUsingLicense(final String license) {
 		return currentRepo.getAllHostsUsingLicense(license);
 	}
 
