@@ -385,13 +385,31 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 	 * @param license the license
 	 * @return the list of hosts using the licensegetAllLicensesCount
 	 */
-	@Query(nativeQuery = true, value = "with view1 as ("
-		+ "select hostname, jsonb_array_elements(jsonb_array_elements"
-		+	"(CAST(extra_info AS jsonb)->'Databases')->'Licenses') as license "
-		+ "from current_host ) "
-		+ "select distinct hostname from view1 where "
-		+	"license->>'Name' = :license and CAST((license->>'Count') AS numeric) > 0")
-	List<String> getAllHostsUsingLicense(@Param("license") String license);
+	@Query(nativeQuery = true, value = ""
+		+ "WITH dbs AS ( "
+		+ "	SELECT "
+		+ "		hostname, " 
+		+ "		db->>'Name' AS dbname, "
+		+ "		db->'Licenses' as lics "
+		+ "	FROM "
+		+ "		current_host, "
+		+ "		jsonb_array_elements(CAST(extra_info AS jsonb)->'Databases') AS db "
+		+ "), licenses AS ( "
+		+ "	SELECT "
+		+ "		hostname, "
+		+ "		dbname "
+		+ "	FROM "
+		+ "		dbs, "
+		+ "		jsonb_array_elements(lics) AS lic "
+		+ "	WHERE "
+		+ "		CAST((lic->>'Count') AS numeric) > 0 AND "
+		+ "		lic->>'Name' = :license "
+		+ ") SELECT "
+		+ "	hostname, " 
+		+ "	string_agg(dbname, ' ') AS dbs "
+		+ "FROM licenses "
+		+ "GROUP BY hostname;")
+	List<Map<String, Object>> getAllHostsUsingLicense(@Param("license") String license);
 
 	/**
 	 * Gets compliance.
