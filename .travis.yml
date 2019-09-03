@@ -38,8 +38,8 @@ script:
   - whoami
   - ls target/ercole-server-*.*
   - docker build -t ercole/ercole-server:latest .
-  - if [ ${TRAVIS_TAG} -ge 0 ]; then docker tag ercole/ercole-server:latest ercole/ercole-server:${VERSION}; fi
-  - if [ ${TRAVIS_TAG} -ge 0 ]; then docker tag ercole/ercole-server:latest ercole/ercole-server:latest-stable; fi
+  - if [ ! -z "${TRAVIS_TAG}" ]; then docker tag ercole/ercole-server:latest ercole/ercole-server:${VERSION}; fi
+  - if [ ! -z "${TRAVIS_TAG}" ]; then docker tag ercole/ercole-server:latest ercole/ercole-server:latest-stable; fi
 after_failure:
   - find .
   - docker exec -it package_builder /bin/sh -c "find ~/rpmbuild"
