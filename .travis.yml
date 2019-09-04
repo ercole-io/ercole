@@ -25,7 +25,7 @@ install:
   ${PACKAGE_BUILD_IMAGE} /bin/cat
 script:
   - mkdir dist
-  - mvn -X clean package 2>&1 > dist/ercole-server-${VERSION}-build-log.txt
+  - mvn clean package 2>&1 > dist/ercole-server-${VERSION}-build-log.txt
   - cp target/ercole-server-${VERSION}.jar dist/
   - find target > dist/ercole-server-${VERSION}-target-lists.txt
   - sed -i "s|ERCOLE_VERSION|${VERSION}|g" package/rhel7/ercole-server.spec
