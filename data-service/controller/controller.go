@@ -4,9 +4,9 @@ package controller
 import (
 	"net/http"
 
-	"github.com/amreo/ercole-hostdata-dataservice/service"
+	"github.com/amreo/ercole-services/data-service/service"
 
-	"github.com/amreo/ercole-hostdata-dataservice/config"
+	"github.com/amreo/ercole-services/config"
 )
 
 // HostDataControllerInterface is a interface that wrap methods used to handle the request for HostData endpoints

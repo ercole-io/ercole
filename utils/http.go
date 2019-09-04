@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-
-	"github.com/amreo/ercole-hostdata-dataservice/utils"
 )
 
 // ErrorResponseFE is a struct that contains informations about a error
@@ -21,7 +19,7 @@ type ErrorResponseFE struct {
 }
 
 // WriteAndLogError write the error to the w with the statusCode as statusCode and log the error to the stdout
-func WriteAndLogError(w http.ResponseWriter, statusCode int, err utils.AdvancedError) {
+func WriteAndLogError(w http.ResponseWriter, statusCode int, err AdvancedError) {
 	//Build the response
 	resp := ErrorResponseFE{
 		Error:            err.ErrorClass(),

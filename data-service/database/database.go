@@ -5,9 +5,9 @@ import (
 	"context"
 	"log"
 
-	"github.com/amreo/ercole-hostdata-dataservice/config"
-	"github.com/amreo/ercole-hostdata-dataservice/model"
-	"github.com/amreo/ercole-hostdata-dataservice/utils"
+	"github.com/amreo/ercole-services/config"
+	"github.com/amreo/ercole-services/model"
+	"github.com/amreo/ercole-services/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

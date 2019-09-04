@@ -25,6 +25,8 @@ type AdvancedError struct {
 	Line int
 }
 
+var AE_NIL AdvancedError = AdvancedError{}
+
 // ErrorClass return the class of the error
 func (this *AdvancedError) ErrorClass() string {
 	return this.Class

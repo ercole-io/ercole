@@ -6,8 +6,9 @@
 		"AgentPassword": "password"
 	},
 	"Mongodb": {
-		"URI": "mongodb://localhost:32769/ercole",
+		"URI": "mongodb://localhost:32768/ercole",
 		"DBName": "ercole",
-		"Migrate": true
+		"Migrate": true,
+		"FeatureList": "fixture/features.txt"
 	}
 }

@@ -6,3 +6,4 @@
 	* Contains all hostdata
 * ```alerts``` collection
 * ```clusters``` collection
+	* Contains all clusters with the vms and the relative agent virtualization

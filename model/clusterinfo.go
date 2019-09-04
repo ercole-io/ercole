@@ -19,10 +19,11 @@ import "go.mongodb.org/mongo-driver/bson"
 
 //ClusterInfo hold informations about the cluster
 type ClusterInfo struct {
-	Name    string
-	CPU     int
-	Sockets int
-	VMs     []VMInfo
+	Name                        string
+	CPU                         int
+	Sockets                     int
+	VMs                         []VMInfo
+	HostnameAgentVirtualization string
 }
 
 var ClusterInfoBsonValidatorRules bson.D = bson.D{
@@ -32,6 +33,7 @@ var ClusterInfoBsonValidatorRules bson.D = bson.D{
 		"cpu",
 		"sockets",
 		"vms",
+		"hostname_agent_virtualization",
 	}},
 	{"properties", bson.D{
 		{"name", bson.D{
@@ -46,6 +48,9 @@ var ClusterInfoBsonValidatorRules bson.D = bson.D{
 		{"vms", bson.D{
 			{"bsonType", "array"},
 			{"items", VMInfoBsonValidatorRules},
+		}},
+		{"hostname_agent_virtualization", bson.D{
+			{"bsonType", "string"},
 		}},
 	}},
 }

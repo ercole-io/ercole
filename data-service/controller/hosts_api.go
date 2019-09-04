@@ -6,7 +6,6 @@ import (
 
 	"github.com/amreo/ercole-services/utils"
 
-	"github.com/amreo/ercole-services/data-service/service"
 	"github.com/amreo/ercole-services/model"
 	"github.com/goji/httpauth"
 )
@@ -21,14 +20,14 @@ func (this *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 	//Parse the hostdata from the request
 	var hostData model.HostData
 	if err := json.NewDecoder(r.Body).Decode(&hostData); err != nil {
-		WriteAndLogError(w, http.StatusUnprocessableEntity, utils.NewAdvancedError(err, http.StatusText(http.StatusUnprocessableEntity)))
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, utils.NewAdvancedError(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 
 	//Save the HostData
-	id, err := service.SaveHostData(hostData)
-	if err != nil {
-		WriteAndLogError(w, http.StatusInternalServerError, err)
+	id, err := this.Service.UpdateHostInfo(hostData)
+	if err != utils.AE_NIL {
+		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
 	}
 

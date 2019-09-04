@@ -22,7 +22,7 @@ import (
 
 	"github.com/amreo/ercole-services/data-service/database"
 
-	"github.com/amreo/ercole-service/utils"
+	"github.com/amreo/ercole-services/utils"
 
 	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/model"
@@ -39,7 +39,7 @@ type HostDataServiceInterface interface {
 	UpdateHostInfo(hostdata model.HostData) (interface{}, utils.AdvancedError)
 
 	// ArchiveHost archive the host
-	ArchiveHost(hostname string) utils.AdvancedError
+	// ArchiveHost(hostname string) utils.AdvancedError
 }
 
 // HostDataService is the concrete implementation of HostDataServiceInterface. It saves data to a MongoDB database
@@ -64,8 +64,8 @@ func (this *HostDataService) UpdateHostInfo(hostdata model.HostData) (interface{
 	hostdata.CreatedAt = time.Now()
 
 	_, err := this.Database.ArchiveHost(hostdata.Hostname)
-	if err != nil {
-		return err
+	if err != utils.AE_NIL {
+		return nil, err
 	}
 
 	res, err := this.Database.InsertHostData(hostdata)
