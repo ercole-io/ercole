@@ -3,6 +3,7 @@ dist: xenial
 language: java
 jdk:
 - openjdk11
+
 env:
   global:
   - PACKAGE_BUILD_IMAGE=sorintdev/rpmbuild-centos7
@@ -11,17 +12,26 @@ env:
   - secure: bNHHM7oyp9rDyGCJXv7mg8alT+BzxpKkuCQPwOyHXUTGbaxXq8UA+ONzSDeUoLq0B0B/+s75il/F83ZWOluXjXgFJZoBe6NMplCiZLBNi46gAFPmondwNTkPpXiWOQLxti+ut9poNCoeVRSkB2U/27W2kaYXVii/TryN23l1vsaFk1Dr/7XUWk08kEwrBmr/yGfeAwQIOClhrKoCIqJxSKz8EvDzsmaDyEtmyl0daJ2EG8HcrG5XPgVme+s6OhA+piH1cWKJInA0bFoUf4Gvh11oqlBsXw3aK7Mx4qQkpq5Uz7ipWiKMqysNGTJmW224TBAi18wuhQzIktd+/D6Na3n4BjEW/by5DT0KlcgGULh7vbLIpR8am4VghabIYFhroDFvYz0rikfYZ5HvLkUymUuAanDR+D/QdO+T8s8fl/8YhNE/r9bhNhO6+4AB2VOINw/e8Olx7JEjH5U8E57tu45mSNaUxfwN9ijyHL84X/B+kxdMLQS6NQrUHMO6NkMb2J/I5gtYv0Kd0BcEDhssEnSEzxQexoZ60Zg8jD8rnXRv9rWqeA8XxryXeelmKCv1d398wZDWl15JXFnf+iIqSpHl5Ra1txQe4T7XjtgEc7J5pomNq3TM80xmqe/lMCpa6Xnskfl1NxynIeVMDozber2amIIbeCnXnTr33DCz7l8=
   - secure: Y6g93aDymkPP6/WQ6/J1JXXGPBjccgAiUMbDxkJ4xHLT1zz39/m/GpG2ozXwXNbeLT52h9baq8JtpEuC7KkmRufI2X4CB3K5XB6M3VCQ8sqlnDfmV0y1aiUngYlVEoc7DkPjvDUrGqIU1/zhM9sP3duobmwH0ZYs9z1hxl8SdnMHDnrUp7MiQ8rTqW9/q5WF6HoPDaoUebYf//dY1BM+F2mXUBumyypwoq0KNCguYVTFZWrpe2hQLiR0l6cMMmqlRnzKlk6MVlofpGTE42Wjl2XEDEo5si/AVA2YqSolcwK/QGAzwjoTQMCGa7NfHtOE3Fx4CfiJptLFkgoiaV4BcfS56QWsxnbu51WlyTFOZC6BB8gc3Y/v3i3cTQ50HDlB4WMn8rKcw8rCrbZvN3weh5Zi33YLQmDz0miOYkR80LZrfTRNsgifC52+VOH1s5/QLF6yTejUhCbuhaDTrdpgu65BotikDBDXQLpJ/ANVV5R2mZSqZOuVoU8yAPFHTjeN2aj9toLY2hk4jgLBm+iE6JFs3DjtB2pEQ184hkFyREoqWYG3zQ+rWnrT1GJHrOJGDv28jgUrtuf3vP3pAc4jAt5RUpCed0a/D+FE4JFFHvquqO5oaTs0JK5GNi9GANATmpzLJJhgsvdWBC/wVGzxJ/RFGSTqhovQ1boeagA3vqY=
   - secure: TvzBgrI9VCxBeDG7LhtYo5d/d5JejMupTzwkanCVwnnALKk8XZdTpks39ziOJbcgazxRZ+8c5WAQBWOCut0awwJdNbjk0uE4BZjKvBv02bSIR6UMGhVW9w3mMWkk587ZDWyMeayxVjN7NmXGeQDDGTBn4bNfXdpB0evN+2/YltI8hxF0JvQZtQ0OXzXwwPe135sS7wCwmn98hdKDVvXSs/+9y5tyhw7TcToJeJAobBAJK+SqO5hJDKhwzEwPAlI+B2/qeYeMjTDGrSzApDlEC14EEmxzN3tWCR6PnXcz3FmWraQXmNq4qcu5aH6CW/nPrHWdmK6AdBrsKzA8mEgm/yhx8jVeBREBURP5DzOUApRw7Xo3vuCpvn0JdRUIVF/MilqC9/aO8xnKDvBpAf5bI9bP1tspjQy3RcJXhimmSrmTWT1n2dvCy5U9CmXW4sAIhZVF/FWFJvIpOujxJ/l/6pCiHjdbhQGwlduaA/q1eZO71MAADz+WR91NhTxiM7boJweK68lzRjQHQ2RWYLA6CfENn1/KlUbpXGkPI7Vu2YpYD0yqAzDitzKiGC61Q5oErpy+cBjIeEncMRCPBCqftFk7p2u3Ry3W2d3nFIVDVzAIzl9M5AhJlQvP2ajP7Mb6DsnXlb8hP5YvkPEJVkbShCHdg8SH0oVgN4/NJ2j7ZEM=
-service:
-- docker
+
+branches:
+  except:
+    - /^travis-.*-build$/
+
+services:
+  - docker
+
 sudo: required
+
 before_install:
 - sudo docker pull ${PACKAGE_BUILD_IMAGE}
 - export VERSION=`cat pom.xml | grep "version" | cut -d'>' -f2 | cut -d'<' -f1 | head
   -n 2 | tail -n 1`
+
 install:
 - sudo docker run -d --rm -it -e WORKSPACE="${WORKSPACE}" -e TRAVIS_REPO_SLUG="${TRAVIS_REPO_SLUG}"
   -e TRAVIS_BUILD_NUMBER="${TRAVIS_BUILD_NUMBER}" -v $PWD:"${WORKSPACE}" --name package_builder
   ${PACKAGE_BUILD_IMAGE} /bin/cat
+
 script:
   - mkdir dist
   - mvn clean package 2>&1 > dist/ercole-server-${VERSION}-build-log.txt
@@ -39,21 +49,30 @@ script:
   - docker build -t ercole/ercole-server:latest .
   - if [ ! -z "${TRAVIS_TAG}" ]; then docker tag ercole/ercole-server:latest ercole/ercole-server:${VERSION}; fi
   - if [ ! -z "${TRAVIS_TAG}" ]; then docker tag ercole/ercole-server:latest ercole/ercole-server:latest-stable; fi
+
 after_failure:
   - find .
   - docker exec -it package_builder /bin/sh -c "find ~/rpmbuild"
   - cat dist/ercole-server-${VERSION}-build-log.txt
+
+before_deploy:
+  - if [ ! -z "${TRAVIS_TAG}" ]; then git tag -f travis-${VERSION}-build; fi
+  - if [ ! -z "${TRAVIS_TAG}" ]; then git remote add gh https://simonerota:${GITHUB_RELEASE_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git; fi
+  - if [ ! -z "${TRAVIS_TAG}" ]; then git push gh travis-${VERSION}-build || true; fi
+  - if [ ! -z "${TRAVIS_TAG}" ]; then git push -f gh travis-${VERSION}-build; fi
+  - if [ ! -z "${TRAVIS_TAG}" ]; then git remote remove gh; fi
+
 deploy:
-  - provider: releases
-    api_key:
-      secure: VNxiU0UNYVWmbihCwsdNdjRzhislocHPBNbnRkcK9V+rqJbDd8xOxr/rBGmxmJ+o65wF35nWhZhq5uqIMDwWmPr/Fyk91OaASrDXTe/UM2DBuwBxo5k4O8OFMDCbNYdafESogIXG6H4JDDlqHc0XL86I195qGIqm2zIyUlo2HgWyyybEzfYoqIznaVDPLcZjY4leBfOYwnyDvwNED+Unk3WmVZegh/Y19dyTrOSlnIDcGhsx7DZHIkhVvumsfiF8Ac6rampt6rQxza7ZEZ7dMz97IfcUG4b22ZB0pnhHMR/djxh4AMk2ACwgkzOFPYZAyiouGasrYnPEACWTDPww8XUXIhyzkHqV5ZvDx2k22fr5eWEVxBlxchV23JxT3U/mmMQt+ihp/AO+ttg+3ybsxJlGRrKSAiAByZhxYZQNtsJa28ENfNfBrAU09pgBhXwhY1NsRTDkHSlhpRX/qdz0QQAcDj6NvJAx6PvOASgvg9qb038FyBZ18SE0twTiKzga+mc4yGERhqdqQTjySyJF6RMyMKb0yWCN/Db85NqYoXpqjOO7Uiid6LunysirKZJTNiXbb76rozeCgGqgaOqWG4gNNKkEQUxKZnrzzKdLe9abEnvvGeswGlcDN1NMwmF+W+fYz48qxWqQF0dA9FttWqEvNspuQzidKMBiM/5hs1Q=
+  - deploy:
+    provider: releases
+    api_key: $GITHUB_RELEASE_TOKEN
     file_glob: true
     file: dist/*
     skip_cleanup: true
+    name: $VERSION
+    overwrite: true
     on:
-      repo: ercole-io/ercole-server
-      jdk: openjdk11
-      tags: true
+      all_branches: true
   - provider: script
     skip_cleanup: true
     script: script/docker-deploy.sh
