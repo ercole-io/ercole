@@ -3,7 +3,6 @@ dist: xenial
 language: java
 jdk:
 - openjdk11
-- openjdk8
 env:
   global:
   - PACKAGE_BUILD_IMAGE=sorintdev/rpmbuild-centos7
