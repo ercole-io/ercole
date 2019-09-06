@@ -56,12 +56,12 @@ after_failure:
   - cat dist/ercole-server-${VERSION}-build-log.txt
 
 before_deploy:
-  - if [ ! -z "${TRAVIS_TAG}" ]; then git tag -f travis-latest-build; fi
-  - if [ ! -z "${TRAVIS_TAG}" ]; then git remote add gh https://simonerota:${GITHUB_RELEASE_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git; fi
-  - if [ ! -z "${TRAVIS_TAG}" ]; then git push gh travis-latest-build || true; fi
-  - if [ ! -z "${TRAVIS_TAG}" ]; then git push -f gh travis-latest-build; fi
-  - if [ ! -z "${TRAVIS_TAG}" ]; then git remote remove gh; fi
-  - if [ -z "${TRAVIS_TAG}" ]; then export RELEASE_NAME=${VERSION}; else export RELEASE_NAME=latest; fi
+  - if [ -z ${TRAVIS_TAG} ] || [[ ${TRAVIS_TAG} == *-* ]]; then git tag -f travis-latest-build; fi
+  - if [ -z ${TRAVIS_TAG} ] || [[ ${TRAVIS_TAG} == *-* ]]; then git remote add gh https://simonerota:${GITHUB_RELEASE_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git; fi
+  - if [ -z ${TRAVIS_TAG} ] || [[ ${TRAVIS_TAG} == *-* ]]; then git push gh travis-latest-build || true; fi
+  - if [ -z ${TRAVIS_TAG} ] || [[ ${TRAVIS_TAG} == *-* ]]; then git push -f gh travis-latest-build; fi
+  - if [ -z ${TRAVIS_TAG} ] || [[ ${TRAVIS_TAG} == *-* ]]; then git remote remove gh; fi
+  - if [ -z ${TRAVIS_TAG} ] || [[ ${TRAVIS_TAG} == *-* ]]; then export RELEASE_NAME=latest; else export RELEASE_NAME=${VERSION}; fi
 deploy:
   - deploy:
     provider: releases
