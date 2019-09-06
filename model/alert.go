@@ -8,9 +8,9 @@ import (
 
 type Alert struct {
 	ID            string `bson:"_id"`
-	AlertCode     string
-	AlertSeverity string
-	AlertStatus   string
+	AlertCode     string `bson:"alert_code"`
+	AlertSeverity string `bson:"alert_severity"`
+	AlertStatus   string `bson:"alert_status"`
 	Description   string
 	Date          time.Time
 }

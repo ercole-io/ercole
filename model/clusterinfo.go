@@ -23,7 +23,7 @@ type ClusterInfo struct {
 	CPU                         int
 	Sockets                     int
 	VMs                         []VMInfo
-	HostnameAgentVirtualization string
+	HostnameAgentVirtualization string `bson:"hostname_agent_virtualization"`
 }
 
 var ClusterInfoBsonValidatorRules bson.D = bson.D{
@@ -51,6 +51,7 @@ var ClusterInfoBsonValidatorRules bson.D = bson.D{
 		}},
 		{"hostname_agent_virtualization", bson.D{
 			{"bsonType", "string"},
+			{"pattern", "^.+$"},
 		}},
 	}},
 }

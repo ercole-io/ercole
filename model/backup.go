@@ -18,10 +18,10 @@ package model
 import "go.mongodb.org/mongo-driver/bson"
 
 type Backup struct {
-	BackupType string
+	BackupType string `bson:"backup_type"`
 	Hour       string
-	WeekDays   string
-	AvgBckSize string
+	WeekDays   string `bson:"week_days"`
+	AvgBckSize string `bson:"avg_bck_size"`
 	Retention  string
 }
 

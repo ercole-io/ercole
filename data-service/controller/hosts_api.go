@@ -20,17 +20,29 @@ func (this *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 	//Parse the hostdata from the request
 	var hostData model.HostData
 	if err := json.NewDecoder(r.Body).Decode(&hostData); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, utils.NewAdvancedError(err, http.StatusText(http.StatusUnprocessableEntity)))
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 
+	if hostData.HostType == "" {
+		hostData.HostType = "oracledb"
+	}
+	//Updates and fixes
+	fixHostnameAgentVirtualization(&hostData)
+
 	//Save the HostData
 	id, err := this.Service.UpdateHostInfo(hostData)
-	if err != utils.AE_NIL {
+	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
 	}
 
 	//Write the created id
 	utils.WriteJSONResponse(w, http.StatusOK, id)
+}
+
+func fixHostnameAgentVirtualization(orig *model.HostData) {
+	for i, _ := range orig.Extra.Clusters {
+		orig.Extra.Clusters[i].HostnameAgentVirtualization = orig.Hostname
+	}
 }

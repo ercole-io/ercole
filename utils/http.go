@@ -19,11 +19,11 @@ type ErrorResponseFE struct {
 }
 
 // WriteAndLogError write the error to the w with the statusCode as statusCode and log the error to the stdout
-func WriteAndLogError(w http.ResponseWriter, statusCode int, err AdvancedError) {
+func WriteAndLogError(w http.ResponseWriter, statusCode int, err AdvancedErrorInterface) {
 	//Build the response
 	resp := ErrorResponseFE{
 		Error:            err.ErrorClass(),
-		ErrorDescription: err.ErrorClass(),
+		ErrorDescription: err.Error(),
 		LineNumber:       err.LineNumber(),
 		SourceFilename:   err.SourceFilename(),
 	}
@@ -37,6 +37,6 @@ func WriteAndLogError(w http.ResponseWriter, statusCode int, err AdvancedError) 
 func WriteJSONResponse(w http.ResponseWriter, statusCode int, resp interface{}) {
 	//Write the response
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(resp)
 }

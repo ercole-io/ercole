@@ -21,10 +21,10 @@ import "go.mongodb.org/mongo-driver/bson"
 type Tablespace struct {
 	Database string
 	Name     string
-	MaxSize  string
+	MaxSize  string `bson:"max_size"`
 	Total    string
 	Used     string
-	UsedPerc string
+	UsedPerc string `bson:"used_perc"`
 	Status   string
 }
 

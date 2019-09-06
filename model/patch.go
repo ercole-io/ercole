@@ -21,7 +21,7 @@ import "go.mongodb.org/mongo-driver/bson"
 type Patch struct {
 	Database    string
 	Version     string
-	PatchID     string
+	PatchID     string `bson:"patch_id"`
 	Action      string
 	Description string
 	Date        string

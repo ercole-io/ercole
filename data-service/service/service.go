@@ -36,7 +36,7 @@ type HostDataServiceInterface interface {
 	Init()
 
 	// UpdateHostInfo update the host informations using the provided hostdata
-	UpdateHostInfo(hostdata model.HostData) (interface{}, utils.AdvancedError)
+	UpdateHostInfo(hostdata model.HostData) (interface{}, utils.AdvancedErrorInterface)
 
 	// ArchiveHost archive the host
 	// ArchiveHost(hostname string) utils.AdvancedError
@@ -58,16 +58,21 @@ func (this *HostDataService) Init() {
 }
 
 // SaveHostData saves the hostdata
-func (this *HostDataService) UpdateHostInfo(hostdata model.HostData) (interface{}, utils.AdvancedError) {
+func (this *HostDataService) UpdateHostInfo(hostdata model.HostData) (interface{}, utils.AdvancedErrorInterface) {
 	hostdata.ServerVersion = "latest"
 	hostdata.Archived = false
 	hostdata.CreatedAt = time.Now()
 
 	_, err := this.Database.ArchiveHost(hostdata.Hostname)
-	if err != utils.AE_NIL {
+	if err != nil {
 		return nil, err
 	}
 
 	res, err := this.Database.InsertHostData(hostdata)
-	return res.InsertedID, err
+	if err != nil {
+		return nil, err
+	} else {
+		return res.InsertedID, nil
+	}
+
 }

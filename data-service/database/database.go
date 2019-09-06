@@ -18,9 +18,9 @@ type MongoDatabaseInterface interface {
 	// Init initializes the connection to the database
 	Init()
 	// ArchiveHost archives tho host with hostname as hostname
-	ArchiveHost(hostname string) (*mongo.UpdateResult, utils.AdvancedError)
+	ArchiveHost(hostname string) (*mongo.UpdateResult, utils.AdvancedErrorInterface)
 	// InsertHostData adds a new hostdata to the database
-	InsertHostData(hostData model.HostData) (*mongo.InsertOneResult, utils.AdvancedError)
+	InsertHostData(hostData model.HostData) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation
@@ -40,7 +40,7 @@ func (this *MongoDatabase) Init() {
 }
 
 // ArchiveHost archives tho host with hostname as hostname
-func (this *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, utils.AdvancedError) {
+func (this *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, utils.AdvancedErrorInterface) {
 	res, err := this.Client.Database(this.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.D{
 		{"hostname", hostname},
 		{"archived", false},
@@ -49,16 +49,20 @@ func (this *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, ut
 			{"archived", true},
 		}},
 	})
-	return res, utils.NewAdvancedError(err, "DB ERROR")
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return res, nil
 }
 
 // InsertHostData adds a new hostdata to the database
-func (this *MongoDatabase) InsertHostData(hostData model.HostData) (*mongo.InsertOneResult, utils.AdvancedError) {
+func (this *MongoDatabase) InsertHostData(hostData model.HostData) (*mongo.InsertOneResult, utils.AdvancedErrorInterface) {
 	res, err := this.Client.Database(this.Config.Mongodb.DBName).Collection("hosts").InsertOne(context.TODO(), hostData)
 	if err != nil {
-		return nil, utils.NewAdvancedError(err, "DB ERROR")
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
-	return res, utils.AdvancedError{}
+	return res, nil
 }
 
 // ConnectMongodb connects to the MongoDB and return the connection

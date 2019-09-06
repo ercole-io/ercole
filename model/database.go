@@ -19,26 +19,26 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // Database holds information about the database.
 type Database struct {
-	InstanceNumber  string
+	InstanceNumber  string `bson:"instance_number"`
 	Name            string
-	UniqueName      string
+	UniqueName      string `bson:"unique_name"`
 	Status          string
 	Version         string
 	Platform        string
-	Archivelog      string
+	Archivelog      string `bson:"archive_log"`
 	Charset         string
 	NCharset        string
-	BlockSize       string
-	CPUCount        string
-	SGATarget       string
-	PGATarget       string
-	MemoryTarget    string
-	SGAMaxSize      string
-	SegmentsSize    string
+	BlockSize       string `bson:"block_size"`
+	CPUCount        string `bson:"cpu_count"`
+	SGATarget       string `bson:"sga_target"`
+	PGATarget       string `bson:"pga_target"`
+	MemoryTarget    string `bson:"memory_target"`
+	SGAMaxSize      string `bson:"sga_max_size"`
+	SegmentsSize    string `bson:"segments_size"`
 	Used            string
 	Allocated       string
 	Elapsed         string
-	DBTime          string
+	DBTime          string `bson:"db_time"`
 	Work            string
 	ASM             bool
 	Dataguard       bool
@@ -48,47 +48,47 @@ type Database struct {
 	Features        []Feature
 	Licenses        []License
 	ADDMs           []Addm
-	SegmentAdvisors []SegmentAdvisor
-	LastPSUs        []PSU
+	SegmentAdvisors []SegmentAdvisor `bson:"segment_advisors"`
+	LastPSUs        []PSU            `bson:"last_psus"`
 	Backups         []Backup
 }
 
 var DatabaseBsonValidatorRules bson.D = bson.D{
 	{"bsonType", "object"},
-	{"required", bson.A{
-		"instance_number",
-		"name",
-		"unique_name",
-		"status",
-		"version",
-		"platform",
-		"archive_log",
-		"charset",
-		"ncharset",
-		"block_size",
-		"cpu_count",
-		"sga_target",
-		"pga_target",
-		"memory_target",
-		"sga_max_size",
-		"segments_size",
-		"used",
-		"allocated",
-		"elapsed",
-		"db_time",
-		"work",
-		"asm",
-		"dataguard",
-		"patches",
-		"tablespaces",
-		"schemas",
-		"features",
-		"licenses",
-		"addms",
-		"segment_advisor",
-		"last_psus",
-		"backups",
-	}},
+	// {"required", bson.A{
+	// 	"instance_number",
+	// 	"name",
+	// 	"unique_name",
+	// 	"status",
+	// 	"version",
+	// 	"platform",
+	// 	"archive_log",
+	// 	"charset",
+	// 	"ncharset",
+	// 	"block_size",
+	// 	"cpu_count",
+	// 	"sga_target",
+	// 	"pga_target",
+	// 	"memory_target",
+	// 	"sga_max_size",
+	// 	"segments_size",
+	// 	"used",
+	// 	"allocated",
+	// 	"elapsed",
+	// 	"db_time",
+	// 	"work",
+	// 	"asm",
+	// 	"dataguard",
+	// 	"patches",
+	// 	"tablespaces",
+	// 	"schemas",
+	// 	"features",
+	// 	"licenses",
+	// 	"addms",
+	// 	"segment_advisors",
+	// 	"last_psus",
+	// 	"backups",
+	// }},
 	{"properties", bson.D{
 		{"instance_number", bson.D{
 			{"bsonType", "string"},
@@ -183,7 +183,7 @@ var DatabaseBsonValidatorRules bson.D = bson.D{
 			{"bsonType", "array"},
 			{"items", AddmBsonValidatorRules},
 		}},
-		{"segment_advisor", bson.D{
+		{"segment_advisors", bson.D{
 			{"bsonType", "array"},
 			{"items", SegmentAdvisorBsonValidatorRules},
 		}},

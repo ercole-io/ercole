@@ -21,12 +21,12 @@ import "go.mongodb.org/mongo-driver/bson"
 // and used space
 type Filesystem struct {
 	Filesystem string
-	FsType     string
+	FsType     string `bson:"fs_type"`
 	Size       string
 	Used       string
 	Available  string
-	UsedPerc   string
-	MountedOn  string
+	UsedPerc   string `bson:"used_perc"`
+	MountedOn  string `bson:"mounted_on"`
 }
 
 var FilesystemBsonValidatorRules bson.D = bson.D{

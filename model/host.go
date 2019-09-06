@@ -22,19 +22,19 @@ type Host struct {
 	Hostname       string
 	Environment    string
 	Location       string
-	CPUModel       string
-	CPUCores       int
-	CPUThreads     int
+	CPUModel       string `bson:"cpu_model"`
+	CPUCores       int    `bson:"cpu_cores"`
+	CPUThreads     int    `bson:"cpu_threads"`
 	Socket         int
 	Type           string
 	Virtual        bool
 	Kernel         string
 	OS             string
-	MemoryTotal    int
-	SwapTotal      int
-	OracleCluster  bool
-	VeritasCluster bool
-	SunCluster     bool
+	MemoryTotal    int  `bson:"memory_total"`
+	SwapTotal      int  `bson:"swap_total"`
+	OracleCluster  bool `bson:"oracle_cluster"`
+	VeritasCluster bool `bson:"veritas_cluster"`
+	SunCluster     bool `bson:"sun_cluster"`
 }
 
 var HostBsonValidatorRules bson.D = bson.D{

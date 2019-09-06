@@ -18,10 +18,10 @@ package model
 import "go.mongodb.org/mongo-driver/bson"
 
 type SegmentAdvisor struct {
-	SegmentOwner   string
-	SegmentName    string
-	SegmentType    string
-	PartitionName  string
+	SegmentOwner   string `bson:"segment_owner"`
+	SegmentName    string `bson:"segment_name"`
+	SegmentType    string `bson:"segment_type"`
+	PartitionName  string `bson:"partition_name"`
 	Reclaimable    string
 	Recommendation string
 }

@@ -19,17 +19,15 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // ExtraInfo holds information about database, licenses and filesystem.
 type ExtraInfo struct {
-	Databases   []Database
-	Filesystems []Filesystem
-	Clusters    []ClusterInfo
+	Databases   []Database    `bson:",omitempty"`
+	Filesystems []Filesystem  `bson:",omitempty"`
+	Clusters    []ClusterInfo `bson:",omitempty"`
 }
 
 var ExtraInfoBsonValidatorRules bson.D = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"databases",
 		"filesystems",
-		"clusters",
 	}},
 	{"properties", bson.D{
 		{"databases", bson.D{

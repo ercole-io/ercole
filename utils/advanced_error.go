@@ -25,7 +25,9 @@ type AdvancedError struct {
 	Line int
 }
 
-var AE_NIL AdvancedError = AdvancedError{}
+func (this *AdvancedError) Error() string {
+	return this.Err.Error()
+}
 
 // ErrorClass return the class of the error
 func (this *AdvancedError) ErrorClass() string {
@@ -49,5 +51,14 @@ func NewAdvancedError(err error, class string) AdvancedError {
 		return AdvancedError{Err: err, Class: class, Source: file, Line: line}
 	} else {
 		return AdvancedError{Err: err, Class: class, Source: "????", Line: -1}
+	}
+}
+
+func NewAdvancedErrorPtr(err error, class string) *AdvancedError {
+	_, file, line, ok := runtime.Caller(1)
+	if ok {
+		return &AdvancedError{Err: err, Class: class, Source: file, Line: line}
+	} else {
+		return &AdvancedError{Err: err, Class: class, Source: "????", Line: -1}
 	}
 }

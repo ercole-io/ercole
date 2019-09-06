@@ -26,15 +26,15 @@ type HostData struct {
 	Hostname      string
 	Environment   string
 	Location      string
-	HostType      string
+	HostType      string `bson:"host_type"`
 	Version       string
-	ServerVersion string
+	ServerVersion string `bson:"server_version"`
 	Databases     string
 	Schemas       string
 	Info          Host
 	Extra         ExtraInfo
 	Archived      bool
-	CreatedAt     time.Time
+	CreatedAt     time.Time `bson:"created_at"`
 }
 
 var HostDataBsonValidatorRules bson.D = bson.D{
@@ -44,7 +44,7 @@ var HostDataBsonValidatorRules bson.D = bson.D{
 		"environment",
 		"location",
 		"host_type",
-		"version",
+		// "version",
 		"server_version",
 		"info",
 		"extra",
@@ -63,13 +63,13 @@ var HostDataBsonValidatorRules bson.D = bson.D{
 		}},
 		{"host_type", bson.D{
 			{"enum", bson.A{
-				"oracle",
+				"oracledb",
 				"virtualization",
 			}},
 		}},
-		{"version", bson.D{
-			{"bsonType", "string"},
-		}},
+		// {"version", bson.D{
+		// 	{"bsonType", "string"},
+		// }},
 		{"server_version", bson.D{
 			{"bsonType", "string"},
 		}},
