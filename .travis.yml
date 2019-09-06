@@ -69,7 +69,7 @@ deploy:
     file_glob: true
     file: dist/*
     skip_cleanup: true
-    name: $VERSION
+    name: $RELEASE_NAME
     overwrite: true
     on:
       all_branches: true
