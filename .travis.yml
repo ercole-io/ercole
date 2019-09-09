@@ -25,6 +25,7 @@ sudo: required
 before_install:
 - sudo docker pull ${PACKAGE_BUILD_IMAGE}
 - export VERSION=`cat pom.xml | grep "version" | cut -d'>' -f2 | cut -d'<' -f1 | head -n 2 | tail -n 1`
+- if [ -z ${TRAVIS_TAG} ] || [[ ${TRAVIS_TAG} == *-* ]]; then export VERSION=latest; fi 
 
 install:
 - sudo docker run -d --rm -it -e WORKSPACE="${WORKSPACE}" -e TRAVIS_REPO_SLUG="${TRAVIS_REPO_SLUG}" -e TRAVIS_BUILD_NUMBER="${TRAVIS_BUILD_NUMBER}" -v $PWD:"${WORKSPACE}" --name package_builder ${PACKAGE_BUILD_IMAGE} /bin/cat
@@ -34,7 +35,7 @@ script:
   - if [ -z ${TRAVIS_TAG} ] || [[ ${TRAVIS_TAG} == *-* ]]; then cp /tmp/pom.xml pom.xml; fi 
   - mkdir dist
   - mvn clean package 2>&1 > dist/ercole-server-${VERSION}-build-log.txt
-  - cp target/ercole-server-${VERSION}.jar dist/
+  - cp target/ercole-server-*.jar dist/
   - find target > dist/ercole-server-${VERSION}-target-lists.txt
   - sed -i "s|ERCOLE_VERSION|${VERSION}|g" package/rhel7/ercole-server.spec
   - docker exec -it package_builder /bin/sh -c "mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}"
