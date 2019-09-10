@@ -15,8 +15,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var TRUE bool = true
-
 // Migrate migrate the client database
 func Migrate(client *mongo.Database) {
 	//NB: ALL OPERATIONS SHOULD BE IDEMPOTENT
@@ -33,10 +31,6 @@ func Migrate(client *mongo.Database) {
 	MigrateLicensesSchema(client)
 	MigrateAlertsSchema(client)
 	MigrateCurrentDatabasesSchema(client)
-}
-
-func UpdateData(client *mongo.Database) {
-
 }
 
 // MigrateHostsSchema create or update the hosts schema
@@ -60,15 +54,15 @@ func MigrateHostsSchema(client *mongo.Database) {
 	}).Err(); err != nil {
 		log.Panicln(err)
 	}
+
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
 			{"archived", 1},
 			{"hostname", 1},
 		},
-		Options: &options.IndexOptions{
-			Unique:                  &TRUE,
+		Options: (&options.IndexOptions{
 			PartialFilterExpression: bson.D{{"archived", false}},
-		},
+		}).SetUnique(true),
 	}); err != nil {
 		log.Panicln(err)
 	}
@@ -100,6 +94,24 @@ func MigrateHostsSchema(client *mongo.Database) {
 			Collation: &options.Collation{
 				Locale: "simple",
 			},
+		},
+	}); err != nil {
+		log.Panicln(err)
+	}
+	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
+		Keys: bson.D{
+			{"archived", 1},
+			{"host_type", 1},
+			{"extra.clusters.name", 1},
+		},
+	}); err != nil {
+		log.Panicln(err)
+	}
+	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
+		Keys: bson.D{
+			{"archived", 1},
+			{"host_type", 1},
+			{"extra.clusters.vms.hostname", 1},
 		},
 	}); err != nil {
 		log.Panicln(err)
@@ -227,4 +239,8 @@ func MigrateCurrentDatabasesSchema(client *mongo.Database) {
 	}).Err(); err != nil {
 		log.Panicln(err)
 	}
+}
+
+func UpdateData(client *mongo.Database) {
+
 }

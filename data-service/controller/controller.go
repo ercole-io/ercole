@@ -1,4 +1,4 @@
-// controller contains structs and methods used to provide endpoints for storing hostdata informations
+// Package controller contains structs and methods used to provide endpoints for storing hostdata informations
 package controller
 
 import (

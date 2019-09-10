@@ -28,9 +28,10 @@ import (
 	"github.com/amreo/ercole-services/model"
 )
 
-var errHostNotFound error = errors.New("Host not found")
+// ErrHostNotFound cotains "Host not found" error
+var ErrHostNotFound = errors.New("Host not found")
 
-// ServiceInterface is a interface that wrap methods used to manipulate and save data
+// HostDataServiceInterface is a interface that wrap methods used to manipulate and save data
 type HostDataServiceInterface interface {
 	// Init initialize the service
 	Init()
@@ -54,21 +55,24 @@ type HostDataService struct {
 }
 
 // Init initializes the service and database
-func (this *HostDataService) Init() {
+func (hds *HostDataService) Init() {
 }
 
-// SaveHostData saves the hostdata
-func (this *HostDataService) UpdateHostInfo(hostdata model.HostData) (interface{}, utils.AdvancedErrorInterface) {
-	hostdata.ServerVersion = "latest"
+// UpdateHostInfo saves the hostdata
+func (hds *HostDataService) UpdateHostInfo(hostdata model.HostData) (interface{}, utils.AdvancedErrorInterface) {
+	hostdata.ServerVersion = hds.Version
 	hostdata.Archived = false
 	hostdata.CreatedAt = time.Now()
+	hostdata.SchemaVersion = model.SchemaVersion
 
-	_, err := this.Database.ArchiveHost(hostdata.Hostname)
+	//Archive the host
+	_, err := hds.Database.ArchiveHost(hostdata.Hostname)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := this.Database.InsertHostData(hostdata)
+	//Insert the host
+	res, err := hds.Database.InsertHostData(hostdata)
 	if err != nil {
 		return nil, err
 	} else {

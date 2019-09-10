@@ -33,53 +33,52 @@ type MongoDatabase struct {
 }
 
 // Init initializes the connection to the database
-func (this *MongoDatabase) Init() {
+func (md *MongoDatabase) Init() {
 	//Connect to mongodb
-	this.ConnectToMongodb()
-	log.Println("MongoDatabase is connected to MongoDB!", this.Config.Mongodb.URI)
+	md.ConnectToMongodb()
+	log.Println("MongoDatabase is connected to MongoDB!", md.Config.Mongodb.URI)
 }
 
 // ArchiveHost archives tho host with hostname as hostname
-func (this *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, utils.AdvancedErrorInterface) {
-	res, err := this.Client.Database(this.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.D{
+func (md *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, utils.AdvancedErrorInterface) {
+	if res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.D{
 		{"hostname", hostname},
 		{"archived", false},
 	}, bson.D{
 		{"$set", bson.D{
 			{"archived", true},
 		}},
-	})
-	if err != nil {
+	}); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	} else {
+		return res, nil
 	}
-
-	return res, nil
 }
 
 // InsertHostData adds a new hostdata to the database
-func (this *MongoDatabase) InsertHostData(hostData model.HostData) (*mongo.InsertOneResult, utils.AdvancedErrorInterface) {
-	res, err := this.Client.Database(this.Config.Mongodb.DBName).Collection("hosts").InsertOne(context.TODO(), hostData)
+func (md *MongoDatabase) InsertHostData(hostData model.HostData) (*mongo.InsertOneResult, utils.AdvancedErrorInterface) {
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").InsertOne(context.TODO(), hostData)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 	return res, nil
 }
 
-// ConnectMongodb connects to the MongoDB and return the connection
-func (this *MongoDatabase) ConnectToMongodb() {
+// ConnectToMongodb connects to the MongoDB and return the connection
+func (md *MongoDatabase) ConnectToMongodb() {
 	var err error
 
 	//Set client options
-	clientOptions := options.Client().ApplyURI(this.Config.Mongodb.URI)
+	clientOptions := options.Client().ApplyURI(md.Config.Mongodb.URI)
 
 	//Connect to MongoDB
-	this.Client, err = mongo.Connect(context.TODO(), clientOptions)
+	md.Client, err = mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Check the connection
-	err = this.Client.Ping(context.TODO(), nil)
+	err = md.Client.Ping(context.TODO(), nil)
 	if err != nil {
 		log.Fatal(err)
 	}

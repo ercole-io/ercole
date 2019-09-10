@@ -23,18 +23,20 @@ import (
 
 // HostData holds the whole information that will be sent to the server.
 type HostData struct {
-	Hostname      string
-	Environment   string
-	Location      string
-	HostType      string `bson:"host_type"`
-	Version       string
-	ServerVersion string `bson:"server_version"`
-	Databases     string
-	Schemas       string
-	Info          Host
-	Extra         ExtraInfo
-	Archived      bool
-	CreatedAt     time.Time `bson:"created_at"`
+	Hostname              string
+	Environment           string
+	Location              string
+	HostType              string `bson:"host_type"`
+	Version               string
+	HostDataSchemaVersion int    `bson:"-"`
+	ServerVersion         string `bson:"server_version"`
+	SchemaVersion         int    `bson:"schema_version"`
+	Databases             string
+	Schemas               string
+	Info                  Host
+	Extra                 ExtraInfo
+	Archived              bool
+	CreatedAt             time.Time `bson:"created_at"`
 }
 
 var HostDataBsonValidatorRules bson.D = bson.D{
@@ -46,6 +48,7 @@ var HostDataBsonValidatorRules bson.D = bson.D{
 		"host_type",
 		// "version",
 		"server_version",
+		"schema_version",
 		"info",
 		"extra",
 		"archived",
@@ -67,11 +70,14 @@ var HostDataBsonValidatorRules bson.D = bson.D{
 				"virtualization",
 			}},
 		}},
-		// {"version", bson.D{
-		// 	{"bsonType", "string"},
-		// }},
+		{"version", bson.D{
+			{"bsonType", "string"},
+		}},
 		{"server_version", bson.D{
 			{"bsonType", "string"},
+		}},
+		{"schema_version", bson.D{
+			{"bsonType", "int"},
 		}},
 		{"databases", bson.D{
 			{"bsonType", "string"},
@@ -89,3 +95,5 @@ var HostDataBsonValidatorRules bson.D = bson.D{
 		}},
 	}},
 }
+
+const SchemaVersion int = 1

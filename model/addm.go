@@ -17,6 +17,7 @@ package model
 
 import "go.mongodb.org/mongo-driver/bson"
 
+// Addm contains info about addm
 type Addm struct {
 	Finding        string
 	Recommendation string
@@ -24,7 +25,8 @@ type Addm struct {
 	Benefit        string
 }
 
-var AddmBsonValidatorRules bson.D = bson.D{
+// AddmBsonValidatorRules contains mongodb validation rules for addm
+var AddmBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"finding",

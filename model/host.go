@@ -60,6 +60,7 @@ var HostBsonValidatorRules bson.D = bson.D{
 	{"properties", bson.D{
 		{"hostname", bson.D{
 			{"bsonType", "string"},
+			{"pattern", "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$"},
 		}},
 		{"environment", bson.D{
 			{"bsonType", "string"},

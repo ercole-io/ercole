@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Config contains configuration utilities, like readConfig()
+// Package config contains configuration utilities, like readConfig()
 package config
 
 import (
@@ -24,18 +24,20 @@ import (
 
 // Configuration contains Ercole DataService configuration
 type Configuration struct {
-	// HttpServer contains configuration about internal http server
-	HttpServer HttpServer
+	// HTTPServer contains configuration about internal http server
+	HTTPServer HTTPServer
 	// Mongodb contains configuration about database connection, some data logic and migration
 	Mongodb Mongodb
+	// Version contains the version of the server
+	Version string
 }
 
-// HttpServer contains configuration about the internal http servr
-type HttpServer struct {
+// HTTPServer contains configuration about the internal http servr
+type HTTPServer struct {
 	// Port contains the port of the internal http server
 	Port uint16
-	// LogHttpRequest enable the logging of the internal http serverl
-	LogHttpRequest bool
+	// LogHTTPRequest enable the logging of the internal http serverl
+	LogHTTPRequest bool
 	// AgentUsername contains the username of the agent
 	AgentUsername string
 	// AgentPassword contains the password of the agent

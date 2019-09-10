@@ -18,8 +18,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var serverVersion = "latest"
+
 func main() {
 	config := config.ReadConfig()
+	config.Version = serverVersion
 
 	enableDataService := flag.Bool("data-service", false, "Enable data service")
 	enableAlertService := flag.Bool("alert-service", false, "Enable alert service")
