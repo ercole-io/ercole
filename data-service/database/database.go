@@ -77,7 +77,7 @@ func (md *MongoDatabase) ConnectToMongodb() {
 		log.Fatal(err)
 	}
 
-	// Check the connection
+	//Check the connection
 	err = md.Client.Ping(context.TODO(), nil)
 	if err != nil {
 		log.Fatal(err)

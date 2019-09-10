@@ -8,12 +8,35 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo/options"
 
+	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/model"
 
 	"go.mongodb.org/mongo-driver/bson"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )
+
+// ConnectToMongodb connects to the MongoDB and return the connection
+func ConnectToMongodb(conf config.Mongodb) *mongo.Client {
+	var err error
+
+	//Set client options
+	clientOptions := options.Client().ApplyURI(conf.URI)
+
+	//Connect to MongoDB
+	cl, err := mongo.Connect(context.TODO(), clientOptions)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//Check the connection
+	err = cl.Ping(context.TODO(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return cl
+}
 
 // Migrate migrate the client database
 func Migrate(client *mongo.Database) {
@@ -24,7 +47,7 @@ func Migrate(client *mongo.Database) {
 	//SHOULD BE EQUAL TO THE RESULT OF
 	//	Migrate(&db)
 	//AND POSSIBLY AVOID DESTRUCTIVE CHANGES
-	UpdateData(client)
+	UpdateDataSchemas(client)
 
 	MigrateHostsSchema(client)
 	MigrateClustersSchema(client)
@@ -35,6 +58,7 @@ func Migrate(client *mongo.Database) {
 
 // MigrateHostsSchema create or update the hosts schema
 func MigrateHostsSchema(client *mongo.Database) {
+	//Create the collection
 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
 		log.Panicln(err)
 	} else if !utils.Contains(cols, "hosts") {
@@ -45,6 +69,7 @@ func MigrateHostsSchema(client *mongo.Database) {
 		}
 	}
 
+	//Set the collection validator
 	if err := client.RunCommand(context.TODO(), bson.D{
 		{"collMod", "hosts"},
 		{"validator", bson.D{
@@ -55,6 +80,7 @@ func MigrateHostsSchema(client *mongo.Database) {
 		log.Panicln(err)
 	}
 
+	//index creations
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
 			{"archived", 1},
@@ -118,13 +144,9 @@ func MigrateHostsSchema(client *mongo.Database) {
 	}
 }
 
+// MigrateClustersSchema create or update the currentCluster schema
 func MigrateClustersSchema(client *mongo.Database) {
-	// client.RunCommand(context.TODO(), bson.D{
-	// 	{"collMod", "clusters"},
-	// 	{"validator", bson.D{
-	// 		{"$jsonSchema", model.ClusterInfoBsonValidatorRules},
-	// 	}},
-	// })
+	//Create the view
 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
 		log.Panicln(err)
 	} else if !utils.Contains(cols, "currentClusters") {
@@ -135,6 +157,8 @@ func MigrateClustersSchema(client *mongo.Database) {
 			log.Panicln(err)
 		}
 	}
+
+	//Set the view pipeline
 	if err := client.RunCommand(context.TODO(), bson.D{
 		{"collMod", "currentClusters"},
 		{"viewOn", "hosts"},
@@ -159,7 +183,9 @@ func MigrateClustersSchema(client *mongo.Database) {
 	}
 }
 
+// MigrateLicensesSchema create or update the licenses schema
 func MigrateLicensesSchema(client *mongo.Database) {
+	//Create the collection
 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
 		log.Panicln(err)
 	} else if !utils.Contains(cols, "licenses") {
@@ -169,6 +195,8 @@ func MigrateLicensesSchema(client *mongo.Database) {
 			log.Panicln(err)
 		}
 	}
+
+	//Set the collection validator
 	if err := client.RunCommand(context.TODO(), bson.D{
 		{"collMod", "licenses"},
 		{"validator", bson.D{
@@ -179,7 +207,9 @@ func MigrateLicensesSchema(client *mongo.Database) {
 	}
 }
 
+// MigrateAlertsSchema create or update the alerts schema
 func MigrateAlertsSchema(client *mongo.Database) {
+	//Create the collection
 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
 		log.Panicln(err)
 	} else if !utils.Contains(cols, "alerts") {
@@ -189,6 +219,8 @@ func MigrateAlertsSchema(client *mongo.Database) {
 			log.Panicln(err)
 		}
 	}
+
+	//Set the collection validator
 	if err := client.RunCommand(context.TODO(), bson.D{
 		{"collMod", "alerts"},
 		{"validator", bson.D{
@@ -197,6 +229,8 @@ func MigrateAlertsSchema(client *mongo.Database) {
 	}).Err(); err != nil {
 		log.Panicln(err)
 	}
+
+	//index creations
 	if _, err := client.Collection("licenses").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
 			{"hostname", 1},
@@ -206,7 +240,9 @@ func MigrateAlertsSchema(client *mongo.Database) {
 	}
 }
 
+// MigrateCurrentDatabasesSchema create or update the databases schema
 func MigrateCurrentDatabasesSchema(client *mongo.Database) {
+	//Create the collection
 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
 		log.Panicln(err)
 	} else if !utils.Contains(cols, "currentDatabases") {
@@ -217,6 +253,8 @@ func MigrateCurrentDatabasesSchema(client *mongo.Database) {
 			log.Panicln(err)
 		}
 	}
+
+	//Set the view pipeline
 	if err := client.RunCommand(context.TODO(), bson.D{
 		{"collMod", "currentDatabases"},
 		{"viewOn", "hosts"},
@@ -241,6 +279,7 @@ func MigrateCurrentDatabasesSchema(client *mongo.Database) {
 	}
 }
 
-func UpdateData(client *mongo.Database) {
+// UpdateDataSchemas updates the schema of the data in the database
+func UpdateDataSchemas(client *mongo.Database) {
 
 }

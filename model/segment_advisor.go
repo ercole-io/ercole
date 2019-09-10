@@ -17,6 +17,7 @@ package model
 
 import "go.mongodb.org/mongo-driver/bson"
 
+// SegmentAdvisor holds information about a segment advisor
 type SegmentAdvisor struct {
 	SegmentOwner   string `bson:"segment_owner"`
 	SegmentName    string `bson:"segment_name"`
@@ -26,7 +27,8 @@ type SegmentAdvisor struct {
 	Recommendation string
 }
 
-var SegmentAdvisorBsonValidatorRules bson.D = bson.D{
+// SegmentAdvisorBsonValidatorRules contains mongodb validation rules for segmentAdvisor
+var SegmentAdvisorBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"segment_owner",

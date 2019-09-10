@@ -17,7 +17,7 @@ package model
 
 import "go.mongodb.org/mongo-driver/bson"
 
-// Host contains info about the server
+// Host contains info about the host
 type Host struct {
 	Hostname       string
 	Environment    string
@@ -37,7 +37,8 @@ type Host struct {
 	SunCluster     bool `bson:"sun_cluster"`
 }
 
-var HostBsonValidatorRules bson.D = bson.D{
+// HostBsonValidatorRules contains mongodb validation rules for host
+var HostBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"hostname",

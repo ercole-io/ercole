@@ -23,7 +23,8 @@ type License struct {
 	Count float32
 }
 
-var LicenseBsonValidatorRules bson.D = bson.D{
+// LicenseBsonValidatorRules contains mongodb validation rules for license
+var LicenseBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"name",

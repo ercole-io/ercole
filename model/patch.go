@@ -27,7 +27,8 @@ type Patch struct {
 	Date        string
 }
 
-var PatchBsonValidatorRules bson.D = bson.D{
+// PatchBsonValidatorRules contains mongodb validation rules for patch
+var PatchBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"database",

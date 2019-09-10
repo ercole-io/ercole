@@ -17,7 +17,7 @@ package model
 
 import "go.mongodb.org/mongo-driver/bson"
 
-// Tablespace holds the whole information about host and database.
+// Tablespace holds the informations about a tablespace.
 type Tablespace struct {
 	Database string
 	Name     string
@@ -28,7 +28,8 @@ type Tablespace struct {
 	Status   string
 }
 
-var TablespaceBsonValidatorRules bson.D = bson.D{
+// TablespaceBsonValidatorRules contains mongodb validation rules for tablespace
+var TablespaceBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"database",

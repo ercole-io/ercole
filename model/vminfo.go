@@ -25,7 +25,8 @@ type VMInfo struct {
 	CappedCPU   bool   `bson:"capped_cpu"`
 }
 
-var VMInfoBsonValidatorRules bson.D = bson.D{
+// VMInfoBsonValidatorRules contains mongodb validation rules for VMInfo
+var VMInfoBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"name",

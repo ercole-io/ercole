@@ -17,7 +17,7 @@ package model
 
 import "go.mongodb.org/mongo-driver/bson"
 
-// Database holds information about the database.
+// Database holds information about a database.
 type Database struct {
 	InstanceNumber  string `bson:"instance_number"`
 	Name            string
@@ -53,7 +53,8 @@ type Database struct {
 	Backups         []Backup
 }
 
-var DatabaseBsonValidatorRules bson.D = bson.D{
+// DatabaseBsonValidatorRules contains mongodb validation rules for database
+var DatabaseBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"instance_number",

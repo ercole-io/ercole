@@ -17,7 +17,7 @@ package model
 
 import "go.mongodb.org/mongo-driver/bson"
 
-//ClusterInfo hold informations about the cluster
+//ClusterInfo hold informations about a cluster
 type ClusterInfo struct {
 	Name                        string
 	CPU                         int
@@ -26,7 +26,8 @@ type ClusterInfo struct {
 	HostnameAgentVirtualization string `bson:"hostname_agent_virtualization"`
 }
 
-var ClusterInfoBsonValidatorRules bson.D = bson.D{
+// ClusterInfoBsonValidatorRules contains mongodb validation rules for clusterInfo
+var ClusterInfoBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"name",

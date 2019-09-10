@@ -21,7 +21,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// HostData holds the whole information that will be sent to the server.
+// SchemaVersion contains the version of the schema
+const SchemaVersion int = 1
+
+// HostData holds all informations about a host & services
 type HostData struct {
 	Hostname              string
 	Environment           string
@@ -39,14 +42,15 @@ type HostData struct {
 	CreatedAt             time.Time `bson:"created_at"`
 }
 
-var HostDataBsonValidatorRules bson.D = bson.D{
+// HostDataBsonValidatorRules contains mongodb validation rules for hostData
+var HostDataBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"hostname",
 		"environment",
 		"location",
 		"host_type",
-		// "version",
+		"version",
 		"server_version",
 		"schema_version",
 		"info",
@@ -95,5 +99,3 @@ var HostDataBsonValidatorRules bson.D = bson.D{
 		}},
 	}},
 }
-
-const SchemaVersion int = 1

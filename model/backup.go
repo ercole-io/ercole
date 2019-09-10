@@ -17,6 +17,7 @@ package model
 
 import "go.mongodb.org/mongo-driver/bson"
 
+// Backup holds informations about a backup
 type Backup struct {
 	BackupType string `bson:"backup_type"`
 	Hour       string
@@ -25,7 +26,8 @@ type Backup struct {
 	Retention  string
 }
 
-var BackupBsonValidatorRules bson.D = bson.D{
+// BackupBsonValidatorRules contains mongodb validation rules for backup
+var BackupBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"backup_type",

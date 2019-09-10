@@ -6,8 +6,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// Alert holds informations about a alert
 type Alert struct {
 	ID            string `bson:"_id"`
+	HostName      string
 	AlertCode     string `bson:"alert_code"`
 	AlertSeverity string `bson:"alert_severity"`
 	AlertStatus   string `bson:"alert_status"`
@@ -15,19 +17,44 @@ type Alert struct {
 	Date          time.Time
 }
 
-const NEW_DATABASE string = "NEW_DATABASE"
-const NEW_OPTION string = "NEW_OPTION"
-const NEW_LICENSE string = "NEW_LICENSE"
-const NEW_SERVER string = "NEW_SERVER"
-const NO_DATA string = "NO_DATA"
+// Alert codes
+const (
+	// NewDatabase contains string "NEW_DATABASE"
+	NewDatabase string = "NEW_DATABASE"
+	// NewOption contains string "NEW_OPTION"
+	NewOption string = "NEW_OPTION"
+	// NewLicense contains string "NEW_LICENSE"
+	NewLicense string = "NEW_LICENSE"
+	// NewServer contains string "NEW_SERVER"
+	NewServer string = "NEW_SERVER"
+	// NoData contains string "NO_DATA"
+	NoData string = "NO_DATA"
+)
 
-const MINOR string = "MINOR"
-const WARNING string = "WARNING"
-const MAJOR string = "MAJOR"
-const CRITICAL string = "CRITICAL"
-const NOTICE string = "NOTICE"
+// Alert severity
+const (
+	// Minor contains string "MINOR"
+	Minor string = "MINOR"
+	// Warning contains string "WARNING"
+	Warning string = "WARNING"
+	// Major contains string "MAJOR"
+	Major string = "MAJOR"
+	// Critical contains string "CRITICAL"
+	Critical string = "CRITICAL"
+	// Notice contains string "NOTICE"
+	Notice string = "NOTICE"
+)
 
-var AlertBsonValidatorRules bson.D = bson.D{
+// Alert status
+const (
+	// New contains string "NEW"
+	New string = "NEW"
+	// Ack contains string "ACK"
+	Ack string = "ACK"
+)
+
+// AlertBsonValidatorRules contains mongodb validation rules for alert
+var AlertBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"_id",
@@ -44,28 +71,28 @@ var AlertBsonValidatorRules bson.D = bson.D{
 		{"alert_code", bson.D{
 			{"bsonType", "string"},
 			{"enum", bson.A{
-				"NEW_DATABASE",
-				"NEW_OPTION",
-				"NEW_LICENSE",
-				"NEW_SERVER",
-				"NO_DATA",
+				NewDatabase,
+				NewOption,
+				NewLicense,
+				NewServer,
+				NoData,
 			}},
 		}},
 		{"alert_severity", bson.D{
 			{"bsonType", "string"},
 			{"enum", bson.A{
-				"MINOR",
-				"WARNING",
-				"MAJOR",
-				"CRITICAL",
-				"NOTICE",
+				Minor,
+				Warning,
+				Major,
+				Critical,
+				Notice,
 			}},
 		}},
 		{"alert_status", bson.D{
 			{"bsonType", "string"},
 			{"enum", bson.A{
-				"NEW",
-				"ACK",
+				New,
+				Ack,
 			}},
 		}},
 		{"description", bson.D{

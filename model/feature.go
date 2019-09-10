@@ -23,7 +23,8 @@ type Feature struct {
 	Status bool
 }
 
-var FeatureBsonValidatorRules bson.D = bson.D{
+// FeatureBsonValidatorRules contains mongodb validation rules for feature
+var FeatureBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"name",

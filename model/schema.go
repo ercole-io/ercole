@@ -27,7 +27,8 @@ type Schema struct {
 	LOB      int
 }
 
-var SchemaBsonValidatorRules bson.D = bson.D{
+// SchemaBsonValidatorRules contains mongodb validation rules for schema
+var SchemaBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"database",

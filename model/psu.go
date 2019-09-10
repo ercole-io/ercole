@@ -17,12 +17,14 @@ package model
 
 import "go.mongodb.org/mongo-driver/bson"
 
+// PSU holds information about a PSU
 type PSU struct {
 	Date        string
 	Description string
 }
 
-var PSUBsonValidatorRules bson.D = bson.D{
+// PSUBsonValidatorRules contains mongodb validation rules for psu
+var PSUBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"date",

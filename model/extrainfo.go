@@ -17,14 +17,15 @@ package model
 
 import "go.mongodb.org/mongo-driver/bson"
 
-// ExtraInfo holds information about database, licenses and filesystem.
+// ExtraInfo holds various informations.
 type ExtraInfo struct {
 	Databases   []Database    `bson:",omitempty"`
 	Filesystems []Filesystem  `bson:",omitempty"`
 	Clusters    []ClusterInfo `bson:",omitempty"`
 }
 
-var ExtraInfoBsonValidatorRules bson.D = bson.D{
+// ExtraInfoBsonValidatorRules contains mongodb validation rules for extraInfo
+var ExtraInfoBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"filesystems",

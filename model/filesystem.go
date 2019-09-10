@@ -17,8 +17,7 @@ package model
 
 import "go.mongodb.org/mongo-driver/bson"
 
-// Filesystem holds information about mounted filesystems
-// and used space
+// Filesystem holds information about mounted filesystem and used space
 type Filesystem struct {
 	Filesystem string
 	FsType     string `bson:"fs_type"`
@@ -29,7 +28,8 @@ type Filesystem struct {
 	MountedOn  string `bson:"mounted_on"`
 }
 
-var FilesystemBsonValidatorRules bson.D = bson.D{
+// FilesystemBsonValidatorRules contains mongodb validation rules for filesystem
+var FilesystemBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"filesystem",

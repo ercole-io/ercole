@@ -13,7 +13,7 @@ import (
 
 // AuthenticateMiddleware return the middleware used to authenticate (request) users
 func (ctrl *HostDataController) AuthenticateMiddleware() func(http.Handler) http.Handler {
-	return httpauth.SimpleBasicAuth(ctrl.Config.HttpServer.AgentUsername, ctrl.Config.HttpServer.AgentPassword)
+	return httpauth.SimpleBasicAuth(ctrl.Config.HTTPServer.AgentUsername, ctrl.Config.HTTPServer.AgentPassword)
 }
 
 // UpdateHostInfo update the informations about a host using the HostData in the request

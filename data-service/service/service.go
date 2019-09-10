@@ -26,6 +26,8 @@ import (
 
 	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/model"
+	"github.com/mongodb/amboy"
+
 )
 
 // ErrHostNotFound cotains "Host not found" error
@@ -52,10 +54,13 @@ type HostDataService struct {
 	Version string
 	// Database contains the database layer
 	Database database.MongoDatabaseInterface
+	// InsertionQueue contain the queue of hostdata insertion
+	InsertionQueue amboy.Queue
 }
 
 // Init initializes the service and database
 func (hds *HostDataService) Init() {
+
 }
 
 // UpdateHostInfo saves the hostdata
