@@ -32,10 +32,10 @@
 					<form name="f" th:action="@{/login}" method="post" class="form-signin custom-form">
 						<h2 class="form-signin-heading">Login</h2>
 						<div th:if="${param.error}" class="alert alert-danger">
-							Username e password non validi.
+							The username and the password aren't valid.
 						</div>
 						<div th:if="${param.logout}" class="alert alert-success">
-							E' stato effettuato il logout.
+							Logout has been made.
 						</div>
 						<div class="form-group">
 							<label for="username">Username</label>
