@@ -24,16 +24,22 @@ import (
 
 // Configuration contains Ercole DataService configuration
 type Configuration struct {
-	// HTTPServer contains configuration about internal http server
-	HTTPServer HTTPServer
+	// DataService contains configuration about the data service
+	DataService DataService
+	// DataService contains configuration about the alert service
+	AlertService AlertService
 	// Mongodb contains configuration about database connection, some data logic and migration
 	Mongodb Mongodb
 	// Version contains the version of the server
 	Version string
 }
 
-// HTTPServer contains configuration about the internal http servr
-type HTTPServer struct {
+// DataService contains configuration about the data service
+type DataService struct {
+	// RemoteEndpoint contains the endpoint used to connect to the DataService
+	RemoteEndpoint string
+	// BindIP contains the bind ip
+	BindIP string
 	// Port contains the port of the internal http server
 	Port uint16
 	// LogHTTPRequest enable the logging of the internal http serverl
@@ -42,6 +48,24 @@ type HTTPServer struct {
 	AgentUsername string
 	// AgentPassword contains the password of the agent
 	AgentPassword string
+}
+
+// AlertService contains configuration about the alert service
+type AlertService struct {
+	// RemoteEndpoint contains the endpoint used to connect to the AlertService
+	RemoteEndpoint string
+	// BindIP contains the bind ip
+	BindIP string
+	// Port contains the port of the internal http server
+	Port uint16
+	// LogHTTPRequest enable the logging of the internal http serverl
+	LogHTTPRequest bool
+	// LogHTTPRequest enable the logging of the received messages
+	LogMessages bool
+	// AgentUsername contains the username of the agent
+	PublisherUsername string
+	// AgentPassword contains the password of the agent
+	PublisherPassword string
 }
 
 // Mongodb contains configuration about the database connection, some data logic and migration

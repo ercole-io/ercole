@@ -1,12 +1,23 @@
 {
-	"HTTPServer": {
+	"DataService": {
+		"RemoteEndpoint": "127.0.0.1:9081",
+		"BindIP": "0.0.0.0",
 		"Port": 9081,
 		"LogHTTPRequest": true,
 		"AgentUsername": "user",
 		"AgentPassword": "password"
 	},
+	"AlertService": {
+		"RemoteEndpoint": "127.0.0.1:9082",
+		"BindIP": "127.0.0.1",
+		"Port": 9082,
+		"LogHTTPRequest": true,
+		"LogMessages": true,
+		"PublisherUsername": "publisher",
+		"PublisherPassword": "r4nd0mS3cR3tp4ssW0rd"	
+	},
 	"Mongodb": {
-		"URI": "mongodb://localhost:32770/ercole",
+		"URI": "mongodb://localhost:32768/ercole",
 		"DBName": "ercole",
 		"Migrate": true,
 		"FeatureList": "fixture/features.txt"

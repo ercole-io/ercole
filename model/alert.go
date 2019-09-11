@@ -9,12 +9,12 @@ import (
 // Alert holds informations about a alert
 type Alert struct {
 	ID            string `bson:"_id"`
-	HostName      string
 	AlertCode     string `bson:"alert_code"`
 	AlertSeverity string `bson:"alert_severity"`
 	AlertStatus   string `bson:"alert_status"`
 	Description   string
 	Date          time.Time
+	OtherInfo     map[string]interface{} `bson:"other_info"`
 }
 
 // Alert codes
@@ -100,6 +100,9 @@ var AlertBsonValidatorRules = bson.D{
 		}},
 		{"date", bson.D{
 			{"bsonType", "date"},
+		}},
+		{"other_info", bson.D{
+			{"bsonType", "object"},
 		}},
 	}},
 }

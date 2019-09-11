@@ -17,10 +17,14 @@
 package service
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/amreo/ercole-services/data-service/database"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/amreo/ercole-services/utils"
 
@@ -46,7 +50,6 @@ type HostDataServiceInterface interface {
 // HostDataService is the concrete implementation of HostDataServiceInterface. It saves data to a MongoDB database
 type HostDataService struct {
 	// Config contains the dataservice global configuration
-	// TODO: Should be removed?
 	Config config.Configuration
 	// Version of the saved data
 	Version string
@@ -76,7 +79,19 @@ func (hds *HostDataService) UpdateHostInfo(hostdata model.HostData) (interface{}
 	res, err := hds.Database.InsertHostData(hostdata)
 	if err != nil {
 		return nil, err
-	} else {
-		return res.InsertedID, nil
 	}
+
+	//Enqueue the insertion
+	if resp, err := http.Post(fmt.Sprintf("http://%s:%s@%s/queue/host-data-insertion/%s",
+		hds.Config.AlertService.PublisherUsername,
+		hds.Config.AlertService.PublisherPassword,
+		hds.Config.AlertService.RemoteEndpoint,
+		res.InsertedID.(primitive.ObjectID).Hex()), "application/json", bytes.NewReader([]byte{})); err != nil {
+
+		return nil, utils.NewAdvancedErrorPtr(err, "DATA ENQUEUE")
+	} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return nil, utils.NewAdvancedErrorPtr(errors.New("Event enqueue error"), "EVENT ENQUEUE")
+	}
+
+	return res.InsertedID, nil
 }
