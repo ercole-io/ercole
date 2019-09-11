@@ -13,6 +13,7 @@ import (
 	dataservice_database "github.com/amreo/ercole-services/data-service/database"
 	dataservice_service "github.com/amreo/ercole-services/data-service/service"
 	migration "github.com/amreo/ercole-services/database-migration"
+
 	// "github.com/mongodb/amboy"
 	"github.com/rs/cors"
 
@@ -51,7 +52,7 @@ func serve(config config.Configuration, enableDataService bool,
 		cl := migration.ConnectToMongodb(config.Mongodb)
 		migration.Migrate(cl.Database(config.Mongodb.DBName))
 		cl.Disconnect(context.TODO())
-	} 
+	}
 
 	//TODO: implement alert-service, api-service, repo-service
 	mainRouter := mux.NewRouter()
@@ -60,31 +61,17 @@ func serve(config config.Configuration, enableDataService bool,
 		db := &dataservice_database.MongoDatabase{
 			Config: config,
 		}
-		
-		// queue, _ := queue.NewMongoRemoteSingleQueueGroup(
-		// 	context.TODO(),
-		// 	queue.RemoteQueueGroupOptions{
-		// 		Ordered: true,
-		// 		TTL:     0,
-		// 	},
-		// 	db.Client,
-		// 	queue.MongoDBOptions{
-		// 		URI: config.Mongodb.URI,
-		// 		DB:  config.Mongodb.DBName,
-		// 	},
-		// )
+		db.Init()
 		service := &dataservice_service.HostDataService{
-			Config:         config,
-			Version:        "latest",
-			Database:       db,
-			// InsertionQueue: queue,
+			Config:   config,
+			Version:  "latest",
+			Database: db,
 		}
+		service.Init()
 		ctrl := &dataservice_controller.HostDataController{
 			Config:  config,
 			Service: service,
 		}
-		db.Init()
-		service.Init()
 		dataservice_controller.SetupRoutesForHostDataController(mainRouter, ctrl)
 	}
 

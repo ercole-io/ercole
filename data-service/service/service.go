@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Service is a package that provides methods for manipulating host informations
+// Package service is a package that provides methods for manipulating host informations
 package service
 
 import (
@@ -26,8 +26,6 @@ import (
 
 	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/model"
-	"github.com/mongodb/amboy"
-
 )
 
 // ErrHostNotFound cotains "Host not found" error
@@ -54,8 +52,6 @@ type HostDataService struct {
 	Version string
 	// Database contains the database layer
 	Database database.MongoDatabaseInterface
-	// InsertionQueue contain the queue of hostdata insertion
-	InsertionQueue amboy.Queue
 }
 
 // Init initializes the service and database
@@ -83,5 +79,4 @@ func (hds *HostDataService) UpdateHostInfo(hostdata model.HostData) (interface{}
 	} else {
 		return res.InsertedID, nil
 	}
-
 }
