@@ -4,14 +4,15 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // Alert holds informations about a alert
 type Alert struct {
-	ID            string `bson:"_id"`
-	AlertCode     string `bson:"alert_code"`
-	AlertSeverity string `bson:"alert_severity"`
-	AlertStatus   string `bson:"alert_status"`
+	ID            primitive.ObjectID `bson:"_id"`
+	AlertCode     string             `bson:"alert_code"`
+	AlertSeverity string             `bson:"alert_severity"`
+	AlertStatus   string             `bson:"alert_status"`
 	Description   string
 	Date          time.Time
 	OtherInfo     map[string]interface{} `bson:"other_info"`
@@ -20,37 +21,37 @@ type Alert struct {
 // Alert codes
 const (
 	// NewDatabase contains string "NEW_DATABASE"
-	NewDatabase string = "NEW_DATABASE"
+	AlertCodeNewDatabase string = "NEW_DATABASE"
 	// NewOption contains string "NEW_OPTION"
-	NewOption string = "NEW_OPTION"
+	AlertCodeNewOption string = "NEW_OPTION"
 	// NewLicense contains string "NEW_LICENSE"
-	NewLicense string = "NEW_LICENSE"
+	AlertCodeNewLicense string = "NEW_LICENSE"
 	// NewServer contains string "NEW_SERVER"
-	NewServer string = "NEW_SERVER"
+	AlertCodeNewServer string = "NEW_SERVER"
 	// NoData contains string "NO_DATA"
-	NoData string = "NO_DATA"
+	AlertCodeNoData string = "NO_DATA"
 )
 
 // Alert severity
 const (
 	// Minor contains string "MINOR"
-	Minor string = "MINOR"
+	AlertSeverityMinor string = "MINOR"
 	// Warning contains string "WARNING"
-	Warning string = "WARNING"
+	AlertSeverityWarning string = "WARNING"
 	// Major contains string "MAJOR"
-	Major string = "MAJOR"
+	AlertSeverityMajor string = "MAJOR"
 	// Critical contains string "CRITICAL"
-	Critical string = "CRITICAL"
+	AlertSeverityCritical string = "CRITICAL"
 	// Notice contains string "NOTICE"
-	Notice string = "NOTICE"
+	AlertSeverityNotice string = "NOTICE"
 )
 
 // Alert status
 const (
 	// New contains string "NEW"
-	New string = "NEW"
+	AlertStatusNew string = "NEW"
 	// Ack contains string "ACK"
-	Ack string = "ACK"
+	AlertStatusAck string = "ACK"
 )
 
 // AlertBsonValidatorRules contains mongodb validation rules for alert
@@ -65,34 +66,31 @@ var AlertBsonValidatorRules = bson.D{
 		"date",
 	}},
 	{"properties", bson.D{
-		{"_id", bson.D{
-			{"bsonType", "string"},
-		}},
 		{"alert_code", bson.D{
 			{"bsonType", "string"},
 			{"enum", bson.A{
-				NewDatabase,
-				NewOption,
-				NewLicense,
-				NewServer,
-				NoData,
+				AlertCodeNewDatabase,
+				AlertCodeNewOption,
+				AlertCodeNewLicense,
+				AlertCodeNewServer,
+				AlertCodeNoData,
 			}},
 		}},
 		{"alert_severity", bson.D{
 			{"bsonType", "string"},
 			{"enum", bson.A{
-				Minor,
-				Warning,
-				Major,
-				Critical,
-				Notice,
+				AlertSeverityMinor,
+				AlertSeverityWarning,
+				AlertSeverityMajor,
+				AlertSeverityCritical,
+				AlertSeverityNotice,
 			}},
 		}},
 		{"alert_status", bson.D{
 			{"bsonType", "string"},
 			{"enum", bson.A{
-				New,
-				Ack,
+				AlertStatusNew,
+				AlertStatusAck,
 			}},
 		}},
 		{"description", bson.D{

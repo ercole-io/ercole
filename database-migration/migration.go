@@ -104,6 +104,7 @@ func MigrateHostsSchema(client *mongo.Database) {
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
 			{"hostname", 1},
+			{"created_at", -1},
 		},
 	}); err != nil {
 		log.Panicln(err)

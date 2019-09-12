@@ -62,6 +62,8 @@ type AlertService struct {
 	LogHTTPRequest bool
 	// LogHTTPRequest enable the logging of the received messages
 	LogMessages bool
+	// LogThrows enable the logging of alert throws
+	LogAlertThrows bool
 	// AgentUsername contains the username of the agent
 	PublisherUsername string
 	// AgentPassword contains the password of the agent

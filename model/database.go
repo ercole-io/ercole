@@ -198,3 +198,29 @@ var DatabaseBsonValidatorRules = bson.D{
 		}},
 	}},
 }
+
+// DatabasesArrayAsMap return the equivalent map of the database array with Database.Name as Key
+func DatabasesArrayAsMap(dbs []Database) map[string]Database {
+	out := make(map[string]Database)
+	for _, db := range dbs {
+		out[db.Name] = db
+	}
+	return out
+}
+
+// HasEnterpriseLicense return true if the database has enterprise license.
+func HasEnterpriseLicense(db Database) bool {
+	//The database may not support the "license" feature
+	if db.Licenses == nil {
+		return false
+	}
+
+	//Search for a enterprise license
+	for _, lic := range db.Licenses {
+		if (lic.Name == "Oracle ENT" || lic.Name == "oracle ENT" || lic.Name == "Oracle EXT" || lic.Name == "oracle EXT") && lic.Count > 0 {
+			return true
+		}
+	}
+
+	return false
+}

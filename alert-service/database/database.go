@@ -3,16 +3,16 @@ package database
 
 import (
 	"context"
-	"fmt"
 	"log"
+	"time"
 
 	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"gopkg.in/mgo.v2/bson"
 )
 
 // MongoDatabaseInterface is a interface that wrap methods used to perform CRUD operations in the mongodb database
@@ -21,6 +21,10 @@ type MongoDatabaseInterface interface {
 	Init()
 	// FindHostData find a host data
 	FindHostData(id primitive.ObjectID) (model.HostData, utils.AdvancedErrorInterface)
+	// FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
+	FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostData, utils.AdvancedErrorInterface)
+	// InsertAlert inser the alert in the database
+	InsertAlert(alert model.Alert) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation
@@ -61,8 +65,8 @@ func (md *MongoDatabase) ConnectToMongodb() {
 // FindHostData find a host data
 func (md *MongoDatabase) FindHostData(id primitive.ObjectID) (model.HostData, utils.AdvancedErrorInterface) {
 	//Find the hostdata
-	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").FindOne(context.TODO(), bson.D{
-		// {"_id", id},
+	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").FindOne(context.TODO(), bson.M{
+		"_id": id,
 	})
 	if res.Err() != nil {
 		return model.HostData{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
@@ -71,10 +75,56 @@ func (md *MongoDatabase) FindHostData(id primitive.ObjectID) (model.HostData, ut
 	//Decode the data
 	var out model.HostData
 	if err := res.Decode(&out); err != nil {
-		fmt.Println("qui")
 		return model.HostData{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
 	}
 
 	//Return it!
 	return out, nil
+}
+
+// FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
+func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostData, utils.AdvancedErrorInterface) {
+	var out model.HostData
+
+	//Find the most recent HostData older than t
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		bson.A{
+			bson.D{{"$match", bson.D{
+				{"hostname", hostname},
+				{"created_at", bson.D{
+					{"$lt", t},
+				}},
+			}}},
+			bson.D{{"$sort", bson.D{
+				{"created_at", -1},
+			}}},
+			bson.D{{"$limit", 1}},
+		},
+	)
+	if err != nil {
+		return model.HostData{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Next the cursor. If there is no document return a empty document
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return model.HostData{}, nil
+	}
+
+	//Decode the document
+	if err := cur.Decode(&out); err != nil {
+		return model.HostData{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return out, nil
+}
+
+// InsertAlert inser the alert in the database
+func (md *MongoDatabase) InsertAlert(alert model.Alert) (*mongo.InsertOneResult, utils.AdvancedErrorInterface) {
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").InsertOne(context.TODO(), alert)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+	return res, nil
 }

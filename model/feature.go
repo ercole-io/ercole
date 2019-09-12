@@ -39,3 +39,46 @@ var FeatureBsonValidatorRules = bson.D{
 		}},
 	}},
 }
+
+// DiffFeature status of each feature
+const (
+	// DiffFeatureInactive is used when the feature changes from (0/-) to 0
+	DiffFeatureInactive int = -2
+	// DiffFeatureDeactivated is used when the feature changes from 1 to (0/-)
+	DiffFeatureDeactivated int = -1
+	// DiffFeatureMissing is used when a feature is missing in the diff
+	DiffFeatureMissing int = 0
+	// DiffFeatureActivated is used when the feature changes from (0/-) to 1
+	DiffFeatureActivated int = 1
+	// DiffFeatureInactive is used when the feature changes from 1 to 1
+	DiffFeatureActive int = 2
+)
+
+// DiffFeature return a map that contains the difference of status between the oldFeature and newFeature
+func DiffFeature(oldFeatures []Feature, newFeatures []Feature) map[string]int {
+	result := make(map[string]int)
+
+	//Add the features to the result assuming that the all new features are inactive
+	for _, feature := range oldFeatures {
+		if feature.Status {
+			result[feature.Name] = DiffFeatureDeactivated
+		} else {
+			result[feature.Name] = DiffFeatureInactive
+		}
+	}
+
+	//Activate/deactivate missing feature
+	for _, feature := range newFeatures {
+		if (result[feature.Name] == DiffFeatureInactive || result[feature.Name] == DiffFeatureMissing) && !feature.Status {
+			result[feature.Name] = DiffFeatureInactive
+		} else if (result[feature.Name] == DiffFeatureDeactivated) && !feature.Status {
+			result[feature.Name] = DiffFeatureDeactivated
+		} else if (result[feature.Name] == DiffFeatureInactive || result[feature.Name] == DiffFeatureMissing) && feature.Status {
+			result[feature.Name] = DiffFeatureActivated
+		} else if (result[feature.Name] == DiffFeatureDeactivated) && feature.Status {
+			result[feature.Name] = DiffFeatureActive
+		}
+	}
+
+	return result
+}

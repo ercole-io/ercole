@@ -13,6 +13,7 @@
 		"Port": 9082,
 		"LogHTTPRequest": true,
 		"LogMessages": true,
+		"LogAlertThrows": true,
 		"PublisherUsername": "publisher",
 		"PublisherPassword": "r4nd0mS3cR3tp4ssW0rd"	
 	},

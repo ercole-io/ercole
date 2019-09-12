@@ -68,6 +68,7 @@ func (hds *HostDataService) UpdateHostInfo(hostdata model.HostData) (interface{}
 	hostdata.Archived = false
 	hostdata.CreatedAt = time.Now()
 	hostdata.SchemaVersion = model.SchemaVersion
+	hostdata.ID = primitive.NewObjectID()
 
 	//Archive the host
 	_, err := hds.Database.ArchiveHost(hostdata.Hostname)

@@ -1,6 +1,9 @@
 package utils
 
-import "runtime"
+import (
+	"log"
+	"runtime"
+)
 
 // AdvancedErrorInterface is a extension of the error interface with other informations
 type AdvancedErrorInterface interface {
@@ -61,4 +64,9 @@ func NewAdvancedErrorPtr(err error, class string) *AdvancedError {
 	} else {
 		return &AdvancedError{Err: err, Class: class, Source: "????", Line: -1}
 	}
+}
+
+func LogErr(err AdvancedErrorInterface) {
+	//Log the error
+	log.Printf("%s:%d %s: '%s'\n", err.SourceFilename(), err.LineNumber(), err.Error(), err.ErrorClass())
 }

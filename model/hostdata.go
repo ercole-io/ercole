@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SchemaVersion contains the version of the schema
@@ -26,6 +27,7 @@ const SchemaVersion int = 1
 
 // HostData holds all informations about a host & services
 type HostData struct {
+	ID                    primitive.ObjectID `bson:"_id"`
 	Hostname              string
 	Environment           string
 	Location              string
