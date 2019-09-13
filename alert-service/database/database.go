@@ -133,8 +133,8 @@ func (md *MongoDatabase) InsertAlert(alert model.Alert) (*mongo.InsertOneResult,
 	return res, nil
 }
 
-// FindOldCurrentHost return the list of current hosts that haven't sent hostdata after time t
-func (md *MongoDatabase) FindOldCurrentHost(t time.Time) ([]string, utils.AdvancedErrorInterface) {
+// FindOldCurrentHosts return the list of current hosts that haven't sent hostdata after time t
+func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]string, utils.AdvancedErrorInterface) {
 	//Get the list of old current hosts
 	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
 		context.TODO(),

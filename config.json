@@ -5,7 +5,11 @@
 		"Port": 9081,
 		"LogHTTPRequest": true,
 		"AgentUsername": "user",
-		"AgentPassword": "password"
+		"AgentPassword": "password",
+		"FreshnessCheckJob": {
+			"Crontab": "*/1 * * * * *",
+			"DaysThreshold": 0 
+		}
 	},
 	"AlertService": {
 		"RemoteEndpoint": "127.0.0.1:9082",
@@ -18,7 +22,7 @@
 		"PublisherPassword": "r4nd0mS3cR3tp4ssW0rd",
 		"FreshnessCheck": {
 			"Crontab": "*/1 * * * * *",
-			"DaysThreshold": 0 
+			"HourThreshold": 0 
 		}
 	},
 	"Mongodb": {

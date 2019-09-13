@@ -12,9 +12,9 @@ type FreshnessCheckJob struct {
 }
 
 // Run throws NO_DATA alert for each hosts that haven't sent a hostdata withing the FreshnessCheck.DaysThreshold
-func (fcj *FreshnessCheckJob) Run() {
+func (job *FreshnessCheckJob) Run() {
 	//Find the current hosts older than FreshnessCheck.DaysThreshold days
-	hosts, err := fcj.alertService.Database.FindOldCurrentHosts(time.Now().AddDate(0, 0, -fcj.alertService.Config.AlertService.FreshnessCheck.DaysThreshold))
+	hosts, err := job.alertService.Database.FindOldCurrentHosts(time.Now().AddDate(0, 0, -job.alertService.Config.AlertService.FreshnessCheckJob.DaysThreshold))
 	if err != nil {
 		utils.LogErr(err)
 		return
@@ -23,11 +23,11 @@ func (fcj *FreshnessCheckJob) Run() {
 	//For each host, throw a NO_DATA alert
 	for _, host := range hosts {
 		//Throw a NO_DATA alert if the host doesn't already have a new NO_DATA alert
-		if exist, err := fcj.alertService.Database.ExistNoDataAlertByHost(host); err != nil {
+		if exist, err := job.alertService.Database.ExistNoDataAlertByHost(host); err != nil {
 			utils.LogErr(err)
 			return
 		} else if !exist {
-			fcj.alertService.ThrowNoDataAlert(host, fcj.alertService.Config.AlertService.FreshnessCheck.DaysThreshold)
+			job.alertService.ThrowNoDataAlert(host, job.alertService.Config.AlertService.FreshnessCheckJob.DaysThreshold)
 		}
 	}
 }

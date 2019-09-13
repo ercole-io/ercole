@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"github.com/amreo/ercole-services/data-service/database"
+	"github.com/bamzi/jobrunner"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/amreo/ercole-services/utils"
@@ -59,7 +60,13 @@ type HostDataService struct {
 
 // Init initializes the service and database
 func (hds *HostDataService) Init() {
+	//Start cron jobs
+	jobrunner.Start()
 
+	jobrunner.Schedule(hds.Config.DataService.CurrentHostCleaningJob.Crontab, &CurrentHostCleaningJob{hostDataService: hds})
+	jobrunner.Schedule(hds.Config.DataService.ArchivedHostCleaningJob.Crontab, &ArchivedHostCleaningJob{hostDataService: hds})
+	jobrunner.Now(&CurrentHostCleaningJob{hostDataService: hds})
+	jobrunner.Now(&ArchivedHostCleaningJob{hostDataService: hds})
 }
 
 // UpdateHostInfo saves the hostdata

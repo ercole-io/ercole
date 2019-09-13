@@ -48,6 +48,10 @@ type DataService struct {
 	AgentUsername string
 	// AgentPassword contains the password of the agent
 	AgentPassword string
+	// CurrentHostCleaningJob contains the parameters of the current host cleaning
+	CurrentHostCleaningJob CurrentHostCleaningJob
+	// ArchivedCleaningJob contains the parameters of the archived host cleaning
+	ArchivedHostCleaningJob ArchivedHostCleaningJob
 }
 
 // AlertService contains configuration about the alert service
@@ -68,8 +72,8 @@ type AlertService struct {
 	PublisherUsername string
 	// AgentPassword contains the password of the agent
 	PublisherPassword string
-	// FreshnessCheck contains the parameters of the freshness check
-	FreshnessCheck FreshnessCheck
+	// FreshnessCheckJob contains the parameters of the freshness check
+	FreshnessCheckJob FreshnessCheckJob
 }
 
 // Mongodb contains configuration about the database connection, some data logic and migration
@@ -82,12 +86,28 @@ type Mongodb struct {
 	Migrate bool
 }
 
-// FreshnessCheck contains parameters for the freshness check
-type FreshnessCheck struct {
+// FreshnessCheckJob contains parameters for the freshness check
+type FreshnessCheckJob struct {
 	// Crontab contains the crontab string used to schedule the freshness check
 	Crontab string
 	// DaysThreshold contains the threshdold of the freshness check
 	DaysThreshold int
+}
+
+// CurrentHostCleaningJob contains parameters for the current host cleaning
+type CurrentHostCleaningJob struct {
+	// Crontab contains the crontab string used to schedule the cleaning
+	Crontab string
+	// DaysThreshold contains the threshdold of the current host cleaning
+	HourThreshold int
+}
+
+// ArchivedHostCleaningJob contains parameters for the archived host cleaning
+type ArchivedHostCleaningJob struct {
+	// Crontab contains the crontab string used to schedule the cleaning
+	Crontab string
+	// DaysThreshold contains the threshdold of the archived host cleaning
+	HourThreshold int
 }
 
 // ReadConfig read, parse and return a Configuration from the configuration file in config.json or /opt/ercole-hostdata-dataservice/config.json

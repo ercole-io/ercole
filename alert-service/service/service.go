@@ -71,7 +71,7 @@ func (as *AlertService) Init(wg *sync.WaitGroup) {
 	//Start cron jobs
 	jobrunner.Start()
 
-	jobrunner.Schedule(as.Config.AlertService.FreshnessCheck.Crontab, &FreshnessCheckJob{alertService: as})
+	jobrunner.Schedule(as.Config.AlertService.FreshnessCheckJob.Crontab, &FreshnessCheckJob{alertService: as})
 	jobrunner.Now(&FreshnessCheckJob{alertService: as})
 }
 
@@ -89,12 +89,13 @@ func (as *AlertService) HostDataInsertion(id primitive.ObjectID) utils.AdvancedE
 // ProcessMsg processes the message msg
 func (as *AlertService) ProcessMsg(msg hub.Message) {
 	if as.Config.AlertService.LogMessages {
-		log.Printf("RECEIVED EVENT %s: %s", msg.Topic(), utils.ToJson(msg.Fields))
-		switch msg.Topic() {
-		case model.TopicHostDataInsertion:
-			as.ProcessHostDataInsertion(msg.Fields)
-		default:
-		}
+		log.Printf("RECEIVED EVENT %s: %s", msg.Topic(), utils.ToJSON(msg.Fields))
+	}
+
+	switch msg.Topic() {
+	case model.TopicHostDataInsertion:
+		as.ProcessHostDataInsertion(msg.Fields)
+	default:
 	}
 }
 

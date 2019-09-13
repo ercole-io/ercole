@@ -4,11 +4,13 @@ package database
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -21,6 +23,12 @@ type MongoDatabaseInterface interface {
 	ArchiveHost(hostname string) (*mongo.UpdateResult, utils.AdvancedErrorInterface)
 	// InsertHostData adds a new hostdata to the database
 	InsertHostData(hostData model.HostData) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
+	// FindOldCurrentHost return the list of current hosts that haven't sent hostdata after time t
+	FindOldCurrentHosts(t time.Time) ([]string, utils.AdvancedErrorInterface)
+	// FindOldArchivedHosts return the list of archived hosts older than t
+	FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID, utils.AdvancedErrorInterface)
+	// DeleteHostData delete the hostdata
+	DeleteHostData(id primitive.ObjectID) utils.AdvancedErrorInterface
 }
 
 // MongoDatabase is a implementation
@@ -81,4 +89,70 @@ func (md *MongoDatabase) ConnectToMongodb() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+// FindOldCurrentHosts return the list of current hosts that haven't sent hostdata after time t
+func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]string, utils.AdvancedErrorInterface) {
+	//Get the list of old current hosts
+	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
+		context.TODO(),
+		"hostname",
+		bson.D{
+			{"archived", false},
+			{"created_at", bson.D{
+				{"$lt", t},
+			}},
+		})
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Convert the slice of interface{} to []string
+	var hosts []string
+	for _, val := range values {
+		hosts = append(hosts, val.(string))
+	}
+
+	//Return it
+	return hosts, nil
+}
+
+// FindOldArchivedHosts return the list of archived hosts older than t
+func (md *MongoDatabase) FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID, utils.AdvancedErrorInterface) {
+	//Get the list of old archived hosts
+	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
+		context.TODO(),
+		"_id",
+		bson.D{
+			{"archived", true},
+			{"created_at", bson.D{
+				{"$lt", t},
+			}},
+		})
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Convert the slice of interface{} to []primitive.ObjectID
+	var ids []primitive.ObjectID
+	for _, val := range values {
+		ids = append(ids, val.(primitive.ObjectID))
+	}
+
+	//Return it
+	return ids, nil
+}
+
+// DeleteHostData delete the hostdata
+func (md *MongoDatabase) DeleteHostData(id primitive.ObjectID) utils.AdvancedErrorInterface {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").DeleteOne(
+		context.TODO(),
+		bson.D{
+			{"_id", id},
+		})
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return nil
 }
