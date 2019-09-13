@@ -15,7 +15,11 @@
 		"LogMessages": true,
 		"LogAlertThrows": true,
 		"PublisherUsername": "publisher",
-		"PublisherPassword": "r4nd0mS3cR3tp4ssW0rd"	
+		"PublisherPassword": "r4nd0mS3cR3tp4ssW0rd",
+		"FreshnessCheck": {
+			"Crontab": "*/1 * * * * *",
+			"DaysThreshold": 0 
+		}
 	},
 	"Mongodb": {
 		"URI": "mongodb://localhost:32768/ercole",

@@ -2,7 +2,6 @@ package utils
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 )
 
@@ -27,9 +26,8 @@ func WriteAndLogError(w http.ResponseWriter, statusCode int, err AdvancedErrorIn
 		LineNumber:       err.LineNumber(),
 		SourceFilename:   err.SourceFilename(),
 	}
-	LogErr(err)
 	//Log the error
-	log.Printf("%s:%d %s: '%s'", resp.SourceFilename, resp.LineNumber, resp.Error, resp.ErrorDescription)
+	LogErr(err)
 	//Write the response
 	WriteJSONResponse(w, statusCode, resp)
 }

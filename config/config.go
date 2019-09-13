@@ -68,6 +68,8 @@ type AlertService struct {
 	PublisherUsername string
 	// AgentPassword contains the password of the agent
 	PublisherPassword string
+	// FreshnessCheck contains the parameters of the freshness check
+	FreshnessCheck FreshnessCheck
 }
 
 // Mongodb contains configuration about the database connection, some data logic and migration
@@ -78,6 +80,14 @@ type Mongodb struct {
 	DBName string
 	// Migrate is true when mongodb should update/migrate data/schema during the initializazion
 	Migrate bool
+}
+
+// FreshnessCheck contains parameters for the freshness check
+type FreshnessCheck struct {
+	// Crontab contains the crontab string used to schedule the freshness check
+	Crontab string
+	// DaysThreshold contains the threshdold of the freshness check
+	DaysThreshold int
 }
 
 // ReadConfig read, parse and return a Configuration from the configuration file in config.json or /opt/ercole-hostdata-dataservice/config.json

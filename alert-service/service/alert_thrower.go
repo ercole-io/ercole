@@ -89,3 +89,22 @@ func (as *AlertService) ThrowActivatedFeaturesAlert(dbname string, hostname stri
 	}
 	return err
 }
+
+// ThrowNoDataAlert create and insert in the database a new NO_DATA alert
+func (as *AlertService) ThrowNoDataAlert(hostname string, freshnessThreshold int) utils.AdvancedErrorInterface {
+	_, err := as.Database.InsertAlert(model.Alert{
+		ID:            primitive.NewObjectID(),
+		AlertCode:     model.AlertCodeNoData,
+		AlertSeverity: model.AlertSeverityMajor,
+		AlertStatus:   model.AlertStatusNew,
+		Date:          time.Now(),
+		Description:   fmt.Sprintf("No data received from the host %s in the last %d days", hostname, freshnessThreshold),
+		OtherInfo: map[string]interface{}{
+			"hostname": hostname,
+		},
+	})
+	if as.Config.AlertService.LogAlertThrows {
+		log.Printf("Alert NO_DATA of %s was thrown\n", hostname)
+	}
+	return err
+}

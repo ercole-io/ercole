@@ -20,7 +20,6 @@ type HostDataControllerInterface interface {
 // HostDataController is the struct used to handle the requests from agents and contains the concrete implementation of HostDataControllerInterface
 type HostDataController struct {
 	// Config contains the dataservice global configuration
-	// TODO: Should be removed?
 	Config config.Configuration
 	// Service contains the underlying service used to perform various logical and store operations
 	Service service.HostDataServiceInterface

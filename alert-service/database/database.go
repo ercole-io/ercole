@@ -23,8 +23,12 @@ type MongoDatabaseInterface interface {
 	FindHostData(id primitive.ObjectID) (model.HostData, utils.AdvancedErrorInterface)
 	// FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
 	FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostData, utils.AdvancedErrorInterface)
-	// InsertAlert inser the alert in the database
+	// InsertAlert inserr the alert in the database
 	InsertAlert(alert model.Alert) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
+	// FindOldCurrentHost return the list of current hosts that haven't sent hostdata after time t
+	FindOldCurrentHosts(t time.Time) ([]string, utils.AdvancedErrorInterface)
+	// ExistNoDataAlertByHost return true if the host has associated a new NO_DATA alert
+	ExistNoDataAlertByHost(hostname string) (bool, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation
@@ -127,4 +131,48 @@ func (md *MongoDatabase) InsertAlert(alert model.Alert) (*mongo.InsertOneResult,
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 	return res, nil
+}
+
+// FindOldCurrentHost return the list of current hosts that haven't sent hostdata after time t
+func (md *MongoDatabase) FindOldCurrentHost(t time.Time) ([]string, utils.AdvancedErrorInterface) {
+	//Get the list of old current hosts
+	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
+		context.TODO(),
+		"hostname",
+		bson.D{
+			{"archived", false},
+			{"created_at", bson.D{
+				{"$lt", t},
+			}},
+		})
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Convert the slice of interface{} to []string
+	var hosts []string
+	for _, val := range values {
+		hosts = append(hosts, val.(string))
+	}
+
+	//Return it
+	return hosts, nil
+}
+
+// ExistNoDataAlertByHost return true if the host has associated a new NO_DATA alert
+func (md *MongoDatabase) ExistNoDataAlertByHost(hostname string) (bool, utils.AdvancedErrorInterface) {
+	//Count the number of new NO_DATA alerts associated to the host
+	val, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").CountDocuments(context.TODO(), bson.D{
+		{"alert_code", model.AlertCodeNoData},
+		{"alert_status", model.AlertStatusNew},
+		{"other_info.hostname", hostname},
+	}, &options.CountOptions{
+		Limit: utils.Intptr(1),
+	})
+	if err != nil {
+		return false, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Return true if the count > 0
+	return val > 0, nil
 }

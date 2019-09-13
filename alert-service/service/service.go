@@ -23,6 +23,7 @@ import (
 	"github.com/amreo/ercole-services/alert-service/database"
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
+	"github.com/bamzi/jobrunner"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/amreo/ercole-services/config"
@@ -66,6 +67,12 @@ func (as *AlertService) Init(wg *sync.WaitGroup) {
 		log.Println("Stop alert-service/queue")
 		wg.Done()
 	}(sub)
+
+	//Start cron jobs
+	jobrunner.Start()
+
+	jobrunner.Schedule(as.Config.AlertService.FreshnessCheck.Crontab, &FreshnessCheckJob{alertService: as})
+	jobrunner.Now(&FreshnessCheckJob{alertService: as})
 }
 
 // HostDataInsertion inserts the host data insertion in the queue

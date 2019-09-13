@@ -28,23 +28,24 @@ type AdvancedError struct {
 	Line int
 }
 
-func (this *AdvancedError) Error() string {
-	return this.Err.Error()
+//
+func (ae *AdvancedError) Error() string {
+	return ae.Err.Error()
 }
 
 // ErrorClass return the class of the error
-func (this *AdvancedError) ErrorClass() string {
-	return this.Class
+func (ae *AdvancedError) ErrorClass() string {
+	return ae.Class
 }
 
 // SourceFilename return the source filename of the error
-func (this *AdvancedError) SourceFilename() string {
-	return this.Source
+func (ae *AdvancedError) SourceFilename() string {
+	return ae.Source
 }
 
 // LineNumber return the line number of the error
-func (this *AdvancedError) LineNumber() int {
-	return this.Line
+func (ae *AdvancedError) LineNumber() int {
+	return ae.Line
 }
 
 // NewAdvancedError return a new AdvancedError using the err as base error and class as class name
@@ -57,6 +58,7 @@ func NewAdvancedError(err error, class string) AdvancedError {
 	}
 }
 
+// NewAdvancedErrorPtr return a pointer to a new AdvancedError using the err as base error and class as class name
 func NewAdvancedErrorPtr(err error, class string) *AdvancedError {
 	_, file, line, ok := runtime.Caller(1)
 	if ok {
@@ -66,6 +68,7 @@ func NewAdvancedErrorPtr(err error, class string) *AdvancedError {
 	}
 }
 
+// LogErr log the errorr to the stdout
 func LogErr(err AdvancedErrorInterface) {
 	//Log the error
 	log.Printf("%s:%d %s: '%s'\n", err.SourceFilename(), err.LineNumber(), err.Error(), err.ErrorClass())

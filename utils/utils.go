@@ -2,7 +2,13 @@ package utils
 
 import "encoding/json"
 
-func ToJson(v interface{}) string {
+//ToJSON convert v to a string containing the equivalent json rappresentaion
+func ToJSON(v interface{}) string {
 	raw, _ := json.Marshal(v)
 	return string(raw)
+}
+
+//Intptr return a point to the int passed in the argument
+func Intptr(v int64) *int64 {
+	return &v
 }
