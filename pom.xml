@@ -441,13 +441,13 @@
                             <analysisCacheLocation>${project.build.directory}/qa/pmd/pmd.cache</analysisCacheLocation>
                         </configuration>
                         <executions>
-                            <execution>
+                            <!-- <execution>
                                 <phase>prepare-package</phase>
                                 <goals>
                                     <goal>check</goal>
                                     <goal>cpd-check</goal>
                                 </goals>
-                            </execution>
+                            </execution> -->
                         </executions>
                     </plugin>
 
