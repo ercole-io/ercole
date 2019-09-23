@@ -23,7 +23,7 @@ type VMInfo struct {
 	ClusterName  string `bson:"cluster_name"`
 	Hostname     string //Hostname or IP address
 	CappedCPU    bool   `bson:"capped_cpu"`
-	PhysicalHost string `bson:"physical_host"`
+	PhysicalHost string `bson:"physical_host,omitempty"`
 }
 
 // VMInfoBsonValidatorRules contains mongodb validation rules for VMInfo
@@ -34,7 +34,6 @@ var VMInfoBsonValidatorRules = bson.D{
 		"cluster_name",
 		"hostname",
 		"capped_cpu",
-		"physical_host",
 	}},
 	{"properties", bson.D{
 		{"name", bson.D{
