@@ -371,6 +371,8 @@ public final class JsonFilter {
 		info.setClusterName(obj.getString("ClusterName"));
 		info.setHostName(obj.getString("Hostname"));
 		info.setName(obj.getString("Name"));
+		info.setPhysicalHost(obj.getString("PhysicalHost"));
+		info.setName(obj.getString("Name"));
 		
 		if (info.getHostName() == null || info.getHostName().equals("")) {
 			info.setHostName(info.getName());
