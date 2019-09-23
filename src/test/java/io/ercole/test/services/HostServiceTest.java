@@ -90,7 +90,7 @@ public class HostServiceTest {
 						+ "{\"prova\":\"prova\","
 						+ "\"Name\":\"DB1\","
 						+ "\"Features\":[{\"Status\":true,\"Name\":\"WebLogic Server Management Pack Enterprise Edition\"}]"
-						+ "}]}", null,"info", firstEntry);
+						+ "}]}", null, null, "info", firstEntry);
 
 		when(currentRepo.findByHostname(json1.getString("Hostname"))).thenReturn(currentHost1);
 		when(JsonFilter.buildCurrentHostFromJSON(json1)).thenReturn(currentHost1);
@@ -114,14 +114,14 @@ public class HostServiceTest {
 						+ "{\"prova\":\"prova\","
 						+ "\"Name\":\"DB1\","
 						+ "\"Features\":[{\"Status\":false,\"Name\":\"WebLogic Server Management Pack Enterprise Edition\"}]"
-						+ "}]}", null, "info", firstEntry);
+						+ "}]}", null, null, "info", firstEntry);
 		
 		CurrentHost currentHost2 = new CurrentHost(Long.valueOf("1"), "host2", "PRD", "Italia", "oracledb", "", "", "DB2",
 				"ADMIN", "{\"Databases\":["
 						+ "{\"prova\":\"prova\","
 						+ "\"Name\":\"DB2\","
 						+ "\"Features\":[{\"Status\":true,\"Name\":\"WebLogic Server Management Pack Enterprise Edition\"}]"
-						+ "}]}", null, "info", DateUtils.addSeconds(firstEntry, 30));
+						+ "}]}", null, null, "info", DateUtils.addSeconds(firstEntry, 30));
 
 		when(currentRepo.findByHostname(json1.getString("Hostname"))).thenReturn(currentHost1);
 		when(clusterRepo.findOneVMInfoByHostname(json1.getString("Hostname"))).thenReturn(null);
@@ -159,14 +159,14 @@ public class HostServiceTest {
 						+ "{\"prova\":\"prova\","
 						+ "\"Name\":\"DB1\","
 						+ "\"Features\":[{\"Status\":false,\"Name\":\"WebLogic Server Management Pack Enterprise Edition\"}]"
-						+ "}]}", null,  "info", firstEntry);
+						+ "}]}", null, null,  "info", firstEntry);
 		
 		CurrentHost currentHost2 = new CurrentHost(Long.valueOf("1"), "host2", "PRD", "Italia", "oracledb", "", "", "DB2", 
 				"ADMIN", "{\"Databases\":["
 						+ "{\"prova\":\"prova\","
 						+ "\"Name\":\"DB2\","
 						+ "\"Features\":[{\"Status\":true,\"Name\":\"WebLogic Server Management Pack Enterprise Edition\"}]"
-						+ "}]}", null, "info", DateUtils.addSeconds(firstEntry, 30));
+						+ "}]}", null, null, "info", DateUtils.addSeconds(firstEntry, 30));
 
 		when(currentRepo.findByHostname(json1.getString("Hostname"))).thenReturn(currentHost1);
 		when(clusterRepo.findOneVMInfoByHostname(json1.getString("Hostname"))).thenReturn(null);
@@ -232,7 +232,7 @@ public class HostServiceTest {
 		
 		Date wrongUpdate = new Date();
 		CurrentHost currentHost3 = new CurrentHost(Long.valueOf("1"), "host3", "PRD", "Italia", "oracledb", "", "", "BRB CCC", 
-				"ADMIN",  "info", null, "info", wrongUpdate);
+				"ADMIN",  "info", null, null, "info", wrongUpdate);
 
 		when(currentRepo.findByHostname((String) json3.get("Hostname"))).thenReturn(currentHost3);
 		when(clusterRepo.findOneVMInfoByHostname(json3.getString("Hostname"))).thenReturn(null);
@@ -255,7 +255,7 @@ public class HostServiceTest {
 	@Test
 	public void getHistoricalLogsFromYesHistory() {	
 		Date date = new Date(150000000000l);
-		HistoricalHost historical1 = new HistoricalHost(1l, "hostname1", "PRD", "Italy", "oracledb", "", "", "DB1", "ADMIN", "extraInfo", null, "hostInfo", new Date());
+		HistoricalHost historical1 = new HistoricalHost(1l, "hostname1", "PRD", "Italy", "oracledb", "", "", "DB1", "ADMIN", "extraInfo", null, null, "hostInfo", new Date());
 		List<HistoricalHost> list = new LinkedList<>();
 		list.add(historical1);
 		

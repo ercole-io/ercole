@@ -118,7 +118,7 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 	 */
 	@Query(nativeQuery = true, value =
 			"SELECT m.id, m.databases,m.environment,m.host_info,m.hostname,m.location,m.schemas,m.updated,"
-		+ " m.host_type, m.associated_cluster_name, NULL as extra_info, m.version, m.server_version from current_host m WHERE "
+		+ " m.host_type, m.associated_cluster_name, m.associated_hypervisor_hostname, NULL as extra_info, m.version, m.server_version from current_host m WHERE "
 		+ " m.updated <= :date AND "
 		+ " ("
 		+ "   ( (m.host_type IS NULL OR m.host_type = 'oracledb') "

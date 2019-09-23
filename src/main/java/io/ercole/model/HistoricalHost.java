@@ -46,15 +46,16 @@ public class HistoricalHost extends Host {
 	 * @param schemas 
 	 * @param extraInfo 
 	 * @param associatedClusterName associated cluster name
+	 * @param associatedHypervisorHostname associated hypervisor hostname
 	 * @param hostInfo 
 	 * @param updated 
 	 */
 	public HistoricalHost(final Long id, final @NotEmpty String hostname, final String environment,
 			final String location, final String version, final String serverVersion, final String usetype,
 			final String databases, final String schemas, final String extraInfo, 
-			final String associatedClusterName, final String hostInfo, final Date updated) {
+			final String associatedClusterName, final String associatedHypervisorHostname, final String hostInfo, final Date updated) {
 		super(id, hostname, environment, location, version, serverVersion, usetype, databases, schemas, extraInfo,
-				associatedClusterName, hostInfo, updated);
+				associatedClusterName, associatedHypervisorHostname, hostInfo, updated);
 		this.archived = new Date();
 	}
 
