@@ -91,7 +91,7 @@ public class JsonFilterTest {
 				+ "SYS$UMF GGSYS DBSFWUSER SYSRAC REMOTE_SCHEDULER_AGENT SYS$UMF GGSYSDBSFWUSER SYSRAC", "{"
 						+ "\"Databases\": [{\"Name\": \"db1\","
 						+ "\"UniqueName\": \"db1\","
-						+ "\"Status\": \"OPEN\"}]}",null, "{}", data);
+						+ "\"Status\": \"OPEN\"}]}", null, null, "{}", data);
 		assertEquals(host.getHostname(), JsonFilter.buildCurrentHostFromJSON(obj).getHostname());
 	}
 	

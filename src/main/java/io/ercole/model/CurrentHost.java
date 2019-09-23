@@ -46,14 +46,15 @@ public class CurrentHost extends Host {
 	 * @param schemas 
 	 * @param extraInfo 
 	 * @param associatedClusterName associated cluster name
+	 * @param associatedHypervisorHostname associated hypervisor hostname
 	 * @param hostInfo 
 	 * @param updated 
 	 */
 	public CurrentHost(final Long id, final @NotEmpty String hostname, final String environment,
 			final String location, final String version, final String serverVersion, final String hostType,
 			final String databases, final String schemas, final String extraInfo,
-			final String associatedClusterName, final String hostInfo, final Date updated) {
+			final String associatedClusterName, final String associatedHypervisorHostname, final String hostInfo, final Date updated) {
 		super(id, hostname, environment, location, version, serverVersion, hostType, databases, schemas,
-				extraInfo, associatedClusterName, hostInfo, updated);
+				extraInfo, associatedClusterName, associatedHypervisorHostname, hostInfo, updated);
 	}
 }

@@ -35,6 +35,7 @@ public class VMInfo {
     private String clusterName;
     //@Column(unique = true)
     private String hostName;
+    private String physicalHost;
 
     /**
      * @return the id
@@ -87,17 +88,31 @@ public class VMInfo {
         this.hostName = hostName;
     }
     /**
+     * @return the physicalHost
+     */
+    public String getPhysicalHost() {
+        return this.physicalHost;
+    }
+    /**
+     * @param physicalHost the physicalHost
+     */
+    public void setPhysicalHost(final String physicalHost) {
+        this.physicalHost = physicalHost;
+    }
+    /**
      * Create a new VMInfo.
      * @param id the id
      * @param name the name
      * @param clusterName the cluster name
      * @param hostName the hostname
+     * @param physicalHost the physical host
      */
-    public VMInfo(final Long id, final String name, final String clusterName, final String hostName) {
+    public VMInfo(final Long id, final String name, final String clusterName, final String hostName, final String physicalHost) {
         this.id = id;
         this.name = name;
         this.clusterName = clusterName;
         this.hostName = hostName;
+        this.physicalHost = physicalHost;
     }
     /**
      * Create a new VMInfo.

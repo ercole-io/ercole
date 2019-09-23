@@ -73,6 +73,9 @@ public abstract class Host {
 	
 	/*IT CAN BE NULL! If the host isn't in a cluster, this should be null*/
 	private String associatedClusterName;
+	/*IT CAN BE NULL! If the host isn't in a cluster, this should be null*/
+	private String associatedHypervisorHostname;
+
 
 	/**
 	 * Instantiates a new host.
@@ -95,13 +98,14 @@ public abstract class Host {
 	 * @param schem the schemas
 	 * @param extra the extra info
 	 * @param associatedClusterName associatedClusterName
+	 * @param associatedHypervisorHostname associated hypervisor hostname
 	 * @param host the host info
 	 * @param updat the updated
 	 */
 	public Host(final Long ident, final @NotEmpty String name, final String envir, 
 			final String loc, final String ver, final String serverVer, final String hostType,
 			final String data, final String schem, final String extra, 
-			final String associatedClusterName, final String host, final Date updat) {
+			final String associatedClusterName, final String associatedHypervisorHostname, final String host, final Date updat) {
 		super();
 		this.id = ident;
 		this.hostname = name;
@@ -114,6 +118,7 @@ public abstract class Host {
 		this.schemas = schem;
 		this.extraInfo = extra;
 		this.associatedClusterName = associatedClusterName;
+		this.associatedHypervisorHostname = associatedHypervisorHostname;
 		this.hostInfo = host;
 		this.updated = updat;
 	}
@@ -356,4 +361,17 @@ public abstract class Host {
 		this.associatedClusterName = associatedClusterName;
 	}
 
+	/**
+	 * @return the associated hupervisor name
+	 */
+	public String getAssociatedHypervisorHostname() {
+		return this.associatedHypervisorHostname;
+	}
+	/**
+	 * Set the associated hupervisor name.
+	 * @param associatedHypervisorHostname the associated hupervisor name
+	 */
+	public void setAssociatedHypervisorHostname(final String associatedHypervisorHostname) {
+		this.associatedHypervisorHostname = associatedHypervisorHostname;
+	}
 }
