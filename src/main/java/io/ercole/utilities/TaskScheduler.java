@@ -76,7 +76,7 @@ public class TaskScheduler {
 					current.getEnvironment(), current.getLocation(), 
 					current.getVersion(), current.getServerVersion(),
 					current.getHostType(), current.getDatabases(),
-					current.getSchemas(), current.getExtraInfo(), current.getHostInfo(), null,
+					current.getSchemas(), current.getExtraInfo(), current.getAssociatedClusterName(), current.getAssociatedHypervisorHostname(), current.getHostInfo(),
 					current.getUpdated());
 			historicalRepository.save(historical);
 			currentRepository.delete(current);

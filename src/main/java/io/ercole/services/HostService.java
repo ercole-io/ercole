@@ -200,7 +200,7 @@ public class HostService {
 				current.getLocation(), current.getVersion(), 
 				current.getServerVersion(), current.getHostType(), 
 				current.getDatabases(), current.getSchemas(), 
-				current.getExtraInfo(), current.getAssociatedClusterName(), current.getHostInfo(), 
+				current.getExtraInfo(), current.getAssociatedClusterName(), current.getAssociatedHypervisorHostname(), current.getHostInfo(), 
 				current.getUpdated());
 		historicalRepo.save(historical);
 	}
@@ -298,6 +298,7 @@ public class HostService {
 					CurrentHost foundHost = currentRepo.findByHostname(vm.getHostName());
 					if (foundHost != null) {
 						foundHost.setAssociatedClusterName(null);
+						foundHost.setAssociatedHypervisorHostname(null);
 						currentRepo.save(foundHost);
 					}
 				});
@@ -311,6 +312,7 @@ public class HostService {
 				CurrentHost foundHost = currentRepo.findByHostname(vm.getHostName());
 				if (foundHost != null) {
 					foundHost.setAssociatedClusterName(vm.getClusterName());
+					foundHost.setAssociatedHypervisorHostname(vm.getPhysicalHost());
 					currentRepo.save(foundHost);
 				}
 			});
@@ -325,6 +327,7 @@ public class HostService {
 		VMInfo info = clusterRepo.findOneVMInfoByHostname(current.getHostname());
 		if (info != null) {
 			current.setAssociatedClusterName(info.getClusterName());
+			current.setAssociatedHypervisorHostname(info.getPhysicalHost());
 		}
 	}
 
