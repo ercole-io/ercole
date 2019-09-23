@@ -19,10 +19,11 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // VMInfo holds info about the vm
 type VMInfo struct {
-	Name        string
-	ClusterName string `bson:"cluster_name"`
-	Hostname    string //Hostname or IP address
-	CappedCPU   bool   `bson:"capped_cpu"`
+	Name         string
+	ClusterName  string `bson:"cluster_name"`
+	Hostname     string //Hostname or IP address
+	CappedCPU    bool   `bson:"capped_cpu"`
+	PhysicalHost string `bson:"physical_host"`
 }
 
 // VMInfoBsonValidatorRules contains mongodb validation rules for VMInfo
@@ -33,6 +34,7 @@ var VMInfoBsonValidatorRules = bson.D{
 		"cluster_name",
 		"hostname",
 		"capped_cpu",
+		"physical_host",
 	}},
 	{"properties", bson.D{
 		{"name", bson.D{
@@ -46,6 +48,9 @@ var VMInfoBsonValidatorRules = bson.D{
 		}},
 		{"capped_cpu", bson.D{
 			{"bsonType", "bool"},
+		}},
+		{"physical_host", bson.D{
+			{"bsonType", "string"},
 		}},
 	}},
 }
