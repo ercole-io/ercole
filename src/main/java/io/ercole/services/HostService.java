@@ -178,9 +178,24 @@ public class HostService {
 				}
 			}
 		} else if (newHost.getHostType().equals("virtualization")) {
-			JSONObject clustersJSON = new JSONObject(newHost.getExtraInfo());
+			JSONObject oldClustersJSON = new JSONObject(oldCurrent.getExtraInfo());
+			JSONObject newClustersJSON = new JSONObject(newHost.getExtraInfo());
+			List<ClusterInfo> oldClusters = JsonFilter.buildClusterInfosFromJson(oldClustersJSON.getJSONArray("Clusters"));
+			List<ClusterInfo> newClusters = JsonFilter.buildClusterInfosFromJson(newClustersJSON.getJSONArray("Clusters"));
+
+			//Clean old clusters
+			oldClusters.forEach(cl -> {
+				//Search a new cluster with the same name
+				for (ClusterInfo newCl : newClusters) {
+					if (newCl.getName() == cl.getName()) {
+						return;
+					}
+				}
+				clusterRepo.delete(cl);
+			});
 			updateOrInsertClustersInfo(
-					JsonFilter.buildClusterInfosFromJson(clustersJSON.getJSONArray("Clusters")));
+					JsonFilter.buildClusterInfosFromJson(newClustersJSON.getJSONArray("Clusters")));
+			fixAssociatedClusterName(newHost);
 		}
 		
 		return true;
@@ -247,6 +262,7 @@ public class HostService {
 			JSONObject clustersJSON = new JSONObject(host.getExtraInfo());
 			updateOrInsertClustersInfo(
 					JsonFilter.buildClusterInfosFromJson(clustersJSON.getJSONArray("Clusters")));
+			fixAssociatedClusterName(host);
 		}
 		
 
