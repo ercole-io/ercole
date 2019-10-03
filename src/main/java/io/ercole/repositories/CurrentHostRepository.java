@@ -675,7 +675,7 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "		host_database hb,"
 		+ "		jsonb_array_elements(segmentAdvisors) AS segmentAdvisor"
 		+ ") SELECT CONCAT(hostname, ' ', dbname) AS dbname, SUM(reclaimable)"
-        + " as sum FROM segment_advisors GROUP BY dbname,hostname ORDER BY sum LIMIT 15;")
+        + " as sum FROM segment_advisors GROUP BY dbname,hostname ORDER BY sum desc LIMIT 15;")
 	List<Map<String, Object>> getTopReclaimableDatabase(@Param("location") String location);
 
 	/**
