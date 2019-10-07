@@ -7,7 +7,8 @@ License:        ASL 2.0
 URL:            https://ercole.io            
 Source0:        https://github.com/ercole-io/%{name}/archive/%{version}.tar.gz
 Group:          Tools
-Requires:       java-11-openjdk
+Requires:       java-11-openjdk systemd
+BuildRequires: systemd
 
 Buildroot:      /tmp/rpm-ercole-server
 %global         debug_package %{nil}
@@ -34,13 +35,25 @@ cp package/rhel7/%{name}.service %{name}.service
 cd %{_topdir}/BUILD/%{name}-%{version}
 mkdir -p %{buildroot}/opt/%{name}/run %{buildroot}/etc/systemd/system
 install -m 0755 %{name}.jar %{buildroot}/opt/%{name}/%{name}.jar
-install -m 0644 %{name}.service %{buildroot}/etc/systemd/system/%{name}.service
+mkdir -p %{buildroot}%{_unitdir}
+install -m 0644 package/rhel7/ercole-server.service %{buildroot}%{_unitdir}/ercole-server.service
+
+%post
+/usr/bin/systemctl preset ercole-server.service >/dev/null 2>&1 ||:
+
+%preun
+/usr/bin/systemctl --no-reload disable ercole-agent.service >/dev/null 2>&1 || :
+/usr/bin/systemctl stop ercole-agent.service >/dev/null 2>&1 ||:
+
+%postun
+/usr/bin/systemctl daemon-reload >/dev/null 2>&1 ||:
+
 
 %files
 %attr(-,ercole,-) /opt/ercole-server/run
 %dir /opt/ercole-server
 /opt/ercole-server/ercole-server.jar
-/etc/systemd/system/ercole-server.service
+%{_unitdir}/ercole-server.service
 
 %changelog
 * Mon Aug 2 2019 Andrea Laisa <alaisa@sorint.it>
