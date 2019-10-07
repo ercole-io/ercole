@@ -55,7 +55,7 @@ find %{buildroot}
 %dir /opt/ercole-server
 /opt/ercole-server/ercole-server.jar
 %{_unitdir}/ercole-server.service
-%{_presetdir}/60-ercole-server.preset60-ercole-server.preset
+%{_presetdir}/60-ercole-server.preset
 
 %changelog
 * Mon Aug 2 2019 Andrea Laisa <alaisa@sorint.it>
