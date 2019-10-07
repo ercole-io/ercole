@@ -8,6 +8,7 @@ URL:            https://ercole.io
 Source0:        https://github.com/ercole-io/%{name}/archive/%{version}.tar.gz
 Group:          Tools
 Requires:       java-11-openjdk
+BuildRequires:  systemd systemd-rpm-macros
 
 Buildroot:      /tmp/rpm-ercole-server
 %global         debug_package %{nil}
@@ -34,7 +35,16 @@ cp package/rhel7/%{name}.service %{name}.service
 cd %{_topdir}/BUILD/%{name}-%{version}
 mkdir -p %{buildroot}/opt/%{name}/run %{buildroot}/etc/systemd/system
 install -m 0755 %{name}.jar %{buildroot}/opt/%{name}/%{name}.jar
-install -m 0644 %{name}.service %{buildroot}/etc/systemd/system/%{name}.service
+install -m 0644 %{name}.service %{_unitdir}/%{name}.service
+
+%post
+%systemd_post ercole.service
+%systemd_enable ercole.service
+%preun
+%systemd_preun ercole.service
+
+%postun
+%systemd_postun_with_restart ercole.service
 
 %files
 %attr(-,ercole,-) /opt/ercole-server/run
