@@ -35,6 +35,7 @@ import io.ercole.model.HistoricalHost;
 import io.ercole.repositories.AlertRepository;
 import io.ercole.repositories.CurrentHostRepository;
 import io.ercole.repositories.HistoricalHostRepository;
+import io.ercole.services.MailService;
 
 /**
  * Generic scheduler.
@@ -60,6 +61,9 @@ public class TaskScheduler {
 	
 	@Autowired
 	private AlertRepository alertRepository;
+	
+	@Autowired
+	private MailService mailService;
 
 	
 	/**
@@ -118,8 +122,9 @@ public class TaskScheduler {
 		logger.info("Start checking freshness");
 		for (CurrentHost c : currentRepository.findAllNotUpdated(lowerLimit)) {
 			if (!alertRepository.existsByHostnameAndCode(c.getHostname(), AlertCode.NO_DATA)) {
-				alertRepository.save(new Alert(c.getHostname(), AlertCode.NO_DATA, 
+				Alert alert = alertRepository.save(new Alert(c.getHostname(), AlertCode.NO_DATA, 
 				"No data received from the host in the last " + freshnessThreshold + " days", AlertSeverity.MAJOR));
+				mailService.send(alert);
 			}
 		}
 	}

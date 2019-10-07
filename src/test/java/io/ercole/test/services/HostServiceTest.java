@@ -42,6 +42,7 @@ import io.ercole.repositories.ClusterRepository;
 import io.ercole.repositories.CurrentHostRepository;
 import io.ercole.repositories.HistoricalHostRepository;
 import io.ercole.services.HostService;
+import io.ercole.services.MailService;
 import io.ercole.utilities.JsonFilter;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -65,7 +66,10 @@ public class HostServiceTest {
 	
 	@Mock
 	private AlertRepository alertRepo;
-		
+
+	@Mock
+	private MailService mailService;
+
 	@InjectMocks
 	private HostService hostService;
 	
