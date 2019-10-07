@@ -80,6 +80,9 @@ public class HostService {
 	
 	@Autowired
 	private ClusterRepository clusterRepo;
+	
+	@Autowired
+	private MailService mailService;
 
 	/**
 	 * @param object
@@ -134,7 +137,8 @@ public class HostService {
 			List<String> newDatabases = JsonFilter.getNewDatabases(newHost, oldCurrent);
 
 			if (!newDatabases.isEmpty()) {
-				alertRepo.save(generator.fireNewDatabaseAlert(newDatabases, hostname));
+				Alert alert = alertRepo.save(generator.fireNewDatabaseAlert(newDatabases, hostname));
+				mailService.send(alert);
 			}	
 
 			JSONArray oldDbArray = new JSONObject(oldCurrent.getExtraInfo()).getJSONArray(DATABASES);
@@ -142,7 +146,8 @@ public class HostService {
 	
 			if (JsonFilter.hasMoreCPUCores(oldCurrent, newHost) 
 					|| JsonFilter.hasNewEnterpriseLicenses(oldDbArray, newDbArray)) {
-				alertRepo.save(generator.getAlertForEnterpriseLicenseActivated(hostname));
+				Alert alert = alertRepo.save(generator.getAlertForEnterpriseLicenseActivated(hostname));
+				mailService.send(alert);
 			}
 
 			Map<String, Map<String, Boolean>> elencoNewDbs = JsonFilter.getFeaturesMapping(newDbArray);
@@ -156,7 +161,8 @@ public class HostService {
 	
 				for (Alert alert : generator.getAlertForDuplicatedActiveFeature(elencoNewDbs,
 						elencoOldActivatedFeatures, elencoOldDbs, hostname)) {
-					alertRepo.save(alert);
+					Alert a = alertRepo.save(alert);
+					mailService.send(a);
 				}
 				
 				if (oldDbArray.length() != 0) {
@@ -173,7 +179,8 @@ public class HostService {
 							elencoOldDeactivatedFeatures, hostname);
 				if (featureAlerts != null) {
 					for (Alert alert : featureAlerts) {
-						alertRepo.save(alert);
+						Alert a = alertRepo.save(alert);
+						mailService.send(a);
 					}
 				}
 			}
@@ -241,7 +248,8 @@ public class HostService {
 		
 
 			if (JsonFilter.hasEnterpriseLicenses(newDbArray)) {
-				alertRepo.save(generator.getAlertForEnterpriseLicenseActivated(hostname));
+				Alert alert = alertRepo.save(generator.getAlertForEnterpriseLicenseActivated(hostname));
+				mailService.send(alert);
 			}
 			
 			Map<String, Map<String, Boolean>> newFeaturesByDb = JsonFilter.getFeaturesMapping(newDbArray);
@@ -249,14 +257,16 @@ public class HostService {
 			if (!newFeaturesByDb.isEmpty()) {
 				for (Alert alert : generator.getAlertforNewActiveFeature(newFeaturesByDb, 
 						host.getHostname())) {
-					alertRepo.save(alert);
+					Alert a = alertRepo.save(alert);
+					mailService.send(a);
 				}
 			}
 	
 			List<String> dbs = JsonFilter.getDatabases(host);
 	
 			if (!dbs.isEmpty()) {
-				alertRepo.save(generator.fireNewDatabaseAlert(dbs, host.getHostname()));
+				Alert alert = alertRepo.save(generator.fireNewDatabaseAlert(dbs, host.getHostname()));
+				mailService.send(alert);
 			}	
 		} else if (host.getHostType().equals("virtualization")) {
 			JSONObject clustersJSON = new JSONObject(host.getExtraInfo());
@@ -266,7 +276,8 @@ public class HostService {
 		}
 		
 
-		alertRepo.save(generator.fireNewServerAlert(hostname));
+		Alert alert = alertRepo.save(generator.fireNewServerAlert(hostname));
+		mailService.send(alert);
 
 		return true;
 	}
