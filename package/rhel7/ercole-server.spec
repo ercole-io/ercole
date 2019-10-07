@@ -39,7 +39,7 @@ install -m 0644 %{name}.service %{_unitdir}/%{name}.service
 
 %post
 %systemd_post ercole.service
-%systemd_enable ercole.service
+
 %preun
 %systemd_preun ercole.service
 
