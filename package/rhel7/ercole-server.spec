@@ -38,7 +38,6 @@ install -m 0755 %{name}.jar %{buildroot}/opt/%{name}/%{name}.jar
 mkdir -p %{buildroot}%{_unitdir} %{buildroot}%{_presetdir}
 install -m 0644 package/rhel7/ercole-server.service %{buildroot}%{_unitdir}/%{name}.service
 install -m 0644 package/rhel7/60-ercole-server.preset %{buildroot}%{_presetdir}/60-%{name}.preset
-find %{buildroot}
 
 %post
 /usr/bin/systemctl preset %{name}.service >/dev/null 2>&1 ||:
