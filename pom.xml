@@ -13,6 +13,7 @@
 		<rpm6.version>1.5.12</rpm6.version>
 		<rpm7.version>1.5.12</rpm7.version>
 		<win.version>1.5.12</win.version>
+		<hpux.version>1.5.8</hpux.version>
 		<virtualization-rpm7.version>1.5.6</virtualization-rpm7.version>
 	</properties>
 
@@ -291,6 +292,19 @@
                         <configuration>
                             <overwrite>false</overwrite>
                             <url>https://github.com/ercole-io/ercole-agent/releases/download/${win.version}/ercole-agent-setup-${win.version}.exe</url>
+                            <unpack>false</unpack>
+                            <outputDirectory>${project.build.directory}/ercole-web/packages</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-hpux</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>false</overwrite>
+                            <url>https://github.com/ercole-io/ercole-agent-hpux/releases/download/${hpux.version}/ercole-agent-hpux-${hpux.version}.tar.gz</url>
                             <unpack>false</unpack>
                             <outputDirectory>${project.build.directory}/ercole-web/packages</outputDirectory>
                         </configuration>
