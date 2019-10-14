@@ -55,6 +55,8 @@ public class DashboardService {
 	private List<String> osAggregateRulesRegex;
 	@Value(value = "#{'${dashboard.aggregate.os.rules.group}'.split('\n')}")
 	private List<String> osAggregateRulesGroup;
+	@Value(value = "#{'${databases.taglist}'.split('\n')}")
+	private List<String> databaseTagList;
 
 	/**
 	 * @param idArray
@@ -349,4 +351,11 @@ public class DashboardService {
 		return currentRepo.getPatchStatusStats(location, time);
 	}
 
+	/**
+	 * Return the configured list of tags of the databases.
+	 * @return the configured list of tags of the databases
+	 */
+	public List<String> getDatabaseTagList() {
+		return this.databaseTagList;
+	}
 }
