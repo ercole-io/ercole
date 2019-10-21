@@ -411,4 +411,13 @@ public class UserController {
 	public final Map<String, Object> getSegmentsSizeDataHistory(@PathVariable final String hostname) {
 		return hostService.getSegmentsSizeDataHistory(hostname);
 	}
+
+	/**
+	 * Return the configured list of tags of the databases. 
+	 * @return the configured list of tags of the databases 
+	 */
+	@GetMapping("/database-tags")
+	public final List<String> getTagList() {
+		return dashService.getDatabaseTagList();
+	}
 }

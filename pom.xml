@@ -14,6 +14,7 @@
 		<rpm7.version>1.6.0</rpm7.version>
 		<win.version>1.6.0</win.version>
 		<hpux.version>1.6.0</hpux.version>
+        <aix.version>1.6.0</aix.version>
         <checkmk.version>1.0.0</checkmk.version>
 		<virtualization-rpm7.version>1.6.0</virtualization-rpm7.version>
 	</properties>
@@ -306,6 +307,19 @@
                         <configuration>
                             <overwrite>false</overwrite>
                             <url>https://github.com/ercole-io/ercole-agent-hpux/releases/download/${hpux.version}/ercole-agent-hpux-${hpux.version}.tar.gz</url>
+                            <unpack>false</unpack>
+                            <outputDirectory>${project.build.directory}/ercole-web/packages</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-aix</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>false</overwrite>
+                            <url>https://github.com/ercole-io/ercole-agent-aix/releases/download/${aix.version}/ercole-agent-aix-${aix.version}-1.aix6.1.noarch.rpm</url>
                             <unpack>false</unpack>
                             <outputDirectory>${project.build.directory}/ercole-web/packages</outputDirectory>
                         </configuration>
