@@ -796,7 +796,7 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ ") SELECT * FROM data ORDER BY updated ASC;")
 	List<Map<String, Object>> getUsedDataHistory(@Param("hostname") final String hostname, @Param("dbname") final String dbname);
 
-		/**
+	/**
 	 * Return the 'segmentsSize' data history of the hostname/db.
 	 * @param hostname hostname
 	 * @param dbname dbname
@@ -830,4 +830,24 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "		db->>'SegmentsSize' != 'null'"
 		+ ") SELECT * FROM data ORDER BY updated ASC;")
 	List<Map<String, Object>> getSegmentsSizeDataHistory(@Param("hostname") final String hostname, @Param("dbname") final String dbname);
+
+	/**
+	 * Return the list of databases.
+	 * @param c pageable
+	 * @return the list of databases
+	 */
+	@Query(nativeQuery = true, value = ""
+		+ " SELECT"
+		+ " 	ch.hostname,"
+		+ " 	ch.environment,"
+		+ " 	ch.location,"
+		+ " 	db->>'Name' AS dbName,"
+		+ " 	db->>'Version' AS dbVer,"
+		+ " 	CAST(db AS TEXT) AS otherInfo"
+		+ " FROM"
+		+ " 	current_host ch,"
+		+ " 	jsonb_array_elements((CAST(extra_info AS jsonb))->'Databases') AS db"
+		+ " WHERE "
+		+ " 	(ch.host_type IS NULL OR ch.host_type = 'oracledb') ")
+	Page<Map<String, Object>> getDatabases(Pageable c);
 }

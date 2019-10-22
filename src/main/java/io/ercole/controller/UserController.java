@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -420,4 +422,14 @@ public class UserController {
 	public final List<String> getTagList() {
 		return dashService.getDatabaseTagList();
 	}
+
+	/**
+	 * Return the list of databases.
+	 * @param c pageable
+	 * @return the list of databases
+	 */
+	@GetMapping("/databases")
+	public final Page<Map<String, Object>> getDatabases(final Pageable c) {
+		return hostService.getDatabases(c);
+	}	
 }
