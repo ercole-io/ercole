@@ -24,6 +24,9 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.commons.lang3.time.DateUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,6 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import io.ercole.model.Alert;
@@ -414,5 +419,29 @@ public class HostService {
 			result.put(db, currentRepo.getSegmentsSizeDataHistory(hostname, db));
 		}
 		return result;
+	}
+
+	/**
+	 * Return the list of databases.
+	 * @param c pageable
+	 * @return the list of databases
+	 */
+	public Page<Map<String, Object>> getDatabases(final Pageable c) {
+		ObjectMapper mapper = new ObjectMapper();
+		Page<Map<String, Object>> databases = currentRepo.getDatabases(c);
+		
+		Page<Map<String, Object>> out =  databases.map(item -> {
+			Map<String, Object> copy = new HashMap<>(item);
+			JsonNode otherInfo = null;
+			try {
+				otherInfo = mapper.readTree(copy.get("otherinfo").toString());
+			} catch (Exception ex) {
+				logger.error("Shouldn't fail!");
+			}
+			copy.put("otherinfo", otherInfo);
+			return copy;
+		});
+
+		return out;
 	}
 }
