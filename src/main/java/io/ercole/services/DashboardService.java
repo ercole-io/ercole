@@ -358,4 +358,12 @@ public class DashboardService {
 	public List<String> getDatabaseTagList() {
 		return this.databaseTagList;
 	}
+
+	/**
+	 * Count the databases grouped by dataguard status.
+	 * @return the count of databases grouped by dataguard status
+	 */
+	public List<Map<String, Object>> countDatabaseGroupedByDataguardStatus() {
+		return currentRepo.countDatabaseGroupedByDataguardStatus();
+	}
 }
