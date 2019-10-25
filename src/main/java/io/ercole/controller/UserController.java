@@ -441,4 +441,13 @@ public class UserController {
 	public final List<Map<String, Object>> countDatabaseGroupedByDataguardStatus() {
 		return dashService.countDatabaseGroupedByDataguardStatus();
 	}
+
+	/**
+	 * Count the databases grouped by real application cluster feature status.
+	 * @return the count of databases grouped by real application cluster feature status
+	 */
+	@GetMapping("/stats/databases/real-application-cluster-status")
+	public final List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus() {
+		return dashService.countDatabasesGroupedByRealApplicationClusterFeatureStatus();
+	}
 }
