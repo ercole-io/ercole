@@ -887,4 +887,18 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "GROUP BY "
 		+ "	fe->>'Status'; ")
 	List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus();
+
+	/**
+	 * Return the sum of the segments size.
+	 * @return the sum of the segments size
+	 */
+	@Query(nativeQuery = true, value = ""
+	+ "SELECT "
+	+ "	SUM(CAST(db->>'SegmentsSize' AS REAL)) AS SegmentSize "
+	+ "FROM "
+	+ "	current_host ch, "
+	+ "	jsonb_array_elements(CAST(extra_info AS jsonb)->'Databases') AS db "
+	+ "WHERE "
+	+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb')")
+	float getSegmentsSizeSum();
 }

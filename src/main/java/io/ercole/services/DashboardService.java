@@ -374,4 +374,12 @@ public class DashboardService {
 	public List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus() {
 		return currentRepo.countDatabasesGroupedByRealApplicationClusterFeatureStatus();
 	}
+
+	/**
+	 * Return the sum of the segments size.
+	 * @return the sum of the segments size
+	 */
+	public float getSegmentsSizeSum() {
+		return currentRepo.getSegmentsSizeSum();
+	}
 }
