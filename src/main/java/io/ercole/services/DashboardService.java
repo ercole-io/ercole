@@ -382,4 +382,12 @@ public class DashboardService {
 	public float getSegmentsSizeSum() {
 		return currentRepo.getSegmentsSizeSum();
 	}
+
+	/**
+	 * Return the sum of the database work.
+	 * @return the sum of the database work
+	 */
+	public float getDatabaseWorkSum() {
+		return currentRepo.getDatabaseWorkSum();
+	}
 }

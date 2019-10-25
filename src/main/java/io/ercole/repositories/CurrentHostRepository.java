@@ -901,4 +901,19 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 	+ "WHERE "
 	+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb')")
 	float getSegmentsSizeSum();
+
+	/**
+	 * Return the sum of the database work.
+	 * @return the sum of the database work
+	 */
+	@Query(nativeQuery = true, value = ""
+	+ "SELECT "
+	+ "	SUM(CAST(db->>'Work' AS REAL)) AS Work "
+	+ "FROM "
+	+ "	current_host ch, "
+	+ "	jsonb_array_elements(CAST(extra_info AS jsonb)->'Databases') AS db "
+	+ "WHERE "
+	+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') AND "
+	+ "	db->>'Work' != 'N/A' ")
+	float getDatabaseWorkSum();
 }

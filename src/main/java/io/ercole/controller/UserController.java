@@ -459,4 +459,13 @@ public class UserController {
 	public final float getSegmentsSizeSum() {
 		return dashService.getSegmentsSizeSum();
 	}
+
+	/**
+	 * Return the sum of the database work.
+	 * @return the sum of the database work
+	 */
+	@GetMapping("/stats/databases/work-sum")
+	public final float getDatabaseWorkSum() {
+		return dashService.getDatabaseWorkSum();
+	}
 }
