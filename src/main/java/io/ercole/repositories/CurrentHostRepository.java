@@ -850,4 +850,22 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ " WHERE "
 		+ " 	(ch.host_type IS NULL OR ch.host_type = 'oracledb') ")
 	Page<Map<String, Object>> getDatabases(Pageable c);
+
+	/**
+	 * Count the databases grouped by dataguard status.
+	 * @return the count of databases grouped by dataguard status
+	 */
+	@Query(nativeQuery = true, value = ""
+		+ "SELECT "
+		+ "	CAST(db->>'Dataguard' AS bool) as status,"
+		+ "	COUNT(*) AS count "
+		+ "FROM "
+		+ "	current_host ch, "
+		+ "	jsonb_array_elements(CAST(extra_info AS jsonb)->'Databases') AS db "
+		+ "WHERE "
+		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') "
+		+ "GROUP BY "
+		+ "	db->>'Dataguard'"
+	)
+	List<Map<String, Object>> countDatabaseGroupedByDataguardStatus();
 }

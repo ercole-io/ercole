@@ -432,4 +432,13 @@ public class UserController {
 	public final Page<Map<String, Object>> getDatabases(final Pageable c) {
 		return hostService.getDatabases(c);
 	}	
+
+	/**
+	 * Count the databases grouped by dataguard status.
+	 * @return the count of databases grouped by dataguard status
+	 */
+	@GetMapping("/stats/databases/dataguard-status")
+	public final List<Map<String, Object>> countDatabaseGroupedByDataguardStatus() {
+		return dashService.countDatabaseGroupedByDataguardStatus();
+	}
 }
