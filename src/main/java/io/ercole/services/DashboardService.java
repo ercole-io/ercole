@@ -366,4 +366,12 @@ public class DashboardService {
 	public List<Map<String, Object>> countDatabaseGroupedByDataguardStatus() {
 		return currentRepo.countDatabaseGroupedByDataguardStatus();
 	}
+
+	/**
+	 * Count the databases grouped by real application cluster feature status.
+	 * @return the count of databases grouped by real application cluster feature status
+	 */
+	public List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus() {
+		return currentRepo.countDatabasesGroupedByRealApplicationClusterFeatureStatus();
+	}
 }

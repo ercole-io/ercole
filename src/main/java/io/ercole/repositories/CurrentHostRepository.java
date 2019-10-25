@@ -868,4 +868,23 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	db->>'Dataguard'"
 	)
 	List<Map<String, Object>> countDatabaseGroupedByDataguardStatus();
+
+	/**
+	 * Count the databases grouped by real application cluster feature status.
+	 * @return the count of databases grouped by real application cluster feature status
+	 */
+	@Query(nativeQuery = true, value = ""
+		+ "SELECT "
+		+ "	CAST(fe->>'Status' AS bool) AS status, "
+		+ "	COUNT(*) "
+		+ "FROM  "
+		+ "	current_host ch, "
+		+ "	jsonb_array_elements(CAST(extra_info AS jsonb)->'Databases') AS db, "
+		+ "	jsonb_array_elements(db->'Features') AS fe "
+		+ "WHERE  "
+		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') AND "
+		+ "	fe->>'Name' = 'Real Application Clusters' "
+		+ "GROUP BY "
+		+ "	fe->>'Status'; ")
+	List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus();
 }
