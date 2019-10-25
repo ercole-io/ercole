@@ -450,4 +450,13 @@ public class UserController {
 	public final List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus() {
 		return dashService.countDatabasesGroupedByRealApplicationClusterFeatureStatus();
 	}
+
+	/**
+	 * Return the sum of the segments size.
+	 * @return the sum of the segments size
+	 */
+	@GetMapping("/stats/databases/segments-size-sum")
+	public final float getSegmentsSizeSum() {
+		return dashService.getSegmentsSizeSum();
+	}
 }
