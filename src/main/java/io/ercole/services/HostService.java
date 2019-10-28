@@ -427,21 +427,6 @@ public class HostService {
 	 * @return the list of databases
 	 */
 	public Page<Map<String, Object>> getDatabases(final Pageable c) {
-		ObjectMapper mapper = new ObjectMapper();
-		Page<Map<String, Object>> databases = currentRepo.getDatabases(c);
-		
-		Page<Map<String, Object>> out =  databases.map(item -> {
-			Map<String, Object> copy = new HashMap<>(item);
-			JsonNode otherInfo = null;
-			try {
-				otherInfo = mapper.readTree(copy.get("otherinfo").toString());
-			} catch (Exception ex) {
-				logger.error("Shouldn't fail!");
-			}
-			copy.put("otherinfo", otherInfo);
-			return copy;
-		});
-
-		return out;
+		return currentRepo.getDatabases(c);
 	}
 }
