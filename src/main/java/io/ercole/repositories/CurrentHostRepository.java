@@ -935,6 +935,27 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 	float getTotalDatafileSize();
 
 	/**
+	 * Return the sum of the memory size.
+	 * @return the sum of the memory size
+	 */
+	@Query(nativeQuery = true, value = ""
+		+ "SELECT "
+		+ "	SUM(CAST(db->>'PGATarget' AS REAL) + "
+		+ "		CAST(db->>'SGATarget' AS REAL) + "
+		+ "		(CASE WHEN db->>'MemoryTarget' = '' THEN "
+		+ "			0 "
+		+ "		ELSE "
+		+ "			CAST(db->>'MemoryTarget' AS REAL) "
+		+ "		END) "
+		+ "	) AS memory "
+		+ "FROM "
+		+ "	current_host ch, "
+		+ "	jsonb_array_elements((CAST(extra_info AS jsonb))->'Databases') AS db "
+		+ "WHERE  "
+		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') ")
+	float getTotalMemorySize();
+
+	/**
 	 * Return the sum of the database work.
 	 * @return the sum of the database work
 	 */
