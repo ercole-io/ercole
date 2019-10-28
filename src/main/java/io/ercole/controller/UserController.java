@@ -457,7 +457,16 @@ public class UserController {
 	 */
 	@GetMapping("/stats/databases/segments-size-sum")
 	public final float getSegmentsSizeSum() {
-		return dashService.getSegmentsSizeSum();
+		return dashService.getTotalSegmentsSizeSum();
+	}
+
+	/**
+	 * Return the sum of the datafile size.
+	 * @return the sum of the datafile size
+	 */
+	@GetMapping("/stats/databases/datafile-size-sum")
+	public final float getTotalDatafileSize() {
+		return dashService.getTotalDatafileSize();
 	}
 
 	/**
@@ -466,6 +475,6 @@ public class UserController {
 	 */
 	@GetMapping("/stats/databases/work-sum")
 	public final float getDatabaseWorkSum() {
-		return dashService.getDatabaseWorkSum();
+		return dashService.getTotalDatabaseWorkSum();
 	}
 }
