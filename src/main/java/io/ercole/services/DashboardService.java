@@ -400,6 +400,14 @@ public class DashboardService {
 	}
 
 	/**
+	 * Return the sum of the memory size.
+	 * @return the sum of the memory size
+	 */
+	public float getTotalMemorySize() {
+		return currentRepo.getTotalMemorySize();
+	}
+
+	/**
 	 * Return the sum of the database work.
 	 * @return the sum of the database work
 	 */

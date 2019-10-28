@@ -479,6 +479,15 @@ public class UserController {
 	}
 
 	/**
+	 * Return the sum of the memory size.
+	 * @return the sum of the memory size
+	 */
+	@GetMapping("/stats/databases/memory-size-sum")
+	public final float getTotalMemorySize() {
+		return dashService.getTotalMemorySize();
+	}
+
+	/**
 	 * Return the sum of the database work.
 	 * @return the sum of the database work
 	 */
