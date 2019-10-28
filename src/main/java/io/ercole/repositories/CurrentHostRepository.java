@@ -889,6 +889,23 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 	List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus();
 
 	/**
+	 * Count the databases grouped by archive log status.
+	 * @return the count of databases grouped by archive log status
+	 */
+	@Query(nativeQuery = true, value = ""
+		+ "SELECT "
+		+ "	db->>'Archivelog' = 'ARCHIVELOG' AS status, "
+		+ "	count(*) "
+		+ "FROM "
+		+ "	current_host ch, "
+		+ "	jsonb_array_elements((CAST(extra_info AS jsonb))->'Databases') AS db "
+		+ "WHERE  "
+		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') "
+		+ "GROUP BY "
+		+ "	db->>'Archivelog' = 'ARCHIVELOG'")
+	List<Map<String, Object>> countDatabasesGroupedByArchiveLogStatus();
+
+	/**
 	 * Return the sum of the segments size.
 	 * @return the sum of the segments size
 	 */
