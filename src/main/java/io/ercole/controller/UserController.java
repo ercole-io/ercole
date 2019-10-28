@@ -432,4 +432,49 @@ public class UserController {
 	public final Page<Map<String, Object>> getDatabases(final Pageable c) {
 		return hostService.getDatabases(c);
 	}	
+
+	/**
+	 * Count the databases grouped by dataguard status.
+	 * @return the count of databases grouped by dataguard status
+	 */
+	@GetMapping("/stats/databases/dataguard-status")
+	public final List<Map<String, Object>> countDatabaseGroupedByDataguardStatus() {
+		return dashService.countDatabaseGroupedByDataguardStatus();
+	}
+
+	/**
+	 * Count the databases grouped by real application cluster feature status.
+	 * @return the count of databases grouped by real application cluster feature status
+	 */
+	@GetMapping("/stats/databases/real-application-cluster-status")
+	public final List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus() {
+		return dashService.countDatabasesGroupedByRealApplicationClusterFeatureStatus();
+	}
+
+	/**
+	 * Return the sum of the segments size.
+	 * @return the sum of the segments size
+	 */
+	@GetMapping("/stats/databases/segments-size-sum")
+	public final float getSegmentsSizeSum() {
+		return dashService.getTotalSegmentsSizeSum();
+	}
+
+	/**
+	 * Return the sum of the datafile size.
+	 * @return the sum of the datafile size
+	 */
+	@GetMapping("/stats/databases/datafile-size-sum")
+	public final float getTotalDatafileSize() {
+		return dashService.getTotalDatafileSize();
+	}
+
+	/**
+	 * Return the sum of the database work.
+	 * @return the sum of the database work
+	 */
+	@GetMapping("/stats/databases/work-sum")
+	public final float getDatabaseWorkSum() {
+		return dashService.getTotalDatabaseWorkSum();
+	}
 }

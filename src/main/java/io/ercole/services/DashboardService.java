@@ -358,4 +358,44 @@ public class DashboardService {
 	public List<String> getDatabaseTagList() {
 		return this.databaseTagList;
 	}
+
+	/**
+	 * Count the databases grouped by dataguard status.
+	 * @return the count of databases grouped by dataguard status
+	 */
+	public List<Map<String, Object>> countDatabaseGroupedByDataguardStatus() {
+		return currentRepo.countDatabaseGroupedByDataguardStatus();
+	}
+
+	/**
+	 * Count the databases grouped by real application cluster feature status.
+	 * @return the count of databases grouped by real application cluster feature status
+	 */
+	public List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus() {
+		return currentRepo.countDatabasesGroupedByRealApplicationClusterFeatureStatus();
+	}
+
+	/**
+	 * Return the sum of the segments size.
+	 * @return the sum of the segments size
+	 */
+	public float getTotalSegmentsSizeSum() {
+		return currentRepo.getTotalSegmentsSize();
+	}
+
+	/**
+	 * Return the sum of the datafile size.
+	 * @return the sum of the datafile size
+	 */
+	public float getTotalDatafileSize() {
+		return currentRepo.getTotalDatafileSize();
+	}
+
+	/**
+	 * Return the sum of the database work.
+	 * @return the sum of the database work
+	 */
+	public float getTotalDatabaseWorkSum() {
+		return currentRepo.getTotalDatabaseWork();
+	}
 }
