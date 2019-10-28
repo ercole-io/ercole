@@ -450,6 +450,15 @@ public class UserController {
 	public final List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus() {
 		return dashService.countDatabasesGroupedByRealApplicationClusterFeatureStatus();
 	}
+	
+	/**
+	 * Count the databases grouped by archive log status.
+	 * @return the count of databases grouped by archive log status
+	 */
+	@GetMapping("/stats/databases/archive-log-status")
+	public final List<Map<String, Object>> countDatabasesGroupedByArchiveLogStatus() {
+		return dashService.countDatabasesGroupedByArchiveLogStatus();
+	}
 
 	/**
 	 * Return the sum of the segments size.

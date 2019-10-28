@@ -376,6 +376,14 @@ public class DashboardService {
 	}
 
 	/**
+	 * Count the databases grouped by archive log status.
+	 * @return the count of databases grouped by archive log status
+	 */
+	public List<Map<String, Object>> countDatabasesGroupedByArchiveLogStatus() {
+		return currentRepo.countDatabasesGroupedByArchiveLogStatus();
+	}
+
+	/**
 	 * Return the sum of the segments size.
 	 * @return the sum of the segments size
 	 */
