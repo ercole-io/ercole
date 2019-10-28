@@ -23,10 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.transaction.Transactional;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.apache.commons.lang3.time.DateUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
