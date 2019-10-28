@@ -376,6 +376,14 @@ public class DashboardService {
 	}
 
 	/**
+	 * Count the databases grouped by archive log status.
+	 * @return the count of databases grouped by archive log status
+	 */
+	public List<Map<String, Object>> countDatabasesGroupedByArchiveLogStatus() {
+		return currentRepo.countDatabasesGroupedByArchiveLogStatus();
+	}
+
+	/**
 	 * Return the sum of the segments size.
 	 * @return the sum of the segments size
 	 */
@@ -389,6 +397,14 @@ public class DashboardService {
 	 */
 	public float getTotalDatafileSize() {
 		return currentRepo.getTotalDatafileSize();
+	}
+
+	/**
+	 * Return the sum of the memory size.
+	 * @return the sum of the memory size
+	 */
+	public float getTotalMemorySize() {
+		return currentRepo.getTotalMemorySize();
 	}
 
 	/**

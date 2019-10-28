@@ -450,6 +450,15 @@ public class UserController {
 	public final List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus() {
 		return dashService.countDatabasesGroupedByRealApplicationClusterFeatureStatus();
 	}
+	
+	/**
+	 * Count the databases grouped by archive log status.
+	 * @return the count of databases grouped by archive log status
+	 */
+	@GetMapping("/stats/databases/archive-log-status")
+	public final List<Map<String, Object>> countDatabasesGroupedByArchiveLogStatus() {
+		return dashService.countDatabasesGroupedByArchiveLogStatus();
+	}
 
 	/**
 	 * Return the sum of the segments size.
@@ -467,6 +476,15 @@ public class UserController {
 	@GetMapping("/stats/databases/datafile-size-sum")
 	public final float getTotalDatafileSize() {
 		return dashService.getTotalDatafileSize();
+	}
+
+	/**
+	 * Return the sum of the memory size.
+	 * @return the sum of the memory size
+	 */
+	@GetMapping("/stats/databases/memory-size-sum")
+	public final float getTotalMemorySize() {
+		return dashService.getTotalMemorySize();
 	}
 
 	/**
