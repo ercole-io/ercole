@@ -379,15 +379,23 @@ public class DashboardService {
 	 * Return the sum of the segments size.
 	 * @return the sum of the segments size
 	 */
-	public float getSegmentsSizeSum() {
-		return currentRepo.getSegmentsSizeSum();
+	public float getTotalSegmentsSizeSum() {
+		return currentRepo.getTotalSegmentsSize();
+	}
+
+	/**
+	 * Return the sum of the datafile size.
+	 * @return the sum of the datafile size
+	 */
+	public float getTotalDatafileSize() {
+		return currentRepo.getTotalDatafileSize();
 	}
 
 	/**
 	 * Return the sum of the database work.
 	 * @return the sum of the database work
 	 */
-	public float getDatabaseWorkSum() {
-		return currentRepo.getDatabaseWorkSum();
+	public float getTotalDatabaseWorkSum() {
+		return currentRepo.getTotalDatabaseWork();
 	}
 }

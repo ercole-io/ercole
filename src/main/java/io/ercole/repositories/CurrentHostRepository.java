@@ -893,27 +893,42 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 	 * @return the sum of the segments size
 	 */
 	@Query(nativeQuery = true, value = ""
-	+ "SELECT "
-	+ "	SUM(CAST(db->>'SegmentsSize' AS REAL)) AS SegmentSize "
-	+ "FROM "
-	+ "	current_host ch, "
-	+ "	jsonb_array_elements(CAST(extra_info AS jsonb)->'Databases') AS db "
-	+ "WHERE "
-	+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb')")
-	float getSegmentsSizeSum();
+		+ "SELECT "
+		+ "	SUM(CAST(db->>'SegmentsSize' AS REAL)) AS SegmentSize "
+		+ "FROM "
+		+ "	current_host ch, "
+		+ "	jsonb_array_elements(CAST(extra_info AS jsonb)->'Databases') AS db "
+		+ "WHERE "
+		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb')")
+	float getTotalSegmentsSize();
+
+	/**
+	 * Return the sum of the datafile size.
+	 * @return the sum of the datafile size
+	 */
+	@Query(nativeQuery = true, value = ""
+		+ "SELECT "
+		+ "	sum(CAST(db->>'Used' AS real)) as datafile_size "
+		+ "FROM "
+		+ "	current_host ch, "
+		+ "	jsonb_array_elements(CAST(extra_info AS jsonb)->'Databases') AS db "
+		+ "WHERE "
+		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') AND "
+		+ "	db->>'Used' != 'N/A'")
+	float getTotalDatafileSize();
 
 	/**
 	 * Return the sum of the database work.
 	 * @return the sum of the database work
 	 */
 	@Query(nativeQuery = true, value = ""
-	+ "SELECT "
-	+ "	SUM(CAST(db->>'Work' AS REAL)) AS Work "
-	+ "FROM "
-	+ "	current_host ch, "
-	+ "	jsonb_array_elements(CAST(extra_info AS jsonb)->'Databases') AS db "
-	+ "WHERE "
-	+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') AND "
-	+ "	db->>'Work' != 'N/A' ")
-	float getDatabaseWorkSum();
+		+ "SELECT "
+		+ "	SUM(CAST(db->>'Work' AS REAL)) AS Work "
+		+ "FROM "
+		+ "	current_host ch, "
+		+ "	jsonb_array_elements(CAST(extra_info AS jsonb)->'Databases') AS db "
+		+ "WHERE "
+		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') AND "
+		+ "	db->>'Work' != 'N/A' ")
+	float getTotalDatabaseWork();
 }
