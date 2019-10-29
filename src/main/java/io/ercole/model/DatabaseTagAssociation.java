@@ -16,14 +16,17 @@
 package io.ercole.model;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
 public class DatabaseTagAssociation {
 
     /** The id. */
-	@Id
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
 
     private String hostname;
     private String dbname;
@@ -56,11 +59,11 @@ public class DatabaseTagAssociation {
     public DatabaseTagAssociation() {
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(final long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
