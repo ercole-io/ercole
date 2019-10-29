@@ -101,4 +101,9 @@ public class HostController {
 	public final Long addTagToDatabase(@PathVariable final String hostname, @PathVariable final String dbname, final @RequestBody String tagname) {
 		return hostService.addTagToDatabase(hostname, dbname, tagname);
 	}
+
+	@DeleteMapping("/hostname/{hostname}/databases/{dbname}/tags/{tagid}")
+	public void deleteTagOfDatabase(@PathVariable final String hostname, @PathVariable final String dbname, final @PathVariable long tagid) {
+		hostService.deleteTagOfDatabase(hostname, dbname, tagid);
+	}
 }
