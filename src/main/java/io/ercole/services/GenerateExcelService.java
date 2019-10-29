@@ -160,4 +160,87 @@ public class GenerateExcelService {
             }
         }
     }
+
+
+    /**
+     * Init excel response entity.
+     *
+     * @return the response entity
+     * @throws IOException      the io exception
+     * @throws RuntimeException the runtime exception
+     */
+    public ResponseEntity<byte[]> initExcelWithoutTemplate() throws IOException {
+        Iterable<CurrentHost> iterable = currentRepo.findAllByOrderByHostnameAsc();
+
+
+        try (Workbook workbook = new XSSFWorkbook()) {
+
+            XSSFSheet xssfSheet = ((XSSFWorkbook) workbook).createSheet();
+            //number of row where we will write (row 0,1,2 contains the heading of the table)
+            int rowNumber = 0;
+
+            for (CurrentHost host : iterable) {
+                XSSFRow row = xssfSheet.createRow(rowNumber);
+                //get json HostInfo (it contains another 16 field)
+                JSONObject root = new JSONObject(host.getHostInfo());
+                // //get json ExtraInfo (it contains another 2 json array - databases and features)
+                // JSONObject root2 = new JSONObject(host.getExtraInfo());
+                // //get json databases
+                // JSONArray arrayExtraInfo = root2.getJSONArray("Databases");
+                //In the db there are some hosts that don't serve databases
+                // if (arrayExtraInfo.length() == 0) {
+                //     continue;
+                // }
+                // JSONObject database = arrayExtraInfo.getJSONObject(0);
+                // //get json array features (after we will create jsonObject features from this array -getFeatures())
+                // JSONArray features = database.getJSONArray("Features");
+
+                //save data into array
+                String[] dataOfHost = new String[20];
+                dataOfHost[0]  = host.getHostname();                     
+                dataOfHost[1]  = host.getEnvironment();
+                dataOfHost[2]  = host.getHostType();
+                dataOfHost[3]  = host.getAssociatedClusterName();                   
+                dataOfHost[4]  = host.getAssociatedHypervisorHostname();
+                dataOfHost[5]  = host.getUpdated().toString();
+                dataOfHost[6]  = host.getDatabases();
+                dataOfHost[7]  = root.getString("Kernel");
+                dataOfHost[8]  = "" + root.getBoolean("OracleCluster");
+                dataOfHost[9]  = "" + root.getBoolean("SunCluster"); 
+                dataOfHost[10] = "" + root.getBoolean("VeritasCluster");
+                dataOfHost[11] = "" + root.getBoolean("Virtual");
+                dataOfHost[12] = root.getString("Type"); 
+                dataOfHost[13] = "" + root.getInt("CPUThreads");
+                dataOfHost[14] = "" + root.getInt("CPUCores");
+                dataOfHost[15] = "" + root.getInt("Socket"); 
+                dataOfHost[16] = "" + root.getInt("MemoryTotal"); 
+                dataOfHost[17] = "" + root.getInt("SwapTotal"); 
+                dataOfHost[18] = root.getString("CPUModel");
+
+                //insert data of host into a new cell
+                int cellid = 0;
+                for (int i = 0; i < 20; i++) {
+                    //don't delete. see templateVuoto ABCD?F
+                    if (cellid == 5) {
+                        cellid++;
+                    }
+                    Cell cell = row.createCell(cellid++);
+                    cell.setCellValue(dataOfHost[i]);
+                }
+                rowNumber++;
+            }
+            //writing changes in the open file (templateVuoto)
+
+            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+
+                workbook.write(outputStream);
+                HttpHeaders headers = new HttpHeaders();
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=HostsRaw.xlsm");
+                return ResponseEntity.ok()
+                        .headers(headers)
+                        .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                        .body(outputStream.toByteArray());
+            }
+        }
+    }
 }
