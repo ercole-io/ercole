@@ -176,9 +176,30 @@ public class GenerateExcelService {
         try (Workbook workbook = new XSSFWorkbook()) {
 
             XSSFSheet xssfSheet = ((XSSFWorkbook) workbook).createSheet();
-            //number of row where we will write (row 0,1,2 contains the heading of the table)
-            int rowNumber = 0;
+            //header row
+            XSSFRow rowHeader = xssfSheet.createRow(0);
+            rowHeader.createCell(0).setCellValue("hostname");
+            rowHeader.createCell(1).setCellValue("env");
+            rowHeader.createCell(2).setCellValue("host type");
+            rowHeader.createCell(3).setCellValue("cluster");
+            rowHeader.createCell(4).setCellValue("physical host");
+            rowHeader.createCell(5).setCellValue("last update");
+            rowHeader.createCell(6).setCellValue("databases");
+            rowHeader.createCell(7).setCellValue("OS");
+            rowHeader.createCell(8).setCellValue("kernel");
+            rowHeader.createCell(9).setCellValue("oracle cluster");
+            rowHeader.createCell(10).setCellValue("sun cluster");
+            rowHeader.createCell(11).setCellValue("veritas cluster");
+            rowHeader.createCell(12).setCellValue("virtual");
+            rowHeader.createCell(13).setCellValue("host type");
+            rowHeader.createCell(14).setCellValue("cpu threads");
+            rowHeader.createCell(15).setCellValue("cpu cores");
+            rowHeader.createCell(16).setCellValue("sockets");
+            rowHeader.createCell(17).setCellValue("mem total");
+            rowHeader.createCell(18).setCellValue("swap total");
 
+            //data rows
+            int rowNumber = 1;
             for (CurrentHost host : iterable) {
                 XSSFRow row = xssfSheet.createRow(rowNumber);
                 //get json HostInfo (it contains another 16 field)
@@ -204,27 +225,23 @@ public class GenerateExcelService {
                 dataOfHost[4]  = host.getAssociatedHypervisorHostname();
                 dataOfHost[5]  = host.getUpdated().toString();
                 dataOfHost[6]  = host.getDatabases();
-                dataOfHost[7]  = root.getString("Kernel");
-                dataOfHost[8]  = "" + root.getBoolean("OracleCluster");
-                dataOfHost[9]  = "" + root.getBoolean("SunCluster"); 
-                dataOfHost[10] = "" + root.getBoolean("VeritasCluster");
-                dataOfHost[11] = "" + root.getBoolean("Virtual");
-                dataOfHost[12] = root.getString("Type"); 
-                dataOfHost[13] = "" + root.getInt("CPUThreads");
-                dataOfHost[14] = "" + root.getInt("CPUCores");
-                dataOfHost[15] = "" + root.getInt("Socket"); 
-                dataOfHost[16] = "" + root.getInt("MemoryTotal"); 
-                dataOfHost[17] = "" + root.getInt("SwapTotal"); 
-                dataOfHost[18] = root.getString("CPUModel");
+                dataOfHost[7] =  root.getString("OS");
+                dataOfHost[8]  = root.getString("Kernel");
+                dataOfHost[9]  = "" + root.getBoolean("OracleCluster");
+                dataOfHost[10]  = "" + root.getBoolean("SunCluster"); 
+                dataOfHost[11] = "" + root.getBoolean("VeritasCluster");
+                dataOfHost[12] = "" + root.getBoolean("Virtual");
+                dataOfHost[13] = root.getString("Type"); 
+                dataOfHost[14] = "" + root.getInt("CPUThreads");
+                dataOfHost[15] = "" + root.getInt("CPUCores");
+                dataOfHost[16] = "" + root.getInt("Socket"); 
+                dataOfHost[17] = "" + root.getInt("MemoryTotal"); 
+                dataOfHost[18] = "" + root.getInt("SwapTotal"); 
+                dataOfHost[19] = root.getString("CPUModel");
 
                 //insert data of host into a new cell
-                int cellid = 0;
-                for (int i = 0; i < 20; i++) {
-                    //don't delete. see templateVuoto ABCD?F
-                    if (cellid == 5) {
-                        cellid++;
-                    }
-                    Cell cell = row.createCell(cellid++);
+                for (int i = 0; i < dataOfHost.length; i++) {
+                    Cell cell = row.createCell(i);
                     cell.setCellValue(dataOfHost[i]);
                 }
                 rowNumber++;
@@ -235,7 +252,7 @@ public class GenerateExcelService {
 
                 workbook.write(outputStream);
                 HttpHeaders headers = new HttpHeaders();
-                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=HostsRaw.xlsm");
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=HostsRaw.xlsx");
                 return ResponseEntity.ok()
                         .headers(headers)
                         .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
