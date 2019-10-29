@@ -90,6 +90,16 @@ public class UserController {
 		return genService.initExcel();
 	}
 
+	/**
+	 * Generate excel response entity.
+	 *
+	 * @return the response entity
+	 * @throws IOException the io exception
+	 */
+	@GetMapping(path = "/generateexcelraw")
+	public ResponseEntity<byte[]> generateExcelRaw() throws IOException {
+		return genService.initExcelWithoutTemplate();
+	}
 
 	/**
 	 * Gets server env.
