@@ -63,4 +63,10 @@ public class DatabaseTagAssociation {
     public void setId(final long id) {
         this.id = id;
     }
+
+    public DatabaseTagAssociation(final String hostname, final String dbname, final String tag) {
+        this.hostname = hostname;
+        this.dbname = dbname;
+        this.tag = tag;
+    }
 }

@@ -435,4 +435,8 @@ public class HostService {
 	public List<DatabaseTagAssociation> getTagsOfDatabase(final String hostname, final String dbname) {
 		return databaseTagAssociationRepo.findByHostnameAndDbname(hostname, dbname);
 	}
+
+	public Long addTagToDatabase(final String hostname, final String dbname, final String tagname) {
+		return databaseTagAssociationRepo.save(new DatabaseTagAssociation(hostname, dbname, tagname)).getId();
+	}
  }

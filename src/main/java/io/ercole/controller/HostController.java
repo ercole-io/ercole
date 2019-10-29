@@ -26,6 +26,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.ercole.model.CurrentHost;
@@ -93,5 +95,10 @@ public class HostController {
 	@GetMapping("/hostname/{hostname}/databases/{dbname}/tags")
 	public final List<DatabaseTagAssociation> getTagsOfDatabase(@PathVariable final String hostname, @PathVariable final String dbname) {
 		return hostService.getTagsOfDatabase(hostname, dbname);
+	}
+
+	@PostMapping("/hostname/{hostname}/databases/{dbname}/tags")
+	public final Long addTagToDatabase(@PathVariable final String hostname, @PathVariable final String dbname, final @RequestBody String tagname) {
+		return hostService.addTagToDatabase(hostname, dbname, tagname);
 	}
 }
