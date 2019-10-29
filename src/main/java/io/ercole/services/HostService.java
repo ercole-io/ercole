@@ -38,11 +38,13 @@ import io.ercole.model.Alert;
 import io.ercole.model.AlertFactory;
 import io.ercole.model.ClusterInfo;
 import io.ercole.model.CurrentHost;
+import io.ercole.model.DatabaseTagAssociation;
 import io.ercole.model.HistoricalHost;
 import io.ercole.model.VMInfo;
 import io.ercole.repositories.AlertRepository;
 import io.ercole.repositories.ClusterRepository;
 import io.ercole.repositories.CurrentHostRepository;
+import io.ercole.repositories.DatabaseTagAssociationRepository;
 import io.ercole.repositories.HistoricalHostRepository;
 import io.ercole.utilities.DateUtility;
 import io.ercole.utilities.JsonFilter;
@@ -81,7 +83,11 @@ public class HostService {
 	
 	@Autowired
 	private ClusterRepository clusterRepo;
+
+	@Autowired
+	private DatabaseTagAssociationRepository databaseTagAssociationRepo;
 	
+
 	@Autowired
 	private MailService mailService;
 
@@ -425,4 +431,8 @@ public class HostService {
 	public Page<Map<String, Object>> getDatabases(final Pageable c) {
 		return currentRepo.getDatabases(c);
 	}
-}
+
+	public List<DatabaseTagAssociation> getTagsOfDatabase(final String hostname, final String dbname) {
+		return databaseTagAssociationRepo.findByHostnameAndDbname(hostname, dbname);
+	}
+ }

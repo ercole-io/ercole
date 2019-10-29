@@ -17,6 +17,8 @@ package io.ercole.controller;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.ercole.model.CurrentHost;
+import io.ercole.model.DatabaseTagAssociation;
 import io.ercole.repositories.CurrentHostRepository;
 import io.ercole.services.HostService;
 
@@ -79,5 +82,16 @@ public class HostController {
 	@DeleteMapping(value = "/hosts/{hostname}")
 	public void archiveHost(@PathVariable final String hostname) {
 		hostService.archiveHost(hostname);
+	}
+
+	/**
+	 * Return the configured list of tags of the databases. 
+	 * @param hostname hostname
+	 * @param dbname dbname
+	 * @return the configured list of tags of the databases 
+	 */
+	@GetMapping("/hostname/{hostname}/databases/{dbname}/tags")
+	public final List<DatabaseTagAssociation> getTagsOfDatabase(@PathVariable final String hostname, @PathVariable final String dbname) {
+		return hostService.getTagsOfDatabase(hostname, dbname);
 	}
 }
