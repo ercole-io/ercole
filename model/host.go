@@ -30,11 +30,12 @@ type Host struct {
 	Virtual        bool
 	Kernel         string
 	OS             string
-	MemoryTotal    int  `bson:"memory_total"`
-	SwapTotal      int  `bson:"swap_total"`
-	OracleCluster  bool `bson:"oracle_cluster"`
-	VeritasCluster bool `bson:"veritas_cluster"`
-	SunCluster     bool `bson:"sun_cluster"`
+	MemoryTotal    float32 `bson:"memory_total"`
+	SwapTotal      float32 `bson:"swap_total"`
+	OracleCluster  bool    `bson:"oracle_cluster"`
+	VeritasCluster bool    `bson:"veritas_cluster"`
+	SunCluster     bool    `bson:"sun_cluster"`
+	AixCluster     bool    `bson:"aix_cluster"`
 }
 
 // HostBsonValidatorRules contains mongodb validation rules for host
@@ -57,6 +58,7 @@ var HostBsonValidatorRules = bson.D{
 		"oracle_cluster",
 		"veritas_cluster",
 		"sun_cluster",
+		"aix_cluster",
 	}},
 	{"properties", bson.D{
 		{"hostname", bson.D{
@@ -94,10 +96,10 @@ var HostBsonValidatorRules = bson.D{
 			{"bsonType", "string"},
 		}},
 		{"memory_total", bson.D{
-			{"bsonType", "int"},
+			{"bsonType", "double"},
 		}},
 		{"swap_total", bson.D{
-			{"bsonType", "int"},
+			{"bsonType", "double"},
 		}},
 		{"oracle_cluster", bson.D{
 			{"bsonType", "bool"},
@@ -106,6 +108,9 @@ var HostBsonValidatorRules = bson.D{
 			{"bsonType", "bool"},
 		}},
 		{"sun_cluster", bson.D{
+			{"bsonType", "bool"},
+		}},
+		{"aix_cluster", bson.D{
 			{"bsonType", "bool"},
 		}},
 	}},
