@@ -8,7 +8,7 @@
 	<version>1.6.3</version> 
 
 	<properties>
-		<ercole-web.version>1.6.3</ercole-web.version>
+		<ercole-web.version>1.6.5</ercole-web.version>
 		<rpm5.version>1.6.2</rpm5.version>
 		<rpm6.version>1.6.3</rpm6.version>
 		<rpm7.version>1.6.3</rpm7.version>
