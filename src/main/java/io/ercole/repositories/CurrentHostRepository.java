@@ -834,6 +834,7 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 	/**
 	 * Return the list of databases.
 	 * @param c pageable
+	 * @param search search
 	 * @return the list of databases
 	 */
 	@Query(nativeQuery = true, value = ""
@@ -881,8 +882,9 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	jsonb_array_elements((CAST(extra_info AS jsonb))->'Databases') AS db, "
 		+ "	CAST(ch.host_info AS jsonb) AS hi "
 		+ "WHERE  "
-		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') ")
-	Page<Map<String, Object>> getDatabases(Pageable c);
+		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') AND "
+		+ " LOWER(db->>'Name') LIKE LOWER(CONCAT('%',:search,'%')) ")
+	Page<Map<String, Object>> getDatabases(Pageable c, @Param("search") String search);
 
 	/**
 	 * Count the databases grouped by dataguard status.
