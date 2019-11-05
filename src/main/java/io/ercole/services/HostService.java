@@ -41,12 +41,14 @@ import io.ercole.model.ClusterInfo;
 import io.ercole.model.CurrentHost;
 import io.ercole.model.DatabaseTagAssociation;
 import io.ercole.model.HistoricalHost;
+import io.ercole.model.LicenseModifier;
 import io.ercole.model.VMInfo;
 import io.ercole.repositories.AlertRepository;
 import io.ercole.repositories.ClusterRepository;
 import io.ercole.repositories.CurrentHostRepository;
 import io.ercole.repositories.DatabaseTagAssociationRepository;
 import io.ercole.repositories.HistoricalHostRepository;
+import io.ercole.repositories.LicenseModifierRepository;
 import io.ercole.utilities.DateUtility;
 import io.ercole.utilities.JsonFilter;
 
@@ -88,6 +90,8 @@ public class HostService {
 	@Autowired
 	private DatabaseTagAssociationRepository databaseTagAssociationRepo;
 	
+	@Autowired
+	private LicenseModifierRepository licenseModifierRepo;
 
 	@Autowired
 	private MailService mailService;
@@ -462,4 +466,14 @@ public class HostService {
 
 		return out;
 	}
- }
+
+	public void addLicenseModifier(final String hostname, final String dbname, final String licenseName, final int newValue) {
+		LicenseModifier oldLicense = licenseModifierRepo.findByHostnameAndDbnameAndLicenseName(hostname, dbname, licenseName);
+		if (oldLicense == null) {
+			licenseModifierRepo.save(new LicenseModifier(hostname, dbname, licenseName, newValue));
+		} else {
+			oldLicense.setNewValue(newValue);
+			licenseModifierRepo.save(oldLicense);
+		}
+	}
+}
