@@ -37,10 +37,12 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import io.ercole.model.CurrentHost;
 import io.ercole.model.HistoricalHost;
+import io.ercole.model.LicenseModifier;
 import io.ercole.repositories.AlertRepository;
 import io.ercole.repositories.ClusterRepository;
 import io.ercole.repositories.CurrentHostRepository;
 import io.ercole.repositories.HistoricalHostRepository;
+import io.ercole.repositories.LicenseModifierRepository;
 import io.ercole.services.HostService;
 import io.ercole.services.MailService;
 import io.ercole.utilities.JsonFilter;
@@ -66,6 +68,9 @@ public class HostServiceTest {
 	
 	@Mock
 	private AlertRepository alertRepo;
+
+	@Mock
+	private LicenseModifierRepository licenseModifierRepo;
 
 	@Mock
 	private MailService mailService;
