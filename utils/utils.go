@@ -12,3 +12,13 @@ func ToJSON(v interface{}) string {
 func Intptr(v int64) *int64 {
 	return &v
 }
+
+// Contains return true if a contains x, otherwise false.
+func Contains(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
+}

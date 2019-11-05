@@ -28,7 +28,7 @@ type AdvancedError struct {
 	Line int
 }
 
-//
+// Error return the representation string of the error
 func (ae *AdvancedError) Error() string {
 	return ae.Err.Error()
 }
