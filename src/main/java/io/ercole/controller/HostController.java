@@ -18,6 +18,7 @@ package io.ercole.controller;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -86,23 +87,28 @@ public class HostController {
 		hostService.archiveHost(hostname);
 	}
 
+	@GetMapping("/hosts/{hostname}/tags")
+	public final Map<String, List<Object>> getTagsInHosts(@PathVariable final String hostname) {
+		return hostService.getTagsInHosts(hostname);
+	}
+
 	/**
 	 * Return the configured list of tags of the databases. 
 	 * @param hostname hostname
 	 * @param dbname dbname
 	 * @return the configured list of tags of the databases 
 	 */
-	@GetMapping("/hostname/{hostname}/databases/{dbname}/tags")
+	@GetMapping("/hosts/{hostname}/databases/{dbname}/tags")
 	public final List<DatabaseTagAssociation> getTagsOfDatabase(@PathVariable final String hostname, @PathVariable final String dbname) {
 		return hostService.getTagsOfDatabase(hostname, dbname);
 	}
 
-	@PostMapping("/hostname/{hostname}/databases/{dbname}/tags")
+	@PostMapping("/hosts/{hostname}/databases/{dbname}/tags")
 	public final Long addTagToDatabase(@PathVariable final String hostname, @PathVariable final String dbname, final @RequestBody String tagname) {
 		return hostService.addTagToDatabase(hostname, dbname, tagname);
 	}
 
-	@DeleteMapping("/hostname/{hostname}/databases/{dbname}/tags/{tagid}")
+	@DeleteMapping("/hosts/{hostname}/databases/{dbname}/tags/{tagid}")
 	public void deleteTagOfDatabase(@PathVariable final String hostname, @PathVariable final String dbname, final @PathVariable long tagid) {
 		hostService.deleteTagOfDatabase(hostname, dbname, tagid);
 	}
