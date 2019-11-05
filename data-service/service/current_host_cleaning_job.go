@@ -26,12 +26,14 @@ import (
 // CurrentHostCleaningJob is the job used to clean and archive old current host
 type CurrentHostCleaningJob struct {
 	hostDataService *HostDataService
+	// TimeNow contains a function that return the current time
+	TimeNow func() time.Time
 }
 
 // Run archive every hostdata that is older than a amount
 func (job *CurrentHostCleaningJob) Run() {
 	//Find the current hosts older than CurrentHostCleaningJob.HourThreshold days
-	hosts, err := job.hostDataService.Database.FindOldCurrentHosts(time.Now().Add(time.Duration(-job.hostDataService.Config.DataService.CurrentHostCleaningJob.HourThreshold) * time.Hour))
+	hosts, err := job.hostDataService.Database.FindOldCurrentHosts(job.TimeNow().Add(time.Duration(-job.hostDataService.Config.DataService.CurrentHostCleaningJob.HourThreshold) * time.Hour))
 	if err != nil {
 		utils.LogErr(err)
 		return

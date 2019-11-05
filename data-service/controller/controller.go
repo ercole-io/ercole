@@ -3,6 +3,7 @@ package controller
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/amreo/ercole-services/data-service/service"
 
@@ -23,4 +24,6 @@ type HostDataController struct {
 	Config config.Configuration
 	// Service contains the underlying service used to perform various logical and store operations
 	Service service.HostDataServiceInterface
+	// TimeNow contains a function that return the current time
+	TimeNow func() time.Time
 }

@@ -3,6 +3,7 @@ package controller
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/amreo/ercole-services/alert-service/service"
 	"github.com/amreo/ercole-services/config"
@@ -26,6 +27,8 @@ type AlertQueueController struct {
 	Config config.Configuration
 	// Service contains the underlying service used to perform various logical and store operations
 	Service service.AlertServiceInterface
+	// TimeNow contains a function that return the current time
+	TimeNow func() time.Time
 }
 
 // AuthenticateMiddleware return the middleware used to authenticate (request) users

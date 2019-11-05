@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/amreo/ercole-services/config"
 	dataservice_controller "github.com/amreo/ercole-services/data-service/controller"
@@ -81,7 +82,8 @@ func serve(config config.Configuration, enableDataService bool,
 func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 	//Setup the database
 	db := &dataservice_database.MongoDatabase{
-		Config: config,
+		Config:  config,
+		TimeNow: time.Now,
 	}
 	db.Init()
 
@@ -90,6 +92,7 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 		Config:   config,
 		Version:  "latest",
 		Database: db,
+		TimeNow:  time.Now,
 	}
 	service.Init()
 
@@ -98,6 +101,7 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 	ctrl := &dataservice_controller.HostDataController{
 		Config:  config,
 		Service: service,
+		TimeNow: time.Now,
 	}
 	dataservice_controller.SetupRoutesForHostDataController(router, ctrl)
 
@@ -123,7 +127,8 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 	//Setup the database
 	db := &alertservice_database.MongoDatabase{
-		Config: config,
+		Config:  config,
+		TimeNow: time.Now,
 	}
 	db.Init()
 
@@ -131,6 +136,7 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 	service := &alertservice_service.AlertService{
 		Config:   config,
 		Database: db,
+		TimeNow:  time.Now,
 	}
 	service.Init(wg)
 
@@ -139,6 +145,7 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 	ctrl := &alertservice_controller.AlertQueueController{
 		Config:  config,
 		Service: service,
+		TimeNow: time.Now,
 	}
 	alertservice_controller.SetupRoutesForAlertQueueController(router, ctrl)
 

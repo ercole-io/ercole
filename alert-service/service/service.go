@@ -19,6 +19,7 @@ package service
 import (
 	"log"
 	"sync"
+	"time"
 
 	"github.com/amreo/ercole-services/alert-service/database"
 	"github.com/amreo/ercole-services/model"
@@ -49,6 +50,8 @@ type AlertService struct {
 	Queue *hub.Hub
 	// Database contains the database layer
 	Database database.MongoDatabaseInterface
+	// TimeNow contains a function that return the current time
+	TimeNow func() time.Time
 }
 
 // Init initializes the service and database
@@ -71,8 +74,8 @@ func (as *AlertService) Init(wg *sync.WaitGroup) {
 	//Start cron jobs
 	jobrunner.Start()
 
-	jobrunner.Schedule(as.Config.AlertService.FreshnessCheckJob.Crontab, &FreshnessCheckJob{alertService: as})
-	jobrunner.Now(&FreshnessCheckJob{alertService: as})
+	jobrunner.Schedule(as.Config.AlertService.FreshnessCheckJob.Crontab, &FreshnessCheckJob{alertService: as, TimeNow: as.TimeNow})
+	jobrunner.Now(&FreshnessCheckJob{alertService: as, TimeNow: as.TimeNow})
 }
 
 // HostDataInsertion inserts the host data insertion in the queue

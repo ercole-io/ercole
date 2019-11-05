@@ -56,6 +56,8 @@ type HostDataService struct {
 	Version string
 	// Database contains the database layer
 	Database database.MongoDatabaseInterface
+	// TimeNow contains a function that return the current time
+	TimeNow func() time.Time
 }
 
 // Init initializes the service and database
@@ -63,19 +65,19 @@ func (hds *HostDataService) Init() {
 	//Start cron jobs
 	jobrunner.Start()
 
-	jobrunner.Schedule(hds.Config.DataService.CurrentHostCleaningJob.Crontab, &CurrentHostCleaningJob{hostDataService: hds})
-	jobrunner.Schedule(hds.Config.DataService.ArchivedHostCleaningJob.Crontab, &ArchivedHostCleaningJob{hostDataService: hds})
-	jobrunner.Now(&CurrentHostCleaningJob{hostDataService: hds})
-	jobrunner.Now(&ArchivedHostCleaningJob{hostDataService: hds})
+	jobrunner.Schedule(hds.Config.DataService.CurrentHostCleaningJob.Crontab, &CurrentHostCleaningJob{hostDataService: hds, TimeNow: hds.TimeNow})
+	jobrunner.Schedule(hds.Config.DataService.ArchivedHostCleaningJob.Crontab, &ArchivedHostCleaningJob{hostDataService: hds, TimeNow: hds.TimeNow})
+	jobrunner.Now(&CurrentHostCleaningJob{hostDataService: hds, TimeNow: hds.TimeNow})
+	jobrunner.Now(&ArchivedHostCleaningJob{hostDataService: hds, TimeNow: hds.TimeNow})
 }
 
 // UpdateHostInfo saves the hostdata
 func (hds *HostDataService) UpdateHostInfo(hostdata model.HostData) (interface{}, utils.AdvancedErrorInterface) {
 	hostdata.ServerVersion = hds.Version
 	hostdata.Archived = false
-	hostdata.CreatedAt = time.Now()
+	hostdata.CreatedAt = hds.TimeNow()
 	hostdata.SchemaVersion = model.SchemaVersion
-	hostdata.ID = primitive.NewObjectID()
+	hostdata.ID = primitive.NewObjectIDFromTimestamp(hds.TimeNow())
 
 	//Archive the host
 	_, err := hds.Database.ArchiveHost(hostdata.Hostname)

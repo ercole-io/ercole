@@ -37,6 +37,8 @@ type MongoDatabase struct {
 	Config config.Configuration
 	// Client contain the mongodb client
 	Client *mongo.Client
+	// TimeNow contains a function that return the current time
+	TimeNow func() time.Time
 }
 
 // Init initializes the connection to the database
