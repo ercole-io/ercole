@@ -17,6 +17,7 @@ package io.ercole.services;
 
 import java.text.ParseException;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -443,5 +444,22 @@ public class HostService {
 
 	public void deleteTagOfDatabase(final String hostname, final String dbname, final long tagid) {
 		databaseTagAssociationRepo.deleteById(tagid);
+	}
+
+	public Map<String, List<Object>> getTagsInHosts(final String hostname) {
+		List<DatabaseTagAssociation> tags = databaseTagAssociationRepo.findTagsByHostnameOrderByDbname(hostname);
+		Map<String, List<Object>> out = new HashMap<>();
+		String lastDbname = "";
+		List<Object> lastGroup = new ArrayList<>();
+		for (DatabaseTagAssociation item : tags) {
+			if (!item.getDbname().equals(lastDbname)) {
+				lastGroup = new ArrayList<>();
+				out.put(item.getDbname(), lastGroup);
+			}
+			lastGroup.add(item);
+			lastDbname = item.getDbname();
+		}
+
+		return out;
 	}
  }

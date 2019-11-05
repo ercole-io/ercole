@@ -16,11 +16,11 @@
 package io.ercole.repositories;
 
 import java.util.List;
-
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import io.ercole.model.DatabaseTagAssociation;
 
 public interface DatabaseTagAssociationRepository extends PagingAndSortingRepository<DatabaseTagAssociation, Long> {
     List<DatabaseTagAssociation> findByHostnameAndDbname(String hostname, String dbname);
+    List<DatabaseTagAssociation> findTagsByHostnameOrderByDbname(String hostname);
 }
