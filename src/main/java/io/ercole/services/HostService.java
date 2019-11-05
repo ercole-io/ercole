@@ -146,6 +146,7 @@ public class HostService {
 
 		assert (newHost.getHostType() != null);
 		if (newHost.getHostType().equals(orclDb)) {
+			patchCurrentHostWithLicenseModifiers(newHost);
 			List<String> newDatabases = JsonFilter.getNewDatabases(newHost, oldCurrent);
 
 			if (!newDatabases.isEmpty()) {
@@ -256,6 +257,8 @@ public class HostService {
 		AlertFactory generator = new AlertFactory();
 
 		if (host.getHostType().equals(orclDb)) {
+			patchCurrentHostWithLicenseModifiers(host);
+
 			JSONArray newDbArray = new JSONObject(host.getExtraInfo()).getJSONArray(DATABASES);
 		
 
@@ -475,5 +478,34 @@ public class HostService {
 			oldLicense.setNewValue(newValue);
 			licenseModifierRepo.save(oldLicense);
 		}
+
+		//Fix currenthost
+		CurrentHost host = currentRepo.findByHostname(hostname);
+		patchCurrentHostWithLicenseModifiers(host);
+		currentRepo.save(host);
+	}
+
+	public void patchCurrentHostWithLicenseModifiers(final CurrentHost host) {
+		JSONObject extraInfo = new JSONObject(host.getExtraInfo());
+		JSONArray databases = extraInfo.getJSONArray("Databases");
+		for (int i = 0; i < databases.length(); i++) {
+			JSONObject db = databases.getJSONObject(i);
+			JSONArray licenses = db.getJSONArray("Licenses");
+			List<LicenseModifier> modifiers = licenseModifierRepo.findByHostnameAndDbname(host.getHostname(), db.getString("Name"));
+			if (modifiers.size() == 0) {
+				continue;
+			}
+			for (int j = 0; j < licenses.length(); j++) {
+				JSONObject license  = licenses.getJSONObject(j);
+				String name = license.getString("Name");
+				modifiers.forEach(lm -> {
+					if (lm.getLicenseName().equals(name)) {
+						license.put("Count", lm.getNewValue());
+					}
+				});
+			}
+		}
+
+		host.setExtraInfo(extraInfo.toString());
 	}
 }
