@@ -112,4 +112,9 @@ public class HostController {
 	public void deleteTagOfDatabase(@PathVariable final String hostname, @PathVariable final String dbname, final @PathVariable long tagid) {
 		hostService.deleteTagOfDatabase(hostname, dbname, tagid);
 	}
+
+	@PostMapping("/hosts/{hostname}/databases/{dbname}/license-modifiers/{licenseName}")
+	public void addLicenseModifier(@PathVariable final String hostname, @PathVariable final String dbname, final @PathVariable String licenseName, final @RequestBody int newValue) {
+		hostService.addLicenseModifier(hostname, dbname, licenseName, newValue);
+	}
 }
