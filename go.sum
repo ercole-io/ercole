@@ -1,6 +1,7 @@
 github.com/bamzi/jobrunner v0.0.0-20190810144113-852b7ca4d475 h1:3hbHl3+N4HqF+RP+Y5Vjzsj/coJ72iyGSL/7yGQ1oCo=
 github.com/bamzi/jobrunner v0.0.0-20190810144113-852b7ca4d475/go.mod h1:hbN8iwOALqzoHEUsnpWKLY2WI2djW8Qhu3fuboMpsOg=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/go-stack/stack v1.8.0 h1:5SgMzNM5HxrEjV0ww2lTmX6E2Izsfxas4+YHWRs3Lsk=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
