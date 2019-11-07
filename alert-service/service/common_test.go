@@ -8,6 +8,7 @@ import (
 )
 
 //go:generate mockgen -source ../database/database.go -destination=fake_database.go -package=service
+//go:generate mockgen -source service.go -destination=fake_service.go -package=service
 
 //Common data
 var errMock error = errors.New("MockError")

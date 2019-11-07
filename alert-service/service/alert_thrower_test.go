@@ -31,7 +31,7 @@ func TestThrowNewDatabaseAlert_Success(t *testing.T) {
 		}, alert.OtherInfo)
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
-	})
+	}).Times(1)
 	require.Nil(t, as.ThrowNewDatabaseAlert("bestdb", "myhost"))
 }
 
@@ -43,7 +43,7 @@ func TestThrowNewDatabaseAlert_DatabaseError(t *testing.T) {
 		Database: db,
 		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
 	}
-	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock)
+	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock).Times(1)
 	assert.Equal(t, aerrMock, as.ThrowNewDatabaseAlert("bestdb", "myhost"))
 }
 
@@ -67,7 +67,7 @@ func TestThrowNewServerAlert_Success(t *testing.T) {
 		}, alert.OtherInfo)
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
-	})
+	}).Times(1)
 	require.Nil(t, as.ThrowNewServerAlert("myhost"))
 }
 
@@ -79,7 +79,7 @@ func TestThrowNewServerAlert_DatabaseError(t *testing.T) {
 		Database: db,
 		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
 	}
-	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock)
+	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock).Times(1)
 	assert.Equal(t, aerrMock, as.ThrowNewServerAlert("myhost"))
 }
 
@@ -103,7 +103,7 @@ func TestThrowNewEnterpriseLicenseAlert_Success(t *testing.T) {
 		}, alert.OtherInfo)
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
-	})
+	}).Times(1)
 	require.Nil(t, as.ThrowNewEnterpriseLicenseAlert("myhost"))
 }
 
@@ -115,7 +115,7 @@ func TestThrowNewEnterpriseLicenseAlert_DatabaseError(t *testing.T) {
 		Database: db,
 		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
 	}
-	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock)
+	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock).Times(1)
 	assert.Equal(t, aerrMock, as.ThrowNewEnterpriseLicenseAlert("myhost"))
 }
 
@@ -153,7 +153,7 @@ func TestThrowActivatedFeaturesAlert_DatabaseError(t *testing.T) {
 		Database: db,
 		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
 	}
-	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock)
+	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock).Times(1)
 	assert.Equal(t, aerrMock, as.ThrowActivatedFeaturesAlert("mydb", "myhost", []string{"fastibility", "slowibility"}))
 }
 
@@ -177,7 +177,7 @@ func TestThrowNoDataAlert_Success(t *testing.T) {
 		}, alert.OtherInfo)
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
-	})
+	}).Times(1)
 	require.Nil(t, as.ThrowNoDataAlert("myhost", 90))
 }
 
@@ -189,6 +189,6 @@ func TestThrowNoDataAlert_DatabaseError(t *testing.T) {
 		Database: db,
 		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
 	}
-	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock)
+	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock).Times(1)
 	assert.Equal(t, aerrMock, as.ThrowNoDataAlert("myhost", 90))
 }
