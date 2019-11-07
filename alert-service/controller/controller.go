@@ -49,7 +49,7 @@ func (ctrl *AlertQueueController) HostDataInsertion(w http.ResponseWriter, r *ht
 
 	//Insert the event
 	if err := ctrl.Service.HostDataInsertion(id); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
 	}
 }
