@@ -40,6 +40,16 @@ type AlertServiceInterface interface {
 	HostDataInsertion(id primitive.ObjectID) utils.AdvancedErrorInterface
 	// ProcessMsg processes the message msg
 	ProcessMsg(msg hub.Message)
+	// ThrowNewDatabaseAlert create and insert in the database a new NEW_DATABASE alert
+	ThrowNewDatabaseAlert(dbname string, hostname string) utils.AdvancedErrorInterface
+	// ThrowNewServerAlert create and insert in the database a new NEW_SERVER alert
+	ThrowNewServerAlert(hostname string) utils.AdvancedErrorInterface
+	// ThrowNewEnterpriseLicenseAlert create and insert in the database a new NEW_DATABASE alert
+	ThrowNewEnterpriseLicenseAlert(hostname string) utils.AdvancedErrorInterface
+	// ThrowActivatedFeaturesAlert create and insert in the database a new NEW_OPTION alert
+	ThrowActivatedFeaturesAlert(dbname string, hostname string, activatedFeatures []string) utils.AdvancedErrorInterface
+	// ThrowNoDataAlert create and insert in the database a new NO_DATA alert
+	ThrowNoDataAlert(hostname string, freshnessThreshold int) utils.AdvancedErrorInterface
 }
 
 // AlertService is the concrete implementation of HostDataServiceInterface. It saves data to a MongoDB database
