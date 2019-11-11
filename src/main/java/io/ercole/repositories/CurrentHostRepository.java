@@ -56,7 +56,16 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 	 * @param hostname to search
 	 * @return CurrentHost object
 	 */
+	CurrentHost findByHostnameIgnoreCase(@Param("hostname")String hostname);
+
+	/**
+	 * Find by hostname current host.
+	 *
+	 * @param hostname to search
+	 * @return CurrentHost object
+	 */
 	CurrentHost findByHostname(@Param("hostname")String hostname);
+
 
 	/**
 	 * Find all hosts stream.
