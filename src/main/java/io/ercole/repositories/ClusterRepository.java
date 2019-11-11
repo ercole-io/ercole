@@ -49,8 +49,8 @@ public interface ClusterRepository extends PagingAndSortingRepository<ClusterInf
      * @param name name
      * @return the vminfo
      */
-    @Query("select vi from VMInfo vi where vi.hostName = :#{#name}")
-    VMInfo findOneVMInfoByHostname(@Param("name") String name);
+    @Query("select vi from VMInfo vi where vi.hostName = LOWER(:#{#name})")
+    VMInfo findOneVMInfoByHostnameIgnoreCase(@Param("name") String name);
 
     /**
      * Return all cluster that match the filter.
