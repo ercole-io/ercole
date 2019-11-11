@@ -337,7 +337,7 @@ public class HostService {
 			//Update the associated cluster name of the vms of the old cluster 
 			if (oldCluster != null) {
 				oldCluster.getVms().forEach(vm -> {
-					CurrentHost foundHost = currentRepo.findByHostname(vm.getHostName());
+					CurrentHost foundHost = currentRepo.findByHostnameIgnoreCase(vm.getHostName());
 					if (foundHost != null) {
 						foundHost.setAssociatedClusterName(null);
 						foundHost.setAssociatedHypervisorHostname(null);
@@ -351,7 +351,7 @@ public class HostService {
 			cluster = clusterRepo.save(cluster);
 			//Update all relative VM
 			cluster.getVms().forEach(vm -> {
-				CurrentHost foundHost = currentRepo.findByHostname(vm.getHostName());
+				CurrentHost foundHost = currentRepo.findByHostnameIgnoreCase(vm.getHostName());
 				if (foundHost != null) {
 					foundHost.setAssociatedClusterName(vm.getClusterName());
 					foundHost.setAssociatedHypervisorHostname(vm.getPhysicalHost());
@@ -366,7 +366,7 @@ public class HostService {
 	 * @param current current
 	 */
 	public void fixAssociatedClusterName(final CurrentHost current) {
-		VMInfo info = clusterRepo.findOneVMInfoByHostname(current.getHostname());
+		VMInfo info = clusterRepo.findOneVMInfoByHostnameIgnoreCase(current.getHostname());
 		if (info != null) {
 			current.setAssociatedClusterName(info.getClusterName());
 			current.setAssociatedHypervisorHostname(info.getPhysicalHost());
