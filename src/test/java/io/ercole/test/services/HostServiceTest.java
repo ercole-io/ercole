@@ -103,7 +103,7 @@ public class HostServiceTest {
 
 		when(currentRepo.findByHostname(json1.getString("Hostname"))).thenReturn(currentHost1);
 		when(JsonFilter.buildCurrentHostFromJSON(json1)).thenReturn(currentHost1);
-		when(clusterRepo.findOneVMInfoByHostname(json1.getString("Hostname"))).thenReturn(null);
+		when(clusterRepo.findOneVMInfoByHostnameIgnoreCase(json1.getString("Hostname"))).thenReturn(null);
 		String status1 = hostService.updateWithAgent(json1, "oracledb");
 		assertEquals("updated", status1);
 	}
@@ -133,7 +133,7 @@ public class HostServiceTest {
 						+ "}]}", null, null, "info", DateUtils.addSeconds(firstEntry, 30));
 
 		when(currentRepo.findByHostname(json1.getString("Hostname"))).thenReturn(currentHost1);
-		when(clusterRepo.findOneVMInfoByHostname(json1.getString("Hostname"))).thenReturn(null);
+		when(clusterRepo.findOneVMInfoByHostnameIgnoreCase(json1.getString("Hostname"))).thenReturn(null);
 		when(JsonFilter.buildCurrentHostFromJSON(json1)).thenReturn(currentHost2);
 		
 		List<String> newDbs = new ArrayList<>();
@@ -178,7 +178,7 @@ public class HostServiceTest {
 						+ "}]}", null, null, "info", DateUtils.addSeconds(firstEntry, 30));
 
 		when(currentRepo.findByHostname(json1.getString("Hostname"))).thenReturn(currentHost1);
-		when(clusterRepo.findOneVMInfoByHostname(json1.getString("Hostname"))).thenReturn(null);
+		when(clusterRepo.findOneVMInfoByHostnameIgnoreCase(json1.getString("Hostname"))).thenReturn(null);
 		when(JsonFilter.buildCurrentHostFromJSON(json1)).thenReturn(currentHost2);
 		
 		List<String> newDbs = new ArrayList<>();
@@ -244,7 +244,7 @@ public class HostServiceTest {
 				"ADMIN",  "info", null, null, "info", wrongUpdate);
 
 		when(currentRepo.findByHostname((String) json3.get("Hostname"))).thenReturn(currentHost3);
-		when(clusterRepo.findOneVMInfoByHostname(json3.getString("Hostname"))).thenReturn(null);
+		when(clusterRepo.findOneVMInfoByHostnameIgnoreCase(json3.getString("Hostname"))).thenReturn(null);
 
 		hostService.setUpdateRate(8000);
 		String status3 = hostService.updateWithAgent(json3, "oracledb");
