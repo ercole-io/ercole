@@ -84,8 +84,8 @@ func (as *AlertService) Init(wg *sync.WaitGroup) {
 	//Start cron jobs
 	jobrunner.Start()
 
-	jobrunner.Schedule(as.Config.AlertService.FreshnessCheckJob.Crontab, &FreshnessCheckJob{alertService: as, TimeNow: as.TimeNow})
-	jobrunner.Now(&FreshnessCheckJob{alertService: as, TimeNow: as.TimeNow})
+	jobrunner.Schedule(as.Config.AlertService.FreshnessCheckJob.Crontab, &FreshnessCheckJob{alertService: as, TimeNow: as.TimeNow, Database: as.Database})
+	jobrunner.Now(&FreshnessCheckJob{alertService: as, TimeNow: as.TimeNow, Database: as.Database})
 }
 
 // HostDataInsertion inserts the host data insertion in the queue
