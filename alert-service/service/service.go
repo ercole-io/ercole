@@ -177,7 +177,9 @@ func (as *AlertService) DiffHostDataAndGenerateAlert(oldData model.HostData, new
 
 		//Find new enterprises licenses
 		if ((oldData.Info.CPUCores < oldData.Info.CPUCores) || (!model.HasEnterpriseLicense(oldDb) && model.HasEnterpriseLicense(newDb))) && !newEnterpriseLicenseAlertThrown {
-			as.ThrowNewEnterpriseLicenseAlert(newDb.Name)
+			if err := as.ThrowNewEnterpriseLicenseAlert(newData.Hostname); err != nil {
+				return err
+			}
 			newEnterpriseLicenseAlertThrown = true
 		}
 
