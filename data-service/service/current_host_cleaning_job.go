@@ -20,20 +20,27 @@ import (
 	"log"
 	"time"
 
+	"github.com/amreo/ercole-services/config"
+	"github.com/amreo/ercole-services/data-service/database"
 	"github.com/amreo/ercole-services/utils"
 )
 
 // CurrentHostCleaningJob is the job used to clean and archive old current host
 type CurrentHostCleaningJob struct {
-	hostDataService *HostDataService
+	// Database contains the database layer
+	Database database.MongoDatabaseInterface
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
+	// Config contains the dataservice global configuration
+	Config config.Configuration
+	// alertService contains the underlyng hostdata service
+	hostDataService HostDataServiceInterface
 }
 
 // Run archive every hostdata that is older than a amount
 func (job *CurrentHostCleaningJob) Run() {
 	//Find the current hosts older than CurrentHostCleaningJob.HourThreshold days
-	hosts, err := job.hostDataService.Database.FindOldCurrentHosts(job.TimeNow().Add(time.Duration(-job.hostDataService.Config.DataService.CurrentHostCleaningJob.HourThreshold) * time.Hour))
+	hosts, err := job.Database.FindOldCurrentHosts(job.TimeNow().Add(time.Duration(-job.Config.DataService.CurrentHostCleaningJob.HourThreshold) * time.Hour))
 	if err != nil {
 		utils.LogErr(err)
 		return
@@ -42,11 +49,11 @@ func (job *CurrentHostCleaningJob) Run() {
 	//For each host, archive the host
 	for _, host := range hosts {
 		//Archive the host
-		_, err := job.hostDataService.Database.ArchiveHost(host)
+		_, err := job.Database.ArchiveHost(host)
 		if err != nil {
 			utils.LogErr(err)
 			return
 		}
-		log.Printf("%s has been moved because it have passed more than %d hours from last update", host, job.hostDataService.Config.DataService.CurrentHostCleaningJob.HourThreshold)
+		log.Printf("%s has been moved because it have passed more than %d hours from last update", host, job.Config.DataService.CurrentHostCleaningJob.HourThreshold)
 	}
 }
