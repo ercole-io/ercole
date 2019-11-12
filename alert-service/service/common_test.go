@@ -2,6 +2,8 @@ package service
 
 import (
 	"errors"
+	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/amreo/ercole-services/model"
@@ -24,6 +26,48 @@ var hostData1 model.HostData = model.HostData{
 	CreatedAt: p("2019-11-05T14:02:03Z"),
 }
 
+var hostData2 model.HostData = model.HostData{
+	ID:        str2oid("5dca7a8faebf0b7c2e5daf42"),
+	Hostname:  "superhost1",
+	Archived:  true,
+	CreatedAt: p("2019-11-05T12:02:03Z"),
+}
+
+var hostData3 model.HostData = model.HostData{
+	ID:        str2oid("5dca7a8faebf0b7c2e5daf42"),
+	Hostname:  "superhost1",
+	Archived:  true,
+	CreatedAt: p("2019-11-05T16:02:03Z"),
+	Extra: model.ExtraInfo{
+		Databases: []model.Database{
+			model.Database{
+				Name: "acd",
+			},
+		},
+	},
+}
+
+var hostData4 model.HostData = model.HostData{
+	ID:        str2oid("5dca7a8faebf0b7c2e5daf42"),
+	Hostname:  "superhost1",
+	Archived:  true,
+	CreatedAt: p("2019-11-05T18:02:03Z"),
+	Extra: model.ExtraInfo{
+		Databases: []model.Database{
+			model.Database{
+				Name: "acd",
+				Licenses: []model.License{
+					model.License{Name: "Oracle ENT", Count: 10},
+					model.License{Name: "Driving", Count: 100},
+				},
+				Features: []model.Feature{
+					model.Feature{Name: "Driving", Status: true},
+				},
+			},
+		},
+	},
+}
+
 //p parse the string s and return the equivalent time
 func p(s string) time.Time {
 	t, _ := time.Parse(time.RFC3339, s)
@@ -40,4 +84,20 @@ func btc(t time.Time) func() time.Time {
 func str2oid(str string) primitive.ObjectID {
 	val, _ := primitive.ObjectIDFromHex(str)
 	return val
+}
+
+type alertSimilarTo struct{ al model.Alert }
+
+func (sa *alertSimilarTo) Matches(x interface{}) bool {
+	if val, ok := x.(model.Alert); !ok {
+		return false
+	} else if val.AlertCode != sa.al.AlertCode {
+		return false
+	} else {
+		return reflect.DeepEqual(sa.al.OtherInfo, val.OtherInfo)
+	}
+}
+
+func (sa *alertSimilarTo) String() string {
+	return fmt.Sprintf("is similar to %v", sa.al)
 }
