@@ -436,12 +436,11 @@ public class UserController {
 	/**
 	 * Return the list of databases.
 	 * @param c pageable
-	 * @param search search
 	 * @return the list of databases
 	 */
 	@GetMapping("/databases")
-	public final Page<Map<String, Object>> getDatabases(final Pageable c, @RequestParam final String search) {
-		return hostService.getDatabases(c, search);
+	public final Page<Map<String, Object>> getDatabases(final Pageable c) {
+		return hostService.getDatabases(c);
 	}	
 
 	/**

@@ -434,11 +434,10 @@ public class HostService {
 	/**
 	 * Return the list of databases.
 	 * @param c pageable
-	 * @param search search
 	 * @return the list of databases
 	 */
-	public Page<Map<String, Object>> getDatabases(final Pageable c, final String search) {
-		return currentRepo.getDatabases(c, search);
+	public Page<Map<String, Object>> getDatabases(final Pageable c) {
+		return currentRepo.getDatabases(c);
 	}
 
 	public List<DatabaseTagAssociation> getTagsOfDatabase(final String hostname, final String dbname) {
