@@ -960,7 +960,8 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	current_host ch, "
 		+ "	jsonb_array_elements(CAST(extra_info AS jsonb)->'Databases') AS db "
 		+ "WHERE "
-		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb')")
+		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') AND "
+		+ "	db->>'SegmentsSize' != 'N/A'")
 	float getTotalSegmentsSize();
 
 	/**
