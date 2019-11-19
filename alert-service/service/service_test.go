@@ -111,7 +111,7 @@ func TestProcessHostDataInsertion_DiffHostError3(t *testing.T) {
 func TestDiffHostDataAndGenerateAlert_SuccessNoDifferences(t *testing.T) {
 	as := AlertService{}
 
-	require.Nil(t, as.DiffHostDataAndGenerateAlert(hostData2, hostData1))
+	require.NoError(t, as.DiffHostDataAndGenerateAlert(hostData2, hostData1))
 }
 
 func TestDiffHostDataAndGenerateAlert_SuccessNewHost(t *testing.T) {
@@ -131,7 +131,7 @@ func TestDiffHostDataAndGenerateAlert_SuccessNewHost(t *testing.T) {
 	}}).Return(nil, nil).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
 
-	require.Nil(t, as.DiffHostDataAndGenerateAlert(model.HostData{}, hostData1))
+	require.NoError(t, as.DiffHostDataAndGenerateAlert(model.HostData{}, hostData1))
 }
 
 func TestDiffHostDataAndGenerateAlert_SuccessNewDatabase(t *testing.T) {
@@ -160,7 +160,7 @@ func TestDiffHostDataAndGenerateAlert_SuccessNewDatabase(t *testing.T) {
 	}}).Return(nil, nil).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
 
-	require.Nil(t, as.DiffHostDataAndGenerateAlert(hostData1, hostData3))
+	require.NoError(t, as.DiffHostDataAndGenerateAlert(hostData1, hostData3))
 }
 
 func TestDiffHostDataAndGenerateAlert_SuccessNewEnterpriseLicense(t *testing.T) {
@@ -188,7 +188,7 @@ func TestDiffHostDataAndGenerateAlert_SuccessNewEnterpriseLicense(t *testing.T) 
 	}}).Return(nil, nil).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
 
-	require.Nil(t, as.DiffHostDataAndGenerateAlert(hostData3, hostData4))
+	require.NoError(t, as.DiffHostDataAndGenerateAlert(hostData3, hostData4))
 }
 
 func TestDiffHostDataAndGenerateAlert_DatabaseError1(t *testing.T) {

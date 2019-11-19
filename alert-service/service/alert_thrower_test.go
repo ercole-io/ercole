@@ -47,7 +47,7 @@ func TestThrowNewDatabaseAlert_Success(t *testing.T) {
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
 	}).Times(1)
-	require.Nil(t, as.ThrowNewDatabaseAlert("bestdb", "myhost"))
+	require.NoError(t, as.ThrowNewDatabaseAlert("bestdb", "myhost"))
 }
 
 func TestThrowNewDatabaseAlert_DatabaseError(t *testing.T) {
@@ -83,7 +83,7 @@ func TestThrowNewServerAlert_Success(t *testing.T) {
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
 	}).Times(1)
-	require.Nil(t, as.ThrowNewServerAlert("myhost"))
+	require.NoError(t, as.ThrowNewServerAlert("myhost"))
 }
 
 func TestThrowNewServerAlert_DatabaseError(t *testing.T) {
@@ -119,7 +119,7 @@ func TestThrowNewEnterpriseLicenseAlert_Success(t *testing.T) {
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
 	}).Times(1)
-	require.Nil(t, as.ThrowNewEnterpriseLicenseAlert("myhost"))
+	require.NoError(t, as.ThrowNewEnterpriseLicenseAlert("myhost"))
 }
 
 func TestThrowNewEnterpriseLicenseAlert_DatabaseError(t *testing.T) {
@@ -157,7 +157,7 @@ func TestThrowActivatedFeaturesAlert_Success(t *testing.T) {
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
 	})
-	require.Nil(t, as.ThrowActivatedFeaturesAlert("mydb", "myhost", []string{"fastibility", "slowibility"}))
+	require.NoError(t, as.ThrowActivatedFeaturesAlert("mydb", "myhost", []string{"fastibility", "slowibility"}))
 }
 
 func TestThrowActivatedFeaturesAlert_DatabaseError(t *testing.T) {
@@ -193,7 +193,7 @@ func TestThrowNoDataAlert_Success(t *testing.T) {
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
 	}).Times(1)
-	require.Nil(t, as.ThrowNoDataAlert("myhost", 90))
+	require.NoError(t, as.ThrowNoDataAlert("myhost", 90))
 }
 
 func TestThrowNoDataAlert_DatabaseError(t *testing.T) {

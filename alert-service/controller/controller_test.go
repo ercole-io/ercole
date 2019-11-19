@@ -77,7 +77,7 @@ func TestHostDataInsertion_Success(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(aqc.HostDataInsertion)
 	req, err := http.NewRequest("GET", "/queue/host-data-insertion/5dc3f534db7e81a98b726a52", nil)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "5dc3f534db7e81a98b726a52",
 	})
@@ -107,7 +107,7 @@ func TestHostDataInsertion_RequestError(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(aqc.HostDataInsertion)
 	req, err := http.NewRequest("GET", "/queue/host-data-insertion/pippo", nil)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "pippo",
 	})
@@ -138,7 +138,7 @@ func TestHostDataInsertion_ServiceError(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(aqc.HostDataInsertion)
 	req, err := http.NewRequest("GET", "/queue/host-data-insertion/5dc3f534db7e81a98b726a52", nil)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "5dc3f534db7e81a98b726a52",
 	})
