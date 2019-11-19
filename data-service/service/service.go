@@ -33,8 +33,11 @@ import (
 	"github.com/amreo/ercole-services/model"
 )
 
-// ErrHostNotFound cotains "Host not found" error
+// ErrHostNotFound contains "Host not found" error
 var ErrHostNotFound = errors.New("Host not found")
+
+// ErrEventEnqueue contains "Failed to enqueue event" error
+var ErrEventEnqueue = errors.New("Failed to enqueue event")
 
 // HostDataServiceInterface is a interface that wrap methods used to manipulate and save data
 type HostDataServiceInterface interface {
@@ -98,9 +101,9 @@ func (hds *HostDataService) UpdateHostInfo(hostdata model.HostData) (interface{}
 		hds.Config.AlertService.RemoteEndpoint,
 		res.InsertedID.(primitive.ObjectID).Hex()), "application/json", bytes.NewReader([]byte{})); err != nil {
 
-		return nil, utils.NewAdvancedErrorPtr(err, "DATA ENQUEUE")
+		return nil, utils.NewAdvancedErrorPtr(err, "EVENT ENQUEUE")
 	} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return nil, utils.NewAdvancedErrorPtr(errors.New("Event enqueue error"), "EVENT ENQUEUE")
+		return nil, utils.NewAdvancedErrorPtr(ErrEventEnqueue, "EVENT ENQUEUE")
 	}
 
 	return res.InsertedID, nil
