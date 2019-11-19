@@ -4,7 +4,6 @@ go 1.13
 
 require (
 	github.com/bamzi/jobrunner v0.0.0-20190810144113-852b7ca4d475
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
 	github.com/golang/mock v1.3.1
@@ -13,8 +12,11 @@ require (
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.3
 	github.com/leandro-lugaresi/hub v1.1.0
+	github.com/mitchellh/go-homedir v1.1.0
 	github.com/robfig/cron v1.2.0 // indirect
 	github.com/rs/cors v1.7.0
+	github.com/spf13/cobra v0.0.5
+	github.com/spf13/viper v1.3.2
 	github.com/stretchr/testify v1.4.0
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect

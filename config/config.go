@@ -16,12 +16,6 @@
 // Package config contains configuration utilities, like readConfig()
 package config
 
-import (
-	"encoding/json"
-	"io/ioutil"
-	"log"
-)
-
 // Configuration contains Ercole DataService configuration
 type Configuration struct {
 	// DataService contains configuration about the data service
@@ -108,25 +102,4 @@ type ArchivedHostCleaningJob struct {
 	Crontab string
 	// DaysThreshold contains the threshdold of the archived host cleaning
 	HourThreshold int
-}
-
-// ReadConfig read, parse and return a Configuration from the configuration file in config.json or /opt/ercole-hostdata-dataservice/config.json
-// It also set the global Config with the read value
-func ReadConfig() Configuration {
-	var err error
-	var raw []byte
-	var conf Configuration
-
-	//Read and parse config.json or /opt/ercole-hostdata-dataservice/config.json (fallback)
-	if raw, err = ioutil.ReadFile("config.json"); err != nil {
-		if raw, err = ioutil.ReadFile("/opt/ercole-hostdata-dataservice/config.json"); err != nil {
-			log.Fatal("Unable to read configuration file", err)
-		}
-	}
-	if err = json.Unmarshal(raw, &conf); err != nil {
-		log.Fatal("Unable to parse configuration file", err)
-	}
-
-	//Return the read configuration
-	return conf
 }

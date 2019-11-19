@@ -16,7 +16,10 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 
 	"github.com/amreo/ercole-services/config"
@@ -33,7 +36,7 @@ var rootCmd = &cobra.Command{
 	Long:    `Ercole is a software for proactively managing software assets`,
 	Version: serverVersion,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		ercoleConfig = config.ReadConfig()
+		ercoleConfig = readConfig()
 		ercoleConfig.Version = serverVersion
 	},
 }
@@ -43,5 +46,34 @@ func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
+	}
+}
+
+// readConfig read, parse and return a Configuration from the configuration file in config.json or /opt/ercole-hostdata-dataservice/config.json
+// It also set the global Config with the read value
+func readConfig() config.Configuration {
+	var conf config.Configuration
+
+	readSingleConfigFile("/opt/ercole/config.json", &conf)
+	readSingleConfigFile("/etc/ercole.json", &conf)
+	home, _ := os.UserHomeDir()
+	readSingleConfigFile(home+"/.ercole.json", &conf)
+	readSingleConfigFile("config.json", &conf)
+
+	//Return the read configuration
+	return conf
+}
+
+func readSingleConfigFile(filename string, conf *config.Configuration) {
+	//Try to read the file
+	var raw []byte
+	var err error
+
+	if raw, err = ioutil.ReadFile(filename); err != nil {
+		return
+	}
+
+	if err = json.Unmarshal(raw, conf); err != nil {
+		log.Fatalf("Unable to parse configuration file %s (%s)", filename, err)
 	}
 }
