@@ -13,10 +13,35 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package main
+package cmd
 
-import "github.com/amreo/ercole-services/cmd"
+import (
+	"fmt"
+	"os"
 
-func main() {
-	cmd.Execute()
+	"github.com/amreo/ercole-services/config"
+	"github.com/spf13/cobra"
+)
+
+var ercoleConfig config.Configuration
+var serverVersion = "latest"
+
+// serveCmd represents the root command
+var rootCmd = &cobra.Command{
+	Use:     "ercole",
+	Short:   "Ercole services & tools",
+	Long:    `Ercole is a software for proactively managing software assets`,
+	Version: serverVersion,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		ercoleConfig = config.ReadConfig()
+		ercoleConfig.Version = serverVersion
+	},
+}
+
+// Execute executes the commands
+func Execute() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }

@@ -13,10 +13,26 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package main
+package cmd
 
-import "github.com/amreo/ercole-services/cmd"
+import (
+	"fmt"
 
-func main() {
-	cmd.Execute()
+	"github.com/amreo/ercole-services/utils"
+
+	"github.com/spf13/cobra"
+)
+
+// showConfigCmd represents the showConfig command
+var showConfigCmd = &cobra.Command{
+	Use:   "show-config",
+	Short: "Show the configuration",
+	Long:  `Show all ercole configuration`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(utils.ToIdentedJSON(ercoleConfig))
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(showConfigCmd)
 }

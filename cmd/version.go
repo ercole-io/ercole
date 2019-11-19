@@ -13,10 +13,24 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package main
+package cmd
 
-import "github.com/amreo/ercole-services/cmd"
+import (
+	"fmt"
 
-func main() {
-	cmd.Execute()
+	"github.com/spf13/cobra"
+)
+
+// versionCmd represents the version command
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Print the ercole version",
+	Long:  `Print the ercole version`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(serverVersion)
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(versionCmd)
 }
