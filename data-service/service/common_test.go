@@ -16,10 +16,14 @@
 package service
 
 import (
+	"encoding/json"
 	"errors"
-	"fmt"
-	"reflect"
+	"io/ioutil"
+	"net/http"
+	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 
 	"github.com/amreo/ercole-services/model"
 
@@ -52,18 +56,24 @@ func str2oid(str string) primitive.ObjectID {
 	return val
 }
 
-type alertSimilarTo struct{ al model.Alert }
+func loadFixtureHostData(t *testing.T, filename string) model.HostData {
+	var hd model.HostData
+	raw, err := ioutil.ReadFile(filename)
 
-func (sa *alertSimilarTo) Matches(x interface{}) bool {
-	if val, ok := x.(model.Alert); !ok {
-		return false
-	} else if val.AlertCode != sa.al.AlertCode {
-		return false
-	} else {
-		return reflect.DeepEqual(sa.al.OtherInfo, val.OtherInfo)
-	}
+	require.NoError(t, err)
+	require.NoError(t, json.Unmarshal(raw, &hd))
+
+	return hd
 }
 
-func (sa *alertSimilarTo) String() string {
-	return fmt.Sprintf("is similar to %v", sa.al)
+type RoundTripFunc func(req *http.Request) (*http.Response, error)
+
+func (f RoundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req)
+}
+
+func NewHTTPTestClient(fn RoundTripFunc) *http.Client {
+	return &http.Client{
+		Transport: RoundTripFunc(fn),
+	}
 }

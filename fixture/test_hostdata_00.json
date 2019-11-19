@@ -1,0 +1,49 @@
+{
+	"Hostname": "rac1_x",
+	"Environment": "TST",
+	"Location": "Germany",
+	"HostType": "oracledb",
+	"Version": "1.6.5",
+	"HostDataSchemaVersion": 4,
+	"Databases": "",
+	"Schemas": "",
+	"Info": {
+		"Hostname": "rac1",
+		"Environment": "TST",
+		"Location": "Germany",
+		"CPUModel": "Intel(R) Xeon(R) CPU E5-2609 v4 @ 1.70GHz",
+		"CPUCores": 1,
+		"CPUThreads": 2,
+		"Socket": 1,
+		"Type": "OVM",
+		"Virtual": true,
+		"Kernel": "4.1.12-103.3.8.1.el7uek.x86_64",
+		"OS": "Red Hat Enterprise Linux Server release 7.4 (Maipo)",
+		"MemoryTotal": 7,
+		"SwapTotal": 7,
+		"OracleCluster": true,
+		"VeritasCluster": false,
+		"SunCluster": false,
+		"AixCluster": false
+	},
+	"Extra": {
+		"Databases": [],
+		"Filesystems": [{
+			"Filesystem": "/dev/mapper/rootvg-root",
+			"FsType": "ext4",
+			"Size": "22G",
+			"Used": "3,5G",
+			"Available": "17G",
+			"UsedPerc": "18%",
+			"MountedOn": "/"
+		}, {
+			"Filesystem": "/dev/xvda1",
+			"FsType": "ext4",
+			"Size": "283M",
+			"Used": "187M",
+			"Available": "78M",
+			"UsedPerc": "71%",
+			"MountedOn": "/boot"
+		}]
+	}
+}
