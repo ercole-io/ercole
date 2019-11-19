@@ -179,7 +179,7 @@ func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]string, utils.Advan
 // ExistNoDataAlertByHost return true if the host has associated a new NO_DATA alert
 func (md *MongoDatabase) ExistNoDataAlertByHost(hostname string) (bool, utils.AdvancedErrorInterface) {
 	//Count the number of new NO_DATA alerts associated to the host
-	val, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").CountDocuments(context.TODO(), bson.D{
+	val, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").CountDocuments(context.TODO(), bson.D{
 		{"alert_code", model.AlertCodeNoData},
 		{"alert_status", model.AlertStatusNew},
 		{"other_info.hostname", hostname},

@@ -25,7 +25,7 @@ func ToJSON(v interface{}) string {
 
 //ToIdentedJSON convert v to a string containing the equivalent json rappresentation
 func ToIdentedJSON(v interface{}) string {
-	raw, _ := json.MarshalIndent(v, "", "  ")
+	raw, _ := json.MarshalIndent(v, "", "\t")
 	return string(raw)
 }
 
