@@ -1,29 +1,41 @@
 {
 	"DataService": {
-		"RemoteEndpoint": "127.0.0.1:9081",
+		"RemoteEndpoint": "127.0.0.1:11111",
 		"BindIP": "0.0.0.0",
-		"Port": 9081,
+		"Port": 11111,
 		"LogHTTPRequest": true,
 		"AgentUsername": "user",
 		"AgentPassword": "password",
-		"FreshnessCheckJob": {
+		"CurrentHostCleaningJob": {
 			"Crontab": "*/1 * * * * *",
-			"DaysThreshold": 0 
+			"HourThreshold": 1
+		},
+		"ArchivedHostCleaningJob": {
+			"Crontab": "*/1 * * * * *",
+			"HourThreshold": 10
 		}
 	},
 	"AlertService": {
-		"RemoteEndpoint": "127.0.0.1:9082",
+		"RemoteEndpoint": "127.0.0.1:11112",
 		"BindIP": "127.0.0.1",
-		"Port": 9082,
+		"Port": 11112,
 		"LogHTTPRequest": true,
 		"LogMessages": true,
 		"LogAlertThrows": true,
 		"PublisherUsername": "publisher",
 		"PublisherPassword": "r4nd0mS3cR3tp4ssW0rd",
-		"FreshnessCheck": {
+		"FreshnessCheckJob": {
 			"Crontab": "*/1 * * * * *",
-			"HourThreshold": 0 
+			"DaysThreshold": 1
 		}
+	},
+	"APIService": {
+		"RemoteEndpoint": "127.0.0.1:11113",
+		"BindIP": "127.0.0.1",
+		"Port": 11113,	
+		"LogHTTPRequest": true,
+		"UserUsername": "user",
+		"UserPassword": "password"
 	},
 	"Mongodb": {
 		"URI": "mongodb://localhost:32768/ercole",

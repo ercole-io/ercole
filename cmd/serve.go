@@ -39,6 +39,10 @@ import (
 	alertservice_controller "github.com/amreo/ercole-services/alert-service/controller"
 	alertservice_database "github.com/amreo/ercole-services/alert-service/database"
 	alertservice_service "github.com/amreo/ercole-services/alert-service/service"
+
+	apiservice_controller "github.com/amreo/ercole-services/api-service/controller"
+	apiservice_database "github.com/amreo/ercole-services/api-service/database"
+	apiservice_service "github.com/amreo/ercole-services/api-service/service"
 )
 
 var enableDataService bool
@@ -90,7 +94,11 @@ func serve(enableDataService bool,
 		serveAlertService(ercoleConfig, &wg)
 	}
 
-	//TODO: api-service, repo-service
+	if enableAPIService {
+		serveAPIService(ercoleConfig, &wg)
+	}
+
+	//TODO: repo-service
 
 	wg.Wait()
 }
@@ -175,11 +183,55 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 
 	wg.Add(1)
-	//Start the data-service
+	//Start the alert-service
 	go func() {
 		log.Println("Start alert-service: listening at", config.AlertService.Port)
 		http.ListenAndServe(fmt.Sprintf("%s:%d", config.AlertService.BindIP, config.AlertService.Port), cors.AllowAll().Handler(logRouter))
 		log.Println("Stopping alert-service")
+		wg.Done()
+	}()
+}
+
+// serveAPIService setup and start the api-service
+func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
+	//Setup the database
+	db := &apiservice_database.MongoDatabase{
+		Config:  config,
+		TimeNow: time.Now,
+	}
+	db.Init()
+
+	//Setup the service
+	service := &apiservice_service.APIService{
+		Config:   config,
+		Database: db,
+		TimeNow:  time.Now,
+	}
+	service.Init()
+
+	//Setup the controller
+	router := mux.NewRouter()
+	ctrl := &apiservice_controller.APIController{
+		Config:  config,
+		Service: service,
+		TimeNow: time.Now,
+	}
+	apiservice_controller.SetupRoutesForAPIController(router, ctrl)
+
+	//Setup the logger
+	var logRouter http.Handler
+	if config.DataService.LogHTTPRequest {
+		logRouter = handlers.LoggingHandler(os.Stdout, router)
+	} else {
+		logRouter = router
+	}
+
+	wg.Add(1)
+	//Start the api-service
+	go func() {
+		log.Println("Start api-service: listening at", config.APIService.Port)
+		http.ListenAndServe(fmt.Sprintf("%s:%d", config.APIService.BindIP, config.APIService.Port), cors.AllowAll().Handler(logRouter))
+		log.Println("Stopping api-service")
 		wg.Done()
 	}()
 }

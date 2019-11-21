@@ -22,6 +22,8 @@ type Configuration struct {
 	DataService DataService
 	// DataService contains configuration about the alert service
 	AlertService AlertService
+	// APIService contains configuration about the api service
+	APIService APIService
 	// Mongodb contains configuration about database connection, some data logic and migration
 	Mongodb Mongodb
 	// Version contains the version of the server
@@ -68,6 +70,22 @@ type AlertService struct {
 	PublisherPassword string
 	// FreshnessCheckJob contains the parameters of the freshness check
 	FreshnessCheckJob FreshnessCheckJob
+}
+
+// APIService contains configuration about the api service
+type APIService struct {
+	// RemoteEndpoint contains the endpoint used to connect to the APIService
+	RemoteEndpoint string
+	// BindIP contains the bind ip
+	BindIP string
+	// Port contains the port of the internal http server
+	Port uint16
+	// LogHTTPRequest enable the logging of the internal http serverl
+	LogHTTPRequest bool
+	// UserUsername contains the username of the user
+	UserUsername string
+	// UserPassword contains the password of the user
+	UserPassword string
 }
 
 // Mongodb contains configuration about the database connection, some data logic and migration
