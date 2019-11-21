@@ -16,9 +16,8 @@
 package cmd
 
 import (
-	"fmt"
-
-	"github.com/amreo/ercole-services/utils"
+	"encoding/json"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -29,7 +28,9 @@ var showConfigCmd = &cobra.Command{
 	Short: "Show the configuration",
 	Long:  `Show all ercole configuration`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(utils.ToIdentedJSON(ercoleConfig))
+		enc := json.NewEncoder(os.Stdout)
+		enc.SetIndent("", "    ")
+		enc.Encode(ercoleConfig)
 	},
 }
 

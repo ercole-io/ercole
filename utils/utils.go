@@ -23,12 +23,6 @@ func ToJSON(v interface{}) string {
 	return string(raw)
 }
 
-//ToIdentedJSON convert v to a string containing the equivalent json rappresentation
-func ToIdentedJSON(v interface{}) string {
-	raw, _ := json.MarshalIndent(v, "", "\t")
-	return string(raw)
-}
-
 //FromJSON convert a json str to interface containing the equivalent json rappresentation
 func FromJSON(str []byte) interface{} {
 	var out map[string]interface{}
