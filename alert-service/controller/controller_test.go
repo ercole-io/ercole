@@ -20,9 +20,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/require"
@@ -38,30 +35,12 @@ import (
 var errMock error = errors.New("MockError")
 var aerrMock utils.AdvancedErrorInterface = utils.NewAdvancedErrorPtr(errMock, "mock")
 
-//p parse the string s and return the equivalent time
-func p(s string) time.Time {
-	t, _ := time.Parse(time.RFC3339, s)
-	return t
-}
-
-//btc break the time continuum and return a function that return the time t
-func btc(t time.Time) func() time.Time {
-	return func() time.Time {
-		return t
-	}
-}
-
-func str2oid(str string) primitive.ObjectID {
-	val, _ := primitive.ObjectIDFromHex(str)
-	return val
-}
-
 func TestHostDataInsertion_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAlertServiceInterface(mockCtrl)
 	aqc := AlertQueueController{
-		TimeNow: btc(p("2019-11-05T14:02:03Z")),
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config: config.Configuration{
 			AlertService: config.AlertService{
@@ -71,7 +50,7 @@ func TestHostDataInsertion_Success(t *testing.T) {
 			},
 		},
 	}
-	as.EXPECT().HostDataInsertion(str2oid("5dc3f534db7e81a98b726a52")).Return(nil).Times(1)
+	as.EXPECT().HostDataInsertion(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(nil).Times(1)
 	as.EXPECT().HostDataInsertion(gomock.Any()).Times(0)
 
 	rr := httptest.NewRecorder()
@@ -92,7 +71,7 @@ func TestHostDataInsertion_RequestError(t *testing.T) {
 	defer mockCtrl.Finish()
 	as := NewMockAlertServiceInterface(mockCtrl)
 	aqc := AlertQueueController{
-		TimeNow: btc(p("2019-11-05T14:02:03Z")),
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config: config.Configuration{
 			AlertService: config.AlertService{
@@ -122,7 +101,7 @@ func TestHostDataInsertion_ServiceError(t *testing.T) {
 	defer mockCtrl.Finish()
 	as := NewMockAlertServiceInterface(mockCtrl)
 	aqc := AlertQueueController{
-		TimeNow: btc(p("2019-11-05T14:02:03Z")),
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config: config.Configuration{
 			AlertService: config.AlertService{
@@ -132,7 +111,7 @@ func TestHostDataInsertion_ServiceError(t *testing.T) {
 			},
 		},
 	}
-	as.EXPECT().HostDataInsertion(str2oid("5dc3f534db7e81a98b726a52")).Return(aerrMock).Times(1)
+	as.EXPECT().HostDataInsertion(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(aerrMock).Times(1)
 	as.EXPECT().HostDataInsertion(gomock.Any()).Times(0)
 
 	rr := httptest.NewRecorder()

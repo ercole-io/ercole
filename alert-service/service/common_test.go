@@ -19,12 +19,10 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"time"
 
 	"github.com/amreo/ercole-services/model"
 
 	"github.com/amreo/ercole-services/utils"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 //go:generate mockgen -source ../database/database.go -destination=fake_database.go -package=service
@@ -35,24 +33,24 @@ var errMock error = errors.New("MockError")
 var aerrMock utils.AdvancedErrorInterface = utils.NewAdvancedErrorPtr(errMock, "mock")
 
 var hostData1 model.HostData = model.HostData{
-	ID:        str2oid("5dc3f534db7e81a98b726a52"),
+	ID:        utils.Str2oid("5dc3f534db7e81a98b726a52"),
 	Hostname:  "superhost1",
 	Archived:  false,
-	CreatedAt: p("2019-11-05T14:02:03Z"),
+	CreatedAt: utils.P("2019-11-05T14:02:03Z"),
 }
 
 var hostData2 model.HostData = model.HostData{
-	ID:        str2oid("5dca7a8faebf0b7c2e5daf42"),
+	ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
 	Hostname:  "superhost1",
 	Archived:  true,
-	CreatedAt: p("2019-11-05T12:02:03Z"),
+	CreatedAt: utils.P("2019-11-05T12:02:03Z"),
 }
 
 var hostData3 model.HostData = model.HostData{
-	ID:        str2oid("5dca7a8faebf0b7c2e5daf42"),
+	ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
 	Hostname:  "superhost1",
 	Archived:  true,
-	CreatedAt: p("2019-11-05T16:02:03Z"),
+	CreatedAt: utils.P("2019-11-05T16:02:03Z"),
 	Extra: model.ExtraInfo{
 		Databases: []model.Database{
 			model.Database{
@@ -63,10 +61,10 @@ var hostData3 model.HostData = model.HostData{
 }
 
 var hostData4 model.HostData = model.HostData{
-	ID:        str2oid("5dca7a8faebf0b7c2e5daf42"),
+	ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
 	Hostname:  "superhost1",
 	Archived:  true,
-	CreatedAt: p("2019-11-05T18:02:03Z"),
+	CreatedAt: utils.P("2019-11-05T18:02:03Z"),
 	Extra: model.ExtraInfo{
 		Databases: []model.Database{
 			model.Database{
@@ -81,24 +79,6 @@ var hostData4 model.HostData = model.HostData{
 			},
 		},
 	},
-}
-
-//p parse the string s and return the equivalent time
-func p(s string) time.Time {
-	t, _ := time.Parse(time.RFC3339, s)
-	return t
-}
-
-//btc break the time continuum and return a function that return the time t
-func btc(t time.Time) func() time.Time {
-	return func() time.Time {
-		return t
-	}
-}
-
-func str2oid(str string) primitive.ObjectID {
-	val, _ := primitive.ObjectIDFromHex(str)
-	return val
 }
 
 type alertSimilarTo struct{ al model.Alert }

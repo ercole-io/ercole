@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	"github.com/amreo/ercole-services/model"
+	"github.com/amreo/ercole-services/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
@@ -76,7 +77,7 @@ func (m *MongodbSuite) TestExistNoDataAlert_SuccessExist() {
 }
 
 func (m *MongodbSuite) TestFindHostData_SuccessExist() {
-	hd := loadFixtureHostData(m.T(), "../../fixture/test_hostdata_01_mongodb.json")
+	hd := utils.LoadFixtureHostData(m.T(), "../../fixture/test_hostdata_01_mongodb.json")
 
 	err := m.InsertHostData(hd)
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})

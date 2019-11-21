@@ -21,6 +21,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/amreo/ercole-services/model"
+	"github.com/amreo/ercole-services/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -33,7 +34,7 @@ func TestThrowNewDatabaseAlert_Success(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := AlertService{
 		Database: db,
-		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.AlertCodeNewDatabase, alert.AlertCode)
@@ -44,8 +45,8 @@ func TestThrowNewDatabaseAlert_Success(t *testing.T) {
 			"hostname": "myhost",
 			"dbname":   "bestdb",
 		}, alert.OtherInfo)
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.Date)
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
 	}).Times(1)
 	require.NoError(t, as.ThrowNewDatabaseAlert("bestdb", "myhost"))
 }
@@ -56,7 +57,7 @@ func TestThrowNewDatabaseAlert_DatabaseError(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := AlertService{
 		Database: db,
-		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock).Times(1)
 	assert.Equal(t, aerrMock, as.ThrowNewDatabaseAlert("bestdb", "myhost"))
@@ -70,7 +71,7 @@ func TestThrowNewServerAlert_Success(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := AlertService{
 		Database: db,
-		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.AlertCodeNewServer, alert.AlertCode)
@@ -80,8 +81,8 @@ func TestThrowNewServerAlert_Success(t *testing.T) {
 		assert.Equal(t, map[string]interface{}{
 			"hostname": "myhost",
 		}, alert.OtherInfo)
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.Date)
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
 	}).Times(1)
 	require.NoError(t, as.ThrowNewServerAlert("myhost"))
 }
@@ -92,7 +93,7 @@ func TestThrowNewServerAlert_DatabaseError(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := AlertService{
 		Database: db,
-		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock).Times(1)
 	assert.Equal(t, aerrMock, as.ThrowNewServerAlert("myhost"))
@@ -106,7 +107,7 @@ func TestThrowNewEnterpriseLicenseAlert_Success(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := AlertService{
 		Database: db,
-		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.AlertCodeNewLicense, alert.AlertCode)
@@ -116,8 +117,8 @@ func TestThrowNewEnterpriseLicenseAlert_Success(t *testing.T) {
 		assert.Equal(t, map[string]interface{}{
 			"hostname": "myhost",
 		}, alert.OtherInfo)
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.Date)
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
 	}).Times(1)
 	require.NoError(t, as.ThrowNewEnterpriseLicenseAlert("myhost"))
 }
@@ -128,7 +129,7 @@ func TestThrowNewEnterpriseLicenseAlert_DatabaseError(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := AlertService{
 		Database: db,
-		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock).Times(1)
 	assert.Equal(t, aerrMock, as.ThrowNewEnterpriseLicenseAlert("myhost"))
@@ -142,7 +143,7 @@ func TestThrowActivatedFeaturesAlert_Success(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := AlertService{
 		Database: db,
-		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.AlertCodeNewOption, alert.AlertCode)
@@ -154,8 +155,8 @@ func TestThrowActivatedFeaturesAlert_Success(t *testing.T) {
 			"dbname":   "mydb",
 			"features": []string{"fastibility", "slowibility"},
 		}, alert.OtherInfo)
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.Date)
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
 	})
 	require.NoError(t, as.ThrowActivatedFeaturesAlert("mydb", "myhost", []string{"fastibility", "slowibility"}))
 }
@@ -166,7 +167,7 @@ func TestThrowActivatedFeaturesAlert_DatabaseError(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := AlertService{
 		Database: db,
-		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock).Times(1)
 	assert.Equal(t, aerrMock, as.ThrowActivatedFeaturesAlert("mydb", "myhost", []string{"fastibility", "slowibility"}))
@@ -180,7 +181,7 @@ func TestThrowNoDataAlert_Success(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := AlertService{
 		Database: db,
-		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.AlertCodeNoData, alert.AlertCode)
@@ -190,8 +191,8 @@ func TestThrowNoDataAlert_Success(t *testing.T) {
 		assert.Equal(t, map[string]interface{}{
 			"hostname": "myhost",
 		}, alert.OtherInfo)
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.Date)
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
 	}).Times(1)
 	require.NoError(t, as.ThrowNoDataAlert("myhost", 90))
 }
@@ -202,7 +203,7 @@ func TestThrowNoDataAlert_DatabaseError(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := AlertService{
 		Database: db,
-		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock).Times(1)
 	assert.Equal(t, aerrMock, as.ThrowNoDataAlert("myhost", 90))

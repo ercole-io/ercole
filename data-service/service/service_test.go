@@ -29,6 +29,7 @@ import (
 
 	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/model"
+	"github.com/amreo/ercole-services/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -38,7 +39,7 @@ func TestUpdateHostInfo_Success(t *testing.T) {
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	hds := HostDataService{
-		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Database: db,
 		Config: config.Configuration{
 			AlertService: config.AlertService{
@@ -49,14 +50,14 @@ func TestUpdateHostInfo_Success(t *testing.T) {
 		},
 		Version: "1.6.6",
 	}
-	hd := loadFixtureHostData(t, "../../fixture/test_hostdata_00.json")
+	hd := utils.LoadFixtureHostData(t, "../../fixture/test_hostdata_00.json")
 
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
-	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD model.HostData) {
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
+	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD model.HostData) {
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
 		assert.False(t, newHD.Archived)
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), newHD.CreatedAt)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
 		assert.Equal(t, model.SchemaVersion, newHD.SchemaVersion)
 		assert.Equal(t, "1.6.6", newHD.ServerVersion)
 		assert.Equal(t, hd.Hostname, newHD.Hostname)
@@ -76,7 +77,7 @@ func TestUpdateHostInfo_Success(t *testing.T) {
 
 	res, err := hds.UpdateHostInfo(hd)
 	require.NoError(t, err)
-	assert.Equal(t, str2oid("5dd3a8db184dbf295f0376f2"), res)
+	assert.Equal(t, utils.Str2oid("5dd3a8db184dbf295f0376f2"), res)
 }
 
 func TestUpdateHostInfo_DatabaseError1(t *testing.T) {
@@ -84,7 +85,7 @@ func TestUpdateHostInfo_DatabaseError1(t *testing.T) {
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	hds := HostDataService{
-		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Database: db,
 		Config: config.Configuration{
 			AlertService: config.AlertService{
@@ -95,7 +96,7 @@ func TestUpdateHostInfo_DatabaseError1(t *testing.T) {
 		},
 		Version: "1.6.6",
 	}
-	hd := loadFixtureHostData(t, "../../fixture/test_hostdata_00.json")
+	hd := utils.LoadFixtureHostData(t, "../../fixture/test_hostdata_00.json")
 
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, aerrMock).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
@@ -109,7 +110,7 @@ func TestUpdateHostInfo_DatabaseError2(t *testing.T) {
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	hds := HostDataService{
-		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Database: db,
 		Config: config.Configuration{
 			AlertService: config.AlertService{
@@ -120,14 +121,14 @@ func TestUpdateHostInfo_DatabaseError2(t *testing.T) {
 		},
 		Version: "1.6.6",
 	}
-	hd := loadFixtureHostData(t, "../../fixture/test_hostdata_00.json")
+	hd := utils.LoadFixtureHostData(t, "../../fixture/test_hostdata_00.json")
 
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
 	db.EXPECT().InsertHostData(gomock.Any()).Return(nil, aerrMock).Do(func(newHD model.HostData) {
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
 		assert.False(t, newHD.Archived)
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), newHD.CreatedAt)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
 		assert.Equal(t, model.SchemaVersion, newHD.SchemaVersion)
 		assert.Equal(t, "1.6.6", newHD.ServerVersion)
 		assert.Equal(t, hd.Hostname, newHD.Hostname)
@@ -145,7 +146,7 @@ func TestUpdateHostInfo_HttpError(t *testing.T) {
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	hds := HostDataService{
-		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Database: db,
 		Config: config.Configuration{
 			AlertService: config.AlertService{
@@ -156,14 +157,14 @@ func TestUpdateHostInfo_HttpError(t *testing.T) {
 		},
 		Version: "1.6.6",
 	}
-	hd := loadFixtureHostData(t, "../../fixture/test_hostdata_00.json")
+	hd := utils.LoadFixtureHostData(t, "../../fixture/test_hostdata_00.json")
 
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
-	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD model.HostData) {
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
+	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD model.HostData) {
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
 		assert.False(t, newHD.Archived)
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), newHD.CreatedAt)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
 		assert.Equal(t, model.SchemaVersion, newHD.SchemaVersion)
 		assert.Equal(t, "1.6.6", newHD.ServerVersion)
 		assert.Equal(t, hd.Hostname, newHD.Hostname)
@@ -186,7 +187,7 @@ func TestUpdateHostInfo_HttpError2(t *testing.T) {
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	hds := HostDataService{
-		TimeNow:  btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Database: db,
 		Config: config.Configuration{
 			AlertService: config.AlertService{
@@ -197,14 +198,14 @@ func TestUpdateHostInfo_HttpError2(t *testing.T) {
 		},
 		Version: "1.6.6",
 	}
-	hd := loadFixtureHostData(t, "../../fixture/test_hostdata_00.json")
+	hd := utils.LoadFixtureHostData(t, "../../fixture/test_hostdata_00.json")
 
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
-	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD model.HostData) {
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
+	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD model.HostData) {
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
 		assert.False(t, newHD.Archived)
-		assert.Equal(t, p("2019-11-05T14:02:03Z"), newHD.CreatedAt)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
 		assert.Equal(t, model.SchemaVersion, newHD.SchemaVersion)
 		assert.Equal(t, "1.6.6", newHD.ServerVersion)
 		assert.Equal(t, hd.Hostname, newHD.Hostname)

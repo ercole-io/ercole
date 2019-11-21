@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	"github.com/amreo/ercole-services/config"
+	"github.com/amreo/ercole-services/utils"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -28,7 +29,7 @@ func TestCurrentHostCleaningJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	hds := NewMockHostDataServiceInterface(mockCtrl)
 	chcj := CurrentHostCleaningJob{
-		TimeNow:         btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:         utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		hostDataService: hds,
 		Database:        db,
 		Config: config.Configuration{
@@ -40,7 +41,7 @@ func TestCurrentHostCleaningJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().FindOldCurrentHosts(p("2019-11-05T4:02:03Z")).Return([]string{}, nil).Times(1)
+	db.EXPECT().FindOldCurrentHosts(utils.P("2019-11-05T4:02:03Z")).Return([]string{}, nil).Times(1)
 
 	chcj.Run()
 }
@@ -51,7 +52,7 @@ func TestCurrentHostCleaningJobRun_SuccessOldCurrentHosts(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	hds := NewMockHostDataServiceInterface(mockCtrl)
 	chcj := CurrentHostCleaningJob{
-		TimeNow:         btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:         utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		hostDataService: hds,
 		Database:        db,
 		Config: config.Configuration{
@@ -63,7 +64,7 @@ func TestCurrentHostCleaningJobRun_SuccessOldCurrentHosts(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().FindOldCurrentHosts(p("2019-11-05T4:02:03Z")).Return([]string{"superhost", "pippohost"}, nil).Times(1)
+	db.EXPECT().FindOldCurrentHosts(utils.P("2019-11-05T4:02:03Z")).Return([]string{"superhost", "pippohost"}, nil).Times(1)
 	db.EXPECT().ArchiveHost("superhost").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost("pippohost").Return(nil, nil).Times(1)
 
@@ -76,7 +77,7 @@ func TestCurrentHostCleaningJobRun_DatabaseError1(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	hds := NewMockHostDataServiceInterface(mockCtrl)
 	chcj := CurrentHostCleaningJob{
-		TimeNow:         btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:         utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		hostDataService: hds,
 		Database:        db,
 		Config: config.Configuration{
@@ -88,7 +89,7 @@ func TestCurrentHostCleaningJobRun_DatabaseError1(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().FindOldCurrentHosts(p("2019-11-05T4:02:03Z")).Return([]string{"invalid"}, aerrMock).Times(1)
+	db.EXPECT().FindOldCurrentHosts(utils.P("2019-11-05T4:02:03Z")).Return([]string{"invalid"}, aerrMock).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
 
 	chcj.Run()
@@ -100,7 +101,7 @@ func TestCurrentHostCleaningJobRun_DatabaseError2(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	hds := NewMockHostDataServiceInterface(mockCtrl)
 	chcj := CurrentHostCleaningJob{
-		TimeNow:         btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:         utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		hostDataService: hds,
 		Database:        db,
 		Config: config.Configuration{
@@ -112,7 +113,7 @@ func TestCurrentHostCleaningJobRun_DatabaseError2(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().FindOldCurrentHosts(p("2019-11-05T4:02:03Z")).Return([]string{"superhost", "pippohost"}, nil).Times(1)
+	db.EXPECT().FindOldCurrentHosts(utils.P("2019-11-05T4:02:03Z")).Return([]string{"superhost", "pippohost"}, nil).Times(1)
 	db.EXPECT().ArchiveHost("superhost").Return(nil, aerrMock).Times(1)
 	db.EXPECT().ArchiveHost("pippohost").Times(0)
 

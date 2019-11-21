@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/amreo/ercole-services/config"
+	"github.com/amreo/ercole-services/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -30,7 +31,7 @@ func TestFreshnessCheckJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := NewMockAlertServiceInterface(mockCtrl)
 	fcj := FreshnessCheckJob{
-		TimeNow:      btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		alertService: as,
 		Database:     db,
 		Config: config.Configuration{
@@ -43,7 +44,7 @@ func TestFreshnessCheckJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 	}
 
 	db.EXPECT().FindOldCurrentHosts(gomock.Any()).Return([]string{}, nil).Do(func(tm time.Time) {
-		assert.Equal(t, p("2019-10-26T14:02:03Z"), tm)
+		assert.Equal(t, utils.P("2019-10-26T14:02:03Z"), tm)
 	}).Times(1)
 	db.EXPECT().ExistNoDataAlertByHost(gomock.Any()).Times(0)
 	as.EXPECT().ThrowNoDataAlert(gomock.Any(), gomock.Any()).Times(0)
@@ -57,7 +58,7 @@ func TestFreshnessCheckJobRun_SuccessTwoOldCurrentHostsWithoutNoDataAlert(t *tes
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := NewMockAlertServiceInterface(mockCtrl)
 	fcj := FreshnessCheckJob{
-		TimeNow:      btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		alertService: as,
 		Database:     db,
 		Config: config.Configuration{
@@ -70,7 +71,7 @@ func TestFreshnessCheckJobRun_SuccessTwoOldCurrentHostsWithoutNoDataAlert(t *tes
 	}
 
 	db.EXPECT().FindOldCurrentHosts(gomock.Any()).Return([]string{"pippohost", "plutohost"}, nil).Do(func(tm time.Time) {
-		assert.Equal(t, p("2019-10-26T14:02:03Z"), tm)
+		assert.Equal(t, utils.P("2019-10-26T14:02:03Z"), tm)
 	})
 	db.EXPECT().ExistNoDataAlertByHost("pippohost").Return(false, nil).Times(1)
 	db.EXPECT().ExistNoDataAlertByHost("plutohost").Return(false, nil).Times(1)
@@ -89,7 +90,7 @@ func TestFreshnessCheckJobRun_SuccessTwoOldCurrentHostsWithNoDataAlert(t *testin
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := NewMockAlertServiceInterface(mockCtrl)
 	fcj := FreshnessCheckJob{
-		TimeNow:      btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		alertService: as,
 		Database:     db,
 		Config: config.Configuration{
@@ -102,7 +103,7 @@ func TestFreshnessCheckJobRun_SuccessTwoOldCurrentHostsWithNoDataAlert(t *testin
 	}
 
 	db.EXPECT().FindOldCurrentHosts(gomock.Any()).Return([]string{"pippohost", "plutohost"}, nil).Do(func(tm time.Time) {
-		assert.Equal(t, p("2019-10-26T14:02:03Z"), tm)
+		assert.Equal(t, utils.P("2019-10-26T14:02:03Z"), tm)
 	})
 	db.EXPECT().ExistNoDataAlertByHost("pippohost").Return(true, nil).Times(1)
 	db.EXPECT().ExistNoDataAlertByHost("plutohost").Return(true, nil).Times(1)
@@ -118,7 +119,7 @@ func TestFreshnessCheckJobRun_DatabaseError1(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := NewMockAlertServiceInterface(mockCtrl)
 	fcj := FreshnessCheckJob{
-		TimeNow:      btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		alertService: as,
 		Database:     db,
 		Config: config.Configuration{
@@ -131,7 +132,7 @@ func TestFreshnessCheckJobRun_DatabaseError1(t *testing.T) {
 	}
 
 	db.EXPECT().FindOldCurrentHosts(gomock.Any()).Return(nil, aerrMock).Do(func(tm time.Time) {
-		assert.Equal(t, p("2019-10-26T14:02:03Z"), tm)
+		assert.Equal(t, utils.P("2019-10-26T14:02:03Z"), tm)
 	}).Times(1)
 	db.EXPECT().ExistNoDataAlertByHost(gomock.Any()).Times(0)
 	as.EXPECT().ThrowNoDataAlert(gomock.Any(), gomock.Any()).Times(0)
@@ -145,7 +146,7 @@ func TestFreshnessCheckJobRun_DatabaseError2(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := NewMockAlertServiceInterface(mockCtrl)
 	fcj := FreshnessCheckJob{
-		TimeNow:      btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		alertService: as,
 		Database:     db,
 		Config: config.Configuration{
@@ -158,7 +159,7 @@ func TestFreshnessCheckJobRun_DatabaseError2(t *testing.T) {
 	}
 
 	db.EXPECT().FindOldCurrentHosts(gomock.Any()).Return([]string{"pippohost", "plutohost"}, nil).Do(func(tm time.Time) {
-		assert.Equal(t, p("2019-10-26T14:02:03Z"), tm)
+		assert.Equal(t, utils.P("2019-10-26T14:02:03Z"), tm)
 	}).Times(1)
 
 	db.EXPECT().ExistNoDataAlertByHost("pippohost").Return(false, aerrMock).Times(1)
@@ -173,7 +174,7 @@ func TestFreshnessCheckJobRun_AlertServiceError2(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := NewMockAlertServiceInterface(mockCtrl)
 	fcj := FreshnessCheckJob{
-		TimeNow:      btc(p("2019-11-05T14:02:03Z")),
+		TimeNow:      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		alertService: as,
 		Database:     db,
 		Config: config.Configuration{
@@ -186,7 +187,7 @@ func TestFreshnessCheckJobRun_AlertServiceError2(t *testing.T) {
 	}
 
 	db.EXPECT().FindOldCurrentHosts(gomock.Any()).Return([]string{"pippohost", "plutohost"}, nil).Do(func(tm time.Time) {
-		assert.Equal(t, p("2019-10-26T14:02:03Z"), tm)
+		assert.Equal(t, utils.P("2019-10-26T14:02:03Z"), tm)
 	}).Times(1)
 
 	db.EXPECT().ExistNoDataAlertByHost("pippohost").Return(false, nil).Times(1)

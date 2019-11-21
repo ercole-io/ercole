@@ -16,19 +16,10 @@
 package service
 
 import (
-	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"net/http"
-	"testing"
-	"time"
-
-	"github.com/stretchr/testify/require"
-
-	"github.com/amreo/ercole-services/model"
 
 	"github.com/amreo/ercole-services/utils"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 //go:generate mockgen -source ../database/database.go -destination=fake_database.go -package=service
@@ -37,34 +28,6 @@ import (
 //Common data
 var errMock error = errors.New("MockError")
 var aerrMock utils.AdvancedErrorInterface = utils.NewAdvancedErrorPtr(errMock, "mock")
-
-//p parse the string s and return the equivalent time
-func p(s string) time.Time {
-	t, _ := time.Parse(time.RFC3339, s)
-	return t
-}
-
-//btc break the time continuum and return a function that return the time t
-func btc(t time.Time) func() time.Time {
-	return func() time.Time {
-		return t
-	}
-}
-
-func str2oid(str string) primitive.ObjectID {
-	val, _ := primitive.ObjectIDFromHex(str)
-	return val
-}
-
-func loadFixtureHostData(t *testing.T, filename string) model.HostData {
-	var hd model.HostData
-	raw, err := ioutil.ReadFile(filename)
-
-	require.NoError(t, err)
-	require.NoError(t, json.Unmarshal(raw, &hd))
-
-	return hd
-}
 
 type RoundTripFunc func(req *http.Request) (*http.Response, error)
 

@@ -16,64 +16,30 @@
 package database
 
 import (
-	"encoding/json"
-	"io/ioutil"
-	"testing"
-	"time"
-
 	"github.com/amreo/ercole-services/model"
-	"github.com/stretchr/testify/require"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/amreo/ercole-services/utils"
 )
 
 var alert1 model.Alert = model.Alert{
 	AlertCode:     model.AlertCodeNewServer,
 	AlertSeverity: model.AlertSeverityNotice,
 	AlertStatus:   model.AlertStatusNew,
-	Date:          p("2019-11-05T18:02:03Z"),
+	Date:          utils.P("2019-11-05T18:02:03Z"),
 	Description:   "pippo",
 	OtherInfo: map[string]interface{}{
 		"hostname": "myhost",
 	},
-	ID: str2oid("5dd40bfb12f54dfda7b1c291"),
+	ID: utils.Str2oid("5dd40bfb12f54dfda7b1c291"),
 }
 
 var alert2 model.Alert = model.Alert{
 	AlertCode:     model.AlertCodeNoData,
 	AlertSeverity: model.AlertSeverityMajor,
 	AlertStatus:   model.AlertStatusNew,
-	Date:          p("2019-11-05T18:02:03Z"),
+	Date:          utils.P("2019-11-05T18:02:03Z"),
 	Description:   "No data received from the host myhost in the last 90 days",
 	OtherInfo: map[string]interface{}{
 		"hostname": "myhost",
 	},
-	ID: str2oid("5dd4113f0085a6fac03c4fed"),
-}
-
-//p parse the string s and return the equivalent time
-func p(s string) time.Time {
-	t, _ := time.Parse(time.RFC3339, s)
-	return t
-}
-
-//btc break the time continuum and return a function that return the time t
-func btc(t time.Time) func() time.Time {
-	return func() time.Time {
-		return t
-	}
-}
-
-func str2oid(str string) primitive.ObjectID {
-	val, _ := primitive.ObjectIDFromHex(str)
-	return val
-}
-
-func loadFixtureHostData(t *testing.T, filename string) model.HostData {
-	var hd model.HostData
-	raw, err := ioutil.ReadFile(filename)
-
-	require.NoError(t, err)
-	require.NoError(t, json.Unmarshal(raw, &hd))
-
-	return hd
+	ID: utils.Str2oid("5dd4113f0085a6fac03c4fed"),
 }
