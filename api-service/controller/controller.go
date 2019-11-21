@@ -29,8 +29,8 @@ type APIControllerInterface interface {
 	// AuthenticateMiddleware return the middleware used to authenticate users
 	AuthenticateMiddleware() func(http.Handler) http.Handler
 
-	// GetCurrentHosts return all current hosts data using the filters in the request
-	GetCurrentHosts(w http.ResponseWriter, r *http.Request)
+	// SearchCurrentHosts search current hosts data using the filters in the request
+	SearchCurrentHosts(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface

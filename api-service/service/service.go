@@ -29,8 +29,8 @@ import (
 type APIServiceInterface interface {
 	// Init initialize the service
 	Init()
-	// GetCurrentHosts return all current_hosts
-	GetCurrentHosts(full bool) ([]interface{}, utils.AdvancedErrorInterface)
+	// SearchCurrentHosts search current hosts
+	SearchCurrentHosts(full bool) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

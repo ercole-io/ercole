@@ -15,7 +15,10 @@
 
 package utils
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"strconv"
+)
 
 //ToJSON convert v to a string containing the equivalent json rappresentation
 func ToJSON(v interface{}) string {
@@ -43,4 +46,15 @@ func Contains(a []string, x string) bool {
 		}
 	}
 	return false
+}
+
+// Str2bool parse a string to a boolean
+func Str2bool(in string, defaultValue bool) (bool, AdvancedErrorInterface) {
+	if in == "" {
+		return defaultValue, nil
+	} else if val, err := strconv.ParseBool(in); err != nil {
+		return false, NewAdvancedErrorPtr(err, "Unable to parse string to bool")
+	} else {
+		return val, nil
+	}
 }

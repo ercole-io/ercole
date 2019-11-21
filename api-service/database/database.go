@@ -33,8 +33,8 @@ import (
 type MongoDatabaseInterface interface {
 	// Init initializes the connection to the database
 	Init()
-	// FindCurrentHosts return all current hosts
-	FindCurrentHosts() ([]interface{}, utils.AdvancedErrorInterface)
+	// SearchCurrentHosts search current hosts
+	SearchCurrentHosts(full bool) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation
@@ -74,8 +74,8 @@ func (md *MongoDatabase) ConnectToMongodb() {
 	}
 }
 
-// FindCurrentHosts return all current hosts
-func (md *MongoDatabase) FindCurrentHosts() ([]interface{}, utils.AdvancedErrorInterface) {
+// SearchCurrentHosts search current hosts
+func (md *MongoDatabase) SearchCurrentHosts(full bool) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Find the most recent HostData older than t
@@ -85,6 +85,28 @@ func (md *MongoDatabase) FindCurrentHosts() ([]interface{}, utils.AdvancedErrorI
 			bson.D{{"$match", bson.D{
 				{"archived", false},
 			}}},
+			optionalStep(!full, bson.D{{"$project", bson.D{
+				{"hostname", true},
+				{"environment", true},
+				{"host_type", true},
+				{"cluster", ""},
+				{"physical_host", ""},
+				{"created_at", true},
+				{"databases", true},
+				{"os", "$info.os"},
+				{"kernel", "$info.kernel"},
+				{"oracle_cluster", "$info.oracle_cluster"},
+				{"sun_cluster", "$info.sun_cluster"},
+				{"veritas_cluster", "$info.veritas_cluster"},
+				{"virtual", "$info.virtual"},
+				{"type", "$info.type"},
+				{"cpu_threads", "$info.cpu_threads"},
+				{"cpu_cores", "$info.cpu_cores"},
+				{"socket", "$info.socket"},
+				{"mem_total", "$info.memory_total"},
+				{"swap_total", "$info.swap_total"},
+				{"cpu_model", "$info.cpu_model"},
+			}}}),
 		},
 	)
 	if err != nil {
@@ -100,4 +122,11 @@ func (md *MongoDatabase) FindCurrentHosts() ([]interface{}, utils.AdvancedErrorI
 		out = append(out, &item)
 	}
 	return out, nil
+}
+
+func optionalStep(optional bool, step bson.D) bson.D {
+	if optional {
+		return step
+	}
+	return bson.D{{"$skip", 0}}
 }

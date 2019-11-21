@@ -25,24 +25,27 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// getHostsCmd represents the getHosts command
-var getHostsCmd = &cobra.Command{
-	Use:   "get-hosts",
-	Short: "Get current_hosts",
-	Long:  `get-hosts fetch all current hosts from the ercole api-service`,
+var summary bool
+
+// searchHostsCmd represents the getHosts command
+var searchHostsCmd = &cobra.Command{
+	Use:   "search-hosts",
+	Short: "Search current hosts",
+	Long:  `search-hosts search the most matching hosts to the arguments`,
 	Run: func(cmd *cobra.Command, args []string) {
 		resp, err := http.Get(
-			fmt.Sprintf("http://%s:%s@%s/hosts",
+			fmt.Sprintf("http://%s:%s@%s/hosts?full=%v",
 				ercoleConfig.APIService.UserUsername,
 				ercoleConfig.APIService.UserPassword,
-				ercoleConfig.APIService.RemoteEndpoint))
+				ercoleConfig.APIService.RemoteEndpoint,
+				!summary))
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to fetch hosts data: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Failed to search hosts data: %v\n", err)
 			os.Exit(1)
 		} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
 			out, _ := ioutil.ReadAll(resp.Body)
 			defer resp.Body.Close()
-			fmt.Fprintf(os.Stderr, "Failed to fetch hosts data(Status: %d): %s\n", resp.StatusCode, string(out))
+			fmt.Fprintf(os.Stderr, "Failed to search hosts data(Status: %d): %s\n", resp.StatusCode, string(out))
 			os.Exit(1)
 		} else {
 			out, _ := ioutil.ReadAll(resp.Body)
@@ -65,5 +68,6 @@ var getHostsCmd = &cobra.Command{
 }
 
 func init() {
-	apiCmd.AddCommand(getHostsCmd)
+	apiCmd.AddCommand(searchHostsCmd)
+	searchHostsCmd.Flags().BoolVarP(&summary, "summary", "s", false, "Summary mode")
 }

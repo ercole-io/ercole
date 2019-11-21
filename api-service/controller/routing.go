@@ -31,5 +31,5 @@ func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface
 		w.Write([]byte("Pong"))
 	})
 
-	router.HandleFunc("/hosts", ctrl.GetCurrentHosts).Methods("GET")
+	router.HandleFunc("/hosts", ctrl.SearchCurrentHosts).Methods("GET")
 }

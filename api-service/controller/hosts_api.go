@@ -21,10 +21,17 @@ import (
 	"github.com/amreo/ercole-services/utils"
 )
 
-// GetCurrentHosts return all current hosts data using the filters in the request
-func (ctrl *APIController) GetCurrentHosts(w http.ResponseWriter, r *http.Request) {
+// SearchCurrentHosts search current hosts data using the filters in the request
+func (ctrl *APIController) SearchCurrentHosts(w http.ResponseWriter, r *http.Request) {
+	var full bool
+	var err utils.AdvancedErrorInterface
+	//parse the query params
+	if full, err = utils.Str2bool(r.URL.Query().Get("full"), false); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
 	//get the data
-	hosts, err := ctrl.Service.GetCurrentHosts(true)
+	hosts, err := ctrl.Service.SearchCurrentHosts(full)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return

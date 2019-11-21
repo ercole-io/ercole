@@ -20,7 +20,7 @@ import (
 	"github.com/amreo/ercole-services/utils"
 )
 
-// GetCurrentHosts return all current_hosts
-func (as *APIService) GetCurrentHosts(full bool) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.FindCurrentHosts()
+// SearchCurrentHosts search current hosts
+func (as *APIService) SearchCurrentHosts(full bool) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchCurrentHosts(full)
 }
