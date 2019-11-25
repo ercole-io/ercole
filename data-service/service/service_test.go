@@ -45,7 +45,7 @@ func TestUpdateHostInfo_Success(t *testing.T) {
 			AlertService: config.AlertService{
 				PublisherUsername: "publ1sh3r",
 				PublisherPassword: "M0stS3cretP4ssw0rd",
-				RemoteEndpoint:    "ercole.example.org",
+				RemoteEndpoint:    "http://ercole.example.org",
 			},
 		},
 		Version: "1.6.6",
@@ -91,7 +91,7 @@ func TestUpdateHostInfo_DatabaseError1(t *testing.T) {
 			AlertService: config.AlertService{
 				PublisherUsername: "publ1sh3r",
 				PublisherPassword: "M0stS3cretP4ssw0rd",
-				RemoteEndpoint:    "ercole.example.org",
+				RemoteEndpoint:    "http://ercole.example.org",
 			},
 		},
 		Version: "1.6.6",
@@ -116,7 +116,7 @@ func TestUpdateHostInfo_DatabaseError2(t *testing.T) {
 			AlertService: config.AlertService{
 				PublisherUsername: "publ1sh3r",
 				PublisherPassword: "M0stS3cretP4ssw0rd",
-				RemoteEndpoint:    "ercole.example.org",
+				RemoteEndpoint:    "http://ercole.example.org",
 			},
 		},
 		Version: "1.6.6",
@@ -152,7 +152,7 @@ func TestUpdateHostInfo_HttpError(t *testing.T) {
 			AlertService: config.AlertService{
 				PublisherUsername: "publ1sh3r",
 				PublisherPassword: "M0stS3cretP4ssw0rd",
-				RemoteEndpoint:    "ercole.example.org",
+				RemoteEndpoint:    "http://ercole.example.org",
 			},
 		},
 		Version: "1.6.6",
@@ -193,7 +193,7 @@ func TestUpdateHostInfo_HttpError2(t *testing.T) {
 			AlertService: config.AlertService{
 				PublisherUsername: "publ1sh3r",
 				PublisherPassword: "M0stS3cretP4ssw0rd",
-				RemoteEndpoint:    "ercole.example.org",
+				RemoteEndpoint:    "http://ercole.example.org",
 			},
 		},
 		Version: "1.6.6",
