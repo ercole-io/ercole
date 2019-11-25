@@ -142,8 +142,8 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 	//Start the data-service
 	go func() {
 		log.Println("Start data-service: listening at", config.DataService.Port)
-		http.ListenAndServe(fmt.Sprintf("%s:%d", config.DataService.BindIP, config.DataService.Port), cors.AllowAll().Handler(logRouter))
-		log.Println("Stopping data-service")
+		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.DataService.BindIP, config.DataService.Port), cors.AllowAll().Handler(logRouter))
+		log.Println("Stopping data-service", err)
 		wg.Done()
 	}()
 }
@@ -186,8 +186,8 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 	//Start the alert-service
 	go func() {
 		log.Println("Start alert-service: listening at", config.AlertService.Port)
-		http.ListenAndServe(fmt.Sprintf("%s:%d", config.AlertService.BindIP, config.AlertService.Port), cors.AllowAll().Handler(logRouter))
-		log.Println("Stopping alert-service")
+		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.AlertService.BindIP, config.AlertService.Port), cors.AllowAll().Handler(logRouter))
+		log.Println("Stopping alert-service", err)
 		wg.Done()
 	}()
 }
@@ -230,8 +230,8 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	//Start the api-service
 	go func() {
 		log.Println("Start api-service: listening at", config.APIService.Port)
-		http.ListenAndServe(fmt.Sprintf("%s:%d", config.APIService.BindIP, config.APIService.Port), cors.AllowAll().Handler(logRouter))
-		log.Println("Stopping api-service")
+		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.APIService.BindIP, config.APIService.Port), cors.AllowAll().Handler(logRouter))
+		log.Println("Stopping api-service", err)
 		wg.Done()
 	}()
 }
