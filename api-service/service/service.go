@@ -30,7 +30,7 @@ type APIServiceInterface interface {
 	// Init initialize the service
 	Init()
 	// SearchCurrentHosts search current hosts
-	SearchCurrentHosts(full bool) ([]interface{}, utils.AdvancedErrorInterface)
+	SearchCurrentHosts(full bool, search string) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

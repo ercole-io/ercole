@@ -124,22 +124,28 @@ func MigrateHostsSchema(client *mongo.Database) {
 	}); err != nil {
 		log.Panicln(err)
 	}
-	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
-		Keys: bson.D{
-			{"archived", 1},
-			{"hostname", "text"},
-			{"extra.databases.name", "text"},
-			{"extra.databases.lunique_name", "text"},
-			{"extra.clusters.name", "text"},
-		},
-		Options: &options.IndexOptions{
-			Collation: &options.Collation{
-				Locale: "simple",
-			},
-		},
-	}); err != nil {
-		log.Panicln(err)
-	}
+	// if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
+	// 	Keys: bson.D{
+	// 		{"archived", 1},
+	// 		{"hostname", "text"},
+	// 		{"extra.databases.name", "text"},
+	// 		{"extra.databases.unique_name", "text"},
+	// 		{"extra.clusters.name", "text"},
+	// 	},
+	// 	Options: &options.IndexOptions{
+	// 		Collation: &options.Collation{
+	// 			Locale: "simple",
+	// 		},
+	// 		Weights: map[string]interface{}{
+	// 			"hostname":                    10,
+	// 			"extra.databases.name":        7,
+	// 			"extra.databases.unique_name": 6,
+	// 			"extra.clusters.name":         7,
+	// 		},
+	// 	},
+	// }); err != nil {
+	// 	log.Panicln(err)
+	// }
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
 			{"archived", 1},

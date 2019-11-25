@@ -19,12 +19,15 @@ package database
 import (
 	"context"
 	"log"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/amreo/ercole-services/utils"
 
 	"github.com/amreo/ercole-services/config"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -34,7 +37,7 @@ type MongoDatabaseInterface interface {
 	// Init initializes the connection to the database
 	Init()
 	// SearchCurrentHosts search current hosts
-	SearchCurrentHosts(full bool) ([]interface{}, utils.AdvancedErrorInterface)
+	SearchCurrentHosts(full bool, keywords []string) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation
@@ -75,15 +78,33 @@ func (md *MongoDatabase) ConnectToMongodb() {
 }
 
 // SearchCurrentHosts search current hosts
-func (md *MongoDatabase) SearchCurrentHosts(full bool) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
+	var quotedKeywords []string
+	for _, k := range keywords {
+		quotedKeywords = append(quotedKeywords, regexp.QuoteMeta(k))
+	}
 
-	//Find the most recent HostData older than t
+	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		bson.A{
 			bson.D{{"$match", bson.D{
 				{"archived", false},
+				{"$or", bson.A{
+					bson.D{{"hostname", bson.D{
+						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
+					}}},
+					bson.D{{"extra.databases.name", bson.D{
+						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
+					}}},
+					bson.D{{"extra.databases.unique_name", bson.D{
+						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
+					}}},
+					bson.D{{"extra.clusters.name", bson.D{
+						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
+					}}},
+				}},
 			}}},
 			optionalStep(!full, bson.D{{"$project", bson.D{
 				{"hostname", true},
