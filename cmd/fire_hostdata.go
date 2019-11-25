@@ -22,6 +22,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/amreo/ercole-services/utils"
+
 	"github.com/spf13/cobra"
 )
 
@@ -64,10 +66,11 @@ func init() {
 
 func fireHostdata(filename string, content []byte) {
 	resp, err := http.Post(
-		fmt.Sprintf("http://%s:%s@%s/hosts",
+		utils.NewAPIUrlNoParams(ercoleConfig.DataService.RemoteEndpoint,
 			ercoleConfig.DataService.AgentUsername,
 			ercoleConfig.DataService.AgentPassword,
-			ercoleConfig.DataService.RemoteEndpoint),
+			"/hosts",
+		).String(),
 		"application/json", bytes.NewReader(content))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to send hostdata from %s: %v\n", filename, err)

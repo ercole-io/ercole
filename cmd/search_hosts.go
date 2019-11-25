@@ -20,7 +20,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
+	"strconv"
+	"strings"
+
+	"github.com/amreo/ercole-services/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -33,12 +38,18 @@ var searchHostsCmd = &cobra.Command{
 	Short: "Search current hosts",
 	Long:  `search-hosts search the most matching hosts to the arguments`,
 	Run: func(cmd *cobra.Command, args []string) {
+
 		resp, err := http.Get(
-			fmt.Sprintf("http://%s:%s@%s/hosts?full=%v",
+			utils.NewAPIUrl(
+				ercoleConfig.APIService.RemoteEndpoint,
 				ercoleConfig.APIService.UserUsername,
 				ercoleConfig.APIService.UserPassword,
-				ercoleConfig.APIService.RemoteEndpoint,
-				!summary))
+				"/hosts",
+				url.Values{
+					"full":   []string{strconv.FormatBool(!summary)},
+					"search": []string{strings.Join(args, " ")},
+				},
+			).String())
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Failed to search hosts data: %v\n", err)
 			os.Exit(1)

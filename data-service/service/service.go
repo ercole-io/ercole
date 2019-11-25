@@ -19,7 +19,6 @@ package service
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -95,11 +94,13 @@ func (hds *HostDataService) UpdateHostInfo(hostdata model.HostData) (interface{}
 	}
 
 	//Enqueue the insertion
-	if resp, err := http.Post(fmt.Sprintf("http://%s:%s@%s/queue/host-data-insertion/%s",
-		hds.Config.AlertService.PublisherUsername,
-		hds.Config.AlertService.PublisherPassword,
-		hds.Config.AlertService.RemoteEndpoint,
-		res.InsertedID.(primitive.ObjectID).Hex()), "application/json", bytes.NewReader([]byte{})); err != nil {
+	if resp, err := http.Post(
+		utils.NewAPIUrlNoParams(
+			hds.Config.AlertService.RemoteEndpoint,
+			hds.Config.AlertService.PublisherUsername,
+			hds.Config.AlertService.PublisherPassword,
+			"/queue/host-data-insertion/"+res.InsertedID.(primitive.ObjectID).Hex(),
+		).String(), "application/json", bytes.NewReader([]byte{})); err != nil {
 
 		return nil, utils.NewAdvancedErrorPtr(err, "EVENT ENQUEUE")
 	} else if resp.StatusCode < 200 || resp.StatusCode > 299 {

@@ -17,6 +17,7 @@ package utils
 
 import (
 	"encoding/json"
+	"net/url"
 	"strconv"
 )
 
@@ -57,4 +58,25 @@ func Str2bool(in string, defaultValue bool) (bool, AdvancedErrorInterface) {
 	} else {
 		return val, nil
 	}
+}
+
+// NewAPIUrl return a new url crafted using the parameters
+func NewAPIUrl(baseURL string, username string, password string, path string, params url.Values) *url.URL {
+	u := NewAPIUrlNoParams(baseURL, username, password, path)
+	u.RawQuery = params.Encode()
+
+	return u
+}
+
+// NewAPIUrlNoParams return a new url crafted using the parameters
+func NewAPIUrlNoParams(baseURL string, username string, password string, path string) *url.URL {
+	u, err := url.Parse(baseURL)
+	if err != nil {
+		panic(err)
+	}
+
+	u.User = url.UserPassword(username, password)
+	u.Path = path
+
+	return u
 }
