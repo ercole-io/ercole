@@ -23,6 +23,6 @@ import (
 )
 
 // SearchCurrentHosts search current hosts
-func (as *APIService) SearchCurrentHosts(full bool, search string) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchCurrentHosts(full, strings.Split(search, " "))
+func (as *APIService) SearchCurrentHosts(full bool, search string, sortBy string, sortDesc bool) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchCurrentHosts(full, strings.Split(search, " "), sortBy, sortDesc)
 }

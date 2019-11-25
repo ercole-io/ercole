@@ -25,16 +25,24 @@ import (
 func (ctrl *APIController) SearchCurrentHosts(w http.ResponseWriter, r *http.Request) {
 	var full bool
 	var search string
+	var sortBy string
+	var sortDesc bool
+
 	var err utils.AdvancedErrorInterface
 	//parse the query params
 	if full, err = utils.Str2bool(r.URL.Query().Get("full"), false); err != nil {
 		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	search = r.URL.Query().Get("search")
 
+	search = r.URL.Query().Get("search")
+	sortBy = r.URL.Query().Get("sort-by")
+	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
 	//get the data
-	hosts, err := ctrl.Service.SearchCurrentHosts(full, search)
+	hosts, err := ctrl.Service.SearchCurrentHosts(full, search, sortBy, sortDesc)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return

@@ -34,7 +34,7 @@ type MongoDatabaseInterface interface {
 	// Init initializes the connection to the database
 	Init()
 	// SearchCurrentHosts search current hosts
-	SearchCurrentHosts(full bool, keywords []string) ([]interface{}, utils.AdvancedErrorInterface)
+	SearchCurrentHosts(full bool, keywords []string, sortBy string, sortDesc bool) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation
@@ -79,4 +79,21 @@ func optionalStep(optional bool, step bson.D) bson.D {
 		return step
 	}
 	return bson.D{{"$skip", 0}}
+}
+
+func optionalSortingStep(sortBy string, sortDesc bool) bson.D {
+	if sortBy == "" {
+		return bson.D{{"$skip", 0}}
+	}
+
+	sortOrder := 0
+	if sortDesc {
+		sortOrder = -1
+	} else {
+		sortOrder = 1
+	}
+
+	return bson.D{{"$sort", bson.D{
+		{sortBy, sortOrder},
+	}}}
 }

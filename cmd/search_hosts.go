@@ -31,6 +31,8 @@ import (
 )
 
 var summary bool
+var sortBy string
+var sortDesc bool
 
 // searchHostsCmd represents the getHosts command
 var searchHostsCmd = &cobra.Command{
@@ -38,6 +40,15 @@ var searchHostsCmd = &cobra.Command{
 	Short: "Search current hosts",
 	Long:  `search-hosts search the most matching hosts to the arguments`,
 	Run: func(cmd *cobra.Command, args []string) {
+		params := url.Values{
+			"full":   []string{strconv.FormatBool(!summary)},
+			"search": []string{strings.Join(args, " ")},
+		}
+
+		if sortBy != "" {
+			params.Set("sort-by", sortBy)
+			params.Set("sort-desc", strconv.FormatBool(sortDesc))
+		}
 
 		resp, err := http.Get(
 			utils.NewAPIUrl(
@@ -45,10 +56,7 @@ var searchHostsCmd = &cobra.Command{
 				ercoleConfig.APIService.UserUsername,
 				ercoleConfig.APIService.UserPassword,
 				"/hosts",
-				url.Values{
-					"full":   []string{strconv.FormatBool(!summary)},
-					"search": []string{strings.Join(args, " ")},
-				},
+				params,
 			).String())
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Failed to search hosts data: %v\n", err)
@@ -81,4 +89,6 @@ var searchHostsCmd = &cobra.Command{
 func init() {
 	apiCmd.AddCommand(searchHostsCmd)
 	searchHostsCmd.Flags().BoolVarP(&summary, "summary", "s", false, "Summary mode")
+	searchHostsCmd.Flags().StringVar(&sortBy, "sort-by", "", "Sort by field")
+	searchHostsCmd.Flags().BoolVar(&sortDesc, "desc-order", false, "Sort descending")
 }
