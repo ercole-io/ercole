@@ -19,7 +19,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 
 	"github.com/amreo/ercole-services/config"
@@ -28,6 +27,7 @@ import (
 
 var ercoleConfig config.Configuration
 var serverVersion = "latest"
+var extraConfigFile string
 
 // serveCmd represents the root command
 var rootCmd = &cobra.Command{
@@ -59,6 +59,9 @@ func readConfig() config.Configuration {
 	home, _ := os.UserHomeDir()
 	readSingleConfigFile(home+"/.ercole.json", &conf)
 	readSingleConfigFile("config.json", &conf)
+	if extraConfigFile != "" {
+		readSingleConfigFileOrFail(extraConfigFile, &conf)
+	}
 
 	//Return the read configuration
 	return conf
@@ -74,6 +77,25 @@ func readSingleConfigFile(filename string, conf *config.Configuration) {
 	}
 
 	if err = json.Unmarshal(raw, conf); err != nil {
-		log.Fatalf("Unable to parse configuration file %s (%s)", filename, err)
+		fmt.Fprintf(os.Stderr, "Unable to parse configuration file %s (%s)", filename, err)
 	}
+}
+
+func readSingleConfigFileOrFail(filename string, conf *config.Configuration) {
+	//Try to read the file
+	var raw []byte
+	var err error
+
+	if raw, err = ioutil.ReadFile(filename); err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to read  the configuration file %s (%s)\n", filename, err)
+		os.Exit(1)
+	}
+
+	if err = json.Unmarshal(raw, conf); err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to parse configuration file %s (%s)\n", filename, err)
+	}
+}
+
+func init() {
+	rootCmd.PersistentFlags().StringVarP(&extraConfigFile, "config", "c", "", "Configuration file")
 }
