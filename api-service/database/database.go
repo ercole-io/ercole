@@ -19,15 +19,12 @@ package database
 import (
 	"context"
 	"log"
-	"regexp"
-	"strings"
 	"time"
 
 	"github.com/amreo/ercole-services/utils"
 
 	"github.com/amreo/ercole-services/config"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -75,74 +72,6 @@ func (md *MongoDatabase) ConnectToMongodb() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-// SearchCurrentHosts search current hosts
-func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
-	var quotedKeywords []string
-	for _, k := range keywords {
-		quotedKeywords = append(quotedKeywords, regexp.QuoteMeta(k))
-	}
-
-	//Find the matching hostdata
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
-		context.TODO(),
-		bson.A{
-			bson.D{{"$match", bson.D{
-				{"archived", false},
-				{"$or", bson.A{
-					bson.D{{"hostname", bson.D{
-						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
-					}}},
-					bson.D{{"extra.databases.name", bson.D{
-						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
-					}}},
-					bson.D{{"extra.databases.unique_name", bson.D{
-						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
-					}}},
-					bson.D{{"extra.clusters.name", bson.D{
-						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
-					}}},
-				}},
-			}}},
-			optionalStep(!full, bson.D{{"$project", bson.D{
-				{"hostname", true},
-				{"environment", true},
-				{"host_type", true},
-				{"cluster", ""},
-				{"physical_host", ""},
-				{"created_at", true},
-				{"databases", true},
-				{"os", "$info.os"},
-				{"kernel", "$info.kernel"},
-				{"oracle_cluster", "$info.oracle_cluster"},
-				{"sun_cluster", "$info.sun_cluster"},
-				{"veritas_cluster", "$info.veritas_cluster"},
-				{"virtual", "$info.virtual"},
-				{"type", "$info.type"},
-				{"cpu_threads", "$info.cpu_threads"},
-				{"cpu_cores", "$info.cpu_cores"},
-				{"socket", "$info.socket"},
-				{"mem_total", "$info.memory_total"},
-				{"swap_total", "$info.swap_total"},
-				{"cpu_model", "$info.cpu_model"},
-			}}}),
-		},
-	)
-	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
-	}
-
-	//Decode the documents
-	for cur.Next(context.TODO()) {
-		var item map[string]interface{}
-		if cur.Decode(&item) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
-		}
-		out = append(out, &item)
-	}
-	return out, nil
 }
 
 func optionalStep(optional bool, step bson.D) bson.D {
