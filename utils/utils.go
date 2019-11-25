@@ -60,6 +60,17 @@ func Str2bool(in string, defaultValue bool) (bool, AdvancedErrorInterface) {
 	}
 }
 
+// Str2int parse a string to a int
+func Str2int(in string, defaultValue int) (int, AdvancedErrorInterface) {
+	if in == "" {
+		return defaultValue, nil
+	} else if val, err := strconv.ParseInt(in, 10, 32); err != nil {
+		return -1, NewAdvancedErrorPtr(err, "Unable to parse string to int")
+	} else {
+		return int(val), nil
+	}
+}
+
 // NewAPIUrl return a new url crafted using the parameters
 func NewAPIUrl(baseURL string, username string, password string, path string, params url.Values) *url.URL {
 	u := NewAPIUrlNoParams(baseURL, username, password, path)

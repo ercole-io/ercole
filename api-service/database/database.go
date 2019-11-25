@@ -34,7 +34,7 @@ type MongoDatabaseInterface interface {
 	// Init initializes the connection to the database
 	Init()
 	// SearchCurrentHosts search current hosts
-	SearchCurrentHosts(full bool, keywords []string, sortBy string, sortDesc bool) ([]interface{}, utils.AdvancedErrorInterface)
+	SearchCurrentHosts(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation
@@ -95,5 +95,59 @@ func optionalSortingStep(sortBy string, sortDesc bool) bson.D {
 
 	return bson.D{{"$sort", bson.D{
 		{sortBy, sortOrder},
+	}}}
+}
+
+func optionalPagingStep(page int, size int) bson.D {
+	if page == -1 || size == -1 {
+		return bson.D{{"$skip", 0}}
+	}
+
+	return bson.D{{"$facet", bson.D{
+		{"content", bson.A{
+			bson.D{{"$skip", page * size}},
+			bson.D{{"$limit", size}},
+		}},
+		{"metadata", bson.A{
+			bson.D{{"$count", "total_elements"}},
+			bson.D{{"$addFields", bson.D{
+				{"total_pages", bson.D{
+					{"$floor", bson.D{
+						{"$divide", bson.A{
+							"$total_elements",
+							size,
+						}},
+					}},
+				}},
+				{"size", bson.D{
+					{"$min", bson.A{
+						size,
+						bson.D{{"$subtract", bson.A{
+							"$total_elements",
+							size * page,
+						}}},
+					}},
+				}},
+				{"number", page},
+			}}},
+			bson.D{{"$addFields", bson.D{
+				{"empty", bson.D{
+					{"$eq", bson.A{
+						"$size",
+						0,
+					}},
+				}},
+				{"first", page == 0},
+				{"last", bson.D{
+					{"$eq", bson.A{
+						page,
+						bson.D{{"$subtract", bson.A{
+							"$total_pages",
+							1,
+						}}},
+					}},
+				}},
+			}}},
+		}},
 	}}}
 }

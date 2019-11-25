@@ -27,6 +27,8 @@ func (ctrl *APIController) SearchCurrentHosts(w http.ResponseWriter, r *http.Req
 	var search string
 	var sortBy string
 	var sortDesc bool
+	var pageNumber int
+	var pageSize int
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
@@ -41,13 +43,28 @@ func (ctrl *APIController) SearchCurrentHosts(w http.ResponseWriter, r *http.Req
 		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
+	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	hosts, err := ctrl.Service.SearchCurrentHosts(full, search, sortBy, sortDesc)
+	hosts, err := ctrl.Service.SearchCurrentHosts(full, search, sortBy, sortDesc, pageNumber, pageSize)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	//Write the created id
-	utils.WriteJSONResponse(w, http.StatusOK, hosts)
+	if pageNumber == -1 || pageSize == -1 {
+		//Write the created id
+		utils.WriteJSONResponse(w, http.StatusOK, hosts)
+	} else {
+		//Write the created id
+		utils.WriteJSONResponse(w, http.StatusOK, hosts[0])
+	}
 }

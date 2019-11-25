@@ -26,7 +26,7 @@ import (
 )
 
 // SearchCurrentHosts search current hosts
-func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy string, sortDesc bool) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 	var quotedKeywords []string
 	for _, k := range keywords {
@@ -76,6 +76,7 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 				{"cpu_model", "$info.cpu_model"},
 			}}}),
 			optionalSortingStep(sortBy, sortDesc),
+			optionalPagingStep(page, pageSize),
 		},
 	)
 	if err != nil {
