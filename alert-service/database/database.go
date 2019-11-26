@@ -111,16 +111,16 @@ func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		bson.A{
-			bson.D{{"$match", bson.D{
-				{"hostname", hostname},
-				{"created_at", bson.D{
-					{"$lt", t},
-				}},
-			}}},
-			bson.D{{"$sort", bson.D{
-				{"created_at", -1},
-			}}},
-			bson.D{{"$limit", 1}},
+			bson.M{"$match": bson.M{
+				"hostname": hostname,
+				"created_at": bson.M{
+					"$lt": t,
+				},
+			}},
+			bson.M{"$sort": bson.M{
+				"created_at": -1,
+			}},
+			bson.M{"$limit": 1},
 		},
 	)
 	if err != nil {
@@ -156,11 +156,11 @@ func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]string, utils.Advan
 	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
 		context.TODO(),
 		"hostname",
-		bson.D{
-			{"archived", false},
-			{"created_at", bson.D{
-				{"$lt", t},
-			}},
+		bson.M{
+			"archived": false,
+			"created_at": bson.M{
+				"$lt": t,
+			},
 		})
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")

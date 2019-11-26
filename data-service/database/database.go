@@ -65,13 +65,13 @@ func (md *MongoDatabase) Init() {
 
 // ArchiveHost archives tho host with hostname as hostname
 func (md *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, utils.AdvancedErrorInterface) {
-	if res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.D{
-		{"hostname", hostname},
-		{"archived", false},
-	}, bson.D{
-		{"$set", bson.D{
-			{"archived", true},
-		}},
+	if res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.M{
+		"hostname": hostname,
+		"archived": false,
+	}, bson.M{
+		"$set": bson.M{
+			"archived": true,
+		},
 	}); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	} else {
@@ -114,11 +114,11 @@ func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]string, utils.Advan
 	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
 		context.TODO(),
 		"hostname",
-		bson.D{
-			{"archived", false},
-			{"created_at", bson.D{
-				{"$lt", t},
-			}},
+		bson.M{
+			"archived": false,
+			"created_at": bson.M{
+				"$lt": t,
+			},
 		})
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -140,11 +140,11 @@ func (md *MongoDatabase) FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID
 	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
 		context.TODO(),
 		"_id",
-		bson.D{
-			{"archived", true},
-			{"created_at", bson.D{
-				{"$lt", t},
-			}},
+		bson.M{
+			"archived": true,
+			"created_at": bson.M{
+				"$lt": t,
+			},
 		})
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -164,8 +164,8 @@ func (md *MongoDatabase) FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID
 func (md *MongoDatabase) DeleteHostData(id primitive.ObjectID) utils.AdvancedErrorInterface {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").DeleteOne(
 		context.TODO(),
-		bson.D{
-			{"_id", id},
+		bson.M{
+			"_id": id,
 		})
 	if err != nil {
 		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
