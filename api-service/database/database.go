@@ -35,6 +35,8 @@ type MongoDatabaseInterface interface {
 	Init()
 	// SearchCurrentHosts search current hosts
 	SearchCurrentHosts(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetCurrentHost fetch all informations about a current host in the database
+	GetCurrentHost(hostname string) (interface{}, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation

@@ -93,3 +93,105 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 	}
 	return out, nil
 }
+
+// GetCurrentHost fetch all informations about a current host in the database
+func (md *MongoDatabase) GetCurrentHost(hostname string) (interface{}, utils.AdvancedErrorInterface) {
+	var out map[string]interface{}
+
+	//Find the matching hostdata
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		bson.A{
+			bson.M{"$match": bson.M{
+				"archived": false,
+				"hostname": hostname,
+			}},
+			bson.M{"$lookup": bson.M{
+				"from":         "alerts",
+				"localField":   "hostname",
+				"foreignField": "other_info.hostname",
+				"as":           "alerts",
+			}},
+			bson.M{"$lookup": bson.M{
+				"from": "hosts",
+				"let": bson.M{
+					"hn": "$hostname",
+				},
+				"pipeline": bson.A{
+					bson.M{"$match": bson.M{
+						"$expr": bson.M{
+							"$eq": bson.A{"$hostname", "$$hn"},
+						},
+					}},
+					bson.M{"$project": bson.M{
+						"created_at":                    1,
+						"extra.databases.name":          1,
+						"extra.databases.used":          1,
+						"extra.databases.segments_size": 1,
+					}},
+				},
+				"as": "history",
+			}},
+			bson.M{"$set": bson.M{
+				"extra.databases": bson.M{
+					"$map": bson.M{
+						"input": "$extra.databases",
+						"as":    "db",
+						"in": bson.M{
+							"$mergeObjects": bson.A{
+								"$$db",
+								bson.M{
+									"changes": bson.M{
+										"$filter": bson.M{
+											"input": bson.M{"$map": bson.M{
+												"input": "$history",
+												"as":    "hh",
+												"in": bson.M{
+													"$mergeObjects": bson.A{
+														bson.M{"updated": "$$hh.created_at"},
+														bson.M{"$arrayElemAt": bson.A{
+															bson.M{
+																"$filter": bson.M{
+																	"input": "$$hh.extra.databases",
+																	"as":    "hdb",
+																	"cond":  bson.M{"$eq": bson.A{"$$hdb.name", "$$db.name"}},
+																},
+															},
+															0,
+														}},
+													},
+												},
+											}},
+											"as":   "time_frame",
+											"cond": "$$time_frame.segments_size",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			}},
+			bson.M{"$unset": bson.A{
+				"extra.databases.changes.name",
+				"history.extra",
+			}},
+		},
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Next the cursor. If there is no document return a empty document
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return nil, utils.AerrHostNotFound
+	}
+
+	//Decode the document
+	if err := cur.Decode(&out); err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return out, nil
+}

@@ -26,3 +26,8 @@ import (
 func (as *APIService) SearchCurrentHosts(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.SearchCurrentHosts(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize)
 }
+
+// GetCurrentHost return the current host specified in the hostname param
+func (as *APIService) GetCurrentHost(hostname string) (interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetCurrentHost(hostname)
+}

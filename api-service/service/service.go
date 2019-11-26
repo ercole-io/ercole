@@ -31,6 +31,8 @@ type APIServiceInterface interface {
 	Init()
 	// SearchCurrentHosts search current hosts
 	SearchCurrentHosts(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetCurrentHost return the current host specified in the hostname param
+	GetCurrentHost(hostname string) (interface{}, utils.AdvancedErrorInterface)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

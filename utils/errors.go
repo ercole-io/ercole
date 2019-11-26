@@ -13,24 +13,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package controller
+package utils
 
 import (
-	"net/http"
-
-	"github.com/gorilla/mux"
+	"errors"
 )
 
-// SetupRoutesForAPIController setup the routes of the router using the handler in the controller as http handler
-func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface) {
-	//Enable authentication using the ctrl
-	router.Use(ctrl.AuthenticateMiddleware())
+// ErrHostNotFound contains "Host not found" error
+var ErrHostNotFound = errors.New("Host not found")
+var AerrHostNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrHostNotFound, "DB ERROR")
 
-	//Add the routes
-	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Pong"))
-	})
-
-	router.HandleFunc("/hosts", ctrl.SearchCurrentHosts).Methods("GET")
-	router.HandleFunc("/hosts/{hostname}", ctrl.GetCurrentHost).Methods("GET")
-}
+// ErrEventEnqueue contains "Failed to enqueue event" error
+var ErrEventEnqueue = errors.New("Failed to enqueue event")
