@@ -34,7 +34,7 @@ try:
 except Exception as ex:
     pass
 try:
-    data["Info"]["Hostname"] = list0[assoc(data["info"]["Hostname"], len(list0))]
+    data["Info"]["Hostname"] = list0[assoc(data["Info"]["Hostname"], len(list0))]
 except Exception as ex:
     pass
 try:
