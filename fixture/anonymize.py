@@ -83,5 +83,22 @@ try:
 except Exception as ex:
     pass
 
+try:
+    for cl in data["Extra"]["Clusters"]:
+        try:
+            if cl["Name"] != "not_in_cluster":
+                cl["Name"] = list1[assoc(cl["Name"], len(list1))]
+            for vm in cl["VMs"]:
+                try:
+                    vm["Name"] = list0[assoc(vm["Name"], len(list0))]
+                    vm["Hostname"] = list0[assoc(vm["Hostname"], len(list0))]
+                    vm["PhysicalHost"] = list0[assoc(vm["PhysicalHost"], len(list0))]
+                    vm["ClusterName"] = list1[assoc(vm["ClusterName"], len(list1))]
+                except Exception:
+                    pass
+        except Exception:
+            pass
+except Exception:
+    pass
 
 json.dump(data, sys.stdout)
