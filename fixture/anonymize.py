@@ -27,56 +27,59 @@ def assoc(p: str, mod: int):
     digest = reduce(lambda x, y: (x+y) % mod, map(lambda x: x[0]*256 + ord(x[1]), enumerate(list(md5(p.encode("ascii")).hexdigest()))))
     return digest
 
+def assoc_list(p: str, l: list):
+    return l[assoc(p, len(l))] + "-" + md5(p.encode("ascii")).hexdigest()
+
 data = json.load(sys.stdin)
 
 try:
-    data["Hostname"] = list0[assoc(data["Hostname"], len(list0))]
+    data["Hostname"] = assoc_list(data["Hostname"], list0)
 except Exception as ex:
     pass
 try:
-    data["Info"]["Hostname"] = list0[assoc(data["Info"]["Hostname"], len(list0))]
+    data["Info"]["Hostname"] = assoc_list(data["Info"]["Hostname"], list0)
 except Exception as ex:
     pass
 try:
-    data["Databases"] = " ".join(map(lambda x: list2[assoc(x, len(list2))],  data["Databases"].split(" ")))
+    data["Databases"] = " ".join(map(lambda x: assoc_list(x, list2),  data["Databases"].split(" ")))
 except Exception as ex:
     pass
 try:
-    data["Schemas"] = " ".join(map(lambda x: list2[assoc(x, len(list2))],  data["Schemas"].split(" ")))
+    data["Schemas"] = " ".join(map(lambda x: assoc_list(x, list2),  data["Schemas"].split(" ")))
 except Exception as ex:
     pass
 
 try:
     for db in data["Extra"]["Databases"]:
         try:
-            db["Name"] = list2[assoc(db["Name"], len(list2))]
+            db["Name"] = assoc_list(db["Name"], list2)
         except Exception as ex:
             pass
         try:
-            db["UniqueName"] = list2[assoc(db["UniqueName"], len(list2))]
+            db["UniqueName"] = assoc_list(db["UniqueName"], list2)
         except Exception as ex:
             pass
         try:
             for patch in db["Patches"]:
-                patch["Database"] = list2[assoc(patch["Database"], len(list2))]
+                patch["Database"] = assoc_list(patch["Database"], list2)
         except Exception as ex:
             pass
         try:
             for ts in db["Tablespaces"]:
-                ts["Database"] = list2[assoc(ts["Database"], len(list2))]
-                ts["Name"] = list2[assoc(ts["Name"], len(list2))]
+                ts["Database"] = assoc_list(ts["Database"], list2)
+                ts["Name"] = assoc_list(ts["Name"], list2)
         except Exception as ex:
             pass
         try:
             for sc in db["Schemas"]:
-                sc["Database"] = list2[assoc(sc["Database"], len(list2))]
-                sc["User"] = list2[assoc(sc["User"], len(list2))]
+                sc["Database"] = assoc_list(sc["Database"], list2)
+                sc["User"] = assoc_list(sc["User"], list2)
         except Exception as ex:
             pass
         try:
             for sa in db["SegmentAdvisors"]:
-                sa["SegmentOwner"] = list3[assoc(sa["SegmentOwner"], len(list3))]
-                sa["SegmentName"] = list2[assoc(sa["SegmentName"], len(list2))]
+                sa["SegmentOwner"] = assoc_list(sa["SegmentOwner"], list3)
+                sa["SegmentName"] = assoc_list(sa["SegmentName"], list2)
                 sa["Recommendation"] = md5(sa["Recommendation"].encode("ascii")).hexdigest()
         except Exception as ex:
             pass
@@ -87,13 +90,13 @@ try:
     for cl in data["Extra"]["Clusters"]:
         try:
             if cl["Name"] != "not_in_cluster":
-                cl["Name"] = list1[assoc(cl["Name"], len(list1))]
+                cl["Name"] = assoc_list(cl["Name"], list1)
             for vm in cl["VMs"]:
                 try:
-                    vm["Name"] = list0[assoc(vm["Name"], len(list0))]
-                    vm["Hostname"] = list0[assoc(vm["Hostname"], len(list0))]
-                    vm["PhysicalHost"] = list0[assoc(vm["PhysicalHost"], len(list0))]
-                    vm["ClusterName"] = list1[assoc(vm["ClusterName"], len(list1))]
+                    vm["Name"] = assoc_list(vm["Name"], list0)
+                    vm["Hostname"] = assoc_list(vm["Hostname"], list0)
+                    vm["PhysicalHost"] = assoc_list(vm["PhysicalHost"], list0)
+                    vm["ClusterName"] = assoc_list(vm["ClusterName"], list1)
                 except Exception:
                     pass
         except Exception:
