@@ -13,25 +13,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package controller
+// Package service is a package that provides methods for querying data
+package service
 
 import (
-	"net/http"
+	"strings"
 
-	"github.com/gorilla/mux"
+	"github.com/amreo/ercole-services/utils"
 )
 
-// SetupRoutesForAPIController setup the routes of the router using the handler in the controller as http handler
-func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface) {
-	//Enable authentication using the ctrl
-	router.Use(ctrl.AuthenticateMiddleware())
-
-	//Add the routes
-	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Pong"))
-	})
-
-	router.HandleFunc("/hosts", ctrl.SearchCurrentHosts).Methods("GET")
-	router.HandleFunc("/hosts/{hostname}", ctrl.GetCurrentHost).Methods("GET")
-	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")
+// SearchAlerts search alerts
+func (as *APIService) SearchAlerts(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchAlerts(strings.Split(search, " "), sortBy, sortDesc, page, pageSize)
 }
