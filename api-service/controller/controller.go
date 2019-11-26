@@ -32,6 +32,8 @@ type APIControllerInterface interface {
 	SearchCurrentHosts(w http.ResponseWriter, r *http.Request)
 	// GetCurrentHost return all'informations about the current host requested in the id path variable
 	GetCurrentHost(w http.ResponseWriter, r *http.Request)
+	// SearchAlerts search alerts using the filters in the request
+	SearchAlerts(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface
