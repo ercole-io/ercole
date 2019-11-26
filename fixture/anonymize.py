@@ -64,6 +64,7 @@ try:
         try:
             for ts in db["Tablespaces"]:
                 ts["Database"] = list2[assoc(ts["Database"], len(list2))]
+                ts["Name"] = list2[assoc(ts["Name"], len(list2))]
         except Exception as ex:
             pass
         try:
@@ -81,5 +82,6 @@ try:
             pass
 except Exception as ex:
     pass
+
 
 json.dump(data, sys.stdout)
