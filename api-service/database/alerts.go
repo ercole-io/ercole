@@ -37,32 +37,32 @@ func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").Aggregate(
 		context.TODO(),
 		bson.A{
-			bson.D{{"$match", bson.D{
-				{"alert_status", model.AlertStatusNew},
-				{"$or", bson.A{
-					bson.D{{"description", bson.D{
-						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
-					}}},
-					bson.D{{"alert_code", bson.D{
-						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
-					}}},
-					bson.D{{"alert_severity", bson.D{
-						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
-					}}},
-					bson.D{{"other_info.hostname", bson.D{
-						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
-					}}},
-					bson.D{{"other_info.dbname", bson.D{
-						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
-					}}},
-					bson.D{{"other_info.features", bson.D{
-						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
-					}}},
-				}},
-			}}},
-			bson.D{{"$unset", bson.A{
+			bson.M{"$match": bson.M{
+				"alert_status": model.AlertStatusNew,
+				"$or": bson.A{
+					bson.M{"description": bson.M{
+						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
+					}},
+					bson.M{"alert_code": bson.M{
+						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
+					}},
+					bson.M{"alert_severity": bson.M{
+						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
+					}},
+					bson.M{"other_info.hostname": bson.M{
+						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
+					}},
+					bson.M{"other_info.dbname": bson.M{
+						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
+					}},
+					bson.M{"other_info.features": bson.M{
+						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
+					}},
+				},
+			}},
+			bson.M{"$unset": bson.A{
 				"other_info",
-			}}},
+			}},
 			optionalSortingStep(sortBy, sortDesc),
 			optionalPagingStep(page, pageSize),
 		},

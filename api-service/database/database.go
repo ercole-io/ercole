@@ -78,16 +78,16 @@ func (md *MongoDatabase) ConnectToMongodb() {
 	}
 }
 
-func optionalStep(optional bool, step bson.D) bson.D {
+func optionalStep(optional bool, step bson.M) bson.M {
 	if optional {
 		return step
 	}
-	return bson.D{{"$skip", 0}}
+	return bson.M{"$skip": 0}
 }
 
-func optionalSortingStep(sortBy string, sortDesc bool) bson.D {
+func optionalSortingStep(sortBy string, sortDesc bool) bson.M {
 	if sortBy == "" {
-		return bson.D{{"$skip", 0}}
+		return bson.M{"$skip": 0}
 	}
 
 	sortOrder := 0
@@ -97,61 +97,61 @@ func optionalSortingStep(sortBy string, sortDesc bool) bson.D {
 		sortOrder = 1
 	}
 
-	return bson.D{{"$sort", bson.D{
-		{sortBy, sortOrder},
-	}}}
+	return bson.M{"$sort": bson.M{
+		sortBy: sortOrder,
+	}}
 }
 
-func optionalPagingStep(page int, size int) bson.D {
+func optionalPagingStep(page int, size int) bson.M {
 	if page == -1 || size == -1 {
-		return bson.D{{"$skip", 0}}
+		return bson.M{"$skip": 0}
 	}
 
-	return bson.D{{"$facet", bson.D{
-		{"content", bson.A{
-			bson.D{{"$skip", page * size}},
-			bson.D{{"$limit", size}},
-		}},
-		{"metadata", bson.A{
-			bson.D{{"$count", "total_elements"}},
-			bson.D{{"$addFields", bson.D{
-				{"total_pages", bson.D{
-					{"$floor", bson.D{
-						{"$divide", bson.A{
+	return bson.M{"$facet": bson.M{
+		"content": bson.A{
+			bson.M{"$skip": page * size},
+			bson.M{"$limit": size},
+		},
+		"metadata": bson.A{
+			bson.M{"$count": "total_elements"},
+			bson.M{"$addFields": bson.M{
+				"total_pages": bson.M{
+					"$floor": bson.M{
+						"$divide": bson.A{
 							"$total_elements",
 							size,
-						}},
-					}},
-				}},
-				{"size", bson.D{
-					{"$min", bson.A{
+						},
+					},
+				},
+				"size": bson.M{
+					"$min": bson.A{
 						size,
-						bson.D{{"$subtract", bson.A{
+						bson.M{"$subtract": bson.A{
 							"$total_elements",
 							size * page,
-						}}},
-					}},
-				}},
-				{"number", page},
-			}}},
-			bson.D{{"$addFields", bson.D{
-				{"empty", bson.D{
-					{"$eq", bson.A{
+						}},
+					},
+				},
+				"number": page,
+			}},
+			bson.M{"$addFields": bson.M{
+				"empty": bson.M{
+					"$eq": bson.A{
 						"$size",
 						0,
-					}},
-				}},
-				{"first", page == 0},
-				{"last", bson.D{
-					{"$eq", bson.A{
+					},
+				},
+				"first": page == 0,
+				"last": bson.M{
+					"$eq": bson.A{
 						page,
-						bson.D{{"$subtract", bson.A{
+						bson.M{"$subtract": bson.A{
 							"$total_pages",
 							1,
-						}}},
-					}},
-				}},
-			}}},
-		}},
-	}}}
+						}},
+					},
+				},
+			}},
+		},
+	}}
 }

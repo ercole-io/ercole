@@ -36,45 +36,45 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		bson.A{
-			bson.D{{"$match", bson.D{
-				{"archived", false},
-				{"$or", bson.A{
-					bson.D{{"hostname", bson.D{
-						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
-					}}},
-					bson.D{{"extra.databases.name", bson.D{
-						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
-					}}},
-					bson.D{{"extra.databases.unique_name", bson.D{
-						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
-					}}},
-					bson.D{{"extra.clusters.name", bson.D{
-						{"$regex", primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"}},
-					}}},
-				}},
-			}}},
-			optionalStep(!full, bson.D{{"$project", bson.D{
-				{"hostname", true},
-				{"environment", true},
-				{"host_type", true},
-				{"cluster", ""},
-				{"physical_host", ""},
-				{"created_at", true},
-				{"databases", true},
-				{"os", "$info.os"},
-				{"kernel", "$info.kernel"},
-				{"oracle_cluster", "$info.oracle_cluster"},
-				{"sun_cluster", "$info.sun_cluster"},
-				{"veritas_cluster", "$info.veritas_cluster"},
-				{"virtual", "$info.virtual"},
-				{"type", "$info.type"},
-				{"cpu_threads", "$info.cpu_threads"},
-				{"cpu_cores", "$info.cpu_cores"},
-				{"socket", "$info.socket"},
-				{"mem_total", "$info.memory_total"},
-				{"swap_total", "$info.swap_total"},
-				{"cpu_model", "$info.cpu_model"},
-			}}}),
+			bson.M{"$match": bson.M{
+				"archived": false,
+				"$or": bson.A{
+					bson.M{"hostname": bson.M{
+						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
+					}},
+					bson.M{"extra.databases.name": bson.M{
+						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
+					}},
+					bson.M{"extra.databases.unique_name": bson.M{
+						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
+					}},
+					bson.M{"extra.clusters.name": bson.M{
+						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
+					}},
+				},
+			}},
+			optionalStep(!full, bson.M{"$project": bson.M{
+				"hostname":        true,
+				"environment":     true,
+				"host_type":       true,
+				"cluster":         "",
+				"physical_host":   "",
+				"created_at":      true,
+				"databases":       true,
+				"os":              "$info.os",
+				"kernel":          "$info.kernel",
+				"oracle_cluster":  "$info.oracle_cluster",
+				"sun_cluster":     "$info.sun_cluster",
+				"veritas_cluster": "$info.veritas_cluster",
+				"virtual":         "$info.virtual",
+				"type":            "$info.type",
+				"cpu_threads":     "$info.cpu_threads",
+				"cpu_cores":       "$info.cpu_cores",
+				"socket":          "$info.socket",
+				"mem_total":       "$info.memory_total",
+				"swap_total":      "$info.swap_total",
+				"cpu_model":       "$info.cpu_model",
+			}}),
 			optionalSortingStep(sortBy, sortDesc),
 			optionalPagingStep(page, pageSize),
 		},
