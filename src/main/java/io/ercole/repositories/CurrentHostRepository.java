@@ -857,6 +857,7 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	db->>'Charset' AS charset, "
 		+ "	CAST(db->>'BlockSize' AS INT) AS block_size, "
 		+ "	CAST(db->>'CPUCount' AS INT) AS cpu_count, "
+		+ "	db->>'Work' AS work, "
 		+ "	(CAST(db->>'PGATarget' AS REAL) + "
 		+ "		CAST(db->>'SGATarget' AS REAL) + "
 		+ "		(CASE WHEN db->>'MemoryTarget' = '' THEN "
