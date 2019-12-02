@@ -17,6 +17,7 @@
         <aix.version>1.6.3</aix.version>
         <checkmk.version>1.0.0</checkmk.version>
 		<virtualization-rpm7.version>1.6.1</virtualization-rpm7.version>
+        <exadata-rpm7.version>1.6.0</exadata-rpm7.version>
 	</properties>
 
 	<parent>
@@ -337,7 +338,19 @@
                             <outputDirectory>${project.build.directory}/ercole-web/packages</outputDirectory>
                         </configuration>
                     </execution>
-
+                    <execution>
+                        <id>install-rhel7-exadata</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>false</overwrite>
+                            <url>https://github.com/ercole-io/ercole-agent-exadata/releases/download/${exadata-rpm7.version}/ercole-agent-exadata-${exadata-rpm7.version}-1.el7.x86_64.rpm</url>
+                            <unpack>false</unpack>
+                            <outputDirectory>${project.build.directory}/ercole-web/packages</outputDirectory>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>install-checkmk-plugin</id>
                         <phase>generate-sources</phase>
