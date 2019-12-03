@@ -505,4 +505,13 @@ public class UserController {
 	public final float getDatabaseWorkSum() {
 		return dashService.getTotalDatabaseWorkSum();
 	}
+
+	/**
+	 * Return the exadata devices.
+	 * @return the exadata devices
+	 */
+	@GetMapping("/exadata")
+	public final List<Map<String, Object>> getExadataDevices() {
+		return dashService.getExadataDevices();
+	}
 }

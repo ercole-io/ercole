@@ -1013,4 +1013,27 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') AND "
 		+ "	db->>'Work' != 'N/A' ")
 	float getTotalDatabaseWork();
+
+
+	/**
+	 * Return the exadata devices.
+	 * @return the exadata devices
+	 */
+	@Query(nativeQuery = true, value = ""
+		+ "SELECT "
+		+ "	ch.hostname, "
+		+ "	exadev->>'Hostname' AS dev_hostname, "
+		+ "	exadev->>'ServerType' AS dev_type, "
+		+ "	exadev->>'Model' AS dev_model, "
+		+ "	exadev->>'CPUEnabled' AS dev_cpu, "
+		+ "	exadev->>'Memory' AS dev_memory, "
+		+ "	exadev->>'ExaSwVersion' AS dev_version, "
+		+ "	exadev->>'PowerCount' AS dev_power_count, "
+		+ "	exadev->>'TempActual' AS dev_temp_actual "
+		+ "FROM "
+		+ "	current_host ch, "
+		+ "	jsonb_array_elements((CAST(extra_info AS jsonb))->'Exadata'->'Devices') AS exadev "
+		+ "WHERE "
+		+ "	ch.host_type = 'exadata'")
+	List<Map<String, String>> findExadataDevices();
 }
