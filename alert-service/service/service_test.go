@@ -151,14 +151,6 @@ func TestDiffHostDataAndGenerateAlert_SuccessNewDatabase(t *testing.T) {
 			"dbname":   "acd",
 		},
 	}}).Return(nil, nil).Times(1)
-	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
-		AlertCode: model.AlertCodeNewOption,
-		OtherInfo: map[string]interface{}{
-			"hostname": "superhost1",
-			"dbname":   "acd",
-			"features": []string{},
-		},
-	}}).Return(nil, nil).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
 
 	require.NoError(t, as.DiffHostDataAndGenerateAlert(hostData1, hostData3))
