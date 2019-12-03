@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -413,5 +414,30 @@ public class DashboardService {
 	 */
 	public float getTotalDatabaseWorkSum() {
 		return currentRepo.getTotalDatabaseWork();
+	}
+
+	/**
+	 * Return the exadata devices.
+	 * @return the exadata devices
+	 */
+	public List<Map<String, Object>> getExadataDevices() {
+		List<Map<String, String>> devices =  currentRepo.findExadataDevices();
+		Map<String, Map<String, Object>> groups = new HashMap<>();
+
+		devices.forEach(item -> {
+			String hn = item.get("hostname");
+			if (!groups.containsKey(hn)) {
+				Map<String, Object> hm = new HashMap<>();
+				hm.put("hostname", hn);
+				hm.put("DBServer", new ArrayList<Object>());
+				hm.put("StorageServer", new ArrayList<Object>());
+				hm.put("IBSwitch", new ArrayList<Object>());
+				groups.put(hn, hm);
+			}
+
+			((List<Object>) groups.get(hn).get(item.get("dev_type"))).add(item);
+		});
+
+		return groups.values().stream().collect(Collectors.toList());
 	}
 }
