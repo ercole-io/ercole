@@ -1013,4 +1013,97 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') AND "
 		+ "	db->>'Work' != 'N/A' ")
 	float getTotalDatabaseWork();
+
+
+	/**
+	 * Return the exadata devices.
+	 * @return the exadata devices
+	 */
+	@Query(nativeQuery = true, value = ""
+		+ "SELECT "
+		+ "	ch.hostname, "
+		+ "	exadev->>'Hostname' AS dev_hostname, "
+		+ "	exadev->>'ServerType' AS dev_type, "
+		+ "	exadev->>'Model' AS dev_model, "
+		+ "	exadev->>'CPUEnabled' AS dev_cpu, "
+		+ "	exadev->>'Memory' AS dev_memory, "
+		+ "	exadev->>'ExaSwVersion' AS dev_version, "
+		+ "	exadev->>'PowerCount' AS dev_power_count, "
+		+ "	exadev->>'TempActual' AS dev_temp_actual "
+		+ "FROM "
+		+ "	current_host ch, "
+		+ "	jsonb_array_elements((CAST(extra_info AS jsonb))->'Exadata'->'Devices') AS exadev "
+		+ "WHERE "
+		+ "	ch.host_type = 'exadata'")
+	List<Map<String, String>> findExadataDevices();
+
+	/**
+	 * Get exadata stats.
+	 * @return exadata stats
+	 */
+	@Query(nativeQuery = true, value = ""
+		+ "WITH parsed_data AS ( "
+		+ "	SELECT "
+		+ "		(CASE WHEN (exadev->>'CPUEnabled' = '-') THEN "
+		+ "			0 "
+		+ "		ELSE "
+		+ "			CAST(regexp_replace(exadev->>'CPUEnabled', '^(\\d+)\\/(\\d+)$', '\\1') AS REAL) "
+		+ "		END) AS dev_used_cpu, "
+		+ "		(CASE WHEN (exadev->>'CPUEnabled' = '-') THEN "
+		+ "			0 "
+		+ "		ELSE "
+		+ "			CAST(regexp_replace(exadev->>'CPUEnabled', '^(\\d+)\\/(\\d+)$', '\\2') AS REAL) "
+		+ "		END) AS dev_total_cpu, "
+		+ "		(CASE WHEN (exadev->>'Memory' = '-') THEN "
+		+ "			0 "
+		+ "		ELSE "
+		+ "			CAST(regexp_replace(exadev->>'Memory', '^(\\d+)GB$', '\\1') AS REAL) "
+		+ "		END) AS dev_used_memory, "
+		+ "		(CASE WHEN (exadev->>'ExaSwVersion' = '-') THEN "
+		+ "			current_date "
+		+ "		ELSE "
+		+ "			to_date(regexp_replace(exadev->>'ExaSwVersion', '^\\d+\\.\\d+\\.\\d+(\\.\\d+\\.\\d+)?(-\\d+)?\\.(\\d+)$', '\\3'), 'YYMMDD') "
+		+ "		END) AS version_date "
+		+ "	FROM "
+		+ "		current_host ch, "
+		+ "		jsonb_array_elements((CAST(extra_info AS jsonb))->'Exadata'->'Devices') AS exadev "
+		+ "	WHERE "
+		+ "		ch.host_type = 'exadata' "
+		+ ") SELECT  "
+		+ "	count(*) AS count, "
+		+ "	sum(pd.dev_used_cpu) AS used_cpu, "
+		+ "	sum(pd.dev_total_cpu) AS total_cpu, "
+		+ "	sum(pd.dev_used_memory) AS memory, "
+		+ "	sum(CASE WHEN (pd.version_date >= current_date - interval '6 months') THEN "
+		+ "		1 "
+		+ "	ELSE  "
+		+ "		0 "
+		+ "	END) AS count_patched_after_six_month, "
+		+ "	sum(CASE WHEN (pd.version_date >= current_date - interval '12 months') THEN "
+		+ "		1 "
+		+ "	ELSE  "
+		+ "		0 "
+		+ "	END) AS count_patched_after_twelve_month "
+		+ "FROM  "
+		+ "	parsed_data pd; ")
+	Map<String, Object> getExadataStats();
+
+	@Query(nativeQuery = true, value = ""
+		+ "WITH parsed_data AS ( "
+		+ "	SELECT "
+		+ "		COUNT(*) AS disks_count, "
+		+ "		AVG(CAST(cd->>'UsedPerc' AS REAL)) AS disks_used_perc, "
+		+ "		SUM((CASE WHEN (CAST(cd->>'ErrCount' AS REAL) > 0) THEN "
+		+ "			1 "
+		+ "		ELSE "
+		+ "			0 "
+		+ "		END)) AS failed_disks "
+		+ "	FROM "
+		+ "		current_host ch, "
+		+ "		jsonb_array_elements((CAST(extra_info AS jsonb))->'Exadata'->'Devices') AS exadev, "
+		+ "		jsonb_array_elements(exadev->'CellDisks') AS cd "
+		+ "	WHERE "
+		+ "		ch.host_type = 'exadata' AND exadev->>'ServerType' = 'StorageServer' "
+		+ ") SELECT * FROM parsed_data")
+	Map<String, Object> getExadataDisksStats();
 }
