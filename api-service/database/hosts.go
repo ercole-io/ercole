@@ -53,12 +53,59 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 					}},
 				},
 			}},
+			bson.M{"$lookup": bson.M{
+				"from":         "currentClusters",
+				"localField":   "hostname",
+				"foreignField": "cluster.vms.hostname",
+				"as":           "cluster",
+			}},
+			bson.M{"$set": bson.M{
+				"cluster": bson.M{
+					"$arrayElemAt": bson.A{
+						"$cluster",
+						0,
+					},
+				},
+			}},
+			bson.M{"$set": bson.M{
+				"cluster": bson.M{
+					"$arrayElemAt": bson.A{
+						bson.M{
+							"$filter": bson.M{
+								"input": "$cluster.cluster.vms",
+								"as":    "vm",
+								"cond": bson.M{
+									"$eq": bson.A{
+										"$$vm.hostname",
+										"$hostname",
+									},
+								},
+							},
+						},
+						0,
+					},
+				},
+			}},
+			bson.M{"$addFields": bson.M{
+				"cluster": bson.M{
+					"$ifNull": bson.A{
+						"$cluster.cluster_name",
+						nil,
+					},
+				},
+				"physical_host": bson.M{
+					"$ifNull": bson.A{
+						"$cluster.physical_host",
+						nil,
+					},
+				},
+			}},
 			optionalStep(!full, bson.M{"$project": bson.M{
 				"hostname":        true,
 				"environment":     true,
 				"host_type":       true,
-				"cluster":         "",
-				"physical_host":   "",
+				"cluster":         true,
+				"physical_host":   true,
 				"created_at":      true,
 				"databases":       true,
 				"os":              "$info.os",
@@ -111,6 +158,53 @@ func (md *MongoDatabase) GetCurrentHost(hostname string) (interface{}, utils.Adv
 				"localField":   "hostname",
 				"foreignField": "other_info.hostname",
 				"as":           "alerts",
+			}},
+			bson.M{"$lookup": bson.M{
+				"from":         "currentClusters",
+				"localField":   "hostname",
+				"foreignField": "cluster.vms.hostname",
+				"as":           "cluster",
+			}},
+			bson.M{"$set": bson.M{
+				"cluster": bson.M{
+					"$arrayElemAt": bson.A{
+						"$cluster",
+						0,
+					},
+				},
+			}},
+			bson.M{"$set": bson.M{
+				"cluster": bson.M{
+					"$arrayElemAt": bson.A{
+						bson.M{
+							"$filter": bson.M{
+								"input": "$cluster.cluster.vms",
+								"as":    "vm",
+								"cond": bson.M{
+									"$eq": bson.A{
+										"$$vm.hostname",
+										"$hostname",
+									},
+								},
+							},
+						},
+						0,
+					},
+				},
+			}},
+			bson.M{"$addFields": bson.M{
+				"cluster": bson.M{
+					"$ifNull": bson.A{
+						"$cluster.cluster_name",
+						nil,
+					},
+				},
+				"physical_host": bson.M{
+					"$ifNull": bson.A{
+						"$cluster.physical_host",
+						nil,
+					},
+				},
 			}},
 			bson.M{"$lookup": bson.M{
 				"from": "hosts",
