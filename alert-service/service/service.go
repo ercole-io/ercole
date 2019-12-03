@@ -195,8 +195,10 @@ func (as *AlertService) DiffHostDataAndGenerateAlert(oldData model.HostData, new
 		}
 
 		//Throw alert for activated features
-		if err := as.ThrowActivatedFeaturesAlert(newDb.Name, newData.Hostname, activatedFeatures); err != nil {
-			return err
+		if len(activatedFeatures) > 0 {
+			if err := as.ThrowActivatedFeaturesAlert(newDb.Name, newData.Hostname, activatedFeatures); err != nil {
+				return err
+			}
 		}
 	}
 
