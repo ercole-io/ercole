@@ -30,6 +30,9 @@ type APIControllerInterface interface {
 	AuthenticateMiddleware() func(http.Handler) http.Handler
 	// SearchCurrentHosts search current hosts data using the filters in the request
 	SearchCurrentHosts(w http.ResponseWriter, r *http.Request)
+	// SearchCurrentClusters search current clusters data using the filters in the request
+	SearchCurrentClusters(w http.ResponseWriter, r *http.Request)
+
 	// GetCurrentHost return all'informations about the current host requested in the id path variable
 	GetCurrentHost(w http.ResponseWriter, r *http.Request)
 	// SearchAlerts search alerts using the filters in the request
