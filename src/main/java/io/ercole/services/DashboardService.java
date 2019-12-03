@@ -440,4 +440,14 @@ public class DashboardService {
 
 		return groups.values().stream().collect(Collectors.toList());
 	}
+
+	/**
+	 * Get exadata stats.
+	 * @return exadata stats
+	 */
+	public Map<String, Object> getExadataStats() {
+		Map<String, Object> res = new HashMap<>(currentRepo.getExadataStats());
+		res.putAll(currentRepo.getExadataDisksStats());
+		return res;
+	}
 }

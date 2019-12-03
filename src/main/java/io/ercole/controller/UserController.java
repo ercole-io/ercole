@@ -514,4 +514,13 @@ public class UserController {
 	public final List<Map<String, Object>> getExadataDevices() {
 		return dashService.getExadataDevices();
 	}
+	
+	/**
+	 * Get exadata stats.
+	 * @return exadata stats
+	 */
+	@GetMapping("/stats/exadata")
+	public Map<String, Object> getExadataStats() {
+		return dashService.getExadataStats();
+	}
 }
