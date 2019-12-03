@@ -33,7 +33,7 @@ func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface
 
 	router.HandleFunc("/hosts", ctrl.SearchCurrentHosts).Methods("GET")
 	router.HandleFunc("/clusters", ctrl.SearchCurrentClusters).Methods("GET")
+	router.HandleFunc("/addms", ctrl.SearchCurrentAddms).Methods("GET")
 	router.HandleFunc("/hosts/{hostname}", ctrl.GetCurrentHost).Methods("GET")
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")
-
 }
