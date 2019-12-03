@@ -62,10 +62,10 @@ func (ctrl *APIController) SearchCurrentHosts(w http.ResponseWriter, r *http.Req
 	}
 
 	if pageNumber == -1 || pageSize == -1 {
-		//Write the created id
+		//Write the data
 		utils.WriteJSONResponse(w, http.StatusOK, hosts)
 	} else {
-		//Write the created id
+		//Write the data
 		utils.WriteJSONResponse(w, http.StatusOK, hosts[0])
 	}
 }
@@ -84,6 +84,6 @@ func (ctrl *APIController) GetCurrentHost(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	//Write the created id
+	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, host)
 }

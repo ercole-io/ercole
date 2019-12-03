@@ -35,6 +35,8 @@ type APIServiceInterface interface {
 	GetCurrentHost(hostname string) (interface{}, utils.AdvancedErrorInterface)
 	// SearchAlerts search alerts
 	SearchAlerts(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface)
+	// SearchCurrentClusters search current clusters
+	SearchCurrentClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

@@ -21,8 +21,9 @@ import (
 	"github.com/amreo/ercole-services/utils"
 )
 
-// SearchAlerts search alerts using the filters in the request
-func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) {
+// SearchCurrentClusters search current clusters data using the filters in the request
+func (ctrl *APIController) SearchCurrentClusters(w http.ResponseWriter, r *http.Request) {
+	var full bool
 	var search string
 	var sortBy string
 	var sortDesc bool
@@ -31,6 +32,11 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
+	if full, err = utils.Str2bool(r.URL.Query().Get("full"), false); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
@@ -48,7 +54,7 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 	}
 
 	//get the data
-	hosts, err := ctrl.Service.SearchAlerts(search, sortBy, sortDesc, pageNumber, pageSize)
+	clusters, err := ctrl.Service.SearchCurrentClusters(full, search, sortBy, sortDesc, pageNumber, pageSize)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -56,9 +62,9 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 
 	if pageNumber == -1 || pageSize == -1 {
 		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, hosts)
+		utils.WriteJSONResponse(w, http.StatusOK, clusters)
 	} else {
 		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, hosts[0])
+		utils.WriteJSONResponse(w, http.StatusOK, clusters[0])
 	}
 }

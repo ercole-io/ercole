@@ -30,15 +30,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var summary bool
-var sortBy string
-var sortDesc bool
-
-// searchHostsCmd represents the searchHosts command
-var searchHostsCmd = &cobra.Command{
-	Use:   "search-hosts",
-	Short: "Search current hosts",
-	Long:  `search-hosts search the most matching hosts to the arguments`,
+// searchClustersCmd represents the searchClusters command
+var searchClustersCmd = &cobra.Command{
+	Use:   "search-clusters",
+	Short: "Search current clusters",
+	Long:  `search-clusters search the most matching clusters to the arguments`,
 	Run: func(cmd *cobra.Command, args []string) {
 		params := url.Values{
 			"full":   []string{strconv.FormatBool(!summary)},
@@ -55,16 +51,16 @@ var searchHostsCmd = &cobra.Command{
 				ercoleConfig.APIService.RemoteEndpoint,
 				ercoleConfig.APIService.UserUsername,
 				ercoleConfig.APIService.UserPassword,
-				"/hosts",
+				"/clusters",
 				params,
 			).String())
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to search hosts data: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Failed to search clusters data: %v\n", err)
 			os.Exit(1)
 		} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
 			out, _ := ioutil.ReadAll(resp.Body)
 			defer resp.Body.Close()
-			fmt.Fprintf(os.Stderr, "Failed to search hosts data(Status: %d): %s\n", resp.StatusCode, string(out))
+			fmt.Fprintf(os.Stderr, "Failed to search clusters data(Status: %d): %s\n", resp.StatusCode, string(out))
 			os.Exit(1)
 		} else {
 			out, _ := ioutil.ReadAll(resp.Body)
@@ -87,8 +83,8 @@ var searchHostsCmd = &cobra.Command{
 }
 
 func init() {
-	apiCmd.AddCommand(searchHostsCmd)
-	searchHostsCmd.Flags().BoolVarP(&summary, "summary", "s", false, "Summary mode")
-	searchHostsCmd.Flags().StringVar(&sortBy, "sort-by", "", "Sort by field")
-	searchHostsCmd.Flags().BoolVar(&sortDesc, "desc-order", false, "Sort descending")
+	apiCmd.AddCommand(searchClustersCmd)
+	searchClustersCmd.Flags().BoolVarP(&summary, "summary", "s", false, "Summary mode")
+	searchClustersCmd.Flags().StringVar(&sortBy, "sort-by", "", "Sort by field")
+	searchClustersCmd.Flags().BoolVar(&sortDesc, "desc-order", false, "Sort descending")
 }
