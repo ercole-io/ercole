@@ -62,8 +62,12 @@ func (hds *HostDataService) Init() {
 
 	jobrunner.Schedule(hds.Config.DataService.CurrentHostCleaningJob.Crontab, &CurrentHostCleaningJob{hostDataService: hds, TimeNow: hds.TimeNow, Database: hds.Database, Config: hds.Config})
 	jobrunner.Schedule(hds.Config.DataService.ArchivedHostCleaningJob.Crontab, &ArchivedHostCleaningJob{hostDataService: hds, TimeNow: hds.TimeNow, Database: hds.Database, Config: hds.Config})
-	jobrunner.Now(&CurrentHostCleaningJob{hostDataService: hds, TimeNow: hds.TimeNow, Database: hds.Database, Config: hds.Config})
-	jobrunner.Now(&ArchivedHostCleaningJob{hostDataService: hds, TimeNow: hds.TimeNow, Database: hds.Database, Config: hds.Config})
+	if hds.Config.DataService.CurrentHostCleaningJob.RunAtStartup {
+		jobrunner.Now(&CurrentHostCleaningJob{hostDataService: hds, TimeNow: hds.TimeNow, Database: hds.Database, Config: hds.Config})
+	}
+	if hds.Config.DataService.ArchivedHostCleaningJob.RunAtStartup {
+		jobrunner.Now(&ArchivedHostCleaningJob{hostDataService: hds, TimeNow: hds.TimeNow, Database: hds.Database, Config: hds.Config})
+	}
 }
 
 // UpdateHostInfo saves the hostdata
