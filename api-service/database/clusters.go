@@ -50,6 +50,7 @@ func (md *MongoDatabase) SearchCurrentClusters(full bool, keywords []string, sor
 				"hostname_agent_virtualization": "$hostname",
 				"hostname":                      true,
 				"name":                          "$cluster.name",
+				"type":                          "$cluster.type",
 				"cpu":                           "$cluster.cpu",
 				"sockets":                       "$cluster.sockets",
 				"vms":                           "$cluster.vms",
@@ -75,6 +76,7 @@ func (md *MongoDatabase) SearchCurrentClusters(full bool, keywords []string, sor
 				"hostname_agent_virtualization": true,
 				"hostname":                      true,
 				"name":                          true,
+				"type":                          true,
 				"cpu":                           true,
 				"sockets":                       true,
 				"physical_hosts": bson.M{

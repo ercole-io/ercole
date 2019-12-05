@@ -132,6 +132,7 @@
     "Clusters": [
       {
         "Name": "Kuwait-57b3056c82e683f48cb2bb6540c11400",
+        "Type": "vmware",
         "CPU": 140,
         "Sockets": 10,
         "VMs": [
@@ -685,6 +686,7 @@
       },
       {
         "Name": "Angola-1dac9f7418db9b52c259ce4ba087cdb6",
+        "Type": "vmware",
         "CPU": 120,
         "Sockets": 10,
         "VMs": [
@@ -1210,6 +1212,7 @@
       },
       {
         "Name": "Oman-8937f71ed6f3971555e15e2771db239e",
+        "Type": "vmware",
         "CPU": 36,
         "Sockets": 6,
         "VMs": [
@@ -1336,6 +1339,7 @@
       },
       {
         "Name": "Congo-d761da8322cd866a0a2d3692a1a71c6a",
+        "Type": "vmware",
         "CPU": 384,
         "Sockets": 16,
         "VMs": [
@@ -2421,6 +2425,7 @@
       },
       {
         "Name": "Sweden-58c34e1fca36b85170b54c96f7a72687",
+        "Type": "vmware",
         "CPU": 192,
         "Sockets": 8,
         "VMs": [
@@ -2519,6 +2524,7 @@
       },
       {
         "Name": "Finland-178647f9821314a1c6b620b637846aad",
+        "Type": "vmware",
         "CPU": 168,
         "Sockets": 12,
         "VMs": [
@@ -4486,6 +4492,7 @@
       },
       {
         "Name": "Dominica-f5c158ce1d090035b97088dd01a5efc2",
+        "Type": "vmware",
         "CPU": 144,
         "Sockets": 12,
         "VMs": [
@@ -5816,6 +5823,7 @@
       },
       {
         "Name": "Papua-New-Guinea-a1e46a6884ce33acbb1d0dd660a8905a",
+        "Type": "vmware",
         "CPU": 416,
         "Sockets": 26,
         "VMs": [
@@ -6145,12 +6153,14 @@
       },
       {
         "Name": "Senegal-f1a9bb12d7a2dd7d3651d1ed9728d3d9",
+        "Type": "vmware",
         "CPU": 88,
         "Sockets": 22,
         "VMs": []
       },
       {
         "Name": "Libya-174622efaff06818c85dbf0c47af301e",
+        "Type": "vmware",
         "CPU": 96,
         "Sockets": 12,
         "VMs": [
@@ -6753,6 +6763,7 @@
       },
       {
         "Name": "Zambia-4c153220cbe5ae393e81deb370655b85",
+        "Type": "vmware",
         "CPU": 128,
         "Sockets": 8,
         "VMs": [
@@ -7019,6 +7030,7 @@
       },
       {
         "Name": "Madagascar-e1ad116c9ea5c1bab6e892188e4640f9",
+        "Type": "vmware",
         "CPU": 128,
         "Sockets": 16,
         "VMs": [
@@ -7621,6 +7633,7 @@
       },
       {
         "Name": "Maldives-2c9742fcfb882d5e7c28cc0438c3d1e2",
+        "Type": "vmware",
         "CPU": 64,
         "Sockets": 8,
         "VMs": [
@@ -8160,6 +8173,7 @@
       },
       {
         "Name": "Iran-07edc68b89f5db9439119d855b3a8e1f",
+        "Type": "vmware",
         "CPU": 80,
         "Sockets": 8,
         "VMs": [
@@ -8293,6 +8307,7 @@
       },
       {
         "Name": "Bahrain-26b05479dec8238d4de0838d7f2bd133",
+        "Type": "vmware",
         "CPU": 80,
         "Sockets": 8,
         "VMs": [
@@ -8720,6 +8735,7 @@
       },
       {
         "Name": "Cambodia-05e81de600c113b9c50b31c27ad239cc",
+        "Type": "vmware",
         "CPU": 128,
         "Sockets": 16,
         "VMs": [
@@ -9014,12 +9030,14 @@
       },
       {
         "Name": "Kuwait-750ab9e73234705ad4f4ea06a4ee4ea4",
+        "Type": "ovm",
         "CPU": 48,
         "Sockets": 8,
         "VMs": []
       },
       {
         "Name": "Israel-e62730abf4a214c47091d1ca5cd0f7d2",
+        "Type": "ovm",
         "CPU": 280,
         "Sockets": 14,
         "VMs": [
@@ -9916,6 +9934,7 @@
       },
       {
         "Name": "Singapore-5cdbcc49334fa7c984c329ccd068ec24",
+        "Type": "ovm",
         "CPU": 64,
         "Sockets": 8,
         "VMs": [
@@ -11043,6 +11062,7 @@
       },
       {
         "Name": "Malawi-14ae10546e26f501903775d69ca71ed6",
+        "Type": "ovm",
         "CPU": 216,
         "Sockets": 18,
         "VMs": [
@@ -11925,6 +11945,7 @@
       },
       {
         "Name": "Benin-0195679dbe594b14abe5c277a849f71a",
+        "Type": "ovm",
         "CPU": 24,
         "Sockets": 4,
         "VMs": [
@@ -12037,6 +12058,7 @@
       },
       {
         "Name": "not_in_cluster",
+        "Type": "unknown",
         "CPU": 0,
         "Sockets": 0,
         "VMs": [

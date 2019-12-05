@@ -20,6 +20,7 @@ import "go.mongodb.org/mongo-driver/bson"
 //ClusterInfo hold informations about a cluster
 type ClusterInfo struct {
 	Name                        string
+	Type                        string
 	CPU                         int
 	Sockets                     int
 	VMs                         []VMInfo
@@ -31,6 +32,7 @@ var ClusterInfoBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"name",
+		"type",
 		"cpu",
 		"sockets",
 		"vms",
@@ -38,6 +40,9 @@ var ClusterInfoBsonValidatorRules = bson.D{
 	}},
 	{"properties", bson.D{
 		{"name", bson.D{
+			{"bsonType", "string"},
+		}},
+		{"type", bson.D{
 			{"bsonType", "string"},
 		}},
 		{"cpu", bson.D{
