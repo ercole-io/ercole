@@ -8,11 +8,13 @@
 		"AgentPassword": "password",
 		"CurrentHostCleaningJob": {
 			"Crontab": "*/1 * * * * *",
-			"HourThreshold": 1
+			"HourThreshold": 1,
+			"RunAtStartup": false
 		},
 		"ArchivedHostCleaningJob": {
 			"Crontab": "*/1 * * * * *",
-			"HourThreshold": 10
+			"HourThreshold": 10,
+			"RunAtStartup": false
 		}
 	},
 	"AlertService": {
@@ -26,7 +28,8 @@
 		"PublisherPassword": "r4nd0mS3cR3tp4ssW0rd",
 		"FreshnessCheckJob": {
 			"Crontab": "*/1 * * * * *",
-			"DaysThreshold": 1
+			"DaysThreshold": 1,
+			"RunAtStartup": false
 		}
 	},
 	"APIService": {

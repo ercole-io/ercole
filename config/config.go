@@ -104,6 +104,8 @@ type FreshnessCheckJob struct {
 	Crontab string
 	// DaysThreshold contains the threshdold of the freshness check
 	DaysThreshold int
+	// RunAtStartup contains true if the job should run when the service start, otherwise false
+	RunAtStartup bool
 }
 
 // CurrentHostCleaningJob contains parameters for the current host cleaning
@@ -112,6 +114,8 @@ type CurrentHostCleaningJob struct {
 	Crontab string
 	// DaysThreshold contains the threshdold of the current host cleaning
 	HourThreshold int
+	// RunAtStartup contains true if the job should run when the service start, otherwise false
+	RunAtStartup bool
 }
 
 // ArchivedHostCleaningJob contains parameters for the archived host cleaning
@@ -120,4 +124,6 @@ type ArchivedHostCleaningJob struct {
 	Crontab string
 	// DaysThreshold contains the threshdold of the archived host cleaning
 	HourThreshold int
+	// RunAtStartup contains true if the job should run when the service start, otherwise false
+	RunAtStartup bool
 }
