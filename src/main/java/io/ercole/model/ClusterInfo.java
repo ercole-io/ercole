@@ -39,6 +39,7 @@ public class ClusterInfo {
     private long id;
     //@Column(unique = true)
     private String name;
+    private String type;
     private int cpu;
     private int sockets;   
     @ElementCollection(fetch = FetchType.LAZY)
@@ -114,15 +115,17 @@ public class ClusterInfo {
      * 
      * @param id id
      * @param name name
+     * @param type type
      * @param cpu cpu
      * @param sockets sockets
      * @param vms vms
      * @param updated updated
      */
-    public ClusterInfo(final long id, final String name, final int cpu,
+    public ClusterInfo(final long id, final String name, final String type, final int cpu,
                        final int sockets, final List<VMInfo> vms, final Date updated) {
         this.id = id;
         this.name = name;
+        this.type = type;
         this.cpu = cpu;
         this.sockets = sockets;
         this.vms = vms;
@@ -147,5 +150,19 @@ public class ClusterInfo {
      */
     public void setUpdated(final Date updated) {
         this.updated = updated;
+    }
+
+    /**
+     * @return the type
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type
+     */
+    public void setType(final String type) {
+        this.type = type;
     }
 }
