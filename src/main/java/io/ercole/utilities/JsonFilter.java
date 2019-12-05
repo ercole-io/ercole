@@ -343,6 +343,7 @@ public final class JsonFilter {
 	public static ClusterInfo buildClusterInfoFromJsonObject(final JSONObject obj) {
 		ClusterInfo ci = new ClusterInfo();
 		ci.setName(obj.getString("Name"));
+		ci.setType(obj.getString("Type"));
 		ci.setCpu(obj.getInt("CPU"));
 		ci.setSockets(obj.getInt("Sockets"));
 		ci.setVms(buildVMInfosFromJsonArray(obj.getJSONArray("VMs")));
