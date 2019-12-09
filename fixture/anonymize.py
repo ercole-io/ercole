@@ -20,7 +20,10 @@ list3 = []
 with open("fixture/list3.txt") as fp:
     for line in fp:
         list3.append(line.strip())
-
+list4 = []
+with open("fixture/list4.txt") as fp:
+    for line in fp:
+        list4.append(line.strip())
 
 # A injective and suriective function...
 def assoc(p: str, mod: int):
@@ -48,6 +51,57 @@ try:
     data["Schemas"] = " ".join(map(lambda x: assoc_list(x, list2),  data["Schemas"].split(" ")))
 except Exception as ex:
     pass
+try:
+    for fs in data["Extra"]["Filesystems"]:
+        try:
+            fs["Filesystem"] = assoc_list(fs["Filesystem"], list4)
+        except Exception:
+            pass
+
+        try:
+            fs["MountedOn"] = assoc_list(fs["MountedOn"], list4)
+        except Exception:
+            pass
+except Exception:
+    pass
+
+try:
+    for db in data["Extra"]["Databases"]:
+        try:
+            db["Name"] = assoc_list(db["Name"], list2)
+        except Exception as ex:
+            pass
+        try:
+            db["UniqueName"] = assoc_list(db["UniqueName"], list2)
+        except Exception as ex:
+            pass
+        try:
+            for patch in db["Patches"]:
+                patch["Database"] = assoc_list(patch["Database"], list2)
+        except Exception as ex:
+            pass
+        try:
+            for ts in db["Tablespaces"]:
+                ts["Database"] = assoc_list(ts["Database"], list2)
+                ts["Name"] = assoc_list(ts["Name"], list2)
+        except Exception as ex:
+            pass
+        try:
+            for sc in db["Schemas"]:
+                sc["Database"] = assoc_list(sc["Database"], list2)
+                sc["User"] = assoc_list(sc["User"], list2)
+        except Exception as ex:
+            pass
+        try:
+            for sa in db["SegmentAdvisors"]:
+                sa["SegmentOwner"] = assoc_list(sa["SegmentOwner"], list3)
+                sa["SegmentName"] = assoc_list(sa["SegmentName"], list2)
+                sa["Recommendation"] = md5(sa["Recommendation"].encode("ascii")).hexdigest()
+        except Exception as ex:
+            pass
+except Exception as ex:
+    pass
+
 
 try:
     for db in data["Extra"]["Databases"]:
