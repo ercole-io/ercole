@@ -288,6 +288,16 @@ func MigrateCurrentDatabasesSchema(client *mongo.Database) {
 			bson.D{{"$unwind", bson.D{
 				{"path", "$extra.databases"},
 			}}},
+			bson.D{{"$addFields", bson.D{
+				{"extra.databases.ha", bson.D{
+					{"$or", bson.A{
+						"$info.sun_cluster",
+						"$info.veritas_cluster",
+						"$info.oracle_cluster",
+						"$info.aix_cluster",
+					}},
+				}},
+			}}},
 			bson.D{{"$project", bson.D{
 				{"hostname", 1},
 				{"environment", 1},

@@ -37,3 +37,8 @@ func (as *APIService) SearchCurrentSegmentAdvisors(search string, sortBy string,
 func (as *APIService) SearchCurrentPatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.SearchCurrentPatchAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, windowTime, location, environment)
 }
+
+// SearchCurrentDatabases search current databases
+func (as *APIService) SearchCurrentDatabases(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchCurrentDatabases(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment)
+}

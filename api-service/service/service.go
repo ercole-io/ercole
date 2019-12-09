@@ -43,6 +43,8 @@ type APIServiceInterface interface {
 	SearchCurrentSegmentAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchCurrentPatchAdvisors search current patch advisors
 	SearchCurrentPatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
+	// SearchCurrentDatabases search current databases
+	SearchCurrentDatabases(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
