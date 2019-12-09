@@ -47,6 +47,8 @@ type MongoDatabaseInterface interface {
 	SearchCurrentSegmentAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchCurrentPatchAdvisors search current patch advisors
 	SearchCurrentPatchAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
+	// SearchCurrentDatabases search current databases
+	SearchCurrentDatabases(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation

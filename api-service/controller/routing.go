@@ -36,6 +36,7 @@ func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface
 	router.HandleFunc("/addms", ctrl.SearchCurrentAddms).Methods("GET")
 	router.HandleFunc("/segment-advisors", ctrl.SearchCurrentSegmentAdvisors).Methods("GET")
 	router.HandleFunc("/patch-advisors", ctrl.SearchCurrentPatchAdvisors).Methods("GET")
+	router.HandleFunc("/databases", ctrl.SearchCurrentDatabases).Methods("GET")
 	router.HandleFunc("/hosts/{hostname}", ctrl.GetCurrentHost).Methods("GET")
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")
 }
