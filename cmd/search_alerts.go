@@ -30,7 +30,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// searchAlertsCmd represents the getHosts command
+// searchAlertsCmd represents the search-alerts command
 var searchAlertsCmd = &cobra.Command{
 	Use:   "search-alerts",
 	Short: "Search alerts",
