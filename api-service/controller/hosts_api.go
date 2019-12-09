@@ -30,6 +30,8 @@ func (ctrl *APIController) SearchCurrentHosts(w http.ResponseWriter, r *http.Req
 	var sortDesc bool
 	var pageNumber int
 	var pageSize int
+	var location string
+	var environment string
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
@@ -54,8 +56,11 @@ func (ctrl *APIController) SearchCurrentHosts(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
 	//get the data
-	hosts, err := ctrl.Service.SearchCurrentHosts(full, search, sortBy, sortDesc, pageNumber, pageSize)
+	hosts, err := ctrl.Service.SearchCurrentHosts(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return

@@ -29,6 +29,8 @@ func (ctrl *APIController) SearchCurrentClusters(w http.ResponseWriter, r *http.
 	var sortDesc bool
 	var pageNumber int
 	var pageSize int
+	var location string
+	var environment string
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
@@ -53,8 +55,11 @@ func (ctrl *APIController) SearchCurrentClusters(w http.ResponseWriter, r *http.
 		return
 	}
 
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
 	//get the data
-	clusters, err := ctrl.Service.SearchCurrentClusters(full, search, sortBy, sortDesc, pageNumber, pageSize)
+	clusters, err := ctrl.Service.SearchCurrentClusters(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return

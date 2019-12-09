@@ -41,6 +41,8 @@ var searchPatchAdvisorsCmd = &cobra.Command{
 		params := url.Values{
 			"search":      []string{strings.Join(args, " ")},
 			"window-time": []string{strconv.Itoa(windowTime)},
+			"location":    []string{location},
+			"environment": []string{environment},
 		}
 
 		if sortBy != "" {
@@ -89,4 +91,6 @@ func init() {
 	searchPatchAdvisorsCmd.Flags().StringVar(&sortBy, "sort-by", "", "Sort by field")
 	searchPatchAdvisorsCmd.Flags().BoolVar(&sortDesc, "desc-order", false, "Sort descending")
 	searchPatchAdvisorsCmd.Flags().IntVarP(&windowTime, "window-time", "w", 12, "Window time")
+	searchPatchAdvisorsCmd.Flags().StringVarP(&location, "location", "l", "", "Filter by location")
+	searchPatchAdvisorsCmd.Flags().StringVarP(&environment, "environment", "e", "", "Filter by environment")
 }

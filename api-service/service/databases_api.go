@@ -24,16 +24,16 @@ import (
 )
 
 // SearchCurrentAddms search current addms
-func (as *APIService) SearchCurrentAddms(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchCurrentAddms(strings.Split(search, " "), sortBy, sortDesc, page, pageSize)
+func (as *APIService) SearchCurrentAddms(search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchCurrentAddms(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment)
 }
 
 // SearchCurrentSegmentAdvisors search current segment advisors
-func (as *APIService) SearchCurrentSegmentAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchCurrentSegmentAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize)
+func (as *APIService) SearchCurrentSegmentAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchCurrentSegmentAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment)
 }
 
 // SearchCurrentPatchAdvisors search current patch advisors
-func (as *APIService) SearchCurrentPatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchCurrentPatchAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, windowTime)
+func (as *APIService) SearchCurrentPatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchCurrentPatchAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, windowTime, location, environment)
 }

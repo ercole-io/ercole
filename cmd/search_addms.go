@@ -37,7 +37,9 @@ var searchAddmsCmd = &cobra.Command{
 	Long:  `search-addms search the most matching addms to the arguments`,
 	Run: func(cmd *cobra.Command, args []string) {
 		params := url.Values{
-			"search": []string{strings.Join(args, " ")},
+			"search":      []string{strings.Join(args, " ")},
+			"location":    []string{location},
+			"environment": []string{environment},
 		}
 
 		if sortBy != "" {
@@ -85,4 +87,6 @@ func init() {
 	apiCmd.AddCommand(searchAddmsCmd)
 	searchAddmsCmd.Flags().StringVar(&sortBy, "sort-by", "", "Sort by field")
 	searchAddmsCmd.Flags().BoolVar(&sortDesc, "desc-order", false, "Sort descending")
+	searchAddmsCmd.Flags().StringVarP(&location, "location", "l", "", "Filter by location")
+	searchAddmsCmd.Flags().StringVarP(&environment, "environment", "e", "", "Filter by environment")
 }

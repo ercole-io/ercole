@@ -11,7 +11,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// along with this program.  If not, see <http://www.gn+èu.org/licenses/>.
 
 // Package service is a package that provides methods for querying data
 package service
@@ -23,6 +23,6 @@ import (
 )
 
 // SearchCurrentClusters search current clusters
-func (as *APIService) SearchCurrentClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchCurrentClusters(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize)
+func (as *APIService) SearchCurrentClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchCurrentClusters(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment)
 }

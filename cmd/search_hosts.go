@@ -33,6 +33,8 @@ import (
 var summary bool
 var sortBy string
 var sortDesc bool
+var location string
+var environment string
 
 // searchHostsCmd represents the search-hosts command
 var searchHostsCmd = &cobra.Command{
@@ -41,8 +43,10 @@ var searchHostsCmd = &cobra.Command{
 	Long:  `search-hosts search the most matching hosts to the arguments`,
 	Run: func(cmd *cobra.Command, args []string) {
 		params := url.Values{
-			"full":   []string{strconv.FormatBool(!summary)},
-			"search": []string{strings.Join(args, " ")},
+			"full":        []string{strconv.FormatBool(!summary)},
+			"search":      []string{strings.Join(args, " ")},
+			"location":    []string{location},
+			"environment": []string{environment},
 		}
 
 		if sortBy != "" {
@@ -91,4 +95,6 @@ func init() {
 	searchHostsCmd.Flags().BoolVarP(&summary, "summary", "s", false, "Summary mode")
 	searchHostsCmd.Flags().StringVar(&sortBy, "sort-by", "", "Sort by field")
 	searchHostsCmd.Flags().BoolVar(&sortDesc, "desc-order", false, "Sort descending")
+	searchHostsCmd.Flags().StringVarP(&location, "location", "l", "", "Filter by location")
+	searchHostsCmd.Flags().StringVarP(&environment, "environment", "e", "", "Filter by environment")
 }
