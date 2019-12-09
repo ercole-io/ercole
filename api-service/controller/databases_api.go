@@ -17,6 +17,7 @@ package controller
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/amreo/ercole-services/utils"
 )
@@ -102,5 +103,53 @@ func (ctrl *APIController) SearchCurrentSegmentAdvisors(w http.ResponseWriter, r
 	} else {
 		//Write the data
 		utils.WriteJSONResponse(w, http.StatusOK, segmentAdvisors[0])
+	}
+}
+
+// SearchCurrentPatchAdvisors search current patch advisors data using the filters in the request
+func (ctrl *APIController) SearchCurrentPatchAdvisors(w http.ResponseWriter, r *http.Request) {
+	var search string
+	var sortBy string
+	var sortDesc bool
+	var pageNumber int
+	var pageSize int
+	var windowTime int
+
+	var err utils.AdvancedErrorInterface
+	//parse the query params
+	search = r.URL.Query().Get("search")
+	sortBy = r.URL.Query().Get("sort-by")
+	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	if windowTime, err = utils.Str2int(r.URL.Query().Get("window-time"), 6); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	//get the data
+	patchAdvisors, err := ctrl.Service.SearchCurrentPatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, time.Now().AddDate(0, -windowTime, 0))
+	if err != nil {
+		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if pageNumber == -1 || pageSize == -1 {
+		//Write the data
+		utils.WriteJSONResponse(w, http.StatusOK, patchAdvisors)
+	} else {
+		//Write the data
+		utils.WriteJSONResponse(w, http.StatusOK, patchAdvisors[0])
 	}
 }
