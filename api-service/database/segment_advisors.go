@@ -26,7 +26,7 @@ import (
 )
 
 // SearchCurrentSegmentAdvisors search current segment advisors
-func (md *MongoDatabase) SearchCurrentSegmentAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchCurrentSegmentAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 	var quotedKeywords []string
 	for _, k := range keywords {
@@ -36,6 +36,12 @@ func (md *MongoDatabase) SearchCurrentSegmentAdvisors(keywords []string, sortBy 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
 		bson.A{
+			optionalStep(location != "", bson.M{"$match": bson.M{
+				"location": location,
+			}}),
+			optionalStep(environment != "", bson.M{"$match": bson.M{
+				"environment": environment,
+			}}),
 			bson.M{"$match": bson.M{
 				"$or": bson.A{
 					bson.M{"hostname": bson.M{

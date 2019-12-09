@@ -37,7 +37,9 @@ var searchSegmentAdvisorsCmd = &cobra.Command{
 	Long:  `search-segment-advisors search the most matching segment advisors to the arguments`,
 	Run: func(cmd *cobra.Command, args []string) {
 		params := url.Values{
-			"search": []string{strings.Join(args, " ")},
+			"search":      []string{strings.Join(args, " ")},
+			"location":    []string{location},
+			"environment": []string{environment},
 		}
 
 		if sortBy != "" {
@@ -85,4 +87,6 @@ func init() {
 	apiCmd.AddCommand(searchSegmentAdvisorsCmd)
 	searchSegmentAdvisorsCmd.Flags().StringVar(&sortBy, "sort-by", "", "Sort by field")
 	searchSegmentAdvisorsCmd.Flags().BoolVar(&sortDesc, "desc-order", false, "Sort descending")
+	searchSegmentAdvisorsCmd.Flags().StringVarP(&location, "location", "l", "", "Filter by location")
+	searchSegmentAdvisorsCmd.Flags().StringVarP(&environment, "environment", "e", "", "Filter by environment")
 }

@@ -29,6 +29,8 @@ func (ctrl *APIController) SearchCurrentAddms(w http.ResponseWriter, r *http.Req
 	var sortDesc bool
 	var pageNumber int
 	var pageSize int
+	var location string
+	var environment string
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
@@ -48,8 +50,11 @@ func (ctrl *APIController) SearchCurrentAddms(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
 	//get the data
-	addms, err := ctrl.Service.SearchCurrentAddms(search, sortBy, sortDesc, pageNumber, pageSize)
+	addms, err := ctrl.Service.SearchCurrentAddms(search, sortBy, sortDesc, pageNumber, pageSize, location, environment)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -71,6 +76,8 @@ func (ctrl *APIController) SearchCurrentSegmentAdvisors(w http.ResponseWriter, r
 	var sortDesc bool
 	var pageNumber int
 	var pageSize int
+	var location string
+	var environment string
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
@@ -90,8 +97,11 @@ func (ctrl *APIController) SearchCurrentSegmentAdvisors(w http.ResponseWriter, r
 		return
 	}
 
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
 	//get the data
-	segmentAdvisors, err := ctrl.Service.SearchCurrentSegmentAdvisors(search, sortBy, sortDesc, pageNumber, pageSize)
+	segmentAdvisors, err := ctrl.Service.SearchCurrentSegmentAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, location, environment)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -114,6 +124,8 @@ func (ctrl *APIController) SearchCurrentPatchAdvisors(w http.ResponseWriter, r *
 	var pageNumber int
 	var pageSize int
 	var windowTime int
+	var location string
+	var environment string
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
@@ -138,8 +150,11 @@ func (ctrl *APIController) SearchCurrentPatchAdvisors(w http.ResponseWriter, r *
 		return
 	}
 
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
 	//get the data
-	patchAdvisors, err := ctrl.Service.SearchCurrentPatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, time.Now().AddDate(0, -windowTime, 0))
+	patchAdvisors, err := ctrl.Service.SearchCurrentPatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, time.Now().AddDate(0, -windowTime, 0), location, environment)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return

@@ -37,8 +37,10 @@ var searchClustersCmd = &cobra.Command{
 	Long:  `search-clusters search the most matching clusters to the arguments`,
 	Run: func(cmd *cobra.Command, args []string) {
 		params := url.Values{
-			"full":   []string{strconv.FormatBool(!summary)},
-			"search": []string{strings.Join(args, " ")},
+			"full":        []string{strconv.FormatBool(!summary)},
+			"search":      []string{strings.Join(args, " ")},
+			"location":    []string{location},
+			"environment": []string{environment},
 		}
 
 		if sortBy != "" {
@@ -87,4 +89,6 @@ func init() {
 	searchClustersCmd.Flags().BoolVarP(&summary, "summary", "s", false, "Summary mode")
 	searchClustersCmd.Flags().StringVar(&sortBy, "sort-by", "", "Sort by field")
 	searchClustersCmd.Flags().BoolVar(&sortDesc, "desc-order", false, "Sort descending")
+	searchClustersCmd.Flags().StringVarP(&location, "location", "l", "", "Filter by location")
+	searchClustersCmd.Flags().StringVarP(&environment, "environment", "e", "", "Filter by environment")
 }

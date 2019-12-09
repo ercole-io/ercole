@@ -26,16 +26,23 @@ import (
 )
 
 // SearchCurrentHosts search current hosts
-func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 	var quotedKeywords []string
 	for _, k := range keywords {
 		quotedKeywords = append(quotedKeywords, regexp.QuoteMeta(k))
 	}
+
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		bson.A{
+			optionalStep(location != "", bson.M{"$match": bson.M{
+				"location": location,
+			}}),
+			optionalStep(environment != "", bson.M{"$match": bson.M{
+				"environment": environment,
+			}}),
 			bson.M{"$match": bson.M{
 				"archived": false,
 				"$or": bson.A{
@@ -102,6 +109,7 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 			}},
 			optionalStep(!full, bson.M{"$project": bson.M{
 				"hostname":        true,
+				"location":        true,
 				"environment":     true,
 				"host_type":       true,
 				"cluster":         true,
