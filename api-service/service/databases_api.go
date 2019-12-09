@@ -18,6 +18,7 @@ package service
 
 import (
 	"strings"
+	"time"
 
 	"github.com/amreo/ercole-services/utils"
 )
@@ -30,4 +31,9 @@ func (as *APIService) SearchCurrentAddms(search string, sortBy string, sortDesc 
 // SearchCurrentSegmentAdvisors search current segment advisors
 func (as *APIService) SearchCurrentSegmentAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.SearchCurrentSegmentAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize)
+}
+
+// SearchCurrentPatchAdvisors search current patch advisors
+func (as *APIService) SearchCurrentPatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchCurrentPatchAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, windowTime)
 }
