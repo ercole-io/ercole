@@ -34,7 +34,7 @@ var summary bool
 var sortBy string
 var sortDesc bool
 
-// searchHostsCmd represents the searchHosts command
+// searchHostsCmd represents the search-hosts command
 var searchHostsCmd = &cobra.Command{
 	Use:   "search-hosts",
 	Short: "Search current hosts",

@@ -30,7 +30,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// searchClustersCmd represents the searchClusters command
+// searchClustersCmd represents the search-clusters command
 var searchClustersCmd = &cobra.Command{
 	Use:   "search-clusters",
 	Short: "Search current clusters",

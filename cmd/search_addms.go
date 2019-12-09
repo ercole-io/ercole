@@ -30,7 +30,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// searchAddmsCmd represents the searchAddms command
+// searchAddmsCmd represents the search-addms command
 var searchAddmsCmd = &cobra.Command{
 	Use:   "search-addms",
 	Short: "Search current addms",

@@ -29,7 +29,7 @@ import (
 
 var verbose bool
 
-// fireHostDataCmd represents the fire-data command
+// fireHostDataCmd represents the fire-hostdata command
 var fireHostDataCmd = &cobra.Command{
 	Use:   "fire-hostdata",
 	Short: "Fire hostdata",
