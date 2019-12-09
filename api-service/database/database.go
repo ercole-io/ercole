@@ -43,6 +43,8 @@ type MongoDatabaseInterface interface {
 	SearchCurrentClusters(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchCurrentAddms search current addms
 	SearchCurrentAddms(keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface)
+	// SearchCurrentSegmentAdvisors search current segment advisors
+	SearchCurrentSegmentAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation

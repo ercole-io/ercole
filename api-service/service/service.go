@@ -39,6 +39,8 @@ type APIServiceInterface interface {
 	SearchCurrentClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchCurrentAddms search current addm
 	SearchCurrentAddms(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface)
+	// SearchCurrentSegmentAdvisors search current segment advisors
+	SearchCurrentSegmentAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
