@@ -49,6 +49,9 @@ type MongoDatabaseInterface interface {
 	SearchCurrentPatchAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchCurrentDatabases search current databases
 	SearchCurrentDatabases(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
+
+	// GetEnvironmentStats return a array containing the number of hosts per environment
+	GetEnvironmentStats(location string) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation
