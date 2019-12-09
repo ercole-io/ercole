@@ -26,3 +26,8 @@ import (
 func (as *APIService) SearchCurrentAddms(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.SearchCurrentAddms(strings.Split(search, " "), sortBy, sortDesc, page, pageSize)
 }
+
+// SearchCurrentSegmentAdvisors search current segment advisors
+func (as *APIService) SearchCurrentSegmentAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchCurrentSegmentAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize)
+}

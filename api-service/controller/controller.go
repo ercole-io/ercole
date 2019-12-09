@@ -34,6 +34,8 @@ type APIControllerInterface interface {
 	SearchCurrentClusters(w http.ResponseWriter, r *http.Request)
 	// SearchCurrentAddms search current addms data using the filters in the request
 	SearchCurrentAddms(w http.ResponseWriter, r *http.Request)
+	// SearchCurrentSegmentAdvisors search current segment advisors data using the filters in the request
+	SearchCurrentSegmentAdvisors(w http.ResponseWriter, r *http.Request)
 	// GetCurrentHost return all'informations about the current host requested in the id path variable
 	GetCurrentHost(w http.ResponseWriter, r *http.Request)
 	// SearchAlerts search alerts using the filters in the request

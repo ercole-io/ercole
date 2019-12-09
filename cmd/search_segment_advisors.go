@@ -20,52 +20,69 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/amreo/ercole-services/utils"
+
 	"github.com/spf13/cobra"
 )
 
-// getHostCmd represents the get-host command
-var getHostCmd = &cobra.Command{
-	Use:   "get-host",
-	Short: "Get a current host",
-	Long:  `Get from api-service a current host`,
+// searchSegmentAdvisorsCmd represents the search-segment-advisors command
+var searchSegmentAdvisorsCmd = &cobra.Command{
+	Use:   "search-segment-advisors",
+	Short: "Search current segment advisors",
+	Long:  `search-segment-advisors search the most matching segment advisors to the arguments`,
 	Run: func(cmd *cobra.Command, args []string) {
+		params := url.Values{
+			"search": []string{strings.Join(args, " ")},
+		}
+
+		if sortBy != "" {
+			params.Set("sort-by", sortBy)
+			params.Set("sort-desc", strconv.FormatBool(sortDesc))
+		}
+
 		resp, err := http.Get(
-			utils.NewAPIUrlNoParams(
+			utils.NewAPIUrl(
 				ercoleConfig.APIService.RemoteEndpoint,
 				ercoleConfig.APIService.UserUsername,
 				ercoleConfig.APIService.UserPassword,
-				"/hosts/"+args[0],
+				"/segment-advisors",
+				params,
 			).String())
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to get the hostdata: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Failed to search segment advisors data: %v\n", err)
 			os.Exit(1)
 		} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
 			out, _ := ioutil.ReadAll(resp.Body)
 			defer resp.Body.Close()
-			fmt.Fprintf(os.Stderr, "Failed to get the hostdata(Status: %d): %s\n", resp.StatusCode, string(out))
+			fmt.Fprintf(os.Stderr, "Failed to search segment advisors data(Status: %d): %s\n", resp.StatusCode, string(out))
 			os.Exit(1)
 		} else {
 			out, _ := ioutil.ReadAll(resp.Body)
 			defer resp.Body.Close()
-			var res interface{}
+			var res []interface{}
 			err = json.Unmarshal(out, &res)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Failed to unmarshal response body: %v (%s)\n", err, string(out))
 				os.Exit(1)
 			}
 
-			enc := json.NewEncoder(os.Stdout)
-			enc.SetIndent("", "    ")
-			enc.Encode(res)
+			for _, item := range res {
+				enc := json.NewEncoder(os.Stdout)
+				enc.SetIndent("", "    ")
+				enc.Encode(item)
+			}
 		}
 
 	},
-	Args: cobra.ExactArgs(1),
 }
 
 func init() {
-	apiCmd.AddCommand(getHostCmd)
+	apiCmd.AddCommand(searchSegmentAdvisorsCmd)
+	searchSegmentAdvisorsCmd.Flags().StringVar(&sortBy, "sort-by", "", "Sort by field")
+	searchSegmentAdvisorsCmd.Flags().BoolVar(&sortDesc, "desc-order", false, "Sort descending")
 }
