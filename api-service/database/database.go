@@ -52,6 +52,8 @@ type MongoDatabaseInterface interface {
 
 	// GetEnvironmentStats return a array containing the number of hosts per environment
 	GetEnvironmentStats(location string) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetTypeStats return a array containing the number of hosts per operating system
+	GetOperatingSystemStats(location string) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetTypeStats return a array containing the number of hosts per type
 	GetTypeStats(location string) ([]interface{}, utils.AdvancedErrorInterface)
 }
@@ -64,6 +66,8 @@ type MongoDatabase struct {
 	Client *mongo.Client
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
+	// OperatingSystemAggregationRules contains rules used to aggregate various operating systems
+	OperatingSystemAggregationRules []config.AggregationRule
 }
 
 // Init initializes the connection to the database

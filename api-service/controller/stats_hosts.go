@@ -58,3 +58,22 @@ func (ctrl *APIController) GetTypeStats(w http.ResponseWriter, r *http.Request) 
 	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, stats)
 }
+
+// GetOperatingSystemStats return all statistics about the operating systems using the filters in the request
+func (ctrl *APIController) GetOperatingSystemStats(w http.ResponseWriter, r *http.Request) {
+	var location string
+	var err utils.AdvancedErrorInterface
+
+	//parse the query params
+	location = r.URL.Query().Get("location")
+
+	//get the data
+	stats, err := ctrl.Service.GetOperatingSystemStats(location)
+	if err != nil {
+		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, stats)
+}

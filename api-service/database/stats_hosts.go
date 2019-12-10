@@ -103,3 +103,64 @@ func (md *MongoDatabase) GetTypeStats(location string) ([]interface{}, utils.Adv
 	}
 	return out, nil
 }
+
+// GetOperatingSystemStats return a array containing the number of hosts per operanting system
+func (md *MongoDatabase) GetOperatingSystemStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
+	var out []interface{}
+
+	//Create the aggregation branches
+	aggregationBranches := []bson.M{}
+	for _, v := range md.OperatingSystemAggregationRules {
+		aggregationBranches = append(aggregationBranches, bson.M{
+			"case": bson.M{
+				"$regexMatch": bson.M{
+					"input": "$info.os",
+					"regex": v.Regex,
+				},
+			},
+			"then": v.Group,
+		})
+	}
+
+	//Find the matching hostdata
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		bson.A{
+			optionalStep(location != "", bson.M{"$match": bson.M{
+				"location": location,
+			}}),
+			bson.M{"$match": bson.M{
+				"archived": false,
+			}},
+			bson.M{"$group": bson.M{
+				"_id": bson.M{
+					"$switch": bson.M{
+						"branches": aggregationBranches,
+						"default":  "$info.os",
+					},
+				},
+				"count": bson.M{
+					"$sum": 1,
+				},
+			}},
+			bson.M{"$project": bson.M{
+				"_id":              false,
+				"operating_system": "$_id",
+				"count":            true,
+			}},
+		},
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Decode the documents
+	for cur.Next(context.TODO()) {
+		var item map[string]interface{}
+		if cur.Decode(&item) != nil {
+			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		}
+		out = append(out, &item)
+	}
+	return out, nil
+}
