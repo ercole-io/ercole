@@ -117,4 +117,9 @@ public class HostController {
 	public void addLicenseModifier(@PathVariable final String hostname, @PathVariable final String dbname, final @PathVariable String licenseName, final @RequestBody int newValue) {
 		hostService.addLicenseModifier(hostname, dbname, licenseName, newValue);
 	}
+
+	@DeleteMapping("/hosts/{hostname}/databases/{dbname}/license-modifiers/{licenseName}")
+	public void removeLicenseModifier(@PathVariable final String hostname, @PathVariable final String dbname, final @PathVariable String licenseName) {
+		hostService.removeLicenseModifier(hostname, dbname, licenseName);
+	}
 }

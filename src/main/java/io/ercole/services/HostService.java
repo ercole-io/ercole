@@ -484,6 +484,19 @@ public class HostService {
 		currentRepo.save(host);
 	}
 
+	public void removeLicenseModifier(final String hostname, final String dbname, final String licenseName) {
+		LicenseModifier oldLicense = licenseModifierRepo.findByHostnameAndDbnameAndLicenseName(hostname, dbname, licenseName);
+		if (oldLicense != null) {
+			licenseModifierRepo.delete(oldLicense);
+		}
+
+		//Fix currenthost
+		CurrentHost host = currentRepo.findByHostname(hostname);
+		removePatchCurrentHostForLicenseModifiers(host, dbname, licenseName);
+		currentRepo.save(host);
+	}
+
+
 	public void patchCurrentHostWithLicenseModifiers(final CurrentHost host) {
 		JSONObject extraInfo = new JSONObject(host.getExtraInfo());
 		JSONArray databases = extraInfo.getJSONArray("Databases");
@@ -497,11 +510,39 @@ public class HostService {
 			for (int j = 0; j < licenses.length(); j++) {
 				JSONObject license  = licenses.getJSONObject(j);
 				String name = license.getString("Name");
+				if (license.has("OldCount")) {
+					continue;
+				}
 				modifiers.forEach(lm -> {
 					if (lm.getLicenseName().equals(name)) {
+						license.put("OldCount", license.get("Count"));
 						license.put("Count", lm.getNewValue());
 					}
 				});
+			}
+		}
+
+		host.setExtraInfo(extraInfo.toString());
+	}
+
+
+	public void removePatchCurrentHostForLicenseModifiers(final CurrentHost host, final String dbname, final String licenseName) {
+		JSONObject extraInfo = new JSONObject(host.getExtraInfo());
+		JSONArray databases = extraInfo.getJSONArray("Databases");
+		for (int i = 0; i < databases.length(); i++) {
+			JSONObject db = databases.getJSONObject(i);
+			if (!db.getString("Name").equals(dbname)) {
+				continue;
+			}
+			JSONArray licenses = db.getJSONArray("Licenses");
+
+			for (int j = 0; j < licenses.length(); j++) {
+				JSONObject license  = licenses.getJSONObject(j);
+				String name = license.getString("Name");
+				if (name.equals(licenseName)) {
+					license.put("Count", license.get("OldCount"));
+					license.remove("OldCount");
+				}
 			}
 		}
 
