@@ -24,3 +24,8 @@ import (
 func (as *APIService) GetDatabaseEnvironmentStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetDatabaseEnvironmentStats(location)
 }
+
+// GetDatabaseVersionStats return a array containing the number of databases per version
+func (as *APIService) GetDatabaseVersionStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetDatabaseVersionStats(location)
+}
