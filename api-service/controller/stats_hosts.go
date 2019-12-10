@@ -21,7 +21,7 @@ import (
 	"github.com/amreo/ercole-services/utils"
 )
 
-// GetEnvironmentStats return all statistics about the environments using the filters in the request
+// GetEnvironmentStats return all statistics about the environments of the hosts using the filters in the request
 func (ctrl *APIController) GetEnvironmentStats(w http.ResponseWriter, r *http.Request) {
 	var location string
 	var err utils.AdvancedErrorInterface
@@ -40,7 +40,7 @@ func (ctrl *APIController) GetEnvironmentStats(w http.ResponseWriter, r *http.Re
 	utils.WriteJSONResponse(w, http.StatusOK, stats)
 }
 
-// GetTypeStats return all statistics about the types using the filters in the request
+// GetTypeStats return all statistics about the types of the hosts using the filters in the request
 func (ctrl *APIController) GetTypeStats(w http.ResponseWriter, r *http.Request) {
 	var location string
 	var err utils.AdvancedErrorInterface
@@ -59,7 +59,7 @@ func (ctrl *APIController) GetTypeStats(w http.ResponseWriter, r *http.Request) 
 	utils.WriteJSONResponse(w, http.StatusOK, stats)
 }
 
-// GetOperatingSystemStats return all statistics about the operating systems using the filters in the request
+// GetOperatingSystemStats return all statistics about the operating systems of the hosts using the filters in the request
 func (ctrl *APIController) GetOperatingSystemStats(w http.ResponseWriter, r *http.Request) {
 	var location string
 	var err utils.AdvancedErrorInterface

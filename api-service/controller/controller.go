@@ -45,12 +45,14 @@ type APIControllerInterface interface {
 	// SearchAlerts search alerts using the filters in the request
 	SearchAlerts(w http.ResponseWriter, r *http.Request)
 
-	// GetEnvironmentStats return all statistics about the environments using the filters in the request
+	// GetEnvironmentStats return all statistics about the environments of the hosts using the filters in the request
 	GetEnvironmentStats(w http.ResponseWriter, r *http.Request)
-	// GetTypeStats return all statistics about the types using the filters in the request
+	// GetTypeStats return all statistics about the types of the hosts using the filters in the request
 	GetTypeStats(w http.ResponseWriter, r *http.Request)
-	// GetOperatingSystemStats return all statistics about the operating systems using the filters in the request
+	// GetOperatingSystemStats return all statistics about the operating systems of the hosts using the filters in the request
 	GetOperatingSystemStats(w http.ResponseWriter, r *http.Request)
+	// GetDatabaseEnvironmentStats return all statistics about the environments of the databases using the filters in the request
+	GetDatabaseEnvironmentStats(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface
