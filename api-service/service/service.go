@@ -52,6 +52,8 @@ type APIServiceInterface interface {
 	GetOperatingSystemStats(location string) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetTypeStats return a array containing the number of hosts per type
 	GetTypeStats(location string) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetDatabaseEnvironmentStats return a array containing the number of databases per environment
+	GetDatabaseEnvironmentStats(location string) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
