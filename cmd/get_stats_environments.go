@@ -28,9 +28,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// getEnvironmentStatsCmd represents the get-environment-stats command
+// getEnvironmentStatsCmd represents the environment command
 var getEnvironmentStatsCmd = &cobra.Command{
-	Use:   "get-environment-stats",
+	Use:   "environment",
 	Short: "Get environment stats",
 	Long:  `Get stats about the environment field`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -75,6 +75,6 @@ var getEnvironmentStatsCmd = &cobra.Command{
 }
 
 func init() {
-	apiCmd.AddCommand(getEnvironmentStatsCmd)
+	statsCmd.AddCommand(getEnvironmentStatsCmd)
 	getEnvironmentStatsCmd.Flags().StringVarP(&location, "location", "l", "", "Filter by location")
 }

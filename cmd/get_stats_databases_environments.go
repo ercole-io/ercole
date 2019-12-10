@@ -28,10 +28,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// getDatabaseEnvironmentStatsCmd represents the get-databases-environment-stats command
+// getDatabaseEnvironmentStatsCmd represents the environment (databases) command
 var getDatabaseEnvironmentStatsCmd = &cobra.Command{
-	Use:   "get-database-environment-stats",
-	Short: "Get database environment stats",
+	Use:   "environment",
+	Short: "Get databases environment stats",
 	Long:  `Get stats about the environment of the databases`,
 	Run: func(cmd *cobra.Command, args []string) {
 		params := url.Values{
@@ -47,12 +47,12 @@ var getDatabaseEnvironmentStatsCmd = &cobra.Command{
 				params,
 			).String())
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to get database environment stats: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Failed to get databases environment stats: %v\n", err)
 			os.Exit(1)
 		} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
 			out, _ := ioutil.ReadAll(resp.Body)
 			defer resp.Body.Close()
-			fmt.Fprintf(os.Stderr, "Failed to get database environment stats(Status: %d): %s\n", resp.StatusCode, string(out))
+			fmt.Fprintf(os.Stderr, "Failed to get databases environment stats(Status: %d): %s\n", resp.StatusCode, string(out))
 			os.Exit(1)
 		} else {
 			out, _ := ioutil.ReadAll(resp.Body)
@@ -75,6 +75,6 @@ var getDatabaseEnvironmentStatsCmd = &cobra.Command{
 }
 
 func init() {
-	apiCmd.AddCommand(getDatabaseEnvironmentStatsCmd)
+	statsDatabasesCmd.AddCommand(getDatabaseEnvironmentStatsCmd)
 	getDatabaseEnvironmentStatsCmd.Flags().StringVarP(&location, "location", "l", "", "Filter by location")
 }

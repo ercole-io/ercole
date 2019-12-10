@@ -28,9 +28,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// getOperatingSystemStatsCmd represents the get-operating-system-stats command
+// getOperatingSystemStatsCmd represents the operating-system command
 var getOperatingSystemStatsCmd = &cobra.Command{
-	Use:   "get-operating-system-stats",
+	Use:   "operating-system",
 	Short: "Get operating system stats",
 	Long:  `Get stats about the info.operating_system field`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -75,6 +75,6 @@ var getOperatingSystemStatsCmd = &cobra.Command{
 }
 
 func init() {
-	apiCmd.AddCommand(getOperatingSystemStatsCmd)
+	statsCmd.AddCommand(getOperatingSystemStatsCmd)
 	getOperatingSystemStatsCmd.Flags().StringVarP(&location, "location", "l", "", "Filter by location")
 }
