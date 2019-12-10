@@ -16,14 +16,14 @@ limitations under the License.
 package cmd
 
 func init() {
-	getDatabaseTopReclaimableStatsCmd := simpleAPIRequestCommand("top-reclaimable",
-		"Get top reclaimable databases stats",
-		`Get stats about top reclaimable databases`,
+	getDatabaseTopWorkloadStatsCmd := simpleAPIRequestCommand("top-workload",
+		"Get top workload databases   stats",
+		`Get stats about top workload databases`,
 		false, false, false, true, false, false, true,
-		"/stats/databases/top-reclaimable",
-		"Failed to get top reclaimable databases stats: %v\n",
-		"Failed to get top reclaimable databases stats(Status: %d): %s\n",
+		"/stats/databases/top-workload",
+		"Failed to get top workload databases stats: %v\n",
+		"Failed to get top workload databases stats(Status: %d): %s\n",
 	)
 
-	statsDatabasesCmd.AddCommand(getDatabaseTopReclaimableStatsCmd)
+	statsDatabasesCmd.AddCommand(getDatabaseTopWorkloadStatsCmd)
 }

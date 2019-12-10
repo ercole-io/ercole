@@ -45,4 +45,5 @@ func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface
 	router.HandleFunc("/stats/databases/environments", ctrl.GetDatabaseEnvironmentStats).Methods("GET")
 	router.HandleFunc("/stats/databases/versions", ctrl.GetDatabaseVersionStats).Methods("GET")
 	router.HandleFunc("/stats/databases/top-reclaimable", ctrl.GetTopReclaimableDatabaseStats).Methods("GET")
+	router.HandleFunc("/stats/databases/top-workload", ctrl.GetTopWorkloadDatabaseStats).Methods("GET")
 }

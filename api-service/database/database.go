@@ -62,6 +62,8 @@ type MongoDatabaseInterface interface {
 	GetDatabaseVersionStats(location string) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetTopReclaimableDatabaseStats return a array containing the total sum of reclaimable of segments advisors of the top reclaimable databases
 	GetTopReclaimableDatabaseStats(location string, limit int) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetTopWorkloadDatabaseStats return a array containing top databases by workload
+	GetTopWorkloadDatabaseStats(location string, limit int) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation

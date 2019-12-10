@@ -55,8 +55,10 @@ type APIControllerInterface interface {
 	GetDatabaseEnvironmentStats(w http.ResponseWriter, r *http.Request)
 	// GetDatabaseVersionStats return all statistics about the versions of the databases using the filters in the request
 	GetDatabaseVersionStats(w http.ResponseWriter, r *http.Request)
-	// GetTopReclaimableDatabaseStats return all the top database by reclaimable segment advisors using the filters in the request
+	// GetTopReclaimableDatabaseStats return top databases by reclaimable segment advisors using the filters in the request
 	GetTopReclaimableDatabaseStats(w http.ResponseWriter, r *http.Request)
+	// GetTopWorkloadDatabaseStats return top databases by workload advisors using the filters in the request
+	GetTopWorkloadDatabaseStats(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface
