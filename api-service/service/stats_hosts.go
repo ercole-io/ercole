@@ -29,3 +29,8 @@ func (as *APIService) GetEnvironmentStats(location string) ([]interface{}, utils
 func (as *APIService) GetTypeStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetTypeStats(location)
 }
+
+// GetOperatingSystemStats return a array containing the number of hosts per operating system
+func (as *APIService) GetOperatingSystemStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetOperatingSystemStats(location)
+}

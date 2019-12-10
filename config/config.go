@@ -86,6 +86,8 @@ type APIService struct {
 	UserUsername string
 	// UserPassword contains the password of the user
 	UserPassword string
+	// OperatingSystemAggregationRules contains rules used to aggregate various operating systems
+	OperatingSystemAggregationRules []AggregationRule
 }
 
 // Mongodb contains configuration about the database connection, some data logic and migration
@@ -126,4 +128,12 @@ type ArchivedHostCleaningJob struct {
 	HourThreshold int
 	// RunAtStartup contains true if the job should run when the service start, otherwise false
 	RunAtStartup bool
+}
+
+// AggregationRule contains a rule used to aggregate string per group
+type AggregationRule struct {
+	// Regex contains the regular expression used for matching the aggregation group
+	Regex string
+	// Group contains the name of the group
+	Group string
 }

@@ -196,8 +196,9 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	//Setup the database
 	db := &apiservice_database.MongoDatabase{
-		Config:  config,
-		TimeNow: time.Now,
+		Config:                          config,
+		TimeNow:                         time.Now,
+		OperatingSystemAggregationRules: config.APIService.OperatingSystemAggregationRules,
 	}
 	db.Init()
 

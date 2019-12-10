@@ -38,7 +38,14 @@
 		"Port": 11113,	
 		"LogHTTPRequest": true,
 		"UserUsername": "user",
-		"UserPassword": "password"
+		"UserPassword": "password",
+		"OperatingSystemAggregationRules": [
+			{ "Regex": "^Red Hat Enterprise Linux Server release 7.*$", "Group": "RHEL7" },
+			{ "Regex": "^Red Hat Enterprise Linux Server release 6.*$", "Group": "RHEL6" },
+			{ "Regex": "^Red Hat Enterprise Linux Server release 5.*$", "Group": "RHEL5" },
+			{ "Regex": "^HPUX.*$", "Group": "HPUX" },
+			{ "Regex": "^AIX.*$", "Group": "AIX" }
+		]
 	},
 	"Mongodb": {
 		"URI": "mongodb://localhost:32768/ercole",
