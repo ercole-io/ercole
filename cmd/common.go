@@ -37,6 +37,7 @@ var sortDesc bool
 var location string
 var environment string
 var windowTime int
+var limit int
 
 func simpleAPIRequestCommand(
 	use string,
@@ -48,6 +49,7 @@ func simpleAPIRequestCommand(
 	locationOption bool,
 	environmentOption bool,
 	sortableResult bool,
+	limitOption bool,
 	endpointPath string,
 	errorMessageFormat string,
 	httpErrorMessageFormat string) *cobra.Command {
@@ -73,6 +75,9 @@ func simpleAPIRequestCommand(
 			}
 			if environmentOption {
 				params.Set("environment", environment)
+			}
+			if limitOption {
+				params.Set("limit", strconv.Itoa(limit))
 			}
 			if sortableResult && sortBy != "" {
 				params.Set("sort-by", sortBy)
@@ -135,6 +140,8 @@ func simpleAPIRequestCommand(
 		cmd.Flags().StringVar(&sortBy, "sort-by", "", "Sort by field")
 		cmd.Flags().BoolVar(&sortDesc, "desc-order", false, "Sort descending")
 	}
-
+	if limitOption {
+		cmd.Flags().IntVarP(&limit, "limit", "n", 15, "Limit the number of databases")
+	}
 	return cmd
 }
