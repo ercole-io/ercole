@@ -28,9 +28,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// getTypeStatsCmd represents the get-type-stats command
+// getTypeStatsCmd represents the type command
 var getTypeStatsCmd = &cobra.Command{
-	Use:   "get-type-stats",
+	Use:   "type",
 	Short: "Get type stats",
 	Long:  `Get stats about the info.type field`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -75,6 +75,6 @@ var getTypeStatsCmd = &cobra.Command{
 }
 
 func init() {
-	apiCmd.AddCommand(getTypeStatsCmd)
+	statsCmd.AddCommand(getTypeStatsCmd)
 	getTypeStatsCmd.Flags().StringVarP(&location, "location", "l", "", "Filter by location")
 }
