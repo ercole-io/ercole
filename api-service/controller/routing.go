@@ -40,4 +40,5 @@ func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface
 	router.HandleFunc("/hosts/{hostname}", ctrl.GetCurrentHost).Methods("GET")
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")
 	router.HandleFunc("/stats/environments", ctrl.GetEnvironmentStats).Methods("GET")
+	router.HandleFunc("/stats/types", ctrl.GetTypeStats).Methods("GET")
 }

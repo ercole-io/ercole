@@ -24,3 +24,8 @@ import (
 func (as *APIService) GetEnvironmentStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetEnvironmentStats(location)
 }
+
+// GetTypeStats return a array containing the number of hosts per type
+func (as *APIService) GetTypeStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetTypeStats(location)
+}

@@ -28,11 +28,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// getEnvironmentStatsCmd represents the get-environment-stats command
-var getEnvironmentStatsCmd = &cobra.Command{
-	Use:   "get-environment-stats",
-	Short: "Get environment stats",
-	Long:  `Get stats about the environtment field`,
+// getTypeStatsCmd represents the get-type-stats command
+var getTypeStatsCmd = &cobra.Command{
+	Use:   "get-type-stats",
+	Short: "Get type stats",
+	Long:  `Get stats about the info.type field`,
 	Run: func(cmd *cobra.Command, args []string) {
 		params := url.Values{
 			"location": []string{location},
@@ -43,16 +43,16 @@ var getEnvironmentStatsCmd = &cobra.Command{
 				ercoleConfig.APIService.RemoteEndpoint,
 				ercoleConfig.APIService.UserUsername,
 				ercoleConfig.APIService.UserPassword,
-				"/stats/environments",
+				"/stats/types",
 				params,
 			).String())
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to get environment stats: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Failed to get type stats: %v\n", err)
 			os.Exit(1)
 		} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
 			out, _ := ioutil.ReadAll(resp.Body)
 			defer resp.Body.Close()
-			fmt.Fprintf(os.Stderr, "Failed to get environment stats(Status: %d): %s\n", resp.StatusCode, string(out))
+			fmt.Fprintf(os.Stderr, "Failed to get type stats(Status: %d): %s\n", resp.StatusCode, string(out))
 			os.Exit(1)
 		} else {
 			out, _ := ioutil.ReadAll(resp.Body)
@@ -75,6 +75,6 @@ var getEnvironmentStatsCmd = &cobra.Command{
 }
 
 func init() {
-	apiCmd.AddCommand(getEnvironmentStatsCmd)
-	getEnvironmentStatsCmd.Flags().StringVarP(&location, "location", "l", "", "Filter by location")
+	apiCmd.AddCommand(getTypeStatsCmd)
+	getTypeStatsCmd.Flags().StringVarP(&location, "location", "l", "", "Filter by location")
 }

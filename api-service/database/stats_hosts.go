@@ -62,3 +62,44 @@ func (md *MongoDatabase) GetEnvironmentStats(location string) ([]interface{}, ut
 	}
 	return out, nil
 }
+
+// GetTypeStats return a array containing the number of hosts per type
+func (md *MongoDatabase) GetTypeStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
+	var out []interface{}
+	//Find the matching hostdata
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		bson.A{
+			optionalStep(location != "", bson.M{"$match": bson.M{
+				"location": location,
+			}}),
+			bson.M{"$match": bson.M{
+				"archived": false,
+			}},
+			bson.M{"$group": bson.M{
+				"_id": "$info.type",
+				"count": bson.M{
+					"$sum": 1,
+				},
+			}},
+			bson.M{"$project": bson.M{
+				"_id":   false,
+				"type":  "$_id",
+				"count": true,
+			}},
+		},
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Decode the documents
+	for cur.Next(context.TODO()) {
+		var item map[string]interface{}
+		if cur.Decode(&item) != nil {
+			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		}
+		out = append(out, &item)
+	}
+	return out, nil
+}
