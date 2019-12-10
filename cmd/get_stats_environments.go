@@ -15,66 +15,15 @@ limitations under the License.
 */
 package cmd
 
-import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-	"os"
-
-	"github.com/amreo/ercole-services/utils"
-
-	"github.com/spf13/cobra"
-)
-
-// getEnvironmentStatsCmd represents the environment command
-var getEnvironmentStatsCmd = &cobra.Command{
-	Use:   "environment",
-	Short: "Get environment stats",
-	Long:  `Get stats about the environment field`,
-	Run: func(cmd *cobra.Command, args []string) {
-		params := url.Values{
-			"location": []string{location},
-		}
-
-		resp, err := http.Get(
-			utils.NewAPIUrl(
-				ercoleConfig.APIService.RemoteEndpoint,
-				ercoleConfig.APIService.UserUsername,
-				ercoleConfig.APIService.UserPassword,
-				"/stats/environments",
-				params,
-			).String())
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to get environment stats: %v\n", err)
-			os.Exit(1)
-		} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
-			out, _ := ioutil.ReadAll(resp.Body)
-			defer resp.Body.Close()
-			fmt.Fprintf(os.Stderr, "Failed to get environment stats(Status: %d): %s\n", resp.StatusCode, string(out))
-			os.Exit(1)
-		} else {
-			out, _ := ioutil.ReadAll(resp.Body)
-			defer resp.Body.Close()
-			var res []interface{}
-			err = json.Unmarshal(out, &res)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Failed to unmarshal response body: %v (%s)\n", err, string(out))
-				os.Exit(1)
-			}
-
-			for _, item := range res {
-				enc := json.NewEncoder(os.Stdout)
-				enc.SetIndent("", "    ")
-				enc.Encode(item)
-			}
-		}
-
-	},
-}
-
 func init() {
+	getEnvironmentStatsCmd := simpleAPIRequestCommand("environment",
+		"Get environment stats",
+		`Get stats about the environment field`,
+		false, false, false, true, false, false,
+		"/stats/environments",
+		"Failed to get environment stats: %v\n",
+		"Failed to get environment stats(Status: %d): %s\n",
+	)
+
 	statsCmd.AddCommand(getEnvironmentStatsCmd)
-	getEnvironmentStatsCmd.Flags().StringVarP(&location, "location", "l", "", "Filter by location")
 }

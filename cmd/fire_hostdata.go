@@ -27,8 +27,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var verbose bool
-
 // fireHostDataCmd represents the fire-hostdata command
 var fireHostDataCmd = &cobra.Command{
 	Use:   "fire-hostdata",
