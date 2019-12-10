@@ -29,3 +29,8 @@ func (as *APIService) GetDatabaseEnvironmentStats(location string) ([]interface{
 func (as *APIService) GetDatabaseVersionStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetDatabaseVersionStats(location)
 }
+
+// GetTopReclaimableDatabaseStats return a array containing the total sum of reclaimable of segments advisors of the top reclaimable databases
+func (as *APIService) GetTopReclaimableDatabaseStats(location string, limit int) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetTopReclaimableDatabaseStats(location, limit)
+}

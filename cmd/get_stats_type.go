@@ -19,7 +19,7 @@ func init() {
 	getTypeStatsCmd := simpleAPIRequestCommand("type",
 		"Get type stats",
 		`Get stats about the info.type field`,
-		false, false, false, true, false, false,
+		false, false, false, true, false, false, false,
 		"/stats/types",
 		"Failed to get type stats: %v\n",
 		"Failed to get type stats(Status: %d): %s\n",

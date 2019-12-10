@@ -109,3 +109,57 @@ func (md *MongoDatabase) GetDatabaseVersionStats(location string) ([]interface{}
 	}
 	return out, nil
 }
+
+// GetTopReclaimableDatabaseStats return a array containing the total sum of reclaimable of segments advisors of the top reclaimable databases
+func (md *MongoDatabase) GetTopReclaimableDatabaseStats(location string, limit int) ([]interface{}, utils.AdvancedErrorInterface) {
+	var out []interface{}
+
+	//Calculate the stats
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+		context.TODO(),
+		bson.A{
+			optionalStep(location != "", bson.M{"$match": bson.M{
+				"location": location,
+			}}),
+			bson.M{"$project": bson.M{
+				"hostname": true,
+				"dbname":   "$database.name",
+				"reclaimable_segment_advisors": bson.M{
+					"$reduce": bson.M{
+						"input":        "$database.segment_advisors",
+						"initialValue": 0,
+						"in": bson.M{
+							"$add": bson.A{
+								"$$value",
+								bson.M{
+									"$convert": bson.M{
+										"input":   "$$this.reclaimable",
+										"to":      "double",
+										"onError": 0.5,
+									},
+								},
+							},
+						},
+					},
+				},
+			}},
+			bson.M{"$sort": bson.M{
+				"reclaimable_segment_advisors": -1,
+			}},
+			bson.M{"$limit": limit},
+		},
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Decode the documents
+	for cur.Next(context.TODO()) {
+		var item map[string]interface{}
+		if cur.Decode(&item) != nil {
+			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		}
+		out = append(out, &item)
+	}
+	return out, nil
+}

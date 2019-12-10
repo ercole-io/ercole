@@ -56,6 +56,8 @@ type APIServiceInterface interface {
 	GetDatabaseEnvironmentStats(location string) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetDatabaseVersionStats return a array containing the number of databases per version
 	GetDatabaseVersionStats(location string) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetTopReclaimableDatabaseStats return a array containing the total sum of reclaimable of segments advisors of the top reclaimable databases
+	GetTopReclaimableDatabaseStats(location string, limit int) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

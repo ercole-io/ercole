@@ -13,18 +13,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-
 package cmd
 
 func init() {
-	searchHostsCmd := simpleAPIRequestCommand("search-hosts",
-		"Search current hosts",
-		`search-hosts search the most matching hosts to the arguments`,
-		true, true, false, true, true, true, false,
-		"/hosts",
-		"Failed to search hosts data: %v\n",
-		"Failed to search hosts data(Status: %d): %s\n",
+	getDatabaseTopReclaimableStatsCmd := simpleAPIRequestCommand("top-reclaimable",
+		"Get databases top reclaimable stats",
+		`Get stats about top reclaimable databases`,
+		false, false, false, true, false, false, true,
+		"/stats/databases/top-reclaimable",
+		"Failed to get top reclaimable databases stats: %v\n",
+		"Failed to get top reclaimable databases stats(Status: %d): %s\n",
 	)
 
-	apiCmd.AddCommand(searchHostsCmd)
+	statsDatabasesCmd.AddCommand(getDatabaseTopReclaimableStatsCmd)
 }
