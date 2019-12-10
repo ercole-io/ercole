@@ -58,6 +58,8 @@ type MongoDatabaseInterface interface {
 	GetTypeStats(location string) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetDatabaseEnvironmentStats return a array containing the number of databases per environment
 	GetDatabaseEnvironmentStats(location string) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetDatabaseVersionStats return a array containing the number of databases per version
+	GetDatabaseVersionStats(location string) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation

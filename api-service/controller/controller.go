@@ -53,6 +53,8 @@ type APIControllerInterface interface {
 	GetOperatingSystemStats(w http.ResponseWriter, r *http.Request)
 	// GetDatabaseEnvironmentStats return all statistics about the environments of the databases using the filters in the request
 	GetDatabaseEnvironmentStats(w http.ResponseWriter, r *http.Request)
+	// GetDatabaseVersionStats return all statistics about the versions of the databases using the filters in the request
+	GetDatabaseVersionStats(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface

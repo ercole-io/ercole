@@ -25,7 +25,7 @@ import (
 // GetEnvironmentStats return a array containing the number of hosts per environment
 func (md *MongoDatabase) GetEnvironmentStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
-	//Find the matching hostdata
+	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		bson.A{
@@ -66,7 +66,7 @@ func (md *MongoDatabase) GetEnvironmentStats(location string) ([]interface{}, ut
 // GetTypeStats return a array containing the number of hosts per type
 func (md *MongoDatabase) GetTypeStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
-	//Find the matching hostdata
+	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		bson.A{
@@ -122,7 +122,7 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string) ([]interface{}
 		})
 	}
 
-	//Find the matching hostdata
+	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		bson.A{
