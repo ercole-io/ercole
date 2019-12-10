@@ -59,7 +59,7 @@ func (ctrl *APIController) GetDatabaseVersionStats(w http.ResponseWriter, r *htt
 	utils.WriteJSONResponse(w, http.StatusOK, stats)
 }
 
-// GetTopReclaimableDatabaseStats return all the top database by reclaimable segment advisors using the filters in the request
+// GetTopReclaimableDatabaseStats return top databases by reclaimable segment advisors using the filters in the request
 func (ctrl *APIController) GetTopReclaimableDatabaseStats(w http.ResponseWriter, r *http.Request) {
 	var location string
 	var limit int
@@ -74,6 +74,30 @@ func (ctrl *APIController) GetTopReclaimableDatabaseStats(w http.ResponseWriter,
 
 	//get the data
 	stats, err := ctrl.Service.GetTopReclaimableDatabaseStats(location, limit)
+	if err != nil {
+		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, stats)
+}
+
+// GetTopWorkloadDatabaseStats return top databases by workload advisors using the filters in the request
+func (ctrl *APIController) GetTopWorkloadDatabaseStats(w http.ResponseWriter, r *http.Request) {
+	var location string
+	var limit int
+	var err utils.AdvancedErrorInterface
+
+	//parse the query params
+	location = r.URL.Query().Get("location")
+	if limit, err = utils.Str2int(r.URL.Query().Get("limit"), 10); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	//get the data
+	stats, err := ctrl.Service.GetTopWorkloadDatabaseStats(location, limit)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return

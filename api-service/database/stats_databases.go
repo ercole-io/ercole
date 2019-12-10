@@ -163,3 +163,46 @@ func (md *MongoDatabase) GetTopReclaimableDatabaseStats(location string, limit i
 	}
 	return out, nil
 }
+
+// GetTopWorkloadDatabaseStats return a array containing top databases by workload
+func (md *MongoDatabase) GetTopWorkloadDatabaseStats(location string, limit int) ([]interface{}, utils.AdvancedErrorInterface) {
+	var out []interface{}
+
+	//Calculate the stats
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+		context.TODO(),
+		bson.A{
+			optionalStep(location != "", bson.M{"$match": bson.M{
+				"location": location,
+			}}),
+			bson.M{"$project": bson.M{
+				"hostname": true,
+				"dbname":   "$database.name",
+				"workload": bson.M{
+					"$convert": bson.M{
+						"input":   "$database.work",
+						"to":      "double",
+						"onError": 0,
+					},
+				},
+			}},
+			bson.M{"$sort": bson.M{
+				"workload": -1,
+			}},
+			bson.M{"$limit": limit},
+		},
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Decode the documents
+	for cur.Next(context.TODO()) {
+		var item map[string]interface{}
+		if cur.Decode(&item) != nil {
+			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		}
+		out = append(out, &item)
+	}
+	return out, nil
+}

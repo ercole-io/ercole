@@ -34,3 +34,8 @@ func (as *APIService) GetDatabaseVersionStats(location string) ([]interface{}, u
 func (as *APIService) GetTopReclaimableDatabaseStats(location string, limit int) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetTopReclaimableDatabaseStats(location, limit)
 }
+
+// GetTopWorkloadDatabaseStats return a array containing top databases by workload
+func (as *APIService) GetTopWorkloadDatabaseStats(location string, limit int) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetTopWorkloadDatabaseStats(location, limit)
+}
