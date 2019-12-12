@@ -37,12 +37,17 @@ func (as *APIService) GetTopReclaimableDatabaseStats(location string, limit int)
 	return as.Database.GetTopReclaimableDatabaseStats(location, limit)
 }
 
-// GetPatchStatusDatabaseStats return a array containing the number of databases per patch status
-func (as *APIService) GetPatchStatusDatabaseStats(location string, windowTime time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetPatchStatusDatabaseStats(location, windowTime)
+// GetDatabasePatchStatusStats return a array containing the number of databases per patch status
+func (as *APIService) GetDatabasePatchStatusStats(location string, windowTime time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetDatabasePatchStatusStats(location, windowTime)
 }
 
 // GetTopWorkloadDatabaseStats return a array containing top databases by workload
 func (as *APIService) GetTopWorkloadDatabaseStats(location string, limit int) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetTopWorkloadDatabaseStats(location, limit)
+}
+
+// GetDatabaseDataguardStatusStats return a array containing the number of databases per dataguard status
+func (as *APIService) GetDatabaseDataguardStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetDatabaseDataguardStatusStats(location, environment)
 }

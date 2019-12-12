@@ -197,8 +197,8 @@ func (md *MongoDatabase) GetTopWorkloadDatabaseStats(location string, limit int)
 	return out, nil
 }
 
-// GetPatchStatusDatabaseStats return a array containing the number of databases per patch status
-func (md *MongoDatabase) GetPatchStatusDatabaseStats(location string, windowTime time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+// GetDatabasePatchStatusStats return a array containing the number of databases per patch status
+func (md *MongoDatabase) GetDatabasePatchStatusStats(location string, windowTime time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Calculate the stats
@@ -276,6 +276,43 @@ func (md *MongoDatabase) GetPatchStatusDatabaseStats(location string, windowTime
 				"_id":    false,
 				"status": "$_id",
 				"count":  true,
+			}},
+		),
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Decode the documents
+	for cur.Next(context.TODO()) {
+		var item map[string]interface{}
+		if cur.Decode(&item) != nil {
+			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		}
+		out = append(out, &item)
+	}
+	return out, nil
+}
+
+// GetDatabaseDataguardStatusStats return a array containing the number of databases per dataguard status
+func (md *MongoDatabase) GetDatabaseDataguardStatusStats(location string, environent string) ([]interface{}, utils.AdvancedErrorInterface) {
+	var out []interface{}
+
+	//Calculate the stats
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+		context.TODO(),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, environent),
+			bson.M{"$group": bson.M{
+				"_id": "$database.dataguard",
+				"count": bson.M{
+					"$sum": 1,
+				},
+			}},
+			bson.M{"$project": bson.M{
+				"_id":       false,
+				"dataguard": "$_id",
+				"count":     true,
 			}},
 		),
 	)

@@ -98,7 +98,7 @@ func (ctrl *APIController) GetDatabasePatchStatusStats(w http.ResponseWriter, r 
 	}
 
 	//get the data
-	stats, err := ctrl.Service.GetPatchStatusDatabaseStats(location, time.Now().AddDate(0, -windowTime, 0))
+	stats, err := ctrl.Service.GetDatabasePatchStatusStats(location, time.Now().AddDate(0, -windowTime, 0))
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -123,6 +123,27 @@ func (ctrl *APIController) GetTopWorkloadDatabaseStats(w http.ResponseWriter, r 
 
 	//get the data
 	stats, err := ctrl.Service.GetTopWorkloadDatabaseStats(location, limit)
+	if err != nil {
+		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, stats)
+}
+
+// GetDatabaseDataguardStatusStats return all statistics about the dataguard status of the databases using the filters in the request
+func (ctrl *APIController) GetDatabaseDataguardStatusStats(w http.ResponseWriter, r *http.Request) {
+	var location string
+	var environment string
+	var err utils.AdvancedErrorInterface
+
+	//parse the query params
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
+	//get the data
+	stats, err := ctrl.Service.GetDatabaseDataguardStatusStats(location, environment)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
