@@ -18,12 +18,10 @@ package database
 import (
 	"context"
 	"regexp"
-	"strings"
 	"time"
 
 	"github.com/amreo/ercole-services/utils"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SearchCurrentPatchAdvisors search current patch advisors
@@ -39,16 +37,7 @@ func (md *MongoDatabase) SearchCurrentPatchAdvisors(keywords []string, sortBy st
 		context.TODO(),
 		utils.MongoAggegationPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			bson.M{"$match": bson.M{
-				"$or": bson.A{
-					bson.M{"hostname": bson.M{
-						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
-					}},
-					bson.M{"database.name": bson.M{
-						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
-					}},
-				},
-			}},
+			utils.MongoAggregationSearchFilterStep([]string{"hostname", "database.name"}, keywords),
 			bson.M{"$project": bson.M{
 				"hostname":           true,
 				"location":           true,

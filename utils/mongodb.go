@@ -15,9 +15,14 @@
 
 package utils
 
-import "go.mongodb.org/mongo-driver/bson"
+import (
+	"reflect"
+	"regexp"
+	"strings"
 
-import "reflect"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 // MongoAggegationPipeline return a aggregation pipeline joining the steps that could be a single step or a slice of steps
 func MongoAggegationPipeline(steps ...interface{}) bson.A {
@@ -113,5 +118,28 @@ func MongoAggregationOptionalPagingStep(page int, size int) bson.M {
 				},
 			}},
 		},
+	}}
+}
+
+// MongoAggregationSearchFilterStep return a aggregation step that filter the documents when any field match any keyword
+func MongoAggregationSearchFilterStep(fields []string, keywords []string) interface{} {
+	//Build the search pattern
+	quotedKeywords := []string{}
+	for _, k := range keywords {
+		quotedKeywords = append(quotedKeywords, regexp.QuoteMeta(k))
+	}
+	pattern := strings.Join(quotedKeywords, "|")
+
+	//Build the $or conditions
+	conditions := []interface{}{}
+	for _, f := range fields {
+		conditions = append(conditions, bson.M{f: bson.M{
+			"$regex": primitive.Regex{Pattern: pattern, Options: "i"},
+		}})
+	}
+
+	//Return the matching step
+	return bson.M{"$match": bson.M{
+		"$or": conditions,
 	}}
 }
