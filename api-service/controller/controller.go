@@ -57,6 +57,8 @@ type APIControllerInterface interface {
 	GetDatabaseVersionStats(w http.ResponseWriter, r *http.Request)
 	// GetTopReclaimableDatabaseStats return top databases by reclaimable segment advisors using the filters in the request
 	GetTopReclaimableDatabaseStats(w http.ResponseWriter, r *http.Request)
+	// GetDatabasePatchStatusStats return all statistics about the patch status of the databases using the filters in the request
+	GetDatabasePatchStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetTopWorkloadDatabaseStats return top databases by workload advisors using the filters in the request
 	GetTopWorkloadDatabaseStats(w http.ResponseWriter, r *http.Request)
 }
