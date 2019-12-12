@@ -17,6 +17,7 @@ package controller
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/amreo/ercole-services/utils"
 )
@@ -74,6 +75,30 @@ func (ctrl *APIController) GetTopReclaimableDatabaseStats(w http.ResponseWriter,
 
 	//get the data
 	stats, err := ctrl.Service.GetTopReclaimableDatabaseStats(location, limit)
+	if err != nil {
+		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, stats)
+}
+
+// GetDatabasePatchStatusStats return all statistics about the patch status of the databases using the filters in the request
+func (ctrl *APIController) GetDatabasePatchStatusStats(w http.ResponseWriter, r *http.Request) {
+	var location string
+	var windowTime int
+	var err utils.AdvancedErrorInterface
+
+	//parse the query params
+	location = r.URL.Query().Get("location")
+	if windowTime, err = utils.Str2int(r.URL.Query().Get("window-time"), 6); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	//get the data
+	stats, err := ctrl.Service.GetPatchStatusDatabaseStats(location, time.Now().AddDate(0, -windowTime, 0))
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return

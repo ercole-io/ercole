@@ -17,6 +17,8 @@
 package service
 
 import (
+	"time"
+
 	"github.com/amreo/ercole-services/utils"
 )
 
@@ -33,6 +35,11 @@ func (as *APIService) GetDatabaseVersionStats(location string) ([]interface{}, u
 // GetTopReclaimableDatabaseStats return a array containing the total sum of reclaimable of segments advisors of the top reclaimable databases
 func (as *APIService) GetTopReclaimableDatabaseStats(location string, limit int) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetTopReclaimableDatabaseStats(location, limit)
+}
+
+// GetPatchStatusDatabaseStats return a array containing the number of databases per patch status
+func (as *APIService) GetPatchStatusDatabaseStats(location string, windowTime time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetPatchStatusDatabaseStats(location, windowTime)
 }
 
 // GetTopWorkloadDatabaseStats return a array containing top databases by workload

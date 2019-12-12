@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"time"
 
 	"github.com/amreo/ercole-services/utils"
 	"go.mongodb.org/mongo-driver/bson"
@@ -179,6 +180,103 @@ func (md *MongoDatabase) GetTopWorkloadDatabaseStats(location string, limit int)
 				"workload": -1,
 			}},
 			bson.M{"$limit": limit},
+		),
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Decode the documents
+	for cur.Next(context.TODO()) {
+		var item map[string]interface{}
+		if cur.Decode(&item) != nil {
+			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		}
+		out = append(out, &item)
+	}
+	return out, nil
+}
+
+// GetPatchStatusDatabaseStats return a array containing the number of databases per patch status
+func (md *MongoDatabase) GetPatchStatusDatabaseStats(location string, windowTime time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	var out []interface{}
+
+	//Calculate the stats
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+		context.TODO(),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, ""),
+			bson.M{"$project": bson.M{
+				"database.last_psus": bson.M{
+					"$reduce": bson.M{
+						"input": bson.M{
+							"$map": bson.M{
+								"input": "$database.last_psus",
+								"as":    "psu",
+								"in": bson.M{
+									"$mergeObjects": bson.A{
+										"$$psu",
+										bson.M{
+											"date": bson.M{
+												"$dateFromString": bson.M{
+													"dateString": "$$psu.date",
+													"format":     "%Y-%m-%d",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						"initialValue": nil,
+						"in": bson.M{
+							"$cond": bson.M{
+								"if": bson.M{
+									"$eq": bson.A{
+										"$$value",
+										nil,
+									},
+								},
+								"then": "$$this",
+								"else": bson.M{
+									"$cond": bson.M{
+										"if": bson.M{
+											"$gt": bson.A{
+												"$$value.date",
+												"$$this.date",
+											},
+										},
+										"then": "$$value",
+										"else": "$$this",
+									},
+								},
+							},
+						},
+					},
+				},
+			}},
+			bson.M{"$group": bson.M{
+				"_id": bson.M{
+					"$cond": bson.M{
+						"if": bson.M{
+							"$gt": bson.A{
+								"$database.last_psus.date",
+								windowTime,
+							},
+						},
+						"then": "OK",
+						"else": "KO",
+					},
+				},
+				"count": bson.M{
+					"$sum": 1,
+				},
+			}},
+			bson.M{"$project": bson.M{
+				"_id":    false,
+				"status": "$_id",
+				"count":  true,
+			}},
 		),
 	)
 	if err != nil {
