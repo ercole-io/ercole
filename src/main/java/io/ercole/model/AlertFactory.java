@@ -98,14 +98,14 @@ public class AlertFactory {
 				// disattivate e ora attivate, e se altri db che avevano già la feature
 				// attiva
 				if (oldDbs.get(entry.getKey()) != null 
-						&& !oldDbs.get(entry.getKey()).get(feature) 
-						&& newFeatures.get(feature)) {
+						&& oldDbs.get(entry.getKey()).get(feature) == null
+						&& newFeatures.get(feature) != null) {
 					featuresAttivate.add(feature);	
 				}
 				
 				// se invece si tratta di un nuovo db
 				if (oldDbs.get(entry.getKey()) == null 
-						&& newFeatures.get(feature)) {
+						&& newFeatures.get(feature) != null) {
 					featuresAttivate.add(feature);
 				}
 				
