@@ -37,10 +37,10 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		bson.A{
-			optionalStep(location != "", bson.M{"$match": bson.M{
+			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
 				"location": location,
 			}}),
-			optionalStep(environment != "", bson.M{"$match": bson.M{
+			utils.MongoAggregationOptionalStep(environment != "", bson.M{"$match": bson.M{
 				"environment": environment,
 			}}),
 			bson.M{"$match": bson.M{
@@ -107,7 +107,7 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 					},
 				},
 			}},
-			optionalStep(!full, bson.M{"$project": bson.M{
+			utils.MongoAggregationOptionalStep(!full, bson.M{"$project": bson.M{
 				"hostname":        true,
 				"location":        true,
 				"environment":     true,
@@ -130,8 +130,8 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 				"swap_total":      "$info.swap_total",
 				"cpu_model":       "$info.cpu_model",
 			}}),
-			optionalSortingStep(sortBy, sortDesc),
-			optionalPagingStep(page, pageSize),
+			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
+			utils.MongoAggregationOptionalPagingStep(page, pageSize),
 		},
 	)
 	if err != nil {

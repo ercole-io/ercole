@@ -29,7 +29,7 @@ func (md *MongoDatabase) GetDatabaseEnvironmentStats(location string) ([]interfa
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		bson.A{
-			optionalStep(location != "", bson.M{"$match": bson.M{
+			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
 				"location": location,
 			}}),
 			bson.M{"$match": bson.M{
@@ -79,7 +79,7 @@ func (md *MongoDatabase) GetDatabaseVersionStats(location string) ([]interface{}
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
 		bson.A{
-			optionalStep(location != "", bson.M{"$match": bson.M{
+			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
 				"location": location,
 			}}),
 			bson.M{"$group": bson.M{
@@ -118,7 +118,7 @@ func (md *MongoDatabase) GetTopReclaimableDatabaseStats(location string, limit i
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
 		bson.A{
-			optionalStep(location != "", bson.M{"$match": bson.M{
+			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
 				"location": location,
 			}}),
 			bson.M{"$project": bson.M{
@@ -172,7 +172,7 @@ func (md *MongoDatabase) GetTopWorkloadDatabaseStats(location string, limit int)
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
 		bson.A{
-			optionalStep(location != "", bson.M{"$match": bson.M{
+			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
 				"location": location,
 			}}),
 			bson.M{"$project": bson.M{

@@ -36,10 +36,10 @@ func (md *MongoDatabase) SearchCurrentClusters(full bool, keywords []string, sor
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentClusters").Aggregate(
 		context.TODO(),
 		bson.A{
-			optionalStep(location != "", bson.M{"$match": bson.M{
+			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
 				"location": location,
 			}}),
-			optionalStep(environment != "", bson.M{"$match": bson.M{
+			utils.MongoAggregationOptionalStep(environment != "", bson.M{"$match": bson.M{
 				"environment": environment,
 			}}),
 			bson.M{"$match": bson.M{
@@ -75,7 +75,7 @@ func (md *MongoDatabase) SearchCurrentClusters(full bool, keywords []string, sor
 			bson.M{"$unset": bson.A{
 				"vms.cluster_name",
 			}},
-			optionalStep(!full, bson.M{"$project": bson.M{
+			utils.MongoAggregationOptionalStep(!full, bson.M{"$project": bson.M{
 				"_id":                           true,
 				"environment":                   true,
 				"location":                      true,
@@ -105,8 +105,8 @@ func (md *MongoDatabase) SearchCurrentClusters(full bool, keywords []string, sor
 					},
 				},
 			}}),
-			optionalSortingStep(sortBy, sortDesc),
-			optionalPagingStep(page, pageSize),
+			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
+			utils.MongoAggregationOptionalPagingStep(page, pageSize),
 		},
 	)
 	if err != nil {
