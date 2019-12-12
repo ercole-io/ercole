@@ -36,7 +36,7 @@ func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc
 	//Find the matching alerts
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").Aggregate(
 		context.TODO(),
-		bson.A{
+		utils.MongoAggegationPipeline(
 			bson.M{"$match": bson.M{
 				"alert_status": model.AlertStatusNew,
 				"$or": bson.A{
@@ -65,7 +65,7 @@ func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc
 			}},
 			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
 			utils.MongoAggregationOptionalPagingStep(page, pageSize),
-		},
+		),
 	)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")

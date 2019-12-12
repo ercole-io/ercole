@@ -35,13 +35,8 @@ func (md *MongoDatabase) SearchCurrentClusters(full bool, keywords []string, sor
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentClusters").Aggregate(
 		context.TODO(),
-		bson.A{
-			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
-				"location": location,
-			}}),
-			utils.MongoAggregationOptionalStep(environment != "", bson.M{"$match": bson.M{
-				"environment": environment,
-			}}),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, environment),
 			bson.M{"$match": bson.M{
 				"$or": bson.A{
 					bson.M{"cluster.name": bson.M{
@@ -107,7 +102,7 @@ func (md *MongoDatabase) SearchCurrentClusters(full bool, keywords []string, sor
 			}}),
 			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
 			utils.MongoAggregationOptionalPagingStep(page, pageSize),
-		},
+		),
 	)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
