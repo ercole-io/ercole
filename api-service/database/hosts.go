@@ -36,7 +36,7 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
-		bson.A{
+		utils.MongoAggegationPipeline(
 			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
 				"location": location,
 			}}),
@@ -132,7 +132,7 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 			}}),
 			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
 			utils.MongoAggregationOptionalPagingStep(page, pageSize),
-		},
+		),
 	)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -156,7 +156,7 @@ func (md *MongoDatabase) GetCurrentHost(hostname string) (interface{}, utils.Adv
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
-		bson.A{
+		utils.MongoAggegationPipeline(
 			bson.M{"$match": bson.M{
 				"archived": false,
 				"hostname": hostname,
@@ -278,7 +278,7 @@ func (md *MongoDatabase) GetCurrentHost(hostname string) (interface{}, utils.Adv
 				"extra.databases.changes.name",
 				"history.extra",
 			}},
-		},
+		),
 	)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")

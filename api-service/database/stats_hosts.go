@@ -28,10 +28,8 @@ func (md *MongoDatabase) GetEnvironmentStats(location string) ([]interface{}, ut
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
-		bson.A{
-			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
-				"location": location,
-			}}),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, ""),
 			bson.M{"$match": bson.M{
 				"archived": false,
 			}},
@@ -46,7 +44,7 @@ func (md *MongoDatabase) GetEnvironmentStats(location string) ([]interface{}, ut
 				"environment": "$_id",
 				"count":       true,
 			}},
-		},
+		),
 	)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -69,10 +67,8 @@ func (md *MongoDatabase) GetTypeStats(location string) ([]interface{}, utils.Adv
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
-		bson.A{
-			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
-				"location": location,
-			}}),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, ""),
 			bson.M{"$match": bson.M{
 				"archived": false,
 			}},
@@ -87,7 +83,7 @@ func (md *MongoDatabase) GetTypeStats(location string) ([]interface{}, utils.Adv
 				"type":  "$_id",
 				"count": true,
 			}},
-		},
+		),
 	)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -125,10 +121,8 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string) ([]interface{}
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
-		bson.A{
-			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
-				"location": location,
-			}}),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, ""),
 			bson.M{"$match": bson.M{
 				"archived": false,
 			}},
@@ -148,7 +142,7 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string) ([]interface{}
 				"operating_system": "$_id",
 				"count":            true,
 			}},
-		},
+		),
 	)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")

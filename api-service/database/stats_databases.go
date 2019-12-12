@@ -28,13 +28,8 @@ func (md *MongoDatabase) GetDatabaseEnvironmentStats(location string) ([]interfa
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
-		bson.A{
-			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
-				"location": location,
-			}}),
-			bson.M{"$match": bson.M{
-				"archived": false,
-			}},
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, ""),
 			bson.M{"$group": bson.M{
 				"_id": "$environment",
 				"count": bson.M{
@@ -54,7 +49,7 @@ func (md *MongoDatabase) GetDatabaseEnvironmentStats(location string) ([]interfa
 				"environment": "$_id",
 				"count":       true,
 			}},
-		},
+		),
 	)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -78,10 +73,8 @@ func (md *MongoDatabase) GetDatabaseVersionStats(location string) ([]interface{}
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
-		bson.A{
-			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
-				"location": location,
-			}}),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, ""),
 			bson.M{"$group": bson.M{
 				"_id": "$database.version",
 				"count": bson.M{
@@ -93,7 +86,7 @@ func (md *MongoDatabase) GetDatabaseVersionStats(location string) ([]interface{}
 				"version": "$_id",
 				"count":   true,
 			}},
-		},
+		),
 	)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -117,10 +110,8 @@ func (md *MongoDatabase) GetTopReclaimableDatabaseStats(location string, limit i
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
-		bson.A{
-			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
-				"location": location,
-			}}),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, ""),
 			bson.M{"$project": bson.M{
 				"hostname": true,
 				"dbname":   "$database.name",
@@ -147,7 +138,7 @@ func (md *MongoDatabase) GetTopReclaimableDatabaseStats(location string, limit i
 				"reclaimable_segment_advisors": -1,
 			}},
 			bson.M{"$limit": limit},
-		},
+		),
 	)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -171,10 +162,8 @@ func (md *MongoDatabase) GetTopWorkloadDatabaseStats(location string, limit int)
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
-		bson.A{
-			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
-				"location": location,
-			}}),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, ""),
 			bson.M{"$project": bson.M{
 				"hostname": true,
 				"dbname":   "$database.name",
@@ -190,7 +179,7 @@ func (md *MongoDatabase) GetTopWorkloadDatabaseStats(location string, limit int)
 				"workload": -1,
 			}},
 			bson.M{"$limit": limit},
-		},
+		),
 	)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")

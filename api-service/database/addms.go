@@ -35,13 +35,8 @@ func (md *MongoDatabase) SearchCurrentAddms(keywords []string, sortBy string, so
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
-		bson.A{
-			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
-				"location": location,
-			}}),
-			utils.MongoAggregationOptionalStep(environment != "", bson.M{"$match": bson.M{
-				"environment": environment,
-			}}),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, environment),
 			bson.M{"$match": bson.M{
 				"$or": bson.A{
 					bson.M{"hostname": bson.M{
@@ -74,7 +69,7 @@ func (md *MongoDatabase) SearchCurrentAddms(keywords []string, sortBy string, so
 			}},
 			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
 			utils.MongoAggregationOptionalPagingStep(page, pageSize),
-		},
+		),
 	)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")

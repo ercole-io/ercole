@@ -17,13 +17,33 @@ package utils
 
 import "go.mongodb.org/mongo-driver/bson"
 
-func MongoAggregationOptionalStep(optional bool, step bson.M) bson.M {
+import "reflect"
+
+// MongoAggegationPipeline return a aggregation pipeline joining the steps that could be a single step or a slice of steps
+func MongoAggegationPipeline(steps ...interface{}) bson.A {
+	out := bson.A{}
+	for _, step := range steps {
+		if reflect.TypeOf(step).Kind() == reflect.Slice {
+			for _, item := range SliceToSliceOfInterface(step) {
+				out = append(out, item)
+			}
+		} else {
+			out = append(out, step)
+		}
+	}
+
+	return out
+}
+
+// MongoAggregationOptionalStep return the step if optional is true, otherwise return a null step
+func MongoAggregationOptionalStep(optional bool, step interface{}) interface{} {
 	if optional {
 		return step
 	}
 	return bson.M{"$skip": 0}
 }
 
+// MongoAggregationOptionalSortingStep return a step that sort documents by the criteria in the params
 func MongoAggregationOptionalSortingStep(sortBy string, sortDesc bool) bson.M {
 	if sortBy == "" {
 		return bson.M{"$skip": 0}
@@ -41,6 +61,7 @@ func MongoAggregationOptionalSortingStep(sortBy string, sortDesc bool) bson.M {
 	}}
 }
 
+// MongoAggregationOptionalPagingStep return a step that turn a stream of documents into a page that contains the documents plus some metadata
 func MongoAggregationOptionalPagingStep(page int, size int) bson.M {
 	if page == -1 || size == -1 {
 		return bson.M{"$skip": 0}
