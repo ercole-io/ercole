@@ -61,6 +61,8 @@ type APIControllerInterface interface {
 	GetDatabasePatchStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetTopWorkloadDatabaseStats return top databases by workload advisors using the filters in the request
 	GetTopWorkloadDatabaseStats(w http.ResponseWriter, r *http.Request)
+	// GetDatabaseDataguardStatusStats return all statistics about the dataguard status of the databases using the filters in the request
+	GetDatabaseDataguardStatusStats(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface
