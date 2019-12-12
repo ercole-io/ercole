@@ -18,11 +18,9 @@ package database
 import (
 	"context"
 	"regexp"
-	"strings"
 
 	"github.com/amreo/ercole-services/utils"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SearchCurrentAddms search current addms
@@ -37,16 +35,7 @@ func (md *MongoDatabase) SearchCurrentAddms(keywords []string, sortBy string, so
 		context.TODO(),
 		utils.MongoAggegationPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			bson.M{"$match": bson.M{
-				"$or": bson.A{
-					bson.M{"hostname": bson.M{
-						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
-					}},
-					bson.M{"database.name": bson.M{
-						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
-					}},
-				},
-			}},
+			utils.MongoAggregationSearchFilterStep([]string{"hostname", "database.name"}, keywords),
 			bson.M{"$project": bson.M{
 				"hostname":       true,
 				"location":       true,

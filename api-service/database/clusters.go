@@ -18,11 +18,9 @@ package database
 import (
 	"context"
 	"regexp"
-	"strings"
 
 	"github.com/amreo/ercole-services/utils"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SearchCurrentClusters search current clusters
@@ -37,13 +35,7 @@ func (md *MongoDatabase) SearchCurrentClusters(full bool, keywords []string, sor
 		context.TODO(),
 		utils.MongoAggegationPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			bson.M{"$match": bson.M{
-				"$or": bson.A{
-					bson.M{"cluster.name": bson.M{
-						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
-					}},
-				},
-			}},
+			utils.MongoAggregationSearchFilterStep([]string{"cluster.name"}, keywords),
 			bson.M{"$project": bson.M{
 				"_id":                           true,
 				"environment":                   true,

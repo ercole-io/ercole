@@ -18,12 +18,10 @@ package database
 import (
 	"context"
 	"regexp"
-	"strings"
 
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SearchAlerts search alerts
@@ -39,27 +37,15 @@ func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc
 		utils.MongoAggegationPipeline(
 			bson.M{"$match": bson.M{
 				"alert_status": model.AlertStatusNew,
-				"$or": bson.A{
-					bson.M{"description": bson.M{
-						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
-					}},
-					bson.M{"alert_code": bson.M{
-						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
-					}},
-					bson.M{"alert_severity": bson.M{
-						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
-					}},
-					bson.M{"other_info.hostname": bson.M{
-						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
-					}},
-					bson.M{"other_info.dbname": bson.M{
-						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
-					}},
-					bson.M{"other_info.features": bson.M{
-						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
-					}},
-				},
 			}},
+			utils.MongoAggregationSearchFilterStep([]string{
+				"description",
+				"alert_code",
+				"alert_severity",
+				"other_info.hostname",
+				"other_info.dbname",
+				"other_info.features",
+			}, keywords),
 			bson.M{"$unset": bson.A{
 				"other_info",
 			}},
