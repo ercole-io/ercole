@@ -24,7 +24,6 @@ import (
 	"github.com/amreo/ercole-services/utils"
 
 	"github.com/amreo/ercole-services/config"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -103,82 +102,4 @@ func (md *MongoDatabase) ConnectToMongodb() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func optionalStep(optional bool, step bson.M) bson.M {
-	if optional {
-		return step
-	}
-	return bson.M{"$skip": 0}
-}
-
-func optionalSortingStep(sortBy string, sortDesc bool) bson.M {
-	if sortBy == "" {
-		return bson.M{"$skip": 0}
-	}
-
-	sortOrder := 0
-	if sortDesc {
-		sortOrder = -1
-	} else {
-		sortOrder = 1
-	}
-
-	return bson.M{"$sort": bson.M{
-		sortBy: sortOrder,
-	}}
-}
-
-func optionalPagingStep(page int, size int) bson.M {
-	if page == -1 || size == -1 {
-		return bson.M{"$skip": 0}
-	}
-
-	return bson.M{"$facet": bson.M{
-		"content": bson.A{
-			bson.M{"$skip": page * size},
-			bson.M{"$limit": size},
-		},
-		"metadata": bson.A{
-			bson.M{"$count": "total_elements"},
-			bson.M{"$addFields": bson.M{
-				"total_pages": bson.M{
-					"$floor": bson.M{
-						"$divide": bson.A{
-							"$total_elements",
-							size,
-						},
-					},
-				},
-				"size": bson.M{
-					"$min": bson.A{
-						size,
-						bson.M{"$subtract": bson.A{
-							"$total_elements",
-							size * page,
-						}},
-					},
-				},
-				"number": page,
-			}},
-			bson.M{"$addFields": bson.M{
-				"empty": bson.M{
-					"$eq": bson.A{
-						"$size",
-						0,
-					},
-				},
-				"first": page == 0,
-				"last": bson.M{
-					"$eq": bson.A{
-						page,
-						bson.M{"$subtract": bson.A{
-							"$total_pages",
-							1,
-						}},
-					},
-				},
-			}},
-		},
-	}}
 }

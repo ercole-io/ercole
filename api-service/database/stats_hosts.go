@@ -29,7 +29,7 @@ func (md *MongoDatabase) GetEnvironmentStats(location string) ([]interface{}, ut
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		bson.A{
-			optionalStep(location != "", bson.M{"$match": bson.M{
+			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
 				"location": location,
 			}}),
 			bson.M{"$match": bson.M{
@@ -70,7 +70,7 @@ func (md *MongoDatabase) GetTypeStats(location string) ([]interface{}, utils.Adv
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		bson.A{
-			optionalStep(location != "", bson.M{"$match": bson.M{
+			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
 				"location": location,
 			}}),
 			bson.M{"$match": bson.M{
@@ -126,7 +126,7 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string) ([]interface{}
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		bson.A{
-			optionalStep(location != "", bson.M{"$match": bson.M{
+			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
 				"location": location,
 			}}),
 			bson.M{"$match": bson.M{

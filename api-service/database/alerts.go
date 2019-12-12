@@ -63,8 +63,8 @@ func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc
 			bson.M{"$unset": bson.A{
 				"other_info",
 			}},
-			optionalSortingStep(sortBy, sortDesc),
-			optionalPagingStep(page, pageSize),
+			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
+			utils.MongoAggregationOptionalPagingStep(page, pageSize),
 		},
 	)
 	if err != nil {

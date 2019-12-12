@@ -38,10 +38,10 @@ func (md *MongoDatabase) SearchCurrentPatchAdvisors(keywords []string, sortBy st
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
 		bson.A{
-			optionalStep(location != "", bson.M{"$match": bson.M{
+			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
 				"location": location,
 			}}),
-			optionalStep(environment != "", bson.M{"$match": bson.M{
+			utils.MongoAggregationOptionalStep(environment != "", bson.M{"$match": bson.M{
 				"environment": environment,
 			}}),
 			bson.M{"$match": bson.M{
@@ -146,8 +146,8 @@ func (md *MongoDatabase) SearchCurrentPatchAdvisors(keywords []string, sortBy st
 					},
 				},
 			}},
-			optionalSortingStep(sortBy, sortDesc),
-			optionalPagingStep(page, pageSize),
+			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
+			utils.MongoAggregationOptionalPagingStep(page, pageSize),
 		},
 	)
 	if err != nil {
