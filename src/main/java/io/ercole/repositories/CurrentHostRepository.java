@@ -843,6 +843,7 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 	/**
 	 * Return the list of databases.
 	 * @param c pageable
+	 * @param env env
 	 * @return the list of databases
 	 */
 	@Query(nativeQuery = true, value = ""
@@ -891,11 +892,13 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	jsonb_array_elements((CAST(extra_info AS jsonb))->'Databases') AS db, "
 		+ "	CAST(ch.host_info AS jsonb) AS hi "
 		+ "WHERE  "
-		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb')")
-	Page<Map<String, Object>> getDatabases(Pageable c);
+		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') "
+		+ " AND (:env = '' OR ch.environment = :env) ")
+	Page<Map<String, Object>> getDatabases(Pageable c, String env);
 
 	/**
 	 * Count the databases grouped by dataguard status.
+	 * @param env env
 	 * @return the count of databases grouped by dataguard status
 	 */
 	@Query(nativeQuery = true, value = ""
@@ -907,13 +910,15 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	jsonb_array_elements(CAST(extra_info AS jsonb)->'Databases') AS db "
 		+ "WHERE "
 		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') "
+		+ " AND (:env = '' OR ch.environment = :env) "
 		+ "GROUP BY "
 		+ "	db->>'Dataguard'"
 	)
-	List<Map<String, Object>> countDatabaseGroupedByDataguardStatus();
+	List<Map<String, Object>> countDatabaseGroupedByDataguardStatus(final String env);
 
 	/**
 	 * Count the databases grouped by real application cluster feature status.
+	 * @param env env
 	 * @return the count of databases grouped by real application cluster feature status
 	 */
 	@Query(nativeQuery = true, value = ""
@@ -925,14 +930,16 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	jsonb_array_elements(CAST(extra_info AS jsonb)->'Databases') AS db, "
 		+ "	jsonb_array_elements(db->'Features') AS fe "
 		+ "WHERE  "
-		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') AND "
-		+ "	fe->>'Name' = 'Real Application Clusters' "
+		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') "
+		+ " AND (:env = '' OR ch.environment = :env) "
+		+ "	AND fe->>'Name' = 'Real Application Clusters' "
 		+ "GROUP BY "
 		+ "	fe->>'Status'; ")
-	List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus();
+	List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus(final String env);
 
 	/**
 	 * Count the databases grouped by archive log status.
+	 * @param env env
 	 * @return the count of databases grouped by archive log status
 	 */
 	@Query(nativeQuery = true, value = ""
@@ -944,12 +951,14 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	jsonb_array_elements((CAST(extra_info AS jsonb))->'Databases') AS db "
 		+ "WHERE  "
 		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') "
+		+ " AND (:env = '' OR ch.environment = :env) "
 		+ "GROUP BY "
 		+ "	db->>'Archivelog' = 'ARCHIVELOG'")
-	List<Map<String, Object>> countDatabasesGroupedByArchiveLogStatus();
+	List<Map<String, Object>> countDatabasesGroupedByArchiveLogStatus(final String env);
 
 	/**
 	 * Return the sum of the segments size.
+	 * @param env env
 	 * @return the sum of the segments size
 	 */
 	@Query(nativeQuery = true, value = ""
@@ -959,12 +968,14 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	current_host ch, "
 		+ "	jsonb_array_elements(CAST(extra_info AS jsonb)->'Databases') AS db "
 		+ "WHERE "
-		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') AND "
-		+ "	db->>'SegmentsSize' != 'N/A'")
-	float getTotalSegmentsSize();
+		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') "
+		+ " AND (:env = '' OR ch.environment = :env) "
+		+ "	AND db->>'SegmentsSize' != 'N/A'")
+	float getTotalSegmentsSize(String env);
 
 	/**
 	 * Return the sum of the datafile size.
+	 * @param env env
 	 * @return the sum of the datafile size
 	 */
 	@Query(nativeQuery = true, value = ""
@@ -974,12 +985,14 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	current_host ch, "
 		+ "	jsonb_array_elements(CAST(extra_info AS jsonb)->'Databases') AS db "
 		+ "WHERE "
-		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') AND "
-		+ "	db->>'Used' != 'N/A'")
-	float getTotalDatafileSize();
+		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') "
+		+ " AND (:env = '' OR ch.environment = :env) "
+		+ "	AND db->>'Used' != 'N/A'")
+	float getTotalDatafileSize(final String env);
 
 	/**
 	 * Return the sum of the memory size.
+	 * @param env env
 	 * @return the sum of the memory size
 	 */
 	@Query(nativeQuery = true, value = ""
@@ -996,11 +1009,13 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	current_host ch, "
 		+ "	jsonb_array_elements((CAST(extra_info AS jsonb))->'Databases') AS db "
 		+ "WHERE  "
-		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') ")
-	float getTotalMemorySize();
+		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') "
+		+ " AND (:env = '' OR ch.environment = :env) ")
+	float getTotalMemorySize(String env);
 
 	/**
 	 * Return the sum of the database work.
+	 * @param env env
 	 * @return the sum of the database work
 	 */
 	@Query(nativeQuery = true, value = ""
@@ -1011,8 +1026,9 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	jsonb_array_elements(CAST(extra_info AS jsonb)->'Databases') AS db "
 		+ "WHERE "
 		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') AND "
+		+ " (:env = '' OR ch.environment = :env) AND"
 		+ "	db->>'Work' != 'N/A' ")
-	float getTotalDatabaseWork();
+	float getTotalDatabaseWork(final String env);
 
 
 	/**
