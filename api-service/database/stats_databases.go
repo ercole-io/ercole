@@ -519,3 +519,44 @@ func (md *MongoDatabase) GetTotalDatabaseDatafileSizeStats(location string, envi
 
 	return out["value"], nil
 }
+
+// GetTotalDatabaseSegmentSizeStats return the total size of segments of databases
+func (md *MongoDatabase) GetTotalDatabaseSegmentSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
+	var out map[string]float32
+
+	//Calculate the stats
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+		context.TODO(),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, environment),
+			bson.M{"$group": bson.M{
+				"_id": 0,
+				"value": bson.M{
+					"$sum": bson.M{
+						"$convert": bson.M{
+							"input":   "$database.segments_size",
+							"to":      "double",
+							"onError": 0,
+						},
+					},
+				},
+			}},
+		),
+	)
+	if err != nil {
+		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Next the cursor. If there is no document return a empty document
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return 0, nil
+	}
+
+	//Decode the document
+	if err := cur.Decode(&out); err != nil {
+		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return out["value"], nil
+}
