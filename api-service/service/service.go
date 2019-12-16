@@ -72,6 +72,8 @@ type APIServiceInterface interface {
 	GetTotalDatabaseWorkStats(location string, environment string) (float32, utils.AdvancedErrorInterface)
 	// GetTotalDatabaseDatafileSizeStats return the total size of datafiles of databases
 	GetTotalDatabaseDatafileSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface)
+	// GetTotalDatabaseSegmentSizeStats return the total size of segments of databases
+	GetTotalDatabaseSegmentSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
