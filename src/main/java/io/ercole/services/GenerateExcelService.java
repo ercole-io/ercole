@@ -88,10 +88,17 @@ public class GenerateExcelService {
 
                 //save data into array
                 String[] dataOfHost = new String[20];
-                dataOfHost[0]  =
-                        host.getHostname();                     //physical server name
-                dataOfHost[1]  =
-                        host.getAssociatedClusterName();        //virtual server name
+                if (root.getString("Type").equals("VMWARE") || root.getString("Type").equals("OVM")) {
+                        dataOfHost[0]  =
+                                host.getAssociatedClusterName();                     //physical server name
+                        dataOfHost[1]  =
+                                host.getHostname();        //virtual server name
+                } else {
+                        dataOfHost[0]  =
+                                host.getHostname();                     //physical server name
+                        dataOfHost[1]  =
+                                host.getAssociatedClusterName();        //virtual server name
+                }
                 dataOfHost[2]  =
                         root.getString("Type");           //virtualization technol.
                 dataOfHost[3]  =
