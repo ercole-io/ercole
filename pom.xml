@@ -5,20 +5,21 @@
 
 	<groupId>io.ercole</groupId>
 	<artifactId>ercole-server</artifactId>
-	<version>1.6.6</version> 
+	<version>1.6.7</version> 
 
 	<properties>
-		<ercole-web.version>1.6.6</ercole-web.version>
+		<ercole-web.version>1.6.7</ercole-web.version>
 		<rpm5.version>1.6.3</rpm5.version>
 		<rpm6.version>1.6.5</rpm6.version>
 		<rpm7.version>1.6.5</rpm7.version>
 		<win.version>1.6.5</win.version>
-		<hpux.version>1.6.3</hpux.version>
+		<hpux.version>1.6.4</hpux.version>
         <aix.version>1.6.4</aix.version>
         <checkmk.version>1.0.0</checkmk.version>
 		<virtualization-rpm7.version>1.6.2</virtualization-rpm7.version>
-        <exadata-rpm7.version>1.6.0</exadata-rpm7.version>
-	</properties>
+        <exadata-rpm7.version>1.6.1</exadata-rpm7.version>
+        <exadata-rpm6.version>1.6.1</exadata-rpm6.version>
+    </properties>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -347,6 +348,19 @@
                         <configuration>
                             <overwrite>false</overwrite>
                             <url>https://github.com/ercole-io/ercole-agent-exadata/releases/download/${exadata-rpm7.version}/ercole-agent-exadata-${exadata-rpm7.version}-1.el7.x86_64.rpm</url>
+                            <unpack>false</unpack>
+                            <outputDirectory>${project.build.directory}/ercole-web/packages</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-rhel6-exadata</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>false</overwrite>
+                            <url>https://github.com/ercole-io/ercole-agent-exadata/releases/download/${exadata-rpm6.version}/ercole-agent-exadata-${exadata-rpm6.version}-1.el6.x86_64.rpm</url>
                             <unpack>false</unpack>
                             <outputDirectory>${project.build.directory}/ercole-web/packages</outputDirectory>
                         </configuration>
