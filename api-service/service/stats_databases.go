@@ -47,6 +47,11 @@ func (as *APIService) GetTopWorkloadDatabaseStats(location string, limit int) ([
 	return as.Database.GetTopWorkloadDatabaseStats(location, limit)
 }
 
+// GetDatabaseRACStatusStats return a array containing the number of databases per RAC status
+func (as *APIService) GetDatabaseRACStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetDatabaseRACStatusStats(location, environment)
+}
+
 // GetDatabaseDataguardStatusStats return a array containing the number of databases per dataguard status
 func (as *APIService) GetDatabaseDataguardStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetDatabaseDataguardStatusStats(location, environment)

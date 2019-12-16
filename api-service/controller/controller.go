@@ -63,6 +63,8 @@ type APIControllerInterface interface {
 	GetTopWorkloadDatabaseStats(w http.ResponseWriter, r *http.Request)
 	// GetDatabaseDataguardStatusStats return all statistics about the dataguard status of the databases using the filters in the request
 	GetDatabaseDataguardStatusStats(w http.ResponseWriter, r *http.Request)
+	// GetDatabaseRACStatusStats return all statistics about the RAC status of the databases using the filters in the request
+	GetDatabaseRACStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetDatabasArchivelogStatusStats return all statistics about the archivelog status of the databases using the filters in the request
 	GetDatabaseArchivelogStatusStats(w http.ResponseWriter, r *http.Request)
 }
