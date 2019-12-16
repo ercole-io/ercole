@@ -34,3 +34,8 @@ func (as *APIService) GetTypeStats(location string) ([]interface{}, utils.Advanc
 func (as *APIService) GetOperatingSystemStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetOperatingSystemStats(location)
 }
+
+// GetDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
+func (as *APIService) GetDatabaseArchivelogStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetDatabaseArchivelogStatusStats(location, environment)
+}
