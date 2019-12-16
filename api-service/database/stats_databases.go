@@ -295,14 +295,14 @@ func (md *MongoDatabase) GetDatabasePatchStatusStats(location string, windowTime
 }
 
 // GetDatabaseDataguardStatusStats return a array containing the number of databases per dataguard status
-func (md *MongoDatabase) GetDatabaseDataguardStatusStats(location string, environent string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetDatabaseDataguardStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
 		utils.MongoAggegationPipeline(
-			FilterByLocationAndEnvironmentSteps(location, environent),
+			FilterByLocationAndEnvironmentSteps(location, environment),
 			bson.M{"$group": bson.M{
 				"_id": "$database.dataguard",
 				"count": bson.M{
@@ -332,14 +332,14 @@ func (md *MongoDatabase) GetDatabaseDataguardStatusStats(location string, enviro
 }
 
 // GetDatabaseRACStatusStats return a array containing the number of databases per RAC status
-func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environent string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
 		utils.MongoAggegationPipeline(
-			FilterByLocationAndEnvironmentSteps(location, environent),
+			FilterByLocationAndEnvironmentSteps(location, environment),
 			bson.M{"$group": bson.M{
 				"_id": bson.M{
 					"$gt": bson.A{
@@ -397,14 +397,14 @@ func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environent s
 }
 
 // GetDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
-func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, environent string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
 		utils.MongoAggegationPipeline(
-			FilterByLocationAndEnvironmentSteps(location, environent),
+			FilterByLocationAndEnvironmentSteps(location, environment),
 			bson.M{"$group": bson.M{
 				"_id": bson.M{
 					"$eq": bson.A{
@@ -436,4 +436,45 @@ func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, envir
 		out = append(out, &item)
 	}
 	return out, nil
+}
+
+// GetTotalDatabaseWorkStats return the total work of databases
+func (md *MongoDatabase) GetTotalDatabaseWorkStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
+	var out map[string]float32
+
+	//Calculate the stats
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+		context.TODO(),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, environment),
+			bson.M{"$group": bson.M{
+				"_id": 0,
+				"value": bson.M{
+					"$sum": bson.M{
+						"$convert": bson.M{
+							"input":   "$database.work",
+							"to":      "double",
+							"onError": 0,
+						},
+					},
+				},
+			}},
+		),
+	)
+	if err != nil {
+		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Next the cursor. If there is no document return a empty document
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return 0, nil
+	}
+
+	//Decode the document
+	if err := cur.Decode(&out); err != nil {
+		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return out["value"], nil
 }

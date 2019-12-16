@@ -71,6 +71,8 @@ type MongoDatabaseInterface interface {
 	GetDatabaseRACStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
 	GetDatabaseArchivelogStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetTotalDatabaseWorkStats return the total work of databases
+	GetTotalDatabaseWorkStats(location string, environment string) (float32, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation

@@ -145,3 +145,78 @@ func simpleAPIRequestCommand(
 	}
 	return cmd
 }
+
+func simpleSingleValueAPIRequestCommand(
+	use string,
+	short string,
+	long string,
+	searchArguments bool,
+	locationOption bool,
+	environmentOption bool,
+	endpointPath string,
+	errorMessageFormat string,
+	httpErrorMessageFormat string) *cobra.Command {
+
+	cmd := &cobra.Command{
+		Use:   use,
+		Short: short,
+		Long:  long,
+		Run: func(cmd *cobra.Command, args []string) {
+			//Set query params
+			params := url.Values{}
+			if searchArguments {
+				params.Set("search", strings.Join(args, " "))
+			}
+			if locationOption {
+				params.Set("location", location)
+			}
+			if environmentOption {
+				params.Set("environment", environment)
+			}
+
+			//Make the http request
+			resp, err := http.Get(
+				utils.NewAPIUrl(
+					ercoleConfig.APIService.RemoteEndpoint,
+					ercoleConfig.APIService.UserUsername,
+					ercoleConfig.APIService.UserPassword,
+					endpointPath,
+					params,
+				).String())
+			if err != nil {
+				fmt.Fprintf(os.Stderr, errorMessageFormat, err)
+				os.Exit(1)
+			} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
+				out, _ := ioutil.ReadAll(resp.Body)
+				defer resp.Body.Close()
+				fmt.Fprintf(os.Stderr, httpErrorMessageFormat, resp.StatusCode, string(out))
+				os.Exit(1)
+			} else {
+				out, _ := ioutil.ReadAll(resp.Body)
+				defer resp.Body.Close()
+				var res interface{}
+				err = json.Unmarshal(out, &res)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Failed to unmarshal response body: %v (%s)\n", err, string(out))
+					os.Exit(1)
+				}
+
+				enc := json.NewEncoder(os.Stdout)
+				enc.SetIndent("", "    ")
+				enc.Encode(res)
+			}
+
+		},
+	}
+
+	if !searchArguments {
+		cmd.Args = cobra.ExactArgs(0)
+	}
+	if locationOption {
+		cmd.Flags().StringVarP(&location, "location", "l", "", "Filter by location")
+	}
+	if environmentOption {
+		cmd.Flags().StringVarP(&environment, "environment", "e", "", "Filter by environment")
+	}
+	return cmd
+}
