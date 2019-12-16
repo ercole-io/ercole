@@ -194,3 +194,24 @@ func (ctrl *APIController) GetDatabaseArchivelogStatusStats(w http.ResponseWrite
 	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, stats)
 }
+
+// GetTotalDatabaseWorkStats return the total work of databases using the filters in the request
+func (ctrl *APIController) GetTotalDatabaseWorkStats(w http.ResponseWriter, r *http.Request) {
+	var location string
+	var environment string
+	var err utils.AdvancedErrorInterface
+
+	//parse the query params
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
+	//get the data
+	stats, err := ctrl.Service.GetTotalDatabaseWorkStats(location, environment)
+	if err != nil {
+		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, stats)
+}

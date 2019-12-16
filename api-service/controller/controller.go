@@ -67,6 +67,8 @@ type APIControllerInterface interface {
 	GetDatabaseRACStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetDatabasArchivelogStatusStats return all statistics about the archivelog status of the databases using the filters in the request
 	GetDatabaseArchivelogStatusStats(w http.ResponseWriter, r *http.Request)
+	// GetTotalDatabaseWorkStats return the total work of databases using the filters in the request
+	GetTotalDatabaseWorkStats(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface

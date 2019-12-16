@@ -56,3 +56,8 @@ func (as *APIService) GetDatabaseRACStatusStats(location string, environment str
 func (as *APIService) GetDatabaseDataguardStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetDatabaseDataguardStatusStats(location, environment)
 }
+
+// GetTotalDatabaseWorkStats return the total work of databases
+func (as *APIService) GetTotalDatabaseWorkStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
+	return as.Database.GetTotalDatabaseWorkStats(location, environment)
+}
