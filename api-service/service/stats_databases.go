@@ -61,3 +61,8 @@ func (as *APIService) GetDatabaseDataguardStatusStats(location string, environme
 func (as *APIService) GetTotalDatabaseWorkStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
 	return as.Database.GetTotalDatabaseWorkStats(location, environment)
 }
+
+// GetTotalDatabaseDatafileSizeStats return the total size of datafiles of databases
+func (as *APIService) GetTotalDatabaseDatafileSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
+	return as.Database.GetTotalDatabaseDatafileSizeStats(location, environment)
+}

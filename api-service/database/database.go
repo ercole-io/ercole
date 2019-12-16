@@ -73,6 +73,8 @@ type MongoDatabaseInterface interface {
 	GetDatabaseArchivelogStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetTotalDatabaseWorkStats return the total work of databases
 	GetTotalDatabaseWorkStats(location string, environment string) (float32, utils.AdvancedErrorInterface)
+	// GetTotalDatabaseDatafileSizeStats return the total size of datafiles of databases
+	GetTotalDatabaseDatafileSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation
