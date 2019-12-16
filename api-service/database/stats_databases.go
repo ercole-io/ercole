@@ -331,6 +331,71 @@ func (md *MongoDatabase) GetDatabaseDataguardStatusStats(location string, enviro
 	return out, nil
 }
 
+// GetDatabaseRACStatusStats return a array containing the number of databases per RAC status
+func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environent string) ([]interface{}, utils.AdvancedErrorInterface) {
+	var out []interface{}
+
+	//Calculate the stats
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+		context.TODO(),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, environent),
+			bson.M{"$group": bson.M{
+				"_id": bson.M{
+					"$gt": bson.A{
+						bson.M{
+							"$size": bson.M{
+								"$filter": bson.M{
+									"input": "$database.features",
+									"as":    "fe",
+									"cond": bson.M{
+										"$and": bson.A{
+											bson.M{
+												"$eq": bson.A{
+													"$$fe.name",
+													"Real Application Clusters",
+												},
+											},
+											bson.M{
+												"$eq": bson.A{
+													"$$fe.status",
+													true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						0,
+					},
+				},
+				"count": bson.M{
+					"$sum": 1,
+				},
+			}},
+			bson.M{"$project": bson.M{
+				"_id":   false,
+				"rac":   "$_id",
+				"count": true,
+			}},
+		),
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Decode the documents
+	for cur.Next(context.TODO()) {
+		var item map[string]interface{}
+		if cur.Decode(&item) != nil {
+			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		}
+		out = append(out, &item)
+	}
+	return out, nil
+}
+
 // GetDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
 func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, environent string) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}

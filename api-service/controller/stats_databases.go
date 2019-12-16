@@ -153,6 +153,27 @@ func (ctrl *APIController) GetDatabaseDataguardStatusStats(w http.ResponseWriter
 	utils.WriteJSONResponse(w, http.StatusOK, stats)
 }
 
+// GetDatabaseRACStatusStats return all statistics about the RAC status of the databases using the filters in the request
+func (ctrl *APIController) GetDatabaseRACStatusStats(w http.ResponseWriter, r *http.Request) {
+	var location string
+	var environment string
+	var err utils.AdvancedErrorInterface
+
+	//parse the query params
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
+	//get the data
+	stats, err := ctrl.Service.GetDatabaseRACStatusStats(location, environment)
+	if err != nil {
+		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, stats)
+}
+
 // GetDatabaseArchivelogStatusStats return all statistics about the archivelog status of the databases using the filters in the request
 func (ctrl *APIController) GetDatabaseArchivelogStatusStats(w http.ResponseWriter, r *http.Request) {
 	var location string
