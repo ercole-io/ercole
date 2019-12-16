@@ -362,58 +362,65 @@ public class DashboardService {
 
 	/**
 	 * Count the databases grouped by dataguard status.
+	 * @param env env
 	 * @return the count of databases grouped by dataguard status
 	 */
-	public List<Map<String, Object>> countDatabaseGroupedByDataguardStatus() {
-		return currentRepo.countDatabaseGroupedByDataguardStatus();
+	public List<Map<String, Object>> countDatabaseGroupedByDataguardStatus(final String env) {
+		return currentRepo.countDatabaseGroupedByDataguardStatus(env);
 	}
 
 	/**
 	 * Count the databases grouped by real application cluster feature status.
+	 * @param env env
 	 * @return the count of databases grouped by real application cluster feature status
 	 */
-	public List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus() {
-		return currentRepo.countDatabasesGroupedByRealApplicationClusterFeatureStatus();
+	public List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus(final String env) {
+		return currentRepo.countDatabasesGroupedByRealApplicationClusterFeatureStatus(env);
 	}
 
 	/**
 	 * Count the databases grouped by archive log status.
+	 * @param env evn
 	 * @return the count of databases grouped by archive log status
 	 */
-	public List<Map<String, Object>> countDatabasesGroupedByArchiveLogStatus() {
-		return currentRepo.countDatabasesGroupedByArchiveLogStatus();
+	public List<Map<String, Object>> countDatabasesGroupedByArchiveLogStatus(final String env) {
+		return currentRepo.countDatabasesGroupedByArchiveLogStatus(env);
 	}
 
 	/**
 	 * Return the sum of the segments size.
+	 * @param env env
 	 * @return the sum of the segments size
 	 */
-	public float getTotalSegmentsSizeSum() {
-		return currentRepo.getTotalSegmentsSize();
+	public float getTotalSegmentsSizeSum(final String env) {
+		return currentRepo.getTotalSegmentsSize(env);
 	}
 
 	/**
 	 * Return the sum of the datafile size.
+	 * @param env env
 	 * @return the sum of the datafile size
 	 */
-	public float getTotalDatafileSize() {
-		return currentRepo.getTotalDatafileSize();
+	public float getTotalDatafileSize(final String env) {
+		return currentRepo.getTotalDatafileSize(env);
 	}
 
 	/**
 	 * Return the sum of the memory size.
+	 * @param env env
 	 * @return the sum of the memory size
 	 */
-	public float getTotalMemorySize() {
-		return currentRepo.getTotalMemorySize();
+	public float getTotalMemorySize(final String env) {
+		return currentRepo.getTotalMemorySize(env);
 	}
 
 	/**
 	 * Return the sum of the database work.
+	 * @param env env
 	 * @return the sum of the database work
 	 */
-	public float getTotalDatabaseWorkSum() {
-		return currentRepo.getTotalDatabaseWork();
+	public float getTotalDatabaseWorkSum(final String env) {
+		return currentRepo.getTotalDatabaseWork(env);
 	}
 
 	/**

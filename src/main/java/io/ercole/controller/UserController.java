@@ -436,74 +436,82 @@ public class UserController {
 	/**
 	 * Return the list of databases.
 	 * @param c pageable
+	 * @param env env
 	 * @return the list of databases
 	 */
 	@GetMapping("/databases")
-	public final Page<Map<String, Object>> getDatabases(final Pageable c) {
-		return hostService.getDatabases(c);
+	public final Page<Map<String, Object>> getDatabases(final Pageable c, final String env) {
+		return hostService.getDatabases(c, env);
 	}	
 
 	/**
 	 * Count the databases grouped by dataguard status.
+	 * @param env env
 	 * @return the count of databases grouped by dataguard status
 	 */
 	@GetMapping("/stats/databases/dataguard-status")
-	public final List<Map<String, Object>> countDatabaseGroupedByDataguardStatus() {
-		return dashService.countDatabaseGroupedByDataguardStatus();
+	public final List<Map<String, Object>> countDatabaseGroupedByDataguardStatus(final String env) {
+		return dashService.countDatabaseGroupedByDataguardStatus(env);
 	}
 
 	/**
 	 * Count the databases grouped by real application cluster feature status.
+	 * @param env env
 	 * @return the count of databases grouped by real application cluster feature status
 	 */
 	@GetMapping("/stats/databases/real-application-cluster-status")
-	public final List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus() {
-		return dashService.countDatabasesGroupedByRealApplicationClusterFeatureStatus();
+	public final List<Map<String, Object>> countDatabasesGroupedByRealApplicationClusterFeatureStatus(final String env) {
+		return dashService.countDatabasesGroupedByRealApplicationClusterFeatureStatus(env);
 	}
 	
 	/**
 	 * Count the databases grouped by archive log status.
+	 * @param env env
 	 * @return the count of databases grouped by archive log status
 	 */
 	@GetMapping("/stats/databases/archive-log-status")
-	public final List<Map<String, Object>> countDatabasesGroupedByArchiveLogStatus() {
-		return dashService.countDatabasesGroupedByArchiveLogStatus();
+	public final List<Map<String, Object>> countDatabasesGroupedByArchiveLogStatus(final String env) {
+		return dashService.countDatabasesGroupedByArchiveLogStatus(env);
 	}
 
 	/**
 	 * Return the sum of the segments size.
+	 * @param env env
 	 * @return the sum of the segments size
 	 */
 	@GetMapping("/stats/databases/segments-size-sum")
-	public final float getSegmentsSizeSum() {
-		return dashService.getTotalSegmentsSizeSum();
+	public final float getSegmentsSizeSum(final String env) {
+		return dashService.getTotalSegmentsSizeSum(env);
 	}
 
 	/**
 	 * Return the sum of the datafile size.
+	 * @param env env
 	 * @return the sum of the datafile size
 	 */
 	@GetMapping("/stats/databases/datafile-size-sum")
-	public final float getTotalDatafileSize() {
-		return dashService.getTotalDatafileSize();
+	public final float getTotalDatafileSize(final String env) {
+		return dashService.getTotalDatafileSize(env);
 	}
 
 	/**
 	 * Return the sum of the memory size.
+	 * @param env env
 	 * @return the sum of the memory size
 	 */
 	@GetMapping("/stats/databases/memory-size-sum")
-	public final float getTotalMemorySize() {
-		return dashService.getTotalMemorySize();
+	public final float getTotalMemorySize(final String env) {
+		return dashService.getTotalMemorySize(env);
 	}
 
 	/**
 	 * Return the sum of the database work.
+	 * @param env env
 	 * @return the sum of the database work
 	 */
 	@GetMapping("/stats/databases/work-sum")
-	public final float getDatabaseWorkSum() {
-		return dashService.getTotalDatabaseWorkSum();
+	public final float getDatabaseWorkSum(final String env) {
+		return dashService.getTotalDatabaseWorkSum(env);
 	}
 
 	/**
