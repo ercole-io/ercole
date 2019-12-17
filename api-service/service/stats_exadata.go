@@ -21,6 +21,6 @@ import (
 )
 
 // GetTotalExadataMemorySizeStats return the total size of memory of exadata
-func (as *APIService) GetTotalExadataMemorySizeStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) GetTotalExadataMemorySizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
 	return as.Database.GetTotalExadataMemorySizeStats(location, environment)
 }

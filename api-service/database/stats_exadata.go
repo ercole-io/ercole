@@ -24,8 +24,8 @@ import (
 )
 
 // GetTotalExadataMemorySizeStats return the total size of memory of exadata
-func (md *MongoDatabase) GetTotalExadataMemorySizeStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
+func (md *MongoDatabase) GetTotalExadataMemorySizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
+	var out map[string]float32
 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -76,28 +76,19 @@ func (md *MongoDatabase) GetTotalExadataMemorySizeStats(location string, environ
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	//Decode the documents
-	for cur.Next(context.TODO()) {
-		var item map[string]interface{}
-		if cur.Decode(&item) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
-		}
-		out = append(out, &item)
+	//Next the cursor. If there is no document return a empty document
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return 0, nil
 	}
-	return out, nil
-	// //Next the cursor. If there is no document return a empty document
-	// hasNext := cur.Next(context.TODO())
-	// if !hasNext {
-	// 	return 0, nil
-	// }
 
-	// //Decode the document
-	// if err := cur.Decode(&out); err != nil {
-	// 	return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
-	// }
+	//Decode the document
+	if err := cur.Decode(&out); err != nil {
+		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
 
-	// return out["value"], nil
+	return out["value"], nil
 }
