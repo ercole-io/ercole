@@ -432,6 +432,24 @@ public class HostService {
 	}
 
 	/**
+	 * Return the cpu daily usage data history of all databases of host.
+	 * @param hostname hostname
+	 * @return the cpu daily usage data history of all databases of host
+	 */
+	public Map<String, Object> getDailyCPUUsageDataHistory(final String hostname) {
+		CurrentHost current = currentRepo.findByHostname(hostname);
+		HashMap<String, Object> result = new HashMap<>();
+		if (current == null) {
+			return result;
+		}
+		String[] dbs = current.getDatabases().split(" "); 
+		for (String db : dbs) {
+			result.put(db, currentRepo.getDailyCPUUsageDataHistory(hostname, db));
+		}
+		return result;
+	}
+
+	/**
 	 * Return the list of databases.
 	 * @param c pageable
 	 * @param env env

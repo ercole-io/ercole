@@ -425,6 +425,16 @@ public class UserController {
 	}
 
 	/**
+	 * Return the daily cpu usage data history of all databases of host.
+	 * @param hostname hostname
+	 * @return the used data history of all databases of host
+	 */
+	@GetMapping("/hosts/{hostname}/dailycpuusagedatahistory")
+	public final Map<String, Object> getDailyCPUUsageDataHistory(@PathVariable final String hostname) {
+		return hostService.getDailyCPUUsageDataHistory(hostname);
+	}
+
+	/**
 	 * Return the configured list of tags of the databases. 
 	 * @return the configured list of tags of the databases 
 	 */
