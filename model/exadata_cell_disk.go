@@ -17,33 +17,35 @@ package model
 
 import "go.mongodb.org/mongo-driver/bson"
 
-// ExtraInfo holds various informations.
-type ExtraInfo struct {
-	Databases   []Database    `bson:",omitempty"`
-	Filesystems []Filesystem  `bson:",omitempty"`
-	Clusters    []ClusterInfo `bson:",omitempty"`
-	Exadata     Exadata       `bson:",omitempty"`
+// ExadataCellDisk holds info about a exadata cell disk
+type ExadataCellDisk struct {
+	Name     string
+	Status   string
+	ErrCount string `bson:"err_count"`
+	UsedPerc string `bson:"used_perc"`
 }
 
-// ExtraInfoBsonValidatorRules contains mongodb validation rules for extraInfo
-var ExtraInfoBsonValidatorRules = bson.D{
+// ExadataCellDiskBsonValidatorRules contains mongodb validation rules for ExadataCellDisk
+var ExadataCellDiskBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"filesystems",
+		"name",
+		"status",
+		"err_count",
+		"used_perc",
 	}},
 	{"properties", bson.D{
-		{"databases", bson.D{
-			{"bsonType", "array"},
-			{"items", DatabaseBsonValidatorRules},
+		{"name", bson.D{
+			{"bsonType", "string"},
 		}},
-		{"filesystems", bson.D{
-			{"bsonType", "array"},
-			{"items", FilesystemBsonValidatorRules},
+		{"status", bson.D{
+			{"bsonType", "string"},
 		}},
-		{"clusters", bson.D{
-			{"bsonType", "array"},
-			{"items", ClusterInfoBsonValidatorRules},
+		{"err_count", bson.D{
+			{"bsonType", "string"},
 		}},
-		{"exadata", ExadataBsonValidatorRules},
+		{"used_perc", bson.D{
+			{"bsonType", "string"},
+		}},
 	}},
 }
