@@ -479,6 +479,65 @@ func (md *MongoDatabase) GetTotalDatabaseWorkStats(location string, environment 
 	return out["value"], nil
 }
 
+// GetTotalDatabaseMemorySizeStats return the total of memory size of databases
+func (md *MongoDatabase) GetTotalDatabaseMemorySizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
+	var out map[string]float64
+
+	//Calculate the stats
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+		context.TODO(),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, environment),
+			bson.M{"$group": bson.M{
+				"_id": 0,
+				"value": bson.M{
+					"$sum": bson.M{
+						"$add": bson.A{
+							bson.M{
+								"$convert": bson.M{
+									"input":   "$database.pga_target",
+									"to":      "double",
+									"onError": 0,
+								},
+							},
+							bson.M{
+								"$convert": bson.M{
+									"input":   "$database.sga_target",
+									"to":      "double",
+									"onError": 0,
+								},
+							},
+							bson.M{
+								"$convert": bson.M{
+									"input":   "$database.memory_target",
+									"to":      "double",
+									"onError": 0,
+								},
+							},
+						},
+					},
+				},
+			}},
+		),
+	)
+	if err != nil {
+		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Next the cursor. If there is no document return a empty document
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return 0, nil
+	}
+
+	//Decode the document
+	if err := cur.Decode(&out); err != nil {
+		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return float32(out["value"]), nil
+}
+
 // GetTotalDatabaseDatafileSizeStats return the total size of datafiles of databases
 func (md *MongoDatabase) GetTotalDatabaseDatafileSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
 	var out map[string]float32

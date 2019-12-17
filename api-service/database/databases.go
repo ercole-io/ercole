@@ -47,10 +47,25 @@ func (md *MongoDatabase) SearchCurrentDatabases(full bool, keywords []string, so
 				"database.memory": bson.M{
 					"$add": bson.A{
 						bson.M{
-							"$toDouble": "$database.sga_target",
+							"$convert": bson.M{
+								"input":   "$database.pga_target",
+								"to":      "double",
+								"onError": 0,
+							},
 						},
 						bson.M{
-							"$toDouble": "$database.memory_target",
+							"$convert": bson.M{
+								"input":   "$database.sga_target",
+								"to":      "double",
+								"onError": 0,
+							},
+						},
+						bson.M{
+							"$convert": bson.M{
+								"input":   "$database.memory_target",
+								"to":      "double",
+								"onError": 0,
+							},
 						},
 					},
 				},
