@@ -74,6 +74,7 @@ var HostDataBsonValidatorRules = bson.D{
 			{"enum", bson.A{
 				"oracledb",
 				"virtualization",
+				"exadata",
 			}},
 		}},
 		{"version", bson.D{

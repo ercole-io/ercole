@@ -17,33 +17,21 @@ package model
 
 import "go.mongodb.org/mongo-driver/bson"
 
-// ExtraInfo holds various informations.
-type ExtraInfo struct {
-	Databases   []Database    `bson:",omitempty"`
-	Filesystems []Filesystem  `bson:",omitempty"`
-	Clusters    []ClusterInfo `bson:",omitempty"`
-	Exadata     Exadata       `bson:",omitempty"`
+// Exadata holds specific informations about a exadata.
+type Exadata struct {
+	Devices []ExadataDevice
 }
 
-// ExtraInfoBsonValidatorRules contains mongodb validation rules for extraInfo
-var ExtraInfoBsonValidatorRules = bson.D{
+// ExadataBsonValidatorRules contains mongodb validation rules for exadata
+var ExadataBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"filesystems",
+		"devices",
 	}},
 	{"properties", bson.D{
-		{"databases", bson.D{
+		{"devices", bson.D{
 			{"bsonType", "array"},
-			{"items", DatabaseBsonValidatorRules},
+			{"items", ExadataDeviceBsonValidatorRules},
 		}},
-		{"filesystems", bson.D{
-			{"bsonType", "array"},
-			{"items", FilesystemBsonValidatorRules},
-		}},
-		{"clusters", bson.D{
-			{"bsonType", "array"},
-			{"items", ClusterInfoBsonValidatorRules},
-		}},
-		{"exadata", ExadataBsonValidatorRules},
 	}},
 }
