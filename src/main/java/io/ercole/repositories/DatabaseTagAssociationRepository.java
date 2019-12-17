@@ -23,4 +23,5 @@ import io.ercole.model.DatabaseTagAssociation;
 public interface DatabaseTagAssociationRepository extends PagingAndSortingRepository<DatabaseTagAssociation, Long> {
     List<DatabaseTagAssociation> findByHostnameAndDbname(String hostname, String dbname);
     List<DatabaseTagAssociation> findTagsByHostnameOrderByDbname(String hostname);
+    DatabaseTagAssociation findOneByHostnameAndDbnameAndTag(String hostname, String dbname, String tag); 
 }
