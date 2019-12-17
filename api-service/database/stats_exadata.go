@@ -92,3 +92,98 @@ func (md *MongoDatabase) GetTotalExadataMemorySizeStats(location string, environ
 
 	return out["value"], nil
 }
+
+// GetTotalExadataCPUStats return the total cpu of exadata
+func (md *MongoDatabase) GetTotalExadataCPUStats(location string, environment string) (interface{}, utils.AdvancedErrorInterface) {
+	var out map[string]interface{}
+
+	//Calculate the stats
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, environment),
+			bson.M{"$match": bson.M{
+				"archived": false,
+			}},
+			bson.M{"$project": bson.M{
+				"value": bson.M{
+					"$reduce": bson.M{
+						"input":        "$extra.exadata.devices",
+						"initialValue": bson.M{"enabled": 0, "total": 0},
+						"in": bson.M{
+							"$let": bson.M{
+								"vars": bson.M{
+									"match": bson.M{
+										"$regexFind": bson.M{
+											"input": "$$this.cpu_enabled",
+											"regex": primitive.Regex{Pattern: "^(\\d+)/(\\d+)$", Options: "i"},
+										},
+									},
+								},
+								"in": bson.M{
+									"enabled": bson.M{
+										"$add": bson.A{
+											"$$value.enabled",
+											bson.M{
+												"$convert": bson.M{
+													"input": bson.M{"$arrayElemAt": bson.A{
+														"$$match.captures",
+														0,
+													}},
+													"to":     "double",
+													"onNull": 0,
+												},
+											},
+										},
+									},
+									"total": bson.M{
+										"$add": bson.A{
+											"$$value.total",
+											bson.M{
+												"$convert": bson.M{
+													"input": bson.M{"$arrayElemAt": bson.A{
+														"$$match.captures",
+														0,
+													}},
+													"to":     "double",
+													"onNull": 0,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			}},
+
+			bson.M{"$group": bson.M{
+				"_id": 0,
+				"enabled": bson.M{
+					"$sum": "$value.enabled",
+				},
+				"total": bson.M{
+					"$sum": "$value.total",
+				},
+			}},
+			bson.M{"$unset": bson.A{"_id"}},
+		),
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Next the cursor. If there is no document return a empty document
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return 0, nil
+	}
+
+	//Decode the document
+	if err := cur.Decode(&out); err != nil {
+		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return out, nil
+}

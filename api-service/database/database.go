@@ -83,6 +83,8 @@ type MongoDatabaseInterface interface {
 	GetTotalDatabaseSegmentSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface)
 	// GetTotalExadataMemorySizeStats return the total size of memory of exadata
 	GetTotalExadataMemorySizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface)
+	// GetTotalExadataCPUStats return the total cpu of exadata
+	GetTotalExadataCPUStats(location string, environment string) (interface{}, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation
