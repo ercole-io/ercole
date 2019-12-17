@@ -143,3 +143,14 @@ func MongoAggregationSearchFilterStep(fields []string, keywords []string) interf
 		"$or": conditions,
 	}}
 }
+
+// OptionalBsonMExtension return a bson with the same key-values pairs as the orig and extension, if extend is true, otherwise return the orig bson
+func OptionalBsonMExtension(extend bool, orig bson.M, extension bson.M) bson.M {
+	if extend {
+		for k, v := range extension {
+			orig[k] = v
+		}
+	}
+
+	return orig
+}
