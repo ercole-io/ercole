@@ -51,6 +51,7 @@ func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface
 	router.HandleFunc("/stats/databases/archivelog-status", ctrl.GetDatabaseArchivelogStatusStats).Methods("GET")
 	router.HandleFunc("/stats/databases/rac-status", ctrl.GetDatabaseRACStatusStats).Methods("GET")
 	router.HandleFunc("/stats/databases/total-work", ctrl.GetTotalDatabaseWorkStats).Methods("GET")
+	router.HandleFunc("/stats/databases/total-memory-size", ctrl.GetTotalDatabaseMemorySizeStats).Methods("GET")
 	router.HandleFunc("/stats/databases/total-datafile-size", ctrl.GetTotalDatabaseDatafileSizeStats).Methods("GET")
 	router.HandleFunc("/stats/databases/total-segment-size", ctrl.GetTotalDatabaseSegmentSizeStats).Methods("GET")
 }

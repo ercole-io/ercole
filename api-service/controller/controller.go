@@ -69,6 +69,8 @@ type APIControllerInterface interface {
 	GetDatabaseArchivelogStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalDatabaseWorkStats return the total work of databases using the filters in the request
 	GetTotalDatabaseWorkStats(w http.ResponseWriter, r *http.Request)
+	// GetTotalDatabaseMemorySizeStats return the total size of memory of databases using the filters in the request
+	GetTotalDatabaseMemorySizeStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalDatabaseDatafileSizeStats return the total size of datafiles of databases using the filters in the request
 	GetTotalDatabaseDatafileSizeStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalDatabaseSegmentSizeStats return the total size of segments of databases using the filters in the request

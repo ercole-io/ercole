@@ -73,6 +73,8 @@ type MongoDatabaseInterface interface {
 	GetDatabaseArchivelogStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetTotalDatabaseWorkStats return the total work of databases
 	GetTotalDatabaseWorkStats(location string, environment string) (float32, utils.AdvancedErrorInterface)
+	// GetTotalDatabaseMemorySizeStats return the total of memory size of databases
+	GetTotalDatabaseMemorySizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface)
 	// GetTotalDatabaseDatafileSizeStats return the total size of datafiles of databases
 	GetTotalDatabaseDatafileSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface)
 	// GetTotalDatabaseSegmentSizeStats return the total size of segments of databases
