@@ -17,7 +17,6 @@ package database
 
 import (
 	"context"
-	"regexp"
 
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
@@ -27,10 +26,6 @@ import (
 // SearchAlerts search alerts
 func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
-	var quotedKeywords []string
-	for _, k := range keywords {
-		quotedKeywords = append(quotedKeywords, regexp.QuoteMeta(k))
-	}
 	//Find the matching alerts
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").Aggregate(
 		context.TODO(),

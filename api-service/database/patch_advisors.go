@@ -17,7 +17,6 @@ package database
 
 import (
 	"context"
-	"regexp"
 	"time"
 
 	"github.com/amreo/ercole-services/utils"
@@ -27,11 +26,6 @@ import (
 // SearchCurrentPatchAdvisors search current patch advisors
 func (md *MongoDatabase) SearchCurrentPatchAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
-	var quotedKeywords []string
-	for _, k := range keywords {
-		quotedKeywords = append(quotedKeywords, regexp.QuoteMeta(k))
-	}
-
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
