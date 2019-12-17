@@ -77,6 +77,8 @@ type APIControllerInterface interface {
 	GetTotalDatabaseDatafileSizeStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalDatabaseSegmentSizeStats return the total size of segments of databases using the filters in the request
 	GetTotalDatabaseSegmentSizeStats(w http.ResponseWriter, r *http.Request)
+	// GetTotalExadataMemorySizeStats return the total size of memory of exadata using the filters in the request
+	GetTotalExadataMemorySizeStats(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface
