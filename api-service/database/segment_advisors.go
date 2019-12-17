@@ -17,7 +17,6 @@ package database
 
 import (
 	"context"
-	"regexp"
 
 	"github.com/amreo/ercole-services/utils"
 	"go.mongodb.org/mongo-driver/bson"
@@ -26,10 +25,7 @@ import (
 // SearchCurrentSegmentAdvisors search current segment advisors
 func (md *MongoDatabase) SearchCurrentSegmentAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
-	var quotedKeywords []string
-	for _, k := range keywords {
-		quotedKeywords = append(quotedKeywords, regexp.QuoteMeta(k))
-	}
+
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),

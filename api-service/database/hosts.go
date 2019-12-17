@@ -17,21 +17,14 @@ package database
 
 import (
 	"context"
-	"regexp"
-	"strings"
 
 	"github.com/amreo/ercole-services/utils"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SearchCurrentHosts search current hosts
 func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
-	var quotedKeywords []string
-	for _, k := range keywords {
-		quotedKeywords = append(quotedKeywords, regexp.QuoteMeta(k))
-	}
 
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -45,21 +38,13 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 			}}),
 			bson.M{"$match": bson.M{
 				"archived": false,
-				"$or": bson.A{
-					bson.M{"hostname": bson.M{
-						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
-					}},
-					bson.M{"extra.databases.name": bson.M{
-						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
-					}},
-					bson.M{"extra.databases.unique_name": bson.M{
-						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
-					}},
-					bson.M{"extra.clusters.name": bson.M{
-						"$regex": primitive.Regex{Pattern: strings.Join(quotedKeywords, "|"), Options: "i"},
-					}},
-				},
 			}},
+			utils.MongoAggregationSearchFilterStep([]string{
+				"hostname",
+				"extra.databases.name",
+				"extra.databases.unique_name",
+				"extra.clusters.name",
+			}, keywords),
 			bson.M{"$lookup": bson.M{
 				"from":         "currentClusters",
 				"localField":   "hostname",
