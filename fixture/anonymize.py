@@ -158,4 +158,21 @@ try:
 except Exception:
     pass
 
+try:
+    for dev in data["Extra"]["Exadata"]["Devices"]:
+        try:
+            dev["Hostname"] = assoc_list(dev["Hostname"], list0)
+        except Exception:
+            pass
+        try:
+            for cd in dev["CellDisks"]:
+                try:
+                    cd["Name"] = assoc_list(cd["Name"], list0)
+                except Exception:
+                    pass
+        except Exception:
+            pass
+except Exception:
+    pass
+
 json.dump(data, sys.stdout)
