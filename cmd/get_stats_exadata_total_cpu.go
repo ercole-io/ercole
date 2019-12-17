@@ -13,19 +13,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Package service is a package that provides methods for querying data
-package service
+package cmd
 
-import (
-	"github.com/amreo/ercole-services/utils"
-)
+func init() {
+	getExadataTotalCPUStatsCmd := simpleSingleValueAPIRequestCommand("total-cpu",
+		"Get exadata total cpu stats",
+		`Get stats about the total cpu of exadata`,
+		false, true, true,
+		"/stats/exadata/total-cpu",
+		"Failed to get exadata total cpu stats: %v\n",
+		"Failed to get exadata total cpu stats(Status: %d): %s\n",
+	)
 
-// GetTotalExadataMemorySizeStats return the total size of memory of exadata
-func (as *APIService) GetTotalExadataMemorySizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
-	return as.Database.GetTotalExadataMemorySizeStats(location, environment)
-}
-
-// GetTotalExadataCPUStats return the total cpu of exadata
-func (as *APIService) GetTotalExadataCPUStats(location string, environment string) (interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetTotalExadataCPUStats(location, environment)
+	statsExadataCmd.AddCommand(getExadataTotalCPUStatsCmd)
 }
