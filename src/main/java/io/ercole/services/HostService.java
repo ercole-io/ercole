@@ -446,7 +446,11 @@ public class HostService {
 	}
 
 	public Long addTagToDatabase(final String hostname, final String dbname, final String tagname) {
-		return databaseTagAssociationRepo.save(new DatabaseTagAssociation(hostname, dbname, tagname)).getId();
+		if (databaseTagAssociationRepo.findOneByHostnameAndDbnameAndTag(hostname, dbname, tagname) == null) {
+			return databaseTagAssociationRepo.save(new DatabaseTagAssociation(hostname, dbname, tagname)).getId();
+		} else {
+			return -1L;
+		}
 	}
 
 	public void deleteTagOfDatabase(final String hostname, final String dbname, final long tagid) {
