@@ -540,7 +540,7 @@ func (md *MongoDatabase) GetTotalDatabaseMemorySizeStats(location string, enviro
 
 // GetTotalDatabaseDatafileSizeStats return the total size of datafiles of databases
 func (md *MongoDatabase) GetTotalDatabaseDatafileSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
-	var out map[string]float32
+	var out map[string]float64
 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
@@ -576,12 +576,12 @@ func (md *MongoDatabase) GetTotalDatabaseDatafileSizeStats(location string, envi
 		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return out["value"], nil
+	return float32(out["value"]), nil
 }
 
 // GetTotalDatabaseSegmentSizeStats return the total size of segments of databases
 func (md *MongoDatabase) GetTotalDatabaseSegmentSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
-	var out map[string]float32
+	var out map[string]float64
 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
@@ -617,5 +617,5 @@ func (md *MongoDatabase) GetTotalDatabaseSegmentSizeStats(location string, envir
 		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return out["value"], nil
+	return float32(out["value"]), nil
 }

@@ -81,6 +81,8 @@ type APIControllerInterface interface {
 	GetTotalExadataMemorySizeStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalExadataCPUStats return the total cpu of exadata using the filters in the request
 	GetTotalExadataCPUStats(w http.ResponseWriter, r *http.Request)
+	// GetAvegageExadataStorageUsageStats return the average usage of cell disks of exadata using the filters in the request
+	GetAvegageExadataStorageUsageStats(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface

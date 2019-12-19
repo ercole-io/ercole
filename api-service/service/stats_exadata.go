@@ -29,3 +29,8 @@ func (as *APIService) GetTotalExadataMemorySizeStats(location string, environmen
 func (as *APIService) GetTotalExadataCPUStats(location string, environment string) (interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetTotalExadataCPUStats(location, environment)
 }
+
+// GetAvegageExadataStorageUsageStats return the average usage of cell disks of exadata
+func (as *APIService) GetAvegageExadataStorageUsageStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
+	return as.Database.GetAvegageExadataStorageUsageStats(location, environment)
+}
