@@ -173,3 +173,26 @@ func MongoAggregationConvertToDoubleOrZero(what interface{}) interface{} {
 		},
 	}
 }
+
+//MongoAggregationJoin return a expression that join the list into a string
+func MongoAggregationJoin(list interface{}, sep interface{}) interface{} {
+	return bson.M{
+		"$reduce": bson.M{
+			"input":        list,
+			"initialValue": "",
+			"in": bson.M{
+				"$concat": bson.A{
+					"$$value",
+					bson.M{
+						"$cond": bson.A{
+							bson.M{"$eq": bson.A{"$$value", ""}},
+							"",
+							sep,
+						},
+					},
+					"$$this",
+				},
+			},
+		},
+	}
+}
