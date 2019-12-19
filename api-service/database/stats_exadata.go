@@ -43,33 +43,31 @@ func (md *MongoDatabase) GetTotalExadataMemorySizeStats(location string, environ
 						"$reduce": bson.M{
 							"input":        "$extra.exadata.devices",
 							"initialValue": 0,
-							"in": bson.M{
-								"$add": bson.A{
-									"$$value",
-									bson.M{
-										"$let": bson.M{
-											"vars": bson.M{
-												"match": bson.M{
-													"$regexFind": bson.M{
-														"input": "$$this.memory",
-														"regex": primitive.Regex{Pattern: "^(\\d+)GB$", Options: "i"},
-													},
+							"in": utils.MongoAggregationAdd(
+								"$$value",
+								bson.M{
+									"$let": bson.M{
+										"vars": bson.M{
+											"match": bson.M{
+												"$regexFind": bson.M{
+													"input": "$$this.memory",
+													"regex": primitive.Regex{Pattern: "^(\\d+)GB$", Options: "i"},
 												},
 											},
-											"in": bson.M{
-												"$convert": bson.M{
-													"input": bson.M{"$arrayElemAt": bson.A{
-														"$$match.captures",
-														0,
-													}},
-													"to":     "double",
-													"onNull": 0,
-												},
+										},
+										"in": bson.M{
+											"$convert": bson.M{
+												"input": bson.M{"$arrayElemAt": bson.A{
+													"$$match.captures",
+													0,
+												}},
+												"to":     "double",
+												"onNull": 0,
 											},
 										},
 									},
 								},
-							},
+							),
 						},
 					},
 				},
@@ -122,36 +120,32 @@ func (md *MongoDatabase) GetTotalExadataCPUStats(location string, environment st
 									},
 								},
 								"in": bson.M{
-									"enabled": bson.M{
-										"$add": bson.A{
-											"$$value.enabled",
-											bson.M{
-												"$convert": bson.M{
-													"input": bson.M{"$arrayElemAt": bson.A{
-														"$$match.captures",
-														0,
-													}},
-													"to":     "double",
-													"onNull": 0,
-												},
+									"enabled": utils.MongoAggregationAdd(
+										"$$value.enabled",
+										bson.M{
+											"$convert": bson.M{
+												"input": bson.M{"$arrayElemAt": bson.A{
+													"$$match.captures",
+													0,
+												}},
+												"to":     "double",
+												"onNull": 0,
 											},
 										},
-									},
-									"total": bson.M{
-										"$add": bson.A{
-											"$$value.total",
-											bson.M{
-												"$convert": bson.M{
-													"input": bson.M{"$arrayElemAt": bson.A{
-														"$$match.captures",
-														0,
-													}},
-													"to":     "double",
-													"onNull": 0,
-												},
+									),
+									"total": utils.MongoAggregationAdd(
+										"$$value.total",
+										bson.M{
+											"$convert": bson.M{
+												"input": bson.M{"$arrayElemAt": bson.A{
+													"$$match.captures",
+													0,
+												}},
+												"to":     "double",
+												"onNull": 0,
 											},
 										},
-									},
+									),
 								},
 							},
 						},
@@ -216,20 +210,13 @@ func (md *MongoDatabase) GetAvegageExadataStorageUsageStats(location string, env
 													"input":        "$$this.cell_disks",
 													"initialValue": bson.M{"count": 0, "sum": 0},
 													"in": bson.M{
-														"count": bson.M{
-															"$add": bson.A{
-																"$$value.count",
-																1,
+														"count": utils.MongoAggregationAdd("$$value.count", 1),
+														"sum": utils.MongoAggregationAdd(
+															"$$value.sum",
+															bson.M{
+																"$toDouble": "$$this.used_perc",
 															},
-														},
-														"sum": bson.M{
-															"$add": bson.A{
-																"$$value.sum",
-																bson.M{
-																	"$toDouble": "$$this.used_perc",
-																},
-															},
-														},
+														),
 													},
 												},
 											},
@@ -238,18 +225,8 @@ func (md *MongoDatabase) GetAvegageExadataStorageUsageStats(location string, env
 									},
 								},
 								"in": bson.M{
-									"count": bson.M{
-										"$add": bson.A{
-											"$$value.count",
-											"$$part.count",
-										},
-									},
-									"sum": bson.M{
-										"$add": bson.A{
-											"$$value.sum",
-											"$$part.sum",
-										},
-									},
+									"count": utils.MongoAggregationAdd("$$value.count", "$$part.count"),
+									"sum":   utils.MongoAggregationAdd("$$value.sum", "$$part.sum"),
 								},
 							},
 						},

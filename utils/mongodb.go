@@ -154,3 +154,10 @@ func OptionalBsonMExtension(extend bool, orig bson.M, extension bson.M) bson.M {
 
 	return orig
 }
+
+// MongoAggregationAdd return a expression that sum the parameters
+func MongoAggregationAdd(things ...interface{}) interface{} {
+	return bson.M{
+		"$add": things,
+	}
+}
