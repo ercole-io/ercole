@@ -17,6 +17,8 @@
 package service
 
 import (
+	"time"
+
 	"github.com/amreo/ercole-services/utils"
 )
 
@@ -38,4 +40,9 @@ func (as *APIService) GetAvegageExadataStorageUsageStats(location string, enviro
 // GetExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
 func (as *APIService) GetExadataStorageErrorCountStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetExadataStorageErrorCountStatusStats(location, environment)
+}
+
+// GetExadataPatchStatusStats return a array containing the number of exadata per patch status
+func (as *APIService) GetExadataPatchStatusStats(location string, environment string, windowTime time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetExadataPatchStatusStats(location, environment, windowTime)
 }
