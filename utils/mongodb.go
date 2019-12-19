@@ -161,3 +161,15 @@ func MongoAggregationAdd(things ...interface{}) interface{} {
 		"$add": things,
 	}
 }
+
+// MongoAggregationConvertToDoubleOrZero return a expression that convert what to double if it's valid or return zero if invalid or null
+func MongoAggregationConvertToDoubleOrZero(what interface{}) interface{} {
+	return bson.M{
+		"$convert": bson.M{
+			"input":   what,
+			"to":      "double",
+			"onError": 0,
+			"onNull":  0,
+		},
+	}
+}
