@@ -292,3 +292,78 @@ func (md *MongoDatabase) GetAvegageExadataStorageUsageStats(location string, env
 
 	return float32(out["value"]), nil
 }
+
+// GetExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
+func (md *MongoDatabase) GetExadataStorageErrorCountStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+	var out []interface{}
+
+	//Calculate the stats
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, environment),
+			bson.M{"$match": bson.M{
+				"archived": false,
+			}},
+			bson.M{"$project": bson.M{
+				"devs": bson.M{
+					"$map": bson.M{
+						"input": bson.M{
+							"$filter": bson.M{
+								"input": "$extra.exadata.devices",
+								"as":    "dev",
+								"cond": bson.M{
+									"$eq": bson.A{
+										"$$dev.server_type",
+										"StorageServer",
+									},
+								},
+							},
+						},
+						"as": "dev",
+						"in": bson.M{
+							"$map": bson.M{
+								"input": "$$dev.cell_disks",
+								"as":    "cd",
+								"in": bson.M{
+									"$gt": bson.A{
+										bson.M{
+											"$toDouble": "$$cd.err_count",
+										},
+										0,
+									},
+								},
+							},
+						},
+					},
+				},
+			}},
+			bson.M{"$unwind": "$devs"},
+			bson.M{"$unwind": "$devs"},
+			bson.M{"$group": bson.M{
+				"_id": "$devs",
+				"count": bson.M{
+					"$sum": 1,
+				},
+			}},
+			bson.M{"$project": bson.M{
+				"_id":     false,
+				"failing": "$_id",
+				"count":   true,
+			}},
+		),
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Decode the documents
+	for cur.Next(context.TODO()) {
+		var item map[string]interface{}
+		if cur.Decode(&item) != nil {
+			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		}
+		out = append(out, &item)
+	}
+	return out, nil
+}

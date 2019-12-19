@@ -87,6 +87,8 @@ type MongoDatabaseInterface interface {
 	GetTotalExadataCPUStats(location string, environment string) (interface{}, utils.AdvancedErrorInterface)
 	// GetAvegageExadataStorageUsageStats return the average usage of cell disks of exadata
 	GetAvegageExadataStorageUsageStats(location string, environment string) (float32, utils.AdvancedErrorInterface)
+	// GetExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
+	GetExadataStorageErrorCountStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation

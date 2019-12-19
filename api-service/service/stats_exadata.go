@@ -34,3 +34,8 @@ func (as *APIService) GetTotalExadataCPUStats(location string, environment strin
 func (as *APIService) GetAvegageExadataStorageUsageStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
 	return as.Database.GetAvegageExadataStorageUsageStats(location, environment)
 }
+
+// GetExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
+func (as *APIService) GetExadataStorageErrorCountStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetExadataStorageErrorCountStatusStats(location, environment)
+}
