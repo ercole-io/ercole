@@ -100,22 +100,12 @@ func MongoAggregationOptionalPagingStep(page int, size int) bson.M {
 				"number": page,
 			}},
 			bson.M{"$addFields": bson.M{
-				"empty": bson.M{
-					"$eq": bson.A{
-						"$size",
-						0,
-					},
-				},
+				"empty": MongoAggregationEqual("$size", 0),
 				"first": page == 0,
-				"last": bson.M{
-					"$eq": bson.A{
-						page,
-						bson.M{"$subtract": bson.A{
-							"$total_pages",
-							1,
-						}},
-					},
-				},
+				"last": MongoAggregationEqual(page, bson.M{"$subtract": bson.A{
+					"$total_pages",
+					1,
+				}}),
 			}},
 		},
 	}}
@@ -185,7 +175,7 @@ func MongoAggregationJoin(list interface{}, sep interface{}) interface{} {
 					"$$value",
 					bson.M{
 						"$cond": bson.A{
-							bson.M{"$eq": bson.A{"$$value", ""}},
+							MongoAggregationEqual("$$value", ""),
 							"",
 							sep,
 						},
@@ -195,4 +185,9 @@ func MongoAggregationJoin(list interface{}, sep interface{}) interface{} {
 			},
 		},
 	}
+}
+
+// MongoAggregationEqual return a expression that return true if a and b are equal, otherwise false
+func MongoAggregationEqual(a interface{}, b interface{}) interface{} {
+	return bson.M{"$eq": bson.A{a, b}}
 }

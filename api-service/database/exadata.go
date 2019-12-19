@@ -57,12 +57,7 @@ func (md *MongoDatabase) SearchCurrentExadata(full bool, keywords []string, sort
 							"$filter": bson.M{
 								"input": "$extra.exadata.devices",
 								"as":    "dev",
-								"cond": bson.M{
-									"$eq": bson.A{
-										"$$dev.server_type",
-										"DBServer",
-									},
-								},
+								"cond":  utils.MongoAggregationEqual("$$dev.server_type", "DBServer"),
 							},
 						},
 						"as": "dev",
@@ -95,12 +90,7 @@ func (md *MongoDatabase) SearchCurrentExadata(full bool, keywords []string, sort
 							"$filter": bson.M{
 								"input": "$extra.exadata.devices",
 								"as":    "dev",
-								"cond": bson.M{
-									"$eq": bson.A{
-										"$$dev.server_type",
-										"StorageServer",
-									},
-								},
+								"cond":  utils.MongoAggregationEqual("$$dev.server_type", "StorageServer"),
 							},
 						},
 						"as": "dev",
@@ -135,12 +125,7 @@ func (md *MongoDatabase) SearchCurrentExadata(full bool, keywords []string, sort
 							"$filter": bson.M{
 								"input": "$extra.exadata.devices",
 								"as":    "dev",
-								"cond": bson.M{
-									"$eq": bson.A{
-										"$$dev.server_type",
-										"IBSwitch",
-									},
-								},
+								"cond":  utils.MongoAggregationEqual("$$dev.server_type", "IBSwitch"),
 							},
 						},
 						"as": "dev",

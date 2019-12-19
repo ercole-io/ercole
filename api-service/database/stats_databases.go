@@ -223,12 +223,7 @@ func (md *MongoDatabase) GetDatabasePatchStatusStats(location string, windowTime
 						"initialValue": nil,
 						"in": bson.M{
 							"$cond": bson.M{
-								"if": bson.M{
-									"$eq": bson.A{
-										"$$value",
-										nil,
-									},
-								},
+								"if":   utils.MongoAggregationEqual("$$value", nil),
 								"then": "$$this",
 								"else": bson.M{
 									"$cond": bson.M{
@@ -342,18 +337,8 @@ func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environment 
 									"as":    "fe",
 									"cond": bson.M{
 										"$and": bson.A{
-											bson.M{
-												"$eq": bson.A{
-													"$$fe.name",
-													"Real Application Clusters",
-												},
-											},
-											bson.M{
-												"$eq": bson.A{
-													"$$fe.status",
-													true,
-												},
-											},
+											utils.MongoAggregationEqual("$$fe.name", "Real Application Clusters"),
+											utils.MongoAggregationEqual("$$fe.status", true),
 										},
 									},
 								},
@@ -398,12 +383,7 @@ func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, envir
 		utils.MongoAggegationPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			bson.M{"$group": bson.M{
-				"_id": bson.M{
-					"$eq": bson.A{
-						"$database.archive_log",
-						"ARCHIVELOG",
-					},
-				},
+				"_id": utils.MongoAggregationEqual("$database.archive_log", "ARCHIVELOG"),
 				"count": bson.M{
 					"$sum": 1,
 				},
