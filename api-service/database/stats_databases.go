@@ -120,18 +120,16 @@ func (md *MongoDatabase) GetTopReclaimableDatabaseStats(location string, limit i
 					"$reduce": bson.M{
 						"input":        "$database.segment_advisors",
 						"initialValue": 0,
-						"in": bson.M{
-							"$add": bson.A{
-								"$$value",
-								bson.M{
-									"$convert": bson.M{
-										"input":   "$$this.reclaimable",
-										"to":      "double",
-										"onError": 0.5,
-									},
+						"in": utils.MongoAggregationAdd(
+							"$$value",
+							bson.M{
+								"$convert": bson.M{
+									"input":   "$$this.reclaimable",
+									"to":      "double",
+									"onError": 0.5,
 								},
 							},
-						},
+						),
 					},
 				},
 			}},
@@ -491,31 +489,29 @@ func (md *MongoDatabase) GetTotalDatabaseMemorySizeStats(location string, enviro
 			bson.M{"$group": bson.M{
 				"_id": 0,
 				"value": bson.M{
-					"$sum": bson.M{
-						"$add": bson.A{
-							bson.M{
-								"$convert": bson.M{
-									"input":   "$database.pga_target",
-									"to":      "double",
-									"onError": 0,
-								},
-							},
-							bson.M{
-								"$convert": bson.M{
-									"input":   "$database.sga_target",
-									"to":      "double",
-									"onError": 0,
-								},
-							},
-							bson.M{
-								"$convert": bson.M{
-									"input":   "$database.memory_target",
-									"to":      "double",
-									"onError": 0,
-								},
+					"$sum": utils.MongoAggregationAdd(
+						bson.M{
+							"$convert": bson.M{
+								"input":   "$database.pga_target",
+								"to":      "double",
+								"onError": 0,
 							},
 						},
-					},
+						bson.M{
+							"$convert": bson.M{
+								"input":   "$database.sga_target",
+								"to":      "double",
+								"onError": 0,
+							},
+						},
+						bson.M{
+							"$convert": bson.M{
+								"input":   "$database.memory_target",
+								"to":      "double",
+								"onError": 0,
+							},
+						},
+					),
 				},
 			}},
 		),
