@@ -17,6 +17,7 @@ package controller
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/amreo/ercole-services/utils"
 )
@@ -96,6 +97,33 @@ func (ctrl *APIController) GetExadataStorageErrorCountStatusStats(w http.Respons
 
 	//get the data
 	stats, err := ctrl.Service.GetExadataStorageErrorCountStatusStats(location, environment)
+	if err != nil {
+		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, stats)
+}
+
+// GetExadataPatchStatusStats return all statistics about the patch status of the exadata using the filters in the request
+func (ctrl *APIController) GetExadataPatchStatusStats(w http.ResponseWriter, r *http.Request) {
+	var location string
+	var environment string
+	var windowTime int
+
+	var err utils.AdvancedErrorInterface
+
+	//parse the query params
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+	if windowTime, err = utils.Str2int(r.URL.Query().Get("window-time"), 6); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	//get the data
+	stats, err := ctrl.Service.GetExadataPatchStatusStats(location, environment, time.Now().AddDate(0, -windowTime, 0))
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return

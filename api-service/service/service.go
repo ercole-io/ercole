@@ -86,6 +86,8 @@ type APIServiceInterface interface {
 	GetAvegageExadataStorageUsageStats(location string, environment string) (float32, utils.AdvancedErrorInterface)
 	// GetExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
 	GetExadataStorageErrorCountStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetExadataPatchStatusStats return a array containing the number of exadata per patch status
+	GetExadataPatchStatusStats(location string, environment string, windowTime time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

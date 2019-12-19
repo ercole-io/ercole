@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"time"
 
 	"github.com/amreo/ercole-services/utils"
 	"go.mongodb.org/mongo-driver/bson"
@@ -350,6 +351,88 @@ func (md *MongoDatabase) GetExadataStorageErrorCountStatusStats(location string,
 				"_id":     false,
 				"failing": "$_id",
 				"count":   true,
+			}},
+		),
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Decode the documents
+	for cur.Next(context.TODO()) {
+		var item map[string]interface{}
+		if cur.Decode(&item) != nil {
+			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		}
+		out = append(out, &item)
+	}
+	return out, nil
+}
+
+// GetExadataPatchStatusStats return a array containing the number of exadata per patch status
+func (md *MongoDatabase) GetExadataPatchStatusStats(location string, environment string, windowTime time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	var out []interface{}
+
+	//Calculate the stats
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		utils.MongoAggegationPipeline(
+			FilterByLocationAndEnvironmentSteps(location, environment),
+			bson.M{"$match": bson.M{
+				"archived": false,
+			}},
+			bson.M{"$project": bson.M{
+				"status": bson.M{
+					"$map": bson.M{
+						"input": "$extra.exadata.devices",
+						"as":    "dev",
+						"in": bson.M{
+							"$let": bson.M{
+								"vars": bson.M{
+									"match": bson.M{
+										"$regexFind": bson.M{
+											"input": "$$dev.exa_sw_version",
+											"regex": primitive.Regex{Pattern: "^.*\\.(\\d+)$", Options: "i"},
+										},
+									},
+								},
+								"in": bson.M{
+									"$gt": bson.A{
+										bson.M{
+											"$dateFromString": bson.M{
+												"dateString": bson.M{
+													"$concat": bson.A{
+														"20",
+														bson.M{
+															"$arrayElemAt": bson.A{
+																"$$match.captures",
+																0,
+															},
+														},
+													},
+												},
+												"format": "%Y%m%d",
+											},
+										},
+										windowTime,
+									},
+								},
+							},
+						},
+					},
+				},
+			}},
+			bson.M{"$unwind": "$status"},
+			bson.M{"$group": bson.M{
+				"_id": "$status",
+				"count": bson.M{
+					"$sum": 1,
+				},
+			}},
+			bson.M{"$project": bson.M{
+				"_id":    false,
+				"status": "$_id",
+				"count":  true,
 			}},
 		),
 	)
