@@ -22,7 +22,7 @@ type ExtraInfo struct {
 	Databases   []Database    `bson:",omitempty"`
 	Filesystems []Filesystem  `bson:",omitempty"`
 	Clusters    []ClusterInfo `bson:",omitempty"`
-	Exadata     Exadata       `bson:",omitempty"`
+	Exadata     *Exadata      `bson:",omitempty"`
 }
 
 // ExtraInfoBsonValidatorRules contains mongodb validation rules for extraInfo
@@ -44,6 +44,13 @@ var ExtraInfoBsonValidatorRules = bson.D{
 			{"bsonType", "array"},
 			{"items", ClusterInfoBsonValidatorRules},
 		}},
-		{"exadata", ExadataBsonValidatorRules},
+		{"exadata", bson.D{
+			{"anyOf", bson.A{
+				ExadataBsonValidatorRules,
+				bson.D{{"type", "null"}},
+			}},
+		}},
 	}},
 }
+
+// ExadataBsonValidatorRules

@@ -18,6 +18,7 @@ package service
 
 import (
 	"bytes"
+	"log"
 	"net/http"
 	"time"
 
@@ -85,6 +86,9 @@ func (hds *HostDataService) UpdateHostInfo(hostdata model.HostData) (interface{}
 	}
 
 	//Insert the host
+	if hds.Config.DataService.LogInsertingHostdata {
+		log.Println(utils.ToJSON(hostdata))
+	}
 	res, err := hds.Database.InsertHostData(hostdata)
 	if err != nil {
 		return nil, err

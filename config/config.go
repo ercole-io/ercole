@@ -40,6 +40,8 @@ type DataService struct {
 	Port uint16
 	// LogHTTPRequest enable the logging of the internal http serverl
 	LogHTTPRequest bool
+	// LogInsertingHostdata enable the logging of the inserting hostdata
+	LogInsertingHostdata bool
 	// AgentUsername contains the username of the agent
 	AgentUsername string
 	// AgentPassword contains the password of the agent
