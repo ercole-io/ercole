@@ -55,16 +55,10 @@ func (md *MongoDatabase) GetTotalExadataMemorySizeStats(location string, environ
 												},
 											},
 										},
-										"in": bson.M{
-											"$convert": bson.M{
-												"input": bson.M{"$arrayElemAt": bson.A{
-													"$$match.captures",
-													0,
-												}},
-												"to":     "double",
-												"onNull": 0,
-											},
-										},
+										"in": utils.MongoAggregationConvertToDoubleOrZero(bson.M{"$arrayElemAt": bson.A{
+											"$$match.captures",
+											0,
+										}}),
 									},
 								},
 							),
@@ -122,29 +116,17 @@ func (md *MongoDatabase) GetTotalExadataCPUStats(location string, environment st
 								"in": bson.M{
 									"enabled": utils.MongoAggregationAdd(
 										"$$value.enabled",
-										bson.M{
-											"$convert": bson.M{
-												"input": bson.M{"$arrayElemAt": bson.A{
-													"$$match.captures",
-													0,
-												}},
-												"to":     "double",
-												"onNull": 0,
-											},
-										},
+										utils.MongoAggregationConvertToDoubleOrZero(bson.M{"$arrayElemAt": bson.A{
+											"$$match.captures",
+											0,
+										}}),
 									),
 									"total": utils.MongoAggregationAdd(
 										"$$value.total",
-										bson.M{
-											"$convert": bson.M{
-												"input": bson.M{"$arrayElemAt": bson.A{
-													"$$match.captures",
-													0,
-												}},
-												"to":     "double",
-												"onNull": 0,
-											},
-										},
+										utils.MongoAggregationConvertToDoubleOrZero(bson.M{"$arrayElemAt": bson.A{
+											"$$match.captures",
+											0,
+										}}),
 									),
 								},
 							},

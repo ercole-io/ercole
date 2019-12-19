@@ -166,13 +166,7 @@ func (md *MongoDatabase) GetTopWorkloadDatabaseStats(location string, limit int)
 			bson.M{"$project": bson.M{
 				"hostname": true,
 				"dbname":   "$database.name",
-				"workload": bson.M{
-					"$convert": bson.M{
-						"input":   "$database.work",
-						"to":      "double",
-						"onError": 0,
-					},
-				},
+				"workload": utils.MongoAggregationConvertToDoubleOrZero("$database.work"),
 			}},
 			bson.M{"$sort": bson.M{
 				"workload": -1,
@@ -448,13 +442,7 @@ func (md *MongoDatabase) GetTotalDatabaseWorkStats(location string, environment 
 			bson.M{"$group": bson.M{
 				"_id": 0,
 				"value": bson.M{
-					"$sum": bson.M{
-						"$convert": bson.M{
-							"input":   "$database.work",
-							"to":      "double",
-							"onError": 0,
-						},
-					},
+					"$sum": utils.MongoAggregationConvertToDoubleOrZero("$database.work"),
 				},
 			}},
 		),
@@ -490,27 +478,9 @@ func (md *MongoDatabase) GetTotalDatabaseMemorySizeStats(location string, enviro
 				"_id": 0,
 				"value": bson.M{
 					"$sum": utils.MongoAggregationAdd(
-						bson.M{
-							"$convert": bson.M{
-								"input":   "$database.pga_target",
-								"to":      "double",
-								"onError": 0,
-							},
-						},
-						bson.M{
-							"$convert": bson.M{
-								"input":   "$database.sga_target",
-								"to":      "double",
-								"onError": 0,
-							},
-						},
-						bson.M{
-							"$convert": bson.M{
-								"input":   "$database.memory_target",
-								"to":      "double",
-								"onError": 0,
-							},
-						},
+						utils.MongoAggregationConvertToDoubleOrZero("$database.pga_target"),
+						utils.MongoAggregationConvertToDoubleOrZero("$database.sga_target"),
+						utils.MongoAggregationConvertToDoubleOrZero("$database.memory_target"),
 					),
 				},
 			}},
@@ -546,13 +516,7 @@ func (md *MongoDatabase) GetTotalDatabaseDatafileSizeStats(location string, envi
 			bson.M{"$group": bson.M{
 				"_id": 0,
 				"value": bson.M{
-					"$sum": bson.M{
-						"$convert": bson.M{
-							"input":   "$database.used",
-							"to":      "double",
-							"onError": 0,
-						},
-					},
+					"$sum": utils.MongoAggregationConvertToDoubleOrZero("$database.used"),
 				},
 			}},
 		),
@@ -587,13 +551,7 @@ func (md *MongoDatabase) GetTotalDatabaseSegmentSizeStats(location string, envir
 			bson.M{"$group": bson.M{
 				"_id": 0,
 				"value": bson.M{
-					"$sum": bson.M{
-						"$convert": bson.M{
-							"input":   "$database.segments_size",
-							"to":      "double",
-							"onError": 0,
-						},
-					},
+					"$sum": utils.MongoAggregationConvertToDoubleOrZero("$database.segments_size"),
 				},
 			}},
 		),
