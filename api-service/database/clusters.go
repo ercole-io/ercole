@@ -67,25 +67,7 @@ func (md *MongoDatabase) SearchCurrentClusters(full bool, keywords []string, sor
 				"type":                          true,
 				"cpu":                           true,
 				"sockets":                       true,
-				"physical_hosts": bson.M{
-					"$reduce": bson.M{
-						"input":        "$physical_hosts",
-						"initialValue": "",
-						"in": bson.M{
-							"$concat": bson.A{
-								"$$value",
-								bson.M{
-									"$cond": bson.A{
-										bson.M{"$eq": bson.A{"$$value", ""}},
-										"",
-										" ",
-									},
-								},
-								"$$this",
-							},
-						},
-					},
-				},
+				"physical_hosts":                utils.MongoAggregationJoin("$physical_hosts", " "),
 			}}),
 			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
 			utils.MongoAggregationOptionalPagingStep(page, pageSize),
