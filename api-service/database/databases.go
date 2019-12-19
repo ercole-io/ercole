@@ -44,13 +44,8 @@ func (md *MongoDatabase) SearchCurrentDatabases(full bool, keywords []string, so
 					utils.MongoAggregationConvertToDoubleOrZero("$database.sga_target"),
 					utils.MongoAggregationConvertToDoubleOrZero("$database.memory_target"),
 				),
-				"datafile_size": "$database.used",
-				"archive_log_status": bson.M{
-					"$eq": bson.A{
-						"$database.archive_log",
-						"ARCHIVELOG",
-					},
-				},
+				"datafile_size":      "$database.used",
+				"archive_log_status": utils.MongoAggregationEqual("$database.archive_log", "ARCHIVELOG"),
 				"rac": bson.M{
 					"$gt": bson.A{
 						bson.M{
@@ -60,18 +55,8 @@ func (md *MongoDatabase) SearchCurrentDatabases(full bool, keywords []string, so
 									"as":    "fe",
 									"cond": bson.M{
 										"$and": bson.A{
-											bson.M{
-												"$eq": bson.A{
-													"$$fe.name",
-													"Real Application Clusters",
-												},
-											},
-											bson.M{
-												"$eq": bson.A{
-													"$$fe.status",
-													true,
-												},
-											},
+											utils.MongoAggregationEqual("$$fe.name", "Real Application Clusters"),
+											utils.MongoAggregationEqual("$$fe.status", true),
 										},
 									},
 								},

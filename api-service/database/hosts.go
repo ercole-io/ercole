@@ -66,12 +66,7 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 							"$filter": bson.M{
 								"input": "$cluster.cluster.vms",
 								"as":    "vm",
-								"cond": bson.M{
-									"$eq": bson.A{
-										"$$vm.hostname",
-										"$hostname",
-									},
-								},
+								"cond":  utils.MongoAggregationEqual("$$vm.hostname", "$hostname"),
 							},
 						},
 						0,
@@ -173,12 +168,7 @@ func (md *MongoDatabase) GetCurrentHost(hostname string) (interface{}, utils.Adv
 							"$filter": bson.M{
 								"input": "$cluster.cluster.vms",
 								"as":    "vm",
-								"cond": bson.M{
-									"$eq": bson.A{
-										"$$vm.hostname",
-										"$hostname",
-									},
-								},
+								"cond":  utils.MongoAggregationEqual("$$vm.hostname", "$hostname"),
 							},
 						},
 						0,
@@ -206,9 +196,7 @@ func (md *MongoDatabase) GetCurrentHost(hostname string) (interface{}, utils.Adv
 				},
 				"pipeline": bson.A{
 					bson.M{"$match": bson.M{
-						"$expr": bson.M{
-							"$eq": bson.A{"$hostname", "$$hn"},
-						},
+						"$expr": utils.MongoAggregationEqual("$hostname", "$$hn"),
 					}},
 					bson.M{"$project": bson.M{
 						"created_at":                    1,
@@ -241,7 +229,7 @@ func (md *MongoDatabase) GetCurrentHost(hostname string) (interface{}, utils.Adv
 																"$filter": bson.M{
 																	"input": "$$hh.extra.databases",
 																	"as":    "hdb",
-																	"cond":  bson.M{"$eq": bson.A{"$$hdb.name", "$$db.name"}},
+																	"cond":  utils.MongoAggregationEqual("$$hdb.name", "$$db.name"),
 																},
 															},
 															0,

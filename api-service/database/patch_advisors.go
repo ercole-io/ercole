@@ -66,12 +66,7 @@ func (md *MongoDatabase) SearchCurrentPatchAdvisors(keywords []string, sortBy st
 						"initialValue": nil,
 						"in": bson.M{
 							"$cond": bson.M{
-								"if": bson.M{
-									"$eq": bson.A{
-										"$$value",
-										nil,
-									},
-								},
+								"if":   utils.MongoAggregationEqual("$$value", nil),
 								"then": "$$this",
 								"else": bson.M{
 									"$cond": bson.M{

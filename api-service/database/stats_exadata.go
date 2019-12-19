@@ -272,12 +272,7 @@ func (md *MongoDatabase) GetExadataStorageErrorCountStatusStats(location string,
 							"$filter": bson.M{
 								"input": "$extra.exadata.devices",
 								"as":    "dev",
-								"cond": bson.M{
-									"$eq": bson.A{
-										"$$dev.server_type",
-										"StorageServer",
-									},
-								},
+								"cond":  utils.MongoAggregationEqual("$$dev.server_type", "StorageServer"),
 							},
 						},
 						"as": "dev",
