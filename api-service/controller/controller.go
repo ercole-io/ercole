@@ -83,6 +83,8 @@ type APIControllerInterface interface {
 	GetTotalExadataCPUStats(w http.ResponseWriter, r *http.Request)
 	// GetAvegageExadataStorageUsageStats return the average usage of cell disks of exadata using the filters in the request
 	GetAvegageExadataStorageUsageStats(w http.ResponseWriter, r *http.Request)
+	// GetExadataStorageErrorCountStatusStats return all statistics about the ErrorCount status of the storage of the exadata using the filters in the request
+	GetExadataStorageErrorCountStatusStats(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface
