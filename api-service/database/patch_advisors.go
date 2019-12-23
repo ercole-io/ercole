@@ -68,18 +68,7 @@ func (md *MongoDatabase) SearchCurrentPatchAdvisors(keywords []string, sortBy st
 							"$cond": bson.M{
 								"if":   utils.MongoAggregationEqual("$$value", nil),
 								"then": "$$this",
-								"else": bson.M{
-									"$cond": bson.M{
-										"if": bson.M{
-											"$gt": bson.A{
-												"$$value.date",
-												"$$this.date",
-											},
-										},
-										"then": "$$value",
-										"else": "$$this",
-									},
-								},
+								"else": utils.MongoAggregationMax("$$value.date", "$$this.date", "$$value", "$$this"),
 							},
 						},
 					},
