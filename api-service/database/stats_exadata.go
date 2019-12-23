@@ -295,17 +295,7 @@ func (md *MongoDatabase) GetExadataStorageErrorCountStatusStats(location string,
 			}},
 			bson.M{"$unwind": "$devs"},
 			bson.M{"$unwind": "$devs"},
-			bson.M{"$group": bson.M{
-				"_id": "$devs",
-				"count": bson.M{
-					"$sum": 1,
-				},
-			}},
-			bson.M{"$project": bson.M{
-				"_id":     false,
-				"failing": "$_id",
-				"count":   true,
-			}},
+			utils.MongoAggregationGroupAndCountSteps("failing", "count", "$devs"),
 		),
 	)
 	if err != nil {
@@ -377,17 +367,7 @@ func (md *MongoDatabase) GetExadataPatchStatusStats(location string, environment
 				},
 			}},
 			bson.M{"$unwind": "$status"},
-			bson.M{"$group": bson.M{
-				"_id": "$status",
-				"count": bson.M{
-					"$sum": 1,
-				},
-			}},
-			bson.M{"$project": bson.M{
-				"_id":    false,
-				"status": "$_id",
-				"count":  true,
-			}},
+			utils.MongoAggregationGroupAndCountSteps("status", "count", "$status"),
 		),
 	)
 	if err != nil {

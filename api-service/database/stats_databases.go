@@ -76,17 +76,7 @@ func (md *MongoDatabase) GetDatabaseVersionStats(location string) ([]interface{}
 		context.TODO(),
 		utils.MongoAggegationPipeline(
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			bson.M{"$group": bson.M{
-				"_id": "$database.version",
-				"count": bson.M{
-					"$sum": 1,
-				},
-			}},
-			bson.M{"$project": bson.M{
-				"_id":     false,
-				"version": "$_id",
-				"count":   true,
-			}},
+			utils.MongoAggregationGroupAndCountSteps("version", "count", "$database.version"),
 		),
 	)
 	if err != nil {
@@ -231,28 +221,18 @@ func (md *MongoDatabase) GetDatabasePatchStatusStats(location string, windowTime
 					},
 				},
 			}},
-			bson.M{"$group": bson.M{
-				"_id": bson.M{
-					"$cond": bson.M{
-						"if": bson.M{
-							"$gt": bson.A{
-								"$database.last_psus.date",
-								windowTime,
-							},
+			utils.MongoAggregationGroupAndCountSteps("status", "id", bson.M{
+				"$cond": bson.M{
+					"if": bson.M{
+						"$gt": bson.A{
+							"$database.last_psus.date",
+							windowTime,
 						},
-						"then": "OK",
-						"else": "KO",
 					},
+					"then": "OK",
+					"else": "KO",
 				},
-				"count": bson.M{
-					"$sum": 1,
-				},
-			}},
-			bson.M{"$project": bson.M{
-				"_id":    false,
-				"status": "$_id",
-				"count":  true,
-			}},
+			}),
 		),
 	)
 	if err != nil {
@@ -279,17 +259,7 @@ func (md *MongoDatabase) GetDatabaseDataguardStatusStats(location string, enviro
 		context.TODO(),
 		utils.MongoAggegationPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			bson.M{"$group": bson.M{
-				"_id": "$database.dataguard",
-				"count": bson.M{
-					"$sum": 1,
-				},
-			}},
-			bson.M{"$project": bson.M{
-				"_id":       false,
-				"dataguard": "$_id",
-				"count":     true,
-			}},
+			utils.MongoAggregationGroupAndCountSteps("dataguard", "count", "$database.dataguard"),
 		),
 	)
 	if err != nil {
@@ -316,35 +286,25 @@ func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environment 
 		context.TODO(),
 		utils.MongoAggegationPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			bson.M{"$group": bson.M{
-				"_id": bson.M{
-					"$gt": bson.A{
-						bson.M{
-							"$size": bson.M{
-								"$filter": bson.M{
-									"input": "$database.features",
-									"as":    "fe",
-									"cond": bson.M{
-										"$and": bson.A{
-											utils.MongoAggregationEqual("$$fe.name", "Real Application Clusters"),
-											utils.MongoAggregationEqual("$$fe.status", true),
-										},
+			utils.MongoAggregationGroupAndCountSteps("rac", "count", bson.M{
+				"$gt": bson.A{
+					bson.M{
+						"$size": bson.M{
+							"$filter": bson.M{
+								"input": "$database.features",
+								"as":    "fe",
+								"cond": bson.M{
+									"$and": bson.A{
+										utils.MongoAggregationEqual("$$fe.name", "Real Application Clusters"),
+										utils.MongoAggregationEqual("$$fe.status", true),
 									},
 								},
 							},
 						},
-						0,
 					},
+					0,
 				},
-				"count": bson.M{
-					"$sum": 1,
-				},
-			}},
-			bson.M{"$project": bson.M{
-				"_id":   false,
-				"rac":   "$_id",
-				"count": true,
-			}},
+			}),
 		),
 	)
 	if err != nil {
@@ -371,17 +331,9 @@ func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, envir
 		context.TODO(),
 		utils.MongoAggegationPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			bson.M{"$group": bson.M{
-				"_id": utils.MongoAggregationEqual("$database.archive_log", "ARCHIVELOG"),
-				"count": bson.M{
-					"$sum": 1,
-				},
-			}},
-			bson.M{"$project": bson.M{
-				"_id":        false,
-				"archivelog": "$_id",
-				"count":      true,
-			}},
+			utils.MongoAggregationGroupAndCountSteps("archivelog", "count",
+				utils.MongoAggregationEqual("$database.archive_log", "ARCHIVELOG"),
+			),
 		),
 	)
 	if err != nil {

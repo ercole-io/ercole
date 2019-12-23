@@ -207,3 +207,20 @@ func MongoAggregationMax(cmpExprA interface{}, cmpExprB interface{}, a interface
 		},
 	}
 }
+
+// MongoAggregationGroupAndCountSteps return some aggregation steps that group whatFieldName by what and count the documents
+func MongoAggregationGroupAndCountSteps(whatFieldName string, countFieldName string, what interface{}) interface{} {
+	return bson.A{
+		bson.M{"$group": bson.M{
+			"_id": what,
+			countFieldName: bson.M{
+				"$sum": 1,
+			},
+		}},
+		bson.M{"$project": bson.M{
+			"_id":          false,
+			whatFieldName:  "$_id",
+			countFieldName: true,
+		}},
+	}
+}
