@@ -191,3 +191,19 @@ func MongoAggregationJoin(list interface{}, sep interface{}) interface{} {
 func MongoAggregationEqual(a interface{}, b interface{}) interface{} {
 	return bson.M{"$eq": bson.A{a, b}}
 }
+
+// MongoAggregationMax return a expression that return the maximium between a and b using the cmpExpressions
+func MongoAggregationMax(cmpExprA interface{}, cmpExprB interface{}, a interface{}, b interface{}) interface{} {
+	return bson.M{
+		"$cond": bson.M{
+			"if": bson.M{
+				"$gt": bson.A{
+					cmpExprA,
+					cmpExprB,
+				},
+			},
+			"then": a,
+			"else": b,
+		},
+	}
+}
