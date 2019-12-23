@@ -19,6 +19,7 @@ import (
 	"context"
 
 	"github.com/amreo/ercole-services/utils"
+	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -28,7 +29,7 @@ func (md *MongoDatabase) SearchCurrentClusters(full bool, keywords []string, sor
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentClusters").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			utils.MongoAggregationSearchFilterStep([]string{"cluster.name"}, keywords),
 			bson.M{"$project": bson.M{
