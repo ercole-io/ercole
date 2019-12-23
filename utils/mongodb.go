@@ -16,29 +16,12 @@
 package utils
 
 import (
-	"reflect"
 	"regexp"
 	"strings"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
-
-// MongoAggegationPipeline return a aggregation pipeline joining the steps that could be a single step or a slice of steps
-func MongoAggegationPipeline(steps ...interface{}) bson.A {
-	out := bson.A{}
-	for _, step := range steps {
-		if reflect.TypeOf(step).Kind() == reflect.Slice {
-			for _, item := range SliceToSliceOfInterface(step) {
-				out = append(out, item)
-			}
-		} else {
-			out = append(out, step)
-		}
-	}
-
-	return out
-}
 
 // MongoAggregationOptionalStep return the step if optional is true, otherwise return a null step
 func MongoAggregationOptionalStep(optional bool, step interface{}) interface{} {

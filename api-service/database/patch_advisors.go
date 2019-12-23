@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/amreo/ercole-services/utils"
+	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -29,7 +30,7 @@ func (md *MongoDatabase) SearchCurrentPatchAdvisors(keywords []string, sortBy st
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			utils.MongoAggregationSearchFilterStep([]string{"hostname", "database.name"}, keywords),
 			bson.M{"$project": bson.M{

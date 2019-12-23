@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/amreo/ercole-services/utils"
+	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -31,7 +32,7 @@ func (md *MongoDatabase) GetTotalExadataMemorySizeStats(location string, environ
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			bson.M{"$match": bson.M{
 				"archived": false,
@@ -93,7 +94,7 @@ func (md *MongoDatabase) GetTotalExadataCPUStats(location string, environment st
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			bson.M{"$match": bson.M{
 				"archived": false,
@@ -172,7 +173,7 @@ func (md *MongoDatabase) GetAvegageExadataStorageUsageStats(location string, env
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			bson.M{"$match": bson.M{
 				"archived": false,
@@ -260,7 +261,7 @@ func (md *MongoDatabase) GetExadataStorageErrorCountStatusStats(location string,
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			bson.M{"$match": bson.M{
 				"archived": false,
@@ -320,7 +321,7 @@ func (md *MongoDatabase) GetExadataPatchStatusStats(location string, environment
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			bson.M{"$match": bson.M{
 				"archived": false,

@@ -20,6 +20,7 @@ import (
 
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
+	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -29,7 +30,7 @@ func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc
 	//Find the matching alerts
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			bson.M{"$match": bson.M{
 				"alert_status": model.AlertStatusNew,
 			}},

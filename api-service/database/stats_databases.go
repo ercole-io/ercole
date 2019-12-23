@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/amreo/ercole-services/utils"
+	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -29,7 +30,7 @@ func (md *MongoDatabase) GetDatabaseEnvironmentStats(location string) ([]interfa
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, ""),
 			bson.M{"$group": bson.M{
 				"_id": "$environment",
@@ -74,7 +75,7 @@ func (md *MongoDatabase) GetDatabaseVersionStats(location string) ([]interface{}
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, ""),
 			utils.MongoAggregationGroupAndCountSteps("version", "count", "$database.version"),
 		),
@@ -101,7 +102,7 @@ func (md *MongoDatabase) GetTopReclaimableDatabaseStats(location string, limit i
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, ""),
 			bson.M{"$project": bson.M{
 				"hostname": true,
@@ -151,7 +152,7 @@ func (md *MongoDatabase) GetTopWorkloadDatabaseStats(location string, limit int)
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, ""),
 			bson.M{"$project": bson.M{
 				"hostname": true,
@@ -186,7 +187,7 @@ func (md *MongoDatabase) GetDatabasePatchStatusStats(location string, windowTime
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, ""),
 			bson.M{"$project": bson.M{
 				"database.last_psus": bson.M{
@@ -257,7 +258,7 @@ func (md *MongoDatabase) GetDatabaseDataguardStatusStats(location string, enviro
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			utils.MongoAggregationGroupAndCountSteps("dataguard", "count", "$database.dataguard"),
 		),
@@ -284,7 +285,7 @@ func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environment 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			utils.MongoAggregationGroupAndCountSteps("rac", "count", bson.M{
 				"$gt": bson.A{
@@ -329,7 +330,7 @@ func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, envir
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			utils.MongoAggregationGroupAndCountSteps("archivelog", "count",
 				utils.MongoAggregationEqual("$database.archive_log", "ARCHIVELOG"),
@@ -358,7 +359,7 @@ func (md *MongoDatabase) GetTotalDatabaseWorkStats(location string, environment 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			bson.M{"$group": bson.M{
 				"_id": 0,
@@ -393,7 +394,7 @@ func (md *MongoDatabase) GetTotalDatabaseMemorySizeStats(location string, enviro
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			bson.M{"$group": bson.M{
 				"_id": 0,
@@ -432,7 +433,7 @@ func (md *MongoDatabase) GetTotalDatabaseDatafileSizeStats(location string, envi
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			bson.M{"$group": bson.M{
 				"_id": 0,
@@ -467,7 +468,7 @@ func (md *MongoDatabase) GetTotalDatabaseSegmentSizeStats(location string, envir
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			bson.M{"$group": bson.M{
 				"_id": 0,

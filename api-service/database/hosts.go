@@ -19,6 +19,7 @@ import (
 	"context"
 
 	"github.com/amreo/ercole-services/utils"
+	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -29,7 +30,7 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
 				"location": location,
 			}}),
@@ -136,7 +137,7 @@ func (md *MongoDatabase) GetCurrentHost(hostname string) (interface{}, utils.Adv
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
-		utils.MongoAggegationPipeline(
+		mu.MAPipeline(
 			bson.M{"$match": bson.M{
 				"archived": false,
 				"hostname": hostname,
