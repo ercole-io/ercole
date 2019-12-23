@@ -33,17 +33,7 @@ func (md *MongoDatabase) GetEnvironmentStats(location string) ([]interface{}, ut
 			bson.M{"$match": bson.M{
 				"archived": false,
 			}},
-			bson.M{"$group": bson.M{
-				"_id": "$environment",
-				"count": bson.M{
-					"$sum": 1,
-				},
-			}},
-			bson.M{"$project": bson.M{
-				"_id":         false,
-				"environment": "$_id",
-				"count":       true,
-			}},
+			utils.MongoAggregationGroupAndCountSteps("environment", "count", "$environment"),
 		),
 	)
 	if err != nil {
@@ -72,17 +62,7 @@ func (md *MongoDatabase) GetTypeStats(location string) ([]interface{}, utils.Adv
 			bson.M{"$match": bson.M{
 				"archived": false,
 			}},
-			bson.M{"$group": bson.M{
-				"_id": "$info.type",
-				"count": bson.M{
-					"$sum": 1,
-				},
-			}},
-			bson.M{"$project": bson.M{
-				"_id":   false,
-				"type":  "$_id",
-				"count": true,
-			}},
+			utils.MongoAggregationGroupAndCountSteps("type", "count", "$info.type"),
 		),
 	)
 	if err != nil {
@@ -126,22 +106,12 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string) ([]interface{}
 			bson.M{"$match": bson.M{
 				"archived": false,
 			}},
-			bson.M{"$group": bson.M{
-				"_id": bson.M{
-					"$switch": bson.M{
-						"branches": aggregationBranches,
-						"default":  "$info.os",
-					},
+			utils.MongoAggregationGroupAndCountSteps("operating_system", "count", bson.M{
+				"$switch": bson.M{
+					"branches": aggregationBranches,
+					"default":  "$info.os",
 				},
-				"count": bson.M{
-					"$sum": 1,
-				},
-			}},
-			bson.M{"$project": bson.M{
-				"_id":              false,
-				"operating_system": "$_id",
-				"count":            true,
-			}},
+			}),
 		),
 	)
 	if err != nil {
