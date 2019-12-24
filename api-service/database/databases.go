@@ -47,10 +47,10 @@ func (md *MongoDatabase) SearchCurrentDatabases(full bool, keywords []string, so
 				),
 				"datafile_size":      "$database.used",
 				"archive_log_status": mu.APOEqual("$database.archive_log", "ARCHIVELOG"),
-				"rac": mu.APOGreater(mu.APOSize(mu.APOFilter("$database.features", "fe", mu.APOAnd(
+				"rac": mu.APOAny("$database.features", "fe", mu.APOAnd(
 					mu.APOEqual("$$fe.name", "Real Application Clusters"),
 					mu.APOEqual("$$fe.status", true),
-				))), 0),
+				)),
 			}),
 			mu.APReplaceWith(mu.APOMergeObjects("$$ROOT", "$database")),
 			mu.APOptionalStage(!full, mu.APProject(bson.M{

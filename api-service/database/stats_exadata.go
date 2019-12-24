@@ -38,15 +38,9 @@ func (md *MongoDatabase) GetTotalExadataMemorySizeStats(location string, environ
 			}),
 			mu.APGroup(bson.M{
 				"_id": 0,
-				"value": mu.APOSum(mu.APOReduce("$extra.exadata.devices", 0, mu.APOAdd(
-					"$$value",
-					mu.APOLet(
-						bson.M{
-							"match": mu.APORegexFind("$$this.memory", "^(\\d+)GB$", "i"),
-						},
-						mu.APOConvertToDoubleOrZero(mu.APOArrayElemAt("$$match.captures", 0)),
-					),
-				))),
+				"value": mu.APOSum(mu.APOSumReducer("$extra.exadata.devices",
+					mu.APOConvertToDoubleOrZero(mu.APOGetCaptureFromRegexMatch("$$this.memory", "^(\\d+)GB$", "i", 0)),
+				)),
 			}),
 		),
 	)
@@ -245,16 +239,12 @@ func (md *MongoDatabase) GetExadataPatchStatusStats(location string, environment
 			}),
 			mu.APProject(bson.M{
 				"status": mu.APOMap("$extra.exadata.devices", "dev",
-					mu.APOLet(
-						bson.M{
-							"match": mu.APORegexFind("$$dev.exa_sw_version", "^.*\\.(\\d+)$", "i"),
-						},
-						mu.APOGreater(
-							mu.APODateFromString(
-								mu.APOConcat("20", mu.APOArrayElemAt("$$match.captures", 0)), "%Y%m%d",
-							),
-							windowTime,
+					mu.APOGreater(
+						mu.APODateFromString(
+							mu.APOConcat("20", mu.APOGetCaptureFromRegexMatch("$$dev.exa_sw_version", "^.*\\.(\\d+)$", "i", 0)),
+							"%Y%m%d",
 						),
+						windowTime,
 					),
 				),
 			}),

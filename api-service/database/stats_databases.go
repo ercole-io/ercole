@@ -32,25 +32,15 @@ func (md *MongoDatabase) GetDatabaseEnvironmentStats(location string) ([]interfa
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			bson.M{"$group": bson.M{
-				"_id": "$environment",
-				"count": bson.M{
-					"$sum": bson.M{
-						"$cond": bson.M{
-							"if": "$extra.databases",
-							"then": bson.M{
-								"$size": "$extra.databases",
-							},
-							"else": 0,
-						},
-					},
-				},
-			}},
-			bson.M{"$project": bson.M{
+			mu.APGroup(bson.M{
+				"_id":   "$environment",
+				"count": mu.APOSum(mu.APOCond("$extra.databases", mu.APOSize("$extra.databases"), 0)),
+			}),
+			mu.APProject(bson.M{
 				"_id":         false,
 				"environment": "$_id",
 				"count":       true,
-			}},
+			}),
 		),
 	)
 	if err != nil {
@@ -107,11 +97,8 @@ func (md *MongoDatabase) GetTopReclaimableDatabaseStats(location string, limit i
 			mu.APProject(bson.M{
 				"hostname": true,
 				"dbname":   "$database.name",
-				"reclaimable_segment_advisors": mu.APOReduce("$database.segment_advisors", 0,
-					mu.APOAdd(
-						"$$value",
-						mu.APOConvertErrorable("$$this.reclaimable", "double", 0.5),
-					),
+				"reclaimable_segment_advisors": mu.APOSumReducer("$database.segment_advisors",
+					mu.APOConvertErrorable("$$this.reclaimable", "double", 0.5),
 				),
 			}),
 			mu.APSort(bson.M{
@@ -251,14 +238,11 @@ func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environment 
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APGroupAndCountStages("rac", "count", mu.APOGreater(
-				mu.APOSize(mu.APOFilter("$database.features", "fe",
-					mu.APOAnd(
-						mu.APOEqual("$$fe.name", "Real Application Clusters"),
-						mu.APOEqual("$$fe.status", true),
-					),
-				)),
-				0,
+			mu.APGroupAndCountStages("rac", "count", mu.APOAny("$database.features", "fe",
+				mu.APOAnd(
+					mu.APOEqual("$$fe.name", "Real Application Clusters"),
+					mu.APOEqual("$$fe.status", true),
+				),
 			)),
 		),
 	)
