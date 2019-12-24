@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/DataDog/zstd v1.4.4 // indirect
-	github.com/amreo/mu v0.0.0-20191223154924-803978aac2f4
+	github.com/amreo/mu v0.0.0-20191224105344-b120f4b36e8e
 	github.com/bamzi/jobrunner v0.0.0-20190810144113-852b7ca4d475
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
 	github.com/golang/mock v1.3.1

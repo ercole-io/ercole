@@ -11,6 +11,14 @@ github.com/amreo/mu v0.0.0-20191223153059-358513ce6216 h1:3UeCF7gJqYBcd1YcGpFnts
 github.com/amreo/mu v0.0.0-20191223153059-358513ce6216/go.mod h1:Z4dSBwGqIVMf3JyIv/P/5RSHXkSzdbZLrRC/xoKYPIA=
 github.com/amreo/mu v0.0.0-20191223154924-803978aac2f4 h1:NVNZG7FKeyzHT+cdyMicqVaDa/jApCx/fpgwIEWAd8E=
 github.com/amreo/mu v0.0.0-20191223154924-803978aac2f4/go.mod h1:Z4dSBwGqIVMf3JyIv/P/5RSHXkSzdbZLrRC/xoKYPIA=
+github.com/amreo/mu v0.0.0-20191224092659-912e5f46b42b h1:eWILtFH7vSv+N9GhmIl2F8kCXMxxpLax7p/piouKO4Y=
+github.com/amreo/mu v0.0.0-20191224092659-912e5f46b42b/go.mod h1:Z4dSBwGqIVMf3JyIv/P/5RSHXkSzdbZLrRC/xoKYPIA=
+github.com/amreo/mu v0.0.0-20191224102436-71f7ac5a1a34 h1:WyUOOLiE3EF2DCPy++hi4j4DAEQXrSQodkmbtESUDCo=
+github.com/amreo/mu v0.0.0-20191224102436-71f7ac5a1a34/go.mod h1:Z4dSBwGqIVMf3JyIv/P/5RSHXkSzdbZLrRC/xoKYPIA=
+github.com/amreo/mu v0.0.0-20191224102658-4aa4a557a7ec h1:TzoD5iTXXCgWYXx9szB1Sl7XeKayW6ddGsMwcsfFN4U=
+github.com/amreo/mu v0.0.0-20191224102658-4aa4a557a7ec/go.mod h1:Z4dSBwGqIVMf3JyIv/P/5RSHXkSzdbZLrRC/xoKYPIA=
+github.com/amreo/mu v0.0.0-20191224105344-b120f4b36e8e h1:7oeVM/1q3CFr7MytaJzP2vUVdGTDxDcUuniEY/zA8Zw=
+github.com/amreo/mu v0.0.0-20191224105344-b120f4b36e8e/go.mod h1:Z4dSBwGqIVMf3JyIv/P/5RSHXkSzdbZLrRC/xoKYPIA=
 github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6/go.mod h1:grANhF5doyWs3UAsr3K4I6qtAmlQcZDesFNEHPZAzj8=
 github.com/bamzi/jobrunner v0.0.0-20190810144113-852b7ca4d475 h1:3hbHl3+N4HqF+RP+Y5Vjzsj/coJ72iyGSL/7yGQ1oCo=
 github.com/bamzi/jobrunner v0.0.0-20190810144113-852b7ca4d475/go.mod h1:hbN8iwOALqzoHEUsnpWKLY2WI2djW8Qhu3fuboMpsOg=
