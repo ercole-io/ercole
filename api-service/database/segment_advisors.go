@@ -32,17 +32,17 @@ func (md *MongoDatabase) SearchCurrentSegmentAdvisors(keywords []string, sortBy 
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			utils.MongoAggregationSearchFilterStep([]string{"hostname", "database.name"}, keywords),
-			bson.M{"$project": bson.M{
+			mu.APSearchFilterStage([]string{"hostname", "database.name"}, keywords),
+			mu.APProject(bson.M{
 				"hostname":                  true,
 				"location":                  true,
 				"environment":               true,
 				"created_at":                true,
 				"database.name":             true,
 				"database.segment_advisors": true,
-			}},
-			bson.M{"$unwind": "$database.segment_advisors"},
-			bson.M{"$project": bson.M{
+			}),
+			mu.APUnwind("$database.segment_advisors"),
+			mu.APProject(bson.M{
 				"hostname":       true,
 				"location":       true,
 				"environment":    true,
@@ -54,9 +54,9 @@ func (md *MongoDatabase) SearchCurrentSegmentAdvisors(keywords []string, sortBy 
 				"segment_type":   "$database.segment_advisors.segment_type",
 				"partition_name": "$database.segment_advisors.partition_name",
 				"recommendation": "$database.segment_advisors.recommendation",
-			}},
-			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
-			utils.MongoAggregationOptionalPagingStep(page, pageSize),
+			}),
+			mu.APOptionalSortingStage(sortBy, sortDesc),
+			mu.APOptionalPagingStage(page, pageSize),
 		),
 	)
 	if err != nil {

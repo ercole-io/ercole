@@ -31,10 +31,10 @@ func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			bson.M{"$match": bson.M{
+			mu.APMatch(bson.M{
 				"alert_status": model.AlertStatusNew,
-			}},
-			utils.MongoAggregationSearchFilterStep([]string{
+			}),
+			mu.APSearchFilterStage([]string{
 				"description",
 				"alert_code",
 				"alert_severity",
@@ -42,11 +42,11 @@ func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc
 				"other_info.dbname",
 				"other_info.features",
 			}, keywords),
-			bson.M{"$unset": bson.A{
+			mu.APUnset(bson.A{
 				"other_info",
-			}},
-			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
-			utils.MongoAggregationOptionalPagingStep(page, pageSize),
+			}),
+			mu.APOptionalSortingStage(sortBy, sortDesc),
+			mu.APOptionalPagingStage(page, pageSize),
 		),
 	)
 	if err != nil {

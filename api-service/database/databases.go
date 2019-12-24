@@ -31,49 +31,29 @@ func (md *MongoDatabase) SearchCurrentDatabases(full bool, keywords []string, so
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			utils.MongoAggregationSearchFilterStep([]string{"hostname", "database.name"}, keywords),
-			bson.M{"$project": bson.M{
+			mu.APSearchFilterStage([]string{"hostname", "database.name"}, keywords),
+			mu.APProject(bson.M{
 				"hostname":    true,
 				"location":    true,
 				"environment": true,
 				"created_at":  true,
 				"database":    true,
-			}},
-			bson.M{"$addFields": bson.M{
-				"database.memory": utils.MongoAggregationAdd(
-					utils.MongoAggregationConvertToDoubleOrZero("$database.pga_target"),
-					utils.MongoAggregationConvertToDoubleOrZero("$database.sga_target"),
-					utils.MongoAggregationConvertToDoubleOrZero("$database.memory_target"),
+			}),
+			mu.APAddFields(bson.M{
+				"database.memory": mu.APOAdd(
+					mu.APOConvertToDoubleOrZero("$database.pga_target"),
+					mu.APOConvertToDoubleOrZero("$database.sga_target"),
+					mu.APOConvertToDoubleOrZero("$database.memory_target"),
 				),
 				"datafile_size":      "$database.used",
-				"archive_log_status": utils.MongoAggregationEqual("$database.archive_log", "ARCHIVELOG"),
-				"rac": bson.M{
-					"$gt": bson.A{
-						bson.M{
-							"$size": bson.M{
-								"$filter": bson.M{
-									"input": "$database.features",
-									"as":    "fe",
-									"cond": bson.M{
-										"$and": bson.A{
-											utils.MongoAggregationEqual("$$fe.name", "Real Application Clusters"),
-											utils.MongoAggregationEqual("$$fe.status", true),
-										},
-									},
-								},
-							},
-						},
-						0,
-					},
-				},
-			}},
-			bson.M{"$replaceWith": bson.M{
-				"$mergeObjects": bson.A{
-					"$$ROOT",
-					"$database",
-				},
-			}},
-			utils.MongoAggregationOptionalStep(!full, bson.M{"$project": bson.M{
+				"archive_log_status": mu.APOEqual("$database.archive_log", "ARCHIVELOG"),
+				"rac": mu.APOGreater(mu.APOSize(mu.APOFilter("$database.features", "fe", mu.APOAnd(
+					mu.APOEqual("$$fe.name", "Real Application Clusters"),
+					mu.APOEqual("$$fe.status", true),
+				))), 0),
+			}),
+			mu.APReplaceWith(mu.APOMergeObjects("$$ROOT", "$database")),
+			mu.APOptionalStage(!full, mu.APProject(bson.M{
 				"hostname":           true,
 				"location":           true,
 				"environment":        true,
@@ -93,9 +73,9 @@ func (md *MongoDatabase) SearchCurrentDatabases(full bool, keywords []string, so
 				"dataguard":          true,
 				"rac":                true,
 				"ha":                 true,
-			}}),
-			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
-			utils.MongoAggregationOptionalPagingStep(page, pageSize),
+			})),
+			mu.APOptionalSortingStage(sortBy, sortDesc),
+			mu.APOptionalPagingStage(page, pageSize),
 		),
 	)
 	if err != nil {

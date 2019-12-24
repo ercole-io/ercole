@@ -31,17 +31,17 @@ func (md *MongoDatabase) SearchCurrentAddms(keywords []string, sortBy string, so
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			utils.MongoAggregationSearchFilterStep([]string{"hostname", "database.name"}, keywords),
-			bson.M{"$project": bson.M{
+			mu.APSearchFilterStage([]string{"hostname", "database.name"}, keywords),
+			mu.APProject(bson.M{
 				"hostname":       true,
 				"location":       true,
 				"environment":    true,
 				"created_at":     true,
 				"database.name":  true,
 				"database.addms": true,
-			}},
-			bson.M{"$unwind": "$database.addms"},
-			bson.M{"$project": bson.M{
+			}),
+			mu.APUnwind("$database.addms"),
+			mu.APProject(bson.M{
 				"hostname":       true,
 				"location":       true,
 				"environment":    true,
@@ -51,9 +51,9 @@ func (md *MongoDatabase) SearchCurrentAddms(keywords []string, sortBy string, so
 				"benefit":        "$database.addms.benefit",
 				"finding":        "$database.addms.finding",
 				"recommendation": "$database.addms.recommendation",
-			}},
-			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
-			utils.MongoAggregationOptionalPagingStep(page, pageSize),
+			}),
+			mu.APOptionalSortingStage(sortBy, sortDesc),
+			mu.APOptionalPagingStage(page, pageSize),
 		),
 	)
 	if err != nil {

@@ -32,8 +32,8 @@ func (md *MongoDatabase) SearchCurrentPatchAdvisors(keywords []string, sortBy st
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			utils.MongoAggregationSearchFilterStep([]string{"hostname", "database.name"}, keywords),
-			bson.M{"$project": bson.M{
+			mu.APSearchFilterStage([]string{"hostname", "database.name"}, keywords),
+			mu.APProject(bson.M{
 				"hostname":           true,
 				"location":           true,
 				"environment":        true,
@@ -41,76 +41,33 @@ func (md *MongoDatabase) SearchCurrentPatchAdvisors(keywords []string, sortBy st
 				"database.name":      true,
 				"database.version":   true,
 				"database.last_psus": true,
-			}},
-			bson.M{"$set": bson.M{
-				"database.last_psus": bson.M{
-					"$reduce": bson.M{
-						"input": bson.M{
-							"$map": bson.M{
-								"input": "$database.last_psus",
-								"as":    "psu",
-								"in": bson.M{
-									"$mergeObjects": bson.A{
-										"$$psu",
-										bson.M{
-											"date": bson.M{
-												"$dateFromString": bson.M{
-													"dateString": "$$psu.date",
-													"format":     "%Y-%m-%d",
-												},
-											},
-										},
-									},
-								},
-							},
+			}),
+			mu.APSet(bson.M{
+				"database.last_psus": mu.APOReduce(
+					mu.APOMap("$database.last_psus", "psu", mu.APOMergeObjects(
+						"$$psu",
+						bson.M{
+							"date": mu.APODateFromString("$$psu.date", "%Y-%m-%d"),
 						},
-						"initialValue": nil,
-						"in": bson.M{
-							"$cond": bson.M{
-								"if":   utils.MongoAggregationEqual("$$value", nil),
-								"then": "$$this",
-								"else": utils.MongoAggregationMax("$$value.date", "$$this.date", "$$value", "$$this"),
-							},
-						},
-					},
-				},
-			}},
-			bson.M{"$project": bson.M{
+					)),
+					nil,
+					mu.APOCond(mu.APOEqual("$$value", nil), "$$this", mu.APOMaxWithCmpExpr("$$value.date", "$$this.date", "$$value", "$$this")),
+				),
+			}),
+			mu.APProject(bson.M{
 				"hostname":    true,
 				"location":    true,
 				"environment": true,
 				"created_at":  true,
 				"dbname":      "$database.name",
 				"dbver":       "$database.version",
-				"description": bson.M{
-					"$cond": bson.M{
-						"if":   "$database.last_psus.description",
-						"then": "$database.last_psus.description",
-						"else": "",
-					},
+				"description": mu.APOCond("$database.last_psus.description", "$database.last_psus.description", ""), "date": bson.M{
+					"$cond": mu.APOCond("$database.last_psus.date", "$database.last_psus.date", time.Unix(0, 0)),
 				},
-				"date": bson.M{
-					"$cond": bson.M{
-						"if":   "$database.last_psus.date",
-						"then": "$database.last_psus.date",
-						"else": time.Unix(0, 0),
-					},
-				},
-				"status": bson.M{
-					"$cond": bson.M{
-						"if": bson.M{
-							"$gt": bson.A{
-								"$database.last_psus.date",
-								windowTime,
-							},
-						},
-						"then": "OK",
-						"else": "KO",
-					},
-				},
-			}},
-			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
-			utils.MongoAggregationOptionalPagingStep(page, pageSize),
+				"status": mu.APOCond(mu.APOGreater("$database.last_psus.date", windowTime), "OK", "KO"),
+			}),
+			mu.APOptionalSortingStage(sortBy, sortDesc),
+			mu.APOptionalPagingStage(page, pageSize),
 		),
 	)
 	if err != nil {
