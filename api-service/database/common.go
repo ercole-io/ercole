@@ -16,18 +16,18 @@
 package database
 
 import (
-	"github.com/amreo/ercole-services/utils"
+	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 // FilterByLocationAndEnvironmentSteps return the steps required to filter the data by the location and environment field.
 func FilterByLocationAndEnvironmentSteps(location string, environment string) interface{} {
 	return bson.A{
-		utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
+		mu.APOptionalStage(location != "", mu.APMatch(bson.M{
 			"location": location,
-		}}),
-		utils.MongoAggregationOptionalStep(environment != "", bson.M{"$match": bson.M{
+		})),
+		mu.APOptionalStage(environment != "", mu.APMatch(bson.M{
 			"environment": environment,
-		}}),
+		})),
 	}
 }

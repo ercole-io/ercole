@@ -4,6 +4,7 @@
 		"BindIP": "0.0.0.0",
 		"Port": 11111,
 		"LogHTTPRequest": true,
+		"LogInsertingHostdata": true,
 		"AgentUsername": "user",
 		"AgentPassword": "password",
 		"CurrentHostCleaningJob": {
@@ -34,7 +35,7 @@
 	},
 	"APIService": {
 		"RemoteEndpoint": "http://127.0.0.1:11113",
-		"BindIP": "127.0.0.1",
+		"BindIP": "0.0.0.0",
 		"Port": 11113,	
 		"LogHTTPRequest": true,
 		"UserUsername": "user",

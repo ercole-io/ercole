@@ -31,116 +31,86 @@ func (md *MongoDatabase) SearchCurrentExadata(full bool, keywords []string, sort
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
-				"location": location,
-			}}),
-			utils.MongoAggregationOptionalStep(environment != "", bson.M{"$match": bson.M{
-				"environment": environment,
-			}}),
-			bson.M{"$match": bson.M{
+			FilterByLocationAndEnvironmentSteps(location, environment),
+			mu.APMatch(bson.M{
 				"archived": false,
 				"extra.exadata": bson.M{
 					"$ne": nil,
 				},
-			}},
-			utils.MongoAggregationSearchFilterStep([]string{
+			}),
+			mu.APSearchFilterStage([]string{
 				"hostname",
 				"extra_info.exadata.devices.hostname",
 			}, keywords),
-			bson.M{"$project": bson.M{
+			mu.APProject(bson.M{
 				"hostname":    true,
 				"location":    true,
 				"environment": true,
 				"created_at":  true,
-				"db_servers": bson.M{
-					"$map": bson.M{
-						"input": bson.M{
-							"$filter": bson.M{
-								"input": "$extra.exadata.devices",
-								"as":    "dev",
-								"cond":  utils.MongoAggregationEqual("$$dev.server_type", "DBServer"),
-							},
-						},
-						"as": "dev",
-						"in": utils.OptionalBsonMExtension(full,
-							bson.M{
-								"hostname":       "$$dev.hostname",
-								"model":          "$$dev.model",
-								"exa_sw_version": "$$dev.exa_sw_version",
-								"cpu_enabled":    "$$dev.cpu_enabled",
-								"memory":         "$$dev.memory",
-								"power_count":    "$$dev.power_count",
-								"temp_actual":    "$$dev.temp_actual",
-							},
-							bson.M{
-								"status":          "$$dev.status",
-								"power_status":    "$$dev.power_status",
-								"fan_count":       "$$dev.fan_count",
-								"fan_status":      "$$dev.fan_status",
-								"temp_status":     "$$dev.temp_status",
-								"cellsrv_service": "$$dev.cellserv_service",
-								"ms_service":      "$$dev.ms_service",
-								"rs_service":      "$$dev.rs_service",
-							},
-						),
-					},
-				},
-				"storage_servers": bson.M{
-					"$map": bson.M{
-						"input": bson.M{
-							"$filter": bson.M{
-								"input": "$extra.exadata.devices",
-								"as":    "dev",
-								"cond":  utils.MongoAggregationEqual("$$dev.server_type", "StorageServer"),
-							},
-						},
-						"as": "dev",
-						"in": utils.OptionalBsonMExtension(full,
-							bson.M{
-								"hostname":       "$$dev.hostname",
-								"model":          "$$dev.model",
-								"exa_sw_version": "$$dev.exa_sw_version",
-								"cpu_enabled":    "$$dev.cpu_enabled",
-								"memory":         "$$dev.memory",
-								"power_count":    "$$dev.power_count",
-								"temp_actual":    "$$dev.temp_actual",
-							},
-							bson.M{
-								"status":          "$$dev.status",
-								"power_status":    "$$dev.power_status",
-								"fan_count":       "$$dev.fan_count",
-								"fan_status":      "$$dev.fan_status",
-								"temp_status":     "$$dev.temp_status",
-								"cellsrv_service": "$$dev.cellserv_service",
-								"ms_service":      "$$dev.ms_service",
-								"rs_service":      "$$dev.rs_service",
-								"flashcache_mode": "$$dev.flashcache_mode",
-								"cell_disks":      "$$dev.cell_disks",
-							},
-						),
-					},
-				},
-				"ib_switchs": bson.M{
-					"$map": bson.M{
-						"input": bson.M{
-							"$filter": bson.M{
-								"input": "$extra.exadata.devices",
-								"as":    "dev",
-								"cond":  utils.MongoAggregationEqual("$$dev.server_type", "IBSwitch"),
-							},
-						},
-						"as": "dev",
-						"in": bson.M{
+				"db_servers": mu.APOMap(
+					mu.APOFilter("$extra.exadata.devices", "dev", mu.APOEqual("$$dev.server_type", "DBServer")),
+					"dev",
+					mu.BsonOptionalExtension(full,
+						bson.M{
 							"hostname":       "$$dev.hostname",
 							"model":          "$$dev.model",
 							"exa_sw_version": "$$dev.exa_sw_version",
+							"cpu_enabled":    "$$dev.cpu_enabled",
+							"memory":         "$$dev.memory",
+							"power_count":    "$$dev.power_count",
+							"temp_actual":    "$$dev.temp_actual",
 						},
+						bson.M{
+							"status":          "$$dev.status",
+							"power_status":    "$$dev.power_status",
+							"fan_count":       "$$dev.fan_count",
+							"fan_status":      "$$dev.fan_status",
+							"temp_status":     "$$dev.temp_status",
+							"cellsrv_service": "$$dev.cellserv_service",
+							"ms_service":      "$$dev.ms_service",
+							"rs_service":      "$$dev.rs_service",
+						},
+					),
+				),
+				"storage_servers": mu.APOMap(
+					mu.APOFilter("$extra.exadata.devices", "dev", mu.APOEqual("$$dev.server_type", "StorageServer")),
+					"dev",
+					mu.BsonOptionalExtension(full,
+						bson.M{
+							"hostname":       "$$dev.hostname",
+							"model":          "$$dev.model",
+							"exa_sw_version": "$$dev.exa_sw_version",
+							"cpu_enabled":    "$$dev.cpu_enabled",
+							"memory":         "$$dev.memory",
+							"power_count":    "$$dev.power_count",
+							"temp_actual":    "$$dev.temp_actual",
+						},
+						bson.M{
+							"status":          "$$dev.status",
+							"power_status":    "$$dev.power_status",
+							"fan_count":       "$$dev.fan_count",
+							"fan_status":      "$$dev.fan_status",
+							"temp_status":     "$$dev.temp_status",
+							"cellsrv_service": "$$dev.cellserv_service",
+							"ms_service":      "$$dev.ms_service",
+							"rs_service":      "$$dev.rs_service",
+							"flashcache_mode": "$$dev.flashcache_mode",
+							"cell_disks":      "$$dev.cell_disks",
+						},
+					),
+				),
+				"ib_switchs": mu.APOMap(
+					mu.APOFilter("$extra.exadata.devices", "dev", mu.APOEqual("$$dev.server_type", "IBSwitch")),
+					"dev",
+					bson.M{
+						"hostname":       "$$dev.hostname",
+						"model":          "$$dev.model",
+						"exa_sw_version": "$$dev.exa_sw_version",
 					},
-				},
-			}},
-
-			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
-			utils.MongoAggregationOptionalPagingStep(page, pageSize),
+				),
+			}),
+			mu.APOptionalSortingStage(sortBy, sortDesc),
+			mu.APOptionalPagingStage(page, pageSize),
 		),
 	)
 	if err != nil {

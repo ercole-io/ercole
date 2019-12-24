@@ -31,64 +31,28 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			utils.MongoAggregationOptionalStep(location != "", bson.M{"$match": bson.M{
-				"location": location,
-			}}),
-			utils.MongoAggregationOptionalStep(environment != "", bson.M{"$match": bson.M{
-				"environment": environment,
-			}}),
-			bson.M{"$match": bson.M{
+			FilterByLocationAndEnvironmentSteps(location, environment),
+			mu.APMatch(bson.M{
 				"archived": false,
-			}},
-			utils.MongoAggregationSearchFilterStep([]string{
+			}),
+			mu.APSearchFilterStage([]string{
 				"hostname",
 				"extra.databases.name",
 				"extra.databases.unique_name",
 				"extra.clusters.name",
 			}, keywords),
-			bson.M{"$lookup": bson.M{
-				"from":         "currentClusters",
-				"localField":   "hostname",
-				"foreignField": "cluster.vms.hostname",
-				"as":           "cluster",
-			}},
-			bson.M{"$set": bson.M{
-				"cluster": bson.M{
-					"$arrayElemAt": bson.A{
-						"$cluster",
-						0,
-					},
-				},
-			}},
-			bson.M{"$set": bson.M{
-				"cluster": bson.M{
-					"$arrayElemAt": bson.A{
-						bson.M{
-							"$filter": bson.M{
-								"input": "$cluster.cluster.vms",
-								"as":    "vm",
-								"cond":  utils.MongoAggregationEqual("$$vm.hostname", "$hostname"),
-							},
-						},
-						0,
-					},
-				},
-			}},
-			bson.M{"$addFields": bson.M{
-				"cluster": bson.M{
-					"$ifNull": bson.A{
-						"$cluster.cluster_name",
-						nil,
-					},
-				},
-				"physical_host": bson.M{
-					"$ifNull": bson.A{
-						"$cluster.physical_host",
-						nil,
-					},
-				},
-			}},
-			utils.MongoAggregationOptionalStep(!full, bson.M{"$project": bson.M{
+			mu.APLookupSimple("currentClusters", "hostname", "cluster.vms.hostname", "cluster"),
+			mu.APSet(bson.M{
+				"cluster": mu.APOArrayElemAt("$cluster", 0),
+			}),
+			mu.APSet(bson.M{
+				"cluster": mu.APOArrayElemAt(mu.APOFilter("$cluster.cluster.vms", "vm", mu.APOEqual("$$vm.hostname", "$hostname")), 0),
+			}),
+			mu.APAddFields(bson.M{
+				"cluster":       mu.APOIfNull("$cluster.cluster_name", nil),
+				"physical_host": mu.APOIfNull("$cluster.physical_host", nil),
+			}),
+			mu.APOptionalStage(!full, mu.APProject(bson.M{
 				"hostname":        true,
 				"location":        true,
 				"environment":     true,
@@ -110,9 +74,9 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 				"mem_total":       "$info.memory_total",
 				"swap_total":      "$info.swap_total",
 				"cpu_model":       "$info.cpu_model",
-			}}),
-			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
-			utils.MongoAggregationOptionalPagingStep(page, pageSize),
+			})),
+			mu.APOptionalSortingStage(sortBy, sortDesc),
+			mu.APOptionalPagingStage(page, pageSize),
 		),
 	)
 	if err != nil {
@@ -138,120 +102,66 @@ func (md *MongoDatabase) GetCurrentHost(hostname string) (interface{}, utils.Adv
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			bson.M{"$match": bson.M{
+			mu.APMatch(bson.M{
 				"archived": false,
 				"hostname": hostname,
-			}},
-			bson.M{"$lookup": bson.M{
-				"from":         "alerts",
-				"localField":   "hostname",
-				"foreignField": "other_info.hostname",
-				"as":           "alerts",
-			}},
-			bson.M{"$lookup": bson.M{
-				"from":         "currentClusters",
-				"localField":   "hostname",
-				"foreignField": "cluster.vms.hostname",
-				"as":           "cluster",
-			}},
-			bson.M{"$set": bson.M{
-				"cluster": bson.M{
-					"$arrayElemAt": bson.A{
-						"$cluster",
-						0,
-					},
-				},
-			}},
-			bson.M{"$set": bson.M{
-				"cluster": bson.M{
-					"$arrayElemAt": bson.A{
-						bson.M{
-							"$filter": bson.M{
-								"input": "$cluster.cluster.vms",
-								"as":    "vm",
-								"cond":  utils.MongoAggregationEqual("$$vm.hostname", "$hostname"),
-							},
-						},
-						0,
-					},
-				},
-			}},
-			bson.M{"$addFields": bson.M{
-				"cluster": bson.M{
-					"$ifNull": bson.A{
-						"$cluster.cluster_name",
-						nil,
-					},
-				},
-				"physical_host": bson.M{
-					"$ifNull": bson.A{
-						"$cluster.physical_host",
-						nil,
-					},
-				},
-			}},
-			bson.M{"$lookup": bson.M{
-				"from": "hosts",
-				"let": bson.M{
+			}),
+			mu.APLookupSimple("alerts", "hostname", "other_info.hostname", "alerts"),
+			mu.APLookupSimple("currentClusters", "hostname", "cluster.vms.hostname", "cluster"),
+			mu.APSet(bson.M{
+				"cluster": mu.APOArrayElemAt("$cluster", 0),
+			}),
+			mu.APSet(bson.M{
+				"cluster": mu.APOArrayElemAt(
+					mu.APOFilter("$cluster.cluster.vms", "vm", mu.APOEqual("$$vm.hostname", "$hostname")),
+					0,
+				),
+			}),
+			mu.APAddFields(bson.M{
+				"cluster":       mu.APOIfNull("$cluster.cluster_name", nil),
+				"physical_host": mu.APOIfNull("$cluster.physical_host", nil),
+			}),
+			mu.APLookupPipeline(
+				"hosts",
+				bson.M{
 					"hn": "$hostname",
 				},
-				"pipeline": bson.A{
-					bson.M{"$match": bson.M{
-						"$expr": utils.MongoAggregationEqual("$hostname", "$$hn"),
-					}},
-					bson.M{"$project": bson.M{
+				"history",
+				mu.MAPipeline(
+					mu.APMatch(bson.M{
+						"$expr": mu.APOEqual("$hostname", "$$hn"),
+					}),
+					mu.APProject(bson.M{
 						"created_at":                    1,
 						"extra.databases.name":          1,
 						"extra.databases.used":          1,
 						"extra.databases.segments_size": 1,
-					}},
-				},
-				"as": "history",
-			}},
-			bson.M{"$set": bson.M{
-				"extra.databases": bson.M{
-					"$map": bson.M{
-						"input": "$extra.databases",
-						"as":    "db",
-						"in": bson.M{
-							"$mergeObjects": bson.A{
-								"$$db",
-								bson.M{
-									"changes": bson.M{
-										"$filter": bson.M{
-											"input": bson.M{"$map": bson.M{
-												"input": "$history",
-												"as":    "hh",
-												"in": bson.M{
-													"$mergeObjects": bson.A{
-														bson.M{"updated": "$$hh.created_at"},
-														bson.M{"$arrayElemAt": bson.A{
-															bson.M{
-																"$filter": bson.M{
-																	"input": "$$hh.extra.databases",
-																	"as":    "hdb",
-																	"cond":  utils.MongoAggregationEqual("$$hdb.name", "$$db.name"),
-																},
-															},
-															0,
-														}},
-													},
-												},
-											}},
-											"as":   "time_frame",
-											"cond": "$$time_frame.segments_size",
-										},
-									},
-								},
-							},
+					}),
+				),
+			),
+			mu.APSet(bson.M{
+				"extra.databases": mu.APOMap(
+					"$extra.databases",
+					"db",
+					mu.APOMergeObjects(
+						"$$db",
+						bson.M{
+							"changes": mu.APOFilter(
+								mu.APOMap("$history", "hh", mu.APOMergeObjects(
+									bson.M{"updated": "$$hh.created_at"},
+									mu.APOArrayElemAt(mu.APOFilter("$$hh.extra.databases", "hdb", mu.APOEqual("$$hdb.name", "$$db.name")), 0),
+								)),
+								"time_frame",
+								"$$time_frame.segments_size",
+							),
 						},
-					},
-				},
-			}},
-			bson.M{"$unset": bson.A{
+					),
+				),
+			}),
+			mu.APUnset(
 				"extra.databases.changes.name",
 				"history.extra",
-			}},
+			),
 		),
 	)
 	if err != nil {

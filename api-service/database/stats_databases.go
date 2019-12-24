@@ -77,7 +77,7 @@ func (md *MongoDatabase) GetDatabaseVersionStats(location string) ([]interface{}
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			utils.MongoAggregationGroupAndCountSteps("version", "count", "$database.version"),
+			mu.APGroupAndCountStages("version", "count", "$database.version"),
 		),
 	)
 	if err != nil {
@@ -104,30 +104,20 @@ func (md *MongoDatabase) GetTopReclaimableDatabaseStats(location string, limit i
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			bson.M{"$project": bson.M{
+			mu.APProject(bson.M{
 				"hostname": true,
 				"dbname":   "$database.name",
-				"reclaimable_segment_advisors": bson.M{
-					"$reduce": bson.M{
-						"input":        "$database.segment_advisors",
-						"initialValue": 0,
-						"in": utils.MongoAggregationAdd(
-							"$$value",
-							bson.M{
-								"$convert": bson.M{
-									"input":   "$$this.reclaimable",
-									"to":      "double",
-									"onError": 0.5,
-								},
-							},
-						),
-					},
-				},
-			}},
-			bson.M{"$sort": bson.M{
+				"reclaimable_segment_advisors": mu.APOReduce("$database.segment_advisors", 0,
+					mu.APOAdd(
+						"$$value",
+						mu.APOConvertErrorable("$$this.reclaimable", "double", 0.5),
+					),
+				),
+			}),
+			mu.APSort(bson.M{
 				"reclaimable_segment_advisors": -1,
-			}},
-			bson.M{"$limit": limit},
+			}),
+			mu.APLimit(limit),
 		),
 	)
 	if err != nil {
@@ -154,15 +144,15 @@ func (md *MongoDatabase) GetTopWorkloadDatabaseStats(location string, limit int)
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			bson.M{"$project": bson.M{
+			mu.APProject(bson.M{
 				"hostname": true,
 				"dbname":   "$database.name",
-				"workload": utils.MongoAggregationConvertToDoubleOrZero("$database.work"),
-			}},
-			bson.M{"$sort": bson.M{
+				"workload": mu.APOConvertToDoubleOrZero("$database.work"),
+			}),
+			mu.APSort(bson.M{
 				"workload": -1,
-			}},
-			bson.M{"$limit": limit},
+			}),
+			mu.APLimit(limit),
 		),
 	)
 	if err != nil {
@@ -189,51 +179,25 @@ func (md *MongoDatabase) GetDatabasePatchStatusStats(location string, windowTime
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			bson.M{"$project": bson.M{
-				"database.last_psus": bson.M{
-					"$reduce": bson.M{
-						"input": bson.M{
-							"$map": bson.M{
-								"input": "$database.last_psus",
-								"as":    "psu",
-								"in": bson.M{
-									"$mergeObjects": bson.A{
-										"$$psu",
-										bson.M{
-											"date": bson.M{
-												"$dateFromString": bson.M{
-													"dateString": "$$psu.date",
-													"format":     "%Y-%m-%d",
-												},
-											},
-										},
-									},
-								},
-							},
+			mu.APProject(bson.M{
+				"database.last_psus": mu.APOReduce(
+					mu.APOMap("$database.last_psus", "psu", mu.APOMergeObjects(
+						"$$psu",
+						bson.M{
+							"date": mu.APODateFromString("$$psu.date", "%Y-%m-%d"),
 						},
-						"initialValue": nil,
-						"in": bson.M{
-							"$cond": bson.M{
-								"if":   utils.MongoAggregationEqual("$$value", nil),
-								"then": "$$this",
-								"else": utils.MongoAggregationMax("$$value.date", "$$this.date", "$$value", "$$this"),
-							},
-						},
-					},
-				},
-			}},
-			utils.MongoAggregationGroupAndCountSteps("status", "id", bson.M{
-				"$cond": bson.M{
-					"if": bson.M{
-						"$gt": bson.A{
-							"$database.last_psus.date",
-							windowTime,
-						},
-					},
-					"then": "OK",
-					"else": "KO",
-				},
+					)),
+					nil,
+					mu.APOCond(
+						mu.APOEqual("$$value", nil),
+						"$$this",
+						mu.APOMaxWithCmpExpr("$$value.date", "$$this.date", "$$value", "$$this"),
+					),
+				),
 			}),
+			mu.APGroupAndCountStages("status", "id",
+				mu.APOCond(mu.APOGreater("$database.last_psus.date", windowTime), "OK", "KO"),
+			),
 		),
 	)
 	if err != nil {
@@ -260,7 +224,7 @@ func (md *MongoDatabase) GetDatabaseDataguardStatusStats(location string, enviro
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			utils.MongoAggregationGroupAndCountSteps("dataguard", "count", "$database.dataguard"),
+			mu.APGroupAndCountStages("dataguard", "count", "$database.dataguard"),
 		),
 	)
 	if err != nil {
@@ -287,25 +251,15 @@ func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environment 
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			utils.MongoAggregationGroupAndCountSteps("rac", "count", bson.M{
-				"$gt": bson.A{
-					bson.M{
-						"$size": bson.M{
-							"$filter": bson.M{
-								"input": "$database.features",
-								"as":    "fe",
-								"cond": bson.M{
-									"$and": bson.A{
-										utils.MongoAggregationEqual("$$fe.name", "Real Application Clusters"),
-										utils.MongoAggregationEqual("$$fe.status", true),
-									},
-								},
-							},
-						},
-					},
-					0,
-				},
-			}),
+			mu.APGroupAndCountStages("rac", "count", mu.APOGreater(
+				mu.APOSize(mu.APOFilter("$database.features", "fe",
+					mu.APOAnd(
+						mu.APOEqual("$$fe.name", "Real Application Clusters"),
+						mu.APOEqual("$$fe.status", true),
+					),
+				)),
+				0,
+			)),
 		),
 	)
 	if err != nil {
@@ -332,8 +286,8 @@ func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, envir
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			utils.MongoAggregationGroupAndCountSteps("archivelog", "count",
-				utils.MongoAggregationEqual("$database.archive_log", "ARCHIVELOG"),
+			mu.APGroupAndCountStages("archivelog", "count",
+				mu.APOEqual("$database.archive_log", "ARCHIVELOG"),
 			),
 		),
 	)
@@ -361,12 +315,10 @@ func (md *MongoDatabase) GetTotalDatabaseWorkStats(location string, environment 
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			bson.M{"$group": bson.M{
-				"_id": 0,
-				"value": bson.M{
-					"$sum": utils.MongoAggregationConvertToDoubleOrZero("$database.work"),
-				},
-			}},
+			mu.APGroup(bson.M{
+				"_id":   0,
+				"value": mu.APOSum(mu.APOConvertToDoubleOrZero("$database.work")),
+			}),
 		),
 	)
 	if err != nil {
@@ -396,16 +348,14 @@ func (md *MongoDatabase) GetTotalDatabaseMemorySizeStats(location string, enviro
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			bson.M{"$group": bson.M{
+			mu.APGroup(bson.M{
 				"_id": 0,
-				"value": bson.M{
-					"$sum": utils.MongoAggregationAdd(
-						utils.MongoAggregationConvertToDoubleOrZero("$database.pga_target"),
-						utils.MongoAggregationConvertToDoubleOrZero("$database.sga_target"),
-						utils.MongoAggregationConvertToDoubleOrZero("$database.memory_target"),
-					),
-				},
-			}},
+				"value": mu.APOSum(mu.APOAdd(
+					mu.APOConvertToDoubleOrZero("$database.pga_target"),
+					mu.APOConvertToDoubleOrZero("$database.sga_target"),
+					mu.APOConvertToDoubleOrZero("$database.memory_target"),
+				)),
+			}),
 		),
 	)
 	if err != nil {
@@ -435,12 +385,10 @@ func (md *MongoDatabase) GetTotalDatabaseDatafileSizeStats(location string, envi
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			bson.M{"$group": bson.M{
-				"_id": 0,
-				"value": bson.M{
-					"$sum": utils.MongoAggregationConvertToDoubleOrZero("$database.used"),
-				},
-			}},
+			mu.APGroup(bson.M{
+				"_id":   0,
+				"value": mu.APOSum(mu.APOConvertToDoubleOrZero("$database.used")),
+			}),
 		),
 	)
 	if err != nil {
@@ -470,12 +418,10 @@ func (md *MongoDatabase) GetTotalDatabaseSegmentSizeStats(location string, envir
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			bson.M{"$group": bson.M{
-				"_id": 0,
-				"value": bson.M{
-					"$sum": utils.MongoAggregationConvertToDoubleOrZero("$database.segments_size"),
-				},
-			}},
+			mu.APGroup(bson.M{
+				"_id":   0,
+				"value": mu.APOSum(mu.APOConvertToDoubleOrZero("$database.segments_size")),
+			}),
 		),
 	)
 	if err != nil {

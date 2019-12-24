@@ -26,13 +26,14 @@ import (
 // SearchCurrentClusters search current clusters
 func (md *MongoDatabase) SearchCurrentClusters(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
+
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentClusters").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			utils.MongoAggregationSearchFilterStep([]string{"cluster.name"}, keywords),
-			bson.M{"$project": bson.M{
+			mu.APSearchFilterStage([]string{"cluster.name"}, keywords),
+			mu.APProject(bson.M{
 				"_id":                           true,
 				"environment":                   true,
 				"location":                      true,
@@ -43,22 +44,10 @@ func (md *MongoDatabase) SearchCurrentClusters(full bool, keywords []string, sor
 				"cpu":                           "$cluster.cpu",
 				"sockets":                       "$cluster.sockets",
 				"vms":                           "$cluster.vms",
-				"physical_hosts": bson.M{
-					"$setUnion": bson.A{
-						bson.M{
-							"$map": bson.M{
-								"input": "$cluster.vms",
-								"as":    "vm",
-								"in":    "$$vm.physical_host",
-							},
-						},
-					},
-				},
-			}},
-			bson.M{"$unset": bson.A{
-				"vms.cluster_name",
-			}},
-			utils.MongoAggregationOptionalStep(!full, bson.M{"$project": bson.M{
+				"physical_hosts":                mu.APOSetUnion(mu.APOMap("$cluster.vms", "vm", "$$vm.physical_host")),
+			}),
+			mu.APUnset("vms.cluster_name"),
+			mu.APOptionalStage(!full, mu.APProject(bson.M{
 				"_id":                           true,
 				"environment":                   true,
 				"location":                      true,
@@ -68,10 +57,10 @@ func (md *MongoDatabase) SearchCurrentClusters(full bool, keywords []string, sor
 				"type":                          true,
 				"cpu":                           true,
 				"sockets":                       true,
-				"physical_hosts":                utils.MongoAggregationJoin("$physical_hosts", " "),
-			}}),
-			utils.MongoAggregationOptionalSortingStep(sortBy, sortDesc),
-			utils.MongoAggregationOptionalPagingStep(page, pageSize),
+				"physical_hosts":                mu.APOJoin("$physical_hosts", " "),
+			})),
+			mu.APOptionalSortingStage(sortBy, sortDesc),
+			mu.APOptionalPagingStage(page, pageSize),
 		),
 	)
 	if err != nil {

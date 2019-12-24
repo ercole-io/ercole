@@ -31,10 +31,10 @@ func (md *MongoDatabase) GetEnvironmentStats(location string) ([]interface{}, ut
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			bson.M{"$match": bson.M{
+			mu.APMatch(bson.M{
 				"archived": false,
-			}},
-			utils.MongoAggregationGroupAndCountSteps("environment", "count", "$environment"),
+			}),
+			mu.APGroupAndCountStages("environment", "count", "$environment"),
 		),
 	)
 	if err != nil {
@@ -60,10 +60,10 @@ func (md *MongoDatabase) GetTypeStats(location string) ([]interface{}, utils.Adv
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			bson.M{"$match": bson.M{
+			mu.APMatch(bson.M{
 				"archived": false,
-			}},
-			utils.MongoAggregationGroupAndCountSteps("type", "count", "$info.type"),
+			}),
+			mu.APGroupAndCountStages("type", "count", "$info.type"),
 		),
 	)
 	if err != nil {
@@ -104,10 +104,10 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string) ([]interface{}
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			bson.M{"$match": bson.M{
+			mu.APMatch(bson.M{
 				"archived": false,
-			}},
-			utils.MongoAggregationGroupAndCountSteps("operating_system", "count", bson.M{
+			}),
+			mu.APGroupAndCountStages("operating_system", "count", bson.M{
 				"$switch": bson.M{
 					"branches": aggregationBranches,
 					"default":  "$info.os",
