@@ -19,7 +19,7 @@ func init() {
 	searchExadataCmd := simpleAPIRequestCommand("search-exadata",
 		"Search current exadata",
 		`search-exadara search the most matching exadata to the arguments`,
-		true, true, false, true, true, true, false, false,
+		true, []apiOption{fullOption, locationOption, environmentOption, sortingOptions},
 		"/exadata",
 		"Failed to search exadata data: %v\n",
 		"Failed to search exadata data(Status: %d): %s\n",

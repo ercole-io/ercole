@@ -19,7 +19,7 @@ func init() {
 	searchHostsCmd := simpleAPIRequestCommand("search-hosts",
 		"Search current hosts",
 		`search-hosts search the most matching hosts to the arguments`,
-		true, true, false, true, true, true, false, false,
+		true, []apiOption{fullOption, locationOption, environmentOption, sortingOptions},
 		"/hosts",
 		"Failed to search hosts data: %v\n",
 		"Failed to search hosts data(Status: %d): %s\n",
