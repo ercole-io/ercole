@@ -61,10 +61,9 @@ func (md *MongoDatabase) SearchCurrentPatchAdvisors(keywords []string, sortBy st
 				"created_at":  true,
 				"dbname":      "$database.name",
 				"dbver":       "$database.version",
-				"description": mu.APOCond("$database.last_psus.description", "$database.last_psus.description", ""), "date": bson.M{
-					"$cond": mu.APOCond("$database.last_psus.date", "$database.last_psus.date", time.Unix(0, 0)),
-				},
-				"status": mu.APOCond(mu.APOGreater("$database.last_psus.date", windowTime), "OK", "KO"),
+				"description": mu.APOCond("$database.last_psus.description", "$database.last_psus.description", ""),
+				"date":        mu.APOCond("$database.last_psus.date", "$database.last_psus.date", time.Unix(0, 0)),
+				"status":      mu.APOCond(mu.APOGreater("$database.last_psus.date", windowTime), "OK", "KO"),
 			}),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),
