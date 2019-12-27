@@ -18,6 +18,7 @@ package controller
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
@@ -31,6 +32,9 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 	var pageNumber int
 	var pageSize int
 	var severity string
+	var status string
+	var from time.Time
+	var to time.Time
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
@@ -54,9 +58,22 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid severity"), "Invalid  severity"))
 		return
 	}
+	status = r.URL.Query().Get("status")
+	if status != "" && status != model.AlertStatusNew && status != model.AlertStatusAck {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid status"), "Invalid  status"))
+		return
+	}
+	if from, err = utils.Str2time(r.URL.Query().Get("from"), utils.MIN_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	if to, err = utils.Str2time(r.URL.Query().Get("to"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
 
 	//get the data
-	hosts, err := ctrl.Service.SearchAlerts(search, sortBy, sortDesc, pageNumber, pageSize, severity)
+	hosts, err := ctrl.Service.SearchAlerts(search, sortBy, sortDesc, pageNumber, pageSize, severity, status, from, to)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return

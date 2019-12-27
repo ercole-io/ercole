@@ -19,7 +19,11 @@ import (
 	"encoding/json"
 	"net/url"
 	"strconv"
+	"time"
 )
+
+var MIN_TIME time.Time = time.Unix(0, 0)
+var MAX_TIME time.Time = time.Now().AddDate(1000, 0, 0)
 
 //ToJSON convert v to a string containing the equivalent json rappresentation
 func ToJSON(v interface{}) string {
@@ -68,6 +72,17 @@ func Str2int(in string, defaultValue int) (int, AdvancedErrorInterface) {
 		return -1, NewAdvancedErrorPtr(err, "Unable to parse string to int")
 	} else {
 		return int(val), nil
+	}
+}
+
+// Str2time parse a string to a time
+func Str2time(in string, defaultValue time.Time) (time.Time, AdvancedErrorInterface) {
+	if in == "" {
+		return defaultValue, nil
+	} else if val, err := time.Parse(time.RFC3339, in); err != nil {
+		return time.Time{}, NewAdvancedErrorPtr(err, "Unable to parse string to time.Time")
+	} else {
+		return val, nil
 	}
 }
 

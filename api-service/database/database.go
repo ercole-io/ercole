@@ -37,7 +37,7 @@ type MongoDatabaseInterface interface {
 	// GetCurrentHost fetch all informations about a current host in the database
 	GetCurrentHost(hostname string) (interface{}, utils.AdvancedErrorInterface)
 	// SearchAlerts search alerts
-	SearchAlerts(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, severity string) ([]interface{}, utils.AdvancedErrorInterface)
+	SearchAlerts(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, severity string, status string, from time.Time, to time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchCurrentClusters search current clusters
 	SearchCurrentClusters(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchCurrentAddms search current addms
