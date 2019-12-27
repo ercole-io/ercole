@@ -38,6 +38,7 @@ var location string
 var environment string
 var windowTime int
 var limit int
+var severity string
 
 func simpleAPIRequestCommand(
 	use string,
@@ -50,6 +51,7 @@ func simpleAPIRequestCommand(
 	environmentOption bool,
 	sortableResult bool,
 	limitOption bool,
+	severityOption bool,
 	endpointPath string,
 	errorMessageFormat string,
 	httpErrorMessageFormat string) *cobra.Command {
@@ -83,7 +85,9 @@ func simpleAPIRequestCommand(
 				params.Set("sort-by", sortBy)
 				params.Set("sort-desc", strconv.FormatBool(sortDesc))
 			}
-
+			if severityOption {
+				params.Set("severity", severity)
+			}
 			//Make the http request
 			resp, err := http.Get(
 				utils.NewAPIUrl(
@@ -142,6 +146,9 @@ func simpleAPIRequestCommand(
 	}
 	if limitOption {
 		cmd.Flags().IntVarP(&limit, "limit", "n", 15, "Limit the number of databases")
+	}
+	if severityOption {
+		cmd.Flags().StringVar(&severity, "severity", "", "Limit the number of databases")
 	}
 	return cmd
 }

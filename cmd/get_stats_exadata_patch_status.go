@@ -19,7 +19,7 @@ func init() {
 	getExadataPatchStatusStatsCmd := simpleAPIRequestCommand("patch-status",
 		"Get exadata patch status stats",
 		`Get stats about the patch status of the exadata`,
-		false, false, true, true, true, false, false,
+		false, false, true, true, true, false, false, false,
 		"/stats/exadata/patch-status",
 		"Failed to get exadata patch status stats: %v\n",
 		"Failed to get exadata patch status stats(Status: %d): %s\n",

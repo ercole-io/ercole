@@ -19,7 +19,7 @@ func init() {
 	getDatabaseVersionStatsCmd := simpleAPIRequestCommand("version",
 		"Get databases version stats",
 		`Get stats about the version of the databases`,
-		false, false, false, true, false, false, false,
+		false, false, false, true, false, false, false, false,
 		"/stats/databases/versions",
 		"Failed to get databases version stats: %v\n",
 		"Failed to get databases version stats(Status: %d): %s\n",

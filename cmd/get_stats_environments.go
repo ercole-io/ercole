@@ -19,7 +19,7 @@ func init() {
 	getEnvironmentStatsCmd := simpleAPIRequestCommand("environment",
 		"Get environment stats",
 		`Get stats about the environment field`,
-		false, false, false, true, false, false, false,
+		false, false, false, true, false, false, false, false,
 		"/stats/environments",
 		"Failed to get environment stats: %v\n",
 		"Failed to get environment stats(Status: %d): %s\n",

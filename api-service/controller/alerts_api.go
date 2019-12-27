@@ -16,8 +16,10 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 
+	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
 )
 
@@ -28,6 +30,7 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 	var sortDesc bool
 	var pageNumber int
 	var pageSize int
+	var severity string
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
@@ -46,9 +49,14 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
 		return
 	}
+	severity = r.URL.Query().Get("severity")
+	if severity != "" && severity != model.AlertSeverityMinor && severity != model.AlertSeverityWarning && severity != model.AlertSeverityMajor && severity != model.AlertSeverityCritical && severity != model.AlertSeverityNotice {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid severity"), "Invalid  severity"))
+		return
+	}
 
 	//get the data
-	hosts, err := ctrl.Service.SearchAlerts(search, sortBy, sortDesc, pageNumber, pageSize)
+	hosts, err := ctrl.Service.SearchAlerts(search, sortBy, sortDesc, pageNumber, pageSize, severity)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
