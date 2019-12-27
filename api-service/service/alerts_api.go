@@ -23,6 +23,6 @@ import (
 )
 
 // SearchAlerts search alerts
-func (as *APIService) SearchAlerts(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchAlerts(strings.Split(search, " "), sortBy, sortDesc, page, pageSize)
+func (as *APIService) SearchAlerts(search string, sortBy string, sortDesc bool, page int, pageSize int, severity string) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchAlerts(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, severity)
 }

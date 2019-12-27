@@ -19,7 +19,7 @@ func init() {
 	searchPatchAdvisorsCmd := simpleAPIRequestCommand("search-patch-advisors",
 		"Search current patch advisors",
 		`search-patch-advisors search the most matching patch advisors to the arguments`,
-		true, false, true, true, true, true, false,
+		true, false, true, true, true, true, false, false,
 		"/patch-advisors",
 		"Failed to search patch advisors data: %v\n",
 		"Failed to search patch advisors data(Status: %d): %s\n",

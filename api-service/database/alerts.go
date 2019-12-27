@@ -25,7 +25,7 @@ import (
 )
 
 // SearchAlerts search alerts
-func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, severity string) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 	//Find the matching alerts
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").Aggregate(
@@ -34,6 +34,9 @@ func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc
 			mu.APMatch(bson.M{
 				"alert_status": model.AlertStatusNew,
 			}),
+			mu.APOptionalStage(severity != "", mu.APMatch(bson.M{
+				"alert_severity": severity,
+			})),
 			mu.APSearchFilterStage([]string{
 				"description",
 				"alert_code",
@@ -42,9 +45,7 @@ func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc
 				"other_info.dbname",
 				"other_info.features",
 			}, keywords),
-			mu.APUnset(bson.A{
-				"other_info",
-			}),
+			mu.APUnset("other_info"),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),
 		),

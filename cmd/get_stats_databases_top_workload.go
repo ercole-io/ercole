@@ -19,7 +19,7 @@ func init() {
 	getDatabaseTopWorkloadStatsCmd := simpleAPIRequestCommand("top-workload",
 		"Get top workload databases   stats",
 		`Get stats about top workload databases`,
-		false, false, false, true, false, false, true,
+		false, false, false, true, false, false, true, false,
 		"/stats/databases/top-workload",
 		"Failed to get top workload databases stats: %v\n",
 		"Failed to get top workload databases stats(Status: %d): %s\n",

@@ -19,7 +19,7 @@ func init() {
 	searchAlertsCmd := simpleAPIRequestCommand("search-alerts",
 		"Search alerts",
 		`search-alerts search the most matching alerts to the arguments`,
-		true, false, false, false, false, true, false,
+		true, false, false, false, false, true, false, true,
 		"/alerts",
 		"Failed to search alerts data: %v\n",
 		"Failed to search alerts data(Status: %d): %s\n",
