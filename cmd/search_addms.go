@@ -19,7 +19,7 @@ func init() {
 	searchAddmsCmd := simpleAPIRequestCommand("search-addms",
 		"Search current addms",
 		`search-addms search the most matching addms to the arguments`,
-		true, false, false, true, true, true, false, false,
+		true, []apiOption{locationOption, environmentOption, sortingOptions},
 		"/addms",
 		"Failed to search addms data: %v\n",
 		"Failed to search addms data(Status: %d): %s\n",

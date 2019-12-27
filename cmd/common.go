@@ -40,18 +40,84 @@ var windowTime int
 var limit int
 var severity string
 
+type apiOption struct {
+	addOption func(cmd *cobra.Command)
+	addParam  func(params url.Values)
+}
+
+var fullOption apiOption = apiOption{
+	addOption: func(cmd *cobra.Command) {
+		cmd.Flags().BoolVarP(&summary, "summary", "s", false, "Summary mode")
+	},
+	addParam: func(params url.Values) {
+		params.Set("full", strconv.FormatBool(!summary))
+	},
+}
+
+var windowTimeOption apiOption = apiOption{
+	addOption: func(cmd *cobra.Command) {
+		cmd.Flags().IntVarP(&windowTime, "window-time", "w", 12, "Window time")
+	},
+	addParam: func(params url.Values) {
+		params.Set("window-time", strconv.Itoa(windowTime))
+	},
+}
+
+var locationOption apiOption = apiOption{
+	addOption: func(cmd *cobra.Command) {
+		cmd.Flags().StringVarP(&location, "location", "l", "", "Filter by location")
+	},
+	addParam: func(params url.Values) {
+		params.Set("location", location)
+	},
+}
+
+var environmentOption apiOption = apiOption{
+	addOption: func(cmd *cobra.Command) {
+		cmd.Flags().StringVarP(&environment, "environment", "e", "", "Filter by environment")
+	},
+	addParam: func(params url.Values) {
+		params.Set("environment", environment)
+	},
+}
+
+var sortingOptions apiOption = apiOption{
+	addOption: func(cmd *cobra.Command) {
+		cmd.Flags().StringVar(&sortBy, "sort-by", "", "Sort by field")
+		cmd.Flags().BoolVar(&sortDesc, "desc-order", false, "Sort descending")
+	},
+	addParam: func(params url.Values) {
+		if sortBy != "" {
+			params.Set("sort-by", sortBy)
+			params.Set("sort-desc", strconv.FormatBool(sortDesc))
+		}
+	},
+}
+
+var limitOption apiOption = apiOption{
+	addOption: func(cmd *cobra.Command) {
+		cmd.Flags().IntVarP(&limit, "limit", "n", 15, "Limit the number of databases")
+	},
+	addParam: func(params url.Values) {
+		params.Set("limit", strconv.Itoa(limit))
+	},
+}
+
+var severityOption apiOption = apiOption{
+	addOption: func(cmd *cobra.Command) {
+		cmd.Flags().StringVar(&severity, "severity", "", "Filter by severity")
+	},
+	addParam: func(params url.Values) {
+		params.Set("severity", severity)
+	},
+}
+
 func simpleAPIRequestCommand(
 	use string,
 	short string,
 	long string,
 	searchArguments bool,
-	fullOption bool,
-	windowTimeOption bool,
-	locationOption bool,
-	environmentOption bool,
-	sortableResult bool,
-	limitOption bool,
-	severityOption bool,
+	anotherOptions []apiOption,
 	endpointPath string,
 	errorMessageFormat string,
 	httpErrorMessageFormat string) *cobra.Command {
@@ -66,28 +132,10 @@ func simpleAPIRequestCommand(
 			if searchArguments {
 				params.Set("search", strings.Join(args, " "))
 			}
-			if fullOption {
-				params.Set("full", strconv.FormatBool(!summary))
+			for _, opt := range anotherOptions {
+				opt.addParam(params)
 			}
-			if windowTimeOption {
-				params.Set("window-time", strconv.Itoa(windowTime))
-			}
-			if locationOption {
-				params.Set("location", location)
-			}
-			if environmentOption {
-				params.Set("environment", environment)
-			}
-			if limitOption {
-				params.Set("limit", strconv.Itoa(limit))
-			}
-			if sortableResult && sortBy != "" {
-				params.Set("sort-by", sortBy)
-				params.Set("sort-desc", strconv.FormatBool(sortDesc))
-			}
-			if severityOption {
-				params.Set("severity", severity)
-			}
+
 			//Make the http request
 			resp, err := http.Get(
 				utils.NewAPIUrl(
@@ -128,27 +176,8 @@ func simpleAPIRequestCommand(
 	if !searchArguments {
 		cmd.Args = cobra.ExactArgs(0)
 	}
-	if fullOption {
-		cmd.Flags().BoolVarP(&summary, "summary", "s", false, "Summary mode")
-	}
-	if windowTimeOption {
-		cmd.Flags().IntVarP(&windowTime, "window-time", "w", 12, "Window time")
-	}
-	if locationOption {
-		cmd.Flags().StringVarP(&location, "location", "l", "", "Filter by location")
-	}
-	if environmentOption {
-		cmd.Flags().StringVarP(&environment, "environment", "e", "", "Filter by environment")
-	}
-	if sortableResult {
-		cmd.Flags().StringVar(&sortBy, "sort-by", "", "Sort by field")
-		cmd.Flags().BoolVar(&sortDesc, "desc-order", false, "Sort descending")
-	}
-	if limitOption {
-		cmd.Flags().IntVarP(&limit, "limit", "n", 15, "Limit the number of databases")
-	}
-	if severityOption {
-		cmd.Flags().StringVar(&severity, "severity", "", "Limit the number of databases")
+	for _, opt := range anotherOptions {
+		opt.addOption(cmd)
 	}
 	return cmd
 }

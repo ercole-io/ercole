@@ -19,7 +19,7 @@ func init() {
 	getDatabasePatchStatusStatsCmd := simpleAPIRequestCommand("patch-status",
 		"Get databases patch status stats",
 		`Get stats about the patch status of the databases`,
-		false, false, true, true, false, false, false, false,
+		false, []apiOption{windowTimeOption, locationOption},
 		"/stats/databases/patch-status",
 		"Failed to get databases patch status stats: %v\n",
 		"Failed to get databases patch status stats(Status: %d): %s\n",

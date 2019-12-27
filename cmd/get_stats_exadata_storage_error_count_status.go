@@ -19,7 +19,7 @@ func init() {
 	getExadataStorageErrorCountStatusStatsCmd := simpleAPIRequestCommand("storage-error-count-status",
 		"Get exadata storage error count status stats",
 		`Get stats about the error count status of the storage of the exadata`,
-		false, false, false, true, true, false, false, false,
+		false, []apiOption{locationOption, environmentOption},
 		"/stats/exadata/storage-error-count-status",
 		"Failed to get exadata storage error count status stats: %v\n",
 		"Failed to get exadata storage error count status stats(Status: %d): %s\n",
