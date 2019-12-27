@@ -18,11 +18,12 @@ package service
 
 import (
 	"strings"
+	"time"
 
 	"github.com/amreo/ercole-services/utils"
 )
 
 // SearchAlerts search alerts
-func (as *APIService) SearchAlerts(search string, sortBy string, sortDesc bool, page int, pageSize int, severity string) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchAlerts(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, severity)
+func (as *APIService) SearchAlerts(search string, sortBy string, sortDesc bool, page int, pageSize int, severity string, status string, from time.Time, to time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchAlerts(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, severity, status, from, to)
 }

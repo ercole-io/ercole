@@ -24,8 +24,11 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
+	"github.com/jinzhu/now"
 	"github.com/spf13/cobra"
 )
 
@@ -39,6 +42,10 @@ var environment string
 var windowTime int
 var limit int
 var severity string
+var alertStatus string
+var alertStatusAll bool
+var from string
+var to string
 
 type apiOption struct {
 	addOption func(cmd *cobra.Command)
@@ -109,6 +116,51 @@ var severityOption apiOption = apiOption{
 	},
 	addParam: func(params url.Values) {
 		params.Set("severity", severity)
+	},
+}
+
+var alertStatusOptions apiOption = apiOption{
+	addOption: func(cmd *cobra.Command) {
+		cmd.Flags().StringVar(&alertStatus, "status", model.AlertStatusNew, "Filter by alert status")
+		cmd.Flags().BoolVar(&alertStatusAll, "all", false, "Also show read alerts")
+	},
+	addParam: func(params url.Values) {
+		if alertStatusAll {
+			params.Set("status", "")
+		} else {
+			params.Set("status", alertStatus)
+		}
+	},
+}
+
+var fromToWindowOptions apiOption = apiOption{
+	addOption: func(cmd *cobra.Command) {
+		cmd.Flags().StringVarP(&from, "from", "f", "", "Filter alerts with a date >= from")
+		cmd.Flags().StringVarP(&to, "to", "t", "", "Filter alerts with a date <= to")
+	},
+	addParam: func(params url.Values) {
+		if from != "" {
+			if val, err := time.Parse(time.RFC3339, from); err == nil {
+				from = val.Format(time.RFC3339)
+			} else if val, err := time.Parse("2006-01-02", from); err == nil {
+				from = val.Format(time.RFC3339)
+			} else {
+				fmt.Fprintf(os.Stderr, "Unable to parse the value of the from option: %v\n", err)
+				os.Exit(1)
+			}
+		}
+		if to != "" {
+			if val, err := time.Parse(time.RFC3339, to); err == nil {
+				to = val.Format(time.RFC3339)
+			} else if val, err := time.Parse("2006-01-02", to); err == nil {
+				to = now.New(val).EndOfDay().Format(time.RFC3339)
+			} else {
+				fmt.Fprintf(os.Stderr, "Unable to parse the value of the to option: %v\n", err)
+				os.Exit(1)
+			}
+		}
+		params.Set("from", from)
+		params.Set("to", to)
 	},
 }
 

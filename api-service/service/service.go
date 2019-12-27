@@ -34,7 +34,7 @@ type APIServiceInterface interface {
 	// GetCurrentHost return the current host specified in the hostname param
 	GetCurrentHost(hostname string) (interface{}, utils.AdvancedErrorInterface)
 	// SearchAlerts search alerts
-	SearchAlerts(search string, sortBy string, sortDesc bool, page int, pageSize int, severity string) ([]interface{}, utils.AdvancedErrorInterface)
+	SearchAlerts(search string, sortBy string, sortDesc bool, page int, pageSize int, severity string, status string, from time.Time, to time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchCurrentClusters search current clusters
 	SearchCurrentClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchCurrentAddms search current addm

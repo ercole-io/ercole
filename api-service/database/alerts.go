@@ -17,26 +17,33 @@ package database
 
 import (
 	"context"
+	"time"
 
-	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
 	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 // SearchAlerts search alerts
-func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, severity string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, severity string, status string, from time.Time, to time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
+
 	//Find the matching alerts
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			mu.APMatch(bson.M{
-				"alert_status": model.AlertStatusNew,
-			}),
+			mu.APOptionalStage(status != "", mu.APMatch(bson.M{
+				"alert_status": status,
+			})),
 			mu.APOptionalStage(severity != "", mu.APMatch(bson.M{
 				"alert_severity": severity,
 			})),
+			mu.APMatch(bson.M{
+				"date": bson.M{
+					"$gte": from,
+					"$lt":  to,
+				},
+			}),
 			mu.APSearchFilterStage([]string{
 				"description",
 				"alert_code",
