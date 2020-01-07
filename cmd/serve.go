@@ -43,6 +43,8 @@ import (
 	apiservice_controller "github.com/amreo/ercole-services/api-service/controller"
 	apiservice_database "github.com/amreo/ercole-services/api-service/database"
 	apiservice_service "github.com/amreo/ercole-services/api-service/service"
+
+	reposervice_service "github.com/amreo/ercole-services/repo-service/service"
 )
 
 var enableDataService bool
@@ -98,7 +100,9 @@ func serve(enableDataService bool,
 		serveAPIService(ercoleConfig, &wg)
 	}
 
-	//TODO: repo-service
+	if enableRepoService {
+		serveRepoService(ercoleConfig, &wg)
+	}
 
 	wg.Wait()
 }
@@ -235,4 +239,26 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 		log.Println("Stopping api-service", err)
 		wg.Done()
 	}()
+}
+
+// serveRepoService setup and start the repo-service
+func serveRepoService(config config.Configuration, wg *sync.WaitGroup) {
+	//Setup the service
+	service := &reposervice_service.RepoService{
+		Config:      config,
+		SubServices: []reposervice_service.SubRepoServiceInterface{},
+	}
+	if config.RepoService.HTTP.Enable {
+		service.SubServices = append(service.SubServices, &reposervice_service.HTTPSubRepoService{
+			Config: config,
+		})
+	}
+	if config.RepoService.SFTP.Enable {
+		service.SubServices = append(service.SubServices, &reposervice_service.SFTPRepoSubService{
+			Config: config,
+		})
+	}
+
+	//Init and serve
+	service.Init(wg)
 }
