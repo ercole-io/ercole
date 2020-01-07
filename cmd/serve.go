@@ -82,7 +82,7 @@ func serve(enableDataService bool,
 
 	s, _ := os.Readlink("/proc/self/exe")
 	s = filepath.Dir(s)
-	ercoleConfig.RepoService.DistributedFiles = s + filepath.Join("/", ercoleConfig.RepoService.DistributedFiles)
+	ercoleConfig.RepoService.DistributedFiles = s + filepath.Join("/", ercoleConfig.RepoService.DistributedFiles) + "/"
 
 	var wg sync.WaitGroup
 
