@@ -49,8 +49,14 @@
 		]
 	},
 	"RepoService": {
-		"UpstreamRepository": "https://github.com/amreo/ercole-services/releases",
-		"DistributedFiles": "/home/amreo/src/gopath/src/github.com/amreo/ercole-services/distributed_files",
+		"UpstreamRepositories": [
+			{
+				"Name": "ercole-agent",
+				"Type": "github-release",
+				"URL": "https://api.github.com/repos/ercole-io/ercole-agent/releases"
+			}
+		],
+		"DistributedFiles": "distributed_files/",
 		"HTTP": {
 			"Enable": true,
 			"RemoteEndpoint": "http://127.0.0.1:11114",

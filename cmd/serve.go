@@ -21,6 +21,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -78,6 +79,10 @@ func init() {
 // serve setup and start the services
 func serve(enableDataService bool,
 	enableAlertService bool, enableAPIService bool, enableRepoService bool) {
+
+	s, _ := os.Readlink("/proc/self/exe")
+	s = filepath.Dir(s)
+	ercoleConfig.RepoService.DistributedFiles = s + filepath.Join("/", ercoleConfig.RepoService.DistributedFiles)
 
 	var wg sync.WaitGroup
 
