@@ -48,6 +48,26 @@
 			{ "Regex": "^AIX.*$", "Group": "AIX" }
 		]
 	},
+	"RepoService": {
+		"UpstreamRepository": "https://github.com/amreo/ercole-services/releases",
+		"DistributedFiles": "/home/amreo/src/gopath/src/github.com/amreo/ercole-services/distributed_files",
+		"HTTP": {
+			"Enable": true,
+			"RemoteEndpoint": "http://127.0.0.1:11114",
+			"BindIP": "0.0.0.0",
+			"Port": 11114,
+			"LogHTTPRequest": true
+		},
+		"SFTP": {
+			"Enable": true,
+			"RemoteEndpoint": "sftp://127.0.0.1:11115",
+			"BindIP": "0.0.0.0",
+			"Port": 11115,
+			"PrivateKey": "/home/amreo/.ssh/id_rsa",
+			"LogConnections": true,
+			"DebugConnections": true
+		}
+	},
 	"Mongodb": {
 		"URI": "mongodb://localhost:32768/ercole",
 		"DBName": "ercole",

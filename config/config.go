@@ -24,6 +24,8 @@ type Configuration struct {
 	AlertService AlertService
 	// APIService contains configuration about the api service
 	APIService APIService
+	// RepoService contains configuration about the repo service
+	RepoService RepoService
 	// Mongodb contains configuration about database connection, some data logic and migration
 	Mongodb Mongodb
 	// Version contains the version of the server
@@ -92,6 +94,18 @@ type APIService struct {
 	OperatingSystemAggregationRules []AggregationRule
 }
 
+// RepoService contains configuration about the repo service
+type RepoService struct {
+	// UpstreamRepository contains the url of the upstream repository
+	UpstreamRepository string
+	// DistributedFiles contains the path to the files to be served
+	DistributedFiles string
+	// HTTP contains the configuration about the HTTP server
+	HTTP HTTPRepoService
+	// SFTP contains the configuration about the SFTP server
+	SFTP SFTPRepoService
+}
+
 // Mongodb contains configuration about the database connection, some data logic and migration
 type Mongodb struct {
 	// URI contains MongoDB connection string/URI like 'mongodb://localhost:27017/ercole'
@@ -130,6 +144,38 @@ type ArchivedHostCleaningJob struct {
 	HourThreshold int
 	// RunAtStartup contains true if the job should run when the service start, otherwise false
 	RunAtStartup bool
+}
+
+// HTTPRepoService contains parameters for a single serving service
+type HTTPRepoService struct {
+	// Enable contains true it the service is enabled, otherwise false
+	Enable bool
+	// RemoteEndpoint contains the endpoint used to connect to the HTTPRepoService
+	RemoteEndpoint string
+	// BindIP contains the bind ip
+	BindIP string
+	// Port contains the port of the internal http server
+	Port uint16
+	// LogHTTPRequest enable the logging of the internal http serverl
+	LogHTTPRequest bool
+}
+
+// SFTPRepoService contains parameters for a single serving service
+type SFTPRepoService struct {
+	// Enable contains true it the service is enabled, otherwise false
+	Enable bool
+	// RemoteEndpoint contains the endpoint used to connect to the SFTPRepoService
+	RemoteEndpoint string
+	// BindIP contains the bind ip
+	BindIP string
+	// Port contains the port of the sftp server
+	Port uint16
+	// PrivateKey contains the path to the private key
+	PrivateKey string
+	// LogConnections contains true if log connections, otherwise false
+	LogConnections bool
+	// DebugConnections contains true if debug connections, otherwise false
+	DebugConnections bool
 }
 
 // AggregationRule contains a rule used to aggregate string per group
