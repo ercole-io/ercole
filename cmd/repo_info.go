@@ -18,18 +18,18 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
 
+//Commands to be added
 func init() {
-	repoFetchCmd := &cobra.Command{
-		Use:   "fetch",
-		Short: "Fetch files from repositories",
-		Long:  `Fetch files from repositories`,
+	repoInfoCmd := &cobra.Command{
+		Use:   "info",
+		Short: "Get info about some files",
+		Long:  `Get info about some files`,
 		Run: func(cmd *cobra.Command, args []string) {
-			//Fetch the list of files
+			//Get the list of the repository
 			list, err := scanRepositories(verbose)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
@@ -38,46 +38,31 @@ func init() {
 
 			//Calculate the fullname of wanted files in args
 			var files []*fileInfo = make([]*fileInfo, len(args))
-			if verbose {
-				fmt.Print("Fetching")
-			}
 			for i, arg := range args {
 				files[i], err = parseNameOfFile(arg, list)
 				if err != nil {
 					fmt.Fprintln(os.Stderr, err)
 					os.Exit(1)
 				}
-				if verbose {
-					fmt.Printf(" %s", files[i].getFullName())
-				}
-			}
-			if verbose {
-				fmt.Println()
 			}
 
 			//Download and install the files
 			for _, f := range files {
-				if f.installed {
-					continue
-				}
-				if verbose {
-					fmt.Printf("Downloading %s to %s.\n", f.getFullName(), filepath.Join(ercoleConfig.RepoService.DistributedFiles, f.filename))
-				}
-				if err = f.download(filepath.Join(ercoleConfig.RepoService.DistributedFiles, f.filename)); err != nil {
-					fmt.Fprintln(os.Stderr, err)
-					os.Exit(1)
-				}
+				fmt.Println("Repository:", f.repository)
+				fmt.Println("Name:", f.repository)
+				fmt.Println("Version:", f.version)
+				fmt.Println("Release date:", f.releaseDate)
+				fmt.Println("Filename:", f.filename)
+				fmt.Println("Operating system:", f.operatingSystem)
+				fmt.Println("Arch:", f.arch)
+				fmt.Println("Installed:", f.installed)
+				fmt.Println("InstalledCallback:", f.install == nil)
 
-				if f.install != nil {
-					if err = f.install(filepath.Join(ercoleConfig.RepoService.DistributedFiles, f.filename)); err != nil {
-						fmt.Fprintln(os.Stderr, err)
-						os.Exit(1)
-					}
-				}
+				fmt.Println()
 			}
 		},
 	}
-	repoFetchCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose")
+	repoInfoCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose")
 
-	repoCmd.AddCommand(repoFetchCmd)
+	repoCmd.AddCommand(repoInfoCmd)
 }
