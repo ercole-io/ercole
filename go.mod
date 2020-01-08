@@ -9,6 +9,8 @@ require (
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
 	github.com/golang/mock v1.3.1
 	github.com/golang/snappy v0.0.1 // indirect
+	github.com/google/go-github v17.0.0+incompatible // indirect
+	github.com/google/go-github/v28 v28.1.1
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.3
 	github.com/jinzhu/now v1.1.1

@@ -54,6 +54,31 @@
 				"Name": "ercole-agent",
 				"Type": "github-release",
 				"URL": "https://api.github.com/repos/ercole-io/ercole-agent/releases"
+			},
+			{
+				"Name": "ercole-agent-rhel5",
+				"Type": "github-release",
+				"URL": "https://api.github.com/repos/ercole-io/ercole-agent-rhel5/releases"
+			},
+			{
+				"Name": "ercole-agent-aix",
+				"Type": "github-release",
+				"URL": "https://api.github.com/repos/ercole-io/ercole-agent-aix/releases"
+			},
+			{
+				"Name": "ercole-agent-hpux",
+				"Type": "github-release",
+				"URL": "https://api.github.com/repos/ercole-io/ercole-agent-hpux/releases"
+			},
+			{
+				"Name": "ercole-agent-exadata",
+				"Type": "github-release",
+				"URL": "https://api.github.com/repos/ercole-io/ercole-agent-exadata/releases"
+			},
+			{
+				"Name": "ercole-agent-virtualization",
+				"Type": "github-release",
+				"URL": "https://api.github.com/repos/ercole-io/ercole-agent-virtualization/releases"
 			}
 		],
 		"DistributedFiles": "distributed_files/",
