@@ -18,10 +18,12 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -92,9 +94,17 @@ func serve(enableDataService bool,
 	var wg sync.WaitGroup
 
 	if ercoleConfig.Mongodb.Migrate {
+		//Read initial licenses list
+		content, err := ioutil.ReadFile(ercoleConfig.Mongodb.LicensesList)
+		if err != nil {
+			log.Fatalf("Cannot read the licenses list: %v\n", err)
+		}
+		lines := strings.Split(string(content), "\n")
+
+		//Migrate
 		log.Print("Migrating...")
 		cl := migration.ConnectToMongodb(ercoleConfig.Mongodb)
-		migration.Migrate(cl.Database(ercoleConfig.Mongodb.DBName))
+		migration.Migrate(cl.Database(ercoleConfig.Mongodb.DBName), lines)
 		cl.Disconnect(context.TODO())
 	}
 

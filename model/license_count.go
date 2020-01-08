@@ -20,7 +20,7 @@ import "go.mongodb.org/mongo-driver/bson"
 // LicenseCount holds information about Oracle database license
 type LicenseCount struct {
 	Name  string `bson:"_id"`
-	Count uint32
+	Count int
 }
 
 // LicenseCountBsonValidatorRules contains mongodb validation rules for licenseCount

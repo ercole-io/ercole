@@ -54,7 +54,7 @@ func ConnectToMongodb(conf config.Mongodb) *mongo.Client {
 }
 
 // Migrate migrate the client database
-func Migrate(client *mongo.Database) {
+func Migrate(client *mongo.Database, initialLicensesList []string) {
 	//NB: ALL OPERATIONS SHOULD BE IDEMPOTENT
 	//THE RESULT OF
 	//	Migrate(&db)
@@ -66,7 +66,7 @@ func Migrate(client *mongo.Database) {
 
 	MigrateHostsSchema(client)
 	MigrateClustersSchema(client)
-	MigrateLicensesSchema(client)
+	MigrateLicensesSchema(client, initialLicensesList)
 	MigrateAlertsSchema(client)
 	MigrateCurrentDatabasesSchema(client)
 }
@@ -206,7 +206,7 @@ func MigrateClustersSchema(client *mongo.Database) {
 }
 
 // MigrateLicensesSchema create or update the licenses schema
-func MigrateLicensesSchema(client *mongo.Database) {
+func MigrateLicensesSchema(client *mongo.Database, initialLicensesList []string) {
 	//Create the collection
 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
 		log.Panicln(err)
@@ -227,6 +227,9 @@ func MigrateLicensesSchema(client *mongo.Database) {
 	}).Err(); err != nil {
 		log.Panicln(err)
 	}
+
+	//Initializes the collection from the lists of licenses
+	InitLicenses(client, initialLicensesList)
 }
 
 // MigrateAlertsSchema create or update the alerts schema
@@ -314,4 +317,30 @@ func MigrateCurrentDatabasesSchema(client *mongo.Database) {
 // UpdateDataSchemas updates the schema of the data in the database
 func UpdateDataSchemas(client *mongo.Database) {
 
+}
+
+// InitLicenses initialize the licenses collection
+func InitLicenses(client *mongo.Database, list []string) {
+	for _, l := range list {
+		//Check the existance of a license with the same name
+		val, err := client.Collection("licenses").CountDocuments(context.TODO(), bson.D{
+			{"name", l},
+		}, &options.CountOptions{
+			Limit: utils.Intptr(1),
+		})
+		if err != nil {
+			log.Fatalf("Unable to find a license in the licenses collection: %v\n", err)
+		}
+
+		//If not exist, insert the new license
+		if val == 0 {
+			_, err := client.Collection("licenses").InsertOne(context.TODO(), model.LicenseCount{
+				Name:  l,
+				Count: 0,
+			})
+			if err != nil {
+				log.Fatalf("Unable to insert a license in the licenses collection: %v\n", err)
+			}
+		}
+	}
 }

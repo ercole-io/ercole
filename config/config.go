@@ -114,6 +114,8 @@ type Mongodb struct {
 	DBName string
 	// Migrate is true when mongodb should update/migrate data/schema during the initializazion
 	Migrate bool
+	// LicensesList contains the filename of the file that contains the list of licenses
+	LicensesList string
 }
 
 // FreshnessCheckJob contains parameters for the freshness check

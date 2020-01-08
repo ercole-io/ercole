@@ -58,7 +58,7 @@ func (db *MongodbSuite) SetupSuite() {
 
 	//Migrations
 	cl := migration.ConnectToMongodb(db.db.Config.Mongodb)
-	migration.Migrate(cl.Database(db.db.Config.Mongodb.DBName))
+	migration.Migrate(cl.Database(db.db.Config.Mongodb.DBName), []string{})
 	cl.Disconnect(context.TODO())
 
 	db.db.ConnectToMongodb()
