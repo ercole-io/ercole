@@ -84,6 +84,11 @@ func serve(enableDataService bool,
 	s = filepath.Dir(s)
 	ercoleConfig.RepoService.DistributedFiles = s + filepath.Join("/", ercoleConfig.RepoService.DistributedFiles) + "/"
 
+	if _, err := os.Stat(ercoleConfig.RepoService.DistributedFiles); os.IsNotExist(err) {
+		log.Printf("WARNING: the directory %s for RepoService doesn't exist so the RepoService will be disabled\n", ercoleConfig.RepoService.DistributedFiles)
+		enableRepoService = false
+	}
+
 	var wg sync.WaitGroup
 
 	if ercoleConfig.Mongodb.Migrate {
