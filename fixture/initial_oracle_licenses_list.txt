@@ -1,0 +1,32 @@
+Oracle ENT
+Oracle STD
+Oracle EXE
+WebLogic Server Management Pack Enterprise Edition
+Tuning Pack
+Spatial and Graph
+Secure Backup
+Real Application Testing
+Real Application Clusters One Node
+Real Application Clusters
+RAC or RAC One Node
+Provisioning and Patch Automation Pack for Database
+Provisioning and Patch Automation Pack
+Pillar Storage
+Partitioning
+OLAP
+Multitenant
+Label Security
+HW
+GoldenGate
+Exadata
+Diagnostics Pack
+Database Vault
+Database In-Memory
+Database Gateway
+Data Masking Pack
+Configuration Management Pack for Oracle Database
+Change Management Pack
+Advanced Security
+Advanced Compression
+Advanced Analytics
+Active Data Guard
