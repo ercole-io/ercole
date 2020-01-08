@@ -17,7 +17,12 @@ package utils
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
 	"net/url"
+	"os"
+	"regexp"
 	"strconv"
 	"time"
 )
@@ -105,4 +110,45 @@ func NewAPIUrlNoParams(baseURL string, username string, password string, path st
 	u.Path = path
 
 	return u
+}
+
+// FindNamedMatches return the map of the groups of str
+func FindNamedMatches(regex *regexp.Regexp, str string) map[string]string {
+	match := regex.FindStringSubmatch(str)
+
+	results := map[string]string{}
+	for i, name := range match {
+		results[regex.SubexpNames()[i]] = name
+	}
+	return results
+}
+
+// DownloadFile download the file from url into the filepath
+func DownloadFile(filepath string, url string) (err error) {
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Check server response
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("bad status: %s", resp.Status)
+	}
+
+	// Writer the body to file
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

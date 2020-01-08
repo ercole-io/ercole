@@ -96,8 +96,8 @@ type APIService struct {
 
 // RepoService contains configuration about the repo service
 type RepoService struct {
-	// UpstreamRepository contains the url of the upstream repository
-	UpstreamRepository string
+	// UpstreamRepository contains the list of upstream repositories
+	UpstreamRepositories []UpstreamRepository
 	// DistributedFiles contains the path to the files to be served
 	DistributedFiles string
 	// HTTP contains the configuration about the HTTP server
@@ -184,4 +184,14 @@ type AggregationRule struct {
 	Regex string
 	// Group contains the name of the group
 	Group string
+}
+
+// UpstreamRepository contains info about a upstream repository
+type UpstreamRepository struct {
+	// Name of the repository
+	Name string
+	// Type of the repository
+	Type string
+	// URL of the repository where to find files
+	URL string
 }

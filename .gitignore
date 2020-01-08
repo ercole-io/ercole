@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+ercole
 
 # Test binary, build with `go test -c`
 *.test
@@ -13,3 +14,7 @@
 
 # Mocks
 fake_*.go
+
+# Distributions files
+distributed_files/*
+!distributed_files/index.txt
