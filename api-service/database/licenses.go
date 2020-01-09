@@ -38,17 +38,34 @@ func (md *MongoDatabase) ListCurrentLicenses(full bool, sortBy string, sortDesc 
 				}),
 				mu.APProject(bson.M{
 					"hostname": 1,
-					"license": mu.APOMaxAggr(mu.APOMap("$extra.databases", "db",
-						mu.APOLet(
-							bson.M{
-								"val": mu.APOArrayElemAt(mu.APOFilter("$$db.licenses", "lic", mu.APOEqual("$$lic.name", "$$license_name")), 0),
-							},
-							"$$val.count",
+					"databases": mu.APOReduce(
+						mu.APOFilter(
+							mu.APOMap("$extra.databases", "db", bson.M{
+								"name": "$$db.name",
+								"count": mu.APOLet(
+									bson.M{
+										"val": mu.APOArrayElemAt(mu.APOFilter("$$db.licenses", "lic", mu.APOEqual("$$lic.name", "$$license_name")), 0),
+									},
+									"$$val.count",
+								),
+							}),
+							"db",
+							mu.APOGreater("$$db.count", 0),
 						),
-					)),
+						bson.M{"count": 0, "dbs": bson.A{}},
+						bson.M{
+							"count": mu.APOMax("$$value.count", "$$this.count"),
+							"dbs": bson.M{
+								"$concatArrays": bson.A{
+									"$$value.dbs",
+									bson.A{"$$this.name"},
+								},
+							},
+						},
+					),
 				}),
 				mu.APMatch(bson.M{
-					"license": bson.M{
+					"databases.count": bson.M{
 						"$gt": 0,
 					},
 				}),
@@ -73,10 +90,13 @@ func (md *MongoDatabase) ListCurrentLicenses(full bool, sortBy string, sortDesc 
 						mu.APOConcat("cluster_§$#$§_", "$cluster_name"),
 						mu.APOConcat("hostname_§$#$§_", "$hostname"),
 					),
-					"license":     mu.APOMaxAggr("$license"),
+					"license":     mu.APOMaxAggr("$databases.count"),
 					"cluster_cpu": mu.APOMaxAggr("$cluster_cpu"),
 				}, bson.M{
-					"hosts": mu.APOPush("$hostname"),
+					"hosts": mu.APOPush(bson.M{
+						"hostname":  "$hostname",
+						"databases": "$databases.dbs",
+					}),
 				})),
 				mu.APSet(bson.M{
 					"license": mu.APOCond(
@@ -105,7 +125,7 @@ func (md *MongoDatabase) ListCurrentLicenses(full bool, sortBy string, sortDesc 
 				"used": mu.APOArrayElemAt("$used", 0),
 			}),
 			mu.APOptionalStage(full, mu.APSet(bson.M{
-				"hosts": "$used.hosts",
+				"hosts": mu.APOIfNull("$used.hosts", bson.A{}),
 			})),
 			mu.APSet(bson.M{
 				"used": mu.APOIfNull(mu.APOCeil("$used.value"), 0),
