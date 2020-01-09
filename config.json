@@ -100,7 +100,7 @@
 		}
 	},
 	"Mongodb": {
-		"URI": "mongodb://localhost:32768/ercole",
+		"URI": "mongodb://localhost:27017/ercole",
 		"DBName": "ercole",
 		"Migrate": true,
 		"LicensesList": "fixture/initial_oracle_licenses_list.txt"

@@ -79,6 +79,8 @@ type APIControllerInterface interface {
 	GetTotalDatabaseDatafileSizeStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalDatabaseSegmentSizeStats return the total size of segments of databases using the filters in the request
 	GetTotalDatabaseSegmentSizeStats(w http.ResponseWriter, r *http.Request)
+	// GetDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases using the filters in the request
+	GetDatabaseLicenseComplianceStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalExadataMemorySizeStats return the total size of memory of exadata using the filters in the request
 	GetTotalExadataMemorySizeStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalExadataCPUStats return the total cpu of exadata using the filters in the request

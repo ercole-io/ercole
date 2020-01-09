@@ -56,6 +56,7 @@ func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface
 	router.HandleFunc("/stats/databases/total-memory-size", ctrl.GetTotalDatabaseMemorySizeStats).Methods("GET")
 	router.HandleFunc("/stats/databases/total-datafile-size", ctrl.GetTotalDatabaseDatafileSizeStats).Methods("GET")
 	router.HandleFunc("/stats/databases/total-segment-size", ctrl.GetTotalDatabaseSegmentSizeStats).Methods("GET")
+	router.HandleFunc("/stats/databases/license-compliance", ctrl.GetDatabaseLicenseComplianceStatusStats).Methods("GET")
 	router.HandleFunc("/stats/exadata/total-memory-size", ctrl.GetTotalExadataMemorySizeStats).Methods("GET")
 	router.HandleFunc("/stats/exadata/total-cpu", ctrl.GetTotalExadataCPUStats).Methods("GET")
 	router.HandleFunc("/stats/exadata/average-storage-usage", ctrl.GetAvegageExadataStorageUsageStats).Methods("GET")
