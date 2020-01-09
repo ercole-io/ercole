@@ -221,3 +221,54 @@ func (ctrl *APIController) SearchCurrentDatabases(w http.ResponseWriter, r *http
 		utils.WriteJSONResponse(w, http.StatusOK, databases[0])
 	}
 }
+
+// ListCurrentLicenses list current licenses using the filters in the request
+func (ctrl *APIController) ListCurrentLicenses(w http.ResponseWriter, r *http.Request) {
+	var full bool
+	var sortBy string
+	var sortDesc bool
+	var pageNumber int
+	var pageSize int
+	var location string
+	var environment string
+
+	var err utils.AdvancedErrorInterface
+	//parse the query params
+	if full, err = utils.Str2bool(r.URL.Query().Get("full"), false); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	sortBy = r.URL.Query().Get("sort-by")
+	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
+	//get the data
+	licenses, err := ctrl.Service.ListCurrentLicenses(full, sortBy, sortDesc, pageNumber, pageSize, location, environment)
+	if err != nil {
+		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if pageNumber == -1 || pageSize == -1 {
+		//Write the data
+		utils.WriteJSONResponse(w, http.StatusOK, licenses)
+	} else {
+		//Write the data
+		utils.WriteJSONResponse(w, http.StatusOK, licenses[0])
+	}
+}

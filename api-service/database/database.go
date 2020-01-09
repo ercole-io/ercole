@@ -50,6 +50,8 @@ type MongoDatabaseInterface interface {
 	SearchCurrentDatabases(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchCurrentExadata search current exadata
 	SearchCurrentExadata(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
+	// ListCurrentLicenses list current licenses
+	ListCurrentLicenses(full bool, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
 
 	// GetEnvironmentStats return a array containing the number of hosts per environment
 	GetEnvironmentStats(location string) ([]interface{}, utils.AdvancedErrorInterface)

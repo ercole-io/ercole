@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/DataDog/zstd v1.4.4 // indirect
-	github.com/amreo/mu v0.0.0-20191224105344-b120f4b36e8e
+	github.com/amreo/mu v0.0.0-20200109115438-b2637853dcd1
 	github.com/bamzi/jobrunner v0.0.0-20190810144113-852b7ca4d475
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
 	github.com/golang/mock v1.3.1
@@ -21,7 +21,7 @@ require (
 	github.com/stretchr/testify v1.4.0
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
-	go.mongodb.org/mongo-driver v1.2.0
+	go.mongodb.org/mongo-driver v1.2.1
 	golang.org/x/crypto v0.0.0-20190911031432-227b76d455e7
 	golang.org/x/text v0.3.2 // indirect
 	gopkg.in/robfig/cron.v3 v3.0.0-00010101000000-000000000000 // indirect

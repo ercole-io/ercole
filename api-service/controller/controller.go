@@ -46,6 +46,8 @@ type APIControllerInterface interface {
 	SearchAlerts(w http.ResponseWriter, r *http.Request)
 	// SearchCurrentExadata search current exadata data using the filters in the request
 	SearchCurrentExadata(w http.ResponseWriter, r *http.Request)
+	// ListCurrentLicenses list current licenses using the filters in the request
+	ListCurrentLicenses(w http.ResponseWriter, r *http.Request)
 
 	// GetEnvironmentStats return all statistics about the environments of the hosts using the filters in the request
 	GetEnvironmentStats(w http.ResponseWriter, r *http.Request)
