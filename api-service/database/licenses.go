@@ -76,9 +76,7 @@ func (md *MongoDatabase) ListCurrentLicenses(full bool, sortBy string, sortDesc 
 					"license":     mu.APOMaxAggr("$license"),
 					"cluster_cpu": mu.APOMaxAggr("$cluster_cpu"),
 				}, bson.M{
-					"hosts": bson.M{
-						"$push": "$hostname",
-					},
+					"hosts": mu.APOPush("$hostname"),
 				})),
 				mu.APSet(bson.M{
 					"license": mu.APOCond(
@@ -111,6 +109,9 @@ func (md *MongoDatabase) ListCurrentLicenses(full bool, sortBy string, sortDesc 
 			})),
 			mu.APSet(bson.M{
 				"used": mu.APOIfNull(mu.APOCeil("$used.value"), 0),
+			}),
+			mu.APSet(bson.M{
+				"compliance": mu.APOGreaterOrEqual("$count", "$used"),
 			}),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),
