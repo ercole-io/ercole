@@ -92,6 +92,9 @@ type APIServiceInterface interface {
 	GetExadataStorageErrorCountStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetExadataPatchStatusStats return a array containing the number of exadata per patch status
 	GetExadataPatchStatusStats(location string, environment string, windowTime time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+
+	// SetLicenseCount set the count of a certain license
+	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

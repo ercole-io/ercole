@@ -25,3 +25,7 @@ var AerrHostNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrHostNotFoun
 
 // ErrEventEnqueue contains "Failed to enqueue event" error
 var ErrEventEnqueue = errors.New("Failed to enqueue event")
+
+// ErrLicenseNotFound contains "License not found" error
+var ErrLicenseNotFound = errors.New("License not found")
+var AerrLicenseNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrLicenseNotFound, "DB ERROR")
