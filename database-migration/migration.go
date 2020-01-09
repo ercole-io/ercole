@@ -324,7 +324,7 @@ func InitLicenses(client *mongo.Database, list []string) {
 	for _, l := range list {
 		//Check the existance of a license with the same name
 		val, err := client.Collection("licenses").CountDocuments(context.TODO(), bson.D{
-			{"name", l},
+			{"_id", l},
 		}, &options.CountOptions{
 			Limit: utils.Intptr(1),
 		})

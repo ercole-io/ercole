@@ -42,3 +42,8 @@ func (as *APIService) SearchCurrentPatchAdvisors(search string, sortBy string, s
 func (as *APIService) SearchCurrentDatabases(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.SearchCurrentDatabases(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment)
 }
+
+// ListCurrentLicenses list current licenses
+func (as *APIService) ListCurrentLicenses(full bool, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.ListCurrentLicenses(full, sortBy, sortDesc, page, pageSize, location, environment)
+}
