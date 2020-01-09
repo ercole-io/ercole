@@ -425,3 +425,132 @@ func (md *MongoDatabase) GetTotalDatabaseSegmentSizeStats(location string, envir
 
 	return float32(out["value"]), nil
 }
+
+// GetDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
+func (md *MongoDatabase) GetDatabaseLicenseComplianceStatusStats(location string, environment string) (interface{}, utils.AdvancedErrorInterface) {
+	var out map[string]interface{} = map[string]interface{}{
+		"count":     0,
+		"used":      0,
+		"compliant": true,
+	}
+
+	//Find the informations
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses").Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			mu.APLookupPipeline("hosts", bson.M{
+				"license_name": "$_id",
+			}, "used", mu.MAPipeline(
+				mu.APMatch(bson.M{
+					"archived": false,
+				}),
+				mu.APProject(bson.M{
+					"hostname": 1,
+					"databases": mu.APOReduce(
+						mu.APOFilter(
+							mu.APOMap("$extra.databases", "db", bson.M{
+								"name": "$$db.name",
+								"count": mu.APOLet(
+									bson.M{
+										"val": mu.APOArrayElemAt(mu.APOFilter("$$db.licenses", "lic", mu.APOEqual("$$lic.name", "$$license_name")), 0),
+									},
+									"$$val.count",
+								),
+							}),
+							"db",
+							mu.APOGreater("$$db.count", 0),
+						),
+						bson.M{"count": 0, "dbs": bson.A{}},
+						bson.M{
+							"count": mu.APOMax("$$value.count", "$$this.count"),
+							"dbs": bson.M{
+								"$concatArrays": bson.A{
+									"$$value.dbs",
+									bson.A{"$$this.name"},
+								},
+							},
+						},
+					),
+				}),
+				mu.APMatch(bson.M{
+					"databases.count": bson.M{
+						"$gt": 0,
+					},
+				}),
+				mu.APLookupSimple("currentClusters", "hostname", "cluster.vms.hostname", "cluster"),
+				mu.APSet(bson.M{
+					"cluster": mu.APOArrayElemAt("$cluster", 0),
+				}),
+				// mu.APSet(bson.M{
+				// 	"cluster": mu.APOArrayElemAt(
+				// 		mu.APOFilter("$cluster.cluster.vms", "vm", mu.APOEqual("$$vm.hostname", "$hostname")),
+				// 		0,
+				// 	),
+				// }),
+				mu.APSet(bson.M{
+					"cluster_name": "$cluster.cluster.name",
+					"cluster_cpu":  "$cluster.cluster.cpu",
+				}),
+				mu.APUnset("cluster"),
+				mu.APGroup(bson.M{
+					"_id": mu.APOCond(
+						"$cluster_name",
+						mu.APOConcat("cluster_§$#$§_", "$cluster_name"),
+						mu.APOConcat("hostname_§$#$§_", "$hostname"),
+					),
+					"license":     mu.APOMaxAggr("$databases.count"),
+					"cluster_cpu": mu.APOMaxAggr("$cluster_cpu"),
+				}),
+				mu.APSet(bson.M{
+					"license": mu.APOCond(
+						"$cluster_cpu",
+						mu.APODivide("$cluster_cpu", 2),
+						"$license",
+					),
+				}),
+				mu.APGroup(bson.M{
+					"_id":   0,
+					"value": mu.APOSum("$license"),
+				}),
+			)),
+			mu.APSet(bson.M{
+				"used": mu.APOArrayElemAt("$used", 0),
+			}),
+			mu.APSet(bson.M{
+				"used": mu.APOIfNull(mu.APOCeil("$used.value"), 0),
+			}),
+			mu.APSet(bson.M{
+				"compliance": mu.APOGreaterOrEqual("$count", "$used"),
+			}),
+			mu.APGroup(bson.M{
+				"_id":                       0,
+				"licenses_number":           mu.APOSum(1),
+				"count":                     mu.APOSum("$count"),
+				"used":                      mu.APOSum("$used"),
+				"compliant_licenses_number": mu.APOSum(mu.APOCond("$compliance", 1, 0)),
+			}),
+			mu.APProject(bson.M{
+				"_id":       0,
+				"count":     1,
+				"used":      1,
+				"compliant": mu.APOEqual("$licenses_number", "compliant_licenses_number"),
+			}),
+		),
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Next the cursor. If there is no document return a empty document
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return out, nil
+	}
+
+	//Decode the document
+	if err := cur.Decode(&out); err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return out, nil
+}

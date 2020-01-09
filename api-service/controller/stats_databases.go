@@ -278,3 +278,24 @@ func (ctrl *APIController) GetTotalDatabaseSegmentSizeStats(w http.ResponseWrite
 	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, stats)
 }
+
+// GetDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases using the filters in the request
+func (ctrl *APIController) GetDatabaseLicenseComplianceStatusStats(w http.ResponseWriter, r *http.Request) {
+	var location string
+	var environment string
+	var err utils.AdvancedErrorInterface
+
+	//parse the query params
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
+	//get the data
+	stats, err := ctrl.Service.GetDatabaseLicenseComplianceStatusStats(location, environment)
+	if err != nil {
+		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, stats)
+}

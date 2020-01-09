@@ -76,3 +76,8 @@ func (as *APIService) GetTotalDatabaseDatafileSizeStats(location string, environ
 func (as *APIService) GetTotalDatabaseSegmentSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
 	return as.Database.GetTotalDatabaseSegmentSizeStats(location, environment)
 }
+
+// GetDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
+func (as *APIService) GetDatabaseLicenseComplianceStatusStats(location string, environment string) (interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetDatabaseLicenseComplianceStatusStats(location, environment)
+}

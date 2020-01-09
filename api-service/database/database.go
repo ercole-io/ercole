@@ -73,6 +73,8 @@ type MongoDatabaseInterface interface {
 	GetDatabaseDataguardStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetDatabaseRACStatusStats return a array containing the number of databases per RAC status
 	GetDatabaseRACStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
+	GetDatabaseLicenseComplianceStatusStats(location string, environment string) (interface{}, utils.AdvancedErrorInterface)
 	// GetDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
 	GetDatabaseArchivelogStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetTotalDatabaseWorkStats return the total work of databases

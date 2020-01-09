@@ -80,6 +80,8 @@ type APIServiceInterface interface {
 	GetTotalDatabaseDatafileSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface)
 	// GetTotalDatabaseSegmentSizeStats return the total size of segments of databases
 	GetTotalDatabaseSegmentSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface)
+	// GetDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
+	GetDatabaseLicenseComplianceStatusStats(location string, environment string) (interface{}, utils.AdvancedErrorInterface)
 	// GetTotalExadataMemorySizeStats return the total size of memory of exadata
 	GetTotalExadataMemorySizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface)
 	// GetTotalExadataCPUStats return the total cpu of exadata
