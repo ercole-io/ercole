@@ -9,6 +9,8 @@ github.com/amreo/mu v0.0.0-20200109103110-e0f01bb5317c h1:FgOOuP5mn1PbM/+31kkNfc
 github.com/amreo/mu v0.0.0-20200109103110-e0f01bb5317c/go.mod h1:Z4dSBwGqIVMf3JyIv/P/5RSHXkSzdbZLrRC/xoKYPIA=
 github.com/amreo/mu v0.0.0-20200109115438-b2637853dcd1 h1:cmjt06+Vb9n+h0cguo58D0oUo1WXa1Lckv4Fgl4daO8=
 github.com/amreo/mu v0.0.0-20200109115438-b2637853dcd1/go.mod h1:Z4dSBwGqIVMf3JyIv/P/5RSHXkSzdbZLrRC/xoKYPIA=
+github.com/amreo/mu v0.0.0-20200109131148-b66adf28effe h1:GZFO+6GU1kMwUnBBYhM+6ttRsw5zNYSOAEqiqFBPvow=
+github.com/amreo/mu v0.0.0-20200109131148-b66adf28effe/go.mod h1:Z4dSBwGqIVMf3JyIv/P/5RSHXkSzdbZLrRC/xoKYPIA=
 github.com/amreo/sftp v1.10.2-0.20200107091433-ba9b307c31cb h1:fJTz/1VgND5i/LgNsWOmWRh3N5ADz7iXr0IVvHmTb2Y=
 github.com/amreo/sftp v1.10.2-0.20200107091433-ba9b307c31cb/go.mod h1:lYOWFsE0bwd1+KfKJaKeuokY15vzFx25BLbzYYoAxZI=
 github.com/amreo/sftp v1.10.2-0.20200107133605-5981645e4b3b h1:GpQHWqvka4/Y8GQI47k2n33cwlXS/+G3aha7sZnhesU=
