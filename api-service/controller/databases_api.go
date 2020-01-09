@@ -16,10 +16,13 @@
 package controller
 
 import (
+	"io/ioutil"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/amreo/ercole-services/utils"
+	"github.com/gorilla/mux"
 )
 
 // SearchCurrentAddms search current addms data using the filters in the request
@@ -271,4 +274,35 @@ func (ctrl *APIController) ListCurrentLicenses(w http.ResponseWriter, r *http.Re
 		//Write the data
 		utils.WriteJSONResponse(w, http.StatusOK, licenses[0])
 	}
+}
+
+// SetLicenseCount set the count of a certain license
+func (ctrl *APIController) SetLicenseCount(w http.ResponseWriter, r *http.Request) {
+	//get the data
+	name := mux.Vars(r)["name"]
+
+	raw, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		utils.WriteAndLogError(w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, "BAD_REQUEST"))
+		return
+	}
+
+	count, err := strconv.Atoi(string(raw))
+	if err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, "BAD_REQUEST"))
+		return
+	}
+
+	//set the value
+	aerr := ctrl.Service.SetLicenseCount(name, count)
+	if aerr == utils.AerrLicenseNotFound {
+		utils.WriteAndLogError(w, http.StatusNotFound, aerr)
+		return
+	} else if err != nil {
+		utils.WriteAndLogError(w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }

@@ -39,6 +39,7 @@ func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface
 	router.HandleFunc("/segment-advisors", ctrl.SearchCurrentSegmentAdvisors).Methods("GET")
 	router.HandleFunc("/patch-advisors", ctrl.SearchCurrentPatchAdvisors).Methods("GET")
 	router.HandleFunc("/licenses", ctrl.ListCurrentLicenses).Methods("GET")
+	router.HandleFunc("/licenses/{name}", ctrl.SetLicenseCount).Methods("PUT")
 	router.HandleFunc("/exadata", ctrl.SearchCurrentExadata).Methods("GET")
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")
 	router.HandleFunc("/stats/environments", ctrl.GetEnvironmentStats).Methods("GET")

@@ -47,3 +47,8 @@ func (as *APIService) SearchCurrentDatabases(full bool, search string, sortBy st
 func (as *APIService) ListCurrentLicenses(full bool, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.ListCurrentLicenses(full, sortBy, sortDesc, page, pageSize, location, environment)
 }
+
+// SetLicenseCount set the count of a certain license
+func (as *APIService) SetLicenseCount(name string, count int) utils.AdvancedErrorInterface {
+	return as.Database.SetLicenseCount(name, count)
+}

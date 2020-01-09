@@ -533,7 +533,7 @@ func (md *MongoDatabase) GetDatabaseLicenseComplianceStatusStats(location string
 				"_id":       0,
 				"count":     1,
 				"used":      1,
-				"compliant": mu.APOEqual("$licenses_number", "compliant_licenses_number"),
+				"compliant": mu.APOEqual("$licenses_number", "$compliant_licenses_number"),
 			}),
 		),
 	)

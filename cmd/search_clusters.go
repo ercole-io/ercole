@@ -16,7 +16,6 @@
 package cmd
 
 func init() {
-
 	searchClustersCmd := simpleAPIRequestCommand("search-clusters",
 		"Search current clusters",
 		`search-clusters search the most matching clusters to the arguments`,

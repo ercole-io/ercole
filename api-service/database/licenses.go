@@ -151,3 +151,25 @@ func (md *MongoDatabase) ListCurrentLicenses(full bool, sortBy string, sortDesc 
 	}
 	return out, nil
 }
+
+// SetLicenseCount set the count of a certain license
+func (md *MongoDatabase) SetLicenseCount(name string, count int) utils.AdvancedErrorInterface {
+	//Find the informations
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses").UpdateOne(context.TODO(), bson.M{
+		"_id": name,
+	}, bson.M{
+		"$set": bson.M{
+			"count": count,
+		},
+	})
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Check the existance of the result
+	if res.MatchedCount == 0 {
+		return utils.AerrLicenseNotFound
+	} else {
+		return nil
+	}
+}
