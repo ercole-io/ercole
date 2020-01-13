@@ -873,7 +873,7 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ ") ORDER BY updated ASC; ")
 	List<Map<String, Object>> getDailyCPUUsageDataHistory(@Param("hostname") final String hostname, @Param("dbname") final String dbname);
 
-
+ 
 	/**
 	 * Return the list of databases.
 	 * @param c pageable
