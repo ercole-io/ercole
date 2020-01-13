@@ -857,7 +857,7 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	WHERE "
 		+ "		hostname = :hostname AND"
 		+ "		(ch.host_type IS NULL OR ch.host_type = 'oracledb') AND"
-		+ "		db->>'Name' = :dbname AND db->>'DailyCPUUsage' IS NOT NULL"
+		+ "		db->>'Name' = :dbname AND db->>'DailyCPUUsage' IS NOT NULL AND db->>'DailyCPUUsage' != 'N/A'"
 		+ "	UNION ALL SELECT "
 		+ "		updated,"
 		+ "		db->>'DailyCPUUsage' AS usage"
@@ -867,13 +867,13 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	WHERE "
 		+ "		hostname = :hostname AND"
 		+ "		(ch.host_type IS NULL OR ch.host_type = 'oracledb') AND"
-		+ "		db->>'Name' = :dbname AND db->>'DailyCPUUsage' IS NOT NULL"
+		+ "		db->>'Name' = :dbname AND db->>'DailyCPUUsage' IS NOT NULL AND db->>'DailyCPUUsage' != 'N/A' "
 		+ ") SELECT * FROM data d WHERE NOT EXISTS ( "
 		+ " SELECT * FROM data d2 WHERE d2.updated > d.updated AND  date(d2.updated) = date(d.updated) "
 		+ ") ORDER BY updated ASC; ")
 	List<Map<String, Object>> getDailyCPUUsageDataHistory(@Param("hostname") final String hostname, @Param("dbname") final String dbname);
 
-
+ 
 	/**
 	 * Return the list of databases.
 	 * @param c pageable
