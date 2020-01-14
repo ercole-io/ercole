@@ -5,21 +5,21 @@
 
 	<groupId>io.ercole</groupId>
 	<artifactId>ercole-server</artifactId>
-	<version>1.6.7</version> 
+	<version>1.6.8</version> 
 
 	<properties>
-		<ercole-web.version>1.6.7</ercole-web.version>
-		<rpm5.version>1.6.3</rpm5.version>
-		<rpm6.version>1.6.5</rpm6.version>
-		<rpm7.version>1.6.5</rpm7.version>
-		<win.version>1.6.5</win.version>
-		<hpux.version>1.6.4</hpux.version>
-        <aix.version>1.6.4</aix.version>
-        <checkmk.version>1.0.0</checkmk.version>
+		<ercole-web.version>1.6.8</ercole-web.version>
+		<rpm5.version>1.6.4</rpm5.version>
+		<rpm6.version>1.6.6</rpm6.version>
+		<rpm7.version>1.6.6</rpm7.version>
+		<win.version>1.6.6</win.version>
+		<hpux.version>1.6.5</hpux.version>
+		<aix.version>1.6.5</aix.version>
+		<checkmk.version>1.0.0</checkmk.version>
 		<virtualization-rpm7.version>1.6.2</virtualization-rpm7.version>
-        <exadata-rpm7.version>1.6.1</exadata-rpm7.version>
-        <exadata-rpm6.version>1.6.1</exadata-rpm6.version>
-    </properties>
+		<exadata-rpm7.version>1.6.1</exadata-rpm7.version>
+		<exadata-rpm6.version>1.6.1</exadata-rpm6.version>
+	</properties>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
