@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"time"
 
 	"github.com/amreo/ercole-services/utils"
 	"github.com/amreo/mu"
@@ -24,7 +25,7 @@ import (
 )
 
 // SearchCurrentSegmentAdvisors search current segment advisors
-func (md *MongoDatabase) SearchCurrentSegmentAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchCurrentSegmentAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Find the matching hostdata

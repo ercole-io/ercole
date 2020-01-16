@@ -23,26 +23,26 @@ import (
 )
 
 // GetTotalExadataMemorySizeStats return the total size of memory of exadata
-func (as *APIService) GetTotalExadataMemorySizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
-	return as.Database.GetTotalExadataMemorySizeStats(location, environment)
+func (as *APIService) GetTotalExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+	return as.Database.GetTotalExadataMemorySizeStats(location, environment, olderThan)
 }
 
 // GetTotalExadataCPUStats return the total cpu of exadata
-func (as *APIService) GetTotalExadataCPUStats(location string, environment string) (interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetTotalExadataCPUStats(location, environment)
+func (as *APIService) GetTotalExadataCPUStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetTotalExadataCPUStats(location, environment, olderThan)
 }
 
 // GetAvegageExadataStorageUsageStats return the average usage of cell disks of exadata
-func (as *APIService) GetAvegageExadataStorageUsageStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
-	return as.Database.GetAvegageExadataStorageUsageStats(location, environment)
+func (as *APIService) GetAvegageExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+	return as.Database.GetAvegageExadataStorageUsageStats(location, environment, olderThan)
 }
 
 // GetExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
-func (as *APIService) GetExadataStorageErrorCountStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetExadataStorageErrorCountStatusStats(location, environment)
+func (as *APIService) GetExadataStorageErrorCountStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetExadataStorageErrorCountStatusStats(location, environment, olderThan)
 }
 
 // GetExadataPatchStatusStats return a array containing the number of exadata per patch status
-func (as *APIService) GetExadataPatchStatusStats(location string, environment string, windowTime time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetExadataPatchStatusStats(location, environment, windowTime)
+func (as *APIService) GetExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetExadataPatchStatusStats(location, environment, windowTime, olderThan)
 }

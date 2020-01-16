@@ -19,7 +19,7 @@ func init() {
 	getDatabaseRACStatusStatsCmd := simpleAPIRequestCommand("rac-status",
 		"Get databases RAC status stats",
 		`Get stats about the RAC status of the databases`,
-		false, []apiOption{locationOption, environmentOption},
+		false, []apiOption{locationOption, environmentOption, olderThanOptions},
 		"/stats/databases/rac-status",
 		"Failed to get databases RAC status stats: %v\n",
 		"Failed to get databases RAC status stats(Status: %d): %s\n",

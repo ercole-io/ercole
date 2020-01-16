@@ -24,6 +24,7 @@ import (
 
 // GetTotalExadataMemorySizeStats return the total size of memory of exadata using the filters in the request
 func (ctrl *APIController) GetTotalExadataMemorySizeStats(w http.ResponseWriter, r *http.Request) {
+	var olderThan time.Time
 	var location string
 	var environment string
 	var err utils.AdvancedErrorInterface
@@ -32,8 +33,13 @@ func (ctrl *APIController) GetTotalExadataMemorySizeStats(w http.ResponseWriter,
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	stats, err := ctrl.Service.GetTotalExadataMemorySizeStats(location, environment)
+	stats, err := ctrl.Service.GetTotalExadataMemorySizeStats(location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -45,6 +51,7 @@ func (ctrl *APIController) GetTotalExadataMemorySizeStats(w http.ResponseWriter,
 
 // GetTotalExadataCPUStats return the total cpu of exadata using the filters in the request
 func (ctrl *APIController) GetTotalExadataCPUStats(w http.ResponseWriter, r *http.Request) {
+	var olderThan time.Time
 	var location string
 	var environment string
 	var err utils.AdvancedErrorInterface
@@ -53,8 +60,13 @@ func (ctrl *APIController) GetTotalExadataCPUStats(w http.ResponseWriter, r *htt
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	stats, err := ctrl.Service.GetTotalExadataCPUStats(location, environment)
+	stats, err := ctrl.Service.GetTotalExadataCPUStats(location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -66,6 +78,7 @@ func (ctrl *APIController) GetTotalExadataCPUStats(w http.ResponseWriter, r *htt
 
 // GetAvegageExadataStorageUsageStats return the average usage of cell disks of exadata using the filters in the request
 func (ctrl *APIController) GetAvegageExadataStorageUsageStats(w http.ResponseWriter, r *http.Request) {
+	var olderThan time.Time
 	var location string
 	var environment string
 	var err utils.AdvancedErrorInterface
@@ -74,8 +87,13 @@ func (ctrl *APIController) GetAvegageExadataStorageUsageStats(w http.ResponseWri
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	stats, err := ctrl.Service.GetAvegageExadataStorageUsageStats(location, environment)
+	stats, err := ctrl.Service.GetAvegageExadataStorageUsageStats(location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -87,6 +105,7 @@ func (ctrl *APIController) GetAvegageExadataStorageUsageStats(w http.ResponseWri
 
 // GetExadataStorageErrorCountStatusStats return all statistics about the ErrorCount status of the storage of the exadata using the filters in the request
 func (ctrl *APIController) GetExadataStorageErrorCountStatusStats(w http.ResponseWriter, r *http.Request) {
+	var olderThan time.Time
 	var location string
 	var environment string
 	var err utils.AdvancedErrorInterface
@@ -95,8 +114,13 @@ func (ctrl *APIController) GetExadataStorageErrorCountStatusStats(w http.Respons
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	stats, err := ctrl.Service.GetExadataStorageErrorCountStatusStats(location, environment)
+	stats, err := ctrl.Service.GetExadataStorageErrorCountStatusStats(location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -108,6 +132,7 @@ func (ctrl *APIController) GetExadataStorageErrorCountStatusStats(w http.Respons
 
 // GetExadataPatchStatusStats return all statistics about the patch status of the exadata using the filters in the request
 func (ctrl *APIController) GetExadataPatchStatusStats(w http.ResponseWriter, r *http.Request) {
+	var olderThan time.Time
 	var location string
 	var environment string
 	var windowTime int
@@ -122,8 +147,13 @@ func (ctrl *APIController) GetExadataPatchStatusStats(w http.ResponseWriter, r *
 		return
 	}
 
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	stats, err := ctrl.Service.GetExadataPatchStatusStats(location, environment, time.Now().AddDate(0, -windowTime, 0))
+	stats, err := ctrl.Service.GetExadataPatchStatusStats(location, environment, time.Now().AddDate(0, -windowTime, 0), olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return

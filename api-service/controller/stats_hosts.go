@@ -17,20 +17,27 @@ package controller
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/amreo/ercole-services/utils"
 )
 
 // GetEnvironmentStats return all statistics about the environments of the hosts using the filters in the request
 func (ctrl *APIController) GetEnvironmentStats(w http.ResponseWriter, r *http.Request) {
+	var olderThan time.Time
 	var location string
 	var err utils.AdvancedErrorInterface
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
 
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	stats, err := ctrl.Service.GetEnvironmentStats(location)
+	stats, err := ctrl.Service.GetEnvironmentStats(location, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -42,14 +49,20 @@ func (ctrl *APIController) GetEnvironmentStats(w http.ResponseWriter, r *http.Re
 
 // GetTypeStats return all statistics about the types of the hosts using the filters in the request
 func (ctrl *APIController) GetTypeStats(w http.ResponseWriter, r *http.Request) {
+	var olderThan time.Time
 	var location string
 	var err utils.AdvancedErrorInterface
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
 
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	stats, err := ctrl.Service.GetTypeStats(location)
+	stats, err := ctrl.Service.GetTypeStats(location, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -61,14 +74,20 @@ func (ctrl *APIController) GetTypeStats(w http.ResponseWriter, r *http.Request) 
 
 // GetOperatingSystemStats return all statistics about the operating systems of the hosts using the filters in the request
 func (ctrl *APIController) GetOperatingSystemStats(w http.ResponseWriter, r *http.Request) {
+	var olderThan time.Time
 	var location string
 	var err utils.AdvancedErrorInterface
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
 
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	stats, err := ctrl.Service.GetOperatingSystemStats(location)
+	stats, err := ctrl.Service.GetOperatingSystemStats(location, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return

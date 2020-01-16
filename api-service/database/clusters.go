@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"time"
 
 	"github.com/amreo/ercole-services/utils"
 	"github.com/amreo/mu"
@@ -24,7 +25,7 @@ import (
 )
 
 // SearchCurrentClusters search current clusters
-func (md *MongoDatabase) SearchCurrentClusters(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchCurrentClusters(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Find the matching hostdata

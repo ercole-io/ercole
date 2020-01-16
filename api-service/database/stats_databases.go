@@ -25,7 +25,7 @@ import (
 )
 
 // GetDatabaseEnvironmentStats return a array containing the number of databases per environment
-func (md *MongoDatabase) GetDatabaseEnvironmentStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetDatabaseEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -59,7 +59,7 @@ func (md *MongoDatabase) GetDatabaseEnvironmentStats(location string) ([]interfa
 }
 
 // GetDatabaseVersionStats return a array containing the number of databases per version
-func (md *MongoDatabase) GetDatabaseVersionStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetDatabaseVersionStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Calculate the stats
@@ -86,7 +86,7 @@ func (md *MongoDatabase) GetDatabaseVersionStats(location string) ([]interface{}
 }
 
 // GetTopReclaimableDatabaseStats return a array containing the total sum of reclaimable of segments advisors of the top reclaimable databases
-func (md *MongoDatabase) GetTopReclaimableDatabaseStats(location string, limit int) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTopReclaimableDatabaseStats(location string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Calculate the stats
@@ -123,7 +123,7 @@ func (md *MongoDatabase) GetTopReclaimableDatabaseStats(location string, limit i
 }
 
 // GetTopWorkloadDatabaseStats return a array containing top databases by workload
-func (md *MongoDatabase) GetTopWorkloadDatabaseStats(location string, limit int) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTopWorkloadDatabaseStats(location string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Calculate the stats
@@ -158,7 +158,7 @@ func (md *MongoDatabase) GetTopWorkloadDatabaseStats(location string, limit int)
 }
 
 // GetDatabasePatchStatusStats return a array containing the number of databases per patch status
-func (md *MongoDatabase) GetDatabasePatchStatusStats(location string, windowTime time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetDatabasePatchStatusStats(location string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Calculate the stats
@@ -203,7 +203,7 @@ func (md *MongoDatabase) GetDatabasePatchStatusStats(location string, windowTime
 }
 
 // GetDatabaseDataguardStatusStats return a array containing the number of databases per dataguard status
-func (md *MongoDatabase) GetDatabaseDataguardStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetDatabaseDataguardStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Calculate the stats
@@ -230,7 +230,7 @@ func (md *MongoDatabase) GetDatabaseDataguardStatusStats(location string, enviro
 }
 
 // GetDatabaseRACStatusStats return a array containing the number of databases per RAC status
-func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Calculate the stats
@@ -262,7 +262,7 @@ func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environment 
 }
 
 // GetDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
-func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Calculate the stats
@@ -291,7 +291,7 @@ func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, envir
 }
 
 // GetTotalDatabaseWorkStats return the total work of databases
-func (md *MongoDatabase) GetTotalDatabaseWorkStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalDatabaseWorkStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
 	var out map[string]float32
 
 	//Calculate the stats
@@ -324,7 +324,7 @@ func (md *MongoDatabase) GetTotalDatabaseWorkStats(location string, environment 
 }
 
 // GetTotalDatabaseMemorySizeStats return the total of memory size of databases
-func (md *MongoDatabase) GetTotalDatabaseMemorySizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalDatabaseMemorySizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -361,7 +361,7 @@ func (md *MongoDatabase) GetTotalDatabaseMemorySizeStats(location string, enviro
 }
 
 // GetTotalDatabaseDatafileSizeStats return the total size of datafiles of databases
-func (md *MongoDatabase) GetTotalDatabaseDatafileSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -394,7 +394,7 @@ func (md *MongoDatabase) GetTotalDatabaseDatafileSizeStats(location string, envi
 }
 
 // GetTotalDatabaseSegmentSizeStats return the total size of segments of databases
-func (md *MongoDatabase) GetTotalDatabaseSegmentSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -427,7 +427,7 @@ func (md *MongoDatabase) GetTotalDatabaseSegmentSizeStats(location string, envir
 }
 
 // GetDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
-func (md *MongoDatabase) GetDatabaseLicenseComplianceStatusStats(location string, environment string) (interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetDatabaseLicenseComplianceStatusStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
 	var out map[string]interface{} = map[string]interface{}{
 		"count":     0,
 		"used":      0,

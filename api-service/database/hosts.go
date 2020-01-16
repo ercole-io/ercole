@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"time"
 
 	"github.com/amreo/ercole-services/utils"
 	"github.com/amreo/mu"
@@ -24,7 +25,7 @@ import (
 )
 
 // SearchCurrentHosts search current hosts
-func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Find the matching hostdata
@@ -32,26 +33,32 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APMatch(bson.M{
-				"archived": false,
-			}),
+			FilterByOldnessSteps(olderThan),
 			mu.APSearchFilterStage([]string{
 				"hostname",
 				"extra.databases.name",
 				"extra.databases.unique_name",
 				"extra.clusters.name",
 			}, keywords),
-			mu.APLookupSimple("currentClusters", "hostname", "cluster.vms.hostname", "cluster"),
+			mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "vm", mu.MAPipeline(
+				FilterByOldnessSteps(olderThan),
+				mu.APUnwind("$extra.clusters"),
+				mu.APReplaceWith("$extra.clusters"),
+				mu.APUnwind("$vms"),
+				mu.APReplaceWith("$vms"),
+				mu.APMatch(bson.M{
+					"$expr": mu.APOEqual("$hostname", "$$hn"),
+				}),
+				mu.APLimit(1),
+			)),
 			mu.APSet(bson.M{
-				"cluster": mu.APOArrayElemAt("$cluster", 0),
-			}),
-			mu.APSet(bson.M{
-				"cluster": mu.APOArrayElemAt(mu.APOFilter("$cluster.cluster.vms", "vm", mu.APOEqual("$$vm.hostname", "$hostname")), 0),
+				"vm": mu.APOArrayElemAt("$vm", 0),
 			}),
 			mu.APAddFields(bson.M{
-				"cluster":       mu.APOIfNull("$cluster.cluster_name", nil),
-				"physical_host": mu.APOIfNull("$cluster.physical_host", nil),
+				"cluster":       mu.APOIfNull("$vm.cluster_name", nil),
+				"physical_host": mu.APOIfNull("$vm.physical_host", nil),
 			}),
+			mu.APUnset("vm"),
 			mu.APOptionalStage(!full, mu.APProject(bson.M{
 				"hostname":        true,
 				"location":        true,
@@ -95,7 +102,7 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 }
 
 // GetCurrentHost fetch all informations about a current host in the database
-func (md *MongoDatabase) GetCurrentHost(hostname string) (interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetCurrentHost(hostname string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
 	var out map[string]interface{}
 
 	//Find the matching hostdata

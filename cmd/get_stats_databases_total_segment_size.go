@@ -19,7 +19,7 @@ func init() {
 	getDatabaseTotalSegmentSizeStatsCmd := simpleSingleValueAPIRequestCommand("total-segment-size",
 		"Get databases total segment size stats",
 		`Get stats about the total size of segments of databases`,
-		false, true, true,
+		false, true, true, true,
 		"/stats/databases/total-segment-size",
 		"Failed to get databases total segment size stats: %v\n",
 		"Failed to get databases total segment size stats(Status: %d): %s\n",

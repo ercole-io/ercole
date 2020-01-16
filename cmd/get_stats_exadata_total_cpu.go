@@ -19,7 +19,7 @@ func init() {
 	getExadataTotalCPUStatsCmd := simpleSingleValueAPIRequestCommand("total-cpu",
 		"Get exadata total cpu stats",
 		`Get stats about the total cpu of exadata`,
-		false, true, true,
+		false, true, true, true,
 		"/stats/exadata/total-cpu",
 		"Failed to get exadata total cpu stats: %v\n",
 		"Failed to get exadata total cpu stats(Status: %d): %s\n",

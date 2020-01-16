@@ -34,6 +34,7 @@ func (ctrl *APIController) SearchCurrentAddms(w http.ResponseWriter, r *http.Req
 	var pageSize int
 	var location string
 	var environment string
+	var olderThan time.Time
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
@@ -56,8 +57,13 @@ func (ctrl *APIController) SearchCurrentAddms(w http.ResponseWriter, r *http.Req
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	addms, err := ctrl.Service.SearchCurrentAddms(search, sortBy, sortDesc, pageNumber, pageSize, location, environment)
+	addms, err := ctrl.Service.SearchCurrentAddms(search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -81,6 +87,7 @@ func (ctrl *APIController) SearchCurrentSegmentAdvisors(w http.ResponseWriter, r
 	var pageSize int
 	var location string
 	var environment string
+	var olderThan time.Time
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
@@ -103,8 +110,13 @@ func (ctrl *APIController) SearchCurrentSegmentAdvisors(w http.ResponseWriter, r
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	segmentAdvisors, err := ctrl.Service.SearchCurrentSegmentAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, location, environment)
+	segmentAdvisors, err := ctrl.Service.SearchCurrentSegmentAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -129,6 +141,7 @@ func (ctrl *APIController) SearchCurrentPatchAdvisors(w http.ResponseWriter, r *
 	var windowTime int
 	var location string
 	var environment string
+	var olderThan time.Time
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
@@ -156,8 +169,13 @@ func (ctrl *APIController) SearchCurrentPatchAdvisors(w http.ResponseWriter, r *
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	patchAdvisors, err := ctrl.Service.SearchCurrentPatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, time.Now().AddDate(0, -windowTime, 0), location, environment)
+	patchAdvisors, err := ctrl.Service.SearchCurrentPatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -182,6 +200,7 @@ func (ctrl *APIController) SearchCurrentDatabases(w http.ResponseWriter, r *http
 	var pageSize int
 	var location string
 	var environment string
+	var olderThan time.Time
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
@@ -209,8 +228,13 @@ func (ctrl *APIController) SearchCurrentDatabases(w http.ResponseWriter, r *http
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	databases, err := ctrl.Service.SearchCurrentDatabases(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment)
+	databases, err := ctrl.Service.SearchCurrentDatabases(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -234,6 +258,7 @@ func (ctrl *APIController) ListCurrentLicenses(w http.ResponseWriter, r *http.Re
 	var pageSize int
 	var location string
 	var environment string
+	var olderThan time.Time
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
@@ -260,8 +285,13 @@ func (ctrl *APIController) ListCurrentLicenses(w http.ResponseWriter, r *http.Re
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	licenses, err := ctrl.Service.ListCurrentLicenses(full, sortBy, sortDesc, pageNumber, pageSize, location, environment)
+	licenses, err := ctrl.Service.ListCurrentLicenses(full, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return

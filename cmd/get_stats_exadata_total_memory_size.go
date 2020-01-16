@@ -19,7 +19,7 @@ func init() {
 	getExadataTotalMemorySizeStatsCmd := simpleSingleValueAPIRequestCommand("total-memory-size",
 		"Get exadata total memory size stats",
 		`Get stats about the total size of memory of exadata`,
-		false, true, true,
+		false, true, true, true,
 		"/stats/exadata/total-memory-size",
 		"Failed to get exadata total memory size stats: %v\n",
 		"Failed to get exadata total memory size stats(Status: %d): %s\n",

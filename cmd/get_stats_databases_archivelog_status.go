@@ -19,7 +19,7 @@ func init() {
 	getDatabaseArchivelogStatusStatsCmd := simpleAPIRequestCommand("archivelog-status",
 		"Get databases archivelog status stats",
 		`Get stats about the archivelog status of the databases`,
-		false, []apiOption{locationOption, environmentOption},
+		false, []apiOption{locationOption, environmentOption, olderThanOptions},
 		"/stats/databases/archivelog-status",
 		"Failed to get databases archivelog status stats: %v\n",
 		"Failed to get databases archivelog status stats(Status: %d): %s\n",

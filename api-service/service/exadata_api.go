@@ -18,11 +18,12 @@ package service
 
 import (
 	"strings"
+	"time"
 
 	"github.com/amreo/ercole-services/utils"
 )
 
 // SearchCurrentExadata search current exadata
-func (as *APIService) SearchCurrentExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchCurrentExadata(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment)
+func (as *APIService) SearchCurrentExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchCurrentExadata(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }

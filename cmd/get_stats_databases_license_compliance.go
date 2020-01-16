@@ -19,7 +19,7 @@ func init() {
 	getDatabaseLicenseComplianceStatsCmd := simpleSingleValueAPIRequestCommand("license-compliance",
 		"Get databases license compliance stats",
 		`Get stats about the compliance of licenses of the databases`,
-		false, true, true,
+		false, true, true, true,
 		"/stats/databases/license-compliance",
 		"Failed to get databases license compliance stats: %v\n",
 		"Failed to get databases license compliance stats(Status: %d): %s\n",

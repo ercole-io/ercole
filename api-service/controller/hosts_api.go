@@ -17,6 +17,7 @@ package controller
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/amreo/ercole-services/utils"
 	"github.com/gorilla/mux"
@@ -32,6 +33,7 @@ func (ctrl *APIController) SearchCurrentHosts(w http.ResponseWriter, r *http.Req
 	var pageSize int
 	var location string
 	var environment string
+	var olderThan time.Time
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
@@ -59,8 +61,13 @@ func (ctrl *APIController) SearchCurrentHosts(w http.ResponseWriter, r *http.Req
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	hosts, err := ctrl.Service.SearchCurrentHosts(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment)
+	hosts, err := ctrl.Service.SearchCurrentHosts(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -77,10 +84,18 @@ func (ctrl *APIController) SearchCurrentHosts(w http.ResponseWriter, r *http.Req
 
 // GetCurrentHost return all'informations about the current host requested in the id path variable
 func (ctrl *APIController) GetCurrentHost(w http.ResponseWriter, r *http.Request) {
+	var olderThan time.Time
+	var err utils.AdvancedErrorInterface
+
 	hostname := mux.Vars(r)["hostname"]
 
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	host, err := ctrl.Service.GetCurrentHost(hostname)
+	host, err := ctrl.Service.GetCurrentHost(hostname, olderThan)
 	if err == utils.AerrHostNotFound {
 		utils.WriteAndLogError(w, http.StatusNotFound, err)
 		return

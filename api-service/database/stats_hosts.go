@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"time"
 
 	"github.com/amreo/ercole-services/utils"
 	"github.com/amreo/mu"
@@ -24,7 +25,7 @@ import (
 )
 
 // GetEnvironmentStats return a array containing the number of hosts per environment
-func (md *MongoDatabase) GetEnvironmentStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -53,7 +54,7 @@ func (md *MongoDatabase) GetEnvironmentStats(location string) ([]interface{}, ut
 }
 
 // GetTypeStats return a array containing the number of hosts per type
-func (md *MongoDatabase) GetTypeStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTypeStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -82,7 +83,7 @@ func (md *MongoDatabase) GetTypeStats(location string) ([]interface{}, utils.Adv
 }
 
 // GetOperatingSystemStats return a array containing the number of hosts per operanting system
-func (md *MongoDatabase) GetOperatingSystemStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Create the aggregation branches
