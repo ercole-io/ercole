@@ -19,6 +19,7 @@ import (
 	"github.com/amreo/ercole-services/utils"
 	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
+	"time"
 )
 
 // FilterByLocationAndEnvironmentSteps return the steps required to filter the data by the location and environment field.
@@ -33,7 +34,7 @@ func FilterByLocationAndEnvironmentSteps(location string, environment string) in
 	}
 }
 
-func FilterByOldnessSteps(olderThan interface{}) bson.A {
+func FilterByOldnessSteps(olderThan time.Time) bson.A {
 	return mu.MAPipeline(
 		mu.APOptionalStage(olderThan == utils.MAX_TIME, mu.APMatch(bson.M{
 			"archived": false,
@@ -44,10 +45,22 @@ func FilterByOldnessSteps(olderThan interface{}) bson.A {
 					"$lte": olderThan,
 				},
 			}),
-			mu.APSort(bson.M{
-				"created_at": -1,
+			mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname", "ca": "$created_at"}, "check", mu.MAPipeline(
+				mu.APProject(bson.M{
+					"hostname":   1,
+					"created_at": 1,
+				}),
+				mu.APMatch(bson.M{
+					"$expr": mu.APOAnd(mu.APOEqual("$hostname", "$$hn"), mu.APOGreater("$created_at", "$$ca"), mu.APOGreaterOrEqual(olderThan, "$created_at")),
+				}),
+				mu.APLimit(1),
+			)),
+			mu.APMatch(bson.M{
+				"check": bson.M{
+					"$size": 0,
+				},
 			}),
-			mu.APLimit(1),
+			mu.APUnset("check"),
 		}),
 	)
 }
