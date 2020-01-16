@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/amreo/ercole-services/utils"
@@ -32,12 +33,16 @@ var getHostCmd = &cobra.Command{
 	Short: "Get a current host",
 	Long:  `Get from api-service a current host`,
 	Run: func(cmd *cobra.Command, args []string) {
+		params := url.Values{}
+		olderThanOptions.addParam(params)
+
 		resp, err := http.Get(
-			utils.NewAPIUrlNoParams(
+			utils.NewAPIUrl(
 				ercoleConfig.APIService.RemoteEndpoint,
 				ercoleConfig.APIService.UserUsername,
 				ercoleConfig.APIService.UserPassword,
 				"/hosts/"+args[0],
+				params,
 			).String())
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Failed to get the hostdata: %v\n", err)
@@ -68,4 +73,6 @@ var getHostCmd = &cobra.Command{
 
 func init() {
 	apiCmd.AddCommand(getHostCmd)
+
+	olderThanOptions.addOption(getHostCmd)
 }

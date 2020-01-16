@@ -109,34 +109,44 @@ func (md *MongoDatabase) GetCurrentHost(hostname string, olderThan time.Time) (i
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			mu.APMatch(bson.M{
-				"archived": false,
 				"hostname": hostname,
 			}),
-			mu.APLookupSimple("alerts", "hostname", "other_info.hostname", "alerts"),
-			mu.APLookupSimple("currentClusters", "hostname", "cluster.vms.hostname", "cluster"),
+			mu.APLookupPipeline("alerts", bson.M{"hn": "$hostname"}, "alerts", mu.MAPipeline(
+				mu.APMatch(bson.M{
+					"$expr": mu.APOEqual("$other_info.hostname", "$$hn"),
+				}),
+			)),
+			mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "vm", mu.MAPipeline(
+				FilterByOldnessSteps(olderThan),
+				mu.APUnwind("$extra.clusters"),
+				mu.APReplaceWith("$extra.clusters"),
+				mu.APUnwind("$vms"),
+				mu.APReplaceWith("$vms"),
+				mu.APMatch(bson.M{
+					"$expr": mu.APOEqual("$hostname", "$$hn"),
+				}),
+				mu.APLimit(1),
+			)),
 			mu.APSet(bson.M{
-				"cluster": mu.APOArrayElemAt("$cluster", 0),
-			}),
-			mu.APSet(bson.M{
-				"cluster": mu.APOArrayElemAt(
-					mu.APOFilter("$cluster.cluster.vms", "vm", mu.APOEqual("$$vm.hostname", "$hostname")),
-					0,
-				),
+				"vm": mu.APOArrayElemAt("$vm", 0),
 			}),
 			mu.APAddFields(bson.M{
-				"cluster":       mu.APOIfNull("$cluster.cluster_name", nil),
-				"physical_host": mu.APOIfNull("$cluster.physical_host", nil),
+				"cluster":       mu.APOIfNull("$vm.cluster_name", nil),
+				"physical_host": mu.APOIfNull("$vm.physical_host", nil),
 			}),
+			mu.APUnset("vm"),
 			mu.APLookupPipeline(
 				"hosts",
 				bson.M{
 					"hn": "$hostname",
+					"ca": "$created_at",
 				},
 				"history",
 				mu.MAPipeline(
 					mu.APMatch(bson.M{
-						"$expr": mu.APOEqual("$hostname", "$$hn"),
+						"$expr": mu.APOAnd(mu.APOEqual("$hostname", "$$hn"), mu.APOGreaterOrEqual("$$ca", "$created_at")),
 					}),
 					mu.APProject(bson.M{
 						"created_at":                    1,
