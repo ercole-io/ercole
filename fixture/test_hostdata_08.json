@@ -1,0 +1,60 @@
+{
+  "Hostname": "test-virt",
+  "Environment": "PROD",
+  "Location": "Italy",
+  "HostType": "virtualization",
+  "Version": "1.6.1",
+  "HostDataSchemaVersion": 3,
+  "Databases": "",
+  "Schemas": "",
+  "Info": {
+    "Hostname": "test-virt",
+    "Environment": "PROD",
+    "Location": "Italy",
+    "CPUModel": "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
+    "CPUCores": 1,
+    "CPUThreads": 2,
+    "Socket": 2,
+    "Type": "VMWARE",
+    "Virtual": true,
+    "Kernel": "3.10.0-862.9.1.el7.x86_64",
+    "OS": "Red Hat Enterprise Linux Server release 7.5 (Maipo)",
+    "MemoryTotal": 3,
+    "SwapTotal": 4,
+    "OracleCluster": false,
+    "VeritasCluster": false,
+    "SunCluster": false,
+    "AixCluster": false
+  },
+  "Extra": {
+    "Databases": [],
+    "Filesystems": [
+      {
+        "Filesystem": "/dev/mapper/vg_os-lv_root",
+        "FsType": "xfs",
+        "Size": "8.0G",
+        "Used": "3.5G",
+        "Available": "4.6G",
+        "UsedPerc": "43%",
+        "MountedOn": "/"
+      }
+    ],
+    "Clusters": [
+      {
+        "Name": "Puzzait",
+        "Type": "vmware",
+        "CPU": 140,
+        "Sockets": 10,
+        "VMs": [
+          {
+            "Name": "test-virt",
+            "ClusterName": "Puzzait",
+            "Hostname": "test-virt",
+            "CappedCPU": false,
+            "PhysicalHost": "s157-cb32c10a56c256746c337e21b3f82402"
+          }
+        ]
+      }
+    ]
+  }
+}
