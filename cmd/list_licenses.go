@@ -19,7 +19,7 @@ func init() {
 	listLicensesCmd := simpleAPIRequestCommand("list-licenses",
 		"List current licenses",
 		`list-licenses list the informations about the licenses`,
-		false, []apiOption{fullOption, locationOption, environmentOption, sortingOptions},
+		false, []apiOption{fullOption, locationOption, environmentOption, sortingOptions, olderThanOptions},
 		"/licenses",
 		"Failed to list licenses data: %v\n",
 		"Failed to list licenses data(Status: %d): %s\n",

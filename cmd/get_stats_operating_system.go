@@ -19,7 +19,7 @@ func init() {
 	getOperatingSystemStatsCmd := simpleAPIRequestCommand("operating-system",
 		"Get operating system stats",
 		`Get stats about the info.operating_system field`,
-		false, []apiOption{locationOption},
+		false, []apiOption{locationOption, olderThanOptions},
 		"/stats/operating-systems",
 		"Failed to get operating system stats: %v\n",
 		"Failed to get operating system stats(Status: %d): %s\n",

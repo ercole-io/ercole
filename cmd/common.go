@@ -46,6 +46,7 @@ var alertStatus string
 var alertStatusAll bool
 var from string
 var to string
+var olderThan string
 
 type apiOption struct {
 	addOption func(cmd *cobra.Command)
@@ -164,6 +165,25 @@ var fromToWindowOptions apiOption = apiOption{
 	},
 }
 
+var olderThanOptions apiOption = apiOption{
+	addOption: func(cmd *cobra.Command) {
+		cmd.Flags().StringVarP(&olderThan, "older-than", "t", "", "Filter data older than day")
+	},
+	addParam: func(params url.Values) {
+		if olderThan != "" {
+			if val, err := time.Parse(time.RFC3339, olderThan); err == nil {
+				olderThan = val.Format(time.RFC3339)
+			} else if val, err := time.Parse("2006-01-02", olderThan); err == nil {
+				olderThan = now.New(val).EndOfDay().Format(time.RFC3339)
+			} else {
+				fmt.Fprintf(os.Stderr, "Unable to parse the value of the older than option: %v\n", err)
+				os.Exit(1)
+			}
+		}
+		params.Set("older-than", olderThan)
+	},
+}
+
 func simpleAPIRequestCommand(
 	use string,
 	short string,
@@ -241,6 +261,7 @@ func simpleSingleValueAPIRequestCommand(
 	searchArguments bool,
 	locationOption bool,
 	environmentOption bool,
+	olderThanOption bool,
 	endpointPath string,
 	errorMessageFormat string,
 	httpErrorMessageFormat string) *cobra.Command {
@@ -260,6 +281,9 @@ func simpleSingleValueAPIRequestCommand(
 			}
 			if environmentOption {
 				params.Set("environment", environment)
+			}
+			if olderThanOption {
+				olderThanOptions.addParam(params)
 			}
 
 			//Make the http request
@@ -305,6 +329,9 @@ func simpleSingleValueAPIRequestCommand(
 	}
 	if environmentOption {
 		cmd.Flags().StringVarP(&environment, "environment", "e", "", "Filter by environment")
+	}
+	if olderThanOption {
+		olderThanOptions.addOption(cmd)
 	}
 	return cmd
 }

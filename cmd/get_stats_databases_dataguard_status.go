@@ -19,7 +19,7 @@ func init() {
 	getDatabaseDataguardStatusStatsCmd := simpleAPIRequestCommand("dataguard-status",
 		"Get databases dataguard status stats",
 		`Get stats about the dataguard status of the databases`,
-		false, []apiOption{locationOption, environmentOption},
+		false, []apiOption{locationOption, environmentOption, olderThanOptions},
 		"/stats/databases/dataguard-status",
 		"Failed to get databases dataguard status stats: %v\n",
 		"Failed to get databases dataguard status stats(Status: %d): %s\n",

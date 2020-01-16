@@ -19,7 +19,7 @@ func init() {
 	getExadataAverageStorageUsageStatsCmd := simpleSingleValueAPIRequestCommand("average-storage-usage",
 		"Get exadata average storage usage stats",
 		`Get stats about the average usage of storage of exadata`,
-		false, true, true,
+		false, true, true, true,
 		"/stats/exadata/average-storage-usage",
 		"Failed to get exadata average storage usage stats: %v\n",
 		"Failed to get exadata average storage usage stats(Status: %d): %s\n",

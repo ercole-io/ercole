@@ -19,7 +19,7 @@ func init() {
 	searchSegmentAdvisorsCmd := simpleAPIRequestCommand("search-segment-advisors",
 		"Search current segment advisors",
 		`search-segment-advisors search the most matching segment advisors to the arguments`,
-		true, []apiOption{locationOption, environmentOption, sortingOptions},
+		true, []apiOption{locationOption, environmentOption, sortingOptions, olderThanOptions},
 		"/segment-advisors",
 		"Failed to search segment advisors data: %v\n",
 		"Failed to search segment advisors data(Status: %d): %s\n",

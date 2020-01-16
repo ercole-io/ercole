@@ -17,6 +17,7 @@ package controller
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/amreo/ercole-services/utils"
 )
@@ -31,6 +32,7 @@ func (ctrl *APIController) SearchCurrentExadata(w http.ResponseWriter, r *http.R
 	var pageSize int
 	var location string
 	var environment string
+	var olderThan time.Time
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
@@ -58,8 +60,13 @@ func (ctrl *APIController) SearchCurrentExadata(w http.ResponseWriter, r *http.R
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	//get the data
-	exadata, err := ctrl.Service.SearchCurrentExadata(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment)
+	exadata, err := ctrl.Service.SearchCurrentExadata(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return

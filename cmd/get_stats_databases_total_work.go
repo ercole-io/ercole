@@ -19,7 +19,7 @@ func init() {
 	getDatabaseTotalWorkStatsCmd := simpleSingleValueAPIRequestCommand("total-work",
 		"Get databases total work stats",
 		`Get stats about the total work of the databases`,
-		false, true, true,
+		false, true, true, true,
 		"/stats/databases/total-work",
 		"Failed to get databases total work stats: %v\n",
 		"Failed to get databases total work stats(Status: %d): %s\n",

@@ -25,7 +25,7 @@ import (
 )
 
 // GetTotalExadataMemorySizeStats return the total size of memory of exadata
-func (md *MongoDatabase) GetTotalExadataMemorySizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -63,7 +63,7 @@ func (md *MongoDatabase) GetTotalExadataMemorySizeStats(location string, environ
 }
 
 // GetTotalExadataCPUStats return the total cpu of exadata
-func (md *MongoDatabase) GetTotalExadataCPUStats(location string, environment string) (interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalExadataCPUStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
 	var out map[string]interface{}
 
 	//Calculate the stats
@@ -120,7 +120,7 @@ func (md *MongoDatabase) GetTotalExadataCPUStats(location string, environment st
 }
 
 // GetAvegageExadataStorageUsageStats return the average usage of cell disks of exadata
-func (md *MongoDatabase) GetAvegageExadataStorageUsageStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetAvegageExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -185,7 +185,7 @@ func (md *MongoDatabase) GetAvegageExadataStorageUsageStats(location string, env
 }
 
 // GetExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
-func (md *MongoDatabase) GetExadataStorageErrorCountStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetExadataStorageErrorCountStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Calculate the stats
@@ -226,7 +226,7 @@ func (md *MongoDatabase) GetExadataStorageErrorCountStatusStats(location string,
 }
 
 // GetExadataPatchStatusStats return a array containing the number of exadata per patch status
-func (md *MongoDatabase) GetExadataPatchStatusStats(location string, environment string, windowTime time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Calculate the stats

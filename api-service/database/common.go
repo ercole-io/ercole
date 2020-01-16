@@ -16,6 +16,7 @@
 package database
 
 import (
+	"github.com/amreo/ercole-services/utils"
 	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -30,4 +31,23 @@ func FilterByLocationAndEnvironmentSteps(location string, environment string) in
 			"environment": environment,
 		})),
 	}
+}
+
+func FilterByOldnessSteps(olderThan interface{}) bson.A {
+	return mu.MAPipeline(
+		mu.APOptionalStage(olderThan == utils.MAX_TIME, mu.APMatch(bson.M{
+			"archived": false,
+		})),
+		mu.APOptionalStage(olderThan != utils.MAX_TIME, bson.A{
+			mu.APMatch(bson.M{
+				"created_at": bson.M{
+					"$lte": olderThan,
+				},
+			}),
+			mu.APSort(bson.M{
+				"created_at": -1,
+			}),
+			mu.APLimit(1),
+		}),
+	)
 }

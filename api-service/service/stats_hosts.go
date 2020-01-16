@@ -17,25 +17,27 @@
 package service
 
 import (
+	"time"
+
 	"github.com/amreo/ercole-services/utils"
 )
 
 // GetEnvironmentStats return a array containing the number of hosts per environment
-func (as *APIService) GetEnvironmentStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetEnvironmentStats(location)
+func (as *APIService) GetEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetEnvironmentStats(location, olderThan)
 }
 
 // GetTypeStats return a array containing the number of hosts per type
-func (as *APIService) GetTypeStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetTypeStats(location)
+func (as *APIService) GetTypeStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetTypeStats(location, olderThan)
 }
 
 // GetOperatingSystemStats return a array containing the number of hosts per operating system
-func (as *APIService) GetOperatingSystemStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetOperatingSystemStats(location)
+func (as *APIService) GetOperatingSystemStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetOperatingSystemStats(location, olderThan)
 }
 
 // GetDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
-func (as *APIService) GetDatabaseArchivelogStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetDatabaseArchivelogStatusStats(location, environment)
+func (as *APIService) GetDatabaseArchivelogStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetDatabaseArchivelogStatusStats(location, environment, olderThan)
 }

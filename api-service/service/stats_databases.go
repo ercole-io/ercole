@@ -23,61 +23,61 @@ import (
 )
 
 // GetDatabaseEnvironmentStats return a array containing the number of databases per environment
-func (as *APIService) GetDatabaseEnvironmentStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetDatabaseEnvironmentStats(location)
+func (as *APIService) GetDatabaseEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetDatabaseEnvironmentStats(location, olderThan)
 }
 
 // GetDatabaseVersionStats return a array containing the number of databases per version
-func (as *APIService) GetDatabaseVersionStats(location string) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetDatabaseVersionStats(location)
+func (as *APIService) GetDatabaseVersionStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetDatabaseVersionStats(location, olderThan)
 }
 
 // GetTopReclaimableDatabaseStats return a array containing the total sum of reclaimable of segments advisors of the top reclaimable databases
-func (as *APIService) GetTopReclaimableDatabaseStats(location string, limit int) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetTopReclaimableDatabaseStats(location, limit)
+func (as *APIService) GetTopReclaimableDatabaseStats(location string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetTopReclaimableDatabaseStats(location, limit, olderThan)
 }
 
 // GetDatabasePatchStatusStats return a array containing the number of databases per patch status
-func (as *APIService) GetDatabasePatchStatusStats(location string, windowTime time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetDatabasePatchStatusStats(location, windowTime)
+func (as *APIService) GetDatabasePatchStatusStats(location string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetDatabasePatchStatusStats(location, windowTime, olderThan)
 }
 
 // GetTopWorkloadDatabaseStats return a array containing top databases by workload
-func (as *APIService) GetTopWorkloadDatabaseStats(location string, limit int) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetTopWorkloadDatabaseStats(location, limit)
+func (as *APIService) GetTopWorkloadDatabaseStats(location string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetTopWorkloadDatabaseStats(location, limit, olderThan)
 }
 
 // GetDatabaseRACStatusStats return a array containing the number of databases per RAC status
-func (as *APIService) GetDatabaseRACStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetDatabaseRACStatusStats(location, environment)
+func (as *APIService) GetDatabaseRACStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetDatabaseRACStatusStats(location, environment, olderThan)
 }
 
 // GetDatabaseDataguardStatusStats return a array containing the number of databases per dataguard status
-func (as *APIService) GetDatabaseDataguardStatusStats(location string, environment string) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetDatabaseDataguardStatusStats(location, environment)
+func (as *APIService) GetDatabaseDataguardStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetDatabaseDataguardStatusStats(location, environment, olderThan)
 }
 
 // GetTotalDatabaseWorkStats return the total work of databases
-func (as *APIService) GetTotalDatabaseWorkStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
-	return as.Database.GetTotalDatabaseWorkStats(location, environment)
+func (as *APIService) GetTotalDatabaseWorkStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+	return as.Database.GetTotalDatabaseWorkStats(location, environment, olderThan)
 }
 
 // GetTotalDatabaseMemorySizeStats return the total of memory size of databases
-func (as *APIService) GetTotalDatabaseMemorySizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
-	return as.Database.GetTotalDatabaseMemorySizeStats(location, environment)
+func (as *APIService) GetTotalDatabaseMemorySizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+	return as.Database.GetTotalDatabaseMemorySizeStats(location, environment, olderThan)
 }
 
 // GetTotalDatabaseDatafileSizeStats return the total size of datafiles of databases
-func (as *APIService) GetTotalDatabaseDatafileSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
-	return as.Database.GetTotalDatabaseDatafileSizeStats(location, environment)
+func (as *APIService) GetTotalDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+	return as.Database.GetTotalDatabaseDatafileSizeStats(location, environment, olderThan)
 }
 
 // GetTotalDatabaseSegmentSizeStats return the total size of segments of databases
-func (as *APIService) GetTotalDatabaseSegmentSizeStats(location string, environment string) (float32, utils.AdvancedErrorInterface) {
-	return as.Database.GetTotalDatabaseSegmentSizeStats(location, environment)
+func (as *APIService) GetTotalDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+	return as.Database.GetTotalDatabaseSegmentSizeStats(location, environment, olderThan)
 }
 
 // GetDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
-func (as *APIService) GetDatabaseLicenseComplianceStatusStats(location string, environment string) (interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetDatabaseLicenseComplianceStatusStats(location, environment)
+func (as *APIService) GetDatabaseLicenseComplianceStatusStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetDatabaseLicenseComplianceStatusStats(location, environment, olderThan)
 }

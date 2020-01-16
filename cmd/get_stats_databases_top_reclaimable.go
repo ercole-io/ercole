@@ -19,7 +19,7 @@ func init() {
 	getDatabaseTopReclaimableStatsCmd := simpleAPIRequestCommand("top-reclaimable",
 		"Get top reclaimable databases stats",
 		`Get stats about top reclaimable databases`,
-		false, []apiOption{locationOption, limitOption},
+		false, []apiOption{locationOption, limitOption, olderThanOptions},
 		"/stats/databases/top-reclaimable",
 		"Failed to get top reclaimable databases stats: %v\n",
 		"Failed to get top reclaimable databases stats(Status: %d): %s\n",
