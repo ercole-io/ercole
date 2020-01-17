@@ -31,6 +31,7 @@ func (md *MongoDatabase) GetDatabaseEnvironmentStats(location string, olderThan 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
 			mu.APGroup(bson.M{
 				"_id":   "$environment",
