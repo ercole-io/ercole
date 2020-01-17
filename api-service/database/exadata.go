@@ -32,9 +32,9 @@ func (md *MongoDatabase) SearchExadata(full bool, keywords []string, sortBy stri
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APMatch(bson.M{
-				"archived": false,
 				"extra.exadata": bson.M{
 					"$ne": nil,
 				},
