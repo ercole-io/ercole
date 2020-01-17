@@ -29,10 +29,22 @@ func (md *MongoDatabase) SearchSegmentAdvisors(keywords []string, sortBy string,
 	var out []interface{}
 
 	//Find the matching hostdata
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
+			mu.APUnwind("$extra.databases"),
+			mu.APAddFields(bson.M{
+				"extra.databases.ha": mu.APOOr("$info.sun_cluster", "$info.veritas_cluster", "$info.oracle_cluster", "$info.aix_cluster"),
+			}),
+			mu.APProject(bson.M{
+				"hostname":    1,
+				"environment": 1,
+				"location":    1,
+				"created_at":  1,
+				"database":    "$extra.databases",
+			}),
 			mu.APSearchFilterStage([]string{"hostname", "database.name"}, keywords),
 			mu.APProject(bson.M{
 				"hostname":                  true,
