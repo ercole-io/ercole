@@ -31,10 +31,8 @@ func (md *MongoDatabase) GetEnvironmentStats(location string, olderThan time.Tim
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APMatch(bson.M{
-				"archived": false,
-			}),
 			mu.APGroupAndCountStages("environment", "count", "$environment"),
 		),
 	)
@@ -60,10 +58,8 @@ func (md *MongoDatabase) GetTypeStats(location string, olderThan time.Time) ([]i
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APMatch(bson.M{
-				"archived": false,
-			}),
 			mu.APGroupAndCountStages("type", "count", "$info.type"),
 		),
 	)
@@ -104,10 +100,8 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APMatch(bson.M{
-				"archived": false,
-			}),
 			mu.APGroupAndCountStages("operating_system", "count", bson.M{
 				"$switch": bson.M{
 					"branches": aggregationBranches,
