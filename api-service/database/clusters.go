@@ -29,15 +29,25 @@ func (md *MongoDatabase) SearchCurrentClusters(full bool, keywords []string, sor
 	var out []interface{}
 
 	//Find the matching hostdata
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentClusters").Aggregate(
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
+			mu.APUnwind("$extra.clusters"),
+			mu.APProject(bson.M{
+				"hostname":    1,
+				"environment": 1,
+				"location":    1,
+				"created_at":  1,
+				"cluster":     "$extra.clusters",
+			}),
 			mu.APSearchFilterStage([]string{"cluster.name"}, keywords),
 			mu.APProject(bson.M{
 				"_id":                           true,
 				"environment":                   true,
 				"location":                      true,
+				"created_at":                    1,
 				"hostname_agent_virtualization": "$hostname",
 				"hostname":                      true,
 				"name":                          "$cluster.name",
