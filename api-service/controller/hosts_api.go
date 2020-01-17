@@ -23,8 +23,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// SearchCurrentHosts search current hosts data using the filters in the request
-func (ctrl *APIController) SearchCurrentHosts(w http.ResponseWriter, r *http.Request) {
+// SearchHosts search hosts data using the filters in the request
+func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 	var full bool
 	var search string
 	var sortBy string
@@ -67,7 +67,7 @@ func (ctrl *APIController) SearchCurrentHosts(w http.ResponseWriter, r *http.Req
 	}
 
 	//get the data
-	hosts, err := ctrl.Service.SearchCurrentHosts(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	hosts, err := ctrl.Service.SearchHosts(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -82,8 +82,8 @@ func (ctrl *APIController) SearchCurrentHosts(w http.ResponseWriter, r *http.Req
 	}
 }
 
-// GetCurrentHost return all'informations about the current host requested in the id path variable
-func (ctrl *APIController) GetCurrentHost(w http.ResponseWriter, r *http.Request) {
+// GetHost return all'informations about the host requested in the id path variable
+func (ctrl *APIController) GetHost(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
 	var err utils.AdvancedErrorInterface
 
@@ -95,7 +95,7 @@ func (ctrl *APIController) GetCurrentHost(w http.ResponseWriter, r *http.Request
 	}
 
 	//get the data
-	host, err := ctrl.Service.GetCurrentHost(hostname, olderThan)
+	host, err := ctrl.Service.GetHost(hostname, olderThan)
 	if err == utils.AerrHostNotFound {
 		utils.WriteAndLogError(w, http.StatusNotFound, err)
 		return

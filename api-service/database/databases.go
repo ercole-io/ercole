@@ -24,8 +24,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// SearchCurrentDatabases search current databases
-func (md *MongoDatabase) SearchCurrentDatabases(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+// SearchDatabases search databases
+func (md *MongoDatabase) SearchDatabases(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(

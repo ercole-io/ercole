@@ -28,26 +28,26 @@ import (
 type APIControllerInterface interface {
 	// AuthenticateMiddleware return the middleware used to authenticate users
 	AuthenticateMiddleware() func(http.Handler) http.Handler
-	// SearchCurrentHosts search current hosts data using the filters in the request
-	SearchCurrentHosts(w http.ResponseWriter, r *http.Request)
-	// SearchCurrentDatabases search current databases data using the filters in the request
-	SearchCurrentDatabases(w http.ResponseWriter, r *http.Request)
-	// SearchCurrentClusters search current clusters data using the filters in the request
-	SearchCurrentClusters(w http.ResponseWriter, r *http.Request)
-	// SearchCurrentAddms search current addms data using the filters in the request
-	SearchCurrentAddms(w http.ResponseWriter, r *http.Request)
-	// SearchCurrentSegmentAdvisors search current segment advisors data using the filters in the request
-	SearchCurrentSegmentAdvisors(w http.ResponseWriter, r *http.Request)
-	// SearchCurrentPatchAdvisors search current patch advisors data using the filters in the request
-	SearchCurrentPatchAdvisors(w http.ResponseWriter, r *http.Request)
-	// GetCurrentHost return all'informations about the current host requested in the id path variable
-	GetCurrentHost(w http.ResponseWriter, r *http.Request)
+	// SearchHosts search hosts data using the filters in the request
+	SearchHosts(w http.ResponseWriter, r *http.Request)
+	// SearchDatabases search databases data using the filters in the request
+	SearchDatabases(w http.ResponseWriter, r *http.Request)
+	// SearchClusters search clusters data using the filters in the request
+	SearchClusters(w http.ResponseWriter, r *http.Request)
+	// SearchAddms search addms data using the filters in the request
+	SearchAddms(w http.ResponseWriter, r *http.Request)
+	// SearchSegmentAdvisors search segment advisors data using the filters in the request
+	SearchSegmentAdvisors(w http.ResponseWriter, r *http.Request)
+	// SearchPatchAdvisors search patch advisors data using the filters in the request
+	SearchPatchAdvisors(w http.ResponseWriter, r *http.Request)
+	// GetHost return all'informations about the host requested in the id path variable
+	GetHost(w http.ResponseWriter, r *http.Request)
 	// SearchAlerts search alerts using the filters in the request
 	SearchAlerts(w http.ResponseWriter, r *http.Request)
-	// SearchCurrentExadata search current exadata data using the filters in the request
-	SearchCurrentExadata(w http.ResponseWriter, r *http.Request)
-	// ListCurrentLicenses list current licenses using the filters in the request
-	ListCurrentLicenses(w http.ResponseWriter, r *http.Request)
+	// SearchExadata search exadata data using the filters in the request
+	SearchExadata(w http.ResponseWriter, r *http.Request)
+	// ListLicenses list licenses using the filters in the request
+	ListLicenses(w http.ResponseWriter, r *http.Request)
 
 	// GetEnvironmentStats return all statistics about the environments of the hosts using the filters in the request
 	GetEnvironmentStats(w http.ResponseWriter, r *http.Request)

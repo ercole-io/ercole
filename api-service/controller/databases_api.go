@@ -25,8 +25,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// SearchCurrentAddms search current addms data using the filters in the request
-func (ctrl *APIController) SearchCurrentAddms(w http.ResponseWriter, r *http.Request) {
+// SearchAddms search addms data using the filters in the request
+func (ctrl *APIController) SearchAddms(w http.ResponseWriter, r *http.Request) {
 	var search string
 	var sortBy string
 	var sortDesc bool
@@ -63,7 +63,7 @@ func (ctrl *APIController) SearchCurrentAddms(w http.ResponseWriter, r *http.Req
 	}
 
 	//get the data
-	addms, err := ctrl.Service.SearchCurrentAddms(search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	addms, err := ctrl.Service.SearchAddms(search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -78,8 +78,8 @@ func (ctrl *APIController) SearchCurrentAddms(w http.ResponseWriter, r *http.Req
 	}
 }
 
-// SearchCurrentSegmentAdvisors search current segment advisors data using the filters in the request
-func (ctrl *APIController) SearchCurrentSegmentAdvisors(w http.ResponseWriter, r *http.Request) {
+// SearchSegmentAdvisors search segment advisors data using the filters in the request
+func (ctrl *APIController) SearchSegmentAdvisors(w http.ResponseWriter, r *http.Request) {
 	var search string
 	var sortBy string
 	var sortDesc bool
@@ -116,7 +116,7 @@ func (ctrl *APIController) SearchCurrentSegmentAdvisors(w http.ResponseWriter, r
 	}
 
 	//get the data
-	segmentAdvisors, err := ctrl.Service.SearchCurrentSegmentAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	segmentAdvisors, err := ctrl.Service.SearchSegmentAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -131,8 +131,8 @@ func (ctrl *APIController) SearchCurrentSegmentAdvisors(w http.ResponseWriter, r
 	}
 }
 
-// SearchCurrentPatchAdvisors search current patch advisors data using the filters in the request
-func (ctrl *APIController) SearchCurrentPatchAdvisors(w http.ResponseWriter, r *http.Request) {
+// SearchPatchAdvisors search patch advisors data using the filters in the request
+func (ctrl *APIController) SearchPatchAdvisors(w http.ResponseWriter, r *http.Request) {
 	var search string
 	var sortBy string
 	var sortDesc bool
@@ -175,7 +175,7 @@ func (ctrl *APIController) SearchCurrentPatchAdvisors(w http.ResponseWriter, r *
 	}
 
 	//get the data
-	patchAdvisors, err := ctrl.Service.SearchCurrentPatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan)
+	patchAdvisors, err := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -190,8 +190,8 @@ func (ctrl *APIController) SearchCurrentPatchAdvisors(w http.ResponseWriter, r *
 	}
 }
 
-// SearchCurrentDatabases search current databases data using the filters in the request
-func (ctrl *APIController) SearchCurrentDatabases(w http.ResponseWriter, r *http.Request) {
+// SearchDatabases search databases data using the filters in the request
+func (ctrl *APIController) SearchDatabases(w http.ResponseWriter, r *http.Request) {
 	var full bool
 	var search string
 	var sortBy string
@@ -234,7 +234,7 @@ func (ctrl *APIController) SearchCurrentDatabases(w http.ResponseWriter, r *http
 	}
 
 	//get the data
-	databases, err := ctrl.Service.SearchCurrentDatabases(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	databases, err := ctrl.Service.SearchDatabases(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
@@ -249,8 +249,8 @@ func (ctrl *APIController) SearchCurrentDatabases(w http.ResponseWriter, r *http
 	}
 }
 
-// ListCurrentLicenses list current licenses using the filters in the request
-func (ctrl *APIController) ListCurrentLicenses(w http.ResponseWriter, r *http.Request) {
+// ListLicenses list licenses using the filters in the request
+func (ctrl *APIController) ListLicenses(w http.ResponseWriter, r *http.Request) {
 	var full bool
 	var sortBy string
 	var sortDesc bool
@@ -291,7 +291,7 @@ func (ctrl *APIController) ListCurrentLicenses(w http.ResponseWriter, r *http.Re
 	}
 
 	//get the data
-	licenses, err := ctrl.Service.ListCurrentLicenses(full, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	licenses, err := ctrl.Service.ListLicenses(full, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return

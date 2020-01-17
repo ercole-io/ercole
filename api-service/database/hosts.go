@@ -24,8 +24,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// SearchCurrentHosts search current hosts
-func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+// SearchHosts search hosts
+func (md *MongoDatabase) SearchHosts(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Find the matching hostdata
@@ -101,8 +101,8 @@ func (md *MongoDatabase) SearchCurrentHosts(full bool, keywords []string, sortBy
 	return out, nil
 }
 
-// GetCurrentHost fetch all informations about a current host in the database
-func (md *MongoDatabase) GetCurrentHost(hostname string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
+// GetHost fetch all informations about a host in the database
+func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
 	var out map[string]interface{}
 
 	//Find the matching hostdata

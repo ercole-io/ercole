@@ -22,8 +22,8 @@ import (
 	"github.com/amreo/ercole-services/utils"
 )
 
-// SearchCurrentExadata search current exadata data using the filters in the request
-func (ctrl *APIController) SearchCurrentExadata(w http.ResponseWriter, r *http.Request) {
+// SearchExadata search exadata data using the filters in the request
+func (ctrl *APIController) SearchExadata(w http.ResponseWriter, r *http.Request) {
 	var full bool
 	var search string
 	var sortBy string
@@ -66,7 +66,7 @@ func (ctrl *APIController) SearchCurrentExadata(w http.ResponseWriter, r *http.R
 	}
 
 	//get the data
-	exadata, err := ctrl.Service.SearchCurrentExadata(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	exadata, err := ctrl.Service.SearchExadata(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return
