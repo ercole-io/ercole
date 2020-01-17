@@ -22,8 +22,8 @@ import (
 	"github.com/amreo/ercole-services/utils"
 )
 
-// SearchCurrentClusters search current clusters data using the filters in the request
-func (ctrl *APIController) SearchCurrentClusters(w http.ResponseWriter, r *http.Request) {
+// SearchClusters search clusters data using the filters in the request
+func (ctrl *APIController) SearchClusters(w http.ResponseWriter, r *http.Request) {
 	var full bool
 	var search string
 	var sortBy string
@@ -66,7 +66,7 @@ func (ctrl *APIController) SearchCurrentClusters(w http.ResponseWriter, r *http.
 	}
 
 	//get the data
-	clusters, err := ctrl.Service.SearchCurrentClusters(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	clusters, err := ctrl.Service.SearchClusters(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
 		return

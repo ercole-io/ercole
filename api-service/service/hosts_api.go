@@ -23,12 +23,12 @@ import (
 	"github.com/amreo/ercole-services/utils"
 )
 
-// SearchCurrentHosts search current hosts
-func (as *APIService) SearchCurrentHosts(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchCurrentHosts(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+// SearchHosts search hosts
+func (as *APIService) SearchHosts(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchHosts(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
-// GetCurrentHost return the current host specified in the hostname param
-func (as *APIService) GetCurrentHost(hostname string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetCurrentHost(hostname, olderThan)
+// GetHost return the host specified in the hostname param
+func (as *APIService) GetHost(hostname string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetHost(hostname, olderThan)
 }

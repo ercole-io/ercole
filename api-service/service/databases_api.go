@@ -23,29 +23,29 @@ import (
 	"github.com/amreo/ercole-services/utils"
 )
 
-// SearchCurrentAddms search current addms
-func (as *APIService) SearchCurrentAddms(search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchCurrentAddms(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+// SearchAddms search addms
+func (as *APIService) SearchAddms(search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchAddms(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
-// SearchCurrentSegmentAdvisors search current segment advisors
-func (as *APIService) SearchCurrentSegmentAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchCurrentSegmentAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+// SearchSegmentAdvisors search segment advisors
+func (as *APIService) SearchSegmentAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchSegmentAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
-// SearchCurrentPatchAdvisors search current patch advisors
-func (as *APIService) SearchCurrentPatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchCurrentPatchAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, windowTime, location, environment, olderThan)
+// SearchPatchAdvisors search patch advisors
+func (as *APIService) SearchPatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchPatchAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, windowTime, location, environment, olderThan)
 }
 
-// SearchCurrentDatabases search current databases
-func (as *APIService) SearchCurrentDatabases(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchCurrentDatabases(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+// SearchDatabases search databases
+func (as *APIService) SearchDatabases(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchDatabases(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
-// ListCurrentLicenses list current licenses
-func (as *APIService) ListCurrentLicenses(full bool, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.ListCurrentLicenses(full, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+// ListLicenses list licenses
+func (as *APIService) ListLicenses(full bool, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.ListLicenses(full, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
 // SetLicenseCount set the count of a certain license

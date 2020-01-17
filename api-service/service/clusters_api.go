@@ -23,7 +23,7 @@ import (
 	"github.com/amreo/ercole-services/utils"
 )
 
-// SearchCurrentClusters search current clusters
-func (as *APIService) SearchCurrentClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchCurrentClusters(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+// SearchClusters search clusters
+func (as *APIService) SearchClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchClusters(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }

@@ -24,8 +24,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// SearchCurrentExadata search current exadata
-func (md *MongoDatabase) SearchCurrentExadata(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+// SearchExadata search exadata
+func (md *MongoDatabase) SearchExadata(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 
 	//Find the matching hostdata
