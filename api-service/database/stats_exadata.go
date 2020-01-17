@@ -32,10 +32,8 @@ func (md *MongoDatabase) GetTotalExadataMemorySizeStats(location string, environ
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APMatch(bson.M{
-				"archived": false,
-			}),
 			mu.APGroup(bson.M{
 				"_id": 0,
 				"value": mu.APOSum(mu.APOSumReducer("$extra.exadata.devices",
@@ -70,10 +68,8 @@ func (md *MongoDatabase) GetTotalExadataCPUStats(location string, environment st
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APMatch(bson.M{
-				"archived": false,
-			}),
 			mu.APProject(bson.M{
 				"value": mu.APOReduce("$extra.exadata.devices", bson.M{"enabled": 0, "total": 0},
 					mu.APOLet(
@@ -127,10 +123,8 @@ func (md *MongoDatabase) GetAvegageExadataStorageUsageStats(location string, env
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APMatch(bson.M{
-				"archived": false,
-			}),
 			mu.APProject(bson.M{
 				"value": mu.APOReduce("$extra.exadata.devices", bson.M{"count": 0, "sum": 0},
 					mu.APOLet(
@@ -192,10 +186,8 @@ func (md *MongoDatabase) GetExadataStorageErrorCountStatusStats(location string,
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APMatch(bson.M{
-				"archived": false,
-			}),
 			mu.APProject(bson.M{
 				"devs": mu.APOMap(
 					mu.APOFilter("$extra.exadata.devices", "dev",
@@ -233,10 +225,8 @@ func (md *MongoDatabase) GetExadataPatchStatusStats(location string, environment
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APMatch(bson.M{
-				"archived": false,
-			}),
 			mu.APProject(bson.M{
 				"status": mu.APOMap("$extra.exadata.devices", "dev",
 					mu.APOGreater(
