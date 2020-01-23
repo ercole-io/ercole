@@ -54,11 +54,11 @@ public class GenerateExcelAddmService {
 
         List<Map<String, Object>> addmList = currentRepo.getADDMs(env, search);
 
-        try (Workbook workbook = new XSSFWorkbook(new ClassPathResource("template_addm.xlsm").getInputStream())) {
+        try (Workbook workbook = new XSSFWorkbook(new ClassPathResource("template_addm.xlsx").getInputStream())) {
 
             XSSFSheet xssfSheet = ((XSSFWorkbook) workbook).getSheet("Addm");
             //number of row where we will write (row 0,1,2 contains the heading of the table)
-            int rowNumber = 3;
+            int rowNumber = 1;
 
 
             for (Map<String, Object> addmMap : addmList) {
@@ -97,7 +97,7 @@ public class GenerateExcelAddmService {
 
                 HttpHeaders headers = new HttpHeaders();
                 workbook.write(outputStream2);
-                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ADDM.xlsm");
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ADDM.xlsx");
                 return ResponseEntity.ok()
                         .headers(headers)
                         .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))

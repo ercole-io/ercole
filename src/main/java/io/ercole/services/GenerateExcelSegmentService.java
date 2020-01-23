@@ -54,11 +54,11 @@ public class GenerateExcelSegmentService {
 
         List<Map<String, Object>> segmentList = currentRepo.getSegmentAdvisors(env, search);
 
-        try (Workbook workbook = new XSSFWorkbook(new ClassPathResource("template_segment_advisor.xlsm").getInputStream())) {
+        try (Workbook workbook = new XSSFWorkbook(new ClassPathResource("template_segment_advisor.xlsx").getInputStream())) {
 
             XSSFSheet xssfSheet = ((XSSFWorkbook) workbook).getSheet("Segment_Advisor");
             //number of row where we will write (row 0,1,2 contains the heading of the table)
-            int rowNumber = 3;
+            int rowNumber = 1;
 
 
             for (Map<String, Object> segmentMap : segmentList) {
@@ -103,7 +103,7 @@ public class GenerateExcelSegmentService {
 
                 HttpHeaders headers = new HttpHeaders();
                 workbook.write(outputStream1);
-                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=SegmentAdvisor.xlsm");
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=SegmentAdvisor.xlsx");
                 return ResponseEntity.ok()
                         .headers(headers)
                         .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))

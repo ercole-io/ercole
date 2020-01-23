@@ -63,11 +63,11 @@ public class GenerateExcelPatchService {
 
         List<Map<String, Object>> patchList = currentRepo.getAllHostPSUStatus(time, status);
 
-        try (Workbook workbook = new XSSFWorkbook(new ClassPathResource("template_patch_advisor.xlsm").getInputStream())) {
+        try (Workbook workbook = new XSSFWorkbook(new ClassPathResource("template_patch_advisor.xlsx").getInputStream())) {
 
             XSSFSheet xssfSheet = ((XSSFWorkbook) workbook).getSheet("Patch_Advisor");
             //number of row where we will write (row 0,1,2 contains the heading of the table)
-            int rowNumber = 3;
+            int rowNumber = 1;
 
 
 
@@ -105,7 +105,7 @@ public class GenerateExcelPatchService {
 
                 HttpHeaders headers = new HttpHeaders();
                 workbook.write(outputStream);
-                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=PatchAdvisor.xlsm");
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=PatchAdvisor.xlsx");
                 return ResponseEntity.ok()
                         .headers(headers)
                         .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
