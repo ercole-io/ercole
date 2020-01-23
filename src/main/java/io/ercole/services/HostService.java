@@ -36,6 +36,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import io.ercole.model.Alert;
+import io.ercole.model.AlertCode;
 import io.ercole.model.AlertFactory;
 import io.ercole.model.ClusterInfo;
 import io.ercole.model.CurrentHost;
@@ -570,5 +571,13 @@ public class HostService {
 		}
 
 		host.setExtraInfo(extraInfo.toString());
+	}
+
+	public void checkHostAbsence(final String hostname) {
+		if (currentRepo.findByHostname(hostname) == null && !alertRepo.existsByHostnameAndCode(hostname, AlertCode.MISSING_HOST)) {
+			AlertFactory generator = new AlertFactory();
+			Alert alert = alertRepo.save(generator.fireMissingHostAlert(hostname));
+			mailService.send(alert);
+		}
 	}
 }

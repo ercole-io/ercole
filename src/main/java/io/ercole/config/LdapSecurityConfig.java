@@ -109,6 +109,7 @@ public class LdapSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/assets/**").permitAll()
 			.antMatchers("/packages/**").permitAll()
 			.antMatchers(pathUpdate).permitAll()
+			.antMatchers("/alerts/missing-host/**").permitAll()
 			.anyRequest().fullyAuthenticated()
 			.and()
 		.formLogin()
