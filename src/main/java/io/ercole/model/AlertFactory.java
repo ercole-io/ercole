@@ -69,6 +69,15 @@ public class AlertFactory {
 				AlertSeverity.NOTICE);
 	}
 	
+	/**
+	 * @param hostname is the Hostname
+	 * @return an Alert for having added a new Server
+	 */
+	public Alert fireMissingHostAlert(final String hostname) {
+		String description = "Server " + hostname + " is missing";
+		return new Alert(hostname, AlertCode.MISSING_HOST, description, 
+				AlertSeverity.NOTICE);
+	}
 
 	/**
 	 * @param newDbs map of Databases incoming from agent
@@ -224,6 +233,4 @@ public class AlertFactory {
 		builder.append("A new Enterprise license has been enabled");
 		return new Alert(hostname, AlertCode.NEW_LICENSE, builder.toString(), AlertSeverity.CRITICAL);
 	}
-	
-
 }

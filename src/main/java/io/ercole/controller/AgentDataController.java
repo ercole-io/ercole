@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -152,7 +153,7 @@ public class AgentDataController {
 			return historical;
 		}
 	}
-	
+
 	/**
 	 * @param exception
 	 *            thrown
@@ -221,5 +222,14 @@ public class AgentDataController {
 			throws IOException {
 		response.sendError(HttpStatus.NO_CONTENT.value(), exception.getMessage());
 		logger.info(exception.getMessage());
+	}
+
+	@PostMapping("/alerts/missing-host/{hostname}")
+	public void checkHostAbsence(final HttpServletRequest request, final @PathVariable String hostname) throws AgentLoginException {
+		if (areAgentCredentialsValid(request.getHeader("Authorization"))) {
+			hostService.checkHostAbsence(hostname);
+		} else {
+			throw new AgentLoginException("Parametri user o password dell'agente errati.");
+		}
 	}
 }
