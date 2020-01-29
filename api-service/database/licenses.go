@@ -28,15 +28,14 @@ import (
 func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{}
 	//Find the informations
+
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
 			mu.APLookupPipeline("hosts", bson.M{
 				"license_name": "$_id",
 			}, "used", mu.MAPipeline(
-				mu.APMatch(bson.M{
-					"archived": false,
-				}),
+				FilterByOldnessSteps(olderThan),
 				mu.APProject(bson.M{
 					"hostname": 1,
 					"databases": mu.APOReduce(
@@ -70,21 +69,25 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 						"$gt": 0,
 					},
 				}),
-				mu.APLookupSimple("currentClusters", "hostname", "cluster.vms.hostname", "cluster"),
+				mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "vm", mu.MAPipeline(
+					FilterByOldnessSteps(olderThan),
+					mu.APUnwind("$extra.clusters"),
+					mu.APReplaceWith("$extra.clusters"),
+					mu.APUnwind("$vms"),
+					mu.APReplaceWith("$vms"),
+					mu.APMatch(bson.M{
+						"$expr": mu.APOEqual("$hostname", "$$hn"),
+					}),
+					mu.APLimit(1),
+				)),
 				mu.APSet(bson.M{
-					"cluster": mu.APOArrayElemAt("$cluster", 0),
+					"vm": mu.APOArrayElemAt("$vm", 0),
 				}),
-				// mu.APSet(bson.M{
-				// 	"cluster": mu.APOArrayElemAt(
-				// 		mu.APOFilter("$cluster.cluster.vms", "vm", mu.APOEqual("$$vm.hostname", "$hostname")),
-				// 		0,
-				// 	),
-				// }),
-				mu.APSet(bson.M{
-					"cluster_name": "$cluster.cluster.name",
-					"cluster_cpu":  "$cluster.cluster.cpu",
+				mu.APAddFields(bson.M{
+					"cluster_name":  mu.APOIfNull("$vm.cluster_name", nil),
+					"physical_host": mu.APOIfNull("$vm.physical_host", nil),
 				}),
-				mu.APUnset("cluster"),
+				mu.APUnset("vm"),
 				mu.APGroup(mu.BsonOptionalExtension(full, bson.M{
 					"_id": mu.APOCond(
 						"$cluster_name",
