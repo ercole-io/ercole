@@ -64,10 +64,15 @@ func (md *MongoDatabase) GetDatabaseVersionStats(location string, olderThan time
 	var out []interface{}
 
 	//Calculate the stats
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
+			mu.APUnwind("$extra.databases"),
+			mu.APProject(bson.M{
+				"database": "$extra.databases",
+			}),
 			mu.APGroupAndCountStages("version", "count", "$database.version"),
 		),
 	)
@@ -91,10 +96,16 @@ func (md *MongoDatabase) GetTopReclaimableDatabaseStats(location string, limit i
 	var out []interface{}
 
 	//Calculate the stats
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
+			mu.APUnwind("$extra.databases"),
+			mu.APProject(bson.M{
+				"database": "$extra.databases",
+				"hostname": true,
+			}),
 			mu.APProject(bson.M{
 				"hostname": true,
 				"dbname":   "$database.name",
@@ -128,10 +139,16 @@ func (md *MongoDatabase) GetTopWorkloadDatabaseStats(location string, limit int,
 	var out []interface{}
 
 	//Calculate the stats
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
+			mu.APUnwind("$extra.databases"),
+			mu.APProject(bson.M{
+				"database": "$extra.databases",
+				"hostname": true,
+			}),
 			mu.APProject(bson.M{
 				"hostname": true,
 				"dbname":   "$database.name",
@@ -163,10 +180,15 @@ func (md *MongoDatabase) GetDatabasePatchStatusStats(location string, windowTime
 	var out []interface{}
 
 	//Calculate the stats
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
+			mu.APUnwind("$extra.databases"),
+			mu.APProject(bson.M{
+				"database": "$extra.databases",
+			}),
 			mu.APProject(bson.M{
 				"database.last_psus": mu.APOReduce(
 					mu.APOMap("$database.last_psus", "psu", mu.APOMergeObjects(
@@ -208,10 +230,15 @@ func (md *MongoDatabase) GetDatabaseDataguardStatusStats(location string, enviro
 	var out []interface{}
 
 	//Calculate the stats
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
+			mu.APUnwind("$extra.databases"),
+			mu.APProject(bson.M{
+				"database": "$extra.databases",
+			}),
 			mu.APGroupAndCountStages("dataguard", "count", "$database.dataguard"),
 		),
 	)
@@ -235,10 +262,15 @@ func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environment 
 	var out []interface{}
 
 	//Calculate the stats
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
+			mu.APUnwind("$extra.databases"),
+			mu.APProject(bson.M{
+				"database": "$extra.databases",
+			}),
 			mu.APGroupAndCountStages("rac", "count", mu.APOAny("$database.features", "fe",
 				mu.APOAnd(
 					mu.APOEqual("$$fe.name", "Real Application Clusters"),
@@ -267,10 +299,15 @@ func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, envir
 	var out []interface{}
 
 	//Calculate the stats
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
+			mu.APUnwind("$extra.databases"),
+			mu.APProject(bson.M{
+				"database": "$extra.databases",
+			}),
 			mu.APGroupAndCountStages("archivelog", "count",
 				mu.APOEqual("$database.archive_log", "ARCHIVELOG"),
 			),
@@ -296,10 +333,15 @@ func (md *MongoDatabase) GetTotalDatabaseWorkStats(location string, environment 
 	var out map[string]float32
 
 	//Calculate the stats
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
+			mu.APUnwind("$extra.databases"),
+			mu.APProject(bson.M{
+				"database": "$extra.databases",
+			}),
 			mu.APGroup(bson.M{
 				"_id":   0,
 				"value": mu.APOSum(mu.APOConvertToDoubleOrZero("$database.work")),
@@ -329,10 +371,15 @@ func (md *MongoDatabase) GetTotalDatabaseMemorySizeStats(location string, enviro
 	var out map[string]float64
 
 	//Calculate the stats
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
+			mu.APUnwind("$extra.databases"),
+			mu.APProject(bson.M{
+				"database": "$extra.databases",
+			}),
 			mu.APGroup(bson.M{
 				"_id": 0,
 				"value": mu.APOSum(mu.APOAdd(
@@ -369,7 +416,12 @@ func (md *MongoDatabase) GetTotalDatabaseDatafileSizeStats(location string, envi
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
+			mu.APUnwind("$extra.databases"),
+			mu.APProject(bson.M{
+				"database": "$extra.databases",
+			}),
 			mu.APGroup(bson.M{
 				"_id":   0,
 				"value": mu.APOSum(mu.APOConvertToDoubleOrZero("$database.used")),
@@ -402,7 +454,12 @@ func (md *MongoDatabase) GetTotalDatabaseSegmentSizeStats(location string, envir
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("currentDatabases").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
+			mu.APUnwind("$extra.databases"),
+			mu.APProject(bson.M{
+				"database": "$extra.databases",
+			}),
 			mu.APGroup(bson.M{
 				"_id":   0,
 				"value": mu.APOSum(mu.APOConvertToDoubleOrZero("$database.segments_size")),
