@@ -499,9 +499,8 @@ func (md *MongoDatabase) GetDatabaseLicenseComplianceStatusStats(location string
 			mu.APLookupPipeline("hosts", bson.M{
 				"license_name": "$_id",
 			}, "used", mu.MAPipeline(
-				mu.APMatch(bson.M{
-					"archived": false,
-				}),
+				FilterByOldnessSteps(olderThan),
+				FilterByLocationAndEnvironmentSteps(location, environment),
 				mu.APProject(bson.M{
 					"hostname": 1,
 					"databases": mu.APOReduce(
@@ -535,21 +534,23 @@ func (md *MongoDatabase) GetDatabaseLicenseComplianceStatusStats(location string
 						"$gt": 0,
 					},
 				}),
-				mu.APLookupSimple("currentClusters", "hostname", "cluster.vms.hostname", "cluster"),
+				mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "cluster", mu.MAPipeline(
+					FilterByOldnessSteps(olderThan),
+					mu.APUnwind("$extra.clusters"),
+					mu.APReplaceWith("$extra.clusters"),
+					mu.APUnwind("$vms"),
+					mu.APMatch(bson.M{
+						"$expr": mu.APOEqual("$vms.hostname", "$$hn"),
+					}),
+					mu.APLimit(1),
+				)),
 				mu.APSet(bson.M{
 					"cluster": mu.APOArrayElemAt("$cluster", 0),
 				}),
-				// mu.APSet(bson.M{
-				// 	"cluster": mu.APOArrayElemAt(
-				// 		mu.APOFilter("$cluster.cluster.vms", "vm", mu.APOEqual("$$vm.hostname", "$hostname")),
-				// 		0,
-				// 	),
-				// }),
 				mu.APSet(bson.M{
-					"cluster_name": "$cluster.cluster.name",
-					"cluster_cpu":  "$cluster.cluster.cpu",
+					"cluster_name": "$cluster.name",
+					"cluster_cpu":  "$cluster.cpu",
 				}),
-				mu.APUnset("cluster"),
 				mu.APGroup(bson.M{
 					"_id": mu.APOCond(
 						"$cluster_name",
