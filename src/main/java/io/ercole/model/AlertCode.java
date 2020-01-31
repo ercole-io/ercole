@@ -32,7 +32,10 @@ public enum AlertCode {
 	NEW_SERVER("New Server"),
 	
 	/** The no data from agent. */
-	NO_DATA("No Data");
+	NO_DATA("No Data"),
+
+	/** The mssing host.*/
+	MISSING_HOST("Missing Host");
 
 	/**
 	 * Instantiates a new alert code.
