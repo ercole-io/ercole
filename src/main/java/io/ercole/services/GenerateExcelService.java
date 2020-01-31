@@ -121,8 +121,11 @@ public class GenerateExcelService {
                         String.valueOf(root.get(cpuM));             //processor model
                 dataOfHost[12] =
                         String.valueOf(root.get("Socket"));               //processor socket
-                dataOfHost[13] =
-                        String.valueOf(root.get("CPUCores")).replace("'", ""); //core per processor
+                if (root.getInt("CPUCores") < root.getInt("Socket")) {
+                        dataOfHost[13] = String.valueOf(root.getInt("CPUCores")); //core per processor
+                } else {
+                        dataOfHost[13] = String.valueOf(root.getInt("CPUCores") / root.getInt("Socket")); //core per processor
+                }
                 Integer s      =
                         (Integer.parseInt(dataOfHost[12]) * Integer.parseInt(dataOfHost[13]));
                 dataOfHost[14] =
