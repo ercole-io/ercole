@@ -16,6 +16,7 @@
 package controller
 
 import (
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -308,6 +309,11 @@ func (ctrl *APIController) ListLicenses(w http.ResponseWriter, r *http.Request) 
 
 // SetLicenseCount set the count of a certain license
 func (ctrl *APIController) SetLicenseCount(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
 	//get the data
 	name := mux.Vars(r)["name"]
 

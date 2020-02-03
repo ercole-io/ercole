@@ -38,6 +38,7 @@
 		"BindIP": "0.0.0.0",
 		"Port": 11113,	
 		"LogHTTPRequest": true,
+		"ReadOnly": false,
 		"UserUsername": "user",
 		"UserPassword": "password",
 		"OperatingSystemAggregationRules": [

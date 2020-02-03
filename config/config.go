@@ -86,6 +86,8 @@ type APIService struct {
 	Port uint16
 	// LogHTTPRequest enable the logging of the internal http serverl
 	LogHTTPRequest bool
+	// ReadOnly disable modifing APIs
+	ReadOnly bool
 	// UserUsername contains the username of the user
 	UserUsername string
 	// UserPassword contains the password of the user
