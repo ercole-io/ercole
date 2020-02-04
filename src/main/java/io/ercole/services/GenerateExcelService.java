@@ -110,7 +110,7 @@ public class GenerateExcelService {
                 dataOfHost[6]  =
                         String.valueOf(database.get(vrs)).substring(0, 2); //product version
                 dataOfHost[7]  =
-                        String.valueOf(database.get(vrs)).substring(indexVersion);	  //product edition
+                        String.valueOf(database.get(vrs)).substring(indexVersion);      //product edition
                 dataOfHost[8]  =
                         host.getEnvironment();                    //environment
                 dataOfHost[9]  =
@@ -119,17 +119,22 @@ public class GenerateExcelService {
                         " ";         //rac node names
                 dataOfHost[11] =
                         String.valueOf(root.get(cpuM));             //processor model
-                dataOfHost[12] =
-                        String.valueOf(root.get("Socket"));               //processor socket
-                if (root.getInt("CPUCores") < root.getInt("Socket")) {
-                        dataOfHost[13] = String.valueOf(root.getInt("CPUCores")); //core per processor
-                } else {
-                        dataOfHost[13] = String.valueOf(root.getInt("CPUCores") / root.getInt("Socket")); //core per processor
+                dataOfHost[12] = String.valueOf(root.get("Socket")); // processor socket
+
+                int coresPerProcessor = root.getInt("CPUCores"); // core per processor
+                if (root.getInt("CPUCores") >= root.getInt("Socket") && root.getInt("Socket") != 0) {
+                    coresPerProcessor = root.getInt("CPUCores") / root.getInt("Socket"); // core per processor
                 }
-                Integer s      =
-                        (Integer.parseInt(dataOfHost[12]) * Integer.parseInt(dataOfHost[13]));
-                dataOfHost[14] =
-                        s.toString();         //physical core
+                dataOfHost[13] = String.valueOf(coresPerProcessor);
+
+                int physicalCores;
+                if (root.getInt("Socket") == 0) {
+                    physicalCores =  coresPerProcessor;
+                } else {
+                    physicalCores = coresPerProcessor * root.getInt("Socket");
+                }
+                dataOfHost[14] = Integer.toString(physicalCores); 
+                
                 if (String.valueOf(root.get(cpuM)).contains("SPARC")) {
                     dataOfHost[15] = "8";
                 } else {
