@@ -5,10 +5,10 @@
 
 	<groupId>io.ercole</groupId>
 	<artifactId>ercole-server</artifactId>
-	<version>1.6.10</version> 
+	<version>1.6.11</version>
 
 	<properties>
-		<ercole-web.version>1.6.10</ercole-web.version>
+		<ercole-web.version>1.6.11</ercole-web.version>
 		<rpm5.version>1.6.5</rpm5.version>
 		<rpm6.version>1.6.7</rpm6.version>
 		<rpm7.version>1.6.7</rpm7.version>
@@ -219,7 +219,6 @@
 
 
 	<build>
-
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
