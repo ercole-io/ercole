@@ -6,6 +6,7 @@
 		"LogHTTPRequest": true,
 		"LogInsertingHostdata": true,
 		"LogDataPatching": true,
+		"EnablePatching": true,
 		"AgentUsername": "user",
 		"AgentPassword": "password",
 		"CurrentHostCleaningJob": {

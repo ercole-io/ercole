@@ -81,23 +81,25 @@ func (hds *HostDataService) UpdateHostInfo(hostdata map[string]interface{}) (int
 	hostdata["_id"] = primitive.NewObjectIDFromTimestamp(hds.TimeNow())
 
 	//Patch the data
-	patchedHost, aerr := hds.PatchHostData(hostdata)
-	if aerr != nil {
-		return nil, aerr
+	if hds.Config.DataService.EnablePatching {
+		_, aerr := hds.PatchHostData(hostdata)
+		if aerr != nil {
+			return nil, aerr
+		}
 	}
 
 	//Archive the host
-	_, aerr = hds.Database.ArchiveHost(hostdata["Hostname"].(string))
+	_, aerr := hds.Database.ArchiveHost(hostdata["Hostname"].(string))
 	if aerr != nil {
 		return nil, aerr
 	}
 
 	//Insert the host
 	if hds.Config.DataService.LogInsertingHostdata {
-		log.Println(utils.ToJSON(patchedHost))
+		log.Println(utils.ToJSON(hostdata))
 	}
 
-	res, aerr := hds.Database.InsertHostData(patchedHost)
+	res, aerr := hds.Database.InsertHostData(hostdata)
 	if aerr != nil {
 		return nil, aerr
 	}

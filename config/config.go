@@ -46,6 +46,8 @@ type DataService struct {
 	LogInsertingHostdata bool
 	// LogDataPatching enable the logging of the data patching
 	LogDataPatching bool
+	// EnablePatching enable the patching of the arrived hostdata
+	EnablePatching bool
 	// AgentUsername contains the username of the agent
 	AgentUsername string
 	// AgentPassword contains the password of the agent
