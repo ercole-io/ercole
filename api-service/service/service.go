@@ -95,6 +95,8 @@ type APIServiceInterface interface {
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
+	// AddTagToDatabase add the tag to the database if it hasn't the tag
+	AddTagToDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

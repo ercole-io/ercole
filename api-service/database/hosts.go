@@ -22,6 +22,7 @@ import (
 	"github.com/amreo/ercole-services/utils"
 	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // SearchHosts search hosts
@@ -197,4 +198,41 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time) (interfac
 	}
 
 	return out, nil
+}
+
+// FindHostData find the current hostdata with a certain hostname
+func (md *MongoDatabase) FindHostData(hostname string) (map[string]interface{}, utils.AdvancedErrorInterface) {
+	//Find the hostdata
+	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").FindOne(context.TODO(), bson.M{
+		"Hostname": hostname,
+		"Archived": false,
+	})
+	if res.Err() == mongo.ErrNoDocuments {
+		return nil, nil
+	} else if res.Err() != nil {
+		return nil, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+	}
+
+	//Decode the data
+	var out map[string]interface{}
+	if err := res.Decode(&out); err != nil {
+		return nil, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+	}
+
+	//Return it!
+	return out, nil
+}
+
+// ReplaceHostData adds a new hostdata to the database
+func (md *MongoDatabase) ReplaceHostData(hostData map[string]interface{}) utils.AdvancedErrorInterface {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").ReplaceOne(context.TODO(),
+		bson.M{
+			"_id": hostData["_id"],
+		},
+		hostData,
+	)
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+	return nil
 }

@@ -94,6 +94,8 @@ type APIControllerInterface interface {
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(w http.ResponseWriter, r *http.Request)
+	// AddTagToDatabase add a tag to the database if it hasn't the tag
+	AddTagToDatabase(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface
