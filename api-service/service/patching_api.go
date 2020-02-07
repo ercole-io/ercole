@@ -161,3 +161,17 @@ func (as *APIService) ApplyPatch(pf model.PatchingFunction) utils.AdvancedErrorI
 	//Save the patched data
 	return as.Database.ReplaceHostData(data)
 }
+
+// GetPatchingFunction return the patching function specified in the hostname param
+func (as *APIService) GetPatchingFunction(hostname string) (interface{}, utils.AdvancedErrorInterface) {
+	//Check host existence
+	exist, err := as.Database.ExistHostdata(hostname)
+	if err != nil {
+		return nil, err
+	} else if !exist {
+		return nil, utils.AerrHostNotFound
+	}
+
+	//Get the data
+	return as.Database.FindPatchingFunction(hostname)
+}

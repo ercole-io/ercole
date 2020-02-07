@@ -108,6 +108,8 @@ type MongoDatabaseInterface interface {
 	FindPatchingFunction(hostname string) (model.PatchingFunction, utils.AdvancedErrorInterface)
 	// FindHostData find the current hostdata with a certain hostname
 	FindHostData(hostname string) (map[string]interface{}, utils.AdvancedErrorInterface)
+	// ExistHostdata return true if the host specified by hostname exist, otherwise false
+	ExistHostdata(hostname string) (bool, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation

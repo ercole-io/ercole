@@ -33,6 +33,7 @@ func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface
 
 	router.HandleFunc("/hosts", ctrl.SearchHosts).Methods("GET")
 	router.HandleFunc("/hosts/{hostname}", ctrl.GetHost).Methods("GET")
+	router.HandleFunc("/hosts/{hostname}/patching-function", ctrl.GetPatchingFunction).Methods("GET")
 	router.HandleFunc("/hosts/{hostname}/databases/{dbname}/tags", ctrl.AddTagToDatabase).Methods("POST")
 	router.HandleFunc("/clusters", ctrl.SearchClusters).Methods("GET")
 	router.HandleFunc("/databases", ctrl.SearchDatabases).Methods("GET")
