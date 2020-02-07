@@ -24,13 +24,13 @@ import (
 
 // Alert holds informations about a alert
 type Alert struct {
-	ID            primitive.ObjectID `bson:"_id"`
-	AlertCode     string             `bson:"alert_code"`
-	AlertSeverity string             `bson:"alert_severity"`
-	AlertStatus   string             `bson:"alert_status"`
-	Description   string
-	Date          time.Time
-	OtherInfo     map[string]interface{} `bson:"other_info"`
+	ID            primitive.ObjectID     `bson:"_id"`
+	AlertCode     string                 `bson:"AlertCode"`
+	AlertSeverity string                 `bson:"AlertSeverity"`
+	AlertStatus   string                 `bson:"AlertStatus"`
+	Description   string                 `bson:"Description"`
+	Date          time.Time              `bson:"Date"`
+	OtherInfo     map[string]interface{} `bson:"OtherInfo"`
 }
 
 // Alert codes
@@ -74,14 +74,14 @@ var AlertBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
 		"_id",
-		"alert_code",
-		"alert_severity",
-		"alert_status",
-		"description",
-		"date",
+		"AlertCode",
+		"AlertSeverity",
+		"AlertStatus",
+		"Description",
+		"Date",
 	}},
 	{"properties", bson.D{
-		{"alert_code", bson.D{
+		{"AlertCode", bson.D{
 			{"bsonType", "string"},
 			{"enum", bson.A{
 				AlertCodeNewDatabase,
@@ -91,7 +91,7 @@ var AlertBsonValidatorRules = bson.D{
 				AlertCodeNoData,
 			}},
 		}},
-		{"alert_severity", bson.D{
+		{"AlertSeverity", bson.D{
 			{"bsonType", "string"},
 			{"enum", bson.A{
 				AlertSeverityMinor,
@@ -101,20 +101,20 @@ var AlertBsonValidatorRules = bson.D{
 				AlertSeverityNotice,
 			}},
 		}},
-		{"alert_status", bson.D{
+		{"AlertStatus", bson.D{
 			{"bsonType", "string"},
 			{"enum", bson.A{
 				AlertStatusNew,
 				AlertStatusAck,
 			}},
 		}},
-		{"description", bson.D{
+		{"Description", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"date", bson.D{
+		{"Date", bson.D{
 			{"bsonType", "date"},
 		}},
-		{"other_info", bson.D{
+		{"OtherInfo", bson.D{
 			{"bsonType", "object"},
 		}},
 	}},

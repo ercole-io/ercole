@@ -33,109 +33,109 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 		context.TODO(),
 		mu.MAPipeline(
 			mu.APLookupPipeline("hosts", bson.M{
-				"license_name": "$_id",
-			}, "used", mu.MAPipeline(
+				"LicenseName": "$_id",
+			}, "Used", mu.MAPipeline(
 				FilterByOldnessSteps(olderThan),
 				mu.APProject(bson.M{
-					"hostname": 1,
-					"databases": mu.APOReduce(
+					"Hostname": 1,
+					"Databases": mu.APOReduce(
 						mu.APOFilter(
-							mu.APOMap("$extra.databases", "db", bson.M{
-								"name": "$$db.name",
-								"count": mu.APOLet(
+							mu.APOMap("$Extra.Databases", "db", bson.M{
+								"Name": "$$db.Name",
+								"Count": mu.APOLet(
 									bson.M{
-										"val": mu.APOArrayElemAt(mu.APOFilter("$$db.licenses", "lic", mu.APOEqual("$$lic.name", "$$license_name")), 0),
+										"val": mu.APOArrayElemAt(mu.APOFilter("$$db.Licenses", "lic", mu.APOEqual("$$lic.Name", "$$LicenseName")), 0),
 									},
-									"$$val.count",
+									"$$val.Count",
 								),
 							}),
 							"db",
-							mu.APOGreater("$$db.count", 0),
+							mu.APOGreater("$$db.Count", 0),
 						),
-						bson.M{"count": 0, "dbs": bson.A{}},
+						bson.M{"Count": 0, "DBs": bson.A{}},
 						bson.M{
-							"count": mu.APOMax("$$value.count", "$$this.count"),
-							"dbs": bson.M{
+							"Count": mu.APOMax("$$value.Count", "$$this.Count"),
+							"DBs": bson.M{
 								"$concatArrays": bson.A{
-									"$$value.dbs",
-									bson.A{"$$this.name"},
+									"$$value.DBs",
+									bson.A{"$$this.Name"},
 								},
 							},
 						},
 					),
 				}),
 				mu.APMatch(bson.M{
-					"databases.count": bson.M{
+					"Databases.Count": bson.M{
 						"$gt": 0,
 					},
 				}),
-				mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "vm", mu.MAPipeline(
+				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
 					FilterByOldnessSteps(olderThan),
-					mu.APUnwind("$extra.clusters"),
-					mu.APReplaceWith("$extra.clusters"),
-					mu.APUnwind("$vms"),
-					mu.APReplaceWith("$vms"),
+					mu.APUnwind("$Extra.Clusters"),
+					mu.APReplaceWith("$Extra.Clusters"),
+					mu.APUnwind("$VMs"),
+					mu.APReplaceWith("$VMs"),
 					mu.APMatch(bson.M{
-						"$expr": mu.APOEqual("$hostname", "$$hn"),
+						"$expr": mu.APOEqual("$Hostname", "$$hn"),
 					}),
 					mu.APLimit(1),
 				)),
 				mu.APSet(bson.M{
-					"vm": mu.APOArrayElemAt("$vm", 0),
+					"VM": mu.APOArrayElemAt("$VM", 0),
 				}),
 				mu.APAddFields(bson.M{
-					"cluster_name":  mu.APOIfNull("$vm.cluster_name", nil),
-					"physical_host": mu.APOIfNull("$vm.physical_host", nil),
+					"ClusterName":  mu.APOIfNull("$VM.ClusterName", nil),
+					"PhysicalHost": mu.APOIfNull("$VM.PhysicalHost", nil),
 				}),
-				mu.APUnset("vm"),
+				mu.APUnset("VM"),
 				mu.APGroup(mu.BsonOptionalExtension(full, bson.M{
 					"_id": mu.APOCond(
-						"$cluster_name",
-						mu.APOConcat("cluster_§$#$§_", "$cluster_name"),
-						mu.APOConcat("hostname_§$#$§_", "$hostname"),
+						"$ClusterName",
+						mu.APOConcat("cluster_§$#$§_", "$ClusterName"),
+						mu.APOConcat("hostname_§$#$§_", "$Hostname"),
 					),
-					"license":     mu.APOMaxAggr("$databases.count"),
-					"cluster_cpu": mu.APOMaxAggr("$cluster_cpu"),
+					"License":    mu.APOMaxAggr("$Databases.Count"),
+					"ClusterCpu": mu.APOMaxAggr("$ClusterCpu"),
 				}, bson.M{
-					"hosts": mu.APOPush(bson.M{
-						"hostname":  "$hostname",
-						"databases": "$databases.dbs",
+					"Hosts": mu.APOPush(bson.M{
+						"Hostname":  "$Hostname",
+						"Databases": "$Databases.DBs",
 					}),
 				})),
 				mu.APSet(bson.M{
-					"license": mu.APOCond(
-						"$cluster_cpu",
-						mu.APODivide("$cluster_cpu", 2),
-						"$license",
+					"License": mu.APOCond(
+						"$ClusterCpu",
+						mu.APODivide("$ClusterCpu", 2),
+						"$License",
 					),
 				}),
 				mu.APGroup(mu.BsonOptionalExtension(full, bson.M{
 					"_id":   0,
-					"value": mu.APOSum("$license"),
+					"Value": mu.APOSum("$License"),
 				}, bson.M{
-					"hosts": mu.APOPush("$hosts"),
+					"Hosts": mu.APOPush("$Hosts"),
 				})),
 				mu.APOptionalStage(full, mu.MAPipeline(
-					mu.APUnwind("$hosts"),
-					mu.APUnwind("$hosts"),
+					mu.APUnwind("$Hosts"),
+					mu.APUnwind("$Hosts"),
 					mu.APGroup(bson.M{
 						"_id":   0,
-						"value": mu.APOMaxAggr("$value"),
-						"hosts": mu.APOPush("$hosts"),
+						"Value": mu.APOMaxAggr("$Value"),
+						"Hosts": mu.APOPush("$Hosts"),
 					}),
 				)),
 			)),
 			mu.APSet(bson.M{
-				"used": mu.APOArrayElemAt("$used", 0),
+				"Used": mu.APOArrayElemAt("$Used", 0),
 			}),
 			mu.APOptionalStage(full, mu.APSet(bson.M{
-				"hosts": mu.APOIfNull("$used.hosts", bson.A{}),
+				"Hosts": mu.APOIfNull("$Used.Hosts", bson.A{}),
 			})),
 			mu.APSet(bson.M{
-				"used": mu.APOIfNull(mu.APOCeil("$used.value"), 0),
+				"Used": mu.APOIfNull(mu.APOCeil("$Used.Value"), 0),
 			}),
 			mu.APSet(bson.M{
-				"compliance": mu.APOGreaterOrEqual("$count", "$used"),
+				"Compliance": mu.APOGreaterOrEqual("$Count", "$Used"),
 			}),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),
@@ -163,7 +163,7 @@ func (md *MongoDatabase) SetLicenseCount(name string, count int) utils.AdvancedE
 		"_id": name,
 	}, bson.M{
 		"$set": bson.M{
-			"count": count,
+			"Count": count,
 		},
 	})
 	if err != nil {

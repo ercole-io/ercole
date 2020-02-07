@@ -19,22 +19,22 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // License holds information about Oracle database license
 type License struct {
-	Name  string
-	Count float32
+	Name  string  `bson:"Name"`
+	Count float32 `bson:"Count"`
 }
 
 // LicenseBsonValidatorRules contains mongodb validation rules for license
 var LicenseBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"name",
-		"count",
+		"Name",
+		"Count",
 	}},
 	{"properties", bson.D{
-		{"name", bson.D{
+		{"Name", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"count", bson.D{
+		{"Count", bson.D{
 			{"bsonType", "double"},
 		}},
 	}},

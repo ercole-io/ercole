@@ -19,32 +19,32 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // ExadataCellDisk holds info about a exadata cell disk
 type ExadataCellDisk struct {
-	Name     string
-	Status   string
-	ErrCount string `bson:"err_count"`
-	UsedPerc string `bson:"used_perc"`
+	Name     string `bson:"Name"`
+	Status   string `bson:"Status"`
+	ErrCount string `bson:"ErrCount"`
+	UsedPerc string `bson:"UsedPerc"`
 }
 
 // ExadataCellDiskBsonValidatorRules contains mongodb validation rules for ExadataCellDisk
 var ExadataCellDiskBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"name",
-		"status",
-		"err_count",
-		"used_perc",
+		"Name",
+		"Status",
+		"ErrCount",
+		"UsedPerc",
 	}},
 	{"properties", bson.D{
-		{"name", bson.D{
+		{"Name", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"status", bson.D{
+		{"Status", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"err_count", bson.D{
+		{"ErrCount", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"used_perc", bson.D{
+		{"UsedPerc", bson.D{
 			{"bsonType", "string"},
 		}},
 	}},

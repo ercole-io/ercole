@@ -19,22 +19,22 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // Feature holds information about Oracle database feature
 type Feature struct {
-	Name   string
-	Status bool
+	Name   string `bson:"Name"`
+	Status bool   `bson:"Status"`
 }
 
 // FeatureBsonValidatorRules contains mongodb validation rules for feature
 var FeatureBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"name",
-		"status",
+		"Name",
+		"Status",
 	}},
 	{"properties", bson.D{
-		{"name", bson.D{
+		{"Name", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"status", bson.D{
+		{"Status", bson.D{
 			{"bsonType", "bool"},
 		}},
 	}},

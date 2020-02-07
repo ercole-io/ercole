@@ -5,6 +5,7 @@
 		"Port": 11111,
 		"LogHTTPRequest": true,
 		"LogInsertingHostdata": true,
+		"LogDataPatching": true,
 		"AgentUsername": "user",
 		"AgentPassword": "password",
 		"CurrentHostCleaningJob": {
