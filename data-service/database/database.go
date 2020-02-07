@@ -37,13 +37,15 @@ type MongoDatabaseInterface interface {
 	// ArchiveHost archives tho host with hostname as hostname
 	ArchiveHost(hostname string) (*mongo.UpdateResult, utils.AdvancedErrorInterface)
 	// InsertHostData adds a new hostdata to the database
-	InsertHostData(hostData model.HostData) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
+	InsertHostData(hostData interface{}) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
 	// FindOldCurrentHost return the list of current hosts that haven't sent hostdata after time t
 	FindOldCurrentHosts(t time.Time) ([]string, utils.AdvancedErrorInterface)
 	// FindOldArchivedHosts return the list of archived hosts older than t
 	FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID, utils.AdvancedErrorInterface)
 	// DeleteHostData delete the hostdata
 	DeleteHostData(id primitive.ObjectID) utils.AdvancedErrorInterface
+	// FindPatchingFunction find the the patching function associated to the hostname in the database
+	FindPatchingFunction(hostname string) (model.PatchingFunction, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation
@@ -66,11 +68,11 @@ func (md *MongoDatabase) Init() {
 // ArchiveHost archives tho host with hostname as hostname
 func (md *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, utils.AdvancedErrorInterface) {
 	if res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.M{
-		"hostname": hostname,
-		"archived": false,
+		"Hostname": hostname,
+		"Archived": false,
 	}, bson.M{
 		"$set": bson.M{
-			"archived": true,
+			"Archived": true,
 		},
 	}); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -80,7 +82,7 @@ func (md *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, util
 }
 
 // InsertHostData adds a new hostdata to the database
-func (md *MongoDatabase) InsertHostData(hostData model.HostData) (*mongo.InsertOneResult, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) InsertHostData(hostData interface{}) (*mongo.InsertOneResult, utils.AdvancedErrorInterface) {
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").InsertOne(context.TODO(), hostData)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -113,10 +115,10 @@ func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]string, utils.Advan
 	//Get the list of old current hosts
 	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
 		context.TODO(),
-		"hostname",
+		"Hostname",
 		bson.M{
-			"archived": false,
-			"created_at": bson.M{
+			"Archived": false,
+			"CreatedAt": bson.M{
 				"$lt": t,
 			},
 		})
@@ -141,8 +143,8 @@ func (md *MongoDatabase) FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID
 		context.TODO(),
 		"_id",
 		bson.M{
-			"archived": true,
-			"created_at": bson.M{
+			"Archived": true,
+			"CreatedAt": bson.M{
 				"$lt": t,
 			},
 		})
@@ -172,4 +174,30 @@ func (md *MongoDatabase) DeleteHostData(id primitive.ObjectID) utils.AdvancedErr
 	}
 
 	return nil
+}
+
+// FindPatchingFunction find the the patching function associated to the hostname in the database
+func (md *MongoDatabase) FindPatchingFunction(hostname string) (model.PatchingFunction, utils.AdvancedErrorInterface) {
+	var out model.PatchingFunction
+
+	//Find the hostdata
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("patching_functions").Find(context.TODO(), bson.M{
+		"Hostname": hostname,
+	})
+	if err != nil {
+		return model.PatchingFunction{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Next the cursor. If there is no document return a empty document
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return model.PatchingFunction{}, nil
+	}
+
+	//Decode the document
+	if err := cur.Decode(&out); err != nil {
+		return model.PatchingFunction{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return out, nil
 }

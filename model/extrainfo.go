@@ -19,32 +19,42 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // ExtraInfo holds various informations.
 type ExtraInfo struct {
-	Databases   []Database    `bson:",omitempty"`
-	Filesystems []Filesystem  `bson:",omitempty"`
-	Clusters    []ClusterInfo `bson:",omitempty"`
-	Exadata     *Exadata      `bson:",omitempty"`
+	Databases   []Database    `bson:"Databases"`
+	Filesystems []Filesystem  `bson:"Filesystems"`
+	Clusters    []ClusterInfo `bson:"Clusters"`
+	Exadata     *Exadata      `bson:"Exadata"`
 }
 
 // ExtraInfoBsonValidatorRules contains mongodb validation rules for extraInfo
 var ExtraInfoBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"filesystems",
+		"Filesystems",
 	}},
 	{"properties", bson.D{
-		{"databases", bson.D{
-			{"bsonType", "array"},
-			{"items", DatabaseBsonValidatorRules},
+		{"Databases", bson.D{
+			{"anyOf", bson.A{
+				bson.D{
+					{"bsonType", "array"},
+					{"items", DatabaseBsonValidatorRules},
+				},
+				bson.D{{"type", "null"}},
+			}},
 		}},
-		{"filesystems", bson.D{
+		{"Filesystems", bson.D{
 			{"bsonType", "array"},
 			{"items", FilesystemBsonValidatorRules},
 		}},
-		{"clusters", bson.D{
-			{"bsonType", "array"},
-			{"items", ClusterInfoBsonValidatorRules},
+		{"Clusters", bson.D{
+			{"anyOf", bson.A{
+				bson.D{
+					{"bsonType", "array"},
+					{"items", ClusterInfoBsonValidatorRules},
+				},
+				bson.D{{"type", "null"}},
+			}},
 		}},
-		{"exadata", bson.D{
+		{"Exadata", bson.D{
 			{"anyOf", bson.A{
 				ExadataBsonValidatorRules,
 				bson.D{{"type", "null"}},

@@ -65,10 +65,11 @@ func Migrate(client *mongo.Database, initialLicensesList []string) {
 	UpdateDataSchemas(client)
 
 	MigrateHostsSchema(client)
-	MigrateClustersSchema(client)
+	// MigrateClustersSchema(client)
 	MigrateLicensesSchema(client, initialLicensesList)
 	MigrateAlertsSchema(client)
-	MigrateCurrentDatabasesSchema(client)
+	MigratePatchingFunctionsSchema(client)
+	// MigrateCurrentDatabasesSchema(client)
 }
 
 // MigrateHostsSchema create or update the hosts schema
@@ -98,28 +99,28 @@ func MigrateHostsSchema(client *mongo.Database) {
 	//index creations
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
-			{"archived", 1},
-			{"hostname", 1},
+			{"Archived", 1},
+			{"Hostname", 1},
 		},
 		Options: (&options.IndexOptions{
-			PartialFilterExpression: bson.D{{"archived", false}},
+			PartialFilterExpression: bson.D{{"Archived", false}},
 		}).SetUnique(true),
 	}); err != nil {
 		log.Panicln(err)
 	}
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
-			{"archived", 1},
-			{"host_type", 1},
-			{"hostname", 1},
+			{"Archived", 1},
+			{"HostType", 1},
+			{"Hostname", 1},
 		},
 	}); err != nil {
 		log.Panicln(err)
 	}
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
-			{"hostname", 1},
-			{"created_at", -1},
+			{"Hostname", 1},
+			{"CreatedAt", -1},
 		},
 	}); err != nil {
 		log.Panicln(err)
@@ -148,62 +149,62 @@ func MigrateHostsSchema(client *mongo.Database) {
 	// }
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
-			{"archived", 1},
-			{"host_type", 1},
-			{"extra.clusters.name", 1},
+			{"Archived", 1},
+			{"HostType", 1},
+			{"Extra.clusters.Name", 1},
 		},
 	}); err != nil {
 		log.Panicln(err)
 	}
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
-			{"archived", 1},
-			{"host_type", 1},
-			{"extra.clusters.vms.hostname", 1},
+			{"Archived", 1},
+			{"HostType", 1},
+			{"Extra.Clusters.VMs.Hostname", 1},
 		},
 	}); err != nil {
 		log.Panicln(err)
 	}
 }
 
-// MigrateClustersSchema create or update the currentCluster schema
-func MigrateClustersSchema(client *mongo.Database) {
-	//Create the view
-	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
-		log.Panicln(err)
-	} else if !utils.Contains(cols, "currentClusters") {
-		if err := client.RunCommand(context.TODO(), bson.D{
-			{"create", "currentClusters"},
-			{"viewOn", "hosts"},
-		}).Err(); err != nil {
-			log.Panicln(err)
-		}
-	}
+// // MigrateClustersSchema create or update the currentCluster schema
+// func MigrateClustersSchema(client *mongo.Database) {
+// 	//Create the view
+// 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
+// 		log.Panicln(err)
+// 	} else if !utils.Contains(cols, "currentClusters") {
+// 		if err := client.RunCommand(context.TODO(), bson.D{
+// 			{"create", "currentClusters"},
+// 			{"viewOn", "hosts"},
+// 		}).Err(); err != nil {
+// 			log.Panicln(err)
+// 		}
+// 	}
 
-	//Set the view pipeline
-	if err := client.RunCommand(context.TODO(), bson.D{
-		{"collMod", "currentClusters"},
-		{"viewOn", "hosts"},
-		{"pipeline", bson.A{
-			bson.D{{"$match", bson.D{
-				{"archived", false},
-				{"host_type", "virtualization"},
-			}}},
-			bson.D{{"$unwind", bson.D{
-				{"path", "$extra.clusters"},
-			}}},
-			bson.D{{"$project", bson.D{
-				{"hostname", 1},
-				{"environment", 1},
-				{"location", 1},
-				{"created_at", 1},
-				{"cluster", "$extra.clusters"},
-			}}},
-		}},
-	}).Err(); err != nil {
-		log.Panicln(err)
-	}
-}
+// 	//Set the view pipeline
+// 	if err := client.RunCommand(context.TODO(), bson.D{
+// 		{"collMod", "currentClusters"},
+// 		{"viewOn", "hosts"},
+// 		{"pipeline", bson.A{
+// 			bson.D{{"$match", bson.D{
+// 				{"archived", false},
+// 				{"host_type", "virtualization"},
+// 			}}},
+// 			bson.D{{"$unwind", bson.D{
+// 				{"path", "$extra.clusters"},
+// 			}}},
+// 			bson.D{{"$project", bson.D{
+// 				{"hostname", 1},
+// 				{"environment", 1},
+// 				{"location", 1},
+// 				{"created_at", 1},
+// 				{"cluster", "$extra.clusters"},
+// 			}}},
+// 		}},
+// 	}).Err(); err != nil {
+// 		log.Panicln(err)
+// 	}
+// }
 
 // MigrateLicensesSchema create or update the licenses schema
 func MigrateLicensesSchema(client *mongo.Database, initialLicensesList []string) {
@@ -265,54 +266,54 @@ func MigrateAlertsSchema(client *mongo.Database) {
 	}
 }
 
-// MigrateCurrentDatabasesSchema create or update the databases schema
-func MigrateCurrentDatabasesSchema(client *mongo.Database) {
-	//Create the collection
-	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
-		log.Panicln(err)
-	} else if !utils.Contains(cols, "currentDatabases") {
-		if err := client.RunCommand(context.TODO(), bson.D{
-			{"create", "currentDatabases"},
-			{"viewOn", "hosts"},
-		}).Err(); err != nil {
-			log.Panicln(err)
-		}
-	}
+// // MigrateCurrentDatabasesSchema create or update the databases schema
+// func MigrateCurrentDatabasesSchema(client *mongo.Database) {
+// 	//Create the collection
+// 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
+// 		log.Panicln(err)
+// 	} else if !utils.Contains(cols, "currentDatabases") {
+// 		if err := client.RunCommand(context.TODO(), bson.D{
+// 			{"create", "currentDatabases"},
+// 			{"viewOn", "hosts"},
+// 		}).Err(); err != nil {
+// 			log.Panicln(err)
+// 		}
+// 	}
 
-	//Set the view pipeline
-	if err := client.RunCommand(context.TODO(), bson.D{
-		{"collMod", "currentDatabases"},
-		{"viewOn", "hosts"},
-		{"pipeline", bson.A{
-			bson.D{{"$match", bson.D{
-				{"archived", false},
-				{"host_type", "oracledb"},
-			}}},
-			bson.D{{"$unwind", bson.D{
-				{"path", "$extra.databases"},
-			}}},
-			bson.D{{"$addFields", bson.D{
-				{"extra.databases.ha", bson.D{
-					{"$or", bson.A{
-						"$info.sun_cluster",
-						"$info.veritas_cluster",
-						"$info.oracle_cluster",
-						"$info.aix_cluster",
-					}},
-				}},
-			}}},
-			bson.D{{"$project", bson.D{
-				{"hostname", 1},
-				{"environment", 1},
-				{"location", 1},
-				{"created_at", 1},
-				{"database", "$extra.databases"},
-			}}},
-		}},
-	}).Err(); err != nil {
-		log.Panicln(err)
-	}
-}
+// 	//Set the view pipeline
+// 	if err := client.RunCommand(context.TODO(), bson.D{
+// 		{"collMod", "currentDatabases"},
+// 		{"viewOn", "hosts"},
+// 		{"pipeline", bson.A{
+// 			bson.D{{"$match", bson.D{
+// 				{"archived", false},
+// 				{"host_type", "oracledb"},
+// 			}}},
+// 			bson.D{{"$unwind", bson.D{
+// 				{"path", "$extra.databases"},
+// 			}}},
+// 			bson.D{{"$addFields", bson.D{
+// 				{"extra.databases.ha", bson.D{
+// 					{"$or", bson.A{
+// 						"$info.sun_cluster",
+// 						"$info.veritas_cluster",
+// 						"$info.oracle_cluster",
+// 						"$info.aix_cluster",
+// 					}},
+// 				}},
+// 			}}},
+// 			bson.D{{"$project", bson.D{
+// 				{"hostname", 1},
+// 				{"environment", 1},
+// 				{"location", 1},
+// 				{"created_at", 1},
+// 				{"database", "$extra.databases"},
+// 			}}},
+// 		}},
+// 	}).Err(); err != nil {
+// 		log.Panicln(err)
+// 	}
+// }
 
 // UpdateDataSchemas updates the schema of the data in the database
 func UpdateDataSchemas(client *mongo.Database) {
@@ -342,5 +343,39 @@ func InitLicenses(client *mongo.Database, list []string) {
 				log.Fatalf("Unable to insert a license in the licenses collection: %v\n", err)
 			}
 		}
+	}
+}
+
+// MigratePatchingFunctionsSchema create or update the patching_functions schema
+func MigratePatchingFunctionsSchema(client *mongo.Database) {
+	//Create the collection
+	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
+		log.Panicln(err)
+	} else if !utils.Contains(cols, "patching_functions") {
+		if err := client.RunCommand(context.TODO(), bson.D{
+			{"create", "patching_functions"},
+		}).Err(); err != nil {
+			log.Panicln(err)
+		}
+	}
+
+	//Set the collection validator
+	if err := client.RunCommand(context.TODO(), bson.D{
+		{"collMod", "patching_functions"},
+		{"validator", bson.D{
+			{"$jsonSchema", model.PatchingFunctionBsonValidatorRules},
+		}},
+		{"validationAction", "error"},
+	}).Err(); err != nil {
+		log.Panicln(err)
+	}
+
+	//index creations
+	if _, err := client.Collection("patching_functions").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
+		Keys: bson.D{
+			{"Hostname", 1},
+		},
+	}); err != nil {
+		log.Panicln(err)
 	}
 }

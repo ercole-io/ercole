@@ -19,43 +19,43 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // Schema holds information about Oracle database schema.
 type Schema struct {
-	Database string
-	User     string
-	Total    int
-	Tables   int
-	Indexes  int
-	LOB      int
+	Database string `bson:"Database"`
+	User     string `bson:"User"`
+	Total    int    `bson:"Total"`
+	Tables   int    `bson:"Tables"`
+	Indexes  int    `bson:"Indexes"`
+	LOB      int    `bson:"LOB"`
 }
 
 // SchemaBsonValidatorRules contains mongodb validation rules for schema
 var SchemaBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"database",
-		"user",
-		"total",
-		"tables",
-		"indexes",
-		"lob",
+		"Database",
+		"User",
+		"Total",
+		"Tables",
+		"Indexes",
+		"LOB",
 	}},
 	{"properties", bson.D{
-		{"database", bson.D{
+		{"Database", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"user", bson.D{
+		{"User", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"total", bson.D{
-			{"bsonType", "int"},
+		{"Total", bson.D{
+			{"bsonType", "number"},
 		}},
-		{"tables", bson.D{
-			{"bsonType", "int"},
+		{"Tables", bson.D{
+			{"bsonType", "number"},
 		}},
-		{"indexes", bson.D{
-			{"bsonType", "int"},
+		{"Indexes", bson.D{
+			{"bsonType", "number"},
 		}},
-		{"lob", bson.D{
-			{"bsonType", "int"},
+		{"LOB", bson.D{
+			{"bsonType", "number"},
 		}},
 	}},
 }

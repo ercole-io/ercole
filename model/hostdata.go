@@ -27,77 +27,59 @@ const SchemaVersion int = 1
 
 // HostData holds all informations about a host & services
 type HostData struct {
-	ID                    primitive.ObjectID `bson:"_id"`
-	Hostname              string
-	Environment           string
-	Location              string
-	HostType              string `bson:"host_type"`
-	Version               string
-	HostDataSchemaVersion int    `bson:"-"`
-	ServerVersion         string `bson:"server_version"`
-	SchemaVersion         int    `bson:"schema_version"`
-	Databases             string
-	Schemas               string
-	Info                  Host
-	Extra                 ExtraInfo
-	Archived              bool
-	CreatedAt             time.Time `bson:"created_at"`
+	ID            primitive.ObjectID `bson:"_id"`
+	Hostname      string             `bson:"Hostname"`
+	Environment   string             `bson:"Environment"`
+	Location      string             `bson:"Location"`
+	Version       string             `bson:"Version"`
+	ServerVersion string             `bson:"ServerVersion"`
+	SchemaVersion int                `bson:"SchemaVersion"`
+	Info          Host               `bson:"Info"`
+	Extra         ExtraInfo          `bson:"Extra"`
+	Archived      bool               `bson:"Archived"`
+	CreatedAt     time.Time          `bson:"CreatedAt"`
 }
 
 // HostDataBsonValidatorRules contains mongodb validation rules for hostData
 var HostDataBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"hostname",
-		"environment",
-		"location",
-		"host_type",
-		"version",
-		"server_version",
-		"schema_version",
-		"info",
-		"extra",
-		"archived",
-		"created_at",
+		"Hostname",
+		"Environment",
+		"Location",
+		"Version",
+		"ServerVersion",
+		"SchemaVersion",
+		"Info",
+		"Extra",
+		"Archived",
+		"CreatedAt",
 	}},
 	{"properties", bson.D{
-		{"hostname", bson.D{
+		{"Hostname", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"environment", bson.D{
+		{"Environment", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"location", bson.D{
+		{"Location", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"host_type", bson.D{
-			{"enum", bson.A{
-				"oracledb",
-				"virtualization",
-				"exadata",
-			}},
-		}},
-		{"version", bson.D{
+		{"Version", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"server_version", bson.D{
+		{"ServerVersion", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"schema_version", bson.D{
-			{"bsonType", "int"},
+		{"SchemaVersion", bson.D{
+			{"bsonType", "number"},
 		}},
-		{"databases", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"schemas", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"info", HostBsonValidatorRules},
-		{"extra", ExtraInfoBsonValidatorRules},
-		{"archived", bson.D{
+		{"Info", HostBsonValidatorRules},
+		{"Extra", ExtraInfoBsonValidatorRules},
+		{"Archived", bson.D{
 			{"bsonType", "bool"},
 		}},
-		{"created_at", bson.D{
+		{"CreatedAt", bson.D{
 			{"bsonType", "date"},
 		}},
 	}},

@@ -19,17 +19,17 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // Exadata holds specific informations about a exadata.
 type Exadata struct {
-	Devices []ExadataDevice
+	Devices []ExadataDevice `bson:"Devices"`
 }
 
 // ExadataBsonValidatorRules contains mongodb validation rules for exadata
 var ExadataBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"devices",
+		"Devices",
 	}},
 	{"properties", bson.D{
-		{"devices", bson.D{
+		{"Devices", bson.D{
 			{"bsonType", "array"},
 			{"items", ExadataDeviceBsonValidatorRules},
 		}},

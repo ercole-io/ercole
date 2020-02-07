@@ -19,98 +19,98 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // Host contains info about the host
 type Host struct {
-	Hostname       string
-	Environment    string
-	Location       string
-	CPUModel       string `bson:"cpu_model"`
-	CPUCores       int    `bson:"cpu_cores"`
-	CPUThreads     int    `bson:"cpu_threads"`
-	Socket         int
-	Type           string
-	Virtual        bool
-	Kernel         string
-	OS             string
-	MemoryTotal    float32 `bson:"memory_total"`
-	SwapTotal      float32 `bson:"swap_total"`
-	OracleCluster  bool    `bson:"oracle_cluster"`
-	VeritasCluster bool    `bson:"veritas_cluster"`
-	SunCluster     bool    `bson:"sun_cluster"`
-	AixCluster     bool    `bson:"aix_cluster"`
+	Hostname       string  `bson:"Hostname"`
+	Environment    string  `bson:"Environment"`
+	Location       string  `bson:"Location"`
+	CPUModel       string  `bson:"CPUModel"`
+	CPUCores       int     `bson:"CPUCores"`
+	CPUThreads     int     `bson:"CPUThreads"`
+	Socket         int     `bson:"Socket"`
+	Type           string  `bson:"Type"`
+	Virtual        bool    `bson:"Virtual"`
+	Kernel         string  `bson:"Kernel"`
+	OS             string  `bson:"OS"`
+	MemoryTotal    float32 `bson:"MemoryTotal"`
+	SwapTotal      float32 `bson:"SwapTotal"`
+	OracleCluster  bool    `bson:"OracleCluster"`
+	VeritasCluster bool    `bson:"VeritasCluster"`
+	SunCluster     bool    `bson:"SunCluster"`
+	AixCluster     bool    `bson:"AixCluster"`
 }
 
 // HostBsonValidatorRules contains mongodb validation rules for host
 var HostBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"hostname",
-		"environment",
-		"location",
-		"cpu_model",
-		"cpu_cores",
-		"cpu_threads",
-		"socket",
-		"type",
-		"virtual",
-		"kernel",
-		"os",
-		"memory_total",
-		"swap_total",
-		"oracle_cluster",
-		"veritas_cluster",
-		"sun_cluster",
-		"aix_cluster",
+		"Hostname",
+		"Environment",
+		"Location",
+		"CPUModel",
+		"CPUCores",
+		"CPUThreads",
+		"Socket",
+		"Type",
+		"Virtual",
+		"Kernel",
+		"OS",
+		"MemoryTotal",
+		"SwapTotal",
+		"OracleCluster",
+		"VeritasCluster",
+		"SunCluster",
+		"AixCluster",
 	}},
 	{"properties", bson.D{
-		{"hostname", bson.D{
+		{"Hostname", bson.D{
 			{"bsonType", "string"},
 			{"pattern", "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$"},
 		}},
-		{"environment", bson.D{
+		{"Environment", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"location", bson.D{
+		{"Location", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"cpu_model", bson.D{
+		{"CPUModel", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"cpu_cores", bson.D{
-			{"bsonType", "int"},
+		{"CPUCores", bson.D{
+			{"bsonType", "number"},
 		}},
-		{"cpu_threads", bson.D{
-			{"bsonType", "int"},
+		{"CPUThreads", bson.D{
+			{"bsonType", "number"},
 		}},
-		{"socket", bson.D{
-			{"bsonType", "int"},
+		{"Socket", bson.D{
+			{"bsonType", "number"},
 		}},
-		{"type", bson.D{
+		{"Type", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"virtual", bson.D{
+		{"Virtual", bson.D{
 			{"bsonType", "bool"},
 		}},
-		{"kernel", bson.D{
+		{"Kernel", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"os", bson.D{
+		{"OS", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"memory_total", bson.D{
+		{"MemoryTotal", bson.D{
 			{"bsonType", "double"},
 		}},
-		{"swap_total", bson.D{
+		{"SwapTotal", bson.D{
 			{"bsonType", "double"},
 		}},
-		{"oracle_cluster", bson.D{
+		{"OracleCluster", bson.D{
 			{"bsonType", "bool"},
 		}},
-		{"veritas_cluster", bson.D{
+		{"VeritasCluster", bson.D{
 			{"bsonType", "bool"},
 		}},
-		{"sun_cluster", bson.D{
+		{"SunCluster", bson.D{
 			{"bsonType", "bool"},
 		}},
-		{"aix_cluster", bson.D{
+		{"AixCluster", bson.D{
 			{"bsonType", "bool"},
 		}},
 	}},

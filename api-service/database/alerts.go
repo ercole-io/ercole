@@ -33,26 +33,26 @@ func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc
 		context.TODO(),
 		mu.MAPipeline(
 			mu.APOptionalStage(status != "", mu.APMatch(bson.M{
-				"alert_status": status,
+				"AlertStatus": status,
 			})),
 			mu.APOptionalStage(severity != "", mu.APMatch(bson.M{
-				"alert_severity": severity,
+				"AlertSseverity": severity,
 			})),
 			mu.APMatch(bson.M{
-				"date": bson.M{
+				"Date": bson.M{
 					"$gte": from,
 					"$lt":  to,
 				},
 			}),
 			mu.APSearchFilterStage([]string{
-				"description",
-				"alert_code",
-				"alert_severity",
-				"other_info.hostname",
-				"other_info.dbname",
-				"other_info.features",
+				"Description",
+				"AlertCode",
+				"AlertSeverity",
+				"OtherInfo.Hostname",
+				"OtherInfo.Dbname",
+				"OtherInfo.Features",
 			}, keywords),
-			mu.APUnset("other_info"),
+			mu.APUnset("OtherInfo"),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),
 		),

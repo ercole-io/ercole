@@ -19,47 +19,47 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // Filesystem holds information about mounted filesystem and used space
 type Filesystem struct {
-	Filesystem string
-	FsType     string `bson:"fs_type"`
-	Size       string
-	Used       string
-	Available  string
-	UsedPerc   string `bson:"used_perc"`
-	MountedOn  string `bson:"mounted_on"`
+	Filesystem string `bson:"Filesystem"`
+	FsType     string `bson:"FsType"`
+	Size       string `bson:"Size"`
+	Used       string `bson:"Used"`
+	Available  string `bson:"Available"`
+	UsedPerc   string `bson:"UsedPerc"`
+	MountedOn  string `bson:"MountedOn"`
 }
 
 // FilesystemBsonValidatorRules contains mongodb validation rules for filesystem
 var FilesystemBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"filesystem",
-		"fs_type",
-		"size",
-		"used",
-		"available",
-		"used_perc",
-		"mounted_on",
+		"Filesystem",
+		"FsType",
+		"Size",
+		"Used",
+		"Available",
+		"UsedPerc",
+		"MountedOn",
 	}},
 	{"properties", bson.D{
-		{"filesystem", bson.D{
+		{"Filesystem", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"fs_type", bson.D{
+		{"FsType", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"size", bson.D{
+		{"Size", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"used", bson.D{
+		{"Used", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"available", bson.D{
+		{"Available", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"used_perc", bson.D{
+		{"UsedPerc", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"mounted_on", bson.D{
+		{"MountedOn", bson.D{
 			{"bsonType", "string"},
 		}},
 	}},

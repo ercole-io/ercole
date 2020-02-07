@@ -19,37 +19,37 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // Backup holds informations about a backup
 type Backup struct {
-	BackupType string `bson:"backup_type"`
-	Hour       string
-	WeekDays   string `bson:"week_days"`
-	AvgBckSize string `bson:"avg_bck_size"`
-	Retention  string
+	BackupType string `bson:"BackupType"`
+	Hour       string `bson:"Hour"`
+	WeekDays   string `bson:"WeekDays"`
+	AvgBckSize string `bson:"AvgBckSize"`
+	Retention  string `bson:"Retention"`
 }
 
 // BackupBsonValidatorRules contains mongodb validation rules for backup
 var BackupBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"backup_type",
-		"hour",
-		"week_days",
-		"avg_bck_size",
-		"retention",
+		"BackupType",
+		"Hour",
+		"WeekDays",
+		"AvgBckSize",
+		"Retention",
 	}},
 	{"properties", bson.D{
-		{"backup_type", bson.D{
+		{"BackupType", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"hour", bson.D{
+		{"Hour", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"week_days", bson.D{
+		{"WeekDays", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"avg_bck_size", bson.D{
+		{"AvgBckSize", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"retention", bson.D{
+		{"Retention", bson.D{
 			{"bsonType", "string"},
 		}},
 	}},

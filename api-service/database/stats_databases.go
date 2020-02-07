@@ -34,13 +34,13 @@ func (md *MongoDatabase) GetDatabaseEnvironmentStats(location string, olderThan 
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
 			mu.APGroup(bson.M{
-				"_id":   "$environment",
-				"count": mu.APOSum(mu.APOCond("$extra.databases", mu.APOSize("$extra.databases"), 0)),
+				"_id":   "$Environment",
+				"Count": mu.APOSum(mu.APOCond("$Extra.Databases", mu.APOSize("$Extra.Databases"), 0)),
 			}),
 			mu.APProject(bson.M{
 				"_id":         false,
-				"environment": "$_id",
-				"count":       true,
+				"Environment": "$_id",
+				"Count":       true,
 			}),
 		),
 	)
@@ -69,11 +69,11 @@ func (md *MongoDatabase) GetDatabaseVersionStats(location string, olderThan time
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APUnwind("$extra.databases"),
+			mu.APUnwind("$Extra.Databases"),
 			mu.APProject(bson.M{
-				"database": "$extra.databases",
+				"Database": "$Extra.Databases",
 			}),
-			mu.APGroupAndCountStages("version", "count", "$database.version"),
+			mu.APGroupAndCountStages("Version", "Count", "$Database.Version"),
 		),
 	)
 	if err != nil {
@@ -101,20 +101,20 @@ func (md *MongoDatabase) GetTopReclaimableDatabaseStats(location string, limit i
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APUnwind("$extra.databases"),
+			mu.APUnwind("$Extra.Databases"),
 			mu.APProject(bson.M{
-				"database": "$extra.databases",
-				"hostname": true,
+				"Database": "$Extra.Databases",
+				"Hostname": true,
 			}),
 			mu.APProject(bson.M{
-				"hostname": true,
-				"dbname":   "$database.name",
-				"reclaimable_segment_advisors": mu.APOSumReducer("$database.segment_advisors",
-					mu.APOConvertErrorable("$$this.reclaimable", "double", 0.5),
+				"Hostname": true,
+				"Dbname":   "$Database.Name",
+				"ReclaimableSegmentAdvisors": mu.APOSumReducer("$Database.SegmentAdvisors",
+					mu.APOConvertErrorable("$$this.Reclaimable", "double", 0.5),
 				),
 			}),
 			mu.APSort(bson.M{
-				"reclaimable_segment_advisors": -1,
+				"ReclaimableSegmentAdvisors": -1,
 			}),
 			mu.APLimit(limit),
 		),
@@ -144,18 +144,18 @@ func (md *MongoDatabase) GetTopWorkloadDatabaseStats(location string, limit int,
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APUnwind("$extra.databases"),
+			mu.APUnwind("$Extra.Databases"),
 			mu.APProject(bson.M{
-				"database": "$extra.databases",
-				"hostname": true,
+				"Database": "$Extra.Databases",
+				"Hostname": true,
 			}),
 			mu.APProject(bson.M{
-				"hostname": true,
-				"dbname":   "$database.name",
-				"workload": mu.APOConvertToDoubleOrZero("$database.work"),
+				"Hostname": true,
+				"Dbname":   "$Database.Name",
+				"Workload": mu.APOConvertToDoubleOrZero("$Database.Work"),
 			}),
 			mu.APSort(bson.M{
-				"workload": -1,
+				"Workload": -1,
 			}),
 			mu.APLimit(limit),
 		),
@@ -185,28 +185,28 @@ func (md *MongoDatabase) GetDatabasePatchStatusStats(location string, windowTime
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APUnwind("$extra.databases"),
+			mu.APUnwind("$Extra.Databases"),
 			mu.APProject(bson.M{
-				"database": "$extra.databases",
+				"Database": "$Extra.Databases",
 			}),
 			mu.APProject(bson.M{
-				"database.last_psus": mu.APOReduce(
-					mu.APOMap("$database.last_psus", "psu", mu.APOMergeObjects(
+				"Database.LastPSUs": mu.APOReduce(
+					mu.APOMap("$Database.LastPSUs", "psu", mu.APOMergeObjects(
 						"$$psu",
 						bson.M{
-							"date": mu.APODateFromString("$$psu.date", "%Y-%m-%d"),
+							"Date": mu.APODateFromString("$$psu.Date", "%Y-%m-%d"),
 						},
 					)),
 					nil,
 					mu.APOCond(
 						mu.APOEqual("$$value", nil),
 						"$$this",
-						mu.APOMaxWithCmpExpr("$$value.date", "$$this.date", "$$value", "$$this"),
+						mu.APOMaxWithCmpExpr("$$value.Date", "$$this.Date", "$$value", "$$this"),
 					),
 				),
 			}),
-			mu.APGroupAndCountStages("status", "id",
-				mu.APOCond(mu.APOGreater("$database.last_psus.date", windowTime), "OK", "KO"),
+			mu.APGroupAndCountStages("Status", "id",
+				mu.APOCond(mu.APOGreater("$Database.LastPSUs.Date", windowTime), "OK", "KO"),
 			),
 		),
 	)
@@ -235,11 +235,11 @@ func (md *MongoDatabase) GetDatabaseDataguardStatusStats(location string, enviro
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$extra.databases"),
+			mu.APUnwind("$Extra.Databases"),
 			mu.APProject(bson.M{
-				"database": "$extra.databases",
+				"Database": "$Extra.Databases",
 			}),
-			mu.APGroupAndCountStages("dataguard", "count", "$database.dataguard"),
+			mu.APGroupAndCountStages("Dataguard", "Count", "$Database.Dataguard"),
 		),
 	)
 	if err != nil {
@@ -267,14 +267,14 @@ func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environment 
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$extra.databases"),
+			mu.APUnwind("$Extra.Databases"),
 			mu.APProject(bson.M{
-				"database": "$extra.databases",
+				"Database": "$Extra.Databases",
 			}),
-			mu.APGroupAndCountStages("rac", "count", mu.APOAny("$database.features", "fe",
+			mu.APGroupAndCountStages("RAC", "Count", mu.APOAny("$Database.Features", "fe",
 				mu.APOAnd(
-					mu.APOEqual("$$fe.name", "Real Application Clusters"),
-					mu.APOEqual("$$fe.status", true),
+					mu.APOEqual("$$fe.Name", "Real Application Clusters"),
+					mu.APOEqual("$$fe.Status", true),
 				),
 			)),
 		),
@@ -304,12 +304,12 @@ func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, envir
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$extra.databases"),
+			mu.APUnwind("$Extra.Databases"),
 			mu.APProject(bson.M{
-				"database": "$extra.databases",
+				"Database": "$Extra.Databases",
 			}),
-			mu.APGroupAndCountStages("archivelog", "count",
-				mu.APOEqual("$database.archive_log", "ARCHIVELOG"),
+			mu.APGroupAndCountStages("ArchiveLog", "Count",
+				mu.APOEqual("$Database.ArchiveLog", "ARCHIVELOG"),
 			),
 		),
 	)
@@ -338,13 +338,13 @@ func (md *MongoDatabase) GetTotalDatabaseWorkStats(location string, environment 
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$extra.databases"),
+			mu.APUnwind("$Extra.Databases"),
 			mu.APProject(bson.M{
-				"database": "$extra.databases",
+				"Database": "$Extra.Databases",
 			}),
 			mu.APGroup(bson.M{
 				"_id":   0,
-				"value": mu.APOSum(mu.APOConvertToDoubleOrZero("$database.work")),
+				"Value": mu.APOSum(mu.APOConvertToDoubleOrZero("$Database.Work")),
 			}),
 		),
 	)
@@ -376,16 +376,16 @@ func (md *MongoDatabase) GetTotalDatabaseMemorySizeStats(location string, enviro
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$extra.databases"),
+			mu.APUnwind("$Extra.Databases"),
 			mu.APProject(bson.M{
-				"database": "$extra.databases",
+				"Database": "$Extra.Databases",
 			}),
 			mu.APGroup(bson.M{
 				"_id": 0,
-				"value": mu.APOSum(mu.APOAdd(
-					mu.APOConvertToDoubleOrZero("$database.pga_target"),
-					mu.APOConvertToDoubleOrZero("$database.sga_target"),
-					mu.APOConvertToDoubleOrZero("$database.memory_target"),
+				"Value": mu.APOSum(mu.APOAdd(
+					mu.APOConvertToDoubleOrZero("$Database.PGATarget"),
+					mu.APOConvertToDoubleOrZero("$Database.SGATarget"),
+					mu.APOConvertToDoubleOrZero("$Database.MemoryTarget"),
 				)),
 			}),
 		),
@@ -418,13 +418,13 @@ func (md *MongoDatabase) GetTotalDatabaseDatafileSizeStats(location string, envi
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$extra.databases"),
+			mu.APUnwind("$Extra.Databases"),
 			mu.APProject(bson.M{
-				"database": "$extra.databases",
+				"Database": "$Extra.Databases",
 			}),
 			mu.APGroup(bson.M{
 				"_id":   0,
-				"value": mu.APOSum(mu.APOConvertToDoubleOrZero("$database.used")),
+				"Value": mu.APOSum(mu.APOConvertToDoubleOrZero("$Database.Used")),
 			}),
 		),
 	)
@@ -456,13 +456,13 @@ func (md *MongoDatabase) GetTotalDatabaseSegmentSizeStats(location string, envir
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$extra.databases"),
+			mu.APUnwind("$Extra.Databases"),
 			mu.APProject(bson.M{
-				"database": "$extra.databases",
+				"Database": "$Extra.Databases",
 			}),
 			mu.APGroup(bson.M{
 				"_id":   0,
-				"value": mu.APOSum(mu.APOConvertToDoubleOrZero("$database.segments_size")),
+				"Value": mu.APOSum(mu.APOConvertToDoubleOrZero("$Database.SegmentsSize")),
 			}),
 		),
 	)
@@ -487,9 +487,9 @@ func (md *MongoDatabase) GetTotalDatabaseSegmentSizeStats(location string, envir
 // GetDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
 func (md *MongoDatabase) GetDatabaseLicenseComplianceStatusStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
 	var out map[string]interface{} = map[string]interface{}{
-		"count":     0,
-		"used":      0,
-		"compliant": true,
+		"Count":     0,
+		"Used":      0,
+		"Compliant": true,
 	}
 
 	//Find the informations
@@ -497,102 +497,102 @@ func (md *MongoDatabase) GetDatabaseLicenseComplianceStatusStats(location string
 		context.TODO(),
 		mu.MAPipeline(
 			mu.APLookupPipeline("hosts", bson.M{
-				"license_name": "$_id",
-			}, "used", mu.MAPipeline(
+				"LicenseName": "$_id",
+			}, "Used", mu.MAPipeline(
 				FilterByOldnessSteps(olderThan),
 				FilterByLocationAndEnvironmentSteps(location, environment),
 				mu.APProject(bson.M{
-					"hostname": 1,
-					"databases": mu.APOReduce(
+					"Hostname": 1,
+					"Databases": mu.APOReduce(
 						mu.APOFilter(
-							mu.APOMap("$extra.databases", "db", bson.M{
-								"name": "$$db.name",
-								"count": mu.APOLet(
+							mu.APOMap("$Extra.Databases", "db", bson.M{
+								"Name": "$$db.name",
+								"Count": mu.APOLet(
 									bson.M{
-										"val": mu.APOArrayElemAt(mu.APOFilter("$$db.licenses", "lic", mu.APOEqual("$$lic.name", "$$license_name")), 0),
+										"val": mu.APOArrayElemAt(mu.APOFilter("$$db.Licenses", "lic", mu.APOEqual("$$lic.Name", "$$LicenseName")), 0),
 									},
-									"$$val.count",
+									"$$val.Count",
 								),
 							}),
 							"db",
-							mu.APOGreater("$$db.count", 0),
+							mu.APOGreater("$$db.Count", 0),
 						),
-						bson.M{"count": 0, "dbs": bson.A{}},
+						bson.M{"Count": 0, "DBs": bson.A{}},
 						bson.M{
-							"count": mu.APOMax("$$value.count", "$$this.count"),
-							"dbs": bson.M{
+							"Count": mu.APOMax("$$value.Count", "$$this.Count"),
+							"DBs": bson.M{
 								"$concatArrays": bson.A{
-									"$$value.dbs",
-									bson.A{"$$this.name"},
+									"$$value.DBs",
+									bson.A{"$$this.Name"},
 								},
 							},
 						},
 					),
 				}),
 				mu.APMatch(bson.M{
-					"databases.count": bson.M{
+					"Databases.Count": bson.M{
 						"$gt": 0,
 					},
 				}),
-				mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "cluster", mu.MAPipeline(
+				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "Cluster", mu.MAPipeline(
 					FilterByOldnessSteps(olderThan),
-					mu.APUnwind("$extra.clusters"),
-					mu.APReplaceWith("$extra.clusters"),
-					mu.APUnwind("$vms"),
+					mu.APUnwind("$Extra.Clusters"),
+					mu.APReplaceWith("$Extra.Clusters"),
+					mu.APUnwind("$VMs"),
 					mu.APMatch(bson.M{
-						"$expr": mu.APOEqual("$vms.hostname", "$$hn"),
+						"$expr": mu.APOEqual("$VMs.Hostname", "$$hn"),
 					}),
 					mu.APLimit(1),
 				)),
 				mu.APSet(bson.M{
-					"cluster": mu.APOArrayElemAt("$cluster", 0),
+					"Cluster": mu.APOArrayElemAt("$Cluster", 0),
 				}),
 				mu.APSet(bson.M{
-					"cluster_name": "$cluster.name",
-					"cluster_cpu":  "$cluster.cpu",
+					"ClusterName": "$Cluster.Name",
+					"ClusterCpu":  "$Cluster.CPU",
 				}),
 				mu.APGroup(bson.M{
 					"_id": mu.APOCond(
-						"$cluster_name",
-						mu.APOConcat("cluster_§$#$§_", "$cluster_name"),
-						mu.APOConcat("hostname_§$#$§_", "$hostname"),
+						"$ClusterName",
+						mu.APOConcat("cluster_§$#$§_", "$ClusterName"),
+						mu.APOConcat("hostname_§$#$§_", "$Hostname"),
 					),
-					"license":     mu.APOMaxAggr("$databases.count"),
-					"cluster_cpu": mu.APOMaxAggr("$cluster_cpu"),
+					"License":    mu.APOMaxAggr("$Databases.Count"),
+					"ClusterCpu": mu.APOMaxAggr("$ClusterCpu"),
 				}),
 				mu.APSet(bson.M{
-					"license": mu.APOCond(
-						"$cluster_cpu",
-						mu.APODivide("$cluster_cpu", 2),
-						"$license",
+					"License": mu.APOCond(
+						"$ClusterCpu",
+						mu.APODivide("$ClusterCpu", 2),
+						"$License",
 					),
 				}),
 				mu.APGroup(bson.M{
 					"_id":   0,
-					"value": mu.APOSum("$license"),
+					"Value": mu.APOSum("$License"),
 				}),
 			)),
 			mu.APSet(bson.M{
-				"used": mu.APOArrayElemAt("$used", 0),
+				"Used": mu.APOArrayElemAt("$Used", 0),
 			}),
 			mu.APSet(bson.M{
-				"used": mu.APOIfNull(mu.APOCeil("$used.value"), 0),
+				"Used": mu.APOIfNull(mu.APOCeil("$Used.Value"), 0),
 			}),
 			mu.APSet(bson.M{
-				"compliance": mu.APOGreaterOrEqual("$count", "$used"),
+				"Compliance": mu.APOGreaterOrEqual("$Count", "$Used"),
 			}),
 			mu.APGroup(bson.M{
-				"_id":                       0,
-				"licenses_number":           mu.APOSum(1),
-				"count":                     mu.APOSum("$count"),
-				"used":                      mu.APOSum("$used"),
-				"compliant_licenses_number": mu.APOSum(mu.APOCond("$compliance", 1, 0)),
+				"_id":                     0,
+				"LicensesNumber":          mu.APOSum(1),
+				"Count":                   mu.APOSum("$Count"),
+				"Used":                    mu.APOSum("$Used"),
+				"CompliantLicensesNumber": mu.APOSum(mu.APOCond("$Compliance", 1, 0)),
 			}),
 			mu.APProject(bson.M{
 				"_id":       0,
-				"count":     1,
-				"used":      1,
-				"compliant": mu.APOEqual("$licenses_number", "$compliant_licenses_number"),
+				"Count":     1,
+				"Used":      1,
+				"Compliant": mu.APOEqual("$LicensesNumber", "$CompliantLicensesNumber"),
 			}),
 		),
 	)

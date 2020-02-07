@@ -36,8 +36,8 @@ func (md *MongoDatabase) GetTotalExadataMemorySizeStats(location string, environ
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APGroup(bson.M{
 				"_id": 0,
-				"value": mu.APOSum(mu.APOSumReducer("$extra.exadata.devices",
-					mu.APOConvertToDoubleOrZero(mu.APOGetCaptureFromRegexMatch("$$this.memory", "^(\\d+)GB$", "i", 0)),
+				"Value": mu.APOSum(mu.APOSumReducer("$Extra.Exadata.Devices",
+					mu.APOConvertToDoubleOrZero(mu.APOGetCaptureFromRegexMatch("$$this.Memory", "^(\\d+)GB$", "i", 0)),
 				)),
 			}),
 		),
@@ -71,18 +71,18 @@ func (md *MongoDatabase) GetTotalExadataCPUStats(location string, environment st
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APProject(bson.M{
-				"value": mu.APOReduce("$extra.exadata.devices", bson.M{"enabled": 0, "total": 0},
+				"Value": mu.APOReduce("$Extra.Exadata.Devices", bson.M{"Enabled": 0, "Total": 0},
 					mu.APOLet(
 						bson.M{
-							"match": mu.APORegexFind("$$this.cpu_enabled", "^(\\d+)/(\\d+)$", "i"),
+							"match": mu.APORegexFind("$$this.CPUEnabled", "^(\\d+)/(\\d+)$", "i"),
 						},
 						bson.M{
-							"enabled": mu.APOAdd(
-								"$$value.enabled",
+							"Enabled": mu.APOAdd(
+								"$$value.Enabled",
 								mu.APOConvertToDoubleOrZero(mu.APOArrayElemAt("$$match.captures", 0)),
 							),
-							"total": mu.APOAdd(
-								"$$value.total",
+							"Total": mu.APOAdd(
+								"$$value.Total",
 								mu.APOConvertToDoubleOrZero(mu.APOArrayElemAt("$$match.captures", 1)),
 							),
 						},
@@ -91,8 +91,8 @@ func (md *MongoDatabase) GetTotalExadataCPUStats(location string, environment st
 			}),
 			mu.APGroup(bson.M{
 				"_id":     0,
-				"enabled": mu.APOSum("$value.enabled"),
-				"total":   mu.APOSum("$value.total"),
+				"Enabled": mu.APOSum("$Value.Enabled"),
+				"Total":   mu.APOSum("$Value.Total"),
 			}),
 			mu.APUnset("_id"),
 		),
@@ -126,37 +126,37 @@ func (md *MongoDatabase) GetAvegageExadataStorageUsageStats(location string, env
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APProject(bson.M{
-				"value": mu.APOReduce("$extra.exadata.devices", bson.M{"count": 0, "sum": 0},
+				"Value": mu.APOReduce("$Extra.Exadata.Devices", bson.M{"Count": 0, "Sum": 0},
 					mu.APOLet(
 						bson.M{
 							"part": mu.APOIfNull(
-								mu.APOReduce("$$this.cell_disks", bson.M{"count": 0, "sum": 0},
+								mu.APOReduce("$$this.CellDisks", bson.M{"Count": 0, "Sum": 0},
 									bson.M{
-										"count": mu.APOAdd("$$value.count", 1),
-										"sum": mu.APOAdd(
-											"$$value.sum",
-											mu.APOToDouble("$$this.used_perc"),
+										"Count": mu.APOAdd("$$value.Count", 1),
+										"Sum": mu.APOAdd(
+											"$$value.Sum",
+											mu.APOToDouble("$$this.UsedPerc"),
 										),
 									},
 								),
-								bson.M{"count": 0, "sum": 0},
+								bson.M{"Count": 0, "Sum": 0},
 							),
 						},
 						bson.M{
-							"count": mu.APOAdd("$$value.count", "$$part.count"),
-							"sum":   mu.APOAdd("$$value.sum", "$$part.sum"),
+							"Count": mu.APOAdd("$$value.Count", "$$part.Count"),
+							"Sum":   mu.APOAdd("$$value.Sum", "$$part.Sum"),
 						},
 					),
 				),
 			}),
 			mu.APGroup(bson.M{
 				"_id":   0,
-				"count": mu.APOSum("$value.count"),
-				"sum":   mu.APOSum("$value.sum"),
+				"Count": mu.APOSum("$Value.Count"),
+				"Sum":   mu.APOSum("$Value.Sum"),
 			}),
 			mu.APProject(bson.M{
 				"_id":   0,
-				"value": mu.APODivide("$sum", "$count"),
+				"Value": mu.APODivide("$Sum", "$Count"),
 			}),
 		),
 	)
@@ -189,17 +189,17 @@ func (md *MongoDatabase) GetExadataStorageErrorCountStatusStats(location string,
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APProject(bson.M{
-				"devs": mu.APOMap(
-					mu.APOFilter("$extra.exadata.devices", "dev",
-						mu.APOEqual("$$dev.server_type", "StorageServer"),
+				"Devs": mu.APOMap(
+					mu.APOFilter("$Extra.Exadata.Devices", "Dev",
+						mu.APOEqual("$$Dev.ServerType", "StorageServer"),
 					),
 					"dev",
-					mu.APOMap("$$dev.cell_disks", "cd", mu.APOGreater(mu.APOToDouble("$$cd.err_count"), 0)),
+					mu.APOMap("$$Dev.CellDisks", "cd", mu.APOGreater(mu.APOToDouble("$$cd.ErrCount"), 0)),
 				),
 			}),
-			mu.APUnwind("$devs"),
-			mu.APUnwind("$devs"),
-			mu.APGroupAndCountStages("failing", "count", "$devs"),
+			mu.APUnwind("$Devs"),
+			mu.APUnwind("$Devs"),
+			mu.APGroupAndCountStages("failing", "count", "$Devs"),
 		),
 	)
 	if err != nil {
@@ -228,18 +228,18 @@ func (md *MongoDatabase) GetExadataPatchStatusStats(location string, environment
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APProject(bson.M{
-				"status": mu.APOMap("$extra.exadata.devices", "dev",
+				"Status": mu.APOMap("$Extra.Exadata.Devices", "dev",
 					mu.APOGreater(
 						mu.APODateFromString(
-							mu.APOConcat("20", mu.APOGetCaptureFromRegexMatch("$$dev.exa_sw_version", "^.*\\.(\\d+)$", "i", 0)),
+							mu.APOConcat("20", mu.APOGetCaptureFromRegexMatch("$$dev.ExaSwVersion", "^.*\\.(\\d+)$", "i", 0)),
 							"%Y%m%d",
 						),
 						windowTime,
 					),
 				),
 			}),
-			mu.APUnwind("$status"),
-			mu.APGroupAndCountStages("status", "count", "$status"),
+			mu.APUnwind("$Status"),
+			mu.APGroupAndCountStages("Status", "Count", "$Status"),
 		),
 	)
 	if err != nil {
