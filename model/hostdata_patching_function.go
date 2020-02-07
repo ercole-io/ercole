@@ -24,9 +24,9 @@ import (
 
 // PatchingFunction holds all informations about a patching function
 type PatchingFunction struct {
-	ID        primitive.ObjectID `bson:"_id"`
-	Hostname  string             `bson:"Hostname"`
-	CreatedAt time.Time          `bson:"CreatedAt"`
+	ID        *primitive.ObjectID `bson:"_id"`
+	Hostname  string              `bson:"Hostname"`
+	CreatedAt time.Time           `bson:"CreatedAt"`
 	// PatchingFunction contains the javascript code that patch the hostdata
 	// the hostdata is given via the hostdata global variable.
 	// the static vars is given via the vars global variable
@@ -49,7 +49,7 @@ var PatchingFunctionBsonValidatorRules = bson.D{
 			{"bsonType", "string"},
 		}},
 		{"CreatedAt", bson.D{
-			{"bsonType", "string"},
+			{"bsonType", "date"},
 		}},
 		{"Code", bson.D{
 			{"bsonType", "string"},

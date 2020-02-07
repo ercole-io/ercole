@@ -21,6 +21,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
 
 	"github.com/amreo/ercole-services/config"
@@ -98,6 +99,15 @@ type MongoDatabaseInterface interface {
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
+	// SavePatchingFunction saves the patching function
+	SavePatchingFunction(pf model.PatchingFunction) utils.AdvancedErrorInterface
+	// ReplaceHostData adds a new hostdata to the database
+	ReplaceHostData(hostData map[string]interface{}) utils.AdvancedErrorInterface
+
+	// FindPatchingFunction find the the patching function associated to the hostname in the database
+	FindPatchingFunction(hostname string) (model.PatchingFunction, utils.AdvancedErrorInterface)
+	// FindHostData find the current hostdata with a certain hostname
+	FindHostData(hostname string) (map[string]interface{}, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation
