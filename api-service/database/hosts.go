@@ -23,6 +23,7 @@ import (
 	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // SearchHosts search hosts
@@ -235,4 +236,21 @@ func (md *MongoDatabase) ReplaceHostData(hostData map[string]interface{}) utils.
 		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 	return nil
+}
+
+// ExistNoDataAlertByHost return true if the host has associated a new NO_DATA alert
+func (md *MongoDatabase) ExistHostdata(hostname string) (bool, utils.AdvancedErrorInterface) {
+	//Count the number of new NO_DATA alerts associated to the host
+	val, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").CountDocuments(context.TODO(), bson.M{
+		"Archived": true,
+		"Hostname": hostname,
+	}, &options.CountOptions{
+		Limit: utils.Intptr(1),
+	})
+	if err != nil {
+		return false, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Return true if the count > 0
+	return val > 0, nil
 }

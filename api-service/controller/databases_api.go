@@ -342,31 +342,3 @@ func (ctrl *APIController) SetLicenseCount(w http.ResponseWriter, r *http.Reques
 	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
-
-// AddTagToDatabase add a tag to the database if it hasn't the tag
-func (ctrl *APIController) AddTagToDatabase(w http.ResponseWriter, r *http.Request) {
-	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
-		return
-	}
-
-	//get the data
-	hostname := mux.Vars(r)["hostname"]
-	dbname := mux.Vars(r)["dbname"]
-
-	raw, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		utils.WriteAndLogError(w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, "BAD_REQUEST"))
-		return
-	}
-
-	//set the value
-	aerr := ctrl.Service.AddTagToDatabase(hostname, dbname, string(raw))
-	if aerr != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, aerr)
-		return
-	}
-
-	//Write the data
-	utils.WriteJSONResponse(w, http.StatusOK, nil)
-}
