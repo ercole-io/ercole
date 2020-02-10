@@ -23,9 +23,13 @@ import (
 	"net/url"
 	"os"
 
+	"github.com/amreo/ercole-services/model"
+
 	"github.com/amreo/ercole-services/utils"
 	"github.com/spf13/cobra"
 )
+
+var outputMode int
 
 // getHostCmd represents the get-host command
 var getHostPatchingFunctionCmd = &cobra.Command{
@@ -50,12 +54,12 @@ var getHostPatchingFunctionCmd = &cobra.Command{
 		} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
 			out, _ := ioutil.ReadAll(resp.Body)
 			defer resp.Body.Close()
-			fmt.Fprintf(os.Stderr, "Failed to get the hostdata(Status: %d): %s\n", resp.StatusCode, string(out))
+			fmt.Fprintf(os.Stderr, "Failed to get the pf (Status: %d): %s\n", resp.StatusCode, string(out))
 			os.Exit(1)
 		} else {
 			out, _ := ioutil.ReadAll(resp.Body)
 			defer resp.Body.Close()
-			var res interface{}
+			var res model.PatchingFunction
 			err = json.Unmarshal(out, &res)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Failed to unmarshal response body: %v (%s)\n", err, string(out))
@@ -64,7 +68,14 @@ var getHostPatchingFunctionCmd = &cobra.Command{
 
 			enc := json.NewEncoder(os.Stdout)
 			enc.SetIndent("", "    ")
-			enc.Encode(res)
+			switch outputMode {
+			case 0:
+				enc.Encode(res)
+			case 1:
+				fmt.Print(res.Code)
+			case 2:
+				enc.Encode(res.Vars)
+			}
 		}
 
 	},
@@ -73,4 +84,5 @@ var getHostPatchingFunctionCmd = &cobra.Command{
 
 func init() {
 	apiCmd.AddCommand(getHostPatchingFunctionCmd)
+	getHostPatchingFunctionCmd.Flags().IntVarP(&outputMode, "output-mode", "m", 0, "Change the output mode of the command. 0 to show all informations, 1 to show the code, 2 to show the data")
 }
