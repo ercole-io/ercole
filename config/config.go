@@ -68,9 +68,9 @@ type AlertService struct {
 	LogMessages bool
 	// LogThrows enable the logging of alert throws
 	LogAlertThrows bool
-	// AgentUsername contains the username of the agent
+	// PublisherUsername contains the username of the agent
 	PublisherUsername string
-	// AgentPassword contains the password of the agent
+	// PublisherPassword contains the password of the agent
 	PublisherPassword string
 	// FreshnessCheckJob contains the parameters of the freshness check
 	FreshnessCheckJob FreshnessCheckJob
