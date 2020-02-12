@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"os"
 
 	"github.com/amreo/ercole-services/model"
@@ -37,16 +36,13 @@ var getHostPatchingFunctionCmd = &cobra.Command{
 	Short: "Get the patching function of a host",
 	Long:  `Get the patching function of a host`,
 	Run: func(cmd *cobra.Command, args []string) {
-		params := url.Values{}
-		olderThanOptions.addParam(params)
 
 		resp, err := http.Get(
-			utils.NewAPIUrl(
+			utils.NewAPIUrlNoParams(
 				ercoleConfig.APIService.RemoteEndpoint,
 				ercoleConfig.APIService.UserUsername,
 				ercoleConfig.APIService.UserPassword,
 				"/hosts/"+args[0]+"/patching-function",
-				params,
 			).String())
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Failed to get the hostdata: %v\n", err)
