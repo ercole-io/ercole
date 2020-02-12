@@ -15,10 +15,12 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"net/http"
 
+	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
 	"github.com/gorilla/mux"
 )
@@ -41,6 +43,39 @@ func (ctrl *APIController) GetPatchingFunction(w http.ResponseWriter, r *http.Re
 
 	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, pf)
+}
+
+// SetPatchingFunction set the patching function of a host specified in the hostname path variable to the content of the request body
+func (ctrl *APIController) SetPatchingFunction(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+	if !ctrl.Config.APIService.EnableInsertingCustomPatchingFunction {
+		utils.WriteAndLogError(w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the configuration property EnableInsertingCustomPatchingFunction is false"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	//get the data
+	hostname := mux.Vars(r)["hostname"]
+	var pf model.PatchingFunction
+	defer r.Body.Close()
+	if err := json.NewDecoder(r.Body).Decode(&pf); err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		return
+	}
+	//set the value
+	id, aerr := ctrl.Service.SetPatchingFunction(hostname, pf)
+	if aerr == utils.AerrHostNotFound {
+		utils.WriteAndLogError(w, http.StatusNotFound, aerr)
+		return
+	} else if aerr != nil {
+		utils.WriteAndLogError(w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, id)
 }
 
 // AddTagToDatabase add a tag to the database if it hasn't the tag

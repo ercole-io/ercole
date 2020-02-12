@@ -41,6 +41,7 @@
 		"Port": 11113,	
 		"LogHTTPRequest": true,
 		"ReadOnly": false,
+		"EnableInsertingCustomPatchingFunction": true,
 		"UserUsername": "user",
 		"UserPassword": "password",
 		"OperatingSystemAggregationRules": [

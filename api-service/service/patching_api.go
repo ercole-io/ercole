@@ -50,6 +50,62 @@ const DatabaseTagsAdderCode = `
 `
 const DefaultPatchingCode = DatabaseTagsAdderCode
 
+// GetPatchingFunction return the patching function specified in the hostname param
+func (as *APIService) GetPatchingFunction(hostname string) (interface{}, utils.AdvancedErrorInterface) {
+	//Check host existence
+	exist, err := as.Database.ExistHostdata(hostname)
+	if err != nil {
+		return nil, err
+	} else if !exist {
+		return nil, utils.AerrHostNotFound
+	}
+
+	//Get the data
+	return as.Database.FindPatchingFunction(hostname)
+}
+
+// SetPatchingFunction set the patching function of a host
+func (as *APIService) SetPatchingFunction(hostname string, pf model.PatchingFunction) (interface{}, utils.AdvancedErrorInterface) {
+	//Check host existence
+	exist, err := as.Database.ExistHostdata(hostname)
+	if err != nil {
+		return nil, err
+	} else if !exist {
+		return nil, utils.AerrHostNotFound
+	}
+
+	//Get old patching function of the same host
+	oldPf, err := as.Database.FindPatchingFunction(hostname)
+	if err != nil {
+		return nil, err
+	}
+
+	//Fill missing fields in the new pf
+	pf.Hostname = hostname
+	pf.CreatedAt = as.TimeNow()
+	if oldPf.Hostname != hostname || oldPf.Code == "" {
+		id := new(primitive.ObjectID)
+		*id = primitive.NewObjectIDFromTimestamp(as.TimeNow())
+		pf.ID = id
+	} else {
+		pf.ID = oldPf.ID
+	}
+
+	//Save the pf
+	err = as.Database.SavePatchingFunction(pf)
+	if err != nil {
+		return nil, err
+	}
+
+	//Apply the patch
+	err = as.ApplyPatch(pf)
+	if err != nil {
+		return nil, err
+	}
+
+	return pf.ID, nil
+}
+
 // AddTagToDatabase add the tag to the database if it hasn't the tag
 func (as *APIService) AddTagToDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface {
 	//Find the patching function
@@ -160,18 +216,4 @@ func (as *APIService) ApplyPatch(pf model.PatchingFunction) utils.AdvancedErrorI
 
 	//Save the patched data
 	return as.Database.ReplaceHostData(data)
-}
-
-// GetPatchingFunction return the patching function specified in the hostname param
-func (as *APIService) GetPatchingFunction(hostname string) (interface{}, utils.AdvancedErrorInterface) {
-	//Check host existence
-	exist, err := as.Database.ExistHostdata(hostname)
-	if err != nil {
-		return nil, err
-	} else if !exist {
-		return nil, utils.AerrHostNotFound
-	}
-
-	//Get the data
-	return as.Database.FindPatchingFunction(hostname)
 }

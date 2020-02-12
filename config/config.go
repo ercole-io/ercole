@@ -92,6 +92,8 @@ type APIService struct {
 	LogHTTPRequest bool
 	// ReadOnly disable modifing APIs
 	ReadOnly bool
+	// EnableInsertingCustomPatchingFunction enable the API for inserting custom patching functions
+	EnableInsertingCustomPatchingFunction bool
 	// UserUsername contains the username of the user
 	UserUsername string
 	// UserPassword contains the password of the user
