@@ -27,7 +27,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// DefaultPatchingCode is the code used to patch a host when the patching code is unavailable
+// DatabaseTagsAdderCode is the code used to add a tag to a database when the DatabaseTagsAdderMarker is missing
 // It assumes that the vars has the following structure:
 /*
 {
@@ -48,7 +48,44 @@ const DatabaseTagsAdderCode = `
 	});
 	/*</DATABASE_TAGS_ADDER>*/
 `
-const DefaultPatchingCode = DatabaseTagsAdderCode
+
+// DatabaseLicensesFixerCode is the code used to modify the value of a license when the DatabaseLicensesFixerMarker is missing
+// It assumes that the vars has the following structure:
+/*
+{
+	"LicenseModifiers": {
+		"dbname1": {
+			"license1": 0,
+			"license2": 2,
+			...
+		},
+		"dbname2": {
+			"license1": 0,
+			"license2": 2,
+			...
+		},
+		"..."
+	}
+}
+*/
+const DatabaseLicensesFixerMarker = "DATABASE_LICENSES_FIXER"
+const DatabaseLicensesFixerCode = `
+	/*<DATABASE_LICENSES_FIXER>*/
+	hostdata.Extra.Databases.forEach(function fixLicensesDb(db) {
+		if (db.Name in vars.LicenseModifiers) {
+			db.Licenses.forEach(function fixLicense(lic) {
+				if (lic.Name in vars.LicenseModifiers[db.Name]) {
+					if (! ("OldCount" in lic)) {
+						lic.OldCount = lic.Count;
+					}
+					lic.Count = vars.LicenseModifiers[db.Name][lic.Name];
+				}
+			})
+		}
+	});
+	/*</DATABASE_LICENSES_FIXER>*/
+`
+const DefaultPatchingCode = DatabaseTagsAdderCode + DatabaseLicensesFixerCode
 
 // GetPatchingFunction return the patching function specified in the hostname param
 func (as *APIService) GetPatchingFunction(hostname string) (interface{}, utils.AdvancedErrorInterface) {
@@ -278,4 +315,72 @@ func (as *APIService) ApplyPatch(pf model.PatchingFunction) utils.AdvancedErrorI
 
 	//Save the patched data
 	return as.Database.ReplaceHostData(data)
+}
+
+// SetLicenseModifier set the value of certain license to newValue
+func (as *APIService) SetLicenseModifier(hostname string, dbname string, licenseName string, newValue int) utils.AdvancedErrorInterface {
+	//Find the patching function
+	pf, err := as.Database.FindPatchingFunction(hostname)
+	if err != nil {
+		return err
+	}
+
+	//Check if the pf was found
+	if pf.Hostname != hostname || pf.Code == "" {
+		//No, initialze pf
+		pf.Hostname = hostname
+		pf.Code = DefaultPatchingCode
+		pf.Vars = map[string]interface{}{
+			"LicenseModifiers": map[string]interface{}{
+				dbname: map[string]interface{}{
+					licenseName: newValue,
+				},
+			},
+		}
+		pf.CreatedAt = as.TimeNow()
+	} else {
+		//Check the presence of the marker in the code
+		if !strings.Contains(pf.Code, "<"+DatabaseLicensesFixerMarker+">") {
+			pf.Code += DatabaseLicensesFixerCode
+		}
+
+		//Check the presence and the type of LicenseModifiers key in Vars. If not (re)initialize it!
+		if val, ok := pf.Vars["LicenseModifiers"]; !ok {
+			pf.Vars["LicenseModifiers"] = make(map[string]interface{})
+		} else if _, ok := val.(map[string]interface{}); !ok {
+			pf.Vars["LicenseModifiers"] = make(map[string]interface{})
+		}
+		licenseModifiers := pf.Vars["LicenseModifiers"].(map[string]interface{})
+
+		//Check the presence of the database with a slice inside
+		if val, ok := licenseModifiers[dbname]; !ok {
+			licenseModifiers[dbname] = make(map[string]interface{}, 0)
+		} else if _, ok := val.(bson.A); !ok {
+			licenseModifiers[dbname] = make(map[string]interface{}, 0)
+		}
+
+		//Get the modifiers mof the db
+		licenseModifiersOfDb := licenseModifiers[dbname].(map[string]interface{})
+
+		//Check if it already contains the licenseName with the same value
+		if val, ok := licenseModifiersOfDb[licenseName]; !ok {
+			licenseModifiersOfDb[licenseName] = newValue
+		} else if val == newValue {
+			return nil
+		} else {
+			licenseModifiersOfDb[licenseName] = newValue
+		}
+	}
+
+	// Save the modified patch
+	if pf.ID == nil {
+		oi := primitive.NewObjectIDFromTimestamp(as.TimeNow())
+		pf.ID = &oi
+	}
+	err = as.Database.SavePatchingFunction(pf)
+	if err != nil {
+		return err
+	}
+
+	return as.ApplyPatch(pf)
 }

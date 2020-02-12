@@ -19,6 +19,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
@@ -120,6 +121,41 @@ func (ctrl *APIController) DeleteTagOfDatabase(w http.ResponseWriter, r *http.Re
 
 	//set the value
 	aerr := ctrl.Service.DeleteTagOfDatabase(hostname, dbname, tagname)
+	if aerr != nil {
+		utils.WriteAndLogError(w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
+}
+
+// SetLicenseModifier set the license modifier of specified license/db/host in the request to the value in the body
+func (ctrl *APIController) SetLicenseModifier(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	//get the data
+	hostname := mux.Vars(r)["hostname"]
+	dbname := mux.Vars(r)["dbname"]
+	licensename := mux.Vars(r)["licenseName"]
+
+	raw, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		utils.WriteAndLogError(w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, "BAD_REQUEST"))
+		return
+	}
+
+	newValue, err := strconv.Atoi(string(raw))
+	if err != nil {
+		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, "BAD_REQUEST"))
+		return
+	}
+
+	//set the value
+	aerr := ctrl.Service.SetLicenseModifier(hostname, dbname, licensename, newValue)
 	if aerr != nil {
 		utils.WriteAndLogError(w, http.StatusInternalServerError, aerr)
 		return
