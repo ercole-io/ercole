@@ -21,6 +21,7 @@ import (
 
 	"github.com/amreo/ercole-services/api-service/database"
 	"github.com/amreo/ercole-services/utils"
+	"github.com/sirupsen/logrus"
 
 	"github.com/amreo/ercole-services/config"
 )
@@ -107,6 +108,8 @@ type APIService struct {
 	Database database.MongoDatabaseInterface
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
+	// Log contains logger formatted
+	Log *logrus.Logger
 }
 
 // Init initializes the service and database

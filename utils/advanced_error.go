@@ -16,8 +16,9 @@
 package utils
 
 import (
-	"log"
 	"runtime"
+
+	"github.com/sirupsen/logrus"
 )
 
 // AdvancedErrorInterface is a extension of the error interface with other informations
@@ -83,8 +84,7 @@ func NewAdvancedErrorPtr(err error, class string) *AdvancedError {
 	}
 }
 
-// LogErr log the errorr to the stdout
-func LogErr(err AdvancedErrorInterface) {
-	//Log the error
-	log.Printf("%s:%d %s: '%s'\n", err.SourceFilename(), err.LineNumber(), err.Error(), err.ErrorClass())
+// LogErr log the error to the stdout
+func LogErr(log *logrus.Logger, err AdvancedErrorInterface) {
+	log.Errorf("%s:%d %s: '%s'\n", err.SourceFilename(), err.LineNumber(), err.Error(), err.ErrorClass())
 }

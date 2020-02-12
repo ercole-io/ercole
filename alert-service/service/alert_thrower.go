@@ -17,7 +17,6 @@ package service
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/amreo/ercole-services/model"
@@ -40,7 +39,7 @@ func (as *AlertService) ThrowNewDatabaseAlert(dbname string, hostname string) ut
 		},
 	})
 	if as.Config.AlertService.LogAlertThrows {
-		log.Printf("Alert NEW_DATABASE of %s/%s was thrown\n", hostname, dbname)
+		as.Log.Warnf("Alert NEW_DATABASE of %s/%s was thrown\n", hostname, dbname)
 	}
 	return err
 }
@@ -59,7 +58,7 @@ func (as *AlertService) ThrowNewServerAlert(hostname string) utils.AdvancedError
 		},
 	})
 	if as.Config.AlertService.LogAlertThrows {
-		log.Printf("Alert NEW_SERVER of %s was thrown\n", hostname)
+		as.Log.Warnf("Alert NEW_SERVER of %s was thrown\n", hostname)
 	}
 	return err
 }
@@ -78,7 +77,7 @@ func (as *AlertService) ThrowNewEnterpriseLicenseAlert(hostname string) utils.Ad
 		},
 	})
 	if as.Config.AlertService.LogAlertThrows {
-		log.Printf("Alert NEW_LICENSE of %s was thrown\n", hostname)
+		as.Log.Warnf("Alert NEW_LICENSE of %s was thrown\n", hostname)
 	}
 	return err
 }
@@ -99,7 +98,7 @@ func (as *AlertService) ThrowActivatedFeaturesAlert(dbname string, hostname stri
 		},
 	})
 	if as.Config.AlertService.LogAlertThrows {
-		log.Printf("Alert NEW_OPTIONS of %s/%s was thrown\n", hostname, dbname)
+		as.Log.Warnf("Alert NEW_OPTIONS of %s/%s was thrown\n", hostname, dbname)
 	}
 	return err
 }
@@ -118,7 +117,7 @@ func (as *AlertService) ThrowNoDataAlert(hostname string, freshnessThreshold int
 		},
 	})
 	if as.Config.AlertService.LogAlertThrows {
-		log.Printf("Alert NO_DATA of %s was thrown\n", hostname)
+		as.Log.Warnf("Alert NO_DATA of %s was thrown\n", hostname)
 	}
 	return err
 }

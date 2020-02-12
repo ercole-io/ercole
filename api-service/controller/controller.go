@@ -22,6 +22,7 @@ import (
 	"github.com/amreo/ercole-services/api-service/service"
 	"github.com/amreo/ercole-services/config"
 	"github.com/goji/httpauth"
+	"github.com/sirupsen/logrus"
 )
 
 // APIControllerInterface is a interface that wrap methods used to querying data
@@ -104,6 +105,8 @@ type APIController struct {
 	Service service.APIServiceInterface
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
+	// Log contains logger formatted
+	Log *logrus.Logger
 }
 
 // AuthenticateMiddleware return the middleware used to authenticate (request) users

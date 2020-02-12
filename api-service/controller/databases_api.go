@@ -41,16 +41,16 @@ func (ctrl *APIController) SearchAddms(w http.ResponseWriter, r *http.Request) {
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -58,14 +58,14 @@ func (ctrl *APIController) SearchAddms(w http.ResponseWriter, r *http.Request) {
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	addms, err := ctrl.Service.SearchAddms(search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -94,16 +94,16 @@ func (ctrl *APIController) SearchSegmentAdvisors(w http.ResponseWriter, r *http.
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -111,14 +111,14 @@ func (ctrl *APIController) SearchSegmentAdvisors(w http.ResponseWriter, r *http.
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	segmentAdvisors, err := ctrl.Service.SearchSegmentAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -148,21 +148,21 @@ func (ctrl *APIController) SearchPatchAdvisors(w http.ResponseWriter, r *http.Re
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	if windowTime, err = utils.Str2int(r.URL.Query().Get("window-time"), 6); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -170,14 +170,14 @@ func (ctrl *APIController) SearchPatchAdvisors(w http.ResponseWriter, r *http.Re
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	patchAdvisors, err := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -205,23 +205,23 @@ func (ctrl *APIController) SearchDatabases(w http.ResponseWriter, r *http.Reques
 	var err utils.AdvancedErrorInterface
 	//parse the query params
 	if full, err = utils.Str2bool(r.URL.Query().Get("full"), false); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -229,14 +229,14 @@ func (ctrl *APIController) SearchDatabases(w http.ResponseWriter, r *http.Reques
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	databases, err := ctrl.Service.SearchDatabases(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -263,22 +263,22 @@ func (ctrl *APIController) ListLicenses(w http.ResponseWriter, r *http.Request) 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
 	if full, err = utils.Str2bool(r.URL.Query().Get("full"), false); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	sortBy = r.URL.Query().Get("sort-by")
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -286,14 +286,14 @@ func (ctrl *APIController) ListLicenses(w http.ResponseWriter, r *http.Request) 
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	licenses, err := ctrl.Service.ListLicenses(full, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -313,23 +313,23 @@ func (ctrl *APIController) SetLicenseCount(w http.ResponseWriter, r *http.Reques
 
 	raw, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, "BAD_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, "BAD_REQUEST"))
 		return
 	}
 
 	count, err := strconv.Atoi(string(raw))
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, "BAD_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, "BAD_REQUEST"))
 		return
 	}
 
 	//set the value
 	aerr := ctrl.Service.SetLicenseCount(name, count)
 	if aerr == utils.AerrLicenseNotFound {
-		utils.WriteAndLogError(w, http.StatusNotFound, aerr)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
 		return
 	} else if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, aerr)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
 	}
 

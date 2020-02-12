@@ -41,6 +41,7 @@ func TestFreshnessCheckJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldCurrentHosts(gomock.Any()).Return([]string{}, nil).Do(func(tm time.Time) {
@@ -68,6 +69,7 @@ func TestFreshnessCheckJobRun_SuccessTwoOldCurrentHostsWithoutNoDataAlert(t *tes
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldCurrentHosts(gomock.Any()).Return([]string{"pippohost", "plutohost"}, nil).Do(func(tm time.Time) {
@@ -100,6 +102,7 @@ func TestFreshnessCheckJobRun_SuccessTwoOldCurrentHostsWithNoDataAlert(t *testin
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldCurrentHosts(gomock.Any()).Return([]string{"pippohost", "plutohost"}, nil).Do(func(tm time.Time) {
@@ -129,6 +132,7 @@ func TestFreshnessCheckJobRun_DatabaseError1(t *testing.T) {
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldCurrentHosts(gomock.Any()).Return(nil, aerrMock).Do(func(tm time.Time) {
@@ -156,6 +160,7 @@ func TestFreshnessCheckJobRun_DatabaseError2(t *testing.T) {
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldCurrentHosts(gomock.Any()).Return([]string{"pippohost", "plutohost"}, nil).Do(func(tm time.Time) {
@@ -184,6 +189,7 @@ func TestFreshnessCheckJobRun_AlertServiceError2(t *testing.T) {
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldCurrentHosts(gomock.Any()).Return([]string{"pippohost", "plutohost"}, nil).Do(func(tm time.Time) {

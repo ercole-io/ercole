@@ -41,6 +41,7 @@ func TestArchivedHostCleaningJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldArchivedHosts(utils.P("2019-11-05T4:02:03Z")).Return([]primitive.ObjectID{}, nil).Times(1)
@@ -64,6 +65,7 @@ func TestArchivedHostCleaningJobRun_WithOldCurrentHosts(t *testing.T) {
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldArchivedHosts(utils.P("2019-11-05T4:02:03Z")).Return([]primitive.ObjectID{
@@ -93,6 +95,7 @@ func TestArchivedHostCleaningJobRun_DatabaseError1(t *testing.T) {
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldArchivedHosts(utils.P("2019-11-05T4:02:03Z")).Return([]primitive.ObjectID{
@@ -120,6 +123,7 @@ func TestArchivedHostCleaningJobRun_DatabaseError2(t *testing.T) {
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldArchivedHosts(utils.P("2019-11-05T4:02:03Z")).Return([]primitive.ObjectID{

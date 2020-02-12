@@ -38,23 +38,23 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 	var err utils.AdvancedErrorInterface
 	//parse the query params
 	if full, err = utils.Str2bool(r.URL.Query().Get("full"), false); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -62,14 +62,14 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	hosts, err := ctrl.Service.SearchHosts(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -90,17 +90,17 @@ func (ctrl *APIController) GetHost(w http.ResponseWriter, r *http.Request) {
 	hostname := mux.Vars(r)["hostname"]
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	host, err := ctrl.Service.GetHost(hostname, olderThan)
 	if err == utils.AerrHostNotFound {
-		utils.WriteAndLogError(w, http.StatusNotFound, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 

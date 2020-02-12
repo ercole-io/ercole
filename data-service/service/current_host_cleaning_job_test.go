@@ -39,6 +39,7 @@ func TestCurrentHostCleaningJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldCurrentHosts(utils.P("2019-11-05T4:02:03Z")).Return([]string{}, nil).Times(1)
@@ -62,6 +63,7 @@ func TestCurrentHostCleaningJobRun_SuccessOldCurrentHosts(t *testing.T) {
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldCurrentHosts(utils.P("2019-11-05T4:02:03Z")).Return([]string{"superhost", "pippohost"}, nil).Times(1)
@@ -87,6 +89,7 @@ func TestCurrentHostCleaningJobRun_DatabaseError1(t *testing.T) {
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldCurrentHosts(utils.P("2019-11-05T4:02:03Z")).Return([]string{"invalid"}, aerrMock).Times(1)
@@ -111,6 +114,7 @@ func TestCurrentHostCleaningJobRun_DatabaseError2(t *testing.T) {
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldCurrentHosts(utils.P("2019-11-05T4:02:03Z")).Return([]string{"superhost", "pippohost"}, nil).Times(1)

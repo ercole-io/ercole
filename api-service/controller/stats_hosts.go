@@ -32,14 +32,14 @@ func (ctrl *APIController) GetEnvironmentStats(w http.ResponseWriter, r *http.Re
 	location = r.URL.Query().Get("location")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	stats, err := ctrl.Service.GetEnvironmentStats(location, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -57,14 +57,14 @@ func (ctrl *APIController) GetTypeStats(w http.ResponseWriter, r *http.Request) 
 	location = r.URL.Query().Get("location")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	stats, err := ctrl.Service.GetTypeStats(location, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -82,14 +82,14 @@ func (ctrl *APIController) GetOperatingSystemStats(w http.ResponseWriter, r *htt
 	location = r.URL.Query().Get("location")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	stats, err := ctrl.Service.GetOperatingSystemStats(location, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
