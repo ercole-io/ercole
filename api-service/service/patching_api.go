@@ -176,6 +176,66 @@ func (as *APIService) AddTagToDatabase(hostname string, dbname string, tagname s
 	return as.ApplyPatch(pf)
 }
 
+// DeleteTagOfDatabase delete the tag from the database if it hasn't the tag
+func (as *APIService) DeleteTagOfDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface {
+	//Find the patching function
+	pf, err := as.Database.FindPatchingFunction(hostname)
+	if err != nil {
+		return err
+	}
+
+	//Check if the pf was found
+	if pf.Hostname != hostname || pf.Code == "" {
+		return nil
+	}
+
+	//Check the presence of the marker in the code
+	if !strings.Contains(pf.Code, "<"+DatabaseTagsAdderMarker+">") {
+		pf.Code += DatabaseTagsAdderCode
+	}
+
+	//Check the presence and the type of Tags key in Vars. If not (re)initialize it!
+	if val, ok := pf.Vars["Tags"]; !ok {
+		return nil
+	} else if _, ok := val.(map[string]interface{}); !ok {
+		return nil
+	}
+	tags := pf.Vars["Tags"].(map[string]interface{})
+
+	//Check the presence of the database with a slice inside
+	if val, ok := tags[dbname]; !ok {
+		return nil
+	} else if _, ok := val.(bson.A); !ok {
+		return nil
+	}
+
+	//Get the slice inside
+	dbTags := tags[dbname].(bson.A)
+
+	//Check if it contain the tag
+	tagIndex := -1
+	for i, val := range dbTags {
+		if val == tagname {
+			tagIndex = i
+			break
+		}
+	}
+	if tagIndex == -1 {
+		return nil
+	}
+
+	//Remove it because the pf contains it
+	tags[dbname] = append(dbTags[:tagIndex], dbTags[tagIndex+1:]...)
+
+	// Save the modified patch
+	err = as.Database.SavePatchingFunction(pf)
+	if err != nil {
+		return err
+	}
+
+	return as.ApplyPatch(pf)
+}
+
 // ApplyPatch apply the patch pf to the relative host
 func (as *APIService) ApplyPatch(pf model.PatchingFunction) utils.AdvancedErrorInterface {
 	//Get the data
