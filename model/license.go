@@ -35,7 +35,7 @@ var LicenseBsonValidatorRules = bson.D{
 			{"bsonType", "string"},
 		}},
 		{"Count", bson.D{
-			{"bsonType", "double"},
+			{"bsonType", "number"},
 		}},
 	}},
 }
