@@ -17,7 +17,6 @@
 package service
 
 import (
-	"log"
 	"sync"
 	"time"
 
@@ -25,6 +24,7 @@ import (
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
 	"github.com/bamzi/jobrunner"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/amreo/ercole-services/config"
@@ -62,6 +62,8 @@ type AlertService struct {
 	Database database.MongoDatabaseInterface
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
+	// Log contains logger formatted
+	Log *logrus.Logger
 }
 
 // Init initializes the service and database
@@ -73,20 +75,20 @@ func (as *AlertService) Init(wg *sync.WaitGroup) {
 	sub := as.Queue.Subscribe(0, "hostdata.insertion")
 	wg.Add(1)
 	go func(s hub.Subscription) {
-		log.Println("Start alert-service/queue")
+		as.Log.Info("Start alert-service/queue")
 		for msg := range s.Receiver {
 			as.ProcessMsg(msg)
 		}
-		log.Println("Stop alert-service/queue")
+		as.Log.Info("Stop alert-service/queue")
 		wg.Done()
 	}(sub)
 
 	//Start cron jobs
 	jobrunner.Start()
 
-	jobrunner.Schedule(as.Config.AlertService.FreshnessCheckJob.Crontab, &FreshnessCheckJob{alertService: as, TimeNow: as.TimeNow, Database: as.Database})
+	jobrunner.Schedule(as.Config.AlertService.FreshnessCheckJob.Crontab, &FreshnessCheckJob{alertService: as, TimeNow: as.TimeNow, Database: as.Database, Log: as.Log})
 	if as.Config.AlertService.FreshnessCheckJob.RunAtStartup {
-		jobrunner.Now(&FreshnessCheckJob{alertService: as, TimeNow: as.TimeNow, Database: as.Database})
+		jobrunner.Now(&FreshnessCheckJob{alertService: as, TimeNow: as.TimeNow, Database: as.Database, Log: as.Log})
 	}
 }
 
@@ -104,7 +106,7 @@ func (as *AlertService) HostDataInsertion(id primitive.ObjectID) utils.AdvancedE
 // ProcessMsg processes the message msg
 func (as *AlertService) ProcessMsg(msg hub.Message) {
 	if as.Config.AlertService.LogMessages {
-		log.Printf("RECEIVED EVENT %s: %s", msg.Topic(), utils.ToJSON(msg.Fields))
+		as.Log.Infof("RECEIVED EVENT %s: %s", msg.Topic(), utils.ToJSON(msg.Fields))
 	}
 
 	switch msg.Topic() {
@@ -121,20 +123,20 @@ func (as *AlertService) ProcessHostDataInsertion(params hub.Fields) {
 	//Get the original data
 	newData, err := as.Database.FindHostData(id)
 	if err != nil {
-		utils.LogErr(err)
+		utils.LogErr(as.Log, err)
 		return
 	}
 
 	//Get the previous data
 	oldData, err := as.Database.FindMostRecentHostDataOlderThan(newData.Hostname, newData.CreatedAt)
 	if err != nil {
-		utils.LogErr(err)
+		utils.LogErr(as.Log, err)
 		return
 	}
 
 	//Find the data difference and generate eventually alerts
 	if err := as.DiffHostDataAndGenerateAlert(oldData, newData); err != nil {
-		utils.LogErr(err)
+		utils.LogErr(as.Log, err)
 		return
 	}
 }

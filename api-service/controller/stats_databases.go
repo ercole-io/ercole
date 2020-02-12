@@ -32,14 +32,14 @@ func (ctrl *APIController) GetDatabaseEnvironmentStats(w http.ResponseWriter, r 
 	location = r.URL.Query().Get("location")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	stats, err := ctrl.Service.GetDatabaseEnvironmentStats(location, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -57,14 +57,14 @@ func (ctrl *APIController) GetDatabaseVersionStats(w http.ResponseWriter, r *htt
 	location = r.URL.Query().Get("location")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	stats, err := ctrl.Service.GetDatabaseVersionStats(location, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -82,19 +82,19 @@ func (ctrl *APIController) GetTopReclaimableDatabaseStats(w http.ResponseWriter,
 	//parse the query params
 	location = r.URL.Query().Get("location")
 	if limit, err = utils.Str2int(r.URL.Query().Get("limit"), 15); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	stats, err := ctrl.Service.GetTopReclaimableDatabaseStats(location, limit, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -112,19 +112,19 @@ func (ctrl *APIController) GetDatabasePatchStatusStats(w http.ResponseWriter, r 
 	//parse the query params
 	location = r.URL.Query().Get("location")
 	if windowTime, err = utils.Str2int(r.URL.Query().Get("window-time"), 6); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	stats, err := ctrl.Service.GetDatabasePatchStatusStats(location, time.Now().AddDate(0, -windowTime, 0), olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -142,19 +142,19 @@ func (ctrl *APIController) GetTopWorkloadDatabaseStats(w http.ResponseWriter, r 
 	//parse the query params
 	location = r.URL.Query().Get("location")
 	if limit, err = utils.Str2int(r.URL.Query().Get("limit"), 10); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	stats, err := ctrl.Service.GetTopWorkloadDatabaseStats(location, limit, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -174,14 +174,14 @@ func (ctrl *APIController) GetDatabaseDataguardStatusStats(w http.ResponseWriter
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	stats, err := ctrl.Service.GetDatabaseDataguardStatusStats(location, environment, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -201,14 +201,14 @@ func (ctrl *APIController) GetDatabaseRACStatusStats(w http.ResponseWriter, r *h
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	stats, err := ctrl.Service.GetDatabaseRACStatusStats(location, environment, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -228,14 +228,14 @@ func (ctrl *APIController) GetDatabaseArchivelogStatusStats(w http.ResponseWrite
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	stats, err := ctrl.Service.GetDatabaseArchivelogStatusStats(location, environment, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -255,14 +255,14 @@ func (ctrl *APIController) GetTotalDatabaseWorkStats(w http.ResponseWriter, r *h
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	stats, err := ctrl.Service.GetTotalDatabaseWorkStats(location, environment, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -282,14 +282,14 @@ func (ctrl *APIController) GetTotalDatabaseMemorySizeStats(w http.ResponseWriter
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	stats, err := ctrl.Service.GetTotalDatabaseMemorySizeStats(location, environment, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -309,14 +309,14 @@ func (ctrl *APIController) GetTotalDatabaseDatafileSizeStats(w http.ResponseWrit
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	stats, err := ctrl.Service.GetTotalDatabaseDatafileSizeStats(location, environment, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -336,14 +336,14 @@ func (ctrl *APIController) GetTotalDatabaseSegmentSizeStats(w http.ResponseWrite
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	stats, err := ctrl.Service.GetTotalDatabaseSegmentSizeStats(location, environment, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -363,14 +363,14 @@ func (ctrl *APIController) GetDatabaseLicenseComplianceStatusStats(w http.Respon
 	environment = r.URL.Query().Get("environment")
 
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
 	stats, err := ctrl.Service.GetDatabaseLicenseComplianceStatusStats(location, environment, olderThan)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 

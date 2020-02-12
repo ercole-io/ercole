@@ -17,9 +17,9 @@ package migration
 
 import (
 	"context"
-	"log"
 
 	"github.com/amreo/ercole-services/utils"
+	"github.com/sirupsen/logrus"
 
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -32,7 +32,7 @@ import (
 )
 
 // ConnectToMongodb connects to the MongoDB and return the connection
-func ConnectToMongodb(conf config.Mongodb) *mongo.Client {
+func ConnectToMongodb(log *logrus.Logger, conf config.Mongodb) *mongo.Client {
 	var err error
 
 	//Set client options
@@ -54,7 +54,7 @@ func ConnectToMongodb(conf config.Mongodb) *mongo.Client {
 }
 
 // Migrate migrate the client database
-func Migrate(client *mongo.Database, initialLicensesList []string) {
+func Migrate(log *logrus.Logger, client *mongo.Database, initialLicensesList []string) {
 	//NB: ALL OPERATIONS SHOULD BE IDEMPOTENT
 	//THE RESULT OF
 	//	Migrate(&db)
@@ -62,17 +62,17 @@ func Migrate(client *mongo.Database, initialLicensesList []string) {
 	//SHOULD BE EQUAL TO THE RESULT OF
 	//	Migrate(&db)
 	//AND POSSIBLY AVOID DESTRUCTIVE CHANGES
-	UpdateDataSchemas(client)
+	UpdateDataSchemas(log, client)
 
-	MigrateHostsSchema(client)
-	MigrateClustersSchema(client)
-	MigrateLicensesSchema(client, initialLicensesList)
-	MigrateAlertsSchema(client)
-	MigrateCurrentDatabasesSchema(client)
+	MigrateHostsSchema(log, client)
+	MigrateClustersSchema(log, client)
+	MigrateLicensesSchema(log, client, initialLicensesList)
+	MigrateAlertsSchema(log, client)
+	MigrateCurrentDatabasesSchema(log, client)
 }
 
 // MigrateHostsSchema create or update the hosts schema
-func MigrateHostsSchema(client *mongo.Database) {
+func MigrateHostsSchema(log *logrus.Logger, client *mongo.Database) {
 	//Create the collection
 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
 		log.Panicln(err)
@@ -167,7 +167,7 @@ func MigrateHostsSchema(client *mongo.Database) {
 }
 
 // MigrateClustersSchema create or update the currentCluster schema
-func MigrateClustersSchema(client *mongo.Database) {
+func MigrateClustersSchema(log *logrus.Logger, client *mongo.Database) {
 	//Create the view
 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
 		log.Panicln(err)
@@ -206,7 +206,7 @@ func MigrateClustersSchema(client *mongo.Database) {
 }
 
 // MigrateLicensesSchema create or update the licenses schema
-func MigrateLicensesSchema(client *mongo.Database, initialLicensesList []string) {
+func MigrateLicensesSchema(log *logrus.Logger, client *mongo.Database, initialLicensesList []string) {
 	//Create the collection
 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
 		log.Panicln(err)
@@ -229,11 +229,11 @@ func MigrateLicensesSchema(client *mongo.Database, initialLicensesList []string)
 	}
 
 	//Initializes the collection from the lists of licenses
-	InitLicenses(client, initialLicensesList)
+	InitLicenses(log, client, initialLicensesList)
 }
 
 // MigrateAlertsSchema create or update the alerts schema
-func MigrateAlertsSchema(client *mongo.Database) {
+func MigrateAlertsSchema(log *logrus.Logger, client *mongo.Database) {
 	//Create the collection
 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
 		log.Panicln(err)
@@ -266,7 +266,7 @@ func MigrateAlertsSchema(client *mongo.Database) {
 }
 
 // MigrateCurrentDatabasesSchema create or update the databases schema
-func MigrateCurrentDatabasesSchema(client *mongo.Database) {
+func MigrateCurrentDatabasesSchema(log *logrus.Logger, client *mongo.Database) {
 	//Create the collection
 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
 		log.Panicln(err)
@@ -315,12 +315,12 @@ func MigrateCurrentDatabasesSchema(client *mongo.Database) {
 }
 
 // UpdateDataSchemas updates the schema of the data in the database
-func UpdateDataSchemas(client *mongo.Database) {
+func UpdateDataSchemas(log *logrus.Logger, client *mongo.Database) {
 
 }
 
 // InitLicenses initialize the licenses collection
-func InitLicenses(client *mongo.Database, list []string) {
+func InitLicenses(log *logrus.Logger, client *mongo.Database, list []string) {
 	for _, l := range list {
 		//Check the existance of a license with the same name
 		val, err := client.Collection("licenses").CountDocuments(context.TODO(), bson.D{

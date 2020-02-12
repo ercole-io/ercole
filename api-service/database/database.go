@@ -18,10 +18,10 @@ package database
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/amreo/ercole-services/utils"
+	"github.com/sirupsen/logrus"
 
 	"github.com/amreo/ercole-services/config"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -110,13 +110,15 @@ type MongoDatabase struct {
 	TimeNow func() time.Time
 	// OperatingSystemAggregationRules contains rules used to aggregate various operating systems
 	OperatingSystemAggregationRules []config.AggregationRule
+	// Log contains logger formatted
+	Log *logrus.Logger
 }
 
 // Init initializes the connection to the database
 func (md *MongoDatabase) Init() {
 	//Connect to mongodb
 	md.ConnectToMongodb()
-	log.Println("MongoDatabase is connected to MongoDB!", md.Config.Mongodb.URI)
+	md.Log.Info("MongoDatabase is connected to MongoDB! ", md.Config.Mongodb.URI)
 }
 
 // ConnectToMongodb connects to the MongoDB and return the connection
@@ -129,12 +131,12 @@ func (md *MongoDatabase) ConnectToMongodb() {
 	//Connect to MongoDB
 	md.Client, err = mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		log.Fatal(err)
+		md.Log.Fatal(err)
 	}
 
 	//Check the connection
 	err = md.Client.Ping(context.TODO(), nil)
 	if err != nil {
-		log.Fatal(err)
+		md.Log.Fatal(err)
 	}
 }

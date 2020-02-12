@@ -18,12 +18,12 @@ package service
 
 import (
 	"bytes"
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/amreo/ercole-services/data-service/database"
 	"github.com/bamzi/jobrunner"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/amreo/ercole-services/utils"
@@ -54,6 +54,8 @@ type HostDataService struct {
 	Database database.MongoDatabaseInterface
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
+	// Log contains logger formatted
+	Log *logrus.Logger
 }
 
 // Init initializes the service and database
@@ -87,7 +89,7 @@ func (hds *HostDataService) UpdateHostInfo(hostdata model.HostData) (interface{}
 
 	//Insert the host
 	if hds.Config.DataService.LogInsertingHostdata {
-		log.Println(utils.ToJSON(hostdata))
+		hds.Log.Info(utils.ToJSON(hostdata))
 	}
 	res, err := hds.Database.InsertHostData(hostdata)
 	if err != nil {

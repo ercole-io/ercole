@@ -17,12 +17,12 @@
 package service
 
 import (
-	"log"
 	"time"
 
 	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/data-service/database"
 	"github.com/amreo/ercole-services/utils"
+	"github.com/sirupsen/logrus"
 )
 
 // CurrentHostCleaningJob is the job used to clean and archive old current host
@@ -35,6 +35,8 @@ type CurrentHostCleaningJob struct {
 	Config config.Configuration
 	// alertService contains the underlyng hostdata service
 	hostDataService HostDataServiceInterface
+	// Log contains logger formatted
+	Log *logrus.Logger
 }
 
 // Run archive every hostdata that is older than a amount
@@ -42,7 +44,7 @@ func (job *CurrentHostCleaningJob) Run() {
 	//Find the current hosts older than CurrentHostCleaningJob.HourThreshold days
 	hosts, err := job.Database.FindOldCurrentHosts(job.TimeNow().Add(time.Duration(-job.Config.DataService.CurrentHostCleaningJob.HourThreshold) * time.Hour))
 	if err != nil {
-		utils.LogErr(err)
+		utils.LogErr(job.Log, err)
 		return
 	}
 
@@ -51,9 +53,9 @@ func (job *CurrentHostCleaningJob) Run() {
 		//Archive the host
 		_, err := job.Database.ArchiveHost(host)
 		if err != nil {
-			utils.LogErr(err)
+			utils.LogErr(job.Log, err)
 			return
 		}
-		log.Printf("%s has been moved because it have passed more than %d hours from last update", host, job.Config.DataService.CurrentHostCleaningJob.HourThreshold)
+		job.Log.Infof("%s has been moved because it have passed more than %d hours from last update", host, job.Config.DataService.CurrentHostCleaningJob.HourThreshold)
 	}
 }

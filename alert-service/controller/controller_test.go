@@ -49,6 +49,7 @@ func TestHostDataInsertion_Success(t *testing.T) {
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 	as.EXPECT().HostDataInsertion(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(nil).Times(1)
 	as.EXPECT().HostDataInsertion(gomock.Any()).Times(0)
@@ -80,6 +81,7 @@ func TestHostDataInsertion_RequestError(t *testing.T) {
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 	as.EXPECT().HostDataInsertion(gomock.Any()).Times(0)
 
@@ -110,6 +112,7 @@ func TestHostDataInsertion_ServiceError(t *testing.T) {
 				},
 			},
 		},
+		Log: utils.NewLogger("TEST"),
 	}
 	as.EXPECT().HostDataInsertion(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(aerrMock).Times(1)
 	as.EXPECT().HostDataInsertion(gomock.Any()).Times(0)
