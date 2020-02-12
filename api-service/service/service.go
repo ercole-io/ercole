@@ -103,6 +103,8 @@ type APIServiceInterface interface {
 
 	// AddTagToDatabase add the tag to the database if it hasn't the tag
 	AddTagToDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface
+	// DeleteTagOfDatabase delete the tag from the database if it hasn't the tag
+	DeleteTagOfDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

@@ -105,3 +105,26 @@ func (ctrl *APIController) AddTagToDatabase(w http.ResponseWriter, r *http.Reque
 	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
+
+// DeleteTagOfDatabase remove a certain tag from a database if it has the tag
+func (ctrl *APIController) DeleteTagOfDatabase(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	//get the data
+	hostname := mux.Vars(r)["hostname"]
+	dbname := mux.Vars(r)["dbname"]
+	tagname := mux.Vars(r)["tagname"]
+
+	//set the value
+	aerr := ctrl.Service.DeleteTagOfDatabase(hostname, dbname, tagname)
+	if aerr != nil {
+		utils.WriteAndLogError(w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
+}
