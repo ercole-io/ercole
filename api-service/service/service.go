@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/amreo/ercole-services/api-service/database"
+	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
 
 	"github.com/amreo/ercole-services/config"
@@ -97,6 +98,9 @@ type APIServiceInterface interface {
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
+	// SetPatchingFunction set the patching function of a host
+	SetPatchingFunction(hostname string, pf model.PatchingFunction) (interface{}, utils.AdvancedErrorInterface)
+
 	// AddTagToDatabase add the tag to the database if it hasn't the tag
 	AddTagToDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface
 }

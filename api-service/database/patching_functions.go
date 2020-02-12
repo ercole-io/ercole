@@ -17,7 +17,6 @@ package database
 
 import (
 	"context"
-	"log"
 
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
@@ -55,8 +54,6 @@ func (md *MongoDatabase) FindPatchingFunction(hostname string) (model.PatchingFu
 func (md *MongoDatabase) SavePatchingFunction(pf model.PatchingFunction) utils.AdvancedErrorInterface {
 	//Find the informations
 	true := true
-	raw, _ := bson.MarshalExtJSON(pf, false, false)
-	log.Println(string(raw))
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("patching_functions").ReplaceOne(context.TODO(), bson.M{
 		"_id": pf.ID,
 	}, pf, &options.ReplaceOptions{

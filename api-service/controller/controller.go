@@ -96,6 +96,8 @@ type APIControllerInterface interface {
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(w http.ResponseWriter, r *http.Request)
+	// SetPatchingFunction set the patching function of a host specified in the hostname path variable to the content of the request body
+	SetPatchingFunction(w http.ResponseWriter, r *http.Request)
 	// AddTagToDatabase add a tag to the database if it hasn't the tag
 	AddTagToDatabase(w http.ResponseWriter, r *http.Request)
 }

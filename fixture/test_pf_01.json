@@ -1,0 +1,6 @@
+{
+	"Code": "hostdata[\"foo\"] = vars[\"What\"]",
+	"Vars": {
+		"What": "bar"
+	}
+}
