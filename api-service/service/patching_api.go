@@ -227,6 +227,8 @@ func (as *APIService) DeleteTagOfDatabase(hostname string, dbname string, tagnam
 	//Remove it because the pf contains it
 	tags[dbname] = append(dbTags[:tagIndex], dbTags[tagIndex+1:]...)
 
+	//XXX: if there are no tags in the vars, we can remove the DatabaseTagsAdderCode. If there are no code, we can also remove the PF
+
 	// Save the modified patch
 	err = as.Database.SavePatchingFunction(pf)
 	if err != nil {
