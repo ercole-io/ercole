@@ -38,6 +38,7 @@ func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface
 	router.HandleFunc("/hosts/{hostname}/databases/{dbname}/tags", ctrl.AddTagToDatabase).Methods("POST")
 	router.HandleFunc("/hosts/{hostname}/databases/{dbname}/tags/{tagname}", ctrl.DeleteTagOfDatabase).Methods("DELETE")
 	router.HandleFunc("/hosts/{hostname}/databases/{dbname}/licenses/{licenseName}", ctrl.SetLicenseModifier).Methods("PUT")
+	router.HandleFunc("/hosts/{hostname}/databases/{dbname}/licenses/{licenseName}", ctrl.DeleteLicenseModifier).Methods("RESET")
 
 	router.HandleFunc("/clusters", ctrl.SearchClusters).Methods("GET")
 	router.HandleFunc("/databases", ctrl.SearchDatabases).Methods("GET")

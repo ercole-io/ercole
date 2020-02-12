@@ -106,6 +106,8 @@ type APIServiceInterface interface {
 	DeleteTagOfDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface
 	// SetLicenseModifier set the value of certain license to newValue
 	SetLicenseModifier(hostname string, dbname string, licenseName string, newValue int) utils.AdvancedErrorInterface
+	// DeleteLicenseModifier delete the modifier of a certain license
+	DeleteLicenseModifier(hostname string, dbname string, licenseName string) utils.AdvancedErrorInterface
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
