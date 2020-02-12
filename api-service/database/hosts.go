@@ -242,7 +242,7 @@ func (md *MongoDatabase) ReplaceHostData(hostData map[string]interface{}) utils.
 func (md *MongoDatabase) ExistHostdata(hostname string) (bool, utils.AdvancedErrorInterface) {
 	//Count the number of new NO_DATA alerts associated to the host
 	val, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").CountDocuments(context.TODO(), bson.M{
-		"Archived": true,
+		"Archived": false,
 		"Hostname": hostname,
 	}, &options.CountOptions{
 		Limit: utils.Intptr(1),
