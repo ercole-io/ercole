@@ -164,3 +164,26 @@ func (ctrl *APIController) SetLicenseModifier(w http.ResponseWriter, r *http.Req
 	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
+
+// DeleteLicenseModifier delete the license modifier of specified license/db/host in the request
+func (ctrl *APIController) DeleteLicenseModifier(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	//get the data
+	hostname := mux.Vars(r)["hostname"]
+	dbname := mux.Vars(r)["dbname"]
+	licensename := mux.Vars(r)["licenseName"]
+
+	//set the value
+	aerr := ctrl.Service.DeleteLicenseModifier(hostname, dbname, licensename)
+	if aerr != nil {
+		utils.WriteAndLogError(w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
+}

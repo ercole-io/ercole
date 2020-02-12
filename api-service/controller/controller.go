@@ -104,6 +104,8 @@ type APIControllerInterface interface {
 	DeleteTagOfDatabase(w http.ResponseWriter, r *http.Request)
 	// SetLicenseModifier set the license modifier of specified license/db/host in the request to the value in the body
 	SetLicenseModifier(w http.ResponseWriter, r *http.Request)
+	// DeleteLicenseModifier delete the license modifier of specified license/db/host in the request
+	DeleteLicenseModifier(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface
