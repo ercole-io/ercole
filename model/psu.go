@@ -19,22 +19,22 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // PSU holds information about a PSU
 type PSU struct {
-	Date        string
-	Description string
+	Date        string `bson:"Date"`
+	Description string `bson:"Description"`
 }
 
 // PSUBsonValidatorRules contains mongodb validation rules for psu
 var PSUBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"date",
-		"description",
+		"Date",
+		"Description",
 	}},
 	{"properties", bson.D{
-		{"date", bson.D{
+		{"Date", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"description", bson.D{
+		{"Description", bson.D{
 			{"bsonType", "string"},
 		}},
 	}},

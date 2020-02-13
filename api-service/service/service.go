@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/amreo/ercole-services/api-service/database"
+	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
 	"github.com/sirupsen/logrus"
 
@@ -50,6 +51,8 @@ type APIServiceInterface interface {
 	SearchExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// ListLicenses list licenses
 	ListLicenses(full bool, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetPatchingFunction return the patching function specified in the hostname param
+	GetPatchingFunction(hostname string) (interface{}, utils.AdvancedErrorInterface)
 
 	// GetEnvironmentStats return a array containing the number of hosts per environment
 	GetEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
@@ -96,6 +99,13 @@ type APIServiceInterface interface {
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
+	// SetPatchingFunction set the patching function of a host
+	SetPatchingFunction(hostname string, pf model.PatchingFunction) (interface{}, utils.AdvancedErrorInterface)
+
+	// AddTagToDatabase add the tag to the database if it hasn't the tag
+	AddTagToDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface
+	// DeleteTagOfDatabase delete the tag from the database if it hasn't the tag
+	DeleteTagOfDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

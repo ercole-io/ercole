@@ -19,47 +19,47 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // Tablespace holds the informations about a tablespace.
 type Tablespace struct {
-	Database string
-	Name     string
-	MaxSize  string `bson:"max_size"`
-	Total    string
-	Used     string
-	UsedPerc string `bson:"used_perc"`
-	Status   string
+	Database string `bson:"Database"`
+	Name     string `bson:"Name"`
+	MaxSize  string `bson:"MaxSize"`
+	Total    string `bson:"Total"`
+	Used     string `bson:"Used"`
+	UsedPerc string `bson:"UsedPerc"`
+	Status   string `bson:"Status"`
 }
 
 // TablespaceBsonValidatorRules contains mongodb validation rules for tablespace
 var TablespaceBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"database",
-		"name",
-		"max_size",
-		"total",
-		"used",
-		"used_perc",
-		"status",
+		"Database",
+		"Name",
+		"MaxSize",
+		"Total",
+		"Used",
+		"UsedPerc",
+		"Status",
 	}},
 	{"properties", bson.D{
-		{"database", bson.D{
+		{"Database", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"name", bson.D{
+		{"Name", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"max_size", bson.D{
+		{"MaxSize", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"total", bson.D{
+		{"Total", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"used", bson.D{
+		{"Used", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"used_perc", bson.D{
+		{"UsedPerc", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"status", bson.D{
+		{"Status", bson.D{
 			{"bsonType", "string"},
 		}},
 	}},

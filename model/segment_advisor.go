@@ -19,42 +19,42 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // SegmentAdvisor holds information about a segment advisor
 type SegmentAdvisor struct {
-	SegmentOwner   string `bson:"segment_owner"`
-	SegmentName    string `bson:"segment_name"`
-	SegmentType    string `bson:"segment_type"`
-	PartitionName  string `bson:"partition_name"`
-	Reclaimable    string
-	Recommendation string
+	SegmentOwner   string `bson:"SegmentOwner"`
+	SegmentName    string `bson:"SegmentName"`
+	SegmentType    string `bson:"SegmentType"`
+	PartitionName  string `bson:"PartitionName"`
+	Reclaimable    string `bson:"Reclaimable"`
+	Recommendation string `bson:"Recommendation"`
 }
 
 // SegmentAdvisorBsonValidatorRules contains mongodb validation rules for segmentAdvisor
 var SegmentAdvisorBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"segment_owner",
-		"segment_name",
-		"segment_type",
-		"partition_name",
-		"reclaimable",
-		"recommendation",
+		"SegmentOwner",
+		"SegmentName",
+		"SegmentType",
+		"PartitionName",
+		"Reclaimable",
+		"Recommendation",
 	}},
 	{"properties", bson.D{
-		{"segment_owner", bson.D{
+		{"SegmentOwner", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"segment_name", bson.D{
+		{"SegmentName", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"segment_type", bson.D{
+		{"SegmentType", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"partition_name", bson.D{
+		{"PartitionName", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"reclaimable", bson.D{
+		{"Reclaimable", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"recommendation", bson.D{
+		{"Recommendation", bson.D{
 			{"bsonType", "string"},
 		}},
 	}},

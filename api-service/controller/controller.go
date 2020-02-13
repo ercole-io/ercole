@@ -49,6 +49,8 @@ type APIControllerInterface interface {
 	SearchExadata(w http.ResponseWriter, r *http.Request)
 	// ListLicenses list licenses using the filters in the request
 	ListLicenses(w http.ResponseWriter, r *http.Request)
+	// GetPatchingFunction return all'informations about the patching function of the host requested in the hostnmae path variable
+	GetPatchingFunction(w http.ResponseWriter, r *http.Request)
 
 	// GetEnvironmentStats return all statistics about the environments of the hosts using the filters in the request
 	GetEnvironmentStats(w http.ResponseWriter, r *http.Request)
@@ -95,6 +97,12 @@ type APIControllerInterface interface {
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(w http.ResponseWriter, r *http.Request)
+	// SetPatchingFunction set the patching function of a host specified in the hostname path variable to the content of the request body
+	SetPatchingFunction(w http.ResponseWriter, r *http.Request)
+	// AddTagToDatabase add a tag to the database if it hasn't the tag
+	AddTagToDatabase(w http.ResponseWriter, r *http.Request)
+	// DeleteTagOfDatabase remove a certain tag from a database if it has the tag
+	DeleteTagOfDatabase(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface

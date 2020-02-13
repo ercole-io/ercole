@@ -22,6 +22,8 @@ import (
 // ErrHostNotFound contains "Host not found" error
 var ErrHostNotFound = errors.New("Host not found")
 var AerrHostNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrHostNotFound, "DB ERROR")
+var ErrPatchingFunctionNotFound = errors.New("Patching Function not found")
+var AerrPatchingFunctionNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrPatchingFunctionNotFound, "DB ERROR")
 
 // ErrEventEnqueue contains "Failed to enqueue event" error
 var ErrEventEnqueue = errors.New("Failed to enqueue event")

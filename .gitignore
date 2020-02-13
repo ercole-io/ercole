@@ -18,3 +18,6 @@ fake_*.go
 # Distributions files
 distributed_files/*
 !distributed_files/index.txt
+
+# IDEs
+.vscode

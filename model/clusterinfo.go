@@ -19,45 +19,39 @@ import "go.mongodb.org/mongo-driver/bson"
 
 //ClusterInfo hold informations about a cluster
 type ClusterInfo struct {
-	Name                        string
-	Type                        string
-	CPU                         int
-	Sockets                     int
-	VMs                         []VMInfo
-	HostnameAgentVirtualization string `bson:"hostname_agent_virtualization"`
+	Name    string   `bson:"Name"`
+	Type    string   `bson:"Type"`
+	CPU     int      `bson:"CPU"`
+	Sockets int      `bson:"Sockets"`
+	VMs     []VMInfo `bson:"VMs"`
 }
 
 // ClusterInfoBsonValidatorRules contains mongodb validation rules for clusterInfo
 var ClusterInfoBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"name",
-		"type",
-		"cpu",
-		"sockets",
-		"vms",
-		"hostname_agent_virtualization",
+		"Name",
+		"Type",
+		"CPU",
+		"Sockets",
+		"VMs",
 	}},
 	{"properties", bson.D{
-		{"name", bson.D{
+		{"Name", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"type", bson.D{
+		{"Type", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"cpu", bson.D{
-			{"bsonType", "int"},
+		{"CPU", bson.D{
+			{"bsonType", "number"},
 		}},
-		{"sockets", bson.D{
-			{"bsonType", "int"},
+		{"Sockets", bson.D{
+			{"bsonType", "number"},
 		}},
-		{"vms", bson.D{
+		{"VMs", bson.D{
 			{"bsonType", "array"},
 			{"items", VMInfoBsonValidatorRules},
-		}},
-		{"hostname_agent_virtualization", bson.D{
-			{"bsonType", "string"},
-			{"pattern", "^.+$"},
 		}},
 	}},
 }

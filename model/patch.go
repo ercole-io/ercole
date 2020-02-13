@@ -19,42 +19,42 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // Patch holds information about a Oracle patch
 type Patch struct {
-	Database    string
-	Version     string
-	PatchID     string `bson:"patch_id"`
-	Action      string
-	Description string
-	Date        string
+	Database    string `bson:"Database"`
+	Version     string `bson:"Version"`
+	PatchID     string `bson:"PatchID"`
+	Action      string `bson:"Action"`
+	Description string `bson:"Description"`
+	Date        string `bson:"Date"`
 }
 
 // PatchBsonValidatorRules contains mongodb validation rules for patch
 var PatchBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"database",
-		"version",
-		"patch_id",
-		"action",
-		"description",
-		"date",
+		"Database",
+		"Version",
+		"PatchID",
+		"Action",
+		"Description",
+		"Date",
 	}},
 	{"properties", bson.D{
-		{"database", bson.D{
+		{"Database", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"version", bson.D{
+		{"Version", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"patch_id", bson.D{
+		{"PatchID", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"action", bson.D{
+		{"Action", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"description", bson.D{
+		{"Description", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"date", bson.D{
+		{"Date", bson.D{
 			{"bsonType", "string"},
 		}},
 	}},

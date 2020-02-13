@@ -19,32 +19,32 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // Addm contains info about addm
 type Addm struct {
-	Finding        string
-	Recommendation string
-	Action         string
-	Benefit        string
+	Finding        string `bson:"Finding"`
+	Recommendation string `bson:"Recommendation"`
+	Action         string `bson:"Action"`
+	Benefit        string `bson:"Benefit"`
 }
 
 // AddmBsonValidatorRules contains mongodb validation rules for addm
 var AddmBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"finding",
-		"recommendation",
-		"action",
-		"benefit",
+		"Finding",
+		"Recommendation",
+		"Action",
+		"Benefit",
 	}},
 	{"properties", bson.D{
-		{"finding", bson.D{
+		{"Finding", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"recommendation", bson.D{
+		{"Recommendation", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"action", bson.D{
+		{"Action", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"benefit", bson.D{
+		{"Benefit", bson.D{
 			{"bsonType", "string"},
 		}},
 	}},

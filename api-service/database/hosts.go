@@ -22,6 +22,8 @@ import (
 	"github.com/amreo/ercole-services/utils"
 	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // SearchHosts search hosts
@@ -35,52 +37,52 @@ func (md *MongoDatabase) SearchHosts(full bool, keywords []string, sortBy string
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			FilterByOldnessSteps(olderThan),
 			mu.APSearchFilterStage([]string{
-				"hostname",
-				"extra.databases.name",
-				"extra.databases.unique_name",
-				"extra.clusters.name",
+				"Hostname",
+				"Extra.Databases.Name",
+				"Extra.Databases.UniqueName",
+				"Extra.Clusters.Name",
 			}, keywords),
-			mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "vm", mu.MAPipeline(
+			mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
 				FilterByOldnessSteps(olderThan),
-				mu.APUnwind("$extra.clusters"),
-				mu.APReplaceWith("$extra.clusters"),
-				mu.APUnwind("$vms"),
-				mu.APReplaceWith("$vms"),
+				mu.APUnwind("$Extra.Clusters"),
+				mu.APReplaceWith("$Extra.Clusters"),
+				mu.APUnwind("$VMs"),
+				mu.APReplaceWith("$VMs"),
 				mu.APMatch(bson.M{
-					"$expr": mu.APOEqual("$hostname", "$$hn"),
+					"$expr": mu.APOEqual("$Hostname", "$$hn"),
 				}),
 				mu.APLimit(1),
 			)),
 			mu.APSet(bson.M{
-				"vm": mu.APOArrayElemAt("$vm", 0),
+				"VM": mu.APOArrayElemAt("$VM", 0),
 			}),
 			mu.APAddFields(bson.M{
-				"cluster":       mu.APOIfNull("$vm.cluster_name", nil),
-				"physical_host": mu.APOIfNull("$vm.physical_host", nil),
+				"Cluster":      mu.APOIfNull("$vm.ClusterName", nil),
+				"PhysicalHost": mu.APOIfNull("$vm.PhysicalHost", nil),
 			}),
-			mu.APUnset("vm"),
+			mu.APUnset("VM"),
 			mu.APOptionalStage(!full, mu.APProject(bson.M{
-				"hostname":        true,
-				"location":        true,
-				"environment":     true,
-				"host_type":       true,
-				"cluster":         true,
-				"physical_host":   true,
-				"created_at":      true,
-				"databases":       true,
-				"os":              "$info.os",
-				"kernel":          "$info.kernel",
-				"oracle_cluster":  "$info.oracle_cluster",
-				"sun_cluster":     "$info.sun_cluster",
-				"veritas_cluster": "$info.veritas_cluster",
-				"virtual":         "$info.virtual",
-				"type":            "$info.type",
-				"cpu_threads":     "$info.cpu_threads",
-				"cpu_cores":       "$info.cpu_cores",
-				"socket":          "$info.socket",
-				"mem_total":       "$info.memory_total",
-				"swap_total":      "$info.swap_total",
-				"cpu_model":       "$info.cpu_model",
+				"Hostname":       true,
+				"Location":       true,
+				"Environment":    true,
+				"HostType":       true,
+				"Cluster":        true,
+				"PhysicalHost":   true,
+				"CreatedAt":      true,
+				"Databases":      true,
+				"OS":             "$Info.OS",
+				"Kernel":         "$Info.Kernel",
+				"OracleCluster":  "$Info.OracleCluster",
+				"SunCluster":     "$Info.SunCluster",
+				"VeritasCluster": "$Info.VeritasCluster",
+				"Virtual":        "$Info.Virtual",
+				"Type":           "$Info.Type",
+				"CPUThreads":     "$Info.CPUThreads",
+				"CPUCores":       "$Info.CPUCores",
+				"Socket":         "$Info.Socket",
+				"MemTotal":       "$Info.MemTotal",
+				"SwapTotal":      "$Info.SwapTotal",
+				"CPUModel":       "$Info.CPUModel",
 			})),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),
@@ -111,73 +113,73 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time) (interfac
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			mu.APMatch(bson.M{
-				"hostname": hostname,
+				"Hostname": hostname,
 			}),
-			mu.APLookupPipeline("alerts", bson.M{"hn": "$hostname"}, "alerts", mu.MAPipeline(
+			mu.APLookupPipeline("alerts", bson.M{"hn": "$Hostname"}, "Alerts", mu.MAPipeline(
 				mu.APMatch(bson.M{
-					"$expr": mu.APOEqual("$other_info.hostname", "$$hn"),
+					"$expr": mu.APOEqual("$OtherInfo.Hostname", "$$hn"),
 				}),
 			)),
-			mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "vm", mu.MAPipeline(
+			mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
 				FilterByOldnessSteps(olderThan),
-				mu.APUnwind("$extra.clusters"),
-				mu.APReplaceWith("$extra.clusters"),
-				mu.APUnwind("$vms"),
-				mu.APReplaceWith("$vms"),
+				mu.APUnwind("$Extra.Clusters"),
+				mu.APReplaceWith("$Extra.Clusters"),
+				mu.APUnwind("$VMs"),
+				mu.APReplaceWith("$VMs"),
 				mu.APMatch(bson.M{
-					"$expr": mu.APOEqual("$hostname", "$$hn"),
+					"$expr": mu.APOEqual("$Hostname", "$$hn"),
 				}),
 				mu.APLimit(1),
 			)),
 			mu.APSet(bson.M{
-				"vm": mu.APOArrayElemAt("$vm", 0),
+				"VM": mu.APOArrayElemAt("$VM", 0),
 			}),
 			mu.APAddFields(bson.M{
-				"cluster":       mu.APOIfNull("$vm.cluster_name", nil),
-				"physical_host": mu.APOIfNull("$vm.physical_host", nil),
+				"Cluster":      mu.APOIfNull("$VM.ClusterName", nil),
+				"PhysicalHost": mu.APOIfNull("$VM.PhysicalHost", nil),
 			}),
-			mu.APUnset("vm"),
+			mu.APUnset("VM"),
 			mu.APLookupPipeline(
 				"hosts",
 				bson.M{
-					"hn": "$hostname",
-					"ca": "$created_at",
+					"hn": "$Hostname",
+					"ca": "$CreatedAt",
 				},
-				"history",
+				"History",
 				mu.MAPipeline(
 					mu.APMatch(bson.M{
-						"$expr": mu.APOAnd(mu.APOEqual("$hostname", "$$hn"), mu.APOGreaterOrEqual("$$ca", "$created_at")),
+						"$expr": mu.APOAnd(mu.APOEqual("$Hostname", "$$hn"), mu.APOGreaterOrEqual("$$ca", "$CreatedAt")),
 					}),
 					mu.APProject(bson.M{
-						"created_at":                    1,
-						"extra.databases.name":          1,
-						"extra.databases.used":          1,
-						"extra.databases.segments_size": 1,
+						"CreatedAt":                    1,
+						"Extra.Databases.Name":         1,
+						"Extra.Databases.Used":         1,
+						"Extra.Databases.SegmentsSize": 1,
 					}),
 				),
 			),
 			mu.APSet(bson.M{
-				"extra.databases": mu.APOMap(
-					"$extra.databases",
+				"Extra.Databases": mu.APOMap(
+					"$Extra.Databases",
 					"db",
 					mu.APOMergeObjects(
 						"$$db",
 						bson.M{
-							"changes": mu.APOFilter(
-								mu.APOMap("$history", "hh", mu.APOMergeObjects(
-									bson.M{"updated": "$$hh.created_at"},
-									mu.APOArrayElemAt(mu.APOFilter("$$hh.extra.databases", "hdb", mu.APOEqual("$$hdb.name", "$$db.name")), 0),
+							"Changes": mu.APOFilter(
+								mu.APOMap("$History", "hh", mu.APOMergeObjects(
+									bson.M{"Updated": "$$hh.CreatedAt"},
+									mu.APOArrayElemAt(mu.APOFilter("$$hh.Extra.Databases", "hdb", mu.APOEqual("$$hdb.Name", "$$db.Name")), 0),
 								)),
 								"time_frame",
-								"$$time_frame.segments_size",
+								"$$time_frame.SegmentsSize",
 							),
 						},
 					),
 				),
 			}),
 			mu.APUnset(
-				"extra.databases.changes.name",
-				"history.extra",
+				"Extra.Databases.Changes.Name",
+				"History.Extra",
 			),
 		),
 	)
@@ -197,4 +199,58 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time) (interfac
 	}
 
 	return out, nil
+}
+
+// FindHostData find the current hostdata with a certain hostname
+func (md *MongoDatabase) FindHostData(hostname string) (map[string]interface{}, utils.AdvancedErrorInterface) {
+	//Find the hostdata
+	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").FindOne(context.TODO(), bson.M{
+		"Hostname": hostname,
+		"Archived": false,
+	})
+	if res.Err() == mongo.ErrNoDocuments {
+		return nil, nil
+	} else if res.Err() != nil {
+		return nil, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+	}
+
+	//Decode the data
+	var out map[string]interface{}
+	if err := res.Decode(&out); err != nil {
+		return nil, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+	}
+
+	//Return it!
+	return out, nil
+}
+
+// ReplaceHostData adds a new hostdata to the database
+func (md *MongoDatabase) ReplaceHostData(hostData map[string]interface{}) utils.AdvancedErrorInterface {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").ReplaceOne(context.TODO(),
+		bson.M{
+			"_id": hostData["_id"],
+		},
+		hostData,
+	)
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+	return nil
+}
+
+// ExistNoDataAlertByHost return true if the host has associated a new NO_DATA alert
+func (md *MongoDatabase) ExistHostdata(hostname string) (bool, utils.AdvancedErrorInterface) {
+	//Count the number of new NO_DATA alerts associated to the host
+	val, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").CountDocuments(context.TODO(), bson.M{
+		"Archived": false,
+		"Hostname": hostname,
+	}, &options.CountOptions{
+		Limit: utils.Intptr(1),
+	})
+	if err != nil {
+		return false, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Return true if the count > 0
+	return val > 0, nil
 }
