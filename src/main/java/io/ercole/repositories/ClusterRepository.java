@@ -52,6 +52,22 @@ public interface ClusterRepository extends PagingAndSortingRepository<ClusterInf
     @Query("select vi from VMInfo vi where vi.hostName = LOWER(:#{#name})")
     VMInfo findOneVMInfoByHostnameIgnoreCase(@Param("name") String name);
 
+
+    /**
+     * Find a VM containing the hostname.
+     * @param name name
+     * @return the vminfo
+     */
+    @Query(value = "SELECT "
+        + "	vi \n"
+        + "FROM VMInfo vi \n"
+        + "WHERE LOWER(CASE locate('.', vi.hostName) "
+        + "    WHEN 0 THEN vi.hostName  " 
+        + "    ELSE substring(vi.hostName, 1, locate('.', vi.hostName)-1)  "
+        + "  END) = LOWER(:#{#name})\n")
+    VMInfo findOneVMInfoByHostnameIgnoreCaseTrimDomain(@Param("name") String name);
+
+
     /**
      * Return all cluster that match the filter.
      * @param filter filter
