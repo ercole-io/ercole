@@ -44,6 +44,10 @@ type DataService struct {
 	LogHTTPRequest bool
 	// LogInsertingHostdata enable the logging of the inserting hostdata
 	LogInsertingHostdata bool
+	// LogDataPatching enable the logging of the data patching
+	LogDataPatching bool
+	// EnablePatching enable the patching of the arrived hostdata
+	EnablePatching bool
 	// AgentUsername contains the username of the agent
 	AgentUsername string
 	// AgentPassword contains the password of the agent
@@ -86,6 +90,10 @@ type APIService struct {
 	Port uint16
 	// LogHTTPRequest enable the logging of the internal http serverl
 	LogHTTPRequest bool
+	// ReadOnly disable modifing APIs
+	ReadOnly bool
+	// EnableInsertingCustomPatchingFunction enable the API for inserting custom patching functions
+	EnableInsertingCustomPatchingFunction bool
 	// UserUsername contains the username of the user
 	UserUsername string
 	// UserPassword contains the password of the user

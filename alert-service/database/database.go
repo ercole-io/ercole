@@ -23,6 +23,7 @@ import (
 	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
+	"github.com/amreo/mu"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -112,18 +113,18 @@ func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time
 	//Find the most recent HostData older than t
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
-		bson.A{
-			bson.M{"$match": bson.M{
-				"hostname": hostname,
-				"created_at": bson.M{
+		mu.MAPipeline(
+			mu.APMatch(bson.M{
+				"Hostname": hostname,
+				"CreatedAt": bson.M{
 					"$lt": t,
 				},
-			}},
-			bson.M{"$sort": bson.M{
-				"created_at": -1,
-			}},
-			bson.M{"$limit": 1},
-		},
+			}),
+			mu.APSort(bson.M{
+				"CreatedAt": -1,
+			}),
+			mu.APLimit(1),
+		),
 	)
 	if err != nil {
 		return model.HostData{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -157,10 +158,10 @@ func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]string, utils.Advan
 	//Get the list of old current hosts
 	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
 		context.TODO(),
-		"hostname",
+		"Hostname",
 		bson.M{
-			"archived": false,
-			"created_at": bson.M{
+			"Archived": false,
+			"CreatedAt": bson.M{
 				"$lt": t,
 			},
 		})
@@ -182,9 +183,9 @@ func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]string, utils.Advan
 func (md *MongoDatabase) ExistNoDataAlertByHost(hostname string) (bool, utils.AdvancedErrorInterface) {
 	//Count the number of new NO_DATA alerts associated to the host
 	val, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").CountDocuments(context.TODO(), bson.D{
-		{"alert_code", model.AlertCodeNoData},
-		{"alert_status", model.AlertStatusNew},
-		{"other_info.hostname", hostname},
+		{"AlertCode", model.AlertCodeNoData},
+		{"AlertStatus", model.AlertStatusNew},
+		{"OtherInfo.Hostname", hostname},
 	}, &options.CountOptions{
 		Limit: utils.Intptr(1),
 	})

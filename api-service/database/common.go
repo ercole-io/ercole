@@ -16,20 +16,21 @@
 package database
 
 import (
+	"time"
+
 	"github.com/amreo/ercole-services/utils"
 	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
-	"time"
 )
 
 // FilterByLocationAndEnvironmentSteps return the steps required to filter the data by the location and environment field.
 func FilterByLocationAndEnvironmentSteps(location string, environment string) interface{} {
 	return bson.A{
 		mu.APOptionalStage(location != "", mu.APMatch(bson.M{
-			"location": location,
+			"Location": location,
 		})),
 		mu.APOptionalStage(environment != "", mu.APMatch(bson.M{
-			"environment": environment,
+			"Environment": environment,
 		})),
 	}
 }
@@ -37,30 +38,30 @@ func FilterByLocationAndEnvironmentSteps(location string, environment string) in
 func FilterByOldnessSteps(olderThan time.Time) bson.A {
 	return mu.MAPipeline(
 		mu.APOptionalStage(olderThan == utils.MAX_TIME, mu.APMatch(bson.M{
-			"archived": false,
+			"Archived": false,
 		})),
 		mu.APOptionalStage(olderThan != utils.MAX_TIME, bson.A{
 			mu.APMatch(bson.M{
-				"created_at": bson.M{
+				"Created_at": bson.M{
 					"$lte": olderThan,
 				},
 			}),
-			mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname", "ca": "$created_at"}, "check", mu.MAPipeline(
+			mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname", "ca": "$CreatedAt"}, "Check", mu.MAPipeline(
 				mu.APProject(bson.M{
-					"hostname":   1,
-					"created_at": 1,
+					"Hostname":  1,
+					"CreatedAt": 1,
 				}),
 				mu.APMatch(bson.M{
-					"$expr": mu.APOAnd(mu.APOEqual("$hostname", "$$hn"), mu.APOGreater("$created_at", "$$ca"), mu.APOGreaterOrEqual(olderThan, "$created_at")),
+					"$expr": mu.APOAnd(mu.APOEqual("$Hostname", "$$hn"), mu.APOGreater("$CreatedAt", "$$ca"), mu.APOGreaterOrEqual(olderThan, "$CreatedAt")),
 				}),
 				mu.APLimit(1),
 			)),
 			mu.APMatch(bson.M{
-				"check": bson.M{
+				"Check": bson.M{
 					"$size": 0,
 				},
 			}),
-			mu.APUnset("check"),
+			mu.APUnset("Check"),
 		}),
 	)
 }

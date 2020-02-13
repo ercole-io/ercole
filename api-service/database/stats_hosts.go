@@ -33,7 +33,7 @@ func (md *MongoDatabase) GetEnvironmentStats(location string, olderThan time.Tim
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APGroupAndCountStages("environment", "count", "$environment"),
+			mu.APGroupAndCountStages("Environment", "Count", "$Environment"),
 		),
 	)
 	if err != nil {
@@ -60,7 +60,7 @@ func (md *MongoDatabase) GetTypeStats(location string, olderThan time.Time) ([]i
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APGroupAndCountStages("type", "count", "$info.type"),
+			mu.APGroupAndCountStages("Type", "Count", "$Info.Type"),
 		),
 	)
 	if err != nil {
@@ -88,7 +88,7 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 		aggregationBranches = append(aggregationBranches, bson.M{
 			"case": bson.M{
 				"$regexMatch": bson.M{
-					"input": "$info.os",
+					"input": "$Info.Os",
 					"regex": v.Regex,
 				},
 			},
@@ -102,10 +102,10 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APGroupAndCountStages("operating_system", "count", bson.M{
+			mu.APGroupAndCountStages("OperatingSystem", "Count", bson.M{
 				"$switch": bson.M{
 					"branches": aggregationBranches,
-					"default":  "$info.os",
+					"default":  "$Info.OS",
 				},
 			}),
 		),

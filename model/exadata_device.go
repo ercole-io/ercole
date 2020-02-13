@@ -19,105 +19,105 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // ExadataDevice holds informations about a device in a exadata
 type ExadataDevice struct {
-	Hostname       string
-	ServerType     string `bson:"server_type"`
-	Model          string
-	ExaSwVersion   string `bson:"exa_sw_version"`
-	CPUEnabled     string `bson:"cpu_enabled"`
-	Memory         string
-	Status         string
-	PowerCount     string            `bson:"power_count"`
-	PowerStatus    string            `bson:"power_status"`
-	FanCount       string            `bson:"fan_count"`
-	FanStatus      string            `bson:"fan_status"`
-	TempActual     string            `bson:"temp_actual"`
-	TempStatus     string            `bson:"temp_status"`
-	CellsrvService string            `bson:"cellsrv_service"`
-	MsService      string            `bson:"ms_service"`
-	RsService      string            `bson:"rs_service"`
-	FlashcacheMode string            `bson:"flashcache_mode"`
-	CellDisks      []ExadataCellDisk `bson:"cell_disks"`
+	Hostname       string            `bson:"Hostname"`
+	ServerType     string            `bson:"ServerType"`
+	Model          string            `bson:"Model"`
+	ExaSwVersion   string            `bson:"ExaSwVersion"`
+	CPUEnabled     string            `bson:"CPUEnabled"`
+	Memory         string            `bson:"Memory"`
+	Status         string            `bson:"Status"`
+	PowerCount     string            `bson:"PowerCount"`
+	PowerStatus    string            `bson:"PowerStatus"`
+	FanCount       string            `bson:"FanCount"`
+	FanStatus      string            `bson:"FanStatus"`
+	TempActual     string            `bson:"TempActual"`
+	TempStatus     string            `bson:"TempStatus"`
+	CellsrvService string            `bson:"CellsrvService"`
+	MsService      string            `bson:"MsService"`
+	RsService      string            `bson:"RsService"`
+	FlashcacheMode string            `bson:"FlashcacheMode"`
+	CellDisks      []ExadataCellDisk `bson:"CellDisks"`
 }
 
 // ExadataDeviceBsonValidatorRules contains mongodb validation rules for exadata device
 var ExadataDeviceBsonValidatorRules = bson.D{
 	{"bsonType", "object"},
 	{"required", bson.A{
-		"hostname",
-		"server_type",
-		"model",
-		"exa_sw_version",
-		"cpu_enabled",
-		"memory",
-		"status",
-		"power_count",
-		"power_status",
-		"fan_count",
-		"fan_status",
-		"temp_actual",
-		"temp_status",
-		"cellsrv_service",
-		"ms_service",
-		"rs_service",
-		"flashcache_mode",
+		"Hostname",
+		"ServerType",
+		"Model",
+		"ExaSwVersion",
+		"CPUEnabled",
+		"Memory",
+		"Status",
+		"PowerCount",
+		"PowerStatus",
+		"FanCount",
+		"FanStatus",
+		"TempActual",
+		"TempStatus",
+		"CellsrvService",
+		"MsService",
+		"RsService",
+		"FlashcacheMode",
 	}},
 	{"properties", bson.D{
-		{"hostname", bson.D{
+		{"Hostname", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"server_type", bson.D{
+		{"ServerType", bson.D{
 			{"enum", bson.A{
 				"StorageServer",
 				"DBServer",
 				"IBSwitch",
 			}},
 		}},
-		{"model", bson.D{
+		{"Model", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"exa_sw_version", bson.D{
+		{"ExaSwVersion", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"cpu_enabled", bson.D{
+		{"CPUEnabled", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"memory", bson.D{
+		{"Memory", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"status", bson.D{
+		{"Status", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"power_count", bson.D{
+		{"PowerCount", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"power_status", bson.D{
+		{"PowerStatus", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"fan_count", bson.D{
+		{"FanCount", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"fan_status", bson.D{
+		{"FanStatus", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"temp_actual", bson.D{
+		{"TempActual", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"temp_status", bson.D{
+		{"TempStatus", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"cellsrv_service", bson.D{
+		{"CellsrvService", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"ms_service", bson.D{
+		{"MsService", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"rs_service", bson.D{
+		{"RsService", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"flashcache_mode", bson.D{
+		{"FlashcacheMode", bson.D{
 			{"bsonType", "string"},
 		}},
-		{"cell_disks", bson.D{
+		{"CellDisks", bson.D{
 			{"bsonType", bson.A{"array", "null"}},
 			{"items", ExadataCellDiskBsonValidatorRules},
 		}},
