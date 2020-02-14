@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/amreo/ercole-services/data-service/service"
+	"github.com/sirupsen/logrus"
 
 	"github.com/amreo/ercole-services/config"
 )
@@ -41,4 +42,6 @@ type HostDataController struct {
 	Service service.HostDataServiceInterface
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
+	// Log contains logger formatted
+	Log *logrus.Logger
 }

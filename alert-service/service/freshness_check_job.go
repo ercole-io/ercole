@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/amreo/ercole-services/config"
+	"github.com/sirupsen/logrus"
 
 	"github.com/amreo/ercole-services/alert-service/database"
 	"github.com/amreo/ercole-services/utils"
@@ -34,6 +35,8 @@ type FreshnessCheckJob struct {
 	Config config.Configuration
 	// alertService contains the underlyng alert service
 	alertService AlertServiceInterface
+	// Log contains logger formatted
+	Log *logrus.Logger
 }
 
 // Run throws NO_DATA alert for each hosts that haven't sent a hostdata withing the FreshnessCheck.DaysThreshold
@@ -41,7 +44,7 @@ func (job *FreshnessCheckJob) Run() {
 	//Find the current hosts older than FreshnessCheck.DaysThreshold days
 	hosts, err := job.Database.FindOldCurrentHosts(job.TimeNow().AddDate(0, 0, -job.Config.AlertService.FreshnessCheckJob.DaysThreshold))
 	if err != nil {
-		utils.LogErr(err)
+		utils.LogErr(job.Log, err)
 		return
 	}
 
@@ -49,12 +52,12 @@ func (job *FreshnessCheckJob) Run() {
 	for _, host := range hosts {
 		//Throw a NO_DATA alert if the host doesn't already have a new NO_DATA alert
 		if exist, err := job.Database.ExistNoDataAlertByHost(host); err != nil {
-			utils.LogErr(err)
+			utils.LogErr(job.Log, err)
 			return
 		} else if !exist {
 			err = job.alertService.ThrowNoDataAlert(host, job.Config.AlertService.FreshnessCheckJob.DaysThreshold)
 			if err != nil {
-				utils.LogErr(err)
+				utils.LogErr(job.Log, err)
 				return
 			}
 		}

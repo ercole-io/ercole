@@ -20,13 +20,13 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net"
 	"os"
 	"sync"
 
 	"github.com/amreo/ercole-services/config"
 	"github.com/pkg/sftp"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -34,23 +34,25 @@ import (
 type SFTPRepoSubService struct {
 	// Config contains the reposervice global configuration
 	Config config.Configuration
+	// Log contains hs.Logger formatted
+	Log *logrus.Logger
 }
 
 // Init start the service
 func (hs *SFTPRepoSubService) Init(_ *sync.WaitGroup) {
 	//Temporary fix
 	if err := os.Chdir("/"); err != nil {
-		log.Fatal("Cannot change directory to /")
+		hs.Log.Fatal("Cannot change directory to /")
 	}
 	//Setup the ssh server config
 	privateKeyBytes, err := ioutil.ReadFile(hs.Config.RepoService.SFTP.PrivateKey)
 	if err != nil {
-		log.Fatal("Failed to load the repo-service/ssh private key")
+		hs.Log.Fatal("Failed to load the repo-service/ssh private key")
 	}
 
 	privateKey, err := ssh.ParsePrivateKey(privateKeyBytes)
 	if err != nil {
-		log.Fatal("Failed to parse the repo-service/ssh private key")
+		hs.Log.Fatal("Failed to parse the repo-service/ssh private key")
 	}
 
 	config := &ssh.ServerConfig{
@@ -59,28 +61,28 @@ func (hs *SFTPRepoSubService) Init(_ *sync.WaitGroup) {
 	config.AddHostKey(privateKey)
 
 	//start the listener
-	log.Println("Start repo-service/sftp: listening at", hs.Config.RepoService.SFTP.Port)
+	hs.Log.Info("Start repo-service/sftp: listening at ", hs.Config.RepoService.SFTP.Port)
 	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", hs.Config.RepoService.SFTP.BindIP, hs.Config.RepoService.SFTP.Port))
 	if err != nil {
-		log.Fatal("Stopping repo-service/http", err)
+		hs.Log.Fatal("Stopping repo-service/http", err)
 	}
 
 	//Start the sftp sub service
 	for {
 		tcpConn, err := listener.Accept()
 		if err != nil {
-			log.Printf("Failed to accept incoming connection (%s)", err)
+			hs.Log.Infof("Failed to accept incoming connection (%s)", err)
 			continue
 		}
 		// Before use, a handshake must be performed on the incoming net.Conn.
 		sshConn, chans, reqs, err := ssh.NewServerConn(tcpConn, config)
 		if err != nil {
-			log.Printf("Failed to handshake (%s)", err)
+			hs.Log.Infof("Failed to handshake (%s)", err)
 			continue
 		}
 
 		if hs.Config.RepoService.SFTP.LogConnections {
-			log.Printf("New SSH connection from %s (%s)", sshConn.RemoteAddr(), sshConn.ClientVersion())
+			hs.Log.Infof("New SSH connection from %s (%s)", sshConn.RemoteAddr(), sshConn.ClientVersion())
 		}
 		// Discard all global out-of-band Requests
 		go ssh.DiscardRequests(reqs)
@@ -102,41 +104,41 @@ func (hs *SFTPRepoSubService) handleChannel(newChannel ssh.NewChannel) {
 
 	//Check the channel
 	if hs.Config.RepoService.SFTP.DebugConnections {
-		log.Printf("Incoming channel: %s\n", newChannel.ChannelType())
+		hs.Log.Infof("Incoming channel: %s\n", newChannel.ChannelType())
 	}
 	if newChannel.ChannelType() != "session" {
 		newChannel.Reject(ssh.UnknownChannelType, "unknown channel type")
-		log.Printf("Unknown channel type: %s\n", newChannel.ChannelType())
+		hs.Log.Infof("Unknown channel type: %s\n", newChannel.ChannelType())
 		return
 	}
 
 	//Accept the channel
 	channel, requests, err := newChannel.Accept()
 	if err != nil {
-		log.Fatal("could not accept channel.", err)
+		hs.Log.Fatal("could not accept channel.", err)
 	}
 	if hs.Config.RepoService.SFTP.DebugConnections {
-		log.Printf("Channel accepted\n")
+		hs.Log.Info("Channel accepted\n")
 	}
 
 	//Handle the request
 	go func(in <-chan *ssh.Request) {
 		for req := range in {
 			if hs.Config.RepoService.SFTP.DebugConnections {
-				log.Printf("Request: %v\n", req.Type)
+				hs.Log.Infof("Request: %v\n", req.Type)
 			}
 			ok := false
 			switch req.Type {
 			case "subsystem":
 				if hs.Config.RepoService.SFTP.DebugConnections {
-					log.Printf("Subsystem: %s\n", req.Payload[4:])
+					hs.Log.Infof("Subsystem: %s\n", req.Payload[4:])
 				}
 				if string(req.Payload[4:]) == "sftp" {
 					ok = true
 				}
 			}
 			if hs.Config.RepoService.SFTP.DebugConnections {
-				log.Printf(" - accepted: %v\n", ok)
+				hs.Log.Infof(" - accepted: %v\n", ok)
 			}
 			req.Reply(ok, nil)
 		}
@@ -155,15 +157,15 @@ func (hs *SFTPRepoSubService) handleChannel(newChannel ssh.NewChannel) {
 		serverOptions...,
 	)
 	if err != nil {
-		log.Fatal(err)
+		hs.Log.Fatal(err)
 	}
 
 	//Serve the sftp client
 	if err := server.Serve(); err == io.EOF {
 		server.Close()
-		log.Print("sftp client exited session.")
+		hs.Log.Info("sftp client exited session.")
 	} else if err != nil {
-		log.Fatal("sftp server completed with error:", err)
+		hs.Log.Fatal("sftp server completed with error:", err)
 	}
 
 }

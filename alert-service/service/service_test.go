@@ -35,6 +35,7 @@ func TestProcessHostDataInsertion_SuccessNewHost(t *testing.T) {
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Log:      utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(hostData1, nil).Times(1)
@@ -58,6 +59,7 @@ func TestProcessHostDataInsertion_DatabaseError1(t *testing.T) {
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Log:      utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(model.HostData{}, aerrMock).Times(1)
@@ -76,6 +78,7 @@ func TestProcessHostDataInsertion_DatabaseError2(t *testing.T) {
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Log:      utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(hostData1, nil).Times(1)
@@ -96,6 +99,7 @@ func TestProcessHostDataInsertion_DiffHostError3(t *testing.T) {
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Log:      utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(hostData1, nil).Times(1)
@@ -110,7 +114,9 @@ func TestProcessHostDataInsertion_DiffHostError3(t *testing.T) {
 }
 
 func TestDiffHostDataAndGenerateAlert_SuccessNoDifferences(t *testing.T) {
-	as := AlertService{}
+	as := AlertService{
+		Log: utils.NewLogger("TEST"),
+	}
 
 	require.NoError(t, as.DiffHostDataAndGenerateAlert(hostData2, hostData1))
 }
@@ -122,6 +128,7 @@ func TestDiffHostDataAndGenerateAlert_SuccessNewHost(t *testing.T) {
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:      utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
@@ -142,6 +149,7 @@ func TestDiffHostDataAndGenerateAlert_SuccessNewDatabase(t *testing.T) {
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:      utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
@@ -163,6 +171,7 @@ func TestDiffHostDataAndGenerateAlert_SuccessNewEnterpriseLicense(t *testing.T) 
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:      utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
@@ -191,6 +200,7 @@ func TestDiffHostDataAndGenerateAlert_DatabaseError1(t *testing.T) {
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:      utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
@@ -211,6 +221,7 @@ func TestDiffHostDataAndGenerateAlert_DatabaseError2(t *testing.T) {
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:      utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
@@ -232,6 +243,7 @@ func TestDiffHostDataAndGenerateAlert_DatabaseError3(t *testing.T) {
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:      utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
@@ -252,6 +264,7 @@ func TestDiffHostDataAndGenerateAlert_DatabaseError4(t *testing.T) {
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:      utils.NewLogger("TEST"),
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{

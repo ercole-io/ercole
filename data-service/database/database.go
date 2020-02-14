@@ -18,12 +18,12 @@ package database
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -56,13 +56,15 @@ type MongoDatabase struct {
 	Client *mongo.Client
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
+	// Log contains logger formatted
+	Log *logrus.Logger
 }
 
 // Init initializes the connection to the database
 func (md *MongoDatabase) Init() {
 	//Connect to mongodb
 	md.ConnectToMongodb()
-	log.Println("MongoDatabase is connected to MongoDB!", md.Config.Mongodb.URI)
+	md.Log.Info("MongoDatabase is connected to MongoDB! ", md.Config.Mongodb.URI)
 }
 
 // ArchiveHost archives tho host with hostname as hostname
@@ -100,13 +102,13 @@ func (md *MongoDatabase) ConnectToMongodb() {
 	//Connect to MongoDB
 	md.Client, err = mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		log.Fatal(err)
+		md.Log.Fatal(err)
 	}
 
 	//Check the connection
 	err = md.Client.Ping(context.TODO(), nil)
 	if err != nil {
-		log.Fatal(err)
+		md.Log.Fatal(err)
 	}
 }
 

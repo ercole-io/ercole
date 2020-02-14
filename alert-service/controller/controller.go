@@ -25,6 +25,7 @@ import (
 	"github.com/amreo/ercole-services/utils"
 	"github.com/goji/httpauth"
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -44,6 +45,8 @@ type AlertQueueController struct {
 	Service service.AlertServiceInterface
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
+	// Log contains logger formatted
+	Log *logrus.Logger
 }
 
 // AuthenticateMiddleware return the middleware used to authenticate (request) users
@@ -58,13 +61,13 @@ func (ctrl *AlertQueueController) HostDataInsertion(w http.ResponseWriter, r *ht
 
 	//Get the id from the path variable
 	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 
 	//Insert the event
 	if err := ctrl.Service.HostDataInsertion(id); err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 }

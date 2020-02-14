@@ -18,7 +18,6 @@ package service
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"sync"
@@ -26,12 +25,15 @@ import (
 	"github.com/amreo/ercole-services/config"
 	"github.com/gorilla/handlers"
 	"github.com/rs/cors"
+	"github.com/sirupsen/logrus"
 )
 
 // HTTPRepoSubService is a concrete implementation of SubRepoServiceInterface
 type HTTPSubRepoService struct {
 	// Config contains the reposervice global configuration
 	Config config.Configuration
+	// Log contains logger formatted
+	Log *logrus.Logger
 }
 
 // Init start the service
@@ -51,9 +53,9 @@ func (hs *HTTPSubRepoService) Init(wg *sync.WaitGroup) {
 	wg.Add(1)
 	//Start the repo-service
 	go func() {
-		log.Println("Start repo-service/http: listening at", hs.Config.RepoService.HTTP.Port)
+		hs.Log.Info("Start repo-service/http: listening at", hs.Config.RepoService.HTTP.Port)
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", hs.Config.RepoService.HTTP.BindIP, hs.Config.RepoService.HTTP.Port), cors.AllowAll().Handler(logRouter))
-		log.Println("Stopping repo-service/http", err)
+		hs.Log.Info("Stopping repo-service/http", err)
 		wg.Done()
 	}()
 }
