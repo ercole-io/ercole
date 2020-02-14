@@ -24,6 +24,7 @@ import (
 	"github.com/amreo/ercole-services/config"
 	migration "github.com/amreo/ercole-services/database-migration"
 	"github.com/amreo/ercole-services/model"
+	"github.com/sirupsen/logrus"
 
 	"math/rand"
 
@@ -35,6 +36,7 @@ type MongodbSuite struct {
 
 	db     MongoDatabase
 	dbname string
+	log    *logrus.Logger
 }
 
 func (db *MongodbSuite) SetupSuite() {
@@ -57,8 +59,8 @@ func (db *MongodbSuite) SetupSuite() {
 	}
 
 	//Migrations
-	cl := migration.ConnectToMongodb(db.db.Config.Mongodb)
-	migration.Migrate(cl.Database(db.db.Config.Mongodb.DBName), []string{})
+	cl := migration.ConnectToMongodb(db.log, db.db.Config.Mongodb)
+	migration.Migrate(db.log, cl.Database(db.db.Config.Mongodb.DBName), []string{})
 	cl.Disconnect(context.TODO())
 
 	db.db.ConnectToMongodb()

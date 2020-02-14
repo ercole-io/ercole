@@ -18,13 +18,13 @@ package service
 
 import (
 	"bytes"
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/amreo/ercole-services/data-service/database"
 	"github.com/bamzi/jobrunner"
 	"github.com/robertkrimen/otto"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/amreo/ercole-services/utils"
@@ -55,6 +55,8 @@ type HostDataService struct {
 	Database database.MongoDatabaseInterface
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
+	// Log contains logger formatted
+	Log *logrus.Logger
 }
 
 // Init initializes the service and database
@@ -96,7 +98,7 @@ func (hds *HostDataService) UpdateHostInfo(hostdata map[string]interface{}) (int
 
 	//Insert the host
 	if hds.Config.DataService.LogInsertingHostdata {
-		log.Println(utils.ToJSON(hostdata))
+		hds.Log.Info(utils.ToJSON(hostdata))
 	}
 
 	res, aerr := hds.Database.InsertHostData(hostdata)
@@ -132,7 +134,7 @@ func (hds *HostDataService) PatchHostData(hostdata map[string]interface{}) (inte
 	//If patch is valid, apply the path the data
 	if patch.Hostname == hostdata["Hostname"].(string) && patch.Code != "" {
 		if hds.Config.DataService.LogDataPatching {
-			log.Printf("Patching %s hostdata with the patch %s\n", patch.Hostname, patch.ID)
+			hds.Log.Printf("Patching %s hostdata with the patch %s\n", patch.Hostname, patch.ID)
 		}
 
 		//Initialize the vm

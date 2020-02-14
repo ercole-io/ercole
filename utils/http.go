@@ -17,6 +17,7 @@ package utils
 
 import (
 	"encoding/json"
+	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -33,7 +34,7 @@ type ErrorResponseFE struct {
 }
 
 // WriteAndLogError write the error to the w with the statusCode as statusCode and log the error to the stdout
-func WriteAndLogError(w http.ResponseWriter, statusCode int, err AdvancedErrorInterface) {
+func WriteAndLogError(log *logrus.Logger, w http.ResponseWriter, statusCode int, err AdvancedErrorInterface) {
 	//Build the response
 	resp := ErrorResponseFE{
 		Error:            err.ErrorClass(),
@@ -42,7 +43,7 @@ func WriteAndLogError(w http.ResponseWriter, statusCode int, err AdvancedErrorIn
 		SourceFilename:   err.SourceFilename(),
 	}
 	//Log the error
-	LogErr(err)
+	LogErr(log, err)
 	//Write the response
 	WriteJSONResponse(w, statusCode, resp)
 }
