@@ -64,7 +64,7 @@ public interface ClusterRepository extends PagingAndSortingRepository<ClusterInf
         + "WHERE LOWER(CASE locate('.', vi.hostName) "
         + "    WHEN 0 THEN vi.hostName  " 
         + "    ELSE substring(vi.hostName, 1, locate('.', vi.hostName)-1)  "
-        + "  END) = LOWER(:#{#name})\n")
+        + "  END) = LOWER(:#{#name}) OR vi.hostName = :#{#name}\n")
     VMInfo findOneVMInfoByHostnameIgnoreCaseTrimDomain(@Param("name") String name);
 
 
