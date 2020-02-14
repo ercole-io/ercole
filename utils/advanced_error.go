@@ -86,5 +86,5 @@ func NewAdvancedErrorPtr(err error, class string) *AdvancedError {
 
 // LogErr log the error to the stdout
 func LogErr(log *logrus.Logger, err AdvancedErrorInterface) {
-	log.Errorf("%s:%d %s: '%s'\n", err.SourceFilename(), err.LineNumber(), err.Error(), err.ErrorClass())
+	log.Errorf("%s:%d %s: '%s'\n", err.SourceFilename(), err.LineNumber(), err.ErrorClass(), err.Error())
 }
