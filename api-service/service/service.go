@@ -101,11 +101,14 @@ type APIServiceInterface interface {
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
 	// SetPatchingFunction set the patching function of a host
 	SetPatchingFunction(hostname string, pf model.PatchingFunction) (interface{}, utils.AdvancedErrorInterface)
-
 	// AddTagToDatabase add the tag to the database if it hasn't the tag
 	AddTagToDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface
 	// DeleteTagOfDatabase delete the tag from the database if it hasn't the tag
 	DeleteTagOfDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface
+	// SetLicenseModifier set the value of certain license to newValue
+	SetLicenseModifier(hostname string, dbname string, licenseName string, newValue int) utils.AdvancedErrorInterface
+	// DeleteLicenseModifier delete the modifier of a certain license
+	DeleteLicenseModifier(hostname string, dbname string, licenseName string) utils.AdvancedErrorInterface
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
