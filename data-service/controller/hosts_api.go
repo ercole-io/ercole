@@ -39,14 +39,14 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 	var originalHostData map[string]interface{}
 
 	if err := json.NewDecoder(r.Body).Decode(&originalHostData); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 
 	//Update and decode originalHostData
 	err := updateData(originalHostData)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -55,7 +55,7 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 	schemaLoader := gojsonschema.NewStringLoader(model.FrontendHostdataSchemaValidator)
 
 	if result, err := gojsonschema.Validate(schemaLoader, documentLoader); err != nil {
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, "HOSTDATA_VALIDATION"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, "HOSTDATA_VALIDATION"))
 		return
 	} else if !result.Valid() {
 		log.Printf("The input hostdata is not valid:\n")
@@ -63,14 +63,14 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 			log.Printf("- %s\n", desc)
 		}
 		log.Println(utils.ToJSON(originalHostData))
-		utils.WriteAndLogError(w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Invalid schema. See the log"), "HOSTDATA_VALIDATION"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Invalid schema. See the log"), "HOSTDATA_VALIDATION"))
 		return
 	}
 
 	//Save the HostData
 	id, err := ctrl.Service.UpdateHostInfo(originalHostData)
 	if err != nil {
-		utils.WriteAndLogError(w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 

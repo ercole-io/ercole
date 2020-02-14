@@ -19,7 +19,6 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -28,6 +27,7 @@ import (
 	"time"
 
 	"github.com/amreo/ercole-services/config"
+	"github.com/amreo/ercole-services/utils"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -81,13 +81,14 @@ func init() {
 // serve setup and start the services
 func serve(enableDataService bool,
 	enableAlertService bool, enableAPIService bool, enableRepoService bool) {
+	log := utils.NewLogger("SERV")
 
 	s, _ := os.Readlink("/proc/self/exe")
 	s = filepath.Dir(s)
 	ercoleConfig.RepoService.DistributedFiles = s + filepath.Join("/", ercoleConfig.RepoService.DistributedFiles) + "/"
 
 	if _, err := os.Stat(ercoleConfig.RepoService.DistributedFiles); os.IsNotExist(err) {
-		log.Printf("WARNING: the directory %s for RepoService doesn't exist so the RepoService will be disabled\n", ercoleConfig.RepoService.DistributedFiles)
+		log.Warnf("The directory %s for RepoService doesn't exist so the RepoService will be disabled\n", ercoleConfig.RepoService.DistributedFiles)
 		enableRepoService = false
 	}
 
@@ -102,9 +103,9 @@ func serve(enableDataService bool,
 		lines := strings.Split(string(content), "\n")
 
 		//Migrate
-		log.Print("Migrating...")
-		cl := migration.ConnectToMongodb(ercoleConfig.Mongodb)
-		migration.Migrate(cl.Database(ercoleConfig.Mongodb.DBName), lines)
+		log.Info("Migrating...")
+		cl := migration.ConnectToMongodb(log, ercoleConfig.Mongodb)
+		migration.Migrate(log, cl.Database(ercoleConfig.Mongodb.DBName), lines)
 		cl.Disconnect(context.TODO())
 	}
 
@@ -129,10 +130,13 @@ func serve(enableDataService bool,
 
 // serveDataService setup and start the data-service
 func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
+	log := utils.NewLogger("DATA")
+
 	//Setup the database
 	db := &dataservice_database.MongoDatabase{
 		Config:  config,
 		TimeNow: time.Now,
+		Log:     log,
 	}
 	db.Init()
 
@@ -142,6 +146,7 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 		Version:  "latest",
 		Database: db,
 		TimeNow:  time.Now,
+		Log:      log,
 	}
 	service.Init()
 
@@ -151,6 +156,7 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 		Config:  config,
 		Service: service,
 		TimeNow: time.Now,
+		Log:     log,
 	}
 	dataservice_controller.SetupRoutesForHostDataController(router, ctrl)
 
@@ -174,10 +180,13 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 
 // serveAlertService setup and start the alert-service
 func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
+	log := utils.NewLogger("ALRT")
+
 	//Setup the database
 	db := &alertservice_database.MongoDatabase{
 		Config:  config,
 		TimeNow: time.Now,
+		Log:     log,
 	}
 	db.Init()
 
@@ -186,6 +195,7 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 		Config:   config,
 		Database: db,
 		TimeNow:  time.Now,
+		Log:      log,
 	}
 	service.Init(wg)
 
@@ -195,6 +205,7 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 		Config:  config,
 		Service: service,
 		TimeNow: time.Now,
+		Log:     log,
 	}
 	alertservice_controller.SetupRoutesForAlertQueueController(router, ctrl)
 
@@ -218,11 +229,14 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 
 // serveAPIService setup and start the api-service
 func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
+	log := utils.NewLogger("APIS")
+
 	//Setup the database
 	db := &apiservice_database.MongoDatabase{
 		Config:                          config,
 		TimeNow:                         time.Now,
 		OperatingSystemAggregationRules: config.APIService.OperatingSystemAggregationRules,
+		Log:                             log,
 	}
 	db.Init()
 
@@ -231,6 +245,7 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 		Config:   config,
 		Database: db,
 		TimeNow:  time.Now,
+		Log:      log,
 	}
 	service.Init()
 
@@ -240,6 +255,7 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 		Config:  config,
 		Service: service,
 		TimeNow: time.Now,
+		Log:     log,
 	}
 	apiservice_controller.SetupRoutesForAPIController(router, ctrl)
 
@@ -252,11 +268,12 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 
 	wg.Add(1)
+
 	//Start the api-service
 	go func() {
-		log.Println("Start api-service: listening at", config.APIService.Port)
+		log.Info("Start api-service: listening at ", config.APIService.Port)
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.APIService.BindIP, config.APIService.Port), cors.AllowAll().Handler(logRouter))
-		log.Println("Stopping api-service", err)
+		log.Warn("Stopping api-service", err)
 		wg.Done()
 	}()
 }
@@ -268,15 +285,21 @@ func serveRepoService(config config.Configuration, wg *sync.WaitGroup) {
 		Config:      config,
 		SubServices: []reposervice_service.SubRepoServiceInterface{},
 	}
+
 	if config.RepoService.HTTP.Enable {
-		service.SubServices = append(service.SubServices, &reposervice_service.HTTPSubRepoService{
-			Config: config,
-		})
+		service.SubServices = append(service.SubServices,
+			&reposervice_service.HTTPSubRepoService{
+				Config: config,
+				Log:    utils.NewLogger("REPO"),
+			})
 	}
+
 	if config.RepoService.SFTP.Enable {
-		service.SubServices = append(service.SubServices, &reposervice_service.SFTPRepoSubService{
-			Config: config,
-		})
+		service.SubServices = append(service.SubServices,
+			&reposervice_service.SFTPRepoSubService{
+				Config: config,
+				Log:    utils.NewLogger("REPO"),
+			})
 	}
 
 	//Init and serve
