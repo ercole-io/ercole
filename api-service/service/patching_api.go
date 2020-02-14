@@ -27,7 +27,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// DefaultPatchingCode is the code used to patch a host when the patching code is unavailable
+// DatabaseTagsAdderCode is the code used to add a tag to a database when the DatabaseTagsAdderMarker is missing
 // It assumes that the vars has the following structure:
 /*
 {
@@ -48,7 +48,44 @@ const DatabaseTagsAdderCode = `
 	});
 	/*</DATABASE_TAGS_ADDER>*/
 `
-const DefaultPatchingCode = DatabaseTagsAdderCode
+
+// DatabaseLicensesFixerCode is the code used to modify the value of a license when the DatabaseLicensesFixerMarker is missing
+// It assumes that the vars has the following structure:
+/*
+{
+	"LicenseModifiers": {
+		"dbname1": {
+			"license1": 0,
+			"license2": 2,
+			...
+		},
+		"dbname2": {
+			"license1": 0,
+			"license2": 2,
+			...
+		},
+		"..."
+	}
+}
+*/
+const DatabaseLicensesFixerMarker = "DATABASE_LICENSES_FIXER"
+const DatabaseLicensesFixerCode = `
+	/*<DATABASE_LICENSES_FIXER>*/
+	hostdata.Extra.Databases.forEach(function fixLicensesDb(db) {
+		db.Licenses.forEach(function fixLicense(lic) {
+			if (db.Name in vars.LicenseModifiers && lic.Name in vars.LicenseModifiers[db.Name]) {
+				if (! ("OldCount" in lic)) {
+					lic.OldCount = lic.Count;
+				}
+				lic.Count = vars.LicenseModifiers[db.Name][lic.Name];
+			} else if ("OldCount" in lic) {
+				lic.Count = lic.OldCount;
+				delete lic.OldCount;
+			}
+		});
+	});
+	/*</DATABASE_LICENSES_FIXER>*/
+`
 
 // GetPatchingFunction return the patching function specified in the hostname param
 func (as *APIService) GetPatchingFunction(hostname string) (interface{}, utils.AdvancedErrorInterface) {
@@ -79,6 +116,7 @@ func (as *APIService) SetPatchingFunction(hostname string, pf model.PatchingFunc
 	if err != nil {
 		return nil, err
 	}
+	const DefaultPatchingCode = DatabaseTagsAdderCode + DatabaseLicensesFixerCode
 
 	//Fill missing fields in the new pf
 	pf.Hostname = hostname
@@ -118,7 +156,7 @@ func (as *APIService) AddTagToDatabase(hostname string, dbname string, tagname s
 	if pf.Hostname != hostname || pf.Code == "" {
 		//No, initialze pf
 		pf.Hostname = hostname
-		pf.Code = DefaultPatchingCode
+		pf.Code = DatabaseTagsAdderCode
 		pf.Vars = map[string]interface{}{
 			"Tags": map[string]interface{}{
 				dbname: []interface{}{
@@ -273,9 +311,130 @@ func (as *APIService) ApplyPatch(pf model.PatchingFunction) utils.AdvancedErrorI
 	_, err = vm.Run(pf.Code)
 	if err != nil {
 		log.Println(pf.Code)
+		log.Printf("%#v\n", err)
 		return utils.NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 
 	//Save the patched data
 	return as.Database.ReplaceHostData(data)
+}
+
+// SetLicenseModifier set the value of certain license to newValue
+func (as *APIService) SetLicenseModifier(hostname string, dbname string, licenseName string, newValue int) utils.AdvancedErrorInterface {
+	//Find the patching function
+	pf, err := as.Database.FindPatchingFunction(hostname)
+	if err != nil {
+		return err
+	}
+
+	//Check if the pf was found
+	if pf.Hostname != hostname || pf.Code == "" {
+		//No, initialze pf
+		pf.Hostname = hostname
+		pf.Code = DatabaseLicensesFixerCode
+		pf.Vars = map[string]interface{}{
+			"LicenseModifiers": map[string]interface{}{
+				dbname: map[string]interface{}{
+					licenseName: newValue,
+				},
+			},
+		}
+		pf.CreatedAt = as.TimeNow()
+	} else {
+		//Check the presence of the marker in the code
+		if !strings.Contains(pf.Code, "<"+DatabaseLicensesFixerMarker+">") {
+			pf.Code += DatabaseLicensesFixerCode
+		}
+
+		//Check the presence and the type of LicenseModifiers key in Vars. If not (re)initialize it!
+		if val, ok := pf.Vars["LicenseModifiers"]; !ok {
+			pf.Vars["LicenseModifiers"] = make(map[string]interface{})
+		} else if _, ok := val.(map[string]interface{}); !ok {
+			pf.Vars["LicenseModifiers"] = make(map[string]interface{})
+		}
+		licenseModifiers := pf.Vars["LicenseModifiers"].(map[string]interface{})
+
+		//Check the presence of the database with a slice inside
+		if val, ok := licenseModifiers[dbname]; !ok {
+			licenseModifiers[dbname] = make(map[string]interface{}, 0)
+		} else if _, ok := val.(bson.A); !ok {
+			licenseModifiers[dbname] = make(map[string]interface{}, 0)
+		}
+
+		//Get the modifiers mof the db
+		licenseModifiersOfDb := licenseModifiers[dbname].(map[string]interface{})
+
+		//Check if it already contains the licenseName with the same value
+		if val, ok := licenseModifiersOfDb[licenseName]; !ok {
+			licenseModifiersOfDb[licenseName] = newValue
+		} else if val == newValue {
+			return nil
+		} else {
+			licenseModifiersOfDb[licenseName] = newValue
+		}
+	}
+
+	// Save the modified patch
+	if pf.ID == nil {
+		oi := primitive.NewObjectIDFromTimestamp(as.TimeNow())
+		pf.ID = &oi
+	}
+	err = as.Database.SavePatchingFunction(pf)
+	if err != nil {
+		return err
+	}
+
+	return as.ApplyPatch(pf)
+}
+
+// DeleteLicenseModifier delete the modifier of a certain license
+func (as *APIService) DeleteLicenseModifier(hostname string, dbname string, licenseName string) utils.AdvancedErrorInterface {
+	//Find the patching function
+	pf, err := as.Database.FindPatchingFunction(hostname)
+	if err != nil {
+		return err
+	}
+
+	//Check if the pf was found
+	if pf.Hostname != hostname || pf.Code == "" {
+		return nil
+	}
+
+	//Check the presence of the marker in the code
+	if !strings.Contains(pf.Code, "<"+DatabaseLicensesFixerMarker+">") {
+		pf.Code += DatabaseLicensesFixerCode
+	}
+
+	//Check the presence and the type of LicenseModifiers key in Vars. If not (re)initialize it!
+	if val, ok := pf.Vars["LicenseModifiers"]; !ok {
+		return nil
+	} else if _, ok := val.(map[string]interface{}); !ok {
+		return nil
+	}
+	licenseModifiers := pf.Vars["LicenseModifiers"].(map[string]interface{})
+
+	//Check the presence of the database with a slice inside
+	if val, ok := licenseModifiers[dbname]; !ok {
+		return nil
+	} else if _, ok := val.(map[string]interface{}); !ok {
+		return nil
+	}
+
+	//Get the modifiers mof the db
+	licenseModifiersOfDb := licenseModifiers[dbname].(map[string]interface{})
+
+	//Check if it already contains the licenseName with the same value
+	if _, ok := licenseModifiersOfDb[licenseName]; !ok {
+		return nil
+	}
+	//TODO: improved the cleanup of the license modifier
+	delete(licenseModifiersOfDb, licenseName)
+
+	// Save the modified patch
+	err = as.Database.SavePatchingFunction(pf)
+	if err != nil {
+		return err
+	}
+
+	return as.ApplyPatch(pf)
 }
