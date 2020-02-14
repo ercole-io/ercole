@@ -18,7 +18,6 @@ package controller
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 
 	"github.com/amreo/ercole-services/model"
@@ -58,11 +57,11 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, "HOSTDATA_VALIDATION"))
 		return
 	} else if !result.Valid() {
-		log.Printf("The input hostdata is not valid:\n")
+		ctrl.Log.Printf("The input hostdata is not valid:\n")
 		for _, desc := range result.Errors() {
-			log.Printf("- %s\n", desc)
+			ctrl.Log.Printf("- %s\n", desc)
 		}
-		log.Println(utils.ToJSON(originalHostData))
+		ctrl.Log.Println(utils.ToJSON(originalHostData))
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Invalid schema. See the log"), "HOSTDATA_VALIDATION"))
 		return
 	}

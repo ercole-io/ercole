@@ -25,6 +25,9 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+
+	"github.com/amreo/ercole-services/model"
+	"github.com/robertkrimen/otto"
 )
 
 var MIN_TIME time.Time = time.Unix(0, 0)
@@ -151,4 +154,29 @@ func DownloadFile(filepath string, url string) (err error) {
 	}
 
 	return nil
+}
+
+// PatchHostdata patch a single hostdata using the pf PatchingFunction.
+// It doesn't check if pf.Hostname equals hostdata["Hostname"]
+func PatchHostdata(pf model.PatchingFunction, hostdata map[string]interface{}) (map[string]interface{}, AdvancedErrorInterface) {
+	//Initialize the vm
+	vm := otto.New()
+
+	//Set the global variables
+	err := vm.Set("hostdata", hostdata)
+	if err != nil {
+		return nil, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+	}
+	err = vm.Set("vars", pf.Vars)
+	if err != nil {
+		return nil, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+	}
+
+	//Run the code
+	_, err = vm.Run(pf.Code)
+	if err != nil {
+		return nil, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+	}
+
+	return hostdata, nil
 }

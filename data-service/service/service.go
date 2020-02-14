@@ -23,7 +23,6 @@ import (
 
 	"github.com/amreo/ercole-services/data-service/database"
 	"github.com/bamzi/jobrunner"
-	"github.com/robertkrimen/otto"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
@@ -100,7 +99,6 @@ func (hds *HostDataService) UpdateHostInfo(hostdata map[string]interface{}) (int
 	if hds.Config.DataService.LogInsertingHostdata {
 		hds.Log.Info(utils.ToJSON(hostdata))
 	}
-
 	res, aerr := hds.Database.InsertHostData(hostdata)
 	if aerr != nil {
 		return nil, aerr
@@ -137,26 +135,7 @@ func (hds *HostDataService) PatchHostData(hostdata map[string]interface{}) (inte
 			hds.Log.Printf("Patching %s hostdata with the patch %s\n", patch.Hostname, patch.ID)
 		}
 
-		//Initialize the vm
-		vm := otto.New()
-
-		//Set the global variables
-		err := vm.Set("hostdata", hostdata)
-		if err != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "DATA_PATCHING")
-		}
-		err = vm.Set("vars", patch.Vars)
-		if err != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "DATA_PATCHING")
-		}
-
-		//Run the code
-		_, err = vm.Run(patch.Code)
-		if err != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "DATA_PATCHING")
-		}
-
-		return hostdata, nil
+		return utils.PatchHostdata(patch, hostdata)
 	}
 
 	return hostdata, nil

@@ -17,12 +17,10 @@
 package service
 
 import (
-	"log"
 	"strings"
 
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
-	"github.com/robertkrimen/otto"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -291,29 +289,9 @@ func (as *APIService) ApplyPatch(pf model.PatchingFunction) utils.AdvancedErrorI
 
 	//Patch it
 	if as.Config.DataService.LogDataPatching {
-		log.Printf("Patching %s hostdata with the patch %s\n", pf.Hostname, pf.ID)
+		as.Log.Printf("Patching %s hostdata with the patch %s\n", pf.Hostname, pf.ID)
 	}
-
-	//Initialize the vm
-	vm := otto.New()
-
-	//Set the global variables
-	err := vm.Set("hostdata", data)
-	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DATA_PATCHING")
-	}
-	err = vm.Set("vars", pf.Vars)
-	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DATA_PATCHING")
-	}
-
-	//Run the code
-	_, err = vm.Run(pf.Code)
-	if err != nil {
-		log.Println(pf.Code)
-		log.Printf("%#v\n", err)
-		return utils.NewAdvancedErrorPtr(err, "DATA_PATCHING")
-	}
+	utils.PatchHostdata(pf, data)
 
 	//Save the patched data
 	return as.Database.ReplaceHostData(data)
