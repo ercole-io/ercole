@@ -338,12 +338,15 @@ public class HostService {
 			//Update the associated cluster name of the vms of the old cluster 
 			if (oldCluster != null) {
 				oldCluster.getVms().forEach(vm -> {
-					String vmHostnameTrimmed = vm.getHostName();
-					if (vmHostnameTrimmed.contains(".")) {
-						vmHostnameTrimmed = vmHostnameTrimmed.substring(0, vmHostnameTrimmed.indexOf("."));
+					CurrentHost foundHost = currentRepo.findByHostnameIgnoreCase(vm.getHostName());
+					if (foundHost == null) {
+						String vmHostnameTrimmed = vm.getHostName();
+						if (vmHostnameTrimmed.contains(".")) {
+							vmHostnameTrimmed = vmHostnameTrimmed.substring(0, vmHostnameTrimmed.indexOf("."));
+						}
+						foundHost = currentRepo.findByHostnameIgnoreCase(vmHostnameTrimmed);
 					}
 
-					CurrentHost foundHost = currentRepo.findByHostnameIgnoreCase(vmHostnameTrimmed);
 					if (foundHost != null) {
 						foundHost.setAssociatedClusterName(null);
 						foundHost.setAssociatedHypervisorHostname(null);
@@ -357,12 +360,14 @@ public class HostService {
 			cluster = clusterRepo.save(cluster);
 			//Update all relative VM
 			cluster.getVms().forEach(vm -> {
-				
-				String vmHostnameTrimmed = vm.getHostName();
-				if (vmHostnameTrimmed.contains(".")) {
-					vmHostnameTrimmed = vmHostnameTrimmed.substring(0, vmHostnameTrimmed.indexOf("."));
+				CurrentHost foundHost = currentRepo.findByHostnameIgnoreCase(vm.getHostName());
+				if (foundHost == null) {
+					String vmHostnameTrimmed = vm.getHostName();
+					if (vmHostnameTrimmed.contains(".")) {
+						vmHostnameTrimmed = vmHostnameTrimmed.substring(0, vmHostnameTrimmed.indexOf("."));
+					}
+					foundHost = currentRepo.findByHostnameIgnoreCase(vmHostnameTrimmed);
 				}
-				CurrentHost foundHost = currentRepo.findByHostnameIgnoreCase(vmHostnameTrimmed);
 				if (foundHost != null) {
 					foundHost.setAssociatedClusterName(vm.getClusterName());
 					foundHost.setAssociatedHypervisorHostname(vm.getPhysicalHost());
