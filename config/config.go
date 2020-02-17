@@ -16,6 +16,14 @@
 // Package config contains configuration utilities, like readConfig()
 package config
 
+import (
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/amreo/ercole-services/utils"
+)
+
 // Configuration contains Ercole DataService configuration
 type Configuration struct {
 	// DataService contains configuration about the data service
@@ -30,6 +38,8 @@ type Configuration struct {
 	Mongodb Mongodb
 	// Version contains the version of the server
 	Version string
+	// ResourceFilePath contains the directory of the resources
+	ResourceFilePath string
 }
 
 // DataService contains configuration about the data service
@@ -204,4 +214,29 @@ type UpstreamRepository struct {
 	Type string
 	// URL of the repository where to find files
 	URL string
+}
+
+// PatchConfiguration change the value of the fields for meeting some requirements(?)
+func PatchConfiguration(config *Configuration) {
+	cwd, _ := os.Readlink("/proc/self/exe")
+	cwd = filepath.Dir(cwd)
+	if config.RepoService.DistributedFiles == "" {
+		config.RepoService.DistributedFiles = "/var/lib/ercole"
+	} else if filepath.IsAbs(config.RepoService.DistributedFiles) && !strings.HasSuffix(config.RepoService.DistributedFiles, "/") {
+		config.RepoService.DistributedFiles = config.RepoService.DistributedFiles + "/"
+	} else if !filepath.IsAbs(config.RepoService.DistributedFiles) {
+		config.RepoService.DistributedFiles = cwd + filepath.Join("/", config.RepoService.DistributedFiles) + "/"
+	}
+
+	if config.ResourceFilePath == "" {
+		if utils.FileExists(filepath.Join(cwd, "resources")) {
+			config.ResourceFilePath = filepath.Join(cwd, "resources")
+		} else if utils.FileExists("/usr/share/ercole") {
+			config.ResourceFilePath = "/usr/share/ercole"
+		} else {
+			config.ResourceFilePath = "RESOURCES_NOT_FOUND"
+		}
+	} else if !filepath.IsAbs(config.ResourceFilePath) {
+		config.ResourceFilePath = cwd + filepath.Join("/", config.ResourceFilePath) + "/"
+	}
 }
