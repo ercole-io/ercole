@@ -16,6 +16,7 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -47,6 +48,7 @@ var alertStatusAll bool
 var from string
 var to string
 var olderThan string
+var outputFormat string
 
 type apiOption struct {
 	addOption func(cmd *cobra.Command)
@@ -190,6 +192,7 @@ func simpleAPIRequestCommand(
 	long string,
 	searchArguments bool,
 	anotherOptions []apiOption,
+	customResponseTypes bool,
 	endpointPath string,
 	errorMessageFormat string,
 	httpErrorMessageFormat string) *cobra.Command {
@@ -209,14 +212,25 @@ func simpleAPIRequestCommand(
 			}
 
 			//Make the http request
-			resp, err := http.Get(
-				utils.NewAPIUrl(
-					ercoleConfig.APIService.RemoteEndpoint,
-					ercoleConfig.APIService.UserUsername,
-					ercoleConfig.APIService.UserPassword,
-					endpointPath,
-					params,
-				).String())
+			req, _ := http.NewRequest("GET", utils.NewAPIUrl(
+				ercoleConfig.APIService.RemoteEndpoint,
+				ercoleConfig.APIService.UserUsername,
+				ercoleConfig.APIService.UserPassword,
+				endpointPath,
+				params,
+			).String(), bytes.NewReader([]byte{}))
+
+			if customResponseTypes {
+				switch outputFormat {
+				case "json":
+					outputFormat = "application/json"
+				case "xlsx":
+					outputFormat = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+				}
+				req.Header.Set("Accept", outputFormat)
+			}
+
+			resp, err := http.DefaultClient.Do(req)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, errorMessageFormat, err)
 				os.Exit(1)
@@ -228,17 +242,22 @@ func simpleAPIRequestCommand(
 			} else {
 				out, _ := ioutil.ReadAll(resp.Body)
 				defer resp.Body.Close()
-				var res []interface{}
-				err = json.Unmarshal(out, &res)
-				if err != nil {
-					fmt.Fprintf(os.Stderr, "Failed to unmarshal response body: %v (%s)\n", err, string(out))
-					os.Exit(1)
-				}
 
-				for _, item := range res {
-					enc := json.NewEncoder(os.Stdout)
-					enc.SetIndent("", "    ")
-					enc.Encode(item)
+				if resp.Header.Get("Content-Type") == "application/json" {
+					var res []interface{}
+					err = json.Unmarshal(out, &res)
+					if err != nil {
+						fmt.Fprintf(os.Stderr, "Failed to unmarshal response body: %v (%s)\n", err, string(out))
+						os.Exit(1)
+					}
+
+					for _, item := range res {
+						enc := json.NewEncoder(os.Stdout)
+						enc.SetIndent("", "    ")
+						enc.Encode(item)
+					}
+				} else {
+					os.Stdout.Write(out)
 				}
 			}
 
@@ -250,6 +269,9 @@ func simpleAPIRequestCommand(
 	}
 	for _, opt := range anotherOptions {
 		opt.addOption(cmd)
+	}
+	if customResponseTypes {
+		cmd.Flags().StringVarP(&outputFormat, "format", "f", "application/json", "Output format")
 	}
 	return cmd
 }
