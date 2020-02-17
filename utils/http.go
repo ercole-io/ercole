@@ -17,8 +17,10 @@ package utils
 
 import (
 	"encoding/json"
-	"github.com/sirupsen/logrus"
 	"net/http"
+
+	"github.com/plandem/xlsx"
+	"github.com/sirupsen/logrus"
 )
 
 // ErrorResponseFE is a struct that contains informations about a error
@@ -54,4 +56,12 @@ func WriteJSONResponse(w http.ResponseWriter, statusCode int, resp interface{}) 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(resp)
+}
+
+// WriteJSONResponse write the statuscode and the response to w
+func WriteXLSXResponse(w http.ResponseWriter, resp *xlsx.Spreadsheet) {
+	//Write the response
+	w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	w.WriteHeader(http.StatusOK)
+	resp.SaveAs(w)
 }

@@ -17,6 +17,7 @@ require (
 	github.com/leandro-lugaresi/hub v1.1.0
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/pkg/sftp v1.10.1
+	github.com/plandem/xlsx v1.0.4
 	github.com/robertkrimen/otto v0.0.0-20191219234010-c382bd3c16ff
 	github.com/rs/cors v1.7.0
 	github.com/sirupsen/logrus v1.4.2
