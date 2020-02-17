@@ -180,3 +180,13 @@ func PatchHostdata(pf model.PatchingFunction, hostdata map[string]interface{}) (
 
 	return hostdata, nil
 }
+
+// FileExists checks if a file exists and is not a directory before we
+// try using it to prevent further errors.
+func FileExists(filename string) bool {
+	_, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
