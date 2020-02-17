@@ -53,7 +53,7 @@ func (md *MongoDatabase) SearchAddms(keywords []string, sortBy string, sortDesc 
 				"Database.Name":  true,
 				"Database.ADDMs": true,
 			}),
-			mu.APUnwind("$database.addms"),
+			mu.APUnwind("$Database.ADDMs"),
 			mu.APProject(bson.M{
 				"Hostname":       true,
 				"Location":       true,
