@@ -25,6 +25,7 @@ import (
 	"github.com/amreo/ercole-services/utils"
 	"github.com/gorilla/mux"
 	"github.com/plandem/xlsx"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SearchAddms search addms data using the filters in the request
@@ -283,6 +284,23 @@ func (ctrl *APIController) SearchSegmentAdvisorsXLSX(w http.ResponseWriter, r *h
 
 // SearchPatchAdvisors search patch advisors data using the filters in the request
 func (ctrl *APIController) SearchPatchAdvisors(w http.ResponseWriter, r *http.Request) {
+	if r.Header.Get("Accept") == "" || r.Header.Get("Accept") == "application/json" {
+		ctrl.SearchPatchAdvisorsJSON(w, r)
+	} else if r.Header.Get("Accept") == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
+		ctrl.SearchPatchAdvisorsXLSX(w, r)
+	} else {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
+			utils.NewAdvancedErrorPtr(
+				errors.New("The mime type in the accept header is not supported"),
+				http.StatusText(http.StatusNotAcceptable),
+			),
+		)
+		return
+	}
+}
+
+// SearchPatchAdvisorsJSON search patch advisors data using the filters in the request returning it in JSON format
+func (ctrl *APIController) SearchPatchAdvisorsJSON(w http.ResponseWriter, r *http.Request) {
 	var search string
 	var sortBy string
 	var sortDesc bool
@@ -338,6 +356,67 @@ func (ctrl *APIController) SearchPatchAdvisors(w http.ResponseWriter, r *http.Re
 		//Write the data
 		utils.WriteJSONResponse(w, http.StatusOK, patchAdvisors[0])
 	}
+}
+
+// SearchPatchAdvisorsXLSX search patch advisors data using the filters in the request returning it in XLSX format
+func (ctrl *APIController) SearchPatchAdvisorsXLSX(w http.ResponseWriter, r *http.Request) {
+	var search string
+	var sortBy string
+	var sortDesc bool
+	var windowTime int
+	var location string
+	var environment string
+	var olderThan time.Time
+
+	var aerr utils.AdvancedErrorInterface
+	//parse the query params
+	search = r.URL.Query().Get("search")
+	sortBy = r.URL.Query().Get("sort-by")
+	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
+	if windowTime, aerr = utils.Str2int(r.URL.Query().Get("window-time"), 6); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
+	if olderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
+	//get the data
+	patchAdvisors, aerr := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, -1, -1, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan)
+	if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Open the sheet
+	sheets, err := xlsx.Open(ctrl.Config.ResourceFilePath + "/templates/template_patch_advisor.xlsx")
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
+		return
+	}
+	sheet := sheets.SheetByName("Patch_Advisor")
+
+	//Add the data to the sheet
+	for i, val := range patchAdvisors {
+		sheet.Cell(0, i+1).SetText(val["Description"])                               //Description column
+		sheet.Cell(1, i+1).SetText(val["Hostname"])                                  //Hostname column
+		sheet.Cell(2, i+1).SetText(val["Dbname"])                                    //Dbname column
+		sheet.Cell(3, i+1).SetText(val["Dbver"])                                     //Dbver column
+		sheet.Cell(4, i+1).SetText(val["Date"].(primitive.DateTime).Time().String()) //Date column
+		sheet.Cell(5, i+1).SetText(val["Status"])                                    //Status column
+	}
+
+	//Write it to the response
+	utils.WriteXLSXResponse(w, sheets)
 }
 
 // SearchDatabases search databases data using the filters in the request

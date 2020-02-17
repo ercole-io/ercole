@@ -25,8 +25,8 @@ import (
 )
 
 // SearchPatchAdvisors search patch advisors
-func (md *MongoDatabase) SearchPatchAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
+func (md *MongoDatabase) SearchPatchAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+	var out []map[string]interface{}
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
@@ -52,11 +52,11 @@ func (md *MongoDatabase) SearchPatchAdvisors(keywords []string, sortBy string, s
 				"CreatedAt":         true,
 				"Database.Name":     true,
 				"Database.Version":  true,
-				"Database.LastPsus": true,
+				"Database.LastPSUs": true,
 			}),
 			mu.APSet(bson.M{
-				"Database.LastPsus": mu.APOReduce(
-					mu.APOMap("$Database.LastPsus", "psu", mu.APOMergeObjects(
+				"Database.LastPSUs": mu.APOReduce(
+					mu.APOMap("$Database.LastPSUs", "psu", mu.APOMergeObjects(
 						"$$psu",
 						bson.M{
 							"Date": mu.APODateFromString("$$psu.Date", "%Y-%m-%d"),
@@ -73,9 +73,9 @@ func (md *MongoDatabase) SearchPatchAdvisors(keywords []string, sortBy string, s
 				"CreatedAt":   true,
 				"Dbname":      "$Database.Name",
 				"Dbver":       "$Database.Version",
-				"Description": mu.APOCond("$Database.LastPsus.Description", "$Database.LastPsus.Description", ""),
-				"Date":        mu.APOCond("$Database.LastPsus.Date", "$Database.LastPsus.Date", time.Unix(0, 0)),
-				"Status":      mu.APOCond(mu.APOGreater("$Database.LastPsus.Date", windowTime), "OK", "KO"),
+				"Description": mu.APOCond("$Database.LastPSUs.Description", "$Database.LastPSUs.Description", ""),
+				"Date":        mu.APOCond("$Database.LastPSUs.Date", "$Database.LastPSUs.Date", time.Unix(0, 0)),
+				"Status":      mu.APOCond(mu.APOGreater("$Database.LastPSUs.Date", windowTime), "OK", "KO"),
 			}),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),
@@ -91,7 +91,7 @@ func (md *MongoDatabase) SearchPatchAdvisors(keywords []string, sortBy string, s
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 		}
-		out = append(out, &item)
+		out = append(out, item)
 	}
 	return out, nil
 }
