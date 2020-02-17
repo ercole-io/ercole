@@ -25,8 +25,8 @@ import (
 )
 
 // SearchAddms search addms
-func (md *MongoDatabase) SearchAddms(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
+func (md *MongoDatabase) SearchAddms(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+	var out []map[string]interface{}
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
@@ -79,7 +79,7 @@ func (md *MongoDatabase) SearchAddms(keywords []string, sortBy string, sortDesc 
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 		}
-		out = append(out, &item)
+		out = append(out, item)
 	}
 	return out, nil
 }

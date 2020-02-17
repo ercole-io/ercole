@@ -24,10 +24,28 @@ import (
 
 	"github.com/amreo/ercole-services/utils"
 	"github.com/gorilla/mux"
+	"github.com/plandem/xlsx"
 )
 
 // SearchAddms search addms data using the filters in the request
 func (ctrl *APIController) SearchAddms(w http.ResponseWriter, r *http.Request) {
+	if r.Header.Get("Accept") == "" || r.Header.Get("Accept") == "application/json" {
+		ctrl.SearchAddmsJSON(w, r)
+	} else if r.Header.Get("Accept") == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
+		ctrl.SearchAddmsXlsx(w, r)
+	} else {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
+			utils.NewAdvancedErrorPtr(
+				errors.New("The mime type in the accept header is not supported"),
+				http.StatusText(http.StatusNotAcceptable),
+			),
+		)
+		return
+	}
+}
+
+// SearchAddmsJSON search addms data using the filters in the request returning it in JSON format
+func (ctrl *APIController) SearchAddmsJSON(w http.ResponseWriter, r *http.Request) {
 	var search string
 	var sortBy string
 	var sortDesc bool
@@ -77,6 +95,63 @@ func (ctrl *APIController) SearchAddms(w http.ResponseWriter, r *http.Request) {
 		//Write the data
 		utils.WriteJSONResponse(w, http.StatusOK, addms[0])
 	}
+}
+
+// SearchAddmsJSON search addms data using the filters in the request returning it in JSON format
+func (ctrl *APIController) SearchAddmsXlsx(w http.ResponseWriter, r *http.Request) {
+	var search string
+	var sortBy string
+	var sortDesc bool
+	var location string
+	var environment string
+	var olderThan time.Time
+
+	var aerr utils.AdvancedErrorInterface
+	//parse the query params
+	search = r.URL.Query().Get("search")
+	sortBy = r.URL.Query().Get("sort-by")
+	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
+	if olderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
+	//get the data
+	addms, aerr := ctrl.Service.SearchAddms(search, sortBy, sortDesc, -1, -1, location, environment, olderThan)
+	if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+		return
+	}
+	_ = addms
+
+	//Open the sheet
+	sheets, err := xlsx.Open(ctrl.Config.ResourceFilePath + "/templates/template_addm.xlsx")
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
+		return
+	}
+	sheet := sheets.SheetByName("Addm")
+
+	//Add the data to the sheet
+	for i, val := range addms {
+		sheet.Cell(0, i+1).SetText(val["Action"])         //Action column
+		sheet.Cell(1, i+1).SetText(val["Benefit"])        //Benefit column
+		sheet.Cell(2, i+1).SetText(val["Dbname"])         //Dbname column
+		sheet.Cell(3, i+1).SetText(val["Environment"])    //Environment column
+		sheet.Cell(4, i+1).SetText(val["Finding"])        //Finding column
+		sheet.Cell(5, i+1).SetText(val["Hostname"])       //Hostname column
+		sheet.Cell(6, i+1).SetText(val["Recommendation"]) //Recommendation column
+	}
+
+	//Write it to the response
+	utils.WriteXLSXResponse(w, sheets)
 }
 
 // SearchSegmentAdvisors search segment advisors data using the filters in the request
