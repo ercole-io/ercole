@@ -45,27 +45,21 @@ func (md *MongoDatabase) SearchDatabases(full bool, keywords []string, sortBy st
 				"Database":    "$Extra.Databases",
 			}),
 			mu.APSearchFilterStage([]string{"Hostname", "Database.Name"}, keywords),
-			mu.APProject(bson.M{
-				"Hostname":    true,
-				"Environment": true,
-				"Location":    true,
-				"CreatedAt":   true,
-				"Database":    true,
-			}),
 			mu.APAddFields(bson.M{
 				"Database.Memory": mu.APOAdd(
 					mu.APOConvertToDoubleOrZero("$Database.PGATarget"),
 					mu.APOConvertToDoubleOrZero("$Database.SGATarget"),
 					mu.APOConvertToDoubleOrZero("$Database.MemoryTarget"),
 				),
-				"DatafileSize":     "$Database.Used",
-				"ArchiveLogStatus": mu.APOEqual("$Database.ArchiveLog", "ARCHIVELOG"),
-				"RAC": mu.APOAny("$Database.Features", "fe", mu.APOAnd(
+				"Database.DatafileSize":     "$Database.Used",
+				"Database.ArchiveLogStatus": mu.APOEqual("$Database.ArchiveLog", "ARCHIVELOG"),
+				"Database.RAC": mu.APOAny("$Database.Features", "fe", mu.APOAnd(
 					mu.APOEqual("$$fe.Name", "Real Application Clusters"),
 					mu.APOEqual("$$fe.Status", true),
 				)),
 			}),
 			mu.APReplaceWith(mu.APOMergeObjects("$$ROOT", "$Database")),
+			mu.APUnset("Database"),
 			mu.APOptionalStage(!full, mu.APProject(bson.M{
 				"Hostname":         true,
 				"Location":         true,
