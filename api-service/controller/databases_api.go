@@ -32,7 +32,7 @@ func (ctrl *APIController) SearchAddms(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Get("Accept") == "" || r.Header.Get("Accept") == "application/json" {
 		ctrl.SearchAddmsJSON(w, r)
 	} else if r.Header.Get("Accept") == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
-		ctrl.SearchAddmsXlsx(w, r)
+		ctrl.SearchAddmsXLSX(w, r)
 	} else {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
 			utils.NewAdvancedErrorPtr(
@@ -98,7 +98,7 @@ func (ctrl *APIController) SearchAddmsJSON(w http.ResponseWriter, r *http.Reques
 }
 
 // SearchAddmsJSON search addms data using the filters in the request returning it in JSON format
-func (ctrl *APIController) SearchAddmsXlsx(w http.ResponseWriter, r *http.Request) {
+func (ctrl *APIController) SearchAddmsXLSX(w http.ResponseWriter, r *http.Request) {
 	var search string
 	var sortBy string
 	var sortDesc bool
@@ -129,7 +129,6 @@ func (ctrl *APIController) SearchAddmsXlsx(w http.ResponseWriter, r *http.Reques
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
 	}
-	_ = addms
 
 	//Open the sheet
 	sheets, err := xlsx.Open(ctrl.Config.ResourceFilePath + "/templates/template_addm.xlsx")
@@ -156,6 +155,23 @@ func (ctrl *APIController) SearchAddmsXlsx(w http.ResponseWriter, r *http.Reques
 
 // SearchSegmentAdvisors search segment advisors data using the filters in the request
 func (ctrl *APIController) SearchSegmentAdvisors(w http.ResponseWriter, r *http.Request) {
+	if r.Header.Get("Accept") == "" || r.Header.Get("Accept") == "application/json" {
+		ctrl.SearchSegmentAdvisorsJSON(w, r)
+	} else if r.Header.Get("Accept") == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
+		ctrl.SearchSegmentAdvisorsXLSX(w, r)
+	} else {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
+			utils.NewAdvancedErrorPtr(
+				errors.New("The mime type in the accept header is not supported"),
+				http.StatusText(http.StatusNotAcceptable),
+			),
+		)
+		return
+	}
+}
+
+// SearchSegmentAdvisorsJSON search segment advisors data using the filters in the request returning it in JSON format
+func (ctrl *APIController) SearchSegmentAdvisorsJSON(w http.ResponseWriter, r *http.Request) {
 	var search string
 	var sortBy string
 	var sortDesc bool
@@ -205,6 +221,64 @@ func (ctrl *APIController) SearchSegmentAdvisors(w http.ResponseWriter, r *http.
 		//Write the data
 		utils.WriteJSONResponse(w, http.StatusOK, segmentAdvisors[0])
 	}
+}
+
+// SearchSegmentAdvisorsXLSX search segment advisors data using the filters in the request returning it in XLSX format
+func (ctrl *APIController) SearchSegmentAdvisorsXLSX(w http.ResponseWriter, r *http.Request) {
+	var search string
+	var sortBy string
+	var sortDesc bool
+	var location string
+	var environment string
+	var olderThan time.Time
+
+	var aerr utils.AdvancedErrorInterface
+	//parse the query params
+	search = r.URL.Query().Get("search")
+	sortBy = r.URL.Query().Get("sort-by")
+	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
+	if olderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
+	//get the data
+	segmentAdvisors, aerr := ctrl.Service.SearchSegmentAdvisors(search, sortBy, sortDesc, -1, -1, location, environment, olderThan)
+	if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Open the sheet
+	sheets, err := xlsx.Open(ctrl.Config.ResourceFilePath + "/templates/template_segment_advisor.xlsx")
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
+		return
+	}
+	sheet := sheets.SheetByName("Segment_Advisor")
+
+	//Add the data to the sheet
+	for i, val := range segmentAdvisors {
+		sheet.Cell(0, i+1).SetText(val["Dbname"])         //Dbname column
+		sheet.Cell(1, i+1).SetText(val["Environment"])    //Environment column
+		sheet.Cell(2, i+1).SetText(val["Hostname"])       //Hostname column
+		sheet.Cell(3, i+1).SetText(val["PartitionName"])  //PartitionName column
+		sheet.Cell(4, i+1).SetText(val["Reclaimable"])    //Reclaimable column
+		sheet.Cell(5, i+1).SetText(val["Recommendation"]) //Recommendation column
+		sheet.Cell(6, i+1).SetText(val["SegmentName"])    //SegmentName column
+		sheet.Cell(7, i+1).SetText(val["SegmentOwner"])   //SegmentOwner column
+		sheet.Cell(8, i+1).SetText(val["SegmentType"])    //SegmentType column
+	}
+
+	//Write it to the response
+	utils.WriteXLSXResponse(w, sheets)
 }
 
 // SearchPatchAdvisors search patch advisors data using the filters in the request
