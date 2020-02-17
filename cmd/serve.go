@@ -21,7 +21,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -83,13 +82,12 @@ func serve(enableDataService bool,
 	enableAlertService bool, enableAPIService bool, enableRepoService bool) {
 	log := utils.NewLogger("SERV")
 
-	s, _ := os.Readlink("/proc/self/exe")
-	s = filepath.Dir(s)
-	ercoleConfig.RepoService.DistributedFiles = s + filepath.Join("/", ercoleConfig.RepoService.DistributedFiles) + "/"
-
-	if _, err := os.Stat(ercoleConfig.RepoService.DistributedFiles); os.IsNotExist(err) {
+	if !utils.FileExists(ercoleConfig.RepoService.DistributedFiles) {
 		log.Warnf("The directory %s for RepoService doesn't exist so the RepoService will be disabled\n", ercoleConfig.RepoService.DistributedFiles)
 		enableRepoService = false
+	}
+	if ercoleConfig.ResourceFilePath == "RESOURCES_NOT_FOUND" {
+		log.Warn("A directory for resources wasn't found so some services may not work as expected")
 	}
 
 	var wg sync.WaitGroup

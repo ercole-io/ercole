@@ -62,6 +62,7 @@ func readConfig() config.Configuration {
 	if extraConfigFile != "" {
 		readSingleConfigFileOrFail(extraConfigFile, &conf)
 	}
+	config.PatchConfiguration(&conf)
 
 	//Return the read configuration
 	return conf
