@@ -65,5 +65,12 @@ func getCaller(entry *logrus.Entry) string {
 		return ""
 	}
 
-	return fmt.Sprintf("%s:%d", entry.Caller.File, entry.Caller.Line)
+	defer func() string {
+		recover()
+		return ""
+	}()
+
+	caller := strings.SplitAfter(entry.Caller.File, "ercole-services/")[1]
+
+	return fmt.Sprintf("%s:%d", caller, entry.Caller.Line)
 }
