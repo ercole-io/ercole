@@ -421,6 +421,23 @@ func (ctrl *APIController) SearchPatchAdvisorsXLSX(w http.ResponseWriter, r *htt
 
 // SearchDatabases search databases data using the filters in the request
 func (ctrl *APIController) SearchDatabases(w http.ResponseWriter, r *http.Request) {
+	if r.Header.Get("Accept") == "" || r.Header.Get("Accept") == "application/json" {
+		ctrl.SearchDatabasesJSON(w, r)
+	} else if r.Header.Get("Accept") == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
+		ctrl.SearchDatabasesXLSX(w, r)
+	} else {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
+			utils.NewAdvancedErrorPtr(
+				errors.New("The mime type in the accept header is not supported"),
+				http.StatusText(http.StatusNotAcceptable),
+			),
+		)
+		return
+	}
+}
+
+// SearchDatabasesJSON search databases data using the filters in the request returning it in JSON
+func (ctrl *APIController) SearchDatabasesJSON(w http.ResponseWriter, r *http.Request) {
 	var full bool
 	var search string
 	var sortBy string
@@ -476,6 +493,73 @@ func (ctrl *APIController) SearchDatabases(w http.ResponseWriter, r *http.Reques
 		//Write the data
 		utils.WriteJSONResponse(w, http.StatusOK, databases[0])
 	}
+}
+
+// SearchDatabasesXLSX search databases data using the filters in the request returning it in XLSX
+func (ctrl *APIController) SearchDatabasesXLSX(w http.ResponseWriter, r *http.Request) {
+	var search string
+	var sortBy string
+	var sortDesc bool
+	var location string
+	var environment string
+	var olderThan time.Time
+
+	var aerr utils.AdvancedErrorInterface
+	//parse the query params
+	search = r.URL.Query().Get("search")
+	sortBy = r.URL.Query().Get("sort-by")
+	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
+	if olderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
+	//get the data
+	databases, aerr := ctrl.Service.SearchDatabases(false, search, sortBy, sortDesc, -1, -1, location, environment, olderThan)
+	if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Open the sheet
+	sheets, err := xlsx.Open(ctrl.Config.ResourceFilePath + "/templates/template_databases.xlsx")
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
+		return
+	}
+	sheet := sheets.SheetByName("Databases")
+
+	//Add the data to the sheet
+	for i, val := range databases {
+		sheet.Cell(0, i+1).SetText(val["Name"])                     //Name column
+		sheet.Cell(1, i+1).SetText(val["UniqueName"])               //UniqueName column
+		sheet.Cell(2, i+1).SetText(val["Version"])                  //Version column
+		sheet.Cell(3, i+1).SetText(val["Hostname"])                 //Hostname column
+		sheet.Cell(4, i+1).SetText(val["Status"])                   //Status column
+		sheet.Cell(5, i+1).SetText(val["Environment"])              //Environment column
+		sheet.Cell(6, i+1).SetText(val["Location"])                 //Location column
+		sheet.Cell(7, i+1).SetText(val["Charset"])                  //Charset column
+		sheet.Cell(8, i+1).SetText(val["BlockSize"])                //BlockSize column
+		sheet.Cell(9, i+1).SetText(val["CPUCount"])                 //CPUCount column
+		sheet.Cell(10, i+1).SetText(val["Work"])                    //Work column
+		sheet.Cell(11, i+1).SetFloat(val["Memory"].(float64))       //Memory column
+		sheet.Cell(12, i+1).SetText(val["DatafileSize"])            //DatafileSize column
+		sheet.Cell(13, i+1).SetText(val["SegmentsSize"])            //SegmentsSize column
+		sheet.Cell(14, i+1).SetBool(val["ArchiveLogStatus"].(bool)) //ArchiveLogStatus column
+		sheet.Cell(15, i+1).SetBool(val["Dataguard"].(bool))        //Dataguard column
+		sheet.Cell(16, i+1).SetBool(val["RAC"].(bool))              //RAC column
+		sheet.Cell(17, i+1).SetBool(val["HA"].(bool))               //HA column
+	}
+
+	//Write it to the response
+	utils.WriteXLSXResponse(w, sheets)
 }
 
 // ListLicenses list licenses using the filters in the request
