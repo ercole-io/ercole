@@ -39,7 +39,7 @@ func (as *APIService) SearchPatchAdvisors(search string, sortBy string, sortDesc
 }
 
 // SearchDatabases search databases
-func (as *APIService) SearchDatabases(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) SearchDatabases(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.SearchDatabases(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
