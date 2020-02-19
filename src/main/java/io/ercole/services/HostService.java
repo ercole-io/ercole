@@ -471,8 +471,8 @@ public class HostService {
 	 * @param env env
 	 * @return the list of databases
 	 */
-	public Page<Map<String, Object>> getDatabases(final Pageable c, final String env) {
-		return currentRepo.getDatabases(c, env);
+	public Page<Map<String, Object>> getDatabases(final Pageable c, final String env, final String search) {
+		return currentRepo.getDatabases(c, env, search);
 	}
 
 	public List<DatabaseTagAssociation> getTagsOfDatabase(final String hostname, final String dbname) {
