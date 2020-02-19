@@ -469,6 +469,7 @@ public class HostService {
 	 * Return the list of databases.
 	 * @param c pageable
 	 * @param env env
+	 * @param search search
 	 * @return the list of databases
 	 */
 	public Page<Map<String, Object>> getDatabases(final Pageable c, final String env, final String search) {
