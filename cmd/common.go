@@ -49,6 +49,7 @@ var from string
 var to string
 var olderThan string
 var outputFormat string
+var mode string
 
 type apiOption struct {
 	addOption func(cmd *cobra.Command)
@@ -61,6 +62,15 @@ var fullOption apiOption = apiOption{
 	},
 	addParam: func(params url.Values) {
 		params.Set("full", strconv.FormatBool(!summary))
+	},
+}
+
+var modeOption apiOption = apiOption{
+	addOption: func(cmd *cobra.Command) {
+		cmd.Flags().StringVarP(&mode, "mode", "m", "full", "Output mode (full, summary, lms)")
+	},
+	addParam: func(params url.Values) {
+		params.Set("mode", mode)
 	},
 }
 
@@ -226,6 +236,8 @@ func simpleAPIRequestCommand(
 					outputFormat = "application/json"
 				case "xlsx":
 					outputFormat = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+				case "lms":
+					outputFormat = "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 				}
 				req.Header.Set("Accept", outputFormat)
 			}

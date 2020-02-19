@@ -52,7 +52,14 @@
             "Hostname": "test-virt",
             "CappedCPU": false,
             "PhysicalHost": "s157-cb32c10a56c256746c337e21b3f82402"
-          }
+          },
+          {
+            "Name": "test-db",
+            "ClusterName": "Puzzait",
+            "Hostname": "test-db",
+            "CappedCPU": false,
+            "PhysicalHost": "s157-cb32c10a56c256746c337e21b3f82402"
+      	  }
         ]
       }
     ]

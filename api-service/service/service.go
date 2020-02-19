@@ -32,7 +32,7 @@ type APIServiceInterface interface {
 	// Init initialize the service
 	Init()
 	// SearchHosts search hosts
-	SearchHosts(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	SearchHosts(mode string, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// GetHost return the host specified in the hostname param
 	GetHost(hostname string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
 	// SearchAlerts search alerts
