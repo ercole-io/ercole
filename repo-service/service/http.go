@@ -19,11 +19,10 @@ package service
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"sync"
 
 	"github.com/amreo/ercole-services/config"
-	"github.com/gorilla/handlers"
+	"github.com/amreo/ercole-services/utils"
 	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 )
@@ -45,7 +44,7 @@ func (hs *HTTPSubRepoService) Init(wg *sync.WaitGroup) {
 	var logRouter http.Handler
 
 	if hs.Config.RepoService.HTTP.LogHTTPRequest {
-		logRouter = handlers.LoggingHandler(os.Stdout, router)
+		logRouter = utils.CustomLoggingHandler(router, hs.Log)
 	} else {
 		logRouter = router
 	}
