@@ -27,8 +27,8 @@ import (
 )
 
 // SearchHosts search hosts
-func (md *MongoDatabase) SearchHosts(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
+func (md *MongoDatabase) SearchHosts(mode string, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+	var out []map[string]interface{}
 
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -42,6 +42,9 @@ func (md *MongoDatabase) SearchHosts(full bool, keywords []string, sortBy string
 				"Extra.Databases.UniqueName",
 				"Extra.Clusters.Name",
 			}, keywords),
+			mu.APOptionalStage(mode == "lms", mu.APMatch(bson.M{
+				"$expr": mu.APOGreater(mu.APOSize("$Extra.Databases"), 0),
+			})),
 			mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
 				FilterByOldnessSteps(olderThan),
 				mu.APUnwind("$Extra.Clusters"),
@@ -57,11 +60,11 @@ func (md *MongoDatabase) SearchHosts(full bool, keywords []string, sortBy string
 				"VM": mu.APOArrayElemAt("$VM", 0),
 			}),
 			mu.APAddFields(bson.M{
-				"Cluster":      mu.APOIfNull("$vm.ClusterName", nil),
-				"PhysicalHost": mu.APOIfNull("$vm.PhysicalHost", nil),
+				"Cluster":      mu.APOIfNull("$VM.ClusterName", nil),
+				"PhysicalHost": mu.APOIfNull("$VM.PhysicalHost", nil),
 			}),
 			mu.APUnset("VM"),
-			mu.APOptionalStage(!full, mu.APProject(bson.M{
+			mu.APOptionalStage(mode == "summary", mu.APProject(bson.M{
 				"Hostname":       true,
 				"Location":       true,
 				"Environment":    true,
@@ -84,6 +87,99 @@ func (md *MongoDatabase) SearchHosts(full bool, keywords []string, sortBy string
 				"SwapTotal":      "$Info.SwapTotal",
 				"CPUModel":       "$Info.CPUModel",
 			})),
+			mu.APOptionalStage(mode == "lms", mu.MAPipeline(
+				mu.APMatch(bson.M{
+					"$expr": mu.APOGreater(mu.APOSize("$Extra.Databases"), 0),
+				}),
+				mu.APSet(bson.M{
+					"Database": mu.APOArrayElemAt("$Extra.Databases", 0),
+				}),
+				mu.APUnset("Extra"),
+				mu.APSet(bson.M{
+					"VmwareOrOVM": mu.APOOr(mu.APOEqual("$Info.Type", "VMWARE"), mu.APOEqual("$Info.Type", "OVM")),
+				}),
+				mu.APProject(bson.M{
+					"PhysicalServerName":       mu.APOCond("$VmwareOrOVM", mu.APOIfNull("$Cluster", ""), "$Hostname"),
+					"VirtualServerName":        mu.APOCond("$VmwareOrOVM", "$Hostname", mu.APOIfNull("$Cluster", "")),
+					"VirtualizationTechnology": "$Info.Type",
+					"DBInstanceName":           "$Databases",
+					"PluggableDatabaseName":    "",
+					"ConnectString":            "",
+					"ProductVersion": mu.APOArrayElemAt(bson.M{
+						"$split": bson.A{
+							"$Database.Version",
+							".",
+						},
+					}, 0),
+					"ProductEdition": mu.APOArrayElemAt(bson.M{
+						"$split": bson.A{
+							"$Database.Version",
+							" ",
+						},
+					}, 1),
+					"Environment": "$Environment",
+					"Features": mu.APOJoin(mu.APOMap(
+						mu.APOFilter("$Database.Features", "fe", mu.APOEqual("$$fe.Status", true)),
+						"fe",
+						"$$fe.Name",
+					), ", "),
+					"RacNodeNames":   "",
+					"ProcessorModel": "$Info.CPUModel",
+					"Processors":     "$Info.Socket",
+					"CoresPerProcessor": mu.APOCond(
+						mu.APOAnd(
+							mu.APOGreaterOrEqual("$Info.CPUCores", "$Info.Socket"),
+							bson.M{
+								"$ne": bson.A{"$Info.Socket", 0},
+							},
+						),
+						mu.APODivide("$Info.CPUCores", "$Info.Socket"),
+						"$Info.CPUCores",
+					),
+					"ThreadsPerCore": mu.APOCond(
+						mu.APOGreaterOrEqual(bson.M{
+							"$indexOfCP": bson.A{
+								"$Info.CPUModel",
+								"SPARC",
+							},
+						}, 0),
+						8,
+						2,
+					),
+					"ProcessorSpeed": mu.APOLet(
+						bson.M{
+							"indexAt": bson.M{
+								"$indexOfCP": bson.A{
+									"$Info.CPUModel",
+									"@",
+								},
+							},
+						}, mu.APOCond(
+							mu.APOGreaterOrEqual("$$indexAt", 0),
+							bson.M{
+								"$trim": bson.M{
+									"input": bson.M{
+										"$substrCP": bson.A{
+											"$Info.CPUModel",
+											mu.APOAdd("$$indexAt", 1),
+											mu.APOSubtract(bson.M{"$strLenCP": "$Info.CPUModel"}, mu.APOAdd("$$indexAt", 1)),
+										},
+									},
+								},
+							},
+							"???",
+						),
+					),
+					"ServerPurchaseDate": "",
+					"OperatingSystem":    "$Info.OS",
+					"Notes":              "",
+				}),
+				mu.APSet(bson.M{
+					"PhysicalCores": mu.APOCond(mu.APOEqual("$Info.Socket", 0), "$CoresPerProcessor", bson.M{
+						"$multiply": bson.A{"$CoresPerProcessor", "$Processors"},
+					}),
+				}),
+			)),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),
 		),
@@ -98,7 +194,7 @@ func (md *MongoDatabase) SearchHosts(full bool, keywords []string, sortBy string
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 		}
-		out = append(out, &item)
+		out = append(out, item)
 	}
 	return out, nil
 }

@@ -34,7 +34,7 @@ type MongoDatabaseInterface interface {
 	// Init initializes the connection to the database
 	Init()
 	// SearchHosts search hosts
-	SearchHosts(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	SearchHosts(mode string, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// GetHost fetch all informations about a host in the database
 	GetHost(hostname string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
 	// SearchAlerts search alerts
