@@ -927,8 +927,9 @@ public interface CurrentHostRepository extends PagingAndSortingRepository<Curren
 		+ "	CAST(ch.host_info AS jsonb) AS hi "
 		+ "WHERE  "
 		+ "	(ch.host_type IS NULL OR ch.host_type = 'oracledb') "
-		+ " AND (:env = '' OR ch.environment = :env) ")
-	Page<Map<String, Object>> getDatabases(Pageable c, String env);
+		+ " AND (:env = '' OR ch.environment = :env) AND "
+		+ " LOWER(db->>'Name') LIKE LOWER(CONCAT('%',:search,'%')) ")
+	Page<Map<String, Object>> getDatabases(Pageable c, String env, String search);
 
 	/**
 	 * Count the databases grouped by dataguard status.
