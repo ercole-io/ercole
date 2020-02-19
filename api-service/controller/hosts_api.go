@@ -16,16 +16,35 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
 	"github.com/amreo/ercole-services/utils"
 	"github.com/gorilla/mux"
+	"github.com/plandem/xlsx"
 )
 
 // SearchHosts search hosts data using the filters in the request
 func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
-	var full bool
+	if r.Header.Get("Accept") == "" || r.Header.Get("Accept") == "application/json" {
+		ctrl.SearchHostsJSON(w, r)
+	} else if r.Header.Get("Accept") == "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
+		ctrl.SearchHostsLMS(w, r)
+	} else {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
+			utils.NewAdvancedErrorPtr(
+				errors.New("The mime type in the accept header is not supported"),
+				http.StatusText(http.StatusNotAcceptable),
+			),
+		)
+		return
+	}
+}
+
+// SearchHostsJSON search hosts data using the filters in the request returning it in JSON
+func (ctrl *APIController) SearchHostsJSON(w http.ResponseWriter, r *http.Request) {
+	var mode string
 	var search string
 	var sortBy string
 	var sortDesc bool
@@ -37,8 +56,11 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
-	if full, err = utils.Str2bool(r.URL.Query().Get("full"), false); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+	mode = r.URL.Query().Get("mode")
+	if mode == "" {
+		mode = "full"
+	} else if mode != "full" && mode != "summary" && mode != "lms" {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 
@@ -67,7 +89,7 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//get the data
-	hosts, err := ctrl.Service.SearchHosts(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	hosts, err := ctrl.Service.SearchHosts(mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -80,6 +102,81 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 		//Write the data
 		utils.WriteJSONResponse(w, http.StatusOK, hosts[0])
 	}
+}
+
+// SearchHostsXLSX search hosts data using the filters in the request returning it in XLSX
+func (ctrl *APIController) SearchHostsLMS(w http.ResponseWriter, r *http.Request) {
+	var search string
+	var sortBy string
+	var sortDesc bool
+	var location string
+	var environment string
+	var olderThan time.Time
+
+	var aerr utils.AdvancedErrorInterface
+	//parse the query params
+	search = r.URL.Query().Get("search")
+	sortBy = r.URL.Query().Get("sort-by")
+	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
+	if olderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
+	//get the data
+	hosts, aerr := ctrl.Service.SearchHosts("lms", search, sortBy, sortDesc, -1, -1, location, environment, olderThan)
+	if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Open the sheet
+	sheets, err := xlsx.Open(ctrl.Config.ResourceFilePath + "/templates/template_hosts.xlsm")
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
+		return
+	}
+
+	sheet := sheets.SheetByName("Database_&_EBS")
+
+	i := 0
+	//Add the data to the sheet
+	for _, val := range hosts {
+		if val["Databases"] == "" {
+			continue
+		}
+		sheet.Cell(0, i+3).SetText(val["PhysicalServerName"])
+		sheet.Cell(1, i+3).SetText(val["VirtualServerName"])
+		sheet.Cell(2, i+3).SetText(val["VirtualizationTechnology"])
+		sheet.Cell(3, i+3).SetText(val["DBInstanceName"])
+		sheet.Cell(4, i+3).SetText(val["PluggableDatabaseName"])
+		sheet.Cell(5, i+3).SetText(val["ConnectString"])
+		sheet.Cell(7, i+3).SetText(val["ProductVersion"])
+		sheet.Cell(8, i+3).SetText(val["ProductEdition"])
+		sheet.Cell(9, i+3).SetText(val["Environment"])
+		sheet.Cell(10, i+3).SetText(val["Features"])
+		sheet.Cell(11, i+3).SetText(val["RacNodeNames"])
+		sheet.Cell(12, i+3).SetText(val["ProcessorModel"])
+		sheet.Cell(13, i+3).SetInt(int(val["Processors"].(float64)))
+		sheet.Cell(14, i+3).SetInt(int(val["CoresPerProcessor"].(float64)))
+		sheet.Cell(15, i+3).SetInt(int(val["PhysicalCores"].(float64)))
+		sheet.Cell(16, i+3).SetInt(int(val["ThreadsPerCore"].(int32)))
+		sheet.Cell(17, i+3).SetText(val["ProcessorSpeed"])
+		sheet.Cell(18, i+3).SetText(val["ServerPurchaseDate"])
+		sheet.Cell(19, i+3).SetText(val["OperatingSystem"])
+		sheet.Cell(20, i+3).SetText(val["Notes"])
+		i++
+	}
+
+	//Write it to the response
+	utils.WriteXLSXResponse(w, sheets)
 }
 
 // GetHost return all'informations about the host requested in the id path variable
