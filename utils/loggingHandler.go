@@ -6,12 +6,11 @@ import (
 	"os"
 
 	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
 
 // CustomLoggingHandler return a loggingHandler using ercole formatting
-func CustomLoggingHandler(router *mux.Router, log *logrus.Logger) http.Handler {
+func CustomLoggingHandler(router http.Handler, log *logrus.Logger) http.Handler {
 	return handlers.CustomLoggingHandler(os.Stdout, router, createLogFormatter(log))
 }
 
