@@ -27,7 +27,6 @@ import (
 
 	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/utils"
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"github.com/spf13/cobra"
@@ -161,7 +160,7 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 	//Setup the logger
 	var logRouter http.Handler
 	if config.DataService.LogHTTPRequest {
-		logRouter = handlers.LoggingHandler(os.Stdout, router)
+		logRouter = utils.CustomLoggingHandler(router, log)
 	} else {
 		logRouter = router
 	}
@@ -210,7 +209,7 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 	//Setup the logger
 	var logRouter http.Handler
 	if config.DataService.LogHTTPRequest {
-		logRouter = handlers.LoggingHandler(os.Stdout, router)
+		logRouter = utils.CustomLoggingHandler(router, log)
 	} else {
 		logRouter = router
 	}
@@ -260,7 +259,7 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	//Setup the logger
 	var logRouter http.Handler
 	if config.DataService.LogHTTPRequest {
-		logRouter = handlers.LoggingHandler(os.Stdout, router)
+		logRouter = utils.CustomLoggingHandler(router, log)
 	} else {
 		logRouter = router
 	}
