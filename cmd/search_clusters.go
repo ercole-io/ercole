@@ -19,7 +19,7 @@ func init() {
 	searchClustersCmd := simpleAPIRequestCommand("search-clusters",
 		"Search current clusters",
 		`search-clusters search the most matching clusters to the arguments`,
-		true, []apiOption{fullOption, locationOption, environmentOption, sortingOptions, olderThanOptions}, false,
+		true, []apiOption{fullOption, locationOption, environmentOption, sortingOptions, olderThanOptions}, true,
 		"/clusters",
 		"Failed to search clusters data: %v\n",
 		"Failed to search clusters data(Status: %d): %s\n",

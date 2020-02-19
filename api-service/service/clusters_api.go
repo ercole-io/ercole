@@ -24,6 +24,6 @@ import (
 )
 
 // SearchClusters search clusters
-func (as *APIService) SearchClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) SearchClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.SearchClusters(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
