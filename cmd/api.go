@@ -22,8 +22,8 @@ import (
 // apiCmd represents the api command
 var apiCmd = &cobra.Command{
 	Use:   "api",
-	Short: "perform an api request",
-	Long:  `api perform an api request to ercole api-service`,
+	Short: "Perform an api request",
+	Long:  `Api perform an api request to ercole api-service`,
 }
 
 func init() {

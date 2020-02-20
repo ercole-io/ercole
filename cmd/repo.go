@@ -239,8 +239,8 @@ func parseNameOfFile(arg string, list []fileInfo) (*fileInfo, error) {
 // repoCmd represents the repo command
 var repoCmd = &cobra.Command{
 	Use:   "repo",
-	Short: "manage the internal repository",
-	Long:  `manage the internal repository. It requires to be run where the repository is installed`,
+	Short: "Manage the internal repository",
+	Long:  `Manage the internal repository. It requires to be run where the repository is installed`,
 }
 
 //Commands to be added

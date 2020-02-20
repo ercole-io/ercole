@@ -27,7 +27,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// HTTPRepoSubService is a concrete implementation of SubRepoServiceInterface
+// HTTPSubRepoService is a concrete implementation of SubRepoServiceInterface
 type HTTPSubRepoService struct {
 	// Config contains the reposervice global configuration
 	Config config.Configuration
@@ -52,7 +52,7 @@ func (hs *HTTPSubRepoService) Init(wg *sync.WaitGroup) {
 	wg.Add(1)
 	//Start the repo-service
 	go func() {
-		hs.Log.Info("Start repo-service/http: listening at", hs.Config.RepoService.HTTP.Port)
+		hs.Log.Info("Start repo-service/http: listening at ", hs.Config.RepoService.HTTP.Port)
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", hs.Config.RepoService.HTTP.BindIP, hs.Config.RepoService.HTTP.Port), cors.AllowAll().Handler(logRouter))
 		hs.Log.Info("Stopping repo-service/http", err)
 		wg.Done()
