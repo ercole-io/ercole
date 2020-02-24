@@ -20,10 +20,17 @@ import (
 	"strings"
 	"time"
 
+	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SearchAlerts search alerts
 func (as *APIService) SearchAlerts(search string, sortBy string, sortDesc bool, page int, pageSize int, severity string, status string, from time.Time, to time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.SearchAlerts(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, severity, status, from, to)
+}
+
+// AckAlert ack the specified alert
+func (as *APIService) AckAlert(id primitive.ObjectID) utils.AdvancedErrorInterface {
+	return as.Database.UpdateAlertStatus(id, model.AlertStatusAck)
 }
