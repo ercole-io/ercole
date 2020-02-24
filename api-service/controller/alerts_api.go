@@ -22,6 +22,8 @@ import (
 
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
+	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SearchAlerts search alerts using the filters in the request
@@ -86,4 +88,32 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 		//Write the data
 		utils.WriteJSONResponse(w, http.StatusOK, hosts[0])
 	}
+}
+
+// AckAlert ack the specified alert in the request
+func (ctrl *APIController) AckAlert(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	var id primitive.ObjectID
+	var err error
+	//Get the id from the path variable
+	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		return
+	}
+
+	//set the value
+	aerr := ctrl.Service.AckAlert(id)
+	if aerr == utils.AerrAlertNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
+	} else if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }

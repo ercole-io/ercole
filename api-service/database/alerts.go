@@ -22,6 +22,7 @@ import (
 	"github.com/amreo/ercole-services/utils"
 	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SearchAlerts search alerts
@@ -70,4 +71,26 @@ func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc
 		out = append(out, &item)
 	}
 	return out, nil
+}
+
+// UpdateAlertStatus change the status of the specified alert
+func (md *MongoDatabase) UpdateAlertStatus(id primitive.ObjectID, newStatus string) utils.AdvancedErrorInterface {
+	//Find the informations
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").UpdateOne(context.TODO(), bson.M{
+		"_id": id,
+	}, bson.M{
+		"$set": bson.M{
+			"AlertStatus": newStatus,
+		},
+	})
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Check the existance of the result
+	if res.MatchedCount == 0 {
+		return utils.AerrAlertNotFound
+	} else {
+		return nil
+	}
 }
