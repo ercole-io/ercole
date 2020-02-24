@@ -109,6 +109,8 @@ type APIControllerInterface interface {
 	DeleteLicenseModifier(w http.ResponseWriter, r *http.Request)
 	// AckAlert ack the specified alert in the request
 	AckAlert(w http.ResponseWriter, r *http.Request)
+	// ArchiveHost archive the specified host in the request
+	ArchiveHost(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface
