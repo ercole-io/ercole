@@ -280,3 +280,26 @@ func (ctrl *APIController) GetHost(w http.ResponseWriter, r *http.Request) {
 	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, host)
 }
+
+// ArchiveHost archive the specified host in the request
+func (ctrl *APIController) ArchiveHost(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	//Get the id from the path variable
+	hostname := mux.Vars(r)["hostname"]
+
+	//set the value
+	aerr := ctrl.Service.ArchiveHost(hostname)
+	if aerr == utils.AerrHostNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
+	} else if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
+}
