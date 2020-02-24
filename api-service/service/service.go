@@ -112,6 +112,8 @@ type APIServiceInterface interface {
 	DeleteLicenseModifier(hostname string, dbname string, licenseName string) utils.AdvancedErrorInterface
 	// AckAlert ack the specified alert
 	AckAlert(id primitive.ObjectID) utils.AdvancedErrorInterface
+	// ArchiveHost archive the specified host
+	ArchiveHost(hostname string) utils.AdvancedErrorInterface
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

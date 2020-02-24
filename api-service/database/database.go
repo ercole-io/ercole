@@ -106,6 +106,8 @@ type MongoDatabaseInterface interface {
 	ReplaceHostData(hostData map[string]interface{}) utils.AdvancedErrorInterface
 	// UpdateAlertStatus change the status of the specified alert
 	UpdateAlertStatus(id primitive.ObjectID, newStatus string) utils.AdvancedErrorInterface
+	// ArchiveHost archive the specified host
+	ArchiveHost(hostname string) utils.AdvancedErrorInterface
 
 	// FindPatchingFunction find the the patching function associated to the hostname in the database
 	FindPatchingFunction(hostname string) (model.PatchingFunction, utils.AdvancedErrorInterface)
