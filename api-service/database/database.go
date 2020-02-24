@@ -25,6 +25,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/amreo/ercole-services/config"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -103,6 +104,8 @@ type MongoDatabaseInterface interface {
 	SavePatchingFunction(pf model.PatchingFunction) utils.AdvancedErrorInterface
 	// ReplaceHostData adds a new hostdata to the database
 	ReplaceHostData(hostData map[string]interface{}) utils.AdvancedErrorInterface
+	// UpdateAlertStatus change the status of the specified alert
+	UpdateAlertStatus(id primitive.ObjectID, newStatus string) utils.AdvancedErrorInterface
 
 	// FindPatchingFunction find the the patching function associated to the hostname in the database
 	FindPatchingFunction(hostname string) (model.PatchingFunction, utils.AdvancedErrorInterface)

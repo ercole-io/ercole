@@ -31,3 +31,7 @@ var ErrEventEnqueue = errors.New("Failed to enqueue event")
 // ErrLicenseNotFound contains "License not found" error
 var ErrLicenseNotFound = errors.New("License not found")
 var AerrLicenseNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrLicenseNotFound, "DB ERROR")
+
+// ErrAlertNotFound contains "Alert not found" error
+var ErrAlertNotFound = errors.New("Alert not found")
+var AerrAlertNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrAlertNotFound, "DB ERROR")

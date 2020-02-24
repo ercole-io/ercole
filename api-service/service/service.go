@@ -23,6 +23,7 @@ import (
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
 	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/amreo/ercole-services/config"
 )
@@ -109,6 +110,8 @@ type APIServiceInterface interface {
 	SetLicenseModifier(hostname string, dbname string, licenseName string, newValue int) utils.AdvancedErrorInterface
 	// DeleteLicenseModifier delete the modifier of a certain license
 	DeleteLicenseModifier(hostname string, dbname string, licenseName string) utils.AdvancedErrorInterface
+	// AckAlert ack the specified alert
+	AckAlert(id primitive.ObjectID) utils.AdvancedErrorInterface
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
