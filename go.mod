@@ -6,12 +6,9 @@ require (
 	github.com/DataDog/zstd v1.4.4 // indirect
 	github.com/amreo/mu v0.0.0-20200109131148-b66adf28effe
 	github.com/bamzi/jobrunner v0.0.0-20190810144113-852b7ca4d475
-	github.com/coreos/go-etcd v2.0.0+incompatible // indirect
-	github.com/cpuguy83/go-md2man v1.0.10 // indirect
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
 	github.com/golang/mock v1.4.0
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/google/go-github v17.0.0+incompatible // indirect
 	github.com/google/go-github/v28 v28.1.1
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.3
@@ -25,7 +22,6 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cobra v0.0.6
 	github.com/stretchr/testify v1.4.0
-	github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0
