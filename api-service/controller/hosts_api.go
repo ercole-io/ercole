@@ -23,6 +23,7 @@ import (
 	"github.com/amreo/ercole-services/utils"
 	"github.com/gorilla/mux"
 	"github.com/plandem/xlsx"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SearchHosts search hosts data using the filters in the request
@@ -31,6 +32,8 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 		ctrl.SearchHostsJSON(w, r)
 	} else if r.Header.Get("Accept") == "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
 		ctrl.SearchHostsLMS(w, r)
+	} else if r.Header.Get("Accept") == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
+		ctrl.SearchHostsXLSX(w, r)
 	} else {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
 			utils.NewAdvancedErrorPtr(
@@ -104,7 +107,7 @@ func (ctrl *APIController) SearchHostsJSON(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-// SearchHostsXLSX search hosts data using the filters in the request returning it in XLSX
+// SearchHostsLMS search hosts data using the filters in the request returning it in LMS+XLSX
 func (ctrl *APIController) SearchHostsLMS(w http.ResponseWriter, r *http.Request) {
 	var search string
 	var sortBy string
@@ -138,7 +141,7 @@ func (ctrl *APIController) SearchHostsLMS(w http.ResponseWriter, r *http.Request
 	}
 
 	//Open the sheet
-	sheets, err := xlsx.Open(ctrl.Config.ResourceFilePath + "/templates/template_hosts.xlsm")
+	sheets, err := xlsx.Open(ctrl.Config.ResourceFilePath + "/templates/template_lms.xlsm")
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
 		return
@@ -173,6 +176,79 @@ func (ctrl *APIController) SearchHostsLMS(w http.ResponseWriter, r *http.Request
 		sheet.Cell(19, i+3).SetText(val["OperatingSystem"])
 		sheet.Cell(20, i+3).SetText(val["Notes"])
 		i++
+	}
+
+	//Write it to the response
+	utils.WriteXLSXResponse(w, sheets)
+}
+
+// SearchHostsXLSX search hosts data using the filters in the request returning it in XLSX
+func (ctrl *APIController) SearchHostsXLSX(w http.ResponseWriter, r *http.Request) {
+	var search string
+	var sortBy string
+	var sortDesc bool
+	var location string
+	var environment string
+	var olderThan time.Time
+
+	var aerr utils.AdvancedErrorInterface
+	//parse the query params
+	search = r.URL.Query().Get("search")
+	sortBy = r.URL.Query().Get("sort-by")
+	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
+	if olderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
+	//get the data
+	hosts, aerr := ctrl.Service.SearchHosts("summary", search, sortBy, sortDesc, -1, -1, location, environment, olderThan)
+	if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Open the sheet
+	sheets, err := xlsx.Open(ctrl.Config.ResourceFilePath + "/templates/template_hosts.xlsx")
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
+		return
+	}
+
+	sheet := sheets.SheetByName("Hosts")
+
+	//Add the data to the sheet
+	for i, val := range hosts {
+		sheet.Cell(0, i+1).SetText(val["Hostname"])
+		sheet.Cell(1, i+1).SetText(val["Environment"])
+		sheet.Cell(2, i+1).SetText(val["HostType"])
+		if val["Cluster"] != nil && val["PhysicalHost"] != nil {
+			sheet.Cell(3, i+1).SetText(val["Cluster"])
+			sheet.Cell(4, i+1).SetText(val["PhysicalHost"])
+		}
+		sheet.Cell(5, i+1).SetText(val["Version"])
+		sheet.Cell(6, i+1).SetText(val["CreatedAt"].(primitive.DateTime).Time().String())
+		sheet.Cell(7, i+1).SetText(val["Databases"])
+		sheet.Cell(8, i+1).SetText(val["OS"])
+		sheet.Cell(9, i+1).SetText(val["Kernel"])
+		sheet.Cell(10, i+1).SetBool(val["OracleCluster"].(bool))
+		sheet.Cell(11, i+1).SetBool(val["SunCluster"].(bool))
+		sheet.Cell(12, i+1).SetBool(val["VeritasCluster"].(bool))
+		sheet.Cell(13, i+1).SetBool(val["Virtual"].(bool))
+		sheet.Cell(14, i+1).SetText(val["Type"])
+		sheet.Cell(15, i+1).SetInt(int(val["CPUThreads"].(float64)))
+		sheet.Cell(16, i+1).SetInt(int(val["CPUCores"].(float64)))
+		sheet.Cell(17, i+1).SetInt(int(val["Socket"].(float64)))
+		sheet.Cell(18, i+1).SetInt(int(val["MemTotal"].(float64)))
+		sheet.Cell(19, i+1).SetInt(int(val["SwapTotal"].(float64)))
+		sheet.Cell(20, i+1).SetText(val["CPUModel"])
 	}
 
 	//Write it to the response
