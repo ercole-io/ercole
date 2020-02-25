@@ -154,8 +154,9 @@ func scanGithubReleaseRepository(repo config.UpstreamRepository, verbose bool) (
 				return nil, err
 			}
 			fileInfo.installed = fileInfo.checkInstalled()
+			downloadUrl := asset.GetBrowserDownloadURL()
 			fileInfo.download = func(path string) error {
-				return utils.DownloadFile(path, asset.GetBrowserDownloadURL())
+				return utils.DownloadFile(path, downloadUrl)
 			}
 
 			out = append(out, fileInfo)
