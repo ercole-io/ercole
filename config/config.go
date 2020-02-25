@@ -221,7 +221,7 @@ func PatchConfiguration(config *Configuration) {
 	cwd, _ := os.Readlink("/proc/self/exe")
 	cwd = filepath.Dir(cwd)
 	if config.RepoService.DistributedFiles == "" {
-		config.RepoService.DistributedFiles = "/var/lib/ercole"
+		config.RepoService.DistributedFiles = "/var/lib/ercole/distributed_files"
 	} else if filepath.IsAbs(config.RepoService.DistributedFiles) && !strings.HasSuffix(config.RepoService.DistributedFiles, "/") {
 		config.RepoService.DistributedFiles = config.RepoService.DistributedFiles + "/"
 	} else if !filepath.IsAbs(config.RepoService.DistributedFiles) {
