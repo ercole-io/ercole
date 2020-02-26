@@ -17,10 +17,13 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 )
+
+var filterInstalled bool
+var filterUninstalled bool
+var showOnlyNameColumn bool
 
 func init() {
 	repoListCmd := &cobra.Command{
@@ -29,29 +32,34 @@ func init() {
 		Long:  `List files from repositories`,
 		Run: func(cmd *cobra.Command, args []string) {
 			//Get the list of the repository
-			list, err := scanRepositories(verbose)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
-			}
+			index := readOrUpdateIndex()
 
-			for _, f := range list {
+			for _, f := range index {
+				if filterInstalled && !filterUninstalled && !f.Installed {
+					continue
+				} else if filterUninstalled && !filterInstalled && f.Installed {
+					continue
+				}
+
 				var installed rune
-				if f.installed {
+				if f.Installed {
 					installed = 'i'
 				} else {
 					installed = '-'
 				}
 
-				if f.version == "latest" {
-					continue
+				if showOnlyNameColumn {
+					fmt.Println(f.getFullName())
+				} else {
+					fmt.Printf("%c\t%s\t%s\n", installed, f.ReleaseDate, f.getFullName())
 				}
-
-				fmt.Printf("%c\t%s\t%s\n", installed, f.releaseDate, f.getFullName())
 			}
 		},
 	}
 	repoListCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose")
+	repoListCmd.Flags().BoolVarP(&filterInstalled, "installed", "i", false, "Filter by installed artifacts")
+	repoListCmd.Flags().BoolVarP(&filterUninstalled, "uninstalled", "u", false, "Filter by uninstalled artifacts")
+	repoListCmd.Flags().BoolVarP(&showOnlyNameColumn, "name", "n", false, "Show only the name column")
 
 	repoCmd.AddCommand(repoListCmd)
 }
