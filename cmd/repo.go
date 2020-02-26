@@ -164,11 +164,11 @@ func setInstaller(artifact *artifactInfo) {
 			//Create missing directories
 			if verbose {
 				fmt.Printf("Creating the directories (if missing) %s, %s\n",
-					filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem),
+					filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch),
 					filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all"),
 				)
 			}
-			err := os.MkdirAll(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem), 0744)
+			err := os.MkdirAll(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch), 0744)
 			if err != nil {
 				panic(err)
 			}
@@ -179,24 +179,24 @@ func setInstaller(artifact *artifactInfo) {
 
 			//Download the file in the right location
 			if verbose {
-				fmt.Printf("Downloading the artifact %s to %s\n", ai.Filename, filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem, ai.Filename))
+				fmt.Printf("Downloading the artifact %s to %s\n", ai.Filename, filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
 			}
-			ai.Download(ai, filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem, ai.Filename))
+			ai.Download(ai, filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
 
 			//Create a link to all
 			if verbose {
 				fmt.Printf("Linking the artifact to %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
 			}
-			err = os.Link(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem, ai.Filename), filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
+			err = os.Link(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename), filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
 			if err != nil {
 				panic(err)
 			}
 
 			//Launch the createrepo command
 			if verbose {
-				fmt.Printf("Executing createrepo %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem))
+				fmt.Printf("Executing createrepo %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch))
 			}
-			cmd := exec.Command("createrepo", filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem))
+			cmd := exec.Command("createrepo", filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch))
 			if verbose {
 				cmd.Stdout = os.Stdout
 			}
@@ -208,11 +208,11 @@ func setInstaller(artifact *artifactInfo) {
 			//Create missing directories
 			if verbose {
 				fmt.Printf("Creating the directories (if missing) %s, %s\n",
-					filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem),
+					filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch),
 					filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all"),
 				)
 			}
-			err := os.MkdirAll(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem), 0744)
+			err := os.MkdirAll(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch), 0744)
 			if err != nil {
 				panic(err)
 			}
@@ -223,15 +223,15 @@ func setInstaller(artifact *artifactInfo) {
 
 			//Download the file in the right location
 			if verbose {
-				fmt.Printf("Downloading the artifact %s to %s\n", ai.Filename, filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem, ai.Filename))
+				fmt.Printf("Downloading the artifact %s to %s\n", ai.Filename, filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
 			}
-			ai.Download(ai, filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem, ai.Filename))
+			ai.Download(ai, filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem, ai.Arch, ai.Filename))
 
 			//Create a link to all
 			if verbose {
 				fmt.Printf("Linking the artifact to %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
 			}
-			err = os.Link(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem, ai.Filename), filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
+			err = os.Link(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem, ai.Arch, ai.Filename), filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
 			if err != nil {
 				panic(err)
 			}
