@@ -37,6 +37,7 @@ import (
 
 // githubToken contains the token used to avoid rate limit
 var githubToken string
+var rebuildCache bool
 
 type index []*artifactInfo
 
@@ -66,6 +67,18 @@ var AgentWinRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-setup-(?P<v
 var AgentHpuxRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-hpux-(?P<version>.*).tar.gz")
 var AgentAixRegexRpm *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*)-1.(?P<dist>.*).(?P<arch>noarch).rpm$")
 var AgentAixRegexTarGz *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*).tar.gz$")
+
+func cmpVersion(a, b string) bool {
+	va, err := version.NewVersion(a)
+	if err != nil {
+		panic(err)
+	}
+	vb, err := version.NewVersion(b)
+	if err != nil {
+		panic(err)
+	}
+	return va.LessThan(vb)
+}
 
 // setInfoFromFileName sets to fileInfo informations taken from filename
 func setInfoFromFileName(filename string, artifactInfo *artifactInfo) {
@@ -317,13 +330,13 @@ func scanRepositories() index {
 }
 
 // parseNameOfFile parse a string and return the relative complete filename
-func parseNameOfFile(arg string, list []artifactInfo) (*artifactInfo, error) {
+func (idx *index) searchArtifactByArg(arg string) *artifactInfo {
 	//valid formats
-	//	- <filename> 					<-- supported
-	//	- <name>						<-- NOT supported
-	//	- <name>@<version>				<-- NOT supported
-	//	- <repository>/<name>@<version> <-- supported
-	//	- <repository>/<name>			<-- NOT supported
+	//	- <filename>
+	//	- <name>
+	//	- <name>@<version>
+	//	- <repository>/<name>@<version>
+	//	- <repository>/<name>
 	var regex *regexp.Regexp = regexp.MustCompile("^(?:(?P<repository>[a-z-0-9]+)/)?(?P<name>[a-z-.0-9]+)(?:@(?P<version>[a-z0-9.0-9]+))?$")
 	submatches := utils.FindNamedMatches(regex, arg)
 
@@ -331,18 +344,120 @@ func parseNameOfFile(arg string, list []artifactInfo) (*artifactInfo, error) {
 	var name string = submatches["name"]
 	var version string = submatches["version"]
 
-	for _, f := range list {
+	var foundArtifact *artifactInfo
+
+	foundArtifact = idx.searchArtifactByFilename(arg)
+	if foundArtifact != nil {
+		return foundArtifact
+	}
+
+	switch {
+	case repository == "" && version == "": //	<name> case
+		foundArtifact = idx.searchArtifactByName(name)
+	case repository == "" && version != "": //	<name>@<version> case
+		foundArtifact = idx.searchArtifactByNameAndVersion(name, version)
+	case repository != "" && version != "": //	<repository>/<name>@<version> case
+		foundArtifact = idx.searchArtifactByFullname(repository, name, version)
+	case repository != "" && version == "": //	<repository>/<name> case
+		foundArtifact = idx.searchArtifactByRepositoryAndName(repository, name)
+	}
+
+	return foundArtifact
+}
+
+func (idx *index) searchArtifactByFilename(filename string) *artifactInfo {
+	var foundArtifact *artifactInfo
+
+	//Find the artifact
+	for _, f := range *idx {
 		//TODO: add support for missing format
-		if name == f.Filename {
-			return &f, nil
-		} else if repository == "" && version == "" && name == f.Name {
-			return &f, nil
-		} else if repository == f.Repository && name == f.Name && version == f.Version {
-			return &f, nil
+		if filename == f.Filename {
+			if foundArtifact == nil {
+				foundArtifact = f
+			} else {
+				panic(fmt.Errorf("Two artifact have the same filename: %v and %v", foundArtifact, f))
+			}
+
 		}
 	}
 
-	return nil, fmt.Errorf("Unable to understand the fullname of %q", arg)
+	return foundArtifact
+}
+
+func (idx *index) searchArtifactByName(name string) *artifactInfo {
+	var foundArtifact *artifactInfo
+
+	//Find the artifact
+	for _, f := range *idx {
+		//TODO: add support for missing format
+		if name == f.Name {
+			if foundArtifact == nil {
+				foundArtifact = f
+			} else if foundArtifact.Repository == f.Repository {
+				if cmpVersion(foundArtifact.Version, f.Version) {
+					foundArtifact = f
+				}
+			} else {
+				panic(fmt.Errorf("Two artifact have the same name: %v and %v", foundArtifact, f))
+			}
+		}
+	}
+
+	return foundArtifact
+}
+
+func (idx *index) searchArtifactByNameAndVersion(name string, version string) *artifactInfo {
+	var foundArtifact *artifactInfo
+
+	//Find the artifact
+	for _, f := range *idx {
+		//TODO: add support for missing format
+		if name == f.Name && version == f.Version {
+			if foundArtifact == nil {
+				foundArtifact = f
+			} else {
+				panic(fmt.Errorf("Two artifact have the same name and version: %v and %v", foundArtifact, f))
+			}
+		}
+	}
+
+	return foundArtifact
+}
+
+func (idx *index) searchArtifactByFullname(repository, name string, version string) *artifactInfo {
+	var foundArtifact *artifactInfo
+
+	//Find the artifact
+	for _, f := range *idx {
+		//TODO: add support for missing format
+		if repository == f.Repository && name == f.Name && version == f.Version {
+			if foundArtifact == nil {
+				foundArtifact = f
+			} else {
+				panic(fmt.Errorf("Two artifact have the same fullname: %v and %v", foundArtifact, f))
+			}
+		}
+	}
+
+	return foundArtifact
+}
+
+func (idx *index) searchArtifactByRepositoryAndName(repo string, name string) *artifactInfo {
+	var foundArtifact *artifactInfo
+
+	//Find the artifact
+	for _, f := range *idx {
+		//TODO: add support for missing format
+		if name == f.Name && repo == f.Repository {
+			if foundArtifact == nil {
+				foundArtifact = f
+			} else if cmpVersion(foundArtifact.Version, f.Version) {
+				foundArtifact = f
+			}
+		}
+	}
+
+	return foundArtifact
 }
 
 // getOrUpdateIndex return a index of available artifacts
@@ -357,7 +472,7 @@ func readOrUpdateIndex() index {
 	fi, err := os.Stat(ercoleConfig.RepoService.DistributedFiles + "index.json")
 	if err != nil && !os.IsNotExist(err) {
 		panic(err)
-	} else if os.IsNotExist(err) || fi.ModTime().Add(time.Duration(8)*time.Hour).Before(time.Now()) {
+	} else if os.IsNotExist(err) || fi.ModTime().Add(time.Duration(8)*time.Hour).Before(time.Now()) || rebuildCache {
 		// Rebuild the index
 		if verbose {
 			fmt.Fprintln(os.Stderr, "Scanning the repositories...")
@@ -394,15 +509,7 @@ func readOrUpdateIndex() index {
 		} else if index[i].Name != index[j].Name {
 			return index[i].Name < index[j].Name
 		} else {
-			vi, err := version.NewVersion(index[i].Version)
-			if err != nil {
-				panic(err)
-			}
-			vj, err := version.NewVersion(index[j].Version)
-			if err != nil {
-				panic(err)
-			}
-			return vi.LessThan(vj)
+			return cmpVersion(index[i].Version, index[j].Version)
 		}
 	})
 	// Set flag and handlers
@@ -431,4 +538,5 @@ var repoCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(repoCmd)
 	rootCmd.PersistentFlags().StringVarP(&githubToken, "github-token", "g", "", "Github token used to perform requests")
+	rootCmd.PersistentFlags().BoolVar(&rebuildCache, "rebuild-cache", false, "Force the rebuild the cache")
 }
