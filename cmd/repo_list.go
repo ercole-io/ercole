@@ -28,8 +28,8 @@ var showOnlyNameColumn bool
 func init() {
 	repoListCmd := &cobra.Command{
 		Use:   "list",
-		Short: "List files from repositories",
-		Long:  `List files from repositories`,
+		Short: "List artifacts from repositories",
+		Long:  `List artifacts from repositories`,
 		Run: func(cmd *cobra.Command, args []string) {
 			//Get the list of the repository
 			index := readOrUpdateIndex()
