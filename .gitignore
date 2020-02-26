@@ -19,6 +19,7 @@ fake_*.go
 distributed_files/*
 !distributed_files/index.txt
 !distributed_files/ping.txt
+!distributed_files/shared*
 
 # IDEs
 .vscode
