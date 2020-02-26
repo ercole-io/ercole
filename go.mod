@@ -12,6 +12,7 @@ require (
 	github.com/google/go-github/v28 v28.1.1
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.3
+	github.com/hashicorp/go-version v1.2.0
 	github.com/jinzhu/now v1.1.1
 	github.com/leandro-lugaresi/hub v1.1.0
 	github.com/mitchellh/mapstructure v1.1.2
