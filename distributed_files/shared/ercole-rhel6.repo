@@ -1,0 +1,5 @@
+[ercole]
+name=ercole
+baseurl=http://fillme:11114/rhel/rhel6/x86_64
+enabled=1
+gpgcheck=0
