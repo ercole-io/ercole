@@ -102,19 +102,9 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, sortBy stri
 					"DBInstanceName":           "$Databases",
 					"PluggableDatabaseName":    "",
 					"ConnectString":            "",
-					"ProductVersion": mu.APOArrayElemAt(bson.M{
-						"$split": bson.A{
-							"$Database.Version",
-							".",
-						},
-					}, 0),
-					"ProductEdition": mu.APOArrayElemAt(bson.M{
-						"$split": bson.A{
-							"$Database.Version",
-							" ",
-						},
-					}, 1),
-					"Environment": "$Environment",
+					"ProductVersion":           mu.APOArrayElemAt(mu.APOSplit("$Database.Version", "."), 0),
+					"ProductEdition":           mu.APOArrayElemAt(mu.APOSplit("$Database.Version", " "), 1),
+					"Environment":              "$Environment",
 					"Features": mu.APOJoin(mu.APOMap(
 						mu.APOFilter("$Database.Features", "fe", mu.APOEqual("$$fe.Status", true)),
 						"fe",
