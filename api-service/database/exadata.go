@@ -35,9 +35,7 @@ func (md *MongoDatabase) SearchExadata(full bool, keywords []string, sortBy stri
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APMatch(bson.M{
-				"Extra.Exadata": bson.M{
-					"$ne": nil,
-				},
+				"Extra.Exadata": mu.QONotEqual(nil),
 			}),
 			mu.APSearchFilterStage([]string{
 				"Hostname",
