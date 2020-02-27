@@ -357,11 +357,9 @@ func (md *MongoDatabase) ArchiveHost(hostname string) utils.AdvancedErrorInterfa
 	if _, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.M{
 		"Hostname": hostname,
 		"Archived": false,
-	}, bson.M{
-		"$set": bson.M{
-			"Archived": true,
-		},
-	}); err != nil {
+	}, mu.UOSet(bson.M{
+		"Archived": true,
+	})); err != nil {
 		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	} else {
 		return nil
