@@ -539,9 +539,7 @@ func (md *MongoDatabase) GetDatabaseLicenseComplianceStatusStats(location string
 					mu.APUnwind("$Extra.Clusters"),
 					mu.APReplaceWith("$Extra.Clusters"),
 					mu.APUnwind("$VMs"),
-					mu.APMatch(bson.M{
-						"$expr": mu.APOEqual("$VMs.Hostname", "$$hn"),
-					}),
+					mu.APMatch(mu.QOExpr(mu.APOEqual("$VMs.Hostname", "$$hn"))),
 					mu.APLimit(1),
 				)),
 				mu.APSet(bson.M{

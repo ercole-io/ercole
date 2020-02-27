@@ -49,9 +49,7 @@ func FilterByOldnessSteps(olderThan time.Time) bson.A {
 					"Hostname":  1,
 					"CreatedAt": 1,
 				}),
-				mu.APMatch(bson.M{
-					"$expr": mu.APOAnd(mu.APOEqual("$Hostname", "$$hn"), mu.APOGreater("$CreatedAt", "$$ca"), mu.APOGreaterOrEqual(olderThan, "$CreatedAt")),
-				}),
+				mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$Hostname", "$$hn"), mu.APOGreater("$CreatedAt", "$$ca"), mu.APOGreaterOrEqual(olderThan, "$CreatedAt")))),
 				mu.APLimit(1),
 			)),
 			mu.APMatch(bson.M{
