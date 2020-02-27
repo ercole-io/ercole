@@ -42,18 +42,16 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, sortBy stri
 				"Extra.Databases.UniqueName",
 				"Extra.Clusters.Name",
 			}, keywords),
-			mu.APOptionalStage(mode == "lms", mu.APMatch(bson.M{
-				"$expr": mu.APOGreater(mu.APOSize("$Extra.Databases"), 0),
-			})),
+			mu.APOptionalStage(mode == "lms", mu.APMatch(
+				mu.QOExpr(mu.APOGreater(mu.APOSize("$Extra.Databases"), 0))),
+			),
 			mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
 				FilterByOldnessSteps(olderThan),
 				mu.APUnwind("$Extra.Clusters"),
 				mu.APReplaceWith("$Extra.Clusters"),
 				mu.APUnwind("$VMs"),
 				mu.APReplaceWith("$VMs"),
-				mu.APMatch(bson.M{
-					"$expr": mu.APOEqual("$Hostname", "$$hn"),
-				}),
+				mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
 				mu.APLimit(1),
 			)),
 			mu.APSet(bson.M{
@@ -89,9 +87,7 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, sortBy stri
 				"CPUModel":       "$Info.CPUModel",
 			})),
 			mu.APOptionalStage(mode == "lms", mu.MAPipeline(
-				mu.APMatch(bson.M{
-					"$expr": mu.APOGreater(mu.APOSize("$Extra.Databases"), 0),
-				}),
+				mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$Extra.Databases"), 0))),
 				mu.APSet(bson.M{
 					"Database": mu.APOArrayElemAt("$Extra.Databases", 0),
 				}),
@@ -213,9 +209,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time) (interfac
 				"Hostname": hostname,
 			}),
 			mu.APLookupPipeline("alerts", bson.M{"hn": "$Hostname"}, "Alerts", mu.MAPipeline(
-				mu.APMatch(bson.M{
-					"$expr": mu.APOEqual("$OtherInfo.Hostname", "$$hn"),
-				}),
+				mu.APMatch(mu.QOExpr(mu.APOEqual("$OtherInfo.Hostname", "$$hn"))),
 			)),
 			mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
 				FilterByOldnessSteps(olderThan),
@@ -223,9 +217,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time) (interfac
 				mu.APReplaceWith("$Extra.Clusters"),
 				mu.APUnwind("$VMs"),
 				mu.APReplaceWith("$VMs"),
-				mu.APMatch(bson.M{
-					"$expr": mu.APOEqual("$Hostname", "$$hn"),
-				}),
+				mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
 				mu.APLimit(1),
 			)),
 			mu.APSet(bson.M{
@@ -244,9 +236,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time) (interfac
 				},
 				"History",
 				mu.MAPipeline(
-					mu.APMatch(bson.M{
-						"$expr": mu.APOAnd(mu.APOEqual("$Hostname", "$$hn"), mu.APOGreaterOrEqual("$$ca", "$CreatedAt")),
-					}),
+					mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$Hostname", "$$hn"), mu.APOGreaterOrEqual("$$ca", "$CreatedAt")))),
 					mu.APProject(bson.M{
 						"CreatedAt":                    1,
 						"Extra.Databases.Name":         1,

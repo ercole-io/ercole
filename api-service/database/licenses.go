@@ -75,9 +75,7 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 					mu.APReplaceWith("$Extra.Clusters"),
 					mu.APUnwind("$VMs"),
 					mu.APReplaceWith("$VMs"),
-					mu.APMatch(bson.M{
-						"$expr": mu.APOEqual("$Hostname", "$$hn"),
-					}),
+					mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
 					mu.APLimit(1),
 				)),
 				mu.APSet(bson.M{
