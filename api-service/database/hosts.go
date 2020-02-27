@@ -122,23 +122,13 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, sortBy stri
 						"$Info.CPUCores",
 					),
 					"ThreadsPerCore": mu.APOCond(
-						mu.APOGreaterOrEqual(bson.M{
-							"$indexOfCP": bson.A{
-								"$Info.CPUModel",
-								"SPARC",
-							},
-						}, 0),
+						mu.APOGreaterOrEqual(mu.APOIndexOfCP("$Info.CPUModel", "SPARC"), 0),
 						8,
 						2,
 					),
 					"ProcessorSpeed": mu.APOLet(
 						bson.M{
-							"indexAt": bson.M{
-								"$indexOfCP": bson.A{
-									"$Info.CPUModel",
-									"@",
-								},
-							},
+							"indexAt": mu.APOIndexOfCP("$Info.CPUModel", "@"),
 						}, mu.APOCond(
 							mu.APOGreaterOrEqual("$$indexAt", 0),
 							bson.M{
