@@ -211,6 +211,9 @@ type UpstreamRepository struct {
 	// Name of the repository
 	Name string
 	// Type of the repository
+	// Supported types are:
+	//		- github-release
+	//		- directory
 	Type string
 	// URL of the repository where to find files
 	URL string
