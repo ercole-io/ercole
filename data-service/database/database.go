@@ -23,6 +23,7 @@ import (
 	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
+	"github.com/amreo/mu"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -119,10 +120,8 @@ func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]string, utils.Advan
 		context.TODO(),
 		"Hostname",
 		bson.M{
-			"Archived": false,
-			"CreatedAt": bson.M{
-				"$lt": t,
-			},
+			"Archived":  false,
+			"CreatedAt": mu.QOLessThan(t),
 		})
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -145,10 +144,8 @@ func (md *MongoDatabase) FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID
 		context.TODO(),
 		"_id",
 		bson.M{
-			"Archived": true,
-			"CreatedAt": bson.M{
-				"$lt": t,
-			},
+			"Archived":  true,
+			"CreatedAt": mu.QOLessThan(t),
 		})
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
