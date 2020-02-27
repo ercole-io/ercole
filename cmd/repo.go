@@ -55,6 +55,7 @@ type artifactInfo struct {
 	UpstreamType          string
 	UpstreamInfo          map[string]interface{}
 	Install               func(ai *artifactInfo)              `json:"-"`
+	Uninstall             func(ai *artifactInfo)              `json:"-"`
 	Download              func(ai *artifactInfo, dest string) `json:"-"`
 }
 
@@ -202,6 +203,9 @@ func setInstaller(artifact *artifactInfo) {
 			}
 			cmd.Stderr = os.Stderr
 			cmd.Run()
+
+			//Settint it to installed
+			ai.Installed = true
 		}
 	default:
 		artifact.Install = func(ai *artifactInfo) {
@@ -235,6 +239,72 @@ func setInstaller(artifact *artifactInfo) {
 			if err != nil {
 				panic(err)
 			}
+
+			//Settint it to installed
+			ai.Installed = true
+		}
+	}
+}
+
+// setInstaller set the installer of the artifact
+func setUninstaller(artifact *artifactInfo) {
+	switch {
+	case strings.HasSuffix(artifact.Filename, ".rpm"):
+		artifact.Uninstall = func(ai *artifactInfo) {
+			//Removing the link to all
+			if verbose {
+				fmt.Printf("Removing Linking the artifact to %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
+			}
+			err := os.Remove(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
+			if err != nil {
+				panic(err)
+			}
+
+			//Removing the file
+			if verbose {
+				fmt.Printf("Removing the file %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
+			}
+			err = os.Remove(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
+			if err != nil {
+				panic(err)
+			}
+
+			//Launch the createrepo command
+			if verbose {
+				fmt.Printf("Executing createrepo %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch))
+			}
+			cmd := exec.Command("createrepo", filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch))
+			if verbose {
+				cmd.Stdout = os.Stdout
+			}
+			cmd.Stderr = os.Stderr
+			cmd.Run()
+
+			//Set it to not installed
+			ai.Installed = false
+		}
+	default:
+		artifact.Uninstall = func(ai *artifactInfo) {
+			//Removing the link to all
+			if verbose {
+				fmt.Printf("Removing Linking the artifact to %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
+			}
+			err := os.Remove(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
+			if err != nil {
+				panic(err)
+			}
+
+			//Removing the file
+			if verbose {
+				fmt.Printf("Removing the file %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
+			}
+			err = os.Remove(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
+			if err != nil {
+				panic(err)
+			}
+
+			//Set it to not installed
+			ai.Installed = false
 		}
 	}
 }
@@ -517,6 +587,7 @@ func readOrUpdateIndex() index {
 		art.Installed = art.checkInstalled()
 		setDownloader(art)
 		setInstaller(art)
+		setUninstaller(art)
 	}
 
 	return index
