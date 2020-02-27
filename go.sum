@@ -1,4 +1,6 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
+github.com/1set/gut v0.0.0-20200225162230-3995492b8589 h1:JcmJsZl3jnHWyYy9wk770Ep23ArQED3XAliq/0+Ge1E=
+github.com/1set/gut v0.0.0-20200225162230-3995492b8589/go.mod h1:4NyGsj/BwOwBdc9q9F/yemaNpEm8s/D8KIYhusgaasE=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/DataDog/zstd v1.4.4 h1:+IawcoXhCBylN7ccwdwf8LOH2jKq7NavGpEPanrlTzE=
 github.com/DataDog/zstd v1.4.4/go.mod h1:1jcaCB/ufaK+sKp1NBhlGmpz41jOoPQ35bpF36t7BBo=
