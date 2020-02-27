@@ -55,9 +55,7 @@ func FilterByOldnessSteps(olderThan time.Time) bson.A {
 				mu.APLimit(1),
 			)),
 			mu.APMatch(bson.M{
-				"Check": bson.M{
-					"$size": 0,
-				},
+				"Check": mu.QOSize(0),
 			}),
 			mu.APUnset("Check"),
 		}),
