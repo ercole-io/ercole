@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.ercole.model.ClusterInfo;
 import io.ercole.services.DashboardService;
 import io.ercole.services.GenerateExcelAddmService;
+import io.ercole.services.GenerateExcelClustersService;
 import io.ercole.services.GenerateExcelPatchService;
 import io.ercole.services.GenerateExcelSegmentService;
 import io.ercole.services.GenerateExcelService;
@@ -62,8 +63,13 @@ public class UserController {
 
 	@Autowired
 	private GenerateExcelSegmentService generateExcelSegmentService;
+	
 	@Autowired
 	private GenerateExcelAddmService generateExcelAddmService;
+
+	@Autowired
+	private GenerateExcelClustersService generateExcelClustersService;
+
 
 	@Autowired
 	private HostService hostService;
@@ -542,4 +548,19 @@ public class UserController {
 	public Map<String, Object> getExadataStats() {
 		return dashService.getExadataStats();
 	}
+
+	/**
+	 * Generate excel segment response entity.
+	 *
+	 * @param search the search
+	 * @return the response entity
+	 * @throws IOException the io exception
+	 */
+	@GetMapping(path = "/generate-hypervisors")
+	public ResponseEntity<byte[]> generateHypervisors(
+			@RequestParam final String search) throws IOException {
+			return generateExcelClustersService.initExcel(search);
+	}
+
+
 }
