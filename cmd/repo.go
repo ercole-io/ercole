@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -28,6 +29,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/1set/gut/yos"
 	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/utils"
 	"github.com/google/go-github/v28/github"
@@ -151,6 +153,16 @@ func setDownloader(artifact *artifactInfo) {
 	case "github-release":
 		artifact.Download = func(ai *artifactInfo, dest string) {
 			utils.DownloadFile(dest, ai.UpstreamInfo["DownloadUrl"].(string))
+		}
+	case "directory":
+		artifact.Download = func(ai *artifactInfo, dest string) {
+			if verbose {
+				fmt.Printf("Copying file from %s to %s\n", ai.UpstreamInfo["Filename"].(string), dest)
+			}
+			err := yos.CopyFile(ai.UpstreamInfo["Filename"].(string), dest)
+			if err != nil {
+				panic(err)
+			}
 		}
 	default:
 		panic(artifact)
@@ -357,11 +369,43 @@ func scanGithubReleaseRepository(repo config.UpstreamRepository) (index, error) 
 	return out, nil
 }
 
+// scanDirectoryRepository scan the local directory and return detected files
+func scanDirectoryRepository(repo config.UpstreamRepository) (index, error) {
+	//Fetch the data
+	files, err := ioutil.ReadDir(repo.URL)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//Add data to out
+	var out index
+	for _, file := range files {
+		artifactInfo := new(artifactInfo)
+
+		artifactInfo.Repository = repo.Name
+		artifactInfo.Filename = filepath.Base(file.Name())
+		artifactInfo.ReleaseDate = file.ModTime().Format("2006-01-02")
+		artifactInfo.UpstreamType = "directory"
+		artifactInfo.UpstreamInfo = map[string]interface{}{
+			"Filename": filepath.Join(repo.URL, file.Name()),
+		}
+		setInfoFromFileName(artifactInfo.Filename, artifactInfo)
+		if artifactInfo.Version == "latest" {
+			continue
+		}
+		out = append(out, artifactInfo)
+	}
+
+	return out, nil
+}
+
 // scanRepository scan a single repository and return detected files
 func scanRepository(repo config.UpstreamRepository) (index, error) {
 	switch repo.Type {
 	case "github-release":
 		return scanGithubReleaseRepository(repo)
+	case "directory":
+		return scanDirectoryRepository(repo)
 	default:
 		return nil, fmt.Errorf("Unknown repository type %q of %q", repo.Type, repo.Name)
 	}
