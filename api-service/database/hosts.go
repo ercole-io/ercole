@@ -131,9 +131,7 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, sortBy stri
 							"indexAt": mu.APOIndexOfCP("$Info.CPUModel", "@"),
 						}, mu.APOCond(
 							mu.APOGreaterOrEqual("$$indexAt", 0),
-							bson.M{
-								"$trim": bson.M{
-									"input": bson.M{
+							mu.APOTrim(bson.M{
 										"$substrCP": bson.A{
 											"$Info.CPUModel",
 											mu.APOAdd("$$indexAt", 1),
@@ -141,7 +139,7 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, sortBy stri
 										},
 									},
 								},
-							},
+							}),
 							"???",
 						),
 					),
