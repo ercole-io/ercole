@@ -73,11 +73,9 @@ func (md *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, util
 	if res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.M{
 		"Hostname": hostname,
 		"Archived": false,
-	}, bson.M{
-		"$set": bson.M{
-			"Archived": true,
-		},
-	}); err != nil {
+	}, mu.UOSet(bson.M{
+		"Archived": true,
+	})); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	} else {
 		return res, nil

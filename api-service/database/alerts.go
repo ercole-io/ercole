@@ -78,11 +78,9 @@ func (md *MongoDatabase) UpdateAlertStatus(id primitive.ObjectID, newStatus stri
 	//Find the informations
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").UpdateOne(context.TODO(), bson.M{
 		"_id": id,
-	}, bson.M{
-		"$set": bson.M{
-			"AlertStatus": newStatus,
-		},
-	})
+	}, mu.UOSet(bson.M{
+		"AlertStatus": newStatus,
+	}))
 	if err != nil {
 		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}

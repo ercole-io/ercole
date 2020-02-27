@@ -161,11 +161,9 @@ func (md *MongoDatabase) SetLicenseCount(name string, count int) utils.AdvancedE
 	//Find the informations
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses").UpdateOne(context.TODO(), bson.M{
 		"_id": name,
-	}, bson.M{
-		"$set": bson.M{
-			"Count": count,
-		},
-	})
+	}, mu.UOSet(bson.M{
+		"Count": count,
+	}))
 	if err != nil {
 		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
