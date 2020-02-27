@@ -126,9 +126,7 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, sortBy stri
 					"CoresPerProcessor": mu.APOCond(
 						mu.APOAnd(
 							mu.APOGreaterOrEqual("$Info.CPUCores", "$Info.Socket"),
-							bson.M{
-								"$ne": bson.A{"$Info.Socket", 0},
-							},
+							mu.APONotEqual("$Info.Socket", 0),
 						),
 						mu.APODivide("$Info.CPUCores", "$Info.Socket"),
 						"$Info.CPUCores",

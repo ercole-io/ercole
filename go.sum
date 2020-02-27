@@ -19,6 +19,10 @@ github.com/amreo/mu v0.0.0-20200227111649-e3fa55449620 h1:Y5xuf2lzkhl+Rm2wXd3Dlo
 github.com/amreo/mu v0.0.0-20200227111649-e3fa55449620/go.mod h1:Z4dSBwGqIVMf3JyIv/P/5RSHXkSzdbZLrRC/xoKYPIA=
 github.com/amreo/mu v0.0.0-20200227122504-e38c2328f409 h1:CU1NOScTqmhJ2A5D86welQqhkjNClvfH/cOx+ArXbx4=
 github.com/amreo/mu v0.0.0-20200227122504-e38c2328f409/go.mod h1:Z4dSBwGqIVMf3JyIv/P/5RSHXkSzdbZLrRC/xoKYPIA=
+github.com/amreo/mu v0.0.0-20200227125313-cc1a26cef96c h1:6TxXEaiyo9pjGLjvYPnDIuWRv+MJfStWud+SZa00zFg=
+github.com/amreo/mu v0.0.0-20200227125313-cc1a26cef96c/go.mod h1:Z4dSBwGqIVMf3JyIv/P/5RSHXkSzdbZLrRC/xoKYPIA=
+github.com/amreo/mu v0.0.0-20200227125658-a169efb9e7af h1:ssnVNyPWWNsQprinzlxursvH1kg5VcoOKGmcJarV4wk=
+github.com/amreo/mu v0.0.0-20200227125658-a169efb9e7af/go.mod h1:Z4dSBwGqIVMf3JyIv/P/5RSHXkSzdbZLrRC/xoKYPIA=
 github.com/amreo/sftp v1.10.2-0.20200107133605-5981645e4b3b h1:GpQHWqvka4/Y8GQI47k2n33cwlXS/+G3aha7sZnhesU=
 github.com/amreo/sftp v1.10.2-0.20200107133605-5981645e4b3b/go.mod h1:lYOWFsE0bwd1+KfKJaKeuokY15vzFx25BLbzYYoAxZI=
 github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6/go.mod h1:grANhF5doyWs3UAsr3K4I6qtAmlQcZDesFNEHPZAzj8=
