@@ -212,10 +212,11 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time) (interfac
 				mu.MAPipeline(
 					mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$Hostname", "$$hn"), mu.APOGreaterOrEqual("$$ca", "$CreatedAt")))),
 					mu.APProject(bson.M{
-						"CreatedAt":                    1,
-						"Extra.Databases.Name":         1,
-						"Extra.Databases.Used":         1,
-						"Extra.Databases.SegmentsSize": 1,
+						"CreatedAt":                     1,
+						"Extra.Databases.Name":          1,
+						"Extra.Databases.Used":          1,
+						"Extra.Databases.SegmentsSize":  1,
+						"Extra.Databases.DailyCPUUsage": 1,
 					}),
 				),
 			),

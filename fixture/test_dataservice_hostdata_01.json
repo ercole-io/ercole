@@ -48,6 +48,7 @@
 			"Allocated": "129",
 			"Elapsed": "12059.18",
 			"DBTime": "184.81",
+			"DailyCPUUsage": "1.3",
 			"Work": "1",
 			"ASM": false,
 			"Dataguard": false,
