@@ -1,4 +1,9 @@
+version: ~> 1.0
 language: go
-
 go:
-- 1.13.x
+  - 1.13.x
+env:
+  - MONGODB_URI=mongodb://127.0.0.1:27017
+services:
+  - mongodb
+

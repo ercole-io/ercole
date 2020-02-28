@@ -36,10 +36,10 @@ type Database struct {
 	SGAMaxSize      string           `bson:"SGAMaxSize"`
 	SegmentsSize    string           `bson:"SegmentsSize"`
 	Used            string           `bson:"Used"`
-	DailyCPUUsage   string           `bson:"DailyCPUUsage"`
 	Allocated       string           `bson:"Allocated"`
 	Elapsed         string           `bson:"Elapsed"`
 	DBTime          string           `bson:"DBTime"`
+	DailyCPUUsage   string           `bson:"DailyCPUUsage"`
 	Work            string           `bson:"Work"`
 	ASM             bool             `bson:"ASM"`
 	Dataguard       bool             `bson:"Dataguard"`
@@ -78,6 +78,7 @@ var DatabaseBsonValidatorRules = bson.D{
 		"Allocated",
 		"Elapsed",
 		"DBTime",
+		"DailyCPUUsage",
 		"Work",
 		"ASM",
 		"Dataguard",
@@ -150,6 +151,9 @@ var DatabaseBsonValidatorRules = bson.D{
 			{"bsonType", "string"},
 		}},
 		{"DBTime", bson.D{
+			{"bsonType", "string"},
+		}},
+		{"DailyCPUUsage", bson.D{
 			{"bsonType", "string"},
 		}},
 		{"Work", bson.D{
