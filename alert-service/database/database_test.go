@@ -77,7 +77,7 @@ func (m *MongodbSuite) TestExistNoDataAlert_SuccessExist() {
 }
 
 func (m *MongodbSuite) TestFindHostData_SuccessExist() {
-	hd := utils.LoadFixtureHostData(m.T(), "../../fixture/test_hostdata_01_mongodb.json")
+	hd := utils.LoadFixtureHostData(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
 
 	err := m.InsertHostData(hd)
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
