@@ -4,7 +4,7 @@
 		"BindIP": "0.0.0.0",
 		"Port": 11111,
 		"LogHTTPRequest": true,
-		"LogInsertingHostdata": true,
+		"LogInsertingHostdata": false,
 		"LogDataPatching": true,
 		"EnablePatching": true,
 		"AgentUsername": "user",
@@ -29,6 +29,7 @@
 		"LogAlertThrows": true,
 		"PublisherUsername": "publisher",
 		"PublisherPassword": "r4nd0mS3cR3tp4ssW0rd",
+		"QueueBufferSize": 1024,
 		"FreshnessCheckJob": {
 			"Crontab": "*/1 * * * * *",
 			"DaysThreshold": 1,

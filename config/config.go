@@ -86,8 +86,12 @@ type AlertService struct {
 	PublisherUsername string
 	// PublisherPassword contains the password of the agent
 	PublisherPassword string
+	// QueueBufferSize contains the size of the buffer of the queue
+	QueueBufferSize int
 	// FreshnessCheckJob contains the parameters of the freshness check
 	FreshnessCheckJob FreshnessCheckJob
+	// Emailer contains the settings about the emailer
+	Emailer Emailer
 }
 
 // APIService contains configuration about the api service
@@ -217,6 +221,26 @@ type UpstreamRepository struct {
 	Type string
 	// URL of the repository where to find files
 	URL string
+}
+
+// Emailer contains settings used to send emails
+type Emailer struct {
+	// Enabled contains true if the emailer is enabled, otherwise false
+	Enabled bool
+	// From contains the source email
+	From string
+	// To contains the destinations
+	To []string
+	// SmtpServer contains the address or hostname of the server
+	SmtpServer string
+	// SmtpPort contains the port of the server
+	SmtpPort int
+	// SmtpUsername contains the username used to connect to the server
+	SmtpUsername string
+	// SmtpPassword contains the password used to connect to the server
+	SmtpPassword string
+	// DisableSSLCertificateValidation contains true if disable the certification validation, otherwise false
+	DisableSSLCertificateValidation bool
 }
 
 // PatchConfiguration change the value of the fields for meeting some requirements(?)

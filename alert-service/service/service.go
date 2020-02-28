@@ -17,6 +17,7 @@
 package service
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -64,6 +65,8 @@ type AlertService struct {
 	TimeNow func() time.Time
 	// Log contains logger formatted
 	Log *logrus.Logger
+	// Emailer contains the emailer layer
+	Emailer Emailer
 }
 
 // Init initializes the service and database
@@ -72,7 +75,7 @@ func (as *AlertService) Init(wg *sync.WaitGroup) {
 	as.Queue = hub.New()
 
 	//Subscribe the alert-service
-	sub := as.Queue.Subscribe(0, "hostdata.insertion")
+	sub := as.Queue.Subscribe(as.Config.AlertService.QueueBufferSize, model.TopicHostDataInsertion, model.TopicAlertInsertion)
 	wg.Add(1)
 	go func(s hub.Subscription) {
 		as.Log.Info("Start alert-service/queue")
@@ -95,9 +98,20 @@ func (as *AlertService) Init(wg *sync.WaitGroup) {
 // HostDataInsertion inserts the host data insertion in the queue
 func (as *AlertService) HostDataInsertion(id primitive.ObjectID) utils.AdvancedErrorInterface {
 	as.Queue.Publish(hub.Message{
-		Name: "hostdata.insertion",
+		Name: model.TopicHostDataInsertion,
 		Fields: hub.Fields{
 			"id": id,
+		},
+	})
+	return nil
+}
+
+// AlertInsertion inserts a alert insertion in the queue
+func (as *AlertService) AlertInsertion(alr model.Alert) utils.AdvancedErrorInterface {
+	as.Queue.Publish(hub.Message{
+		Name: model.TopicAlertInsertion,
+		Fields: hub.Fields{
+			"alert": alr,
 		},
 	})
 	return nil
@@ -112,6 +126,8 @@ func (as *AlertService) ProcessMsg(msg hub.Message) {
 	switch msg.Topic() {
 	case model.TopicHostDataInsertion:
 		as.ProcessHostDataInsertion(msg.Fields)
+	case model.TopicAlertInsertion:
+		as.ProcessAlertInsertion(msg.Fields)
 	default:
 	}
 }
@@ -136,6 +152,29 @@ func (as *AlertService) ProcessHostDataInsertion(params hub.Fields) {
 
 	//Find the data difference and generate eventually alerts
 	if err := as.DiffHostDataAndGenerateAlert(oldData, newData); err != nil {
+		utils.LogErr(as.Log, err)
+		return
+	}
+}
+
+// ProcessAlertInsertion processes the alert insertion event
+func (as *AlertService) ProcessAlertInsertion(params hub.Fields) {
+	alert := params["alert"].(model.Alert)
+
+	//Create the subject and message
+	var subject string
+	var message string
+	if val, ok := alert.OtherInfo["Hostname"]; ok {
+		subject = fmt.Sprintf("%s %s on %s", alert.AlertSeverity, alert.Description, val)
+		message = fmt.Sprintf("Date: %s\nSeverity: %s\nHost: %s\nCode: %s\n%s", alert.Date, alert.AlertSeverity, val, alert.AlertCode, alert.Description)
+	} else {
+		subject = fmt.Sprintf("%s %s", alert.AlertSeverity, alert.Description)
+		message = fmt.Sprintf("Date: %s\nSeverity: %s\nCode: %s\n%s", alert.Date, alert.AlertSeverity, alert.AlertCode, alert.Description)
+	}
+
+	// Send the email
+	err := as.Emailer.SendEmail(subject, message, as.Config.AlertService.Emailer.To)
+	if err != nil {
 		utils.LogErr(as.Log, err)
 		return
 	}
