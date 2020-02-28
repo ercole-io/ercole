@@ -6,4 +6,11 @@ env:
   - MONGODB_URI=mongodb://127.0.0.1:27017
 services:
   - mongodb
-
+install:
+  - go get -v
+  - go get github.com/golang/mock/mockgen@latest
+script: 
+  - go generate -v ./...
+  - go build -o ercole
+  - go test -v ./...
+  - ./ercole version
