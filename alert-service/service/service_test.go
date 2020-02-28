@@ -36,6 +36,7 @@ func TestProcessHostDataInsertion_SuccessNewHost(t *testing.T) {
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Log:      utils.NewLogger("TEST"),
+		Queue:    hub.New(),
 	}
 
 	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(hostData1, nil).Times(1)
@@ -129,6 +130,7 @@ func TestDiffHostDataAndGenerateAlert_SuccessNewHost(t *testing.T) {
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T16:02:03Z")),
 		Log:      utils.NewLogger("TEST"),
+		Queue:    hub.New(),
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
@@ -150,6 +152,7 @@ func TestDiffHostDataAndGenerateAlert_SuccessNewDatabase(t *testing.T) {
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T16:02:03Z")),
 		Log:      utils.NewLogger("TEST"),
+		Queue:    hub.New(),
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
@@ -172,6 +175,7 @@ func TestDiffHostDataAndGenerateAlert_SuccessNewEnterpriseLicense(t *testing.T) 
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T16:02:03Z")),
 		Log:      utils.NewLogger("TEST"),
+		Queue:    hub.New(),
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
@@ -265,6 +269,7 @@ func TestDiffHostDataAndGenerateAlert_DatabaseError4(t *testing.T) {
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T16:02:03Z")),
 		Log:      utils.NewLogger("TEST"),
+		Queue:    hub.New(),
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
