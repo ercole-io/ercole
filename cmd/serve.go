@@ -186,12 +186,18 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	db.Init()
 
+	//Setup the emailer
+	emailer := &alertservice_service.SmtpEmailer{
+		Config: config,
+	}
+
 	//Setup the service
 	service := &alertservice_service.AlertService{
 		Config:   config,
 		Database: db,
 		TimeNow:  time.Now,
 		Log:      log,
+		Emailer:  emailer,
 	}
 	service.Init(wg)
 
