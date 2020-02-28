@@ -18,6 +18,7 @@ package service
 import (
 	"testing"
 
+	"github.com/leandro-lugaresi/hub"
 	"github.com/stretchr/testify/require"
 
 	"github.com/amreo/ercole-services/model"
@@ -35,6 +36,7 @@ func TestThrowNewDatabaseAlert_Success(t *testing.T) {
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Queue:    hub.New(),
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.AlertCodeNewDatabase, alert.AlertCode)
@@ -72,6 +74,7 @@ func TestThrowNewServerAlert_Success(t *testing.T) {
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Queue:    hub.New(),
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.AlertCodeNewServer, alert.AlertCode)
@@ -108,6 +111,7 @@ func TestThrowNewEnterpriseLicenseAlert_Success(t *testing.T) {
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Queue:    hub.New(),
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.AlertCodeNewLicense, alert.AlertCode)
@@ -144,6 +148,7 @@ func TestThrowActivatedFeaturesAlert_Success(t *testing.T) {
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Queue:    hub.New(),
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.AlertCodeNewOption, alert.AlertCode)
@@ -182,6 +187,7 @@ func TestThrowNoDataAlert_Success(t *testing.T) {
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Queue:    hub.New(),
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.AlertCodeNoData, alert.AlertCode)
