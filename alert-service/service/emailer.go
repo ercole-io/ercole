@@ -13,11 +13,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package model
+package service
 
-const (
-	// TopicHostDataInsertion is the topic used when a hostdata is inserted in the db
-	TopicHostDataInsertion string = "hostdata.insertion"
-	// TopicAlertInsertion is the topic used when a aler is inserted in the db
-	TopicAlertInsertion string = "alert.insertion"
-)
+import "github.com/amreo/ercole-services/utils"
+
+// Emailer contains the interface of a email senders
+type Emailer interface {
+	// SendEmail send a email
+	SendEmail(subject string, text string, to []string) utils.AdvancedErrorInterface
+}
