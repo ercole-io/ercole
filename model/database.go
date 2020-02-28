@@ -36,6 +36,7 @@ type Database struct {
 	SGAMaxSize      string           `bson:"SGAMaxSize"`
 	SegmentsSize    string           `bson:"SegmentsSize"`
 	Used            string           `bson:"Used"`
+	DailyCPUUsage   string           `bson:"DailyCPUUsage"`
 	Allocated       string           `bson:"Allocated"`
 	Elapsed         string           `bson:"Elapsed"`
 	DBTime          string           `bson:"DBTime"`

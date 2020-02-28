@@ -186,6 +186,7 @@ var FrontendHostdataSchemaValidator string = `
 										"SGAMaxSize",
 										"SegmentsSize",
 										"Used",
+										"DailyCPUUsage",
 										"Allocated",
 										"Elapsed",
 										"DBTime",
@@ -261,6 +262,9 @@ var FrontendHostdataSchemaValidator string = `
 											"type": "string"
 										},
 										"DBTime": {
+											"type": "string"
+										},
+										"DailyCPUUsage": {
 											"type": "string"
 										},
 										"Work": {
