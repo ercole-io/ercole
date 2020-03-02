@@ -1,22 +1,40 @@
 version: ~> 1.0
+
+dist: xenial
+
 language: go
+
+sudo: required
+
 go:
   - 1.13.x
+
 env:
-  - MONGODB_URI=mongodb://127.0.0.1:27017
-  - VERSION=latest
+  global:
+    - MONGODB_URI=mongodb://127.0.0.1:27017
+    - VERSION=latest
+    - PACKAGE_BUILD_IMAGE=sorintdev/rpmbuild-centos7
+    - WORKSPACE='/project'
+
 services:
   - mongodb
+  
+before_install:
+  - sudo docker pull ${PACKAGE_BUILD_IMAGE}
+
 install:
   - go get -v
   - go get github.com/golang/mock/mockgen@latest
+  - sudo docker run -d --rm -it -e WORKSPACE="${WORKSPACE}" -e TRAVIS_REPO_SLUG="${TRAVIS_REPO_SLUG}" -e TRAVIS_BUILD_NUMBER="${TRAVIS_BUILD_NUMBER}" -v $PWD:"${WORKSPACE}" --name package_builder ${PACKAGE_BUILD_IMAGE} /bin/cat
+
 script: 
   - go generate -v ./...
   - go build -o ercole
   - go test -v ./...
   - ./ercole version
-  - mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
-  - ln -s $PWD ~/rpmbuild/SOURCES/ercole-${VERSION}
-  - rpmbuild -bb package/rhel7/ercole.spec
-  - ls ~/rpmbuild/RPMS/x86_64/ercole-*.rpm
-  - file ~/rpmbuild/RPMS/x86_64/ercole-*.rpm
+  - docker exec -it package_builder /bin/sh -c "mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}"
+  - docker exec -it package_builder /bin/sh -c "ln -s ${WORKSPACE} ~/rpmbuild/SOURCES/ercole-${VERSION}"
+  - docker exec -it package_builder /bin/sh -c "cd ${WORKSPACE} && rpmbuild --define \"_version ${VERSION}\" -bb package/rhel7/ercole.spec"
+  - docker exec -it package_builder /bin/sh -c "ls ~/rpmbuild/RPMS/x86_64/ercole-*.rpm"
+  - docker exec -it package_builder /bin/sh -c "file ~/rpmbuild/RPMS/x86_64/ercole-*.rpm"
+  
