@@ -92,7 +92,7 @@ func serve(enableDataService bool,
 
 	if ercoleConfig.Mongodb.Migrate {
 		//Read initial licenses list
-		content, err := ioutil.ReadFile(ercoleConfig.Mongodb.LicensesList)
+		content, err := ioutil.ReadFile(ercoleConfig.ResourceFilePath + "/initial_oracle_licenses_list.txt")
 		if err != nil {
 			log.Fatalf("Cannot read the licenses list: %v\n", err)
 		}

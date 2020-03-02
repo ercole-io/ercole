@@ -3,3 +3,5 @@ name=ercole
 baseurl=http://fillme:11114/rhel/rhel5/x86_64
 enabled=1
 gpgcheck=0
+skip_if_unavailable=1
+retries=2

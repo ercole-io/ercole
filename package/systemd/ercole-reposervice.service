@@ -1,0 +1,10 @@
+[Unit]
+Description=Ercole reposervice
+PartOf=ercole.service
+After=ercole.service
+
+[Service]
+ExecStart=/usr/bin/ercole serve --enable-repo-service
+
+[Install]
+WantedBy=ercole.service
