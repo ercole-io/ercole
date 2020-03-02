@@ -51,6 +51,7 @@ install -m 0644 package/systemd/60-ercole.preset %{buildroot}%{_presetdir}/60-%{
 %files
 %dir /var/lib/ercole
 %dir /var/lib/ercole/distributed_files
+/usr/bin/ercole
 %{_presetdir}/60-ercole.preset
 %{_unitdir}/ercole-alertservice.service
 %{_unitdir}/ercole-apiservice.service
