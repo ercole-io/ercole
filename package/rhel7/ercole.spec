@@ -31,7 +31,7 @@ ls
 cd %{_builddir}/%{name}-%{version}
 mkdir -p %{buildroot}/usr/bin/ %{buildroot}/usr/share/ercole %{buildroot}%{_unitdir} %{buildroot}%{_presetdir} %{buildroot}/var/lib/ercole/distributed_files/shared
 install -m 0755 ercole %{buildroot}/usr/bin/ercole
-install -m 0644 resources/initial_oracle_licenses-list.txt %{buildroot}/usr/share/ercole
+install -m 0644 resources/initial_oracle_licenses_list.txt %{buildroot}/usr/share/ercole
 install -m 0644 -d resources/templates %{buildroot}/usr/share/ercole
 
 install -m 0644 package/config.json %{buildroot}/usr/share/ercole/ercole.json
