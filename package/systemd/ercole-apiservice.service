@@ -1,10 +1,11 @@
 [Unit]
 Description=Ercole apiservice
 PartOf=ercole.service
-After=ercole.service
+After=ercole.service syslog.target network.target
 
 [Service]
 ExecStart=/usr/bin/ercole serve --enable-api-service
+User=ercole
 
 [Install]
 WantedBy=ercole.service

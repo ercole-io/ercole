@@ -1,10 +1,11 @@
 [Unit]
 Description=Ercole alertservice
 PartOf=ercole.service
-After=ercole.service
+After=ercole.service syslog.target network.target
 
 [Service]
 ExecStart=/usr/bin/ercole serve --enable-alert-service
+User=ercole
 
 [Install]
 WantedBy=ercole.service
