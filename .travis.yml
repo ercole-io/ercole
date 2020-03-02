@@ -21,7 +21,7 @@ services:
   
 before_install:
   - sudo docker pull ${PACKAGE_BUILD_IMAGE}
-
+  - mkdir dist
 install:
   - go get -v
   - go get github.com/golang/mock/mockgen@latest
@@ -37,4 +37,12 @@ script:
   - docker exec -it package_builder /bin/sh -c "cd ${WORKSPACE} && rpmbuild --define \"_version ${VERSION}\" -bb package/rhel7/ercole.spec"
   - docker exec -it package_builder /bin/sh -c "ls ~/rpmbuild/RPMS/x86_64/ercole-*.rpm"
   - docker exec -it package_builder /bin/sh -c "file ~/rpmbuild/RPMS/x86_64/ercole-*.rpm"
+  - docker exec -it package_builder /bin/sh -c "cp ~/rpmbuild/RPMS/x86_64/ercole-*.rpm ${WORKSPACE}/dist"
   
+deploy:
+  provider: releases
+  api_key: $GITHUB_API_RELEASE
+  file_glob: true
+  file: dist/*
+  skip_cleanup: true
+
