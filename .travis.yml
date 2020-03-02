@@ -4,6 +4,7 @@ go:
   - 1.13.x
 env:
   - MONGODB_URI=mongodb://127.0.0.1:27017
+  - VERSION=latest
 services:
   - mongodb
 install:
@@ -14,3 +15,8 @@ script:
   - go build -o ercole
   - go test -v ./...
   - ./ercole version
+  - mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+  - ln -s $PWD ~/rpmbuild/SOURCES/ercole-${VERSION}
+  - rpmbuild -bb package/rhel7/ercole.spec
+  - ls ~/rpmbuild/RPMS/x86_64/ercole-*.rpm
+  - file ~/rpmbuild/RPMS/x86_64/ercole-*.rpm

@@ -55,6 +55,7 @@ func readConfig() config.Configuration {
 	var conf config.Configuration
 
 	readSingleConfigFile("/opt/ercole/config.json", &conf)
+	readSingleConfigFile("/usr/share/ercole/config.json", &conf)
 	readSingleConfigFile("/etc/ercole.json", &conf)
 	home, _ := os.UserHomeDir()
 	readSingleConfigFile(home+"/.ercole.json", &conf)
