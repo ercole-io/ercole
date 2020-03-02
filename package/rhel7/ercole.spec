@@ -35,8 +35,8 @@ install -m 0644 resources/initial_oracle_licenses_list.txt %{buildroot}/usr/shar
 install -m 0644 -d resources/templates %{buildroot}/usr/share/ercole
 
 install -m 0644 package/config.json %{buildroot}/usr/share/ercole/ercole.json
-install -m 0644 package/rhel7/ercole-server.service %{buildroot}%{_unitdir}/%{name}.service
-install -m 0644 package/rhel7/60-ercole-server.preset %{buildroot}%{_presetdir}/60-%{name}.preset
+install -m 0644 package/rhel7/ercole.service %{buildroot}%{_unitdir}/%{name}.service
+install -m 0644 package/rhel7/60-ercole.preset %{buildroot}%{_presetdir}/60-%{name}.preset
 
 %post
 /usr/bin/systemctl preset %{name}.service >/dev/null 2>&1 ||:
