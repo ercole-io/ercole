@@ -1,0 +1,10 @@
+[Unit]
+Description=Application
+
+[Service]
+Type=oneshot
+ExecStart=/bin/true
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

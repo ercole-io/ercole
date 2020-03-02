@@ -1,0 +1,10 @@
+[Unit]
+Description=Ercole alertservice
+PartOf=ercole.service
+After=ercole.service
+
+[Service]
+ExecStart=/usr/bin/ercole serve --enable-alert-service
+
+[Install]
+WantedBy=ercole.service

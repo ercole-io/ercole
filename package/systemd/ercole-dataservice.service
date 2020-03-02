@@ -1,0 +1,11 @@
+[Unit]
+Description=Ercole dataservice
+PartOf=ercole.service
+After=ercole.service
+Wants=ercole-alertservice.service
+
+[Service]
+ExecStart=/usr/bin/ercole serve --enable-data-service
+
+[Install]
+WantedBy=ercole.service
