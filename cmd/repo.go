@@ -290,7 +290,10 @@ func setUninstaller(artifact *artifactInfo) {
 				cmd.Stdout = os.Stdout
 			}
 			cmd.Stderr = os.Stderr
-			cmd.Run()
+			err = cmd.Run()
+			if err != nil {
+				panic(err)
+			}
 
 			//Set it to not installed
 			ai.Installed = false
