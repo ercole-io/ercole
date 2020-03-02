@@ -5,6 +5,7 @@ Description=Application
 Type=oneshot
 ExecStart=/bin/true
 RemainAfterExit=yes
+User=nobody
 
 [Install]
 WantedBy=multi-user.target
