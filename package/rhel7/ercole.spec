@@ -49,5 +49,15 @@ install -m 0644 package/systemd/60-ercole.preset %{buildroot}%{_presetdir}/60-%{
 /usr/bin/systemctl daemon-reload >/dev/null 2>&1 ||:
 
 %files
+%dir /var/lib/ercole
+%dir /var/lib/ercole/distributed_files
+%{_presetdir}/60-ercole.preset
+%{_unitdir}/ercole-alertservice.service
+%{_unitdir}/ercole-apiservice.service
+%{_unitdir}/ercole-dataservice.service
+%{_unitdir}/ercole-reposervice.service
+%{_unitdir}/ercole.service
+/usr/share/ercole/ercole.json
+/usr/share/ercole/initial_oracle_licenses_list.txt
 
 %changelog
