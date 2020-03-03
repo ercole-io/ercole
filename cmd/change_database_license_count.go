@@ -45,8 +45,8 @@ func init() {
 				newValue := args[i+3]
 
 				req, _ := http.NewRequest("PUT", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
-					ercoleConfig.APIService.UserUsername,
-					ercoleConfig.APIService.UserPassword,
+					ercoleConfig.APIService.AuthenticationSource.Username,
+					ercoleConfig.APIService.AuthenticationSource.Password,
 					"/hosts/"+hostname+"/databases/"+dbname+"/licenses/"+licenseName,
 				).String(), bytes.NewReader([]byte(newValue)))
 

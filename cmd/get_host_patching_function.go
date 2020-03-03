@@ -40,8 +40,8 @@ var getHostPatchingFunctionCmd = &cobra.Command{
 		resp, err := http.Get(
 			utils.NewAPIUrlNoParams(
 				ercoleConfig.APIService.RemoteEndpoint,
-				ercoleConfig.APIService.UserUsername,
-				ercoleConfig.APIService.UserPassword,
+				ercoleConfig.APIService.AuthenticationSource.Username,
+				ercoleConfig.APIService.AuthenticationSource.Password,
 				"/hosts/"+args[0]+"/patching-function",
 			).String())
 		if err != nil {

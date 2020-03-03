@@ -34,8 +34,8 @@ func init() {
 		Run: func(cmd *cobra.Command, args []string) {
 			for i := 0; i < len(args); i++ {
 				req, _ := http.NewRequest("DELETE", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
-					ercoleConfig.APIService.UserUsername,
-					ercoleConfig.APIService.UserPassword,
+					ercoleConfig.APIService.AuthenticationSource.Username,
+					ercoleConfig.APIService.AuthenticationSource.Password,
 					"/alerts/"+args[i],
 				).String(), bytes.NewReader([]byte{}))
 

@@ -44,8 +44,8 @@ func init() {
 				licenseName := args[i+2]
 
 				req, _ := http.NewRequest("RESET", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
-					ercoleConfig.APIService.UserUsername,
-					ercoleConfig.APIService.UserPassword,
+					ercoleConfig.APIService.AuthenticationSource.Username,
+					ercoleConfig.APIService.AuthenticationSource.Password,
 					"/hosts/"+hostname+"/databases/"+dbname+"/licenses/"+licenseName,
 				).String(), bytes.NewReader([]byte{}))
 

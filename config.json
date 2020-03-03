@@ -43,8 +43,12 @@
 		"LogHTTPRequest": true,
 		"ReadOnly": false,
 		"EnableInsertingCustomPatchingFunction": true,
-		"UserUsername": "user",
-		"UserPassword": "password",
+		"AuthenticationSource": {
+            "Type": "basic",
+            "Username": "user",
+            "Password": "password",
+            "PrivateKey": "/path/to/my_private_rsa_key"
+        },
 		"OperatingSystemAggregationRules": [
 			{ "Regex": "^Red Hat Enterprise Linux Server release 7.*$", "Group": "RHEL7" },
 			{ "Regex": "^Red Hat Enterprise Linux Server release 6.*$", "Group": "RHEL6" },
@@ -99,7 +103,7 @@
 			"RemoteEndpoint": "sftp://127.0.0.1:11115",
 			"BindIP": "0.0.0.0",
 			"Port": 11115,
-			"PrivateKey": "/home/amreo/.ssh/id_rsa",
+			"PrivateKey": "/path/to/my_private_rsa_key",
 			"LogConnections": true,
 			"DebugConnections": true
 		}
@@ -107,7 +111,7 @@
 	"Mongodb": {
 		"URI": "mongodb://localhost:27017/ercole",
 		"DBName": "ercole",
-		"Migrate": true,
-		"LicensesList": "fixture/initial_oracle_licenses_list.txt"
-	}
+		"Migrate": true
+	},
+	"ResourceFilePath": "resources/"
 }

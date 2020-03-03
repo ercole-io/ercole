@@ -36,8 +36,8 @@ func init() {
 				hostname := args[i]
 
 				req, _ := http.NewRequest("DELETE", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
-					ercoleConfig.APIService.UserUsername,
-					ercoleConfig.APIService.UserPassword,
+					ercoleConfig.APIService.AuthenticationSource.Username,
+					ercoleConfig.APIService.AuthenticationSource.Password,
 					"/hosts/"+hostname,
 				).String(), bytes.NewReader([]byte{}))
 
