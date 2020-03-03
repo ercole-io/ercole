@@ -102,6 +102,8 @@ type APIServiceInterface interface {
 	GetExadataStorageErrorCountStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetExadataPatchStatusStats return a array containing the number of exadata per patch status
 	GetExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetDefaultDatabasesTags return the default list of database tags from configuration
+	GetDefaultDatabasesTags() ([]string, utils.AdvancedErrorInterface)
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface

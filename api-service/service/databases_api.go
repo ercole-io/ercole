@@ -52,3 +52,8 @@ func (as *APIService) ListLicenses(full bool, sortBy string, sortDesc bool, page
 func (as *APIService) SetLicenseCount(name string, count int) utils.AdvancedErrorInterface {
 	return as.Database.SetLicenseCount(name, count)
 }
+
+// GetDefaultDatabasesTags return the default list of database tags from configuration
+func (as *APIService) GetDefaultDatabasesTags() ([]string, utils.AdvancedErrorInterface) {
+	return as.Config.APIService.DefaultDatabasesTags, nil
+}

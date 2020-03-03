@@ -663,3 +663,14 @@ func (ctrl *APIController) SetLicenseCount(w http.ResponseWriter, r *http.Reques
 	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
+
+// GetDefaultDatabasesTags return the default list of database tags from configuration
+func (ctrl *APIController) GetDefaultDatabasesTags(w http.ResponseWriter, r *http.Request) {
+	tags, err := ctrl.Service.GetDefaultDatabasesTags()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, tags)
+}
