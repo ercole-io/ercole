@@ -39,8 +39,8 @@ var getHostCmd = &cobra.Command{
 		resp, err := http.Get(
 			utils.NewAPIUrl(
 				ercoleConfig.APIService.RemoteEndpoint,
-				ercoleConfig.APIService.UserUsername,
-				ercoleConfig.APIService.UserPassword,
+				ercoleConfig.APIService.AuthenticationSource.Username,
+				ercoleConfig.APIService.AuthenticationSource.Password,
 				"/hosts/"+args[0],
 				params,
 			).String())

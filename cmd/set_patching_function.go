@@ -49,8 +49,8 @@ func init() {
 				}
 
 				req, _ := http.NewRequest("PUT", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
-					ercoleConfig.APIService.UserUsername,
-					ercoleConfig.APIService.UserPassword,
+					ercoleConfig.APIService.AuthenticationSource.Username,
+					ercoleConfig.APIService.AuthenticationSource.Password,
 					"/hosts/"+hostname+"/patching-function",
 				).String(), bytes.NewReader(raw))
 

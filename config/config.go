@@ -108,10 +108,8 @@ type APIService struct {
 	ReadOnly bool
 	// EnableInsertingCustomPatchingFunction enable the API for inserting custom patching functions
 	EnableInsertingCustomPatchingFunction bool
-	// UserUsername contains the username of the user
-	UserUsername string
-	// UserPassword contains the password of the user
-	UserPassword string
+	// AuthenticationSource contains info about how the users are authenticated
+	AuthenticationSource AuthenticationSource
 	// OperatingSystemAggregationRules contains rules used to aggregate various operating systems
 	OperatingSystemAggregationRules []AggregationRule
 }
@@ -239,6 +237,19 @@ type Emailer struct {
 	SmtpPassword string
 	// DisableSSLCertificateValidation contains true if disable the certification validation, otherwise false
 	DisableSSLCertificateValidation bool
+}
+
+// AuthenticationSource contains the settings used to authenticate the users
+type AuthenticationSource struct {
+	// Type contains the type of the source. Supported types are:
+	//	- basic
+	Type string
+	// Username is the username of the user if type == "basic"
+	Username string
+	// Password is the password of the user if type == "basic"
+	Password string
+	// PrivateKeyFilename is the filename of the key if type == "basic"
+	PrivateKey string
 }
 
 // PatchConfiguration change the value of the fields for meeting some requirements(?)

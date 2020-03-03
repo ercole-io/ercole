@@ -43,8 +43,12 @@
 		"LogHTTPRequest": true,
 		"ReadOnly": false,
 		"EnableInsertingCustomPatchingFunction": true,
-		"UserUsername": "user",
-		"UserPassword": "password",
+		"AuthenticationSource": {
+            "Type": "basic",
+            "Username": "user",
+            "Password": "password",
+            "PrivateKey": "/etc/ssh/ssh_host_rsa_key"
+        },
 		"OperatingSystemAggregationRules": [
 			{ "Regex": "^Red Hat Enterprise Linux Server release 7.*$", "Group": "RHEL7" },
 			{ "Regex": "^Red Hat Enterprise Linux Server release 6.*$", "Group": "RHEL6" },

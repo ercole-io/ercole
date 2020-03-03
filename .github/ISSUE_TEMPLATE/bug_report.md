@@ -25,6 +25,10 @@ If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
  - OS: [e.g. centos7]
+ - ercole version: [e.g. 2.0.2 or 16719f8143e945c4d55783dd205279e62f8f4725]  
 
-**Additional context**
+**Additional context (optional)**
+Add any other context about the problem here.
+
+**Possible solution (optional)**
 Add any other context about the problem here.
