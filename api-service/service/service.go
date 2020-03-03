@@ -66,6 +66,8 @@ type APIServiceInterface interface {
 	GetOperatingSystemStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetTypeStats return a array containing the number of hosts per type
 	GetTypeStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetTopUnusedInstanceResourceStats return a array containing top unused instance resource by workload
+	GetTopUnusedInstanceResourceStats(location string, environment string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetDatabaseEnvironmentStats return a array containing the number of databases per environment
 	GetDatabaseEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetDatabaseVersionStats return a array containing the number of databases per version

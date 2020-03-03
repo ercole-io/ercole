@@ -22,6 +22,11 @@ import (
 	"github.com/amreo/ercole-services/utils"
 )
 
+// GetDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
+func (as *APIService) GetDatabaseArchivelogStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetDatabaseArchivelogStatusStats(location, environment, olderThan)
+}
+
 // GetDatabaseEnvironmentStats return a array containing the number of databases per environment
 func (as *APIService) GetDatabaseEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetDatabaseEnvironmentStats(location, olderThan)
