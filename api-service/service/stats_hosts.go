@@ -37,7 +37,8 @@ func (as *APIService) GetOperatingSystemStats(location string, olderThan time.Ti
 	return as.Database.GetOperatingSystemStats(location, olderThan)
 }
 
-// GetDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
-func (as *APIService) GetDatabaseArchivelogStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetDatabaseArchivelogStatusStats(location, environment, olderThan)
+// GetTopUnusedInstanceResourceStats return a array containing top unused instance resource by workload
+func (as *APIService) GetTopUnusedInstanceResourceStats(location string, environment string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetTopUnusedInstanceResourceStats(location, environment, limit, olderThan)
+
 }

@@ -62,6 +62,8 @@ type APIControllerInterface interface {
 	GetTypeStats(w http.ResponseWriter, r *http.Request)
 	// GetOperatingSystemStats return all statistics about the operating systems of the hosts using the filters in the request
 	GetOperatingSystemStats(w http.ResponseWriter, r *http.Request)
+	// GetTopUnusedInstanceResourceStats return top unused instance resource by databases work using the filters in the request
+	GetTopUnusedInstanceResourceStats(w http.ResponseWriter, r *http.Request)
 	// GetDatabaseEnvironmentStats return all statistics about the environments of the databases using the filters in the request
 	GetDatabaseEnvironmentStats(w http.ResponseWriter, r *http.Request)
 	// GetDatabaseVersionStats return all statistics about the versions of the databases using the filters in the request

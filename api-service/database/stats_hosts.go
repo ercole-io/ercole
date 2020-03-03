@@ -124,3 +124,49 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 	}
 	return out, nil
 }
+
+// GetTopUnusedInstanceResourceStats return a array containing top unused instance resource by workload
+func (md *MongoDatabase) GetTopUnusedInstanceResourceStats(location string, environment string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	var out []interface{}
+
+	//Calculate the stats
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
+			FilterByLocationAndEnvironmentSteps(location, environment),
+			mu.APProject(bson.M{
+				"Hostname": 1,
+				"Works": mu.APOReduce(
+					mu.APOFilter("$Extra.Databases", "db", mu.APONotEqual("$$db.Work", "N/A")),
+					bson.M{"TotalWork": 0, "TotalCPUCount": 0},
+					bson.M{
+						"TotalWork":     mu.APOAdd("$$value.TotalWork", mu.APOConvertErrorableNullable("$$this.Work", "double", 0, 0)),
+						"TotalCPUCount": mu.APOAdd("$$value.TotalCPUCount", mu.APOConvertErrorableNullable("$$this.CPUCount", "double", 0, 0)),
+					},
+				),
+			}),
+			mu.APProject(bson.M{
+				"Hostname": 1,
+				"Unused":   mu.APOSubtract("$Works.TotalCPUCount", "$Works.TotalWork"),
+			}),
+			mu.APSort(bson.M{
+				"Unused": -1,
+			}),
+			mu.APLimit(limit),
+		),
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Decode the documents
+	for cur.Next(context.TODO()) {
+		var item map[string]interface{}
+		if cur.Decode(&item) != nil {
+			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		}
+		out = append(out, &item)
+	}
+	return out, nil
+}
