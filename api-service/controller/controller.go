@@ -98,6 +98,8 @@ type APIControllerInterface interface {
 	GetExadataStorageErrorCountStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetExadataPatchStatusStats return all statistics about the patch status of the exadata using the filters in the request
 	GetExadataPatchStatusStats(w http.ResponseWriter, r *http.Request)
+	//GetDefaultDatabasesTags return the default list of database tags from configuration
+	GetDefaultDatabasesTags(w http.ResponseWriter, r *http.Request)
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(w http.ResponseWriter, r *http.Request)
