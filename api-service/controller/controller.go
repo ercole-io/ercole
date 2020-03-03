@@ -51,6 +51,8 @@ type APIControllerInterface interface {
 	ListLicenses(w http.ResponseWriter, r *http.Request)
 	// GetPatchingFunction return all'informations about the patching function of the host requested in the hostnmae path variable
 	GetPatchingFunction(w http.ResponseWriter, r *http.Request)
+	// ListLocations list locations using the filters in the request
+	ListLocations(w http.ResponseWriter, r *http.Request)
 
 	// GetEnvironmentStats return all statistics about the environments of the hosts using the filters in the request
 	GetEnvironmentStats(w http.ResponseWriter, r *http.Request)
