@@ -95,8 +95,8 @@ type MongoDatabaseInterface interface {
 	GetTotalExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface)
 	// GetTotalExadataCPUStats return the total cpu of exadata
 	GetTotalExadataCPUStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
-	// GetAvegageExadataStorageUsageStats return the average usage of cell disks of exadata
-	GetAvegageExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface)
+	// GetAverageExadataStorageUsageStats return the average usage of cell disks of exadata
+	GetAverageExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface)
 	// GetExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
 	GetExadataStorageErrorCountStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetExadataPatchStatusStats return a array containing the number of exadata per patch status
