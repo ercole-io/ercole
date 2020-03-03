@@ -38,6 +38,11 @@ func (as *APIService) ListLocations(location string, environment string, olderTh
 	return as.Database.ListLocations(location, environment, olderThan)
 }
 
+// ListEnvironments list environments
+func (as *APIService) ListEnvironments(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface) {
+	return as.Database.ListEnvironments(location, environment, olderThan)
+}
+
 // ArchiveHost archive the specified host
 func (as *APIService) ArchiveHost(hostname string) utils.AdvancedErrorInterface {
 	return as.Database.ArchiveHost(hostname)
