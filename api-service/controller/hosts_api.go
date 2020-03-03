@@ -281,6 +281,33 @@ func (ctrl *APIController) GetHost(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSONResponse(w, http.StatusOK, host)
 }
 
+// ListLocations list locations using the filters in the request
+func (ctrl *APIController) ListLocations(w http.ResponseWriter, r *http.Request) {
+	var location string
+	var environment string
+	var olderThan time.Time
+
+	var err utils.AdvancedErrorInterface
+	//parse the query params
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	//get the data
+	locations, err := ctrl.Service.ListLocations(location, environment, olderThan)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, locations)
+}
+
 // ArchiveHost archive the specified host in the request
 func (ctrl *APIController) ArchiveHost(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {

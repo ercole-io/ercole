@@ -263,6 +263,36 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time) (interfac
 	return out, nil
 }
 
+// ListLocations list locations
+func (md *MongoDatabase) ListLocations(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface) {
+	var out []string = make([]string, 0)
+
+	//Find the matching hostdata
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
+			FilterByLocationAndEnvironmentSteps(location, environment),
+			mu.APGroup(bson.M{
+				"_id": "$Location",
+			}),
+		),
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Decode the documents
+	for cur.Next(context.TODO()) {
+		var item map[string]string
+		if cur.Decode(&item) != nil {
+			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		}
+		out = append(out, item["_id"])
+	}
+	return out, nil
+}
+
 // FindHostData find the current hostdata with a certain hostname
 func (md *MongoDatabase) FindHostData(hostname string) (map[string]interface{}, utils.AdvancedErrorInterface) {
 	//Find the hostdata
