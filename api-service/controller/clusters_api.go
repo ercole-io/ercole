@@ -21,23 +21,26 @@ import (
 	"time"
 
 	"github.com/amreo/ercole-services/utils"
+	"github.com/golang/gddo/httputil"
 	"github.com/plandem/xlsx"
 )
 
 // SearchClusters search clusters data using the filters in the request
 func (ctrl *APIController) SearchClusters(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("Accept") == "" || r.Header.Get("Accept") == "application/json" {
+	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
+	switch choiche {
+	case "application/json":
 		ctrl.SearchClustersJSON(w, r)
-	} else if r.Header.Get("Accept") == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchClustersXLSX(w, r)
-	} else {
+	default:
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
 			utils.NewAdvancedErrorPtr(
 				errors.New("The mime type in the accept header is not supported"),
 				http.StatusText(http.StatusNotAcceptable),
 			),
 		)
-		return
 	}
 }
 

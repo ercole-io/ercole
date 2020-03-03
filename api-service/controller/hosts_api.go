@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/amreo/ercole-services/utils"
+	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
 	"github.com/plandem/xlsx"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -28,20 +29,22 @@ import (
 
 // SearchHosts search hosts data using the filters in the request
 func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("Accept") == "" || r.Header.Get("Accept") == "application/json" {
+	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
+	switch choiche {
+	case "application/json":
 		ctrl.SearchHostsJSON(w, r)
-	} else if r.Header.Get("Accept") == "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
+	case "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchHostsLMS(w, r)
-	} else if r.Header.Get("Accept") == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchHostsXLSX(w, r)
-	} else {
+	default:
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
 			utils.NewAdvancedErrorPtr(
 				errors.New("The mime type in the accept header is not supported"),
 				http.StatusText(http.StatusNotAcceptable),
 			),
 		)
-		return
 	}
 }
 

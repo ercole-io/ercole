@@ -20,10 +20,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/amreo/ercole-services/utils"
+	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
 	"github.com/plandem/xlsx"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -31,18 +31,20 @@ import (
 
 // SearchAddms search addms data using the filters in the request
 func (ctrl *APIController) SearchAddms(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("Accept") == "" || strings.Contains(r.Header.Get("Accept"), "application/json") {
+	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
+	switch choiche {
+	case "application/json":
 		ctrl.SearchAddmsJSON(w, r)
-	} else if r.Header.Get("Accept") == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchAddmsXLSX(w, r)
-	} else {
+	default:
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
 			utils.NewAdvancedErrorPtr(
 				errors.New("The mime type in the accept header is not supported"),
 				http.StatusText(http.StatusNotAcceptable),
 			),
 		)
-		return
 	}
 }
 
@@ -157,18 +159,20 @@ func (ctrl *APIController) SearchAddmsXLSX(w http.ResponseWriter, r *http.Reques
 
 // SearchSegmentAdvisors search segment advisors data using the filters in the request
 func (ctrl *APIController) SearchSegmentAdvisors(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("Accept") == "" || strings.Contains(r.Header.Get("Accept"), "application/json") {
+	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
+	switch choiche {
+	case "application/json":
 		ctrl.SearchSegmentAdvisorsJSON(w, r)
-	} else if r.Header.Get("Accept") == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchSegmentAdvisorsXLSX(w, r)
-	} else {
+	default:
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
 			utils.NewAdvancedErrorPtr(
 				errors.New("The mime type in the accept header is not supported"),
 				http.StatusText(http.StatusNotAcceptable),
 			),
 		)
-		return
 	}
 }
 
@@ -285,18 +289,20 @@ func (ctrl *APIController) SearchSegmentAdvisorsXLSX(w http.ResponseWriter, r *h
 
 // SearchPatchAdvisors search patch advisors data using the filters in the request
 func (ctrl *APIController) SearchPatchAdvisors(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("Accept") == "" || strings.Contains(r.Header.Get("Accept"), "application/json") {
+	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
+	switch choiche {
+	case "application/json":
 		ctrl.SearchPatchAdvisorsJSON(w, r)
-	} else if r.Header.Get("Accept") == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchPatchAdvisorsXLSX(w, r)
-	} else {
+	default:
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
 			utils.NewAdvancedErrorPtr(
 				errors.New("The mime type in the accept header is not supported"),
 				http.StatusText(http.StatusNotAcceptable),
 			),
 		)
-		return
 	}
 }
 
@@ -422,18 +428,20 @@ func (ctrl *APIController) SearchPatchAdvisorsXLSX(w http.ResponseWriter, r *htt
 
 // SearchDatabases search databases data using the filters in the request
 func (ctrl *APIController) SearchDatabases(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("Accept") == "" || strings.Contains(r.Header.Get("Accept"), "application/json") {
+	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
+	switch choiche {
+	case "application/json":
 		ctrl.SearchDatabasesJSON(w, r)
-	} else if r.Header.Get("Accept") == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchDatabasesXLSX(w, r)
-	} else {
+	default:
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
 			utils.NewAdvancedErrorPtr(
 				errors.New("The mime type in the accept header is not supported"),
 				http.StatusText(http.StatusNotAcceptable),
 			),
 		)
-		return
 	}
 }
 
