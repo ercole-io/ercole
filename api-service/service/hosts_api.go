@@ -33,6 +33,11 @@ func (as *APIService) GetHost(hostname string, olderThan time.Time) (interface{}
 	return as.Database.GetHost(hostname, olderThan)
 }
 
+// ListLocations list locations
+func (as *APIService) ListLocations(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface) {
+	return as.Database.ListLocations(location, environment, olderThan)
+}
+
 // ArchiveHost archive the specified host
 func (as *APIService) ArchiveHost(hostname string) utils.AdvancedErrorInterface {
 	return as.Database.ArchiveHost(hostname)
