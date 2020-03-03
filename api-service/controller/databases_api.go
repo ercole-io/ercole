@@ -20,6 +20,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/amreo/ercole-services/utils"
@@ -30,7 +31,7 @@ import (
 
 // SearchAddms search addms data using the filters in the request
 func (ctrl *APIController) SearchAddms(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("Accept") == "" || r.Header.Get("Accept") == "application/json" {
+	if r.Header.Get("Accept") == "" || strings.Contains(r.Header.Get("Accept"), "application/json") {
 		ctrl.SearchAddmsJSON(w, r)
 	} else if r.Header.Get("Accept") == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
 		ctrl.SearchAddmsXLSX(w, r)
@@ -156,7 +157,7 @@ func (ctrl *APIController) SearchAddmsXLSX(w http.ResponseWriter, r *http.Reques
 
 // SearchSegmentAdvisors search segment advisors data using the filters in the request
 func (ctrl *APIController) SearchSegmentAdvisors(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("Accept") == "" || r.Header.Get("Accept") == "application/json" {
+	if r.Header.Get("Accept") == "" || strings.Contains(r.Header.Get("Accept"), "application/json") {
 		ctrl.SearchSegmentAdvisorsJSON(w, r)
 	} else if r.Header.Get("Accept") == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
 		ctrl.SearchSegmentAdvisorsXLSX(w, r)
@@ -284,7 +285,7 @@ func (ctrl *APIController) SearchSegmentAdvisorsXLSX(w http.ResponseWriter, r *h
 
 // SearchPatchAdvisors search patch advisors data using the filters in the request
 func (ctrl *APIController) SearchPatchAdvisors(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("Accept") == "" || r.Header.Get("Accept") == "application/json" {
+	if r.Header.Get("Accept") == "" || strings.Contains(r.Header.Get("Accept"), "application/json") {
 		ctrl.SearchPatchAdvisorsJSON(w, r)
 	} else if r.Header.Get("Accept") == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
 		ctrl.SearchPatchAdvisorsXLSX(w, r)
@@ -421,7 +422,7 @@ func (ctrl *APIController) SearchPatchAdvisorsXLSX(w http.ResponseWriter, r *htt
 
 // SearchDatabases search databases data using the filters in the request
 func (ctrl *APIController) SearchDatabases(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("Accept") == "" || r.Header.Get("Accept") == "application/json" {
+	if r.Header.Get("Accept") == "" || strings.Contains(r.Header.Get("Accept"), "application/json") {
 		ctrl.SearchDatabasesJSON(w, r)
 	} else if r.Header.Get("Accept") == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
 		ctrl.SearchDatabasesXLSX(w, r)

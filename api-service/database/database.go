@@ -56,6 +56,8 @@ type MongoDatabaseInterface interface {
 	ListLicenses(full bool, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// ListLocations list locations
 	ListLocations(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface)
+	// ListEnvironments list environments
+	ListEnvironments(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface)
 
 	// GetEnvironmentStats return a array containing the number of hosts per environment
 	GetEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
