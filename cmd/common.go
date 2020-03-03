@@ -224,8 +224,8 @@ func simpleAPIRequestCommand(
 			//Make the http request
 			req, _ := http.NewRequest("GET", utils.NewAPIUrl(
 				ercoleConfig.APIService.RemoteEndpoint,
-				ercoleConfig.APIService.UserUsername,
-				ercoleConfig.APIService.UserPassword,
+				ercoleConfig.APIService.AuthenticationSource.Username,
+				ercoleConfig.APIService.AuthenticationSource.Password,
 				endpointPath,
 				params,
 			).String(), bytes.NewReader([]byte{}))
@@ -324,8 +324,8 @@ func simpleSingleValueAPIRequestCommand(
 			resp, err := http.Get(
 				utils.NewAPIUrl(
 					ercoleConfig.APIService.RemoteEndpoint,
-					ercoleConfig.APIService.UserUsername,
-					ercoleConfig.APIService.UserPassword,
+					ercoleConfig.APIService.AuthenticationSource.Username,
+					ercoleConfig.APIService.AuthenticationSource.Password,
 					endpointPath,
 					params,
 				).String())
