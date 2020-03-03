@@ -26,7 +26,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// GetPatchingFunction return all'informations about the patching function of the host requested in the hostnmae path variable
+// GetPatchingFunction return all'informations about the patching function of the host requested in the hostname path variable
 func (ctrl *APIController) GetPatchingFunction(w http.ResponseWriter, r *http.Request) {
 	var err utils.AdvancedErrorInterface
 

@@ -115,8 +115,8 @@ func (md *MongoDatabase) GetTotalExadataCPUStats(location string, environment st
 	return out, nil
 }
 
-// GetAvegageExadataStorageUsageStats return the average usage of cell disks of exadata
-func (md *MongoDatabase) GetAvegageExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+// GetAverageExadataStorageUsageStats return the average usage of cell disks of exadata
+func (md *MongoDatabase) GetAverageExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
 	var out map[string]float64
 
 	//Calculate the stats
