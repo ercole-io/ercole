@@ -40,6 +40,7 @@ import (
 	alertservice_database "github.com/amreo/ercole-services/alert-service/database"
 	alertservice_service "github.com/amreo/ercole-services/alert-service/service"
 
+	apiservice_auth "github.com/amreo/ercole-services/api-service/auth"
 	apiservice_controller "github.com/amreo/ercole-services/api-service/controller"
 	apiservice_database "github.com/amreo/ercole-services/api-service/database"
 	apiservice_service "github.com/amreo/ercole-services/api-service/service"
@@ -251,15 +252,22 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	service.Init()
 
-	//Setup the controller
-	router := mux.NewRouter()
-	ctrl := &apiservice_controller.APIController{
-		Config:  config,
-		Service: service,
+	auth := &apiservice_auth.BasicAuthenticationProvider{
+		Config:  config.APIService.AuthenticationProvider,
 		TimeNow: time.Now,
 		Log:     log,
 	}
-	apiservice_controller.SetupRoutesForAPIController(router, ctrl)
+	auth.Init()
+	//Setup the controller
+	router := mux.NewRouter()
+	ctrl := &apiservice_controller.APIController{
+		Config:        config,
+		Service:       service,
+		TimeNow:       time.Now,
+		Log:           log,
+		Authenticator: auth,
+	}
+	apiservice_controller.SetupRoutesForAPIController(router, ctrl, auth)
 
 	//Setup the logger
 	var logRouter http.Handler

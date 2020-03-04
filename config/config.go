@@ -109,7 +109,7 @@ type APIService struct {
 	// EnableInsertingCustomPatchingFunction enable the API for inserting custom patching functions
 	EnableInsertingCustomPatchingFunction bool
 	// AuthenticationProvider contains info about how the users are authenticated
-	AuthenticationProvider AuthenticationProvider
+	AuthenticationProvider AuthenticationProviderConfig
 	// OperatingSystemAggregationRules contains rules used to aggregate various operating systems
 	OperatingSystemAggregationRules []AggregationRule
 	// DefaultDatabaseTags contains the default list of database tags
@@ -241,8 +241,8 @@ type Emailer struct {
 	DisableSSLCertificateValidation bool
 }
 
-// AuthenticationProvider contains the settings used to authenticate the users
-type AuthenticationProvider struct {
+// AuthenticationProviderConfig contains the settings used to authenticate the users
+type AuthenticationProviderConfig struct {
 	// Type contains the type of the source. Supported types are:
 	//	- basic
 	Type string
@@ -250,8 +250,10 @@ type AuthenticationProvider struct {
 	Username string
 	// Password is the password of the user if type == "basic"
 	Password string
-	// PrivateKeyFilename is the filename of the key if type == "basic"
+	// PrivateKey is the filename of the key if type == "basic"
 	PrivateKey string
+	// PublicKey is the filename of the key if type == "basic"
+	PublicKey string
 }
 
 // PatchConfiguration change the value of the fields for meeting some requirements(?)
