@@ -16,7 +16,10 @@
 package utils
 
 import (
+	"crypto/x509"
 	"encoding/json"
+	"encoding/pem"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -189,4 +192,32 @@ func FileExists(filename string) bool {
 		return false
 	}
 	return true
+}
+
+// ParsePrivateKey converts a private key expressed as []byte to interface{}
+func ParsePrivateKey(raw []byte) (interface{}, interface{}, AdvancedErrorInterface) {
+	block, _ := pem.Decode(raw)
+	if block == nil {
+		return nil, nil, NewAdvancedErrorPtr(errors.New("Unable to parse the private key"), "PARSE_PRIVATE_KEY")
+	}
+
+	privatekey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	if err != nil {
+		return nil, nil, NewAdvancedErrorPtr(err, "PARSE_PRIVATE_KEY")
+	}
+	return privatekey, privatekey.PublicKey, nil
+}
+
+// ParsePublicKey converts a private key expressed as []byte to interface{}
+func ParsePublicKey(raw []byte) (interface{}, AdvancedErrorInterface) {
+	block, _ := pem.Decode(raw)
+	if block == nil {
+		return nil, NewAdvancedErrorPtr(errors.New("Unable to parse the public key"), "PARSE_PUBLIC_KEY")
+	}
+
+	publickey, err := x509.ParsePKCS1PublicKey(block.Bytes)
+	if err != nil {
+		return nil, NewAdvancedErrorPtr(err, "PARSE_PUBLIC_KEY")
+	}
+	return publickey, nil
 }
