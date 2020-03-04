@@ -52,7 +52,7 @@
 			{ "Regex": "^HPUX.*$", "Group": "HPUX" },
 			{ "Regex": "^AIX.*$", "Group": "AIX" }
 		],
-		"DefaultDatabasesTags":[
+		"DefaultDatabaseTags":[
 			"coolest",
 			"very important",
 			"gdpr-compliant"
