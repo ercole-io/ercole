@@ -76,8 +76,8 @@ func (ctrl *APIController) GetTotalExadataCPUStats(w http.ResponseWriter, r *htt
 	utils.WriteJSONResponse(w, http.StatusOK, stats)
 }
 
-// GetAvegageExadataStorageUsageStats return the average usage of cell disks of exadata using the filters in the request
-func (ctrl *APIController) GetAvegageExadataStorageUsageStats(w http.ResponseWriter, r *http.Request) {
+// GetAverageExadataStorageUsageStats return the average usage of cell disks of exadata using the filters in the request
+func (ctrl *APIController) GetAverageExadataStorageUsageStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
 	var location string
 	var environment string
@@ -93,7 +93,7 @@ func (ctrl *APIController) GetAvegageExadataStorageUsageStats(w http.ResponseWri
 	}
 
 	//get the data
-	stats, err := ctrl.Service.GetAvegageExadataStorageUsageStats(location, environment, olderThan)
+	stats, err := ctrl.Service.GetAverageExadataStorageUsageStats(location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
