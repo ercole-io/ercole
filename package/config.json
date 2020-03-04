@@ -43,7 +43,7 @@
 		"LogHTTPRequest": true,
 		"ReadOnly": false,
 		"EnableInsertingCustomPatchingFunction": true,
-		"AuthenticationSource": {
+		"AuthenticationProvider": {
             "Type": "basic",
             "Username": "user",
             "Password": "password",
