@@ -32,9 +32,9 @@ func (as *APIService) GetTotalExadataCPUStats(location string, environment strin
 	return as.Database.GetTotalExadataCPUStats(location, environment, olderThan)
 }
 
-// GetAvegageExadataStorageUsageStats return the average usage of cell disks of exadata
-func (as *APIService) GetAvegageExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
-	return as.Database.GetAvegageExadataStorageUsageStats(location, environment, olderThan)
+// GetAverageExadataStorageUsageStats return the average usage of cell disks of exadata
+func (as *APIService) GetAverageExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+	return as.Database.GetAverageExadataStorageUsageStats(location, environment, olderThan)
 }
 
 // GetExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status

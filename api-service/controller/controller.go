@@ -94,8 +94,8 @@ type APIControllerInterface interface {
 	GetTotalExadataMemorySizeStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalExadataCPUStats return the total cpu of exadata using the filters in the request
 	GetTotalExadataCPUStats(w http.ResponseWriter, r *http.Request)
-	// GetAvegageExadataStorageUsageStats return the average usage of cell disks of exadata using the filters in the request
-	GetAvegageExadataStorageUsageStats(w http.ResponseWriter, r *http.Request)
+	// GetAverageExadataStorageUsageStats return the average usage of cell disks of exadata using the filters in the request
+	GetAverageExadataStorageUsageStats(w http.ResponseWriter, r *http.Request)
 	// GetExadataStorageErrorCountStatusStats return all statistics about the ErrorCount status of the storage of the exadata using the filters in the request
 	GetExadataStorageErrorCountStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetExadataPatchStatusStats return all statistics about the patch status of the exadata using the filters in the request
