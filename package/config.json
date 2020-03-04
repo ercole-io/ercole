@@ -47,7 +47,8 @@
             "Type": "basic",
             "Username": "user",
             "Password": "password",
-            "PrivateKey": "/etc/ssh/ssh_host_rsa_key"
+			"PrivateKey": "/etc/ssh/ssh_host_rsa_key",
+			"PublicKey": "/etc/ssh/ssh_host_rsa_key.pub"
         },
 		"OperatingSystemAggregationRules": [
 			{ "Regex": "^Red Hat Enterprise Linux Server release 7.*$", "Group": "RHEL7" },

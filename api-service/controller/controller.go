@@ -19,6 +19,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/amreo/ercole-services/api-service/auth"
 	"github.com/amreo/ercole-services/api-service/service"
 	"github.com/amreo/ercole-services/config"
 	"github.com/goji/httpauth"
@@ -131,6 +132,8 @@ type APIController struct {
 	TimeNow func() time.Time
 	// Log contains logger formatted
 	Log *logrus.Logger
+	// Authenticator contains the authenticator
+	Authenticator auth.AuthenticationProvider
 }
 
 // AuthenticateMiddleware return the middleware used to authenticate (request) users
