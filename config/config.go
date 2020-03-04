@@ -112,6 +112,8 @@ type APIService struct {
 	AuthenticationProvider AuthenticationProvider
 	// OperatingSystemAggregationRules contains rules used to aggregate various operating systems
 	OperatingSystemAggregationRules []AggregationRule
+	// DefaultDatabaseTags contains the default list of database tags
+	DefaultDatabaseTags []string
 }
 
 // RepoService contains configuration about the repo service

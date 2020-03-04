@@ -55,6 +55,11 @@
 			{ "Regex": "^Red Hat Enterprise Linux Server release 5.*$", "Group": "RHEL5" },
 			{ "Regex": "^HPUX.*$", "Group": "HPUX" },
 			{ "Regex": "^AIX.*$", "Group": "AIX" }
+		],
+		"DefaultDatabaseTags":[
+			"coolest",
+			"very important",
+			"gdpr-compliant"
 		]
 	},
 	"RepoService": {

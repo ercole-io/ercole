@@ -75,4 +75,10 @@ func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface
 	router.HandleFunc("/stats/exadata/average-storage-usage", ctrl.GetAverageExadataStorageUsageStats).Methods("GET")
 	router.HandleFunc("/stats/exadata/storage-error-count-status", ctrl.GetExadataStorageErrorCountStatusStats).Methods("GET")
 	router.HandleFunc("/stats/exadata/patch-status", ctrl.GetExadataPatchStatusStats).Methods("GET")
+
+	setupSettingsRoutes(router.PathPrefix("/settings").Subrouter(), ctrl)
+}
+
+func setupSettingsRoutes(router *mux.Router, ctrl APIControllerInterface) {
+	router.HandleFunc("/default-database-tag-choiches", ctrl.GetDefaultDatabaseTags).Methods("GET")
 }
