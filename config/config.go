@@ -108,8 +108,8 @@ type APIService struct {
 	ReadOnly bool
 	// EnableInsertingCustomPatchingFunction enable the API for inserting custom patching functions
 	EnableInsertingCustomPatchingFunction bool
-	// AuthenticationSource contains info about how the users are authenticated
-	AuthenticationSource AuthenticationSource
+	// AuthenticationProvider contains info about how the users are authenticated
+	AuthenticationProvider AuthenticationProvider
 	// OperatingSystemAggregationRules contains rules used to aggregate various operating systems
 	OperatingSystemAggregationRules []AggregationRule
 }
@@ -239,8 +239,8 @@ type Emailer struct {
 	DisableSSLCertificateValidation bool
 }
 
-// AuthenticationSource contains the settings used to authenticate the users
-type AuthenticationSource struct {
+// AuthenticationProvider contains the settings used to authenticate the users
+type AuthenticationProvider struct {
 	// Type contains the type of the source. Supported types are:
 	//	- basic
 	Type string
@@ -273,6 +273,6 @@ func PatchConfiguration(config *Configuration) {
 			config.ResourceFilePath = "RESOURCES_NOT_FOUND"
 		}
 	} else if !filepath.IsAbs(config.ResourceFilePath) {
-		config.ResourceFilePath = cwd + filepath.Join("/", config.ResourceFilePath) + "/"
+		config.ResourceFilePath = cwd + filepath.Join("/", config.ResourceFilePath)
 	}
 }

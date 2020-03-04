@@ -48,8 +48,8 @@ func init() {
 				}
 
 				req, _ := http.NewRequest("PUT", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
-					ercoleConfig.APIService.AuthenticationSource.Username,
-					ercoleConfig.APIService.AuthenticationSource.Password,
+					ercoleConfig.APIService.AuthenticationProvider.Username,
+					ercoleConfig.APIService.AuthenticationProvider.Password,
 					"/licenses/"+name,
 				).String(), bytes.NewReader([]byte(args[i+1])))
 

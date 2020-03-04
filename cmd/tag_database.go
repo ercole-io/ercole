@@ -44,8 +44,8 @@ func init() {
 				tagname := args[i+2]
 
 				req, _ := http.NewRequest("POST", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
-					ercoleConfig.APIService.AuthenticationSource.Username,
-					ercoleConfig.APIService.AuthenticationSource.Password,
+					ercoleConfig.APIService.AuthenticationProvider.Username,
+					ercoleConfig.APIService.AuthenticationProvider.Password,
 					"/hosts/"+hostname+"/databases/"+dbname+"/tags",
 				).String(), bytes.NewReader([]byte(tagname)))
 

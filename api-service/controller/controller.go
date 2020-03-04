@@ -133,5 +133,5 @@ type APIController struct {
 
 // AuthenticateMiddleware return the middleware used to authenticate (request) users
 func (ctrl *APIController) AuthenticateMiddleware() func(http.Handler) http.Handler {
-	return httpauth.SimpleBasicAuth(ctrl.Config.APIService.AuthenticationSource.Username, ctrl.Config.APIService.AuthenticationSource.Password)
+	return httpauth.SimpleBasicAuth(ctrl.Config.APIService.AuthenticationProvider.Username, ctrl.Config.APIService.AuthenticationProvider.Password)
 }
