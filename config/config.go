@@ -114,8 +114,8 @@ type APIService struct {
 	UserPassword string
 	// OperatingSystemAggregationRules contains rules used to aggregate various operating systems
 	OperatingSystemAggregationRules []AggregationRule
-	// DefaultDatabasesTags contains the default list of database tags
-	DefaultDatabasesTags []string
+	// DefaultDatabaseTags contains the default list of database tags
+	DefaultDatabaseTags []string
 }
 
 // RepoService contains configuration about the repo service

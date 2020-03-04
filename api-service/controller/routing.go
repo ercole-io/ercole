@@ -45,7 +45,6 @@ func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface
 	router.HandleFunc("/environments", ctrl.ListEnvironments).Methods("GET")
 	router.HandleFunc("/clusters", ctrl.SearchClusters).Methods("GET")
 	router.HandleFunc("/databases", ctrl.SearchDatabases).Methods("GET")
-	router.HandleFunc("/databases/defaulttags", ctrl.GetDefaultDatabasesTags).Methods("GET")
 	router.HandleFunc("/addms", ctrl.SearchAddms).Methods("GET")
 	router.HandleFunc("/segment-advisors", ctrl.SearchSegmentAdvisors).Methods("GET")
 	router.HandleFunc("/patch-advisors", ctrl.SearchPatchAdvisors).Methods("GET")
@@ -75,4 +74,10 @@ func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface
 	router.HandleFunc("/stats/exadata/average-storage-usage", ctrl.GetAvegageExadataStorageUsageStats).Methods("GET")
 	router.HandleFunc("/stats/exadata/storage-error-count-status", ctrl.GetExadataStorageErrorCountStatusStats).Methods("GET")
 	router.HandleFunc("/stats/exadata/patch-status", ctrl.GetExadataPatchStatusStats).Methods("GET")
+
+	setupSettingsRoutes(router.PathPrefix("/settings").Subrouter(), ctrl)
+}
+
+func setupSettingsRoutes(router *mux.Router, ctrl APIControllerInterface) {
+	router.HandleFunc("/default-database-tag-choiches", ctrl.GetDefaultDatabaseTags).Methods("GET")
 }
