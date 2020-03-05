@@ -254,6 +254,8 @@ type AuthenticationProviderConfig struct {
 	PrivateKey string
 	// PublicKey is the filename of the key if type == "basic"
 	PublicKey string
+	// TokenValidityTimeout contains the number of seconds in which the token is still valid
+	TokenValidityTimeout int
 }
 
 // PatchConfiguration change the value of the fields for meeting some requirements(?)
