@@ -205,7 +205,7 @@ func ParsePrivateKey(raw []byte) (interface{}, interface{}, AdvancedErrorInterfa
 	if err != nil {
 		return nil, nil, NewAdvancedErrorPtr(err, "PARSE_PRIVATE_KEY")
 	}
-	return privatekey, privatekey.PublicKey, nil
+	return privatekey, &privatekey.PublicKey, nil
 }
 
 // ParsePublicKey converts a private key expressed as []byte to interface{}
