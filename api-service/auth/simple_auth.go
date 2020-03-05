@@ -22,7 +22,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -111,7 +110,8 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 		NotBefore: jwt.NewNumericDate(ap.TimeNow()),
 		Audience:  jwt.Audience{info["Username"].(string)},
 		ID:        info["Username"].(string),
-		Expiry:    jwt.NewNumericDate(ap.TimeNow().Add(time.Duration(15) * time.Minute)),
+		Expiry:    jwt.NewNumericDate(ap.TimeNow().Add(time.Duration(ap.Config.TokenValidityTimeout) * time.Second)),
+		IssuedAt:  jwt.NewNumericDate(ap.TimeNow()),
 	}
 	raw, err := jwt.Signed(sig).Claims(cl).CompactSerialize()
 	if err != nil {
@@ -157,7 +157,6 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 			next.ServeHTTP(w, r)
 		} else if strings.HasPrefix(tokenStr, "Bearer ") {
 			tokenStr = tokenStr[len("Bearer "):]
-			fmt.Println(tokenStr)
 			//Parse the token
 			parsed, err := jwt.ParseSigned(tokenStr)
 			if err != nil {

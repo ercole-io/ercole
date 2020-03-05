@@ -252,11 +252,8 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	service.Init()
 
-	auth := &apiservice_auth.BasicAuthenticationProvider{
-		Config:  config.APIService.AuthenticationProvider,
-		TimeNow: time.Now,
-		Log:     log,
-	}
+	auth := apiservice_auth.BuildAuthenticationProvider(config.APIService.AuthenticationProvider, time.Now, log)
+
 	auth.Init()
 	//Setup the controller
 	router := mux.NewRouter()

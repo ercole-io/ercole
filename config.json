@@ -48,7 +48,8 @@
             "Username": "user",
             "Password": "password",
 			"PrivateKey": "/path/to/my_private_rsa_key",
-			"PublicKey": "/path/to/my_public_rsa_key.pub"
+			"PublicKey": "/path/to/my_public_rsa_key.pub",
+			"TokenValidityTimeout": 900
         },
 		"OperatingSystemAggregationRules": [
 			{ "Regex": "^Red Hat Enterprise Linux Server release 7.*$", "Group": "RHEL7" },

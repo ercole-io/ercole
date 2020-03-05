@@ -18,8 +18,11 @@ package auth
 
 import (
 	"net/http"
+	"time"
 
+	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/utils"
+	"github.com/sirupsen/logrus"
 )
 
 // AuthenticationProvider is a interface that wrap methods used to authenticate users
@@ -32,4 +35,19 @@ type AuthenticationProvider interface {
 	GetToken(w http.ResponseWriter, r *http.Request)
 	// GetUserInfoIfCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
 	GetUserInfoIfCredentialsAreCorrect(username string, password string) (map[string]interface{}, utils.AdvancedErrorInterface)
+}
+
+// BuildAuthenticationProvider return a authentication provider that match what is requested in the configuration
+// It's initialized
+func BuildAuthenticationProvider(conf config.AuthenticationProviderConfig, timeNow func() time.Time, log *logrus.Logger) AuthenticationProvider {
+	switch conf.Type {
+	case "basic":
+		prov := new(BasicAuthenticationProvider)
+		prov.Config = conf
+		prov.Log = log
+		prov.TimeNow = timeNow
+		return prov
+	default:
+		panic("The AuthenticationProvider type wasn't recognized or supported")
+	}
 }
