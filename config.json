@@ -47,7 +47,8 @@
             "Type": "basic",
             "Username": "user",
             "Password": "password",
-            "PrivateKey": "/path/to/my_private_rsa_key"
+			"PrivateKey": "/path/to/my_private_rsa_key",
+			"PublicKey": "/path/to/my_public_rsa_key.pub"
         },
 		"OperatingSystemAggregationRules": [
 			{ "Regex": "^Red Hat Enterprise Linux Server release 7.*$", "Group": "RHEL7" },

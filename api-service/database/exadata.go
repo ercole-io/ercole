@@ -26,7 +26,7 @@ import (
 
 // SearchExadata search exadata
 func (md *MongoDatabase) SearchExadata(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
+	var out []interface{} = make([]interface{}, 0)
 
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
