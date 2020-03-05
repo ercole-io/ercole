@@ -180,7 +180,7 @@ func (md *MongoDatabase) GetAverageExadataStorageUsageStats(location string, env
 
 // GetExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
 func (md *MongoDatabase) GetExadataStorageErrorCountStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
+	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -219,7 +219,7 @@ func (md *MongoDatabase) GetExadataStorageErrorCountStatusStats(location string,
 
 // GetExadataPatchStatusStats return a array containing the number of exadata per patch status
 func (md *MongoDatabase) GetExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
+	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(

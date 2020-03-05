@@ -27,7 +27,7 @@ import (
 
 // SearchAlerts search alerts
 func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, severity string, status string, from time.Time, to time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
+	var out []interface{} = make([]interface{}, 0)
 
 	//Find the matching alerts
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").Aggregate(

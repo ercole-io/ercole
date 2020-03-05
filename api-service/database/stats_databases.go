@@ -26,7 +26,7 @@ import (
 
 // GetDatabaseEnvironmentStats return a array containing the number of databases per environment
 func (md *MongoDatabase) GetDatabaseEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
+	var out []interface{} = make([]interface{}, 0)
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
@@ -61,7 +61,7 @@ func (md *MongoDatabase) GetDatabaseEnvironmentStats(location string, olderThan 
 
 // GetDatabaseVersionStats return a array containing the number of databases per version
 func (md *MongoDatabase) GetDatabaseVersionStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
+	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -93,7 +93,7 @@ func (md *MongoDatabase) GetDatabaseVersionStats(location string, olderThan time
 
 // GetTopReclaimableDatabaseStats return a array containing the total sum of reclaimable of segments advisors of the top reclaimable databases
 func (md *MongoDatabase) GetTopReclaimableDatabaseStats(location string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
+	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -136,7 +136,7 @@ func (md *MongoDatabase) GetTopReclaimableDatabaseStats(location string, limit i
 
 // GetTopWorkloadDatabaseStats return a array containing top databases by workload
 func (md *MongoDatabase) GetTopWorkloadDatabaseStats(location string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
+	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -177,7 +177,7 @@ func (md *MongoDatabase) GetTopWorkloadDatabaseStats(location string, limit int,
 
 // GetDatabasePatchStatusStats return a array containing the number of databases per patch status
 func (md *MongoDatabase) GetDatabasePatchStatusStats(location string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
+	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -227,7 +227,7 @@ func (md *MongoDatabase) GetDatabasePatchStatusStats(location string, windowTime
 
 // GetDatabaseDataguardStatusStats return a array containing the number of databases per dataguard status
 func (md *MongoDatabase) GetDatabaseDataguardStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
+	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -259,7 +259,7 @@ func (md *MongoDatabase) GetDatabaseDataguardStatusStats(location string, enviro
 
 // GetDatabaseRACStatusStats return a array containing the number of databases per RAC status
 func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
+	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -296,7 +296,7 @@ func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environment 
 
 // GetDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
 func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{}
+	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
