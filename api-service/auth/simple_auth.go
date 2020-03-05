@@ -100,7 +100,7 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	sig, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.HS256, Key: ap.privateKey}, (&jose.SignerOptions{}).WithType("JWT"))
+	sig, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.RS256, Key: ap.privateKey}, (&jose.SignerOptions{}).WithType("JWT"))
 	if err != nil {
 		panic(err)
 	}
@@ -180,7 +180,7 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 			}
 
 			//Check issuedat field
-			if claim.IssuedAt.Time().Before(ap.TimeNow()) {
+			if claim.IssuedAt.Time().After(ap.TimeNow()) {
 				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewAdvancedErrorPtr(errors.New("Futuristic tokens (from future) are invalid"), http.StatusText(http.StatusUnauthorized)))
 				return
 			}
