@@ -43,10 +43,10 @@ func init() {
 				dbname := args[i+1]
 				licenseName := args[i+2]
 
-				req, _ := http.NewRequest("RESET", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
+				req, _ := http.NewRequest("DELETE", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
 					ercoleConfig.APIService.AuthenticationProvider.Username,
 					ercoleConfig.APIService.AuthenticationProvider.Password,
-					"/hosts/"+hostname+"/databases/"+dbname+"/licenses/"+licenseName,
+					"/hosts/"+hostname+"/databases/"+dbname+"/license-modifiers/"+licenseName,
 				).String(), bytes.NewReader([]byte{}))
 
 				//Make the http request

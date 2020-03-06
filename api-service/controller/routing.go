@@ -46,7 +46,7 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/{hostname}/databases/{dbname}/tags", ctrl.AddTagToDatabase).Methods("POST")
 	router.HandleFunc("/hosts/{hostname}/databases/{dbname}/tags/{tagname}", ctrl.DeleteTagOfDatabase).Methods("DELETE")
 	router.HandleFunc("/hosts/{hostname}/databases/{dbname}/licenses/{licenseName}", ctrl.SetLicenseModifier).Methods("PUT")
-	router.HandleFunc("/hosts/{hostname}/databases/{dbname}/licenses/{licenseName}", ctrl.DeleteLicenseModifier).Methods("RESET")
+	router.HandleFunc("/hosts/{hostname}/databases/{dbname}/license-modifiers/{licenseName}", ctrl.DeleteLicenseModifier).Methods("DELETE")
 
 	router.HandleFunc("/locations", ctrl.ListLocations).Methods("GET")
 	router.HandleFunc("/environments", ctrl.ListEnvironments).Methods("GET")
