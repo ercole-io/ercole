@@ -35,7 +35,7 @@ func (f *ercoleFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	msg.WriteString(
 		fmt.Sprintf("\x1b[%dm[%s][%s][%s]\x1b[0m[%s] %-50s",
 			levelColor,
-			entry.Time.Format("06-01-02 15:04"),
+			entry.Time.Format("06-01-02 15:04:05"),
 			f.ComponentName,
 			levelText,
 			caller,
