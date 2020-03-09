@@ -45,13 +45,15 @@ type APIServiceInterface interface {
 	// SearchSegmentAdvisors search segment advisors
 	SearchSegmentAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// SearchPatchAdvisors search patch advisors
-	SearchPatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
+	SearchPatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// SearchDatabases search databases
 	SearchDatabases(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// SearchExadata search exadata
 	SearchExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// ListLicenses list licenses
 	ListLicenses(full bool, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetLicense return the license specified in the name param
+	GetLicense(name string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
 	// ListLocations list locations
 	ListLocations(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface)
 	// ListEnvironments list environments
@@ -109,6 +111,9 @@ type APIServiceInterface interface {
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
+	// SetLicensesCount set the count of all licenses in newLicenses
+	// It assumes that newLicenses maps contain the string _id and the int Count
+	SetLicensesCount(newLicenses []map[string]interface{}) utils.AdvancedErrorInterface
 	// SetPatchingFunction set the patching function of a host
 	SetPatchingFunction(hostname string, pf model.PatchingFunction) (interface{}, utils.AdvancedErrorInterface)
 	// AddTagToDatabase add the tag to the database if it hasn't the tag
