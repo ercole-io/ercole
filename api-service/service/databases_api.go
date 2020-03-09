@@ -48,6 +48,11 @@ func (as *APIService) ListLicenses(full bool, sortBy string, sortDesc bool, page
 	return as.Database.ListLicenses(full, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
+// GetLicense return the license specified in the name param
+func (as *APIService) GetLicense(name string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetLicense(name, olderThan)
+}
+
 // SetLicenseCount set the count of a certain license
 func (as *APIService) SetLicenseCount(name string, count int) utils.AdvancedErrorInterface {
 	return as.Database.SetLicenseCount(name, count)
