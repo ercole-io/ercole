@@ -37,7 +37,7 @@ func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc
 				"AlertStatus": status,
 			})),
 			mu.APOptionalStage(severity != "", mu.APMatch(bson.M{
-				"AlertSseverity": severity,
+				"AlertSeverity": severity,
 			})),
 			mu.APMatch(bson.M{
 				"Date": bson.M{
@@ -53,7 +53,9 @@ func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc
 				"OtherInfo.Dbname",
 				"OtherInfo.Features",
 			}, keywords),
-			mu.APUnset("OtherInfo"),
+			mu.APSet(bson.M{
+				"Hostname": "$OtherInfo.Hostname",
+			}),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),
 		),
