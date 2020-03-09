@@ -109,6 +109,9 @@ type APIServiceInterface interface {
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
+	// SetLicensesCount set the count of all licenses in newLicenses
+	// It assumes that newLicenses maps contain the string _id and the int Count
+	SetLicensesCount(newLicenses []map[string]interface{}) utils.AdvancedErrorInterface
 	// SetPatchingFunction set the patching function of a host
 	SetPatchingFunction(hostname string, pf model.PatchingFunction) (interface{}, utils.AdvancedErrorInterface)
 	// AddTagToDatabase add the tag to the database if it hasn't the tag
