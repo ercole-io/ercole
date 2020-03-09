@@ -33,7 +33,7 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 		context.TODO(),
 		mu.MAPipeline(
 			mu.APLookupPipeline("hosts", bson.M{
-				"LicenseName": "$_id",
+				"ln": "$_id",
 			}, "Used", mu.MAPipeline(
 				FilterByOldnessSteps(olderThan),
 				mu.APProject(bson.M{
@@ -44,7 +44,7 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 								"Name": "$$db.Name",
 								"Count": mu.APOLet(
 									bson.M{
-										"val": mu.APOArrayElemAt(mu.APOFilter("$$db.Licenses", "lic", mu.APOEqual("$$lic.Name", "$$LicenseName")), 0),
+										"val": mu.APOArrayElemAt(mu.APOFilter("$$db.Licenses", "lic", mu.APOEqual("$$lic.Name", "$$ln")), 0),
 									},
 									"$$val.Count",
 								),
@@ -151,6 +151,136 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 		}
 		out = append(out, &item)
 	}
+	return out, nil
+}
+
+// GetLicense get a certain license
+func (md *MongoDatabase) GetLicense(name string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
+	var out map[string]interface{}
+	//Find the informations
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses").Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			mu.APMatch(bson.M{
+				"_id": name,
+			}),
+			mu.APLookupPipeline("hosts", bson.M{
+				"ln": "$_id",
+			}, "Used", mu.MAPipeline(
+				FilterByOldnessSteps(olderThan),
+				mu.APProject(bson.M{
+					"Hostname": 1,
+					"Databases": mu.APOReduce(
+						mu.APOFilter(
+							mu.APOMap("$Extra.Databases", "db", bson.M{
+								"Name": "$$db.Name",
+								"Count": mu.APOLet(
+									bson.M{
+										"val": mu.APOArrayElemAt(mu.APOFilter("$$db.Licenses", "lic", mu.APOEqual("$$lic.Name", "$$ln")), 0),
+									},
+									"$$val.Count",
+								),
+							}),
+							"db",
+							mu.APOGreater("$$db.Count", 0),
+						),
+						bson.M{"Count": 0, "DBs": bson.A{}},
+						bson.M{
+							"Count": mu.APOMax("$$value.Count", "$$this.Count"),
+							"DBs": bson.M{
+								"$concatArrays": bson.A{
+									"$$value.DBs",
+									bson.A{"$$this.Name"},
+								},
+							},
+						},
+					),
+				}),
+				mu.APMatch(bson.M{
+					"Databases.Count": bson.M{
+						"$gt": 0,
+					},
+				}),
+				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
+					FilterByOldnessSteps(olderThan),
+					mu.APUnwind("$Extra.Clusters"),
+					mu.APReplaceWith("$Extra.Clusters"),
+					mu.APUnwind("$VMs"),
+					mu.APReplaceWith("$VMs"),
+					mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
+					mu.APLimit(1),
+				)),
+				mu.APSet(bson.M{
+					"VM": mu.APOArrayElemAt("$VM", 0),
+				}),
+				mu.APAddFields(bson.M{
+					"ClusterName":  mu.APOIfNull("$VM.ClusterName", nil),
+					"PhysicalHost": mu.APOIfNull("$VM.PhysicalHost", nil),
+				}),
+				mu.APUnset("VM"),
+				mu.APGroup(bson.M{
+					"_id": mu.APOCond(
+						"$ClusterName",
+						mu.APOConcat("cluster_§$#$§_", "$ClusterName"),
+						mu.APOConcat("hostname_§$#$§_", "$Hostname"),
+					),
+					"License":    mu.APOMaxAggr("$Databases.Count"),
+					"ClusterCpu": mu.APOMaxAggr("$ClusterCpu"),
+					"Hosts": mu.APOPush(bson.M{
+						"Hostname":  "$Hostname",
+						"Databases": "$Databases.DBs",
+					}),
+				}),
+				mu.APSet(bson.M{
+					"License": mu.APOCond(
+						"$ClusterCpu",
+						mu.APODivide("$ClusterCpu", 2),
+						"$License",
+					),
+				}),
+				mu.APGroup(bson.M{
+					"_id":   0,
+					"Value": mu.APOSum("$License"),
+					"Hosts": mu.APOPush("$Hosts"),
+				}),
+				mu.APUnwind("$Hosts"),
+				mu.APUnwind("$Hosts"),
+				mu.APGroup(bson.M{
+					"_id":   0,
+					"Value": mu.APOMaxAggr("$Value"),
+					"Hosts": mu.APOPush("$Hosts"),
+				}),
+			)),
+			mu.APSet(bson.M{
+				"Used": mu.APOArrayElemAt("$Used", 0),
+			}),
+			mu.APSet(bson.M{
+				"Hosts": mu.APOIfNull("$Used.Hosts", bson.A{}),
+			}),
+			mu.APSet(bson.M{
+				"Used": mu.APOIfNull(mu.APOCeil("$Used.Value"), 0),
+			}),
+			mu.APSet(bson.M{
+				"Compliance": mu.APOGreaterOrEqual("$Count", "$Used"),
+			}),
+		),
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Next the cursor. If there is no document return a empty document
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return nil, utils.AerrLicenseNotFound
+	}
+
+	//Decode the document
+	if err := cur.Decode(&out); err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
 	return out, nil
 }
 

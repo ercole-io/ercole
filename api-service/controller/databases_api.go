@@ -16,6 +16,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"net/http"
@@ -317,7 +318,7 @@ func (ctrl *APIController) SearchPatchAdvisorsJSON(w http.ResponseWriter, r *htt
 	var location string
 	var environment string
 	var olderThan time.Time
-
+	var status string
 	var err utils.AdvancedErrorInterface
 	//parse the query params
 	search = r.URL.Query().Get("search")
@@ -335,9 +336,13 @@ func (ctrl *APIController) SearchPatchAdvisorsJSON(w http.ResponseWriter, r *htt
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
-
 	if windowTime, err = utils.Str2int(r.URL.Query().Get("window-time"), 6); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	status = r.URL.Query().Get("status")
+	if status != "" && status != "OK" && status != "KO" {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid status"), "Invalid  status"))
 		return
 	}
 
@@ -350,7 +355,7 @@ func (ctrl *APIController) SearchPatchAdvisorsJSON(w http.ResponseWriter, r *htt
 	}
 
 	//get the data
-	patchAdvisors, err := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan)
+	patchAdvisors, err := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -374,6 +379,7 @@ func (ctrl *APIController) SearchPatchAdvisorsXLSX(w http.ResponseWriter, r *htt
 	var location string
 	var environment string
 	var olderThan time.Time
+	var status string
 
 	var aerr utils.AdvancedErrorInterface
 	//parse the query params
@@ -396,9 +402,14 @@ func (ctrl *APIController) SearchPatchAdvisorsXLSX(w http.ResponseWriter, r *htt
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
 		return
 	}
+	status = r.URL.Query().Get("status")
+	if status != "" && status != "OK" && status != "KO" {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid status"), "Invalid  status"))
+		return
+	}
 
 	//get the data
-	patchAdvisors, aerr := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, -1, -1, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan)
+	patchAdvisors, aerr := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, -1, -1, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
@@ -628,6 +639,32 @@ func (ctrl *APIController) ListLicenses(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
+// GetLicense return a certain license asked in the request
+func (ctrl *APIController) GetLicense(w http.ResponseWriter, r *http.Request) {
+	var err utils.AdvancedErrorInterface
+	var olderThan time.Time
+
+	//parse the query params
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	name := mux.Vars(r)["name"]
+
+	//get the data
+	lic, err := ctrl.Service.GetLicense(name, olderThan)
+	if err == utils.AerrLicenseNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+		return
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, lic)
+}
+
 // SetLicenseCount set the count of a certain license
 func (ctrl *APIController) SetLicenseCount(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
@@ -656,6 +693,50 @@ func (ctrl *APIController) SetLicenseCount(w http.ResponseWriter, r *http.Reques
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
 		return
 	} else if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
+}
+
+// SetLicensesCount set the count of licenses
+func (ctrl *APIController) SetLicensesCount(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	//get the data
+	var newLicensesCount []map[string]interface{}
+	if err := json.NewDecoder(r.Body).Decode(&newLicensesCount); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		return
+	}
+
+	//Check and fix the data
+	for _, lic := range newLicensesCount {
+		if val, ok := lic["_id"]; !ok {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("_id property is missing"), http.StatusText(http.StatusUnprocessableEntity)))
+			return
+		} else if _, ok := val.(string); !ok {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("_id property is not a string"), http.StatusText(http.StatusUnprocessableEntity)))
+			return
+		} else if val, ok := lic["Count"]; !ok {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Count property is missing"), http.StatusText(http.StatusUnprocessableEntity)))
+			return
+		} else if val, ok := val.(float64); !ok {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Count property is not a float64"), http.StatusText(http.StatusUnprocessableEntity)))
+			return
+		} else {
+			lic["Count"] = int(val)
+		}
+	}
+
+	//set the value
+	aerr := ctrl.Service.SetLicensesCount(newLicensesCount)
+	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
 	}

@@ -34,8 +34,8 @@ func (as *APIService) SearchSegmentAdvisors(search string, sortBy string, sortDe
 }
 
 // SearchPatchAdvisors search patch advisors
-func (as *APIService) SearchPatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchPatchAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, windowTime, location, environment, olderThan)
+func (as *APIService) SearchPatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchPatchAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, windowTime, location, environment, olderThan, status)
 }
 
 // SearchDatabases search databases
@@ -48,7 +48,24 @@ func (as *APIService) ListLicenses(full bool, sortBy string, sortDesc bool, page
 	return as.Database.ListLicenses(full, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
+// GetLicense return the license specified in the name param
+func (as *APIService) GetLicense(name string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetLicense(name, olderThan)
+}
+
 // SetLicenseCount set the count of a certain license
 func (as *APIService) SetLicenseCount(name string, count int) utils.AdvancedErrorInterface {
 	return as.Database.SetLicenseCount(name, count)
+}
+
+// SetLicensesCount set the count of all licenses in newLicenses
+// It assumes that newLicenses maps contain the string _id and the int Count
+func (as *APIService) SetLicensesCount(newLicenses []map[string]interface{}) utils.AdvancedErrorInterface {
+	for _, lic := range newLicenses {
+		err := as.Database.SetLicenseCount(lic["_id"].(string), lic["Count"].(int))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
