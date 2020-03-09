@@ -317,7 +317,7 @@ func (ctrl *APIController) SearchPatchAdvisorsJSON(w http.ResponseWriter, r *htt
 	var location string
 	var environment string
 	var olderThan time.Time
-
+	var status string
 	var err utils.AdvancedErrorInterface
 	//parse the query params
 	search = r.URL.Query().Get("search")
@@ -335,9 +335,13 @@ func (ctrl *APIController) SearchPatchAdvisorsJSON(w http.ResponseWriter, r *htt
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
-
 	if windowTime, err = utils.Str2int(r.URL.Query().Get("window-time"), 6); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	status = r.URL.Query().Get("status")
+	if status != "" && status != "OK" && status != "KO" {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid status"), "Invalid  status"))
 		return
 	}
 
@@ -350,7 +354,7 @@ func (ctrl *APIController) SearchPatchAdvisorsJSON(w http.ResponseWriter, r *htt
 	}
 
 	//get the data
-	patchAdvisors, err := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan)
+	patchAdvisors, err := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -374,6 +378,7 @@ func (ctrl *APIController) SearchPatchAdvisorsXLSX(w http.ResponseWriter, r *htt
 	var location string
 	var environment string
 	var olderThan time.Time
+	var status string
 
 	var aerr utils.AdvancedErrorInterface
 	//parse the query params
@@ -396,9 +401,14 @@ func (ctrl *APIController) SearchPatchAdvisorsXLSX(w http.ResponseWriter, r *htt
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
 		return
 	}
+	status = r.URL.Query().Get("status")
+	if status != "" && status != "OK" && status != "KO" {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid status"), "Invalid  status"))
+		return
+	}
 
 	//get the data
-	patchAdvisors, aerr := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, -1, -1, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan)
+	patchAdvisors, aerr := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, -1, -1, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
