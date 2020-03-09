@@ -52,3 +52,15 @@ func (as *APIService) ListLicenses(full bool, sortBy string, sortDesc bool, page
 func (as *APIService) SetLicenseCount(name string, count int) utils.AdvancedErrorInterface {
 	return as.Database.SetLicenseCount(name, count)
 }
+
+// SetLicensesCount set the count of all licenses in newLicenses
+// It assumes that newLicenses maps contain the string _id and the int Count
+func (as *APIService) SetLicensesCount(newLicenses []map[string]interface{}) utils.AdvancedErrorInterface {
+	for _, lic := range newLicenses {
+		err := as.Database.SetLicenseCount(lic["_id"].(string), lic["Count"].(int))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
