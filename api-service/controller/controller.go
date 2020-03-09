@@ -42,7 +42,7 @@ type APIControllerInterface interface {
 	SearchSegmentAdvisors(w http.ResponseWriter, r *http.Request)
 	// SearchPatchAdvisors search patch advisors data using the filters in the request
 	SearchPatchAdvisors(w http.ResponseWriter, r *http.Request)
-	// GetHost return all'informations about the host requested in the id path variable
+	// GetHost return all informations about the host requested in the id path variable
 	GetHost(w http.ResponseWriter, r *http.Request)
 	// SearchAlerts search alerts using the filters in the request
 	SearchAlerts(w http.ResponseWriter, r *http.Request)
@@ -50,6 +50,9 @@ type APIControllerInterface interface {
 	SearchExadata(w http.ResponseWriter, r *http.Request)
 	// ListLicenses list licenses using the filters in the request
 	ListLicenses(w http.ResponseWriter, r *http.Request)
+	// GetLicense return a certain license asked in the request
+	GetLicense(w http.ResponseWriter, r *http.Request)
+
 	// GetPatchingFunction return all'informations about the patching function of the host requested in the hostnmae path variable
 	GetPatchingFunction(w http.ResponseWriter, r *http.Request)
 	// ListLocations list locations using the filters in the request
