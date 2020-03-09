@@ -56,6 +56,7 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/segment-advisors", ctrl.SearchSegmentAdvisors).Methods("GET")
 	router.HandleFunc("/patch-advisors", ctrl.SearchPatchAdvisors).Methods("GET")
 	router.HandleFunc("/licenses", ctrl.ListLicenses).Methods("GET")
+	router.HandleFunc("/licenses", ctrl.SetLicensesCount).Methods("PUT")
 	router.HandleFunc("/licenses/{name}", ctrl.SetLicenseCount).Methods("PUT")
 	router.HandleFunc("/exadata", ctrl.SearchExadata).Methods("GET")
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")
