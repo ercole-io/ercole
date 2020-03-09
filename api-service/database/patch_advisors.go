@@ -25,7 +25,7 @@ import (
 )
 
 // SearchPatchAdvisors search patch advisors
-func (md *MongoDatabase) SearchPatchAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchPatchAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
 	var out []map[string]interface{} = make([]map[string]interface{}, 0)
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -77,6 +77,9 @@ func (md *MongoDatabase) SearchPatchAdvisors(keywords []string, sortBy string, s
 				"Date":        mu.APOCond("$Database.LastPSUs.Date", "$Database.LastPSUs.Date", time.Unix(0, 0)),
 				"Status":      mu.APOCond(mu.APOGreater("$Database.LastPSUs.Date", windowTime), "OK", "KO"),
 			}),
+			mu.APOptionalStage(status != "", mu.APMatch(bson.M{
+				"Status": status,
+			})),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),
 		),

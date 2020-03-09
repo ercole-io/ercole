@@ -34,8 +34,8 @@ func (as *APIService) SearchSegmentAdvisors(search string, sortBy string, sortDe
 }
 
 // SearchPatchAdvisors search patch advisors
-func (as *APIService) SearchPatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchPatchAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, windowTime, location, environment, olderThan)
+func (as *APIService) SearchPatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchPatchAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, windowTime, location, environment, olderThan, status)
 }
 
 // SearchDatabases search databases
