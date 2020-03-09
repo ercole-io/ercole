@@ -33,7 +33,7 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 		context.TODO(),
 		mu.MAPipeline(
 			mu.APLookupPipeline("hosts", bson.M{
-				"LicenseName": "$_id",
+				"ln": "$_id",
 			}, "Used", mu.MAPipeline(
 				FilterByOldnessSteps(olderThan),
 				mu.APProject(bson.M{
@@ -44,7 +44,7 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 								"Name": "$$db.Name",
 								"Count": mu.APOLet(
 									bson.M{
-										"val": mu.APOArrayElemAt(mu.APOFilter("$$db.Licenses", "lic", mu.APOEqual("$$lic.Name", "$$LicenseName")), 0),
+										"val": mu.APOArrayElemAt(mu.APOFilter("$$db.Licenses", "lic", mu.APOEqual("$$lic.Name", "$$ln")), 0),
 									},
 									"$$val.Count",
 								),
