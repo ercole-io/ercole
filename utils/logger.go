@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -31,8 +32,9 @@ func (f *ercoleFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	caller := getCaller(entry)
 	message := strings.TrimSuffix(entry.Message, "\n")
 
-	var msg bytes.Buffer
-	msg.WriteString(
+	var logBuffer bytes.Buffer
+
+	logBuffer.WriteString(
 		fmt.Sprintf("\x1b[%dm[%s][%s][%s]\x1b[0m[%s] %-50s",
 			levelColor,
 			entry.Time.Format("06-01-02 15:04:05"),
@@ -41,12 +43,12 @@ func (f *ercoleFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 			caller,
 			message))
 
-	for key, value := range entry.Data {
-		msg.WriteString(
-			fmt.Sprintf("\x1b[%dm%s\x1b[0m=%v ", levelColor, key, value))
+	for _, k := range getKeysInOrder(entry.Data) {
+		logBuffer.WriteString(
+			fmt.Sprintf("\x1b[%dm%s\x1b[0m=%v ", levelColor, k, entry.Data[k]))
 	}
 
-	return append(msg.Bytes(), '\n'), nil
+	return append(logBuffer.Bytes(), '\n'), nil
 }
 
 func getColorByLevel(entry *logrus.Entry) int {
@@ -78,4 +80,25 @@ func getCaller(entry *logrus.Entry) string {
 	}
 
 	return fmt.Sprintf("%s:%d", caller, entry.Caller.Line)
+}
+
+func getKeysInOrder(entryData logrus.Fields) []string {
+	manuallyOrderedKeys := []string{"endpoint", "statusCode"}
+
+	for i := 0; i < len(manuallyOrderedKeys); i++ {
+		if _, ok := entryData[manuallyOrderedKeys[i]]; !ok {
+			manuallyOrderedKeys = Remove(manuallyOrderedKeys, i)
+			i--
+		}
+	}
+
+	var entryDataKeys []string
+	for k := range entryData {
+		if !Contains(manuallyOrderedKeys, k) {
+			entryDataKeys = append(entryDataKeys, k)
+		}
+	}
+	sort.Strings(entryDataKeys)
+
+	return append(manuallyOrderedKeys, entryDataKeys...)
 }
