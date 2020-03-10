@@ -42,7 +42,7 @@ func FilterByOldnessSteps(olderThan time.Time) bson.A {
 		})),
 		mu.APOptionalStage(olderThan != utils.MAX_TIME, bson.A{
 			mu.APMatch(bson.M{
-				"Created_at": mu.QOLessThanOrEqual(olderThan),
+				"CreatedAt": mu.QOLessThanOrEqual(olderThan),
 			}),
 			mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname", "ca": "$CreatedAt"}, "Check", mu.MAPipeline(
 				mu.APProject(bson.M{
