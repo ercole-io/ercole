@@ -497,7 +497,7 @@ func (md *MongoDatabase) GetDatabaseLicenseComplianceStatusStats(location string
 		context.TODO(),
 		mu.MAPipeline(
 			mu.APLookupPipeline("hosts", bson.M{
-				"LicenseName": "$_id",
+				"ln": "$_id",
 			}, "Used", mu.MAPipeline(
 				FilterByOldnessSteps(olderThan),
 				FilterByLocationAndEnvironmentSteps(location, environment),
@@ -509,7 +509,7 @@ func (md *MongoDatabase) GetDatabaseLicenseComplianceStatusStats(location string
 								"Name": "$$db.name",
 								"Count": mu.APOLet(
 									bson.M{
-										"val": mu.APOArrayElemAt(mu.APOFilter("$$db.Licenses", "lic", mu.APOEqual("$$lic.Name", "$$LicenseName")), 0),
+										"val": mu.APOArrayElemAt(mu.APOFilter("$$db.Licenses", "lic", mu.APOEqual("$$lic.Name", "$$ln")), 0),
 									},
 									"$$val.Count",
 								),
