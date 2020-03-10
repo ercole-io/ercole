@@ -13,10 +13,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Package config contains configuration utilities, like readConfig()
 package config
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -256,6 +258,54 @@ type AuthenticationProviderConfig struct {
 	PublicKey string
 	// TokenValidityTimeout contains the number of seconds in which the token is still valid
 	TokenValidityTimeout int
+}
+
+// ReadConfig read, parse and return a Configuration from the configuration file in config.json or /opt/ercole-hostdata-dataservice/config.json
+// It also set the global Config with the read value
+func ReadConfig(extraConfigFile string) Configuration {
+	var conf Configuration
+
+	readSingleConfigFile("/opt/ercole/config.json", &conf)
+	readSingleConfigFile("/usr/share/ercole/config.json", &conf)
+	readSingleConfigFile("/etc/ercole.json", &conf)
+	home, _ := os.UserHomeDir()
+	readSingleConfigFile(home+"/.ercole.json", &conf)
+	readSingleConfigFile("config.json", &conf)
+
+	if extraConfigFile != "" {
+		readSingleConfigFileOrFail(extraConfigFile, &conf)
+	}
+
+	PatchConfiguration(&conf)
+
+	return conf
+}
+
+func readSingleConfigFile(filename string, conf *Configuration) {
+	var raw []byte
+	var err error
+
+	if raw, err = ioutil.ReadFile(filename); err != nil {
+		return
+	}
+
+	if err = json.Unmarshal(raw, conf); err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to parse configuration file %s (%s)", filename, err)
+	}
+}
+
+func readSingleConfigFileOrFail(filename string, conf *Configuration) {
+	var raw []byte
+	var err error
+
+	if raw, err = ioutil.ReadFile(filename); err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to read  the configuration file %s (%s)\n", filename, err)
+		os.Exit(1)
+	}
+
+	if err = json.Unmarshal(raw, conf); err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to parse configuration file %s (%s)\n", filename, err)
+	}
 }
 
 // PatchConfiguration change the value of the fields for meeting some requirements(?)
