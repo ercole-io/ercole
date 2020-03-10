@@ -88,7 +88,7 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 		aggregationBranches = append(aggregationBranches, bson.M{
 			"case": bson.M{
 				"$regexMatch": bson.M{
-					"input": "$Info.Os",
+					"input": "$Info.OS",
 					"regex": v.Regex,
 				},
 			},

@@ -205,7 +205,7 @@ func (md *MongoDatabase) GetDatabasePatchStatusStats(location string, windowTime
 					),
 				),
 			}),
-			mu.APGroupAndCountStages("Status", "id",
+			mu.APGroupAndCountStages("Status", "Count",
 				mu.APOCond(mu.APOGreater("$Database.LastPSUs.Date", windowTime), "OK", "KO"),
 			),
 		),
