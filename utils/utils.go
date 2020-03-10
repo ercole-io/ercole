@@ -64,6 +64,11 @@ func Contains(a []string, x string) bool {
 	return false
 }
 
+// Remove return slice without element at position i, mantaining order
+func Remove(slice []string, i int) []string {
+	return append(slice[:i], slice[i+1:]...)
+}
+
 // Str2bool parse a string to a boolean
 func Str2bool(in string, defaultValue bool) (bool, AdvancedErrorInterface) {
 	if in == "" {
