@@ -12,6 +12,7 @@ require (
 	github.com/golang/mock v1.4.0
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-github/v28 v28.1.1
+	github.com/goraz/onion v0.1.2
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.3
 	github.com/hashicorp/go-version v1.2.0
@@ -29,7 +30,7 @@ require (
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0
 	go.mongodb.org/mongo-driver v1.2.1
-	golang.org/x/crypto v0.0.0-20190911031432-227b76d455e7
+	golang.org/x/crypto v0.0.0-20191112222119-e1110fd1c708
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/robfig/cron.v3 v3.0.0-00010101000000-000000000000 // indirect
