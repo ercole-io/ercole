@@ -500,13 +500,12 @@ func (md *MongoDatabase) GetDatabaseLicenseComplianceStatusStats(location string
 				"ln": "$_id",
 			}, "Used", mu.MAPipeline(
 				FilterByOldnessSteps(olderThan),
-				FilterByLocationAndEnvironmentSteps(location, environment),
 				mu.APProject(bson.M{
 					"Hostname": 1,
 					"Databases": mu.APOReduce(
 						mu.APOFilter(
 							mu.APOMap("$Extra.Databases", "db", bson.M{
-								"Name": "$$db.name",
+								"Name": "$$db.Name",
 								"Count": mu.APOLet(
 									bson.M{
 										"val": mu.APOArrayElemAt(mu.APOFilter("$$db.Licenses", "lic", mu.APOEqual("$$lic.Name", "$$ln")), 0),
@@ -534,7 +533,7 @@ func (md *MongoDatabase) GetDatabaseLicenseComplianceStatusStats(location string
 						"$gt": 0,
 					},
 				}),
-				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "Cluster", mu.MAPipeline(
+				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
 					FilterByOldnessSteps(olderThan),
 					mu.APUnwind("$Extra.Clusters"),
 					mu.APReplaceWith("$Extra.Clusters"),
@@ -543,12 +542,13 @@ func (md *MongoDatabase) GetDatabaseLicenseComplianceStatusStats(location string
 					mu.APLimit(1),
 				)),
 				mu.APSet(bson.M{
-					"Cluster": mu.APOArrayElemAt("$Cluster", 0),
+					"VM": mu.APOArrayElemAt("$VM", 0),
 				}),
-				mu.APSet(bson.M{
-					"ClusterName": "$Cluster.Name",
-					"ClusterCpu":  "$Cluster.CPU",
+				mu.APAddFields(bson.M{
+					"ClusterName":  mu.APOIfNull("$VM.ClusterName", nil),
+					"PhysicalHost": mu.APOIfNull("$VM.PhysicalHost", nil),
 				}),
+				mu.APUnset("VM"),
 				mu.APGroup(bson.M{
 					"_id": mu.APOCond(
 						"$ClusterName",
