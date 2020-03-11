@@ -190,16 +190,16 @@ func (md *MongoDatabase) GetExadataStorageErrorCountStatusStats(location string,
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APProject(bson.M{
 				"Devs": mu.APOMap(
-					mu.APOFilter("$Extra.Exadata.Devices", "Dev",
-						mu.APOEqual("$$Dev.ServerType", "StorageServer"),
+					mu.APOFilter("$Extra.Exadata.Devices", "dev",
+						mu.APOEqual("$$dev.ServerType", "StorageServer"),
 					),
 					"dev",
-					mu.APOMap("$$Dev.CellDisks", "cd", mu.APOGreater(mu.APOToDouble("$$cd.ErrCount"), 0)),
+					mu.APOMap("$$dev.CellDisks", "cd", mu.APOGreater(mu.APOToDouble("$$cd.ErrCount"), 0)),
 				),
 			}),
 			mu.APUnwind("$Devs"),
 			mu.APUnwind("$Devs"),
-			mu.APGroupAndCountStages("failing", "count", "$Devs"),
+			mu.APGroupAndCountStages("Failing", "Count", "$Devs"),
 		),
 	)
 	if err != nil {
