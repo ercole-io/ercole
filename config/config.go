@@ -16,14 +16,12 @@
 package config
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/amreo/ercole-services/utils"
+	"github.com/goraz/onion"
 )
 
 // Configuration contains Ercole DataService configuration
@@ -260,52 +258,38 @@ type AuthenticationProviderConfig struct {
 	TokenValidityTimeout int
 }
 
-// ReadConfig read, parse and return a Configuration from the configuration file in config.json or /opt/ercole-hostdata-dataservice/config.json
-// It also set the global Config with the read value
-func ReadConfig(extraConfigFile string) Configuration {
-	var conf Configuration
-
-	readSingleConfigFile("/opt/ercole/config.json", &conf)
-	readSingleConfigFile("/usr/share/ercole/config.json", &conf)
-	readSingleConfigFile("/etc/ercole.json", &conf)
+// ReadConfig read, parse and return a Configuration from the configuration file
+func ReadConfig(extraConfigFile string) (configuration Configuration) {
+	layers := make([]onion.Layer, 0)
 	home, _ := os.UserHomeDir()
-	readSingleConfigFile(home+"/.ercole.json", &conf)
-	readSingleConfigFile("config.json", &conf)
 
-	if extraConfigFile != "" {
-		readSingleConfigFileOrFail(extraConfigFile, &conf)
+	configFiles := []string{
+		"/opt/ercole/config.json",
+		"/usr/share/ercole/config.json",
+		"/etc/ercole.json",
+		home + "/.ercole.json",
+		"config.json",
+		extraConfigFile,
 	}
 
-	PatchConfiguration(&conf)
+	for _, file := range configFiles {
+		layer, err := onion.NewFileLayer(file, nil)
 
-	return conf
-}
-
-func readSingleConfigFile(filename string, conf *Configuration) {
-	var raw []byte
-	var err error
-
-	if raw, err = ioutil.ReadFile(filename); err != nil {
-		return
+		if err == nil {
+			layers = append(layers, layer)
+		}
 	}
 
-	if err = json.Unmarshal(raw, conf); err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to parse configuration file %s (%s)", filename, err)
-	}
-}
+	envLayer := onion.NewEnvLayerPrefix("_", "ERCOLE")
+	layers = append(layers, envLayer)
 
-func readSingleConfigFileOrFail(filename string, conf *Configuration) {
-	var raw []byte
-	var err error
+	configOnion := onion.New(layers...)
 
-	if raw, err = ioutil.ReadFile(filename); err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to read  the configuration file %s (%s)\n", filename, err)
-		os.Exit(1)
-	}
+	configOnion.MergeAndDecode(&configuration)
 
-	if err = json.Unmarshal(raw, conf); err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to parse configuration file %s (%s)\n", filename, err)
-	}
+	PatchConfiguration(&configuration)
+
+	return configuration
 }
 
 // PatchConfiguration change the value of the fields for meeting some requirements(?)
