@@ -1,0 +1,133 @@
+ResourceFilePath = "resources/"
+
+[DataService]
+RemoteEndpoint = "http://127.0.0.1:11111"
+BindIP = "0.0.0.0"
+Port = 11111.0
+LogHTTPRequest = true
+LogInsertingHostdata = false
+LogDataPatching = true
+EnablePatching = true
+AgentUsername = "user"
+AgentPassword = "password"
+
+  [DataService.CurrentHostCleaningJob]
+  Crontab = "*/1 * * * * *"
+  HourThreshold = 1.0
+  RunAtStartup = false
+
+  [DataService.ArchivedHostCleaningJob]
+  Crontab = "*/1 * * * * *"
+  HourThreshold = 10.0
+  RunAtStartup = false
+
+[AlertService]
+RemoteEndpoint = "http://127.0.0.1:11112"
+BindIP = "127.0.0.1"
+Port = 11112.0
+LogHTTPRequest = true
+LogMessages = true
+LogAlertThrows = true
+PublisherUsername = "publisher"
+PublisherPassword = "r4nd0mS3cR3tp4ssW0rd"
+QueueBufferSize = 1024.0
+
+  [AlertService.FreshnessCheckJob]
+  Crontab = "*/1 * * * * *"
+  DaysThreshold = 1.0
+  RunAtStartup = false
+
+[APIService]
+RemoteEndpoint = "http://127.0.0.1:11113"
+BindIP = "0.0.0.0"
+Port = 11113.0
+LogHTTPRequest = true
+ReadOnly = false
+EnableInsertingCustomPatchingFunction = true
+DefaultDatabaseTags = [
+  "coolest",
+  "very important",
+  "gdpr-compliant"
+]
+
+  [APIService.AuthenticationProvider]
+  Type = "basic"
+  Username = "user"
+  Password = "password"
+  PrivateKey = "/path/to/my_private_rsa_key"
+  PublicKey = "/path/to/my_public_rsa_key.pub"
+  TokenValidityTimeout = 900.0
+
+  [[APIService.OperatingSystemAggregationRules]]
+  Regex = "^Red Hat Enterprise Linux Server release 7.*$"
+  Group = "RHEL7"
+
+  [[APIService.OperatingSystemAggregationRules]]
+  Regex = "^Red Hat Enterprise Linux Server release 6.*$"
+  Group = "RHEL6"
+
+  [[APIService.OperatingSystemAggregationRules]]
+  Regex = "^Red Hat Enterprise Linux Server release 5.*$"
+  Group = "RHEL5"
+
+  [[APIService.OperatingSystemAggregationRules]]
+  Regex = "^HPUX.*$"
+  Group = "HPUX"
+
+  [[APIService.OperatingSystemAggregationRules]]
+  Regex = "^AIX.*$"
+  Group = "AIX"
+
+[RepoService]
+DistributedFiles = "distributed_files/"
+
+  [RepoService.HTTP]
+  Enable = true
+  RemoteEndpoint = "http://127.0.0.1:11114"
+  BindIP = "0.0.0.0"
+  Port = 11114.0
+  LogHTTPRequest = true
+
+  [RepoService.SFTP]
+  Enable = true
+  RemoteEndpoint = "sftp://127.0.0.1:11115"
+  BindIP = "0.0.0.0"
+  Port = 11115.0
+  PrivateKey = "/path/to/my_private_rsa_key"
+  LogConnections = true
+  DebugConnections = true
+
+  [[RepoService.UpstreamRepositories]]
+  Name = "ercole-agent"
+  Type = "github-release"
+  URL = "https://api.github.com/repos/ercole-io/ercole-agent/releases"
+
+  [[RepoService.UpstreamRepositories]]
+  Name = "ercole-agent-rhel5"
+  Type = "github-release"
+  URL = "https://api.github.com/repos/ercole-io/ercole-agent-rhel5/releases"
+
+  [[RepoService.UpstreamRepositories]]
+  Name = "ercole-agent-aix"
+  Type = "github-release"
+  URL = "https://api.github.com/repos/ercole-io/ercole-agent-aix/releases"
+
+  [[RepoService.UpstreamRepositories]]
+  Name = "ercole-agent-hpux"
+  Type = "github-release"
+  URL = "https://api.github.com/repos/ercole-io/ercole-agent-hpux/releases"
+
+  [[RepoService.UpstreamRepositories]]
+  Name = "ercole-agent-exadata"
+  Type = "github-release"
+  URL = "https://api.github.com/repos/ercole-io/ercole-agent-exadata/releases"
+
+  [[RepoService.UpstreamRepositories]]
+  Name = "ercole-agent-virtualization"
+  Type = "github-release"
+  URL = "https://api.github.com/repos/ercole-io/ercole-agent-virtualization/releases"
+
+[Mongodb]
+URI = "mongodb://localhost:27017/ercole"
+DBName = "ercole"
+Migrate = true

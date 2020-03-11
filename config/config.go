@@ -22,6 +22,7 @@ import (
 
 	"github.com/amreo/ercole-services/utils"
 	"github.com/goraz/onion"
+	_ "github.com/goraz/onion/loaders/toml" // Needed to load toml files
 )
 
 // Configuration contains Ercole DataService configuration
@@ -264,11 +265,11 @@ func ReadConfig(extraConfigFile string) (configuration Configuration) {
 	home, _ := os.UserHomeDir()
 
 	configFiles := []string{
-		"/opt/ercole/config.json",
-		"/usr/share/ercole/config.json",
-		"/etc/ercole.json",
-		home + "/.ercole.json",
-		"config.json",
+		"/opt/ercole/config.toml",
+		"/usr/share/ercole/config.toml",
+		"/etc/ercole.toml",
+		home + "/.ercole.toml",
+		"config.toml",
 		extraConfigFile,
 	}
 
@@ -296,6 +297,7 @@ func ReadConfig(extraConfigFile string) (configuration Configuration) {
 func PatchConfiguration(config *Configuration) {
 	cwd, _ := os.Readlink("/proc/self/exe")
 	cwd = filepath.Dir(cwd)
+
 	if config.RepoService.DistributedFiles == "" {
 		config.RepoService.DistributedFiles = "/var/lib/ercole/distributed_files"
 	} else if filepath.IsAbs(config.RepoService.DistributedFiles) && !strings.HasSuffix(config.RepoService.DistributedFiles, "/") {
