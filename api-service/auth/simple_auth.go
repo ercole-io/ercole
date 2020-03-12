@@ -95,7 +95,7 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 		utils.WriteAndLogError(ap.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	} else if info == nil {
-		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewAdvancedErrorPtr(nil, http.StatusText(http.StatusUnauthorized)))
+		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewAdvancedErrorPtr(errors.New("Failed to login, invalid credentials"), http.StatusText(http.StatusUnauthorized)))
 		return
 	}
 
