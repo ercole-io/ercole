@@ -196,7 +196,7 @@ func TestUpdateHostInfo_HttpError(t *testing.T) {
 
 	_, err := hds.UpdateHostInfo(out)
 	require.Equal(t, "EVENT ENQUEUE", err.ErrorClass())
-	require.EqualError(t, err, "Post http://publ1sh3r:***@ercole.example.org/queue/host-data-insertion/5dd3a8db184dbf295f0376f2: MockError")
+	require.EqualError(t, err, "Post \"http://publ1sh3r:***@ercole.example.org/queue/host-data-insertion/5dd3a8db184dbf295f0376f2\": MockError")
 }
 
 func TestUpdateHostInfo_HttpError2(t *testing.T) {
