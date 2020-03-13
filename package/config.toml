@@ -1,12 +1,10 @@
-ResourceFilePath = "resources/"
-
 [DataService]
 RemoteEndpoint = "http://127.0.0.1:11111"
 BindIP = "0.0.0.0"
 Port = 11111
 LogHTTPRequest = true
 LogInsertingHostdata = false
-LogDataPatching = true
+LogDataPatching = false
 EnablePatching = true
 AgentUsername = "user"
 AgentPassword = "password"
@@ -26,15 +24,15 @@ RemoteEndpoint = "http://127.0.0.1:11112"
 BindIP = "127.0.0.1"
 Port = 11112
 LogHTTPRequest = true
-LogMessages = true
+LogMessages = false
 LogAlertThrows = true
 PublisherUsername = "publisher"
 PublisherPassword = "r4nd0mS3cR3tp4ssW0rd"
-QueueBufferSize = 10240
+QueueBufferSize = 1024
 
   [AlertService.FreshnessCheckJob]
   Crontab = "*/1 * * * * *"
-  DaysThreshold = 10
+  DaysThreshold = 1
   RunAtStartup = false
 
 [APIService]
@@ -44,19 +42,14 @@ Port = 11113
 LogHTTPRequest = true
 ReadOnly = false
 EnableInsertingCustomPatchingFunction = true
-DefaultDatabaseTags = [
-  "coolest",
-  "very important",
-  "gdpr-compliant"
-]
 
   [APIService.AuthenticationProvider]
   Type = "basic"
   Username = "user"
   Password = "password"
-  PrivateKey = "/path/to/my_private_rsa_key"
-  PublicKey = "/path/to/my_public_rsa_key.pub"
-  TokenValidityTimeout = 900
+  PrivateKey = "/etc/ssh/ssh_host_rsa_key"
+  PublicKey = "/etc/ssh/ssh_host_rsa_key.pub"
+  TokenValidityTimeout = 2700
 
   [[APIService.OperatingSystemAggregationRules]]
   Regex = "^Red Hat Enterprise Linux Server release 7.*$"
@@ -79,7 +72,6 @@ DefaultDatabaseTags = [
   Group = "AIX"
 
 [RepoService]
-DistributedFiles = "distributed_files/"
 
   [RepoService.HTTP]
   Enable = true
@@ -93,9 +85,9 @@ DistributedFiles = "distributed_files/"
   RemoteEndpoint = "sftp://127.0.0.1:11115"
   BindIP = "0.0.0.0"
   Port = 11115
-  PrivateKey = "/path/to/my_private_rsa_key"
+  PrivateKey = "/etc/ssh/ssh_host_rsa_key"
   LogConnections = true
-  DebugConnections = true
+  DebugConnections = false
 
   [[RepoService.UpstreamRepositories]]
   Name = "ercole-agent"
