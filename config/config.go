@@ -23,6 +23,7 @@ import (
 	"github.com/amreo/ercole-services/utils"
 	"github.com/goraz/onion"
 	_ "github.com/goraz/onion/loaders/toml" // Needed to load toml files
+	"github.com/goraz/onion/onionwriter"
 )
 
 // Configuration contains Ercole DataService configuration
@@ -262,16 +263,37 @@ type AuthenticationProviderConfig struct {
 // ReadConfig read, parse and return a Configuration from the configuration file
 func ReadConfig(extraConfigFile string) (configuration Configuration) {
 	layers := make([]onion.Layer, 0)
-	home, _ := os.UserHomeDir()
 
-	configFiles := []string{
+	layers = addFileLayers(layers,
 		"/opt/ercole/config.toml",
 		"/usr/share/ercole/config.toml",
-		"/etc/ercole.toml",
-		home + "/.ercole.toml",
+		"/etc/ercole.toml")
+
+	folderLayer, err := onion.NewFolderLayer("/etc/ercole.d/", "toml")
+	if err == nil {
+		layers = append(layers, folderLayer)
+	}
+
+	home, _ := os.UserHomeDir()
+	layers = addFileLayers(layers,
+		home+"/.ercole.toml",
 		"config.toml",
 		extraConfigFile,
-	}
+	)
+
+	envLayer := onion.NewEnvLayerPrefix("_", "ERCOLE")
+	layers = append(layers, envLayer)
+
+	configOnion := onion.New(layers...)
+
+	onionwriter.DecodeOnion(configOnion, &configuration)
+
+	PatchConfiguration(&configuration)
+
+	return configuration
+}
+
+func addFileLayers(layers []onion.Layer, configFiles ...string) []onion.Layer {
 
 	for _, file := range configFiles {
 		layer, err := onion.NewFileLayer(file, nil)
@@ -281,16 +303,7 @@ func ReadConfig(extraConfigFile string) (configuration Configuration) {
 		}
 	}
 
-	envLayer := onion.NewEnvLayerPrefix("_", "ERCOLE")
-	layers = append(layers, envLayer)
-
-	configOnion := onion.New(layers...)
-
-	configOnion.MergeAndDecode(&configuration)
-
-	PatchConfiguration(&configuration)
-
-	return configuration
+	return layers
 }
 
 // PatchConfiguration change the value of the fields for meeting some requirements(?)
