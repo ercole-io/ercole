@@ -16,10 +16,7 @@
 package utils
 
 import (
-	"crypto/x509"
 	"encoding/json"
-	"encoding/pem"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -31,6 +28,7 @@ import (
 
 	"github.com/amreo/ercole-services/model"
 	"github.com/robertkrimen/otto"
+	"golang.org/x/crypto/ssh"
 )
 
 var MIN_TIME time.Time = time.Unix(0, 0)
@@ -196,28 +194,20 @@ func FileExists(filename string) bool {
 
 // ParsePrivateKey converts a private key expressed as []byte to interface{}
 func ParsePrivateKey(raw []byte) (interface{}, interface{}, AdvancedErrorInterface) {
-	block, _ := pem.Decode(raw)
-	if block == nil {
-		return nil, nil, NewAdvancedErrorPtr(errors.New("Unable to parse the private key"), "PARSE_PRIVATE_KEY")
-	}
-
-	privatekey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	privatekey, err := ssh.ParsePrivateKey(raw)
 	if err != nil {
 		return nil, nil, NewAdvancedErrorPtr(err, "PARSE_PRIVATE_KEY")
 	}
-	return privatekey, &privatekey.PublicKey, nil
+
+	return privatekey, privatekey.PublicKey, nil
 }
 
-// ParsePublicKey converts a private key expressed as []byte to interface{}
+// ParsePublicKey converts a public key expressed as []byte to interface{}
 func ParsePublicKey(raw []byte) (interface{}, AdvancedErrorInterface) {
-	block, _ := pem.Decode(raw)
-	if block == nil {
-		return nil, NewAdvancedErrorPtr(errors.New("Unable to parse the public key"), "PARSE_PUBLIC_KEY")
-	}
-
-	publickey, err := x509.ParsePKCS1PublicKey(block.Bytes)
+	publickey, err := ssh.ParsePublicKey(raw)
 	if err != nil {
 		return nil, NewAdvancedErrorPtr(err, "PARSE_PUBLIC_KEY")
 	}
+
 	return publickey, nil
 }
