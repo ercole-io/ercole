@@ -20,6 +20,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/OpenPeeDeeP/xdg"
 	"github.com/amreo/ercole-services/utils"
 	"github.com/goraz/onion"
 	_ "github.com/goraz/onion/loaders/toml" // Needed to load toml files
@@ -264,19 +265,23 @@ type AuthenticationProviderConfig struct {
 func ReadConfig(extraConfigFile string) (configuration Configuration) {
 	layers := make([]onion.Layer, 0)
 
-	layers = addFileLayers(layers,
-		"/opt/ercole/config.toml",
-		"/usr/share/ercole/config.toml",
-		"/etc/ercole.toml")
+	layers = addFileLayers(layers, "/opt/ercole/config.toml")
+
+	dataDirs := xdg.DataDirs()
+	for i := 0; i < len(dataDirs); i++ {
+		dataDirs[i] = dataDirs[i] + "/config.toml"
+	}
+	layers = addFileLayers(layers, dataDirs...)
+
+	layers = addFileLayers(layers, "/etc/ercole.toml")
 
 	folderLayer, err := onion.NewFolderLayer("/etc/ercole.d/", "toml")
 	if err == nil {
 		layers = append(layers, folderLayer)
 	}
 
-	home, _ := os.UserHomeDir()
 	layers = addFileLayers(layers,
-		home+"/.ercole.toml",
+		xdg.DataHome()+"/ercole.toml",
 		"config.toml",
 		extraConfigFile,
 	)
