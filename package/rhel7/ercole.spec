@@ -8,7 +8,7 @@ License:        GPLv3
 URL:            https://ercole.io            
 Source0:        https://github.com/ercole-io/%{name}/archive/%{version}.tar.gz
 Group:          Daemons
-Requires:       systemd createrepo nginx
+Requires:       systemd createrepo
 BuildRequires:  systemd
 
 %global         debug_package %{nil}
