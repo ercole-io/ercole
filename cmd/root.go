@@ -16,9 +16,7 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/amreo/ercole-services/config"
@@ -36,7 +34,7 @@ var rootCmd = &cobra.Command{
 	Long:    `Ercole is a software for proactively managing software assets`,
 	Version: serverVersion,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		ercoleConfig = readConfig()
+		ercoleConfig = config.ReadConfig(extraConfigFile)
 		ercoleConfig.Version = serverVersion
 	},
 }
@@ -46,55 +44,6 @@ func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
-	}
-}
-
-// readConfig read, parse and return a Configuration from the configuration file in config.json or /opt/ercole-hostdata-dataservice/config.json
-// It also set the global Config with the read value
-func readConfig() config.Configuration {
-	var conf config.Configuration
-
-	readSingleConfigFile("/opt/ercole/config.json", &conf)
-	readSingleConfigFile("/usr/share/ercole/config.json", &conf)
-	readSingleConfigFile("/etc/ercole.json", &conf)
-	home, _ := os.UserHomeDir()
-	readSingleConfigFile(home+"/.ercole.json", &conf)
-	readSingleConfigFile("config.json", &conf)
-	if extraConfigFile != "" {
-		readSingleConfigFileOrFail(extraConfigFile, &conf)
-	}
-	config.PatchConfiguration(&conf)
-
-	//Return the read configuration
-	return conf
-}
-
-func readSingleConfigFile(filename string, conf *config.Configuration) {
-	//Try to read the file
-	var raw []byte
-	var err error
-
-	if raw, err = ioutil.ReadFile(filename); err != nil {
-		return
-	}
-
-	if err = json.Unmarshal(raw, conf); err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to parse configuration file %s (%s)", filename, err)
-	}
-}
-
-func readSingleConfigFileOrFail(filename string, conf *config.Configuration) {
-	//Try to read the file
-	var raw []byte
-	var err error
-
-	if raw, err = ioutil.ReadFile(filename); err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to read  the configuration file %s (%s)\n", filename, err)
-		os.Exit(1)
-	}
-
-	if err = json.Unmarshal(raw, conf); err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to parse configuration file %s (%s)\n", filename, err)
 	}
 }
 
