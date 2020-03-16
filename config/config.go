@@ -13,7 +13,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Package config contains configuration utilities, like readConfig()
 package config
 
 import (
@@ -21,7 +20,11 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/OpenPeeDeeP/xdg"
 	"github.com/amreo/ercole-services/utils"
+	"github.com/goraz/onion"
+	_ "github.com/goraz/onion/loaders/toml" // Needed to load toml files
+	"github.com/goraz/onion/onionwriter"
 )
 
 // Configuration contains Ercole DataService configuration
@@ -258,10 +261,61 @@ type AuthenticationProviderConfig struct {
 	TokenValidityTimeout int
 }
 
+// ReadConfig read, parse and return a Configuration from the configuration file
+func ReadConfig(extraConfigFile string) (configuration Configuration) {
+	layers := make([]onion.Layer, 0)
+
+	layers = addFileLayers(layers, "/opt/ercole/config.toml")
+
+	dataDirs := xdg.DataDirs()
+	for i := 0; i < len(dataDirs); i++ {
+		dataDirs[i] = dataDirs[i] + "/ercole/config.toml"
+	}
+	layers = addFileLayers(layers, dataDirs...)
+
+	layers = addFileLayers(layers, "/etc/ercole.toml")
+
+	folderLayer, err := onion.NewFolderLayer("/etc/ercole.d/", "toml")
+	if err == nil {
+		layers = append(layers, folderLayer)
+	}
+
+	layers = addFileLayers(layers,
+		xdg.DataHome()+"/ercole.toml",
+		"config.toml",
+		extraConfigFile,
+	)
+
+	envLayer := onion.NewEnvLayerPrefix("_", "ERCOLE")
+	layers = append(layers, envLayer)
+
+	configOnion := onion.New(layers...)
+
+	onionwriter.DecodeOnion(configOnion, &configuration)
+
+	PatchConfiguration(&configuration)
+
+	return configuration
+}
+
+func addFileLayers(layers []onion.Layer, configFiles ...string) []onion.Layer {
+
+	for _, file := range configFiles {
+		layer, err := onion.NewFileLayer(file, nil)
+
+		if err == nil {
+			layers = append(layers, layer)
+		}
+	}
+
+	return layers
+}
+
 // PatchConfiguration change the value of the fields for meeting some requirements(?)
 func PatchConfiguration(config *Configuration) {
 	cwd, _ := os.Readlink("/proc/self/exe")
 	cwd = filepath.Dir(cwd)
+
 	if config.RepoService.DistributedFiles == "" {
 		config.RepoService.DistributedFiles = "/var/lib/ercole/distributed_files"
 	} else if filepath.IsAbs(config.RepoService.DistributedFiles) && !strings.HasSuffix(config.RepoService.DistributedFiles, "/") {
