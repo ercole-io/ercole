@@ -103,15 +103,14 @@ public final class JsonFilter {
 	 */
 	public static Map<String, Boolean> getFalseFeaturesFromDbArray(final JSONArray oldDbArray) {
 		Map<String, Boolean> retMap = setAllFeaturesToFalse(oldDbArray);
-		JSONArray oldFeatures = oldDbArray.getJSONObject(0).getJSONArray(FEATURES);
 		
-		for (int x = 0; x < oldFeatures.length(); x++) {
-			for (int y = 0; y < oldDbArray.length(); y++) {
-
-				String key = (String) oldDbArray.getJSONObject(y).getJSONArray(FEATURES)
-						.getJSONObject(x).get(NAME);
-				Boolean value = (Boolean) oldDbArray.getJSONObject(y).getJSONArray(FEATURES)
-						.getJSONObject(x).get(STATUS);
+		for (int x = 0; x < oldDbArray.length(); x++) {
+		        JSONArray oldFeatures = oldDbArray.getJSONObject(x).getJSONArray(FEATURES);
+                        
+		        for (int y = 0; y < oldFeatures.length(); y++) {
+			        String key = (String) oldFeatures.getJSONObject(y).get(NAME);
+				Boolean value = (Boolean) oldDbArray.getJSONObject(x).getJSONArray(FEATURES)
+						.getJSONObject(y).get(STATUS);
 				
 				if (value) {
 					retMap.remove(key);
