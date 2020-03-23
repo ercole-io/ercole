@@ -118,8 +118,8 @@ EnableInsertingCustomPatchingFunction = true
   Name = "ercole-agent-virtualization"
   Type = "github-release"
   URL = "https://api.github.com/repos/ercole-io/ercole-agent-virtualization/releases"
-
+  
 [Mongodb]
 URI = "mongodb://localhost:27017/ercole"
 DBName = "ercole"
-Migrate = true
+Migrate = false
