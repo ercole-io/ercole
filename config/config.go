@@ -281,7 +281,7 @@ func ReadConfig(extraConfigFile string) (configuration Configuration) {
 	}
 
 	layers = addFileLayers(layers,
-		xdg.DataHome()+"/ercole.toml",
+		xdg.ConfigHome()+"/ercole.toml",
 		"config.toml",
 		extraConfigFile,
 	)
