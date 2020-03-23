@@ -269,7 +269,7 @@ func ReadConfig(extraConfigFile string) (configuration Configuration) {
 
 	dataDirs := xdg.DataDirs()
 	for i := 0; i < len(dataDirs); i++ {
-		dataDirs[i] = dataDirs[i] + "/ercole/config.toml"
+		dataDirs[i] = filepath.Join(dataDirs[i], "ercole/config.toml")
 	}
 	layers = addFileLayers(layers, dataDirs...)
 
