@@ -31,6 +31,8 @@ ls
 cd %{_builddir}/%{name}-%{version}
 mkdir -p %{buildroot}/usr/bin/ %{buildroot}/usr/share/ercole %{buildroot}%{_unitdir} %{buildroot}%{_presetdir} %{buildroot}/var/lib/ercole/distributed_files/shared
 install -m 0755 ercole %{buildroot}/usr/bin/ercole
+install -m 0755 package/ercole-setup %{buildroot}/usr/bin/ercole-setup
+
 install -m 0644 resources/initial_oracle_licenses_list.txt %{buildroot}/usr/share/ercole
 install -m 0644 -d resources/templates %{buildroot}/usr/share/ercole
 
@@ -40,6 +42,7 @@ install -m 0644 package/systemd/60-ercole.preset %{buildroot}%{_presetdir}/60-%{
 
 %post
 /usr/bin/systemctl preset %{name}.service >/dev/null 2>&1 ||:
+NOINTERACTIVE=1 /usr/bin/ercole-setup
 
 %preun
 /usr/bin/systemctl --no-reload disable %{name}.service >/dev/null 2>&1 || :
@@ -52,6 +55,7 @@ install -m 0644 package/systemd/60-ercole.preset %{buildroot}%{_presetdir}/60-%{
 %dir /var/lib/ercole
 %dir /var/lib/ercole/distributed_files
 /usr/bin/ercole
+/usr/bin/ercole-setup
 %{_presetdir}/60-ercole.preset
 %{_unitdir}/ercole-alertservice.service
 %{_unitdir}/ercole-apiservice.service
