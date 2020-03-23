@@ -273,9 +273,9 @@ func ReadConfig(extraConfigFile string) (configuration Configuration) {
 	}
 	layers = addFileLayers(layers, dataDirs...)
 
-	layers = addFileLayers(layers, "/etc/ercole.toml")
+	layers = addFileLayers(layers, "/etc/ercole/ercole.toml")
 
-	folderLayer, err := onion.NewFolderLayer("/etc/ercole.d/", "toml")
+	folderLayer, err := onion.NewFolderLayer("/etc/ercole/conf.d/", "toml")
 	if err == nil {
 		layers = append(layers, folderLayer)
 	}
