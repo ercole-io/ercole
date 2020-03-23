@@ -84,3 +84,5 @@ fi
 
 # Run the frontend setup
 command -v ercoleweb-setup > /dev/null && ercoleweb-setup
+
+timeout 2 ercole migrate || echo "The migration is failed. It's necessary to run ercole migrate"
