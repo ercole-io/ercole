@@ -34,7 +34,7 @@ install -m 0755 ercole %{buildroot}/usr/bin/ercole
 install -m 0644 resources/initial_oracle_licenses_list.txt %{buildroot}/usr/share/ercole
 install -m 0644 -d resources/templates %{buildroot}/usr/share/ercole
 
-install -m 0644 package/config.toml %{buildroot}/usr/share/ercole/ercole.toml
+install -m 0644 package/config.toml %{buildroot}/usr/share/ercole/config.toml
 install -m 0644 package/systemd/*.service %{buildroot}%{_unitdir}/
 install -m 0644 package/systemd/60-ercole.preset %{buildroot}%{_presetdir}/60-%{name}.preset
 
@@ -58,7 +58,7 @@ install -m 0644 package/systemd/60-ercole.preset %{buildroot}%{_presetdir}/60-%{
 %{_unitdir}/ercole-dataservice.service
 %{_unitdir}/ercole-reposervice.service
 %{_unitdir}/ercole.service
-/usr/share/ercole/ercole.toml
+/usr/share/ercole/config.toml
 /usr/share/ercole/initial_oracle_licenses_list.txt
 
 %changelog
