@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/1set/gut v0.0.0-20200225162230-3995492b8589
 	github.com/DataDog/zstd v1.4.4 // indirect
+	github.com/OpenPeeDeeP/xdg v0.2.0
 	github.com/amreo/mu v0.0.0-20200309101515-dd7f9c71dd78
 	github.com/bamzi/jobrunner v0.0.0-20190810144113-852b7ca4d475
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
@@ -12,7 +13,7 @@ require (
 	github.com/golang/mock v1.4.0
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-github/v28 v28.1.1
-	github.com/goraz/onion v0.1.2
+	github.com/goraz/onion v0.1.3-0.20200316185150-c3fd0dfc83f1
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.3
 	github.com/hashicorp/go-version v1.2.0
@@ -23,7 +24,7 @@ require (
 	github.com/plandem/xlsx v1.0.4
 	github.com/robertkrimen/otto v0.0.0-20191219234010-c382bd3c16ff
 	github.com/rs/cors v1.7.0
-	github.com/sirupsen/logrus v1.4.2
+	github.com/sirupsen/logrus v1.5.0
 	github.com/spf13/cobra v0.0.6
 	github.com/stretchr/testify v1.4.0
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
@@ -38,7 +39,7 @@ require (
 	gopkg.in/square/go-jose.v2 v2.4.1
 )
 
-replace github.com/Sirupsen/logrus => github.com/sirupsen/logrus v1.4.2
+replace github.com/Sirupsen/logrus => github.com/sirupsen/logrus v1.5.0
 
 replace gopkg.in/robfig/cron.v3 => github.com/robfig/cron/v3 v3.0.0
 
