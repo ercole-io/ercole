@@ -29,16 +29,18 @@ ls
 
 %install
 cd %{_builddir}/%{name}-%{version}
-mkdir -p %{buildroot}/usr/bin/ %{buildroot}/usr/share/ercole %{buildroot}%{_unitdir} %{buildroot}%{_presetdir} %{buildroot}/var/lib/ercole/distributed_files/shared
+mkdir -p %{buildroot}/usr/bin/ %{buildroot}/usr/share/ercole/examples %{buildroot}%{_unitdir} %{buildroot}%{_presetdir} %{buildroot}/var/lib/ercole/distributed_files
 install -m 0755 ercole %{buildroot}/usr/bin/ercole
 install -m 0755 package/ercole-setup %{buildroot}/usr/bin/ercole-setup
-
 install -m 0644 resources/initial_oracle_licenses_list.txt %{buildroot}/usr/share/ercole
 install -m 0644 -d resources/templates %{buildroot}/usr/share/ercole
-
 install -m 0644 package/config.toml %{buildroot}/usr/share/ercole/config.toml
 install -m 0644 package/systemd/*.service %{buildroot}%{_unitdir}/
 install -m 0644 package/systemd/60-ercole.preset %{buildroot}%{_presetdir}/60-%{name}.preset
+install -m 0644 distributed_files/ping.txt %{buildroot}/var/lib/ercole/ping.txt
+install -m 0644 -d distributed_files/ %{buildroot}/var/lib/ercole/
+install -m 0644 -d distributed_files/ %{buildroot}/var/lib/ercole/
+install -m 0644 distributed_files/shared/*.repo %{buildroot}/usr/share/ercole/examples/
 
 %post
 /usr/bin/systemctl daemon-reload >/dev/null 2>&1 ||:
@@ -59,7 +61,6 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 
 %files
 %dir /var/lib/ercole
-%dir /var/lib/ercole/distributed_files
 /usr/bin/ercole
 /usr/bin/ercole-setup
 %{_presetdir}/60-ercole.preset
@@ -70,5 +71,9 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 %{_unitdir}/ercole.service
 /usr/share/ercole/config.toml
 /usr/share/ercole/initial_oracle_licenses_list.txt
+/usr/share/ercole/examples/ercole-rhel5.repo
+/usr/share/ercole/examples/ercole-rhel6.repo
+/usr/share/ercole/examples/ercole-rhel7.repo
+/var/lib/ercole/distributed_files/ping.txt
 
 %changelog
