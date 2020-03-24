@@ -38,8 +38,6 @@ install -m 0644 package/config.toml %{buildroot}/usr/share/ercole/config.toml
 install -m 0644 package/systemd/*.service %{buildroot}%{_unitdir}/
 install -m 0644 package/systemd/60-ercole.preset %{buildroot}%{_presetdir}/60-%{name}.preset
 install -m 0644 distributed_files/ping.txt %{buildroot}/var/lib/ercole/ping.txt
-install -m 0644 -d distributed_files/ %{buildroot}/var/lib/ercole/
-install -m 0644 -d distributed_files/ %{buildroot}/var/lib/ercole/
 install -m 0644 distributed_files/shared/*.repo %{buildroot}/usr/share/ercole/examples/
 
 %post
@@ -60,7 +58,7 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 /usr/bin/systemctl daemon-reload >/dev/null 2>&1 ||:
 
 %files
-%dir /var/lib/ercole
+%dir /var/lib/ercole/distributed_files
 /usr/bin/ercole
 /usr/bin/ercole-setup
 %{_presetdir}/60-ercole.preset
