@@ -41,6 +41,7 @@ install -m 0644 package/systemd/*.service %{buildroot}%{_unitdir}/
 install -m 0644 package/systemd/60-ercole.preset %{buildroot}%{_presetdir}/60-%{name}.preset
 
 %post
+/usr/bin/systemctl daemon-reload >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-alertservice.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-apiservice.service >/dev/null 2>&1 ||:
