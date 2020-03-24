@@ -42,6 +42,10 @@ install -m 0644 package/systemd/60-ercole.preset %{buildroot}%{_presetdir}/60-%{
 
 %post
 /usr/bin/systemctl preset %{name}.service >/dev/null 2>&1 ||:
+/usr/bin/systemctl preset %{name}-alertservice.service >/dev/null 2>&1 ||:
+/usr/bin/systemctl preset %{name}-apiservice.service >/dev/null 2>&1 ||:
+/usr/bin/systemctl preset %{name}-reposervice.service >/dev/null 2>&1 ||:
+/usr/bin/systemctl preset %{name}-dataservice.service >/dev/null 2>&1 ||:
 NOINTERACTIVE=1 /usr/bin/ercole-setup
 
 %preun
