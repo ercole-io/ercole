@@ -37,7 +37,7 @@ script:
   - docker exec -it package_builder /bin/sh -c "ls ~/rpmbuild/RPMS/x86_64/ercole-*.rpm"
   - docker exec -it package_builder /bin/sh -c "file ~/rpmbuild/RPMS/x86_64/ercole-*.rpm"
   - docker exec -it package_builder /bin/sh -c "cp ~/rpmbuild/RPMS/x86_64/ercole-*.rpm ${WORKSPACE}/dist"
-  - go test -race -coverprofile=coverage.txt -covermode=atomic -v ./... 
+  - go test -race -coverprofile=coverage.txt -covermode=atomic -v ./...
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
