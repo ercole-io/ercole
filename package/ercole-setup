@@ -21,7 +21,7 @@ REPO_SERVICE_SFTP_PRIVATE_KEY=$(grep "RepoService.SFTP.PrivateKey" /etc/ercole/c
 CURRENT_IP_ADDRESS=""
 if [ -z $DATA_SERVICE_REMOTE_ENDPOINT ] || [ -z $API_SERVICE_REMOTE_ENDPOINT ] || [ -z $REPO_SERVICE_HTTP_REMOTE_ENDPOINT ] || [ -z $REPO_SERVICE_SFTP_REMOTE_ENDPOINT ]; then
 	CURRENT_IP_ADDRESS=$(hostname -I | cut -d' ' -f1)
-	if [ -z NOINTERACTIVE ]; then
+	if [ -z $NOINTERACTIVE ]; then
 		read -p "IP address($CURRENT_IP_ADDRESS): " INPUT
 		if [ ! -z $INPUT ]; then
 			CURRENT_IP_ADDRESS=$INPUT
