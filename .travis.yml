@@ -43,8 +43,7 @@ after_success:
   - bash <(curl -s https://codecov.io/bash)
 
 deploy:
-  - provider: releases
-    draft: true
+  - provider: release
     api_key: $GITHUB_API_RELEASE
     file_glob: true
     file: dist/*
