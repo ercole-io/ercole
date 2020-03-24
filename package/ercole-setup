@@ -8,7 +8,6 @@ fi
 
 # Get actual configured values in /etc/ercole/conf.d/20-ercolesetup.toml
 DATA_SERVICE_REMOTE_ENDPOINT=$(grep "DataService.RemoteEndpoint" /etc/ercole/conf.d/20-ercolesetup.toml | cut -d'=' -f2 | sed -e 's/[[:space:]]*"//' | sed -e 's/"[[:space:]]*//')
-ALERT_SERVICE_REMOTE_ENDPOINT=$(grep "AlertService.RemoteEndpoint" /etc/ercole/conf.d/20-ercolesetup.toml | cut -d'=' -f2 | sed -e 's/[[:space:]]*"//' | sed -e 's/"[[:space:]]*//')
 ALERT_SERVICE_PUBLISHER_PASSWORD=$(grep "AlertService.PublisherPassword" /etc/ercole/conf.d/20-ercolesetup.toml | cut -d'=' -f2 | sed -e 's/[[:space:]]*"//' | sed -e 's/"[[:space:]]*//')
 API_SERVICE_REMOTE_ENDPOINT=$(grep "APIService.RemoteEndpoint" /etc/ercole/conf.d/20-ercolesetup.toml | cut -d'=' -f2 | sed -e 's/[[:space:]]*"//' | sed -e 's/"[[:space:]]*//')
 API_SERVICE_AUTH_PROVIDER_PRIVATE_KEY=$(grep "APIService.AuthenticationProvider.PrivateKey" /etc/ercole/conf.d/20-ercolesetup.toml | cut -d'=' -f2 | sed -e 's/[[:space:]]*"//' | sed -e 's/"[[:space:]]*//')
@@ -20,7 +19,7 @@ REPO_SERVICE_SFTP_PRIVATE_KEY=$(grep "RepoService.SFTP.PrivateKey" /etc/ercole/c
 
 # Get actual IP Addres
 CURRENT_IP_ADDRESS=""
-if [ -z $DATA_SERVICE_REMOTE_ENDPOINT ] || [ -z $ALERT_SERVICE_REMOTE_ENDPOINT ] || [ -z $API_SERVICE_REMOTE_ENDPOINT ] || [ -z $REPO_SERVICE_HTTP_REMOTE_ENDPOINT ] || [ -z $REPO_SERVICE_SFTP_REMOTE_ENDPOINT ]; then
+if [ -z $DATA_SERVICE_REMOTE_ENDPOINT ] || [ -z $API_SERVICE_REMOTE_ENDPOINT ] || [ -z $REPO_SERVICE_HTTP_REMOTE_ENDPOINT ] || [ -z $REPO_SERVICE_SFTP_REMOTE_ENDPOINT ]; then
 	CURRENT_IP_ADDRESS=$(hostname -I | cut -d' ' -f1)
 	if [ -z NOINTERACTIVE ]; then
 		read -p "IP address($CURRENT_IP_ADDRESS): " INPUT
@@ -34,10 +33,6 @@ fi
 if [ -z $DATA_SERVICE_REMOTE_ENDPOINT ]; then
 	DATA_SERVICE_REMOTE_ENDPOINT="http://$CURRENT_IP_ADDRESS:11111"
 	echo "DataService.RemoteEndpoint = \"$DATA_SERVICE_REMOTE_ENDPOINT\"" >> /etc/ercole/conf.d/20-ercolesetup.toml
-fi
-if [ -z $ALERT_SERVICE_REMOTE_ENDPOINT ]; then
-	ALERT_SERVICE_REMOTE_ENDPOINT="http://$CURRENT_IP_ADDRESS:11112"
-	echo "AlertService.RemoteEndpoint = \"$ALERT_SERVICE_REMOTE_ENDPOINT\"" >> /etc/ercole/conf.d/20-ercolesetup.toml
 fi
 if [ -z $API_SERVICE_REMOTE_ENDPOINT ]; then
 	API_SERVICE_REMOTE_ENDPOINT="http://$CURRENT_IP_ADDRESS:11113"
