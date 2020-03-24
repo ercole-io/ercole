@@ -77,6 +77,18 @@ if [ -z $REPO_SERVICE_SFTP_PRIVATE_KEY ]; then
 	echo "RepoService.SFTP.PrivateKey = \"$REPO_SERVICE_SFTP_PRIVATE_KEY\"" >> /etc/ercole/conf.d/20-ercolesetup.toml
 fi
 
+# Initialize the /var/lib/ercole/distributed_files directory
+mkdir -p /var/lib/ercole/distributed_files/shared
+if [ ! -f /var/lib/ercole/distributed_files/shared/ercole-rhel7.repo ]; then
+	cat /usr/share/ercole/examples/ercole-rhel7.repo | sed "s/http:\/\/fillme:11114/$(echo $REPO_SERVICE_HTTP_REMOTE_ENDPOINT | sed -e 's/[\/&]/\\&/g')/" > /var/lib/ercole/distributed_files/shared/ercole-rhel7.repo 
+fi
+if [ ! -f /var/lib/ercole/distributed_files/shared/ercole-rhel6.repo ]; then
+	cat /usr/share/ercole/examples/ercole-rhel6.repo | sed  "s/http:\/\/fillme:11114/$(echo $REPO_SERVICE_HTTP_REMOTE_ENDPOINT | sed -e 's/[\/&]/\\&/g')/" > /var/lib/ercole/distributed_files/shared/ercole-rhel6.repo 
+fi
+if [ ! -f /var/lib/ercole/distributed_files/shared/ercole-rhel5.repo ]; then
+	cat /usr/share/ercole/examples/ercole-rhel5.repo | sed  "s/http:\/\/fillme:11114/$(echo $REPO_SERVICE_HTTP_REMOTE_ENDPOINT | sed -e 's/[\/&]/\\&/g')/" > /var/lib/ercole/distributed_files/shared/ercole-rhel5.repo 
+fi
+
 # Run the frontend setup
 command -v ercoleweb-setup > /dev/null && ercoleweb-setup
 
