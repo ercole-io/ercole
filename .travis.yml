@@ -15,13 +15,11 @@ env:
     - VERSION=latest
     - PACKAGE_BUILD_IMAGE=sorintdev/rpmbuild-centos7
     - WORKSPACE='/project'
-
 services:
   - mongodb
   
 before_install:
   - sudo docker pull ${PACKAGE_BUILD_IMAGE}
-
 install:
   - mkdir dist
   - go get -v
@@ -46,6 +44,7 @@ after_success:
 
 deploy:
   - provider: releases
+    draft: true
     api_key: $GITHUB_API_RELEASE
     file_glob: true
     file: dist/*
