@@ -48,6 +48,7 @@ install -m 0644 package/systemd/60-ercole.preset %{buildroot}%{_presetdir}/60-%{
 /usr/bin/systemctl preset %{name}-reposervice.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-dataservice.service >/dev/null 2>&1 ||:
 NOINTERACTIVE=1 /usr/bin/ercole-setup
+ercole completion bash > /usr/share/bash-completion/completions/ercole
 
 %preun
 /usr/bin/systemctl --no-reload disable %{name}.service >/dev/null 2>&1 || :
