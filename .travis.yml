@@ -50,7 +50,7 @@ script:
 
 before_deploy:
   - if [[ ${VERSION} == "latest" ]]; then git tag -f latest; fi
-  - if [[ ${VERSION} == "latest" ]]; then git remote add gh https://amreo:${GITHUB_RELEASE_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git; fi
+  - if [[ ${VERSION} == "latest" ]]; then git remote add gh https://amreo:${GITHUB_API_RELEASE}@github.com/${TRAVIS_REPO_SLUG}.git; fi
   - if [[ ${VERSION} == "latest" ]]; then git push gh latest || true; fi
   - if [[ ${VERSION} == "latest" ]]; then git push -f gh latest; fi
   - if [[ ${VERSION} == "latest" ]]; then git remote remove gh; fi
