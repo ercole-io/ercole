@@ -422,7 +422,7 @@ func (f *artifactInfo) getFullName() string {
 
 // checkInstalled return true if file is detected in the distribution directory
 func (f *artifactInfo) checkInstalled() bool {
-	if _, err := os.Stat(filepath.Join(ercoleConfig.RepoService.DistributedFiles+"all", f.Filename)); os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", f.Filename)); os.IsNotExist(err) {
 		return false
 	} else {
 		return true
