@@ -47,6 +47,10 @@ install -m 0644 distributed_files/shared/*.repo %{buildroot}/usr/share/ercole/ex
 /usr/bin/systemctl preset %{name}-apiservice.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-reposervice.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-dataservice.service >/dev/null 2>&1 ||:
+/usr/bin/systemctl is-active --quiet %{name}-alertservice.service && /usr/bin/systemctl restart %{name}-alertservice.service
+/usr/bin/systemctl is-active --quiet %{name}-apiservice.service && /usr/bin/systemctl restart %{name}-apiservice.service
+/usr/bin/systemctl is-active --quiet %{name}-reposervice.service && /usr/bin/systemctl restart %{name}-reposervice.service
+/usr/bin/systemctl is-active --quiet %{name}-dataservice.service && /usr/bin/systemctl restart %{name}-dataservice.service
 NOINTERACTIVE=1 /usr/bin/ercole-setup
 ercole completion bash > /usr/share/bash-completion/completions/ercole
 
