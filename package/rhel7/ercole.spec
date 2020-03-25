@@ -35,6 +35,7 @@ install -m 0755 package/ercole-setup %{buildroot}/usr/bin/ercole-setup
 install -m 0644 resources/initial_oracle_licenses_list.txt %{buildroot}/usr/share/ercole
 install -m 0644 -d resources/templates %{buildroot}/usr/share/ercole
 install -m 0644 package/config.toml %{buildroot}/usr/share/ercole/config.toml
+install -m 0644 resources/templates/* %{buildroot}/usr/share/ercole/templates/
 install -m 0644 package/systemd/*.service %{buildroot}%{_unitdir}/
 install -m 0644 package/systemd/60-ercole.preset %{buildroot}%{_presetdir}/60-%{name}.preset
 install -m 0644 distributed_files/ping.txt %{buildroot}/var/lib/ercole/distributed_files/ping.txt
@@ -69,9 +70,17 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 %{_unitdir}/ercole.service
 /usr/share/ercole/config.toml
 /usr/share/ercole/initial_oracle_licenses_list.txt
+/usr/share/ercole/templates/template_addm.xlsx
+/usr/share/ercole/templates/template_clusters.xlsx
+/usr/share/ercole/templates/template_databases.xlsx
+/usr/share/ercole/templates/template_hosts.xlsx
+/usr/share/ercole/templates/template_lms.xlsm
+/usr/share/ercole/templates/template_patch_advisor.xlsx
+/usr/share/ercole/templates/template_segment_advisor.xlsx
 /usr/share/ercole/examples/ercole-rhel5.repo
 /usr/share/ercole/examples/ercole-rhel6.repo
 /usr/share/ercole/examples/ercole-rhel7.repo
 /var/lib/ercole/distributed_files/ping.txt
+
 
 %changelog
