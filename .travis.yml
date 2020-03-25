@@ -6,6 +6,10 @@ language: go
 
 sudo: required
 
+branches:
+  except:
+    - /^latest$/
+
 go:
   - 1.13.x
 
@@ -15,11 +19,16 @@ env:
     - VERSION=latest
     - PACKAGE_BUILD_IMAGE=sorintdev/rpmbuild-centos7
     - WORKSPACE='/project'
+
 services:
   - mongodb
   
 before_install:
+  - if [ -z ${TRAVIS_TAG} ] || [ ${TRAVIS_TAG} == *-* ]; then export VERSION=latest; else export VERSION=${TRAVIS_TAG}; fi
+  - echo ${TRAVIS_TAG}
+  - echo ${VERSION}
   - sudo docker pull ${PACKAGE_BUILD_IMAGE}
+
 install:
   - mkdir dist
   - go get -v
@@ -39,6 +48,13 @@ script:
   - docker exec -it package_builder /bin/sh -c "cp ~/rpmbuild/RPMS/x86_64/ercole-*.rpm ${WORKSPACE}/dist"
   - go test -race -coverprofile=coverage.txt -covermode=atomic -v ./...
 
+before_deploy:
+  - if [[ ${VERSION} == "latest" ]]; then git tag -f latest; fi
+  - if [[ ${VERSION} == "latest" ]]; then git remote add gh https://amreo:${GITHUB_RELEASE_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git; fi
+  - if [[ ${VERSION} == "latest" ]]; then git push gh latest || true; fi
+  - if [[ ${VERSION} == "latest" ]]; then git push -f gh latest; fi
+  - if [[ ${VERSION} == "latest" ]]; then git remote remove gh; fi
+
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 
@@ -48,5 +64,6 @@ deploy:
     file_glob: true
     file: dist/*
     skip_cleanup: true
+    overwrite: true
     on:
       all_branches: true
