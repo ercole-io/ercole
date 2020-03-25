@@ -29,11 +29,10 @@ ls
 
 %install
 cd %{_builddir}/%{name}-%{version}
-mkdir -p %{buildroot}/usr/bin/ %{buildroot}/usr/share/ercole/examples %{buildroot}%{_unitdir} %{buildroot}%{_presetdir} %{buildroot}/var/lib/ercole/distributed_files
+mkdir -p %{buildroot}/usr/bin/ %{buildroot}/usr/share/ercole/{examples,templates} %{buildroot}%{_unitdir} %{buildroot}%{_presetdir} %{buildroot}/var/lib/ercole/distributed_files
 install -m 0755 ercole %{buildroot}/usr/bin/ercole
 install -m 0755 package/ercole-setup %{buildroot}/usr/bin/ercole-setup
 install -m 0644 resources/initial_oracle_licenses_list.txt %{buildroot}/usr/share/ercole
-install -m 0644 -d resources/templates %{buildroot}/usr/share/ercole
 install -m 0644 package/config.toml %{buildroot}/usr/share/ercole/config.toml
 install -m 0644 resources/templates/* %{buildroot}/usr/share/ercole/templates/
 install -m 0644 package/systemd/*.service %{buildroot}%{_unitdir}/
@@ -81,6 +80,5 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 /usr/share/ercole/examples/ercole-rhel6.repo
 /usr/share/ercole/examples/ercole-rhel7.repo
 /var/lib/ercole/distributed_files/ping.txt
-
 
 %changelog
