@@ -586,7 +586,7 @@ func readOrUpdateIndex() index {
 	if verbose {
 		fmt.Fprintln(os.Stderr, "Trying to read index.json...")
 	}
-	fi, err := os.Stat(ercoleConfig.RepoService.DistributedFiles + "index.json")
+	fi, err := os.Stat(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "index.json"))
 	if err != nil && !os.IsNotExist(err) {
 		panic(err)
 	} else if os.IsNotExist(err) || fi.ModTime().Add(time.Duration(8)*time.Hour).Before(time.Now()) || rebuildCache {
@@ -600,7 +600,7 @@ func readOrUpdateIndex() index {
 		if verbose {
 			fmt.Fprintln(os.Stderr, "Writing the index...")
 		}
-		file, err := os.Create(ercoleConfig.RepoService.DistributedFiles + "index.json")
+		file, err := os.Create(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "index.json"))
 		if err != nil {
 			panic(err)
 		}
@@ -612,7 +612,7 @@ func readOrUpdateIndex() index {
 		if verbose {
 			fmt.Fprintln(os.Stderr, "Read index.json...")
 		}
-		file, err := os.Open(ercoleConfig.RepoService.DistributedFiles + "index.json")
+		file, err := os.Open(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "index.json"))
 		if err != nil {
 			panic(err)
 		}
