@@ -181,11 +181,11 @@ func setInstaller(artifact *artifactInfo) {
 					filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all"),
 				)
 			}
-			err := os.MkdirAll(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch), 0744)
+			err := os.MkdirAll(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch), 0755)
 			if err != nil {
 				panic(err)
 			}
-			err = os.MkdirAll(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all"), 0744)
+			err = os.MkdirAll(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all"), 0755)
 			if err != nil {
 				panic(err)
 			}
@@ -228,11 +228,11 @@ func setInstaller(artifact *artifactInfo) {
 					filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all"),
 				)
 			}
-			err := os.MkdirAll(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch), 0744)
+			err := os.MkdirAll(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch), 0755)
 			if err != nil {
 				panic(err)
 			}
-			err = os.MkdirAll(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all"), 0744)
+			err = os.MkdirAll(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all"), 0755)
 			if err != nil {
 				panic(err)
 			}
