@@ -105,8 +105,6 @@ func (ctrl *APIController) SearchAddmsJSON(w http.ResponseWriter, r *http.Reques
 // SearchAddmsJSON search addms data using the filters in the request returning it in JSON format
 func (ctrl *APIController) SearchAddmsXLSX(w http.ResponseWriter, r *http.Request) {
 	var search string
-	var sortBy string
-	var sortDesc bool
 	var location string
 	var environment string
 	var olderThan time.Time
@@ -114,11 +112,6 @@ func (ctrl *APIController) SearchAddmsXLSX(w http.ResponseWriter, r *http.Reques
 	var aerr utils.AdvancedErrorInterface
 	//parse the query params
 	search = r.URL.Query().Get("search")
-	sortBy = r.URL.Query().Get("sort-by")
-	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
-		return
-	}
 
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
@@ -129,7 +122,7 @@ func (ctrl *APIController) SearchAddmsXLSX(w http.ResponseWriter, r *http.Reques
 	}
 
 	//get the data
-	addms, aerr := ctrl.Service.SearchAddms(search, sortBy, sortDesc, -1, -1, location, environment, olderThan)
+	addms, aerr := ctrl.Service.SearchAddms(search, "Benefit", true, -1, -1, location, environment, olderThan)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
@@ -145,13 +138,13 @@ func (ctrl *APIController) SearchAddmsXLSX(w http.ResponseWriter, r *http.Reques
 
 	//Add the data to the sheet
 	for i, val := range addms {
-		sheet.Cell(0, i+1).SetText(val["Action"])         //Action column
-		sheet.Cell(1, i+1).SetText(val["Benefit"])        //Benefit column
-		sheet.Cell(2, i+1).SetText(val["Dbname"])         //Dbname column
-		sheet.Cell(3, i+1).SetText(val["Environment"])    //Environment column
-		sheet.Cell(4, i+1).SetText(val["Finding"])        //Finding column
-		sheet.Cell(5, i+1).SetText(val["Hostname"])       //Hostname column
-		sheet.Cell(6, i+1).SetText(val["Recommendation"]) //Recommendation column
+		sheet.Cell(0, i+1).SetText(val["Action"])             //Action column
+		sheet.Cell(1, i+1).SetFloat(val["Benefit"].(float64)) //Benefit column
+		sheet.Cell(2, i+1).SetText(val["Dbname"])             //Dbname column
+		sheet.Cell(3, i+1).SetText(val["Environment"])        //Environment column
+		sheet.Cell(4, i+1).SetText(val["Finding"])            //Finding column
+		sheet.Cell(5, i+1).SetText(val["Hostname"])           //Hostname column
+		sheet.Cell(6, i+1).SetText(val["Recommendation"])     //Recommendation column
 	}
 
 	//Write it to the response
