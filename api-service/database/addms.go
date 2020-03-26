@@ -61,7 +61,7 @@ func (md *MongoDatabase) SearchAddms(keywords []string, sortBy string, sortDesc 
 				"CreatedAt":      true,
 				"Dbname":         "$Database.Name",
 				"Action":         "$Database.ADDMs.Action",
-				"Benefit":        "$Database.ADDMs.Benefit",
+				"Benefit":        mu.APOToDouble("$Database.ADDMs.Benefit"),
 				"Finding":        "$Database.ADDMs.Finding",
 				"Recommendation": "$Database.ADDMs.Recommendation",
 			}),
