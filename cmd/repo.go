@@ -164,6 +164,10 @@ func setDownloader(artifact *artifactInfo) {
 				panic(err)
 			}
 		}
+	case "ercole-reposervice":
+		artifact.Download = func(ai *artifactInfo, dest string) {
+			utils.DownloadFile(dest, ai.UpstreamInfo["DownloadUrl"].(string))
+		}
 	default:
 		panic(artifact)
 	}
@@ -402,6 +406,80 @@ func scanDirectoryRepository(repo config.UpstreamRepository) (index, error) {
 	return out, nil
 }
 
+// scanGithubReleaseRepository scan a github releases repository and return detected files
+func scanErcoleReposerviceRepository(repo config.UpstreamRepository) (index, error) {
+	//Fetch the data
+	req, _ := http.NewRequest("GET", repo.URL+"/all", nil)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	} else if resp.StatusCode != 200 {
+		bytes, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("Received %d from ercole reposervice for URL %s (body: %s)", resp.StatusCode, repo.URL+"/all", string(bytes))
+	}
+
+	if verbose {
+		fmt.Printf("Fetched data from %s\n", repo.URL)
+	}
+
+	//Extract the filenames
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	regex := regexp.MustCompile("<a href=\"([^\"]*)\">")
+
+	// //Add data to out
+	var out index
+	installedNames := make([]string, 0)
+
+	for _, fn := range regex.FindAllStringSubmatch(string(data), -1) {
+		installedNames = append(installedNames, fn[1])
+	}
+
+	//Fetch the data
+	req, _ = http.NewRequest("GET", repo.URL+"/index.json", nil)
+	resp, err = http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	} else if resp.StatusCode != 200 {
+		bytes, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("Received %d from ercole reposervice for URL %s (body: %s)", resp.StatusCode, repo.URL+"/index.json", string(bytes))
+	}
+
+	if verbose {
+		fmt.Printf("Fetched data from %s\n", repo.URL)
+	}
+
+	//Decode data
+	var data2 []map[string]string
+	json.NewDecoder(resp.Body).Decode(&data2)
+
+	for _, d := range data2 {
+		if !utils.Contains(installedNames, d["Filename"]) {
+			continue
+		}
+
+		artifactInfo := new(artifactInfo)
+
+		artifactInfo.Repository = repo.Name
+		artifactInfo.Filename = d["Filename"]
+		artifactInfo.ReleaseDate = d["ReleaseDate"]
+		artifactInfo.UpstreamType = "ercole-reposervice"
+		artifactInfo.UpstreamInfo = map[string]interface{}{
+			"DownloadUrl": repo.URL + "/all/" + d["Filename"],
+		}
+		setInfoFromFileName(artifactInfo.Filename, artifactInfo)
+		if artifactInfo.Version == "latest" {
+			continue
+		}
+		out = append(out, artifactInfo)
+	}
+	return out, nil
+}
+
 // scanRepository scan a single repository and return detected files
 func scanRepository(repo config.UpstreamRepository) (index, error) {
 	switch repo.Type {
@@ -409,6 +487,8 @@ func scanRepository(repo config.UpstreamRepository) (index, error) {
 		return scanGithubReleaseRepository(repo)
 	case "directory":
 		return scanDirectoryRepository(repo)
+	case "ercole-reposervice":
+		return scanErcoleReposerviceRepository(repo)
 	default:
 		return nil, fmt.Errorf("Unknown repository type %q of %q", repo.Type, repo.Name)
 	}
