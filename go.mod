@@ -45,6 +45,4 @@ replace gopkg.in/robfig/cron.v3 => github.com/robfig/cron/v3 v3.0.0
 
 replace github.com/pkg/sftp => github.com/amreo/sftp v1.10.2-0.20200107133605-5981645e4b3b
 
-replace github.com/goraz/onion => github.com/cirelli94/onion v0.1.3-0.20200313132515-67501b7c6e06
-
 // replace github.com/pkg/sftp => ../sftp
