@@ -5,13 +5,13 @@
 
 	<groupId>io.ercole</groupId>
 	<artifactId>ercole-server</artifactId>
-	<version>1.6.13</version>
+	<version>1.6.14</version>
 
 	<properties>
-		<ercole-web.version>1.6.13</ercole-web.version>
+		<ercole-web.version>1.6.14</ercole-web.version>
 		<rpm5.version>1.6.7</rpm5.version>
-		<rpm6.version>1.6.9</rpm6.version>
-		<rpm7.version>1.6.9</rpm7.version>
+		<rpm6.version>1.6.11</rpm6.version>
+		<rpm7.version>1.6.11</rpm7.version>
 		<win.version>1.6.8</win.version>
 		<hpux.version>1.6.5</hpux.version>
 		<aix.version>1.6.8</aix.version>
