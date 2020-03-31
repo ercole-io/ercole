@@ -20,6 +20,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
 	"github.com/leandro-lugaresi/hub"
@@ -289,4 +290,85 @@ func TestDiffHostDataAndGenerateAlert_DatabaseError4(t *testing.T) {
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
 
 	require.Equal(t, aerrMock, as.DiffHostDataAndGenerateAlert(hostData3, hostData4))
+}
+
+func TestProcessAlertInsertion_WithHostname(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	emailer := NewMockEmailer(mockCtrl)
+
+	as := AlertService{
+		Emailer: emailer,
+		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:     utils.NewLogger("TEST"),
+		Queue:   hub.New(),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					To: []string{"test@ercole.test"},
+				},
+			},
+		},
+	}
+
+	emailer.EXPECT().SendEmail(
+		"MAJOR This is just an alert test to a mocked emailer. on TestHostname",
+		`Date: 2019-09-02 10:25:28 +0000 UTC
+Severity: MAJOR
+Host: TestHostname
+Code: NEW_LICENSE
+This is just an alert test to a mocked emailer.`,
+		as.Config.AlertService.Emailer.To)
+
+	params := make(hub.Fields, 1)
+	params["alert"] = model.Alert{
+		OtherInfo:     map[string]interface{}{"Hostname": "TestHostname"},
+		AlertSeverity: model.AlertSeverityMajor,
+		Description:   "This is just an alert test to a mocked emailer.",
+		Date:          utils.P("2019-09-02T10:25:28Z"),
+		AlertCode:     model.AlertCodeNewLicense,
+	}
+
+	as.ProcessAlertInsertion(params)
+}
+
+func TestProcessAlertInsertion_WithoutHostname(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	emailer := NewMockEmailer(mockCtrl)
+
+	as := AlertService{
+		Emailer: emailer,
+		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:     utils.NewLogger("TEST"),
+		Queue:   hub.New(),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					To: []string{"test@ercole.test"},
+				},
+			},
+		},
+	}
+
+	emailer.EXPECT().SendEmail(
+		"MAJOR This is just an alert test to a mocked emailer.",
+		`Date: 2019-09-02 10:25:28 +0000 UTC
+Severity: MAJOR
+Code: NEW_LICENSE
+This is just an alert test to a mocked emailer.`,
+		as.Config.AlertService.Emailer.To)
+
+	params := make(hub.Fields, 1)
+	params["alert"] = model.Alert{
+		OtherInfo:     map[string]interface{}{},
+		AlertSeverity: model.AlertSeverityMajor,
+		Description:   "This is just an alert test to a mocked emailer.",
+		Date:          utils.P("2019-09-02T10:25:28Z"),
+		AlertCode:     model.AlertCodeNewLicense,
+	}
+
+	as.ProcessAlertInsertion(params)
 }
