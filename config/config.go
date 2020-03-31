@@ -24,7 +24,7 @@ import (
 	"github.com/amreo/ercole-services/utils"
 	"github.com/goraz/onion"
 	"github.com/goraz/onion/layers/directorylayer"
-	_ "github.com/goraz/onion/loaders/toml" // Needed to load toml files
+	_ "github.com/goraz/onion/loaders/toml-0.5.0" // Needed to load toml files
 	"github.com/goraz/onion/onionwriter"
 )
 
