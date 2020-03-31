@@ -23,7 +23,8 @@ import (
 	"github.com/OpenPeeDeeP/xdg"
 	"github.com/amreo/ercole-services/utils"
 	"github.com/goraz/onion"
-	_ "github.com/goraz/onion/loaders/toml" // Needed to load toml files
+	"github.com/goraz/onion/layers/directorylayer"
+	_ "github.com/goraz/onion/loaders/toml-0.5.0" // Needed to load toml files
 	"github.com/goraz/onion/onionwriter"
 )
 
@@ -275,7 +276,7 @@ func ReadConfig(extraConfigFile string) (configuration Configuration) {
 
 	layers = addFileLayers(layers, "/etc/ercole/ercole.toml")
 
-	folderLayer, err := onion.NewFolderLayer("/etc/ercole/conf.d/", "toml")
+	folderLayer, err := directorylayer.NewDirectoryLayer("/etc/ercole/conf.d/", "toml")
 	if err == nil {
 		layers = append(layers, folderLayer)
 	}
