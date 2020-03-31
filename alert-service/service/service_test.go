@@ -29,6 +29,91 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
+func TestProcessMsg_HostDataInsertion(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := AlertService{
+		Database: db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Log:      utils.NewLogger("TEST"),
+		Queue:    hub.New(),
+	}
+
+	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(hostData1, nil).Times(1)
+	db.EXPECT().FindHostData(gomock.Any()).Times(0)
+	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).Return(model.HostData{}, nil).Times(1)
+	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostData{}, nil).Times(0)
+	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
+		assert.Equal(t, "The server 'superhost1' was added to ercole", alert.Description)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
+	}).Times(1)
+
+	msg := hub.Message{
+		Name: "hostdata.insertion",
+		Fields: hub.Fields{
+			"id": utils.Str2oid("5dc3f534db7e81a98b726a52"),
+		},
+	}
+	as.ProcessMsg(msg)
+}
+func TestProcessMsg_AlertInsertion(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	emailer := NewMockEmailer(mockCtrl)
+
+	as := AlertService{
+		Emailer: emailer,
+		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:     utils.NewLogger("TEST"),
+		Queue:   hub.New(),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					To: []string{"test@ercole.test"},
+				},
+			},
+		},
+	}
+
+	emailer.EXPECT().SendEmail(
+		"MAJOR This is just an alert test to a mocked emailer. on TestHostname",
+		`Date: 2019-09-02 10:25:28 +0000 UTC
+Severity: MAJOR
+Host: TestHostname
+Code: NEW_LICENSE
+This is just an alert test to a mocked emailer.`,
+		as.Config.AlertService.Emailer.To)
+
+	fields := make(hub.Fields, 1)
+	fields["alert"] = model.Alert{
+		OtherInfo:     map[string]interface{}{"Hostname": "TestHostname"},
+		AlertSeverity: model.AlertSeverityMajor,
+		Description:   "This is just an alert test to a mocked emailer.",
+		Date:          utils.P("2019-09-02T10:25:28Z"),
+		AlertCode:     model.AlertCodeNewLicense,
+	}
+
+	msg := hub.Message{
+		Name:   "alert.insertion",
+		Fields: fields,
+	}
+	as.ProcessMsg(msg)
+}
+
+func TestProcessMsg_WrongInsertion(t *testing.T) {
+	as := AlertService{
+		Log: utils.NewLogger("TEST"),
+	}
+
+	msg := hub.Message{
+		Name: "",
+	}
+
+	as.ProcessMsg(msg)
+}
 func TestProcessHostDataInsertion_SuccessNewHost(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -113,6 +198,87 @@ func TestProcessHostDataInsertion_DiffHostError3(t *testing.T) {
 	as.ProcessHostDataInsertion(hub.Fields{
 		"id": utils.Str2oid("5dc3f534db7e81a98b726a52"),
 	})
+}
+
+func TestProcessAlertInsertion_WithHostname(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	emailer := NewMockEmailer(mockCtrl)
+
+	as := AlertService{
+		Emailer: emailer,
+		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:     utils.NewLogger("TEST"),
+		Queue:   hub.New(),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					To: []string{"test@ercole.test"},
+				},
+			},
+		},
+	}
+
+	emailer.EXPECT().SendEmail(
+		"MAJOR This is just an alert test to a mocked emailer. on TestHostname",
+		`Date: 2019-09-02 10:25:28 +0000 UTC
+Severity: MAJOR
+Host: TestHostname
+Code: NEW_LICENSE
+This is just an alert test to a mocked emailer.`,
+		as.Config.AlertService.Emailer.To)
+
+	params := make(hub.Fields, 1)
+	params["alert"] = model.Alert{
+		OtherInfo:     map[string]interface{}{"Hostname": "TestHostname"},
+		AlertSeverity: model.AlertSeverityMajor,
+		Description:   "This is just an alert test to a mocked emailer.",
+		Date:          utils.P("2019-09-02T10:25:28Z"),
+		AlertCode:     model.AlertCodeNewLicense,
+	}
+
+	as.ProcessAlertInsertion(params)
+}
+
+func TestProcessAlertInsertion_WithoutHostname(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	emailer := NewMockEmailer(mockCtrl)
+
+	as := AlertService{
+		Emailer: emailer,
+		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:     utils.NewLogger("TEST"),
+		Queue:   hub.New(),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					To: []string{"test@ercole.test"},
+				},
+			},
+		},
+	}
+
+	emailer.EXPECT().SendEmail(
+		"MAJOR This is just an alert test to a mocked emailer.",
+		`Date: 2019-09-02 10:25:28 +0000 UTC
+Severity: MAJOR
+Code: NEW_LICENSE
+This is just an alert test to a mocked emailer.`,
+		as.Config.AlertService.Emailer.To)
+
+	params := make(hub.Fields, 1)
+	params["alert"] = model.Alert{
+		OtherInfo:     map[string]interface{}{},
+		AlertSeverity: model.AlertSeverityMajor,
+		Description:   "This is just an alert test to a mocked emailer.",
+		Date:          utils.P("2019-09-02T10:25:28Z"),
+		AlertCode:     model.AlertCodeNewLicense,
+	}
+
+	as.ProcessAlertInsertion(params)
 }
 
 func TestDiffHostDataAndGenerateAlert_SuccessNoDifferences(t *testing.T) {
@@ -290,85 +456,4 @@ func TestDiffHostDataAndGenerateAlert_DatabaseError4(t *testing.T) {
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
 
 	require.Equal(t, aerrMock, as.DiffHostDataAndGenerateAlert(hostData3, hostData4))
-}
-
-func TestProcessAlertInsertion_WithHostname(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-
-	emailer := NewMockEmailer(mockCtrl)
-
-	as := AlertService{
-		Emailer: emailer,
-		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
-		Queue:   hub.New(),
-		Config: config.Configuration{
-			AlertService: config.AlertService{
-				Emailer: config.Emailer{
-					To: []string{"test@ercole.test"},
-				},
-			},
-		},
-	}
-
-	emailer.EXPECT().SendEmail(
-		"MAJOR This is just an alert test to a mocked emailer. on TestHostname",
-		`Date: 2019-09-02 10:25:28 +0000 UTC
-Severity: MAJOR
-Host: TestHostname
-Code: NEW_LICENSE
-This is just an alert test to a mocked emailer.`,
-		as.Config.AlertService.Emailer.To)
-
-	params := make(hub.Fields, 1)
-	params["alert"] = model.Alert{
-		OtherInfo:     map[string]interface{}{"Hostname": "TestHostname"},
-		AlertSeverity: model.AlertSeverityMajor,
-		Description:   "This is just an alert test to a mocked emailer.",
-		Date:          utils.P("2019-09-02T10:25:28Z"),
-		AlertCode:     model.AlertCodeNewLicense,
-	}
-
-	as.ProcessAlertInsertion(params)
-}
-
-func TestProcessAlertInsertion_WithoutHostname(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-
-	emailer := NewMockEmailer(mockCtrl)
-
-	as := AlertService{
-		Emailer: emailer,
-		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
-		Queue:   hub.New(),
-		Config: config.Configuration{
-			AlertService: config.AlertService{
-				Emailer: config.Emailer{
-					To: []string{"test@ercole.test"},
-				},
-			},
-		},
-	}
-
-	emailer.EXPECT().SendEmail(
-		"MAJOR This is just an alert test to a mocked emailer.",
-		`Date: 2019-09-02 10:25:28 +0000 UTC
-Severity: MAJOR
-Code: NEW_LICENSE
-This is just an alert test to a mocked emailer.`,
-		as.Config.AlertService.Emailer.To)
-
-	params := make(hub.Fields, 1)
-	params["alert"] = model.Alert{
-		OtherInfo:     map[string]interface{}{},
-		AlertSeverity: model.AlertSeverityMajor,
-		Description:   "This is just an alert test to a mocked emailer.",
-		Date:          utils.P("2019-09-02T10:25:28Z"),
-		AlertCode:     model.AlertCodeNewLicense,
-	}
-
-	as.ProcessAlertInsertion(params)
 }

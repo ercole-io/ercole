@@ -95,6 +95,7 @@ func (as *AlertService) Init(wg *sync.WaitGroup) {
 	}
 }
 
+//TODO Tests
 // HostDataInsertion inserts the host data insertion in the queue
 func (as *AlertService) HostDataInsertion(id primitive.ObjectID) utils.AdvancedErrorInterface {
 	as.Queue.Publish(hub.Message{
@@ -106,6 +107,7 @@ func (as *AlertService) HostDataInsertion(id primitive.ObjectID) utils.AdvancedE
 	return nil
 }
 
+//TODO Tests
 // AlertInsertion inserts a alert insertion in the queue
 func (as *AlertService) AlertInsertion(alr model.Alert) utils.AdvancedErrorInterface {
 	as.Queue.Publish(hub.Message{
@@ -129,6 +131,7 @@ func (as *AlertService) ProcessMsg(msg hub.Message) {
 	case model.TopicAlertInsertion:
 		as.ProcessAlertInsertion(msg.Fields)
 	default:
+		as.Log.Warnf("Received message with unknown topic: %s", msg.Topic())
 	}
 }
 
