@@ -3,7 +3,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=amreo_ercole-services&metric=alert_status)](https://sonarcloud.io/dashboard?id=amreo_ercole-services)
 
 Ercole is a open-source software for proactive software asset management:
-
+ 
 Ercole is made by multiple services:
 * Alert: generate alerts, send notifications. Expose data for 3rd party usage (i.e. prometheus)
 * API: provides REST APIs for the User Interface
