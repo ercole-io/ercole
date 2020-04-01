@@ -16,6 +16,7 @@
 package service
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -105,6 +106,8 @@ This is just an alert test to a mocked emailer.`,
 
 func TestProcessMsg_WrongInsertion(t *testing.T) {
 	as := AlertService{
+		Config: config.Configuration{
+			AlertService: config.AlertService{LogMessages: true}},
 		Log: utils.NewLogger("TEST"),
 	}
 
@@ -114,6 +117,7 @@ func TestProcessMsg_WrongInsertion(t *testing.T) {
 
 	as.ProcessMsg(msg)
 }
+
 func TestProcessHostDataInsertion_SuccessNewHost(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -268,6 +272,47 @@ Severity: MAJOR
 Code: NEW_LICENSE
 This is just an alert test to a mocked emailer.`,
 		as.Config.AlertService.Emailer.To)
+
+	params := make(hub.Fields, 1)
+	params["alert"] = model.Alert{
+		OtherInfo:     map[string]interface{}{},
+		AlertSeverity: model.AlertSeverityMajor,
+		Description:   "This is just an alert test to a mocked emailer.",
+		Date:          utils.P("2019-09-02T10:25:28Z"),
+		AlertCode:     model.AlertCodeNewLicense,
+	}
+
+	as.ProcessAlertInsertion(params)
+}
+
+func TestProcessAlertInsertion_EmailerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	emailer := NewMockEmailer(mockCtrl)
+
+	as := AlertService{
+		Emailer: emailer,
+		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:     utils.NewLogger("TEST"),
+		Queue:   hub.New(),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					To: []string{"test@ercole.test"},
+				},
+			},
+		},
+	}
+
+	emailer.EXPECT().SendEmail(
+		"MAJOR This is just an alert test to a mocked emailer.",
+		`Date: 2019-09-02 10:25:28 +0000 UTC
+Severity: MAJOR
+Code: NEW_LICENSE
+This is just an alert test to a mocked emailer.`,
+		as.Config.AlertService.Emailer.To).
+		Return(utils.NewAdvancedErrorPtr(fmt.Errorf("test error from emailer"), "test EMAILER"))
 
 	params := make(hub.Fields, 1)
 	params["alert"] = model.Alert{
