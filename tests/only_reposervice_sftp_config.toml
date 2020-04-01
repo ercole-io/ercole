@@ -1,0 +1,21 @@
+[RepoService]
+DistributedFiles = "%TEST_DIR%/distributed_files/"
+
+  [RepoService.HTTP]
+  Enable = false
+  [RepoService.SFTP]
+  Enable = true
+  BindIP = "127.0.0.1"
+  Port = "%PORT%"
+  PrivateKey = "%TEST_DIR%/test.key"
+  LogConnections = false
+  DebugConnections = false
+
+
+  [[RepoService.UpstreamRepositories]]
+  Name = "test"
+  Type = "directory"
+  URL = "%TEST_DIR%/upstream"
+
+[Mongodb]
+Migrate = false

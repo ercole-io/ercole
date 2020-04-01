@@ -286,9 +286,6 @@ func ReadConfig(extraConfigFile string) (configuration Configuration) {
 		extraConfigFile,
 	)
 
-	envLayer := onion.NewEnvLayerPrefix("_", "ERCOLE")
-	layers = append(layers, envLayer)
-
 	configOnion := onion.New(layers...)
 
 	onionwriter.DecodeOnion(configOnion, &configuration)
