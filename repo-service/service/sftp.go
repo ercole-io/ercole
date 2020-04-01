@@ -40,7 +40,7 @@ type SFTPRepoSubService struct {
 
 // Init start the service
 func (hs *SFTPRepoSubService) Init(_ *sync.WaitGroup) {
-	//Temporary fix
+	//FIXME: Temporary fix
 	if err := os.Chdir("/"); err != nil {
 		hs.Log.Fatal("Cannot change directory to /", err)
 	}
