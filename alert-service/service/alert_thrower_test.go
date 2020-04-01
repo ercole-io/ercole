@@ -21,6 +21,7 @@ import (
 	"github.com/leandro-lugaresi/hub"
 	"github.com/stretchr/testify/require"
 
+	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
 	"github.com/golang/mock/gomock"
@@ -32,12 +33,19 @@ import (
 func TestThrowNewDatabaseAlert_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
+
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Queue:    hub.New(),
+		Log:      utils.NewLogger("TEST"),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				LogAlertThrows: true},
+		},
 	}
+
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.AlertCodeNewDatabase, alert.AlertCode)
 		assert.Equal(t, model.AlertSeverityNotice, alert.AlertSeverity)
@@ -50,6 +58,7 @@ func TestThrowNewDatabaseAlert_Success(t *testing.T) {
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
 	}).Times(1)
+
 	require.NoError(t, as.ThrowNewDatabaseAlert("bestdb", "myhost"))
 }
 
@@ -70,12 +79,19 @@ func TestThrowNewDatabaseAlert_DatabaseError(t *testing.T) {
 func TestThrowNewServerAlert_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
+
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Queue:    hub.New(),
+		Log:      utils.NewLogger("TEST"),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				LogAlertThrows: true},
+		},
 	}
+
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.AlertCodeNewServer, alert.AlertCode)
 		assert.Equal(t, model.AlertSeverityNotice, alert.AlertSeverity)
@@ -87,6 +103,7 @@ func TestThrowNewServerAlert_Success(t *testing.T) {
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
 	}).Times(1)
+
 	require.NoError(t, as.ThrowNewServerAlert("myhost"))
 }
 
@@ -112,6 +129,11 @@ func TestThrowNewEnterpriseLicenseAlert_Success(t *testing.T) {
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Queue:    hub.New(),
+		Log:      utils.NewLogger("TEST"),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				LogAlertThrows: true},
+		},
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.AlertCodeNewLicense, alert.AlertCode)
@@ -149,6 +171,11 @@ func TestThrowActivatedFeaturesAlert_Success(t *testing.T) {
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Queue:    hub.New(),
+		Log:      utils.NewLogger("TEST"),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				LogAlertThrows: true},
+		},
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.AlertCodeNewOption, alert.AlertCode)
@@ -188,6 +215,11 @@ func TestThrowNoDataAlert_Success(t *testing.T) {
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Queue:    hub.New(),
+		Log:      utils.NewLogger("TEST"),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				LogAlertThrows: true},
+		},
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.AlertCodeNoData, alert.AlertCode)
