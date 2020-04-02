@@ -18,7 +18,6 @@ package database
 import (
 	"context"
 	"fmt"
-	"log"
 	"math/rand"
 	"testing"
 	"time"
@@ -63,6 +62,34 @@ func TestConnectToMongodb_FailToConnect(t *testing.T) {
 	assert.PanicsWithValue(t, "log.Fatal called by test", db.ConnectToMongodb)
 }
 
+func (m *MongodbSuite) TestFindHostData_SuccessExist() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	hd := utils.LoadFixtureHostData(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
+	err := m.InsertHostData(hd)
+	require.NoError(m.T(), err)
+
+	hd2, err := m.db.FindHostData(hd.ID)
+	require.NoError(m.T(), err)
+
+	assert.Equal(m.T(), hd, hd2)
+}
+
+func (m *MongodbSuite) TestFindHostData_FailWrongID() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	hd := utils.LoadFixtureHostData(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
+	err := m.InsertHostData(hd)
+	require.NoError(m.T(), err)
+
+	notExistingID := primitive.NewObjectIDFromTimestamp(time.Now())
+
+	hd2, err := m.db.FindHostData(notExistingID)
+	require.Error(m.T(), err)
+
+	assert.Equal(m.T(), model.HostData{}, hd2)
+}
+
 func (m *MongodbSuite) TestInsertAlert_Success() {
 	_, err := m.db.InsertAlert(alert1)
 	require.NoError(m.T(), err)
@@ -99,20 +126,6 @@ func (m *MongodbSuite) TestExistNoDataAlert_SuccessExist() {
 	require.NoError(m.T(), err)
 
 	assert.True(m.T(), exist)
-}
-
-func (m *MongodbSuite) TestFindHostData_SuccessExist() {
-	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
-
-	hd := utils.LoadFixtureHostData(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
-	err := m.InsertHostData(hd)
-	require.NoError(m.T(), err)
-
-	hd2, err := m.db.FindHostData(hd.ID)
-	require.NoError(m.T(), err)
-	log.Println(hd2.CreatedAt)
-
-	assert.Equal(m.T(), hd, hd2)
 }
 
 func (m *MongodbSuite) TestFindMostRecentHostDataOlderThan_OneInsert_Success() {
