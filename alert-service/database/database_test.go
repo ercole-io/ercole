@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -90,44 +90,6 @@ func (m *MongodbSuite) TestFindHostData_FailWrongID() {
 	assert.Equal(m.T(), model.HostData{}, hd2)
 }
 
-func (m *MongodbSuite) TestInsertAlert_Success() {
-	_, err := m.db.InsertAlert(alert1)
-	require.NoError(m.T(), err)
-	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
-	val := m.db.Client.Database(m.dbname).Collection("alerts").FindOne(context.TODO(), bson.M{
-		"_id": alert1.ID,
-	})
-	require.NoError(m.T(), val.Err())
-
-	var out model.Alert
-	val.Decode(&out)
-
-	assert.Equal(m.T(), alert1, out)
-
-}
-
-func (m *MongodbSuite) TestExistNoDataAlert_SuccessNotExist() {
-	_, err := m.db.InsertAlert(alert1)
-	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
-	require.NoError(m.T(), err)
-
-	exist, err := m.db.ExistNoDataAlertByHost("myhost")
-	require.NoError(m.T(), err)
-
-	assert.False(m.T(), exist)
-}
-
-func (m *MongodbSuite) TestExistNoDataAlert_SuccessExist() {
-	_, err := m.db.InsertAlert(alert2)
-	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
-	require.NoError(m.T(), err)
-
-	exist, err := m.db.ExistNoDataAlertByHost("myhost")
-	require.NoError(m.T(), err)
-
-	assert.True(m.T(), exist)
-}
-
 func (m *MongodbSuite) TestFindMostRecentHostDataOlderThan_OneInsert_Success() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
@@ -173,4 +135,41 @@ func (m *MongodbSuite) TestFindMostRecentHostDataOlderThan_MoreInserts_Success()
 	hd4, err4 := m.db.FindMostRecentHostDataOlderThan(hd.Hostname, afterSecondInsert)
 	require.NoError(m.T(), err4)
 	assert.Equal(m.T(), hd2, hd4)
+}
+
+func (m *MongodbSuite) TestInsertAlert_Success() {
+	_, err := m.db.InsertAlert(alert1)
+	require.NoError(m.T(), err)
+	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
+	val := m.db.Client.Database(m.dbname).Collection("alerts").FindOne(context.TODO(), bson.M{
+		"_id": alert1.ID,
+	})
+	require.NoError(m.T(), val.Err())
+
+	var out model.Alert
+	val.Decode(&out)
+
+	assert.Equal(m.T(), alert1, out)
+}
+
+func (m *MongodbSuite) TestExistNoDataAlert_SuccessNotExist() {
+	_, err := m.db.InsertAlert(alert1)
+	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
+	require.NoError(m.T(), err)
+
+	exist, err := m.db.ExistNoDataAlertByHost("myhost")
+	require.NoError(m.T(), err)
+
+	assert.False(m.T(), exist)
+}
+
+func (m *MongodbSuite) TestExistNoDataAlert_SuccessExist() {
+	_, err := m.db.InsertAlert(alert2)
+	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
+	require.NoError(m.T(), err)
+
+	exist, err := m.db.ExistNoDataAlertByHost("myhost")
+	require.NoError(m.T(), err)
+
+	assert.True(m.T(), exist)
 }
