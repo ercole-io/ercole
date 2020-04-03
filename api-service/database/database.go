@@ -37,7 +37,7 @@ type MongoDatabaseInterface interface {
 	// SearchHosts search hosts
 	SearchHosts(mode string, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// GetHost fetch all informations about a host in the database
-	GetHost(hostname string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
+	GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, utils.AdvancedErrorInterface)
 	// SearchAlerts search alerts
 	SearchAlerts(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, severity string, status string, from time.Time, to time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchClusters search clusters

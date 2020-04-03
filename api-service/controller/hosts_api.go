@@ -29,11 +29,13 @@ import (
 
 // SearchHosts search hosts data using the filters in the request
 func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
-	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ercole.mongohostdata+json"}, "application/json")
 
 	switch choiche {
 	case "application/json":
 		ctrl.SearchHostsJSON(w, r)
+	// case "application/vnd.ercole.mongohostdata+json":
+	// 	ctrl.SearchHostsMongoJSON(w, r)
 	case "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchHostsLMS(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
@@ -65,7 +67,7 @@ func (ctrl *APIController) SearchHostsJSON(w http.ResponseWriter, r *http.Reques
 	mode = r.URL.Query().Get("mode")
 	if mode == "" {
 		mode = "full"
-	} else if mode != "full" && mode != "summary" && mode != "lms" {
+	} else if mode != "full" && mode != "summary" && mode != "lms" && mode != "mhd" {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
@@ -109,6 +111,60 @@ func (ctrl *APIController) SearchHostsJSON(w http.ResponseWriter, r *http.Reques
 		utils.WriteJSONResponse(w, http.StatusOK, hosts[0])
 	}
 }
+
+// // SearchHostsMongoJSON search hosts data using the filters in the request returning it in EXT JSON
+// func (ctrl *APIController) SearchHostsMongoJSON(w http.ResponseWriter, r *http.Request) {
+// 	var search string
+// 	var sortBy string
+// 	var sortDesc bool
+// 	var pageNumber int
+// 	var pageSize int
+// 	var location string
+// 	var environment string
+// 	var olderThan time.Time
+
+// 	var err utils.AdvancedErrorInterface
+
+// 	//parse the query params
+// 	search = r.URL.Query().Get("search")
+// 	sortBy = r.URL.Query().Get("sort-by")
+// 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
+// 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+// 		return
+// 	}
+
+// 	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
+// 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+// 		return
+// 	}
+// 	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
+// 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+// 		return
+// 	}
+
+// 	location = r.URL.Query().Get("location")
+// 	environment = r.URL.Query().Get("environment")
+
+// 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+// 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+// 		return
+// 	}
+
+// 	//get the data
+// 	hosts, err := ctrl.Service.SearchHosts("mongo", search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+// 	if err != nil {
+// 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+// 		return
+// 	}
+
+// 	if pageNumber == -1 || pageSize == -1 {
+// 		//Write the data
+// 		utils.WriteExtJSONResponse(ctrl.Log, w, http.StatusOK, hosts)
+// 	} else {
+// 		//Write the data
+// 		utils.WriteExtJSONResponse(ctrl.Log, w, http.StatusOK, hosts[0])
+// 	}
+// }
 
 // SearchHostsLMS search hosts data using the filters in the request returning it in LMS+XLSX
 func (ctrl *APIController) SearchHostsLMS(w http.ResponseWriter, r *http.Request) {
@@ -260,6 +316,25 @@ func (ctrl *APIController) SearchHostsXLSX(w http.ResponseWriter, r *http.Reques
 
 // GetHost return all'informations about the host requested in the id path variable
 func (ctrl *APIController) GetHost(w http.ResponseWriter, r *http.Request) {
+	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.ercole.mongohostdata+json"}, "application/json")
+
+	switch choiche {
+	case "application/json":
+		ctrl.GetHostJSON(w, r)
+	case "application/vnd.ercole.mongohostdata+json":
+		ctrl.GetHostMongoJSON(w, r)
+	default:
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
+			utils.NewAdvancedErrorPtr(
+				errors.New("The mime type in the accept header is not supported"),
+				http.StatusText(http.StatusNotAcceptable),
+			),
+		)
+	}
+}
+
+// GetHostJSON return all'informations about the host requested in the id path variable
+func (ctrl *APIController) GetHostJSON(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
 	var err utils.AdvancedErrorInterface
 
@@ -271,7 +346,7 @@ func (ctrl *APIController) GetHost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//get the data
-	host, err := ctrl.Service.GetHost(hostname, olderThan)
+	host, err := ctrl.Service.GetHost(hostname, olderThan, false)
 	if err == utils.AerrHostNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
@@ -282,6 +357,32 @@ func (ctrl *APIController) GetHost(w http.ResponseWriter, r *http.Request) {
 
 	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, host)
+}
+
+// GetHostMongoJSON return all'informations about the host requested in the id path variable
+func (ctrl *APIController) GetHostMongoJSON(w http.ResponseWriter, r *http.Request) {
+	var olderThan time.Time
+	var aerr utils.AdvancedErrorInterface
+
+	hostname := mux.Vars(r)["hostname"]
+
+	if olderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
+	//get the data
+	host, aerr := ctrl.Service.GetHost(hostname, olderThan, true)
+	if aerr == utils.AerrHostNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
+		return
+	} else if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Write the response
+	utils.WriteExtJSONResponse(ctrl.Log, w, http.StatusOK, host)
 }
 
 // ListLocations list locations using the filters in the request

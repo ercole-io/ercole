@@ -42,117 +42,119 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, sortBy stri
 				"Extra.Databases.UniqueName",
 				"Extra.Clusters.Name",
 			}, keywords),
-			mu.APOptionalStage(mode == "lms", mu.APMatch(
-				mu.QOExpr(mu.APOGreater(mu.APOSize("$Extra.Databases"), 0))),
-			),
-			mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
-				FilterByOldnessSteps(olderThan),
-				mu.APUnwind("$Extra.Clusters"),
-				mu.APReplaceWith("$Extra.Clusters"),
-				mu.APUnwind("$VMs"),
-				mu.APReplaceWith("$VMs"),
-				mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
-				mu.APLimit(1),
-			)),
-			mu.APSet(bson.M{
-				"VM": mu.APOArrayElemAt("$VM", 0),
-			}),
-			mu.APAddFields(bson.M{
-				"Cluster":      mu.APOIfNull("$VM.ClusterName", nil),
-				"PhysicalHost": mu.APOIfNull("$VM.PhysicalHost", nil),
-			}),
-			mu.APUnset("VM"),
-			mu.APOptionalStage(mode == "summary", mu.APProject(bson.M{
-				"Hostname":       true,
-				"Location":       true,
-				"Environment":    true,
-				"HostType":       true,
-				"Cluster":        true,
-				"Version":        true,
-				"PhysicalHost":   true,
-				"CreatedAt":      true,
-				"Databases":      true,
-				"OS":             "$Info.OS",
-				"Kernel":         "$Info.Kernel",
-				"OracleCluster":  "$Info.OracleCluster",
-				"SunCluster":     "$Info.SunCluster",
-				"VeritasCluster": "$Info.VeritasCluster",
-				"Virtual":        "$Info.Virtual",
-				"Type":           "$Info.Type",
-				"CPUThreads":     "$Info.CPUThreads",
-				"CPUCores":       "$Info.CPUCores",
-				"Socket":         "$Info.Socket",
-				"MemTotal":       "$Info.MemoryTotal",
-				"SwapTotal":      "$Info.SwapTotal",
-				"CPUModel":       "$Info.CPUModel",
-			})),
-			mu.APOptionalStage(mode == "lms", mu.MAPipeline(
-				mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$Extra.Databases"), 0))),
+			mu.APOptionalStage(mode != "mongo", mu.MAPipeline(
+				mu.APOptionalStage(mode == "lms", mu.APMatch(
+					mu.QOExpr(mu.APOGreater(mu.APOSize("$Extra.Databases"), 0))),
+				),
+				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
+					FilterByOldnessSteps(olderThan),
+					mu.APUnwind("$Extra.Clusters"),
+					mu.APReplaceWith("$Extra.Clusters"),
+					mu.APUnwind("$VMs"),
+					mu.APReplaceWith("$VMs"),
+					mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
+					mu.APLimit(1),
+				)),
 				mu.APSet(bson.M{
-					"Database": mu.APOArrayElemAt("$Extra.Databases", 0),
+					"VM": mu.APOArrayElemAt("$VM", 0),
 				}),
-				mu.APUnset("Extra"),
-				mu.APSet(bson.M{
-					"VmwareOrOVM": mu.APOOr(mu.APOEqual("$Info.Type", "VMWARE"), mu.APOEqual("$Info.Type", "OVM")),
+				mu.APAddFields(bson.M{
+					"Cluster":      mu.APOIfNull("$VM.ClusterName", nil),
+					"PhysicalHost": mu.APOIfNull("$VM.PhysicalHost", nil),
 				}),
-				mu.APProject(bson.M{
-					"PhysicalServerName":       mu.APOCond("$VmwareOrOVM", mu.APOIfNull("$Cluster", ""), "$Hostname"),
-					"VirtualServerName":        mu.APOCond("$VmwareOrOVM", "$Hostname", mu.APOIfNull("$Cluster", "")),
-					"VirtualizationTechnology": "$Info.Type",
-					"DBInstanceName":           "$Databases",
-					"PluggableDatabaseName":    "",
-					"ConnectString":            "",
-					"ProductVersion":           mu.APOArrayElemAt(mu.APOSplit("$Database.Version", "."), 0),
-					"ProductEdition":           mu.APOArrayElemAt(mu.APOSplit("$Database.Version", " "), 1),
-					"Environment":              "$Environment",
-					"Features": mu.APOJoin(mu.APOMap(
-						mu.APOFilter("$Database.Features", "fe", mu.APOEqual("$$fe.Status", true)),
-						"fe",
-						"$$fe.Name",
-					), ", "),
-					"RacNodeNames":   "",
-					"ProcessorModel": "$Info.CPUModel",
-					"Processors":     "$Info.Socket",
-					"CoresPerProcessor": mu.APOCond(
-						mu.APOAnd(
-							mu.APOGreaterOrEqual("$Info.CPUCores", "$Info.Socket"),
-							mu.APONotEqual("$Info.Socket", 0),
-						),
-						mu.APODivide("$Info.CPUCores", "$Info.Socket"),
-						"$Info.CPUCores",
-					),
-					"ThreadsPerCore": mu.APOCond(
-						mu.APOGreaterOrEqual(mu.APOIndexOfCp("$Info.CPUModel", "SPARC"), 0),
-						8,
-						2,
-					),
-					"ProcessorSpeed": mu.APOLet(
-						bson.M{
-							"indexAt": mu.APOIndexOfCp("$Info.CPUModel", "@"),
-						}, mu.APOCond(
-							mu.APOGreaterOrEqual("$$indexAt", 0),
-							mu.APOTrim(
-								mu.APOSubstrCP(
-									"$Info.CPUModel",
-									mu.APOAdd("$$indexAt", 1),
-									mu.APOSubtract(mu.APOStrLenCP("$Info.CPUModel"), mu.APOAdd("$$indexAt", 1)),
-								),
-							),
-							"???",
-						),
-					),
-					"ServerPurchaseDate": "",
-					"OperatingSystem":    "$Info.OS",
-					"Notes":              "",
-				}),
-				mu.APSet(bson.M{
-					"PhysicalCores": mu.APOCond(mu.APOEqual("$Info.Socket", 0), "$CoresPerProcessor", bson.M{
-						"$multiply": bson.A{"$CoresPerProcessor", "$Processors"},
+				mu.APUnset("VM"),
+				mu.APOptionalStage(mode == "summary", mu.APProject(bson.M{
+					"Hostname":       true,
+					"Location":       true,
+					"Environment":    true,
+					"HostType":       true,
+					"Cluster":        true,
+					"Version":        true,
+					"PhysicalHost":   true,
+					"CreatedAt":      true,
+					"Databases":      true,
+					"OS":             "$Info.OS",
+					"Kernel":         "$Info.Kernel",
+					"OracleCluster":  "$Info.OracleCluster",
+					"SunCluster":     "$Info.SunCluster",
+					"VeritasCluster": "$Info.VeritasCluster",
+					"Virtual":        "$Info.Virtual",
+					"Type":           "$Info.Type",
+					"CPUThreads":     "$Info.CPUThreads",
+					"CPUCores":       "$Info.CPUCores",
+					"Socket":         "$Info.Socket",
+					"MemTotal":       "$Info.MemoryTotal",
+					"SwapTotal":      "$Info.SwapTotal",
+					"CPUModel":       "$Info.CPUModel",
+				})),
+				mu.APOptionalStage(mode == "lms", mu.MAPipeline(
+					mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$Extra.Databases"), 0))),
+					mu.APSet(bson.M{
+						"Database": mu.APOArrayElemAt("$Extra.Databases", 0),
 					}),
-				}),
+					mu.APUnset("Extra"),
+					mu.APSet(bson.M{
+						"VmwareOrOVM": mu.APOOr(mu.APOEqual("$Info.Type", "VMWARE"), mu.APOEqual("$Info.Type", "OVM")),
+					}),
+					mu.APProject(bson.M{
+						"PhysicalServerName":       mu.APOCond("$VmwareOrOVM", mu.APOIfNull("$Cluster", ""), "$Hostname"),
+						"VirtualServerName":        mu.APOCond("$VmwareOrOVM", "$Hostname", mu.APOIfNull("$Cluster", "")),
+						"VirtualizationTechnology": "$Info.Type",
+						"DBInstanceName":           "$Databases",
+						"PluggableDatabaseName":    "",
+						"ConnectString":            "",
+						"ProductVersion":           mu.APOArrayElemAt(mu.APOSplit("$Database.Version", "."), 0),
+						"ProductEdition":           mu.APOArrayElemAt(mu.APOSplit("$Database.Version", " "), 1),
+						"Environment":              "$Environment",
+						"Features": mu.APOJoin(mu.APOMap(
+							mu.APOFilter("$Database.Features", "fe", mu.APOEqual("$$fe.Status", true)),
+							"fe",
+							"$$fe.Name",
+						), ", "),
+						"RacNodeNames":   "",
+						"ProcessorModel": "$Info.CPUModel",
+						"Processors":     "$Info.Socket",
+						"CoresPerProcessor": mu.APOCond(
+							mu.APOAnd(
+								mu.APOGreaterOrEqual("$Info.CPUCores", "$Info.Socket"),
+								mu.APONotEqual("$Info.Socket", 0),
+							),
+							mu.APODivide("$Info.CPUCores", "$Info.Socket"),
+							"$Info.CPUCores",
+						),
+						"ThreadsPerCore": mu.APOCond(
+							mu.APOGreaterOrEqual(mu.APOIndexOfCp("$Info.CPUModel", "SPARC"), 0),
+							8,
+							2,
+						),
+						"ProcessorSpeed": mu.APOLet(
+							bson.M{
+								"indexAt": mu.APOIndexOfCp("$Info.CPUModel", "@"),
+							}, mu.APOCond(
+								mu.APOGreaterOrEqual("$$indexAt", 0),
+								mu.APOTrim(
+									mu.APOSubstrCP(
+										"$Info.CPUModel",
+										mu.APOAdd("$$indexAt", 1),
+										mu.APOSubtract(mu.APOStrLenCP("$Info.CPUModel"), mu.APOAdd("$$indexAt", 1)),
+									),
+								),
+								"???",
+							),
+						),
+						"ServerPurchaseDate": "",
+						"OperatingSystem":    "$Info.OS",
+						"Notes":              "",
+					}),
+					mu.APSet(bson.M{
+						"PhysicalCores": mu.APOCond(mu.APOEqual("$Info.Socket", 0), "$CoresPerProcessor", bson.M{
+							"$multiply": bson.A{"$CoresPerProcessor", "$Processors"},
+						}),
+					}),
+				)),
+				mu.APOptionalSortingStage(sortBy, sortDesc),
+				mu.APOptionalPagingStage(page, pageSize),
 			)),
-			mu.APOptionalSortingStage(sortBy, sortDesc),
-			mu.APOptionalPagingStage(page, pageSize),
 		),
 	)
 	if err != nil {
@@ -171,7 +173,7 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, sortBy stri
 }
 
 // GetHost fetch all informations about a host in the database
-func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, utils.AdvancedErrorInterface) {
 	var out map[string]interface{}
 
 	//Find the matching hostdata
@@ -182,67 +184,69 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time) (interfac
 			mu.APMatch(bson.M{
 				"Hostname": hostname,
 			}),
-			mu.APLookupPipeline("alerts", bson.M{"hn": "$Hostname"}, "Alerts", mu.MAPipeline(
-				mu.APMatch(mu.QOExpr(mu.APOEqual("$OtherInfo.Hostname", "$$hn"))),
-			)),
-			mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
-				FilterByOldnessSteps(olderThan),
-				mu.APUnwind("$Extra.Clusters"),
-				mu.APReplaceWith("$Extra.Clusters"),
-				mu.APUnwind("$VMs"),
-				mu.APReplaceWith("$VMs"),
-				mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
-				mu.APLimit(1),
-			)),
-			mu.APSet(bson.M{
-				"VM": mu.APOArrayElemAt("$VM", 0),
-			}),
-			mu.APAddFields(bson.M{
-				"Cluster":      mu.APOIfNull("$VM.ClusterName", nil),
-				"PhysicalHost": mu.APOIfNull("$VM.PhysicalHost", nil),
-			}),
-			mu.APUnset("VM"),
-			mu.APLookupPipeline(
-				"hosts",
-				bson.M{
-					"hn": "$Hostname",
-					"ca": "$CreatedAt",
-				},
-				"History",
-				mu.MAPipeline(
-					mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$Hostname", "$$hn"), mu.APOGreaterOrEqual("$$ca", "$CreatedAt")))),
-					mu.APProject(bson.M{
-						"CreatedAt":                     1,
-						"Extra.Databases.Name":          1,
-						"Extra.Databases.Used":          1,
-						"Extra.Databases.SegmentsSize":  1,
-						"Extra.Databases.DailyCPUUsage": 1,
-					}),
-				),
-			),
-			mu.APSet(bson.M{
-				"Extra.Databases": mu.APOMap(
-					"$Extra.Databases",
-					"db",
-					mu.APOMergeObjects(
-						"$$db",
-						bson.M{
-							"Changes": mu.APOFilter(
-								mu.APOMap("$History", "hh", mu.APOMergeObjects(
-									bson.M{"Updated": "$$hh.CreatedAt"},
-									mu.APOArrayElemAt(mu.APOFilter("$$hh.Extra.Databases", "hdb", mu.APOEqual("$$hdb.Name", "$$db.Name")), 0),
-								)),
-								"time_frame",
-								"$$time_frame.SegmentsSize",
-							),
-						},
+			mu.APOptionalStage(!raw, mu.MAPipeline(
+				mu.APLookupPipeline("alerts", bson.M{"hn": "$Hostname"}, "Alerts", mu.MAPipeline(
+					mu.APMatch(mu.QOExpr(mu.APOEqual("$OtherInfo.Hostname", "$$hn"))),
+				)),
+				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
+					FilterByOldnessSteps(olderThan),
+					mu.APUnwind("$Extra.Clusters"),
+					mu.APReplaceWith("$Extra.Clusters"),
+					mu.APUnwind("$VMs"),
+					mu.APReplaceWith("$VMs"),
+					mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
+					mu.APLimit(1),
+				)),
+				mu.APSet(bson.M{
+					"VM": mu.APOArrayElemAt("$VM", 0),
+				}),
+				mu.APAddFields(bson.M{
+					"Cluster":      mu.APOIfNull("$VM.ClusterName", nil),
+					"PhysicalHost": mu.APOIfNull("$VM.PhysicalHost", nil),
+				}),
+				mu.APUnset("VM"),
+				mu.APLookupPipeline(
+					"hosts",
+					bson.M{
+						"hn": "$Hostname",
+						"ca": "$CreatedAt",
+					},
+					"History",
+					mu.MAPipeline(
+						mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$Hostname", "$$hn"), mu.APOGreaterOrEqual("$$ca", "$CreatedAt")))),
+						mu.APProject(bson.M{
+							"CreatedAt":                     1,
+							"Extra.Databases.Name":          1,
+							"Extra.Databases.Used":          1,
+							"Extra.Databases.SegmentsSize":  1,
+							"Extra.Databases.DailyCPUUsage": 1,
+						}),
 					),
 				),
-			}),
-			mu.APUnset(
-				"Extra.Databases.Changes.Name",
-				"History.Extra",
-			),
+				mu.APSet(bson.M{
+					"Extra.Databases": mu.APOMap(
+						"$Extra.Databases",
+						"db",
+						mu.APOMergeObjects(
+							"$$db",
+							bson.M{
+								"Changes": mu.APOFilter(
+									mu.APOMap("$History", "hh", mu.APOMergeObjects(
+										bson.M{"Updated": "$$hh.CreatedAt"},
+										mu.APOArrayElemAt(mu.APOFilter("$$hh.Extra.Databases", "hdb", mu.APOEqual("$$hdb.Name", "$$db.Name")), 0),
+									)),
+									"time_frame",
+									"$$time_frame.SegmentsSize",
+								),
+							},
+						),
+					),
+				}),
+				mu.APUnset(
+					"Extra.Databases.Changes.Name",
+					"History.Extra",
+				),
+			)),
 		),
 	)
 	if err != nil {
