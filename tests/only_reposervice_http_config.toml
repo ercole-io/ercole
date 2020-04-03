@@ -1,0 +1,14 @@
+[RepoService]
+DistributedFiles = "%TEST_DIR%/distributed_files/"
+
+  [RepoService.HTTP]
+  Enable = true
+  BindIP = "127.0.0.1"
+  Port = "%PORT%"
+  LogHTTPRequest = false
+
+  [RepoService.SFTP]
+  Enable = false
+
+[Mongodb]
+Migrate = false

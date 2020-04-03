@@ -13,7 +13,7 @@ require (
 	github.com/golang/mock v1.4.0
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-github/v28 v28.1.1
-	github.com/goraz/onion v0.1.3-0.20200316185150-c3fd0dfc83f1
+	github.com/goraz/onion v0.1.3
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.3
 	github.com/hashicorp/go-version v1.2.0
@@ -44,7 +44,5 @@ replace github.com/Sirupsen/logrus => github.com/sirupsen/logrus v1.5.0
 replace gopkg.in/robfig/cron.v3 => github.com/robfig/cron/v3 v3.0.0
 
 replace github.com/pkg/sftp => github.com/amreo/sftp v1.10.2-0.20200107133605-5981645e4b3b
-
-replace github.com/goraz/onion => github.com/cirelli94/onion v0.1.3-0.20200330175625-826fb67727d2
 
 // replace github.com/pkg/sftp => ../sftp
