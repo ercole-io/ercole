@@ -16,6 +16,7 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -36,14 +37,23 @@ var getHostCmd = &cobra.Command{
 		params := url.Values{}
 		olderThanOptions.addParam(params)
 
-		resp, err := http.Get(
-			utils.NewAPIUrl(
-				ercoleConfig.APIService.RemoteEndpoint,
-				ercoleConfig.APIService.AuthenticationProvider.Username,
-				ercoleConfig.APIService.AuthenticationProvider.Password,
-				"/hosts/"+args[0],
-				params,
-			).String())
+		req, _ := http.NewRequest("GET", utils.NewAPIUrl(
+			ercoleConfig.APIService.RemoteEndpoint,
+			ercoleConfig.APIService.AuthenticationProvider.Username,
+			ercoleConfig.APIService.AuthenticationProvider.Password,
+			"/hosts/"+args[0],
+			params,
+		).String(), bytes.NewReader([]byte{}))
+
+		switch outputFormat {
+		case "json":
+			outputFormat = "application/json"
+		case "mongohostdata", "mhd":
+			outputFormat = "application/vnd.ercole.mongohostdata+json"
+		}
+		req.Header.Set("Accept", outputFormat)
+
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Failed to get the hostdata: %v\n", err)
 			os.Exit(1)
@@ -75,4 +85,5 @@ func init() {
 	apiCmd.AddCommand(getHostCmd)
 
 	olderThanOptions.addOption(getHostCmd)
+	getHostCmd.Flags().StringVarP(&outputFormat, "format", "f", "application/json", "Output format")
 }

@@ -29,8 +29,8 @@ func (as *APIService) SearchHosts(mode string, search string, sortBy string, sor
 }
 
 // GetHost return the host specified in the hostname param
-func (as *APIService) GetHost(hostname string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetHost(hostname, olderThan)
+func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetHost(hostname, olderThan, raw)
 }
 
 // ListLocations list locations
