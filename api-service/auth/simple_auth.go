@@ -52,16 +52,16 @@ type BasicAuthenticationProvider struct {
 func (ap *BasicAuthenticationProvider) Init() {
 	raw, err := ioutil.ReadFile(ap.Config.PrivateKey)
 	if err != nil {
-		panic(err)
+		ap.Log.Panic(err)
 	}
 
 	ap.privateKey, ap.publicKey, err = utils.ParsePrivateKey(raw)
 	if err != nil {
-		panic(err)
+		ap.Log.Panic(err)
 	}
 }
 
-// GetUserInfoIfCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
+// GetUserInfoIfCredentialsAreCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
 func (ap *BasicAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(username string, password string) (map[string]interface{}, utils.AdvancedErrorInterface) {
 	if ap.Config.Username == username && ap.Config.Password == password {
 		return map[string]interface{}{
@@ -72,7 +72,7 @@ func (ap *BasicAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(userna
 	}
 }
 
-// TokenEndpoint return the middleware used to check if the users are authenticated
+// GetToken return the middleware used to check if the users are authenticated
 func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.Request) {
 	type LoginRequest struct {
 		Username string
@@ -80,28 +80,24 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 	}
 
 	var err error
-	var aerr utils.AdvancedErrorInterface
 	var request LoginRequest
 
 	//Parse the request
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		utils.WriteAndLogError(ap.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		utils.WriteAndLogError(ap.Log, w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 
 	//Check if the credentials are valid
-	info, aerr := ap.GetUserInfoIfCredentialsAreCorrect(request.Username, request.Password)
-	if aerr != nil {
-		utils.WriteAndLogError(ap.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
-		return
-	} else if info == nil {
+	info, _ := ap.GetUserInfoIfCredentialsAreCorrect(request.Username, request.Password)
+	if info == nil {
 		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewAdvancedErrorPtr(errors.New("Failed to login, invalid credentials"), http.StatusText(http.StatusUnauthorized)))
 		return
 	}
 
 	sig, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.RS256, Key: ap.privateKey}, (&jose.SignerOptions{}).WithType("JWT"))
 	if err != nil {
-		panic(err)
+		ap.Log.Panic(err)
 	}
 
 	cl := jwt.Claims{
@@ -115,7 +111,7 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 	}
 	raw, err := jwt.Signed(sig).Claims(cl).CompactSerialize()
 	if err != nil {
-		panic(err)
+		ap.Log.Panic(err)
 	}
 
 	w.WriteHeader(http.StatusOK)
