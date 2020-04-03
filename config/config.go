@@ -26,6 +26,7 @@ import (
 	"github.com/goraz/onion/layers/directorylayer"
 	_ "github.com/goraz/onion/loaders/toml-0.5.0" // Needed to load toml files
 	"github.com/goraz/onion/onionwriter"
+	"github.com/sirupsen/logrus"
 )
 
 // Configuration contains Ercole DataService configuration
@@ -264,24 +265,29 @@ type AuthenticationProviderConfig struct {
 
 // ReadConfig read, parse and return a Configuration from the configuration file
 func ReadConfig(extraConfigFile string) (configuration Configuration) {
+	log := utils.NewLogger("CONF")
+
 	layers := make([]onion.Layer, 0)
 
-	layers = addFileLayers(layers, "/opt/ercole/config.toml")
+	layers = addFileLayers(log, layers, "/opt/ercole/config.toml")
 
 	dataDirs := xdg.DataDirs()
 	for i := 0; i < len(dataDirs); i++ {
 		dataDirs[i] = filepath.Join(dataDirs[i], "ercole/config.toml")
 	}
-	layers = addFileLayers(layers, dataDirs...)
+	layers = addFileLayers(log, layers, dataDirs...)
 
-	layers = addFileLayers(layers, "/etc/ercole/ercole.toml")
+	layers = addFileLayers(log, layers, "/etc/ercole/ercole.toml")
 
-	folderLayer, err := directorylayer.NewDirectoryLayer("/etc/ercole/conf.d/", "toml")
+	etcErcoleDirectory := "/etc/ercole/conf.d/"
+	directoryLayer, err := directorylayer.NewDirectoryLayer(etcErcoleDirectory, "toml")
 	if err == nil {
-		layers = append(layers, folderLayer)
+		layers = append(layers, directoryLayer)
+	} else if !strings.Contains(err.Error(), "no such file or directory") {
+		log.Warnf("error reading file [%s]: [%s]", etcErcoleDirectory, err)
 	}
 
-	layers = addFileLayers(layers,
+	layers = addFileLayers(log, layers,
 		xdg.ConfigHome()+"/ercole.toml",
 		"config.toml",
 		extraConfigFile,
@@ -289,20 +295,25 @@ func ReadConfig(extraConfigFile string) (configuration Configuration) {
 
 	configOnion := onion.New(layers...)
 
-	onionwriter.DecodeOnion(configOnion, &configuration)
+	err = onionwriter.DecodeOnion(configOnion, &configuration)
+	if err != nil {
+		log.Fatal("something went wrong while reading your configuration files")
+	}
 
-	PatchConfiguration(&configuration)
+	patchConfiguration(&configuration)
 
 	return configuration
 }
 
-func addFileLayers(layers []onion.Layer, configFiles ...string) []onion.Layer {
+func addFileLayers(log *logrus.Logger, layers []onion.Layer, configFiles ...string) []onion.Layer {
 
 	for _, file := range configFiles {
 		layer, err := onion.NewFileLayer(file, nil)
 
 		if err == nil {
 			layers = append(layers, layer)
+		} else if !strings.Contains(err.Error(), "no such file or directory") {
+			log.Warnf("error reading file [%s]: [%s]", file, err)
 		}
 	}
 
@@ -310,7 +321,7 @@ func addFileLayers(layers []onion.Layer, configFiles ...string) []onion.Layer {
 }
 
 // PatchConfiguration change the value of the fields for meeting some requirements(?)
-func PatchConfiguration(config *Configuration) {
+func patchConfiguration(config *Configuration) {
 	cwd, _ := os.Readlink("/proc/self/exe")
 	cwd = filepath.Dir(cwd)
 
