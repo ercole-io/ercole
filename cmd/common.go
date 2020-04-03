@@ -238,6 +238,8 @@ func simpleAPIRequestCommand(
 					outputFormat = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 				case "lms":
 					outputFormat = "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+				case "mongohostdata", "mhd":
+					outputFormat = "application/vnd.ercole.mongohostdata+json"
 				}
 				req.Header.Set("Accept", outputFormat)
 			}

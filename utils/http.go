@@ -21,6 +21,7 @@ import (
 
 	"github.com/plandem/xlsx"
 	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // ErrorResponseFE is a struct that contains informations about a error
@@ -56,6 +57,19 @@ func WriteJSONResponse(w http.ResponseWriter, statusCode int, resp interface{}) 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(resp)
+}
+
+// WriteExtJSONResponse write the statuscode and the response to w
+func WriteExtJSONResponse(log *logrus.Logger, w http.ResponseWriter, statusCode int, resp interface{}) {
+	raw, err := bson.MarshalExtJSON(resp, true, false)
+	if err != nil {
+		WriteAndLogError(log, w, http.StatusInternalServerError, NewAdvancedErrorPtr(err, "MARSHAL_EXT_JSON"))
+	}
+
+	//Write the response
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	w.Write(raw)
 }
 
 // WriteJSONResponse write the statuscode and the response to w
