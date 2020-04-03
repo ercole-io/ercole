@@ -40,19 +40,19 @@ type SFTPRepoSubService struct {
 
 // Init start the service
 func (hs *SFTPRepoSubService) Init(_ *sync.WaitGroup) {
-	//Temporary fix
+	//FIXME: Temporary fix
 	if err := os.Chdir("/"); err != nil {
-		hs.Log.Fatal("Cannot change directory to /")
+		hs.Log.Fatal("Cannot change directory to /", err)
 	}
 	//Setup the ssh server config
 	privateKeyBytes, err := ioutil.ReadFile(hs.Config.RepoService.SFTP.PrivateKey)
 	if err != nil {
-		hs.Log.Fatal("Failed to load the repo-service/ssh private key")
+		hs.Log.Fatal("Failed to load the repo-service/ssh private key", err)
 	}
 
 	privateKey, err := ssh.ParsePrivateKey(privateKeyBytes)
 	if err != nil {
-		hs.Log.Fatal("Failed to parse the repo-service/ssh private key")
+		hs.Log.Fatal("Failed to parse the repo-service/ssh private key", err)
 	}
 
 	config := &ssh.ServerConfig{
@@ -163,7 +163,9 @@ func (hs *SFTPRepoSubService) handleChannel(newChannel ssh.NewChannel) {
 	//Serve the sftp client
 	if err := server.Serve(); err == io.EOF {
 		server.Close()
-		hs.Log.Info("sftp client exited session.")
+		if hs.Config.RepoService.SFTP.LogConnections {
+			hs.Log.Info("sftp client exited session.")
+		}
 	} else if err != nil {
 		hs.Log.Fatal("sftp server completed with error:", err)
 	}
