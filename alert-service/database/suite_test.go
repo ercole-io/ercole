@@ -24,9 +24,7 @@ import (
 	"github.com/amreo/ercole-services/config"
 	migration "github.com/amreo/ercole-services/database-migration"
 	"github.com/amreo/ercole-services/model"
-	"github.com/amreo/mu"
 	"github.com/sirupsen/logrus"
-	"go.mongodb.org/mongo-driver/bson"
 
 	"math/rand"
 
@@ -76,17 +74,4 @@ func (db *MongodbSuite) TearDownSuite() {
 func (db *MongodbSuite) InsertHostData(hostData model.HostData) error {
 	_, err := db.db.Client.Database(db.dbname).Collection("hosts").InsertOne(context.TODO(), hostData)
 	return err
-}
-
-func (db *MongodbSuite) ArchiveHost(hostname string) error {
-	if _, err := db.db.Client.Database(db.dbname).Collection("hosts").UpdateOne(context.TODO(), bson.M{
-		"Hostname": hostname,
-		"Archived": false,
-	}, mu.UOSet(bson.M{
-		"Archived": true,
-	})); err != nil {
-		return err
-	}
-
-	return nil
 }
