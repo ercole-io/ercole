@@ -3,10 +3,13 @@ package utils
 import (
 	"encoding/json"
 	"io/ioutil"
+	"reflect"
+	"runtime"
 	"testing"
 	"time"
 
 	"github.com/amreo/ercole-services/model"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -39,4 +42,11 @@ func LoadFixtureHostData(t *testing.T, filename string) model.HostData {
 	require.NoError(t, json.Unmarshal(raw, &hd))
 
 	return hd
+}
+
+// AssertFuncAreTheSame tests if funcExpected is the same of funcActual
+func AssertFuncAreTheSame(t *testing.T, funcExpected interface{}, funcActual interface{}) {
+	funcExpectedAddress := runtime.FuncForPC(reflect.ValueOf(funcExpected).Pointer()).Name()
+	funcActualAddress := runtime.FuncForPC(reflect.ValueOf(funcActual).Pointer()).Name()
+	assert.Equal(t, funcExpectedAddress, funcActualAddress)
 }
