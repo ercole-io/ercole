@@ -110,31 +110,36 @@ func (m *MongodbSuite) TestFindMostRecentHostDataOlderThan_MoreInserts_Success()
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
 	hd := utils.LoadFixtureHostData(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
-	hd.ID = primitive.NewObjectIDFromTimestamp(time.Now())
-	hd.CreatedAt = utils.P("2019-11-05T14:02:03Z")
 	err := m.InsertHostData(hd)
 	require.NoError(m.T(), err)
+
+	aTimeAfterInsert := hd.CreatedAt.AddDate(0, 0, 1)
+	m.T().Run("Should find hd", func(t *testing.T) {
+		foundHd, err := m.db.FindMostRecentHostDataOlderThan("itl-csllab-112.sorint.localpippo", aTimeAfterInsert)
+		require.NoError(m.T(), err)
+		assert.Equal(m.T(), hd, foundHd)
+	})
 
 	m.ArchiveHost(hd.Hostname)
 	hd.Archived = true
 
-	afterFirstInsert := utils.P("2019-11-05T15:02:03Z")
-	hd3, err3 := m.db.FindMostRecentHostDataOlderThan("itl-csllab-112.sorint.localpippo", afterFirstInsert)
-	require.NoError(m.T(), err3)
-	assert.Equal(m.T(), hd, hd3)
+	m.T().Run("Should find hd even if archived", func(t *testing.T) {
+		foundHd, err := m.db.FindMostRecentHostDataOlderThan("itl-csllab-112.sorint.localpippo", aTimeAfterInsert)
+		require.NoError(m.T(), err)
+		assert.Equal(m.T(), hd, foundHd)
+	})
 
 	hd2 := utils.LoadFixtureHostData(m.T(), "../../fixture/test_dataservice_mongohostdata_02.json")
-	hd2.ID = primitive.NewObjectIDFromTimestamp(time.Now())
-	hd2.CreatedAt = utils.P("2019-11-06T14:02:03Z")
 	err2 := m.InsertHostData(hd2)
 	require.NoError(m.T(), err2)
-
 	assert.NotEqual(m.T(), hd, hd2)
 
-	afterSecondInsert := utils.P("2019-11-06T15:02:03Z")
-	hd4, err4 := m.db.FindMostRecentHostDataOlderThan(hd.Hostname, afterSecondInsert)
-	require.NoError(m.T(), err4)
-	assert.Equal(m.T(), hd2, hd4)
+	aTimeAfterInsert = hd2.CreatedAt.AddDate(0, 0, 1)
+	m.T().Run("Should find hd2", func(t *testing.T) {
+		foundHd, err := m.db.FindMostRecentHostDataOlderThan(hd.Hostname, aTimeAfterInsert)
+		require.NoError(m.T(), err)
+		assert.Equal(m.T(), hd2, foundHd)
+	})
 }
 
 func (m *MongodbSuite) TestInsertAlert_Success() {
