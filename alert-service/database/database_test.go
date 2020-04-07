@@ -82,7 +82,7 @@ func (m *MongodbSuite) TestFindHostData_FailWrongID() {
 	err := m.InsertHostData(hd)
 	require.NoError(m.T(), err)
 
-	notExistingID := primitive.NewObjectIDFromTimestamp(time.Now())
+	notExistingID := utils.Str2oid("8a46027b2ddab34ed01a8c56")
 
 	hd2, err := m.db.FindHostData(notExistingID)
 	require.Error(m.T(), err)
