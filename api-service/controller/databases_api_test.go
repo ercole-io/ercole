@@ -436,3 +436,456 @@ func TestSearchAddms_XLSXInternalServerError2(t *testing.T) {
 
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
+
+func TestSearchSegmentAdvisors_JSONPaged(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	expectedRes := map[string]interface{}{
+		"Content": []interface{}{
+			map[string]interface{}{
+				"CreatedAt":      utils.P("2020-04-07T08:52:59.82+02:00"),
+				"Dbname":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+				"Environment":    "SVIL",
+				"Hostname":       "publicitate-36d06ca83eafa454423d2097f4965517",
+				"Location":       "Germany",
+				"PartitionName":  "",
+				"Reclaimable":    "\u003c1",
+				"Recommendation": "3d7e603f515ed171fc99bdb908f38fb2",
+				"SegmentName":    "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3",
+				"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+				"SegmentType":    "TABLE",
+				"_id":            utils.Str2oid("5e8c234b24f648a08585bd32"),
+			},
+			map[string]interface{}{
+				"CreatedAt":      utils.P("2020-04-07T08:52:59.872+02:00"),
+				"Dbname":         "ERCOLE",
+				"Environment":    "TST",
+				"Hostname":       "test-db",
+				"Location":       "Germany",
+				"PartitionName":  "iyyiuyyoy",
+				"Reclaimable":    "\u003c1",
+				"Recommendation": "32b36a77e7481343ef175483c086859e",
+				"SegmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+				"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+				"SegmentType":    "TABLE",
+				"_id":            utils.Str2oid("5e8c234b24f648a08585bd43"),
+			},
+		},
+		"Metadata": map[string]interface{}{
+			"Empty":         false,
+			"First":         true,
+			"Last":          true,
+			"Number":        0,
+			"Size":          20,
+			"TotalElements": 25,
+			"TotalPages":    1,
+		},
+	}
+
+	resFromService := []map[string]interface{}{
+		expectedRes,
+	}
+
+	as.EXPECT().
+		SearchSegmentAdvisors("foobar", "Reclaimable", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		Return(resFromService, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchSegmentAdvisors)
+	req, err := http.NewRequest("GET", "/segment-advisors?search=foobar&sort-by=Reclaimable&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+}
+
+func TestSearchSegmentAdvisors_JSONUnpaged(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	expectedRes := []map[string]interface{}{
+		map[string]interface{}{
+			"CreatedAt":      utils.P("2020-04-07T08:52:59.82+02:00"),
+			"Dbname":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"Environment":    "SVIL",
+			"Hostname":       "publicitate-36d06ca83eafa454423d2097f4965517",
+			"Location":       "Germany",
+			"PartitionName":  "",
+			"Reclaimable":    "\u003c1",
+			"Recommendation": "3d7e603f515ed171fc99bdb908f38fb2",
+			"SegmentName":    "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3",
+			"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+			"SegmentType":    "TABLE",
+			"_id":            utils.Str2oid("5e8c234b24f648a08585bd32"),
+		},
+		map[string]interface{}{
+			"CreatedAt":      utils.P("2020-04-07T08:52:59.872+02:00"),
+			"Dbname":         "ERCOLE",
+			"Environment":    "TST",
+			"Hostname":       "test-db",
+			"Location":       "Germany",
+			"PartitionName":  "iyyiuyyoy",
+			"Reclaimable":    "\u003c1",
+			"Recommendation": "32b36a77e7481343ef175483c086859e",
+			"SegmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+			"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+			"SegmentType":    "TABLE",
+			"_id":            utils.Str2oid("5e8c234b24f648a08585bd43"),
+		},
+	}
+
+	as.EXPECT().
+		SearchSegmentAdvisors("", "", false, -1, -1, "", "", utils.MAX_TIME).
+		Return(expectedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchSegmentAdvisors)
+	req, err := http.NewRequest("GET", "/segment-advisors", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+}
+
+func TestSearchSegmentAdvisors_JSONUnprocessableEntity1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchSegmentAdvisors)
+	req, err := http.NewRequest("GET", "/segment-advisors?sort-desc=asasdasd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchSegmentAdvisors_JSONUnprocessableEntity2(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchSegmentAdvisors)
+	req, err := http.NewRequest("GET", "/segment-advisors?page=asasdasd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchSegmentAdvisors_JSONUnprocessableEntity3(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchSegmentAdvisors)
+	req, err := http.NewRequest("GET", "/segment-advisors?size=asasdasd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchSegmentAdvisors_JSONUnprocessableEntity4(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchSegmentAdvisors)
+	req, err := http.NewRequest("GET", "/segment-advisors?older-than=asasdasd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchSegmentAdvisors_JSONInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		SearchSegmentAdvisors("", "", false, -1, -1, "", "", utils.MAX_TIME).
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchSegmentAdvisors)
+	req, err := http.NewRequest("GET", "/segment-advisors", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestSearchSegmentAdvisors_XLSXSuccess(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	expectedRes := []map[string]interface{}{
+		map[string]interface{}{
+			"CreatedAt":      utils.P("2020-04-07T08:52:59.82+02:00"),
+			"Dbname":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"Environment":    "SVIL",
+			"Hostname":       "publicitate-36d06ca83eafa454423d2097f4965517",
+			"Location":       "Germany",
+			"PartitionName":  "",
+			"Reclaimable":    "\u003c1",
+			"Recommendation": "3d7e603f515ed171fc99bdb908f38fb2",
+			"SegmentName":    "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3",
+			"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+			"SegmentType":    "TABLE",
+			"_id":            utils.Str2oid("5e8c234b24f648a08585bd32"),
+		},
+		map[string]interface{}{
+			"CreatedAt":      utils.P("2020-04-07T08:52:59.872+02:00"),
+			"Dbname":         "ERCOLE",
+			"Environment":    "TST",
+			"Hostname":       "test-db",
+			"Location":       "Germany",
+			"PartitionName":  "iyyiuyyoy",
+			"Reclaimable":    "\u003c1",
+			"Recommendation": "32b36a77e7481343ef175483c086859e",
+			"SegmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+			"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+			"SegmentType":    "TABLE",
+			"_id":            utils.Str2oid("5e8c234b24f648a08585bd43"),
+		},
+	}
+
+	as.EXPECT().
+		SearchSegmentAdvisors("foobar", "Reclaimable", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		Return(expectedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchSegmentAdvisors)
+	req, err := http.NewRequest("GET", "/segment-advisors?search=foobar&sort-by=Reclaimable&sort-desc=true&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	sp, err := xlsx.Open(rr.Body)
+	require.NoError(t, err)
+	sh := sp.SheetByName("Segment_Advisor")
+	require.NotNil(t, sh)
+	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sh.Cell(0, 1).String())
+	assert.Equal(t, "SVIL", sh.Cell(1, 1).String())
+	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sh.Cell(2, 1).String())
+	assert.Equal(t, "", sh.Cell(3, 1).String())
+	assert.Equal(t, "\u003c1", sh.Cell(4, 1).String())
+	assert.Equal(t, "3d7e603f515ed171fc99bdb908f38fb2", sh.Cell(5, 1).String())
+	assert.Equal(t, "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3", sh.Cell(6, 1).String())
+	assert.Equal(t, "Brittany-424f6a749eef846fa40a1ad1ee3d3674", sh.Cell(7, 1).String())
+	assert.Equal(t, "TABLE", sh.Cell(8, 1).String())
+
+	assert.Equal(t, "ERCOLE", sh.Cell(0, 2).String())
+	assert.Equal(t, "TST", sh.Cell(1, 2).String())
+	assert.Equal(t, "test-db", sh.Cell(2, 2).String())
+	assert.Equal(t, "iyyiuyyoy", sh.Cell(3, 2).String())
+	assert.Equal(t, "\u003c1", sh.Cell(4, 2).String())
+	assert.Equal(t, "32b36a77e7481343ef175483c086859e", sh.Cell(5, 2).String())
+	assert.Equal(t, "pasta-973e4d1f937da4d9bc1b092f934ab0ec", sh.Cell(6, 2).String())
+	assert.Equal(t, "Brittany-424f6a749eef846fa40a1ad1ee3d3674", sh.Cell(7, 2).String())
+	assert.Equal(t, "TABLE", sh.Cell(8, 2).String())
+}
+
+func TestSearchSegmentAdvisors_XLSXUnprocessableEntity1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchSegmentAdvisors)
+	req, err := http.NewRequest("GET", "/segment-advisors?sort-desc=sadasddasasd", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchSegmentAdvisors_XLSXUnprocessableEntity2(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchSegmentAdvisors)
+	req, err := http.NewRequest("GET", "/segment-advisors?older-than=sadasddasasd", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchSegmentAdvisors_XLSXInternalServerError1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		SearchSegmentAdvisors("", "", false, -1, -1, "", "", utils.MAX_TIME).
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchSegmentAdvisors)
+	req, err := http.NewRequest("GET", "/segment-advisors", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestSearchSegmentAdvisors_XLSXInternalServerError2(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	expectedRes := []map[string]interface{}{
+		map[string]interface{}{
+			"CreatedAt":      utils.P("2020-04-07T08:52:59.82+02:00"),
+			"Dbname":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"Environment":    "SVIL",
+			"Hostname":       "publicitate-36d06ca83eafa454423d2097f4965517",
+			"Location":       "Germany",
+			"PartitionName":  "",
+			"Reclaimable":    "\u003c1",
+			"Recommendation": "3d7e603f515ed171fc99bdb908f38fb2",
+			"SegmentName":    "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3",
+			"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+			"SegmentType":    "TABLE",
+			"_id":            utils.Str2oid("5e8c234b24f648a08585bd32"),
+		},
+		map[string]interface{}{
+			"CreatedAt":      utils.P("2020-04-07T08:52:59.872+02:00"),
+			"Dbname":         "ERCOLE",
+			"Environment":    "TST",
+			"Hostname":       "test-db",
+			"Location":       "Germany",
+			"PartitionName":  "iyyiuyyoy",
+			"Reclaimable":    "\u003c1",
+			"Recommendation": "32b36a77e7481343ef175483c086859e",
+			"SegmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+			"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+			"SegmentType":    "TABLE",
+			"_id":            utils.Str2oid("5e8c234b24f648a08585bd43"),
+		},
+	}
+
+	as.EXPECT().
+		SearchSegmentAdvisors("", "", false, -1, -1, "", "", utils.MAX_TIME).
+		Return(expectedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchSegmentAdvisors)
+	req, err := http.NewRequest("GET", "/segment-advisors", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
