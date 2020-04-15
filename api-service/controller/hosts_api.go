@@ -40,13 +40,6 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 		ctrl.SearchHostsLMS(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchHostsXLSX(w, r)
-	default:
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
-			utils.NewAdvancedErrorPtr(
-				errors.New("The mime type in the accept header is not supported"),
-				http.StatusText(http.StatusNotAcceptable),
-			),
-		)
 	}
 }
 
@@ -323,13 +316,6 @@ func (ctrl *APIController) GetHost(w http.ResponseWriter, r *http.Request) {
 		ctrl.GetHostJSON(w, r)
 	case "application/vnd.ercole.mongohostdata+json":
 		ctrl.GetHostMongoJSON(w, r)
-	default:
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
-			utils.NewAdvancedErrorPtr(
-				errors.New("The mime type in the accept header is not supported"),
-				http.StatusText(http.StatusNotAcceptable),
-			),
-		)
 	}
 }
 
