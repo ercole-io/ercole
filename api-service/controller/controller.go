@@ -22,14 +22,11 @@ import (
 	"github.com/amreo/ercole-services/api-service/auth"
 	"github.com/amreo/ercole-services/api-service/service"
 	"github.com/amreo/ercole-services/config"
-	"github.com/goji/httpauth"
 	"github.com/sirupsen/logrus"
 )
 
 // APIControllerInterface is a interface that wrap methods used to querying data
 type APIControllerInterface interface {
-	// AuthenticateMiddleware return the middleware used to authenticate users
-	AuthenticateMiddleware() func(http.Handler) http.Handler
 	// SearchHosts search hosts data using the filters in the request
 	SearchHosts(w http.ResponseWriter, r *http.Request)
 	// SearchDatabases search databases data using the filters in the request
@@ -140,9 +137,4 @@ type APIController struct {
 	Log *logrus.Logger
 	// Authenticator contains the authenticator
 	Authenticator auth.AuthenticationProvider
-}
-
-// AuthenticateMiddleware return the middleware used to authenticate (request) users
-func (ctrl *APIController) AuthenticateMiddleware() func(http.Handler) http.Handler {
-	return httpauth.SimpleBasicAuth(ctrl.Config.APIService.AuthenticationProvider.Username, ctrl.Config.APIService.AuthenticationProvider.Password)
 }
