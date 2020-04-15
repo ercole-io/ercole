@@ -24,6 +24,7 @@ import (
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
 	gomock "github.com/golang/mock/gomock"
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -35,14 +36,8 @@ func TestSearchAlerts_SuccessPaged(t *testing.T) {
 	ac := APIController{
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
-		Config: config.Configuration{
-			AlertService: config.AlertService{
-				FreshnessCheckJob: config.FreshnessCheckJob{
-					DaysThreshold: 10,
-				},
-			},
-		},
-		Log: utils.NewLogger("TEST"),
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
 	}
 
 	expectedRes := map[string]interface{}{
@@ -110,14 +105,8 @@ func TestSearchAlerts_SuccessUnpaged(t *testing.T) {
 	ac := APIController{
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
-		Config: config.Configuration{
-			AlertService: config.AlertService{
-				FreshnessCheckJob: config.FreshnessCheckJob{
-					DaysThreshold: 10,
-				},
-			},
-		},
-		Log: utils.NewLogger("TEST"),
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
 	}
 
 	expectedRes := []interface{}{
@@ -169,14 +158,8 @@ func TestSearchAlerts_FailUnprocessable1(t *testing.T) {
 	ac := APIController{
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
-		Config: config.Configuration{
-			AlertService: config.AlertService{
-				FreshnessCheckJob: config.FreshnessCheckJob{
-					DaysThreshold: 10,
-				},
-			},
-		},
-		Log: utils.NewLogger("TEST"),
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -196,14 +179,8 @@ func TestSearchAlerts_FailUnprocessable2(t *testing.T) {
 	ac := APIController{
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
-		Config: config.Configuration{
-			AlertService: config.AlertService{
-				FreshnessCheckJob: config.FreshnessCheckJob{
-					DaysThreshold: 10,
-				},
-			},
-		},
-		Log: utils.NewLogger("TEST"),
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -223,14 +200,8 @@ func TestSearchAlerts_FailUnprocessable3(t *testing.T) {
 	ac := APIController{
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
-		Config: config.Configuration{
-			AlertService: config.AlertService{
-				FreshnessCheckJob: config.FreshnessCheckJob{
-					DaysThreshold: 10,
-				},
-			},
-		},
-		Log: utils.NewLogger("TEST"),
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -250,14 +221,8 @@ func TestSearchAlerts_FailUnprocessable4(t *testing.T) {
 	ac := APIController{
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
-		Config: config.Configuration{
-			AlertService: config.AlertService{
-				FreshnessCheckJob: config.FreshnessCheckJob{
-					DaysThreshold: 10,
-				},
-			},
-		},
-		Log: utils.NewLogger("TEST"),
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -277,14 +242,8 @@ func TestSearchAlerts_FailUnprocessable5(t *testing.T) {
 	ac := APIController{
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
-		Config: config.Configuration{
-			AlertService: config.AlertService{
-				FreshnessCheckJob: config.FreshnessCheckJob{
-					DaysThreshold: 10,
-				},
-			},
-		},
-		Log: utils.NewLogger("TEST"),
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -304,14 +263,8 @@ func TestSearchAlerts_FailUnprocessable6(t *testing.T) {
 	ac := APIController{
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
-		Config: config.Configuration{
-			AlertService: config.AlertService{
-				FreshnessCheckJob: config.FreshnessCheckJob{
-					DaysThreshold: 10,
-				},
-			},
-		},
-		Log: utils.NewLogger("TEST"),
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -331,14 +284,8 @@ func TestSearchAlerts_FailUnprocessable7(t *testing.T) {
 	ac := APIController{
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
-		Config: config.Configuration{
-			AlertService: config.AlertService{
-				FreshnessCheckJob: config.FreshnessCheckJob{
-					DaysThreshold: 10,
-				},
-			},
-		},
-		Log: utils.NewLogger("TEST"),
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -358,14 +305,8 @@ func TestSearchAlerts_FailInternalServerError(t *testing.T) {
 	ac := APIController{
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
-		Config: config.Configuration{
-			AlertService: config.AlertService{
-				FreshnessCheckJob: config.FreshnessCheckJob{
-					DaysThreshold: 10,
-				},
-			},
-		},
-		Log: utils.NewLogger("TEST"),
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -376,6 +317,152 @@ func TestSearchAlerts_FailInternalServerError(t *testing.T) {
 	handler := http.HandlerFunc(ac.SearchAlerts)
 	req, err := http.NewRequest("GET", "/alerts", nil)
 	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestAckAlert_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().AckAlert(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AckAlert)
+	req, err := http.NewRequest("DELETE", "/alerts/5dc3f534db7e81a98b726a52", nil)
+	require.NoError(t, err)
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "5dc3f534db7e81a98b726a52",
+	})
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+}
+
+func TestAckAlert_FailForbidden(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: true,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AckAlert)
+	req, err := http.NewRequest("DELETE", "/alerts/5dc3f534db7e81a98b726a52", nil)
+	require.NoError(t, err)
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "5dc3f534db7e81a98b726a52",
+	})
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusForbidden, rr.Code)
+}
+
+func TestAckAlert_FailUnprocessableEntity(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AckAlert)
+	req, err := http.NewRequest("DELETE", "/alerts/asdasd", nil)
+	require.NoError(t, err)
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "asdasdasd",
+	})
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestAckAlert_FailNotFound(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().AckAlert(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(utils.AerrAlertNotFound)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AckAlert)
+	req, err := http.NewRequest("DELETE", "/alerts/5dc3f534db7e81a98b726a52", nil)
+	require.NoError(t, err)
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "5dc3f534db7e81a98b726a52",
+	})
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusNotFound, rr.Code)
+}
+
+func TestAckAlert_FailInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().AckAlert(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AckAlert)
+	req, err := http.NewRequest("DELETE", "/alerts/5dc3f534db7e81a98b726a52", nil)
+	require.NoError(t, err)
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "5dc3f534db7e81a98b726a52",
+	})
 
 	handler.ServeHTTP(rr, req)
 
