@@ -889,3 +889,522 @@ func TestSearchSegmentAdvisors_XLSXInternalServerError2(t *testing.T) {
 
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
+
+func TestSearchPatchAdvisors_JSONPaged(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	expectedRes := map[string]interface{}{
+		"Content": []interface{}{
+			map[string]interface{}{
+				"CreatedAt":   utils.P("2020-04-07T08:52:59.82+02:00"),
+				"Date":        utils.P("2012-04-16T02:00:00+02:00"),
+				"Dbname":      "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+				"Dbver":       "11.2.0.3.0 Enterprise Edition",
+				"Description": "PSU 11.2.0.3.2",
+				"Environment": "SVIL",
+				"Hostname":    "publicitate-36d06ca83eafa454423d2097f4965517",
+				"Location":    "Germany",
+				"Status":      "KO",
+				"_id":         utils.Str2oid("5e8c234b24f648a08585bd32"),
+			},
+			map[string]interface{}{
+				"CreatedAt":   utils.P("2020-04-07T08:52:59.872+02:00"),
+				"Date":        utils.P("2012-04-16T02:00:00+02:00"),
+				"Dbname":      "ERCOLE",
+				"Dbver":       "12.2.0.1.0 Enterprise Edition",
+				"Description": "PSU 11.2.0.3.2",
+				"Environment": "TST",
+				"Hostname":    "test-db",
+				"Location":    "Germany",
+				"Status":      "KO",
+				"_id":         utils.Str2oid("5e8c234b24f648a08585bd43"),
+			},
+		},
+		"Metadata": map[string]interface{}{
+			"Empty":         false,
+			"First":         true,
+			"Last":          true,
+			"Number":        0,
+			"Size":          20,
+			"TotalElements": 25,
+			"TotalPages":    1,
+		},
+	}
+
+	resFromService := []map[string]interface{}{
+		expectedRes,
+	}
+
+	as.EXPECT().
+		SearchPatchAdvisors("foobar", "Hostname", true, 2, 3, utils.P("2019-03-05T14:02:03Z"), "Italy", "TST", utils.P("2020-06-10T11:54:59Z"), "KO").
+		Return(resFromService, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchPatchAdvisors)
+	req, err := http.NewRequest("GET", "/patch-advisors?search=foobar&sort-by=Hostname&sort-desc=true&page=2&size=3&window-time=8&status=KO&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+}
+
+func TestSearchPatchAdvisors_JSONUnpaged(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	expectedRes := []map[string]interface{}{
+		map[string]interface{}{
+			"CreatedAt":   utils.P("2020-04-07T08:52:59.82+02:00"),
+			"Date":        utils.P("2012-04-16T02:00:00+02:00"),
+			"Dbname":      "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"Dbver":       "11.2.0.3.0 Enterprise Edition",
+			"Description": "PSU 11.2.0.3.2",
+			"Environment": "SVIL",
+			"Hostname":    "publicitate-36d06ca83eafa454423d2097f4965517",
+			"Location":    "Germany",
+			"Status":      "KO",
+			"_id":         utils.Str2oid("5e8c234b24f648a08585bd32"),
+		},
+		map[string]interface{}{
+			"CreatedAt":   utils.P("2020-04-07T08:52:59.872+02:00"),
+			"Date":        utils.P("2012-04-16T02:00:00+02:00"),
+			"Dbname":      "ERCOLE",
+			"Dbver":       "12.2.0.1.0 Enterprise Edition",
+			"Description": "PSU 11.2.0.3.2",
+			"Environment": "TST",
+			"Hostname":    "test-db",
+			"Location":    "Germany",
+			"Status":      "KO",
+			"_id":         utils.Str2oid("5e8c234b24f648a08585bd43"),
+		},
+	}
+
+	as.EXPECT().
+		SearchPatchAdvisors("", "", false, -1, -1, utils.P("2019-05-05T14:02:03Z"), "", "", utils.MAX_TIME, "").
+		Return(expectedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchPatchAdvisors)
+	req, err := http.NewRequest("GET", "/patch-advisors", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+}
+
+func TestSearchPatchAdvisors_JSONUnprocessableEntity1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchPatchAdvisors)
+	req, err := http.NewRequest("GET", "/patch-advisors?sort-desc=sdasdasdasd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchPatchAdvisors_JSONUnprocessableEntity2(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchPatchAdvisors)
+	req, err := http.NewRequest("GET", "/patch-advisors?page=sdasdasdasd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchPatchAdvisors_JSONUnprocessableEntity3(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchPatchAdvisors)
+	req, err := http.NewRequest("GET", "/patch-advisors?size=sdasdasdasd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchPatchAdvisors_JSONUnprocessableEntity4(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchPatchAdvisors)
+	req, err := http.NewRequest("GET", "/patch-advisors?window-time=sdasdasdasd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchPatchAdvisors_JSONUnprocessableEntity5(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchPatchAdvisors)
+	req, err := http.NewRequest("GET", "/patch-advisors?status=sdasdasdasd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchPatchAdvisors_JSONUnprocessableEntity6(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchPatchAdvisors)
+	req, err := http.NewRequest("GET", "/patch-advisors?older-than=sdasdasdasd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchPatchAdvisors_JSONInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		SearchPatchAdvisors("", "", false, -1, -1, utils.P("2019-05-05T14:02:03Z"), "", "", utils.MAX_TIME, "").
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchPatchAdvisors)
+	req, err := http.NewRequest("GET", "/patch-advisors", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestSearchPatchAdvisors_XLSXSuccess(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	expectedRes := []map[string]interface{}{
+		map[string]interface{}{
+			"CreatedAt":   utils.P("2020-04-07T08:52:59.82+02:00"),
+			"Date":        utils.PDT("2012-04-16T02:00:00+02:00"),
+			"Dbname":      "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"Dbver":       "11.2.0.3.0 Enterprise Edition",
+			"Description": "PSU 11.2.0.3.2",
+			"Environment": "SVIL",
+			"Hostname":    "publicitate-36d06ca83eafa454423d2097f4965517",
+			"Location":    "Germany",
+			"Status":      "KO",
+			"_id":         utils.Str2oid("5e8c234b24f648a08585bd32"),
+		},
+		map[string]interface{}{
+			"CreatedAt":   utils.P("2020-04-07T08:52:59.872+02:00"),
+			"Date":        utils.PDT("2012-04-16T02:00:00+02:00"),
+			"Dbname":      "ERCOLE",
+			"Dbver":       "12.2.0.1.0 Enterprise Edition",
+			"Description": "PSU 11.2.0.3.2",
+			"Environment": "TST",
+			"Hostname":    "test-db",
+			"Location":    "Germany",
+			"Status":      "KO",
+			"_id":         utils.Str2oid("5e8c234b24f648a08585bd43"),
+		},
+	}
+
+	as.EXPECT().
+		SearchPatchAdvisors("foobar", "Hostname", true, -1, -1, utils.P("2019-03-05T14:02:03Z"), "Italy", "TST", utils.P("2020-06-10T11:54:59Z"), "KO").
+		Return(expectedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchPatchAdvisors)
+	req, err := http.NewRequest("GET", "/patch-advisors?search=foobar&sort-by=Hostname&sort-desc=true&window-time=8&status=KO&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	require.NoError(t, err)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	sp, err := xlsx.Open(rr.Body)
+	require.NoError(t, err)
+	sh := sp.SheetByName("Patch_Advisor")
+	require.NotNil(t, sh)
+	assert.Equal(t, "PSU 11.2.0.3.2", sh.Cell(0, 1).String())
+	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sh.Cell(1, 1).String())
+	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sh.Cell(2, 1).String())
+	assert.Equal(t, "11.2.0.3.0 Enterprise Edition", sh.Cell(3, 1).String())
+	assert.Equal(t, utils.P("2012-04-16T02:00:00+02:00").String(), sh.Cell(4, 1).String())
+	assert.Equal(t, "KO", sh.Cell(5, 1).String())
+
+	assert.Equal(t, "PSU 11.2.0.3.2", sh.Cell(0, 2).String())
+	assert.Equal(t, "test-db", sh.Cell(1, 2).String())
+	assert.Equal(t, "ERCOLE", sh.Cell(2, 2).String())
+	assert.Equal(t, "12.2.0.1.0 Enterprise Edition", sh.Cell(3, 2).String())
+	assert.Equal(t, utils.P("2012-04-16T02:00:00+02:00").String(), sh.Cell(4, 2).String())
+	assert.Equal(t, "KO", sh.Cell(5, 2).String())
+}
+
+func TestSearchPatchAdvisors_XLSXUnprocessableEntity1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchPatchAdvisors)
+	req, err := http.NewRequest("GET", "/patch-advisors?sort-desc=dsasdasd", nil)
+	require.NoError(t, err)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchPatchAdvisors_XLSXUnprocessableEntity2(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchPatchAdvisors)
+	req, err := http.NewRequest("GET", "/patch-advisors?window-time=dsasdasd", nil)
+	require.NoError(t, err)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchPatchAdvisors_XLSXUnprocessableEntity3(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchPatchAdvisors)
+	req, err := http.NewRequest("GET", "/patch-advisors?older-than=dsasdasd", nil)
+	require.NoError(t, err)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchPatchAdvisors_XLSXUnprocessableEntity4(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchPatchAdvisors)
+	req, err := http.NewRequest("GET", "/patch-advisors?status=dsasdasd", nil)
+	require.NoError(t, err)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchPatchAdvisors_XLSXInternalServerError1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		SearchPatchAdvisors("", "", false, -1, -1, utils.P("2019-05-05T14:02:03Z"), "", "", utils.MAX_TIME, "").
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchPatchAdvisors)
+	req, err := http.NewRequest("GET", "/patch-advisors", nil)
+	require.NoError(t, err)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+func TestSearchPatchAdvisors_XLSXInternalServerError2(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	expectedRes := []map[string]interface{}{
+		map[string]interface{}{
+			"CreatedAt":   utils.P("2020-04-07T08:52:59.82+02:00"),
+			"Date":        utils.PDT("2012-04-16T02:00:00+02:00"),
+			"Dbname":      "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"Dbver":       "11.2.0.3.0 Enterprise Edition",
+			"Description": "PSU 11.2.0.3.2",
+			"Environment": "SVIL",
+			"Hostname":    "publicitate-36d06ca83eafa454423d2097f4965517",
+			"Location":    "Germany",
+			"Status":      "KO",
+			"_id":         utils.Str2oid("5e8c234b24f648a08585bd32"),
+		},
+		map[string]interface{}{
+			"CreatedAt":   utils.P("2020-04-07T08:52:59.872+02:00"),
+			"Date":        utils.PDT("2012-04-16T02:00:00+02:00"),
+			"Dbname":      "ERCOLE",
+			"Dbver":       "12.2.0.1.0 Enterprise Edition",
+			"Description": "PSU 11.2.0.3.2",
+			"Environment": "TST",
+			"Hostname":    "test-db",
+			"Location":    "Germany",
+			"Status":      "KO",
+			"_id":         utils.Str2oid("5e8c234b24f648a08585bd43"),
+		},
+	}
+
+	as.EXPECT().
+		SearchPatchAdvisors("foobar", "Hostname", true, -1, -1, utils.P("2019-03-05T14:02:03Z"), "Italy", "TST", utils.P("2020-06-10T11:54:59Z"), "KO").
+		Return(expectedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchPatchAdvisors)
+	req, err := http.NewRequest("GET", "/patch-advisors?search=foobar&sort-by=Hostname&sort-desc=true&window-time=8&status=KO&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	require.NoError(t, err)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}

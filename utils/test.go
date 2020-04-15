@@ -20,6 +20,12 @@ func P(s string) time.Time {
 	return t
 }
 
+//PDT parse the string s and return the equivalent time
+func PDT(s string) primitive.DateTime {
+	t, _ := time.Parse(time.RFC3339, s)
+	return primitive.NewDateTimeFromTime(t)
+}
+
 //Btc break the time continuum and return a function that return the time t
 func Btc(t time.Time) func() time.Time {
 	return func() time.Time {
