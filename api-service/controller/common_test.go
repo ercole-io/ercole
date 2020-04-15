@@ -17,8 +17,11 @@ package controller
 
 import (
 	"errors"
+	"testing"
 
 	"github.com/amreo/ercole-services/utils"
+	"github.com/plandem/xlsx"
+	"github.com/stretchr/testify/assert"
 )
 
 //go:generate mockgen -source ../service/service.go -destination=fake_service.go -package=controller
@@ -26,3 +29,15 @@ import (
 //Common data
 var errMock error = errors.New("MockError")
 var aerrMock utils.AdvancedErrorInterface = utils.NewAdvancedErrorPtr(errMock, "mock")
+
+func AssertXLSXFloat(t *testing.T, expected float64, cell *xlsx.Cell) {
+	actual, err := cell.Float()
+	assert.NoError(t, err)
+	assert.Equal(t, expected, actual)
+}
+
+func AssertXLSXInt(t *testing.T, expected int, cell *xlsx.Cell) {
+	actual, err := cell.Int()
+	assert.NoError(t, err)
+	assert.Equal(t, expected, actual)
+}
