@@ -39,13 +39,6 @@ func (ctrl *APIController) SearchAddms(w http.ResponseWriter, r *http.Request) {
 		ctrl.SearchAddmsJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchAddmsXLSX(w, r)
-	default:
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
-			utils.NewAdvancedErrorPtr(
-				errors.New("The mime type in the accept header is not supported"),
-				http.StatusText(http.StatusNotAcceptable),
-			),
-		)
 	}
 }
 
@@ -160,13 +153,6 @@ func (ctrl *APIController) SearchSegmentAdvisors(w http.ResponseWriter, r *http.
 		ctrl.SearchSegmentAdvisorsJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchSegmentAdvisorsXLSX(w, r)
-	default:
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
-			utils.NewAdvancedErrorPtr(
-				errors.New("The mime type in the accept header is not supported"),
-				http.StatusText(http.StatusNotAcceptable),
-			),
-		)
 	}
 }
 
@@ -290,13 +276,6 @@ func (ctrl *APIController) SearchPatchAdvisors(w http.ResponseWriter, r *http.Re
 		ctrl.SearchPatchAdvisorsJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchPatchAdvisorsXLSX(w, r)
-	default:
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
-			utils.NewAdvancedErrorPtr(
-				errors.New("The mime type in the accept header is not supported"),
-				http.StatusText(http.StatusNotAcceptable),
-			),
-		)
 	}
 }
 
@@ -439,13 +418,6 @@ func (ctrl *APIController) SearchDatabases(w http.ResponseWriter, r *http.Reques
 		ctrl.SearchDatabasesJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchDatabasesXLSX(w, r)
-	default:
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
-			utils.NewAdvancedErrorPtr(
-				errors.New("The mime type in the accept header is not supported"),
-				http.StatusText(http.StatusNotAcceptable),
-			),
-		)
 	}
 }
 
