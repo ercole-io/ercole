@@ -327,7 +327,7 @@ func (ctrl *APIController) SearchPatchAdvisorsJSON(w http.ResponseWriter, r *htt
 	}
 
 	//get the data
-	patchAdvisors, err := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
+	patchAdvisors, err := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, ctrl.TimeNow().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -381,7 +381,7 @@ func (ctrl *APIController) SearchPatchAdvisorsXLSX(w http.ResponseWriter, r *htt
 	}
 
 	//get the data
-	patchAdvisors, aerr := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, -1, -1, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
+	patchAdvisors, aerr := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, -1, -1, ctrl.TimeNow().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
