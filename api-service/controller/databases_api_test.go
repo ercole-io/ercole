@@ -1223,14 +1223,14 @@ func TestSearchPatchAdvisors_XLSXSuccess(t *testing.T) {
 	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sh.Cell(1, 1).String())
 	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sh.Cell(2, 1).String())
 	assert.Equal(t, "11.2.0.3.0 Enterprise Edition", sh.Cell(3, 1).String())
-	assert.Equal(t, utils.P("2012-04-16T02:00:00+02:00").String(), sh.Cell(4, 1).String())
+	assert.Equal(t, utils.P("2012-04-16T00:00:00Z").String(), sh.Cell(4, 1).String())
 	assert.Equal(t, "KO", sh.Cell(5, 1).String())
 
 	assert.Equal(t, "PSU 11.2.0.3.2", sh.Cell(0, 2).String())
 	assert.Equal(t, "test-db", sh.Cell(1, 2).String())
 	assert.Equal(t, "ERCOLE", sh.Cell(2, 2).String())
 	assert.Equal(t, "12.2.0.1.0 Enterprise Edition", sh.Cell(3, 2).String())
-	assert.Equal(t, utils.P("2012-04-16T02:00:00+02:00").String(), sh.Cell(4, 2).String())
+	assert.Equal(t, utils.P("2012-04-16T00:00:00Z").String(), sh.Cell(4, 2).String())
 	assert.Equal(t, "KO", sh.Cell(5, 2).String())
 }
 
