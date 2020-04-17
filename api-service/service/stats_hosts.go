@@ -40,5 +40,4 @@ func (as *APIService) GetOperatingSystemStats(location string, olderThan time.Ti
 // GetTopUnusedInstanceResourceStats return a array containing top unused instance resource by workload
 func (as *APIService) GetTopUnusedInstanceResourceStats(location string, environment string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetTopUnusedInstanceResourceStats(location, environment, limit, olderThan)
-
 }

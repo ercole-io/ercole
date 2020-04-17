@@ -39,13 +39,6 @@ func (ctrl *APIController) SearchAddms(w http.ResponseWriter, r *http.Request) {
 		ctrl.SearchAddmsJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchAddmsXLSX(w, r)
-	default:
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
-			utils.NewAdvancedErrorPtr(
-				errors.New("The mime type in the accept header is not supported"),
-				http.StatusText(http.StatusNotAcceptable),
-			),
-		)
 	}
 }
 
@@ -160,13 +153,6 @@ func (ctrl *APIController) SearchSegmentAdvisors(w http.ResponseWriter, r *http.
 		ctrl.SearchSegmentAdvisorsJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchSegmentAdvisorsXLSX(w, r)
-	default:
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
-			utils.NewAdvancedErrorPtr(
-				errors.New("The mime type in the accept header is not supported"),
-				http.StatusText(http.StatusNotAcceptable),
-			),
-		)
 	}
 }
 
@@ -290,13 +276,6 @@ func (ctrl *APIController) SearchPatchAdvisors(w http.ResponseWriter, r *http.Re
 		ctrl.SearchPatchAdvisorsJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchPatchAdvisorsXLSX(w, r)
-	default:
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
-			utils.NewAdvancedErrorPtr(
-				errors.New("The mime type in the accept header is not supported"),
-				http.StatusText(http.StatusNotAcceptable),
-			),
-		)
 	}
 }
 
@@ -348,7 +327,7 @@ func (ctrl *APIController) SearchPatchAdvisorsJSON(w http.ResponseWriter, r *htt
 	}
 
 	//get the data
-	patchAdvisors, err := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
+	patchAdvisors, err := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, ctrl.TimeNow().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -402,7 +381,7 @@ func (ctrl *APIController) SearchPatchAdvisorsXLSX(w http.ResponseWriter, r *htt
 	}
 
 	//get the data
-	patchAdvisors, aerr := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, -1, -1, time.Now().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
+	patchAdvisors, aerr := ctrl.Service.SearchPatchAdvisors(search, sortBy, sortDesc, -1, -1, ctrl.TimeNow().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
@@ -418,12 +397,12 @@ func (ctrl *APIController) SearchPatchAdvisorsXLSX(w http.ResponseWriter, r *htt
 
 	//Add the data to the sheet
 	for i, val := range patchAdvisors {
-		sheet.Cell(0, i+1).SetText(val["Description"])                               //Description column
-		sheet.Cell(1, i+1).SetText(val["Hostname"])                                  //Hostname column
-		sheet.Cell(2, i+1).SetText(val["Dbname"])                                    //Dbname column
-		sheet.Cell(3, i+1).SetText(val["Dbver"])                                     //Dbver column
-		sheet.Cell(4, i+1).SetText(val["Date"].(primitive.DateTime).Time().String()) //Date column
-		sheet.Cell(5, i+1).SetText(val["Status"])                                    //Status column
+		sheet.Cell(0, i+1).SetText(val["Description"])                                     //Description column
+		sheet.Cell(1, i+1).SetText(val["Hostname"])                                        //Hostname column
+		sheet.Cell(2, i+1).SetText(val["Dbname"])                                          //Dbname column
+		sheet.Cell(3, i+1).SetText(val["Dbver"])                                           //Dbver column
+		sheet.Cell(4, i+1).SetText(val["Date"].(primitive.DateTime).Time().UTC().String()) //Date column
+		sheet.Cell(5, i+1).SetText(val["Status"])                                          //Status column
 	}
 
 	//Write it to the response
@@ -439,13 +418,6 @@ func (ctrl *APIController) SearchDatabases(w http.ResponseWriter, r *http.Reques
 		ctrl.SearchDatabasesJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchDatabasesXLSX(w, r)
-	default:
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
-			utils.NewAdvancedErrorPtr(
-				errors.New("The mime type in the accept header is not supported"),
-				http.StatusText(http.StatusNotAcceptable),
-			),
-		)
 	}
 }
 
