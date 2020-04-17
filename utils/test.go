@@ -3,10 +3,13 @@ package utils
 import (
 	"encoding/json"
 	"io/ioutil"
+	"reflect"
+	"runtime"
 	"testing"
 	"time"
 
 	"github.com/amreo/ercole-services/model"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -14,12 +17,15 @@ import (
 
 //P parse the string s and return the equivalent time
 func P(s string) time.Time {
-	t, _ := time.Parse(time.RFC3339, s)
+	t, err := time.Parse(time.RFC3339, s)
+	if err != nil {
+		panic(err)
+	}
 	return t
 }
 
-//Str2priTime parse the string s and return the equivalent bson primitive time
-func Str2priTime(s string) primitive.DateTime {
+//PDT parse the string s and return the equivalent bson primitive time
+func PDT(s string) primitive.DateTime {
 	time := P(s)
 	return primitive.NewDateTimeFromTime(time)
 }
@@ -57,4 +63,11 @@ func LoadFixtureHostDataMap(t *testing.T, filename string) model.HostDataMap {
 	require.NoError(t, bson.UnmarshalExtJSON(raw, true, &hd))
 
 	return model.HostDataMap(hd)
+}
+
+// AssertFuncAreTheSame tests if funcExpected is the same of funcActual
+func AssertFuncAreTheSame(t *testing.T, funcExpected interface{}, funcActual interface{}) {
+	funcExpectedAddress := runtime.FuncForPC(reflect.ValueOf(funcExpected).Pointer()).Name()
+	funcActualAddress := runtime.FuncForPC(reflect.ValueOf(funcActual).Pointer()).Name()
+	assert.Equal(t, funcExpectedAddress, funcActualAddress)
 }

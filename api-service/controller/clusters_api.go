@@ -16,7 +16,6 @@
 package controller
 
 import (
-	"errors"
 	"net/http"
 	"time"
 
@@ -34,13 +33,6 @@ func (ctrl *APIController) SearchClusters(w http.ResponseWriter, r *http.Request
 		ctrl.SearchClustersJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchClustersXLSX(w, r)
-	default:
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotAcceptable,
-			utils.NewAdvancedErrorPtr(
-				errors.New("The mime type in the accept header is not supported"),
-				http.StatusText(http.StatusNotAcceptable),
-			),
-		)
 	}
 }
 

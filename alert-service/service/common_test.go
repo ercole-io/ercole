@@ -48,7 +48,7 @@ var hostData1 model.HostDataMap = model.HostDataMap{
 	"_id":       utils.Str2oid("5dc3f534db7e81a98b726a52"),
 	"Hostname":  "superhost1",
 	"Archived":  false,
-	"CreatedAt": utils.Str2priTime("2019-11-05T14:02:03Z"),
+	"CreatedAt": utils.PDT("2019-11-05T14:02:03Z"),
 	"Extra": map[string]interface{}{
 		"Databases": primitive.A{},
 	},
@@ -61,7 +61,7 @@ var hostData2 model.HostDataMap = model.HostDataMap{
 	"_id":       utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
 	"Hostname":  "superhost1",
 	"Archived":  true,
-	"CreatedAt": utils.Str2priTime("2019-11-05T12:02:03Z"),
+	"CreatedAt": utils.PDT("2019-11-05T12:02:03Z"),
 	"Extra": map[string]interface{}{
 		"Databases": primitive.A{},
 	},
@@ -74,7 +74,7 @@ var hostData3 model.HostDataMap = model.HostDataMap{
 	"_id":       utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
 	"Hostname":  "superhost1",
 	"Archived":  true,
-	"CreatedAt": utils.Str2priTime("2019-11-05T16:02:03Z"),
+	"CreatedAt": utils.PDT("2019-11-05T16:02:03Z"),
 	"Extra": map[string]interface{}{
 		"Databases": primitive.A{
 			map[string]interface{}{
@@ -93,7 +93,7 @@ var hostData4 model.HostDataMap = model.HostDataMap{
 	"_id":       utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
 	"Hostname":  "superhost1",
 	"Archived":  true,
-	"CreatedAt": utils.Str2priTime("2019-11-05T18:02:03Z"),
+	"CreatedAt": utils.PDT("2019-11-05T18:02:03Z"),
 	"Extra": map[string]interface{}{
 		"Databases": primitive.A{
 			map[string]interface{}{
