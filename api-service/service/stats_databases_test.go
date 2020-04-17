@@ -252,11 +252,11 @@ func TestGetDatabasePatchStatusStats_Success(t *testing.T) {
 	}
 
 	db.EXPECT().GetDatabasePatchStatusStats(
-		"Italy", utils.P("2019-6-05T14:02:03Z"), utils.P("2019-12-05T14:02:03Z"),
+		"Italy", utils.P("2019-06-05T14:02:03Z"), utils.P("2019-12-05T14:02:03Z"),
 	).Return(expectedRes, nil).Times(1)
 
 	res, err := as.GetDatabasePatchStatusStats(
-		"Italy", utils.P("2019-6-05T14:02:03Z"), utils.P("2019-12-05T14:02:03Z"),
+		"Italy", utils.P("2019-06-05T14:02:03Z"), utils.P("2019-12-05T14:02:03Z"),
 	)
 
 	require.NoError(t, err)
@@ -272,11 +272,11 @@ func TestGetDatabasePatchStatusStats_Fail(t *testing.T) {
 	}
 
 	db.EXPECT().GetDatabasePatchStatusStats(
-		"Italy", utils.P("2019-6-05T14:02:03Z"), utils.P("2019-12-05T14:02:03Z"),
+		"Italy", utils.P("2019-06-05T14:02:03Z"), utils.P("2019-12-05T14:02:03Z"),
 	).Return(nil, aerrMock).Times(1)
 
 	res, err := as.GetDatabasePatchStatusStats(
-		"Italy", utils.P("2019-6-05T14:02:03Z"), utils.P("2019-12-05T14:02:03Z"),
+		"Italy", utils.P("2019-06-05T14:02:03Z"), utils.P("2019-12-05T14:02:03Z"),
 	)
 
 	assert.Nil(t, res)

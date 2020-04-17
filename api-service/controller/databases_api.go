@@ -397,12 +397,12 @@ func (ctrl *APIController) SearchPatchAdvisorsXLSX(w http.ResponseWriter, r *htt
 
 	//Add the data to the sheet
 	for i, val := range patchAdvisors {
-		sheet.Cell(0, i+1).SetText(val["Description"])                               //Description column
-		sheet.Cell(1, i+1).SetText(val["Hostname"])                                  //Hostname column
-		sheet.Cell(2, i+1).SetText(val["Dbname"])                                    //Dbname column
-		sheet.Cell(3, i+1).SetText(val["Dbver"])                                     //Dbver column
-		sheet.Cell(4, i+1).SetText(val["Date"].(primitive.DateTime).Time().String()) //Date column
-		sheet.Cell(5, i+1).SetText(val["Status"])                                    //Status column
+		sheet.Cell(0, i+1).SetText(val["Description"])                                     //Description column
+		sheet.Cell(1, i+1).SetText(val["Hostname"])                                        //Hostname column
+		sheet.Cell(2, i+1).SetText(val["Dbname"])                                          //Dbname column
+		sheet.Cell(3, i+1).SetText(val["Dbver"])                                           //Dbver column
+		sheet.Cell(4, i+1).SetText(val["Date"].(primitive.DateTime).Time().UTC().String()) //Date column
+		sheet.Cell(5, i+1).SetText(val["Status"])                                          //Status column
 	}
 
 	//Write it to the response
