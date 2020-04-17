@@ -16,7 +16,10 @@ import (
 
 //P parse the string s and return the equivalent time
 func P(s string) time.Time {
-	t, _ := time.Parse(time.RFC3339, s)
+	t, err := time.Parse(time.RFC3339, s)
+	if err != nil {
+		panic(err)
+	}
 	return t
 }
 
