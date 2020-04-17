@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Database contains methods used to perform CRUD operations to the MongoDB database
+// Package database contains methods used to perform CRUD operations to the MongoDB database
 package database
 
 import (
@@ -36,9 +36,15 @@ type MongoDatabaseInterface interface {
 	// Init initializes the connection to the database
 	Init()
 	// FindHostData find a host data
+	//TODO Remove
 	FindHostData(id primitive.ObjectID) (model.HostData, utils.AdvancedErrorInterface)
+	// FindHostData find a host data
+	FindHostDataMap(id primitive.ObjectID) (model.HostDataMap, utils.AdvancedErrorInterface)
 	// FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
+	//TODO Remove
 	FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostData, utils.AdvancedErrorInterface)
+	// FindMostRecentHostDataMapOlderThan return the most recest hostdata that is older than t
+	FindMostRecentHostDataMapOlderThan(hostname string, t time.Time) (model.HostDataMap, utils.AdvancedErrorInterface)
 	// InsertAlert inserr the alert in the database
 	InsertAlert(alert model.Alert) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
 	// FindOldCurrentHost return the list of current hosts that haven't sent hostdata after time t
@@ -87,6 +93,7 @@ func (md *MongoDatabase) ConnectToMongodb() {
 }
 
 // FindHostData find a host data
+//TODO Remove
 func (md *MongoDatabase) FindHostData(id primitive.ObjectID) (model.HostData, utils.AdvancedErrorInterface) {
 	//Find the hostdata
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").FindOne(context.TODO(), bson.M{
@@ -106,7 +113,28 @@ func (md *MongoDatabase) FindHostData(id primitive.ObjectID) (model.HostData, ut
 	return out, nil
 }
 
+// FindHostDataMap find a host data
+func (md *MongoDatabase) FindHostDataMap(id primitive.ObjectID) (model.HostDataMap, utils.AdvancedErrorInterface) {
+	//Find the hostdata
+	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").FindOne(context.TODO(), bson.M{
+		"_id": id,
+	})
+	if res.Err() != nil {
+		return model.HostDataMap{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+	}
+
+	//Decode the data
+	var out map[string]interface{}
+	if err := res.Decode(&out); err != nil {
+		return model.HostDataMap{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+	}
+
+	//Return it!
+	return out, nil
+}
+
 // FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
+//TODO Remove?
 func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostData, utils.AdvancedErrorInterface) {
 	var out model.HostData
 
@@ -137,6 +165,42 @@ func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time
 	//Decode the document
 	if err := cur.Decode(&out); err != nil {
 		return model.HostData{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return out, nil
+}
+
+// FindMostRecentHostDataMapOlderThan return the most recest hostdata that is older than t
+func (md *MongoDatabase) FindMostRecentHostDataMapOlderThan(hostname string, t time.Time) (model.HostDataMap, utils.AdvancedErrorInterface) {
+	var out map[string]interface{}
+
+	//Find the most recent HostData older than t
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			mu.APMatch(bson.M{
+				"Hostname":  hostname,
+				"CreatedAt": mu.QOLessThan(t),
+			}),
+			mu.APSort(bson.M{
+				"CreatedAt": -1,
+			}),
+			mu.APLimit(1),
+		),
+	)
+	if err != nil {
+		return model.HostDataMap{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Next the cursor. If there is no document return a empty document
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return model.HostDataMap{}, nil
+	}
+
+	//Decode the document
+	if err := cur.Decode(&out); err != nil {
+		return model.HostDataMap{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
 	return out, nil
