@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"math/rand"
 	"testing"
-	"time"
 
 	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/model"
@@ -28,7 +27,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/stretchr/testify/suite"
 )
@@ -65,11 +63,12 @@ func TestConnectToMongodb_FailToConnect(t *testing.T) {
 func (m *MongodbSuite) TestFindHostData_SuccessExist() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	hd := utils.LoadFixtureHostData(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
+	hd := utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
+
 	err := m.InsertHostData(hd)
 	require.NoError(m.T(), err)
 
-	hd2, err := m.db.FindHostData(hd.ID)
+	hd2, err := m.db.FindHostDataMap(hd.ID())
 	require.NoError(m.T(), err)
 
 	assert.Equal(m.T(), hd, hd2)
@@ -78,28 +77,28 @@ func (m *MongodbSuite) TestFindHostData_SuccessExist() {
 func (m *MongodbSuite) TestFindHostData_FailWrongID() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	hd := utils.LoadFixtureHostData(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
+	hd := utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
 	err := m.InsertHostData(hd)
 	require.NoError(m.T(), err)
 
 	notExistingID := utils.Str2oid("8a46027b2ddab34ed01a8c56")
 
-	hd2, err := m.db.FindHostData(notExistingID)
+	hd2, err := m.db.FindHostDataMap(notExistingID)
 	require.Error(m.T(), err)
 
-	assert.Equal(m.T(), model.HostData{}, hd2)
+	assert.Equal(m.T(), model.HostDataMap{}, hd2)
 }
 
 func (m *MongodbSuite) TestFindMostRecentHostDataOlderThan_OnlyOne() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	hd := utils.LoadFixtureHostData(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
+	hd := utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
 	err := m.InsertHostData(hd)
 	require.NoError(m.T(), err)
 
-	aTimeAfterInsert := hd.CreatedAt.AddDate(0, 0, 1)
+	aTimeAfterInsert := hd.CreatedAt().AddDate(0, 0, 1)
 
-	foundHd, err := m.db.FindMostRecentHostDataOlderThan("itl-csllab-112.sorint.localpippo", aTimeAfterInsert)
+	foundHd, err := m.db.FindMostRecentHostDataMapOlderThan("itl-csllab-112.sorint.localpippo", aTimeAfterInsert)
 	require.NoError(m.T(), err)
 	assert.Equal(m.T(), hd, foundHd)
 }
@@ -107,26 +106,26 @@ func (m *MongodbSuite) TestFindMostRecentHostDataOlderThan_OnlyOne() {
 func (m *MongodbSuite) TestFindMostRecentHostDataOlderThan_MoreThanOne() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	hd := utils.LoadFixtureHostData(m.T(), "../../fixture/test_dataservice_mongohostdata_04.json")
+	hd := utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_dataservice_mongohostdata_04.json")
 	err := m.InsertHostData(hd)
 	require.NoError(m.T(), err)
 
-	aTimeAfterInsert := hd.CreatedAt.AddDate(0, 0, 1)
+	aTimeAfterInsert := hd.CreatedAt().AddDate(0, 0, 1)
 
 	m.T().Run("Should find hd even if archived", func(t *testing.T) {
-		foundHd, err := m.db.FindMostRecentHostDataOlderThan("itl-csllab-112.sorint.localpippo", aTimeAfterInsert)
+		foundHd, err := m.db.FindMostRecentHostDataMapOlderThan("itl-csllab-112.sorint.localpippo", aTimeAfterInsert)
 		require.NoError(m.T(), err)
 		assert.Equal(m.T(), hd, foundHd)
 	})
 
-	hd2 := utils.LoadFixtureHostData(m.T(), "../../fixture/test_dataservice_mongohostdata_02.json")
+	hd2 := utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_dataservice_mongohostdata_02.json")
 	err2 := m.InsertHostData(hd2)
 	require.NoError(m.T(), err2)
 	assert.NotEqual(m.T(), hd, hd2)
 
-	aTimeAfterInsert = hd2.CreatedAt.AddDate(0, 0, 1)
+	aTimeAfterInsert = hd2.CreatedAt().AddDate(0, 0, 1)
 	m.T().Run("Should find hd2, more inserts", func(t *testing.T) {
-		foundHd, err := m.db.FindMostRecentHostDataOlderThan(hd.Hostname, aTimeAfterInsert)
+		foundHd, err := m.db.FindMostRecentHostDataMapOlderThan(hd.Hostname(), aTimeAfterInsert)
 		require.NoError(m.T(), err)
 		assert.Equal(m.T(), hd2, foundHd)
 	})
@@ -150,39 +149,37 @@ func (m *MongodbSuite) TestInsertAlert_Success() {
 func (m *MongodbSuite) TestFindOldCurrentHosts() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	hd := utils.LoadFixtureHostData(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
-	hd.ID = primitive.NewObjectIDFromTimestamp(time.Now())
+	hd := utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
 	err := m.InsertHostData(hd)
 	require.NoError(m.T(), err)
 
-	hd2 := utils.LoadFixtureHostData(m.T(), "../../fixture/test_dataservice_mongohostdata_03.json")
-	hd2.ID = primitive.NewObjectIDFromTimestamp(time.Now())
+	hd2 := utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_dataservice_mongohostdata_03.json")
 	err2 := m.InsertHostData(hd2)
 	require.NoError(m.T(), err2)
 
-	assert.True(m.T(), hd.CreatedAt.Before(hd2.CreatedAt))
+	assert.True(m.T(), hd.CreatedAt().Before(hd2.CreatedAt()))
 
 	m.T().Run("Should not find any", func(t *testing.T) {
-		hosts, err := m.db.FindOldCurrentHosts(hd.CreatedAt.AddDate(0, 0, -1))
+		hosts, err := m.db.FindOldCurrentHosts(hd.CreatedAt().AddDate(0, 0, -1))
 		require.NoError(m.T(), err)
 		assert.Empty(m.T(), hosts)
 	})
 
 	m.T().Run("Should find one", func(t *testing.T) {
-		hosts, err := m.db.FindOldCurrentHosts(hd.CreatedAt.AddDate(0, 0, 15))
+		hosts, err := m.db.FindOldCurrentHosts(hd.CreatedAt().AddDate(0, 0, 15))
 		require.NoError(m.T(), err)
 
 		assert.Len(m.T(), hosts, 1)
-		expectedHosts := append(make([]string, 0), hd.Info.Hostname)
+		expectedHosts := append(make([]string, 0), hd.Hostname())
 		assert.ElementsMatch(m.T(), expectedHosts, hosts)
 	})
 
 	m.T().Run("Should find two", func(t *testing.T) {
-		hosts, err := m.db.FindOldCurrentHosts(hd2.CreatedAt.AddDate(0, 0, 1))
+		hosts, err := m.db.FindOldCurrentHosts(hd2.CreatedAt().AddDate(0, 0, 1))
 		require.NoError(m.T(), err)
 
 		assert.Len(m.T(), hosts, 2)
-		expectedHosts := append(make([]string, 0), hd.Info.Hostname, hd2.Info.Hostname)
+		expectedHosts := append(make([]string, 0), hd.Hostname(), hd2.Hostname())
 		assert.ElementsMatch(m.T(), expectedHosts, hosts)
 	})
 }
