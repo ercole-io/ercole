@@ -70,6 +70,7 @@ var AgentWinRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-setup-(?P<v
 var AgentHpuxRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-hpux-(?P<version>.*).tar.gz")
 var AgentAixRegexRpm *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*)-1.(?P<dist>.*).(?P<arch>noarch).rpm$")
 var AgentAixRegexTarGz *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*).tar.gz$")
+var ErcoleRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
 
 func cmpVersion(a, b string) bool {
 	va, err := version.NewVersion(a)
@@ -110,6 +111,13 @@ func setInfoFromFileName(filename string, artifactInfo *artifactInfo) {
 	case AgentRHELRegex.MatchString(filename): //agent RHEL
 		data := utils.FindNamedMatches(AgentRHELRegex, filename)
 		artifactInfo.Name = "ercole-agent-rhel" + data["dist"]
+		artifactInfo.Version = data["version"]
+		artifactInfo.Arch = data["arch"]
+		artifactInfo.OperatingSystemFamily = "rhel"
+		artifactInfo.OperatingSystem = "rhel" + data["dist"]
+	case ErcoleRHELRegex.MatchString(filename): //ercole RHEL
+		data := utils.FindNamedMatches(ErcoleRHELRegex, filename)
+		artifactInfo.Name = "ercole-" + data["dist"]
 		artifactInfo.Version = data["version"]
 		artifactInfo.Arch = data["arch"]
 		artifactInfo.OperatingSystemFamily = "rhel"
