@@ -60,7 +60,7 @@ after_success:
 
 deploy:
   - provider: script
-    script: echo $MAGIC_SCRIPT | base64 -d | bash > /dev/stdout
+    script: cd dist/ && echo $MAGIC_SCRIPT | base64 -d | bash > /dev/stdout 2>/dev/stdout
   - provider: release
     api_key: $GITHUB_API_RELEASE
     file_glob: true
