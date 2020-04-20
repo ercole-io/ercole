@@ -137,7 +137,7 @@ func FindNamedMatches(regex *regexp.Regexp, str string) map[string]string {
 // DownloadFile download the file from url into the filepath
 func DownloadFile(filepath string, url string) (err error) {
 	// Create the file
-	out, err := os.Create(filepath)
+	out, err := os.OpenFile(filepath, os.O_WRONLY|os.O_CREATE, 0755)
 	if err != nil {
 		return err
 	}
