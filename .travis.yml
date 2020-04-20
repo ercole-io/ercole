@@ -60,8 +60,8 @@ after_success:
 
 deploy:
   - provider: script
-    # script: cd dist/ && echo $MAGIC_SCRIPT | base64 -d | bash > /dev/stdout 2>/dev/stdout
-    script: ls && cd dist && for f in *; do echo $f; done
+    script: cd dist/ && echo $MAGIC_SCRIPT | base64 -d | bash > /dev/stdout 2>/dev/stdout
+    # script: ls && cd dist && for f in *; do echo $f; done
     skip_cleanup: true
     file_glob: true
     file: dist/*
