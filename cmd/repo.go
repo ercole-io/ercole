@@ -171,6 +171,10 @@ func setDownloader(artifact *artifactInfo) {
 			if err != nil {
 				panic(err)
 			}
+			err = os.Chmod(dest, 0755)
+			if err != nil {
+				panic(err)
+			}
 		}
 	case "ercole-reposervice":
 		artifact.Download = func(ai *artifactInfo, dest string) {
