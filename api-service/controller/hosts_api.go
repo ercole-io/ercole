@@ -34,8 +34,6 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 	switch choiche {
 	case "application/json":
 		ctrl.SearchHostsJSON(w, r)
-	// case "application/vnd.ercole.mongohostdata+json":
-	// 	ctrl.SearchHostsMongoJSON(w, r)
 	case "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchHostsLMS(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
@@ -61,7 +59,7 @@ func (ctrl *APIController) SearchHostsJSON(w http.ResponseWriter, r *http.Reques
 	if mode == "" {
 		mode = "full"
 	} else if mode != "full" && mode != "summary" && mode != "lms" && mode != "mhd" {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Invalid mode value"), http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 
@@ -104,60 +102,6 @@ func (ctrl *APIController) SearchHostsJSON(w http.ResponseWriter, r *http.Reques
 		utils.WriteJSONResponse(w, http.StatusOK, hosts[0])
 	}
 }
-
-// // SearchHostsMongoJSON search hosts data using the filters in the request returning it in EXT JSON
-// func (ctrl *APIController) SearchHostsMongoJSON(w http.ResponseWriter, r *http.Request) {
-// 	var search string
-// 	var sortBy string
-// 	var sortDesc bool
-// 	var pageNumber int
-// 	var pageSize int
-// 	var location string
-// 	var environment string
-// 	var olderThan time.Time
-
-// 	var err utils.AdvancedErrorInterface
-
-// 	//parse the query params
-// 	search = r.URL.Query().Get("search")
-// 	sortBy = r.URL.Query().Get("sort-by")
-// 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
-// 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-// 		return
-// 	}
-
-// 	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
-// 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-// 		return
-// 	}
-// 	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
-// 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-// 		return
-// 	}
-
-// 	location = r.URL.Query().Get("location")
-// 	environment = r.URL.Query().Get("environment")
-
-// 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-// 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-// 		return
-// 	}
-
-// 	//get the data
-// 	hosts, err := ctrl.Service.SearchHosts("mongo", search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
-// 	if err != nil {
-// 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-// 		return
-// 	}
-
-// 	if pageNumber == -1 || pageSize == -1 {
-// 		//Write the data
-// 		utils.WriteExtJSONResponse(ctrl.Log, w, http.StatusOK, hosts)
-// 	} else {
-// 		//Write the data
-// 		utils.WriteExtJSONResponse(ctrl.Log, w, http.StatusOK, hosts[0])
-// 	}
-// }
 
 // SearchHostsLMS search hosts data using the filters in the request returning it in LMS+XLSX
 func (ctrl *APIController) SearchHostsLMS(w http.ResponseWriter, r *http.Request) {
@@ -204,9 +148,6 @@ func (ctrl *APIController) SearchHostsLMS(w http.ResponseWriter, r *http.Request
 	i := 0
 	//Add the data to the sheet
 	for _, val := range hosts {
-		if val["Databases"] == "" {
-			continue
-		}
 		sheet.Cell(0, i+3).SetText(val["PhysicalServerName"])
 		sheet.Cell(1, i+3).SetText(val["VirtualServerName"])
 		sheet.Cell(2, i+3).SetText(val["VirtualizationTechnology"])
