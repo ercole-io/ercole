@@ -2471,7 +2471,7 @@ func TestSetLicenseCount_FailUnprocessableEntity1(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSetLicenseCount_FailUnprocessableEntity2(t *testing.T) {
+func TestSetLicensesCount_FailUnprocessableEntity2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -2502,7 +2502,7 @@ func TestSetLicenseCount_FailUnprocessableEntity2(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSetLicenseCount_FailUnprocessableEntity3(t *testing.T) {
+func TestSetLicensesCount_FailUnprocessableEntity3(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -2534,7 +2534,7 @@ func TestSetLicenseCount_FailUnprocessableEntity3(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSetLicenseCount_FailUnprocessableEntity4(t *testing.T) {
+func TestSetLicensesCount_FailUnprocessableEntity4(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -2565,7 +2565,7 @@ func TestSetLicenseCount_FailUnprocessableEntity4(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSetLicenseCount_FailUnprocessableEntity5(t *testing.T) {
+func TestSetLicensesCount_FailUnprocessableEntity5(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
