@@ -47,3 +47,9 @@ func AssertXLSXBool(t *testing.T, expected bool, cell *xlsx.Cell) {
 	assert.NoError(t, err)
 	assert.Equal(t, expected, actual)
 }
+
+type FailingReader struct{}
+
+func (fr *FailingReader) Read(p []byte) (n int, err error) {
+	return 0, aerrMock
+}
