@@ -1408,3 +1408,558 @@ func TestSearchPatchAdvisors_XLSXInternalServerError2(t *testing.T) {
 
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
+
+func TestSearchDatabases_JSONPaged(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	expectedRes := map[string]interface{}{
+		"Content": []interface{}{
+			map[string]interface{}{
+				"ArchiveLogStatus": false,
+				"BlockSize":        "8192",
+				"CPUCount":         "16",
+				"Charset":          "AL32UTF8",
+				"CreatedAt":        utils.P("2020-04-07T08:52:59.82+02:00"),
+				"DatafileSize":     "61",
+				"Dataguard":        false,
+				"Environment":      "SVIL",
+				"HA":               false,
+				"Hostname":         "publicitate-36d06ca83eafa454423d2097f4965517",
+				"Location":         "Germany",
+				"Memory":           4.199,
+				"Name":             "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+				"RAC":              false,
+				"SegmentsSize":     "41",
+				"Status":           "OPEN",
+				"UniqueName":       "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+				"Version":          "11.2.0.3.0 Enterprise Edition",
+				"Work":             "1",
+				"_id":              utils.Str2oid("5e8c234b24f648a08585bd32"),
+			},
+			map[string]interface{}{
+				"ArchiveLogStatus": false,
+				"BlockSize":        "8192",
+				"CPUCount":         "2",
+				"Charset":          "AL32UTF8",
+				"CreatedAt":        utils.P("2020-04-07T08:52:59.872+02:00"),
+				"DatafileSize":     "6",
+				"Dataguard":        false,
+				"Environment":      "TST",
+				"HA":               false,
+				"Hostname":         "test-db",
+				"Location":         "Germany",
+				"Memory":           1.484,
+				"Name":             "ERCOLE",
+				"RAC":              false,
+				"SegmentsSize":     "3",
+				"Status":           "OPEN",
+				"UniqueName":       "ERCOLE",
+				"Version":          "12.2.0.1.0 Enterprise Edition",
+				"Work":             "1",
+				"_id":              utils.Str2oid("5e8c234b24f648a08585bd43"),
+			},
+		},
+		"Metadata": map[string]interface{}{
+			"Empty":         false,
+			"First":         true,
+			"Last":          true,
+			"Number":        0,
+			"Size":          20,
+			"TotalElements": 25,
+			"TotalPages":    1,
+		},
+	}
+
+	resFromService := []map[string]interface{}{
+		expectedRes,
+	}
+
+	as.EXPECT().
+		SearchDatabases(true, "foobar", "Hostname", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		Return(resFromService, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchDatabases)
+	req, err := http.NewRequest("GET", "/databases?full=true&search=foobar&sort-by=Hostname&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+}
+
+func TestSearchDatabases_JSONUnpaged(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	expectedRes := []map[string]interface{}{
+		map[string]interface{}{
+			"ArchiveLogStatus": false,
+			"BlockSize":        "8192",
+			"CPUCount":         "16",
+			"Charset":          "AL32UTF8",
+			"CreatedAt":        utils.P("2020-04-07T08:52:59.82+02:00"),
+			"DatafileSize":     "61",
+			"Dataguard":        false,
+			"Environment":      "SVIL",
+			"HA":               false,
+			"Hostname":         "publicitate-36d06ca83eafa454423d2097f4965517",
+			"Location":         "Germany",
+			"Memory":           4.199,
+			"Name":             "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"RAC":              false,
+			"SegmentsSize":     "41",
+			"Status":           "OPEN",
+			"UniqueName":       "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"Version":          "11.2.0.3.0 Enterprise Edition",
+			"Work":             "1",
+			"_id":              utils.Str2oid("5e8c234b24f648a08585bd32"),
+		},
+		map[string]interface{}{
+			"ArchiveLogStatus": false,
+			"BlockSize":        "8192",
+			"CPUCount":         "2",
+			"Charset":          "AL32UTF8",
+			"CreatedAt":        utils.P("2020-04-07T08:52:59.872+02:00"),
+			"DatafileSize":     "6",
+			"Dataguard":        false,
+			"Environment":      "TST",
+			"HA":               false,
+			"Hostname":         "test-db",
+			"Location":         "Germany",
+			"Memory":           1.484,
+			"Name":             "ERCOLE",
+			"RAC":              false,
+			"SegmentsSize":     "3",
+			"Status":           "OPEN",
+			"UniqueName":       "ERCOLE",
+			"Version":          "12.2.0.1.0 Enterprise Edition",
+			"Work":             "1",
+			"_id":              utils.Str2oid("5e8c234b24f648a08585bd43"),
+		},
+	}
+
+	as.EXPECT().
+		SearchDatabases(false, "", "", false, -1, -1, "", "", utils.MAX_TIME).
+		Return(expectedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchDatabases)
+	req, err := http.NewRequest("GET", "/databases", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+}
+
+func TestSearchDatabases_JSONUnprocessableEntity1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchDatabases)
+	req, err := http.NewRequest("GET", "/databases?full=sasdasd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchDatabases_JSONUnprocessableEntity2(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchDatabases)
+	req, err := http.NewRequest("GET", "/databases?sort-desc=sasdasd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchDatabases_JSONUnprocessableEntity3(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchDatabases)
+	req, err := http.NewRequest("GET", "/databases?page=sasdasd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchDatabases_JSONUnprocessableEntity4(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchDatabases)
+	req, err := http.NewRequest("GET", "/databases?size=sasdasd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchDatabases_JSONUnprocessableEntity5(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchDatabases)
+	req, err := http.NewRequest("GET", "/databases?older-than=sasdasd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchDatabases_JSONInternalServerError1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		SearchDatabases(false, "", "", false, -1, -1, "", "", utils.MAX_TIME).
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchDatabases)
+	req, err := http.NewRequest("GET", "/databases", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestSearchDatabases_XLSXSuccess(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	expectedRes := []map[string]interface{}{
+		map[string]interface{}{
+			"ArchiveLogStatus": false,
+			"BlockSize":        "8192",
+			"CPUCount":         "16",
+			"Charset":          "AL32UTF8",
+			"CreatedAt":        utils.P("2020-04-07T08:52:59.82+02:00"),
+			"DatafileSize":     "61",
+			"Dataguard":        false,
+			"Environment":      "SVIL",
+			"HA":               false,
+			"Hostname":         "publicitate-36d06ca83eafa454423d2097f4965517",
+			"Location":         "Germany",
+			"Memory":           4.199,
+			"Name":             "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"RAC":              false,
+			"SegmentsSize":     "41",
+			"Status":           "OPEN",
+			"UniqueName":       "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"Version":          "11.2.0.3.0 Enterprise Edition",
+			"Work":             "1",
+			"_id":              utils.Str2oid("5e8c234b24f648a08585bd32"),
+		},
+		map[string]interface{}{
+			"ArchiveLogStatus": false,
+			"BlockSize":        "8192",
+			"CPUCount":         "2",
+			"Charset":          "AL32UTF8",
+			"CreatedAt":        utils.P("2020-04-07T08:52:59.872+02:00"),
+			"DatafileSize":     "6",
+			"Dataguard":        false,
+			"Environment":      "TST",
+			"HA":               false,
+			"Hostname":         "test-db",
+			"Location":         "Germany",
+			"Memory":           1.484,
+			"Name":             "ERCOLE",
+			"RAC":              false,
+			"SegmentsSize":     "3",
+			"Status":           "OPEN",
+			"UniqueName":       "ERCOLE",
+			"Version":          "12.2.0.1.0 Enterprise Edition",
+			"Work":             "1",
+			"_id":              utils.Str2oid("5e8c234b24f648a08585bd43"),
+		},
+	}
+
+	as.EXPECT().
+		SearchDatabases(false, "foobar", "Hostname", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		Return(expectedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchDatabases)
+	req, err := http.NewRequest("GET", "/databases?search=foobar&sort-by=Hostname&sort-desc=true&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	require.NoError(t, err)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	sp, err := xlsx.Open(rr.Body)
+	require.NoError(t, err)
+	sh := sp.SheetByName("Databases")
+	require.NotNil(t, sh)
+	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sh.Cell(0, 1).String())
+	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sh.Cell(1, 1).String())
+	assert.Equal(t, "11.2.0.3.0 Enterprise Edition", sh.Cell(2, 1).String())
+	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sh.Cell(3, 1).String())
+	assert.Equal(t, "OPEN", sh.Cell(4, 1).String())
+	assert.Equal(t, "SVIL", sh.Cell(5, 1).String())
+	assert.Equal(t, "Germany", sh.Cell(6, 1).String())
+	assert.Equal(t, "AL32UTF8", sh.Cell(7, 1).String())
+	assert.Equal(t, "8192", sh.Cell(8, 1).String())
+	assert.Equal(t, "16", sh.Cell(9, 1).String())
+	assert.Equal(t, "1", sh.Cell(10, 1).String())
+	AssertXLSXFloat(t, 4.199, sh.Cell(11, 1))
+	assert.Equal(t, "61", sh.Cell(12, 1).String())
+	assert.Equal(t, "41", sh.Cell(13, 1).String())
+	AssertXLSXBool(t, false, sh.Cell(14, 1))
+	AssertXLSXBool(t, false, sh.Cell(15, 1))
+	AssertXLSXBool(t, false, sh.Cell(16, 1))
+	AssertXLSXBool(t, false, sh.Cell(17, 1))
+
+	assert.Equal(t, "ERCOLE", sh.Cell(0, 2).String())
+	assert.Equal(t, "ERCOLE", sh.Cell(1, 2).String())
+	assert.Equal(t, "12.2.0.1.0 Enterprise Edition", sh.Cell(2, 2).String())
+	assert.Equal(t, "test-db", sh.Cell(3, 2).String())
+	assert.Equal(t, "OPEN", sh.Cell(4, 2).String())
+	assert.Equal(t, "TST", sh.Cell(5, 2).String())
+	assert.Equal(t, "Germany", sh.Cell(6, 2).String())
+	assert.Equal(t, "AL32UTF8", sh.Cell(7, 2).String())
+	assert.Equal(t, "8192", sh.Cell(8, 2).String())
+	assert.Equal(t, "2", sh.Cell(9, 2).String())
+	assert.Equal(t, "1", sh.Cell(10, 2).String())
+	AssertXLSXFloat(t, 1.484, sh.Cell(11, 2))
+	assert.Equal(t, "6", sh.Cell(12, 2).String())
+	assert.Equal(t, "3", sh.Cell(13, 2).String())
+	AssertXLSXBool(t, false, sh.Cell(14, 2))
+	AssertXLSXBool(t, false, sh.Cell(15, 2))
+	AssertXLSXBool(t, false, sh.Cell(16, 2))
+	AssertXLSXBool(t, false, sh.Cell(17, 2))
+}
+
+func TestSearchDatabases_XLSXUnprocessableEntity1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchDatabases)
+	req, err := http.NewRequest("GET", "/databases?sort-desc=sdddaadasd", nil)
+	require.NoError(t, err)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchDatabases_XLSXUnprocessableEntity2(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchDatabases)
+	req, err := http.NewRequest("GET", "/databases?older-than=sdddaadasd", nil)
+	require.NoError(t, err)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchDatabases_XLSXInternalServerError1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		SearchDatabases(false, "", "", false, -1, -1, "", "", utils.MAX_TIME).
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchDatabases)
+	req, err := http.NewRequest("GET", "/databases", nil)
+	require.NoError(t, err)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestSearchDatabases_XLSXInternalServerError2(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	expectedRes := []map[string]interface{}{
+		map[string]interface{}{
+			"ArchiveLogStatus": false,
+			"BlockSize":        "8192",
+			"CPUCount":         "16",
+			"Charset":          "AL32UTF8",
+			"CreatedAt":        utils.P("2020-04-07T08:52:59.82+02:00"),
+			"DatafileSize":     "61",
+			"Dataguard":        false,
+			"Environment":      "SVIL",
+			"HA":               false,
+			"Hostname":         "publicitate-36d06ca83eafa454423d2097f4965517",
+			"Location":         "Germany",
+			"Memory":           4.199,
+			"Name":             "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"RAC":              false,
+			"SegmentsSize":     "41",
+			"Status":           "OPEN",
+			"UniqueName":       "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"Version":          "11.2.0.3.0 Enterprise Edition",
+			"Work":             "1",
+			"_id":              utils.Str2oid("5e8c234b24f648a08585bd32"),
+		},
+		map[string]interface{}{
+			"ArchiveLogStatus": false,
+			"BlockSize":        "8192",
+			"CPUCount":         "2",
+			"Charset":          "AL32UTF8",
+			"CreatedAt":        utils.P("2020-04-07T08:52:59.872+02:00"),
+			"DatafileSize":     "6",
+			"Dataguard":        false,
+			"Environment":      "TST",
+			"HA":               false,
+			"Hostname":         "test-db",
+			"Location":         "Germany",
+			"Memory":           1.484,
+			"Name":             "ERCOLE",
+			"RAC":              false,
+			"SegmentsSize":     "3",
+			"Status":           "OPEN",
+			"UniqueName":       "ERCOLE",
+			"Version":          "12.2.0.1.0 Enterprise Edition",
+			"Work":             "1",
+			"_id":              utils.Str2oid("5e8c234b24f648a08585bd43"),
+		},
+	}
+
+	as.EXPECT().
+		SearchDatabases(false, "foobar", "Hostname", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		Return(expectedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchDatabases)
+	req, err := http.NewRequest("GET", "/databases?search=foobar&sort-by=Hostname&sort-desc=true&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	require.NoError(t, err)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
