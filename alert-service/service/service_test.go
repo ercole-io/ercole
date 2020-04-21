@@ -16,10 +16,12 @@
 package service
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
 	"github.com/leandro-lugaresi/hub"
@@ -27,6 +29,95 @@ import (
 
 	"github.com/golang/mock/gomock"
 )
+
+func TestProcessMsg_HostDataInsertion(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := AlertService{
+		Database: db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Log:      utils.NewLogger("TEST"),
+		Queue:    hub.New(),
+	}
+
+	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(hostData1, nil).Times(1)
+	db.EXPECT().FindHostData(gomock.Any()).Times(0)
+	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).Return(emptyHostData, nil).Times(1)
+	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostDataMap{}, nil).Times(0)
+	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
+		assert.Equal(t, "The server 'superhost1' was added to ercole", alert.Description)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
+	}).Times(1)
+
+	msg := hub.Message{
+		Name: "hostdata.insertion",
+		Fields: hub.Fields{
+			"id": utils.Str2oid("5dc3f534db7e81a98b726a52"),
+		},
+	}
+	as.ProcessMsg(msg)
+}
+
+func TestProcessMsg_AlertInsertion(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	emailer := NewMockEmailer(mockCtrl)
+
+	as := AlertService{
+		Emailer: emailer,
+		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:     utils.NewLogger("TEST"),
+		Queue:   hub.New(),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					To: []string{"test@ercole.test"},
+				},
+			},
+		},
+	}
+
+	emailer.EXPECT().SendEmail(
+		"MAJOR This is just an alert test to a mocked emailer. on TestHostname",
+		`Date: 2019-09-02 10:25:28 +0000 UTC
+Severity: MAJOR
+Host: TestHostname
+Code: NEW_LICENSE
+This is just an alert test to a mocked emailer.`,
+		as.Config.AlertService.Emailer.To)
+
+	fields := make(hub.Fields, 1)
+	fields["alert"] = model.Alert{
+		OtherInfo:     map[string]interface{}{"Hostname": "TestHostname"},
+		AlertSeverity: model.AlertSeverityMajor,
+		Description:   "This is just an alert test to a mocked emailer.",
+		Date:          utils.P("2019-09-02T10:25:28Z"),
+		AlertCode:     model.AlertCodeNewLicense,
+	}
+
+	msg := hub.Message{
+		Name:   "alert.insertion",
+		Fields: fields,
+	}
+	as.ProcessMsg(msg)
+}
+
+func TestProcessMsg_WrongInsertion(t *testing.T) {
+	as := AlertService{
+		Config: config.Configuration{
+			AlertService: config.AlertService{LogMessages: true}},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	msg := hub.Message{
+		Name: "",
+	}
+
+	as.ProcessMsg(msg)
+}
 
 func TestProcessHostDataInsertion_SuccessNewHost(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
@@ -41,8 +132,8 @@ func TestProcessHostDataInsertion_SuccessNewHost(t *testing.T) {
 
 	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(hostData1, nil).Times(1)
 	db.EXPECT().FindHostData(gomock.Any()).Times(0)
-	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).Return(model.HostData{}, nil).Times(1)
-	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostData{}, nil).Times(0)
+	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).Return(emptyHostData, nil).Times(1)
+	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostDataMap{}, nil).Times(0)
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, "The server 'superhost1' was added to ercole", alert.Description)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
@@ -63,9 +154,9 @@ func TestProcessHostDataInsertion_DatabaseError1(t *testing.T) {
 		Log:      utils.NewLogger("TEST"),
 	}
 
-	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(model.HostData{}, aerrMock).Times(1)
+	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(emptyHostData, aerrMock).Times(1)
 	db.EXPECT().FindHostData(gomock.Any()).Times(0)
-	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostData{}, nil).Times(0)
+	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostDataMap{}, nil).Times(0)
 
 	as.ProcessHostDataInsertion(hub.Fields{
 		"id": utils.Str2oid("5dc3f534db7e81a98b726a52"),
@@ -84,8 +175,8 @@ func TestProcessHostDataInsertion_DatabaseError2(t *testing.T) {
 
 	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(hostData1, nil).Times(1)
 	db.EXPECT().FindHostData(gomock.Any()).Times(0)
-	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).Return(model.HostData{}, aerrMock).Times(1)
-	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostData{}, nil).Times(0)
+	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).Return(model.HostDataMap{}, aerrMock).Times(1)
+	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostDataMap{}, nil).Times(0)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
 
 	as.ProcessHostDataInsertion(hub.Fields{
@@ -105,8 +196,8 @@ func TestProcessHostDataInsertion_DiffHostError3(t *testing.T) {
 
 	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(hostData1, nil).Times(1)
 	db.EXPECT().FindHostData(gomock.Any()).Times(0)
-	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).Return(model.HostData{}, nil).Times(1)
-	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostData{}, nil).Times(0)
+	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).Return(emptyHostData, nil).Times(1)
+	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostDataMap{}, nil).Times(0)
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock).Times(1)
 
 	as.ProcessHostDataInsertion(hub.Fields{
@@ -114,15 +205,137 @@ func TestProcessHostDataInsertion_DiffHostError3(t *testing.T) {
 	})
 }
 
-func TestDiffHostDataAndGenerateAlert_SuccessNoDifferences(t *testing.T) {
+func TestProcessAlertInsertion_WithHostname(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	emailer := NewMockEmailer(mockCtrl)
+
+	as := AlertService{
+		Emailer: emailer,
+		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:     utils.NewLogger("TEST"),
+		Queue:   hub.New(),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					To: []string{"test@ercole.test"},
+				},
+			},
+		},
+	}
+
+	emailer.EXPECT().SendEmail(
+		"MAJOR This is just an alert test to a mocked emailer. on TestHostname",
+		`Date: 2019-09-02 10:25:28 +0000 UTC
+Severity: MAJOR
+Host: TestHostname
+Code: NEW_LICENSE
+This is just an alert test to a mocked emailer.`,
+		as.Config.AlertService.Emailer.To)
+
+	params := make(hub.Fields, 1)
+	params["alert"] = model.Alert{
+		OtherInfo:     map[string]interface{}{"Hostname": "TestHostname"},
+		AlertSeverity: model.AlertSeverityMajor,
+		Description:   "This is just an alert test to a mocked emailer.",
+		Date:          utils.P("2019-09-02T10:25:28Z"),
+		AlertCode:     model.AlertCodeNewLicense,
+	}
+
+	as.ProcessAlertInsertion(params)
+}
+
+func TestProcessAlertInsertion_WithoutHostname(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	emailer := NewMockEmailer(mockCtrl)
+
+	as := AlertService{
+		Emailer: emailer,
+		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:     utils.NewLogger("TEST"),
+		Queue:   hub.New(),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					To: []string{"test@ercole.test"},
+				},
+			},
+		},
+	}
+
+	emailer.EXPECT().SendEmail(
+		"MAJOR This is just an alert test to a mocked emailer.",
+		`Date: 2019-09-02 10:25:28 +0000 UTC
+Severity: MAJOR
+Code: NEW_LICENSE
+This is just an alert test to a mocked emailer.`,
+		as.Config.AlertService.Emailer.To)
+
+	params := make(hub.Fields, 1)
+	params["alert"] = model.Alert{
+		OtherInfo:     map[string]interface{}{},
+		AlertSeverity: model.AlertSeverityMajor,
+		Description:   "This is just an alert test to a mocked emailer.",
+		Date:          utils.P("2019-09-02T10:25:28Z"),
+		AlertCode:     model.AlertCodeNewLicense,
+	}
+
+	as.ProcessAlertInsertion(params)
+}
+
+func TestProcessAlertInsertion_EmailerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	emailer := NewMockEmailer(mockCtrl)
+
+	as := AlertService{
+		Emailer: emailer,
+		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:     utils.NewLogger("TEST"),
+		Queue:   hub.New(),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				Emailer: config.Emailer{
+					To: []string{"test@ercole.test"},
+				},
+			},
+		},
+	}
+
+	emailer.EXPECT().SendEmail(
+		"MAJOR This is just an alert test to a mocked emailer.",
+		`Date: 2019-09-02 10:25:28 +0000 UTC
+Severity: MAJOR
+Code: NEW_LICENSE
+This is just an alert test to a mocked emailer.`,
+		as.Config.AlertService.Emailer.To).
+		Return(utils.NewAdvancedErrorPtr(fmt.Errorf("test error from emailer"), "test EMAILER"))
+
+	params := make(hub.Fields, 1)
+	params["alert"] = model.Alert{
+		OtherInfo:     map[string]interface{}{},
+		AlertSeverity: model.AlertSeverityMajor,
+		Description:   "This is just an alert test to a mocked emailer.",
+		Date:          utils.P("2019-09-02T10:25:28Z"),
+		AlertCode:     model.AlertCodeNewLicense,
+	}
+
+	as.ProcessAlertInsertion(params)
+}
+
+func TestDiffHostDataMapAndGenerateAlert_SuccessNoDifferences(t *testing.T) {
 	as := AlertService{
 		Log: utils.NewLogger("TEST"),
 	}
 
-	require.NoError(t, as.DiffHostDataAndGenerateAlert(hostData2, hostData1))
+	require.NoError(t, as.DiffHostDataMapAndGenerateAlert(hostData2, hostData1))
 }
 
-func TestDiffHostDataAndGenerateAlert_SuccessNewHost(t *testing.T) {
+func TestDiffHostDataMapAndGenerateAlert_SuccessNewHost(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -141,10 +354,10 @@ func TestDiffHostDataAndGenerateAlert_SuccessNewHost(t *testing.T) {
 	}}).Return(nil, nil).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
 
-	require.NoError(t, as.DiffHostDataAndGenerateAlert(model.HostData{}, hostData1))
+	require.NoError(t, as.DiffHostDataMapAndGenerateAlert(emptyHostData, hostData1))
 }
 
-func TestDiffHostDataAndGenerateAlert_SuccessNewDatabase(t *testing.T) {
+func TestDiffHostDataMapAndGenerateAlert_SuccessNewDatabase(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -164,10 +377,10 @@ func TestDiffHostDataAndGenerateAlert_SuccessNewDatabase(t *testing.T) {
 	}}).Return(nil, nil).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
 
-	require.NoError(t, as.DiffHostDataAndGenerateAlert(hostData1, hostData3))
+	require.NoError(t, as.DiffHostDataMapAndGenerateAlert(hostData1, hostData3))
 }
 
-func TestDiffHostDataAndGenerateAlert_SuccessNewEnterpriseLicense(t *testing.T) {
+func TestDiffHostDataMapAndGenerateAlert_SuccessNewEnterpriseLicense(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -194,10 +407,10 @@ func TestDiffHostDataAndGenerateAlert_SuccessNewEnterpriseLicense(t *testing.T) 
 	}}).Return(nil, nil).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
 
-	require.NoError(t, as.DiffHostDataAndGenerateAlert(hostData3, hostData4))
+	require.NoError(t, as.DiffHostDataMapAndGenerateAlert(hostData3, hostData4))
 }
 
-func TestDiffHostDataAndGenerateAlert_DatabaseError1(t *testing.T) {
+func TestDiffHostDataMapAndGenerateAlert_DatabaseError1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -215,10 +428,10 @@ func TestDiffHostDataAndGenerateAlert_DatabaseError1(t *testing.T) {
 	}}).Return(nil, aerrMock).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
 
-	require.Equal(t, aerrMock, as.DiffHostDataAndGenerateAlert(model.HostData{}, hostData1))
+	require.Equal(t, aerrMock, as.DiffHostDataMapAndGenerateAlert(emptyHostData, hostData1))
 }
 
-func TestDiffHostDataAndGenerateAlert_DatabaseError2(t *testing.T) {
+func TestDiffHostDataMapAndGenerateAlert_DatabaseError2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -237,10 +450,10 @@ func TestDiffHostDataAndGenerateAlert_DatabaseError2(t *testing.T) {
 	}}).Return(nil, aerrMock).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
 
-	require.Equal(t, aerrMock, as.DiffHostDataAndGenerateAlert(hostData1, hostData3))
+	require.Equal(t, aerrMock, as.DiffHostDataMapAndGenerateAlert(hostData1, hostData3))
 }
 
-func TestDiffHostDataAndGenerateAlert_DatabaseError3(t *testing.T) {
+func TestDiffHostDataMapAndGenerateAlert_DatabaseError3(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -258,10 +471,10 @@ func TestDiffHostDataAndGenerateAlert_DatabaseError3(t *testing.T) {
 	}}).Return(nil, aerrMock).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
 
-	require.Equal(t, aerrMock, as.DiffHostDataAndGenerateAlert(hostData3, hostData4))
+	require.Equal(t, aerrMock, as.DiffHostDataMapAndGenerateAlert(hostData3, hostData4))
 }
 
-func TestDiffHostDataAndGenerateAlert_DatabaseError4(t *testing.T) {
+func TestDiffHostDataMapAndGenerateAlert_DatabaseError4(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -288,5 +501,5 @@ func TestDiffHostDataAndGenerateAlert_DatabaseError4(t *testing.T) {
 	}}).Return(nil, aerrMock).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
 
-	require.Equal(t, aerrMock, as.DiffHostDataAndGenerateAlert(hostData3, hostData4))
+	require.Equal(t, aerrMock, as.DiffHostDataMapAndGenerateAlert(hostData3, hostData4))
 }
