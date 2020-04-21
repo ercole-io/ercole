@@ -41,3 +41,9 @@ func AssertXLSXInt(t *testing.T, expected int, cell *xlsx.Cell) {
 	assert.NoError(t, err)
 	assert.Equal(t, expected, actual)
 }
+
+func AssertXLSXBool(t *testing.T, expected bool, cell *xlsx.Cell) {
+	actual, err := cell.Bool()
+	assert.NoError(t, err)
+	assert.Equal(t, expected, actual)
+}
