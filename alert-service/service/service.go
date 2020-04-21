@@ -129,6 +129,7 @@ func (as *AlertService) ProcessMsg(msg hub.Message) {
 	case model.TopicAlertInsertion:
 		as.ProcessAlertInsertion(msg.Fields)
 	default:
+		as.Log.Warnf("Received message with unknown topic: %s", msg.Topic())
 	}
 }
 
@@ -144,14 +145,14 @@ func (as *AlertService) ProcessHostDataInsertion(params hub.Fields) {
 	}
 
 	//Get the previous data
-	oldData, err := as.Database.FindMostRecentHostDataOlderThan(newData.Hostname, newData.CreatedAt)
+	oldData, err := as.Database.FindMostRecentHostDataOlderThan(newData.Hostname(), newData.CreatedAt())
 	if err != nil {
 		utils.LogErr(as.Log, err)
 		return
 	}
 
 	//Find the data difference and generate eventually alerts
-	if err := as.DiffHostDataAndGenerateAlert(oldData, newData); err != nil {
+	if err := as.DiffHostDataMapAndGenerateAlert(oldData, newData); err != nil {
 		utils.LogErr(as.Log, err)
 		return
 	}
@@ -180,24 +181,20 @@ func (as *AlertService) ProcessAlertInsertion(params hub.Fields) {
 	}
 }
 
-// DiffHostDataAndGenerateAlert find the difference between the data and generate eventually alerts for such difference
-func (as *AlertService) DiffHostDataAndGenerateAlert(oldData model.HostData, newData model.HostData) utils.AdvancedErrorInterface {
+// DiffHostDataMapAndGenerateAlert find the difference between the data and generate eventually alerts for such difference
+func (as *AlertService) DiffHostDataMapAndGenerateAlert(oldData model.HostDataMap, newData model.HostDataMap) utils.AdvancedErrorInterface {
 	newEnterpriseLicenseAlertThrown := false
-	//Modify the data to make the comparison more easier
-	if oldData.Extra.Databases == nil {
-		oldData.Extra.Databases = []model.Database{}
-	}
-	if newData.Extra.Databases == nil {
-		newData.Extra.Databases = []model.Database{}
-	}
+
+	oldExtra := oldData.Extra()
+	newExtra := newData.Extra()
 
 	//Convert databases array to map
-	oldDatabases := model.DatabasesArrayAsMap(oldData.Extra.Databases)
-	newDatabases := model.DatabasesArrayAsMap(newData.Extra.Databases)
+	oldDatabases := model.DatabaseMapArrayAsMap(oldExtra.Databases())
+	newDatabases := model.DatabaseMapArrayAsMap(newExtra.Databases())
 
 	//If the oldData is empty, fire a new server
-	if oldData.Hostname == "" {
-		if err := as.ThrowNewServerAlert(newData.Hostname); err != nil {
+	if oldData.Hostname() == "" {
+		if err := as.ThrowNewServerAlert(newData.Hostname()); err != nil {
 			return err
 		}
 	}
@@ -205,29 +202,36 @@ func (as *AlertService) DiffHostDataAndGenerateAlert(oldData model.HostData, new
 	//For each new database
 	for _, newDb := range newDatabases {
 		//Get the old database if exist
-		var oldDb model.Database
-		if val, ok := oldDatabases[newDb.Name]; ok {
+		var oldDb model.DatabaseMap
+		if val, ok := oldDatabases[newDb.Name()]; ok {
 			oldDb = val
 		} else {
-			oldDb = model.Database{
-				Features: []model.Feature{},
+			oldDb = model.DatabaseMap{
+				"Licenses": primitive.A{},
+				"Features": primitive.A{},
 			}
 			// fire NEW_DATABASE alert
-			if err := as.ThrowNewDatabaseAlert(newDb.Name, newData.Hostname); err != nil {
+			if err := as.ThrowNewDatabaseAlert(newDb.Name(), newData.Hostname()); err != nil {
 				return err
 			}
 		}
 
+		oldDataInfo := oldData.Info()
+		newDataInfo := oldData.Info()
+
 		//Find new enterprises licenses
-		if ((oldData.Info.CPUCores < newData.Info.CPUCores) || (!model.HasEnterpriseLicense(oldDb) && model.HasEnterpriseLicense(newDb))) && !newEnterpriseLicenseAlertThrown {
-			if err := as.ThrowNewEnterpriseLicenseAlert(newData.Hostname); err != nil {
+		if ((oldDataInfo.CPUCores() < newDataInfo.CPUCores()) || (!oldDb.HasEnterpriseLicense() && newDb.HasEnterpriseLicense())) && !newEnterpriseLicenseAlertThrown {
+			if err := as.ThrowNewEnterpriseLicenseAlert(newData.Hostname()); err != nil {
 				return err
 			}
 			newEnterpriseLicenseAlertThrown = true
 		}
 
+		fmt.Printf("%v", oldDb.Features())
+		fmt.Printf("%v", newDb.Features())
+
 		//Get the difference of features
-		diff := model.DiffFeature(oldDb.Features, newDb.Features)
+		diff := model.DiffFeatureMap(oldDb.Features(), newDb.Features())
 
 		//Extract from the diff the activated features
 		activatedFeatures := []string{}
@@ -239,7 +243,7 @@ func (as *AlertService) DiffHostDataAndGenerateAlert(oldData model.HostData, new
 
 		//Throw alert for activated features
 		if len(activatedFeatures) > 0 {
-			if err := as.ThrowActivatedFeaturesAlert(newDb.Name, newData.Hostname, activatedFeatures); err != nil {
+			if err := as.ThrowActivatedFeaturesAlert(newDb.Name(), newData.Hostname(), activatedFeatures); err != nil {
 				return err
 			}
 		}
