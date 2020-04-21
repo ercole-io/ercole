@@ -16,6 +16,7 @@
 package controller
 
 import (
+	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -2331,4 +2332,267 @@ func TestGetLicense_NotFound(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusNotFound, rr.Code)
+}
+
+func TestSetLicenseCount_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	payload := []map[string]interface{}{
+		map[string]interface{}{
+			"_id":   "Oracle ENT",
+			"Count": 10,
+		},
+		map[string]interface{}{
+			"_id":   "Oracle STD",
+			"Count": 20,
+		},
+	}
+
+	as.EXPECT().SetLicensesCount(payload).Return(nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetLicensesCount)
+	req, err := http.NewRequest("PUT", "/licenses", bytes.NewReader([]byte(utils.ToJSON(payload))))
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+}
+
+func TestSetLicenseCount_FailedReadOnly(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: true,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	payload := []map[string]interface{}{
+		map[string]interface{}{
+			"_id":   "Oracle ENT",
+			"Count": 10,
+		},
+		map[string]interface{}{
+			"_id":   "Oracle STD",
+			"Count": 20,
+		},
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetLicensesCount)
+	req, err := http.NewRequest("PUT", "/licenses", bytes.NewReader([]byte(utils.ToJSON(payload))))
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusForbidden, rr.Code)
+}
+
+func TestSetLicenseCount_FailedInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	payload := []map[string]interface{}{
+		map[string]interface{}{
+			"_id":   "Oracle ENT",
+			"Count": 10,
+		},
+		map[string]interface{}{
+			"_id":   "Oracle STD",
+			"Count": 20,
+		},
+	}
+
+	as.EXPECT().SetLicensesCount(payload).Return(aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetLicensesCount)
+	req, err := http.NewRequest("PUT", "/licenses", bytes.NewReader([]byte(utils.ToJSON(payload))))
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestSetLicenseCount_FailUnprocessableEntity1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetLicensesCount)
+	req, err := http.NewRequest("PUT", "/licenses", bytes.NewReader([]byte{100, 200}))
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSetLicenseCount_FailUnprocessableEntity2(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	payload := []map[string]interface{}{
+		map[string]interface{}{
+			"Count": 10,
+		},
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetLicensesCount)
+	req, err := http.NewRequest("PUT", "/licenses", bytes.NewReader([]byte(utils.ToJSON(payload))))
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSetLicenseCount_FailUnprocessableEntity3(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	payload := []map[string]interface{}{
+		map[string]interface{}{
+			"_id":   456546,
+			"Count": 10,
+		},
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetLicensesCount)
+	req, err := http.NewRequest("PUT", "/licenses", bytes.NewReader([]byte(utils.ToJSON(payload))))
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSetLicenseCount_FailUnprocessableEntity4(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	payload := []map[string]interface{}{
+		map[string]interface{}{
+			"_id": "Oracle ENT",
+		},
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetLicensesCount)
+	req, err := http.NewRequest("PUT", "/licenses", bytes.NewReader([]byte(utils.ToJSON(payload))))
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSetLicenseCount_FailUnprocessableEntity5(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	payload := []map[string]interface{}{
+		map[string]interface{}{
+			"_id":   "Oracle ENT",
+			"Count": "ssadsad",
+		},
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetLicensesCount)
+	req, err := http.NewRequest("PUT", "/licenses", bytes.NewReader([]byte(utils.ToJSON(payload))))
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
