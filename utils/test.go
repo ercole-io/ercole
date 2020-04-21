@@ -11,6 +11,7 @@ import (
 	"github.com/amreo/ercole-services/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -23,10 +24,10 @@ func P(s string) time.Time {
 	return t
 }
 
-//PDT parse the string s and return the equivalent time
+//PDT parse the string s and return the equivalent bson primitive time
 func PDT(s string) primitive.DateTime {
-	t, _ := time.Parse(time.RFC3339, s)
-	return primitive.NewDateTimeFromTime(t)
+	time := P(s)
+	return primitive.NewDateTimeFromTime(time)
 }
 
 //Btc break the time continuum and return a function that return the time t
@@ -51,6 +52,17 @@ func LoadFixtureHostData(t *testing.T, filename string) model.HostData {
 	require.NoError(t, json.Unmarshal(raw, &hd))
 
 	return hd
+}
+
+//LoadFixtureHostDataMap load the hostdata in the filename and return it
+func LoadFixtureHostDataMap(t *testing.T, filename string) model.HostDataMap {
+	raw, err := ioutil.ReadFile(filename)
+	require.NoError(t, err)
+
+	var hd map[string]interface{}
+	require.NoError(t, bson.UnmarshalExtJSON(raw, true, &hd))
+
+	return model.HostDataMap(hd)
 }
 
 // AssertFuncAreTheSame tests if funcExpected is the same of funcActual
