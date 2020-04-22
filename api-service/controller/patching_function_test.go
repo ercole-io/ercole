@@ -571,3 +571,157 @@ func TestDeleteTagOfDatabase_FailInternalServerError(t *testing.T) {
 
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
+
+func TestSetLicenseModifier_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().SetLicenseModifier("test-db", "ERCOLE", "Diagnostics Pack", 20).Return(nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetLicenseModifier)
+	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/licenses/Diagnostics%20Pack", strings.NewReader("20"))
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname":    "test-db",
+		"dbname":      "ERCOLE",
+		"licenseName": "Diagnostics Pack",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+}
+
+func TestSetLicenseModifier_FailReadOnly(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: true,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetLicenseModifier)
+	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/licenses/Diagnostics%20Pack", strings.NewReader("20"))
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname":    "test-db",
+		"dbname":      "ERCOLE",
+		"licenseName": "Diagnostics Pack",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusForbidden, rr.Code)
+}
+
+func TestSetLicenseModifier_FailBadRequest(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetLicenseModifier)
+	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/licenses/Diagnostics%20Pack", &FailingReader{})
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname":    "test-db",
+		"dbname":      "ERCOLE",
+		"licenseName": "Diagnostics Pack",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusBadRequest, rr.Code)
+}
+
+func TestSetLicenseModifier_FailUnprocessableEntity(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetLicenseModifier)
+	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/licenses/Diagnostics%20Pack", strings.NewReader("sdfsdfsd"))
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname":    "test-db",
+		"dbname":      "ERCOLE",
+		"licenseName": "Diagnostics Pack",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSetLicenseModifier_FailInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().SetLicenseModifier("test-db", "ERCOLE", "Diagnostics Pack", 20).Return(aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetLicenseModifier)
+	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/licenses/Diagnostics%20Pack", strings.NewReader("20"))
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname":    "test-db",
+		"dbname":      "ERCOLE",
+		"licenseName": "Diagnostics Pack",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
