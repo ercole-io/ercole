@@ -1187,3 +1187,257 @@ func TestGetHost_MongoJSONFailNotFound(t *testing.T) {
 
 	require.Equal(t, http.StatusNotFound, rr.Code)
 }
+
+func TestListLocations_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	expectedRes := []string{"Italy", "German", "France"}
+
+	as.EXPECT().
+		ListLocations("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		Return(expectedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.ListLocations)
+	req, err := http.NewRequest("GET", "/locations?environment=TST&location=Italy&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+}
+
+func TestListLocations_FailUnprocessableEntity1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.ListLocations)
+	req, err := http.NewRequest("GET", "/locations?older-than=dfsgdfsg", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestListLocations_FailInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		ListLocations("", "", utils.MAX_TIME).
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.ListLocations)
+	req, err := http.NewRequest("GET", "/locations", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestListEnvironments_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	expectedRes := []string{"TST", "PRD", "DEV"}
+
+	as.EXPECT().
+		ListEnvironments("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		Return(expectedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.ListEnvironments)
+	req, err := http.NewRequest("GET", "/environments?environment=TST&location=Italy&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+}
+
+func TestListEnvironments_FailUnprocessableEntity1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.ListEnvironments)
+	req, err := http.NewRequest("GET", "/environments?older-than=dfsgdfsg", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestListEnvironments_FailInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		ListEnvironments("", "", utils.MAX_TIME).
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.ListEnvironments)
+	req, err := http.NewRequest("GET", "/environments", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestArchiveHost_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().ArchiveHost("foobar").Return(nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.ArchiveHost)
+	req, err := http.NewRequest("DELETE", "/hosts/foobar", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "foobar",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+}
+
+func TestArchiveHost_FailReadOnly(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: true,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.ArchiveHost)
+	req, err := http.NewRequest("DELETE", "/hosts/foobar", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "foobar",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusForbidden, rr.Code)
+}
+
+func TestArchiveHost_FailNotFound(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().ArchiveHost("foobar").Return(utils.AerrHostNotFound)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.ArchiveHost)
+	req, err := http.NewRequest("DELETE", "/hosts/foobar", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "foobar",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusNotFound, rr.Code)
+}
+
+func TestArchiveHost_FailInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().ArchiveHost("foobar").Return(aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.ArchiveHost)
+	req, err := http.NewRequest("DELETE", "/hosts/foobar", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "foobar",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
