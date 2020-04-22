@@ -227,7 +227,7 @@ func (ctrl *APIController) SearchHostsXLSX(w http.ResponseWriter, r *http.Reques
 			sheet.Cell(4, i+1).SetText(val["PhysicalHost"])
 		}
 		sheet.Cell(5, i+1).SetText(val["Version"])
-		sheet.Cell(6, i+1).SetText(val["CreatedAt"].(primitive.DateTime).Time().String())
+		sheet.Cell(6, i+1).SetText(val["CreatedAt"].(primitive.DateTime).Time().UTC().String())
 		sheet.Cell(7, i+1).SetText(val["Databases"])
 		sheet.Cell(8, i+1).SetText(val["OS"])
 		sheet.Cell(9, i+1).SetText(val["Kernel"])
