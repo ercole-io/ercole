@@ -16,6 +16,7 @@
 package controller
 
 import (
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -23,6 +24,7 @@ import (
 	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/utils"
 	gomock "github.com/golang/mock/gomock"
+	"github.com/gorilla/mux"
 	"github.com/plandem/xlsx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -883,4 +885,305 @@ func TestSearchHosts_XLSXInternalServerError2(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestGetHost_JSONSuccess(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	expectedRes := map[string]interface{}{
+		"Archived":    false,
+		"Cluster":     "Puzzait",
+		"CreatedAt":   utils.P("2020-04-15T08:46:58.466+02:00"),
+		"Databases":   "",
+		"Environment": "PROD",
+		"Extra": map[string]interface{}{
+			"Clusters": []interface{}{
+				map[string]interface{}{
+					"CPU":     140,
+					"Name":    "Puzzait",
+					"Sockets": 10,
+					"Type":    "vmware",
+					"VMs": []interface{}{
+						map[string]interface{}{
+							"CappedCPU":    false,
+							"ClusterName":  "Puzzait",
+							"Hostname":     "test-virt",
+							"Name":         "test-virt",
+							"PhysicalHost": "s157-cb32c10a56c256746c337e21b3f82402",
+						},
+						map[string]interface{}{
+							"CappedCPU":    false,
+							"ClusterName":  "Puzzait",
+							"Hostname":     "test-db",
+							"Name":         "test-db",
+							"PhysicalHost": "s157-cb32c10a56c256746c337e21b3f82402",
+						},
+					},
+				},
+			},
+			"Databases": []interface{}{},
+			"Filesystems": []interface{}{
+				map[string]interface{}{
+					"Available":  "4.6G",
+					"Filesystem": "/dev/mapper/vg_os-lv_root",
+					"FsType":     "xfs",
+					"MountedOn":  "/",
+					"Size":       "8.0G",
+					"Used":       "3.5G",
+					"UsedPerc":   "43%",
+				},
+			},
+		},
+		"HostDataSchemaVersion": 3,
+		"HostType":              "virtualization",
+		"Hostname":              "test-virt",
+		"Info": map[string]interface{}{
+			"AixCluster":     false,
+			"CPUCores":       1,
+			"CPUModel":       "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
+			"CPUThreads":     2,
+			"Environment":    "PROD",
+			"Hostname":       "test-virt",
+			"Kernel":         "3.10.0-862.9.1.el7.x86_64",
+			"Location":       "Italy",
+			"MemoryTotal":    3,
+			"OS":             "Red Hat Enterprise Linux Server release 7.5 (Maipo)",
+			"OracleCluster":  false,
+			"Socket":         2,
+			"SunCluster":     false,
+			"SwapTotal":      4,
+			"Type":           "VMWARE",
+			"VeritasCluster": false,
+			"Virtual":        true,
+		},
+		"Location":      "Italy",
+		"PhysicalHost":  "s157-cb32c10a56c256746c337e21b3f82402",
+		"SchemaVersion": 1,
+		"Schemas":       "",
+		"ServerVersion": "latest",
+		"Version":       "1.6.1",
+		"_id":           utils.Str2oid("5e96ade270c184faca93fe34"),
+	}
+
+	as.EXPECT().
+		GetHost("foobar", utils.P("2020-06-10T11:54:59Z"), false).
+		Return(expectedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetHost)
+	req, err := http.NewRequest("GET", "/hosts/foobar?older-than=2020-06-10T11%3A54%3A59Z", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "foobar",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+}
+
+func TestGetHost_JSONFailUnprocessableEntity(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetHost)
+	req, err := http.NewRequest("GET", "/hosts/foobar?older-than=fgfggf", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "foobar",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestGetHost_JSONFailInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		GetHost("foobar", utils.MAX_TIME, false).
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetHost)
+	req, err := http.NewRequest("GET", "/hosts/foobar", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "foobar",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestGetHost_JSONFailNotFound(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		GetHost("foobar", utils.MAX_TIME, false).
+		Return(nil, utils.AerrHostNotFound)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetHost)
+	req, err := http.NewRequest("GET", "/hosts/foobar", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "foobar",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusNotFound, rr.Code)
+}
+
+func TestGetHost_MongoJSONSuccess(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	res := utils.LoadFixtureHostDataMap(t, "../../fixture/test_dataservice_mongohostdata_02.json")
+	expectedRes, err := ioutil.ReadFile("../../fixture/test_dataservice_mongohostdata_02.json")
+	require.NoError(t, err)
+
+	as.EXPECT().
+		GetHost("foobar", utils.P("2020-06-10T11:54:59Z"), true).
+		Return(res, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetHost)
+	req, err := http.NewRequest("GET", "/hosts/foobar?older-than=2020-06-10T11%3A54%3A59Z", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "foobar",
+	})
+	req.Header.Add("Accept", "application/vnd.ercole.mongohostdata+json")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, string(expectedRes), rr.Body.String())
+}
+
+func TestGetHost_MongoJSONFailUnprocessableEntity(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetHost)
+	req, err := http.NewRequest("GET", "/hosts/foobar?older-than=fgfggf", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "foobar",
+	})
+	req.Header.Add("Accept", "application/vnd.ercole.mongohostdata+json")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestGetHost_MongoJSONFailInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		GetHost("foobar", utils.MAX_TIME, true).
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetHost)
+	req, err := http.NewRequest("GET", "/hosts/foobar", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "foobar",
+	})
+	req.Header.Add("Accept", "application/vnd.ercole.mongohostdata+json")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestGetHost_MongoJSONFailNotFound(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		GetHost("foobar", utils.MAX_TIME, true).
+		Return(nil, utils.AerrHostNotFound)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetHost)
+	req, err := http.NewRequest("GET", "/hosts/foobar", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "foobar",
+	})
+	req.Header.Add("Accept", "application/vnd.ercole.mongohostdata+json")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusNotFound, rr.Code)
 }
