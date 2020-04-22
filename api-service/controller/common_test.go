@@ -53,3 +53,20 @@ type FailingReader struct{}
 func (fr *FailingReader) Read(p []byte) (n int, err error) {
 	return 0, aerrMock
 }
+
+// type patchingFunctionSimilarTo struct{ pf model.PatchingFunction }
+
+// func (sp *patchingFunctionSimilarTo) Matches(x interface{}) bool {
+// 	fmt.Printf("%#v\n%#v\n", sp.pf, x)
+// 	if val, ok := x.(model.PatchingFunction); !ok {
+// 		return false
+// 	} else if val.Code != sp.pf.Code {
+// 		return false
+// 	} else {
+// 		return reflect.DeepEqual(sp.pf.Vars, val.Vars)
+// 	}
+// }
+
+// func (sp *patchingFunctionSimilarTo) String() string {
+// 	return fmt.Sprintf("is similar to %v", sp.pf)
+// }

@@ -18,6 +18,7 @@ package controller
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/amreo/ercole-services/config"
@@ -121,6 +122,236 @@ func TestGetPatchingFunction_FailInternalServerError(t *testing.T) {
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "test-db",
 	})
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestSetPatchingFunction_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly:                              false,
+				EnableInsertingCustomPatchingFunction: true,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	pf := model.PatchingFunction{
+		Code: "//OK",
+		Vars: map[string]interface{}{
+			"Tags": map[string]interface{}{
+				"ERCOLE": []interface{}{"foobar"},
+			},
+		},
+		ID: nil,
+	}
+
+	as.EXPECT().SetPatchingFunction("test-db", pf).Return(utils.Str2oid("5e9ff545e4c53a19c79eadfd"), nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetPatchingFunction)
+	req, err := http.NewRequest("PUT", "/hosts/test.db/patching-function", strings.NewReader(utils.ToJSON(pf)))
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "test-db",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+}
+
+func TestSetPatchingFunction_FailReadOnly(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly:                              true,
+				EnableInsertingCustomPatchingFunction: true,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	pf := model.PatchingFunction{
+		Code: "//OK",
+		Vars: map[string]interface{}{
+			"Tags": map[string]interface{}{
+				"ERCOLE": []interface{}{"foobar"},
+			},
+		},
+		ID: nil,
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetPatchingFunction)
+	req, err := http.NewRequest("PUT", "/hosts/test.db/patching-function", strings.NewReader(utils.ToJSON(pf)))
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "test-db",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusForbidden, rr.Code)
+}
+
+func TestSetPatchingFunction_FailDisabled(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly:                              false,
+				EnableInsertingCustomPatchingFunction: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	pf := model.PatchingFunction{
+		Code: "//OK",
+		Vars: map[string]interface{}{
+			"Tags": map[string]interface{}{
+				"ERCOLE": []interface{}{"foobar"},
+			},
+		},
+		ID: nil,
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetPatchingFunction)
+	req, err := http.NewRequest("PUT", "/hosts/test.db/patching-function", strings.NewReader(utils.ToJSON(pf)))
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "test-db",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusForbidden, rr.Code)
+}
+
+func TestSetPatchingFunction_FailUnprocessableEntity(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly:                              false,
+				EnableInsertingCustomPatchingFunction: true,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetPatchingFunction)
+	req, err := http.NewRequest("PUT", "/hosts/test.db/patching-function", strings.NewReader("sddassd"))
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "test-db",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSetPatchingFunction_FailNotFound(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly:                              false,
+				EnableInsertingCustomPatchingFunction: true,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	pf := model.PatchingFunction{
+		Code: "//OK",
+		Vars: map[string]interface{}{
+			"Tags": map[string]interface{}{
+				"ERCOLE": []interface{}{"foobar"},
+			},
+		},
+		ID: nil,
+	}
+
+	as.EXPECT().SetPatchingFunction("test-db", pf).Return(nil, utils.AerrHostNotFound)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetPatchingFunction)
+	req, err := http.NewRequest("PUT", "/hosts/test.db/patching-function", strings.NewReader(utils.ToJSON(pf)))
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "test-db",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusNotFound, rr.Code)
+}
+
+func TestSetPatchingFunction_FailInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly:                              false,
+				EnableInsertingCustomPatchingFunction: true,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	pf := model.PatchingFunction{
+		Code: "//OK",
+		Vars: map[string]interface{}{
+			"Tags": map[string]interface{}{
+				"ERCOLE": []interface{}{"foobar"},
+			},
+		},
+		ID: nil,
+	}
+
+	as.EXPECT().SetPatchingFunction("test-db", pf).Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SetPatchingFunction)
+	req, err := http.NewRequest("PUT", "/hosts/test.db/patching-function", strings.NewReader(utils.ToJSON(pf)))
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "test-db",
+	})
+	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
 
