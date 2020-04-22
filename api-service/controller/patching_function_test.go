@@ -357,3 +357,123 @@ func TestSetPatchingFunction_FailInternalServerError(t *testing.T) {
 
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
+
+func TestAddTagToDatabase_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().AddTagToDatabase("test-db", "ERCOLE", "awesome").Return(nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AddTagToDatabase)
+	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/tags", strings.NewReader("awesome"))
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "test-db",
+		"dbname":   "ERCOLE",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+}
+
+func TestAddTagToDatabase_FailReadOnly(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: true,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AddTagToDatabase)
+	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/tags", strings.NewReader("awesome"))
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "test-db",
+		"dbname":   "ERCOLE",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusForbidden, rr.Code)
+}
+
+func TestAddTagToDatabase_FailBadRequest(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AddTagToDatabase)
+	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/tags", &FailingReader{})
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "test-db",
+		"dbname":   "ERCOLE",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusBadRequest, rr.Code)
+}
+
+func TestAddTagToDatabase_FailInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().AddTagToDatabase("test-db", "ERCOLE", "awesome").Return(aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AddTagToDatabase)
+	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/tags", strings.NewReader("awesome"))
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "test-db",
+		"dbname":   "ERCOLE",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
