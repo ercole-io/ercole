@@ -477,3 +477,97 @@ func TestAddTagToDatabase_FailInternalServerError(t *testing.T) {
 
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
+
+func TestDeleteTagOfDatabase_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().DeleteTagOfDatabase("test-db", "ERCOLE", "awesome").Return(nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.DeleteTagOfDatabase)
+	req, err := http.NewRequest("DELETE", "/hosts/test-db/databases/ERCOLE/tags/awesome", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "test-db",
+		"dbname":   "ERCOLE",
+		"tagname":  "awesome",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+}
+
+func TestDeleteTagOfDatabase_FailReadOnly(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: true,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.DeleteTagOfDatabase)
+	req, err := http.NewRequest("DELETE", "/hosts/test-db/databases/ERCOLE/tags/awesome", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "test-db",
+		"dbname":   "ERCOLE",
+		"tagname":  "awesome",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusForbidden, rr.Code)
+}
+
+func TestDeleteTagOfDatabase_FailInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().DeleteTagOfDatabase("test-db", "ERCOLE", "awesome").Return(aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.DeleteTagOfDatabase)
+	req, err := http.NewRequest("DELETE", "/hosts/test-db/databases/ERCOLE/tags/awesome", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"hostname": "test-db",
+		"dbname":   "ERCOLE",
+		"tagname":  "awesome",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
