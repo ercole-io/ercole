@@ -25,9 +25,11 @@ import (
 	migration "github.com/amreo/ercole-services/database-migration"
 	"github.com/amreo/ercole-services/model"
 	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson"
 
 	"math/rand"
 
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -73,4 +75,19 @@ func (db *MongodbSuite) TearDownSuite() {
 func (db *MongodbSuite) InsertHostData(hostData model.HostDataMap) error {
 	_, err := db.db.Client.Database(db.dbname).Collection("hosts").InsertOne(context.TODO(), hostData)
 	return err
+}
+
+func (db *MongodbSuite) RunTestQuery(testName string, query bson.A, check func(out []map[string]interface{})) {
+	db.Run(testName, func() {
+		cur, err := db.db.Client.Database(db.db.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+			context.TODO(),
+			query,
+		)
+		require.NoError(db.T(), err)
+
+		var out []map[string]interface{} = make([]map[string]interface{}, 0)
+		require.NoError(db.T(), cur.All(context.TODO(), &out))
+
+		check(out)
+	})
 }
