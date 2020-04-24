@@ -122,7 +122,7 @@ func (ctrl *APIController) GetDatabasePatchStatusStats(w http.ResponseWriter, r 
 	}
 
 	//get the data
-	stats, err := ctrl.Service.GetDatabasePatchStatusStats(location, time.Now().AddDate(0, -windowTime, 0), olderThan)
+	stats, err := ctrl.Service.GetDatabasePatchStatusStats(location, ctrl.TimeNow().AddDate(0, -windowTime, 0), olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
