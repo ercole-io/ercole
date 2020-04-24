@@ -1,0 +1,48 @@
+{
+	"Hostname": "test-small",
+	"Environment": "TST",
+	"Location": "Germany",
+	"HostType": "oracledb",
+	"Version": "latest",
+	"HostDataSchemaVersion": 4,
+	"Databases": "ERCOLE",
+	"Schemas": "RAF REMOTE_SCHEDULER_AGENT",
+	"Info": {
+		"Hostname": "test-small",
+		"Environment": "TST",
+		"Location": "Germany",
+		"CPUModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+		"CPUCores": 1,
+		"CPUThreads": 2,
+		"Socket": 2,
+		"Type": "VMWARE",
+		"Virtual": true,
+		"Kernel": "3.10.0-514.el7.x86_64",
+		"OS": "Red Hat Enterprise Linux Server release 7.6 (Maipo)",
+		"MemoryTotal": 3,
+		"SwapTotal": 1,
+		"OracleCluster": false,
+		"VeritasCluster": false,
+		"SunCluster": false,
+		"AixCluster": false
+	},
+	"Extra": {
+		"Filesystems": [{
+			"Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+			"FsType": "ext4",
+			"Size": "13G",
+			"Used": "6.7G",
+			"Available": "5.4G",
+			"UsedPerc": "56%",
+			"MountedOn": "/"
+		}, {
+			"Filesystem": "/dev/sda1",
+			"FsType": "ext4",
+			"Size": "488M",
+			"Used": "133M",
+			"Available": "320M",
+			"UsedPerc": "30%",
+			"MountedOn": "/boot"
+		}]
+	}
+}
