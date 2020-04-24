@@ -27,7 +27,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetEnvironmentStats_Success(t *testing.T) {
+func TestGetTotalExadataMemorySizeStats_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -38,24 +38,15 @@ func TestGetEnvironmentStats_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []interface{}{
-		map[string]interface{}{
-			"Count":       3,
-			"Environment": "TST",
-		},
-		map[string]interface{}{
-			"Count":       1,
-			"Environment": "SVIL",
-		},
-	}
+	expectedRes := float32(10.3)
 
 	as.EXPECT().
-		GetEnvironmentStats("Italy", utils.P("2020-06-10T11:54:59Z")).
+		GetTotalExadataMemorySizeStats("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetEnvironmentStats)
-	req, err := http.NewRequest("GET", "/stats/environments?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	handler := http.HandlerFunc(ac.GetTotalExadataMemorySizeStats)
+	req, err := http.NewRequest("GET", "/stats/exadata/total-memory-size?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -64,7 +55,7 @@ func TestGetEnvironmentStats_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 
-func TestGetEnvironmentStats_FailUnprocessableEntity(t *testing.T) {
+func TestGetTotalExadataMemorySizeStats_FailUnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -76,8 +67,8 @@ func TestGetEnvironmentStats_FailUnprocessableEntity(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetEnvironmentStats)
-	req, err := http.NewRequest("GET", "/stats/environments?older-than=sdfsdfsdf", nil)
+	handler := http.HandlerFunc(ac.GetTotalExadataMemorySizeStats)
+	req, err := http.NewRequest("GET", "/stats/exadata/total-memory-size?older-than=sdfsdfsdf", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -85,7 +76,7 @@ func TestGetEnvironmentStats_FailUnprocessableEntity(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestGetEnvironmentStats_FailInternalServerError(t *testing.T) {
+func TestGetTotalExadataMemorySizeStats_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -97,12 +88,12 @@ func TestGetEnvironmentStats_FailInternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		GetEnvironmentStats("", utils.MAX_TIME).
-		Return(nil, aerrMock)
+		GetTotalExadataMemorySizeStats("", "", utils.MAX_TIME).
+		Return(float32(0), aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetEnvironmentStats)
-	req, err := http.NewRequest("GET", "/stats/environments", nil)
+	handler := http.HandlerFunc(ac.GetTotalExadataMemorySizeStats)
+	req, err := http.NewRequest("GET", "/stats/exadata/total-memory-size", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -110,7 +101,7 @@ func TestGetEnvironmentStats_FailInternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestGetTypeStats_Success(t *testing.T) {
+func TestGetTotalExadataCPUStats_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -121,24 +112,18 @@ func TestGetTypeStats_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []interface{}{
-		map[string]interface{}{
-			"Count": 4,
-			"Type":  "VMWARE",
-		},
-		map[string]interface{}{
-			"Count": 2,
-			"Type":  "PH",
-		},
+	expectedRes := map[string]interface{}{
+		"Enabled": 156,
+		"Total":   216,
 	}
 
 	as.EXPECT().
-		GetTypeStats("Italy", utils.P("2020-06-10T11:54:59Z")).
+		GetTotalExadataCPUStats("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTypeStats)
-	req, err := http.NewRequest("GET", "/stats/types?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	handler := http.HandlerFunc(ac.GetTotalExadataCPUStats)
+	req, err := http.NewRequest("GET", "/stats/exadata/total-cpu?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -147,7 +132,7 @@ func TestGetTypeStats_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 
-func TestGetTypeStats_FailUnprocessableEntity(t *testing.T) {
+func TestGetTotalExadataCPUStats_FailUnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -159,8 +144,8 @@ func TestGetTypeStats_FailUnprocessableEntity(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTypeStats)
-	req, err := http.NewRequest("GET", "/stats/types?older-than=sdfsdfsdf", nil)
+	handler := http.HandlerFunc(ac.GetTotalExadataCPUStats)
+	req, err := http.NewRequest("GET", "/stats/exadata/total-cpu?older-than=sdfsdfsdf", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -168,7 +153,7 @@ func TestGetTypeStats_FailUnprocessableEntity(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestGetTypeStats_FailInternalServerError(t *testing.T) {
+func TestGetTotalExadataCPUStats_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -180,12 +165,12 @@ func TestGetTypeStats_FailInternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		GetTypeStats("", utils.MAX_TIME).
-		Return(nil, aerrMock)
+		GetTotalExadataCPUStats("", "", utils.MAX_TIME).
+		Return(float32(0), aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTypeStats)
-	req, err := http.NewRequest("GET", "/stats/types", nil)
+	handler := http.HandlerFunc(ac.GetTotalExadataCPUStats)
+	req, err := http.NewRequest("GET", "/stats/exadata/total-cpu", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -193,7 +178,7 @@ func TestGetTypeStats_FailInternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestGetOperatingSystemStats_Success(t *testing.T) {
+func TestGetAverageExadataStorageUsageStats_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -204,24 +189,15 @@ func TestGetOperatingSystemStats_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []interface{}{
-		map[string]interface{}{
-			"Count":           6,
-			"OperatingSystem": "RHEL7",
-		},
-		map[string]interface{}{
-			"Count":           1,
-			"OperatingSystem": "RHEL5",
-		},
-	}
+	expectedRes := float32(10.3)
 
 	as.EXPECT().
-		GetOperatingSystemStats("Italy", utils.P("2020-06-10T11:54:59Z")).
+		GetAverageExadataStorageUsageStats("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetOperatingSystemStats)
-	req, err := http.NewRequest("GET", "/stats/operating-systems?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	handler := http.HandlerFunc(ac.GetAverageExadataStorageUsageStats)
+	req, err := http.NewRequest("GET", "/stats/exadata/average-storage-usage?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -230,7 +206,7 @@ func TestGetOperatingSystemStats_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 
-func TestGetOperatingSystemStatsStats_FailUnprocessableEntity(t *testing.T) {
+func TestGetAverageExadataStorageUsageStats_FailUnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -242,8 +218,8 @@ func TestGetOperatingSystemStatsStats_FailUnprocessableEntity(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetOperatingSystemStats)
-	req, err := http.NewRequest("GET", "/stats/operating-systems?older-than=sdfsdfsdf", nil)
+	handler := http.HandlerFunc(ac.GetAverageExadataStorageUsageStats)
+	req, err := http.NewRequest("GET", "/stats/exadata/average-storage-usage?older-than=sdfsdfsdf", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -251,7 +227,7 @@ func TestGetOperatingSystemStatsStats_FailUnprocessableEntity(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestGetOperatingSystemStats_FailInternalServerError(t *testing.T) {
+func TestGetAverageExadataStorageUsageStats_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -263,12 +239,12 @@ func TestGetOperatingSystemStats_FailInternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		GetOperatingSystemStats("", utils.MAX_TIME).
-		Return(nil, aerrMock)
+		GetAverageExadataStorageUsageStats("", "", utils.MAX_TIME).
+		Return(float32(0), aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetOperatingSystemStats)
-	req, err := http.NewRequest("GET", "/stats/operating-systems", nil)
+	handler := http.HandlerFunc(ac.GetAverageExadataStorageUsageStats)
+	req, err := http.NewRequest("GET", "/stats/exadata/average-storage-usage", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -276,7 +252,7 @@ func TestGetOperatingSystemStats_FailInternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestGetTopUnusedInstanceResourceStats_Success(t *testing.T) {
+func TestGetExadataStorageErrorCountStatusStats_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -289,24 +265,22 @@ func TestGetTopUnusedInstanceResourceStats_Success(t *testing.T) {
 
 	expectedRes := []interface{}{
 		map[string]interface{}{
-			"Hostname": "publicitate-36d06ca83eafa454423d2097f4965517",
-			"Unused":   30,
-			"_id":      "5e96ade270c184faca93fe25",
+			"Count":   10,
+			"Failing": false,
 		},
 		map[string]interface{}{
-			"Hostname": "itl-csllab-112.sorint.localpippo",
-			"Unused":   2,
-			"_id":      "5e96ade270c184faca93fe20",
+			"Count":   8,
+			"Failing": true,
 		},
 	}
 
 	as.EXPECT().
-		GetTopUnusedInstanceResourceStats("Italy", "TST", 10, utils.P("2020-06-10T11:54:59Z")).
+		GetExadataStorageErrorCountStatusStats("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTopUnusedInstanceResourceStats)
-	req, err := http.NewRequest("GET", "/stats/top-unused-instance-resource?location=Italy&environment=TST&limit=10&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	handler := http.HandlerFunc(ac.GetExadataStorageErrorCountStatusStats)
+	req, err := http.NewRequest("GET", "/stats/exadata/storage-error-count-status?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -315,7 +289,7 @@ func TestGetTopUnusedInstanceResourceStats_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 
-func TestGetTopUnusedInstanceResourceStats_FailUnprocessableEntity1(t *testing.T) {
+func TestGetExadataStorageErrorCountStatusStats_FailUnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -327,8 +301,8 @@ func TestGetTopUnusedInstanceResourceStats_FailUnprocessableEntity1(t *testing.T
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTopUnusedInstanceResourceStats)
-	req, err := http.NewRequest("GET", "/stats/top-unused-instance-resource?limit=sdfsdfsdf", nil)
+	handler := http.HandlerFunc(ac.GetExadataStorageErrorCountStatusStats)
+	req, err := http.NewRequest("GET", "/stats/exadata/storage-error-count-status?older-than=sdfsdfsdf", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -336,28 +310,7 @@ func TestGetTopUnusedInstanceResourceStats_FailUnprocessableEntity1(t *testing.T
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestGetTopUnusedInstanceResourceStats_FailUnprocessableEntity2(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTopUnusedInstanceResourceStats)
-	req, err := http.NewRequest("GET", "/stats/top-unused-instance-resource?older-than=sdfsdfsdf", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-}
-
-func TestGetTopUnusedInstanceResourceStats_FailInternalServerError(t *testing.T) {
+func TestGetExadataStorageErrorCountStatusStats_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -369,12 +322,116 @@ func TestGetTopUnusedInstanceResourceStats_FailInternalServerError(t *testing.T)
 	}
 
 	as.EXPECT().
-		GetTopUnusedInstanceResourceStats("", "", 15, utils.MAX_TIME).
+		GetExadataStorageErrorCountStatusStats("", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTopUnusedInstanceResourceStats)
-	req, err := http.NewRequest("GET", "/stats/top-unused-instance-resource", nil)
+	handler := http.HandlerFunc(ac.GetExadataStorageErrorCountStatusStats)
+	req, err := http.NewRequest("GET", "/stats/exadata/storage-error-count-status", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestGetExadataPatchStatusStats_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	expectedRes := []interface{}{
+		map[string]interface{}{
+			"Count":   10,
+			"Failing": false,
+		},
+		map[string]interface{}{
+			"Count":   8,
+			"Failing": true,
+		},
+	}
+
+	as.EXPECT().
+		GetExadataPatchStatusStats("Italy", "TST", utils.P("2019-03-05T14:02:03Z"), utils.P("2020-06-10T11:54:59Z")).
+		Return(expectedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetExadataPatchStatusStats)
+	req, err := http.NewRequest("GET", "/stats/exadata/patch-status?location=Italy&environment=TST&window-time=8&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+}
+
+func TestGetExadataPatchStatusStats_FailUnprocessableEntity1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetExadataPatchStatusStats)
+	req, err := http.NewRequest("GET", "/stats/exadata/patch-status?window-time=sdfsdfsdf", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestGetExadataPatchStatusStats_FailUnprocessableEntity2(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetExadataPatchStatusStats)
+	req, err := http.NewRequest("GET", "/stats/exadata/patch-status?older-than=sdfsdfsdf", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestGetExadataPatchStatusStats_FailInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		GetExadataPatchStatusStats("", "", utils.P("2019-05-05T14:02:03Z"), utils.MAX_TIME).
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetExadataPatchStatusStats)
+	req, err := http.NewRequest("GET", "/stats/exadata/patch-status", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)

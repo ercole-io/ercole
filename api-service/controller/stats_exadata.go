@@ -153,7 +153,7 @@ func (ctrl *APIController) GetExadataPatchStatusStats(w http.ResponseWriter, r *
 	}
 
 	//get the data
-	stats, err := ctrl.Service.GetExadataPatchStatusStats(location, environment, time.Now().AddDate(0, -windowTime, 0), olderThan)
+	stats, err := ctrl.Service.GetExadataPatchStatusStats(location, environment, ctrl.TimeNow().AddDate(0, -windowTime, 0), olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
