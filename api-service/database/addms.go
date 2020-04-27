@@ -34,9 +34,6 @@ func (md *MongoDatabase) SearchAddms(keywords []string, sortBy string, sortDesc 
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APUnwind("$Extra.Databases"),
-			mu.APAddFields(bson.M{
-				"Extra.Databases.HA": mu.APOOr("$Info.SunCluster", "$Info.VeritasCluster", "$Info.OracleCluster", "$Info.AixCluster"),
-			}),
 			mu.APProject(bson.M{
 				"Hostname":    1,
 				"Environment": 1,
