@@ -45,7 +45,7 @@ func (md *MongoDatabase) SearchSegmentAdvisors(keywords []string, sortBy string,
 				"CreatedAt":   1,
 				"Database":    "$Extra.Databases",
 			}),
-			mu.APSearchFilterStage([]string{"Hostname", "Database.Name"}, keywords),
+			mu.APSearchFilterStage([]interface{}{"$Hostname", "$Database.Name"}, keywords),
 			mu.APProject(bson.M{
 				"Hostname":                 true,
 				"Location":                 true,

@@ -42,7 +42,7 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 				"CreatedAt":   1,
 				"Cluster":     "$Extra.Clusters",
 			}),
-			mu.APSearchFilterStage([]string{"Cluster.Name"}, keywords),
+			mu.APSearchFilterStage([]interface{}{"$Cluster.Name"}, keywords),
 			mu.APProject(bson.M{
 				"_id":                         true,
 				"Environment":                 true,
