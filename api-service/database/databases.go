@@ -44,7 +44,7 @@ func (md *MongoDatabase) SearchDatabases(full bool, keywords []string, sortBy st
 				"CreatedAt":   1,
 				"Database":    "$Extra.Databases",
 			}),
-			mu.APSearchFilterStage([]string{"Hostname", "Database.Name"}, keywords),
+			mu.APSearchFilterStage([]interface{}{"$Hostname", "$Database.Name"}, keywords),
 			mu.APAddFields(bson.M{
 				"Database.Memory": mu.APOAdd(
 					mu.APOConvertToDoubleOrZero("$Database.PGATarget"),
