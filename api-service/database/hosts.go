@@ -36,11 +36,11 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, sortBy stri
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			FilterByOldnessSteps(olderThan),
-			mu.APSearchFilterStage([]string{
-				"Hostname",
-				"Extra.Databases.Name",
-				"Extra.Databases.UniqueName",
-				"Extra.Clusters.Name",
+			mu.APSearchFilterStage([]interface{}{
+				"$Hostname",
+				"$Extra.Databases.Name",
+				"$Extra.Databases.UniqueName",
+				"$Extra.Clusters.Name",
 			}, keywords),
 			mu.APOptionalStage(mode != "mongo", mu.MAPipeline(
 				mu.APOptionalStage(mode == "lms", mu.APMatch(

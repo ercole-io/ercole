@@ -41,7 +41,7 @@ func (md *MongoDatabase) SearchAddms(keywords []string, sortBy string, sortDesc 
 				"CreatedAt":   1,
 				"Database":    "$Extra.Databases",
 			}),
-			mu.APSearchFilterStage([]string{"Hostname", "Database.Name"}, keywords),
+			mu.APSearchFilterStage([]interface{}{"$Hostname", "$Database.Name"}, keywords),
 			mu.APProject(bson.M{
 				"Hostname":       true,
 				"Location":       true,

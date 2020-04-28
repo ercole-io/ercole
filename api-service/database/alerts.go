@@ -45,13 +45,13 @@ func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc
 					"$lt":  to,
 				},
 			}),
-			mu.APSearchFilterStage([]string{
-				"Description",
-				"AlertCode",
-				"AlertSeverity",
-				"OtherInfo.Hostname",
-				"OtherInfo.Dbname",
-				"OtherInfo.Features",
+			mu.APSearchFilterStage([]interface{}{
+				"$Description",
+				"$AlertCode",
+				"$AlertSeverity",
+				"$OtherInfo.Hostname",
+				"$OtherInfo.Dbname",
+				"$OtherInfo.Features",
 			}, keywords),
 			mu.APSet(bson.M{
 				"Hostname": "$OtherInfo.Hostname",
