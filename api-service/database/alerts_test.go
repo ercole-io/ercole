@@ -271,3 +271,41 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 }
+
+func (m *MongodbSuite) TestUpdateAlertStatus() {
+	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
+	alert := model.Alert{
+		ID:            utils.Str2oid("5ea6a65bb2e36eb58da2f67c"),
+		AlertCode:     model.AlertCodeNewOption,
+		AlertSeverity: model.AlertSeverityCritical,
+		AlertStatus:   model.AlertStatusNew,
+		Date:          utils.P("2020-04-15T08:46:58.475Z").UTC(),
+		Description:   "The database ERCOLE on test-db has enabled new features (Diagnostics Pack) on server",
+		OtherInfo: map[string]interface{}{
+			"Dbname": "ERCOLE",
+			"Features": bson.A{
+				"Diagnostics Pack",
+			},
+			"Hostname": "test-db",
+		},
+	}
+	m.InsertAlert(alert)
+
+	m.T().Run("should_return_not_found", func(t *testing.T) {
+		err := m.db.UpdateAlertStatus(utils.Str2oid("5ea6a65bb2e36eb58daaaaaa"), model.AlertStatusAck)
+
+		assert.Equal(t, utils.AerrAlertNotFound, err)
+	})
+
+	m.T().Run("should_success", func(t *testing.T) {
+		err := m.db.UpdateAlertStatus(utils.Str2oid("5ea6a65bb2e36eb58da2f67c"), model.AlertStatusAck)
+		assert.NoError(t, err)
+
+		val := m.db.Client.Database(m.dbname).Collection("alerts").FindOne(context.TODO(), bson.M{"_id": utils.Str2oid("5ea6a65bb2e36eb58da2f67c")})
+		var res model.Alert
+		val.Decode(&res)
+
+		alert.AlertStatus = model.AlertStatusAck
+		assert.Equal(t, alert, res)
+	})
+}
