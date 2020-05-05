@@ -4,14 +4,14 @@ info:
   version: 1.0.0
   license:
     name: GNU General Public License v3.0 or later
-    url: 'https://www.gnu.org/licenses/gpl-3.0-standalone.html'
+    url: "https://www.gnu.org/licenses/gpl-3.0-standalone.html"
   description: API used to talk to ercole services
   contact:
     name: Issues support
-    url: 'https://github.com/amreo/ercole-services'
+    url: "https://github.com/amreo/ercole-services"
 servers:
   - description: SwaggerHub API Auto Mocking
-    url: 'https://virtserver.swaggerhub.com/amreo/ercole/1.0.0'
+    url: "https://virtserver.swaggerhub.com/amreo/ercole/1.0.0"
 tags:
   - name: data-service
     description: API served by data-service
@@ -427,52 +427,52 @@ components:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/Patch'
+            $ref: "#/components/schemas/Patch"
         Tablespaces:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/Tablespace'
+            $ref: "#/components/schemas/Tablespace"
         Schemas:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/Tablespace'
+            $ref: "#/components/schemas/Tablespace"
         Features:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/Feature'
+            $ref: "#/components/schemas/Feature"
         Licenses:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/License'
+            $ref: "#/components/schemas/License"
         ADDMs:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/ADDM'
+            $ref: "#/components/schemas/ADDM"
         SegmentAdvisors:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/SegmentAdvisor'
+            $ref: "#/components/schemas/SegmentAdvisor"
         LastPSUs:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/LastPSU'
+            $ref: "#/components/schemas/LastPSU"
         Backups:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/Backup'
+            $ref: "#/components/schemas/Backup"
         Changes:
           nullable: true
           type: array
           items:
-            $ref: '#/components/schemas/DatabaseChange'
+            $ref: "#/components/schemas/DatabaseChange"
       required:
         - Name
         - UniqueName
@@ -578,7 +578,7 @@ components:
           nullable: true
           type: array
           items:
-            $ref: '#/components/schemas/CellDisk'
+            $ref: "#/components/schemas/CellDisk"
       required:
         - Hostname
         - ServerType
@@ -623,7 +623,7 @@ components:
           type: string
           nullable: true
         Info:
-          $ref: '#/components/schemas/HostDataInfo'
+          $ref: "#/components/schemas/HostDataInfo"
         OS:
           type: string
           nullable: true
@@ -723,24 +723,24 @@ components:
         History:
           type: array
           items:
-            $ref: '#/components/schemas/HistoryEntry'
+            $ref: "#/components/schemas/HistoryEntry"
         Extra:
           type: object
           required:
             - Filesystems
           properties:
             Filesystems:
-              $ref: '#/components/schemas/Filesystems'
+              $ref: "#/components/schemas/Filesystems"
             Databases:
               nullable: true
               type: array
               items:
-                $ref: '#/components/schemas/Database'
+                $ref: "#/components/schemas/Database"
             Clusters:
               nullable: true
               type: array
               items:
-                $ref: '#/components/schemas/Cluster'
+                $ref: "#/components/schemas/Cluster"
             Exadata:
               nullable: true
               type: object
@@ -748,7 +748,7 @@ components:
                 Devices:
                   type: array
                   items:
-                    $ref: '#/components/schemas/ExadataDev'
+                    $ref: "#/components/schemas/ExadataDev"
               required:
                 - Devices
         Cluster:
@@ -843,7 +843,7 @@ components:
           AlertCode: NEW_DATABASE
           AlertSeverity: NOTICE
           AlertStatus: NEW
-          Date: '2020-04-15T14:28:04.309+02:00'
+          Date: "2020-04-15T14:28:04.309+02:00"
           Description: "The database 'ERCOLE' was created on the server itl-csllab-112.sorint.localpippo"
           Hostname: itl-csllab-112.sorint.localpippo
           OtherInfo:
@@ -889,6 +889,79 @@ components:
         - AlertSeverity
         - AlertCode
         - _id
+  parameters:
+    search:
+      in: query
+      name: search
+      required: false
+      description: filter the result using search terms
+      allowEmptyValue: true
+      example: foobar
+      schema:
+        type: string
+        readOnly: true
+        example: foobar
+    sort-by:
+      in: query
+      name: sort-by
+      required: false
+      description: sort the result by a field
+      allowEmptyValue: true
+      example: foobar
+      schema:
+        type: string
+        readOnly: true
+        example: CreatedAt
+    sort-desc:
+      schema:
+        type: boolean
+      in: query
+      name: sort-desc
+      description: |
+        Sort the field descendently instead of ascendently
+      allowEmptyValue: true
+    page:
+      schema:
+        type: integer
+      in: query
+      name: page
+      description: Number of the page
+      allowEmptyValue: true
+    size:
+      schema:
+        type: integer
+      in: query
+      name: size
+      description: Size of the page
+      allowEmptyValue: true
+    location:
+      schema:
+        type: string
+        example: Italy
+      in: query
+      name: location
+      description: Filter by location
+      allowEmptyValue: true
+    environment:
+      schema:
+        type: string
+        example: TST
+      in: query
+      name: environment
+      description: Filter by environment
+      allowEmptyValue: true
+    older-than:
+      schema:
+        type: string
+        format: date-time
+        example: "2020-05-05T08:23:40+00:00"
+      in: query
+      name: older-than
+      description: Filter until the date
+      allowEmptyValue: true
+#########################################################################
+### PATHS
+#########################################################################
 paths:
   /ping:
     get:
@@ -902,15 +975,15 @@ paths:
         - read
       operationId: ping
       responses:
-        '200':
+        "200":
           description: OK
           content:
             text/plain:
               schema:
                 type: string
-                example: 'PONG!'
+                example: "PONG!"
                 readOnly: true
-  '/queue/host-data-insertion/{id}':
+  "/queue/host-data-insertion/{id}":
     post:
       tags:
         - alert-service
@@ -930,28 +1003,28 @@ paths:
             type: string
             minLength: 24
             maxLength: 24
-            pattern: '^[0-9a-fA-F]+$'
+            pattern: "^[0-9a-fA-F]+$"
             example: 5e3a95f6d76af99696203d4a
       responses:
-        '200':
+        "200":
           description: OK
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
   /user/login:
     post:
       tags:
         - api-service
         - fe-user
-      security: []  
+      security: []
       summary: Request access token
       description: Request a user access token given the credentials. Note that the behaviour and interface may change if the service is configured to use different authentication provider.
       operationId: GetToken
       responses:
-        '200':
+        "200":
           description: Access token
           content:
             text/plain:
@@ -960,12 +1033,12 @@ paths:
                 readOnly: true
                 example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsidXNlciJdLCJleHAiOjE1ODg2NjExMjMsImlhdCI6MTU4ODY2MDIyMywiaXNzIjoiZXJjb2xlIiwianRpIjoidXNlciIsIm5iZiI6MTU4ODY2MDIyMywic3ViIjoidXNlciJ9.QJhUuBR4Z8uPncXITUjRVHktZXLVax1wstMMd4x6qSDPmxGbYTfOINUawgNNSV9ho-C0rh3icks3Q3227fiyUEcdV0Tfa2O5t7lJX0A4MdTnd2sVv_xxlMju8lCBGnf82fvtSg3C0rQsWnmxgC1rBDW3lzru0ffIJG_JrV3mNxhigniBzm_C0Gq1AaL2cmZ0POCnYJReYcLY-9maKRhMsjcart8pqGZ-5jEjMNWxSc7Lh2snCZklFE0NrmtxvaWITSjm4JGWvTwZcWIfTNBiZRABr5OKARVPMsdgOZ--a4kjIsdXngtIX-C5iaISrgRAUv89XInNBvrquqXnq7p5vg
                 description: JWT access token
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
   /hosts:
     get:
       tags:
@@ -988,69 +1061,16 @@ paths:
               - summary
               - lms
               - mhd
-        - in: query
-          name: search
-          required: false
-          description: filter the result using search terms
-          allowEmptyValue: true
-          example: foobar
-          schema:
-            type: string
-            readOnly: true
-            example: foobar
-        - in: query
-          name: sort-by
-          required: false
-          description: sort the result by a field
-          allowEmptyValue: true
-          example: foobar
-          schema:
-            type: string
-            readOnly: true
-            example: CreatedAt
-        - schema:
-            type: boolean
-          in: query
-          name: sort-desc
-          description: |
-            Sort the field descendently instead of ascendently
-          allowEmptyValue: true
-        - schema:
-            type: integer
-          in: query
-          name: page
-          description: Number of the page
-          allowEmptyValue: true
-        - schema:
-            type: integer
-          in: query
-          name: size
-          description: Size of the page
-          allowEmptyValue: true
-        - schema:
-            type: string
-            example: Italy
-          in: query
-          name: location
-          description: Filter by location
-          allowEmptyValue: true
-        - schema:
-            type: string
-            example: TST
-          in: query
-          name: environment
-          description: Filter by environment
-          allowEmptyValue: true
-        - schema:
-            type: string
-            format: time
-            example: '2020-05-05T08:23:40+00:00'
-          in: query
-          name: older-than
-          description: Filter until the date
-          allowEmptyValue: true
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/sort-by"
+        - $ref: "#/components/parameters/sort-desc"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/size"
+        - $ref: "#/components/parameters/location"
+        - $ref: "#/components/parameters/environment"
+        - $ref: "#/components/parameters/older-than"
       responses:
-        '200':
+        "200":
           description: Result of the search
           content:
             application/json:
@@ -1062,57 +1082,59 @@ paths:
                       Content:
                         type: array
                         items:
-                          $ref: '#/components/schemas/HostData'
+                          $ref: "#/components/schemas/HostData"
                       Metadata:
-                        $ref: '#/components/schemas/PageMetadata'
+                        $ref: "#/components/schemas/PageMetadata"
                     required:
                       - Content
                       - Metadata
                   - type: array
                     description: full non paged
                     items:
-                      $ref: '#/components/schemas/HostData'
+                      $ref: "#/components/schemas/HostData"
                   - type: object
                     description: summary paged
                     properties:
                       Content:
                         type: array
                         items:
-                          $ref: '#/components/schemas/HostData'
+                          $ref: "#/components/schemas/HostData"
                       Metadata:
-                        $ref: '#/components/schemas/PageMetadata'
+                        $ref: "#/components/schemas/PageMetadata"
                     required:
                       - Content
                       - Metadata
                   - type: array
                     description: summary non paged
                     items:
-                      $ref: '#/components/schemas/HostData'
+                      $ref: "#/components/schemas/HostData"
                   - type: object
                     description: lms paged
                     properties:
                       Content:
                         type: array
                         items:
-                          $ref: '#/components/schemas/HostData'
+                          $ref: "#/components/schemas/HostData"
                       Metadata:
-                        $ref: '#/components/schemas/PageMetadata'
+                        $ref: "#/components/schemas/PageMetadata"
                     required:
                       - Content
                       - Metadata
                   - type: array
                     description: lms non paged
                     items:
-                      $ref: '#/components/schemas/HostData'
-            application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet: {}
-            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: {}
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
-  '/hosts/{hostname}':
+                      $ref: "#/components/schemas/HostData"
+            ? application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet
+            : {}
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              {}
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  "/hosts/{hostname}":
     parameters:
       - in: path
         name: hostname
@@ -1129,21 +1151,14 @@ paths:
       summary: Get a host
       description: Get a host
       parameters:
-        - schema:
-            type: string
-            format: time
-            example: '2020-05-05T08:23:40+00:00'
-          in: query
-          name: older-than
-          description: Filter until the date
-          allowEmptyValue: true
+        - $ref: "#/components/parameters/older-than"
       responses:
-        '200':
+        "200":
           description: Result of the search
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HostData'
+                $ref: "#/components/schemas/HostData"
     delete:
       tags:
         - api-service
@@ -1153,19 +1168,19 @@ paths:
       summary: Archive a host
       description: Archive a host
       responses:
-        '200':
+        "200":
           description: The host is archived
           content: {}
-        '401':
-          $ref: '#/components/responses/error'
-        '404':
+        "401":
+          $ref: "#/components/responses/error"
+        "404":
           description: The host is not found
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
-  '/hosts/{hostname}/patching-function':
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  "/hosts/{hostname}/patching-function":
     parameters:
       - in: path
         name: hostname
@@ -1182,21 +1197,21 @@ paths:
       summary: Get a patching function of a host
       description: Get a patching function of a host
       responses:
-        '200':
+        "200":
           description: Patching function of the host
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PatchingFunction'
-        '401':
-          $ref: '#/components/responses/error'
-        '404':
+                $ref: "#/components/schemas/PatchingFunction"
+        "401":
+          $ref: "#/components/responses/error"
+        "404":
           description: 'The host or patching function don"t exist'
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
     put:
       tags:
         - api-service
@@ -1206,22 +1221,22 @@ paths:
       summary: Set a patching function of a host
       description: Set the patching function of a host
       responses:
-        '200':
+        "200":
           description: Patching function of the host
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PatchingFunction'
-        '401':
-          $ref: '#/components/responses/error'
-        '404':
+                $ref: "#/components/schemas/PatchingFunction"
+        "401":
+          $ref: "#/components/responses/error"
+        "404":
           description: 'The host don"t exist'
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
-  '/hosts/{hostname}/databases/{dbname}/tags':
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  "/hosts/{hostname}/databases/{dbname}/tags":
     parameters:
       - in: path
         name: hostname
@@ -1250,17 +1265,17 @@ paths:
             schema:
               type: string
       responses:
-        '200':
+        "200":
           description: The tag was successfully attached to the db
           content:
             application/json: {}
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
-  '/hosts/{hostname}/databases/{dbname}/tags/{tagname}':
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  "/hosts/{hostname}/databases/{dbname}/tags/{tagname}":
     parameters:
       - in: path
         name: hostname
@@ -1289,17 +1304,17 @@ paths:
       summary: Delete a tag of a database of a host
       description: Add a tag of a database of a host
       responses:
-        '200':
+        "200":
           description: The tag was successfully deleted from the db
           content:
             application/json: {}
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
-  '/hosts/{hostname}/databases/{dbname}/licenses/{licenseName}':
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  "/hosts/{hostname}/databases/{dbname}/licenses/{licenseName}":
     parameters:
       - in: path
         name: hostname
@@ -1333,17 +1348,17 @@ paths:
             schema:
               type: number
       responses:
-        '200':
+        "200":
           description: The value of the the license was changed successfully
           content:
             application/json: {}
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
-  '/hosts/{hostname}/databases/{dbname}/license-modifiers/{licenseName}':
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  "/hosts/{hostname}/databases/{dbname}/license-modifiers/{licenseName}":
     parameters:
       - in: path
         name: hostname
@@ -1399,67 +1414,14 @@ paths:
           schema:
             type: boolean
             readOnly: true
-        - in: query
-          name: search
-          required: false
-          description: filter the result using search terms
-          allowEmptyValue: true
-          example: foobar
-          schema:
-            type: string
-            readOnly: true
-            example: foobar
-        - in: query
-          name: sort-by
-          required: false
-          description: sort the result by a field
-          allowEmptyValue: true
-          example: foobar
-          schema:
-            type: string
-            readOnly: true
-            example: CreatedAt
-        - schema:
-            type: boolean
-          in: query
-          name: sort-desc
-          description: |
-            Sort the field descendently instead of ascendently
-          allowEmptyValue: true
-        - schema:
-            type: integer
-          in: query
-          name: page
-          description: Number of the page
-          allowEmptyValue: true
-        - schema:
-            type: integer
-          in: query
-          name: size
-          description: Size of the page
-          allowEmptyValue: true
-        - schema:
-            type: string
-            example: Italy
-          in: query
-          name: location
-          description: Filter by location
-          allowEmptyValue: true
-        - schema:
-            type: string
-            example: TST
-          in: query
-          name: environment
-          description: Filter by environment
-          allowEmptyValue: true
-        - schema:
-            type: string
-            format: time
-            example: '2020-05-05T08:23:40+00:00'
-          in: query
-          name: older-than
-          description: Filter until the date
-          allowEmptyValue: true
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/sort-by"
+        - $ref: "#/components/parameters/sort-desc"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/size"
+        - $ref: "#/components/parameters/location"
+        - $ref: "#/components/parameters/environment"
+        - $ref: "#/components/parameters/older-than"
       responses:
         "200":
           description: Result of the search
@@ -1499,7 +1461,8 @@ paths:
                     description: "not full non paged"
                     items:
                       $ref: "#/components/schemas/Database"
-            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: {}
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              {}
         "401":
           $ref: "#/components/responses/error"
         "422":
@@ -1516,67 +1479,14 @@ paths:
       summary: Search a list of ADDMs
       description: Get a list of ADDMs filtered using various search terms and various params. Can also generate a XLSX file
       parameters:
-        - in: query
-          name: search
-          required: false
-          description: filter the result using search terms
-          allowEmptyValue: true
-          example: foobar
-          schema:
-            type: string
-            readOnly: true
-            example: foobar
-        - in: query
-          name: sort-by
-          required: false
-          description: sort the result by a field
-          allowEmptyValue: true
-          example: foobar
-          schema:
-            type: string
-            readOnly: true
-            example: CreatedAt
-        - schema:
-            type: boolean
-          in: query
-          name: sort-desc
-          description: |
-            Sort the field descendently instead of ascendently
-          allowEmptyValue: true
-        - schema:
-            type: integer
-          in: query
-          name: page
-          description: Number of the page
-          allowEmptyValue: true
-        - schema:
-            type: integer
-          in: query
-          name: size
-          description: Size of the page
-          allowEmptyValue: true
-        - schema:
-            type: string
-            example: Italy
-          in: query
-          name: location
-          description: Filter by location
-          allowEmptyValue: true
-        - schema:
-            type: string
-            example: TST
-          in: query
-          name: environment
-          description: Filter by environment
-          allowEmptyValue: true
-        - schema:
-            type: string
-            format: time
-            example: "2020-05-05T08:23:40+00:00"
-          in: query
-          name: older-than
-          description: Filter until the date
-          allowEmptyValue: true
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/sort-by"
+        - $ref: "#/components/parameters/sort-desc"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/size"
+        - $ref: "#/components/parameters/location"
+        - $ref: "#/components/parameters/environment"
+        - $ref: "#/components/parameters/older-than"
       responses:
         "200":
           description: Result of the search
@@ -1600,7 +1510,8 @@ paths:
                     description: "non paged"
                     items:
                       $ref: "#/components/schemas/ADDM"
-            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: {}
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              {}
         "401":
           $ref: "#/components/responses/error"
         "422":
@@ -1617,30 +1528,11 @@ paths:
       summary: List the locations
       description: List the locations
       parameters:
-        - schema:
-            type: string
-            example: Italy
-          in: query
-          name: location
-          description: Filter by location
-          allowEmptyValue: true
-        - schema:
-            type: string
-            example: TST
-          in: query
-          name: environment
-          description: Filter by environment
-          allowEmptyValue: true
-        - schema:
-            type: string
-            format: time
-            example: "2020-05-05T08:23:40+00:00"
-          in: query
-          name: older-than
-          description: Filter until the date
-          allowEmptyValue: true
+        - $ref: "#/components/parameters/location"
+        - $ref: "#/components/parameters/environment"
+        - $ref: "#/components/parameters/older-than"
       responses:
-        '200':
+        "200":
           description: List of the locations
           content:
             application/json:
@@ -1665,28 +1557,9 @@ paths:
       summary: List the environments
       description: List the environments
       parameters:
-        - schema:
-            type: string
-            example: Italy
-          in: query
-          name: location
-          description: Filter by location
-          allowEmptyValue: true
-        - schema:
-            type: string
-            example: TST
-          in: query
-          name: environment
-          description: Filter by environment
-          allowEmptyValue: true
-        - schema:
-            type: string
-            format: time
-            example: "2020-05-05T08:23:40+00:00"
-          in: query
-          name: older-than
-          description: Filter until the date
-          allowEmptyValue: true
+        - $ref: "#/components/parameters/location"
+        - $ref: "#/components/parameters/environment"
+        - $ref: "#/components/parameters/older-than"
       responses:
         "200":
           description: List of the environments
@@ -1712,48 +1585,11 @@ paths:
         - fe-user
       operationId: SearchAlerts
       parameters:
-        - in: query
-          name: search
-          required: false
-          description: filter the result using search terms
-          allowEmptyValue: true
-          example: foobar
-          schema:
-            type: string
-            readOnly: true
-            example: foobar
-        - in: query
-          name: sort-by
-          required: false
-          description: sort the result by a field
-          allowEmptyValue: true
-          example: foobar
-          schema:
-            type: string
-            readOnly: true
-            example: CreatedAt
-        - in: query
-          name: sort-desc
-          required: false
-          allowEmptyValue: true
-          schema:
-            type: boolean
-            readOnly: true
-            example: true
-          description: |
-            Sort the field descendently instead of ascendently
-        - in: query
-          name: page
-          schema:
-            type: integer
-          description: Number of the page
-          allowEmptyValue: true
-        - in: query
-          name: size
-          schema:
-            type: integer
-          description: Size of the page
-          allowEmptyValue: true
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/sort-by"
+        - $ref: "#/components/parameters/sort-desc"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/size"
         - in: query
           schema:
             type: string
@@ -1782,7 +1618,7 @@ paths:
           schema:
             type: string
             format: date-time
-            example: '2020-05-05T08:23:40+00:00'
+            example: "2020-05-05T08:23:40+00:00"
           name: from
           description: Filter from a date
           allowEmptyValue: true
@@ -1790,12 +1626,12 @@ paths:
           schema:
             type: string
             format: date-time
-            example: '2021-05-05T08:23:40+00:00'
+            example: "2021-05-05T08:23:40+00:00"
           name: to
           description: Filter until a date
           allowEmptyValue: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -1803,13 +1639,13 @@ paths:
                 anyOf:
                   - type: array
                     items:
-                      $ref: '#/components/schemas/Alert'
+                      $ref: "#/components/schemas/Alert"
                   - type: object
                     properties:
                       Content:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Alert'
+                          $ref: "#/components/schemas/Alert"
                       Metadata:
                         type: object
                         properties:
@@ -1834,7 +1670,7 @@ paths:
                       - AlertCode: NEW_SERVER
                         AlertSeverity: NOTICE
                         AlertStatus: NEW
-                        Date: '2020-04-15T14:27:59.858+02:00'
+                        Date: "2020-04-15T14:27:59.858+02:00"
                         Description: "The server 'rac1_x' was added to ercole"
                         Hostname: rac1_x
                         OtherInfo:
@@ -1843,7 +1679,7 @@ paths:
                       - AlertCode: NEW_SERVER
                         AlertSeverity: NOTICE
                         AlertStatus: NEW
-                        Date: '2020-04-15T14:28:04.309+02:00'
+                        Date: "2020-04-15T14:28:04.309+02:00"
                         Description: "The server 'itl-csllab-112.sorint.localpippo' was added to ercole"
                         Hostname: itl-csllab-112.sorint.localpippo
                         OtherInfo:
@@ -1852,7 +1688,7 @@ paths:
                       - AlertCode: NEW_DATABASE
                         AlertSeverity: NOTICE
                         AlertStatus: NEW
-                        Date: '2020-04-15T14:28:04.309+02:00'
+                        Date: "2020-04-15T14:28:04.309+02:00"
                         Description: "The database 'ERCOLE' was created on the server itl-csllab-112.sorint.localpippo"
                         Hostname: itl-csllab-112.sorint.localpippo
                         OtherInfo:
@@ -1872,7 +1708,7 @@ paths:
                     - AlertCode: NEW_SERVER
                       AlertSeverity: NOTICE
                       AlertStatus: NEW
-                      Date: '2020-04-15T14:27:59.858+02:00'
+                      Date: "2020-04-15T14:27:59.858+02:00"
                       Description: "The server 'rac1_x' was added to ercole"
                       Hostname: rac1_x
                       OtherInfo:
@@ -1881,7 +1717,7 @@ paths:
                     - AlertCode: NEW_DATABASE
                       AlertSeverity: NOTICE
                       AlertStatus: NEW
-                      Date: '2020-04-15T14:28:04.309+02:00'
+                      Date: "2020-04-15T14:28:04.309+02:00"
                       Description: "The database 'ERCOLE' was created on the server itl-csllab-112.sorint.localpippo"
                       Hostname: itl-csllab-112.sorint.localpippo
                       OtherInfo:
@@ -1891,7 +1727,7 @@ paths:
                     - AlertCode: NEW_LICENSE
                       AlertSeverity: CRITICAL
                       AlertStatus: NEW
-                      Date: '2020-04-15T14:28:04.309+02:00'
+                      Date: "2020-04-15T14:28:04.309+02:00"
                       Description: A new Enterprise license has been enabled to itl-csllab-112.sorint.localpippo
                       Hostname: itl-csllab-112.sorint.localpippo
                       OtherInfo:
@@ -1900,7 +1736,7 @@ paths:
                     - AlertCode: NEW_OPTION
                       AlertSeverity: CRITICAL
                       AlertStatus: NEW
-                      Date: '2020-04-15T14:28:04.309+02:00'
+                      Date: "2020-04-15T14:28:04.309+02:00"
                       Description: The database ERCOLE on itl-csllab-112.sorint.localpippo has enabled new features (Diagnostics Pack) on server
                       Hostname: itl-csllab-112.sorint.localpippo
                       OtherInfo:
@@ -1912,7 +1748,7 @@ paths:
                     - AlertCode: NEW_DATABASE
                       AlertSeverity: NOTICE
                       AlertStatus: NEW
-                      Date: '2020-04-15T14:28:09.787+02:00'
+                      Date: "2020-04-15T14:28:09.787+02:00"
                       Description: "The database 'urcole' was created on the server itl-csllab-112.sorint.localpippo"
                       Hostname: itl-csllab-112.sorint.localpippo
                       OtherInfo:
@@ -1922,7 +1758,7 @@ paths:
                     - AlertCode: NEW_LICENSE
                       AlertSeverity: CRITICAL
                       AlertStatus: NEW
-                      Date: '2020-04-15T14:28:09.787+02:00'
+                      Date: "2020-04-15T14:28:09.787+02:00"
                       Description: A new Enterprise license has been enabled to itl-csllab-112.sorint.localpippo
                       Hostname: itl-csllab-112.sorint.localpippo
                       OtherInfo:
@@ -1931,16 +1767,16 @@ paths:
                     - AlertCode: NEW_OPTION
                       AlertSeverity: CRITICAL
                       AlertStatus: NEW
-                      Date: '2020-04-15T14:28:09.787+02:00'
+                      Date: "2020-04-15T14:28:09.787+02:00"
                       Description: The database urcole on itl-csllab-112.sorint.localpippo has enabled new features (Diagnostics Pack) on server
                       Hostname: itl-csllab-112.sorint.localpippo
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
-  '/alerts/{id}':
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  "/alerts/{id}":
     parameters:
       - in: path
         name: id
@@ -1956,22 +1792,24 @@ paths:
         - fe-user
       operationId: AckAlert
       responses:
-        '200':
+        "200":
           description: OK
-        '401':
-          $ref: '#/components/responses/error'
-        '403':
+        "401":
+          $ref: "#/components/responses/error"
+        "403":
           description: The API is disabled because the service is put in read-only mode
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
   /clusters:
     get:
-      summary: Your GET endpoint
-      tags: []
+      summary: Search a list of clusters
+      tags:
+        - api-service
+        - fe-user
       responses:
-        '200':
+        "200":
           description: OK
           headers: {}
           content:
@@ -1980,15 +1818,15 @@ paths:
                 oneOf:
                   - type: array
                     items:
-                      $ref: '#/components/schemas/Cluster'
+                      $ref: "#/components/schemas/Cluster"
                   - type: object
                     properties:
                       Content:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Cluster'
+                          $ref: "#/components/schemas/Cluster"
                       Metadata:
-                        $ref: '#/components/schemas/PageMetadata'
+                        $ref: "#/components/schemas/PageMetadata"
               examples:
                 json without paging:
                   value:
@@ -2087,67 +1925,14 @@ paths:
         Search clusters data using the filters in the request.
         Return content type could be JSON or XLSX.
       parameters:
-        - in: query
-          name: search
-          required: false
-          description: filter the result using search terms
-          allowEmptyValue: true
-          example: foobar
-          schema:
-            type: string
-            readOnly: true
-            example: foobar
-        - in: query
-          name: sort-by
-          required: false
-          description: sort the result by a field
-          allowEmptyValue: true
-          example: foobar
-          schema:
-            type: string
-            readOnly: true
-            example: CreatedAt
-        - schema:
-            type: boolean
-          in: query
-          name: sort-desc
-          description: |
-            Sort the field descendently instead of ascendently
-          allowEmptyValue: true
-        - schema:
-            type: integer
-          in: query
-          name: page
-          description: Number of the page
-          allowEmptyValue: true
-        - schema:
-            type: integer
-          in: query
-          name: size
-          description: Size of the page
-          allowEmptyValue: true
-        - schema:
-            type: string
-            example: Italy
-          in: query
-          name: location
-          description: Filter by location
-          allowEmptyValue: true
-        - schema:
-            type: string
-            example: TST
-          in: query
-          name: environment
-          description: Filter by environment
-          allowEmptyValue: true
-        - schema:
-            type: string
-            format: time
-            example: '2020-05-05T08:23:40+00:00'
-          in: query
-          name: older-than
-          description: Filter until the date
-          allowEmptyValue: true
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/sort-by"
+        - $ref: "#/components/parameters/sort-desc"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/size"
+        - $ref: "#/components/parameters/location"
+        - $ref: "#/components/parameters/environment"
+        - $ref: "#/components/parameters/older-than"
   /stats/exadata/storage-error-count-status:
     get:
       tags:
@@ -2158,28 +1943,9 @@ paths:
       summary: Get the statistics about the ErrorCount status of the storage of the exadata
       description: Get the statistics about the ErrorCount status of the storage of the  exadata
       parameters:
-        - schema:
-            type: string
-            example: Italy
-          in: query
-          name: location
-          description: Filter by location
-          allowEmptyValue: true
-        - schema:
-            type: string
-            example: TST
-          in: query
-          name: environment
-          description: Filter by environment
-          allowEmptyValue: true
-        - schema:
-            type: string
-            format: time
-            example: '2020-05-05T08:23:40+00:00'
-          in: query
-          name: older-than
-          description: Filter until the date
-          allowEmptyValue: true
+        - $ref: "#/components/parameters/location"
+        - $ref: "#/components/parameters/environment"
+        - $ref: "#/components/parameters/older-than"
       responses:
         "200":
           description: statistics
@@ -2190,9 +1956,9 @@ paths:
                 items:
                   type: object
                   properties:
-                    Failing: 
+                    Failing:
                       type: boolean
-                    Count: 
+                    Count:
                       type: integer
                   required:
                     - Failing
@@ -2213,34 +1979,9 @@ paths:
       summary: Get the statistics about the patch status of the exadata
       description: Get the statistics about the patch status of the exadata
       parameters:
-        - schema:
-            type: string
-            example: Italy
-          in: query
-          name: location
-          description: Filter by location
-          allowEmptyValue: true
-        - schema:
-            type: string
-            example: TST
-          in: query
-          name: environment
-          description: Filter by environment
-          allowEmptyValue: true
-        - schema:
-            type: string
-            format: time
-            example: '2020-05-05T08:23:40+00:00'
-          in: query
-          name: older-than
-          description: Filter until the date
-          allowEmptyValue: true
-        - schema:
-            type: integer
-          in: query
-          name: window-time
-          description: Change the patch window
-          allowEmptyValue: true
+        - $ref: "#/components/parameters/location"
+        - $ref: "#/components/parameters/environment"
+        - $ref: "#/components/parameters/older-than"
       responses:
         "200":
           description: statistics
@@ -2251,9 +1992,9 @@ paths:
                 items:
                   type: object
                   properties:
-                    Status: 
+                    Status:
                       type: boolean
-                    Count: 
+                    Count:
                       type: integer
                   required:
                     - Status
@@ -2264,6 +2005,21 @@ paths:
           $ref: "#/components/responses/error"
         "500":
           $ref: "#/components/responses/error"
+  /segment-advisors:
+    get:
+      parameters:
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/sort-by"
+        - $ref: "#/components/parameters/sort-desc"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/size"
+        - $ref: "#/components/parameters/location"
+        - $ref: "#/components/parameters/environment"
+        - $ref: "#/components/parameters/older-than"
+
+#########################################################################
+### GLOBAL SECURITY
+#########################################################################
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []
