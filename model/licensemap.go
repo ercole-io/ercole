@@ -12,5 +12,12 @@ func (license *LicenseMap) Name() string {
 // Count getter
 func (license *LicenseMap) Count() int {
 	count := (*license)["Count"]
-	return count.(int)
+	switch val := count.(type) {
+	case int:
+		return val
+	case float64:
+		return int(val)
+	default:
+		panic("Invalid type")
+	}
 }
