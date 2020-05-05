@@ -260,7 +260,21 @@ components:
         Action:
           type: string
         Benefit:
+          oneOf:
+            - type: string
+            - type: boolean
+        Hostname:
           type: string
+          nullable: true
+        Location:
+          type: string
+          nullable: true
+        Environment:
+          type: string
+          nullable: true
+        CreatedAt:
+          type: string
+          nullable: true
       required:
         - Finding
         - Recommendation
@@ -322,6 +336,7 @@ components:
       properties:
         InstanceNumber:
           type: string
+          nullable: true
         Name:
           type: string
         UniqueName:
@@ -332,76 +347,126 @@ components:
           type: string
         Platform:
           type: string
+          nullable: true
         Archivelog:
           type: string
+          nullable: true
         Charset:
           type: string
+          nullable: true
         NCharset:
           type: string
+          nullable: true
         BlockSize:
           type: string
         CPUCount:
           type: string
         SGATarget:
           type: string
+          nullable: true
         PGATarget:
           type: string
+          nullable: true
         MemoryTarget:
           type: string
+          nullable: true
         SGAMaxSize:
           type: string
+          nullable: true
         SegmentsSize:
           type: string
         Used:
           type: string
+          nullable: true
         Allocated:
           type: string
+          nullable: true
         Elapsed:
           type: string
+          nullable: true
         DBTime:
           type: string
+          nullable: true
         DailyCPUUsage:
           type: string
+          nullable: true
         Work:
           type: string
         ASM:
           type: boolean
+          nullable: true
         Dataguard:
           type: boolean
+        RAC:
+          nullable: true
+          type: boolean
+        HA:
+          nullable: true
+          type: boolean
+        Hostname:
+          type: string
+          nullable: true
+        Location:
+          type: string
+          nullable: true
+        Environment:
+          type: string
+          nullable: true
+        CreatedAt:
+          type: string
+          nullable: true
+        ArchiveLogStatus:
+          type: boolean
+          nullable: true
+        Memory:
+          type: number
+          nullable: true
+        DatafileSize:
+          type: number
+          nullable: true
         Patches:
           type: array
+          nullable: true
           items:
             $ref: "#/components/schemas/Patch"
         Tablespaces:
           type: array
+          nullable: true
           items:
             $ref: "#/components/schemas/Tablespace"
         Schemas:
           type: array
+          nullable: true
           items:
             $ref: "#/components/schemas/Tablespace"
         Features:
           type: array
+          nullable: true
           items:
             $ref: "#/components/schemas/Feature"
         Licenses:
           type: array
+          nullable: true
           items:
             $ref: "#/components/schemas/License"
         ADDMs:
           type: array
+          nullable: true
           items:
             $ref: "#/components/schemas/ADDM"
         SegmentAdvisors:
           type: array
+          nullable: true
           items:
             $ref: "#/components/schemas/SegmentAdvisor"
         LastPSUs:
           type: array
+          nullable: true
           items:
             $ref: "#/components/schemas/LastPSU"
         Backups:
           type: array
+          nullable: true
           items:
             $ref: "#/components/schemas/Backup"
         Changes:
@@ -410,39 +475,15 @@ components:
           items:
             $ref: "#/components/schemas/DatabaseChange"
       required:
-        - InstanceNumber
         - Name
         - UniqueName
         - Status
         - Version
-        - Platform
-        - Archivelog
-        - Charset
-        - NCharset
         - BlockSize
         - CPUCount
-        - SGATarget
-        - PGATarget
-        - MemoryTarget
-        - SGAMaxSize
         - SegmentsSize
-        - Used
-        - Allocated
-        - Elapsed
-        - DBTime
-        - DailyCPUUsage
         - Work
-        - ASM
         - Dataguard
-        - Patches
-        - Tablespaces
-        - Schemas
-        - Features
-        - Licenses
-        - ADDMs
-        - SegmentAdvisors
-        - LastPSUs
-        - Backups
     Cluster:
       type: object
       properties:
@@ -1359,6 +1400,260 @@ paths:
       operationId: DeleteLicenseModifier
       summary: Delete a license modifier of a database
       description: Delete a license modifier of a database
+      responses:
+        "200":
+          description: The license modifier was deleted successfully
+          content:
+            application/json: {}
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  /databases:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      security:
+        - basicAuthApiService: []
+        - tokenAuthApiService: []
+      operationId: SearchDatabases
+      summary: Search a list of databases
+      description: Get a list of databases filtered using various search terms and various params. Can also generate a XLSX file
+      parameters:
+        - in: query
+          name: full
+          description: output mode
+          allowEmptyValue: true
+          schema:
+            type: boolean
+            readOnly: true
+        - in: query
+          name: search
+          required: false
+          description: filter the result using search terms
+          allowEmptyValue: true
+          example: foobar
+          schema:
+            type: string
+            readOnly: true
+            example: foobar
+        - in: query
+          name: sort-by
+          required: false
+          description: sort the result by a field
+          allowEmptyValue: true
+          example: foobar
+          schema:
+            type: string
+            readOnly: true
+            example: CreatedAt
+        - schema:
+            type: boolean
+          in: query
+          name: sort-desc
+          description: |
+            Sort the field descendently instead of ascendently
+          allowEmptyValue: true
+        - schema:
+            type: integer
+          in: query
+          name: page
+          description: Number of the page
+          allowEmptyValue: true
+        - schema:
+            type: integer
+          in: query
+          name: size
+          description: Size of the page
+          allowEmptyValue: true
+        - schema:
+            type: string
+            example: Italy
+          in: query
+          name: location
+          description: Filter by location
+          allowEmptyValue: true
+        - schema:
+            type: string
+            example: TST
+          in: query
+          name: environment
+          description: Filter by environment
+          allowEmptyValue: true
+        - schema:
+            type: string
+            format: time
+            example: "2020-05-05T08:23:40+00:00"
+          in: query
+          name: older-than
+          description: Filter until the date
+          allowEmptyValue: true
+      responses:
+        "200":
+          description: Result of the search
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    description: "full paged"
+                    properties:
+                      Content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Database"
+                      Metadata:
+                        $ref: "#/components/schemas/PageMetadata"
+                    required:
+                      - Content
+                      - Metadata
+                  - type: array
+                    description: "full non paged"
+                    items:
+                      $ref: "#/components/schemas/Database"
+                  - type: object
+                    description: "not full paged"
+                    properties:
+                      Content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Database"
+                      Metadata:
+                        $ref: "#/components/schemas/PageMetadata"
+                    required:
+                      - Content
+                      - Metadata
+                  - type: array
+                    description: "not full non paged"
+                    items:
+                      $ref: "#/components/schemas/Database"
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: {}
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  /addms:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      security:
+        - basicAuthApiService: []
+        - tokenAuthApiService: []
+      operationId: SearchAddms
+      summary: Search a list of ADDMs
+      description: Get a list of ADDMs filtered using various search terms and various params. Can also generate a XLSX file
+      parameters:
+        - in: query
+          name: search
+          required: false
+          description: filter the result using search terms
+          allowEmptyValue: true
+          example: foobar
+          schema:
+            type: string
+            readOnly: true
+            example: foobar
+        - in: query
+          name: sort-by
+          required: false
+          description: sort the result by a field
+          allowEmptyValue: true
+          example: foobar
+          schema:
+            type: string
+            readOnly: true
+            example: CreatedAt
+        - schema:
+            type: boolean
+          in: query
+          name: sort-desc
+          description: |
+            Sort the field descendently instead of ascendently
+          allowEmptyValue: true
+        - schema:
+            type: integer
+          in: query
+          name: page
+          description: Number of the page
+          allowEmptyValue: true
+        - schema:
+            type: integer
+          in: query
+          name: size
+          description: Size of the page
+          allowEmptyValue: true
+        - schema:
+            type: string
+            example: Italy
+          in: query
+          name: location
+          description: Filter by location
+          allowEmptyValue: true
+        - schema:
+            type: string
+            example: TST
+          in: query
+          name: environment
+          description: Filter by environment
+          allowEmptyValue: true
+        - schema:
+            type: string
+            format: time
+            example: "2020-05-05T08:23:40+00:00"
+          in: query
+          name: older-than
+          description: Filter until the date
+          allowEmptyValue: true
+      responses:
+        "200":
+          description: Result of the search
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    description: "paged"
+                    properties:
+                      Content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/ADDM"
+                      Metadata:
+                        $ref: "#/components/schemas/PageMetadata"
+                    required:
+                      - Content
+                      - Metadata
+                  - type: array
+                    description: "non paged"
+                    items:
+                      $ref: "#/components/schemas/ADDM"
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: {}
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  /locations:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      security:
+        - basicAuthApiService: []
+        - tokenAuthApiService: []
+      operationId: ListLocations
+      summary: List the locations
+      description: List the locations
       parameters:
         - schema:
             type: string
@@ -1384,16 +1679,21 @@ paths:
           allowEmptyValue: true
       responses:
         "200":
-          description: The license modifier was deleted successfully
+          description: List of the locations
           content:
-            application/json: {}
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                uniqueItems: true
         "401":
           $ref: "#/components/responses/error"
         "422":
           $ref: "#/components/responses/error"
         "500":
           $ref: "#/components/responses/error"
-  /locations:
+  /environments:
     get:
       tags:
         - api-service
@@ -1402,12 +1702,35 @@ paths:
       security:
         - basicAuthApiService: []
         - tokenAuthApiService: []
-      operationId: ListLocations
-      summary: List the locations
-      description: List the locations
+      operationId: ListEnvironments
+      summary: List the environments
+      description: List the environments
+      parameters:
+        - schema:
+            type: string
+            example: Italy
+          in: query
+          name: location
+          description: Filter by location
+          allowEmptyValue: true
+        - schema:
+            type: string
+            example: TST
+          in: query
+          name: environment
+          description: Filter by environment
+          allowEmptyValue: true
+        - schema:
+            type: string
+            format: time
+            example: "2020-05-05T08:23:40+00:00"
+          in: query
+          name: older-than
+          description: Filter until the date
+          allowEmptyValue: true
       responses:
         "200":
-          description: List of the locations
+          description: List of the environments
           content:
             application/json:
               schema:
@@ -1690,4 +2013,3 @@ paths:
           $ref: "#/components/responses/error"
         "500":
           $ref: "#/components/responses/error"
-      
