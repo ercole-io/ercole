@@ -404,6 +404,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Backup"
+        Changes:
+          nullable: true
+          type: array
+          items:
+            $ref: "#/components/schemas/DatabaseChange"
       required:
         - InstanceNumber
         - Name
@@ -675,6 +680,10 @@ components:
         PhysicalCores:
           type: integer
           nullable: true
+        History:
+          type: array
+          items:
+            $ref: "#/components/schemas/HistoryEntry"
         Extra:
           type: object
           required:
@@ -741,6 +750,105 @@ components:
           type: integer
         TotalPages:
           type: integer
+    HistoryEntry: 
+      type: object
+      required:
+        - _id
+        - CreatedAt
+      properties:
+        _id: 
+          type: string
+        CreatedAt:
+          type: string
+    DatabaseChange:
+      type: object
+      required:
+        - DailyCPUUsage
+        - SegmentsSize
+        - Updated
+        - Used
+      properties:
+        DailyCPUUsage:
+          type: string
+        SegmentsSize:
+          type: string
+        Updated:
+          type: string
+        Used:
+          type: string
+    PatchingFunction:
+      type: object
+      required:
+        - Code
+        - Vars
+      properties:
+        ID:
+          type: string
+          nullable: true
+        Hostname:
+          type: string
+          nullable: true
+        CreatedAt:
+          type: string
+          nullable: true
+        Code:
+          type: string
+        Vars: 
+          type: object
+    Alert:
+      title: Alert
+      type: object
+      x-examples:
+        example-1:
+          AlertCode: NEW_DATABASE
+          AlertSeverity: NOTICE
+          AlertStatus: NEW
+          Date: "2020-04-15T14:28:04.309+02:00"
+          Description: "The database 'ERCOLE' was created on the server itl-csllab-112.sorint.localpippo"
+          Hostname: itl-csllab-112.sorint.localpippo
+          OtherInfo:
+            Dbname: ERCOLE
+            Hostname: itl-csllab-112.sorint.localpippo
+          _id: 5e96fdd41a65b0bf4e980292
+      properties:
+        OtherInfo:
+          type: object
+          properties:
+            DbName:
+              type: string
+            Hostname:
+              type: string
+        Hostname:
+          type: string
+        Description:
+          type: string
+        AlertStatus:
+          type: string
+          enum:
+            - NEW
+            - ACK
+          example: NEW
+        AlertSeverity:
+          type: string
+          enum:
+            - MINOR
+            - WARNING
+            - MAJOR
+            - CRITICAL
+            - NOTICE
+          example: MAJOR
+        AlertCode:
+          type: string
+        _id:
+          type: string
+          description: ID of the alert
+      required:
+        - Hostname
+        - Description
+        - AlertStatus
+        - AlertSeverity
+        - AlertCode
+        - _id
 paths:
   /ping:
     get:
@@ -968,6 +1076,351 @@ paths:
           $ref: "#/components/responses/error"
         "500":
           $ref: "#/components/responses/error"
+  /hosts/{hostname}:
+    parameters:
+      - in: path
+        name: hostname
+        schema:
+          type: string
+        required: true
+        description: hostname of the requested host
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      security:
+        - basicAuthApiService: []
+        - tokenAuthApiService: []
+      operationId: GetHost
+      summary: Get a host
+      description: Get a host
+      parameters:
+        - schema:
+            type: string
+            format: time
+            example: "2020-05-05T08:23:40+00:00"
+          in: query
+          name: older-than
+          description: Filter until the date
+          allowEmptyValue: true
+      responses:
+        "200":
+          description: Result of the search
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HostData"
+    delete: 
+      tags:
+        - api-service
+        - fe-user
+        - write
+      security:
+        - basicAuthApiService: []
+        - tokenAuthApiService: []
+      operationId: ArchiveHost
+      summary: Archive a host
+      description: Archive a host
+      responses:
+        "200":
+          description: The host is archived
+          content: {}
+        "401":
+          $ref: "#/components/responses/error"
+        "404": 
+          description: The host is not found
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  /hosts/{hostname}/patching-function:
+    parameters:
+      - in: path
+        name: hostname
+        schema:
+          type: string
+        required: true
+        description: hostname of the requested host
+    get:
+      tags:
+        - api-service
+        - developer-user
+        - read
+      security:
+        - basicAuthApiService: []
+        - tokenAuthApiService: []
+      operationId: GetPatchingFunction
+      summary: Get a patching function of a host
+      description: Get a patching function of a host
+      responses:
+        "200":
+          description: Patching function of the host
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PatchingFunction"
+        "401":
+          $ref: "#/components/responses/error"
+        "404":
+          description: The host or patching function don"t exist
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+    put:
+      tags:
+        - api-service
+        - developer-user
+        - write
+      security:
+        - basicAuthApiService: []
+        - tokenAuthApiService: []
+      operationId: SetPatchingFunction
+      summary: Set a patching function of a host
+      description: Set the patching function of a host
+      responses:
+        "200":
+          description: Patching function of the host
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PatchingFunction"
+        "401":
+          $ref: "#/components/responses/error"
+        "404":
+          description: The host don"t exist
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  /hosts/{hostname}/databases/{dbname}/tags:
+    parameters:
+      - in: path
+        name: hostname
+        schema:
+          type: string
+        required: true
+        description: hostname of the requested host
+      - in: path
+        name: dbname
+        schema:
+          type: string
+        required: true
+        description: name of the modifying database
+    post:
+      tags:
+        - api-service
+        - fe-user
+        - write
+      security:
+        - basicAuthApiService: []
+        - tokenAuthApiService: []
+      operationId: AddTagToDatabase
+      summary: Add a tag to a database of a host
+      description: Add a tag to a database of a host
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        "200":
+          description: The tag was successfully attached to the db
+          content:
+            application/json: {}
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  /hosts/{hostname}/databases/{dbname}/tags/{tagname}:
+    parameters:
+      - in: path
+        name: hostname
+        schema:
+          type: string
+        required: true
+        description: hostname of the requested host
+      - in: path
+        name: dbname
+        schema:
+          type: string
+        required: true
+        description: name of the modifying database
+      - in: path
+        name: tagname
+        schema:
+          type: string
+        required: true
+        description: name of the tag
+    delete:
+      tags:
+        - api-service
+        - fe-user
+        - write
+      security:
+        - basicAuthApiService: []
+        - tokenAuthApiService: []
+      operationId: DeleteTagOfDatabase
+      summary: Delete a tag of a database of a host
+      description: Add a tag of a database of a host
+      responses:
+        "200":
+          description: The tag was successfully deleted from the db
+          content:
+            application/json: {}
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  /hosts/{hostname}/databases/{dbname}/licenses/{licenseName}:
+    parameters:
+      - in: path
+        name: hostname
+        schema:
+          type: string
+        required: true
+        description: hostname of the requested host
+      - in: path
+        name: dbname
+        schema:
+          type: string
+        required: true
+        description: name of the modifying database
+      - in: path
+        name: licenseName
+        schema:
+          type: string
+        required: true
+        description: name of the license
+    put:
+      tags:
+        - api-service
+        - fe-user
+        - write
+      security:
+        - basicAuthApiService: []
+        - tokenAuthApiService: []
+      operationId: SetLicenseModifier
+      summary: Change the value of a license of a database
+      description: Change the value of a license of a database
+      requestBody:
+        content:
+          "text/plain":
+            schema:
+              type: number
+      responses:
+        "200":
+          description: The value of the the license was changed successfully
+          content:
+            application/json: {}
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  /hosts/{hostname}/databases/{dbname}/license-modifiers/{licenseName}:
+    parameters:
+      - in: path
+        name: hostname
+        schema:
+          type: string
+        required: true
+        description: hostname of the requested host
+      - in: path
+        name: dbname
+        schema:
+          type: string
+        required: true
+        description: name of the modifying database
+      - in: path
+        name: licenseName
+        schema:
+          type: string
+        required: true
+        description: name of the license
+    delete:
+      tags:
+        - api-service
+        - fe-user
+        - write
+      security:
+        - basicAuthApiService: []
+        - tokenAuthApiService: []
+      operationId: DeleteLicenseModifier
+      summary: Delete a license modifier of a database
+      description: Delete a license modifier of a database
+      parameters:
+        - schema:
+            type: string
+            example: Italy
+          in: query
+          name: location
+          description: Filter by location
+          allowEmptyValue: true
+        - schema:
+            type: string
+            example: TST
+          in: query
+          name: environment
+          description: Filter by environment
+          allowEmptyValue: true
+        - schema:
+            type: string
+            format: time
+            example: "2020-05-05T08:23:40+00:00"
+          in: query
+          name: older-than
+          description: Filter until the date
+          allowEmptyValue: true
+      responses:
+        "200":
+          description: The license modifier was deleted successfully
+          content:
+            application/json: {}
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  /locations:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      security:
+        - basicAuthApiService: []
+        - tokenAuthApiService: []
+      operationId: ListLocations
+      summary: List the locations
+      description: List the locations
+      responses:
+        "200":
+          description: List of the locations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                uniqueItems: true
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
   /alerts:
     get:
       summary: search alerts using the filters in the request
@@ -1050,7 +1503,7 @@ paths:
           schema:
             type: string
             format: date-time
-            example: '2020-05-05T08:23:40+00:00'
+            example: "2020-05-05T08:23:40+00:00"
           name: from
           description: Filter from a date
           allowEmptyValue: true
@@ -1058,44 +1511,183 @@ paths:
           schema:
             type: string
             format: date-time
-            example: '2021-05-05T08:23:40+00:00'
+            example: "2021-05-05T08:23:40+00:00"
           name: to
           description: Filter until a date
           allowEmptyValue: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                oneOf:
+                anyOf:
                   - type: array
                     items:
-                      type: object
-                      properties:
-                        _id:
-                          type: string
-                          description: ID of the alert
-                        AlertCode:
-                          type: string
-                        AlertSeverity:
-                          type: string
-                          enum:
-                            - MINOR
-                            - WARNING
-                            - MAJOR
-                            - CRITICAL
-                            - NOTICE
-                          example: '"MAJOR"'
-                        '':
-                          type: string
-                      required:
-                        - _id
-                        - AlertCode
-                    
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
+                      $ref: "#/components/schemas/Alert"
+                  - type: object
+                    properties:
+                      Content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Alert"
+                      Metadata:
+                        type: object
+                        properties:
+                          Empty:
+                            type: boolean
+                          First:
+                            type: boolean
+                          Last:
+                            type: boolean
+                          Number:
+                            type: integer
+                          Size:
+                            type: integer
+                          TotalElements:
+                            type: integer
+                          TotalPages:
+                            type: integer
+              examples:
+                example with page=0 and size=3:
+                  value:
+                    Content:
+                      - AlertCode: NEW_SERVER
+                        AlertSeverity: NOTICE
+                        AlertStatus: NEW
+                        Date: "2020-04-15T14:27:59.858+02:00"
+                        Description: "The server 'rac1_x' was added to ercole"
+                        Hostname: rac1_x
+                        OtherInfo:
+                          Hostname: rac1_x
+                        _id: 5e96fdcf1a65b0bf4e98028f
+                      - AlertCode: NEW_SERVER
+                        AlertSeverity: NOTICE
+                        AlertStatus: NEW
+                        Date: "2020-04-15T14:28:04.309+02:00"
+                        Description: "The server 'itl-csllab-112.sorint.localpippo' was added to ercole"
+                        Hostname: itl-csllab-112.sorint.localpippo
+                        OtherInfo:
+                          Hostname: itl-csllab-112.sorint.localpippo
+                        _id: 5e96fdd41a65b0bf4e980291
+                      - AlertCode: NEW_DATABASE
+                        AlertSeverity: NOTICE
+                        AlertStatus: NEW
+                        Date: "2020-04-15T14:28:04.309+02:00"
+                        Description: "The database 'ERCOLE' was created on the server itl-csllab-112.sorint.localpippo"
+                        Hostname: itl-csllab-112.sorint.localpippo
+                        OtherInfo:
+                          Dbname: ERCOLE
+                          Hostname: itl-csllab-112.sorint.localpippo
+                        _id: 5e96fdd41a65b0bf4e980292
+                    Metadata:
+                      Empty: false
+                      First: true
+                      Last: false
+                      Number: 0
+                      Size: 3
+                      TotalElements: 25
+                      TotalPages: 8
+                example without paging:
+                  value:
+                    - AlertCode: NEW_SERVER
+                      AlertSeverity: NOTICE
+                      AlertStatus: NEW
+                      Date: "2020-04-15T14:27:59.858+02:00"
+                      Description: "The server 'rac1_x' was added to ercole"
+                      Hostname: rac1_x
+                      OtherInfo:
+                        Hostname: rac1_x
+                      _id: 5e96fdcf1a65b0bf4e98028f
+                    - AlertCode: NEW_DATABASE
+                      AlertSeverity: NOTICE
+                      AlertStatus: NEW
+                      Date: "2020-04-15T14:28:04.309+02:00"
+                      Description: "The database 'ERCOLE' was created on the server itl-csllab-112.sorint.localpippo"
+                      Hostname: itl-csllab-112.sorint.localpippo
+                      OtherInfo:
+                        Dbname: ERCOLE
+                        Hostname: itl-csllab-112.sorint.localpippo
+                      _id: 5e96fdd41a65b0bf4e980292
+                    - AlertCode: NEW_LICENSE
+                      AlertSeverity: CRITICAL
+                      AlertStatus: NEW
+                      Date: "2020-04-15T14:28:04.309+02:00"
+                      Description: A new Enterprise license has been enabled to itl-csllab-112.sorint.localpippo
+                      Hostname: itl-csllab-112.sorint.localpippo
+                      OtherInfo:
+                        Hostname: itl-csllab-112.sorint.localpippo
+                      _id: 5e96fdd41a65b0bf4e980293
+                    - AlertCode: NEW_OPTION
+                      AlertSeverity: CRITICAL
+                      AlertStatus: NEW
+                      Date: "2020-04-15T14:28:04.309+02:00"
+                      Description: The database ERCOLE on itl-csllab-112.sorint.localpippo has enabled new features (Diagnostics Pack) on server
+                      Hostname: itl-csllab-112.sorint.localpippo
+                      OtherInfo:
+                        Dbname: ERCOLE
+                        Features:
+                          - Diagnostics Pack
+                        Hostname: itl-csllab-112.sorint.localpippo
+                      _id: 5e96fdd41a65b0bf4e980294
+                    - AlertCode: NEW_DATABASE
+                      AlertSeverity: NOTICE
+                      AlertStatus: NEW
+                      Date: "2020-04-15T14:28:09.787+02:00"
+                      Description: "The database 'urcole' was created on the server itl-csllab-112.sorint.localpippo"
+                      Hostname: itl-csllab-112.sorint.localpippo
+                      OtherInfo:
+                        Dbname: urcole
+                        Hostname: itl-csllab-112.sorint.localpippo
+                      _id: 5e96fdd91a65b0bf4e980296
+                    - AlertCode: NEW_LICENSE
+                      AlertSeverity: CRITICAL
+                      AlertStatus: NEW
+                      Date: "2020-04-15T14:28:09.787+02:00"
+                      Description: A new Enterprise license has been enabled to itl-csllab-112.sorint.localpippo
+                      Hostname: itl-csllab-112.sorint.localpippo
+                      OtherInfo:
+                        Hostname: itl-csllab-112.sorint.localpippo
+                      _id: 5e96fdd91a65b0bf4e980297
+                    - AlertCode: NEW_OPTION
+                      AlertSeverity: CRITICAL
+                      AlertStatus: NEW
+                      Date: "2020-04-15T14:28:09.787+02:00"
+                      Description: The database urcole on itl-csllab-112.sorint.localpippo has enabled new features (Diagnostics Pack) on server
+                      Hostname: itl-csllab-112.sorint.localpippo
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  /alerts/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: alert id
+    delete:
+      summary: AckAlert ack the specified alert in the request
+      description: AckAlert ack the specified alert in the request
+      tags:
+        - api-service
+        - fe-user
+      security:
+        - basicAuthApiService: []
+        - tokenAuthApiService: []
+      operationId: AckAlert
+      responses:
+        "200":
+          description: OK
+        "401":
+          $ref: "#/components/responses/error"
+        "403":
+          description: The API is disabled because the service is put in read-only mode
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+      
