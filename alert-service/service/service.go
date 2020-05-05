@@ -227,9 +227,6 @@ func (as *AlertService) DiffHostDataMapAndGenerateAlert(oldData model.HostDataMa
 			newEnterpriseLicenseAlertThrown = true
 		}
 
-		fmt.Printf("%v", oldDb.Features())
-		fmt.Printf("%v", newDb.Features())
-
 		//Get the difference of features
 		diff := model.DiffFeatureMap(oldDb.Features(), newDb.Features())
 

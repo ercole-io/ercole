@@ -9,6 +9,9 @@ type ExtraInfoMap map[string]interface{}
 func (ei *ExtraInfoMap) Databases() []DatabaseMap {
 	interf := (*ei)["Databases"]
 
+	if interf == nil {
+		return []DatabaseMap{}
+	}
 	interfSlice := []interface{}(interf.(primitive.A))
 
 	var dbs []DatabaseMap
