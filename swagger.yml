@@ -4,14 +4,14 @@ info:
   version: 1.0.0
   license:
     name: GNU General Public License v3.0 or later
-    url: "https://www.gnu.org/licenses/gpl-3.0-standalone.html"
+    url: 'https://www.gnu.org/licenses/gpl-3.0-standalone.html'
   description: API used to talk to ercole services
   contact:
     name: Issues support
-    url: "https://github.com/amreo/ercole-services"
+    url: 'https://github.com/amreo/ercole-services'
 servers:
   - description: SwaggerHub API Auto Mocking
-    url: "https://virtserver.swaggerhub.com/amreo/ercole/1.0.0"
+    url: 'https://virtserver.swaggerhub.com/amreo/ercole/1.0.0'
 tags:
   - name: data-service
     description: API served by data-service
@@ -31,7 +31,6 @@ tags:
     description: "API that don't change the state of the informations"
   - name: write
     description: API that change the state of the informations
-
 components:
   securitySchemes:
     basicAuthDataService:
@@ -428,52 +427,52 @@ components:
           type: array
           nullable: true
           items:
-            $ref: "#/components/schemas/Patch"
+            $ref: '#/components/schemas/Patch'
         Tablespaces:
           type: array
           nullable: true
           items:
-            $ref: "#/components/schemas/Tablespace"
+            $ref: '#/components/schemas/Tablespace'
         Schemas:
           type: array
           nullable: true
           items:
-            $ref: "#/components/schemas/Tablespace"
+            $ref: '#/components/schemas/Tablespace'
         Features:
           type: array
           nullable: true
           items:
-            $ref: "#/components/schemas/Feature"
+            $ref: '#/components/schemas/Feature'
         Licenses:
           type: array
           nullable: true
           items:
-            $ref: "#/components/schemas/License"
+            $ref: '#/components/schemas/License'
         ADDMs:
           type: array
           nullable: true
           items:
-            $ref: "#/components/schemas/ADDM"
+            $ref: '#/components/schemas/ADDM'
         SegmentAdvisors:
           type: array
           nullable: true
           items:
-            $ref: "#/components/schemas/SegmentAdvisor"
+            $ref: '#/components/schemas/SegmentAdvisor'
         LastPSUs:
           type: array
           nullable: true
           items:
-            $ref: "#/components/schemas/LastPSU"
+            $ref: '#/components/schemas/LastPSU'
         Backups:
           type: array
           nullable: true
           items:
-            $ref: "#/components/schemas/Backup"
+            $ref: '#/components/schemas/Backup'
         Changes:
           nullable: true
           type: array
           items:
-            $ref: "#/components/schemas/DatabaseChange"
+            $ref: '#/components/schemas/DatabaseChange'
       required:
         - Name
         - UniqueName
@@ -522,7 +521,7 @@ components:
         - CPU
         - Sockets
         - VMs
-    CellDisk: 
+    CellDisk:
       type: object
       properties:
         Name:
@@ -579,7 +578,7 @@ components:
           nullable: true
           type: array
           items:
-            $ref: "#/components/schemas/CellDisk"
+            $ref: '#/components/schemas/CellDisk'
       required:
         - Hostname
         - ServerType
@@ -624,80 +623,80 @@ components:
           type: string
           nullable: true
         Info:
-          $ref: "#/components/schemas/HostDataInfo"
-        OS: 
+          $ref: '#/components/schemas/HostDataInfo'
+        OS:
           type: string
           nullable: true
-        Kernel: 
+        Kernel:
           type: string
           nullable: true
-        OracleCluster: 
+        OracleCluster:
           type: boolean
           nullable: true
-        SunCluster: 
+        SunCluster:
           type: boolean
           nullable: true
-        VeritasCluster: 
+        VeritasCluster:
           type: boolean
           nullable: true
-        Virtual: 
+        Virtual:
           type: boolean
           nullable: true
-        Type: 
+        Type:
           type: string
           nullable: true
-        CPUThreads: 
+        CPUThreads:
           type: integer
           nullable: true
-        CPUCores: 
+        CPUCores:
           type: integer
           nullable: true
-        Socket: 
+        Socket:
           type: integer
           nullable: true
-        MemTotal: 
+        MemTotal:
           type: integer
           nullable: true
-        SwapTotal: 
+        SwapTotal:
           type: integer
           nullable: true
-        CPUModel: 
+        CPUModel:
           type: string
           nullable: true
-        PhysicalServerName: 
+        PhysicalServerName:
           type: string
           nullable: true
-        VirtualServerName: 
+        VirtualServerName:
           type: string
           nullable: true
-        VirtualizationTechnology: 
+        VirtualizationTechnology:
           type: string
           nullable: true
-        DBInstanceName: 
+        DBInstanceName:
           type: string
           nullable: true
-        PluggableDatabaseName: 
+        PluggableDatabaseName:
           type: string
           nullable: true
-        ConnectString: 
+        ConnectString:
           type: string
           nullable: true
-        ProductVersion: 
+        ProductVersion:
           type: string
           nullable: true
-        ProductEdition: 
+        ProductEdition:
           type: string
           nullable: true
-        Features: 
+        Features:
           type: string
           nullable: true
-        RacNodeNames: 
+        RacNodeNames:
           type: string
           nullable: true
-        ProcessorModel: 
+        ProcessorModel:
           type: string
           nullable: true
-        Processors: 
+        Processors:
           type: integer
           nullable: true
         CoresPerProcessor:
@@ -724,24 +723,24 @@ components:
         History:
           type: array
           items:
-            $ref: "#/components/schemas/HistoryEntry"
+            $ref: '#/components/schemas/HistoryEntry'
         Extra:
           type: object
           required:
             - Filesystems
           properties:
             Filesystems:
-              $ref: "#/components/schemas/Filesystems"
+              $ref: '#/components/schemas/Filesystems'
             Databases:
               nullable: true
               type: array
               items:
-                $ref: "#/components/schemas/Database"
+                $ref: '#/components/schemas/Database'
             Clusters:
               nullable: true
               type: array
               items:
-                $ref: "#/components/schemas/Cluster"
+                $ref: '#/components/schemas/Cluster'
             Exadata:
               nullable: true
               type: object
@@ -749,7 +748,7 @@ components:
                 Devices:
                   type: array
                   items:
-                    $ref: "#/components/schemas/ExadataDev"
+                    $ref: '#/components/schemas/ExadataDev'
               required:
                 - Devices
         Cluster:
@@ -791,13 +790,13 @@ components:
           type: integer
         TotalPages:
           type: integer
-    HistoryEntry: 
+    HistoryEntry:
       type: object
       required:
         - _id
         - CreatedAt
       properties:
-        _id: 
+        _id:
           type: string
         CreatedAt:
           type: string
@@ -834,7 +833,7 @@ components:
           nullable: true
         Code:
           type: string
-        Vars: 
+        Vars:
           type: object
     Alert:
       title: Alert
@@ -844,7 +843,7 @@ components:
           AlertCode: NEW_DATABASE
           AlertSeverity: NOTICE
           AlertStatus: NEW
-          Date: "2020-04-15T14:28:04.309+02:00"
+          Date: '2020-04-15T14:28:04.309+02:00'
           Description: "The database 'ERCOLE' was created on the server itl-csllab-112.sorint.localpippo"
           Hostname: itl-csllab-112.sorint.localpippo
           OtherInfo:
@@ -903,15 +902,15 @@ paths:
         - read
       operationId: ping
       responses:
-        "200":
+        '200':
           description: OK
           content:
             text/plain:
               schema:
                 type: string
-                example: "PONG!"
+                example: 'PONG!'
                 readOnly: true
-  "/queue/host-data-insertion/{id}":
+  '/queue/host-data-insertion/{id}':
     post:
       tags:
         - alert-service
@@ -931,27 +930,28 @@ paths:
             type: string
             minLength: 24
             maxLength: 24
-            pattern: "^[0-9a-fA-F]+$"
+            pattern: '^[0-9a-fA-F]+$'
             example: 5e3a95f6d76af99696203d4a
       responses:
-        "200":
+        '200':
           description: OK
-        "401":
-          $ref: "#/components/responses/error"
-        "422":
-          $ref: "#/components/responses/error"
-        "500":
-          $ref: "#/components/responses/error"
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
   /user/login:
     post:
       tags:
         - api-service
         - fe-user
+      security: []  
       summary: Request access token
       description: Request a user access token given the credentials. Note that the behaviour and interface may change if the service is configured to use different authentication provider.
       operationId: GetToken
       responses:
-        "200":
+        '200':
           description: Access token
           content:
             text/plain:
@@ -960,20 +960,17 @@ paths:
                 readOnly: true
                 example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsidXNlciJdLCJleHAiOjE1ODg2NjExMjMsImlhdCI6MTU4ODY2MDIyMywiaXNzIjoiZXJjb2xlIiwianRpIjoidXNlciIsIm5iZiI6MTU4ODY2MDIyMywic3ViIjoidXNlciJ9.QJhUuBR4Z8uPncXITUjRVHktZXLVax1wstMMd4x6qSDPmxGbYTfOINUawgNNSV9ho-C0rh3icks3Q3227fiyUEcdV0Tfa2O5t7lJX0A4MdTnd2sVv_xxlMju8lCBGnf82fvtSg3C0rQsWnmxgC1rBDW3lzru0ffIJG_JrV3mNxhigniBzm_C0Gq1AaL2cmZ0POCnYJReYcLY-9maKRhMsjcart8pqGZ-5jEjMNWxSc7Lh2snCZklFE0NrmtxvaWITSjm4JGWvTwZcWIfTNBiZRABr5OKARVPMsdgOZ--a4kjIsdXngtIX-C5iaISrgRAUv89XInNBvrquqXnq7p5vg
                 description: JWT access token
-        "401":
-          $ref: "#/components/responses/error"
-        "422":
-          $ref: "#/components/responses/error"
-        "500":
-          $ref: "#/components/responses/error"
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
   /hosts:
     get:
       tags:
         - api-service
         - fe-user
-      security:
-        - basicAuthApiService: []
-        - tokenAuthApiService: []
       operationId: SearchHosts
       summary: Search a list of hosts
       description: Get a list of hosts filtered using various search terms and various params. Can also generate a XLSX file
@@ -1047,77 +1044,75 @@ paths:
         - schema:
             type: string
             format: time
-            example: "2020-05-05T08:23:40+00:00"
+            example: '2020-05-05T08:23:40+00:00'
           in: query
           name: older-than
           description: Filter until the date
           allowEmptyValue: true
       responses:
-        "200":
+        '200':
           description: Result of the search
           content:
             application/json:
               schema:
                 oneOf:
                   - type: object
-                    description: "full paged"
+                    description: full paged
                     properties:
                       Content:
                         type: array
                         items:
-                          $ref: "#/components/schemas/HostData"
+                          $ref: '#/components/schemas/HostData'
                       Metadata:
-                        $ref: "#/components/schemas/PageMetadata"
+                        $ref: '#/components/schemas/PageMetadata'
                     required:
                       - Content
                       - Metadata
                   - type: array
-                    description: "full non paged"
+                    description: full non paged
                     items:
-                      $ref: "#/components/schemas/HostData"
+                      $ref: '#/components/schemas/HostData'
                   - type: object
-                    description: "summary paged"
+                    description: summary paged
                     properties:
                       Content:
                         type: array
                         items:
-                          $ref: "#/components/schemas/HostData"
+                          $ref: '#/components/schemas/HostData'
                       Metadata:
-                        $ref: "#/components/schemas/PageMetadata"
+                        $ref: '#/components/schemas/PageMetadata'
                     required:
                       - Content
                       - Metadata
                   - type: array
-                    description: "summary non paged"
+                    description: summary non paged
                     items:
-                      $ref: "#/components/schemas/HostData"
+                      $ref: '#/components/schemas/HostData'
                   - type: object
-                    description: "lms paged"
+                    description: lms paged
                     properties:
                       Content:
                         type: array
                         items:
-                          $ref: "#/components/schemas/HostData"
+                          $ref: '#/components/schemas/HostData'
                       Metadata:
-                        $ref: "#/components/schemas/PageMetadata"
+                        $ref: '#/components/schemas/PageMetadata'
                     required:
                       - Content
                       - Metadata
                   - type: array
-                    description: "lms non paged"
+                    description: lms non paged
                     items:
-                      $ref: "#/components/schemas/HostData"
-                  - type: object
-                    description: Data as mongo host data format
+                      $ref: '#/components/schemas/HostData'
             application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet: {}
             application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: {}
-        "401":
-          $ref: "#/components/responses/error"
-        "422":
-          $ref: "#/components/responses/error"
-        "500":
-          $ref: "#/components/responses/error"
-  /hosts/{hostname}:
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  '/hosts/{hostname}':
     parameters:
       - in: path
         name: hostname
@@ -1130,9 +1125,6 @@ paths:
         - api-service
         - fe-user
         - read
-      security:
-        - basicAuthApiService: []
-        - tokenAuthApiService: []
       operationId: GetHost
       summary: Get a host
       description: Get a host
@@ -1140,43 +1132,40 @@ paths:
         - schema:
             type: string
             format: time
-            example: "2020-05-05T08:23:40+00:00"
+            example: '2020-05-05T08:23:40+00:00'
           in: query
           name: older-than
           description: Filter until the date
           allowEmptyValue: true
       responses:
-        "200":
+        '200':
           description: Result of the search
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HostData"
-    delete: 
+                $ref: '#/components/schemas/HostData'
+    delete:
       tags:
         - api-service
         - fe-user
         - write
-      security:
-        - basicAuthApiService: []
-        - tokenAuthApiService: []
       operationId: ArchiveHost
       summary: Archive a host
       description: Archive a host
       responses:
-        "200":
+        '200':
           description: The host is archived
           content: {}
-        "401":
-          $ref: "#/components/responses/error"
-        "404": 
+        '401':
+          $ref: '#/components/responses/error'
+        '404':
           description: The host is not found
-          $ref: "#/components/responses/error"
-        "422":
-          $ref: "#/components/responses/error"
-        "500":
-          $ref: "#/components/responses/error"
-  /hosts/{hostname}/patching-function:
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  '/hosts/{hostname}/patching-function':
     parameters:
       - in: path
         name: hostname
@@ -1189,56 +1178,50 @@ paths:
         - api-service
         - developer-user
         - read
-      security:
-        - basicAuthApiService: []
-        - tokenAuthApiService: []
       operationId: GetPatchingFunction
       summary: Get a patching function of a host
       description: Get a patching function of a host
       responses:
-        "200":
+        '200':
           description: Patching function of the host
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PatchingFunction"
-        "401":
-          $ref: "#/components/responses/error"
-        "404":
-          description: The host or patching function don"t exist
-          $ref: "#/components/responses/error"
-        "422":
-          $ref: "#/components/responses/error"
-        "500":
-          $ref: "#/components/responses/error"
+                $ref: '#/components/schemas/PatchingFunction'
+        '401':
+          $ref: '#/components/responses/error'
+        '404':
+          description: 'The host or patching function don"t exist'
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
     put:
       tags:
         - api-service
         - developer-user
         - write
-      security:
-        - basicAuthApiService: []
-        - tokenAuthApiService: []
       operationId: SetPatchingFunction
       summary: Set a patching function of a host
       description: Set the patching function of a host
       responses:
-        "200":
+        '200':
           description: Patching function of the host
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PatchingFunction"
-        "401":
-          $ref: "#/components/responses/error"
-        "404":
-          description: The host don"t exist
-          $ref: "#/components/responses/error"
-        "422":
-          $ref: "#/components/responses/error"
-        "500":
-          $ref: "#/components/responses/error"
-  /hosts/{hostname}/databases/{dbname}/tags:
+                $ref: '#/components/schemas/PatchingFunction'
+        '401':
+          $ref: '#/components/responses/error'
+        '404':
+          description: 'The host don"t exist'
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  '/hosts/{hostname}/databases/{dbname}/tags':
     parameters:
       - in: path
         name: hostname
@@ -1257,9 +1240,6 @@ paths:
         - api-service
         - fe-user
         - write
-      security:
-        - basicAuthApiService: []
-        - tokenAuthApiService: []
       operationId: AddTagToDatabase
       summary: Add a tag to a database of a host
       description: Add a tag to a database of a host
@@ -1270,17 +1250,17 @@ paths:
             schema:
               type: string
       responses:
-        "200":
+        '200':
           description: The tag was successfully attached to the db
           content:
             application/json: {}
-        "401":
-          $ref: "#/components/responses/error"
-        "422":
-          $ref: "#/components/responses/error"
-        "500":
-          $ref: "#/components/responses/error"
-  /hosts/{hostname}/databases/{dbname}/tags/{tagname}:
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  '/hosts/{hostname}/databases/{dbname}/tags/{tagname}':
     parameters:
       - in: path
         name: hostname
@@ -1305,24 +1285,21 @@ paths:
         - api-service
         - fe-user
         - write
-      security:
-        - basicAuthApiService: []
-        - tokenAuthApiService: []
       operationId: DeleteTagOfDatabase
       summary: Delete a tag of a database of a host
       description: Add a tag of a database of a host
       responses:
-        "200":
+        '200':
           description: The tag was successfully deleted from the db
           content:
             application/json: {}
-        "401":
-          $ref: "#/components/responses/error"
-        "422":
-          $ref: "#/components/responses/error"
-        "500":
-          $ref: "#/components/responses/error"
-  /hosts/{hostname}/databases/{dbname}/licenses/{licenseName}:
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  '/hosts/{hostname}/databases/{dbname}/licenses/{licenseName}':
     parameters:
       - in: path
         name: hostname
@@ -1347,29 +1324,26 @@ paths:
         - api-service
         - fe-user
         - write
-      security:
-        - basicAuthApiService: []
-        - tokenAuthApiService: []
       operationId: SetLicenseModifier
       summary: Change the value of a license of a database
       description: Change the value of a license of a database
       requestBody:
         content:
-          "text/plain":
+          text/plain:
             schema:
               type: number
       responses:
-        "200":
+        '200':
           description: The value of the the license was changed successfully
           content:
             application/json: {}
-        "401":
-          $ref: "#/components/responses/error"
-        "422":
-          $ref: "#/components/responses/error"
-        "500":
-          $ref: "#/components/responses/error"
-  /hosts/{hostname}/databases/{dbname}/license-modifiers/{licenseName}:
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  '/hosts/{hostname}/databases/{dbname}/license-modifiers/{licenseName}':
     parameters:
       - in: path
         name: hostname
@@ -1394,9 +1368,6 @@ paths:
         - api-service
         - fe-user
         - write
-      security:
-        - basicAuthApiService: []
-        - tokenAuthApiService: []
       operationId: DeleteLicenseModifier
       summary: Delete a license modifier of a database
       description: Delete a license modifier of a database
@@ -1417,9 +1388,6 @@ paths:
         - api-service
         - fe-user
         - read
-      security:
-        - basicAuthApiService: []
-        - tokenAuthApiService: []
       operationId: SearchDatabases
       summary: Search a list of databases
       description: Get a list of databases filtered using various search terms and various params. Can also generate a XLSX file
@@ -1487,7 +1455,7 @@ paths:
         - schema:
             type: string
             format: time
-            example: "2020-05-05T08:23:40+00:00"
+            example: '2020-05-05T08:23:40+00:00'
           in: query
           name: older-than
           description: Filter until the date
@@ -1544,9 +1512,6 @@ paths:
         - api-service
         - fe-user
         - read
-      security:
-        - basicAuthApiService: []
-        - tokenAuthApiService: []
       operationId: SearchAddms
       summary: Search a list of ADDMs
       description: Get a list of ADDMs filtered using various search terms and various params. Can also generate a XLSX file
@@ -1648,9 +1613,6 @@ paths:
         - api-service
         - fe-user
         - read
-      security:
-        - basicAuthApiService: []
-        - tokenAuthApiService: []
       operationId: ListLocations
       summary: List the locations
       description: List the locations
@@ -1678,7 +1640,7 @@ paths:
           description: Filter until the date
           allowEmptyValue: true
       responses:
-        "200":
+        '200':
           description: List of the locations
           content:
             application/json:
@@ -1699,9 +1661,6 @@ paths:
         - api-service
         - fe-user
         - read
-      security:
-        - basicAuthApiService: []
-        - tokenAuthApiService: []
       operationId: ListEnvironments
       summary: List the environments
       description: List the environments
@@ -1751,9 +1710,6 @@ paths:
       tags:
         - api-service
         - fe-user
-      security:
-        - basicAuthApiService: []
-        - tokenAuthApiService: []
       operationId: SearchAlerts
       parameters:
         - in: query
@@ -1826,7 +1782,7 @@ paths:
           schema:
             type: string
             format: date-time
-            example: "2020-05-05T08:23:40+00:00"
+            example: '2020-05-05T08:23:40+00:00'
           name: from
           description: Filter from a date
           allowEmptyValue: true
@@ -1834,12 +1790,12 @@ paths:
           schema:
             type: string
             format: date-time
-            example: "2021-05-05T08:23:40+00:00"
+            example: '2021-05-05T08:23:40+00:00'
           name: to
           description: Filter until a date
           allowEmptyValue: true
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
@@ -1847,13 +1803,13 @@ paths:
                 anyOf:
                   - type: array
                     items:
-                      $ref: "#/components/schemas/Alert"
+                      $ref: '#/components/schemas/Alert'
                   - type: object
                     properties:
                       Content:
                         type: array
                         items:
-                          $ref: "#/components/schemas/Alert"
+                          $ref: '#/components/schemas/Alert'
                       Metadata:
                         type: object
                         properties:
@@ -1878,7 +1834,7 @@ paths:
                       - AlertCode: NEW_SERVER
                         AlertSeverity: NOTICE
                         AlertStatus: NEW
-                        Date: "2020-04-15T14:27:59.858+02:00"
+                        Date: '2020-04-15T14:27:59.858+02:00'
                         Description: "The server 'rac1_x' was added to ercole"
                         Hostname: rac1_x
                         OtherInfo:
@@ -1887,7 +1843,7 @@ paths:
                       - AlertCode: NEW_SERVER
                         AlertSeverity: NOTICE
                         AlertStatus: NEW
-                        Date: "2020-04-15T14:28:04.309+02:00"
+                        Date: '2020-04-15T14:28:04.309+02:00'
                         Description: "The server 'itl-csllab-112.sorint.localpippo' was added to ercole"
                         Hostname: itl-csllab-112.sorint.localpippo
                         OtherInfo:
@@ -1896,7 +1852,7 @@ paths:
                       - AlertCode: NEW_DATABASE
                         AlertSeverity: NOTICE
                         AlertStatus: NEW
-                        Date: "2020-04-15T14:28:04.309+02:00"
+                        Date: '2020-04-15T14:28:04.309+02:00'
                         Description: "The database 'ERCOLE' was created on the server itl-csllab-112.sorint.localpippo"
                         Hostname: itl-csllab-112.sorint.localpippo
                         OtherInfo:
@@ -1916,7 +1872,7 @@ paths:
                     - AlertCode: NEW_SERVER
                       AlertSeverity: NOTICE
                       AlertStatus: NEW
-                      Date: "2020-04-15T14:27:59.858+02:00"
+                      Date: '2020-04-15T14:27:59.858+02:00'
                       Description: "The server 'rac1_x' was added to ercole"
                       Hostname: rac1_x
                       OtherInfo:
@@ -1925,7 +1881,7 @@ paths:
                     - AlertCode: NEW_DATABASE
                       AlertSeverity: NOTICE
                       AlertStatus: NEW
-                      Date: "2020-04-15T14:28:04.309+02:00"
+                      Date: '2020-04-15T14:28:04.309+02:00'
                       Description: "The database 'ERCOLE' was created on the server itl-csllab-112.sorint.localpippo"
                       Hostname: itl-csllab-112.sorint.localpippo
                       OtherInfo:
@@ -1935,7 +1891,7 @@ paths:
                     - AlertCode: NEW_LICENSE
                       AlertSeverity: CRITICAL
                       AlertStatus: NEW
-                      Date: "2020-04-15T14:28:04.309+02:00"
+                      Date: '2020-04-15T14:28:04.309+02:00'
                       Description: A new Enterprise license has been enabled to itl-csllab-112.sorint.localpippo
                       Hostname: itl-csllab-112.sorint.localpippo
                       OtherInfo:
@@ -1944,7 +1900,7 @@ paths:
                     - AlertCode: NEW_OPTION
                       AlertSeverity: CRITICAL
                       AlertStatus: NEW
-                      Date: "2020-04-15T14:28:04.309+02:00"
+                      Date: '2020-04-15T14:28:04.309+02:00'
                       Description: The database ERCOLE on itl-csllab-112.sorint.localpippo has enabled new features (Diagnostics Pack) on server
                       Hostname: itl-csllab-112.sorint.localpippo
                       OtherInfo:
@@ -1956,7 +1912,7 @@ paths:
                     - AlertCode: NEW_DATABASE
                       AlertSeverity: NOTICE
                       AlertStatus: NEW
-                      Date: "2020-04-15T14:28:09.787+02:00"
+                      Date: '2020-04-15T14:28:09.787+02:00'
                       Description: "The database 'urcole' was created on the server itl-csllab-112.sorint.localpippo"
                       Hostname: itl-csllab-112.sorint.localpippo
                       OtherInfo:
@@ -1966,7 +1922,7 @@ paths:
                     - AlertCode: NEW_LICENSE
                       AlertSeverity: CRITICAL
                       AlertStatus: NEW
-                      Date: "2020-04-15T14:28:09.787+02:00"
+                      Date: '2020-04-15T14:28:09.787+02:00'
                       Description: A new Enterprise license has been enabled to itl-csllab-112.sorint.localpippo
                       Hostname: itl-csllab-112.sorint.localpippo
                       OtherInfo:
@@ -1975,16 +1931,16 @@ paths:
                     - AlertCode: NEW_OPTION
                       AlertSeverity: CRITICAL
                       AlertStatus: NEW
-                      Date: "2020-04-15T14:28:09.787+02:00"
+                      Date: '2020-04-15T14:28:09.787+02:00'
                       Description: The database urcole on itl-csllab-112.sorint.localpippo has enabled new features (Diagnostics Pack) on server
                       Hostname: itl-csllab-112.sorint.localpippo
-        "401":
-          $ref: "#/components/responses/error"
-        "422":
-          $ref: "#/components/responses/error"
-        "500":
-          $ref: "#/components/responses/error"
-  /alerts/{id}:
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  '/alerts/{id}':
     parameters:
       - in: path
         name: id
@@ -1998,18 +1954,200 @@ paths:
       tags:
         - api-service
         - fe-user
-      security:
-        - basicAuthApiService: []
-        - tokenAuthApiService: []
       operationId: AckAlert
       responses:
-        "200":
+        '200':
           description: OK
-        "401":
-          $ref: "#/components/responses/error"
-        "403":
+        '401':
+          $ref: '#/components/responses/error'
+        '403':
           description: The API is disabled because the service is put in read-only mode
-        "422":
-          $ref: "#/components/responses/error"
-        "500":
-          $ref: "#/components/responses/error"
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /clusters:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/Cluster'
+                  - type: object
+                    properties:
+                      Content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Cluster'
+                      Metadata:
+                        $ref: '#/components/schemas/PageMetadata'
+              examples:
+                json without paging:
+                  value:
+                    - CPU: 216
+                      Environment: PROD
+                      Hostname: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
+                      HostnameAgentVirtualization: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
+                      Location: Italy
+                      Name: Malawi-14ae10546e26f501903775d69ca71ed6
+                      PhysicalHosts: aip-f7ac72d65c3d0f28b3be0c26ef19b67e core4-946e846e3266aef1b0a5caf0853bd1e2 globe-1c7ed122094a9a20e7e4dc94db586829 hi-tech-ad02f9047e0d90b2316bfee07ce932b7 kabinet-d14b782bb1b7fd8156149d3a3979f27d kodeks-e21341c5c7820452c7448790c4ce7965 nikita-54069d32da6d7577e88feff9bbcdb5b7 sail-b5add97f3e182af4c87bd608bc967b89 srvc22-163b8c9d378f6f8895d0e156b16ca1af
+                      Sockets: 18
+                      Type: ovm
+                      _id: 5e96fde91a65b0bf4e9802a4
+                    - CPU: 24
+                      Environment: PROD
+                      Hostname: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
+                      HostnameAgentVirtualization: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
+                      Location: Italy
+                      Name: Benin-0195679dbe594b14abe5c277a849f71a
+                      PhysicalHosts: kernel-c3b26054af731b58a4a5dd0afc33d1a3 rad2-94ac849abaafdf1133fa71d76f365676
+                      Sockets: 4
+                      Type: ovm
+                      _id: 5e96fde91a65b0bf4e9802a4
+                    - CPU: 0
+                      Environment: PROD
+                      Hostname: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
+                      HostnameAgentVirtualization: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
+                      Location: Italy
+                      Name: not_in_cluster
+                      PhysicalHosts: aspera-b1fe49e8501c9ef031e5acff4b5e69a9
+                      Sockets: 0
+                      Type: unknown
+                      _id: 5e96fde91a65b0bf4e9802a4
+                    - CPU: 140
+                      Environment: PROD
+                      Hostname: test-virt
+                      HostnameAgentVirtualization: test-virt
+                      Location: Italy
+                      Name: Puzzait
+                      PhysicalHosts: s157-cb32c10a56c256746c337e21b3f82402
+                      Sockets: 10
+                      Type: vmware
+                      _id: 5e96fdfb1a65b0bf4e9802a8
+                json with paging of size 3:
+                  value:
+                    Content:
+                      - CPU: 140
+                        Environment: PROD
+                        Hostname: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
+                        HostnameAgentVirtualization: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
+                        Location: Italy
+                        Name: Kuwait-57b3056c82e683f48cb2bb6540c11400
+                        PhysicalHosts: 120-90be671af89eaf0e30be81da23e1b84e mtm-33b6dd0ffed21137cb3d43d19cac46ad pdd-d50ecef60a81d7774731c614002d1f6f s157-cb32c10a56c256746c337e21b3f82402 wts-e4371401590b884eb8b617b484981e7f
+                        Sockets: 10
+                        Type: vmware
+                        _id: 5e96fde91a65b0bf4e9802a4
+                      - CPU: 120
+                        Environment: PROD
+                        Hostname: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
+                        HostnameAgentVirtualization: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
+                        Location: Italy
+                        Name: Angola-1dac9f7418db9b52c259ce4ba087cdb6
+                        PhysicalHosts: 85-fe26dd53fd3f1def9629e01cdf2a3f2f 85st-98267410e051fa5158808a97be4461d5 localmail-0a8ec10dc2e5a2eaff1e12bfda9ac2e4 masters-ce97f9677cdff85c88f230999361894d suspended-290dce22a939f3868f8f23a6e1f57dd8
+                        Sockets: 10
+                        Type: vmware
+                        _id: 5e96fde91a65b0bf4e9802a4
+                      - CPU: 36
+                        Environment: PROD
+                        Hostname: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
+                        HostnameAgentVirtualization: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
+                        Location: Italy
+                        Name: Oman-8937f71ed6f3971555e15e2771db239e
+                        PhysicalHosts: duma-facdfcc851a2913f903df31abce563c3 isms-9a1b83714ea7a358aa14b71b6c2405a5 tree-f96e941ab35a2bc95b1c50fc01bbf963
+                        Sockets: 6
+                        Type: vmware
+                        _id: 5e96fde91a65b0bf4e9802a4
+                    Metadata:
+                      Empty: false
+                      First: true
+                      Last: false
+                      Number: 0
+                      Size: 3
+                      TotalElements: 23
+                      TotalPages: 7
+            application/xml:
+              schema:
+                type: object
+                properties: {}
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: object
+                properties: {}
+              examples: {}
+      operationId: SearchClusters
+      description: |-
+        Search clusters data using the filters in the request.
+        Return content type could be JSON or XLSX.
+      parameters:
+        - in: query
+          name: search
+          required: false
+          description: filter the result using search terms
+          allowEmptyValue: true
+          example: foobar
+          schema:
+            type: string
+            readOnly: true
+            example: foobar
+        - in: query
+          name: sort-by
+          required: false
+          description: sort the result by a field
+          allowEmptyValue: true
+          example: foobar
+          schema:
+            type: string
+            readOnly: true
+            example: CreatedAt
+        - schema:
+            type: boolean
+          in: query
+          name: sort-desc
+          description: |
+            Sort the field descendently instead of ascendently
+          allowEmptyValue: true
+        - schema:
+            type: integer
+          in: query
+          name: page
+          description: Number of the page
+          allowEmptyValue: true
+        - schema:
+            type: integer
+          in: query
+          name: size
+          description: Size of the page
+          allowEmptyValue: true
+        - schema:
+            type: string
+            example: Italy
+          in: query
+          name: location
+          description: Filter by location
+          allowEmptyValue: true
+        - schema:
+            type: string
+            example: TST
+          in: query
+          name: environment
+          description: Filter by environment
+          allowEmptyValue: true
+        - schema:
+            type: string
+            format: time
+            example: '2020-05-05T08:23:40+00:00'
+          in: query
+          name: older-than
+          description: Filter until the date
+          allowEmptyValue: true
+security:
+  - basicAuthApiService: []
+  - tokenAuthApiService: []
