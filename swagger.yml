@@ -2147,7 +2147,68 @@ paths:
           in: query
           name: older-than
           description: Filter until the date
+          allowEmptyValue: true  
+  /stats/exadata/patch-status:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetExadataPatchStatusStats
+      summary: Get the statistics about the patch status of the exadata
+      description: Get the statistics about the patch status of the exadata
+      parameters:
+        - schema:
+            type: string
+            example: Italy
+          in: query
+          name: location
+          description: Filter by location
           allowEmptyValue: true
+        - schema:
+            type: string
+            example: TST
+          in: query
+          name: environment
+          description: Filter by environment
+          allowEmptyValue: true
+        - schema:
+            type: string
+            format: time
+            example: '2020-05-05T08:23:40+00:00'
+          in: query
+          name: older-than
+          description: Filter until the date
+          allowEmptyValue: true
+        - schema:
+            type: integer
+          in: query
+          name: window-time
+          description: Change the patch window
+          allowEmptyValue: true
+      responses:
+        "200":
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Status: 
+                      type: boolean
+                    Count: 
+                      type: integer
+                  required:
+                    - Status
+                    - Count
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []
