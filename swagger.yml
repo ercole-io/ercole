@@ -1,18 +1,17 @@
-openapi: '3.0.2'
+openapi: 3.0.2
 info:
   title: API Ercole 2.0
-  version: '1.0.0'
+  version: 1.0.0
   license:
     name: GNU General Public License v3.0 or later
-    url: https://www.gnu.org/licenses/gpl-3.0-standalone.html
+    url: "https://www.gnu.org/licenses/gpl-3.0-standalone.html"
   description: API used to talk to ercole services
   contact:
     name: Issues support
-    url: https://github.com/amreo/ercole-services
+    url: "https://github.com/amreo/ercole-services"
 servers:
   - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/amreo/ercole/1.0.0
-  
+    url: "https://virtserver.swaggerhub.com/amreo/ercole/1.0.0"
 tags:
   - name: data-service
     description: API served by data-service
@@ -29,10 +28,10 @@ tags:
   - name: service-user
     description: API used by the services
   - name: read
-    description: API that don't change the state of the informations
+    description: "API that don't change the state of the informations"
   - name: write
     description: API that change the state of the informations
-    
+
 components:
   securitySchemes:
     basicAuthDataService:
@@ -49,9 +48,9 @@ components:
       description: access to api-service APIs
     tokenAuthApiService:
       type: http
-      scheme: bearer    
+      scheme: bearer
       bearerFormat: JWT
-      description: access using the access token 
+      description: access using the access token
   responses:
     error:
       description: Contains some informations about a error
@@ -75,12 +74,673 @@ components:
               LineNumber:
                 type: integer
           examples:
-            Test1: 
+            Test1:
               value:
                 Error: Invalid  status
                 ErrorDescription: invalid status
-                SourceFilename: "/home/travis/go/src/github.com/amreo/ercole-services/api-service/controller/alerts_api.go"
+                SourceFilename: /home/travis/go/src/github.com/amreo/ercole-services/api-service/controller/alerts_api.go
                 LineNumber: 65
+  schemas:
+    HostDataInfo:
+      type: object
+      required:
+        - Hostname
+        - Environment
+        - Location
+        - CPUModel
+        - CPUCores
+        - CPUThreads
+        - Socket
+        - Type
+        - Virtual
+        - Kernel
+        - OS
+        - MemoryTotal
+        - SwapTotal
+        - OracleCluster
+        - VeritasCluster
+        - SunCluster
+        - AixCluster
+      properties:
+        Hostname:
+          type: string
+          pattern: "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$"
+        Environment:
+          type: string
+        Location:
+          type: string
+        CPUModel:
+          type: string
+        CPUCores:
+          type: integer
+        CPUThreads:
+          type: integer
+        Socket:
+          type: integer
+        Type:
+          type: string
+        Virtual:
+          type: boolean
+        Kernel:
+          type: string
+        OS:
+          type: string
+        MemoryTotal:
+          type: number
+        SwapTotal:
+          type: number
+        OracleCluster:
+          type: boolean
+        VeritasCluster:
+          type: boolean
+        SunCluster:
+          type: boolean
+        AixCluster:
+          type: boolean
+    Filesystems:
+      type: array
+      items:
+        type: object
+        properties:
+          Filesystem:
+            type: string
+          FsType:
+            type: string
+          Size:
+            type: string
+          Used:
+            type: string
+          UsedPerc:
+            type: string
+          MountedOn:
+            type: string
+        required:
+          - Filesystem
+          - FsType
+          - Size
+          - Used
+          - UsedPerc
+          - MountedOn
+    Patch:
+      type: object
+      properties:
+        Database:
+          type: string
+        Version:
+          type: string
+        PatchID:
+          type: string
+        Action:
+          type: string
+        Description:
+          type: string
+        Date:
+          type: string
+      required:
+        - Database
+        - Version
+        - PatchID
+        - Action
+        - Description
+        - Date
+    Tablespace:
+      type: object
+      properties:
+        Database:
+          type: string
+        Name:
+          type: string
+        MaxSize:
+          type: string
+        Total:
+          type: string
+        Used:
+          type: string
+        UsedPerc:
+          type: string
+        Status:
+          type: string
+      required:
+        - Database
+        - Name
+        - MaxSize
+        - Total
+        - Used
+        - UsedPerc
+        - Status
+    Schema:
+      type: object
+      properties:
+        Database:
+          type: string
+        User:
+          type: string
+        Total:
+          type: integer
+        Tables:
+          type: integer
+        Indexes:
+          type: integer
+        LOB:
+          type: integer
+      required:
+        - Database
+        - User
+        - Total
+        - Tables
+        - Indexes
+        - LOB
+    Feature:
+      type: object
+      properties:
+        Name:
+          type: string
+        Status:
+          type: boolean
+      required:
+        - Name
+        - Status
+    License:
+      type: object
+      properties:
+        Name:
+          type: string
+        Count:
+          type: number
+      required:
+        - Name
+        - Count
+    ADDM:
+      type: object
+      properties:
+        Finding:
+          type: string
+        Recommendation:
+          type: string
+        Action:
+          type: string
+        Benefit:
+          type: string
+      required:
+        - Finding
+        - Recommendation
+        - Action
+        - Benefit
+    SegmentAdvisor:
+      type: object
+      properties:
+        SegmentOwner:
+          type: string
+        SegmentName:
+          type: string
+        SegmentType:
+          type: string
+        PartitionName:
+          type: string
+        Reclaimable:
+          type: string
+        Recommendation:
+          type: string
+      required:
+        - SegmentOwner
+        - SegmentName
+        - SegmentType
+        - PartitionName
+        - Reclaimable
+        - Recommendation
+    LastPSU:
+      type: object
+      properties:
+        Date:
+          type: string
+        Description:
+          type: string
+      required:
+        - Date
+        - Description
+    Backup:
+      type: object
+      properties:
+        BackupType:
+          type: string
+        Hour:
+          type: string
+        WeekDays:
+          type: string
+        AvgBckSize:
+          type: string
+        Retention:
+          type: string
+      required:
+        - BackupType
+        - Hour
+        - WeekDays
+        - AvgBckSize
+        - Retention
+    Database:
+      type: object
+      properties:
+        InstanceNumber:
+          type: string
+        Name:
+          type: string
+        UniqueName:
+          type: string
+        Status:
+          type: string
+        Version:
+          type: string
+        Platform:
+          type: string
+        Archivelog:
+          type: string
+        Charset:
+          type: string
+        NCharset:
+          type: string
+        BlockSize:
+          type: string
+        CPUCount:
+          type: string
+        SGATarget:
+          type: string
+        PGATarget:
+          type: string
+        MemoryTarget:
+          type: string
+        SGAMaxSize:
+          type: string
+        SegmentsSize:
+          type: string
+        Used:
+          type: string
+        Allocated:
+          type: string
+        Elapsed:
+          type: string
+        DBTime:
+          type: string
+        DailyCPUUsage:
+          type: string
+        Work:
+          type: string
+        ASM:
+          type: boolean
+        Dataguard:
+          type: boolean
+        Patches:
+          type: array
+          items:
+            $ref: "#/components/schemas/Patch"
+        Tablespaces:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tablespace"
+        Schemas:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tablespace"
+        Features:
+          type: array
+          items:
+            $ref: "#/components/schemas/Feature"
+        Licenses:
+          type: array
+          items:
+            $ref: "#/components/schemas/License"
+        ADDMs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ADDM"
+        SegmentAdvisors:
+          type: array
+          items:
+            $ref: "#/components/schemas/SegmentAdvisor"
+        LastPSUs:
+          type: array
+          items:
+            $ref: "#/components/schemas/LastPSU"
+        Backups:
+          type: array
+          items:
+            $ref: "#/components/schemas/Backup"
+      required:
+        - InstanceNumber
+        - Name
+        - UniqueName
+        - Status
+        - Version
+        - Platform
+        - Archivelog
+        - Charset
+        - NCharset
+        - BlockSize
+        - CPUCount
+        - SGATarget
+        - PGATarget
+        - MemoryTarget
+        - SGAMaxSize
+        - SegmentsSize
+        - Used
+        - Allocated
+        - Elapsed
+        - DBTime
+        - DailyCPUUsage
+        - Work
+        - ASM
+        - Dataguard
+        - Patches
+        - Tablespaces
+        - Schemas
+        - Features
+        - Licenses
+        - ADDMs
+        - SegmentAdvisors
+        - LastPSUs
+        - Backups
+    Cluster:
+      type: object
+      properties:
+        Name:
+          type: string
+        Type:
+          type: string
+        CPU:
+          type: integer
+        Sockets:
+          type: integer
+        VMs:
+          type: array
+          items:
+            type: object
+            properties:
+              Name:
+                type: string
+              ClusterName:
+                type: string
+              Hostname:
+                type: string
+              CappedCPU:
+                type: boolean
+              PhysicalHost:
+                type: string
+            required:
+              - Name
+              - ClusterName
+              - Hostname
+              - CappedCPU
+              - PhysicalHost
+      required:
+        - Name
+        - Type
+        - CPU
+        - Sockets
+        - VMs
+    CellDisk: 
+      type: object
+      properties:
+        Name:
+          type: string
+        Status:
+          type: string
+        ErrCount:
+          type: string
+        UsedPerc:
+          type: string
+      required:
+        - Name
+        - Status
+        - ErrCount
+        - UsedPerc
+    ExadataDev:
+      type: object
+      properties:
+        Hostname:
+          type: string
+        ServerType:
+          type: string
+        Model:
+          type: string
+        ExaSwVersion:
+          type: string
+        CPUEnabled:
+          type: string
+        Memory:
+          type: string
+        Status:
+          type: string
+        PowerCount:
+          type: string
+        PowerStatus:
+          type: string
+        FanCount:
+          type: string
+        FanStatus:
+          type: string
+        TempActual:
+          type: string
+        TempStatus:
+          type: string
+        CellsrvService:
+          type: string
+        MsService:
+          type: string
+        RsService:
+          type: string
+        FlashcacheMode:
+          type: string
+        CellDisks:
+          nullable: true
+          type: array
+          items:
+            $ref: "#/components/schemas/CellDisk"
+      required:
+        - Hostname
+        - ServerType
+        - Model
+        - ExaSwVersion
+        - CPUEnabled
+        - Memory
+        - Status
+        - PowerCount
+        - PowerStatus
+        - FanCount
+        - FanStatus
+        - TempActual
+        - TempStatus
+        - CellsrvService
+        - MsService
+        - RsService
+        - FlashcacheMode
+        - CellDisks
+    HostData:
+      description: A hostdata from FE
+      type: object
+      properties:
+        Hostname:
+          type: string
+        Environment:
+          type: string
+        Location:
+          type: string
+        HostType:
+          enum:
+            - oracledb
+            - virtualization
+            - exadata
+        Version:
+          type: string
+        HostDataSchemaVersion:
+          type: integer
+        Databases:
+          type: string
+        Schemas:
+          type: string
+          nullable: true
+        Info:
+          $ref: "#/components/schemas/HostDataInfo"
+        OS: 
+          type: string
+          nullable: true
+        Kernel: 
+          type: string
+          nullable: true
+        OracleCluster: 
+          type: boolean
+          nullable: true
+        SunCluster: 
+          type: boolean
+          nullable: true
+        VeritasCluster: 
+          type: boolean
+          nullable: true
+        Virtual: 
+          type: boolean
+          nullable: true
+        Type: 
+          type: string
+          nullable: true
+        CPUThreads: 
+          type: integer
+          nullable: true
+        CPUCores: 
+          type: integer
+          nullable: true
+        Socket: 
+          type: integer
+          nullable: true
+        MemTotal: 
+          type: integer
+          nullable: true
+        SwapTotal: 
+          type: integer
+          nullable: true
+        CPUModel: 
+          type: string
+          nullable: true
+        PhysicalServerName: 
+          type: string
+          nullable: true
+        VirtualServerName: 
+          type: string
+          nullable: true
+        VirtualizationTechnology: 
+          type: string
+          nullable: true
+        DBInstanceName: 
+          type: string
+          nullable: true
+        PluggableDatabaseName: 
+          type: string
+          nullable: true
+        ConnectString: 
+          type: string
+          nullable: true
+        ProductVersion: 
+          type: string
+          nullable: true
+        ProductEdition: 
+          type: string
+          nullable: true
+        Features: 
+          type: string
+          nullable: true
+        RacNodeNames: 
+          type: string
+          nullable: true
+        ProcessorModel: 
+          type: string
+          nullable: true
+        Processors: 
+          type: integer
+          nullable: true
+        CoresPerProcessor:
+          type: integer
+          nullable: true
+        ThreadsPerCore:
+          type: integer
+          nullable: true
+        ProcessorSpeed:
+          type: string
+          nullable: true
+        ServerPurchaseDate:
+          type: string
+          nullable: true
+        OperatingSystem:
+          type: string
+          nullable: true
+        Notes:
+          type: string
+          nullable: true
+        PhysicalCores:
+          type: integer
+          nullable: true
+        Extra:
+          type: object
+          required:
+            - Filesystems
+          properties:
+            Filesystems:
+              $ref: "#/components/schemas/Filesystems"
+            Databases:
+              nullable: true
+              type: array
+              items:
+                $ref: "#/components/schemas/Database"
+            Clusters:
+              nullable: true
+              type: array
+              items:
+                $ref: "#/components/schemas/Cluster"
+            Exadata:
+              nullable: true
+              type: object
+              properties:
+                Devices:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/ExadataDev"
+              required:
+                - Devices
+        Cluster:
+          type: string
+          nullable: true
+        PhysicalHost:
+          type: string
+          nullable: true
+      required:
+        - Hostname
+        - Environment
+        - Location
+        - Version
+        - HostDataSchemaVersion
+        - Info
+        - Extra
+    PageMetadata:
+      type: object
+      required:
+        - Empty
+        - First
+        - Last
+        - Number
+        - Size
+        - TotalElements
+        - TotalPages
+      properties:
+        Empty:
+          type: boolean
+        First:
+          type: boolean
+        Last:
+          type: boolean
+        Number:
+          type: integer
+        Size:
+          type: integer
+        TotalElements:
+          type: integer
+        TotalPages:
+          type: integer
 paths:
   /ping:
     get:
@@ -94,16 +754,16 @@ paths:
         - read
       operationId: ping
       responses:
-        '200':
+        "200":
           description: OK
-          content: 
-            'text/plain':
+          content:
+            text/plain:
               schema:
                 type: string
-                example: PONG!
+                example: "PONG!"
                 readOnly: true
-  /queue/host-data-insertion/{id}:
-    post: 
+  "/queue/host-data-insertion/{id}":
+    post:
       tags:
         - alert-service
         - service-user
@@ -122,17 +782,17 @@ paths:
             type: string
             minLength: 24
             maxLength: 24
-            pattern: '^[0-9a-fA-F]+$'
-            example: 5e3a95f6d76af99696203d4a        
+            pattern: "^[0-9a-fA-F]+$"
+            example: 5e3a95f6d76af99696203d4a
       responses:
-        '200':
+        "200":
           description: OK
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
   /user/login:
     post:
       tags:
@@ -142,24 +802,24 @@ paths:
       description: Request a user access token given the credentials. Note that the behaviour and interface may change if the service is configured to use different authentication provider.
       operationId: GetToken
       responses:
-        '200':
-          description: 'Access token'
+        "200":
+          description: Access token
           content:
-            'text/plain':
+            text/plain:
               schema:
                 type: string
                 readOnly: true
                 example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsidXNlciJdLCJleHAiOjE1ODg2NjExMjMsImlhdCI6MTU4ODY2MDIyMywiaXNzIjoiZXJjb2xlIiwianRpIjoidXNlciIsIm5iZiI6MTU4ODY2MDIyMywic3ViIjoidXNlciJ9.QJhUuBR4Z8uPncXITUjRVHktZXLVax1wstMMd4x6qSDPmxGbYTfOINUawgNNSV9ho-C0rh3icks3Q3227fiyUEcdV0Tfa2O5t7lJX0A4MdTnd2sVv_xxlMju8lCBGnf82fvtSg3C0rQsWnmxgC1rBDW3lzru0ffIJG_JrV3mNxhigniBzm_C0Gq1AaL2cmZ0POCnYJReYcLY-9maKRhMsjcart8pqGZ-5jEjMNWxSc7Lh2snCZklFE0NrmtxvaWITSjm4JGWvTwZcWIfTNBiZRABr5OKARVPMsdgOZ--a4kjIsdXngtIX-C5iaISrgRAUv89XInNBvrquqXnq7p5vg
                 description: JWT access token
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
   /hosts:
-    get: 
-      tags: 
+    get:
+      tags:
         - api-service
         - fe-user
       security:
@@ -171,11 +831,10 @@ paths:
       parameters:
         - in: query
           name: mode
-          required: false
           description: change the scheme of the output
           allowEmptyValue: true
           example: full
-          schema: 
+          schema:
             type: string
             readOnly: true
             enum:
@@ -189,24 +848,251 @@ paths:
           description: filter the result using search terms
           allowEmptyValue: true
           example: foobar
-          schema: 
+          schema:
             type: string
             readOnly: true
+            example: foobar
         - in: query
           name: sort-by
+          required: false
+          description: sort the result by a field
+          allowEmptyValue: true
+          example: foobar
+          schema:
+            type: string
+            readOnly: true
+            example: CreatedAt
+        - schema:
+            type: boolean
+          in: query
+          name: sort-desc
+          description: |
+            Sort the field descendently instead of ascendently
+          allowEmptyValue: true
+        - schema:
+            type: integer
+          in: query
+          name: page
+          description: Number of the page
+          allowEmptyValue: true
+        - schema:
+            type: integer
+          in: query
+          name: size
+          description: Size of the page
+          allowEmptyValue: true
+        - schema:
+            type: string
+            example: Italy
+          in: query
+          name: location
+          description: Filter by location
+          allowEmptyValue: true
+        - schema:
+            type: string
+            example: TST
+          in: query
+          name: environment
+          description: Filter by environment
+          allowEmptyValue: true
+        - schema:
+            type: string
+            format: time
+            example: "2020-05-05T08:23:40+00:00"
+          in: query
+          name: older-than
+          description: Filter until the date
+          allowEmptyValue: true
+      responses:
+        "200":
+          description: Result of the search
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    description: "full paged"
+                    properties:
+                      Content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/HostData"
+                      Metadata:
+                        $ref: "#/components/schemas/PageMetadata"
+                    required:
+                      - Content
+                      - Metadata
+                  - type: array
+                    description: "full non paged"
+                    items:
+                      $ref: "#/components/schemas/HostData"
+                  - type: object
+                    description: "summary paged"
+                    properties:
+                      Content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/HostData"
+                      Metadata:
+                        $ref: "#/components/schemas/PageMetadata"
+                    required:
+                      - Content
+                      - Metadata
+                  - type: array
+                    description: "summary non paged"
+                    items:
+                      $ref: "#/components/schemas/HostData"
+                  - type: object
+                    description: "lms paged"
+                    properties:
+                      Content:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/HostData"
+                      Metadata:
+                        $ref: "#/components/schemas/PageMetadata"
+                    required:
+                      - Content
+                      - Metadata
+                  - type: array
+                    description: "lms non paged"
+                    items:
+                      $ref: "#/components/schemas/HostData"
+                  - type: object
+                    description: Data as mongo host data format
+            application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet: {}
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: {}
+        "401":
+          $ref: "#/components/responses/error"
+        "422":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+  /alerts:
+    get:
+      summary: search alerts using the filters in the request
+      description: search alerts using the filters in the request
+      tags:
+        - api-service
+        - fe-user
+      security:
+        - basicAuthApiService: []
+        - tokenAuthApiService: []
+      operationId: SearchAlerts
+      parameters:
+        - in: query
+          name: search
           required: false
           description: filter the result using search terms
           allowEmptyValue: true
           example: foobar
-          schema: 
+          schema:
             type: string
             readOnly: true
+            example: foobar
+        - in: query
+          name: sort-by
+          required: false
+          description: sort the result by a field
+          allowEmptyValue: true
+          example: foobar
+          schema:
+            type: string
+            readOnly: true
+            example: CreatedAt
+        - in: query
+          name: sort-desc
+          required: false
+          allowEmptyValue: true
+          schema:
+            type: boolean
+            readOnly: true
+            example: true
+          description: |
+            Sort the field descendently instead of ascendently
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Number of the page
+          allowEmptyValue: true
+        - in: query
+          name: size
+          schema:
+            type: integer
+          description: Size of the page
+          allowEmptyValue: true
+        - in: query
+          schema:
+            type: string
+            enum:
+              - MINOR
+              - WARNING
+              - MAJOR
+              - CRITICAL
+              - NOTICE
+          name: severity
+          description: Filter by severity
+          allowEmptyValue: true
+        - in: query
+          name: status
+          required: false
+          description: Filter by status
+          allowEmptyValue: true
+          schema:
+            type: string
+            readOnly: true
+            enum:
+              - NEW
+              - ACK
+            example: NEW
+        - in: query
+          schema:
+            type: string
+            format: date-time
+            example: '2020-05-05T08:23:40+00:00'
+          name: from
+          description: Filter from a date
+          allowEmptyValue: true
+        - in: query
+          schema:
+            type: string
+            format: date-time
+            example: '2021-05-05T08:23:40+00:00'
+          name: to
+          description: Filter until a date
+          allowEmptyValue: true
       responses:
-        '200': 
-          description: 'Result of the search'
+        '200':
+          description: OK
           content:
-            'application/json':
-              example: 'TODO'
+            application/json:
+              schema:
+                oneOf:
+                  - type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          description: ID of the alert
+                        AlertCode:
+                          type: string
+                        AlertSeverity:
+                          type: string
+                          enum:
+                            - MINOR
+                            - WARNING
+                            - MAJOR
+                            - CRITICAL
+                            - NOTICE
+                          example: '"MAJOR"'
+                        '':
+                          type: string
+                      required:
+                        - _id
+                        - AlertCode
+                    
         '401':
           $ref: '#/components/responses/error'
         '422':
