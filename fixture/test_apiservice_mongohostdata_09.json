@@ -1,0 +1,340 @@
+{
+    "Archived": false,
+    "CreatedAt": {
+        "$date": {
+            "$numberLong": "1588765163259"
+        }
+    },
+    "Databases": "",
+    "Environment": "TST",
+    "Extra": {
+        "Databases": [
+            {
+                "ADDMs": [],
+                "ASM": false,
+                "Allocated": "129",
+                "Archivelog": "ARCHIVELOG",
+                "Backups": [],
+                "BlockSize": "8192",
+                "CPUCount": "2",
+                "Charset": "AL32UTF8",
+                "DBTime": "184.81",
+                "DailyCPUUsage": "1.3",
+                "Dataguard": true,
+                "Elapsed": "12059.18",
+                "Features": [
+                    {
+                        "Name": "WebLogic Server Management Pack Enterprise Edition",
+                        "Status": false
+                    },
+                    {
+                        "Name": "Tuning Pack",
+                        "Status": false
+                    },
+                    {
+                        "Name": "Provisioning and Patch Automation Pack for Database",
+                        "Status": false
+                    },
+                    {
+                        "Name": "Label Security",
+                        "Status": false
+                    },
+                    {
+                        "Name": "HW",
+                        "Status": false
+                    },
+                    {
+                        "Name": "GoldenGate",
+                        "Status": false
+                    },
+                    {
+                        "Name": "Exadata",
+                        "Status": false
+                    },
+                    {
+                        "Name": "Diagnostics Pack",
+                        "Status": true
+                    }, {
+                        "Name": "Real Application Clusters",
+                        "Status": true
+                    }
+                ],
+                "Features2": [
+                    {
+                        "CurrentlyUsed": false,
+                        "DetectedUsages": {
+                            "$numberDouble": "91.0"
+                        },
+                        "ExtraFeatureInfo": "",
+                        "Feature": "ADDM",
+                        "FirstUsageDate": "2019-06-24 17:34:20",
+                        "LastUsageDate": "2019-11-09 04:48:23",
+                        "Product": "Diagnostics Pack"
+                    },
+                    {
+                        "CurrentlyUsed": false,
+                        "DetectedUsages": {
+                            "$numberDouble": "90.0"
+                        },
+                        "ExtraFeatureInfo": "",
+                        "Feature": "AWR Report",
+                        "FirstUsageDate": "2019-06-27 15:15:44",
+                        "LastUsageDate": "2019-11-09 04:48:23",
+                        "Product": "Diagnostics Pack"
+                    },
+                    {
+                        "CurrentlyUsed": false,
+                        "DetectedUsages": {
+                            "$numberDouble": "7.0"
+                        },
+                        "ExtraFeatureInfo": "",
+                        "Feature": "Automatic Workload Repository",
+                        "FirstUsageDate": "2019-06-27 17:01:09",
+                        "LastUsageDate": "2019-07-02 05:35:05",
+                        "Product": "Diagnostics Pack"
+                    }
+                ],
+                "InstanceNumber": "1",
+                "LastPSUs": [],
+                "Licenses": [
+                    {
+                        "Count": {
+                            "$numberDouble": "0.0"
+                        },
+                        "Name": "Oracle EXE"
+                    },
+                    {
+                        "Count": {
+                            "$numberDouble": "0.5"
+                        },
+                        "Name": "Oracle ENT"
+                    },
+                    {
+                        "Count": {
+                            "$numberDouble": "0.0"
+                        },
+                        "Name": "Oracle STD"
+                    },
+                    {
+                        "Count": {
+                            "$numberDouble": "0.0"
+                        },
+                        "Name": "WebLogic Server Management Pack Enterprise Edition"
+                    },
+                    {
+                        "Count": {
+                            "$numberDouble": "0.0"
+                        },
+                        "Name": "RAC or RAC One Node"
+                    },
+                    {
+                        "Count": {
+                            "$numberDouble": "0.0"
+                        },
+                        "Name": "Provisioning and Patch Automation Pack"
+                    },
+                    {
+                        "Count": {
+                            "$numberDouble": "0.0"
+                        },
+                        "Name": "Provisioning and Patch Automation Pack for Database"
+                    },
+                    {
+                        "Count": {
+                            "$numberDouble": "0.0"
+                        },
+                        "Name": "Pillar Storage"
+                    },
+                    {
+                        "Count": {
+                            "$numberDouble": "0.0"
+                        },
+                        "Name": "Partitioning"
+                    },
+                    {
+                        "Count": {
+                            "$numberDouble": "0.5"
+                        },
+                        "Name": "Diagnostics Pack"
+                    }
+                ],
+                "MemoryTarget": "1.484",
+                "NCharset": "AL16UTF16",
+                "Name": "pokemons",
+                "PGATarget": "53.45",
+                "Patches": [],
+                "Platform": "Linux x86 64-bit",
+                "SGAMaxSize": "1.484",
+                "SGATarget": "35.32",
+                "Schemas": [
+                    {
+                        "Database": "pokemons",
+                        "Indexes": {
+                            "$numberDouble": "0.0"
+                        },
+                        "LOB": {
+                            "$numberDouble": "0.0"
+                        },
+                        "Tables": {
+                            "$numberDouble": "192.0"
+                        },
+                        "Total": {
+                            "$numberDouble": "192.0"
+                        },
+                        "User": "RAF"
+                    },
+                    {
+                        "Database": "pokemons",
+                        "Indexes": {
+                            "$numberDouble": "0.0"
+                        },
+                        "LOB": {
+                            "$numberDouble": "0.0"
+                        },
+                        "Tables": {
+                            "$numberDouble": "0.0"
+                        },
+                        "Total": {
+                            "$numberDouble": "0.0"
+                        },
+                        "User": "REMOTE_SCHEDULER_AGENT"
+                    },
+                    {
+                        "Database": "pokemons",
+                        "Indexes": {
+                            "$numberDouble": "0.0"
+                        },
+                        "LOB": {
+                            "$numberDouble": "0.0"
+                        },
+                        "Tables": {
+                            "$numberDouble": "0.0"
+                        },
+                        "Total": {
+                            "$numberDouble": "0.0"
+                        },
+                        "User": "SYS$UMF"
+                    }
+                ],
+                "SegmentAdvisors": [],
+                "SegmentsSize": "3",
+                "Status": "OPEN",
+                "Tablespaces": [
+                    {
+                        "Database": "pokemons",
+                        "MaxSize": "32767.9844",
+                        "Name": "SYSTEM",
+                        "Status": "ONLINE",
+                        "Total": "850",
+                        "Used": "842.875",
+                        "UsedPerc": "2.57"
+                    },
+                    {
+                        "Database": "pokemons",
+                        "MaxSize": "32767.9844",
+                        "Name": "USERS",
+                        "Status": "ONLINE",
+                        "Total": "1024",
+                        "Used": "576",
+                        "UsedPerc": "1.76"
+                    },
+                    {
+                        "Database": "pokemons",
+                        "MaxSize": "32767.9844",
+                        "Name": "UNDOTBS1",
+                        "Status": "ONLINE",
+                        "Total": "895",
+                        "Used": "41.25",
+                        "UsedPerc": "0.13"
+                    },
+                    {
+                        "Database": "pokemons",
+                        "MaxSize": "32767.9844",
+                        "Name": "SYSAUX",
+                        "Status": "ONLINE",
+                        "Total": "1870",
+                        "Used": "1749.625",
+                        "UsedPerc": "5.34"
+                    }
+                ],
+                "UniqueName": "pokemons",
+                "Used": "6",
+                "Version": "12.2.0.1.0 Enterprise Edition",
+                "Work": "1"
+            }
+        ],
+        "Filesystems": [
+            {
+                "Available": "5.4G",
+                "Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+                "FsType": "ext4",
+                "MountedOn": "/",
+                "Size": "13G",
+                "Used": "6.7G",
+                "UsedPerc": "56%"
+            },
+            {
+                "Available": "320M",
+                "Filesystem": "/dev/sda1",
+                "FsType": "ext4",
+                "MountedOn": "/boot",
+                "Size": "488M",
+                "Used": "133M",
+                "UsedPerc": "30%"
+            },
+            {
+                "Available": "22G",
+                "Filesystem": "/dev/mapper/cl_itl--csllab--112-data",
+                "FsType": "ext4",
+                "MountedOn": "/data",
+                "Size": "40G",
+                "Used": "17G",
+                "UsedPerc": "44%"
+            }
+        ]
+    },
+    "HostDataSchemaVersion": {
+        "$numberDouble": "4.0"
+    },
+    "HostType": "oracledb",
+    "Hostname": "test-db2",
+    "Info": {
+        "AixCluster": false,
+        "CPUCores": {
+            "$numberDouble": "1.0"
+        },
+        "CPUModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+        "CPUThreads": {
+            "$numberDouble": "2.0"
+        },
+        "Environment": "TST",
+        "Hostname": "test-db2",
+        "Kernel": "3.10.0-514.el7.x86_64",
+        "Location": "Germany",
+        "MemoryTotal": {
+            "$numberDouble": "3.0"
+        },
+        "OS": "Red Hat Enterprise Linux Server release 7.6 (Maipo)",
+        "OracleCluster": false,
+        "Socket": {
+            "$numberDouble": "2.0"
+        },
+        "SunCluster": true,
+        "SwapTotal": {
+            "$numberDouble": "1.0"
+        },
+        "Type": "OVM",
+        "VeritasCluster": false,
+        "Virtual": true
+    },
+    "Location": "Germany",
+    "SchemaVersion": {
+        "$numberInt": "1"
+    },
+    "Schemas": "RAF REMOTE_SCHEDULER_AGENT SYS$UMF GGSYS DBSFWUSER ERCOLE SYSRAC",
+    "ServerVersion": "latest",
+    "Version": "latest",
+    "_id": {
+        "$oid": "5eb2a1eba77f5e4badf8a2cc"
+    }
+}
