@@ -1,6 +1,7 @@
 # Ercole
 [![Build Status](https://travis-ci.org/amreo/ercole-services.png)](https://travis-ci.org/amreo/ercole-services) [![Join the chat at https://gitter.im/ercole-server/community](https://badges.gitter.im/ercole-server/community.svg)](https://gitter.im/ercole-server/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![codecov](https://codecov.io/gh/amreo/ercole-services/branch/master/graph/badge.svg)](https://codecov.io/gh/amreo/ercole-services) [![Go Report Card](https://goreportcard.com/badge/github.com/amreo/ercole-services)](https://goreportcard.com/report/github.com/amreo/ercole-services)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=amreo_ercole-services&metric=alert_status)](https://sonarcloud.io/dashboard?id=amreo_ercole-services)
+[![API Documentation](https://img.shields.io/badge/API%20Documentation-read%20and%20try-brightgreen)](https://mrin9.github.io/OpenAPI-Viewer/#/load/https%3A%2F%2Fraw.githubusercontent.com%2Famreo%2Fercole-services%2Fmaster%2Fswagger.yml)
 
 Ercole is a open-source software for proactive software asset management:
  
