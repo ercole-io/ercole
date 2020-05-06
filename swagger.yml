@@ -545,36 +545,50 @@ components:
           type: string
         ServerType:
           type: string
+          nullable: true
         Model:
           type: string
         ExaSwVersion:
           type: string
         CPUEnabled:
           type: string
+          nullable: true
         Memory:
           type: string
+          nullable: true
         Status:
           type: string
+          nullable: true
         PowerCount:
           type: string
+          nullable: true
         PowerStatus:
           type: string
+          nullable: true
         FanCount:
           type: string
+          nullable: true
         FanStatus:
           type: string
+          nullable: true
         TempActual:
           type: string
+          nullable: true
         TempStatus:
           type: string
+          nullable: true
         CellsrvService:
           type: string
+          nullable: true
         MsService:
           type: string
+          nullable: true
         RsService:
           type: string
+          nullable: true
         FlashcacheMode:
           type: string
+          nullable: true
         CellDisks:
           nullable: true
           type: array
@@ -582,23 +596,8 @@ components:
             $ref: '#/components/schemas/CellDisk'
       required:
         - Hostname
-        - ServerType
         - Model
         - ExaSwVersion
-        - CPUEnabled
-        - Memory
-        - Status
-        - PowerCount
-        - PowerStatus
-        - FanCount
-        - FanStatus
-        - TempActual
-        - TempStatus
-        - CellsrvService
-        - MsService
-        - RsService
-        - FlashcacheMode
-        - CellDisks
     HostData:
       description: A hostdata from FE
       type: object
@@ -925,6 +924,31 @@ components:
         - Description
         - Status
         - _id
+    ExadataSummary:
+      type: object
+      required:
+        - Hostname
+        - Location
+        - Environment
+        - CreatedAt
+        - DBServers
+        - StorageServers
+        - IBSwitches
+      properties:
+        Hostname:
+          type: string
+        Location:
+          type: string
+        Environment:
+          type: string
+        CreatedAt:
+          type: string
+        DBServers:
+          $ref: '#/components/schemas/ExadataDev'
+        StorageServers:
+          $ref: '#/components/schemas/ExadataDev'
+        IBSwitches:
+          $ref: '#/components/schemas/ExadataDev'
   parameters:
     search:
       in: query
@@ -995,6 +1019,21 @@ components:
       name: older-than
       description: Filter until the date
       allowEmptyValue: true
+    limit:
+      schema:
+        type: integer
+        example: 15
+      in: query
+      name: limit
+      description: Limit the size of the result
+      allowEmptyValue: true
+    window-time:
+      schema:
+        type: integer
+        default: 6
+      in: query
+      name: window-time
+      description: window time to check the patch date, in months
 paths:
   /ping:
     get:
@@ -1966,6 +2005,717 @@ paths:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
         - $ref: '#/components/parameters/older-than'
+  /exadata:
+    get:
+      summary: Search a list of exadata
+      tags:
+        - api-service
+        - fe-user
+        - read
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/ExadataSummary'
+                  - type: object
+                    properties:
+                      Content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ExadataSummary'
+                      Metadata:
+                        $ref: '#/components/schemas/PageMetadata'
+                    required:
+                      - Content
+                      - Metadata
+      operationId: SearchExadata
+      description: |-
+        Search exadata data using the filters in the request.
+        Return content type could be JSON or XLSX.
+      parameters:
+        - $ref: '#/components/parameters/search'
+        - $ref: '#/components/parameters/sort-by'
+        - $ref: '#/components/parameters/sort-desc'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+  /stats/environments:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetEnvironmentStats
+      summary: Get the stats about the environments
+      description: Get the stats about the environments
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Environment:
+                      type: string
+                    Count:
+                      type: integer
+                  required:
+                    - Environment
+                    - Count
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/types:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetTypeStats
+      summary: Get the stats about the types
+      description: Get the stats about the types
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Type:
+                      type: string
+                    Count:
+                      type: integer
+                  required:
+                    - Type
+                    - Count
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/operating-systems:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetOperatingSystemStats
+      summary: Get the stats about the operating systems 
+      description: Get the stats about the operating systems
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    OperatingSystem:
+                      type: string
+                    Count:
+                      type: integer
+                  required:
+                    - OperatingSystem
+                    - Count
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/top-unused-instance-resource:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetTopUnusedInstanceResourceStats
+      summary: Get the stats about the top unused instance resource by databases work
+      description: Get the stats about the top unused instance resource by databases work
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Hostname:
+                      type: string
+                    Unused:
+                      type: number
+                  required:
+                    - Hostname
+                    - Used
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/databases/environments:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetDatabaseEnvironmentStats
+      summary: Get the stats about the environment of the databases 
+      description: Get the stats about the environment of the databases
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Environment:
+                      type: string
+                    Count:
+                      type: string
+                  required:
+                    - Environment
+                    - Count
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/databases/versions:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetDatabaseVersionStats
+      summary: Get the stats about the version of the databases 
+      description: Get the stats about the version of the databases
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Version:
+                      type: string
+                    Count:
+                      type: string
+                  required:
+                    - Version
+                    - Count
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/databases/top-reclaimable:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetTopReclaimableDatabaseStats
+      summary: Get the list of top databases by reclaimable segment advisors 
+      description: Get the list of top databases by reclaimable segment advisors
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Hostname:
+                      type: string
+                    Dbname:
+                      type: string
+                    ReclaimableSegmentAdvisors: 
+                      type: number
+                  required:
+                    - Hostname
+                    - Dbname
+                    - ReclaimableSegmentAdvisors
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/databases/patch-status:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetDatabasePatchStatusStats
+      summary: Get the statistics about the patch status of the databases
+      description: Get the statistics about the patch status of the databases
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+        - $ref: '#/components/parameters/window-time'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Status:
+                      type: boolean
+                    Count:
+                      type: integer
+                  required:
+                    - Status
+                    - Count
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/databases/top-workload:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetTopWorkloadDatabaseStats
+      summary: Get the list of top databases by workload
+      description: Get the list of top databases by workload
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Hostname:
+                      type: string
+                    Dbname:
+                      type: string
+                    Workload: 
+                      type: number
+                  required:
+                    - Hostname
+                    - Dbname
+                    - Workload
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/databases/dataguard-status:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetDatabaseDataguardStatusStats
+      summary: Get the statistics about the dataguard status of the databases
+      description: Get the statistics about the dataguard status of the databases
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Dataguard:
+                      type: boolean
+                    Count:
+                      type: integer
+                  required:
+                    - Dataguard
+                    - Count
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/databases/archivelog-status:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetDatabaseArchivelogStatusStats
+      summary: Get the statistics about the archive log status of the databases
+      description: Get the statistics about the archive log status of the databases
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    ArchiveLog:
+                      type: boolean
+                    Count:
+                      type: integer
+                  required:
+                    - ArchiveLog
+                    - Count
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/databases/rac-status:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetDatabaseRACStatusStats
+      summary: Get the statistics about the RAC status of the databases
+      description: Get the statistics about the RAC status of the databases
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    RAC:
+                      type: boolean
+                    Count:
+                      type: integer
+                  required:
+                    - RAC
+                    - Count
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/databases/total-work:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetTotalDatabaseWorkStats
+      summary: Get the total work of the databases
+      description: Get the total work of the databases
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            text/plain:
+              schema:
+                type: number
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/databases/total-memory-size:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetTotalDatabaseMemorySizeStats
+      summary: Get the total size of the memory of the databases
+      description: Get the total size of the memory of the databases
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            text/plain:
+              schema:
+                type: number
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/databases/total-datafile-size:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetTotalDatabaseDatafileSizeStats
+      summary: Get the total size of the datafile of the databases
+      description: Get the total size of the datafile of the databases
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            text/plain:
+              schema:
+                type: number
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/databases/total-segment-size:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetTotalDatabaseSegmentSizeStats
+      summary: Get the total size of the segments of the databases
+      description: Get the total size of the segments of the databases
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            text/plain:
+              schema:
+                type: number
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/databases/license-compliance:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetDatabaseLicenseComplianceStatusStats
+      summary: Get the status of the license compliance of the databases
+      description: Get the status of the license compliance of the databases
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - Count
+                  - Used
+                  - Compliant
+                properties:
+                  Count: 
+                    type: number
+                  Used: 
+                    type: number
+                  Compliant:
+                    type: boolean
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error' 
+  /stats/exadata/total-memory-size:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetTotalExadataMemorySizeStats
+      summary: Get the total size of the memory of the exadata
+      description: Get the total size of the memory of the exadata
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            text/plain:
+              schema:
+                type: number
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/exadata/total-cpu:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetTotalExadataCPUStats
+      summary: Get the total cpu of the exadata
+      description: Get the total cpu of the exadata
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - Enabled
+                  - Total
+                properties:
+                  Enabled: 
+                    type: number
+                  Total: 
+                    type: number
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error' 
+  /stats/exadata/average-storage-usage:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetAverageExadataStorageUsageStats
+      summary: Get the average usage of the storage of the exadata
+      description: Get the average usage of the storage of the exadata
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            text/plain:
+              schema:
+                type: number
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
   /stats/exadata/storage-error-count-status:
     get:
       tags:
@@ -2041,6 +2791,13 @@ paths:
   /segment-advisors:
     get:
       parameters:
+        - in: query
+          name: full
+          description: output mode
+          allowEmptyValue: true
+          schema:
+            type: boolean
+            readOnly: true
         - $ref: '#/components/parameters/search'
         - $ref: '#/components/parameters/sort-by'
         - $ref: '#/components/parameters/sort-desc'
@@ -2094,12 +2851,7 @@ paths:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
         - $ref: '#/components/parameters/older-than'
-        - schema:
-            type: string
-            default: ''
-          in: query
-          name: window-time
-          description: window time to check Database.LastPSUs date to set Status
+        - $ref: '#/components/parameters/window-time'
         - schema:
             type: string
             enum:
@@ -2226,6 +2978,164 @@ paths:
         - api-service
         - fe-user
         - read
+  /licenses:
+    get:
+      parameters:
+        - in: query
+          name: full
+          description: output mode
+          allowEmptyValue: true
+          schema:
+            type: boolean
+            readOnly: true
+        - $ref: '#/components/parameters/sort-by'
+        - $ref: '#/components/parameters/sort-desc'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/License'
+                  - type: object
+                    properties:
+                      Content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/License'
+                      Metadata:
+                        $ref: '#/components/schemas/PageMetadata'
+                    required:
+                      - Content
+                      - Metadata
+      operationId: ListLicenses
+      description: List licenses using the filters in the request
+      summary: Search a list of patch advisors
+      tags:
+        - api-service
+        - fe-user
+        - read
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                required:
+                  - _id
+                  - Count
+                properties:
+                  _id:
+                    type: string
+                  Count:
+                    type: integer
+      responses:
+        '200':
+          description: OK
+      operationId: SetLicensesCount
+      description: Set the count of licenses
+      summary: Set the count of licenses
+      tags:
+        - api-service
+        - fe-user
+        - read
+  '/licenses/{name}':
+    get:
+      operationId: GetLicense
+      description: Return a certain license asked in the request
+      summary: Return a certain license asked in the request
+      tags:
+        - api-service
+        - fe-user
+        - read
+      parameters:
+        - in: path
+          name: name
+          description: name of the license
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/License'
+                  - type: object
+                    properties:
+                      Content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/License'
+                      Metadata:
+                        $ref: '#/components/schemas/PageMetadata'
+                    required:
+                      - Content
+                      - Metadata
+    put:
+      operationId: SetLicenseCount
+      description: Set the count of a certain license
+      summary: Set the count of a certain license
+      tags:
+        - api-service
+        - fe-user
+        - read
+      parameters:
+        - in: path
+          name: name
+          description: name of the license
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: number
+              description: new count value
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not found 
+        '500':
+          $ref: '#/components/responses/error'
+  /default-database-tag-choiches:
+    get:
+      operationId: GetDefaultDatabaseTags
+      description: Return the default list of database tags from configuration
+      summary: Return the default list of database tags from configuration
+      tags:
+        - api-service
+        - fe-user
+        - read
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []
