@@ -48,3 +48,32 @@ func (hd *HostDataMap) Info() HostMap {
 	info := (*hd)["Info"]
 	return info.(map[string]interface{})
 }
+
+// NewEmptyHostDataMap return an empty initialized HostDataMap
+func NewEmptyHostDataMap() HostDataMap {
+	return map[string]interface{}{
+		"Hostname":  "",
+		"CreatedAt": time.Time{},
+		"Archived":  false,
+		"Extra":     map[string]interface{}{},
+		"Info": map[string]interface{}{
+			"Hostname":       "",
+			"Environment":    "",
+			"Location":       "",
+			"CPUModel":       "",
+			"CPUCores":       0,
+			"CPUThreads":     0,
+			"Socket":         0,
+			"Type":           "",
+			"Virtual":        false,
+			"Kernel":         "",
+			"OS":             "",
+			"MemoryTotal":    0,
+			"SwapTotal":      0,
+			"OracleCluster":  false,
+			"VeritasCluster": false,
+			"SunCluster":     false,
+			"AixCluster":     false,
+		},
+	}
+}
