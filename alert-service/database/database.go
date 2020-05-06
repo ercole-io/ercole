@@ -125,18 +125,16 @@ func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time
 		),
 	)
 	if err != nil {
-		return model.HostDataMap{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	//Next the cursor. If there is no document return a empty document
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
-		return model.HostDataMap{}, nil
+		return nil, nil
 	}
 
-	//Decode the document
 	if err := cur.Decode(&out); err != nil {
-		return model.HostDataMap{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
 	return out, nil

@@ -151,7 +151,10 @@ func (as *AlertService) ProcessHostDataInsertion(params hub.Fields) {
 		return
 	}
 
-	//Find the data difference and generate eventually alerts
+	if oldData == nil {
+		oldData = model.NewEmptyHostDataMap()
+	}
+
 	if err := as.DiffHostDataMapAndGenerateAlert(oldData, newData); err != nil {
 		utils.LogErr(as.Log, err)
 		return
