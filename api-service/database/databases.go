@@ -52,7 +52,7 @@ func (md *MongoDatabase) SearchDatabases(full bool, keywords []string, sortBy st
 					mu.APOConvertToDoubleOrZero("$Database.MemoryTarget"),
 				),
 				"Database.DatafileSize":     "$Database.Used",
-				"Database.ArchiveLogStatus": mu.APOEqual("$Database.ArchiveLog", "ARCHIVELOG"),
+				"Database.ArchiveLogStatus": mu.APOEqual("$Database.Archivelog", "ARCHIVELOG"),
 				"Database.RAC": mu.APOAny("$Database.Features", "fe", mu.APOAnd(
 					mu.APOEqual("$$fe.Name", "Real Application Clusters"),
 					mu.APOEqual("$$fe.Status", true),
