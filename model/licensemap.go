@@ -17,6 +17,8 @@ func (license *LicenseMap) Count() int {
 		return val
 	case float64:
 		return int(val)
+	case int32:
+		return int(val)
 	default:
 		panic("Invalid type")
 	}
