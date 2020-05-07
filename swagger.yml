@@ -230,7 +230,7 @@ components:
         - Tables
         - Indexes
         - LOB
-    Feature:
+    OracleDatabaseFeature:
       type: object
       properties:
         Name:
@@ -443,7 +443,7 @@ components:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/Feature'
+            $ref: '#/components/schemas/OracleDatabaseFeature'
         Licenses:
           type: array
           nullable: true
@@ -949,6 +949,81 @@ components:
           $ref: '#/components/schemas/ExadataDev'
         IBSwitches:
           $ref: '#/components/schemas/ExadataDev'
+    Features: 
+      type: object
+      properties:
+        Oracle/Database:
+          type: boolean
+          nullable: true
+        Oracle/Exadata:
+          type: boolean
+          nullable: true
+        Postgresql/Postgresql:
+          type: boolean
+          nullable: true
+        Microsoft/SQLServer:
+          type: boolean
+          nullable: true
+    AssetStatus:
+      type: object
+      required:
+        - Name
+        - Used
+        - Count
+        - Compliance
+        - Cost
+      properties:
+        Name:
+          type: string
+        Used:
+          type: integer
+        Count:
+          type: integer
+        Compliant:
+          type: boolean
+        Cost:
+          type: number
+    AllAssetComplianceStatus:
+      type: object
+      required:
+        - Used
+        - Count
+        - Compliant
+        - Cost
+      properties:
+        Used:
+          type: integer
+        Count:
+          type: integer
+        Compliant:
+          type: boolean
+        Cost:
+          type: number
+    AggregatedCodeSeverityAlerts:
+      type: object
+      required:
+        - Code
+        - Severity
+        - Count
+        - AffectedHosts
+        - OldestAlert
+      properties:
+        Code: 
+          type: string
+          externalDocs:
+            url: https://github.com/amreo/ercole-services/blob/master/model/alert.go
+        Severity:
+          type: string
+          externalDocs:
+            url: https://github.com/amreo/ercole-services/blob/master/model/alert.go
+        Count: 
+          type: integer
+        AffectedHosts:
+          type: integer
+        OldestAlert:
+          type: string
+          format: date-time
+          example: '2020-05-05T08:23:40+00:00'
   parameters:
     search:
       in: query
@@ -1467,6 +1542,43 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
+  /assets/:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: ListAssets
+      summary: List all assets 
+      description:  List all assets
+      parameters:
+        - in: query
+          name: full
+          description: output mode
+          allowEmptyValue: true
+          schema:
+            type: boolean
+            readOnly: true
+        - $ref: '#/components/parameters/sort-by'
+        - $ref: '#/components/parameters/sort-desc'
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: Result of the search
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/AssetStatus'
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
   /databases:
     get:
       tags:
@@ -1653,6 +1765,16 @@ paths:
         - fe-user
       operationId: SearchAlerts
       parameters:
+        - in: query
+          name: mode
+          description: output mode
+          allowEmptyValue: true
+          schema:
+            type: string
+            enum:
+              - all
+              - aggregated-code-severity
+            readOnly: true
         - $ref: '#/components/parameters/search'
         - $ref: '#/components/parameters/sort-by'
         - $ref: '#/components/parameters/sort-desc'
@@ -1704,7 +1826,7 @@ paths:
           content:
             application/json:
               schema:
-                anyOf:
+                oneOf:
                   - type: array
                     items:
                       $ref: '#/components/schemas/Alert'
@@ -1731,113 +1853,9 @@ paths:
                             type: integer
                           TotalPages:
                             type: integer
-              examples:
-                example with page=0 and size=3:
-                  value:
-                    Content:
-                      - AlertCode: NEW_SERVER
-                        AlertSeverity: NOTICE
-                        AlertStatus: NEW
-                        Date: '2020-04-15T14:27:59.858+02:00'
-                        Description: "The server 'rac1_x' was added to ercole"
-                        Hostname: rac1_x
-                        OtherInfo:
-                          Hostname: rac1_x
-                        _id: 5e96fdcf1a65b0bf4e98028f
-                      - AlertCode: NEW_SERVER
-                        AlertSeverity: NOTICE
-                        AlertStatus: NEW
-                        Date: '2020-04-15T14:28:04.309+02:00'
-                        Description: "The server 'itl-csllab-112.sorint.localpippo' was added to ercole"
-                        Hostname: itl-csllab-112.sorint.localpippo
-                        OtherInfo:
-                          Hostname: itl-csllab-112.sorint.localpippo
-                        _id: 5e96fdd41a65b0bf4e980291
-                      - AlertCode: NEW_DATABASE
-                        AlertSeverity: NOTICE
-                        AlertStatus: NEW
-                        Date: '2020-04-15T14:28:04.309+02:00'
-                        Description: "The database 'ERCOLE' was created on the server itl-csllab-112.sorint.localpippo"
-                        Hostname: itl-csllab-112.sorint.localpippo
-                        OtherInfo:
-                          Dbname: ERCOLE
-                          Hostname: itl-csllab-112.sorint.localpippo
-                        _id: 5e96fdd41a65b0bf4e980292
-                    Metadata:
-                      Empty: false
-                      First: true
-                      Last: false
-                      Number: 0
-                      Size: 3
-                      TotalElements: 25
-                      TotalPages: 8
-                example without paging:
-                  value:
-                    - AlertCode: NEW_SERVER
-                      AlertSeverity: NOTICE
-                      AlertStatus: NEW
-                      Date: '2020-04-15T14:27:59.858+02:00'
-                      Description: "The server 'rac1_x' was added to ercole"
-                      Hostname: rac1_x
-                      OtherInfo:
-                        Hostname: rac1_x
-                      _id: 5e96fdcf1a65b0bf4e98028f
-                    - AlertCode: NEW_DATABASE
-                      AlertSeverity: NOTICE
-                      AlertStatus: NEW
-                      Date: '2020-04-15T14:28:04.309+02:00'
-                      Description: "The database 'ERCOLE' was created on the server itl-csllab-112.sorint.localpippo"
-                      Hostname: itl-csllab-112.sorint.localpippo
-                      OtherInfo:
-                        Dbname: ERCOLE
-                        Hostname: itl-csllab-112.sorint.localpippo
-                      _id: 5e96fdd41a65b0bf4e980292
-                    - AlertCode: NEW_LICENSE
-                      AlertSeverity: CRITICAL
-                      AlertStatus: NEW
-                      Date: '2020-04-15T14:28:04.309+02:00'
-                      Description: A new Enterprise license has been enabled to itl-csllab-112.sorint.localpippo
-                      Hostname: itl-csllab-112.sorint.localpippo
-                      OtherInfo:
-                        Hostname: itl-csllab-112.sorint.localpippo
-                      _id: 5e96fdd41a65b0bf4e980293
-                    - AlertCode: NEW_OPTION
-                      AlertSeverity: CRITICAL
-                      AlertStatus: NEW
-                      Date: '2020-04-15T14:28:04.309+02:00'
-                      Description: The database ERCOLE on itl-csllab-112.sorint.localpippo has enabled new features (Diagnostics Pack) on server
-                      Hostname: itl-csllab-112.sorint.localpippo
-                      OtherInfo:
-                        Dbname: ERCOLE
-                        Features:
-                          - Diagnostics Pack
-                        Hostname: itl-csllab-112.sorint.localpippo
-                      _id: 5e96fdd41a65b0bf4e980294
-                    - AlertCode: NEW_DATABASE
-                      AlertSeverity: NOTICE
-                      AlertStatus: NEW
-                      Date: '2020-04-15T14:28:09.787+02:00'
-                      Description: "The database 'urcole' was created on the server itl-csllab-112.sorint.localpippo"
-                      Hostname: itl-csllab-112.sorint.localpippo
-                      OtherInfo:
-                        Dbname: urcole
-                        Hostname: itl-csllab-112.sorint.localpippo
-                      _id: 5e96fdd91a65b0bf4e980296
-                    - AlertCode: NEW_LICENSE
-                      AlertSeverity: CRITICAL
-                      AlertStatus: NEW
-                      Date: '2020-04-15T14:28:09.787+02:00'
-                      Description: A new Enterprise license has been enabled to itl-csllab-112.sorint.localpippo
-                      Hostname: itl-csllab-112.sorint.localpippo
-                      OtherInfo:
-                        Hostname: itl-csllab-112.sorint.localpippo
-                      _id: 5e96fdd91a65b0bf4e980297
-                    - AlertCode: NEW_OPTION
-                      AlertSeverity: CRITICAL
-                      AlertStatus: NEW
-                      Date: '2020-04-15T14:28:09.787+02:00'
-                      Description: The database urcole on itl-csllab-112.sorint.localpippo has enabled new features (Diagnostics Pack) on server
-                      Hostname: itl-csllab-112.sorint.localpippo
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/AggregatedCodeSeverityAlerts'
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -2186,6 +2204,32 @@ paths:
                   required:
                     - Hostname
                     - Used
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/assets/compliance:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetAssetsCompliance
+      summary: Get the total compliance status of all assets 
+      description: Get the total compliance status of all assets 
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllAssetComplianceStatus'
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -2971,6 +3015,12 @@ paths:
                 type: object
                 description: XLSX file
               examples: {}
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
       operationId: SearchPatchAdvisors
       description: Search patch advisors data using the filters in the request
       summary: Search a list of patch advisors
@@ -3017,6 +3067,12 @@ paths:
                     required:
                       - Content
                       - Metadata
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
       operationId: ListLicenses
       description: List licenses using the filters in the request
       summary: Search a list of patch advisors
@@ -3089,6 +3145,12 @@ paths:
                     required:
                       - Content
                       - Metadata
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
     put:
       operationId: SetLicenseCount
       description: Set the count of a certain license
@@ -3114,10 +3176,14 @@ paths:
         '200':
           description: OK
         '404':
-          description: Not found 
+          $ref: '#/components/responses/error'
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /default-database-tag-choiches:
+  /settings/default-database-tag-choiches:
     get:
       operationId: GetDefaultDatabaseTags
       description: Return the default list of database tags from configuration
@@ -3136,6 +3202,75 @@ paths:
                 type: array
                 items:
                   type: string
+  /settings/features:
+    get:
+      operationId: GetFeatures
+      description: Return a map 
+      summary: Return the default list of database tags from configuration
+      tags:
+        - api-service
+        - fe-user
+        - read
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json::
+              schema:
+                $ref: '#/components/schemas/Features' 
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /frontend/dashboard:
+    get: 
+      operationId: GetFrontendDashboardData
+      description: Return the information required by ercole-web dashboard page
+      summary: Return the information required by ercole-web dashboard page
+      tags:
+        - api-service
+        - fe-user
+        - read
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - Features
+                  - Assets
+                  - Alerts
+                properties:
+                  Features:
+                    $ref: '#/components/schemas/Features' 
+                  Alerts: 
+                    $ref: '#/components/schemas/AggregatedCodeSeverityAlerts'
+                  Assets:
+                    type: object
+                    required:
+                      - Assets
+                      - Total
+                    properties:
+                      Assets:
+                        $ref: '#/components/schemas/AssetStatus' 
+                      Total:
+                        $ref: '#/components/schemas/AllAssetComplianceStatus' 
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []
