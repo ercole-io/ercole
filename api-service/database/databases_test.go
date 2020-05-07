@@ -35,7 +35,7 @@ func (m *MongodbSuite) TestSearchDatabases() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
@@ -43,7 +43,7 @@ func (m *MongodbSuite) TestSearchDatabases() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
@@ -51,7 +51,7 @@ func (m *MongodbSuite) TestSearchDatabases() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_be_paging", func(t *testing.T) {
@@ -95,7 +95,7 @@ func (m *MongodbSuite) TestSearchDatabases() {
 			},
 		}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_be_sorting", func(t *testing.T) {
@@ -147,7 +147,7 @@ func (m *MongodbSuite) TestSearchDatabases() {
 				"_id":              utils.Str2oid("5e96ade270c184faca93fe36"),
 			},
 		}
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_search_return_anything", func(t *testing.T) {
@@ -155,7 +155,7 @@ func (m *MongodbSuite) TestSearchDatabases() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_search_return_found", func(t *testing.T) {
@@ -186,7 +186,7 @@ func (m *MongodbSuite) TestSearchDatabases() {
 			},
 		}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("notfullmode", func(t *testing.T) {
@@ -238,7 +238,7 @@ func (m *MongodbSuite) TestSearchDatabases() {
 				"_id":              utils.Str2oid("5eb2a1eba77f5e4badf8a2cc"),
 			},
 		}
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("fullmode", func(t *testing.T) {
@@ -638,6 +638,6 @@ func (m *MongodbSuite) TestSearchDatabases() {
 				"_id":        "5eb2a1eba77f5e4badf8a2cc",
 			},
 		}
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 }

@@ -34,7 +34,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
@@ -42,7 +42,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
@@ -50,7 +50,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_be_paging", func(t *testing.T) {
@@ -84,7 +84,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 			},
 		}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_be_sorting", func(t *testing.T) {
@@ -115,7 +115,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 				"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
 			},
 		}
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_search_return_anything", func(t *testing.T) {
@@ -123,7 +123,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_search_return_found", func(t *testing.T) {
@@ -144,7 +144,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 			},
 		}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("fullmode", func(t *testing.T) {
@@ -206,7 +206,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 				},
 			},
 		}
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 }
