@@ -89,7 +89,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			},
 		}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_be_sorting", func(t *testing.T) {
 		out, err := m.db.SearchAlerts([]string{}, "AlertSeverity", true, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
@@ -124,7 +124,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 				"Hostname": "test-db",
 			},
 		}
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_filter_by_status", func(t *testing.T) {
 		out, err := m.db.SearchAlerts([]string{}, "", false, -1, -1, "", model.AlertStatusNew, utils.MIN_TIME, utils.MAX_TIME)
@@ -148,7 +148,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			},
 		}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_filter_by_severity", func(t *testing.T) {
 		out, err := m.db.SearchAlerts([]string{}, "", false, -1, -1, model.AlertSeverityCritical, "", utils.MIN_TIME, utils.MAX_TIME)
@@ -172,7 +172,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			},
 		}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_filter_by_from", func(t *testing.T) {
 		out, err := m.db.SearchAlerts([]string{}, "", false, -1, -1, "", "", utils.P("2020-04-13T08:46:58.38+02:00"), utils.MAX_TIME)
@@ -196,7 +196,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			},
 		}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_filter_by_to", func(t *testing.T) {
 		out, err := m.db.SearchAlerts([]string{}, "", false, -1, -1, "", "", utils.MIN_TIME, utils.P("2020-04-13T08:46:58.38+02:00"))
@@ -216,14 +216,14 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			},
 		}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_search1", func(t *testing.T) {
 		out, err := m.db.SearchAlerts([]string{"foobar"}, "", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_search2", func(t *testing.T) {
 		out, err := m.db.SearchAlerts([]string{"added", model.AlertCodeNewServer, model.AlertSeverityNotice, "rac1_x"}, "", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
@@ -243,7 +243,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			},
 		}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_search3", func(t *testing.T) {

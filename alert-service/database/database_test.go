@@ -161,26 +161,26 @@ func (m *MongodbSuite) TestFindOldCurrentHosts() {
 
 	m.T().Run("Should not find any", func(t *testing.T) {
 		hosts, err := m.db.FindOldCurrentHosts(hd.CreatedAt().AddDate(0, 0, -1))
-		require.NoError(m.T(), err)
-		assert.Empty(m.T(), hosts)
+		require.NoError(t, err)
+		assert.Empty(t, hosts)
 	})
 
 	m.T().Run("Should find one", func(t *testing.T) {
 		hosts, err := m.db.FindOldCurrentHosts(hd.CreatedAt().AddDate(0, 0, 15))
-		require.NoError(m.T(), err)
+		require.NoError(t, err)
 
-		assert.Len(m.T(), hosts, 1)
+		assert.Len(t, hosts, 1)
 		expectedHosts := append(make([]string, 0), hd.Hostname())
-		assert.ElementsMatch(m.T(), expectedHosts, hosts)
+		assert.ElementsMatch(t, expectedHosts, hosts)
 	})
 
 	m.T().Run("Should find two", func(t *testing.T) {
 		hosts, err := m.db.FindOldCurrentHosts(hd2.CreatedAt().AddDate(0, 0, 1))
-		require.NoError(m.T(), err)
+		require.NoError(t, err)
 
-		assert.Len(m.T(), hosts, 2)
+		assert.Len(t, hosts, 2)
 		expectedHosts := append(make([]string, 0), hd.Hostname(), hd2.Hostname())
-		assert.ElementsMatch(m.T(), expectedHosts, hosts)
+		assert.ElementsMatch(t, expectedHosts, hosts)
 	})
 }
 

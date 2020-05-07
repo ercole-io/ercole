@@ -33,21 +33,21 @@ func (m *MongodbSuite) TestSearchAddms() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
 		out, err := m.db.SearchAddms([]string{}, "", false, -1, -1, "", "PRD", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
 		out, err := m.db.SearchAddms([]string{}, "", false, -1, -1, "", "", utils.MIN_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_be_paging", func(t *testing.T) {
 		out, err := m.db.SearchAddms([]string{}, "", false, 0, 1, "", "", utils.MAX_TIME)
@@ -80,7 +80,7 @@ func (m *MongodbSuite) TestSearchAddms() {
 			},
 		}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_be_sorting", func(t *testing.T) {
 		out, err := m.db.SearchAddms([]string{}, "Benefit", false, -1, -1, "", "", utils.MAX_TIME)
@@ -112,14 +112,14 @@ func (m *MongodbSuite) TestSearchAddms() {
 			},
 		}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_search1", func(t *testing.T) {
 		out, err := m.db.SearchAddms([]string{"foobar"}, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_search2", func(t *testing.T) {
 		out, err := m.db.SearchAddms([]string{"test-db", "ERCOLE"}, "", false, -1, -1, "", "", utils.MAX_TIME)
@@ -151,6 +151,6 @@ func (m *MongodbSuite) TestSearchAddms() {
 			},
 		}
 
-		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 }
