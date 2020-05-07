@@ -826,7 +826,7 @@
                         }
                     ]
                 },
-                "postgresql": {
+                "Postgresql": {
                     "anyOf": [
                         { "type": "null" }, 
                         {
