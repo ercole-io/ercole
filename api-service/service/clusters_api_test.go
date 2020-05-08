@@ -33,7 +33,7 @@ func TestSearchClusters_Success(t *testing.T) {
 	}
 
 	expectedRes := []map[string]interface{}{
-		map[string]interface{}{
+		{
 			"CPU":                         0,
 			"Environment":                 "PROD",
 			"Hostname":                    "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
@@ -45,7 +45,7 @@ func TestSearchClusters_Success(t *testing.T) {
 			"Type":                        "unknown",
 			"_id":                         utils.Str2oid("5e8c234b24f648a08585bd3d"),
 		},
-		map[string]interface{}{
+		{
 			"CPU":                         140,
 			"Environment":                 "PROD",
 			"Hostname":                    "test-virt",
