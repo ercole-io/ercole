@@ -28,6 +28,7 @@ import (
 
 // SearchAlerts search alerts using the filters in the request
 func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) {
+	var mode string
 	var search string
 	var sortBy string
 	var sortDesc bool
@@ -40,6 +41,13 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 
 	var err utils.AdvancedErrorInterface
 	//parse the query params
+	mode = r.URL.Query().Get("mode")
+	if mode == "" {
+		mode = "all"
+	} else if mode != "all" && mode != "aggregated-code-severity" {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Invalid mode value"), http.StatusText(http.StatusUnprocessableEntity)))
+		return
+	}
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
@@ -75,7 +83,7 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 	}
 
 	//get the data
-	hosts, err := ctrl.Service.SearchAlerts(search, sortBy, sortDesc, pageNumber, pageSize, severity, status, from, to)
+	hosts, err := ctrl.Service.SearchAlerts(mode, search, sortBy, sortDesc, pageNumber, pageSize, severity, status, from, to)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return

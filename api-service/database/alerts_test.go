@@ -53,9 +53,31 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			"Hostname": "rac1_x",
 		},
 	})
+	m.InsertAlert(model.Alert{
+		ID:            utils.Str2oid("5eb5057f780da34946c353fb"),
+		AlertCode:     model.AlertCodeNewServer,
+		AlertSeverity: model.AlertSeverityNotice,
+		AlertStatus:   model.AlertStatusAck,
+		Date:          utils.P("2020-04-10T08:46:58.38+02:00"),
+		Description:   "The server 'rac1_x' was added to ercole",
+		OtherInfo: map[string]interface{}{
+			"Hostname": "rac1_x",
+		},
+	})
+	m.InsertAlert(model.Alert{
+		ID:            utils.Str2oid("5eb5058de2a09300d98aab67"),
+		AlertCode:     model.AlertCodeNewServer,
+		AlertSeverity: model.AlertSeverityNotice,
+		AlertStatus:   model.AlertStatusAck,
+		Date:          utils.P("2020-04-10T08:46:58.38+02:00"),
+		Description:   "The server 'rac2_x' was added to ercole",
+		OtherInfo: map[string]interface{}{
+			"Hostname": "rac2_x",
+		},
+	})
 
 	m.T().Run("should_be_paging", func(t *testing.T) {
-		out, err := m.db.SearchAlerts([]string{}, "", false, 0, 1, "", "", utils.MIN_TIME, utils.MAX_TIME)
+		out, err := m.db.SearchAlerts("all", []string{}, "", false, 0, 1, "", "", utils.MIN_TIME, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -83,8 +105,8 @@ func (m *MongodbSuite) TestSearchAlerts() {
 					"Last":          false,
 					"Number":        0,
 					"Size":          1,
-					"TotalElements": 2,
-					"TotalPages":    2,
+					"TotalElements": 4,
+					"TotalPages":    4,
 				},
 			},
 		}
@@ -92,7 +114,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_be_sorting", func(t *testing.T) {
-		out, err := m.db.SearchAlerts([]string{}, "AlertSeverity", true, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
+		out, err := m.db.SearchAlerts("all", []string{}, "AlertSeverity", true, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -106,6 +128,30 @@ func (m *MongodbSuite) TestSearchAlerts() {
 					"Hostname": "rac1_x",
 				},
 				"Hostname": "rac1_x",
+			},
+			map[string]interface{}{
+				"_id":           utils.Str2oid("5eb5057f780da34946c353fb"),
+				"AlertCode":     model.AlertCodeNewServer,
+				"AlertSeverity": model.AlertSeverityNotice,
+				"AlertStatus":   model.AlertStatusAck,
+				"Date":          utils.P("2020-04-10T08:46:58.38+02:00"),
+				"Description":   "The server 'rac1_x' was added to ercole",
+				"OtherInfo": map[string]interface{}{
+					"Hostname": "rac1_x",
+				},
+				"Hostname": "rac1_x",
+			},
+			map[string]interface{}{
+				"_id":           utils.Str2oid("5eb5058de2a09300d98aab67"),
+				"AlertCode":     model.AlertCodeNewServer,
+				"AlertSeverity": model.AlertSeverityNotice,
+				"AlertStatus":   model.AlertStatusAck,
+				"Date":          utils.P("2020-04-10T08:46:58.38+02:00"),
+				"Description":   "The server 'rac2_x' was added to ercole",
+				"OtherInfo": map[string]interface{}{
+					"Hostname": "rac2_x",
+				},
+				"Hostname": "rac2_x",
 			},
 			map[string]interface{}{
 				"_id":           utils.Str2oid("5ea6a65bb2e36eb58da2f67c"),
@@ -127,7 +173,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_filter_by_status", func(t *testing.T) {
-		out, err := m.db.SearchAlerts([]string{}, "", false, -1, -1, "", model.AlertStatusNew, utils.MIN_TIME, utils.MAX_TIME)
+		out, err := m.db.SearchAlerts("all", []string{}, "", false, -1, -1, "", model.AlertStatusNew, utils.MIN_TIME, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -151,7 +197,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_filter_by_severity", func(t *testing.T) {
-		out, err := m.db.SearchAlerts([]string{}, "", false, -1, -1, model.AlertSeverityCritical, "", utils.MIN_TIME, utils.MAX_TIME)
+		out, err := m.db.SearchAlerts("all", []string{}, "", false, -1, -1, model.AlertSeverityCritical, "", utils.MIN_TIME, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -175,7 +221,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_filter_by_from", func(t *testing.T) {
-		out, err := m.db.SearchAlerts([]string{}, "", false, -1, -1, "", "", utils.P("2020-04-13T08:46:58.38+02:00"), utils.MAX_TIME)
+		out, err := m.db.SearchAlerts("all", []string{}, "", false, -1, -1, "", "", utils.P("2020-04-13T08:46:58.38+02:00"), utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -199,7 +245,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_filter_by_to", func(t *testing.T) {
-		out, err := m.db.SearchAlerts([]string{}, "", false, -1, -1, "", "", utils.MIN_TIME, utils.P("2020-04-13T08:46:58.38+02:00"))
+		out, err := m.db.SearchAlerts("all", []string{}, "", false, -1, -1, "", "", utils.MIN_TIME, utils.P("2020-04-13T08:46:58.38+02:00"))
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -214,23 +260,59 @@ func (m *MongodbSuite) TestSearchAlerts() {
 				},
 				"Hostname": "rac1_x",
 			},
+			map[string]interface{}{
+				"_id":           utils.Str2oid("5eb5057f780da34946c353fb"),
+				"AlertCode":     model.AlertCodeNewServer,
+				"AlertSeverity": model.AlertSeverityNotice,
+				"AlertStatus":   model.AlertStatusAck,
+				"Date":          utils.P("2020-04-10T08:46:58.38+02:00"),
+				"Description":   "The server 'rac1_x' was added to ercole",
+				"OtherInfo": map[string]interface{}{
+					"Hostname": "rac1_x",
+				},
+				"Hostname": "rac1_x",
+			},
+			map[string]interface{}{
+				"_id":           utils.Str2oid("5eb5058de2a09300d98aab67"),
+				"AlertCode":     model.AlertCodeNewServer,
+				"AlertSeverity": model.AlertSeverityNotice,
+				"AlertStatus":   model.AlertStatusAck,
+				"Date":          utils.P("2020-04-10T08:46:58.38+02:00"),
+				"Description":   "The server 'rac2_x' was added to ercole",
+				"OtherInfo": map[string]interface{}{
+					"Hostname": "rac2_x",
+				},
+				"Hostname": "rac2_x",
+			},
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_search1", func(t *testing.T) {
-		out, err := m.db.SearchAlerts([]string{"foobar"}, "", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
+		out, err := m.db.SearchAlerts("all", []string{"foobar"}, "", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_search2", func(t *testing.T) {
-		out, err := m.db.SearchAlerts([]string{"added", model.AlertCodeNewServer, model.AlertSeverityNotice, "rac1_x"}, "", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
+		out, err := m.db.SearchAlerts("all", []string{"added", model.AlertCodeNewServer, model.AlertSeverityNotice, "rac1_x"}, "", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
 				"_id":           utils.Str2oid("5e96ade270c184faca93fe1b"),
+				"AlertCode":     model.AlertCodeNewServer,
+				"AlertSeverity": model.AlertSeverityNotice,
+				"AlertStatus":   model.AlertStatusAck,
+				"Date":          utils.P("2020-04-10T08:46:58.38+02:00"),
+				"Description":   "The server 'rac1_x' was added to ercole",
+				"OtherInfo": map[string]interface{}{
+					"Hostname": "rac1_x",
+				},
+				"Hostname": "rac1_x",
+			},
+			map[string]interface{}{
+				"_id":           utils.Str2oid("5eb5057f780da34946c353fb"),
 				"AlertCode":     model.AlertCodeNewServer,
 				"AlertSeverity": model.AlertSeverityNotice,
 				"AlertStatus":   model.AlertStatusAck,
@@ -247,7 +329,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 	})
 
 	m.T().Run("should_search3", func(t *testing.T) {
-		out, err := m.db.SearchAlerts([]string{"ERCOLE", "Diagnostics Pack"}, "", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
+		out, err := m.db.SearchAlerts("all", []string{"ERCOLE", "Diagnostics Pack"}, "", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -269,6 +351,29 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		}
 
 		assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_aggregate_result", func(t *testing.T) {
+		out, err := m.db.SearchAlerts("aggregated-code-severity", []string{}, "Count", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{
+			map[string]interface{}{
+				"AffectedHosts": 1,
+				"Code":          "NEW_OPTION",
+				"Count":         1,
+				"OldestAlert":   utils.P("2020-04-15T08:46:58.475+02:00"),
+				"Severity":      "CRITICAL",
+			},
+			map[string]interface{}{
+				"AffectedHosts": 2,
+				"Code":          "NEW_SERVER",
+				"Count":         3,
+				"OldestAlert":   "2020-04-10T08:46:58.38+02:00",
+				"Severity":      "NOTICE",
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 }
 

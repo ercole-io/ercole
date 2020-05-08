@@ -35,33 +35,23 @@ func TestSearchAlerts_Success(t *testing.T) {
 
 	expectedRes := []interface{}{
 		map[string]interface{}{
-			"AlertCode":     "NEW_DATABASE",
-			"AlertSeverity": "NOTICE",
-			"AlertStatus":   "NEW",
-			"Date":          utils.P("2020-04-07T08:52:59.874+02:00"),
-			"Description":   "The database 'ERCOLE' was created on the server test-db",
-			"Hostname":      "test-db",
-			"OtherInfo": map[string]interface{}{
-				"Dbname":   "ERCOLE",
-				"Hostname": "test-db",
-			},
-			"_id": utils.Str2oid("5e8c234b24f648a08585bd45"),
+			"AffectedHosts": 12,
+			"Code":          "NEW_SERVER",
+			"Count":         12,
+			"OldestAlert":   "2020-05-06T15:40:04.543+02:00",
+			"Severity":      "NOTICE",
 		},
 		map[string]interface{}{
-			"AlertCode":     "NEW_LICENSE",
-			"AlertSeverity": "CRITICAL",
-			"AlertStatus":   "NEW",
-			"Date":          utils.P("2020-04-07T08:52:59.875+02:00"),
-			"Description":   "A new Enterprise license has been enabled to test-db",
-			"Hostname":      "test-db",
-			"OtherInfo": map[string]interface{}{
-				"Hostname": "test-db",
-			},
-			"_id": utils.Str2oid("5e8c234b24f648a08585bd46"),
+			"AffectedHosts": 12,
+			"Code":          "NEW_SERVER",
+			"Count":         12,
+			"OldestAlert":   "2020-05-06T15:40:04.543+02:00",
+			"Severity":      "NOTICE",
 		},
 	}
 
 	db.EXPECT().SearchAlerts(
+		"aggregated-code-severity",
 		[]string{"foo", "bar", "foobarx"}, "AlertCode", true,
 		1, 1, model.AlertSeverityMinor, model.AlertStatusNew,
 		utils.P("2019-11-05T14:02:03Z"), utils.P("2020-04-07T14:02:03Z"),
@@ -71,6 +61,7 @@ func TestSearchAlerts_Success(t *testing.T) {
 	).Times(1)
 
 	res, err := as.SearchAlerts(
+		"aggregated-code-severity",
 		"foo bar foobarx", "AlertCode", true,
 		1, 1, model.AlertSeverityMinor, model.AlertStatusNew,
 		utils.P("2019-11-05T14:02:03Z"), utils.P("2020-04-07T14:02:03Z"),
@@ -89,6 +80,7 @@ func TestSearchAlerts_Fail(t *testing.T) {
 	}
 
 	db.EXPECT().SearchAlerts(
+		"aggregated-code-severity",
 		[]string{"foo", "bar", "foobarx"}, "AlertCode", true,
 		1, 1, model.AlertSeverityMinor, model.AlertStatusNew,
 		utils.P("2019-11-05T14:02:03Z"), utils.P("2019-12-05T14:02:03Z"),
@@ -98,6 +90,7 @@ func TestSearchAlerts_Fail(t *testing.T) {
 	).Times(1)
 
 	res, err := as.SearchAlerts(
+		"aggregated-code-severity",
 		"foo bar foobarx", "AlertCode", true,
 		1, 1, model.AlertSeverityMinor, model.AlertStatusNew,
 		utils.P("2019-11-05T14:02:03Z"), utils.P("2019-12-05T14:02:03Z"),
