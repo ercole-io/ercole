@@ -20,21 +20,22 @@ env:
     - PACKAGE_BUILD_IMAGE=sorintdev/rpmbuild-centos7
     - WORKSPACE='/project'
 
-services:
-  - mongodb
+# services:
+#   - mongodb   # The version of mongodb is old
   
 before_install:
   - if [ -z ${TRAVIS_TAG} ] || [ ${TRAVIS_TAG} == *-* ]; then export VERSION=latest; else export VERSION=${TRAVIS_TAG}; fi
   - echo ${TRAVIS_TAG}
   - echo ${VERSION}
   - sudo docker pull ${PACKAGE_BUILD_IMAGE}
+  - sudo docker pull mongo:latest
 
 install:
   - mkdir -p dist
   - go get -v
   - go get github.com/golang/mock/mockgen@latest
   - sudo docker run -d --rm -it -e WORKSPACE="${WORKSPACE}" -e TRAVIS_REPO_SLUG="${TRAVIS_REPO_SLUG}" -e TRAVIS_BUILD_NUMBER="${TRAVIS_BUILD_NUMBER}" -v $PWD:"${WORKSPACE}" --name package_builder ${PACKAGE_BUILD_IMAGE} /bin/cat
-
+  - sudo docker run -d --rm -p 27017:27017 mongo:latest
 script: 
   - go generate -v ./...
   - go build -o ercole
