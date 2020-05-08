@@ -19,37 +19,38 @@ package service
 import (
 	"time"
 
+	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
 )
 
 // ListAssets returns the list of assets with some stats
-func (as *APIService) ListAssets(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) ListAssets(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.AssetStatus, utils.AdvancedErrorInterface) {
 	partialList, err := as.Database.GetAssetsUsage(sortBy, sortDesc, location, environment, olderThan)
 	if err != nil {
 		return nil, err
 	}
 
-	finalList := make([]map[string]interface{}, 0)
+	finalList := make([]model.AssetStatus, 0)
 
 	//Oracle/Database
 	if partialList["Oracle/Database"] > 0 {
-		finalList = append(finalList, map[string]interface{}{
-			"Name":       "Oracle/Database",
-			"Used":       partialList["Oracle/Database"],
-			"Count":      0,
-			"Compliance": false,
-			"Cost":       0,
+		finalList = append(finalList, model.AssetStatus{
+			Name:       "Oracle/Database",
+			Used:       partialList["Oracle/Database"],
+			Count:      0.0,
+			Compliance: false,
+			Cost:       0.0,
 		})
 	}
 
 	//Oracle/Exadata
 	if partialList["Oracle/Exadata"] > 0 {
-		finalList = append(finalList, map[string]interface{}{
-			"Name":       "Oracle/Exadata",
-			"Used":       partialList["Oracle/Exadata"],
-			"Count":      partialList["Oracle/Exadata"],
-			"Compliance": true,
-			"Cost":       0,
+		finalList = append(finalList, model.AssetStatus{
+			Name:       "Oracle/Exadata",
+			Used:       partialList["Oracle/Exadata"],
+			Count:      partialList["Oracle/Exadata"],
+			Compliance: true,
+			Cost:       0.0,
 		})
 	}
 
