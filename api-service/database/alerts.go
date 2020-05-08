@@ -26,7 +26,7 @@ import (
 )
 
 // SearchAlerts search alerts
-func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, severity string, status string, from time.Time, to time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, severity string, status string, from time.Time, to time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{} = make([]interface{}, 0)
 
 	//Find the matching alerts
@@ -56,6 +56,29 @@ func (md *MongoDatabase) SearchAlerts(keywords []string, sortBy string, sortDesc
 			mu.APSet(bson.M{
 				"Hostname": "$OtherInfo.Hostname",
 			}),
+			mu.APOptionalStage(mode == "aggregated-code-severity", mu.MAPipeline(
+				mu.APGroup(bson.M{
+					"_id": bson.M{
+						"Code":     "$AlertCode",
+						"Severity": "$AlertSeverity",
+					},
+					"Count": mu.APOSum(1),
+					"OldestAlert": bson.M{
+						"$min": "$Date",
+					},
+					"AffectedHosts": bson.M{
+						"$addToSet": "$Hostname",
+					},
+				}),
+				mu.APProject(bson.M{
+					"_id":           false,
+					"Code":          "$_id.Code",
+					"Severity":      "$_id.Severity",
+					"Count":         true,
+					"AffectedHosts": mu.APOSize("$AffectedHosts"),
+					"OldestAlert":   true,
+				}),
+			)),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),
 		),

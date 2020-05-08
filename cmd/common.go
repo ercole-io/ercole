@@ -50,6 +50,7 @@ var to string
 var olderThan string
 var outputFormat string
 var mode string
+var mode2 string
 
 type apiOption struct {
 	addOption func(cmd *cobra.Command)
@@ -71,6 +72,15 @@ var modeOption apiOption = apiOption{
 	},
 	addParam: func(params url.Values) {
 		params.Set("mode", mode)
+	},
+}
+
+var modeAlertOption apiOption = apiOption{
+	addOption: func(cmd *cobra.Command) {
+		cmd.Flags().StringVarP(&mode2, "mode", "m", "all", "Output mode (all, aggregated-code-severity)")
+	},
+	addParam: func(params url.Values) {
+		params.Set("mode", mode2)
 	},
 }
 

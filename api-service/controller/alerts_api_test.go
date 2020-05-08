@@ -43,29 +43,18 @@ func TestSearchAlerts_SuccessPaged(t *testing.T) {
 	expectedRes := map[string]interface{}{
 		"Content": []interface{}{
 			map[string]interface{}{
-				"AlertCode":     "NEW_DATABASE",
-				"AlertSeverity": "NOTICE",
-				"AlertStatus":   "NEW",
-				"Date":          utils.P("2020-04-07T08:52:59.874+02:00"),
-				"Description":   "The database 'ERCOLE' was created on the server test-db",
-				"Hostname":      "test-db",
-				"OtherInfo": map[string]interface{}{
-					"Dbname":   "ERCOLE",
-					"Hostname": "test-db",
-				},
-				"_id": utils.Str2oid("5e8c234b24f648a08585bd45"),
+				"AffectedHosts": 12,
+				"Code":          "NEW_SERVER",
+				"Count":         12,
+				"OldestAlert":   utils.P("2020-05-06T15:40:04.543+02:00"),
+				"Severity":      "NOTICE",
 			},
 			map[string]interface{}{
-				"AlertCode":     "NEW_LICENSE",
-				"AlertSeverity": "CRITICAL",
-				"AlertStatus":   "NEW",
-				"Date":          utils.P("2020-04-07T08:52:59.875+02:00"),
-				"Description":   "A new Enterprise license has been enabled to test-db",
-				"Hostname":      "test-db",
-				"OtherInfo": map[string]interface{}{
-					"Hostname": "test-db",
-				},
-				"_id": utils.Str2oid("5e8c234b24f648a08585bd46"),
+				"AffectedHosts": 1,
+				"Code":          "NEW_LICENSE",
+				"Count":         1,
+				"OldestAlert":   utils.P("2020-05-06T15:40:04.62+02:00"),
+				"Severity":      "CRITICAL",
 			},
 		},
 		"Metadata": map[string]interface{}{
@@ -84,12 +73,12 @@ func TestSearchAlerts_SuccessPaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchAlerts("foo", "CreatedAt", true, 10, 2, model.AlertSeverityMinor, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
+		SearchAlerts("aggregated-code-severity", "foo", "CreatedAt", true, 10, 2, model.AlertSeverityMinor, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
 		Return(resFromService, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts?search=foo&sort-by=CreatedAt&sort-desc=true&page=10&size=2&severity=MINOR&status=ACK&from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
+	req, err := http.NewRequest("GET", "/alerts?mode=aggregated-code-severity&search=foo&sort-by=CreatedAt&sort-desc=true&page=10&size=2&severity=MINOR&status=ACK&from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -111,38 +100,28 @@ func TestSearchAlerts_SuccessUnpaged(t *testing.T) {
 
 	expectedRes := []interface{}{
 		map[string]interface{}{
-			"AlertCode":     "NEW_DATABASE",
-			"AlertSeverity": "NOTICE",
-			"AlertStatus":   "NEW",
-			"Date":          utils.P("2020-04-07T08:52:59.874+02:00"),
-			"Description":   "The database 'ERCOLE' was created on the server test-db",
-			"Hostname":      "test-db",
-			"OtherInfo": map[string]interface{}{
-				"Dbname":   "ERCOLE",
-				"Hostname": "test-db",
-			},
-			"_id": utils.Str2oid("5e8c234b24f648a08585bd45"),
+			"AffectedHosts": 12,
+			"Code":          "NEW_SERVER",
+			"Count":         12,
+			"OldestAlert":   utils.P("2020-05-06T15:40:04.543+02:00"),
+			"Severity":      "NOTICE",
 		},
 		map[string]interface{}{
-			"AlertCode":     "NEW_LICENSE",
-			"AlertSeverity": "CRITICAL",
-			"AlertStatus":   "NEW",
-			"Date":          utils.P("2020-04-07T08:52:59.875+02:00"),
-			"Description":   "A new Enterprise license has been enabled to test-db",
-			"Hostname":      "test-db",
-			"OtherInfo": map[string]interface{}{
-				"Hostname": "test-db",
-			},
-			"_id": utils.Str2oid("5e8c234b24f648a08585bd46"),
+			"AffectedHosts": 1,
+			"Code":          "NEW_LICENSE",
+			"Count":         1,
+			"OldestAlert":   utils.P("2020-05-06T15:40:04.62+02:00"),
+			"Severity":      "CRITICAL",
 		},
 	}
 	as.EXPECT().
-		SearchAlerts("foo", "CreatedAt", true, -1, -1, model.AlertSeverityMinor, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
+		SearchAlerts("aggregated-code-severity",
+			"foo", "CreatedAt", true, -1, -1, model.AlertSeverityMinor, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts?search=foo&sort-by=CreatedAt&sort-desc=true&severity=MINOR&status=ACK&from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
+	req, err := http.NewRequest("GET", "/alerts?mode=aggregated-code-severity&search=foo&sort-by=CreatedAt&sort-desc=true&severity=MINOR&status=ACK&from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -164,7 +143,7 @@ func TestSearchAlerts_FailUnprocessable1(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts?sort-desc=maybe", nil)
+	req, err := http.NewRequest("GET", "/alerts?mode=sdfgsdfg", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -185,7 +164,7 @@ func TestSearchAlerts_FailUnprocessable2(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts?page=ssdfds", nil)
+	req, err := http.NewRequest("GET", "/alerts?sort-desc=maybe", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -206,7 +185,7 @@ func TestSearchAlerts_FailUnprocessable3(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts?size=asasd", nil)
+	req, err := http.NewRequest("GET", "/alerts?page=ssdfds", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -227,7 +206,7 @@ func TestSearchAlerts_FailUnprocessable4(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts?severity=asasdsd", nil)
+	req, err := http.NewRequest("GET", "/alerts?size=asasd", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -248,7 +227,7 @@ func TestSearchAlerts_FailUnprocessable5(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts?status=asasdsd", nil)
+	req, err := http.NewRequest("GET", "/alerts?severity=asasdsd", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -269,7 +248,7 @@ func TestSearchAlerts_FailUnprocessable6(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts?from=asasdsd", nil)
+	req, err := http.NewRequest("GET", "/alerts?status=asasdsd", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -278,6 +257,27 @@ func TestSearchAlerts_FailUnprocessable6(t *testing.T) {
 }
 
 func TestSearchAlerts_FailUnprocessable7(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchAlerts)
+	req, err := http.NewRequest("GET", "/alerts?from=asasdsd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchAlerts_FailUnprocessable8(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -310,7 +310,7 @@ func TestSearchAlerts_FailInternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchAlerts("", "", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME).
+		SearchAlerts("all", "", "", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
