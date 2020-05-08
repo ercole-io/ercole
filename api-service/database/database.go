@@ -124,6 +124,8 @@ type MongoDatabaseInterface interface {
 	FindHostData(hostname string) (map[string]interface{}, utils.AdvancedErrorInterface)
 	// ExistHostdata return true if the host specified by hostname exist, otherwise false
 	ExistHostdata(hostname string) (bool, utils.AdvancedErrorInterface)
+	// GetAssetsUsage return a map that contains the number of usages for every features
+	GetAssetsUsage(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) (map[string]float32, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation

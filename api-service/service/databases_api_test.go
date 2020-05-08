@@ -108,7 +108,7 @@ func TestSearchSegmentAdvisors_Success(t *testing.T) {
 	}
 
 	expectedRes := []map[string]interface{}{
-		map[string]interface{}{
+		{
 			"CreatedAt":      utils.P("2020-04-07T08:52:59.82+02:00"),
 			"Dbname":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
 			"Environment":    "SVIL",
@@ -122,7 +122,7 @@ func TestSearchSegmentAdvisors_Success(t *testing.T) {
 			"SegmentType":    "TABLE",
 			"_id":            utils.Str2oid("5e8c234b24f648a08585bd32"),
 		},
-		map[string]interface{}{
+		{
 			"CreatedAt":      utils.P("2020-04-07T08:52:59.872+02:00"),
 			"Dbname":         "ERCOLE",
 			"Environment":    "TST",

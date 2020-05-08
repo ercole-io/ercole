@@ -29,6 +29,8 @@ import (
 type APIControllerInterface interface {
 	// SearchHosts search hosts data using the filters in the request
 	SearchHosts(w http.ResponseWriter, r *http.Request)
+	// ListAssets returns the list of assets with some stats using the filters in the request
+	ListAssets(w http.ResponseWriter, r *http.Request)
 	// SearchDatabases search databases data using the filters in the request
 	SearchDatabases(w http.ResponseWriter, r *http.Request)
 	// SearchClusters search clusters data using the filters in the request
