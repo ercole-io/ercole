@@ -2209,7 +2209,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetAssetsCompliance
+      operationId: GetTotalAssetsCompliance
       summary: Get the total compliance status of all assets 
       description: Get the total compliance status of all assets 
       parameters:
