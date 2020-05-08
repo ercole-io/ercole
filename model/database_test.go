@@ -23,11 +23,11 @@ import (
 
 func TestDatabasesArrayAsMap(t *testing.T) {
 	dbs := []Database{
-		Database{
+		{
 			Name:     "superdb",
 			Platform: "HPP 1.2.3",
 		},
-		Database{
+		{
 			Name:     "superdb2",
 			Platform: "PPH 1.2.3",
 		},
@@ -49,8 +49,8 @@ func TestHasEnterpriseLicense_NoEnterpriseLicense(t *testing.T) {
 	assert.False(t, HasEnterpriseLicense(Database{
 		Name: "superdb",
 		Licenses: []License{
-			License{Name: "Driving", Count: 10},
-			License{Name: "Illegal query engine", Count: 9},
+			{Name: "Driving", Count: 10},
+			{Name: "Illegal query engine", Count: 9},
 		},
 	}))
 }
@@ -59,8 +59,8 @@ func TestHasEnterpriseLicense_WithEnterpriseLicense(t *testing.T) {
 	assert.True(t, HasEnterpriseLicense(Database{
 		Name: "superdb",
 		Licenses: []License{
-			License{Name: "Oracle ENT", Count: 10},
-			License{Name: "Illegal query engine", Count: 9},
+			{Name: "Oracle ENT", Count: 10},
+			{Name: "Illegal query engine", Count: 9},
 		},
 	}))
 }

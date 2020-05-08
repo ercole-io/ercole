@@ -33,7 +33,7 @@ func TestSearchAddms_Success(t *testing.T) {
 	}
 
 	expectedRes := []map[string]interface{}{
-		map[string]interface{}{
+		{
 			"Action":         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
 			"Benefit":        83.34,
 			"CreatedAt":      utils.P("2020-04-07T08:52:59.872+02:00"),
@@ -45,7 +45,7 @@ func TestSearchAddms_Success(t *testing.T) {
 			"Recommendation": "SQL Tuning",
 			"_id":            utils.Str2oid("5e8c234b24f648a08585bd43"),
 		},
-		map[string]interface{}{
+		{
 			"Action":         "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
 			"Benefit":        68.24,
 			"CreatedAt":      utils.P("2020-04-07T08:52:59.872+02:00"),
@@ -187,7 +187,7 @@ func TestSearchPatchAdvisors_Success(t *testing.T) {
 	}
 
 	expectedRes := []map[string]interface{}{
-		map[string]interface{}{
+		{
 			"CreatedAt":   utils.P("2020-04-07T08:52:59.82+02:00"),
 			"Date":        utils.P("2012-04-16T02:00:00+02:00"),
 			"Dbname":      "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
@@ -199,7 +199,7 @@ func TestSearchPatchAdvisors_Success(t *testing.T) {
 			"Status":      "KO",
 			"_id":         utils.Str2oid("5e8c234b24f648a08585bd32"),
 		},
-		map[string]interface{}{
+		{
 			"CreatedAt":   utils.P("2020-04-07T08:52:59.872+02:00"),
 			"Date":        utils.P("2012-04-16T02:00:00+02:00"),
 			"Dbname":      "ERCOLE",
@@ -265,7 +265,7 @@ func TestSearchDatabases_Success(t *testing.T) {
 	}
 
 	expectedRes := []map[string]interface{}{
-		map[string]interface{}{
+		{
 			"ArchiveLogStatus": false,
 			"BlockSize":        "8192",
 			"CPUCount":         "16",
@@ -287,7 +287,7 @@ func TestSearchDatabases_Success(t *testing.T) {
 			"Work":             "1",
 			"_id":              utils.Str2oid("5e8c234b24f648a08585bd32"),
 		},
-		map[string]interface{}{
+		{
 			"ArchiveLogStatus": false,
 			"BlockSize":        "8192",
 			"CPUCount":         "2",
@@ -532,11 +532,11 @@ func TestSetLicensesCount_Success(t *testing.T) {
 	db.EXPECT().SetLicenseCount("Oracle STD", 20).Return(nil).Times(1)
 
 	err := as.SetLicensesCount([]map[string]interface{}{
-		map[string]interface{}{
+		{
 			"_id":   "Oracle ENT",
 			"Count": 10,
 		},
-		map[string]interface{}{
+		{
 			"_id":   "Oracle STD",
 			"Count": 20,
 		},
@@ -569,11 +569,11 @@ func TestSetLicensesCount_Fail(t *testing.T) {
 	db.EXPECT().SetLicenseCount("Oracle ENT", 10).Return(aerrMock).Times(1)
 
 	err := as.SetLicensesCount([]map[string]interface{}{
-		map[string]interface{}{
+		{
 			"_id":   "Oracle ENT",
 			"Count": 10,
 		},
-		map[string]interface{}{
+		{
 			"_id":   "Oracle STD",
 			"Count": 20,
 		},

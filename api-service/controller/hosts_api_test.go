@@ -136,7 +136,7 @@ func TestSearchHosts_JSONUnpaged(t *testing.T) {
 	}
 
 	expectedRes := []map[string]interface{}{
-		map[string]interface{}{
+		{
 			"CPUCores":       1,
 			"CPUModel":       "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
 			"CPUThreads":     2,
@@ -161,7 +161,7 @@ func TestSearchHosts_JSONUnpaged(t *testing.T) {
 			"Virtual":        true,
 			"_id":            utils.Str2oid("5e8c234b24f648a08585bd3d"),
 		},
-		map[string]interface{}{
+		{
 			"CPUCores":       1,
 			"CPUModel":       "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
 			"CPUThreads":     2,
@@ -347,7 +347,7 @@ func TestSearchHosts_LMSSuccess(t *testing.T) {
 	}
 
 	expectedRes := []map[string]interface{}{
-		map[string]interface{}{
+		{
 			"ConnectString":            "",
 			"CoresPerProcessor":        float64(1),
 			"DBInstanceName":           "ERCOLE",
@@ -370,7 +370,7 @@ func TestSearchHosts_LMSSuccess(t *testing.T) {
 			"VirtualizationTechnology": "VMWARE",
 			"_id":                      utils.Str2oid("5e96ade270c184faca93fe20"),
 		},
-		map[string]interface{}{
+		{
 			"ConnectString":            "",
 			"CoresPerProcessor":        float64(4),
 			"DBInstanceName":           "rudeboy-fb3160a04ffea22b55555bbb58137f77 007bond-f260462ca34bbd17deeda88f042e42a1 jacket-d4a157354d91bfc68fce6f45546d8f3d allstate-9a6a2a820a3f61aeb345a834abf40fba 4wcqjn-ecf040bdfab7695ab332aef7401f185c",
@@ -543,7 +543,7 @@ func TestSearchHosts_LMSSuccessInternalServerError2(t *testing.T) {
 	}
 
 	expectedRes := []map[string]interface{}{
-		map[string]interface{}{
+		{
 			"ConnectString":            "",
 			"CoresPerProcessor":        float64(1),
 			"DBInstanceName":           "ERCOLE",
@@ -566,7 +566,7 @@ func TestSearchHosts_LMSSuccessInternalServerError2(t *testing.T) {
 			"VirtualizationTechnology": "VMWARE",
 			"_id":                      utils.Str2oid("5e96ade270c184faca93fe20"),
 		},
-		map[string]interface{}{
+		{
 			"ConnectString":            "",
 			"CoresPerProcessor":        float64(4),
 			"DBInstanceName":           "rudeboy-fb3160a04ffea22b55555bbb58137f77 007bond-f260462ca34bbd17deeda88f042e42a1 jacket-d4a157354d91bfc68fce6f45546d8f3d allstate-9a6a2a820a3f61aeb345a834abf40fba 4wcqjn-ecf040bdfab7695ab332aef7401f185c",
@@ -620,7 +620,7 @@ func TestSearchHosts_XLSXSuccess(t *testing.T) {
 	}
 
 	expectedRes := []map[string]interface{}{
-		map[string]interface{}{
+		{
 			"CPUCores":       float64(24),
 			"CPUModel":       "Intel(R) Xeon(R) Platinum 8160 CPU @ 2.10GHz",
 			"CPUThreads":     float64(48),
@@ -645,7 +645,7 @@ func TestSearchHosts_XLSXSuccess(t *testing.T) {
 			"Virtual":        false,
 			"_id":            utils.Str2oid("5e96ade270c184faca93fe31"),
 		},
-		map[string]interface{}{
+		{
 			"CPUCores":       float64(1),
 			"CPUModel":       "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
 			"CPUThreads":     float64(2),
@@ -820,7 +820,7 @@ func TestSearchHosts_XLSXInternalServerError2(t *testing.T) {
 	}
 
 	expectedRes := []map[string]interface{}{
-		map[string]interface{}{
+		{
 			"CPUCores":       float64(24),
 			"CPUModel":       "Intel(R) Xeon(R) Platinum 8160 CPU @ 2.10GHz",
 			"CPUThreads":     float64(48),
@@ -845,7 +845,7 @@ func TestSearchHosts_XLSXInternalServerError2(t *testing.T) {
 			"Virtual":        false,
 			"_id":            utils.Str2oid("5e96ade270c184faca93fe31"),
 		},
-		map[string]interface{}{
+		{
 			"CPUCores":       float64(1),
 			"CPUModel":       "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
 			"CPUThreads":     float64(2),
