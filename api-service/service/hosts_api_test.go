@@ -33,7 +33,7 @@ func TestSearchHosts_Success(t *testing.T) {
 	}
 
 	expectedRes := []map[string]interface{}{
-		map[string]interface{}{
+		{
 			"CPUCores":       1,
 			"CPUModel":       "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
 			"CPUThreads":     2,
@@ -58,7 +58,7 @@ func TestSearchHosts_Success(t *testing.T) {
 			"Virtual":        true,
 			"_id":            utils.Str2oid("5e8c234b24f648a08585bd3d"),
 		},
-		map[string]interface{}{
+		{
 			"CPUCores":       1,
 			"CPUModel":       "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
 			"CPUThreads":     2,

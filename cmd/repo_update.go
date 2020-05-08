@@ -40,7 +40,7 @@ func init() {
 			}
 
 			//Install all updateCandidates
-			for art, _ := range updateCandidates {
+			for art := range updateCandidates {
 				art.Install(art)
 			}
 		},
