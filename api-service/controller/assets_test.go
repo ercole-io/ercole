@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/amreo/ercole-services/config"
+	"github.com/amreo/ercole-services/model"
 	"github.com/amreo/ercole-services/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -38,20 +39,20 @@ func TestListAssets_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []map[string]interface{}{
+	expectedRes := []model.AssetStatus{
 		{
-			"Compliance": false,
-			"Cost":       0,
-			"Count":      0,
-			"Name":       "Oracle/Database",
-			"Used":       8,
+			Compliance: false,
+			Cost:       0,
+			Count:      0,
+			Name:       "Oracle/Database",
+			Used:       8,
 		},
 		{
-			"Compliance": true,
-			"Cost":       0,
-			"Count":      2,
-			"Name":       "Oracle/Exadata",
-			"Used":       2,
+			Compliance: true,
+			Cost:       0,
+			Count:      2,
+			Name:       "Oracle/Exadata",
+			Used:       2,
 		},
 	}
 
