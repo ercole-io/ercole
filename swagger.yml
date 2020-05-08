@@ -1542,7 +1542,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /assets/:
+  /assets:
     get:
       tags:
         - api-service
@@ -1552,13 +1552,6 @@ paths:
       summary: List all assets 
       description:  List all assets
       parameters:
-        - in: query
-          name: full
-          description: output mode
-          allowEmptyValue: true
-          schema:
-            type: boolean
-            readOnly: true
         - $ref: '#/components/parameters/sort-by'
         - $ref: '#/components/parameters/sort-desc'
         - $ref: '#/components/parameters/location'
