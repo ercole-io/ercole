@@ -832,7 +832,7 @@
                         {
                             "type": "object",
                             "properties": {
-                                "postgresql": {
+                                "Postgresql": {
                                     "anyOf": [
                                         { "type": "null" },
                                         { 
