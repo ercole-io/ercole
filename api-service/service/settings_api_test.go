@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	"github.com/amreo/ercole-services/config"
+	"github.com/amreo/ercole-services/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -42,4 +43,49 @@ func TestGetDefaultDatabaseTags_Success(t *testing.T) {
 	res, err := as.GetDefaultDatabaseTags()
 	require.NoError(t, err)
 	assert.Equal(t, []string{"foo", "bar"}, res)
+}
+
+func TestGetErcoleFeatures_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
+
+	expectedRes := map[string]bool{
+		"Oracle/Database": true,
+		"Oracle/Exadata":  false,
+	}
+
+	getAssetsUsageRes := map[string]float32{
+		"Oracle/Database": 8,
+		"Oracle/Exadata":  0,
+	}
+
+	db.EXPECT().
+		GetAssetsUsage("", false, "", "", utils.MAX_TIME).
+		Return(getAssetsUsageRes, nil)
+
+	res, err := as.GetErcoleFeatures()
+
+	require.NoError(t, err)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
+}
+
+func TestGetErcoleFeatures_FailInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
+
+	db.EXPECT().
+		GetAssetsUsage("", false, "", "", utils.MAX_TIME).
+		Return(nil, aerrMock)
+
+	_, err := as.GetErcoleFeatures()
+
+	require.Equal(t, aerrMock, err)
 }

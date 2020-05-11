@@ -105,8 +105,10 @@ type APIControllerInterface interface {
 	GetExadataStorageErrorCountStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetExadataPatchStatusStats return all statistics about the patch status of the exadata using the filters in the request
 	GetExadataPatchStatusStats(w http.ResponseWriter, r *http.Request)
-	//GetDefaultDatabaseTags return the default list of database tags from configuration
+	// GetDefaultDatabaseTags return the default list of database tags from configuration
 	GetDefaultDatabaseTags(w http.ResponseWriter, r *http.Request)
+	// GetErcoleFeatures return a map of active/inactive features
+	GetErcoleFeatures(w http.ResponseWriter, r *http.Request)
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(w http.ResponseWriter, r *http.Request)
@@ -127,6 +129,9 @@ type APIControllerInterface interface {
 	AckAlert(w http.ResponseWriter, r *http.Request)
 	// ArchiveHost archive the specified host in the request
 	ArchiveHost(w http.ResponseWriter, r *http.Request)
+
+	// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
+	GetInfoForFrontendDashboard(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface
