@@ -16,3 +16,14 @@ func (ctrl *APIController) GetDefaultDatabaseTags(w http.ResponseWriter, r *http
 
 	utils.WriteJSONResponse(w, http.StatusOK, tags)
 }
+
+// GetErcoleFeatures return a map of active/inactive features
+func (ctrl *APIController) GetErcoleFeatures(w http.ResponseWriter, r *http.Request) {
+	data, err := ctrl.Service.GetErcoleFeatures()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, data)
+}
