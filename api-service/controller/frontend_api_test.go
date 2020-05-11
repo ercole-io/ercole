@@ -27,7 +27,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetDefaultDatabaseTags_Success(t *testing.T) {
+func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -38,15 +38,67 @@ func TestGetDefaultDatabaseTags_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	res := []string{"awesome", "fast", "slow"}
+	res := map[string]interface{}{
+		"Alerts": []map[string]interface{}{
+			{
+				"AffectedHosts": 4,
+				"Code":          "NEW_DATABASE",
+				"Count":         9,
+				"OldestAlert":   "2020-05-11T11:38:11.992+02:00",
+				"Severity":      "NOTICE",
+			},
+			{
+				"AffectedHosts": 12,
+				"Code":          "NEW_SERVER",
+				"Count":         12,
+				"OldestAlert":   "2020-05-11T11:38:11.988+02:00",
+				"Severity":      "NOTICE",
+			},
+			{
+				"AffectedHosts": 4,
+				"Code":          "NEW_OPTION",
+				"Count":         7,
+				"OldestAlert":   "2020-05-11T11:38:11.992+02:00",
+				"Severity":      "CRITICAL",
+			},
+		},
+		"Assets": map[string]interface{}{
+			"Assets": []map[string]interface{}{
+				{
+					"Compliance": false,
+					"Cost":       0,
+					"Count":      0,
+					"Name":       "Oracle/Database",
+					"Used":       8,
+				},
+				{
+					"Compliance": true,
+					"Cost":       0,
+					"Count":      2,
+					"Name":       "Oracle/Exadata",
+					"Used":       2,
+				},
+			},
+			"Total": map[string]interface{}{
+				"Compliant": false,
+				"Cost":      0,
+				"Count":     2,
+				"Used":      10,
+			},
+		},
+		"Features": map[string]interface{}{
+			"Oracle/Database": true,
+			"Oracle/Exadata":  true,
+		},
+	}
 
 	as.EXPECT().
-		GetDefaultDatabaseTags().
+		GetInfoForFrontendDashboard("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(res, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetDefaultDatabaseTags)
-	req, err := http.NewRequest("GET", "/settings/default-database-tag-choiches", nil)
+	handler := http.HandlerFunc(ac.GetInfoForFrontendDashboard)
+	req, err := http.NewRequest("GET", "/settings/features?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -55,7 +107,7 @@ func TestGetDefaultDatabaseTags_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(res), rr.Body.String())
 }
 
-func TestGetDefaultDatabaseTags_FailInternalServerError(t *testing.T) {
+func TestGetInfoForFrontendDashboard_UnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -66,52 +118,17 @@ func TestGetDefaultDatabaseTags_FailInternalServerError(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().
-		GetDefaultDatabaseTags().
-		Return(nil, aerrMock)
-
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetDefaultDatabaseTags)
-	req, err := http.NewRequest("GET", "/settings/default-database-tag-choiches", nil)
+	handler := http.HandlerFunc(ac.GetInfoForFrontendDashboard)
+	req, err := http.NewRequest("GET", "/settings/features?older-than=sdfsdfsdf", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestGetErcoleFeatures_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	res := map[string]bool{
-		"Oracle/Database": true,
-		"Oracle/Exadata":  true,
-	}
-
-	as.EXPECT().
-		GetErcoleFeatures().
-		Return(res, nil)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetErcoleFeatures)
-	req, err := http.NewRequest("GET", "/settings/features", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(res), rr.Body.String())
-}
-
-func TestGetErcoleFeatures_FailInternalServerError(t *testing.T) {
+func TestGetInfoForFrontendDashboard_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -123,11 +140,11 @@ func TestGetErcoleFeatures_FailInternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		GetErcoleFeatures().
+		GetInfoForFrontendDashboard("", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetErcoleFeatures)
+	handler := http.HandlerFunc(ac.GetInfoForFrontendDashboard)
 	req, err := http.NewRequest("GET", "/settings/features", nil)
 	require.NoError(t, err)
 

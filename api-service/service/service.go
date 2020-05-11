@@ -112,7 +112,8 @@ type APIServiceInterface interface {
 	GetExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetDefaultDatabaseTags return the default list of database tags from configuration
 	GetDefaultDatabaseTags() ([]string, utils.AdvancedErrorInterface)
-
+	// GetErcoleFeatures return a map of active/inactive features
+	GetErcoleFeatures() (map[string]bool, utils.AdvancedErrorInterface)
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
 	// SetLicensesCount set the count of all licenses in newLicenses
@@ -132,6 +133,9 @@ type APIServiceInterface interface {
 	AckAlert(id primitive.ObjectID) utils.AdvancedErrorInterface
 	// ArchiveHost archive the specified host
 	ArchiveHost(hostname string) utils.AdvancedErrorInterface
+
+	// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
+	GetInfoForFrontendDashboard(location string, environment string, olderThan time.Time) (map[string]interface{}, utils.AdvancedErrorInterface)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

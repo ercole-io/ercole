@@ -88,8 +88,15 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/stats/exadata/patch-status", ctrl.GetExadataPatchStatusStats).Methods("GET")
 
 	setupSettingsRoutes(router.PathPrefix("/settings").Subrouter(), ctrl)
+	setupFrontendAPIRoutes(router.PathPrefix("/frontend").Subrouter(), ctrl)
 }
 
 func setupSettingsRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/default-database-tag-choiches", ctrl.GetDefaultDatabaseTags).Methods("GET")
+	router.HandleFunc("/features", ctrl.GetErcoleFeatures).Methods("GET")
+
+}
+
+func setupFrontendAPIRoutes(router *mux.Router, ctrl APIControllerInterface) {
+	router.HandleFunc("/dashboard", ctrl.GetInfoForFrontendDashboard).Methods("GET")
 }

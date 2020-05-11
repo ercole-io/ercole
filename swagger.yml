@@ -3198,8 +3198,8 @@ paths:
   /settings/features:
     get:
       operationId: GetFeatures
-      description: Return a map 
-      summary: Return the default list of database tags from configuration
+      description: Return a map of active/inactive ercole features
+      summary: Return a map of active/inactive ercole features
       tags:
         - api-service
         - fe-user
