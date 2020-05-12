@@ -58,7 +58,7 @@ func (m *MongodbSuite) TestSearchAddms() {
 					map[string]interface{}{
 						"Action":         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
 						"Benefit":        83.34,
-						"CreatedAt":      utils.P("2020-04-15T08:46:58.471+02:00"),
+						"CreatedAt":      utils.P("2020-04-15T08:46:58.471+02:00").Local(),
 						"Dbname":         "ERCOLE",
 						"Environment":    "TST",
 						"Finding":        "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
@@ -89,7 +89,7 @@ func (m *MongodbSuite) TestSearchAddms() {
 			map[string]interface{}{
 				"Action":         "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
 				"Benefit":        68.24,
-				"CreatedAt":      utils.P("2020-04-15T08:46:58.471+02:00"),
+				"CreatedAt":      utils.P("2020-04-15T08:46:58.471+02:00").Local(),
 				"Dbname":         "ERCOLE",
 				"Environment":    "TST",
 				"Finding":        "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
@@ -101,7 +101,7 @@ func (m *MongodbSuite) TestSearchAddms() {
 			map[string]interface{}{
 				"Action":         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
 				"Benefit":        83.34,
-				"CreatedAt":      utils.P("2020-04-15T08:46:58.471+02:00"),
+				"CreatedAt":      utils.P("2020-04-15T08:46:58.471+02:00").Local(),
 				"Dbname":         "ERCOLE",
 				"Environment":    "TST",
 				"Finding":        "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
@@ -128,7 +128,7 @@ func (m *MongodbSuite) TestSearchAddms() {
 			map[string]interface{}{
 				"Action":         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
 				"Benefit":        83.34,
-				"CreatedAt":      utils.P("2020-04-15T08:46:58.471+02:00"),
+				"CreatedAt":      utils.P("2020-04-15T08:46:58.471+02:00").Local(),
 				"Dbname":         "ERCOLE",
 				"Environment":    "TST",
 				"Finding":        "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
@@ -140,7 +140,7 @@ func (m *MongodbSuite) TestSearchAddms() {
 			map[string]interface{}{
 				"Action":         "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
 				"Benefit":        68.24,
-				"CreatedAt":      utils.P("2020-04-15T08:46:58.471+02:00"),
+				"CreatedAt":      utils.P("2020-04-15T08:46:58.471+02:00").Local(),
 				"Dbname":         "ERCOLE",
 				"Environment":    "TST",
 				"Finding":        "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",

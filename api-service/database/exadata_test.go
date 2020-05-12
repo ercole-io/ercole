@@ -69,7 +69,7 @@ func (m *MongodbSuite) TestSearchExadata() {
 			map[string]interface{}{
 				"Content": []interface{}{
 					map[string]interface{}{
-						"CreatedAt": utils.P("2020-05-12T10:39:44.831+02:00"),
+						"CreatedAt": utils.P("2020-05-12T10:39:44.831+02:00").Local(),
 						"DBServers": []map[string]interface{}{
 							{
 								"CPUEnabled":   "48/48",
