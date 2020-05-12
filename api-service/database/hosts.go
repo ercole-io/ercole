@@ -44,7 +44,7 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, sortBy stri
 			}, keywords),
 			mu.APOptionalStage(mode != "mongo", mu.MAPipeline(
 				mu.APOptionalStage(mode == "lms", mu.APMatch(
-					mu.QOExpr(mu.APOGreater(mu.APOSize("$Extra.Databases"), 0))),
+					mu.QOExpr(mu.APOGreater(mu.APOSize(mu.APOIfNull("$Extra.Databases", bson.A{})), 0))),
 				),
 				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
 					FilterByOldnessSteps(olderThan),
