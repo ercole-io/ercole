@@ -1,76 +1,84 @@
-version: ~> 1.0
+version: "~> 1.0"
 
 dist: xenial
 
 language: go
 
-sudo: required
-
-branches:
-  except:
-    - /^latest$/
-
 go:
-  - 1.13.x
+- 1.14.x
 
 env:
   global:
-    - MONGODB_URI=mongodb://127.0.0.1:27017
-    - VERSION=latest
-    - PACKAGE_BUILD_IMAGE=sorintdev/rpmbuild-centos7
-    - WORKSPACE='/project'
+  - MONGODB_URI=mongodb://127.0.0.1:27017
+  - VERSION=latest
+  - PACKAGE_BUILD_IMAGE=sorintdev/rpmbuild-centos7
+  - WORKSPACE='/project'
+  - secure: z/budndhuvHV42SK1sFDrgeqgW37xE0SOUrgxF1GFL3+hw90efA7+4K22DDK/fzTo7xCJ7Ddl2eH6v1lBhsxpMd3eM2uYBthO+c+3d6KNOHhcnUoAvXtte1h3E+KleXyWQIRR9e2OOQWylYjOFFDFFkhRAIy/X7p7aNk2EVr7UkAMM6IcnUGuEgw9kbk1NjKx4lABgm/p4MV43b7WJjDKqRA1Bxw2Y94eLvn8gI7/WLI/z6iNrieOjjM3Ac2dUXbiEcipIhhkmZx5ouIg8fN+/UNCMzH6zdseYUOs6r8Z5UP4rLoV1TEE8xG//1+l97+9oYcQo3uep5xuDhbbSUU8Y6msr85uGbZJEnhKfJltfD7y8PwMbp4aLWZsoWbt2jxqRZpk9G8ycq7c36ZfDeJh91s/KZHNuriD5UB2uDma758ea7zxj/vHxGdOLPsPQ30tzenNFbUUYRHRhQkV0dYCN5FManz3F6itA8aVDu4ubdWPCeqPVqLtsHE5zdX/fQY9c/1nGoHQ8G2QPHwfjWIO3uCEpNH5IxVxkjq7dyzvmbLlAMZQRWQTuSnC6vK+bflVSWqEjdwhgIyyAu37f0BFqR25Hs0M6/Z7R0snl4eGa7ypn7CRP4F8+16y2rB7U/lMBed0RNulM635LDSX3HQiZ7NBFl43DnPAQI7uCt1D7k=
+  - secure: rACyY30MxlWAX6BcS5dB2rHjrZsKwt0+cswvetx5hr3DeJbVwwhQuMLWYnL6I/K+sEVtuJ9bvGie6PabaFWUSmw7Y08xLrskRgO0GsTjvCa0Ewmk70etfoPoMILoX2RVBCGMdMVi7g3CTQZ9PR2j/NHRHPtSFpJSIxmFkiSxFASIvA5pKSfTEdF73E9hiNRIDvlYAjYW/EE0YkU/0p5RBTNLwCC6kQ+boedPgLlW/KfVjp1aGKB7p3VQ8936/BWcUk/uYNhRkr54IAAs3nmIyV0cVIJe1pxGsIZEzoW/vpt2f+AUZKaSdMyTWLBxUkffHLIATLHcokO7bMISCd8F6D6WPLm3Lki1r6HcLGKDMOeI32xfsejBxWPhddT48+5vQ7d39LG7LwydNKCrorbw1fPdZ6Iv2zznOcKNQT95SReSmjKOyq2p/dhUevNKLRpTJDBykf3mzBU0m9NUePwKX1PnTWCXKIXB2EepndyDmglY9T+Gtkx9aBd0ZjI4RNDbWSi7rHiizBD1JLfClS8cxlrfAL29P/Tp0lIQGW/+nb5XUDxq9LRaPeiPf7v6dyL2kxVgS4nMcKtrvLj9HDU+QqEJZYoIt3AI0lpGki4JjzZuHDBz43Liq+BEKrkPVO5HY3G4DBjkaGpRJUm2F01zk7kCealJYIMEQII1xNX0THo=
 
-# services:
-#   - mongodb   # The version of mongodb is old
-  
+services:
+- docker
+
 before_install:
-  - if [ -z ${TRAVIS_TAG} ] || [ ${TRAVIS_TAG} == *-* ]; then export VERSION=latest; else export VERSION=${TRAVIS_TAG}; fi
-  - echo ${TRAVIS_TAG}
-  - echo ${VERSION}
-  - sudo docker pull ${PACKAGE_BUILD_IMAGE}
-  - sudo docker pull mongo:latest
+- if [ -z ${TRAVIS_TAG} ] || [ ${TRAVIS_TAG} == *-* ]; then export VERSION=latest;
+  else export VERSION=${TRAVIS_TAG}; fi
+- echo ${TRAVIS_TAG}
+- echo ${VERSION}
+- docker pull ${PACKAGE_BUILD_IMAGE}
+- docker pull mongo:latest
 
 install:
-  - mkdir -p dist
-  - go get -v
-  - go get github.com/golang/mock/mockgen@latest
-  - sudo docker run -d --rm -it -e WORKSPACE="${WORKSPACE}" -e TRAVIS_REPO_SLUG="${TRAVIS_REPO_SLUG}" -e TRAVIS_BUILD_NUMBER="${TRAVIS_BUILD_NUMBER}" -v $PWD:"${WORKSPACE}" --name package_builder ${PACKAGE_BUILD_IMAGE} /bin/cat
-  - sudo docker run -d --rm -p 27017:27017 mongo:latest
-script: 
-  - go generate -v ./...
-  - go build -o ercole
-  - go test -v ./...
-  - ./ercole version
-  - docker exec -it package_builder /bin/sh -c "mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}"
-  - docker exec -it package_builder /bin/sh -c "ln -s ${WORKSPACE} ~/rpmbuild/SOURCES/ercole-${VERSION}"
-  - docker exec -it package_builder /bin/sh -c "cd ${WORKSPACE} && rpmbuild --define \"_version ${VERSION}\" -bb package/rhel7/ercole.spec"
-  - docker exec -it package_builder /bin/sh -c "ls ~/rpmbuild/RPMS/x86_64/ercole-*.rpm"
-  - docker exec -it package_builder /bin/sh -c "file ~/rpmbuild/RPMS/x86_64/ercole-*.rpm"
-  - docker exec -it package_builder /bin/sh -c "cp ~/rpmbuild/RPMS/x86_64/ercole-*.rpm ${WORKSPACE}/dist"
-  - go test -race -coverprofile=coverage.txt -covermode=atomic -v ./...
+- mkdir -p dist
+- go get -v
+- go get github.com/golang/mock/mockgen@latest
+- docker run -d --rm -it -e WORKSPACE="${WORKSPACE}" -e TRAVIS_REPO_SLUG="${TRAVIS_REPO_SLUG}"
+  -e TRAVIS_BUILD_NUMBER="${TRAVIS_BUILD_NUMBER}" -v $PWD:"${WORKSPACE}" --name package_builder
+  ${PACKAGE_BUILD_IMAGE} /bin/cat
+- docker run -d --rm -p 27017:27017 mongo:latest
+
+script:
+- go generate -v ./...
+- go build -o ercole
+- go test -v ./...
+- "./ercole version"
+- docker exec -it package_builder /bin/sh -c "mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}"
+- docker exec -it package_builder /bin/sh -c "ln -s ${WORKSPACE} ~/rpmbuild/SOURCES/ercole-${VERSION}"
+- docker exec -it package_builder /bin/sh -c "cd ${WORKSPACE} && rpmbuild --define
+  \"_version ${VERSION}\" -bb package/rhel7/ercole.spec"
+- docker exec -it package_builder /bin/sh -c "ls ~/rpmbuild/RPMS/x86_64/ercole-*.rpm"
+- docker exec -it package_builder /bin/sh -c "file ~/rpmbuild/RPMS/x86_64/ercole-*.rpm"
+- docker exec -it package_builder /bin/sh -c "cp ~/rpmbuild/RPMS/x86_64/ercole-*.rpm
+  ${WORKSPACE}/dist"
+- go test -race -coverprofile=coverage.txt -covermode=atomic -v ./...
 
 before_deploy:
-  - if [[ ${VERSION} == "latest" ]]; then git tag -f latest; fi
-  - if [[ ${VERSION} == "latest" ]]; then git remote add gh https://amreo:${GITHUB_API_RELEASE}@github.com/${TRAVIS_REPO_SLUG}.git; fi
-  - if [[ ${VERSION} == "latest" ]]; then git push gh latest || true; fi
-  - if [[ ${VERSION} == "latest" ]]; then git push -f gh latest; fi
-  - if [[ ${VERSION} == "latest" ]]; then git remote remove gh; fi
+- if [[ ${VERSION} == "latest" ]]; then git tag -f latest; fi
+- if [[ ${VERSION} == "latest" ]]; then git remote add gh https://amreo:${GITHUB_API_RELEASE}@github.com/${TRAVIS_REPO_SLUG}.git;
+  fi
+- if [[ ${VERSION} == "latest" ]]; then git push gh latest || true; fi
+- if [[ ${VERSION} == "latest" ]]; then git push -f gh latest; fi
+- if [[ ${VERSION} == "latest" ]]; then git remote remove gh; fi
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.io/bash)
+- docker build -t ercole/ercole-services .
 
 deploy:
-  - provider: script
-    script: cd dist/ && echo $MAGIC_SCRIPT | base64 -d | bash > /dev/stdout 2>/dev/stdout
-    # script: ls && cd dist && for f in *; do echo $f; done
-    skip_cleanup: true
-    file_glob: true
-    file: dist/*
-  - provider: release
-    api_key: $GITHUB_API_RELEASE
-    file_glob: true
-    file: dist/*
-    skip_cleanup: true
-    overwrite: true
-    on:
-      all_branches: true  
+- provider: script
+  script: cd dist/ && echo $MAGIC_SCRIPT | base64 -d | bash > /dev/stdout 2>/dev/stdout
+  skip_cleanup: true
+  file_glob: true
+  file: dist/*
+- provider: releases
+  api_key: "$GITHUB_API_RELEASE"
+  file_glob: true
+  file: dist/*
+  skip_cleanup: true
+  overwrite: true
+  on:
+    all_branches: true
+- provider: script
+  script: \
+    docker tag ercole/ercole-services ercole/ercole-services:${VERSION} && \
+    ( echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin ) && \
+    docker push ercole/ercole-services:${VERSION}
