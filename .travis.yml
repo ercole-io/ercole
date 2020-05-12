@@ -78,7 +78,6 @@ deploy:
   on:
     all_branches: true
 - provider: script
-  script: \
-    docker tag ercole/ercole-services ercole/ercole-services:${VERSION} && \
-    ( echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin ) && \
-    docker push ercole/ercole-services:${VERSION}
+  script: bash docker_push.sh
+  on:
+    branch: master
