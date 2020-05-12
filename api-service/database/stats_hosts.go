@@ -34,6 +34,9 @@ func (md *MongoDatabase) GetEnvironmentStats(location string, olderThan time.Tim
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
 			mu.APGroupAndCountStages("Environment", "Count", "$Environment"),
+			mu.APSort(bson.M{
+				"Environment": 1,
+			}),
 		),
 	)
 	if err != nil {
