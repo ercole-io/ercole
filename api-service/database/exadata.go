@@ -39,7 +39,7 @@ func (md *MongoDatabase) SearchExadata(full bool, keywords []string, sortBy stri
 			}),
 			mu.APSearchFilterStage([]interface{}{
 				"$Hostname",
-				"$ExtraInfo.Exadata.Devices.Hostname",
+				"$Extra.Exadata.Devices.Hostname",
 			}, keywords),
 			mu.APProject(bson.M{
 				"Hostname":    true,
