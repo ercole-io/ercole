@@ -45,7 +45,7 @@ func TestGetTotalAssetsComplianceStats_Success(t *testing.T) {
 	}
 
 	db.EXPECT().
-		GetAssetsUsage("", false, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(getAssetsUsageRes, nil)
 
 	res, err := as.GetTotalAssetsComplianceStats(
@@ -65,7 +65,7 @@ func TestGetTotalAssetsComplianceStats_FailInternalServerError(t *testing.T) {
 	}
 
 	db.EXPECT().
-		GetAssetsUsage("", false, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(nil, aerrMock)
 
 	_, err := as.GetTotalAssetsComplianceStats(

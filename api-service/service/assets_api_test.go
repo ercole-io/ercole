@@ -55,7 +55,7 @@ func TestListAssets_Success(t *testing.T) {
 	}
 
 	db.EXPECT().
-		GetAssetsUsage("Count", true, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(getAssetsUsageRes, nil)
 
 	res, err := as.ListAssets(
@@ -82,7 +82,7 @@ func TestListAssets_SuccessEmpty(t *testing.T) {
 	}
 
 	db.EXPECT().
-		GetAssetsUsage("Count", true, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(getAssetsUsageRes, nil)
 
 	res, err := as.ListAssets(
@@ -103,7 +103,7 @@ func TestListAssets_FailInternalServerError(t *testing.T) {
 	}
 
 	db.EXPECT().
-		GetAssetsUsage("Count", true, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(nil, aerrMock)
 
 	_, err := as.ListAssets(
