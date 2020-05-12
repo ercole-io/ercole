@@ -25,7 +25,7 @@ import (
 )
 
 // GetAssetsUsage return a map that contains the number of usages for every features
-func (md *MongoDatabase) GetAssetsUsage(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) (map[string]float32, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetAssetsUsage(location string, environment string, olderThan time.Time) (map[string]float32, utils.AdvancedErrorInterface) {
 	var out map[string]float32 = make(map[string]float32)
 
 	//Find the matching hostdata
@@ -48,7 +48,6 @@ func (md *MongoDatabase) GetAssetsUsage(sortBy string, sortDesc bool, location s
 				),
 			}),
 			mu.APUnset("_id"),
-			// mu.APOptionalSortingStage(sortBy, sortDesc),
 		),
 	)
 	if err != nil {

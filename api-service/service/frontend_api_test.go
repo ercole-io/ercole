@@ -77,7 +77,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		"Oracle/Exadata":  0,
 	}
 	db.EXPECT().
-		GetAssetsUsage("", false, "Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		GetAssetsUsage("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 		Return(getAssetsUsageRes, nil).AnyTimes().MinTimes(1)
 
 	searchAlertsRes := []interface{}{
@@ -111,7 +111,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		"Oracle/Exadata":  2,
 	}
 	db.EXPECT().
-		GetAssetsUsage("", false, "", "", utils.MAX_TIME).
+		GetAssetsUsage("", "", utils.MAX_TIME).
 		Return(getAssetsUsageRes2, nil)
 
 	res, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
@@ -129,7 +129,7 @@ func TestGetInfoForFrontendDashboard_Fail1(t *testing.T) {
 	}
 
 	db.EXPECT().
-		GetAssetsUsage("", false, "Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		GetAssetsUsage("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 		Return(nil, aerrMock).AnyTimes().MinTimes(1)
 
 	_, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
@@ -150,7 +150,7 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 		"Oracle/Exadata":  0,
 	}
 	db.EXPECT().
-		GetAssetsUsage("", false, "Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		GetAssetsUsage("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 		Return(getAssetsUsageRes, nil).AnyTimes().MinTimes(1)
 
 	searchAlertsRes := []interface{}{
@@ -180,7 +180,7 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 	)
 
 	db.EXPECT().
-		GetAssetsUsage("", false, "", "", utils.MAX_TIME).
+		GetAssetsUsage("", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	_, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
