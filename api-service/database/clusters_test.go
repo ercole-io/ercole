@@ -162,7 +162,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 				"Sockets":                     10,
 				"Type":                        "vmware",
 				"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
-				"CreatedAt":                   utils.P("2020-05-04T16:09:46.608+02:00"),
+				"CreatedAt":                   utils.P("2020-05-04T16:09:46.608+02:00").Local(),
 				"VMs": []interface{}{
 					map[string]interface{}{
 						"CappedCPU":    false,
@@ -189,7 +189,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 				"Sockets":                     13,
 				"Type":                        "vmware",
 				"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
-				"CreatedAt":                   utils.P("2020-05-04T16:09:46.608+02:00"),
+				"CreatedAt":                   utils.P("2020-05-04T16:09:46.608+02:00").Local(),
 				"VMs": []interface{}{
 					map[string]interface{}{
 						"CappedCPU":    false,
