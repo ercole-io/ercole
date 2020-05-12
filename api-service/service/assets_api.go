@@ -25,7 +25,7 @@ import (
 
 // ListAssets returns the list of assets with some stats
 func (as *APIService) ListAssets(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.AssetStatus, utils.AdvancedErrorInterface) {
-	partialList, err := as.Database.GetAssetsUsage(sortBy, sortDesc, location, environment, olderThan)
+	partialList, err := as.Database.GetAssetsUsage(location, environment, olderThan)
 	if err != nil {
 		return nil, err
 	}

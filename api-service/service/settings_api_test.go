@@ -64,7 +64,7 @@ func TestGetErcoleFeatures_Success(t *testing.T) {
 	}
 
 	db.EXPECT().
-		GetAssetsUsage("", false, "", "", utils.MAX_TIME).
+		GetAssetsUsage("", "", utils.MAX_TIME).
 		Return(getAssetsUsageRes, nil)
 
 	res, err := as.GetErcoleFeatures()
@@ -82,7 +82,7 @@ func TestGetErcoleFeatures_FailInternalServerError(t *testing.T) {
 	}
 
 	db.EXPECT().
-		GetAssetsUsage("", false, "", "", utils.MAX_TIME).
+		GetAssetsUsage("", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	_, err := as.GetErcoleFeatures()

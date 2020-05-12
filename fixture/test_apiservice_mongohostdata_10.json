@@ -1,0 +1,233 @@
+{
+    "Archived": false,
+    "CreatedAt": {
+        "$date": {
+            "$numberLong": "1589272784831"
+        }
+    },
+    "Databases": "",
+    "Environment": "PROD",
+    "Extra": {
+        "Databases": [],
+        "Exadata": {
+            "Devices": [
+                {
+                    "CPUEnabled": "20/40",
+                    "CellDisks": [
+                        {
+                            "ErrCount": "0",
+                            "Name": "fanshop-5bde7badf2c9deceea5f615c3840c0b9",
+                            "Status": "normal",
+                            "UsedPerc": "32"
+                        },
+                        {
+                            "ErrCount": "0",
+                            "Name": "globe-b31fa3756675a5c8ac052437ff7e439b",
+                            "Status": "normal",
+                            "UsedPerc": "54"
+                        },
+                        {
+                            "ErrCount": "3",
+                            "Name": "srvc28-3807c977788c598cfa31fe21c0d3d5be",
+                            "Status": "normal",
+                            "UsedPerc": "90"
+                        }
+                    ],
+                    "CellsrvService": "running",
+                    "ExaSwVersion": "19.2.4.0.0.190709",
+                    "FanCount": "8/8",
+                    "FanStatus": "normal",
+                    "FlashcacheMode": "WriteBack",
+                    "Hostname": "s75-c2449b0e89e5a0b38401636eaa07abd5",
+                    "Memory": "188GB",
+                    "Model": "X7-2L_High_Capacity",
+                    "MsService": "running",
+                    "PowerCount": "2/2",
+                    "PowerStatus": "normal",
+                    "RsService": "running",
+                    "ServerType": "StorageServer",
+                    "Status": "online",
+                    "TempActual": "23.0",
+                    "TempStatus": "normal"
+                },
+                {
+                    "CPUEnabled": "20/40",
+                    "CellDisks": [
+                        {
+                            "ErrCount": "0",
+                            "Name": "server52-390b5dac8c3b68e3471c657ef97a7ae6",
+                            "Status": "normal",
+                            "UsedPerc": "32"
+                        },
+                        {
+                            "ErrCount": "1",
+                            "Name": "srvc07-5b888ab40dbd25e106309fd482f859a0",
+                            "Status": "normal",
+                            "UsedPerc": "54"
+                        }
+                    ],
+                    "CellsrvService": "running",
+                    "ExaSwVersion": "19.2.4.0.0.190709",
+                    "FanCount": "8/8",
+                    "FanStatus": "normal",
+                    "FlashcacheMode": "WriteBack",
+                    "Hostname": "itl-b22fa37cad1326aba990cdec7facace2",
+                    "Memory": "188GB",
+                    "Model": "X7-2L_High_Capacity",
+                    "MsService": "running",
+                    "PowerCount": "2/2",
+                    "PowerStatus": "normal",
+                    "RsService": "running",
+                    "ServerType": "StorageServer",
+                    "Status": "online",
+                    "TempActual": "24.0",
+                    "TempStatus": "normal"
+                },
+                {
+                    "CPUEnabled": "48/48",
+                    "CellDisks": null,
+                    "CellsrvService": "-",
+                    "ExaSwVersion": "19.2.4.0.0.190709",
+                    "FanCount": "16/16",
+                    "FanStatus": "normal",
+                    "FlashcacheMode": "-",
+                    "Hostname": "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
+                    "Memory": "376GB",
+                    "Model": "X7-2",
+                    "MsService": "running",
+                    "PowerCount": "2/2",
+                    "PowerStatus": "normal",
+                    "RsService": "running",
+                    "ServerType": "DBServer",
+                    "Status": "online",
+                    "TempActual": "24.0",
+                    "TempStatus": "normal"
+                },
+                {
+                    "CPUEnabled": "48/48",
+                    "CellDisks": null,
+                    "CellsrvService": "-",
+                    "ExaSwVersion": "19.2.4.0.0.190709",
+                    "FanCount": "16/16",
+                    "FanStatus": "normal",
+                    "FlashcacheMode": "-",
+                    "Hostname": "kantoor-43a6cdc54bb211eb127bca5c6651950c",
+                    "Memory": "376GB",
+                    "Model": "X7-2",
+                    "MsService": "running",
+                    "PowerCount": "2/2",
+                    "PowerStatus": "normal",
+                    "RsService": "running",
+                    "ServerType": "DBServer",
+                    "Status": "online",
+                    "TempActual": "24.0",
+                    "TempStatus": "normal"
+                },
+                {
+                    "CPUEnabled": "-",
+                    "CellDisks": null,
+                    "CellsrvService": "-",
+                    "ExaSwVersion": "2.2.13-2.190326",
+                    "FanCount": "-",
+                    "FanStatus": "-",
+                    "FlashcacheMode": "-",
+                    "Hostname": "off-df8b95a01746a464e69203c840a6a46a",
+                    "Memory": "-",
+                    "Model": "SUN_DCS_36p",
+                    "MsService": "-",
+                    "PowerCount": "-",
+                    "PowerStatus": "-",
+                    "RsService": "-",
+                    "ServerType": "IBSwitch",
+                    "Status": "-",
+                    "TempActual": "-",
+                    "TempStatus": "-"
+                },
+                {
+                    "CPUEnabled": "-",
+                    "CellDisks": null,
+                    "CellsrvService": "-",
+                    "ExaSwVersion": "2.2.13-2.190326",
+                    "FanCount": "-",
+                    "FanStatus": "-",
+                    "FlashcacheMode": "-",
+                    "Hostname": "aspen-8d1d1b210625b1f1024b686135f889a1",
+                    "Memory": "-",
+                    "Model": "SUN_DCS_36p",
+                    "MsService": "-",
+                    "PowerCount": "-",
+                    "PowerStatus": "-",
+                    "RsService": "-",
+                    "ServerType": "IBSwitch",
+                    "Status": "-",
+                    "TempActual": "-",
+                    "TempStatus": "-"
+                }
+            ]
+        },
+        "Filesystems": [
+            {
+                "Available": "8.0G",
+                "Filesystem": "KEENAN-f4e458d4320a271207b301c8c6442d77",
+                "FsType": "ext4",
+                "MountedOn": "BENTON-6666cd76f96956469e7be39d750cc7d9",
+                "Size": "30G",
+                "Used": "20G",
+                "UsedPerc": "72%"
+            },
+            {
+                "Available": "406M",
+                "Filesystem": "JUAN-45e177f34dddc33a5b1537ce8f4913ba",
+                "FsType": "ext4",
+                "MountedOn": "MICHAEL-a53bfb333437907a8d5bdc636d15c75d",
+                "Size": "488M",
+                "Used": "48M",
+                "UsedPerc": "11%"
+            }
+        ]
+    },
+    "HostDataSchemaVersion": {
+        "$numberDouble": "4.0"
+    },
+    "HostType": "exadata",
+    "Hostname": "test-exadata",
+    "Info": {
+        "AixCluster": false,
+        "CPUCores": {
+            "$numberDouble": "24.0"
+        },
+        "CPUModel": "Intel(R) Xeon(R) Platinum 8160 CPU @ 2.10GHz",
+        "CPUThreads": {
+            "$numberDouble": "48.0"
+        },
+        "Environment": "PROD",
+        "Hostname": "test-exadata",
+        "Kernel": "4.1.12-124.26.12.el7uek.x86_64",
+        "Location": "Italy",
+        "MemoryTotal": {
+            "$numberDouble": "376.0"
+        },
+        "OS": "Red Hat Enterprise Linux Server release 7.6 (Maipo)",
+        "OracleCluster": true,
+        "Socket": {
+            "$numberDouble": "1.0"
+        },
+        "SunCluster": false,
+        "SwapTotal": {
+            "$numberDouble": "23.0"
+        },
+        "Type": "PH",
+        "VeritasCluster": false,
+        "Virtual": false
+    },
+    "Location": "Italy",
+    "SchemaVersion": {
+        "$numberInt": "1"
+    },
+    "Schemas": "",
+    "ServerVersion": "latest",
+    "Version": "latest",
+    "_id": {
+        "$oid": "5eba60d00b606515fdc2c554"
+    }
+}
