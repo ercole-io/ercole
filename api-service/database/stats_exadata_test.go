@@ -108,3 +108,84 @@ func (m *MongodbSuite) TestGetTotalExadataCPUStats() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 }
+
+func (m *MongodbSuite) TestGetAverageExadataStorageUsageStats() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
+
+	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
+		out, err := m.db.GetAverageExadataStorageUsageStats("", "FOOBAR", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		assert.True(t, math.Abs(float64(out)-0.0) < 0.00001)
+	})
+
+	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
+		out, err := m.db.GetAverageExadataStorageUsageStats("France", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		assert.Equal(t, float32(0.0), out)
+	})
+
+	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
+		out, err := m.db.GetAverageExadataStorageUsageStats("", "", utils.MIN_TIME)
+		m.Require().NoError(err)
+
+		assert.True(t, math.Abs(float64(out)-0.0) < 0.00001)
+	})
+
+	m.T().Run("should_return_correct_results", func(t *testing.T) {
+		out, err := m.db.GetAverageExadataStorageUsageStats("", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		assert.True(t, math.Abs(float64(out)-52.4) < 0.00001)
+	})
+}
+
+func (m *MongodbSuite) TestGetExadataStorageErrorCountStatusStats() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
+
+	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
+		out, err := m.db.GetExadataStorageErrorCountStatusStats("France", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
+		out, err := m.db.GetExadataStorageErrorCountStatusStats("", "FOOBAR", utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
+		out, err := m.db.GetExadataStorageErrorCountStatusStats("", "", utils.MIN_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_return_correct_result", func(t *testing.T) {
+		out, err := m.db.GetExadataStorageErrorCountStatusStats("", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []map[string]interface{}{
+			{
+				"Failing": false,
+				"Count":   3,
+			},
+			{
+				"Failing": true,
+				"Count":   2,
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+}
