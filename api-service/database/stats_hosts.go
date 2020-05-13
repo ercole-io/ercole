@@ -89,17 +89,29 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 	var out []interface{} = make([]interface{}, 0)
 
 	//Create the aggregation branches
-	aggregationBranches := []bson.M{}
-	for _, v := range md.OperatingSystemAggregationRules {
-		aggregationBranches = append(aggregationBranches, bson.M{
-			"case": bson.M{
-				"$regexMatch": bson.M{
-					"input": "$Info.OS",
-					"regex": v.Regex,
+	var switchExpr interface{}
+	if len(md.OperatingSystemAggregationRules) > 0 {
+		aggregationBranches := []bson.M{}
+		for _, v := range md.OperatingSystemAggregationRules {
+			aggregationBranches = append(aggregationBranches, bson.M{
+				"case": bson.M{
+					"$regexMatch": bson.M{
+						"input": "$Info.OS",
+						"regex": v.Regex,
+					},
 				},
+				"then": v.Group,
+			})
+		}
+
+		switchExpr = bson.M{
+			"$switch": bson.M{
+				"branches": aggregationBranches,
+				"default":  "$Info.OS",
 			},
-			"then": v.Group,
-		})
+		}
+	} else {
+		switchExpr = "$Info.OS"
 	}
 
 	//Calculate the stats
@@ -108,11 +120,9 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APGroupAndCountStages("OperatingSystem", "Count", bson.M{
-				"$switch": bson.M{
-					"branches": aggregationBranches,
-					"default":  "$Info.OS",
-				},
+			mu.APGroupAndCountStages("OperatingSystem", "Count", switchExpr),
+			mu.APSort(bson.M{
+				"OperatingSystem": 1,
 			}),
 		),
 	)

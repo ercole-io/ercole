@@ -1,0 +1,67 @@
+{
+    "Archived": false,
+    "CreatedAt": {
+        "$date": {
+            "$numberLong": "1589354837557"
+        }
+    },
+    "Databases": "",
+    "Environment": "TST",
+    "Extra": {
+        "Filesystems": [
+            {
+                "Available": "320M",
+                "Filesystem": "/dev/sda1",
+                "FsType": "ext4",
+                "MountedOn": "/boot",
+                "Size": "488M",
+                "Used": "133M",
+                "UsedPerc": "30%"
+            }
+        ]
+    },
+    "HostDataSchemaVersion": {
+        "$numberDouble": "4.0"
+    },
+    "HostType": "oracledb",
+    "Hostname": "test-small4",
+    "Info": {
+        "AixCluster": false,
+        "CPUCores": {
+            "$numberDouble": "1.0"
+        },
+        "CPUModel": "Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz",
+        "CPUThreads": {
+            "$numberDouble": "2.0"
+        },
+        "Environment": "DEV",
+        "Hostname": "test-small3",
+        "Kernel": "5.3.0-45-generic",
+        "Location": "Italy",
+        "MemoryTotal": {
+            "$numberDouble": "3.0"
+        },
+        "OS": "Ubuntu Server 18.04.4",
+        "OracleCluster": false,
+        "Socket": {
+            "$numberDouble": "2.0"
+        },
+        "SunCluster": false,
+        "SwapTotal": {
+            "$numberDouble": "1.0"
+        },
+        "Type": "VMWARE",
+        "VeritasCluster": true,
+        "Virtual": true
+    },
+    "Location": "Italy",
+    "SchemaVersion": {
+        "$numberInt": "1"
+    },
+    "Schemas": "",
+    "ServerVersion": "latest",
+    "Version": "latest",
+    "_id": {
+        "$oid": "5ebba15547c3fcf9dc0a1f4d"
+    }
+}
