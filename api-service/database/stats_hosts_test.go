@@ -188,3 +188,73 @@ func (m *MongodbSuite) TestGetOperatingSystemStats() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 }
+
+func (m *MongodbSuite) TestGetTopUnusedInstanceResourceStats() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_04.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+
+	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
+		out, err := m.db.GetTopUnusedInstanceResourceStats("France", "", 15, utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
+		out, err := m.db.GetTopUnusedInstanceResourceStats("", "FOOBAR", 15, utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
+		out, err := m.db.GetTopUnusedInstanceResourceStats("", "", 15, utils.MIN_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_limit_the_result", func(t *testing.T) {
+		out, err := m.db.GetTopUnusedInstanceResourceStats("", "", 1, utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []map[string]interface{}{
+			{
+				"Hostname": "test-db2",
+				"Unused":   2.5999999999999996,
+				"_id":      "5ebbaaf747c3fcf9dc0a1f51",
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_return_all_results", func(t *testing.T) {
+		out, err := m.db.GetTopUnusedInstanceResourceStats("", "", 15, utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []map[string]interface{}{
+			{
+				"Hostname": "test-db2",
+				"Unused":   2.5999999999999996,
+				"_id":      "5ebbaaf747c3fcf9dc0a1f51",
+			},
+			{
+				"Hostname": "test-db",
+				"Unused":   1,
+				"_id":      "5e96ade270c184faca93fe36",
+			},
+			{
+				"Hostname": "test-small2",
+				"Unused":   nil,
+				"_id":      "5ea2d3c520d55cbdc35022b5",
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+}
