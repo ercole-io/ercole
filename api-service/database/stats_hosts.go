@@ -64,6 +64,9 @@ func (md *MongoDatabase) GetTypeStats(location string, olderThan time.Time) ([]i
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
 			mu.APGroupAndCountStages("Type", "Count", "$Info.Type"),
+			mu.APSort(bson.M{
+				"Type": 1,
+			}),
 		),
 	)
 	if err != nil {

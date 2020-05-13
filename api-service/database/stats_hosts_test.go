@@ -69,3 +69,49 @@ func (m *MongodbSuite) TestGetEnvironmentStats() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 }
+
+func (m *MongodbSuite) TestGetTypeStats() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_04.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_09.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
+
+	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
+		out, err := m.db.GetTypeStats("France", utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
+		out, err := m.db.GetTypeStats("", utils.MIN_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_return_correct_results", func(t *testing.T) {
+		out, err := m.db.GetTypeStats("", utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []map[string]interface{}{
+			{
+				"Type":  "OVM",
+				"Count": 1,
+			},
+			{
+				"Type":  "PH",
+				"Count": 1,
+			},
+			{
+				"Type":  "VMWARE",
+				"Count": 2,
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+}
