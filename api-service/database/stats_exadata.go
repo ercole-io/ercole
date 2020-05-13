@@ -203,6 +203,9 @@ func (md *MongoDatabase) GetExadataStorageErrorCountStatusStats(location string,
 			mu.APUnwind("$Devs"),
 			mu.APUnwind("$Devs"),
 			mu.APGroupAndCountStages("Failing", "Count", "$Devs"),
+			mu.APSort(bson.M{
+				"Failing": 1,
+			}),
 		),
 	)
 	if err != nil {
