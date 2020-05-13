@@ -19,6 +19,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/amreo/ercole-services/config"
 	"github.com/amreo/ercole-services/utils"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
@@ -109,6 +110,78 @@ func (m *MongodbSuite) TestGetTypeStats() {
 			{
 				"Type":  "VMWARE",
 				"Count": 2,
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+}
+
+func (m *MongodbSuite) TestGetOperatingSystemStats() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_04.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_09.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_11.json"))
+
+	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
+		m.db.OperatingSystemAggregationRules = []config.AggregationRule{}
+		out, err := m.db.GetOperatingSystemStats("France", utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
+		m.db.OperatingSystemAggregationRules = []config.AggregationRule{}
+		out, err := m.db.GetOperatingSystemStats("", utils.MIN_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_return_correct_results", func(t *testing.T) {
+		m.db.OperatingSystemAggregationRules = []config.AggregationRule{}
+		out, err := m.db.GetOperatingSystemStats("", utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []map[string]interface{}{
+			{
+				"OperatingSystem": "Red Hat Enterprise Linux Server release 7.6 (Maipo)",
+				"Count":           3,
+			},
+			{
+				"OperatingSystem": "Ubuntu Server 18.04.4",
+				"Count":           1,
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_aggregate_correctly", func(t *testing.T) {
+		m.db.OperatingSystemAggregationRules = []config.AggregationRule{
+			{
+				Regex: "^Red Hat Enterprise Linux Server release 7.*$",
+				Group: "RHEL7",
+			},
+			{
+				Regex: "^Ubuntu Server 18\\.04.*$",
+				Group: "Ubuntu Server",
+			},
+		}
+		out, err := m.db.GetOperatingSystemStats("", utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []map[string]interface{}{
+			{
+				"OperatingSystem": "RHEL7",
+				"Count":           3,
+			},
+			{
+				"OperatingSystem": "Ubuntu Server",
+				"Count":           1,
 			},
 		}
 
