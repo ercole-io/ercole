@@ -104,12 +104,15 @@ func (md *MongoDatabase) GetTotalExadataCPUStats(location string, environment st
 	//Next the cursor. If there is no document return a empty document
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
-		return 0, nil
+		return map[string]interface{}{
+			"Enabled": 0,
+			"Total":   0,
+		}, nil
 	}
 
 	//Decode the document
 	if err := cur.Decode(&out); err != nil {
-		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
 	return out, nil
