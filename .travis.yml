@@ -59,7 +59,7 @@ before_deploy:
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)
-- docker build -t ercole/ercole-services .
+- docker build -t ercoleorg/ercole-services .
 
 deploy:
 - provider: script
@@ -77,5 +77,3 @@ deploy:
     all_branches: true
 - provider: script
   script: bash docker_push.sh
-  on:
-    branch: master
