@@ -58,3 +58,53 @@ func (m *MongodbSuite) TestGetTotalExadataMemorySizeStats() {
 		assert.True(t, math.Abs(float64(out)-1128) < 0.00001)
 	})
 }
+
+func (m *MongodbSuite) TestGetTotalExadataCPUStats() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
+
+	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
+		out, err := m.db.GetTotalExadataCPUStats("France", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = map[string]interface{}{
+			"Enabled": 0,
+			"Total":   0,
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
+		out, err := m.db.GetTotalExadataCPUStats("", "FOOBAR", utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = map[string]interface{}{
+			"Enabled": 0,
+			"Total":   0,
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
+		out, err := m.db.GetTotalExadataCPUStats("", "", utils.MIN_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = map[string]interface{}{
+			"Enabled": 0,
+			"Total":   0,
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_return_correct_results", func(t *testing.T) {
+		out, err := m.db.GetTotalExadataCPUStats("", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = map[string]interface{}{
+			"Enabled": 136,
+			"Total":   176,
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+}
