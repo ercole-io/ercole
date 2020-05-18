@@ -77,6 +77,9 @@ func (md *MongoDatabase) GetDatabaseVersionStats(location string, olderThan time
 				"Database": "$Extra.Databases",
 			}),
 			mu.APGroupAndCountStages("Version", "Count", "$Database.Version"),
+			mu.APSort(bson.M{
+				"Version": 1,
+			}),
 		),
 	)
 	if err != nil {
