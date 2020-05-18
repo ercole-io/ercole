@@ -246,6 +246,9 @@ func (md *MongoDatabase) GetExadataPatchStatusStats(location string, environment
 			}),
 			mu.APUnwind("$Status"),
 			mu.APGroupAndCountStages("Status", "Count", "$Status"),
+			mu.APSort(bson.M{
+				"Status": 1,
+			}),
 		),
 	)
 	if err != nil {
