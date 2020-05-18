@@ -42,6 +42,9 @@ func (md *MongoDatabase) GetDatabaseEnvironmentStats(location string, olderThan 
 				"Environment": "$_id",
 				"Count":       true,
 			}),
+			mu.APSort(bson.M{
+				"Environment": 1,
+			}),
 		),
 	)
 	if err != nil {
