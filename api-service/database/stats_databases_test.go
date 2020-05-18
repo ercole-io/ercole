@@ -63,3 +63,47 @@ func (m *MongodbSuite) TestGetDatabaseEnvironmentStats() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 }
+
+func (m *MongodbSuite) TestGetDatabaseVersionStats() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+
+	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
+		out, err := m.db.GetDatabaseVersionStats("France", utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
+		out, err := m.db.GetDatabaseVersionStats("", utils.MIN_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_return_correct_results", func(t *testing.T) {
+		out, err := m.db.GetDatabaseVersionStats("", utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []map[string]interface{}{
+			{
+				"Version": "12.2.0.1.0 Enterprise Edition",
+				"Count":   2,
+			},
+			{
+				"Version": "16.2.0.1.0 Enterprise Edition",
+				"Count":   1,
+			},
+			{
+				"Version": "18.2.0.1.0 Enterprise Edition",
+				"Count":   1,
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+}
