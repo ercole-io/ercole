@@ -290,6 +290,9 @@ func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environment 
 					mu.APOEqual("$$fe.Status", true),
 				),
 			)),
+			mu.APSort(bson.M{
+				"RAC": 1,
+			}),
 		),
 	)
 	if err != nil {
