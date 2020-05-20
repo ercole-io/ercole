@@ -367,3 +367,31 @@ func (m *MongodbSuite) TestListEnvironments() {
 		assert.ElementsMatch(t, []string{"PROD", "DEV", "TST"}, out)
 	})
 }
+
+func (m *MongodbSuite) TestFindHostData() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+	testSmall := utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json")
+	m.InsertHostData(testSmall)
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_05.json"))
+
+	m.T().Run("should_find_test_small", func(t *testing.T) {
+		out, err := m.db.FindHostData("test-small")
+		m.Require().NoError(err)
+
+		assert.JSONEq(t, utils.ToJSON(testSmall), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_not_find_anything", func(t *testing.T) {
+		out, err := m.db.FindHostData("foobar")
+		m.Require().NoError(err)
+
+		assert.JSONEq(t, utils.ToJSON(nil), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_not_find_archived_host", func(t *testing.T) {
+		out, err := m.db.FindHostData("test-small3")
+		m.Require().NoError(err)
+
+		assert.JSONEq(t, utils.ToJSON(nil), utils.ToJSON(out))
+	})
+}
