@@ -250,6 +250,9 @@ func (md *MongoDatabase) GetDatabaseDataguardStatusStats(location string, enviro
 				"Database": "$Extra.Databases",
 			}),
 			mu.APGroupAndCountStages("Dataguard", "Count", "$Database.Dataguard"),
+			mu.APSort(bson.M{
+				"Dataguard": 1,
+			}),
 		),
 	)
 	if err != nil {

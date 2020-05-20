@@ -256,7 +256,7 @@
                 "Charset": "AL32UTF8",
                 "DBTime": "184.81",
                 "DailyCPUUsage": "3.1",
-                "Dataguard": false,
+                "Dataguard": true,
                 "Elapsed": "12059.18",
                 "Features": [
                     {
