@@ -438,3 +438,17 @@ func (m *MongodbSuite) TestExistHostData() {
 		assert.False(t, out)
 	})
 }
+
+func (m *MongodbSuite) TestArchiveHost() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
+	val, err := m.db.ExistHostdata("test-small")
+	m.Require().NoError(err)
+	m.Assert().True(val)
+
+	err = m.db.ArchiveHost("test-small")
+	m.Require().NoError(err)
+	val, err = m.db.ExistHostdata("test-small")
+	m.Require().NoError(err)
+	m.Assert().False(val)
+}
