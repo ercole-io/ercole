@@ -41,3 +41,4 @@ Documentation about this new version of Ercole [here](https://ercole.io/architec
 Run the binary: `./ercole serve`
 
 You can customize parameters by copying the `config.toml` file in the same directory as your ercole binary or in `/opt/ercole/config.toml`.
+ 
