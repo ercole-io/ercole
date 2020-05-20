@@ -390,7 +390,7 @@
                         "SegmentType": "TABLE"
                     }
                 ],
-                "SegmentsSize": "3",
+                "SegmentsSize": "6",
                 "Status": "OPEN",
                 "Tablespaces": [
                     {
