@@ -100,6 +100,10 @@
                     {
                         "Date": "2012-04-16",
                         "Description": "PSU 11.2.0.3.2"
+                    },
+                    {
+                        "Date": "2020-04-16",
+                        "Description": "PSU 11.2.0.3.7"
                     }
                 ],
                 "Licenses": [
@@ -300,12 +304,7 @@
                     }
                 ],
                 "InstanceNumber": "1",
-                "LastPSUs": [
-                    {
-                        "Date": "2012-04-16",
-                        "Description": "PSU 11.2.0.3.2"
-                    }
-                ],
+                "LastPSUs": [],
                 "Licenses": [
                     {
                         "Count": {
