@@ -211,7 +211,7 @@
                 "UniqueName": "foobar3",
                 "Used": "6",
                 "Version": "16.2.0.1.0 Enterprise Edition",
-                "Work": "1"
+                "Work": "99"
             },
             {
                 "ADDMs": [
@@ -415,7 +415,7 @@
                 "UniqueName": "foobar4",
                 "Used": "6",
                 "Version": "18.2.0.1.0 Enterprise Edition",
-                "Work": "6.4"
+                "Work": "10"
             }
         ],
         "Filesystems": [

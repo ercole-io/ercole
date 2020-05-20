@@ -178,3 +178,74 @@ func (m *MongodbSuite) TestGetTopReclaimableDatabaseStats() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 }
+
+func (m *MongodbSuite) TestGetTopWorkloadDatabaseStats() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+
+	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
+		out, err := m.db.GetTopWorkloadDatabaseStats("France", 15, utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
+		out, err := m.db.GetTopWorkloadDatabaseStats("", 15, utils.MIN_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_limit_the_result", func(t *testing.T) {
+		out, err := m.db.GetTopWorkloadDatabaseStats("", 1, utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []map[string]interface{}{
+			{
+				"Hostname": "test-db3",
+				"Dbname":   "foobar3",
+				"Workload": 99,
+				"_id":      "5ec2518bbc4991e955e2cb3f",
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_return_all_results", func(t *testing.T) {
+		out, err := m.db.GetTopWorkloadDatabaseStats("", 15, utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []map[string]interface{}{
+			{
+				"Hostname": "test-db3",
+				"Dbname":   "foobar3",
+				"Workload": 99,
+				"_id":      "5ec2518bbc4991e955e2cb3f",
+			},
+			{
+				"Hostname": "test-db3",
+				"Dbname":   "foobar4",
+				"Workload": 10,
+				"_id":      "5ec2518bbc4991e955e2cb3f",
+			},
+			{
+				"Hostname": "test-db2",
+				"Dbname":   "foobar2",
+				"Workload": 6.4,
+				"_id":      "5ebbaaf747c3fcf9dc0a1f51",
+			},
+			{
+				"Hostname": "test-db2",
+				"Dbname":   "foobar1",
+				"Workload": 1,
+				"_id":      "5ebbaaf747c3fcf9dc0a1f51",
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+}
