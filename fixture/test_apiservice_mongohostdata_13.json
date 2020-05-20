@@ -138,14 +138,14 @@
                         "Name": "Diagnostics Pack"
                     }
                 ],
-                "MemoryTarget": "1.484",
+                "MemoryTarget": "9.34",
                 "NCharset": "AL16UTF16",
                 "Name": "foobar3",
-                "PGATarget": "0.",
+                "PGATarget": "0.45",
                 "Patches": [],
                 "Platform": "Linux x86 64-bit",
                 "SGAMaxSize": "1.484",
-                "SGATarget": "0.",
+                "SGATarget": "4.6",
                 "Schemas": [
                     {
                         "Database": "foobar3",
@@ -341,14 +341,14 @@
                         "Name": "Diagnostics Pack"
                     }
                 ],
-                "MemoryTarget": "1.484",
+                "MemoryTarget": "10.484",
                 "NCharset": "AL16UTF16",
                 "Name": "foobar4",
-                "PGATarget": "0.",
+                "PGATarget": "6.3",
                 "Patches": [],
                 "Platform": "Linux x86 64-bit",
                 "SGAMaxSize": "1.484",
-                "SGATarget": "0.",
+                "SGATarget": "0.5",
                 "Schemas": [
                     {
                         "Database": "foobar4",
