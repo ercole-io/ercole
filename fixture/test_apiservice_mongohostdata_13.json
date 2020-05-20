@@ -179,7 +179,7 @@
                 "SegmentAdvisors": [
                     {
                         "PartitionName": "iyyiuyyoy",
-                        "Reclaimable": "\u003c1",
+                        "Reclaimable": "4.3",
                         "Recommendation": "32b36a77e7481343ef175483c086859e",
                         "SegmentName": "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
                         "SegmentOwner": "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
@@ -383,7 +383,7 @@
                 "SegmentAdvisors": [
                     {
                         "PartitionName": "iyyiuyyoy",
-                        "Reclaimable": "\u003c1",
+                        "Reclaimable": "534.34",
                         "Recommendation": "32b36a77e7481343ef175483c086859e",
                         "SegmentName": "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
                         "SegmentOwner": "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
