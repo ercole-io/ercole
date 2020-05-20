@@ -467,7 +467,42 @@ func (m *MongodbSuite) TestGetTotalDatabaseWorkStats() {
 		out, err := m.db.GetTotalDatabaseWorkStats("", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
-		fmt.Println(out)
 		assert.True(t, math.Abs(float64(out)-116.4) < 0.00001)
+	})
+}
+
+func (m *MongodbSuite) TestGetTotalDatabaseMemorySizeStats() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+
+	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
+		out, err := m.db.GetTotalDatabaseMemorySizeStats("France", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		assert.Equal(t, float32(0.0), out)
+	})
+
+	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
+		out, err := m.db.GetTotalDatabaseMemorySizeStats("", "FOOBAR", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		assert.True(t, math.Abs(float64(out)-0.0) < 0.00001)
+	})
+
+	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
+		out, err := m.db.GetTotalDatabaseMemorySizeStats("", "", utils.MIN_TIME)
+		m.Require().NoError(err)
+
+		assert.True(t, math.Abs(float64(out)-0.0) < 0.00001)
+	})
+
+	m.T().Run("should_return_correct_results", func(t *testing.T) {
+		out, err := m.db.GetTotalDatabaseMemorySizeStats("", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		fmt.Println(out)
+		assert.True(t, math.Abs(float64(out)-34.642) < 0.00001)
 	})
 }
