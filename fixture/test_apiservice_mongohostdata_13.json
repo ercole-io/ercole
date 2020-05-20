@@ -266,6 +266,10 @@
                     {
                         "Name": "Diagnostics Pack",
                         "Status": true
+                    },
+                    {
+                        "Name": "Real Application Clusters",
+                        "Status": true
                     }
                 ],
                 "Features2": [
