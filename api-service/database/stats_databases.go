@@ -324,8 +324,8 @@ func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, envir
 			mu.APProject(bson.M{
 				"Database": "$Extra.Databases",
 			}),
-			mu.APGroupAndCountStages("ArchiveLog", "Count",
-				mu.APOEqual("$Database.ArchiveLog", "ARCHIVELOG"),
+			mu.APGroupAndCountStages("Archivelog", "Count",
+				mu.APOEqual("$Database.Archivelog", "ARCHIVELOG"),
 			),
 		),
 	)
