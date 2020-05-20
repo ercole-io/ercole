@@ -17,6 +17,8 @@ package database
 
 import (
 	"context"
+	"fmt"
+	"math"
 	"testing"
 
 	"github.com/amreo/ercole-services/utils"
@@ -431,5 +433,41 @@ func (m *MongodbSuite) TestGetDatabaseArchivelogStatusStats() {
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+}
+
+func (m *MongodbSuite) TestGetTotalDatabaseWorkStats() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+
+	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
+		out, err := m.db.GetTotalDatabaseWorkStats("France", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		assert.Equal(t, float32(0.0), out)
+	})
+
+	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
+		out, err := m.db.GetTotalDatabaseWorkStats("", "FOOBAR", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		assert.True(t, math.Abs(float64(out)-0.0) < 0.00001)
+	})
+
+	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
+		out, err := m.db.GetTotalDatabaseWorkStats("", "", utils.MIN_TIME)
+		m.Require().NoError(err)
+
+		assert.True(t, math.Abs(float64(out)-0.0) < 0.00001)
+	})
+
+	m.T().Run("should_return_correct_results", func(t *testing.T) {
+		out, err := m.db.GetTotalDatabaseWorkStats("", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		fmt.Println(out)
+		assert.True(t, math.Abs(float64(out)-116.4) < 0.00001)
 	})
 }

@@ -327,6 +327,9 @@ func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, envir
 			mu.APGroupAndCountStages("Archivelog", "Count",
 				mu.APOEqual("$Database.Archivelog", "ARCHIVELOG"),
 			),
+			mu.APSort(bson.M{
+				"Archivelog": 1,
+			}),
 		),
 	)
 	if err != nil {
@@ -346,7 +349,7 @@ func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, envir
 
 // GetTotalDatabaseWorkStats return the total work of databases
 func (md *MongoDatabase) GetTotalDatabaseWorkStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
-	var out map[string]float32
+	var out map[string]float64
 
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -379,7 +382,7 @@ func (md *MongoDatabase) GetTotalDatabaseWorkStats(location string, environment 
 		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return out["Value"], nil
+	return float32(out["Value"]), nil
 }
 
 // GetTotalDatabaseMemorySizeStats return the total of memory size of databases
