@@ -293,3 +293,77 @@ func (m *MongodbSuite) TestSearchHosts() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 }
+
+func (m *MongodbSuite) TestListLocations() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_04.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_09.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
+
+	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
+		out, err := m.db.ListLocations("France", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		assert.ElementsMatch(t, []string{}, out)
+	})
+
+	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
+		out, err := m.db.ListLocations("", "FOOBAR", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		assert.ElementsMatch(t, []string{}, out)
+	})
+
+	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
+		out, err := m.db.ListLocations("", "", utils.MIN_TIME)
+		m.Require().NoError(err)
+
+		assert.ElementsMatch(t, []string{}, out)
+	})
+
+	m.T().Run("should_return_correct_results", func(t *testing.T) {
+		out, err := m.db.ListLocations("", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		assert.ElementsMatch(t, []string{"Italy", "Germany"}, out)
+	})
+}
+
+func (m *MongodbSuite) TestListEnvironments() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_04.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_09.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
+
+	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
+		out, err := m.db.ListEnvironments("France", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		assert.ElementsMatch(t, []string{}, out)
+	})
+
+	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
+		out, err := m.db.ListEnvironments("", "FOOBAR", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		assert.ElementsMatch(t, []string{}, out)
+	})
+
+	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
+		out, err := m.db.ListEnvironments("", "", utils.MIN_TIME)
+		m.Require().NoError(err)
+
+		assert.ElementsMatch(t, []string{}, out)
+	})
+
+	m.T().Run("should_return_correct_results", func(t *testing.T) {
+		out, err := m.db.ListEnvironments("", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		assert.ElementsMatch(t, []string{"PROD", "DEV", "TST"}, out)
+	})
+}
