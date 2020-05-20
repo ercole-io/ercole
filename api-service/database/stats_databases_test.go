@@ -249,3 +249,43 @@ func (m *MongodbSuite) TestGetTopWorkloadDatabaseStats() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 }
+
+func (m *MongodbSuite) TestGetDatabasePatchStatusStats() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+
+	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
+		out, err := m.db.GetDatabasePatchStatusStats("France", utils.P("2019-10-10T08:46:58.38+02:00"), utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
+		out, err := m.db.GetDatabasePatchStatusStats("", utils.P("2019-10-10T08:46:58.38+02:00"), utils.MIN_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_return_correct_result", func(t *testing.T) {
+		out, err := m.db.GetDatabasePatchStatusStats("", utils.P("2019-10-10T08:46:58.38+02:00"), utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []map[string]interface{}{
+			{
+				"Status": "KO",
+				"Count":  3,
+			},
+			{
+				"Status": "OK",
+				"Count":  1,
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+}

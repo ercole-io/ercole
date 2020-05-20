@@ -195,6 +195,7 @@ func (md *MongoDatabase) GetDatabasePatchStatusStats(location string, windowTime
 			mu.APProject(bson.M{
 				"Database": "$Extra.Databases",
 			}),
+			//TODO: we can map directly PSU to date instead of mapping indirectly using a object that contain the Date field
 			mu.APProject(bson.M{
 				"Database.LastPSUs": mu.APOReduce(
 					mu.APOMap("$Database.LastPSUs", "psu", mu.APOMergeObjects(
@@ -214,6 +215,9 @@ func (md *MongoDatabase) GetDatabasePatchStatusStats(location string, windowTime
 			mu.APGroupAndCountStages("Status", "Count",
 				mu.APOCond(mu.APOGreater("$Database.LastPSUs.Date", windowTime), "OK", "KO"),
 			),
+			mu.APSort(bson.M{
+				"Status": 1,
+			}),
 		),
 	)
 	if err != nil {
