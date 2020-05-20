@@ -21,6 +21,7 @@ import (
 
 	"github.com/amreo/ercole-services/utils"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -393,5 +394,47 @@ func (m *MongodbSuite) TestFindHostData() {
 		m.Require().NoError(err)
 
 		assert.JSONEq(t, utils.ToJSON(nil), utils.ToJSON(out))
+	})
+}
+
+func (m *MongodbSuite) TestReplaceHostData() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
+	newHostdata := utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json")
+	newHostdata["Foo"] = "Bar"
+	err := m.db.ReplaceHostData(newHostdata)
+	m.Require().NoError(err)
+
+	hs, err := m.db.FindHostData("test-small")
+	m.Require().NoError(err)
+	m.Require().NotNil(hs)
+
+	m.Assert().Equal("Bar", hs["Foo"])
+}
+
+func (m *MongodbSuite) TestExistHostData() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_05.json"))
+
+	m.T().Run("should_find_test_small", func(t *testing.T) {
+		out, err := m.db.ExistHostdata("test-small")
+		require.NoError(t, err)
+
+		assert.True(t, out)
+	})
+
+	m.T().Run("should_not_find_anything", func(t *testing.T) {
+		out, err := m.db.ExistHostdata("foobar")
+		require.NoError(t, err)
+
+		assert.False(t, out)
+	})
+
+	m.T().Run("should_not_find_archived_host", func(t *testing.T) {
+		out, err := m.db.ExistHostdata("test-small3")
+		require.NoError(t, err)
+
+		assert.False(t, out)
 	})
 }
