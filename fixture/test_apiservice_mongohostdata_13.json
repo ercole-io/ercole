@@ -26,7 +26,7 @@
                 ],
                 "ASM": false,
                 "Allocated": "129",
-                "Archivelog": "NOARCHIVELOG",
+                "Archivelog": "ARCHIVELOG",
                 "Backups": [
                     {
                         "AvgBckSize": "13",
