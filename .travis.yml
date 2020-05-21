@@ -49,13 +49,13 @@ script:
   ${WORKSPACE}/dist"
 - go test -race -coverprofile=coverage.txt -covermode=atomic -v ./...
 
-before_deploy:
-- if [[ ${VERSION} == "latest" ]]; then git tag -f latest; fi
-- if [[ ${VERSION} == "latest" ]]; then git remote add gh https://amreo:${GITHUB_API_RELEASE}@github.com/${TRAVIS_REPO_SLUG}.git;
-  fi
-- if [[ ${VERSION} == "latest" ]]; then git push gh latest || true; fi
-- if [[ ${VERSION} == "latest" ]]; then git push -f gh latest; fi
-- if [[ ${VERSION} == "latest" ]]; then git remote remove gh; fi
+# before_deploy:
+# - if [[ ${VERSION} == "latest" ]]; then git tag -f latest; fi
+# - if [[ ${VERSION} == "latest" ]]; then git remote add gh https://amreo:${GITHUB_API_RELEASE}@github.com/${TRAVIS_REPO_SLUG}.git;
+#   fi
+# - if [[ ${VERSION} == "latest" ]]; then git push gh latest || true; fi
+# - if [[ ${VERSION} == "latest" ]]; then git push -f gh latest; fi
+# - if [[ ${VERSION} == "latest" ]]; then git remote remove gh; fi
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)
@@ -75,5 +75,6 @@ deploy:
   overwrite: true
   on:
     all_branches: true
+    tags: true
 - provider: script
   script: bash docker_push.sh
