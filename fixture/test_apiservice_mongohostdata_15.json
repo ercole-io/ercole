@@ -1,0 +1,114 @@
+{
+    "Archived": true,
+    "CreatedAt": {
+        "$date": {
+            "$numberLong": "1590053529288"
+        }
+    },
+    "Databases": "pippodb",
+    "Environment": "TST",
+    "Extra": {
+        "Databases": [
+            {
+                "ADDMs": [],
+                "ASM": false,
+                "Allocated": "129",
+                "Archivelog": "NOARCHIVELOG",
+                "Backups": [],
+                "BlockSize": "8192",
+                "CPUCount": "2",
+                "Charset": "AL32UTF8",
+                "DBTime": "184.81",
+                "DailyCPUUsage": "5.3",
+                "Dataguard": false,
+                "Elapsed": "12059.18",
+                "Features": [],
+                "Features2": [],
+                "InstanceNumber": "1",
+                "LastPSUs": [],
+                "Licenses": [],
+                "MemoryTarget": "1.484",
+                "NCharset": "AL16UTF16",
+                "Name": "pippodb",
+                "PGATarget": "0.",
+                "Patches": [],
+                "Platform": "Linux x86 64-bit",
+                "SGAMaxSize": "1.484",
+                "SGATarget": "0.",
+                "Schemas": [],
+                "SegmentAdvisors": [],
+                "SegmentsSize": "100",
+                "Status": "OPEN",
+                "Tablespaces": [],
+                "UniqueName": "pippodb",
+                "Used": "10",
+                "Version": "12.2.0.1.0 Enterprise Edition",
+                "Work": "1"
+            }
+        ],
+        "Filesystems": [
+            {
+                "Available": "5.4G",
+                "Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+                "FsType": "ext4",
+                "MountedOn": "/",
+                "Size": "13G",
+                "Used": "6.7G",
+                "UsedPerc": "56%"
+            },
+            {
+                "Available": "320M",
+                "Filesystem": "/dev/sda1",
+                "FsType": "ext4",
+                "MountedOn": "/boot",
+                "Size": "488M",
+                "Used": "133M",
+                "UsedPerc": "30%"
+            }
+        ]
+    },
+    "HostDataSchemaVersion": {
+        "$numberDouble": "4.0"
+    },
+    "HostType": "oracledb",
+    "Hostname": "newdb",
+    "Info": {
+        "AixCluster": false,
+        "CPUCores": {
+            "$numberDouble": "1.0"
+        },
+        "CPUModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+        "CPUThreads": {
+            "$numberDouble": "2.0"
+        },
+        "Environment": "TST",
+        "Hostname": "newdb",
+        "Kernel": "3.10.0-514.el7.x86_64",
+        "Location": "Germany",
+        "MemoryTotal": {
+            "$numberDouble": "3.0"
+        },
+        "OS": "Red Hat Enterprise Linux Server release 7.6 (Maipo)",
+        "OracleCluster": false,
+        "Socket": {
+            "$numberDouble": "2.0"
+        },
+        "SunCluster": false,
+        "SwapTotal": {
+            "$numberDouble": "1.0"
+        },
+        "Type": "VMWARE",
+        "VeritasCluster": false,
+        "Virtual": true
+    },
+    "Location": "Germany",
+    "SchemaVersion": {
+        "$numberInt": "1"
+    },
+    "Schemas": "RAF REMOTE_SCHEDULER_AGENT",
+    "ServerVersion": "latest",
+    "Version": "latest",
+    "_id": {
+        "$oid": "5ec64a9940c089c5aff44e9c"
+    }
+}
