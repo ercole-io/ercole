@@ -213,7 +213,7 @@
                     }
                 ],
                 "UniqueName": "foobar3",
-                "Used": "6",
+                "Used": "45",
                 "Version": "16.2.0.1.0 Enterprise Edition",
                 "Work": "99"
             },
@@ -416,7 +416,7 @@
                     }
                 ],
                 "UniqueName": "foobar4",
-                "Used": "6",
+                "Used": "76",
                 "Version": "18.2.0.1.0 Enterprise Edition",
                 "Work": "10"
             }
