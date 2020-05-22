@@ -548,7 +548,7 @@ func (m *MongodbSuite) TestGetHost() {
 					"_id":       utils.Str2oid("5ec64a9940c089c5aff44e9c"),
 				},
 				map[string]interface{}{
-					"CreatedAt": utils.P("2020-05-21T11:30:55.061+02:00"),
+					"CreatedAt": utils.P("2020-05-21T11:30:55.061+02:00").Local(),
 					"_id":       utils.Str2oid("5ec64a4f40c089c5aff44e99"),
 				},
 			},
