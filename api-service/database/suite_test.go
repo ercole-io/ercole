@@ -97,3 +97,9 @@ func (db *MongodbSuite) InsertAlert(alert model.Alert) {
 	_, err := db.db.Client.Database(db.db.Config.Mongodb.DBName).Collection("alerts").InsertOne(context.TODO(), alert)
 	db.Require().NoError(err)
 }
+
+// InsertLicense insert the license in the database
+func (db *MongodbSuite) InsertLicense(lic model.LicenseCount) {
+	_, err := db.db.Client.Database(db.db.Config.Mongodb.DBName).Collection("licenses").InsertOne(context.TODO(), lic)
+	db.Require().NoError(err)
+}
