@@ -18,11 +18,11 @@ package service
 import (
 	"time"
 
-	"github.com/amreo/ercole-services/config"
+	"github.com/ercole-io/ercole/config"
 	"github.com/sirupsen/logrus"
 
-	"github.com/amreo/ercole-services/alert-service/database"
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/alert-service/database"
+	"github.com/ercole-io/ercole/utils"
 )
 
 // FreshnessCheckJob is the job used to check the freshness of the current hosts

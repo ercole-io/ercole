@@ -19,7 +19,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/utils"
 )
 
 // GetDatabaseEnvironmentStats return all statistics about the environments of the databases using the filters in the request

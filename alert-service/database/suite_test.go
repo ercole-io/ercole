@@ -21,9 +21,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/amreo/ercole-services/config"
-	migration "github.com/amreo/ercole-services/database-migration"
-	"github.com/amreo/ercole-services/model"
+	"github.com/ercole-io/ercole/config"
+	migration "github.com/ercole-io/ercole/database-migration"
+	"github.com/ercole-io/ercole/model"
 	"github.com/sirupsen/logrus"
 
 	"math/rand"

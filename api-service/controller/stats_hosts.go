@@ -19,7 +19,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/utils"
 )
 
 // GetEnvironmentStats return all statistics about the environments of the hosts using the filters in the request

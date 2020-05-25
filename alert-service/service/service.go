@@ -21,14 +21,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/amreo/ercole-services/alert-service/database"
-	"github.com/amreo/ercole-services/model"
-	"github.com/amreo/ercole-services/utils"
 	"github.com/bamzi/jobrunner"
+	"github.com/ercole-io/ercole/alert-service/database"
+	"github.com/ercole-io/ercole/model"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/amreo/ercole-services/config"
+	"github.com/ercole-io/ercole/config"
 
 	"github.com/leandro-lugaresi/hub"
 )

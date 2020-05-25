@@ -21,8 +21,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/amreo/ercole-services/model"
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/model"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/gorilla/mux"
 )
 
