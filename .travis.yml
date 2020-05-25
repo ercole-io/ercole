@@ -49,14 +49,6 @@ script:
   ${WORKSPACE}/dist"
 - go test -race -coverprofile=coverage.txt -covermode=atomic -v ./...
 
-# before_deploy:
-# - if [[ ${VERSION} == "latest" ]]; then git tag -f latest; fi
-# - if [[ ${VERSION} == "latest" ]]; then git remote add gh https://amreo:${GITHUB_API_RELEASE}@github.com/${TRAVIS_REPO_SLUG}.git;
-#   fi
-# - if [[ ${VERSION} == "latest" ]]; then git push gh latest || true; fi
-# - if [[ ${VERSION} == "latest" ]]; then git push -f gh latest; fi
-# - if [[ ${VERSION} == "latest" ]]; then git remote remove gh; fi
-
 after_success:
 - bash <(curl -s https://codecov.io/bash)
 - docker build -t ercoleorg/ercole-services .
@@ -68,7 +60,7 @@ deploy:
   file_glob: true
   file: dist/*
 - provider: releases
-  api_key: "$GITHUB_API_RELEASE"
+  api_key: "$GITHUB_RELEASE_TOKEN"
   file_glob: true
   file: dist/*
   skip_cleanup: true
