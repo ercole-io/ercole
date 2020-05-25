@@ -51,7 +51,7 @@ script:
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)
-- docker build -t ercoleorg/ercole-services .
+- docker build -t sorintlab/ercole-services .
 
 deploy:
 - provider: script
