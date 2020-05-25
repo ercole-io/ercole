@@ -1,4 +1,4 @@
-module github.com/amreo/ercole-services
+module github.com/ercole-io/ercole
 
 go 1.13
 
@@ -10,7 +10,7 @@ require (
 	github.com/bamzi/jobrunner v0.0.0-20190810144113-852b7ca4d475
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
 	github.com/golang/gddo v0.0.0-20200219175727-df439dd5819e
-	github.com/golang/mock v1.4.0
+	github.com/golang/mock v1.4.3
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-github/v28 v28.1.1
 	github.com/goraz/onion v0.1.3

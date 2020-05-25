@@ -21,8 +21,8 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/amreo/ercole-services/config"
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 )

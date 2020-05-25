@@ -19,9 +19,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/amreo/ercole-services/api-service/auth"
-	"github.com/amreo/ercole-services/api-service/service"
-	"github.com/amreo/ercole-services/config"
+	"github.com/ercole-io/ercole/api-service/auth"
+	"github.com/ercole-io/ercole/api-service/service"
+	"github.com/ercole-io/ercole/config"
 	"github.com/sirupsen/logrus"
 )
 

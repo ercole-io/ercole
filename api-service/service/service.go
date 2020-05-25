@@ -19,13 +19,13 @@ package service
 import (
 	"time"
 
-	"github.com/amreo/ercole-services/api-service/database"
-	"github.com/amreo/ercole-services/model"
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/api-service/database"
+	"github.com/ercole-io/ercole/model"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/amreo/ercole-services/config"
+	"github.com/ercole-io/ercole/config"
 )
 
 // APIServiceInterface is a interface that wrap methods used to querying data
