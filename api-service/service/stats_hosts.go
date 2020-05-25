@@ -19,7 +19,7 @@ package service
 import (
 	"time"
 
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/utils"
 )
 
 // GetEnvironmentStats return a array containing the number of hosts per environment

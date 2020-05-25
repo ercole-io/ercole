@@ -19,7 +19,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/utils"
 )
 
 // ListAssets returns the list of assets with some stats using the filters in the request

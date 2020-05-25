@@ -19,7 +19,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/plandem/xlsx"
 	"github.com/stretchr/testify/assert"
 )

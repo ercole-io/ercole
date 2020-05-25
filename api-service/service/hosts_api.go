@@ -20,7 +20,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/utils"
 )
 
 // SearchHosts search hosts
