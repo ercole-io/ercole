@@ -54,16 +54,16 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 				{
 					"Compliance": false,
 					"Cost":       0,
-					"Count":      0,
+					"Count":      7,
 					"Name":       "Oracle/Database",
-					"Used":       8,
+					"Used":       10,
 				},
 			},
 			"Total": map[string]interface{}{
 				"Compliant": false,
 				"Cost":      0,
-				"Count":     0,
-				"Used":      8,
+				"Count":     7,
+				"Used":      10,
 			},
 		},
 		"Features": map[string]interface{}{
@@ -79,6 +79,30 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 	db.EXPECT().
 		GetAssetsUsage("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 		Return(getAssetsUsageRes, nil).AnyTimes().MinTimes(1)
+
+	listLicensesRes := []interface{}{
+		map[string]interface{}{
+			"Compliance": false,
+			"Count":      4,
+			"Used":       4,
+			"_id":        "Partitioning",
+		},
+		map[string]interface{}{
+			"Compliance": false,
+			"Count":      3,
+			"Used":       6,
+			"_id":        "Diagnostics Pack",
+		},
+		map[string]interface{}{
+			"Compliance": true,
+			"Count":      5,
+			"Used":       0,
+			"_id":        "Advanced Analytics",
+		},
+	}
+	db.EXPECT().
+		ListLicenses(false, "", false, -1, -1, "Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		Return(listLicensesRes, nil).AnyTimes().MinTimes(1)
 
 	searchAlertsRes := []interface{}{
 		map[string]interface{}{
@@ -152,6 +176,30 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 	db.EXPECT().
 		GetAssetsUsage("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 		Return(getAssetsUsageRes, nil).AnyTimes().MinTimes(1)
+
+	listLicensesRes := []interface{}{
+		map[string]interface{}{
+			"Compliance": false,
+			"Count":      4,
+			"Used":       4,
+			"_id":        "Partitioning",
+		},
+		map[string]interface{}{
+			"Compliance": false,
+			"Count":      3,
+			"Used":       6,
+			"_id":        "Diagnostics Pack",
+		},
+		map[string]interface{}{
+			"Compliance": true,
+			"Count":      5,
+			"Used":       0,
+			"_id":        "Advanced Analytics",
+		},
+	}
+	db.EXPECT().
+		ListLicenses(false, "", false, -1, -1, "Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		Return(listLicensesRes, nil).AnyTimes().MinTimes(1)
 
 	searchAlertsRes := []interface{}{
 		map[string]interface{}{
