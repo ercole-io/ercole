@@ -8,7 +8,7 @@ info:
   description: API used to talk to ercole services
   contact:
     name: Issues support
-    url: 'https://github.com/amreo/ercole-services'
+    url: 'https://github.com/ercole-io/ercole'
 servers:
   - description: SwaggerHub API Auto Mocking
     url: 'https://virtserver.swaggerhub.com/amreo/ercole/1.0.0'
@@ -78,7 +78,7 @@ components:
               value:
                 Error: Invalid  status
                 ErrorDescription: invalid status
-                SourceFilename: /home/travis/go/src/github.com/amreo/ercole-services/api-service/controller/alerts_api.go
+                SourceFilename: /home/travis/go/src/github.com/ercole-io/ercole/api-service/controller/alerts_api.go
                 LineNumber: 65
   schemas:
     HostDataInfo:
@@ -1011,11 +1011,11 @@ components:
         Code: 
           type: string
           externalDocs:
-            url: https://github.com/amreo/ercole-services/blob/master/model/alert.go
+            url: https://github.com/ercole-io/ercole/blob/master/model/alert.go
         Severity:
           type: string
           externalDocs:
-            url: https://github.com/amreo/ercole-services/blob/master/model/alert.go
+            url: https://github.com/ercole-io/ercole/blob/master/model/alert.go
         Count: 
           type: integer
         AffectedHosts:

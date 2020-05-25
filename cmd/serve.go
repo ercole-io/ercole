@@ -24,28 +24,28 @@ import (
 	"sync"
 	"time"
 
-	"github.com/amreo/ercole-services/config"
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"github.com/spf13/cobra"
 
-	migration "github.com/amreo/ercole-services/database-migration"
+	migration "github.com/ercole-io/ercole/database-migration"
 
-	dataservice_controller "github.com/amreo/ercole-services/data-service/controller"
-	dataservice_database "github.com/amreo/ercole-services/data-service/database"
-	dataservice_service "github.com/amreo/ercole-services/data-service/service"
+	dataservice_controller "github.com/ercole-io/ercole/data-service/controller"
+	dataservice_database "github.com/ercole-io/ercole/data-service/database"
+	dataservice_service "github.com/ercole-io/ercole/data-service/service"
 
-	alertservice_controller "github.com/amreo/ercole-services/alert-service/controller"
-	alertservice_database "github.com/amreo/ercole-services/alert-service/database"
-	alertservice_service "github.com/amreo/ercole-services/alert-service/service"
+	alertservice_controller "github.com/ercole-io/ercole/alert-service/controller"
+	alertservice_database "github.com/ercole-io/ercole/alert-service/database"
+	alertservice_service "github.com/ercole-io/ercole/alert-service/service"
 
-	apiservice_auth "github.com/amreo/ercole-services/api-service/auth"
-	apiservice_controller "github.com/amreo/ercole-services/api-service/controller"
-	apiservice_database "github.com/amreo/ercole-services/api-service/database"
-	apiservice_service "github.com/amreo/ercole-services/api-service/service"
+	apiservice_auth "github.com/ercole-io/ercole/api-service/auth"
+	apiservice_controller "github.com/ercole-io/ercole/api-service/controller"
+	apiservice_database "github.com/ercole-io/ercole/api-service/database"
+	apiservice_service "github.com/ercole-io/ercole/api-service/service"
 
-	reposervice_service "github.com/amreo/ercole-services/repo-service/service"
+	reposervice_service "github.com/ercole-io/ercole/repo-service/service"
 )
 
 var enableDataService bool

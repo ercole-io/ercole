@@ -20,9 +20,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/amreo/ercole-services/config"
-	"github.com/amreo/ercole-services/model"
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/model"
+	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
