@@ -20,9 +20,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/amreo/ercole-services/alert-service/service"
-	"github.com/amreo/ercole-services/config"
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/alert-service/service"
+	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/goji/httpauth"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"

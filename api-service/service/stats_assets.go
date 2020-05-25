@@ -19,7 +19,7 @@ package service
 import (
 	"time"
 
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/utils"
 )
 
 // GetTotalAssetsComplianceStats return the total compliance of all assets
