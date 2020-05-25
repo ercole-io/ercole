@@ -24,7 +24,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/amreo/ercole-services/config"
+	"github.com/ercole-io/ercole/config"
 	"github.com/pkg/sftp"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh"

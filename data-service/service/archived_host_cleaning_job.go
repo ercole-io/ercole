@@ -19,9 +19,9 @@ package service
 import (
 	"time"
 
-	"github.com/amreo/ercole-services/config"
-	"github.com/amreo/ercole-services/data-service/database"
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/data-service/database"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/sirupsen/logrus"
 )
 

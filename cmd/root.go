@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/amreo/ercole-services/config"
+	"github.com/ercole-io/ercole/config"
 	"github.com/spf13/cobra"
 )
 

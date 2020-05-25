@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/amreo/ercole-services/model"
+	"github.com/ercole-io/ercole/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"

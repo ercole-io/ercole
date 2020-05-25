@@ -16,8 +16,8 @@
 package database
 
 import (
-	"github.com/amreo/ercole-services/model"
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/model"
+	"github.com/ercole-io/ercole/utils"
 )
 
 var alert1 model.Alert = model.Alert{
