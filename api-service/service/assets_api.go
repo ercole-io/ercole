@@ -17,6 +17,7 @@
 package service
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/amreo/ercole-services/model"
@@ -30,18 +31,12 @@ func (as *APIService) ListAssets(sortBy string, sortDesc bool, location string, 
 		return nil, err
 	}
 
-	finalList := make([]model.AssetStatus, 0)
-
-	//Oracle/Database
-	if partialList["Oracle/Database"] > 0 {
-		finalList = append(finalList, model.AssetStatus{
-			Name:       "Oracle/Database",
-			Used:       partialList["Oracle/Database"],
-			Count:      0.0,
-			Compliance: false,
-			Cost:       0.0,
-		})
+	oracleLicenseListRaw, err := as.Database.ListLicenses(false, "", false, -1, -1, location, environment, olderThan)
+	if err != nil {
+		return nil, err
 	}
+
+	finalList := make([]model.AssetStatus, 0)
 
 	//Oracle/Exadata
 	if partialList["Oracle/Exadata"] > 0 {
@@ -50,6 +45,33 @@ func (as *APIService) ListAssets(sortBy string, sortDesc bool, location string, 
 			Used:       partialList["Oracle/Exadata"],
 			Count:      partialList["Oracle/Exadata"],
 			Compliance: true,
+			Cost:       0.0,
+		})
+	}
+
+	//Oracle/Databases
+	type License struct {
+		Count float32
+		Used  float32
+	}
+	oracleLicenseList := make([]License, 0)
+	json.Unmarshal([]byte(utils.ToJSON(oracleLicenseListRaw)), &oracleLicenseList)
+	used := float32(0.0)
+	holded := float32(0.0)
+	for _, lic := range oracleLicenseList {
+		used += lic.Used
+		if lic.Count > lic.Used {
+			holded += lic.Used
+		} else {
+			holded += lic.Count
+		}
+	}
+	if used > 0 {
+		finalList = append(finalList, model.AssetStatus{
+			Name:       "Oracle/Database",
+			Used:       used,
+			Count:      holded,
+			Compliance: used <= holded,
 			Cost:       0.0,
 		})
 	}
