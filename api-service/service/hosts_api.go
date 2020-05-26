@@ -20,12 +20,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ercole-io/ercole/api-service/database"
 	"github.com/ercole-io/ercole/utils"
 )
 
 // SearchHosts search hosts
-func (as *APIService) SearchHosts(mode string, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchHosts(mode, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+func (as *APIService) SearchHosts(mode string, search string, otherFilters database.SearchHostsFilters, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchHosts(mode, strings.Split(search, " "), otherFilters, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
 // GetHost return the host specified in the hostname param

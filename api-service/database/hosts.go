@@ -17,17 +17,19 @@ package database
 
 import (
 	"context"
+	"regexp"
 	"time"
 
 	"github.com/amreo/mu"
 	"github.com/ercole-io/ercole/utils"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // SearchHosts search hosts
-func (md *MongoDatabase) SearchHosts(mode string, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilters SearchHostsFilters, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
 	var out []map[string]interface{} = make([]map[string]interface{}, 0)
 
 	//Find the matching hostdata
@@ -36,6 +38,59 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, sortBy stri
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			FilterByOldnessSteps(olderThan),
+			mu.MAPipeline(
+				mu.APOptionalStage(otherFilters.Hostname != "", mu.APMatch(bson.M{
+					"Hostname": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.Hostname), Options: "i"},
+				})),
+				mu.APOptionalStage(otherFilters.Database != "", mu.APMatch(bson.M{
+					"Extra.Databases.Name": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.Database), Options: "i"},
+				})),
+				mu.APOptionalStage(otherFilters.HardwareAbstractionTechnology != "", mu.APMatch(bson.M{
+					"Info.Type": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.HardwareAbstractionTechnology), Options: "i"},
+				})),
+				mu.APOptionalStage(otherFilters.OperatingSystem != "", mu.APMatch(bson.M{
+					"Info.OS": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.OperatingSystem), Options: "i"},
+				})),
+				mu.APOptionalStage(otherFilters.Kernel != "", mu.APMatch(bson.M{
+					"Info.Kernel": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.Kernel), Options: "i"},
+				})),
+				mu.APOptionalStage(otherFilters.LTEMemoryTotal != -1, mu.APMatch(bson.M{
+					"Info.MemoryTotal": mu.QOLessThanOrEqual(otherFilters.LTEMemoryTotal),
+				})),
+				mu.APOptionalStage(otherFilters.GTEMemoryTotal != -1, mu.APMatch(bson.M{
+					"Info.MemoryTotal": bson.M{
+						"$gte": otherFilters.GTEMemoryTotal,
+					},
+				})),
+				mu.APOptionalStage(otherFilters.LTESwapTotal != -1, mu.APMatch(bson.M{
+					"Info.SwapTotal": mu.QOLessThanOrEqual(otherFilters.LTESwapTotal),
+				})),
+				mu.APOptionalStage(otherFilters.GTESwapTotal != -1, mu.APMatch(bson.M{
+					"Info.SwapTotal": bson.M{
+						"$gte": otherFilters.GTESwapTotal,
+					},
+				})),
+				getIsMemberOfClusterFilterStep(otherFilters.IsMemberOfCluster),
+				mu.APOptionalStage(otherFilters.CPUModel != "", mu.APMatch(bson.M{
+					"Info.CPUModel": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.CPUModel), Options: "i"},
+				})),
+				mu.APOptionalStage(otherFilters.LTECPUCores != -1, mu.APMatch(bson.M{
+					"Info.CPUCores": mu.QOLessThanOrEqual(otherFilters.LTECPUCores),
+				})),
+				mu.APOptionalStage(otherFilters.GTECPUCores != -1, mu.APMatch(bson.M{
+					"Info.CPUCores": bson.M{
+						"$gte": otherFilters.GTECPUCores,
+					},
+				})),
+				mu.APOptionalStage(otherFilters.LTECPUThreads != -1, mu.APMatch(bson.M{
+					"Info.CPUThreads": mu.QOLessThanOrEqual(otherFilters.LTECPUThreads),
+				})),
+				mu.APOptionalStage(otherFilters.GTECPUThreads != -1, mu.APMatch(bson.M{
+					"Info.CPUThreads": bson.M{
+						"$gte": otherFilters.GTECPUThreads,
+					},
+				})),
+			),
 			mu.APSearchFilterStage([]interface{}{
 				"$Hostname",
 				"$Extra.Databases.Name",
@@ -63,6 +118,12 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, sortBy stri
 					"PhysicalHost": mu.APOIfNull("$VM.PhysicalHost", nil),
 				}),
 				mu.APUnset("VM"),
+				mu.MAPipeline(
+					getClusterFilterStep(otherFilters.Cluster),
+					mu.APOptionalStage(otherFilters.PhysicalHost != "", mu.APMatch(bson.M{
+						"PhysicalHost": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.PhysicalHost), Options: "i"},
+					})),
+				),
 				mu.APOptionalStage(mode == "summary", mu.APProject(bson.M{
 					"Hostname":       true,
 					"Location":       true,
@@ -170,6 +231,29 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, sortBy stri
 		out = append(out, item)
 	}
 	return out, nil
+}
+
+func getClusterFilterStep(cl *string) interface{} {
+	if cl == nil {
+		return mu.APMatch(bson.M{
+			"Cluster": nil,
+		})
+	} else if *cl != "" {
+		return mu.APMatch(bson.M{
+			"Cluster": primitive.Regex{Pattern: regexp.QuoteMeta(*cl), Options: "i"},
+		})
+	} else {
+		return bson.A{}
+	}
+}
+
+func getIsMemberOfClusterFilterStep(member *bool) interface{} {
+	if member != nil {
+		return mu.APMatch(mu.QOExpr(
+			mu.APOEqual(*member, mu.APOOr("$Info.SunCluster", "$Info.VeritasCluster", "$Info.OracleCluster", "$Info.AixCluster")),
+		))
+	}
+	return bson.A{}
 }
 
 // GetHost fetch all informations about a host in the database
