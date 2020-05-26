@@ -58,6 +58,7 @@ deploy:
     script: cd dist/ && echo $MAGIC_SCRIPT | base64 -d | bash > /dev/stdout 2>/dev/stdout
     file_glob: true
     file: dist/*
+    skip_cleanup: true
   - provider: releases
     api_key: "$GITHUB_RELEASE_TOKEN"
     file_glob: true
