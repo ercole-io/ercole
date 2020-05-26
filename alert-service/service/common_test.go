@@ -20,10 +20,10 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/amreo/ercole-services/model"
+	"github.com/ercole-io/ercole/model"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/utils"
 )
 
 //go:generate mockgen -source ../database/database.go -destination=fake_database.go -package=service

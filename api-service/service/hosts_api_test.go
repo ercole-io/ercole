@@ -18,8 +18,8 @@ package service
 import (
 	"testing"
 
-	database "github.com/amreo/ercole-services/api-service/database"
-	"github.com/amreo/ercole-services/utils"
+	database "github.com/ercole-io/ercole/api-service/database"
+	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
