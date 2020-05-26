@@ -35,18 +35,41 @@ func TestGetTotalAssetsComplianceStats_Success(t *testing.T) {
 	expectedRes := map[string]interface{}{
 		"Compliant": false,
 		"Cost":      0,
-		"Count":     2,
-		"Used":      10,
+		"Count":     9,
+		"Used":      12,
 	}
 
 	getAssetsUsageRes := map[string]float32{
-		"Oracle/Database": 8,
-		"Oracle/Exadata":  2,
+		"Oracle/Exadata": 2,
 	}
 
 	db.EXPECT().
 		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(getAssetsUsageRes, nil)
+
+	listLicensesRes := []interface{}{
+		map[string]interface{}{
+			"Compliance": false,
+			"Count":      4,
+			"Used":       4,
+			"_id":        "Partitioning",
+		},
+		map[string]interface{}{
+			"Compliance": false,
+			"Count":      3,
+			"Used":       6,
+			"_id":        "Diagnostics Pack",
+		},
+		map[string]interface{}{
+			"Compliance": true,
+			"Count":      5,
+			"Used":       0,
+			"_id":        "Advanced Analytics",
+		},
+	}
+	db.EXPECT().
+		ListLicenses(false, "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		Return(listLicensesRes, nil).AnyTimes().MinTimes(1)
 
 	res, err := as.GetTotalAssetsComplianceStats(
 		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),

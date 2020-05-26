@@ -35,7 +35,7 @@ type MongoDatabaseInterface interface {
 	// Init initializes the connection to the database
 	Init()
 	// SearchHosts search hosts
-	SearchHosts(mode string, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
+	SearchHosts(mode string, keywords []string, otherFilters SearchHostsFilters, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// GetHost fetch all informations about a host in the database
 	GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, utils.AdvancedErrorInterface)
 	// SearchAlerts search alerts
@@ -167,4 +167,26 @@ func (md *MongoDatabase) ConnectToMongodb() {
 	if err != nil {
 		md.Log.Fatal(err)
 	}
+}
+
+// SearchHostsFilters contains all filters for the SearchHosts API
+type SearchHostsFilters struct {
+	Hostname                      string
+	Database                      string
+	Asset                         string
+	HardwareAbstractionTechnology string
+	Cluster                       *string
+	PhysicalHost                  string
+	OperatingSystem               string
+	Kernel                        string
+	LTEMemoryTotal                float32
+	GTEMemoryTotal                float32
+	LTESwapTotal                  float32
+	GTESwapTotal                  float32
+	IsMemberOfCluster             *bool
+	CPUModel                      string
+	LTECPUCores                   int
+	GTECPUCores                   int
+	LTECPUThreads                 int
+	GTECPUThreads                 int
 }
