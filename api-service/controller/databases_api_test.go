@@ -22,8 +22,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/amreo/ercole-services/config"
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	"github.com/plandem/xlsx"

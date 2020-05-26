@@ -29,7 +29,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/amreo/ercole-services/model"
+	"github.com/ercole-io/ercole/model"
 	"github.com/robertkrimen/otto"
 )
 

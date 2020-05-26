@@ -17,7 +17,6 @@ package service
 
 import (
 	"testing"
-
 	database "github.com/amreo/ercole-services/api-service/database"
 	"github.com/amreo/ercole-services/utils"
 	gomock "github.com/golang/mock/gomock"

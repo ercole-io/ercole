@@ -23,7 +23,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/spf13/cobra"
 )
 
