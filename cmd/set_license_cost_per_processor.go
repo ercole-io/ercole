@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,10 +28,10 @@ import (
 )
 
 func init() {
-	setLicenseCountCmd := &cobra.Command{
-		Use:   "set-license-count",
-		Short: "Set the count of a license",
-		Long:  `Set the count of a license`,
+	setLicenseCostPerProcessorCmd := &cobra.Command{
+		Use:   "set-license-cost-per-processor",
+		Short: "Set the cost per processor of a license",
+		Long:  `Set the cost per processor of a license`,
 		Run: func(cmd *cobra.Command, args []string) {
 			//Argument lenght check
 			if len(args)%2 != 0 {
@@ -43,30 +43,30 @@ func init() {
 				name := args[i]
 				_, err := strconv.Atoi(args[i+1])
 				if err != nil {
-					fmt.Fprintf(os.Stderr, "Unable to parse the count %q, err: %v\n", args[i+1], err)
+					fmt.Fprintf(os.Stderr, "Unable to parse the cost per processor %q, err: %v\n", args[i+1], err)
 					os.Exit(1)
 				}
 
 				req, _ := http.NewRequest("PUT", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
 					ercoleConfig.APIService.AuthenticationProvider.Username,
 					ercoleConfig.APIService.AuthenticationProvider.Password,
-					"/licenses/"+name+"/count",
+					"/licenses/"+name+"/cost-per-processor",
 				).String(), bytes.NewReader([]byte(args[i+1])))
 
 				//Make the http request
 				resp, err := http.DefaultClient.Do(req)
 				if err != nil {
-					fmt.Fprintf(os.Stderr, "Failed to set count of license %q: %v\n", name, err)
+					fmt.Fprintf(os.Stderr, "Failed to set cost per processor of license %q: %v\n", name, err)
 					os.Exit(1)
 				} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
 					out, _ := ioutil.ReadAll(resp.Body)
 					defer resp.Body.Close()
-					fmt.Fprintf(os.Stderr, "License: %s Status: %d Cause: %s\n", name, resp.StatusCode, string(out))
+					fmt.Fprintf(os.Stderr, "License: %s cost per processor: %d Cause: %s\n", name, resp.StatusCode, string(out))
 					os.Exit(1)
 				}
 			}
 		},
 	}
 
-	apiCmd.AddCommand(setLicenseCountCmd)
+	apiCmd.AddCommand(setLicenseCostPerProcessorCmd)
 }

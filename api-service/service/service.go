@@ -116,6 +116,8 @@ type APIServiceInterface interface {
 	GetErcoleFeatures() (map[string]bool, utils.AdvancedErrorInterface)
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
+	// SetLicenseCostPerProcessor set the cost per processor of a certain license
+	SetLicenseCostPerProcessor(name string, costPerProcessor float32) utils.AdvancedErrorInterface
 	// SetLicensesCount set the count of all licenses in newLicenses
 	// It assumes that newLicenses maps contain the string _id and the int Count
 	SetLicensesCount(newLicenses []map[string]interface{}) utils.AdvancedErrorInterface
