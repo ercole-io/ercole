@@ -33,7 +33,7 @@ type APIServiceInterface interface {
 	// Init initialize the service
 	Init()
 	// SearchHosts search hosts
-	SearchHosts(mode string, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
+	SearchHosts(mode string, search string, otherFilters database.SearchHostsFilters, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// GetHost return the host specified in the hostname param
 	GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, utils.AdvancedErrorInterface)
 	// ListAssets returns the list of assets with some stats

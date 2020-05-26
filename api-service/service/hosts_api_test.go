@@ -18,6 +18,7 @@ package service
 import (
 	"testing"
 
+	database "github.com/amreo/ercole-services/api-service/database"
 	"github.com/amreo/ercole-services/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -86,13 +87,13 @@ func TestSearchHosts_Success(t *testing.T) {
 	}
 
 	db.EXPECT().SearchHosts(
-		"summary", []string{"foo", "bar", "foobarx"}, "Memory",
+		"summary", []string{"foo", "bar", "foobarx"}, database.SearchHostsFilters{}, "Memory",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	).Return(expectedRes, nil).Times(1)
 
 	res, err := as.SearchHosts(
-		"summary", "foo bar foobarx", "Memory",
+		"summary", "foo bar foobarx", database.SearchHostsFilters{}, "Memory",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
@@ -109,13 +110,13 @@ func TestSearchHosts_Fail(t *testing.T) {
 	}
 
 	db.EXPECT().SearchHosts(
-		"summary", []string{"foo", "bar", "foobarx"}, "Memory",
+		"summary", []string{"foo", "bar", "foobarx"}, database.SearchHostsFilters{}, "Memory",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	).Return(nil, aerrMock).Times(1)
 
 	res, err := as.SearchHosts(
-		"summary", "foo bar foobarx", "Memory",
+		"summary", "foo bar foobarx", database.SearchHostsFilters{}, "Memory",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
