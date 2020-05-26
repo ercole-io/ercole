@@ -42,14 +42,16 @@ func TestListAssets_Success(t *testing.T) {
 	expectedRes := []model.AssetStatus{
 		{
 			Compliance: false,
-			Cost:       0,
+			TotalCost:  100,
+			PaidCost:   20,
 			Count:      0,
 			Name:       "Oracle/Database",
 			Used:       8,
 		},
 		{
 			Compliance: true,
-			Cost:       0,
+			TotalCost:  15,
+			PaidCost:   3,
 			Count:      2,
 			Name:       "Oracle/Exadata",
 			Used:       2,

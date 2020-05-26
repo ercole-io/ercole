@@ -19,8 +19,9 @@ import "go.mongodb.org/mongo-driver/bson"
 
 // LicenseCount holds information about Oracle database license
 type LicenseCount struct {
-	Name  string `bson:"_id"`
-	Count int    `bson:"Count"`
+	Name             string  `bson:"_id"`
+	Count            int     `bson:"Count"`
+	CostPerProcessor float32 `bson:"CostPerProcessor"`
 }
 
 // LicenseCountBsonValidatorRules contains mongodb validation rules for licenseCount
@@ -29,12 +30,16 @@ var LicenseCountBsonValidatorRules = bson.D{
 	{"required", bson.A{
 		"_id",
 		"Count",
+		"CostPerProcessor",
 	}},
 	{"properties", bson.D{
 		{"_id", bson.D{
 			{"bsonType", "string"},
 		}},
 		{"Count", bson.D{
+			{"bsonType", "number"},
+		}},
+		{"CostPerProcessor", bson.D{
 			{"bsonType", "number"},
 		}},
 	}},
