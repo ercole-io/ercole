@@ -2392,7 +2392,7 @@ func TestSetLicensesCount_Success(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SetLicenseCount)
-	req, err := http.NewRequest("PUT", "/licenses/Oracle%20ENT", strings.NewReader("10"))
+	req, err := http.NewRequest("PUT", "/licenses/Oracle%20ENT/count", strings.NewReader("10"))
 	req = mux.SetURLVars(req, map[string]string{
 		"name": "Oracle ENT",
 	})
@@ -2420,7 +2420,7 @@ func TestSetLicensesCount_FailReadOnly(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SetLicenseCount)
-	req, err := http.NewRequest("PUT", "/licenses/Oracle%20ENT", strings.NewReader("10"))
+	req, err := http.NewRequest("PUT", "/licenses/Oracle%20ENT/count", strings.NewReader("10"))
 	req = mux.SetURLVars(req, map[string]string{
 		"name": "Oracle ENT",
 	})
@@ -2450,7 +2450,7 @@ func TestSetLicensesCount_FailNotFound(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SetLicenseCount)
-	req, err := http.NewRequest("PUT", "/licenses/Oracle%20ENT", strings.NewReader("10"))
+	req, err := http.NewRequest("PUT", "/licenses/Oracle%20ENT/count", strings.NewReader("10"))
 	req = mux.SetURLVars(req, map[string]string{
 		"name": "Oracle ENT",
 	})
@@ -2480,7 +2480,7 @@ func TestSetLicensesCount_FailInternalServerError(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SetLicenseCount)
-	req, err := http.NewRequest("PUT", "/licenses/Oracle%20ENT", strings.NewReader("10"))
+	req, err := http.NewRequest("PUT", "/licenses/Oracle%20ENT/count", strings.NewReader("10"))
 	req = mux.SetURLVars(req, map[string]string{
 		"name": "Oracle ENT",
 	})
@@ -2508,7 +2508,7 @@ func TestSetLicensesCount_FailUnprocessableEntity(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SetLicenseCount)
-	req, err := http.NewRequest("PUT", "/licenses/Oracle%20ENT", strings.NewReader("sdfsdf"))
+	req, err := http.NewRequest("PUT", "/licenses/Oracle%20ENT/count", strings.NewReader("sdfsdf"))
 	req = mux.SetURLVars(req, map[string]string{
 		"name": "Oracle ENT",
 	})
@@ -2536,7 +2536,7 @@ func TestSetLicensesCount_FailBadRequest(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SetLicenseCount)
-	req, err := http.NewRequest("PUT", "/licenses/Oracle%20ENT", &FailingReader{})
+	req, err := http.NewRequest("PUT", "/licenses/Oracle%20ENT/count", &FailingReader{})
 	req = mux.SetURLVars(req, map[string]string{
 		"name": "Oracle ENT",
 	})

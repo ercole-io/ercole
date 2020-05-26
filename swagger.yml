@@ -3252,6 +3252,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
+  '/licenses/{name}/count':
     put:
       operationId: SetLicenseCount
       description: Set the count of a certain license
