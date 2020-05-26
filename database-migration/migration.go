@@ -18,13 +18,13 @@ package migration
 import (
 	"context"
 
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/sirupsen/logrus"
 
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/amreo/ercole-services/config"
-	"github.com/amreo/ercole-services/model"
+	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/model"
 
 	"go.mongodb.org/mongo-driver/bson"
 

@@ -20,8 +20,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/amreo/ercole-services/api-service/database"
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/api-service/database"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
 	"github.com/plandem/xlsx"

@@ -15,7 +15,7 @@
 
 package main
 
-import "github.com/amreo/ercole-services/cmd"
+import "github.com/ercole-io/ercole/cmd"
 
 func main() {
 	cmd.Execute()

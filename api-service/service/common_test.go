@@ -18,7 +18,7 @@ package service
 import (
 	"errors"
 
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/utils"
 )
 
 //go:generate mockgen -source ../database/database.go -destination=fake_database.go -package=service
