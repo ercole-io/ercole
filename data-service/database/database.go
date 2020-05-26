@@ -20,10 +20,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/amreo/ercole-services/config"
-	"github.com/amreo/ercole-services/model"
-	"github.com/amreo/ercole-services/utils"
 	"github.com/amreo/mu"
+	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/model"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

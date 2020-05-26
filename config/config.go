@@ -21,7 +21,7 @@ import (
 	"strings"
 
 	"github.com/OpenPeeDeeP/xdg"
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/goraz/onion"
 	"github.com/goraz/onion/layers/directorylayer"
 	_ "github.com/goraz/onion/loaders/toml-0.5.0" // Needed to load toml files
