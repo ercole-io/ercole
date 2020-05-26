@@ -34,18 +34,18 @@ func TestListAssets_Success(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"Compliance": false,
-			"Cost":       0,
-			"Count":      0,
-			"Name":       "Oracle/Database",
-			"Used":       8,
-		},
-		{
 			"Compliance": true,
 			"Cost":       0,
 			"Count":      2,
 			"Name":       "Oracle/Exadata",
 			"Used":       2,
+		},
+		{
+			"Compliance": false,
+			"Cost":       0,
+			"Count":      7,
+			"Name":       "Oracle/Database",
+			"Used":       10,
 		},
 	}
 
@@ -53,16 +53,37 @@ func TestListAssets_Success(t *testing.T) {
 		"Oracle/Database": 8,
 		"Oracle/Exadata":  2,
 	}
-
 	db.EXPECT().
 		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(getAssetsUsageRes, nil)
+	listLicensesRes := []interface{}{
+		map[string]interface{}{
+			"Compliance": false,
+			"Count":      4,
+			"Used":       4,
+			"_id":        "Partitioning",
+		},
+		map[string]interface{}{
+			"Compliance": false,
+			"Count":      3,
+			"Used":       6,
+			"_id":        "Diagnostics Pack",
+		},
+		map[string]interface{}{
+			"Compliance": true,
+			"Count":      5,
+			"Used":       0,
+			"_id":        "Advanced Analytics",
+		},
+	}
+	db.EXPECT().
+		ListLicenses(false, "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		Return(listLicensesRes, nil)
 
 	res, err := as.ListAssets(
 		"Count", true,
 		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
 	)
-
 	require.NoError(t, err)
 	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
 }
@@ -77,13 +98,21 @@ func TestListAssets_SuccessEmpty(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{}
 
-	getAssetsUsageRes := map[string]float32{
-		"Oracle/Database": 0,
-	}
-
+	getAssetsUsageRes := map[string]float32{}
 	db.EXPECT().
 		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(getAssetsUsageRes, nil)
+	listLicensesRes := []interface{}{
+		map[string]interface{}{
+			"Compliance": false,
+			"Count":      10,
+			"Used":       0,
+			"_id":        "Partitioning",
+		},
+	}
+	db.EXPECT().
+		ListLicenses(false, "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		Return(listLicensesRes, nil)
 
 	res, err := as.ListAssets(
 		"Count", true,
@@ -94,7 +123,7 @@ func TestListAssets_SuccessEmpty(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
 }
 
-func TestListAssets_FailInternalServerError(t *testing.T) {
+func TestListAssets_FailInternalServerError1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -104,6 +133,30 @@ func TestListAssets_FailInternalServerError(t *testing.T) {
 
 	db.EXPECT().
 		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		Return(nil, aerrMock)
+
+	_, err := as.ListAssets(
+		"Count", true,
+		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
+	)
+
+	require.Equal(t, aerrMock, err)
+}
+
+func TestListAssets_FailInternalServerError2(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
+
+	getAssetsUsageRes := map[string]float32{}
+	db.EXPECT().
+		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		Return(getAssetsUsageRes, nil)
+	db.EXPECT().
+		ListLicenses(false, "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(nil, aerrMock)
 
 	_, err := as.ListAssets(

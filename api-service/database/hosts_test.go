@@ -32,8 +32,23 @@ func (m *MongodbSuite) TestSearchHosts() {
 	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
 	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
 
+	commonFilters := SearchHostsFilters{
+		Cluster:           new(string),
+		LTEMemoryTotal:    -1,
+		GTEMemoryTotal:    -1,
+		LTESwapTotal:      -1,
+		GTESwapTotal:      -1,
+		IsMemberOfCluster: nil,
+		LTECPUCores:       -1,
+		GTECPUCores:       -1,
+		LTECPUThreads:     -1,
+		GTECPUThreads:     -1,
+	}
+
+	//TODO: add search hosts filter tests!
+
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
-		out, err := m.db.SearchHosts("summary", []string{""}, "", false, -1, -1, "", "FOOBAR", utils.MAX_TIME)
+		out, err := m.db.SearchHosts("summary", []string{""}, commonFilters, "", false, -1, -1, "", "FOOBAR", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
@@ -41,7 +56,7 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
-		out, err := m.db.SearchHosts("summary", []string{""}, "", false, -1, -1, "France", "", utils.MAX_TIME)
+		out, err := m.db.SearchHosts("summary", []string{""}, commonFilters, "", false, -1, -1, "France", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
@@ -49,7 +64,7 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
-		out, err := m.db.SearchHosts("summary", []string{""}, "", false, -1, -1, "", "", utils.MIN_TIME)
+		out, err := m.db.SearchHosts("summary", []string{""}, commonFilters, "", false, -1, -1, "", "", utils.MIN_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
@@ -57,7 +72,7 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("should_be_paging", func(t *testing.T) {
-		out, err := m.db.SearchHosts("summary", []string{""}, "_id", true, 0, 1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchHosts("summary", []string{""}, commonFilters, "_id", true, 0, 1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -104,7 +119,7 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("should_be_sorting", func(t *testing.T) {
-		out, err := m.db.SearchHosts("summary", []string{""}, "CreatedAt", true, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchHosts("summary", []string{""}, commonFilters, "CreatedAt", true, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
@@ -188,7 +203,7 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("should_search1", func(t *testing.T) {
-		out, err := m.db.SearchHosts("summary", []string{"foobar"}, "", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchHosts("summary", []string{"foobar"}, commonFilters, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{}
 
@@ -196,7 +211,7 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("should_search2", func(t *testing.T) {
-		out, err := m.db.SearchHosts("summary", []string{"test-db", "ERCOLE"}, "", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchHosts("summary", []string{"test-db", "ERCOLE"}, commonFilters, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
@@ -230,7 +245,7 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("should_search3", func(t *testing.T) {
-		out, err := m.db.SearchHosts("summary", []string{"Puzzait"}, "", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchHosts("summary", []string{"Puzzait"}, commonFilters, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
@@ -264,7 +279,7 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("lms_mode", func(t *testing.T) {
-		out, err := m.db.SearchHosts("lms", []string{""}, "", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchHosts("lms", []string{""}, commonFilters, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{

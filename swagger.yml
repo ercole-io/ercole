@@ -1209,6 +1209,114 @@ paths:
               - lms
               - mhd
         - $ref: '#/components/parameters/search'
+        - in: query
+          name: hostname
+          description: filter by hostname
+          allowEmptyValue: true
+          schema:
+            type: string
+        - in: query
+          name: database
+          description: filter by a database name
+          allowEmptyValue: true
+          schema:
+            type: string
+        - in: query
+          name: asset
+          description: filter by a asset
+          allowEmptyValue: true
+          schema:
+            type: string
+        - in: query
+          name: hardware-abstraction-technology
+          description: filter by the HA technology
+          allowEmptyValue: true
+          schema:
+            type: string
+        - in: query
+          name: cluster
+          description: filter by the name of virtualization cluster. use 'NULL' for searching host that aren't part of a virtualization cluster
+          allowEmptyValue: true
+          schema:
+            type: string
+        - in: query
+          name: physical-host
+          description: filter by the name of physical host on which the host runs
+          allowEmptyValue: true
+          schema:
+            type: string
+        - in: query
+          name: operating-system
+          description: filter by the operating system
+          allowEmptyValue: true
+          schema:
+            type: string
+        - in: query
+          name: kernel
+          description: filter by the kernel
+          allowEmptyValue: true
+          schema:
+            type: string
+        - in: query
+          name: memory-total-lte
+          description: filter the hosts with the Info.MemoryTotal less than memory-total-lte value
+          allowEmptyValue: true
+          schema:
+            type: number
+        - in: query
+          name: memory-total-gte
+          description: filter the hosts with the Info.MemoryTotal less than memory-total-gte value
+          allowEmptyValue: true
+          schema:
+            type: number
+        - in: query
+          name: swap-total-lte
+          description: filter the hosts with the Info.SwapTotal less than swap-total-lte value
+          allowEmptyValue: true
+          schema:
+            type: number
+        - in: query
+          name: swap-total-gte
+          description: filter the hosts with the Info.SwapTotal less than swap-total-gte value
+          allowEmptyValue: true
+          schema:
+            type: number
+        - in: query
+          name: is-member-of-cluster
+          description: filter the host by operating systems cluster membership
+          allowEmptyValue: true
+          schema:
+            type: boolean
+        - in: query
+          name: cpu-model
+          description: filter by CPU model
+          allowEmptyValue: true
+          schema:
+            type: boolean
+        - in: query
+          name: cpu-cores-lte
+          description: filter the hosts with the Info.CPUCores less than cpu-cores-lte value
+          allowEmptyValue: true
+          schema:
+            type: number
+        - in: query
+          name: cpu-cores-gte
+          description: filter the hosts with the Info.CPUCores less than cpu-cores-gte value
+          allowEmptyValue: true
+          schema:
+            type: number
+        - in: query
+          name: cpu-threads-lte
+          description: filter the hosts with the Info.CPUThreads less than cpu-threads-lte value
+          allowEmptyValue: true
+          schema:
+            type: number
+        - in: query
+          name: cpu-threads-gte
+          description: filter the hosts with the Info.CPUThreads less than cpu-threads-gte value
+          allowEmptyValue: true
+          schema:
+            type: number
         - $ref: '#/components/parameters/sort-by'
         - $ref: '#/components/parameters/sort-desc'
         - $ref: '#/components/parameters/page'
