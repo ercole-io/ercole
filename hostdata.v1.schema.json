@@ -65,12 +65,14 @@
                 "CPUThreads",
                 "ThreadsPerCore",
                 "CoresPerSocket",
-                "HA",
-                "HATechnology",
+                "HardwareAbstraction",
+                "HardwareAbstractionTechnology",
                 "Kernel",
                 "KernelVersion",
                 "OS",
-                "OSVersion"
+                "OSVersion",
+                "MemoryTotal",
+                "SwapTotal"
             ],
             "properties": {
                 "Hostname": {
@@ -132,6 +134,14 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 64
+                },
+                "MemoryTotal": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "SwapTotal": {
+                    "type": "number",
+                    "minimum": 0
                 }
             }
         },

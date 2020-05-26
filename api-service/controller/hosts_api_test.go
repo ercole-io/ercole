@@ -30,6 +30,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+//TODO: add SearchHostsFilters tests for SearchHosts!
 func TestSearchHosts_JSONPaged(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -110,7 +111,7 @@ func TestSearchHosts_JSONPaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchHosts("summary", "foobar", "Hostname", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		SearchHosts("summary", "foobar", gomock.Any(), "Hostname", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(resFromService, nil)
 
 	rr := httptest.NewRecorder()
@@ -189,7 +190,7 @@ func TestSearchHosts_JSONUnpaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchHosts("full", "", "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchHosts("full", "", gomock.Any(), "", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
@@ -320,7 +321,7 @@ func TestSearchHosts_JSONInternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchHosts("full", "", "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchHosts("full", "", gomock.Any(), "", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
@@ -396,7 +397,7 @@ func TestSearchHosts_LMSSuccess(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchHosts("lms", "foobar", "Processors", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		SearchHosts("lms", "foobar", gomock.Any(), "Processors", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
@@ -517,7 +518,7 @@ func TestSearchHosts_LMSSuccessInternalServerError1(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchHosts("lms", "foobar", "Processors", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		SearchHosts("lms", "foobar", gomock.Any(), "Processors", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
@@ -592,7 +593,7 @@ func TestSearchHosts_LMSSuccessInternalServerError2(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchHosts("lms", "", "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchHosts("lms", "", gomock.Any(), "", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
@@ -673,7 +674,7 @@ func TestSearchHosts_XLSXSuccess(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchHosts("summary", "foobar", "Processors", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		SearchHosts("summary", "foobar", gomock.Any(), "Processors", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
@@ -794,7 +795,7 @@ func TestSearchHosts_XLSXInternalServerError1(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchHosts("summary", "", "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchHosts("summary", "", gomock.Any(), "", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
@@ -873,7 +874,7 @@ func TestSearchHosts_XLSXInternalServerError2(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchHosts("summary", "", "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchHosts("summary", "", gomock.Any(), "", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
