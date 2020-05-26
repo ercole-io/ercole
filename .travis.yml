@@ -5,68 +5,67 @@ dist: xenial
 language: go
 
 go:
-- 1.14.x
+  - 1.14.x
 
 env:
   global:
-  - MONGODB_URI=mongodb://127.0.0.1:27017
-  - VERSION=latest
-  - PACKAGE_BUILD_IMAGE=sorintdev/rpmbuild-centos7
-  - WORKSPACE='/project'
+    - MONGODB_URI=mongodb://127.0.0.1:27017
+    - VERSION=latest
+    - PACKAGE_BUILD_IMAGE=sorintdev/rpmbuild-centos7
+    - WORKSPACE='/project'
 
 services:
-- docker
+  - docker
 
 before_install:
-- if [ -z ${TRAVIS_TAG} ] || [ ${TRAVIS_TAG} == *-* ]; then export VERSION=latest;
-  else export VERSION=${TRAVIS_TAG}; fi
-- echo ${TRAVIS_TAG}
-- echo ${VERSION}
-- docker pull ${PACKAGE_BUILD_IMAGE}
-- docker pull mongo:latest
+  - if [ -z ${TRAVIS_TAG} ] || [ ${TRAVIS_TAG} == *-* ]; then export VERSION=latest;
+    else export VERSION=${TRAVIS_TAG}; fi
+  - echo ${TRAVIS_TAG}
+  - echo ${VERSION}
+  - docker pull ${PACKAGE_BUILD_IMAGE}
+  - docker pull mongo:latest
 
 install:
-- mkdir -p dist
-- go get -v
-- go get github.com/golang/mock/mockgen@latest
-- docker run -d --rm -it -e WORKSPACE="${WORKSPACE}" -e TRAVIS_REPO_SLUG="${TRAVIS_REPO_SLUG}"
-  -e TRAVIS_BUILD_NUMBER="${TRAVIS_BUILD_NUMBER}" -v $PWD:"${WORKSPACE}" --name package_builder
-  ${PACKAGE_BUILD_IMAGE} /bin/cat
-- docker run -d --rm -p 27017:27017 mongo:latest
+  - mkdir -p dist
+  - go get -v
+  - go get github.com/golang/mock/mockgen@latest
+  - docker run -d --rm -it -e WORKSPACE="${WORKSPACE}" -e TRAVIS_REPO_SLUG="${TRAVIS_REPO_SLUG}"
+    -e TRAVIS_BUILD_NUMBER="${TRAVIS_BUILD_NUMBER}" -v $PWD:"${WORKSPACE}" --name package_builder
+    ${PACKAGE_BUILD_IMAGE} /bin/cat
+  - docker run -d --rm -p 27017:27017 mongo:latest
 
 script:
-- go generate -v ./...
-- go build -o ercole
-- go test -v ./...
-- "./ercole version"
-- docker exec -it package_builder /bin/sh -c "mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}"
-- docker exec -it package_builder /bin/sh -c "ln -s ${WORKSPACE} ~/rpmbuild/SOURCES/ercole-${VERSION}"
-- docker exec -it package_builder /bin/sh -c "cd ${WORKSPACE} && rpmbuild --define
-  \"_version ${VERSION}\" -bb package/rhel7/ercole.spec"
-- docker exec -it package_builder /bin/sh -c "ls ~/rpmbuild/RPMS/x86_64/ercole-*.rpm"
-- docker exec -it package_builder /bin/sh -c "file ~/rpmbuild/RPMS/x86_64/ercole-*.rpm"
-- docker exec -it package_builder /bin/sh -c "cp ~/rpmbuild/RPMS/x86_64/ercole-*.rpm
-  ${WORKSPACE}/dist"
-- go test -race -coverprofile=coverage.txt -covermode=atomic -v ./...
+  - go generate -v ./...
+  - go build -o ercole
+  - go test -v ./...
+  - "./ercole version"
+  - docker exec -it package_builder /bin/sh -c "mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}"
+  - docker exec -it package_builder /bin/sh -c "ln -s ${WORKSPACE} ~/rpmbuild/SOURCES/ercole-${VERSION}"
+  - docker exec -it package_builder /bin/sh -c "cd ${WORKSPACE} && rpmbuild --define
+    \"_version ${VERSION}\" -bb package/rhel7/ercole.spec"
+  - docker exec -it package_builder /bin/sh -c "ls ~/rpmbuild/RPMS/x86_64/ercole-*.rpm"
+  - docker exec -it package_builder /bin/sh -c "file ~/rpmbuild/RPMS/x86_64/ercole-*.rpm"
+  - docker exec -it package_builder /bin/sh -c "cp ~/rpmbuild/RPMS/x86_64/ercole-*.rpm
+    ${WORKSPACE}/dist"
+  - go test -race -coverprofile=coverage.txt -covermode=atomic -v ./...
 
 after_success:
-- bash <(curl -s https://codecov.io/bash)
-- docker build -t sorintlab/ercole-services .
+  - bash <(curl -s https://codecov.io/bash)
+  - docker build -t sorintlab/ercole-services .
 
 deploy:
-- provider: script
-  script: cd dist/ && echo $MAGIC_SCRIPT | base64 -d | bash > /dev/stdout 2>/dev/stdout
-  skip_cleanup: true
-  file_glob: true
-  file: dist/*
-- provider: releases
-  api_key: "$GITHUB_RELEASE_TOKEN"
-  file_glob: true
-  file: dist/*
-  skip_cleanup: true
-  overwrite: true
-  on:
-    all_branches: true
-    tags: true
-- provider: script
-  script: bash docker_push.sh
+  - provider: script
+    script: cd dist/ && echo $MAGIC_SCRIPT | base64 -d | bash > /dev/stdout 2>/dev/stdout
+    file_glob: true
+    file: dist/*
+  - provider: releases
+    api_key: "$GITHUB_RELEASE_TOKEN"
+    file_glob: true
+    file: dist/*
+    skip_cleanup: true
+    overwrite: true
+    on:
+      all_branches: true
+      tags: true
+  - provider: script
+    script: bash deploy.sh
