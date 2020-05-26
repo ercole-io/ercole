@@ -45,25 +45,33 @@ func (as *APIService) ListAssets(sortBy string, sortDesc bool, location string, 
 			Used:       partialList["Oracle/Exadata"],
 			Count:      partialList["Oracle/Exadata"],
 			Compliance: true,
-			Cost:       0.0,
+			PaidCost:   0.0,
+			TotalCost:  0.0,
 		})
 	}
 
 	//Oracle/Databases
 	type License struct {
-		Count float32
-		Used  float32
+		Count     float32
+		Used      float32
+		PaidCost  float32
+		TotalCost float32
 	}
 	oracleLicenseList := make([]License, 0)
 	json.Unmarshal([]byte(utils.ToJSON(oracleLicenseListRaw)), &oracleLicenseList)
 	used := float32(0.0)
 	holded := float32(0.0)
+	totalCost := float32(0.0)
+	paidCost := float32(0.0)
 	for _, lic := range oracleLicenseList {
 		used += lic.Used
+		totalCost += lic.TotalCost
 		if lic.Count > lic.Used {
 			holded += lic.Used
+			paidCost += lic.TotalCost
 		} else {
 			holded += lic.Count
+			paidCost += lic.PaidCost
 		}
 	}
 	if used > 0 {
@@ -72,7 +80,8 @@ func (as *APIService) ListAssets(sortBy string, sortDesc bool, location string, 
 			Used:       used,
 			Count:      holded,
 			Compliance: used <= holded,
-			Cost:       0.0,
+			TotalCost:  totalCost,
+			PaidCost:   paidCost,
 		})
 	}
 

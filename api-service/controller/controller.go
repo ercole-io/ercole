@@ -112,6 +112,8 @@ type APIControllerInterface interface {
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(w http.ResponseWriter, r *http.Request)
+	// SetLicenseCostPerProcessor set the cost per processor of a certain license
+	SetLicenseCostPerProcessor(w http.ResponseWriter, r *http.Request)
 	// SetLicensesCount set the count of all licenses
 	SetLicensesCount(w http.ResponseWriter, r *http.Request)
 

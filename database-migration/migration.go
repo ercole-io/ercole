@@ -336,8 +336,9 @@ func InitLicenses(log *logrus.Logger, client *mongo.Database, list []string) {
 		//If not exist, insert the new license
 		if val == 0 {
 			_, err := client.Collection("licenses").InsertOne(context.TODO(), model.LicenseCount{
-				Name:  l,
-				Count: 0,
+				Name:             l,
+				Count:            0,
+				CostPerProcessor: 0,
 			})
 			if err != nil {
 				log.Fatalf("Unable to insert a license in the licenses collection: %v\n", err)

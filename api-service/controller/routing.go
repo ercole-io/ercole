@@ -60,6 +60,7 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/licenses", ctrl.SetLicensesCount).Methods("PUT")
 	router.HandleFunc("/licenses/{name}", ctrl.GetLicense).Methods("GET")
 	router.HandleFunc("/licenses/{name}/count", ctrl.SetLicenseCount).Methods("PUT")
+	router.HandleFunc("/licenses/{name}/cost-per-processor", ctrl.SetLicenseCostPerProcessor).Methods("PUT")
 	router.HandleFunc("/exadata", ctrl.SearchExadata).Methods("GET")
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")
 	router.HandleFunc("/alerts/{id}", ctrl.AckAlert).Methods("DELETE")
