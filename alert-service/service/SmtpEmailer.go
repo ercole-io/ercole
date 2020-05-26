@@ -18,8 +18,8 @@ package service
 import (
 	"crypto/tls"
 
-	"github.com/amreo/ercole-services/config"
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/utils"
 	gomail "gopkg.in/gomail.v2"
 )
 

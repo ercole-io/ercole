@@ -19,7 +19,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/utils"
 )
 
 // SearchExadata search exadata data using the filters in the request

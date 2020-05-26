@@ -30,8 +30,8 @@ import (
 	"time"
 
 	"github.com/1set/gut/yos"
-	"github.com/amreo/ercole-services/config"
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/google/go-github/v28/github"
 	"github.com/hashicorp/go-version"
 	"github.com/spf13/cobra"

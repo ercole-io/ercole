@@ -20,10 +20,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/amreo/ercole-services/data-service/service"
+	"github.com/ercole-io/ercole/data-service/service"
 	"github.com/sirupsen/logrus"
 
-	"github.com/amreo/ercole-services/config"
+	"github.com/ercole-io/ercole/config"
 )
 
 // HostDataControllerInterface is a interface that wrap methods used to handle the request for HostData endpoints

@@ -3,7 +3,7 @@ package controller
 import (
 	"net/http"
 
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/utils"
 )
 
 // GetDefaultDatabaseTags return the default list of database tags from configuration
