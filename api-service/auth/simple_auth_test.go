@@ -23,8 +23,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/amreo/ercole-services/config"
-	"github.com/amreo/ercole-services/utils"
+	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/square/go-jose.v2/jwt"
