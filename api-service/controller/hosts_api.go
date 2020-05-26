@@ -20,6 +20,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/amreo/ercole-services/api-service/database"
 	"github.com/amreo/ercole-services/utils"
 	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
@@ -52,7 +53,7 @@ func (ctrl *APIController) SearchHostsJSON(w http.ResponseWriter, r *http.Reques
 	var location string
 	var environment string
 	var olderThan time.Time
-
+	var searchHostsFilters database.SearchHostsFilters
 	var err utils.AdvancedErrorInterface
 	//parse the query params
 	mode = r.URL.Query().Get("mode")
@@ -64,6 +65,13 @@ func (ctrl *APIController) SearchHostsJSON(w http.ResponseWriter, r *http.Reques
 	}
 
 	search = r.URL.Query().Get("search")
+
+	searchHostsFilters, err = ctrl.GetSearchHostFilters(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	sortBy = r.URL.Query().Get("sort-by")
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
@@ -88,7 +96,7 @@ func (ctrl *APIController) SearchHostsJSON(w http.ResponseWriter, r *http.Reques
 	}
 
 	//get the data
-	hosts, err := ctrl.Service.SearchHosts(mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	hosts, err := ctrl.Service.SearchHosts(mode, search, searchHostsFilters, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -111,10 +119,18 @@ func (ctrl *APIController) SearchHostsLMS(w http.ResponseWriter, r *http.Request
 	var location string
 	var environment string
 	var olderThan time.Time
+	var searchHostsFilters database.SearchHostsFilters
 
 	var aerr utils.AdvancedErrorInterface
 	//parse the query params
 	search = r.URL.Query().Get("search")
+
+	searchHostsFilters, aerr = ctrl.GetSearchHostFilters(r)
+	if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
 	sortBy = r.URL.Query().Get("sort-by")
 	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
@@ -130,7 +146,7 @@ func (ctrl *APIController) SearchHostsLMS(w http.ResponseWriter, r *http.Request
 	}
 
 	//get the data
-	hosts, aerr := ctrl.Service.SearchHosts("lms", search, sortBy, sortDesc, -1, -1, location, environment, olderThan)
+	hosts, aerr := ctrl.Service.SearchHosts("lms", search, searchHostsFilters, sortBy, sortDesc, -1, -1, location, environment, olderThan)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
@@ -183,10 +199,18 @@ func (ctrl *APIController) SearchHostsXLSX(w http.ResponseWriter, r *http.Reques
 	var location string
 	var environment string
 	var olderThan time.Time
+	var searchHostsFilters database.SearchHostsFilters
 
 	var aerr utils.AdvancedErrorInterface
 	//parse the query params
 	search = r.URL.Query().Get("search")
+
+	searchHostsFilters, aerr = ctrl.GetSearchHostFilters(r)
+	if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
 	sortBy = r.URL.Query().Get("sort-by")
 	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
@@ -202,7 +226,7 @@ func (ctrl *APIController) SearchHostsXLSX(w http.ResponseWriter, r *http.Reques
 	}
 
 	//get the data
-	hosts, aerr := ctrl.Service.SearchHosts("summary", search, sortBy, sortDesc, -1, -1, location, environment, olderThan)
+	hosts, aerr := ctrl.Service.SearchHosts("summary", search, searchHostsFilters, sortBy, sortDesc, -1, -1, location, environment, olderThan)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
@@ -246,6 +270,61 @@ func (ctrl *APIController) SearchHostsXLSX(w http.ResponseWriter, r *http.Reques
 
 	//Write it to the response
 	utils.WriteXLSXResponse(w, sheets)
+}
+
+// GetSearchHostFilters return the host search filters in the request
+func (ctrl *APIController) GetSearchHostFilters(r *http.Request) (database.SearchHostsFilters, utils.AdvancedErrorInterface) {
+	var aerr utils.AdvancedErrorInterface
+
+	filters := database.SearchHostsFilters{}
+
+	filters.Hostname = r.URL.Query().Get("hostname")
+	filters.Database = r.URL.Query().Get("database")
+	filters.Asset = r.URL.Query().Get("asset")
+	filters.HardwareAbstractionTechnology = r.URL.Query().Get("hardware-abstraction-technology")
+	if r.URL.Query().Get("cluster") == "NULL" {
+		filters.Cluster = nil
+	} else {
+		filters.Cluster = new(string)
+		*filters.Cluster = r.URL.Query().Get("cluster")
+	}
+	filters.PhysicalHost = r.URL.Query().Get("physical-host")
+	filters.OperatingSystem = r.URL.Query().Get("operating-system")
+	filters.Kernel = r.URL.Query().Get("kernel")
+	if filters.LTEMemoryTotal, aerr = utils.Str2float32(r.URL.Query().Get("memory-total-lte"), -1); aerr != nil {
+		return database.SearchHostsFilters{}, aerr
+	}
+	if filters.GTEMemoryTotal, aerr = utils.Str2float32(r.URL.Query().Get("memory-total-gte"), -1); aerr != nil {
+		return database.SearchHostsFilters{}, aerr
+	}
+	if filters.LTESwapTotal, aerr = utils.Str2float32(r.URL.Query().Get("swap-total-lte"), -1); aerr != nil {
+		return database.SearchHostsFilters{}, aerr
+	}
+	if filters.GTESwapTotal, aerr = utils.Str2float32(r.URL.Query().Get("swap-total-gte"), -1); aerr != nil {
+		return database.SearchHostsFilters{}, aerr
+	}
+	if r.URL.Query().Get("is-member-of-cluster") == "" {
+		filters.IsMemberOfCluster = nil
+	} else {
+		filters.IsMemberOfCluster = new(bool)
+		if *filters.IsMemberOfCluster, aerr = utils.Str2bool(r.URL.Query().Get("is-member-of-cluster"), false); aerr != nil {
+			return database.SearchHostsFilters{}, aerr
+		}
+	}
+	filters.CPUModel = r.URL.Query().Get("cpu-model")
+	if filters.LTECPUCores, aerr = utils.Str2int(r.URL.Query().Get("cpu-cores-lte"), -1); aerr != nil {
+		return database.SearchHostsFilters{}, aerr
+	}
+	if filters.GTECPUCores, aerr = utils.Str2int(r.URL.Query().Get("cpu-cores-gte"), -1); aerr != nil {
+		return database.SearchHostsFilters{}, aerr
+	}
+	if filters.LTECPUThreads, aerr = utils.Str2int(r.URL.Query().Get("cpu-threads-lte"), -1); aerr != nil {
+		return database.SearchHostsFilters{}, aerr
+	}
+	if filters.GTECPUThreads, aerr = utils.Str2int(r.URL.Query().Get("cpu-threads-gte"), -1); aerr != nil {
+		return database.SearchHostsFilters{}, aerr
+	}
+	return filters, nil
 }
 
 // GetHost return all'informations about the host requested in the id path variable
