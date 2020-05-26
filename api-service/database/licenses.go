@@ -134,6 +134,12 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 			}),
 			mu.APSet(bson.M{
 				"Compliance": mu.APOGreaterOrEqual("$Count", "$Used"),
+				"TotalCost": bson.M{
+					"$multiply": bson.A{"$Used", "$CostPerProcessor"},
+				},
+				"PaidCost": bson.M{
+					"$multiply": bson.A{"$Count", "$CostPerProcessor"},
+				},
 			}),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),
@@ -263,6 +269,12 @@ func (md *MongoDatabase) GetLicense(name string, olderThan time.Time) (interface
 			}),
 			mu.APSet(bson.M{
 				"Compliance": mu.APOGreaterOrEqual("$Count", "$Used"),
+				"TotalCost": bson.M{
+					"$multiply": bson.A{"$Used", "$CostPerProcessor"},
+				},
+				"PaidCost": bson.M{
+					"$multiply": bson.A{"$Count", "$CostPerProcessor"},
+				},
 			}),
 		),
 	)
@@ -291,6 +303,26 @@ func (md *MongoDatabase) SetLicenseCount(name string, count int) utils.AdvancedE
 		"_id": name,
 	}, mu.UOSet(bson.M{
 		"Count": count,
+	}))
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Check the existance of the result
+	if res.MatchedCount == 0 {
+		return utils.AerrLicenseNotFound
+	} else {
+		return nil
+	}
+}
+
+// SetLicenseCostPerProcessor set the cost per processor of a certain license
+func (md *MongoDatabase) SetLicenseCostPerProcessor(name string, count float32) utils.AdvancedErrorInterface {
+	//Find the informations
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses").UpdateOne(context.TODO(), bson.M{
+		"_id": name,
+	}, mu.UOSet(bson.M{
+		"CostPerProcessor": count,
 	}))
 	if err != nil {
 		return utils.NewAdvancedErrorPtr(err, "DB ERROR")

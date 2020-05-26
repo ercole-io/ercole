@@ -20,5 +20,6 @@ type AssetStatus struct {
 	Used       float32
 	Count      float32
 	Compliance bool
-	Cost       float32
+	TotalCost  float32
+	PaidCost   float32
 }

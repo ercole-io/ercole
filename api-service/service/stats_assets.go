@@ -32,12 +32,15 @@ func (as *APIService) GetTotalAssetsComplianceStats(location string, environment
 	totalUsed := float32(0.0)
 	totalCount := float32(0.0)
 	totalCompliant := true
-	totalCost := float32(0.0)
+	totalTotalCost := float32(0.0)
+	totalPaidCost := float32(0.0)
 
 	for _, ass := range data {
 		totalUsed += ass.Used
 		totalCount += ass.Count
-		totalCost += ass.Cost
+		totalTotalCost += ass.TotalCost
+		totalPaidCost += ass.PaidCost
+
 		totalCompliant = totalCompliant && ass.Compliance
 	}
 
@@ -45,6 +48,7 @@ func (as *APIService) GetTotalAssetsComplianceStats(location string, environment
 		"Used":      totalUsed,
 		"Count":     totalCount,
 		"Compliant": totalCompliant,
-		"Cost":      totalCost,
+		"TotalCost": totalTotalCost,
+		"PaidCost":  totalPaidCost,
 	}, nil
 }
