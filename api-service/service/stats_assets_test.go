@@ -34,9 +34,10 @@ func TestGetTotalAssetsComplianceStats_Success(t *testing.T) {
 
 	expectedRes := map[string]interface{}{
 		"Compliant": false,
-		"Cost":      0,
 		"Count":     9,
 		"Used":      12,
+		"TotalCost": 130,
+		"PaidCost":  85,
 	}
 
 	getAssetsUsageRes := map[string]float32{
@@ -49,22 +50,31 @@ func TestGetTotalAssetsComplianceStats_Success(t *testing.T) {
 
 	listLicensesRes := []interface{}{
 		map[string]interface{}{
-			"Compliance": false,
-			"Count":      4,
-			"Used":       4,
-			"_id":        "Partitioning",
+			"Compliance":       false,
+			"Count":            4,
+			"Used":             4,
+			"_id":              "Partitioning",
+			"TotalCost":        40,
+			"PaidCost":         40,
+			"CostPerProcessor": 10,
 		},
 		map[string]interface{}{
-			"Compliance": false,
-			"Count":      3,
-			"Used":       6,
-			"_id":        "Diagnostics Pack",
+			"Compliance":       false,
+			"Count":            3,
+			"Used":             6,
+			"_id":              "Diagnostics Pack",
+			"TotalCost":        90,
+			"PaidCost":         45,
+			"CostPerProcessor": 15,
 		},
 		map[string]interface{}{
-			"Compliance": true,
-			"Count":      5,
-			"Used":       0,
-			"_id":        "Advanced Analytics",
+			"Compliance":       true,
+			"Count":            5,
+			"Used":             0,
+			"_id":              "Advanced Analytics",
+			"TotalCost":        0,
+			"PaidCost":         5,
+			"CostPerProcessor": 1,
 		},
 	}
 	db.EXPECT().

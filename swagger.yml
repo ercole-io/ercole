@@ -971,7 +971,8 @@ components:
         - Used
         - Count
         - Compliance
-        - Cost
+        - TotalCost
+        - PaidCost
       properties:
         Name:
           type: string
@@ -981,7 +982,9 @@ components:
           type: integer
         Compliant:
           type: boolean
-        Cost:
+        TotalCost:
+          type: number
+        PaidCost:
           type: number
     AllAssetComplianceStatus:
       type: object
@@ -989,7 +992,8 @@ components:
         - Used
         - Count
         - Compliant
-        - Cost
+        - TotalCost
+        - PaidCost
       properties:
         Used:
           type: integer
@@ -997,7 +1001,9 @@ components:
           type: integer
         Compliant:
           type: boolean
-        Cost:
+        TotalCost:
+          type: number
+        PaidCost:
           type: number
     AggregatedCodeSeverityAlerts:
       type: object
@@ -1024,6 +1030,47 @@ components:
           type: string
           format: date-time
           example: '2020-05-05T08:23:40+00:00'
+    LicenseCount:
+      type: object
+      properties:
+        _id:
+          type: string
+        Used:
+          type: number
+        Count:
+          type: number
+        CostPerProcessor:
+          type: number
+        PaidCost:
+          type: number
+        TotalCost:
+          type: number
+        Compliance:
+          type: boolean
+        Hosts:
+          nullable: true
+          type: array
+          items:
+            type: object
+            required:
+              - Hostname
+              - Databases
+            properties:
+              Hostname:
+                type: string
+              Databases:
+                type: array
+                uniqueItems: true
+                items:
+                  type: string
+      required:
+        - _id
+        - Used
+        - Count
+        - TotalCost
+        - PaidCost
+        - CostPerProcessor
+        - Compliance
   parameters:
     search:
       in: query
@@ -3156,13 +3203,13 @@ paths:
                 oneOf:
                   - type: array
                     items:
-                      $ref: '#/components/schemas/License'
+                      $ref: '#/components/schemas/LicenseCount'
                   - type: object
                     properties:
                       Content:
                         type: array
                         items:
-                          $ref: '#/components/schemas/License'
+                          $ref: '#/components/schemas/LicenseCount'
                       Metadata:
                         $ref: '#/components/schemas/PageMetadata'
                     required:
@@ -3231,21 +3278,7 @@ paths:
           content:
             application/json:
               schema:
-                oneOf:
-                  - type: array
-                    items:
-                      $ref: '#/components/schemas/License'
-                  - type: object
-                    properties:
-                      Content:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/License'
-                      Metadata:
-                        $ref: '#/components/schemas/PageMetadata'
-                    required:
-                      - Content
-                      - Metadata
+                $ref: '#/components/schemas/LicenseCount'
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -3274,6 +3307,39 @@ paths:
             schema:
               type: number
               description: new count value
+      responses:
+        '200':
+          description: OK
+        '404':
+          $ref: '#/components/responses/error'
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  '/licenses/{name}/cost-per-processor':
+    put:
+      operationId: SetLicenseCostPerProcessor
+      description: Set the cost per processor of a certain license
+      summary: Set the cost per processors
+      tags:
+        - api-service
+        - fe-user
+        - read
+      parameters:
+        - in: path
+          name: name
+          description: name of the license
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: number
+              description: new cost per processor value
       responses:
         '200':
           description: OK
