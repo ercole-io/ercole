@@ -424,8 +424,9 @@ func (m *MongodbSuite) TestGetHost() {
 				},
 			}, "History": []interface{}{
 				map[string]interface{}{
-					"CreatedAt": utils.P("2020-05-04T16:09:46.608+02:00").Local(),
-					"_id":       utils.Str2oid("5eb0222a45d85f4193704944"),
+					"CreatedAt":          utils.P("2020-05-04T16:09:46.608+02:00").Local(),
+					"_id":                utils.Str2oid("5eb0222a45d85f4193704944"),
+					"TotalDailyCPUUsage": 0,
 				},
 			},
 			"HostDataSchemaVersion": 3,
@@ -555,16 +556,19 @@ func (m *MongodbSuite) TestGetHost() {
 			},
 			"History": []interface{}{
 				map[string]interface{}{
-					"CreatedAt": utils.P("2020-05-21T11:32:54.83+02:00").Local(),
-					"_id":       utils.Str2oid("5ec64ac640c089c5aff44e9d"),
+					"CreatedAt":          utils.P("2020-05-21T11:32:54.83+02:00").Local(),
+					"_id":                utils.Str2oid("5ec64ac640c089c5aff44e9d"),
+					"TotalDailyCPUUsage": 3.4,
 				},
 				map[string]interface{}{
-					"CreatedAt": utils.P("2020-05-21T11:32:09.288+02:00").Local(),
-					"_id":       utils.Str2oid("5ec64a9940c089c5aff44e9c"),
+					"CreatedAt":          utils.P("2020-05-21T11:32:09.288+02:00").Local(),
+					"_id":                utils.Str2oid("5ec64a9940c089c5aff44e9c"),
+					"TotalDailyCPUUsage": 5.3,
 				},
 				map[string]interface{}{
-					"CreatedAt": utils.P("2020-05-21T11:30:55.061+02:00").Local(),
-					"_id":       utils.Str2oid("5ec64a4f40c089c5aff44e99"),
+					"CreatedAt":          utils.P("2020-05-21T11:30:55.061+02:00").Local(),
+					"_id":                utils.Str2oid("5ec64a4f40c089c5aff44e99"),
+					"TotalDailyCPUUsage": 0.7,
 				},
 			},
 			"HostDataSchemaVersion": 4,
