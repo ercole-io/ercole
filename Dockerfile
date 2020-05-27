@@ -13,7 +13,7 @@ COPY --from=builder /app/ercole-services .
 COPY --from=builder /app/config.toml /opt/ercole/config.toml
 
 RUN mkdir /app/distributed_files/
-COPY --from=builder /app/resources/initial_oracle_licenses_list.txt /app/resources/
+COPY --from=builder /app/resources/ /app/resources/
 
 # Mount this volume to add your config file as ercole.toml and to insert ssh keys
 VOLUME [ "/etc/ercole" ]
