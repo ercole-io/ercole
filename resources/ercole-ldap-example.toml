@@ -1,0 +1,18 @@
+### Example of LDAP authentication.
+### Tested with https://github.com/rroemhild/docker-test-openldap 
+
+ResourceFilePath = "/home/amreo/src/gopath/src/github.com/ercole-io/ercole/resources/"
+[APIService.AuthenticationProvider]
+PrivateKey = "/path/to/your/key" # Privatekey is necessary!
+Type = "ldap"
+Username = "zoidberg"
+Password = "zoidberg"
+TokenValidityTimeout = 360
+Host = "127.0.0.1"
+Port = 389
+LDAPBase = "dc=planetexpress,dc=com"
+LDAPUseSSL = false
+LDAPBindDN = "cn=admin,dc=planetexpress,dc=com"
+LDAPBindPassword = "GoodNewsEveryone"
+LDAPUserFilter = "(uid=%s)"
+LDAPGroupFilter = "(memberUid=%s)" # I don't known what are UserFilter/GroupFilter..
