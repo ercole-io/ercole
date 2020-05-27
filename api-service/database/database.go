@@ -56,6 +56,8 @@ type MongoDatabaseInterface interface {
 	ListLicenses(full bool, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetLicense get a certain license
 	GetLicense(name string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
+	// SearchLicenseModifiera search license modifiers
+	SearchLicenseModifiers(keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 
 	// ListLocations list locations
 	ListLocations(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface)
