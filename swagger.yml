@@ -1071,6 +1071,25 @@ components:
         - PaidCost
         - CostPerProcessor
         - Compliance
+    LicenseModifier:
+      type: object
+      required:
+        - _id
+        - Hostname
+        - DatabaseName
+        - LicenseName
+        - NewValue
+      properties:
+        _id: 
+          type: string
+        Hostname:
+          type: string
+        DatabaseName:
+          type: string
+        LicenseName:
+          type: string
+        NewValue:
+          type: number
   parameters:
     search:
       in: query
@@ -2213,6 +2232,50 @@ paths:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
         - $ref: '#/components/parameters/older-than'
+  /license-modifiers:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: SearchLicenseModifiers
+      summary: Search a list of license modifiers
+      description: Get a list of license modifiers using various search terms and various params.
+      parameters:
+        - $ref: '#/components/parameters/search'
+        - $ref: '#/components/parameters/sort-by'
+        - $ref: '#/components/parameters/sort-desc'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+      responses:
+        '200':
+          description: Result of the search
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    description: paged
+                    properties:
+                      Content:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/LicenseModifier'
+                      Metadata:
+                        $ref: '#/components/schemas/PageMetadata'
+                    required:
+                      - Content
+                      - Metadata
+                  - type: array
+                    description: non paged
+                    items:
+                      $ref: '#/components/schemas/LicenseModifier'
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
   /stats/environments:
     get:
       tags:

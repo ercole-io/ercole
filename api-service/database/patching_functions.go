@@ -18,6 +18,7 @@ package database
 import (
 	"context"
 
+	"github.com/amreo/mu"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"go.mongodb.org/mongo-driver/bson"
@@ -63,4 +64,57 @@ func (md *MongoDatabase) SavePatchingFunction(pf model.PatchingFunction) utils.A
 		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 	return nil
+}
+
+// SearchLicenseModifiers search license modifiers
+func (md *MongoDatabase) SearchLicenseModifiers(keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+	var out []map[string]interface{} = make([]map[string]interface{}, 0)
+
+	//Find the matching hostdata
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("patching_functions").Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			mu.APProject(bson.M{
+				"Hostname": 1,
+				"LicenseModifiers": bson.M{
+					"$objectToArray": "$Vars.LicenseModifiers",
+				},
+			}),
+			mu.APUnwind("$LicenseModifiers"),
+			mu.APProject(bson.M{
+				"Hostname":     1,
+				"DatabaseName": "$LicenseModifiers.k",
+				"License": bson.M{
+					"$objectToArray": "$LicenseModifiers.v",
+				},
+			}),
+			mu.APUnwind("$License"),
+			mu.APProject(bson.M{
+				"Hostname":     1,
+				"DatabaseName": 1,
+				"LicenseName":  "$License.k",
+				"NewValue":     "$License.v",
+			}),
+			mu.APSearchFilterStage([]interface{}{
+				"$Hostname",
+				"$DatabaseName",
+				"$LicenseName",
+			}, keywords),
+			mu.APOptionalSortingStage(sortBy, sortDesc),
+			mu.APOptionalPagingStage(page, pageSize),
+		),
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Decode the documents
+	for cur.Next(context.TODO()) {
+		var item map[string]interface{}
+		if cur.Decode(&item) != nil {
+			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		}
+		out = append(out, item)
+	}
+	return out, nil
 }

@@ -187,3 +187,45 @@ func (ctrl *APIController) DeleteLicenseModifier(w http.ResponseWriter, r *http.
 	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
+
+// SearchLicenseModifiers search a license modifier using the filters in the request
+func (ctrl *APIController) SearchLicenseModifiers(w http.ResponseWriter, r *http.Request) {
+	var search string
+	var sortBy string
+	var sortDesc bool
+	var pageNumber int
+	var pageSize int
+
+	var err utils.AdvancedErrorInterface
+	//parse the query params
+	search = r.URL.Query().Get("search")
+	sortBy = r.URL.Query().Get("sort-by")
+	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	//get the data
+	data, err := ctrl.Service.SearchLicenseModifiers(search, sortBy, sortDesc, pageNumber, pageSize)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if pageNumber == -1 || pageSize == -1 {
+		//Write the data
+		utils.WriteJSONResponse(w, http.StatusOK, data)
+	} else {
+		//Write the data
+		utils.WriteJSONResponse(w, http.StatusOK, data[0])
+	}
+}
