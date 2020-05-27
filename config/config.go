@@ -251,6 +251,7 @@ type Emailer struct {
 type AuthenticationProviderConfig struct {
 	// Type contains the type of the source. Supported types are:
 	//	- basic
+	// 	- ldap
 	Type string
 	// Username is the username of the user if type == "basic"
 	Username string
@@ -262,6 +263,14 @@ type AuthenticationProviderConfig struct {
 	PublicKey string
 	// TokenValidityTimeout contains the number of seconds in which the token is still valid
 	TokenValidityTimeout int
+	Host                 string
+	Port                 int
+	LDAPBase             string
+	LDAPUseSSL           bool
+	LDAPBindDN           string
+	LDAPBindPassword     string
+	LDAPUserFilter       string
+	LDAPGroupFilter      string
 }
 
 // ReadConfig read, parse and return a Configuration from the configuration file
