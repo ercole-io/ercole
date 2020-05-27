@@ -60,6 +60,8 @@ type APIServiceInterface interface {
 	ListLocations(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface)
 	// ListEnvironments list environments
 	ListEnvironments(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface)
+	// SearchLicenseModifiers search license modifiers
+	SearchLicenseModifiers(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 
 	// GetPatchingFunction return the patching function specified in the hostname param
 	GetPatchingFunction(hostname string) (interface{}, utils.AdvancedErrorInterface)
