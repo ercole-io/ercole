@@ -16,6 +16,7 @@
 package config
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -308,9 +309,11 @@ func addFileLayers(log *logrus.Logger, layers []onion.Layer, configFiles ...stri
 	for _, file := range configFiles {
 		layer, err := onion.NewFileLayer(file, nil)
 
+		var pathErr *os.PathError
+
 		if err == nil {
 			layers = append(layers, layer)
-		} else if !strings.Contains(err.Error(), "no such file or directory") {
+		} else if !errors.As(err, &pathErr) {
 			log.Warnf("error reading file [%s]: [%s]", file, err)
 		}
 	}
