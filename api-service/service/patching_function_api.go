@@ -332,10 +332,12 @@ func (as *APIService) SetLicenseModifier(hostname string, dbname string, license
 		}
 		licenseModifiers := pf.Vars["LicenseModifiers"].(map[string]interface{})
 
-		//Check the presence of the database with a slice inside
-		if val, ok := licenseModifiers[dbname]; !ok {
+		// Check the presence of the database with a slice inside
+		switch licenseModifiers[dbname].(type) {
+		case nil:
 			licenseModifiers[dbname] = make(map[string]interface{}, 0)
-		} else if _, ok := val.(bson.A); !ok {
+		case map[string]interface{}:
+		default:
 			licenseModifiers[dbname] = make(map[string]interface{}, 0)
 		}
 
@@ -350,6 +352,7 @@ func (as *APIService) SetLicenseModifier(hostname string, dbname string, license
 		} else {
 			licenseModifiersOfDb[licenseName] = newValue
 		}
+
 	}
 
 	// Save the modified patch
@@ -415,4 +418,9 @@ func (as *APIService) DeleteLicenseModifier(hostname string, dbname string, lice
 	}
 
 	return as.ApplyPatch(pf)
+}
+
+// SearchLicenseModifiers search license modifiers
+func (as *APIService) SearchLicenseModifiers(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchLicenseModifiers(strings.Split(search, " "), sortBy, sortDesc, page, pageSize)
 }

@@ -17,9 +17,11 @@ package database
 
 import (
 	"context"
+	"testing"
 
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
+	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -64,5 +66,169 @@ func (m *MongodbSuite) TestSaveAndFindPatchingFunction() {
 	m.Assert().Equal(utils.P("2020-05-21T09:53:34+00:00").UTC(), pf.CreatedAt)
 	m.Assert().Equal("foobar", pf.Hostname)
 	m.Assert().Equal(map[string]interface{}{"bar": int32(2)}, pf.Vars)
+
+}
+
+func (m *MongodbSuite) TestSearchLicenseModifiers() {
+	defer m.db.Client.Database(m.dbname).Collection("patching_functions").DeleteMany(context.TODO(), bson.M{})
+
+	id := utils.Str2oid("5ece29086437750f8b114d60")
+	m.Require().NoError(m.db.SavePatchingFunction(model.PatchingFunction{
+		ID:        &id,
+		Code:      "//!important",
+		CreatedAt: utils.P("2020-05-21T09:53:34+00:00").UTC(),
+		Hostname:  "foobar",
+		Vars: map[string]interface{}{
+			"LicenseModifiers": map[string]interface{}{
+				"foobar1": map[string]int{
+					"Oracle EXE": 10,
+				},
+				"foobar2": map[string]int{
+					"Diagnostics Pack": 20,
+					"Oracle EXE":       50,
+				},
+			},
+		},
+	}))
+
+	id2 := utils.Str2oid("5ece294be12ef084764b25e6")
+	m.Require().NoError(m.db.SavePatchingFunction(model.PatchingFunction{
+		ID:        &id2,
+		Code:      "//!important",
+		CreatedAt: utils.P("2020-05-21T09:53:34+00:00").UTC(),
+		Hostname:  "foobar2",
+		Vars: map[string]interface{}{
+			"LicenseModifiers": map[string]interface{}{
+				"foobar3": map[string]int{
+					"Diagnostics Pack": 70,
+				},
+			},
+		},
+	}))
+
+	m.T().Run("should_be_paging", func(t *testing.T) {
+		out, err := m.db.SearchLicenseModifiers([]string{""}, "NewValue", false, 0, 1)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{
+			map[string]interface{}{
+				"Content": []interface{}{
+					map[string]interface{}{
+						"_id":          utils.Str2oid("5ece29086437750f8b114d60"),
+						"Hostname":     "foobar",
+						"DatabaseName": "foobar1",
+						"LicenseName":  "Oracle EXE",
+						"NewValue":     10,
+					},
+				},
+				"Metadata": map[string]interface{}{
+					"Empty":         false,
+					"First":         true,
+					"Last":          false,
+					"Number":        0,
+					"Size":          1,
+					"TotalElements": 4,
+					"TotalPages":    4,
+				},
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_be_sorting", func(t *testing.T) {
+		out, err := m.db.SearchLicenseModifiers([]string{""}, "NewValue", true, -1, -1)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{
+			map[string]interface{}{
+				"_id":          utils.Str2oid("5ece294be12ef084764b25e6"),
+				"Hostname":     "foobar2",
+				"DatabaseName": "foobar3",
+				"LicenseName":  "Diagnostics Pack",
+				"NewValue":     70,
+			},
+			map[string]interface{}{
+				"_id":          utils.Str2oid("5ece29086437750f8b114d60"),
+				"Hostname":     "foobar",
+				"DatabaseName": "foobar2",
+				"LicenseName":  "Oracle EXE",
+				"NewValue":     50,
+			},
+			map[string]interface{}{
+				"_id":          utils.Str2oid("5ece29086437750f8b114d60"),
+				"Hostname":     "foobar",
+				"DatabaseName": "foobar2",
+				"LicenseName":  "Diagnostics Pack",
+				"NewValue":     20,
+			},
+			map[string]interface{}{
+				"_id":          utils.Str2oid("5ece29086437750f8b114d60"),
+				"Hostname":     "foobar",
+				"DatabaseName": "foobar1",
+				"LicenseName":  "Oracle EXE",
+				"NewValue":     10,
+			},
+		}
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_search_return_anything", func(t *testing.T) {
+		out, err := m.db.SearchLicenseModifiers([]string{"barfoo"}, "NewValue", false, -1, -1)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_search_return_found", func(t *testing.T) {
+		out, err := m.db.SearchLicenseModifiers([]string{"foobar2", "foobar3", "Diagnostics Pack"}, "NewValue", false, -1, -1)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{
+			map[string]interface{}{
+				"_id":          utils.Str2oid("5ece294be12ef084764b25e6"),
+				"Hostname":     "foobar2",
+				"DatabaseName": "foobar3",
+				"LicenseName":  "Diagnostics Pack",
+				"NewValue":     70,
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_return_all_results", func(t *testing.T) {
+		out, err := m.db.SearchLicenseModifiers([]string{""}, "NewValue", false, -1, -1)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{
+			map[string]interface{}{
+				"_id":          utils.Str2oid("5ece29086437750f8b114d60"),
+				"Hostname":     "foobar",
+				"DatabaseName": "foobar1",
+				"LicenseName":  "Oracle EXE",
+				"NewValue":     10,
+			},
+			map[string]interface{}{
+				"_id":          utils.Str2oid("5ece29086437750f8b114d60"),
+				"Hostname":     "foobar",
+				"DatabaseName": "foobar2",
+				"LicenseName":  "Diagnostics Pack",
+				"NewValue":     20,
+			},
+			map[string]interface{}{
+				"_id":          utils.Str2oid("5ece29086437750f8b114d60"),
+				"Hostname":     "foobar",
+				"DatabaseName": "foobar2",
+				"LicenseName":  "Oracle EXE",
+				"NewValue":     50,
+			},
+			map[string]interface{}{
+				"_id":          utils.Str2oid("5ece294be12ef084764b25e6"),
+				"Hostname":     "foobar2",
+				"DatabaseName": "foobar3",
+				"LicenseName":  "Diagnostics Pack",
+				"NewValue":     70,
+			},
+		}
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
 
 }

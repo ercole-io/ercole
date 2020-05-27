@@ -819,3 +819,149 @@ func TestDeleteLicenseModifier_FailInternalServerError(t *testing.T) {
 
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
+
+func TestSearchLicenseModifiers_SuccessPaged(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	expectedRes := map[string]interface{}{
+		"Content": []interface{}{
+			map[string]interface{}{
+				"DatabaseName": "foobar1",
+				"Hostname":     "test-db1",
+				"LicenseName":  "Oracle PIPPO",
+				"NewValue":     20,
+				"_id":          utils.Str2oid("5ece1c740fa23c31d597d8b1"),
+			},
+			map[string]interface{}{
+				"DatabaseName": "foobar1",
+				"Hostname":     "test-db2",
+				"LicenseName":  "Oracle EXE",
+				"NewValue":     10,
+				"_id":          utils.Str2oid("5ece1c2d0fa23c31d597d8b0"),
+			},
+		},
+		"Metadata": map[string]interface{}{
+			"Empty":         false,
+			"First":         true,
+			"Last":          true,
+			"Number":        0,
+			"Size":          20,
+			"TotalElements": 25,
+			"TotalPages":    1,
+		},
+	}
+
+	resFromService := []map[string]interface{}{
+		expectedRes,
+	}
+
+	as.EXPECT().
+		SearchLicenseModifiers("foobar", "Hostname", true, 2, 3).
+		Return(resFromService, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchLicenseModifiers)
+	req, err := http.NewRequest("GET", "/license-modifiers?search=foobar&sort-by=Hostname&sort-desc=true&page=2&size=3", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+}
+
+func TestSearchLicenseModifiers_FailedUnprocessableEntity1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchLicenseModifiers)
+	req, err := http.NewRequest("GET", "/license-modifiers?sort-desc=sdffsd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchLicenseModifiers_FailedUnprocessableEntity2(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchLicenseModifiers)
+	req, err := http.NewRequest("GET", "/license-modifiers?page=sdffsd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchLicenseModifiers_FailedUnprocessableEntity3(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchLicenseModifiers)
+	req, err := http.NewRequest("GET", "/license-modifiers?size=sdffsd", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestSearchLicenseModifiers_FailedInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		SearchLicenseModifiers("", "", false, -1, -1).
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchLicenseModifiers)
+	req, err := http.NewRequest("GET", "/license-modifiers", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
