@@ -800,6 +800,8 @@ components:
           type: string
         CreatedAt:
           type: string
+        TotalDailyCPUUsage:
+          type: number
     DatabaseChange:
       type: object
       required:
