@@ -18,8 +18,10 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -34,9 +36,24 @@ var rootCmd = &cobra.Command{
 	Long:    `Ercole is a software for proactively managing software assets`,
 	Version: serverVersion,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		ercoleConfig = config.ReadConfig(extraConfigFile)
+		log := utils.NewLogger("CONF")
+		extraConfigFile = strings.TrimSpace(extraConfigFile)
+
+		if len(extraConfigFile) > 0 && !fileExists(extraConfigFile) {
+			log.Fatalf("Configuration file not found: %s", extraConfigFile)
+		}
+
+		ercoleConfig = config.ReadConfig(log, extraConfigFile)
 		ercoleConfig.Version = serverVersion
 	},
+}
+
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
 }
 
 // Execute executes the commands
