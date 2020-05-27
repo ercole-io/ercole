@@ -10,9 +10,16 @@ info:
     name: Issues support
     url: 'https://github.com/ercole-io/ercole'
 servers:
-  - description: SwaggerHub API Auto Mocking
-    url: 'https://virtserver.swaggerhub.com/amreo/ercole/1.0.0'
-  - url: 'http://localhost:11113'
+  - description: Api service on dev.ercole.io
+    url: 'https://dev.ercole.io/api'
+  - description: Data service on dev.ercole.io
+    url: 'https://dev.ercole.io/data'
+  - description: Alert service on dev.ercole.io
+    url: 'https://dev.ercole.io/alert'
+  - description: Repo service on dev.ercole.io
+    url: 'https://dev.ercole.io/repo'
+  - description: localhost address
+    url: 'http://localhost:11111'
 tags:
   - name: data-service
     description: API served by data-service
