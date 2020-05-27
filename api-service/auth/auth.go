@@ -46,6 +46,12 @@ func BuildAuthenticationProvider(conf config.AuthenticationProviderConfig, timeN
 		prov.Log = log
 		prov.TimeNow = timeNow
 		return prov
+	case "ldap":
+		prov := new(LDAPAuthenticationProvider)
+		prov.Config = conf
+		prov.Log = log
+		prov.TimeNow = timeNow
+		return prov
 	default:
 		panic("The AuthenticationProvider type wasn't recognized or supported")
 	}

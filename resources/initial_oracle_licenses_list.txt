@@ -3,7 +3,6 @@ Oracle STD
 Oracle EXE
 WebLogic Server Management Pack Enterprise Edition
 Tuning Pack
-Spatial and Graph
 Secure Backup
 Real Application Testing
 Real Application Clusters One Node
