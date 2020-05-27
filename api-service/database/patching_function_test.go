@@ -107,7 +107,7 @@ func (m *MongodbSuite) TestSearchLicenseModifiers() {
 	}))
 
 	m.T().Run("should_be_paging", func(t *testing.T) {
-		out, err := m.db.SearchLicenseModifiers([]string{""}, "", false, 0, 1)
+		out, err := m.db.SearchLicenseModifiers([]string{""}, "NewValue", false, 0, 1)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -172,7 +172,7 @@ func (m *MongodbSuite) TestSearchLicenseModifiers() {
 	})
 
 	m.T().Run("should_search_return_anything", func(t *testing.T) {
-		out, err := m.db.SearchLicenseModifiers([]string{"barfoo"}, "", false, -1, -1)
+		out, err := m.db.SearchLicenseModifiers([]string{"barfoo"}, "NewValue", false, -1, -1)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
@@ -180,7 +180,7 @@ func (m *MongodbSuite) TestSearchLicenseModifiers() {
 	})
 
 	m.T().Run("should_search_return_found", func(t *testing.T) {
-		out, err := m.db.SearchLicenseModifiers([]string{"foobar2", "foobar3", "Diagnostics Pack"}, "", false, -1, -1)
+		out, err := m.db.SearchLicenseModifiers([]string{"foobar2", "foobar3", "Diagnostics Pack"}, "NewValue", false, -1, -1)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -196,7 +196,7 @@ func (m *MongodbSuite) TestSearchLicenseModifiers() {
 	})
 
 	m.T().Run("should_return_all_results", func(t *testing.T) {
-		out, err := m.db.SearchLicenseModifiers([]string{""}, "", false, -1, -1)
+		out, err := m.db.SearchLicenseModifiers([]string{""}, "NewValue", false, -1, -1)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
