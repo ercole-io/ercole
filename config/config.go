@@ -264,9 +264,7 @@ type AuthenticationProviderConfig struct {
 }
 
 // ReadConfig read, parse and return a Configuration from the configuration file
-func ReadConfig(extraConfigFile string) (configuration Configuration) {
-	log := utils.NewLogger("CONF")
-
+func ReadConfig(log *logrus.Logger, extraConfigFile string) (configuration Configuration) {
 	layers := make([]onion.Layer, 0)
 
 	layers = addFileLayers(log, layers, "/opt/ercole/config.toml")
