@@ -304,6 +304,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 							"Extra.Databases.Used":          1,
 							"Extra.Databases.SegmentsSize":  1,
 							"Extra.Databases.DailyCPUUsage": 1,
+							"TotalDailyCPUUsage":            mu.APOSumReducer("$Extra.Databases", mu.APOConvertToDoubleOrZero("$$this.DailyCPUUsage")),
 						}),
 					),
 				),
