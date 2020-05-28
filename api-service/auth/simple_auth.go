@@ -21,6 +21,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -168,8 +169,14 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 			}
 
 			//Check exp field
-			if claim.Expiry.Time().Before(ap.TimeNow()) {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewAdvancedErrorPtr(errors.New("The token is expired"), http.StatusText(http.StatusUnauthorized)))
+			timeNow := ap.TimeNow()
+			if claim.Expiry.Time().Before(timeNow) {
+				message := fmt.Sprintf("The token is expired at [%v], but now is [%v]!",
+					claim.Expiry.Time().String(), timeNow.String())
+
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized,
+					utils.NewAdvancedErrorPtr(errors.New(message), http.StatusText(http.StatusUnauthorized)))
+
 				return
 			}
 
