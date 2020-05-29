@@ -15,7 +15,12 @@
 
 package model
 
-import "go.mongodb.org/mongo-driver/bson"
+import (
+	"reflect"
+
+	godynstruct "github.com/amreo/go-dyn-struct"
+	"go.mongodb.org/mongo-driver/bson"
+)
 
 // Addm contains info about addm
 type Addm struct {
@@ -23,6 +28,27 @@ type Addm struct {
 	Recommendation string `bson:"Recommendation"`
 	Action         string `bson:"Action"`
 	Benefit        string `bson:"Benefit"`
+	_otherInfo     map[string]interface{}
+}
+
+// MarshalJSON return the JSON rappresentation of this
+func (v Addm) MarshalJSON() ([]byte, error) {
+	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+}
+
+// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
+func (v *Addm) UnmarshalJSON(data []byte) error {
+	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v._otherInfo)
+}
+
+// MarshalBSON return the BSON rappresentation of this
+func (v Addm) MarshalBSON() ([]byte, error) {
+	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+}
+
+// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
+func (v *Addm) UnmarshalBSON(data []byte) error {
+	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v._otherInfo)
 }
 
 // AddmBsonValidatorRules contains mongodb validation rules for addm
