@@ -15,17 +15,43 @@
 
 package model
 
-import "go.mongodb.org/mongo-driver/bson"
+import (
+	"reflect"
+
+	godynstruct "github.com/amreo/go-dyn-struct"
+	"go.mongodb.org/mongo-driver/bson"
+)
 
 // Tablespace holds the informations about a tablespace.
 type Tablespace struct {
-	Database string `bson:"Database"`
-	Name     string `bson:"Name"`
-	MaxSize  string `bson:"MaxSize"`
-	Total    string `bson:"Total"`
-	Used     string `bson:"Used"`
-	UsedPerc string `bson:"UsedPerc"`
-	Status   string `bson:"Status"`
+	Database   string `bson:"Database"`
+	Name       string `bson:"Name"`
+	MaxSize    string `bson:"MaxSize"`
+	Total      string `bson:"Total"`
+	Used       string `bson:"Used"`
+	UsedPerc   string `bson:"UsedPerc"`
+	Status     string `bson:"Status"`
+	_otherInfo map[string]interface{}
+}
+
+// MarshalJSON return the JSON rappresentation of this
+func (v Tablespace) MarshalJSON() ([]byte, error) {
+	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+}
+
+// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
+func (v *Tablespace) UnmarshalJSON(data []byte) error {
+	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v._otherInfo)
+}
+
+// MarshalBSON return the BSON rappresentation of this
+func (v Tablespace) MarshalBSON() ([]byte, error) {
+	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+}
+
+// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
+func (v *Tablespace) UnmarshalBSON(data []byte) error {
+	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v._otherInfo)
 }
 
 // TablespaceBsonValidatorRules contains mongodb validation rules for tablespace
