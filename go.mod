@@ -6,6 +6,7 @@ require (
 	github.com/1set/gut v0.0.0-20200225162230-3995492b8589
 	github.com/DataDog/zstd v1.4.4 // indirect
 	github.com/OpenPeeDeeP/xdg v0.2.0
+	github.com/amreo/go-dyn-struct v1.0.0
 	github.com/amreo/mu v0.0.0-20200428112942-b72352edfdf1
 	github.com/bamzi/jobrunner v0.0.0-20190810144113-852b7ca4d475
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
@@ -27,11 +28,11 @@ require (
 	github.com/rs/cors v1.7.0
 	github.com/sirupsen/logrus v1.5.0
 	github.com/spf13/cobra v0.0.6
-	github.com/stretchr/testify v1.4.0
+	github.com/stretchr/testify v1.5.1
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0
-	go.mongodb.org/mongo-driver v1.2.1
+	go.mongodb.org/mongo-driver v1.3.3
 	golang.org/x/crypto v0.0.0-20191112222119-e1110fd1c708
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect

@@ -15,11 +15,37 @@
 
 package model
 
-import "go.mongodb.org/mongo-driver/bson"
+import (
+	"reflect"
+
+	godynstruct "github.com/amreo/go-dyn-struct"
+	"go.mongodb.org/mongo-driver/bson"
+)
 
 // Exadata holds specific informations about a exadata.
 type Exadata struct {
-	Devices []ExadataDevice `bson:"Devices"`
+	Devices    []ExadataDevice `bson:"Devices"`
+	_otherInfo map[string]interface{}
+}
+
+// MarshalJSON return the JSON rappresentation of this
+func (v Exadata) MarshalJSON() ([]byte, error) {
+	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+}
+
+// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
+func (v *Exadata) UnmarshalJSON(data []byte) error {
+	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v._otherInfo)
+}
+
+// MarshalBSON return the BSON rappresentation of this
+func (v Exadata) MarshalBSON() ([]byte, error) {
+	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+}
+
+// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
+func (v *Exadata) UnmarshalBSON(data []byte) error {
+	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v._otherInfo)
 }
 
 // ExadataBsonValidatorRules contains mongodb validation rules for exadata
