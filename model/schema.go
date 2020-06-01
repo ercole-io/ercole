@@ -15,16 +15,42 @@
 
 package model
 
-import "go.mongodb.org/mongo-driver/bson"
+import (
+	"reflect"
+
+	godynstruct "github.com/amreo/go-dyn-struct"
+	"go.mongodb.org/mongo-driver/bson"
+)
 
 // Schema holds information about Oracle database schema.
 type Schema struct {
-	Database string `bson:"Database"`
-	User     string `bson:"User"`
-	Total    int    `bson:"Total"`
-	Tables   int    `bson:"Tables"`
-	Indexes  int    `bson:"Indexes"`
-	LOB      int    `bson:"LOB"`
+	Database   string `bson:"Database"`
+	User       string `bson:"User"`
+	Total      int    `bson:"Total"`
+	Tables     int    `bson:"Tables"`
+	Indexes    int    `bson:"Indexes"`
+	LOB        int    `bson:"LOB"`
+	_otherInfo map[string]interface{}
+}
+
+// MarshalJSON return the JSON rappresentation of this
+func (v Schema) MarshalJSON() ([]byte, error) {
+	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+}
+
+// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
+func (v *Schema) UnmarshalJSON(data []byte) error {
+	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v._otherInfo)
+}
+
+// MarshalBSON return the BSON rappresentation of this
+func (v Schema) MarshalBSON() ([]byte, error) {
+	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+}
+
+// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
+func (v *Schema) UnmarshalBSON(data []byte) error {
+	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v._otherInfo)
 }
 
 // SchemaBsonValidatorRules contains mongodb validation rules for schema

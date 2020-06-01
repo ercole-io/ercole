@@ -15,7 +15,12 @@
 
 package model
 
-import "go.mongodb.org/mongo-driver/bson"
+import (
+	"reflect"
+
+	godynstruct "github.com/amreo/go-dyn-struct"
+	"go.mongodb.org/mongo-driver/bson"
+)
 
 // SegmentAdvisor holds information about a segment advisor
 type SegmentAdvisor struct {
@@ -25,6 +30,27 @@ type SegmentAdvisor struct {
 	PartitionName  string `bson:"PartitionName"`
 	Reclaimable    string `bson:"Reclaimable"`
 	Recommendation string `bson:"Recommendation"`
+	_otherInfo     map[string]interface{}
+}
+
+// MarshalJSON return the JSON rappresentation of this
+func (v SegmentAdvisor) MarshalJSON() ([]byte, error) {
+	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+}
+
+// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
+func (v *SegmentAdvisor) UnmarshalJSON(data []byte) error {
+	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v._otherInfo)
+}
+
+// MarshalBSON return the BSON rappresentation of this
+func (v SegmentAdvisor) MarshalBSON() ([]byte, error) {
+	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+}
+
+// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
+func (v *SegmentAdvisor) UnmarshalBSON(data []byte) error {
+	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v._otherInfo)
 }
 
 // SegmentAdvisorBsonValidatorRules contains mongodb validation rules for segmentAdvisor
