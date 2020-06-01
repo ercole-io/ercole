@@ -28,8 +28,8 @@ import (
 func (m *MongodbSuite) TestSearchPatchAdvisors() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
 		out, err := m.db.SearchPatchAdvisors([]string{""}, "", false, -1, -1, utils.P("2019-10-10T08:46:58.38+02:00"), "", "PROD", utils.MAX_TIME, "")

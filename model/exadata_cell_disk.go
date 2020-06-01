@@ -24,11 +24,11 @@ import (
 
 // ExadataCellDisk holds info about a exadata cell disk
 type ExadataCellDisk struct {
-	Name       string `bson:"Name"`
-	Status     string `bson:"Status"`
-	ErrCount   string `bson:"ErrCount"`
-	UsedPerc   string `bson:"UsedPerc"`
-	_otherInfo map[string]interface{}
+	Name       string                 `bson:"Name"`
+	Status     string                 `bson:"Status"`
+	ErrCount   string                 `bson:"ErrCount"`
+	UsedPerc   string                 `bson:"UsedPerc"`
+	_otherInfo map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
