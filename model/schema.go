@@ -24,13 +24,13 @@ import (
 
 // Schema holds information about Oracle database schema.
 type Schema struct {
-	Database   string `bson:"Database"`
-	User       string `bson:"User"`
-	Total      int    `bson:"Total"`
-	Tables     int    `bson:"Tables"`
-	Indexes    int    `bson:"Indexes"`
-	LOB        int    `bson:"LOB"`
-	_otherInfo map[string]interface{}
+	Database   string                 `bson:"Database"`
+	User       string                 `bson:"User"`
+	Total      int                    `bson:"Total"`
+	Tables     int                    `bson:"Tables"`
+	Indexes    int                    `bson:"Indexes"`
+	LOB        int                    `bson:"LOB"`
+	_otherInfo map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

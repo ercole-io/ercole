@@ -29,18 +29,18 @@ const SchemaVersion int = 1
 
 // HostData holds all informations about a host & services
 type HostData struct {
-	ID            primitive.ObjectID `bson:"_id"`
-	Hostname      string             `bson:"Hostname"`
-	Environment   string             `bson:"Environment"`
-	Location      string             `bson:"Location"`
-	Version       string             `bson:"Version"`
-	ServerVersion string             `bson:"ServerVersion"`
-	SchemaVersion int                `bson:"SchemaVersion"`
-	Info          Host               `bson:"Info"`
-	Extra         ExtraInfo          `bson:"Extra"`
-	Archived      bool               `bson:"Archived"`
-	CreatedAt     time.Time          `bson:"CreatedAt"`
-	_otherInfo    map[string]interface{}
+	ID            primitive.ObjectID     `bson:"_id"`
+	Hostname      string                 `bson:"Hostname"`
+	Environment   string                 `bson:"Environment"`
+	Location      string                 `bson:"Location"`
+	Version       string                 `bson:"Version"`
+	ServerVersion string                 `bson:"ServerVersion"`
+	SchemaVersion int                    `bson:"SchemaVersion"`
+	Info          Host                   `bson:"Info"`
+	Extra         ExtraInfo              `bson:"Extra"`
+	Archived      bool                   `bson:"Archived"`
+	CreatedAt     time.Time              `bson:"CreatedAt"`
+	_otherInfo    map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

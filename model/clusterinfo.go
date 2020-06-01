@@ -24,12 +24,12 @@ import (
 
 //ClusterInfo hold informations about a cluster
 type ClusterInfo struct {
-	Name       string   `bson:"Name"`
-	Type       string   `bson:"Type"`
-	CPU        int      `bson:"CPU"`
-	Sockets    int      `bson:"Sockets"`
-	VMs        []VMInfo `bson:"VMs"`
-	_otherInfo map[string]interface{}
+	Name       string                 `bson:"Name"`
+	Type       string                 `bson:"Type"`
+	CPU        int                    `bson:"CPU"`
+	Sockets    int                    `bson:"Sockets"`
+	VMs        []VMInfo               `bson:"VMs"`
+	_otherInfo map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

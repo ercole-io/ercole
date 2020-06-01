@@ -24,40 +24,40 @@ import (
 
 // Database holds information about a database.
 type Database struct {
-	InstanceNumber  string           `bson:"InstanceNumber"`
-	Name            string           `bson:"Name"`
-	UniqueName      string           `bson:"UniqueName"`
-	Status          string           `bson:"Status"`
-	Version         string           `bson:"Version"`
-	Platform        string           `bson:"Platform"`
-	Archivelog      string           `bson:"Archivelog"`
-	Charset         string           `bson:"Charset"`
-	NCharset        string           `bson:"NCharset"`
-	BlockSize       string           `bson:"BlockSize"`
-	CPUCount        string           `bson:"CPUCount"`
-	SGATarget       string           `bson:"SGATarget"`
-	PGATarget       string           `bson:"PGATarget"`
-	MemoryTarget    string           `bson:"MemoryTarget"`
-	SGAMaxSize      string           `bson:"SGAMaxSize"`
-	SegmentsSize    string           `bson:"SegmentsSize"`
-	Used            string           `bson:"Used"`
-	Allocated       string           `bson:"Allocated"`
-	Elapsed         string           `bson:"Elapsed"`
-	DBTime          string           `bson:"DBTime"`
-	DailyCPUUsage   string           `bson:"DailyCPUUsage"`
-	Work            string           `bson:"Work"`
-	ASM             bool             `bson:"ASM"`
-	Dataguard       bool             `bson:"Dataguard"`
-	Patches         []Patch          `bson:"Patches"`
-	Tablespaces     []Tablespace     `bson:"Tablespaces"`
-	Schemas         []Schema         `bson:"Schemas"`
-	Features        []Feature        `bson:"Features"`
-	Licenses        []License        `bson:"Licenses"`
-	ADDMs           []Addm           `bson:"ADDMs"`
-	SegmentAdvisors []SegmentAdvisor `bson:"SegmentAdvisors"`
-	LastPSUs        []PSU            `bson:"LastPSUs"`
-	Backups         []Backup         `bson:"Backups"`
-	_otherInfo      map[string]interface{}
+	InstanceNumber  string                 `bson:"InstanceNumber"`
+	Name            string                 `bson:"Name"`
+	UniqueName      string                 `bson:"UniqueName"`
+	Status          string                 `bson:"Status"`
+	Version         string                 `bson:"Version"`
+	Platform        string                 `bson:"Platform"`
+	Archivelog      string                 `bson:"Archivelog"`
+	Charset         string                 `bson:"Charset"`
+	NCharset        string                 `bson:"NCharset"`
+	BlockSize       string                 `bson:"BlockSize"`
+	CPUCount        string                 `bson:"CPUCount"`
+	SGATarget       string                 `bson:"SGATarget"`
+	PGATarget       string                 `bson:"PGATarget"`
+	MemoryTarget    string                 `bson:"MemoryTarget"`
+	SGAMaxSize      string                 `bson:"SGAMaxSize"`
+	SegmentsSize    string                 `bson:"SegmentsSize"`
+	Used            string                 `bson:"Used"`
+	Allocated       string                 `bson:"Allocated"`
+	Elapsed         string                 `bson:"Elapsed"`
+	DBTime          string                 `bson:"DBTime"`
+	DailyCPUUsage   string                 `bson:"DailyCPUUsage"`
+	Work            string                 `bson:"Work"`
+	ASM             bool                   `bson:"ASM"`
+	Dataguard       bool                   `bson:"Dataguard"`
+	Patches         []Patch                `bson:"Patches"`
+	Tablespaces     []Tablespace           `bson:"Tablespaces"`
+	Schemas         []Schema               `bson:"Schemas"`
+	Features        []Feature              `bson:"Features"`
+	Licenses        []License              `bson:"Licenses"`
+	ADDMs           []Addm                 `bson:"ADDMs"`
+	SegmentAdvisors []SegmentAdvisor       `bson:"SegmentAdvisors"`
+	LastPSUs        []PSU                  `bson:"LastPSUs"`
+	Backups         []Backup               `bson:"Backups"`
+	_otherInfo      map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

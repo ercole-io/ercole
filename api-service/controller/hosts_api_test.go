@@ -1083,7 +1083,7 @@ func TestGetHost_MongoJSONSuccess(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	res := utils.LoadFixtureHostDataMap(t, "../../fixture/test_dataservice_mongohostdata_02.json")
+	res := utils.LoadFixtureMongoHostDataMap(t, "../../fixture/test_dataservice_mongohostdata_02.json")
 	expectedRes, err := ioutil.ReadFile("../../fixture/test_dataservice_mongohostdata_02.json")
 	require.NoError(t, err)
 

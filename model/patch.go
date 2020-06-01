@@ -24,13 +24,13 @@ import (
 
 // Patch holds information about a Oracle patch
 type Patch struct {
-	Database    string `bson:"Database"`
-	Version     string `bson:"Version"`
-	PatchID     string `bson:"PatchID"`
-	Action      string `bson:"Action"`
-	Description string `bson:"Description"`
-	Date        string `bson:"Date"`
-	_otherInfo  map[string]interface{}
+	Database    string                 `bson:"Database"`
+	Version     string                 `bson:"Version"`
+	PatchID     string                 `bson:"PatchID"`
+	Action      string                 `bson:"Action"`
+	Description string                 `bson:"Description"`
+	Date        string                 `bson:"Date"`
+	_otherInfo  map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

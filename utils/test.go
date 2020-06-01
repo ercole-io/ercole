@@ -65,6 +65,17 @@ func LoadFixtureHostDataMap(t *testing.T, filename string) model.HostDataMap {
 	return model.HostDataMap(hd)
 }
 
+//LoadFixtureMongoHostDataMap load the mongohostdata in the filename and return it
+func LoadFixtureMongoHostDataMap(t *testing.T, filename string) model.HostDataMap {
+	raw, err := ioutil.ReadFile(filename)
+	require.NoError(t, err)
+
+	var hd map[string]interface{}
+	require.NoError(t, bson.UnmarshalExtJSON(raw, true, &hd))
+
+	return model.HostDataMap(hd)
+}
+
 // AssertFuncAreTheSame tests if funcExpected is the same of funcActual
 func AssertFuncAreTheSame(t *testing.T, funcExpected interface{}, funcActual interface{}) {
 	funcExpectedAddress := runtime.FuncForPC(reflect.ValueOf(funcExpected).Pointer()).Name()

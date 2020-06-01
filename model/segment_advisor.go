@@ -24,13 +24,13 @@ import (
 
 // SegmentAdvisor holds information about a segment advisor
 type SegmentAdvisor struct {
-	SegmentOwner   string `bson:"SegmentOwner"`
-	SegmentName    string `bson:"SegmentName"`
-	SegmentType    string `bson:"SegmentType"`
-	PartitionName  string `bson:"PartitionName"`
-	Reclaimable    string `bson:"Reclaimable"`
-	Recommendation string `bson:"Recommendation"`
-	_otherInfo     map[string]interface{}
+	SegmentOwner   string                 `bson:"SegmentOwner"`
+	SegmentName    string                 `bson:"SegmentName"`
+	SegmentType    string                 `bson:"SegmentType"`
+	PartitionName  string                 `bson:"PartitionName"`
+	Reclaimable    string                 `bson:"Reclaimable"`
+	Recommendation string                 `bson:"Recommendation"`
+	_otherInfo     map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

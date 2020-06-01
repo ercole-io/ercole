@@ -24,12 +24,12 @@ import (
 
 // Backup holds informations about a backup
 type Backup struct {
-	BackupType string `bson:"BackupType"`
-	Hour       string `bson:"Hour"`
-	WeekDays   string `bson:"WeekDays"`
-	AvgBckSize string `bson:"AvgBckSize"`
-	Retention  string `bson:"Retention"`
-	_otherInfo map[string]interface{}
+	BackupType string                 `bson:"BackupType"`
+	Hour       string                 `bson:"Hour"`
+	WeekDays   string                 `bson:"WeekDays"`
+	AvgBckSize string                 `bson:"AvgBckSize"`
+	Retention  string                 `bson:"Retention"`
+	_otherInfo map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

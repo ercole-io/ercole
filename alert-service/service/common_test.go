@@ -21,7 +21,6 @@ import (
 	"reflect"
 
 	"github.com/ercole-io/ercole/model"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/utils"
 )
@@ -34,89 +33,91 @@ import (
 var errMock error = errors.New("MockError")
 var aerrMock utils.AdvancedErrorInterface = utils.NewAdvancedErrorPtr(errMock, "mock")
 
-var emptyHostData model.HostDataMap = model.HostDataMap{
-	"Hostname": "",
-	"Extra": map[string]interface{}{
-		"Databases": primitive.A{},
+var emptyHostData model.HostData = model.HostData{
+	Hostname: "",
+	Extra: model.ExtraInfo{
+		Databases: []model.Database{},
 	},
-	"Info": map[string]interface{}{
-		"CPUCores": 0,
-	},
-}
-
-var hostData1 model.HostDataMap = model.HostDataMap{
-	"_id":       utils.Str2oid("5dc3f534db7e81a98b726a52"),
-	"Hostname":  "superhost1",
-	"Archived":  false,
-	"CreatedAt": utils.PDT("2019-11-05T14:02:03Z"),
-	"Extra": map[string]interface{}{
-		"Databases": primitive.A{},
-	},
-	"Info": map[string]interface{}{
-		"CPUCores": 0,
+	Info: model.Host{
+		CPUCores: 0,
 	},
 }
 
-var hostData2 model.HostDataMap = model.HostDataMap{
-	"_id":       utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
-	"Hostname":  "superhost1",
-	"Archived":  true,
-	"CreatedAt": utils.PDT("2019-11-05T12:02:03Z"),
-	"Extra": map[string]interface{}{
-		"Databases": primitive.A{},
+var hostData1 model.HostData = model.HostData{
+	ID:        utils.Str2oid("5dc3f534db7e81a98b726a52"),
+	Hostname:  "superhost1",
+	Archived:  false,
+	CreatedAt: utils.P("2019-11-05T14:02:03Z"),
+	Extra: model.ExtraInfo{
+		Databases: []model.Database{},
 	},
-	"Info": map[string]interface{}{
-		"CPUCores": 0,
+	Info: model.Host{
+		CPUCores: 0,
 	},
 }
 
-var hostData3 model.HostDataMap = model.HostDataMap{
-	"_id":       utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
-	"Hostname":  "superhost1",
-	"Archived":  true,
-	"CreatedAt": utils.PDT("2019-11-05T16:02:03Z"),
-	"Extra": map[string]interface{}{
-		"Databases": primitive.A{
-			map[string]interface{}{
-				"Name":     "acd",
-				"Licenses": primitive.A{},
-				"Features": primitive.A{},
+var hostData2 model.HostData = model.HostData{
+	ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
+	Hostname:  "superhost1",
+	Archived:  true,
+	CreatedAt: utils.P("2019-11-05T12:02:03Z"),
+	Extra: model.ExtraInfo{
+		Databases: []model.Database{},
+	},
+	Info: model.Host{
+		CPUCores: 0,
+	},
+}
+
+var hostData3 model.HostData = model.HostData{
+	ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
+	Hostname:  "superhost1",
+	Archived:  true,
+	CreatedAt: utils.P("2019-11-05T16:02:03Z"),
+	Extra: model.ExtraInfo{
+		Databases: []model.Database{
+			{
+				Name:     "acd",
+				Licenses: []model.License{},
+				Features: []model.Feature{},
 			},
 		},
 	},
-	"Info": map[string]interface{}{
-		"CPUCores": 0,
+	Info: model.Host{
+		CPUCores: 0,
 	},
 }
 
-var hostData4 model.HostDataMap = model.HostDataMap{
-	"_id":       utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
-	"Hostname":  "superhost1",
-	"Archived":  true,
-	"CreatedAt": utils.PDT("2019-11-05T18:02:03Z"),
-	"Extra": map[string]interface{}{
-		"Databases": primitive.A{
-			map[string]interface{}{
-				"Name": "acd",
-				"Licenses": primitive.A{
-					map[string]interface{}{
-						"Name":  "Oracle ENT",
-						"Count": 10,
+var hostData4 model.HostData = model.HostData{
+	ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
+	Hostname:  "superhost1",
+	Archived:  true,
+	CreatedAt: utils.P("2019-11-05T18:02:03Z"),
+	Extra: model.ExtraInfo{
+		Databases: []model.Database{
+			{
+				Name: "acd",
+				Licenses: []model.License{
+					{
+						Name:  "Oracle ENT",
+						Count: 10,
 					},
-					map[string]interface{}{
-						"Name":  "Driving",
-						"Count": 100},
+					{
+						Name:  "Driving",
+						Count: 100,
+					},
 				},
-				"Features": primitive.A{
-					map[string]interface{}{
-						"Name":   "Driving",
-						"Status": true},
+				Features: []model.Feature{
+					{
+						Name:   "Driving",
+						Status: true,
+					},
 				},
 			},
 		},
 	},
-	"Info": map[string]interface{}{
-		"CPUCores": 0,
+	Info: model.Host{
+		CPUCores: 0,
 	},
 }
 

@@ -24,11 +24,11 @@ import (
 
 // ExtraInfo holds various informations.
 type ExtraInfo struct {
-	Databases   []Database    `bson:"Databases"`
-	Filesystems []Filesystem  `bson:"Filesystems"`
-	Clusters    []ClusterInfo `bson:"Clusters"`
-	Exadata     *Exadata      `bson:"Exadata"`
-	_otherInfo  map[string]interface{}
+	Databases   []Database             `bson:"Databases"`
+	Filesystems []Filesystem           `bson:"Filesystems"`
+	Clusters    []ClusterInfo          `bson:"Clusters"`
+	Exadata     *Exadata               `bson:"Exadata"`
+	_otherInfo  map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
