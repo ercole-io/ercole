@@ -24,9 +24,9 @@ import (
 
 // PSU holds information about a PSU
 type PSU struct {
-	Date        string `bson:"Date"`
-	Description string `bson:"Description"`
-	_otherInfo  map[string]interface{}
+	Date        string                 `bson:"Date"`
+	Description string                 `bson:"Description"`
+	_otherInfo  map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

@@ -24,24 +24,24 @@ import (
 
 // Host contains info about the host
 type Host struct {
-	Hostname       string  `bson:"Hostname"`
-	Environment    string  `bson:"Environment"`
-	Location       string  `bson:"Location"`
-	CPUModel       string  `bson:"CPUModel"`
-	CPUCores       int     `bson:"CPUCores"`
-	CPUThreads     int     `bson:"CPUThreads"`
-	Socket         int     `bson:"Socket"`
-	Type           string  `bson:"Type"`
-	Virtual        bool    `bson:"Virtual"`
-	Kernel         string  `bson:"Kernel"`
-	OS             string  `bson:"OS"`
-	MemoryTotal    float32 `bson:"MemoryTotal"`
-	SwapTotal      float32 `bson:"SwapTotal"`
-	OracleCluster  bool    `bson:"OracleCluster"`
-	VeritasCluster bool    `bson:"VeritasCluster"`
-	SunCluster     bool    `bson:"SunCluster"`
-	AixCluster     bool    `bson:"AixCluster"`
-	_otherInfo     map[string]interface{}
+	Hostname       string                 `bson:"Hostname"`
+	Environment    string                 `bson:"Environment"`
+	Location       string                 `bson:"Location"`
+	CPUModel       string                 `bson:"CPUModel"`
+	CPUCores       int                    `bson:"CPUCores"`
+	CPUThreads     int                    `bson:"CPUThreads"`
+	Socket         int                    `bson:"Socket"`
+	Type           string                 `bson:"Type"`
+	Virtual        bool                   `bson:"Virtual"`
+	Kernel         string                 `bson:"Kernel"`
+	OS             string                 `bson:"OS"`
+	MemoryTotal    float32                `bson:"MemoryTotal"`
+	SwapTotal      float32                `bson:"SwapTotal"`
+	OracleCluster  bool                   `bson:"OracleCluster"`
+	VeritasCluster bool                   `bson:"VeritasCluster"`
+	SunCluster     bool                   `bson:"SunCluster"`
+	AixCluster     bool                   `bson:"AixCluster"`
+	_otherInfo     map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

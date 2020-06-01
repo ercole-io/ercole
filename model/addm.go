@@ -24,11 +24,11 @@ import (
 
 // Addm contains info about addm
 type Addm struct {
-	Finding        string `bson:"Finding"`
-	Recommendation string `bson:"Recommendation"`
-	Action         string `bson:"Action"`
-	Benefit        string `bson:"Benefit"`
-	_otherInfo     map[string]interface{}
+	Finding        string                 `bson:"Finding"`
+	Recommendation string                 `bson:"Recommendation"`
+	Action         string                 `bson:"Action"`
+	Benefit        string                 `bson:"Benefit"`
+	_otherInfo     map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

@@ -24,9 +24,9 @@ import (
 
 // Feature holds information about Oracle database feature
 type Feature struct {
-	Name       string `bson:"Name"`
-	Status     bool   `bson:"Status"`
-	_otherInfo map[string]interface{}
+	Name       string                 `bson:"Name"`
+	Status     bool                   `bson:"Status"`
+	_otherInfo map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

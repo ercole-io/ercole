@@ -24,14 +24,14 @@ import (
 
 // Tablespace holds the informations about a tablespace.
 type Tablespace struct {
-	Database   string `bson:"Database"`
-	Name       string `bson:"Name"`
-	MaxSize    string `bson:"MaxSize"`
-	Total      string `bson:"Total"`
-	Used       string `bson:"Used"`
-	UsedPerc   string `bson:"UsedPerc"`
-	Status     string `bson:"Status"`
-	_otherInfo map[string]interface{}
+	Database   string                 `bson:"Database"`
+	Name       string                 `bson:"Name"`
+	MaxSize    string                 `bson:"MaxSize"`
+	Total      string                 `bson:"Total"`
+	Used       string                 `bson:"Used"`
+	UsedPerc   string                 `bson:"UsedPerc"`
+	Status     string                 `bson:"Status"`
+	_otherInfo map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

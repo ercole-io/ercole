@@ -42,10 +42,10 @@ func (db *DatabaseMap) Features() []FeatureMap {
 }
 
 // DatabaseMapArrayAsMap return the equivalent map of the database array with Database.Name as Key
-func DatabaseMapArrayAsMap(dbs []DatabaseMap) map[string]DatabaseMap {
-	out := make(map[string]DatabaseMap)
+func DatabaseMapArrayAsMap(dbs []Database) map[string]Database {
+	out := make(map[string]Database)
 	for _, db := range dbs {
-		out[db.Name()] = db
+		out[db.Name] = db
 	}
 	return out
 }

@@ -24,25 +24,25 @@ import (
 
 // ExadataDevice holds informations about a device in a exadata
 type ExadataDevice struct {
-	Hostname       string            `bson:"Hostname"`
-	ServerType     string            `bson:"ServerType"`
-	Model          string            `bson:"Model"`
-	ExaSwVersion   string            `bson:"ExaSwVersion"`
-	CPUEnabled     string            `bson:"CPUEnabled"`
-	Memory         string            `bson:"Memory"`
-	Status         string            `bson:"Status"`
-	PowerCount     string            `bson:"PowerCount"`
-	PowerStatus    string            `bson:"PowerStatus"`
-	FanCount       string            `bson:"FanCount"`
-	FanStatus      string            `bson:"FanStatus"`
-	TempActual     string            `bson:"TempActual"`
-	TempStatus     string            `bson:"TempStatus"`
-	CellsrvService string            `bson:"CellsrvService"`
-	MsService      string            `bson:"MsService"`
-	RsService      string            `bson:"RsService"`
-	FlashcacheMode string            `bson:"FlashcacheMode"`
-	CellDisks      []ExadataCellDisk `bson:"CellDisks"`
-	_otherInfo     map[string]interface{}
+	Hostname       string                 `bson:"Hostname"`
+	ServerType     string                 `bson:"ServerType"`
+	Model          string                 `bson:"Model"`
+	ExaSwVersion   string                 `bson:"ExaSwVersion"`
+	CPUEnabled     string                 `bson:"CPUEnabled"`
+	Memory         string                 `bson:"Memory"`
+	Status         string                 `bson:"Status"`
+	PowerCount     string                 `bson:"PowerCount"`
+	PowerStatus    string                 `bson:"PowerStatus"`
+	FanCount       string                 `bson:"FanCount"`
+	FanStatus      string                 `bson:"FanStatus"`
+	TempActual     string                 `bson:"TempActual"`
+	TempStatus     string                 `bson:"TempStatus"`
+	CellsrvService string                 `bson:"CellsrvService"`
+	MsService      string                 `bson:"MsService"`
+	RsService      string                 `bson:"RsService"`
+	FlashcacheMode string                 `bson:"FlashcacheMode"`
+	CellDisks      []ExadataCellDisk      `bson:"CellDisks"`
+	_otherInfo     map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

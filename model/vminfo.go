@@ -24,12 +24,12 @@ import (
 
 // VMInfo holds info about the vm
 type VMInfo struct {
-	Name         string `bson:"Name"`
-	ClusterName  string `bson:"ClusterName"`
-	Hostname     string `bson:"Hostname"` //Hostname or IP address
-	CappedCPU    bool   `bson:"CappedCPU"`
-	PhysicalHost string `bson:"PhysicalHost"`
-	_otherInfo   map[string]interface{}
+	Name         string                 `bson:"Name"`
+	ClusterName  string                 `bson:"ClusterName"`
+	Hostname     string                 `bson:"Hostname"` //Hostname or IP address
+	CappedCPU    bool                   `bson:"CappedCPU"`
+	PhysicalHost string                 `bson:"PhysicalHost"`
+	_otherInfo   map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

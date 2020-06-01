@@ -45,7 +45,7 @@ func TestProcessMsg_HostDataInsertion(t *testing.T) {
 	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(hostData1, nil).Times(1)
 	db.EXPECT().FindHostData(gomock.Any()).Times(0)
 	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).Return(emptyHostData, nil).Times(1)
-	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostDataMap{}, nil).Times(0)
+	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostData{}, nil).Times(0)
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, "The server 'superhost1' was added to ercole", alert.Description)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
@@ -133,7 +133,7 @@ func TestProcessHostDataInsertion_SuccessNewHost(t *testing.T) {
 	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(hostData1, nil).Times(1)
 	db.EXPECT().FindHostData(gomock.Any()).Times(0)
 	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).Return(emptyHostData, nil).Times(1)
-	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostDataMap{}, nil).Times(0)
+	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostData{}, nil).Times(0)
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, "The server 'superhost1' was added to ercole", alert.Description)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
@@ -156,7 +156,7 @@ func TestProcessHostDataInsertion_DatabaseError1(t *testing.T) {
 
 	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(emptyHostData, aerrMock).Times(1)
 	db.EXPECT().FindHostData(gomock.Any()).Times(0)
-	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostDataMap{}, nil).Times(0)
+	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostData{}, nil).Times(0)
 
 	as.ProcessHostDataInsertion(hub.Fields{
 		"id": utils.Str2oid("5dc3f534db7e81a98b726a52"),
@@ -175,8 +175,8 @@ func TestProcessHostDataInsertion_DatabaseError2(t *testing.T) {
 
 	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(hostData1, nil).Times(1)
 	db.EXPECT().FindHostData(gomock.Any()).Times(0)
-	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).Return(model.HostDataMap{}, aerrMock).Times(1)
-	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostDataMap{}, nil).Times(0)
+	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).Return(model.HostData{}, aerrMock).Times(1)
+	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostData{}, nil).Times(0)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
 
 	as.ProcessHostDataInsertion(hub.Fields{
@@ -197,7 +197,7 @@ func TestProcessHostDataInsertion_DiffHostError3(t *testing.T) {
 	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(hostData1, nil).Times(1)
 	db.EXPECT().FindHostData(gomock.Any()).Times(0)
 	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).Return(emptyHostData, nil).Times(1)
-	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostDataMap{}, nil).Times(0)
+	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostData{}, nil).Times(0)
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock).Times(1)
 
 	as.ProcessHostDataInsertion(hub.Fields{

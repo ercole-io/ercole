@@ -24,8 +24,8 @@ import (
 
 // Exadata holds specific informations about a exadata.
 type Exadata struct {
-	Devices    []ExadataDevice `bson:"Devices"`
-	_otherInfo map[string]interface{}
+	Devices    []ExadataDevice        `bson:"Devices"`
+	_otherInfo map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
