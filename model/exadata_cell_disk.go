@@ -52,26 +52,26 @@ func (v *ExadataCellDisk) UnmarshalBSON(data []byte) error {
 }
 
 // ExadataCellDiskBsonValidatorRules contains mongodb validation rules for ExadataCellDisk
-var ExadataCellDiskBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var ExadataCellDiskBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Name",
 		"Status",
 		"ErrCount",
 		"UsedPerc",
-	}},
-	{"properties", bson.D{
-		{"Name", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Status", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"ErrCount", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"UsedPerc", bson.D{
-			{"bsonType", "string"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Name": bson.M{
+			"bsonType": "string",
+		},
+		"Status": bson.M{
+			"bsonType": "string",
+		},
+		"ErrCount": bson.M{
+			"bsonType": "string",
+		},
+		"UsedPerc": bson.M{
+			"bsonType": "string",
+		},
+	},
 }

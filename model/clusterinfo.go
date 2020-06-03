@@ -53,31 +53,34 @@ func (v *ClusterInfo) UnmarshalBSON(data []byte) error {
 }
 
 // ClusterInfoBsonValidatorRules contains mongodb validation rules for clusterInfo
-var ClusterInfoBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var ClusterInfoBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Name",
 		"Type",
 		"CPU",
 		"Sockets",
 		"VMs",
-	}},
-	{"properties", bson.D{
-		{"Name", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Type", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"CPU", bson.D{
-			{"bsonType", "number"},
-		}},
-		{"Sockets", bson.D{
-			{"bsonType", "number"},
-		}},
-		{"VMs", bson.D{
-			{"bsonType", "array"},
-			{"items", VMInfoBsonValidatorRules},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Name": bson.M{
+			"bsonType": "string",
+		},
+		"Hour": bson.M{
+			"bsonType": "string",
+		},
+		"Type": bson.M{
+			"bsonType": "string",
+		},
+		"CPU": bson.M{
+			"bsonType": "number",
+		},
+		"Sockets": bson.M{
+			"bsonType": "number",
+		},
+		"VMs": bson.M{
+			"bsonType": "array",
+			"items":    VMInfoBsonValidatorRules,
+		},
+	},
 }

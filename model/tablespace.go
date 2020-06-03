@@ -55,9 +55,9 @@ func (v *Tablespace) UnmarshalBSON(data []byte) error {
 }
 
 // TablespaceBsonValidatorRules contains mongodb validation rules for tablespace
-var TablespaceBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var TablespaceBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Database",
 		"Name",
 		"MaxSize",
@@ -65,28 +65,28 @@ var TablespaceBsonValidatorRules = bson.D{
 		"Used",
 		"UsedPerc",
 		"Status",
-	}},
-	{"properties", bson.D{
-		{"Database", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Name", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"MaxSize", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Total", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Used", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"UsedPerc", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Status", bson.D{
-			{"bsonType", "string"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Database": bson.M{
+			"bsonType": "string",
+		},
+		"Name": bson.M{
+			"bsonType": "string",
+		},
+		"MaxSize": bson.M{
+			"bsonType": "string",
+		},
+		"Total": bson.M{
+			"bsonType": "string",
+		},
+		"Used": bson.M{
+			"bsonType": "string",
+		},
+		"UsedPerc": bson.M{
+			"bsonType": "string",
+		},
+		"Status": bson.M{
+			"bsonType": "string",
+		},
+	},
 }

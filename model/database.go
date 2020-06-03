@@ -81,9 +81,9 @@ func (v *Database) UnmarshalBSON(data []byte) error {
 }
 
 // DatabaseBsonValidatorRules contains mongodb validation rules for database
-var DatabaseBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var DatabaseBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"InstanceNumber",
 		"Name",
 		"UniqueName",
@@ -117,117 +117,117 @@ var DatabaseBsonValidatorRules = bson.D{
 		"SegmentAdvisors",
 		"LastPSUs",
 		"Backups",
-	}},
-	{"properties", bson.D{
-		{"InstanceNumber", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Name", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"UniqueName", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Status", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Version", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Platform", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Archivelog", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Charset", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"NCharset", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"BlockSize", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"CPUCount", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"SGATarget", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"PGATarget", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"MemoryTarget", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"SGAMaxSize", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"SegmentsSize", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Used", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Allocated", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Elapsed", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"DBTime", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"DailyCPUUsage", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Work", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"ASM", bson.D{
-			{"bsonType", "bool"},
-		}},
-		{"Dataguard", bson.D{
-			{"bsonType", "bool"},
-		}},
-		{"Patches", bson.D{
-			{"bsonType", "array"},
-			{"items", PatchBsonValidatorRules},
-		}},
-		{"Tablespaces", bson.D{
-			{"bsonType", "array"},
-			{"items", TablespaceBsonValidatorRules},
-		}},
-		{"Schemas", bson.D{
-			{"bsonType", "array"},
-			{"items", SchemaBsonValidatorRules},
-		}},
-		{"Features", bson.D{
-			{"bsonType", "array"},
-			{"items", FeatureBsonValidatorRules},
-		}},
-		{"Licenses", bson.D{
-			{"bsonType", "array"},
-			{"items", LicenseBsonValidatorRules},
-		}},
-		{"ADDMs", bson.D{
-			{"bsonType", "array"},
-			{"items", AddmBsonValidatorRules},
-		}},
-		{"SegmentAdvisors", bson.D{
-			{"bsonType", "array"},
-			{"items", SegmentAdvisorBsonValidatorRules},
-		}},
-		{"LastPSUs", bson.D{
-			{"bsonType", "array"},
-			{"items", PSUBsonValidatorRules},
-		}},
-		{"Backups", bson.D{
-			{"bsonType", "array"},
-			{"items", BackupBsonValidatorRules},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"InstanceNumber": bson.M{
+			"bsonType": "string",
+		},
+		"Name": bson.M{
+			"bsonType": "string",
+		},
+		"UniqueName": bson.M{
+			"bsonType": "string",
+		},
+		"Status": bson.M{
+			"bsonType": "string",
+		},
+		"Version": bson.M{
+			"bsonType": "string",
+		},
+		"Platform": bson.M{
+			"bsonType": "string",
+		},
+		"Archivelog": bson.M{
+			"bsonType": "string",
+		},
+		"Charset": bson.M{
+			"bsonType": "string",
+		},
+		"NCharset": bson.M{
+			"bsonType": "string",
+		},
+		"BlockSize": bson.M{
+			"bsonType": "string",
+		},
+		"CPUCount": bson.M{
+			"bsonType": "string",
+		},
+		"SGATarget": bson.M{
+			"bsonType": "string",
+		},
+		"PGATarget": bson.M{
+			"bsonType": "string",
+		},
+		"MemoryTarget": bson.M{
+			"bsonType": "string",
+		},
+		"SGAMaxSize": bson.M{
+			"bsonType": "string",
+		},
+		"SegmentsSize": bson.M{
+			"bsonType": "string",
+		},
+		"Used": bson.M{
+			"bsonType": "string",
+		},
+		"Allocated": bson.M{
+			"bsonType": "string",
+		},
+		"Elapsed": bson.M{
+			"bsonType": "string",
+		},
+		"DBTime": bson.M{
+			"bsonType": "string",
+		},
+		"DailyCPUUsage": bson.M{
+			"bsonType": "string",
+		},
+		"Work": bson.M{
+			"bsonType": "string",
+		},
+		"ASM": bson.M{
+			"bsonType": "bool",
+		},
+		"Dataguard": bson.M{
+			"bsonType": "bool",
+		},
+		"Patches": bson.M{
+			"bsonType": "array",
+			"items":    PatchBsonValidatorRules,
+		},
+		"Tablespaces": bson.M{
+			"bsonType": "array",
+			"items":    TablespaceBsonValidatorRules,
+		},
+		"Schemas": bson.M{
+			"bsonType": "array",
+			"items":    SchemaBsonValidatorRules,
+		},
+		"Features": bson.M{
+			"bsonType": "array",
+			"items":    FeatureBsonValidatorRules,
+		},
+		"Licenses": bson.M{
+			"bsonType": "array",
+			"items":    LicenseBsonValidatorRules,
+		},
+		"ADDMs": bson.M{
+			"bsonType": "array",
+			"items":    AddmBsonValidatorRules,
+		},
+		"SegmentAdvisors": bson.M{
+			"bsonType": "array",
+			"items":    SegmentAdvisorBsonValidatorRules,
+		},
+		"LastPSUs": bson.M{
+			"bsonType": "array",
+			"items":    PSUBsonValidatorRules,
+		},
+		"Backups": bson.M{
+			"bsonType": "array",
+			"items":    BackupBsonValidatorRules,
+		},
+	},
 }
 
 // DatabasesArrayAsMap return the equivalent map of the database array with Database.Name as Key

@@ -53,30 +53,30 @@ func (v *VMInfo) UnmarshalBSON(data []byte) error {
 }
 
 // VMInfoBsonValidatorRules contains mongodb validation rules for VMInfo
-var VMInfoBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var VMInfoBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Name",
 		"ClusterName",
 		"Hostname",
 		"CappedCPU",
 		"PhysicalHost",
-	}},
-	{"properties", bson.D{
-		{"Name", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"ClusterName", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Hostname", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"CappedCPU", bson.D{
-			{"bsonType", "bool"},
-		}},
-		{"PhysicalHost", bson.D{
-			{"bsonType", "string"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Name": bson.M{
+			"bsonType": "string",
+		},
+		"ClusterName": bson.M{
+			"bsonType": "string",
+		},
+		"Hostname": bson.M{
+			"bsonType": "string",
+		},
+		"CappedCPU": bson.M{
+			"bsonType": "bool",
+		},
+		"PhysicalHost": bson.M{
+			"bsonType": "string",
+		},
+	},
 }

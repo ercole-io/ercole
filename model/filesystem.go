@@ -55,9 +55,9 @@ func (v *Filesystem) UnmarshalBSON(data []byte) error {
 }
 
 // FilesystemBsonValidatorRules contains mongodb validation rules for filesystem
-var FilesystemBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var FilesystemBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Filesystem",
 		"FsType",
 		"Size",
@@ -65,28 +65,28 @@ var FilesystemBsonValidatorRules = bson.D{
 		"Available",
 		"UsedPerc",
 		"MountedOn",
-	}},
-	{"properties", bson.D{
-		{"Filesystem", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"FsType", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Size", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Used", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Available", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"UsedPerc", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"MountedOn", bson.D{
-			{"bsonType", "string"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Filesystem": bson.M{
+			"bsonType": "string",
+		},
+		"FsType": bson.M{
+			"bsonType": "string",
+		},
+		"Size": bson.M{
+			"bsonType": "string",
+		},
+		"Used": bson.M{
+			"bsonType": "string",
+		},
+		"Available": bson.M{
+			"bsonType": "string",
+		},
+		"UsedPerc": bson.M{
+			"bsonType": "string",
+		},
+		"MountedOn": bson.M{
+			"bsonType": "string",
+		},
+	},
 }

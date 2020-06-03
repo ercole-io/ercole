@@ -54,34 +54,34 @@ func (v *Schema) UnmarshalBSON(data []byte) error {
 }
 
 // SchemaBsonValidatorRules contains mongodb validation rules for schema
-var SchemaBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var SchemaBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Database",
 		"User",
 		"Total",
 		"Tables",
 		"Indexes",
 		"LOB",
-	}},
-	{"properties", bson.D{
-		{"Database", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"User", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Total", bson.D{
-			{"bsonType", "number"},
-		}},
-		{"Tables", bson.D{
-			{"bsonType", "number"},
-		}},
-		{"Indexes", bson.D{
-			{"bsonType", "number"},
-		}},
-		{"LOB", bson.D{
-			{"bsonType", "number"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Database": bson.M{
+			"bsonType": "string",
+		},
+		"User": bson.M{
+			"bsonType": "string",
+		},
+		"Total": bson.M{
+			"bsonType": "number",
+		},
+		"Tables": bson.M{
+			"bsonType": "number",
+		},
+		"Indexes": bson.M{
+			"bsonType": "number",
+		},
+		"LOB": bson.M{
+			"bsonType": "number",
+		},
+	},
 }
