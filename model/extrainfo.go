@@ -52,41 +52,45 @@ func (v *ExtraInfo) UnmarshalBSON(data []byte) error {
 }
 
 // ExtraInfoBsonValidatorRules contains mongodb validation rules for extraInfo
-var ExtraInfoBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var ExtraInfoBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Filesystems",
-	}},
-	{"properties", bson.D{
-		{"Databases", bson.D{
-			{"anyOf", bson.A{
-				bson.D{
-					{"bsonType", "array"},
-					{"items", DatabaseBsonValidatorRules},
+	},
+	"properties": bson.M{
+		"Databases": bson.M{
+			"anyOf": bson.A{
+				bson.M{
+					"bsonType": "null",
 				},
-				bson.D{{"type", "null"}},
-			}},
-		}},
-		{"Filesystems", bson.D{
-			{"bsonType", "array"},
-			{"items", FilesystemBsonValidatorRules},
-		}},
-		{"Clusters", bson.D{
-			{"anyOf", bson.A{
-				bson.D{
-					{"bsonType", "array"},
-					{"items", ClusterInfoBsonValidatorRules},
+				bson.M{
+					"bsonType": "array",
+					"items":    DatabaseBsonValidatorRules,
 				},
-				bson.D{{"type", "null"}},
-			}},
-		}},
-		{"Exadata", bson.D{
-			{"anyOf", bson.A{
+			},
+		},
+		"Filesystems": bson.M{
+			"bsonType": "array",
+			"items":    FilesystemBsonValidatorRules,
+		},
+		"Clusters": bson.M{
+			"anyOf": bson.A{
+				bson.M{
+					"bsonType": "null",
+				},
+				bson.M{
+					"bsonType": "array",
+					"items":    ClusterInfoBsonValidatorRules,
+				},
+			},
+		},
+		"Exadata": bson.M{
+			"anyOf": bson.A{
+				bson.M{
+					"bsonType": "null",
+				},
 				ExadataBsonValidatorRules,
-				bson.D{{"type", "null"}},
-			}},
-		}},
-	}},
+			},
+		},
+	},
 }
-
-// ExadataBsonValidatorRules

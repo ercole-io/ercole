@@ -50,18 +50,18 @@ func (v *License) UnmarshalBSON(data []byte) error {
 }
 
 // LicenseBsonValidatorRules contains mongodb validation rules for license
-var LicenseBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var LicenseBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Name",
 		"Count",
-	}},
-	{"properties", bson.D{
-		{"Name", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Count", bson.D{
-			{"bsonType", "number"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Name": bson.M{
+			"bsonType": "string",
+		},
+		"Count": bson.M{
+			"bsonType": "number",
+		},
+	},
 }

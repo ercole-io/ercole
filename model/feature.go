@@ -50,20 +50,20 @@ func (v *Feature) UnmarshalBSON(data []byte) error {
 }
 
 // FeatureBsonValidatorRules contains mongodb validation rules for feature
-var FeatureBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var FeatureBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Name",
 		"Status",
-	}},
-	{"properties", bson.D{
-		{"Name", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Status", bson.D{
-			{"bsonType", "bool"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Name": bson.M{
+			"bsonType": "string",
+		},
+		"Status": bson.M{
+			"bsonType": "bool",
+		},
+	},
 }
 
 // DiffFeature status of each feature

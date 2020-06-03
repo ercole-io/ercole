@@ -64,9 +64,9 @@ func (v *HostData) UnmarshalBSON(data []byte) error {
 }
 
 // HostDataBsonValidatorRules contains mongodb validation rules for hostData
-var HostDataBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var HostDataBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Hostname",
 		"Environment",
 		"Location",
@@ -77,33 +77,33 @@ var HostDataBsonValidatorRules = bson.D{
 		"Extra",
 		"Archived",
 		"CreatedAt",
-	}},
-	{"properties", bson.D{
-		{"Hostname", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Environment", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Location", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Version", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"ServerVersion", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"SchemaVersion", bson.D{
-			{"bsonType", "number"},
-		}},
-		{"Info", HostBsonValidatorRules},
-		{"Extra", ExtraInfoBsonValidatorRules},
-		{"Archived", bson.D{
-			{"bsonType", "bool"},
-		}},
-		{"CreatedAt", bson.D{
-			{"bsonType", "date"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Hostname": bson.M{
+			"bsonType": "string",
+		},
+		"Environment": bson.M{
+			"bsonType": "string",
+		},
+		"Location": bson.M{
+			"bsonType": "string",
+		},
+		"Version": bson.M{
+			"bsonType": "string",
+		},
+		"ServerVersion": bson.M{
+			"bsonType": "string",
+		},
+		"SchemaVersion": bson.M{
+			"bsonType": "number",
+		},
+		"Info":  HostBsonValidatorRules,
+		"Extra": ExtraInfoBsonValidatorRules,
+		"Archived": bson.M{
+			"bsonType": "bool",
+		},
+		"CreatedAt": bson.M{
+			"bsonType": "date",
+		},
+	},
 }

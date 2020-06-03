@@ -65,9 +65,9 @@ func (v *Host) UnmarshalBSON(data []byte) error {
 }
 
 // HostBsonValidatorRules contains mongodb validation rules for host
-var HostBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var HostBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Hostname",
 		"Environment",
 		"Location",
@@ -85,59 +85,59 @@ var HostBsonValidatorRules = bson.D{
 		"VeritasCluster",
 		"SunCluster",
 		"AixCluster",
-	}},
-	{"properties", bson.D{
-		{"Hostname", bson.D{
-			{"bsonType", "string"},
-			{"pattern", "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$"},
-		}},
-		{"Environment", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Location", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"CPUModel", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"CPUCores", bson.D{
-			{"bsonType", "number"},
-		}},
-		{"CPUThreads", bson.D{
-			{"bsonType", "number"},
-		}},
-		{"Socket", bson.D{
-			{"bsonType", "number"},
-		}},
-		{"Type", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Virtual", bson.D{
-			{"bsonType", "bool"},
-		}},
-		{"Kernel", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"OS", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"MemoryTotal", bson.D{
-			{"bsonType", "double"},
-		}},
-		{"SwapTotal", bson.D{
-			{"bsonType", "double"},
-		}},
-		{"OracleCluster", bson.D{
-			{"bsonType", "bool"},
-		}},
-		{"VeritasCluster", bson.D{
-			{"bsonType", "bool"},
-		}},
-		{"SunCluster", bson.D{
-			{"bsonType", "bool"},
-		}},
-		{"AixCluster", bson.D{
-			{"bsonType", "bool"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Hostname": bson.M{
+			"bsonType": "string",
+			"pattern":  "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$",
+		},
+		"Environment": bson.M{
+			"bsonType": "string",
+		},
+		"Location": bson.M{
+			"bsonType": "string",
+		},
+		"CPUModel": bson.M{
+			"bsonType": "string",
+		},
+		"CPUCores": bson.M{
+			"bsonType": "number",
+		},
+		"CPUThreads": bson.M{
+			"bsonType": "number",
+		},
+		"Socket": bson.M{
+			"bsonType": "number",
+		},
+		"Type": bson.M{
+			"bsonType": "string",
+		},
+		"Virtual": bson.M{
+			"bsonType": "bool",
+		},
+		"Kernel": bson.M{
+			"bsonType": "string",
+		},
+		"OS": bson.M{
+			"bsonType": "string",
+		},
+		"MemoryTotal": bson.M{
+			"bsonType": "double",
+		},
+		"SwapTotal": bson.M{
+			"bsonType": "double",
+		},
+		"OracleCluster": bson.M{
+			"bsonType": "bool",
+		},
+		"VeritasCluster": bson.M{
+			"bsonType": "bool",
+		},
+		"SunCluster": bson.M{
+			"bsonType": "bool",
+		},
+		"AixCluster": bson.M{
+			"bsonType": "bool",
+		},
+	},
 }

@@ -68,7 +68,7 @@ func (m *MongodbSuite) TestFindHostData_SuccessExist() {
 	err := m.InsertHostData(hd)
 	require.NoError(m.T(), err)
 
-	hd2, err := m.db.FindHostData(hd.ID())
+	hd2, err := m.db.FindHostData(utils.Str2oid("5dd41aa2b2fa40163c878538"))
 	require.NoError(m.T(), err)
 
 	assert.Equal(m.T(), "itl-csllab-112.sorint.localpippo", hd2.Hostname)
@@ -98,9 +98,7 @@ func (m *MongodbSuite) TestFindMostRecentHostDataOlderThan_OnlyOne() {
 	err := m.InsertHostData(hd)
 	require.NoError(m.T(), err)
 
-	aTimeAfterInsert := hd.CreatedAt().AddDate(0, 0, 1)
-
-	foundHd, err := m.db.FindMostRecentHostDataOlderThan("itl-csllab-112.sorint.localpippo", aTimeAfterInsert)
+	foundHd, err := m.db.FindMostRecentHostDataOlderThan("itl-csllab-112.sorint.localpippo", utils.P("2020-04-25T11:45:23Z"))
 	require.NoError(m.T(), err)
 	assert.Equal(m.T(), "itl-csllab-112.sorint.localpippo", foundHd.Hostname)
 	assert.False(m.T(), foundHd.Archived)
@@ -114,10 +112,8 @@ func (m *MongodbSuite) TestFindMostRecentHostDataOlderThan_MoreThanOne() {
 	err := m.InsertHostData(hd)
 	require.NoError(m.T(), err)
 
-	aTimeAfterInsert := hd.CreatedAt().AddDate(0, 0, 1)
-
 	m.T().Run("Should_find_hd_even_if_archived", func(t *testing.T) {
-		foundHd, err := m.db.FindMostRecentHostDataOlderThan("itl-csllab-112.sorint.localpippo", aTimeAfterInsert)
+		foundHd, err := m.db.FindMostRecentHostDataOlderThan("itl-csllab-112.sorint.localpippo", utils.P("2019-11-20T15:38:58Z"))
 		require.NoError(t, err)
 		assert.True(t, foundHd.Archived)
 		assert.Equal(t, "itl-csllab-112.sorint.localpippo", foundHd.Hostname)
@@ -129,9 +125,8 @@ func (m *MongodbSuite) TestFindMostRecentHostDataOlderThan_MoreThanOne() {
 	require.NoError(m.T(), err2)
 	assert.NotEqual(m.T(), hd, hd2)
 
-	aTimeAfterInsert = hd2.CreatedAt().AddDate(0, 0, 1)
 	m.T().Run("Should_find_hd2_more_inserts", func(t *testing.T) {
-		foundHd, err := m.db.FindMostRecentHostDataOlderThan("itl-csllab-112.sorint.localpippo", aTimeAfterInsert)
+		foundHd, err := m.db.FindMostRecentHostDataOlderThan("itl-csllab-112.sorint.localpippo", utils.P("2019-12-20T15:38:58Z"))
 		require.NoError(t, err)
 		assert.False(t, foundHd.Archived)
 		assert.Equal(t, "itl-csllab-112.sorint.localpippo", foundHd.Hostname)
@@ -165,29 +160,27 @@ func (m *MongodbSuite) TestFindOldCurrentHosts() {
 	err2 := m.InsertHostData(hd2)
 	require.NoError(m.T(), err2)
 
-	assert.True(m.T(), hd.CreatedAt().Before(hd2.CreatedAt()))
-
 	m.T().Run("Should not find any", func(t *testing.T) {
-		hosts, err := m.db.FindOldCurrentHosts(hd.CreatedAt().AddDate(0, 0, -1))
+		hosts, err := m.db.FindOldCurrentHosts(utils.P("2019-11-18T16:38:58Z"))
 		require.NoError(t, err)
 		assert.Empty(t, hosts)
 	})
 
 	m.T().Run("Should find one", func(t *testing.T) {
-		hosts, err := m.db.FindOldCurrentHosts(hd.CreatedAt().AddDate(0, 0, 15))
+		hosts, err := m.db.FindOldCurrentHosts(utils.P("2019-12-04T16:38:58Z"))
 		require.NoError(t, err)
 
 		assert.Len(t, hosts, 1)
-		expectedHosts := append(make([]string, 0), hd.Hostname())
+		expectedHosts := append(make([]string, 0), "itl-csllab-112.sorint.localpippo")
 		assert.ElementsMatch(t, expectedHosts, hosts)
 	})
 
 	m.T().Run("Should find two", func(t *testing.T) {
-		hosts, err := m.db.FindOldCurrentHosts(hd2.CreatedAt().AddDate(0, 0, 1))
+		hosts, err := m.db.FindOldCurrentHosts(utils.P("2020-01-14T15:38:58Z"))
 		require.NoError(t, err)
 
 		assert.Len(t, hosts, 2)
-		expectedHosts := append(make([]string, 0), hd.Hostname(), hd2.Hostname())
+		expectedHosts := append(make([]string, 0), "itl-csllab-112.sorint.localpippo", "itl-csllab-223.sorint.localpippo")
 		assert.ElementsMatch(t, expectedHosts, hosts)
 	})
 }

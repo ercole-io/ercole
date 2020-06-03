@@ -54,34 +54,34 @@ func (v *SegmentAdvisor) UnmarshalBSON(data []byte) error {
 }
 
 // SegmentAdvisorBsonValidatorRules contains mongodb validation rules for segmentAdvisor
-var SegmentAdvisorBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var SegmentAdvisorBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"SegmentOwner",
 		"SegmentName",
 		"SegmentType",
 		"PartitionName",
 		"Reclaimable",
 		"Recommendation",
-	}},
-	{"properties", bson.D{
-		{"SegmentOwner", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"SegmentName", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"SegmentType", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"PartitionName", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Reclaimable", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Recommendation", bson.D{
-			{"bsonType", "string"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"SegmentOwner": bson.M{
+			"bsonType": "string",
+		},
+		"SegmentName": bson.M{
+			"bsonType": "string",
+		},
+		"SegmentType": bson.M{
+			"bsonType": "string",
+		},
+		"PartitionName": bson.M{
+			"bsonType": "string",
+		},
+		"Reclaimable": bson.M{
+			"bsonType": "string",
+		},
+		"Recommendation": bson.M{
+			"bsonType": "string",
+		},
+	},
 }

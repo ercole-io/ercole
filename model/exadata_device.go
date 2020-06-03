@@ -66,9 +66,9 @@ func (v *ExadataDevice) UnmarshalBSON(data []byte) error {
 }
 
 // ExadataDeviceBsonValidatorRules contains mongodb validation rules for exadata device
-var ExadataDeviceBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var ExadataDeviceBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Hostname",
 		"ServerType",
 		"Model",
@@ -86,66 +86,67 @@ var ExadataDeviceBsonValidatorRules = bson.D{
 		"MsService",
 		"RsService",
 		"FlashcacheMode",
-	}},
-	{"properties", bson.D{
-		{"Hostname", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"ServerType", bson.D{
-			{"enum", bson.A{
+	},
+	"properties": bson.M{
+		"Hostname": bson.M{
+			"bsonType": "string",
+		},
+		"ServerType": bson.M{
+			"bsonType": "string",
+			"enum": bson.A{
 				"StorageServer",
 				"DBServer",
 				"IBSwitch",
-			}},
-		}},
-		{"Model", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"ExaSwVersion", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"CPUEnabled", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Memory", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Status", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"PowerCount", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"PowerStatus", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"FanCount", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"FanStatus", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"TempActual", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"TempStatus", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"CellsrvService", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"MsService", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"RsService", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"FlashcacheMode", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"CellDisks", bson.D{
-			{"bsonType", bson.A{"array", "null"}},
-			{"items", ExadataCellDiskBsonValidatorRules},
-		}},
-	}},
+			},
+		},
+		"Model": bson.M{
+			"bsonType": "string",
+		},
+		"ExaSwVersion": bson.M{
+			"bsonType": "string",
+		},
+		"CPUEnabled": bson.M{
+			"bsonType": "string",
+		},
+		"Memory": bson.M{
+			"bsonType": "string",
+		},
+		"Status": bson.M{
+			"bsonType": "string",
+		},
+		"PowerCount": bson.M{
+			"bsonType": "string",
+		},
+		"PowerStatus": bson.M{
+			"bsonType": "string",
+		},
+		"FanCount": bson.M{
+			"bsonType": "string",
+		},
+		"FanStatus": bson.M{
+			"bsonType": "string",
+		},
+		"TempActual": bson.M{
+			"bsonType": "string",
+		},
+		"TempStatus": bson.M{
+			"bsonType": "string",
+		},
+		"CellsrvService": bson.M{
+			"bsonType": "string",
+		},
+		"MsService": bson.M{
+			"bsonType": "string",
+		},
+		"RsService": bson.M{
+			"bsonType": "string",
+		},
+		"FlashcacheMode": bson.M{
+			"bsonType": "string",
+		},
+		"CellDisks": bson.M{
+			"bsonType": bson.A{"array", "null"},
+			"items":    ExadataCellDiskBsonValidatorRules,
+		},
+	},
 }

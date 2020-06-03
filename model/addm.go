@@ -52,26 +52,26 @@ func (v *Addm) UnmarshalBSON(data []byte) error {
 }
 
 // AddmBsonValidatorRules contains mongodb validation rules for addm
-var AddmBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var AddmBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Finding",
 		"Recommendation",
 		"Action",
 		"Benefit",
-	}},
-	{"properties", bson.D{
-		{"Finding", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Recommendation", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Action", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Benefit", bson.D{
-			{"bsonType", "string"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Finding": bson.M{
+			"bsonType": "string",
+		},
+		"Recommendation": bson.M{
+			"bsonType": "string",
+		},
+		"Action": bson.M{
+			"bsonType": "string",
+		},
+		"Benefit": bson.M{
+			"bsonType": "string",
+		},
+	},
 }

@@ -50,18 +50,18 @@ func (v *PSU) UnmarshalBSON(data []byte) error {
 }
 
 // PSUBsonValidatorRules contains mongodb validation rules for psu
-var PSUBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var PSUBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Date",
 		"Description",
-	}},
-	{"properties", bson.D{
-		{"Date", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Description", bson.D{
-			{"bsonType", "string"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Date": bson.M{
+			"bsonType": "string",
+		},
+		"Description": bson.M{
+			"bsonType": "string",
+		},
+	},
 }

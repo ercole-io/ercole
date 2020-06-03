@@ -53,30 +53,30 @@ func (v *Backup) UnmarshalBSON(data []byte) error {
 }
 
 // BackupBsonValidatorRules contains mongodb validation rules for backup
-var BackupBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var BackupBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"BackupType",
 		"Hour",
 		"WeekDays",
 		"AvgBckSize",
 		"Retention",
-	}},
-	{"properties", bson.D{
-		{"BackupType", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Hour", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"WeekDays", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"AvgBckSize", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Retention", bson.D{
-			{"bsonType", "string"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"BackupType": bson.M{
+			"bsonType": "string",
+		},
+		"Hour": bson.M{
+			"bsonType": "string",
+		},
+		"WeekDays": bson.M{
+			"bsonType": "string",
+		},
+		"AvgBckSize": bson.M{
+			"bsonType": "string",
+		},
+		"Retention": bson.M{
+			"bsonType": "string",
+		},
+	},
 }
