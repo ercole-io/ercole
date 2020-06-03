@@ -36,26 +36,26 @@ type PatchingFunction struct {
 	Vars map[string]interface{} `bson:"Vars"`
 }
 
-// HostDataBsonValidatorRules contains mongodb validation rules for hostData
-var PatchingFunctionBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+// PatchingFunctionBsonValidatorRules contains mongodb validation rules for patching function
+var PatchingFunctionBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Hostname",
 		"CreatedAt",
 		"Code",
-	}},
-	{"properties", bson.D{
-		{"Hostname", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"CreatedAt", bson.D{
-			{"bsonType", "date"},
-		}},
-		{"Code", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Vars", bson.D{
-			{"bsonType", "object"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Hostname": bson.M{
+			"bsonType": "string",
+		},
+		"CreatedAt": bson.M{
+			"bsonType": "date",
+		},
+		"Code": bson.M{
+			"bsonType": "string",
+		},
+		"Vars": bson.M{
+			"bsonType": "object",
+		},
+	},
 }

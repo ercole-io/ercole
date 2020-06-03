@@ -27,22 +27,22 @@ type LicenseCount struct {
 }
 
 // LicenseCountBsonValidatorRules contains mongodb validation rules for licenseCount
-var LicenseCountBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var LicenseCountBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"_id",
 		"Count",
 		"CostPerProcessor",
-	}},
-	{"properties", bson.D{
-		{"_id", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Count", bson.D{
-			{"bsonType", "number"},
-		}},
-		{"CostPerProcessor", bson.D{
-			{"bsonType", "number"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"_id": bson.M{
+			"bsonType": "string",
+		},
+		"Count": bson.M{
+			"bsonType": "number",
+		},
+		"CostPerProcessor": bson.M{
+			"bsonType": "number",
+		},
+	},
 }

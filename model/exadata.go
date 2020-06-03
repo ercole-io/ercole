@@ -49,15 +49,15 @@ func (v *Exadata) UnmarshalBSON(data []byte) error {
 }
 
 // ExadataBsonValidatorRules contains mongodb validation rules for exadata
-var ExadataBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var ExadataBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Devices",
-	}},
-	{"properties", bson.D{
-		{"Devices", bson.D{
-			{"bsonType", "array"},
-			{"items", ExadataDeviceBsonValidatorRules},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Devices": bson.M{
+			"bsonType": "array",
+			"items":    ExadataDeviceBsonValidatorRules,
+		},
+	},
 }

@@ -188,8 +188,8 @@ func (as *AlertService) DiffHostDataMapAndGenerateAlert(oldData model.HostData, 
 	newExtra := newData.Extra
 
 	//Convert databases array to map
-	oldDatabases := model.DatabaseMapArrayAsMap(oldExtra.Databases)
-	newDatabases := model.DatabaseMapArrayAsMap(newExtra.Databases)
+	oldDatabases := model.DatabasesArrayAsMap(oldExtra.Databases)
+	newDatabases := model.DatabasesArrayAsMap(newExtra.Databases)
 
 	//If the oldData is empty, fire a new server
 	if oldData.Hostname == "" {

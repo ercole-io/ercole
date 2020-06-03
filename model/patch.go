@@ -54,34 +54,34 @@ func (v *Patch) UnmarshalBSON(data []byte) error {
 }
 
 // PatchBsonValidatorRules contains mongodb validation rules for patch
-var PatchBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var PatchBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Database",
 		"Version",
 		"PatchID",
 		"Action",
 		"Description",
 		"Date",
-	}},
-	{"properties", bson.D{
-		{"Database", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Version", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"PatchID", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Action", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Description", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Date", bson.D{
-			{"bsonType", "string"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Database": bson.M{
+			"bsonType": "string",
+		},
+		"Version": bson.M{
+			"bsonType": "string",
+		},
+		"PatchID": bson.M{
+			"bsonType": "string",
+		},
+		"Action": bson.M{
+			"bsonType": "string",
+		},
+		"Description": bson.M{
+			"bsonType": "string",
+		},
+		"Date": bson.M{
+			"bsonType": "string",
+		},
+	},
 }
