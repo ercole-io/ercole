@@ -38,7 +38,7 @@ type HostDataServiceInterface interface {
 	Init()
 
 	// UpdateHostInfo update the host informations using the provided hostdata
-	UpdateHostInfo(hostdata map[string]interface{}) (interface{}, utils.AdvancedErrorInterface)
+	UpdateHostInfo(hostdata model.HostData) (interface{}, utils.AdvancedErrorInterface)
 
 	// ArchiveHost archive the host
 	// ArchiveHost(hostname string) utils.AdvancedError
@@ -74,23 +74,25 @@ func (hds *HostDataService) Init() {
 }
 
 // UpdateHostInfo saves the hostdata
-func (hds *HostDataService) UpdateHostInfo(hostdata map[string]interface{}) (interface{}, utils.AdvancedErrorInterface) {
-	hostdata["ServerVersion"] = hds.Version
-	hostdata["Archived"] = false
-	hostdata["CreatedAt"] = hds.TimeNow()
-	hostdata["SchemaVersion"] = model.SchemaVersion
-	hostdata["_id"] = primitive.NewObjectIDFromTimestamp(hds.TimeNow())
+func (hds *HostDataService) UpdateHostInfo(hostdata model.HostData) (interface{}, utils.AdvancedErrorInterface) {
+	var aerr utils.AdvancedErrorInterface
+
+	hostdata.ServerVersion = hds.Version
+	hostdata.Archived = false
+	hostdata.CreatedAt = hds.TimeNow()
+	hostdata.SchemaVersion = model.SchemaVersion
+	hostdata.ID = primitive.NewObjectIDFromTimestamp(hds.TimeNow())
 
 	//Patch the data
 	if hds.Config.DataService.EnablePatching {
-		_, aerr := hds.PatchHostData(hostdata)
+		hostdata, aerr = hds.PatchHostData(hostdata)
 		if aerr != nil {
 			return nil, aerr
 		}
 	}
 
 	//Archive the host
-	_, aerr := hds.Database.ArchiveHost(hostdata["Hostname"].(string))
+	_, aerr = hds.Database.ArchiveHost(hostdata.Hostname)
 	if aerr != nil {
 		return nil, aerr
 	}
@@ -121,16 +123,16 @@ func (hds *HostDataService) UpdateHostInfo(hostdata map[string]interface{}) (int
 	return res.InsertedID, nil
 }
 
-// UpdateHostInfo saves the hostdata
-func (hds *HostDataService) PatchHostData(hostdata map[string]interface{}) (interface{}, utils.AdvancedErrorInterface) {
+// PatchHostData patch the hostdata using the pf stored in the db
+func (hds *HostDataService) PatchHostData(hostdata model.HostData) (model.HostData, utils.AdvancedErrorInterface) {
 	//Find the patch
-	patch, err := hds.Database.FindPatchingFunction(hostdata["Hostname"].(string))
+	patch, err := hds.Database.FindPatchingFunction(hostdata.Hostname)
 	if err != nil {
-		return nil, err
+		return model.HostData{}, err
 	}
 
 	//If patch is valid, apply the path the data
-	if patch.Hostname == hostdata["Hostname"].(string) && patch.Code != "" {
+	if patch.Hostname == hostdata.Hostname && patch.Code != "" {
 		if hds.Config.DataService.LogDataPatching {
 			hds.Log.Printf("Patching %s hostdata with the patch %s\n", patch.Hostname, patch.ID)
 		}
