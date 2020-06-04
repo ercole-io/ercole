@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/ercole-io/ercole/model"
@@ -791,38 +792,39 @@ func (m *MongodbSuite) TestFindHostData() {
 	m.T().Run("should_find_test_small", func(t *testing.T) {
 		out, err := m.db.FindHostData("test-small")
 		m.Require().NoError(err)
-
-		assert.JSONEq(t, utils.ToJSON(testSmall), utils.ToJSON(out))
+		assert.Equal(t, utils.Str2oid("5ea2d26d20d55cbdc35022b4"), out.ID)
+		assert.False(t, out.Archived)
+		assert.Equal(t, "test-small", out.Hostname)
+		assert.Equal(t, utils.P("2020-04-24T11:50:05.46Z"), out.CreatedAt)
 	})
 
 	m.T().Run("should_not_find_anything", func(t *testing.T) {
-		out, err := m.db.FindHostData("foobar")
-		m.Require().NoError(err)
-
-		assert.JSONEq(t, utils.ToJSON(nil), utils.ToJSON(out))
+		_, err := m.db.FindHostData("foobar")
+		assert.Equal(t, utils.AerrHostNotFound, err)
 	})
 
 	m.T().Run("should_not_find_archived_host", func(t *testing.T) {
-		out, err := m.db.FindHostData("test-small3")
-		m.Require().NoError(err)
-
-		assert.JSONEq(t, utils.ToJSON(nil), utils.ToJSON(out))
+		_, err := m.db.FindHostData("test-small3")
+		assert.Equal(t, utils.AerrHostNotFound, err)
 	})
 }
 
 func (m *MongodbSuite) TestReplaceHostData() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
-	newHostdata := utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json")
-	newHostdata["Foo"] = "Bar"
+	newHostdata := utils.LoadFixtureMongoHostDataMapAsHostData(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json")
+	newHostdata.OtherInfo["Foo"] = "Bar"
+	newHostdata.CreatedAt = utils.P("2020-04-28T13:50:05.46Z").Local()
+	fmt.Println("qui0", utils.ToJSON(newHostdata))
 	err := m.db.ReplaceHostData(newHostdata)
 	m.Require().NoError(err)
 
 	hs, err := m.db.FindHostData("test-small")
+	fmt.Println(utils.ToJSON(hs))
 	m.Require().NoError(err)
 	m.Require().NotNil(hs)
 
-	m.Assert().Equal("Bar", hs["Foo"])
+	m.Assert().Equal("Bar", hs.OtherInfo["Foo"])
 }
 
 func (m *MongodbSuite) TestExistHostData() {

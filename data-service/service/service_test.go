@@ -23,10 +23,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/mitchellh/mapstructure"
 	"github.com/stretchr/testify/require"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/ercole-io/ercole/config"
@@ -57,14 +55,14 @@ func TestUpdateHostInfo_Success(t *testing.T) {
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
 	db.EXPECT().FindPatchingFunction(gomock.Any()).Return(model.PatchingFunction{}, nil).Times(0)
-	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD map[string]interface{}) {
-		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD["_id"].(primitive.ObjectID).Timestamp())
-		assert.False(t, newHD["Archived"].(bool))
-		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD["CreatedAt"])
-		assert.Equal(t, model.SchemaVersion, newHD["SchemaVersion"])
-		assert.Equal(t, "1.6.6", newHD["ServerVersion"])
-		assert.Equal(t, hd.Hostname, newHD["Hostname"])
-		assert.Equal(t, hd.Environment, newHD["Environment"])
+	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD model.HostData) {
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
+		assert.False(t, newHD.Archived)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
+		assert.Equal(t, model.SchemaVersion, newHD.SchemaVersion)
+		assert.Equal(t, "1.6.6", newHD.ServerVersion)
+		assert.Equal(t, hd.Hostname, newHD.Hostname)
+		assert.Equal(t, hd.Environment, newHD.Environment)
 		//I assume that other fields are correct
 	}).Times(1)
 	db.EXPECT().InsertHostData(gomock.Any()).Times(0)
@@ -78,10 +76,7 @@ func TestUpdateHostInfo_Success(t *testing.T) {
 		}, nil
 	})
 
-	var out map[string]interface{}
-	mapstructure.Decode(hd, &out)
-
-	res, err := hds.UpdateHostInfo(out)
+	res, err := hds.UpdateHostInfo(hd)
 	require.NoError(t, err)
 	assert.Equal(t, utils.Str2oid("5dd3a8db184dbf295f0376f2"), res)
 }
@@ -107,10 +102,7 @@ func TestUpdateHostInfo_DatabaseError1(t *testing.T) {
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
 	db.EXPECT().FindPatchingFunction(gomock.Any()).Return(model.PatchingFunction{}, nil).Times(0)
 
-	var out map[string]interface{}
-	mapstructure.Decode(hd, &out)
-
-	_, err := hds.UpdateHostInfo(out)
+	_, err := hds.UpdateHostInfo(hd)
 	require.Equal(t, aerrMock, err)
 }
 
@@ -135,22 +127,19 @@ func TestUpdateHostInfo_DatabaseError2(t *testing.T) {
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
 	db.EXPECT().FindPatchingFunction(gomock.Any()).Return(model.PatchingFunction{}, nil).Times(0)
-	db.EXPECT().InsertHostData(gomock.Any()).Return(nil, aerrMock).Do(func(newHD map[string]interface{}) {
-		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD["_id"].(primitive.ObjectID).Timestamp())
-		assert.False(t, newHD["Archived"].(bool))
-		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD["CreatedAt"])
-		assert.Equal(t, model.SchemaVersion, newHD["SchemaVersion"])
-		assert.Equal(t, "1.6.6", newHD["ServerVersion"])
-		assert.Equal(t, hd.Hostname, newHD["Hostname"])
-		assert.Equal(t, hd.Environment, newHD["Environment"])
+	db.EXPECT().InsertHostData(gomock.Any()).Return(nil, aerrMock).Do(func(newHD model.HostData) {
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
+		assert.False(t, newHD.Archived)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
+		assert.Equal(t, model.SchemaVersion, newHD.SchemaVersion)
+		assert.Equal(t, "1.6.6", newHD.ServerVersion)
+		assert.Equal(t, hd.Hostname, newHD.Hostname)
+		assert.Equal(t, hd.Environment, newHD.Environment)
 		//I assume that other fields are correct
 	}).Times(1)
 	db.EXPECT().InsertHostData(gomock.Any()).Times(0)
 
-	var out map[string]interface{}
-	mapstructure.Decode(hd, &out)
-
-	_, err := hds.UpdateHostInfo(out)
+	_, err := hds.UpdateHostInfo(hd)
 	require.Equal(t, aerrMock, err)
 }
 
@@ -175,14 +164,14 @@ func TestUpdateHostInfo_HttpError(t *testing.T) {
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
 	db.EXPECT().FindPatchingFunction(gomock.Any()).Return(model.PatchingFunction{}, nil).Times(0)
-	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD map[string]interface{}) {
-		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD["_id"].(primitive.ObjectID).Timestamp())
-		assert.False(t, newHD["Archived"].(bool))
-		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD["CreatedAt"])
-		assert.Equal(t, model.SchemaVersion, newHD["SchemaVersion"])
-		assert.Equal(t, "1.6.6", newHD["ServerVersion"])
-		assert.Equal(t, hd.Hostname, newHD["Hostname"])
-		assert.Equal(t, hd.Environment, newHD["Environment"])
+	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD model.HostData) {
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
+		assert.False(t, newHD.Archived)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
+		assert.Equal(t, model.SchemaVersion, newHD.SchemaVersion)
+		assert.Equal(t, "1.6.6", newHD.ServerVersion)
+		assert.Equal(t, hd.Hostname, newHD.Hostname)
+		assert.Equal(t, hd.Environment, newHD.Environment)
 		//I assume that other fields are correct
 	}).Times(1)
 	db.EXPECT().InsertHostData(gomock.Any()).Times(0)
@@ -191,10 +180,7 @@ func TestUpdateHostInfo_HttpError(t *testing.T) {
 		return nil, errMock
 	})
 
-	var out map[string]interface{}
-	mapstructure.Decode(hd, &out)
-
-	_, err := hds.UpdateHostInfo(out)
+	_, err := hds.UpdateHostInfo(hd)
 	require.Equal(t, "EVENT ENQUEUE", err.ErrorClass())
 	require.Contains(t, err.Error(), "http://publ1sh3r:***@ercole.example.org/queue/host-data-insertion/5dd3a8db184dbf295f0376f2")
 	require.Contains(t, err.Error(), "MockError")
@@ -221,14 +207,14 @@ func TestUpdateHostInfo_HttpError2(t *testing.T) {
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
 	db.EXPECT().FindPatchingFunction(gomock.Any()).Return(model.PatchingFunction{}, nil).Times(0)
-	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD map[string]interface{}) {
-		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD["_id"].(primitive.ObjectID).Timestamp())
-		assert.False(t, newHD["Archived"].(bool))
-		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD["CreatedAt"])
-		assert.Equal(t, model.SchemaVersion, newHD["SchemaVersion"])
-		assert.Equal(t, "1.6.6", newHD["ServerVersion"])
-		assert.Equal(t, hd.Hostname, newHD["Hostname"])
-		assert.Equal(t, hd.Environment, newHD["Environment"])
+	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD model.HostData) {
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
+		assert.False(t, newHD.Archived)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
+		assert.Equal(t, model.SchemaVersion, newHD.SchemaVersion)
+		assert.Equal(t, "1.6.6", newHD.ServerVersion)
+		assert.Equal(t, hd.Hostname, newHD.Hostname)
+		assert.Equal(t, hd.Environment, newHD.Environment)
 		//I assume that other fields are correct
 	}).Times(1)
 	db.EXPECT().InsertHostData(gomock.Any()).Times(0)
@@ -241,10 +227,7 @@ func TestUpdateHostInfo_HttpError2(t *testing.T) {
 		}, nil
 	})
 
-	var out map[string]interface{}
-	mapstructure.Decode(hd, &out)
-
-	_, err := hds.UpdateHostInfo(out)
+	_, err := hds.UpdateHostInfo(hd)
 	require.Equal(t, "EVENT ENQUEUE", err.ErrorClass())
 	require.EqualError(t, err, "Failed to enqueue event")
 }

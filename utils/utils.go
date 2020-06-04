@@ -177,24 +177,24 @@ func DownloadFile(filepath string, url string) (err error) {
 
 // PatchHostdata patch a single hostdata using the pf PatchingFunction.
 // It doesn't check if pf.Hostname equals hostdata["Hostname"]
-func PatchHostdata(pf model.PatchingFunction, hostdata map[string]interface{}) (map[string]interface{}, AdvancedErrorInterface) {
+func PatchHostdata(pf model.PatchingFunction, hostdata model.HostData) (model.HostData, AdvancedErrorInterface) {
 	//Initialize the vm
 	vm := otto.New()
 
 	//Set the global variables
-	err := vm.Set("hostdata", hostdata)
+	err := vm.Set("hostdata", &hostdata)
 	if err != nil {
-		return nil, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 	err = vm.Set("vars", pf.Vars)
 	if err != nil {
-		return nil, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 
 	//Run the code
 	_, err = vm.Run(pf.Code)
 	if err != nil {
-		return nil, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 
 	return hostdata, nil

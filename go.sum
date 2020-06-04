@@ -18,6 +18,10 @@ github.com/amreo/go-dyn-struct v1.0.0 h1:+8so82kfaF1jacIZLgmYCTiuE7lLQVhsi7HP+Ij
 github.com/amreo/go-dyn-struct v1.0.0/go.mod h1:0tC/4/GW8i37+O26wvg9+mCEb6WKdAn3w3iC6GBazYE=
 github.com/amreo/go-dyn-struct v1.0.3 h1:KqD9OEBNOGwpPX1m3pvcuBc8lkFsqy98UJlh7DJNK8U=
 github.com/amreo/go-dyn-struct v1.0.3/go.mod h1:0tC/4/GW8i37+O26wvg9+mCEb6WKdAn3w3iC6GBazYE=
+github.com/amreo/go-dyn-struct v1.0.4 h1:7pCh5hscQVemPWJ/PQlwQc3VzMGNQjD97b/6eF2cCds=
+github.com/amreo/go-dyn-struct v1.0.4/go.mod h1:0tC/4/GW8i37+O26wvg9+mCEb6WKdAn3w3iC6GBazYE=
+github.com/amreo/go-dyn-struct v1.1.0 h1:VNExoIUaFqgBJX5tnW6iya/6f2/egY3zwETVXa15vvk=
+github.com/amreo/go-dyn-struct v1.1.0/go.mod h1:0tC/4/GW8i37+O26wvg9+mCEb6WKdAn3w3iC6GBazYE=
 github.com/amreo/mu v0.0.0-20200428112942-b72352edfdf1 h1:+0Oqu8KN1ajM2fNTxkqSVZ98bh6NX1jOWPs7MoNCyok=
 github.com/amreo/mu v0.0.0-20200428112942-b72352edfdf1/go.mod h1:Z4dSBwGqIVMf3JyIv/P/5RSHXkSzdbZLrRC/xoKYPIA=
 github.com/amreo/sftp v1.10.2-0.20200107133605-5981645e4b3b h1:GpQHWqvka4/Y8GQI47k2n33cwlXS/+G3aha7sZnhesU=
