@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/amreo/mu"
+	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -413,22 +414,27 @@ func (md *MongoDatabase) ListEnvironments(location string, environment string, o
 }
 
 // FindHostData find the current hostdata with a certain hostname
-func (md *MongoDatabase) FindHostData(hostname string) (map[string]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) FindHostData(hostname string) (model.HostData, utils.AdvancedErrorInterface) {
 	//Find the hostdata
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").FindOne(context.TODO(), bson.M{
 		"Hostname": hostname,
 		"Archived": false,
 	})
 	if res.Err() == mongo.ErrNoDocuments {
-		return nil, nil
+		return model.HostData{}, utils.AerrHostNotFound
 	} else if res.Err() != nil {
-		return nil, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+		return model.HostData{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
 	}
 
 	//Decode the data
-	var out map[string]interface{}
+	var out model.HostData
 	if err := res.Decode(&out); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+		return model.HostData{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+	}
+
+	var out2 map[string]interface{}
+	if err := res.Decode(&out2); err != nil {
+		// return model.HostData{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
 	}
 
 	//Return it!
@@ -436,10 +442,10 @@ func (md *MongoDatabase) FindHostData(hostname string) (map[string]interface{}, 
 }
 
 // ReplaceHostData adds a new hostdata to the database
-func (md *MongoDatabase) ReplaceHostData(hostData map[string]interface{}) utils.AdvancedErrorInterface {
+func (md *MongoDatabase) ReplaceHostData(hostData model.HostData) utils.AdvancedErrorInterface {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").ReplaceOne(context.TODO(),
 		bson.M{
-			"_id": hostData["_id"],
+			"_id": hostData.ID,
 		},
 		hostData,
 	)
@@ -449,7 +455,7 @@ func (md *MongoDatabase) ReplaceHostData(hostData map[string]interface{}) utils.
 	return nil
 }
 
-// ExistNoDataAlertByHost return true if the host has associated a new NO_DATA alert
+// ExistHostdata return true if exist a non-archived hostdata with the hostname equal hostname
 func (md *MongoDatabase) ExistHostdata(hostname string) (bool, utils.AdvancedErrorInterface) {
 	//Count the number of new NO_DATA alerts associated to the host
 	val, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").CountDocuments(context.TODO(), bson.M{

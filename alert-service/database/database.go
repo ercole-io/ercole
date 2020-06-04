@@ -97,6 +97,7 @@ func (md *MongoDatabase) FindHostData(id primitive.ObjectID) (model.HostData, ut
 	}
 
 	//Decode the data
+
 	var out model.HostData
 	if err := res.Decode(&out); err != nil {
 		return model.HostData{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")

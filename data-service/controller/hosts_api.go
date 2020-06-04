@@ -35,7 +35,8 @@ func (ctrl *HostDataController) AuthenticateMiddleware() func(http.Handler) http
 // UpdateHostInfo update the informations about a host using the HostData in the request
 func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Request) {
 	//Parse the hostdata from the request
-	var originalHostData map[string]interface{}
+	var originalHostData model.RawObject
+	var aerr utils.AdvancedErrorInterface
 
 	if err := json.NewDecoder(r.Body).Decode(&originalHostData); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
@@ -43,8 +44,7 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 	}
 
 	//Update and decode originalHostData
-	err := updateData(originalHostData)
-	if err != nil {
+	if err := updateData(originalHostData); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
@@ -66,10 +66,24 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	//Save the HostData
-	id, err := ctrl.Service.UpdateHostInfo(originalHostData)
+	//Convert the originalHostData to a hostdata
+	tempUpdatedRawJSON, err := json.Marshal(originalHostData)
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		return
+	}
+
+	var updatedHostData model.HostData
+	err = json.Unmarshal(tempUpdatedRawJSON, &updatedHostData)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		return
+	}
+
+	//Save the HostData
+	id, aerr := ctrl.Service.UpdateHostInfo(updatedHostData)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
 	}
 

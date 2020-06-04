@@ -117,7 +117,7 @@ type MongoDatabaseInterface interface {
 	// SavePatchingFunction saves the patching function
 	SavePatchingFunction(pf model.PatchingFunction) utils.AdvancedErrorInterface
 	// ReplaceHostData adds a new hostdata to the database
-	ReplaceHostData(hostData map[string]interface{}) utils.AdvancedErrorInterface
+	ReplaceHostData(hostData model.HostData) utils.AdvancedErrorInterface
 	// UpdateAlertStatus change the status of the specified alert
 	UpdateAlertStatus(id primitive.ObjectID, newStatus string) utils.AdvancedErrorInterface
 	// ArchiveHost archive the specified host
@@ -126,7 +126,7 @@ type MongoDatabaseInterface interface {
 	// FindPatchingFunction find the the patching function associated to the hostname in the database
 	FindPatchingFunction(hostname string) (model.PatchingFunction, utils.AdvancedErrorInterface)
 	// FindHostData find the current hostdata with a certain hostname
-	FindHostData(hostname string) (map[string]interface{}, utils.AdvancedErrorInterface)
+	FindHostData(hostname string) (model.HostData, utils.AdvancedErrorInterface)
 	// ExistHostdata return true if the host specified by hostname exist, otherwise false
 	ExistHostdata(hostname string) (bool, utils.AdvancedErrorInterface)
 	// GetAssetsUsage return a map that contains the number of usages for every features
