@@ -24,54 +24,54 @@ import (
 
 // ExadataCellDisk holds info about a exadata cell disk
 type ExadataCellDisk struct {
-	Name       string `bson:"Name"`
-	Status     string `bson:"Status"`
-	ErrCount   string `bson:"ErrCount"`
-	UsedPerc   string `bson:"UsedPerc"`
-	_otherInfo map[string]interface{}
+	Name      string                 `bson:"Name"`
+	Status    string                 `bson:"Status"`
+	ErrCount  string                 `bson:"ErrCount"`
+	UsedPerc  string                 `bson:"UsedPerc"`
+	OtherInfo map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
 func (v ExadataCellDisk) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
 func (v *ExadataCellDisk) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
 func (v ExadataCellDisk) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *ExadataCellDisk) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // ExadataCellDiskBsonValidatorRules contains mongodb validation rules for ExadataCellDisk
-var ExadataCellDiskBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var ExadataCellDiskBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Name",
 		"Status",
 		"ErrCount",
 		"UsedPerc",
-	}},
-	{"properties", bson.D{
-		{"Name", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Status", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"ErrCount", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"UsedPerc", bson.D{
-			{"bsonType", "string"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Name": bson.M{
+			"bsonType": "string",
+		},
+		"Status": bson.M{
+			"bsonType": "string",
+		},
+		"ErrCount": bson.M{
+			"bsonType": "string",
+		},
+		"UsedPerc": bson.M{
+			"bsonType": "string",
+		},
+	},
 }

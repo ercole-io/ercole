@@ -36,9 +36,9 @@ type MongoDatabaseInterface interface {
 	// Init initializes the connection to the database
 	Init()
 	// FindHostData find a host data
-	FindHostData(id primitive.ObjectID) (model.HostDataMap, utils.AdvancedErrorInterface)
+	FindHostData(id primitive.ObjectID) (model.HostData, utils.AdvancedErrorInterface)
 	// FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
-	FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostDataMap, utils.AdvancedErrorInterface)
+	FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostData, utils.AdvancedErrorInterface)
 	// InsertAlert inserr the alert in the database
 	InsertAlert(alert model.Alert) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
 	// FindOldCurrentHost return the list of current hosts that haven't sent hostdata after time t
@@ -87,19 +87,20 @@ func (md *MongoDatabase) ConnectToMongodb() {
 }
 
 // FindHostData find a host data
-func (md *MongoDatabase) FindHostData(id primitive.ObjectID) (model.HostDataMap, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) FindHostData(id primitive.ObjectID) (model.HostData, utils.AdvancedErrorInterface) {
 	//Find the hostdata
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").FindOne(context.TODO(), bson.M{
 		"_id": id,
 	})
 	if res.Err() != nil {
-		return model.HostDataMap{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+		return model.HostData{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
 	}
 
 	//Decode the data
-	var out map[string]interface{}
+
+	var out model.HostData
 	if err := res.Decode(&out); err != nil {
-		return model.HostDataMap{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+		return model.HostData{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
 	//Return it!
@@ -107,8 +108,8 @@ func (md *MongoDatabase) FindHostData(id primitive.ObjectID) (model.HostDataMap,
 }
 
 // FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
-func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostDataMap, utils.AdvancedErrorInterface) {
-	var out map[string]interface{}
+func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostData, utils.AdvancedErrorInterface) {
+	var out model.HostData
 
 	//Find the most recent HostData older than t
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -125,16 +126,15 @@ func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return model.HostData{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
-
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
-		return nil, nil
+		return model.HostData{}, nil
 	}
 
 	if err := cur.Decode(&out); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return model.HostData{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
 	return out, nil

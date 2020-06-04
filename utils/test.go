@@ -55,14 +55,36 @@ func LoadFixtureHostData(t *testing.T, filename string) model.HostData {
 }
 
 //LoadFixtureHostDataMap load the hostdata in the filename and return it
-func LoadFixtureHostDataMap(t *testing.T, filename string) model.HostDataMap {
+func LoadFixtureHostDataMap(t *testing.T, filename string) model.RawObject {
 	raw, err := ioutil.ReadFile(filename)
 	require.NoError(t, err)
 
-	var hd map[string]interface{}
+	var hd model.RawObject
 	require.NoError(t, bson.UnmarshalExtJSON(raw, true, &hd))
 
-	return model.HostDataMap(hd)
+	return hd
+}
+
+//LoadFixtureMongoHostDataMap load the mongohostdata in the filename and return it
+func LoadFixtureMongoHostDataMap(t *testing.T, filename string) model.RawObject {
+	raw, err := ioutil.ReadFile(filename)
+	require.NoError(t, err)
+
+	var hd model.RawObject
+	require.NoError(t, bson.UnmarshalExtJSON(raw, true, &hd))
+
+	return hd
+}
+
+//LoadFixtureMongoHostDataMapAsHostData load the mongohostdata in the filename and return it as hostdata
+func LoadFixtureMongoHostDataMapAsHostData(t *testing.T, filename string) model.HostData {
+	raw, err := ioutil.ReadFile(filename)
+	require.NoError(t, err)
+
+	var hd model.HostData
+	require.NoError(t, bson.UnmarshalExtJSON(raw, true, &hd))
+
+	return hd
 }
 
 // AssertFuncAreTheSame tests if funcExpected is the same of funcActual

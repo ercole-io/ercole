@@ -28,8 +28,8 @@ import (
 func (m *MongodbSuite) TestGetDatabaseEnvironmentStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.GetDatabaseEnvironmentStats("France", utils.MAX_TIME)
@@ -68,8 +68,8 @@ func (m *MongodbSuite) TestGetDatabaseEnvironmentStats() {
 func (m *MongodbSuite) TestGetDatabaseVersionStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.GetDatabaseVersionStats("France", utils.MAX_TIME)
@@ -112,8 +112,8 @@ func (m *MongodbSuite) TestGetDatabaseVersionStats() {
 func (m *MongodbSuite) TestGetTopReclaimableDatabaseStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.GetTopReclaimableDatabaseStats("France", 15, utils.MAX_TIME)
@@ -183,8 +183,8 @@ func (m *MongodbSuite) TestGetTopReclaimableDatabaseStats() {
 func (m *MongodbSuite) TestGetTopWorkloadDatabaseStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.GetTopWorkloadDatabaseStats("France", 15, utils.MAX_TIME)
@@ -254,8 +254,8 @@ func (m *MongodbSuite) TestGetTopWorkloadDatabaseStats() {
 func (m *MongodbSuite) TestGetDatabasePatchStatusStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.GetDatabasePatchStatusStats("France", utils.P("2019-10-10T08:46:58.38+02:00"), utils.MAX_TIME)
@@ -294,8 +294,8 @@ func (m *MongodbSuite) TestGetDatabasePatchStatusStats() {
 func (m *MongodbSuite) TestGetDatabaseDataguardStatusStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.GetDatabaseDataguardStatusStats("France", "", utils.MAX_TIME)
@@ -342,8 +342,8 @@ func (m *MongodbSuite) TestGetDatabaseDataguardStatusStats() {
 func (m *MongodbSuite) TestGetDatabaseRACStatusStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.GetDatabaseRACStatusStats("France", "", utils.MAX_TIME)
@@ -390,8 +390,8 @@ func (m *MongodbSuite) TestGetDatabaseRACStatusStats() {
 func (m *MongodbSuite) TestGetDatabaseArchivelogStatusStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.GetDatabaseArchivelogStatusStats("France", "", utils.MAX_TIME)
@@ -438,8 +438,8 @@ func (m *MongodbSuite) TestGetDatabaseArchivelogStatusStats() {
 func (m *MongodbSuite) TestGetTotalDatabaseWorkStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.GetTotalDatabaseWorkStats("France", "", utils.MAX_TIME)
@@ -473,8 +473,8 @@ func (m *MongodbSuite) TestGetTotalDatabaseWorkStats() {
 func (m *MongodbSuite) TestGetTotalDatabaseDatafileSizeStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.GetTotalDatabaseDatafileSizeStats("France", "", utils.MAX_TIME)
@@ -508,8 +508,8 @@ func (m *MongodbSuite) TestGetTotalDatabaseDatafileSizeStats() {
 func (m *MongodbSuite) TestGetTotalDatabaseMemorySizeStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.GetTotalDatabaseMemorySizeStats("France", "", utils.MAX_TIME)
@@ -543,8 +543,8 @@ func (m *MongodbSuite) TestGetTotalDatabaseMemorySizeStats() {
 func (m *MongodbSuite) TestGetTotalDatabaseSegmentSizeStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.GetTotalDatabaseSegmentSizeStats("France", "", utils.MAX_TIME)

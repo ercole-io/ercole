@@ -24,54 +24,54 @@ import (
 
 // Addm contains info about addm
 type Addm struct {
-	Finding        string `bson:"Finding"`
-	Recommendation string `bson:"Recommendation"`
-	Action         string `bson:"Action"`
-	Benefit        string `bson:"Benefit"`
-	_otherInfo     map[string]interface{}
+	Finding        string                 `bson:"Finding"`
+	Recommendation string                 `bson:"Recommendation"`
+	Action         string                 `bson:"Action"`
+	Benefit        string                 `bson:"Benefit"`
+	OtherInfo      map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
 func (v Addm) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
 func (v *Addm) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
 func (v Addm) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *Addm) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // AddmBsonValidatorRules contains mongodb validation rules for addm
-var AddmBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var AddmBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Finding",
 		"Recommendation",
 		"Action",
 		"Benefit",
-	}},
-	{"properties", bson.D{
-		{"Finding", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Recommendation", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Action", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Benefit", bson.D{
-			{"bsonType", "string"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Finding": bson.M{
+			"bsonType": "string",
+		},
+		"Recommendation": bson.M{
+			"bsonType": "string",
+		},
+		"Action": bson.M{
+			"bsonType": "string",
+		},
+		"Benefit": bson.M{
+			"bsonType": "string",
+		},
+	},
 }

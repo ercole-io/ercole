@@ -28,7 +28,7 @@ import (
 func (m *MongodbSuite) TestGetTotalExadataMemorySizeStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
 		out, err := m.db.GetTotalExadataMemorySizeStats("", "FOOBAR", utils.MAX_TIME)
@@ -62,7 +62,7 @@ func (m *MongodbSuite) TestGetTotalExadataMemorySizeStats() {
 func (m *MongodbSuite) TestGetTotalExadataCPUStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.GetTotalExadataCPUStats("France", "", utils.MAX_TIME)
@@ -112,7 +112,7 @@ func (m *MongodbSuite) TestGetTotalExadataCPUStats() {
 func (m *MongodbSuite) TestGetAverageExadataStorageUsageStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
 		out, err := m.db.GetAverageExadataStorageUsageStats("", "FOOBAR", utils.MAX_TIME)
@@ -146,7 +146,7 @@ func (m *MongodbSuite) TestGetAverageExadataStorageUsageStats() {
 func (m *MongodbSuite) TestGetExadataStorageErrorCountStatusStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.GetExadataStorageErrorCountStatusStats("France", "", utils.MAX_TIME)
@@ -193,7 +193,7 @@ func (m *MongodbSuite) TestGetExadataStorageErrorCountStatusStats() {
 func (m *MongodbSuite) TestGetExadataPatchStatusStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.GetExadataPatchStatusStats("France", "", utils.P("2019-10-10T08:46:58.38+02:00"), utils.MAX_TIME)

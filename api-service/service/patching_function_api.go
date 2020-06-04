@@ -278,20 +278,20 @@ func (as *APIService) DeleteTagOfDatabase(hostname string, dbname string, tagnam
 func (as *APIService) ApplyPatch(pf model.PatchingFunction) utils.AdvancedErrorInterface {
 	//Get the data
 	data, aerr := as.Database.FindHostData(pf.Hostname)
-	if aerr != nil {
-		return aerr
-	}
-
-	//If it's found, patch it
-	if data == nil {
+	if aerr == utils.AerrHostNotFound {
 		return nil
+	} else if aerr != nil {
+		return aerr
 	}
 
 	//Patch it
 	if as.Config.DataService.LogDataPatching {
 		as.Log.Printf("Patching %s hostdata with the patch %s\n", pf.Hostname, pf.ID)
 	}
-	utils.PatchHostdata(pf, data)
+	data, aerr = utils.PatchHostdata(pf, data)
+	if aerr != nil {
+		return aerr
+	}
 
 	//Save the patched data
 	return as.Database.ReplaceHostData(data)
