@@ -70,52 +70,52 @@ const (
 )
 
 // AlertBsonValidatorRules contains mongodb validation rules for alert
-var AlertBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var AlertBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"_id",
 		"AlertCode",
 		"AlertSeverity",
 		"AlertStatus",
 		"Description",
 		"Date",
-	}},
-	{"properties", bson.D{
-		{"AlertCode", bson.D{
-			{"bsonType", "string"},
-			{"enum", bson.A{
+	},
+	"properties": bson.M{
+		"AlertCode": bson.M{
+			"bsonType": "string",
+			"enum": bson.A{
 				AlertCodeNewDatabase,
 				AlertCodeNewOption,
 				AlertCodeNewLicense,
 				AlertCodeNewServer,
 				AlertCodeNoData,
-			}},
-		}},
-		{"AlertSeverity", bson.D{
-			{"bsonType", "string"},
-			{"enum", bson.A{
+			},
+		},
+		"AlertSeverity": bson.M{
+			"bsonType": "string",
+			"enum": bson.A{
 				AlertSeverityMinor,
 				AlertSeverityWarning,
 				AlertSeverityMajor,
 				AlertSeverityCritical,
 				AlertSeverityNotice,
-			}},
-		}},
-		{"AlertStatus", bson.D{
-			{"bsonType", "string"},
-			{"enum", bson.A{
+			},
+		},
+		"AlertStatus": bson.M{
+			"bsonType": "string",
+			"enum": bson.A{
 				AlertStatusNew,
 				AlertStatusAck,
-			}},
-		}},
-		{"Description", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Date", bson.D{
-			{"bsonType", "date"},
-		}},
-		{"OtherInfo", bson.D{
-			{"bsonType", "object"},
-		}},
-	}},
+			},
+		},
+		"Description": bson.M{
+			"bsonType": "string",
+		},
+		"Date": bson.M{
+			"bsonType": "date",
+		},
+		"OtherInfo": bson.M{
+			"bsonType": "object",
+		},
+	},
 }

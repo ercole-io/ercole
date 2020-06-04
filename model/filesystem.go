@@ -24,40 +24,40 @@ import (
 
 // Filesystem holds information about mounted filesystem and used space
 type Filesystem struct {
-	Filesystem string `bson:"Filesystem"`
-	FsType     string `bson:"FsType"`
-	Size       string `bson:"Size"`
-	Used       string `bson:"Used"`
-	Available  string `bson:"Available"`
-	UsedPerc   string `bson:"UsedPerc"`
-	MountedOn  string `bson:"MountedOn"`
-	_otherInfo map[string]interface{}
+	Filesystem string                 `bson:"Filesystem"`
+	FsType     string                 `bson:"FsType"`
+	Size       string                 `bson:"Size"`
+	Used       string                 `bson:"Used"`
+	Available  string                 `bson:"Available"`
+	UsedPerc   string                 `bson:"UsedPerc"`
+	MountedOn  string                 `bson:"MountedOn"`
+	OtherInfo  map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
 func (v Filesystem) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
 func (v *Filesystem) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
 func (v Filesystem) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *Filesystem) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // FilesystemBsonValidatorRules contains mongodb validation rules for filesystem
-var FilesystemBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var FilesystemBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Filesystem",
 		"FsType",
 		"Size",
@@ -65,28 +65,28 @@ var FilesystemBsonValidatorRules = bson.D{
 		"Available",
 		"UsedPerc",
 		"MountedOn",
-	}},
-	{"properties", bson.D{
-		{"Filesystem", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"FsType", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Size", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Used", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Available", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"UsedPerc", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"MountedOn", bson.D{
-			{"bsonType", "string"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Filesystem": bson.M{
+			"bsonType": "string",
+		},
+		"FsType": bson.M{
+			"bsonType": "string",
+		},
+		"Size": bson.M{
+			"bsonType": "string",
+		},
+		"Used": bson.M{
+			"bsonType": "string",
+		},
+		"Available": bson.M{
+			"bsonType": "string",
+		},
+		"UsedPerc": bson.M{
+			"bsonType": "string",
+		},
+		"MountedOn": bson.M{
+			"bsonType": "string",
+		},
+	},
 }

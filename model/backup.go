@@ -24,59 +24,59 @@ import (
 
 // Backup holds informations about a backup
 type Backup struct {
-	BackupType string `bson:"BackupType"`
-	Hour       string `bson:"Hour"`
-	WeekDays   string `bson:"WeekDays"`
-	AvgBckSize string `bson:"AvgBckSize"`
-	Retention  string `bson:"Retention"`
-	_otherInfo map[string]interface{}
+	BackupType string                 `bson:"BackupType"`
+	Hour       string                 `bson:"Hour"`
+	WeekDays   string                 `bson:"WeekDays"`
+	AvgBckSize string                 `bson:"AvgBckSize"`
+	Retention  string                 `bson:"Retention"`
+	OtherInfo  map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
 func (v Backup) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
 func (v *Backup) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
 func (v Backup) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *Backup) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // BackupBsonValidatorRules contains mongodb validation rules for backup
-var BackupBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var BackupBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"BackupType",
 		"Hour",
 		"WeekDays",
 		"AvgBckSize",
 		"Retention",
-	}},
-	{"properties", bson.D{
-		{"BackupType", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Hour", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"WeekDays", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"AvgBckSize", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Retention", bson.D{
-			{"bsonType", "string"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"BackupType": bson.M{
+			"bsonType": "string",
+		},
+		"Hour": bson.M{
+			"bsonType": "string",
+		},
+		"WeekDays": bson.M{
+			"bsonType": "string",
+		},
+		"AvgBckSize": bson.M{
+			"bsonType": "string",
+		},
+		"Retention": bson.M{
+			"bsonType": "string",
+		},
+	},
 }

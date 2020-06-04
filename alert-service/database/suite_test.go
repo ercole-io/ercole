@@ -70,7 +70,7 @@ func (db *MongodbSuite) TearDownSuite() {
 	db.db.Client.Disconnect(context.TODO())
 }
 
-func (db *MongodbSuite) InsertHostData(hostData model.HostDataMap) error {
+func (db *MongodbSuite) InsertHostData(hostData model.RawObject) error {
 	_, err := db.db.Client.Database(db.dbname).Collection("hosts").InsertOne(context.TODO(), hostData)
 	return err
 }

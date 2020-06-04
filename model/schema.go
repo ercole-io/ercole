@@ -24,64 +24,64 @@ import (
 
 // Schema holds information about Oracle database schema.
 type Schema struct {
-	Database   string `bson:"Database"`
-	User       string `bson:"User"`
-	Total      int    `bson:"Total"`
-	Tables     int    `bson:"Tables"`
-	Indexes    int    `bson:"Indexes"`
-	LOB        int    `bson:"LOB"`
-	_otherInfo map[string]interface{}
+	Database  string                 `bson:"Database"`
+	User      string                 `bson:"User"`
+	Total     int                    `bson:"Total"`
+	Tables    int                    `bson:"Tables"`
+	Indexes   int                    `bson:"Indexes"`
+	LOB       int                    `bson:"LOB"`
+	OtherInfo map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
 func (v Schema) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
 func (v *Schema) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
 func (v Schema) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *Schema) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // SchemaBsonValidatorRules contains mongodb validation rules for schema
-var SchemaBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var SchemaBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Database",
 		"User",
 		"Total",
 		"Tables",
 		"Indexes",
 		"LOB",
-	}},
-	{"properties", bson.D{
-		{"Database", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"User", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Total", bson.D{
-			{"bsonType", "number"},
-		}},
-		{"Tables", bson.D{
-			{"bsonType", "number"},
-		}},
-		{"Indexes", bson.D{
-			{"bsonType", "number"},
-		}},
-		{"LOB", bson.D{
-			{"bsonType", "number"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Database": bson.M{
+			"bsonType": "string",
+		},
+		"User": bson.M{
+			"bsonType": "string",
+		},
+		"Total": bson.M{
+			"bsonType": "number",
+		},
+		"Tables": bson.M{
+			"bsonType": "number",
+		},
+		"Indexes": bson.M{
+			"bsonType": "number",
+		},
+		"LOB": bson.M{
+			"bsonType": "number",
+		},
+	},
 }

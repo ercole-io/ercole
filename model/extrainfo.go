@@ -24,69 +24,73 @@ import (
 
 // ExtraInfo holds various informations.
 type ExtraInfo struct {
-	Databases   []Database    `bson:"Databases"`
-	Filesystems []Filesystem  `bson:"Filesystems"`
-	Clusters    []ClusterInfo `bson:"Clusters"`
-	Exadata     *Exadata      `bson:"Exadata"`
-	_otherInfo  map[string]interface{}
+	Databases   []Database             `bson:"Databases"`
+	Filesystems []Filesystem           `bson:"Filesystems"`
+	Clusters    []ClusterInfo          `bson:"Clusters"`
+	Exadata     *Exadata               `bson:"Exadata"`
+	OtherInfo   map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
 func (v ExtraInfo) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
 func (v *ExtraInfo) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
 func (v ExtraInfo) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *ExtraInfo) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // ExtraInfoBsonValidatorRules contains mongodb validation rules for extraInfo
-var ExtraInfoBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var ExtraInfoBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Filesystems",
-	}},
-	{"properties", bson.D{
-		{"Databases", bson.D{
-			{"anyOf", bson.A{
-				bson.D{
-					{"bsonType", "array"},
-					{"items", DatabaseBsonValidatorRules},
+	},
+	"properties": bson.M{
+		"Databases": bson.M{
+			"anyOf": bson.A{
+				bson.M{
+					"bsonType": "null",
 				},
-				bson.D{{"type", "null"}},
-			}},
-		}},
-		{"Filesystems", bson.D{
-			{"bsonType", "array"},
-			{"items", FilesystemBsonValidatorRules},
-		}},
-		{"Clusters", bson.D{
-			{"anyOf", bson.A{
-				bson.D{
-					{"bsonType", "array"},
-					{"items", ClusterInfoBsonValidatorRules},
+				bson.M{
+					"bsonType": "array",
+					"items":    DatabaseBsonValidatorRules,
 				},
-				bson.D{{"type", "null"}},
-			}},
-		}},
-		{"Exadata", bson.D{
-			{"anyOf", bson.A{
+			},
+		},
+		"Filesystems": bson.M{
+			"bsonType": "array",
+			"items":    FilesystemBsonValidatorRules,
+		},
+		"Clusters": bson.M{
+			"anyOf": bson.A{
+				bson.M{
+					"bsonType": "null",
+				},
+				bson.M{
+					"bsonType": "array",
+					"items":    ClusterInfoBsonValidatorRules,
+				},
+			},
+		},
+		"Exadata": bson.M{
+			"anyOf": bson.A{
+				bson.M{
+					"bsonType": "null",
+				},
 				ExadataBsonValidatorRules,
-				bson.D{{"type", "null"}},
-			}},
-		}},
-	}},
+			},
+		},
+	},
 }
-
-// ExadataBsonValidatorRules
