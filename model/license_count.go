@@ -16,9 +16,6 @@
 package model
 
 import (
-	"reflect"
-
-	godynstruct "github.com/amreo/go-dyn-struct"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -27,46 +24,25 @@ type LicenseCount struct {
 	Name             string  `bson:"_id"`
 	Count            int     `bson:"Count"`
 	CostPerProcessor float32 `bson:"CostPerProcessor"`
-	_otherInfo       map[string]interface{}
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v LicenseCount) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *LicenseCount) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v._otherInfo)
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v LicenseCount) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *LicenseCount) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v._otherInfo)
 }
 
 // LicenseCountBsonValidatorRules contains mongodb validation rules for licenseCount
-var LicenseCountBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var LicenseCountBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"_id",
 		"Count",
 		"CostPerProcessor",
-	}},
-	{"properties", bson.D{
-		{"_id", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Count", bson.D{
-			{"bsonType", "number"},
-		}},
-		{"CostPerProcessor", bson.D{
-			{"bsonType", "number"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"_id": bson.M{
+			"bsonType": "string",
+		},
+		"Count": bson.M{
+			"bsonType": "number",
+		},
+		"CostPerProcessor": bson.M{
+			"bsonType": "number",
+		},
+	},
 }

@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/ercole-io/ercole/model"
@@ -28,9 +29,9 @@ import (
 
 func (m *MongodbSuite) TestSearchHosts() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
 
 	commonFilters := SearchHostsFilters{
 		Cluster:           new(string),
@@ -315,10 +316,10 @@ func (m *MongodbSuite) TestGetHost() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_14.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_15.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_16.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_14.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_15.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_16.json"))
 	m.InsertAlert(model.Alert{
 		ID:            utils.Str2oid("5e96ade270c184faca93fe1b"),
 		AlertCode:     model.AlertCodeNewServer,
@@ -711,10 +712,10 @@ func (m *MongodbSuite) TestGetHost() {
 func (m *MongodbSuite) TestListLocations() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_04.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_09.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_04.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_09.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.ListLocations("France", "", utils.MAX_TIME)
@@ -748,10 +749,10 @@ func (m *MongodbSuite) TestListLocations() {
 func (m *MongodbSuite) TestListEnvironments() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_04.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_09.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_04.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_09.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.ListEnvironments("France", "", utils.MAX_TIME)
@@ -784,51 +785,52 @@ func (m *MongodbSuite) TestListEnvironments() {
 
 func (m *MongodbSuite) TestFindHostData() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
-	testSmall := utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json")
+	testSmall := utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json")
 	m.InsertHostData(testSmall)
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_05.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_05.json"))
 
 	m.T().Run("should_find_test_small", func(t *testing.T) {
 		out, err := m.db.FindHostData("test-small")
 		m.Require().NoError(err)
-
-		assert.JSONEq(t, utils.ToJSON(testSmall), utils.ToJSON(out))
+		assert.Equal(t, utils.Str2oid("5ea2d26d20d55cbdc35022b4"), out.ID)
+		assert.False(t, out.Archived)
+		assert.Equal(t, "test-small", out.Hostname)
+		assert.Equal(t, utils.P("2020-04-24T11:50:05.46Z"), out.CreatedAt)
 	})
 
 	m.T().Run("should_not_find_anything", func(t *testing.T) {
-		out, err := m.db.FindHostData("foobar")
-		m.Require().NoError(err)
-
-		assert.JSONEq(t, utils.ToJSON(nil), utils.ToJSON(out))
+		_, err := m.db.FindHostData("foobar")
+		assert.Equal(t, utils.AerrHostNotFound, err)
 	})
 
 	m.T().Run("should_not_find_archived_host", func(t *testing.T) {
-		out, err := m.db.FindHostData("test-small3")
-		m.Require().NoError(err)
-
-		assert.JSONEq(t, utils.ToJSON(nil), utils.ToJSON(out))
+		_, err := m.db.FindHostData("test-small3")
+		assert.Equal(t, utils.AerrHostNotFound, err)
 	})
 }
 
 func (m *MongodbSuite) TestReplaceHostData() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
-	newHostdata := utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json")
-	newHostdata["Foo"] = "Bar"
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
+	newHostdata := utils.LoadFixtureMongoHostDataMapAsHostData(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json")
+	newHostdata.OtherInfo["Foo"] = "Bar"
+	newHostdata.CreatedAt = utils.P("2020-04-28T13:50:05.46Z").Local()
+	fmt.Println("qui0", utils.ToJSON(newHostdata))
 	err := m.db.ReplaceHostData(newHostdata)
 	m.Require().NoError(err)
 
 	hs, err := m.db.FindHostData("test-small")
+	fmt.Println(utils.ToJSON(hs))
 	m.Require().NoError(err)
 	m.Require().NotNil(hs)
 
-	m.Assert().Equal("Bar", hs["Foo"])
+	m.Assert().Equal("Bar", hs.OtherInfo["Foo"])
 }
 
 func (m *MongodbSuite) TestExistHostData() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_05.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_05.json"))
 
 	m.T().Run("should_find_test_small", func(t *testing.T) {
 		out, err := m.db.ExistHostdata("test-small")
@@ -854,7 +856,7 @@ func (m *MongodbSuite) TestExistHostData() {
 
 func (m *MongodbSuite) TestArchiveHost() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
 	val, err := m.db.ExistHostdata("test-small")
 	m.Require().NoError(err)
 	m.Assert().True(val)

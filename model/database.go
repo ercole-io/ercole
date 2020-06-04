@@ -24,66 +24,66 @@ import (
 
 // Database holds information about a database.
 type Database struct {
-	InstanceNumber  string           `bson:"InstanceNumber"`
-	Name            string           `bson:"Name"`
-	UniqueName      string           `bson:"UniqueName"`
-	Status          string           `bson:"Status"`
-	Version         string           `bson:"Version"`
-	Platform        string           `bson:"Platform"`
-	Archivelog      string           `bson:"Archivelog"`
-	Charset         string           `bson:"Charset"`
-	NCharset        string           `bson:"NCharset"`
-	BlockSize       string           `bson:"BlockSize"`
-	CPUCount        string           `bson:"CPUCount"`
-	SGATarget       string           `bson:"SGATarget"`
-	PGATarget       string           `bson:"PGATarget"`
-	MemoryTarget    string           `bson:"MemoryTarget"`
-	SGAMaxSize      string           `bson:"SGAMaxSize"`
-	SegmentsSize    string           `bson:"SegmentsSize"`
-	Used            string           `bson:"Used"`
-	Allocated       string           `bson:"Allocated"`
-	Elapsed         string           `bson:"Elapsed"`
-	DBTime          string           `bson:"DBTime"`
-	DailyCPUUsage   string           `bson:"DailyCPUUsage"`
-	Work            string           `bson:"Work"`
-	ASM             bool             `bson:"ASM"`
-	Dataguard       bool             `bson:"Dataguard"`
-	Patches         []Patch          `bson:"Patches"`
-	Tablespaces     []Tablespace     `bson:"Tablespaces"`
-	Schemas         []Schema         `bson:"Schemas"`
-	Features        []Feature        `bson:"Features"`
-	Licenses        []License        `bson:"Licenses"`
-	ADDMs           []Addm           `bson:"ADDMs"`
-	SegmentAdvisors []SegmentAdvisor `bson:"SegmentAdvisors"`
-	LastPSUs        []PSU            `bson:"LastPSUs"`
-	Backups         []Backup         `bson:"Backups"`
-	_otherInfo      map[string]interface{}
+	InstanceNumber  string                 `bson:"InstanceNumber"`
+	Name            string                 `bson:"Name"`
+	UniqueName      string                 `bson:"UniqueName"`
+	Status          string                 `bson:"Status"`
+	Version         string                 `bson:"Version"`
+	Platform        string                 `bson:"Platform"`
+	Archivelog      string                 `bson:"Archivelog"`
+	Charset         string                 `bson:"Charset"`
+	NCharset        string                 `bson:"NCharset"`
+	BlockSize       string                 `bson:"BlockSize"`
+	CPUCount        string                 `bson:"CPUCount"`
+	SGATarget       string                 `bson:"SGATarget"`
+	PGATarget       string                 `bson:"PGATarget"`
+	MemoryTarget    string                 `bson:"MemoryTarget"`
+	SGAMaxSize      string                 `bson:"SGAMaxSize"`
+	SegmentsSize    string                 `bson:"SegmentsSize"`
+	Used            string                 `bson:"Used"`
+	Allocated       string                 `bson:"Allocated"`
+	Elapsed         string                 `bson:"Elapsed"`
+	DBTime          string                 `bson:"DBTime"`
+	DailyCPUUsage   string                 `bson:"DailyCPUUsage"`
+	Work            string                 `bson:"Work"`
+	ASM             bool                   `bson:"ASM"`
+	Dataguard       bool                   `bson:"Dataguard"`
+	Patches         []Patch                `bson:"Patches"`
+	Tablespaces     []Tablespace           `bson:"Tablespaces"`
+	Schemas         []Schema               `bson:"Schemas"`
+	Features        []Feature              `bson:"Features"`
+	Licenses        []License              `bson:"Licenses"`
+	ADDMs           []Addm                 `bson:"ADDMs"`
+	SegmentAdvisors []SegmentAdvisor       `bson:"SegmentAdvisors"`
+	LastPSUs        []PSU                  `bson:"LastPSUs"`
+	Backups         []Backup               `bson:"Backups"`
+	OtherInfo       map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
 func (v Database) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
 func (v *Database) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
 func (v Database) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *Database) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // DatabaseBsonValidatorRules contains mongodb validation rules for database
-var DatabaseBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var DatabaseBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"InstanceNumber",
 		"Name",
 		"UniqueName",
@@ -117,117 +117,117 @@ var DatabaseBsonValidatorRules = bson.D{
 		"SegmentAdvisors",
 		"LastPSUs",
 		"Backups",
-	}},
-	{"properties", bson.D{
-		{"InstanceNumber", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Name", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"UniqueName", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Status", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Version", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Platform", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Archivelog", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Charset", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"NCharset", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"BlockSize", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"CPUCount", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"SGATarget", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"PGATarget", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"MemoryTarget", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"SGAMaxSize", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"SegmentsSize", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Used", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Allocated", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Elapsed", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"DBTime", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"DailyCPUUsage", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Work", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"ASM", bson.D{
-			{"bsonType", "bool"},
-		}},
-		{"Dataguard", bson.D{
-			{"bsonType", "bool"},
-		}},
-		{"Patches", bson.D{
-			{"bsonType", "array"},
-			{"items", PatchBsonValidatorRules},
-		}},
-		{"Tablespaces", bson.D{
-			{"bsonType", "array"},
-			{"items", TablespaceBsonValidatorRules},
-		}},
-		{"Schemas", bson.D{
-			{"bsonType", "array"},
-			{"items", SchemaBsonValidatorRules},
-		}},
-		{"Features", bson.D{
-			{"bsonType", "array"},
-			{"items", FeatureBsonValidatorRules},
-		}},
-		{"Licenses", bson.D{
-			{"bsonType", "array"},
-			{"items", LicenseBsonValidatorRules},
-		}},
-		{"ADDMs", bson.D{
-			{"bsonType", "array"},
-			{"items", AddmBsonValidatorRules},
-		}},
-		{"SegmentAdvisors", bson.D{
-			{"bsonType", "array"},
-			{"items", SegmentAdvisorBsonValidatorRules},
-		}},
-		{"LastPSUs", bson.D{
-			{"bsonType", "array"},
-			{"items", PSUBsonValidatorRules},
-		}},
-		{"Backups", bson.D{
-			{"bsonType", "array"},
-			{"items", BackupBsonValidatorRules},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"InstanceNumber": bson.M{
+			"bsonType": "string",
+		},
+		"Name": bson.M{
+			"bsonType": "string",
+		},
+		"UniqueName": bson.M{
+			"bsonType": "string",
+		},
+		"Status": bson.M{
+			"bsonType": "string",
+		},
+		"Version": bson.M{
+			"bsonType": "string",
+		},
+		"Platform": bson.M{
+			"bsonType": "string",
+		},
+		"Archivelog": bson.M{
+			"bsonType": "string",
+		},
+		"Charset": bson.M{
+			"bsonType": "string",
+		},
+		"NCharset": bson.M{
+			"bsonType": "string",
+		},
+		"BlockSize": bson.M{
+			"bsonType": "string",
+		},
+		"CPUCount": bson.M{
+			"bsonType": "string",
+		},
+		"SGATarget": bson.M{
+			"bsonType": "string",
+		},
+		"PGATarget": bson.M{
+			"bsonType": "string",
+		},
+		"MemoryTarget": bson.M{
+			"bsonType": "string",
+		},
+		"SGAMaxSize": bson.M{
+			"bsonType": "string",
+		},
+		"SegmentsSize": bson.M{
+			"bsonType": "string",
+		},
+		"Used": bson.M{
+			"bsonType": "string",
+		},
+		"Allocated": bson.M{
+			"bsonType": "string",
+		},
+		"Elapsed": bson.M{
+			"bsonType": "string",
+		},
+		"DBTime": bson.M{
+			"bsonType": "string",
+		},
+		"DailyCPUUsage": bson.M{
+			"bsonType": "string",
+		},
+		"Work": bson.M{
+			"bsonType": "string",
+		},
+		"ASM": bson.M{
+			"bsonType": "bool",
+		},
+		"Dataguard": bson.M{
+			"bsonType": "bool",
+		},
+		"Patches": bson.M{
+			"bsonType": "array",
+			"items":    PatchBsonValidatorRules,
+		},
+		"Tablespaces": bson.M{
+			"bsonType": "array",
+			"items":    TablespaceBsonValidatorRules,
+		},
+		"Schemas": bson.M{
+			"bsonType": "array",
+			"items":    SchemaBsonValidatorRules,
+		},
+		"Features": bson.M{
+			"bsonType": "array",
+			"items":    FeatureBsonValidatorRules,
+		},
+		"Licenses": bson.M{
+			"bsonType": "array",
+			"items":    LicenseBsonValidatorRules,
+		},
+		"ADDMs": bson.M{
+			"bsonType": "array",
+			"items":    AddmBsonValidatorRules,
+		},
+		"SegmentAdvisors": bson.M{
+			"bsonType": "array",
+			"items":    SegmentAdvisorBsonValidatorRules,
+		},
+		"LastPSUs": bson.M{
+			"bsonType": "array",
+			"items":    PSUBsonValidatorRules,
+		},
+		"Backups": bson.M{
+			"bsonType": "array",
+			"items":    BackupBsonValidatorRules,
+		},
+	},
 }
 
 // DatabasesArrayAsMap return the equivalent map of the database array with Database.Name as Key

@@ -24,40 +24,40 @@ import (
 
 // Tablespace holds the informations about a tablespace.
 type Tablespace struct {
-	Database   string `bson:"Database"`
-	Name       string `bson:"Name"`
-	MaxSize    string `bson:"MaxSize"`
-	Total      string `bson:"Total"`
-	Used       string `bson:"Used"`
-	UsedPerc   string `bson:"UsedPerc"`
-	Status     string `bson:"Status"`
-	_otherInfo map[string]interface{}
+	Database  string                 `bson:"Database"`
+	Name      string                 `bson:"Name"`
+	MaxSize   string                 `bson:"MaxSize"`
+	Total     string                 `bson:"Total"`
+	Used      string                 `bson:"Used"`
+	UsedPerc  string                 `bson:"UsedPerc"`
+	Status    string                 `bson:"Status"`
+	OtherInfo map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
 func (v Tablespace) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
 func (v *Tablespace) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
 func (v Tablespace) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *Tablespace) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // TablespaceBsonValidatorRules contains mongodb validation rules for tablespace
-var TablespaceBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var TablespaceBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Database",
 		"Name",
 		"MaxSize",
@@ -65,28 +65,28 @@ var TablespaceBsonValidatorRules = bson.D{
 		"Used",
 		"UsedPerc",
 		"Status",
-	}},
-	{"properties", bson.D{
-		{"Database", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Name", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"MaxSize", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Total", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Used", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"UsedPerc", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Status", bson.D{
-			{"bsonType", "string"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Database": bson.M{
+			"bsonType": "string",
+		},
+		"Name": bson.M{
+			"bsonType": "string",
+		},
+		"MaxSize": bson.M{
+			"bsonType": "string",
+		},
+		"Total": bson.M{
+			"bsonType": "string",
+		},
+		"Used": bson.M{
+			"bsonType": "string",
+		},
+		"UsedPerc": bson.M{
+			"bsonType": "string",
+		},
+		"Status": bson.M{
+			"bsonType": "string",
+		},
+	},
 }

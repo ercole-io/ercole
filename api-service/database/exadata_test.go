@@ -27,7 +27,7 @@ import (
 func (m *MongodbSuite) TestSearchExadata() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
 		out, err := m.db.SearchExadata(false, []string{""}, "", false, -1, -1, "", "FOOBAR", utils.MAX_TIME)

@@ -29,44 +29,44 @@ const SchemaVersion int = 1
 
 // HostData holds all informations about a host & services
 type HostData struct {
-	ID            primitive.ObjectID `bson:"_id"`
-	Hostname      string             `bson:"Hostname"`
-	Environment   string             `bson:"Environment"`
-	Location      string             `bson:"Location"`
-	Version       string             `bson:"Version"`
-	ServerVersion string             `bson:"ServerVersion"`
-	SchemaVersion int                `bson:"SchemaVersion"`
-	Info          Host               `bson:"Info"`
-	Extra         ExtraInfo          `bson:"Extra"`
-	Archived      bool               `bson:"Archived"`
-	CreatedAt     time.Time          `bson:"CreatedAt"`
-	_otherInfo    map[string]interface{}
+	ID            primitive.ObjectID     `bson:"_id"`
+	Hostname      string                 `bson:"Hostname"`
+	Environment   string                 `bson:"Environment"`
+	Location      string                 `bson:"Location"`
+	Version       string                 `bson:"Version"`
+	ServerVersion string                 `bson:"ServerVersion"`
+	SchemaVersion int                    `bson:"SchemaVersion"`
+	Info          Host                   `bson:"Info"`
+	Extra         ExtraInfo              `bson:"Extra"`
+	Archived      bool                   `bson:"Archived"`
+	CreatedAt     time.Time              `bson:"CreatedAt"`
+	OtherInfo     map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
 func (v HostData) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
 func (v *HostData) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
 func (v HostData) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v._otherInfo, "_otherInfo")
+	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *HostData) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v._otherInfo)
+	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // HostDataBsonValidatorRules contains mongodb validation rules for hostData
-var HostDataBsonValidatorRules = bson.D{
-	{"bsonType", "object"},
-	{"required", bson.A{
+var HostDataBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
 		"Hostname",
 		"Environment",
 		"Location",
@@ -77,33 +77,33 @@ var HostDataBsonValidatorRules = bson.D{
 		"Extra",
 		"Archived",
 		"CreatedAt",
-	}},
-	{"properties", bson.D{
-		{"Hostname", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Environment", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Location", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"Version", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"ServerVersion", bson.D{
-			{"bsonType", "string"},
-		}},
-		{"SchemaVersion", bson.D{
-			{"bsonType", "number"},
-		}},
-		{"Info", HostBsonValidatorRules},
-		{"Extra", ExtraInfoBsonValidatorRules},
-		{"Archived", bson.D{
-			{"bsonType", "bool"},
-		}},
-		{"CreatedAt", bson.D{
-			{"bsonType", "date"},
-		}},
-	}},
+	},
+	"properties": bson.M{
+		"Hostname": bson.M{
+			"bsonType": "string",
+		},
+		"Environment": bson.M{
+			"bsonType": "string",
+		},
+		"Location": bson.M{
+			"bsonType": "string",
+		},
+		"Version": bson.M{
+			"bsonType": "string",
+		},
+		"ServerVersion": bson.M{
+			"bsonType": "string",
+		},
+		"SchemaVersion": bson.M{
+			"bsonType": "number",
+		},
+		"Info":  HostBsonValidatorRules,
+		"Extra": ExtraInfoBsonValidatorRules,
+		"Archived": bson.M{
+			"bsonType": "bool",
+		},
+		"CreatedAt": bson.M{
+			"bsonType": "date",
+		},
+	},
 }
