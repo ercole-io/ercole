@@ -21,20 +21,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDiffFeature(t *testing.T) {
-	differences := DiffFeature([]Feature{
-		{Name: "Spatial queryes", Status: true},
-		{Name: "High heavy database", Status: false},
-		{Name: "Power saving", Status: false},
-		{Name: "Crackked", Status: true},
-		{Name: "Star wars support", Status: true},
-		{Name: "Star wars support SP3", Status: false},
-	}, []Feature{
-		{Name: "Spatial queryes", Status: true},
-		{Name: "High heavy database", Status: true},
-		{Name: "Power saving", Status: false},
-		{Name: "Crackked", Status: false},
-		{Name: "Dark Engine", Status: true},
+func TestDiffLicenses(t *testing.T) {
+	differences := DiffLicenses([]License{
+		{Name: "Spatial queryes", Count: 10},
+		{Name: "High heavy database", Count: 0},
+		{Name: "Power saving", Count: 0},
+		{Name: "Crackked", Count: 12},
+		{Name: "Star wars support", Count: 6},
+		{Name: "Star wars support SP3", Count: 0},
+	}, []License{
+		{Name: "Spatial queryes", Count: 5},
+		{Name: "High heavy database", Count: 7},
+		{Name: "Power saving", Count: 0},
+		{Name: "Crackked", Count: 0},
+		{Name: "Dark Engine", Count: 13},
 	})
 
 	assert.Equal(t, differences["Spatial queryes"], DiffFeatureActive)

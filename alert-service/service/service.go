@@ -207,7 +207,6 @@ func (as *AlertService) DiffHostDataMapAndGenerateAlert(oldData model.HostData, 
 		} else {
 			oldDb = model.Database{
 				Licenses: []model.License{},
-				Features: []model.Feature{},
 			}
 			// fire NEW_DATABASE alert
 			if err := as.ThrowNewDatabaseAlert(newDb.Name, newData.Hostname); err != nil {
@@ -227,12 +226,12 @@ func (as *AlertService) DiffHostDataMapAndGenerateAlert(oldData model.HostData, 
 		}
 
 		//Get the difference of features
-		diff := model.DiffFeature(oldDb.Features, newDb.Features)
+		diff := model.DiffLicenses(oldDb.Licenses, newDb.Licenses)
 
 		//Extract from the diff the activated features
 		activatedFeatures := []string{}
 		for feature, val := range diff {
-			if val == model.DiffFeatureActivated {
+			if val == model.DiffFeatureActivated && feature != "Oracle ENT" && feature != "Oracle STD" && feature != "Oracle EXE" {
 				activatedFeatures = append(activatedFeatures, feature)
 			}
 		}

@@ -65,3 +65,46 @@ var LicenseBsonValidatorRules = bson.M{
 		},
 	},
 }
+
+// DiffFeature status of each feature
+const (
+	// DiffFeatureInactive is used when the feature changes from (0/-) to 0
+	DiffFeatureInactive int = -2
+	// DiffFeatureDeactivated is used when the feature changes from 1 to (0/-)
+	DiffFeatureDeactivated int = -1
+	// DiffFeatureMissing is used when a feature is missing in the diff
+	DiffFeatureMissing int = 0
+	// DiffFeatureActivated is used when the feature changes from (0/-) to 1
+	DiffFeatureActivated int = 1
+	// DiffFeatureInactive is used when the feature changes from 1 to 1
+	DiffFeatureActive int = 2
+)
+
+// DiffLicenses return a map that contains the difference of status between the oldLicenses and newLicenses
+func DiffLicenses(oldLicenses []License, newLicenses []License) map[string]int {
+	result := make(map[string]int)
+
+	//Add the features to the result assuming that the all new features are inactive
+	for _, license := range oldLicenses {
+		if license.Count > 0 {
+			result[license.Name] = DiffFeatureDeactivated
+		} else {
+			result[license.Name] = DiffFeatureInactive
+		}
+	}
+
+	//Activate/deactivate missing feature
+	for _, license := range newLicenses {
+		if (result[license.Name] == DiffFeatureInactive || result[license.Name] == DiffFeatureMissing) && license.Count <= 0 {
+			result[license.Name] = DiffFeatureInactive
+		} else if (result[license.Name] == DiffFeatureDeactivated) && license.Count <= 0 {
+			result[license.Name] = DiffFeatureDeactivated
+		} else if (result[license.Name] == DiffFeatureInactive || result[license.Name] == DiffFeatureMissing) && license.Count > 0 {
+			result[license.Name] = DiffFeatureActivated
+		} else if (result[license.Name] == DiffFeatureDeactivated) && license.Count > 0 {
+			result[license.Name] = DiffFeatureActive
+		}
+	}
+
+	return result
+}

@@ -51,7 +51,6 @@ type Database struct {
 	Patches         []Patch                `bson:"Patches"`
 	Tablespaces     []Tablespace           `bson:"Tablespaces"`
 	Schemas         []Schema               `bson:"Schemas"`
-	Features        []Feature              `bson:"Features"`
 	Licenses        []License              `bson:"Licenses"`
 	ADDMs           []Addm                 `bson:"ADDMs"`
 	SegmentAdvisors []SegmentAdvisor       `bson:"SegmentAdvisors"`
@@ -111,7 +110,6 @@ var DatabaseBsonValidatorRules = bson.M{
 		"Patches",
 		"Tablespaces",
 		"Schemas",
-		"Features",
 		"Licenses",
 		"ADDMs",
 		"SegmentAdvisors",
@@ -202,10 +200,6 @@ var DatabaseBsonValidatorRules = bson.M{
 		"Schemas": bson.M{
 			"bsonType": "array",
 			"items":    SchemaBsonValidatorRules,
-		},
-		"Features": bson.M{
-			"bsonType": "array",
-			"items":    FeatureBsonValidatorRules,
 		},
 		"Licenses": bson.M{
 			"bsonType": "array",
