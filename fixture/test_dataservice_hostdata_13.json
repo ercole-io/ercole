@@ -108,31 +108,6 @@
 				"Indexes": 0,
 				"LOB": 0
 			}],
-			"Features": [{
-				"Name": "WebLogic Server Management Pack Enterprise Edition",
-				"Status": false
-			}, {
-				"Name": "Tuning Pack",
-				"Status": false
-			}, {
-				"Name": "Provisioning and Patch Automation Pack for Database",
-				"Status": false
-			}, {
-				"Name": "Label Security",
-				"Status": false
-			}, {
-				"Name": "HW",
-				"Status": false
-			}, {
-				"Name": "GoldenGate",
-				"Status": false
-			}, {
-				"Name": "Exadata",
-				"Status": false
-			}, {
-				"Name": "Diagnostics Pack",
-				"Status": true
-			}],
 			"Licenses": [{
 				"Name": "Oracle EXE",
 				"Count": 0
