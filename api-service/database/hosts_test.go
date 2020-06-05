@@ -17,7 +17,6 @@ package database
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/ercole-io/ercole/model"
@@ -510,7 +509,6 @@ func (m *MongodbSuite) TestGetHost() {
 						"DailyCPUUsage":   "3.4",
 						"Dataguard":       false,
 						"Elapsed":         "12059.18",
-						"Features":        []interface{}{},
 						"Features2":       []interface{}{},
 						"InstanceNumber":  "1",
 						"LastPSUs":        []interface{}{},
@@ -630,7 +628,6 @@ func (m *MongodbSuite) TestGetHost() {
 						"DailyCPUUsage":   "3.4",
 						"Dataguard":       false,
 						"Elapsed":         "12059.18",
-						"Features":        []interface{}{},
 						"Features2":       []interface{}{},
 						"InstanceNumber":  "1",
 						"LastPSUs":        []interface{}{},
@@ -815,12 +812,10 @@ func (m *MongodbSuite) TestReplaceHostData() {
 	newHostdata := utils.LoadFixtureMongoHostDataMapAsHostData(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json")
 	newHostdata.OtherInfo["Foo"] = "Bar"
 	newHostdata.CreatedAt = utils.P("2020-04-28T13:50:05.46Z").Local()
-	fmt.Println("qui0", utils.ToJSON(newHostdata))
 	err := m.db.ReplaceHostData(newHostdata)
 	m.Require().NoError(err)
 
 	hs, err := m.db.FindHostData("test-small")
-	fmt.Println(utils.ToJSON(hs))
 	m.Require().NoError(err)
 	m.Require().NotNil(hs)
 

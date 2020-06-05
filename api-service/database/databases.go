@@ -53,9 +53,9 @@ func (md *MongoDatabase) SearchDatabases(full bool, keywords []string, sortBy st
 				),
 				"Database.DatafileSize":     "$Database.Used",
 				"Database.ArchiveLogStatus": mu.APOEqual("$Database.Archivelog", "ARCHIVELOG"),
-				"Database.RAC": mu.APOAny("$Database.Features", "fe", mu.APOAnd(
-					mu.APOEqual("$$fe.Name", "Real Application Clusters"),
-					mu.APOEqual("$$fe.Status", true),
+				"Database.RAC": mu.APOAny("$Database.Licenses", "lic", mu.APOAnd(
+					mu.APOEqual("$$lic.Name", "Real Application Clusters"),
+					mu.APOGreater("$$lic.Count", 0),
 				)),
 			}),
 			mu.APReplaceWith(mu.APOMergeObjects("$$ROOT", "$Database")),

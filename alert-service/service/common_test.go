@@ -79,7 +79,6 @@ var hostData3 model.HostData = model.HostData{
 			{
 				Name:     "acd",
 				Licenses: []model.License{},
-				Features: []model.Feature{},
 			},
 		},
 	},
@@ -105,12 +104,6 @@ var hostData4 model.HostData = model.HostData{
 					{
 						Name:  "Driving",
 						Count: 100,
-					},
-				},
-				Features: []model.Feature{
-					{
-						Name:   "Driving",
-						Status: true,
 					},
 				},
 			},
