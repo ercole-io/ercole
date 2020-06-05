@@ -196,7 +196,6 @@ var FrontendHostdataSchemaValidator string = `
 										"Patches",
 										"Tablespaces",
 										"Schemas",
-										"Features",
 										"Licenses",
 										"ADDMs",
 										"SegmentAdvisors",
@@ -378,24 +377,6 @@ var FrontendHostdataSchemaValidator string = `
 													},
 													"LOB": {
 														"type": "integer"
-													}
-												}
-											}
-										},
-										"Features": {
-											"type": "array",
-											"items": {
-												"type": "object",
-												"required": [
-													"Name",
-													"Status"										
-												],
-												"properties": {
-													"Name": {
-														"type": "string"
-													},
-													"Status": {
-														"type": "boolean"
 													}
 												}
 											}

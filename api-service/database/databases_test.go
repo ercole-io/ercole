@@ -289,15 +289,6 @@ func (m *MongodbSuite) TestSearchDatabases() {
 				"Dataguard":     false,
 				"Elapsed":       "12059.18",
 				"Environment":   "TST",
-				"Features": []interface{}{
-					map[string]interface{}{
-						"Name":   "Exadata",
-						"Status": false,
-					},
-					map[string]interface{}{"Name": "Diagnostics Pack",
-						"Status": true,
-					},
-				},
 				"Features2": []interface{}{
 					map[string]interface{}{
 						"CurrentlyUsed":    false,
@@ -335,10 +326,11 @@ func (m *MongodbSuite) TestSearchDatabases() {
 						"Description": "PSU 11.2.0.3.2",
 					},
 				},
-				"Licenses": []interface{}{map[string]interface{}{
-					"Count": 0,
-					"Name":  "Oracle EXE",
-				},
+				"Licenses": []interface{}{
+					map[string]interface{}{
+						"Count": 0,
+						"Name":  "Oracle EXE",
+					},
 					map[string]interface{}{
 						"Count": 0.5,
 						"Name":  "Oracle ENT",
@@ -440,44 +432,6 @@ func (m *MongodbSuite) TestSearchDatabases() {
 				"Dataguard":        true,
 				"Elapsed":          "12059.18",
 				"Environment":      "TST",
-				"Features": []interface{}{
-					map[string]interface{}{
-						"Name":   "WebLogic Server Management Pack Enterprise Edition",
-						"Status": false,
-					},
-					map[string]interface{}{
-						"Name":   "Tuning Pack",
-						"Status": false,
-					},
-					map[string]interface{}{
-						"Name":   "Provisioning and Patch Automation Pack for Database",
-						"Status": false,
-					},
-					map[string]interface{}{
-						"Name":   "Label Security",
-						"Status": false,
-					},
-					map[string]interface{}{
-						"Name":   "HW",
-						"Status": false,
-					},
-					map[string]interface{}{
-						"Name":   "GoldenGate",
-						"Status": false,
-					},
-					map[string]interface{}{
-						"Name":   "Exadata",
-						"Status": false,
-					},
-					map[string]interface{}{
-						"Name":   "Diagnostics Pack",
-						"Status": true,
-					},
-					map[string]interface{}{
-						"Name":   "Real Application Clusters",
-						"Status": true,
-					},
-				},
 				"Features2": []interface{}{
 					map[string]interface{}{
 						"CurrentlyUsed":    false,
@@ -551,6 +505,10 @@ func (m *MongodbSuite) TestSearchDatabases() {
 					map[string]interface{}{
 						"Count": 0.5,
 						"Name":  "Diagnostics Pack",
+					},
+					map[string]interface{}{
+						"Count": 0.5,
+						"Name":  "Real Application Clusters",
 					},
 				},
 				"Location":     "Germany",

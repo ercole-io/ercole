@@ -50,16 +50,6 @@
                 "DailyCPUUsage": "0.7",
                 "Dataguard": false,
                 "Elapsed": "12059.18",
-                "Features": [
-                    {
-                        "Name": "Exadata",
-                        "Status": false
-                    },
-                    {
-                        "Name": "Diagnostics Pack",
-                        "Status": true
-                    }
-                ],
                 "Features2": [
                     {
                         "CurrentlyUsed": false,
@@ -254,16 +244,6 @@
                 "DailyCPUUsage": "3.1",
                 "Dataguard": false,
                 "Elapsed": "12059.18",
-                "Features": [
-                    {
-                        "Name": "Exadata",
-                        "Status": false
-                    },
-                    {
-                        "Name": "Diagnostics Pack",
-                        "Status": true
-                    }
-                ],
                 "Features2": [
                     {
                         "CurrentlyUsed": false,
