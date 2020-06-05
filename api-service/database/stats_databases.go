@@ -284,10 +284,10 @@ func (md *MongoDatabase) GetDatabaseRACStatusStats(location string, environment 
 			mu.APProject(bson.M{
 				"Database": "$Extra.Databases",
 			}),
-			mu.APGroupAndCountStages("RAC", "Count", mu.APOAny("$Database.Features", "fe",
+			mu.APGroupAndCountStages("RAC", "Count", mu.APOAny("$Database.Licenses", "lic",
 				mu.APOAnd(
-					mu.APOEqual("$$fe.Name", "Real Application Clusters"),
-					mu.APOEqual("$$fe.Status", true),
+					mu.APOEqual("$$lic.Name", "Real Application Clusters"),
+					mu.APOGreater("$$lic.Count", 0),
 				),
 			)),
 			mu.APSort(bson.M{

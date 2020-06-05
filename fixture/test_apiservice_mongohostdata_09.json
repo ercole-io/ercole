@@ -22,43 +22,6 @@
                 "DailyCPUUsage": "1.3",
                 "Dataguard": true,
                 "Elapsed": "12059.18",
-                "Features": [
-                    {
-                        "Name": "WebLogic Server Management Pack Enterprise Edition",
-                        "Status": false
-                    },
-                    {
-                        "Name": "Tuning Pack",
-                        "Status": false
-                    },
-                    {
-                        "Name": "Provisioning and Patch Automation Pack for Database",
-                        "Status": false
-                    },
-                    {
-                        "Name": "Label Security",
-                        "Status": false
-                    },
-                    {
-                        "Name": "HW",
-                        "Status": false
-                    },
-                    {
-                        "Name": "GoldenGate",
-                        "Status": false
-                    },
-                    {
-                        "Name": "Exadata",
-                        "Status": false
-                    },
-                    {
-                        "Name": "Diagnostics Pack",
-                        "Status": true
-                    }, {
-                        "Name": "Real Application Clusters",
-                        "Status": true
-                    }
-                ],
                 "Features2": [
                     {
                         "CurrentlyUsed": false,
@@ -156,6 +119,12 @@
                             "$numberDouble": "0.5"
                         },
                         "Name": "Diagnostics Pack"
+                    },
+                    {
+                        "Count": {
+                            "$numberDouble": "0.5"
+                        },
+                        "Name": "Real Application Clusters"
                     }
                 ],
                 "MemoryTarget": "1.484",

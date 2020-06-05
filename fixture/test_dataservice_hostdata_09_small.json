@@ -85,13 +85,6 @@
 				"Indexes": 0,
 				"LOB": 0
 			}],
-			"Features": [{
-				"Name": "Exadata",
-				"Status": false
-			}, {
-				"Name": "Diagnostics Pack",
-				"Status": true
-			}],
 			"Licenses": [{
 				"Name": "Oracle EXE",
 				"Count": 0

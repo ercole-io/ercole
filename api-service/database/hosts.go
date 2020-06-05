@@ -169,9 +169,9 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 						"ProductEdition":           mu.APOArrayElemAt(mu.APOSplit("$Database.Version", " "), 1),
 						"Environment":              "$Environment",
 						"Features": mu.APOJoin(mu.APOMap(
-							mu.APOFilter("$Database.Features", "fe", mu.APOEqual("$$fe.Status", true)),
-							"fe",
-							"$$fe.Name",
+							mu.APOFilter("$Database.Licenses", "lic", mu.APOAnd(mu.APOGreater("$$lic.Count", 0), mu.APONotEqual("$$lic.Name", "Oracle STD"), mu.APONotEqual("$$lic.Name", "Oracle EXE"), mu.APONotEqual("$$lic.Name", "Oracle ENT"))),
+							"lic",
+							"$$lic.Name",
 						), ", "),
 						"RacNodeNames":   "",
 						"ProcessorModel": "$Info.CPUModel",
