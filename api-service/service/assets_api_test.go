@@ -40,6 +40,7 @@ func TestListAssets_Success(t *testing.T) {
 			"Count":      2,
 			"Name":       "Oracle/Exadata",
 			"Used":       2,
+			"HostsCount": 2,
 		},
 		{
 			"Compliance": false,
@@ -48,12 +49,13 @@ func TestListAssets_Success(t *testing.T) {
 			"Count":      7,
 			"Name":       "Oracle/Database",
 			"Used":       10,
+			"HostsCount": 8,
 		},
 	}
 
 	getAssetsUsageRes := map[string]float32{
-		"Oracle/Database": 8,
-		"Oracle/Exadata":  2,
+		"Oracle/Database_HostsCount": 8,
+		"Oracle/Exadata":             2,
 	}
 	db.EXPECT().
 		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).

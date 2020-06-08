@@ -29,6 +29,11 @@ func (as *APIService) GetTotalAssetsComplianceStats(location string, environment
 		return nil, err
 	}
 
+	hostsCount, err := as.GetHostsCountStats(location, environment, olderThan)
+	if err != nil {
+		return nil, err
+	}
+
 	totalUsed := float32(0.0)
 	totalCount := float32(0.0)
 	totalCompliant := true
@@ -45,10 +50,11 @@ func (as *APIService) GetTotalAssetsComplianceStats(location string, environment
 	}
 
 	return map[string]interface{}{
-		"Used":      totalUsed,
-		"Count":     totalCount,
-		"Compliant": totalCompliant,
-		"TotalCost": totalTotalCost,
-		"PaidCost":  totalPaidCost,
+		"Used":       totalUsed,
+		"Count":      totalCount,
+		"Compliant":  totalCompliant,
+		"TotalCost":  totalTotalCost,
+		"PaidCost":   totalPaidCost,
+		"HostsCount": hostsCount,
 	}, nil
 }
