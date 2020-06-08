@@ -59,8 +59,8 @@ func TestGetErcoleFeatures_Success(t *testing.T) {
 	}
 
 	getAssetsUsageRes := map[string]float32{
-		"Oracle/Database": 8,
-		"Oracle/Exadata":  0,
+		"Oracle/Database_HostsCount": 8,
+		"Oracle/Exadata":             0,
 	}
 
 	db.EXPECT().

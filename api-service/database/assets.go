@@ -36,6 +36,9 @@ func (md *MongoDatabase) GetAssetsUsage(location string, environment string, old
 			FilterByOldnessSteps(olderThan),
 			mu.APGroup(bson.M{
 				"_id": 1,
+				"Oracle/Database_HostsCount": mu.APOSum(
+					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$Extra.Databases", bson.A{})), 0), 1, 0),
+				),
 				"Oracle/Exadata": mu.APOSum(
 					mu.APOCond(
 						mu.APOEqual(bson.M{

@@ -982,6 +982,7 @@ components:
         - Compliance
         - TotalCost
         - PaidCost
+        - HostsCount
       properties:
         Name:
           type: string
@@ -995,6 +996,8 @@ components:
           type: number
         PaidCost:
           type: number
+        HostsCount:
+          type: integer
     AllAssetComplianceStatus:
       type: object
       required:
@@ -1003,6 +1006,7 @@ components:
         - Compliant
         - TotalCost
         - PaidCost
+        - HostsCount
       properties:
         Used:
           type: integer
@@ -1014,6 +1018,8 @@ components:
           type: number
         PaidCost:
           type: number
+        HostsCount:
+          type: integer
     AggregatedCodeSeverityAlerts:
       type: object
       required:
@@ -2279,6 +2285,32 @@ paths:
                     description: non paged
                     items:
                       $ref: '#/components/schemas/LicenseModifier'
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /stats/count:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetHostsCountStats
+      summary: Get the number of the hosts
+      description: Get the number of the hosts
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: integer
         '401':
           $ref: '#/components/responses/error'
         '422':
