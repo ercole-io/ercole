@@ -33,11 +33,12 @@ func TestGetTotalAssetsComplianceStats_Success(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Compliant": false,
-		"Count":     9,
-		"Used":      12,
-		"TotalCost": 130,
-		"PaidCost":  85,
+		"Compliant":  false,
+		"Count":      9,
+		"Used":       12,
+		"TotalCost":  130,
+		"PaidCost":   85,
+		"HostsCount": 20,
 	}
 
 	getAssetsUsageRes := map[string]float32{
@@ -47,6 +48,9 @@ func TestGetTotalAssetsComplianceStats_Success(t *testing.T) {
 	db.EXPECT().
 		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(getAssetsUsageRes, nil)
+	db.EXPECT().
+		GetHostsCountStats("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		Return(20, nil).AnyTimes().MinTimes(1)
 
 	listLicensesRes := []interface{}{
 		map[string]interface{}{

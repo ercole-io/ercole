@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2019 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,14 +13,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package model
+package cmd
 
-type AssetStatus struct {
-	Name       string
-	Used       float32
-	Count      float32
-	Compliance bool
-	TotalCost  float32
-	PaidCost   float32
-	HostsCount int
+func init() {
+	getHostsCountStatsCmd := simpleSingleValueAPIRequestCommand("count",
+		"Get the number of hosts",
+		`Get the number of hosts`,
+		false, true, true, true,
+		"/stats/count",
+		"Failed to get the number of hosts: %v\n",
+		"Failed to get the number of hostswork (Status: %d): %s\n",
+	)
+
+	statsCmd.AddCommand(getHostsCountStatsCmd)
 }

@@ -47,6 +47,7 @@ func TestListAssets_Success(t *testing.T) {
 			Count:      0,
 			Name:       "Oracle/Database",
 			Used:       8,
+			HostsCount: 10,
 		},
 		{
 			Compliance: true,
@@ -55,6 +56,7 @@ func TestListAssets_Success(t *testing.T) {
 			Count:      2,
 			Name:       "Oracle/Exadata",
 			Used:       2,
+			HostsCount: 1,
 		},
 	}
 

@@ -58,14 +58,16 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 					"Used":       10,
 					"TotalCost":  130,
 					"PaidCost":   85,
+					"HostsCount": 8,
 				},
 			},
 			"Total": map[string]interface{}{
-				"Compliant": false,
-				"TotalCost": 130,
-				"PaidCost":  85,
-				"Count":     7,
-				"Used":      10,
+				"Compliant":  false,
+				"TotalCost":  130,
+				"PaidCost":   85,
+				"Count":      7,
+				"Used":       10,
+				"HostsCount": 20,
 			},
 		},
 		"Features": map[string]interface{}{
@@ -75,12 +77,16 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 	}
 
 	getAssetsUsageRes := map[string]float32{
-		"Oracle/Database": 8,
-		"Oracle/Exadata":  0,
+		"Oracle/Database_HostsCount": 8,
+		"Oracle/Exadata":             0,
 	}
 	db.EXPECT().
 		GetAssetsUsage("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 		Return(getAssetsUsageRes, nil).AnyTimes().MinTimes(1)
+
+	db.EXPECT().
+		GetHostsCountStats("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		Return(20, nil).AnyTimes().MinTimes(1)
 
 	listLicensesRes := []interface{}{
 		map[string]interface{}{
@@ -142,8 +148,8 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 	)
 
 	getAssetsUsageRes2 := map[string]float32{
-		"Oracle/Database": 8,
-		"Oracle/Exadata":  2,
+		"Oracle/Database_HostsCount": 8,
+		"Oracle/Exadata":             2,
 	}
 	db.EXPECT().
 		GetAssetsUsage("", "", utils.MAX_TIME).
@@ -184,9 +190,13 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 		"Oracle/Database": 8,
 		"Oracle/Exadata":  0,
 	}
+
 	db.EXPECT().
 		GetAssetsUsage("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 		Return(getAssetsUsageRes, nil).AnyTimes().MinTimes(1)
+	db.EXPECT().
+		GetHostsCountStats("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		Return(20, nil).AnyTimes().MinTimes(1)
 
 	listLicensesRes := []interface{}{
 		map[string]interface{}{

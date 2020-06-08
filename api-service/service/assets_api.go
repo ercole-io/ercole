@@ -47,6 +47,7 @@ func (as *APIService) ListAssets(sortBy string, sortDesc bool, location string, 
 			Compliance: true,
 			PaidCost:   0.0,
 			TotalCost:  0.0,
+			HostsCount: int(partialList["Oracle/Exadata"]),
 		})
 	}
 
@@ -82,6 +83,7 @@ func (as *APIService) ListAssets(sortBy string, sortDesc bool, location string, 
 			Compliance: used <= holded,
 			TotalCost:  totalCost,
 			PaidCost:   paidCost,
+			HostsCount: int(partialList["Oracle/Database_HostsCount"]),
 		})
 	}
 
