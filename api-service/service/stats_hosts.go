@@ -22,6 +22,11 @@ import (
 	"github.com/ercole-io/ercole/utils"
 )
 
+// GetHostsCountStats return the number of the non-archived hosts
+func (as *APIService) GetHostsCountStats(location string, environment string, olderThan time.Time) (int, utils.AdvancedErrorInterface) {
+	return as.Database.GetHostsCountStats(location, environment, olderThan)
+}
+
 // GetEnvironmentStats return a array containing the number of hosts per environment
 func (as *APIService) GetEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetEnvironmentStats(location, olderThan)
