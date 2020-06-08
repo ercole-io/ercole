@@ -63,7 +63,8 @@ type MongoDatabaseInterface interface {
 	ListLocations(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface)
 	// ListEnvironments list environments
 	ListEnvironments(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface)
-
+	// GetHostsCountStats return the number of the non-archived hosts
+	GetHostsCountStats(location string, environment string, olderThan time.Time) (int, utils.AdvancedErrorInterface)
 	// GetEnvironmentStats return a array containing the number of hosts per environment
 	GetEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetTypeStats return a array containing the number of hosts per operating system

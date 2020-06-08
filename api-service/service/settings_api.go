@@ -18,7 +18,7 @@ func (as *APIService) GetErcoleFeatures() (map[string]bool, utils.AdvancedErrorI
 
 	out := map[string]bool{}
 
-	out["Oracle/Database"] = partialList["Oracle/Database"] > 0
+	out["Oracle/Database"] = partialList["Oracle/Database_HostsCount"] > 0
 	out["Oracle/Exadata"] = partialList["Oracle/Exadata"] > 0
 
 	return out, nil

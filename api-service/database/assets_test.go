@@ -56,7 +56,8 @@ func (m *MongodbSuite) TestGetAssetsUsage() {
 		out, err := m.db.GetAssetsUsage("", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = map[string]interface{}{
-			"Oracle/Exadata": 1,
+			"Oracle/Exadata":             1,
+			"Oracle/Database_HostsCount": 2,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))

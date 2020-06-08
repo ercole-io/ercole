@@ -24,6 +24,37 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// GetHostsCountStats return the number of the non-archived hosts
+func (md *MongoDatabase) GetHostsCountStats(location string, environment string, olderThan time.Time) (int, utils.AdvancedErrorInterface) {
+	var out map[string]int
+
+	//Calculate the stats
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
+			FilterByLocationAndEnvironmentSteps(location, environment),
+			mu.APCount("Value"),
+		),
+	)
+	if err != nil {
+		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Next the cursor. If there is no document return a empty document
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return 0, nil
+	}
+
+	//Decode the document
+	if err := cur.Decode(&out); err != nil {
+		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return out["Value"], nil
+}
+
 // GetEnvironmentStats return a array containing the number of hosts per environment
 func (md *MongoDatabase) GetEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{} = make([]interface{}, 0)
