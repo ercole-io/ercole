@@ -79,6 +79,34 @@ func (ctrl *APIController) SetPatchingFunction(w http.ResponseWriter, r *http.Re
 	utils.WriteJSONResponse(w, http.StatusOK, id)
 }
 
+// DeletePatchingFunction delete the patching function of a host specified in the hostname path variable
+func (ctrl *APIController) DeletePatchingFunction(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+	if !ctrl.Config.APIService.EnableInsertingCustomPatchingFunction {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the configuration property EnableInsertingCustomPatchingFunction is false"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	//get the data
+	hostname := mux.Vars(r)["hostname"]
+
+	//delete the value
+	aerr := ctrl.Service.DeletePatchingFunction(hostname)
+	if aerr == utils.AerrHostNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
+		return
+	} else if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
+}
+
 // AddTagToDatabase add a tag to the database if it hasn't the tag
 func (ctrl *APIController) AddTagToDatabase(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
