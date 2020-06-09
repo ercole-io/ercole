@@ -61,6 +61,7 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 					"_id": bson.M{
 						"Code":     "$AlertCode",
 						"Severity": "$AlertSeverity",
+						"Category": "$AlertCategory",
 					},
 					"Count": mu.APOSum(1),
 					"OldestAlert": bson.M{
@@ -72,7 +73,31 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 				}),
 				mu.APProject(bson.M{
 					"_id":           false,
+					"Category":      "$_id.Category",
 					"Code":          "$_id.Code",
+					"Severity":      "$_id.Severity",
+					"Count":         true,
+					"AffectedHosts": mu.APOSize("$AffectedHosts"),
+					"OldestAlert":   true,
+				}),
+			)),
+			mu.APOptionalStage(mode == "aggregated-category-severity", mu.MAPipeline(
+				mu.APGroup(bson.M{
+					"_id": bson.M{
+						"Severity": "$AlertSeverity",
+						"Category": "$AlertCategory",
+					},
+					"Count": mu.APOSum(1),
+					"OldestAlert": bson.M{
+						"$min": "$Date",
+					},
+					"AffectedHosts": bson.M{
+						"$addToSet": "$Hostname",
+					},
+				}),
+				mu.APProject(bson.M{
+					"_id":           false,
+					"Category":      "$_id.Category",
 					"Severity":      "$_id.Severity",
 					"Count":         true,
 					"AffectedHosts": mu.APOSize("$AffectedHosts"),
