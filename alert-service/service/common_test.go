@@ -121,6 +121,10 @@ func (sa *alertSimilarTo) Matches(x interface{}) bool {
 		return false
 	} else if val.AlertCode != sa.al.AlertCode {
 		return false
+	} else if (sa.al.AlertAffectedAsset == nil && val.AlertAffectedAsset != sa.al.AlertAffectedAsset) || (sa.al.AlertAffectedAsset != nil && *val.AlertAffectedAsset != *sa.al.AlertAffectedAsset) {
+		return false
+	} else if val.AlertCategory != sa.al.AlertCategory {
+		return false
 	} else {
 		return reflect.DeepEqual(sa.al.OtherInfo, val.OtherInfo)
 	}

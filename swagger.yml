@@ -847,18 +847,6 @@ components:
     Alert:
       title: Alert
       type: object
-      x-examples:
-        example-1:
-          AlertCode: NEW_DATABASE
-          AlertSeverity: NOTICE
-          AlertStatus: NEW
-          Date: '2020-04-15T14:28:04.309+02:00'
-          Description: "The database 'ERCOLE' was created on the server itl-csllab-112.sorint.localpippo"
-          Hostname: itl-csllab-112.sorint.localpippo
-          OtherInfo:
-            Dbname: ERCOLE
-            Hostname: itl-csllab-112.sorint.localpippo
-          _id: 5e96fdd41a65b0bf4e980292
       properties:
         OtherInfo:
           type: object
@@ -871,6 +859,18 @@ components:
           type: string
         Description:
           type: string
+        AlertCategory:
+          type: string
+          enum:
+            - SYSTEM
+            - AGENT
+            - LICENSE
+        AlertAffectedAsset:
+          nullable: true
+          type: string
+          enum:
+            - Oracle/Database
+            - Oracle/Exadata
         AlertStatus:
           type: string
           enum:
@@ -888,12 +888,20 @@ components:
           example: MAJOR
         AlertCode:
           type: string
+          enum:
+            - NEW_DATABASE
+            - NEW_OPTION
+            - NEW_LICENSE
+            - NEW_SERVER
+            - NO_DATA
         _id:
           type: string
           description: ID of the alert
       required:
         - Hostname
         - Description
+        - AlertCategory
+        - AlertAffectedAsset
         - AlertStatus
         - AlertSeverity
         - AlertCode
@@ -1023,16 +1031,50 @@ components:
     AggregatedCodeSeverityAlerts:
       type: object
       required:
+        - Category
         - Code
         - Severity
         - Count
         - AffectedHosts
         - OldestAlert
       properties:
+        Category:
+          type: string
+          enum:
+            - SYSTEM
+            - AGENT
+            - LICENSE
         Code: 
           type: string
           externalDocs:
             url: https://github.com/ercole-io/ercole/blob/master/model/alert.go
+        Severity:
+          type: string
+          externalDocs:
+            url: https://github.com/ercole-io/ercole/blob/master/model/alert.go
+        Count: 
+          type: integer
+        AffectedHosts:
+          type: integer
+        OldestAlert:
+          type: string
+          format: date-time
+          example: '2020-05-05T08:23:40+00:00'
+    AggregatedCategorySeverityAlerts:
+      type: object
+      required:
+        - Category
+        - Severity
+        - Count
+        - AffectedHosts
+        - OldestAlert
+      properties:
+        Category:
+          type: string
+          enum:
+            - SYSTEM
+            - AGENT
+            - LICENSE
         Severity:
           type: string
           externalDocs:
@@ -1956,6 +1998,7 @@ paths:
             enum:
               - all
               - aggregated-code-severity
+              - aggregated-category-severity
             readOnly: true
         - $ref: '#/components/parameters/search'
         - $ref: '#/components/parameters/sort-by'

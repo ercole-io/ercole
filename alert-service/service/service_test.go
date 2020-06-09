@@ -91,11 +91,14 @@ This is just an alert test to a mocked emailer.`,
 
 	fields := make(hub.Fields, 1)
 	fields["alert"] = model.Alert{
-		OtherInfo:     map[string]interface{}{"Hostname": "TestHostname"},
-		AlertSeverity: model.AlertSeverityMajor,
-		Description:   "This is just an alert test to a mocked emailer.",
-		Date:          utils.P("2019-09-02T10:25:28Z"),
-		AlertCode:     model.AlertCodeNewLicense,
+		AlertCategory:      model.AlertCategoryLicense,
+		AlertAffectedAsset: model.AssetOracleDatabasePtr,
+		AlertStatus:        model.AlertStatusNew,
+		OtherInfo:          map[string]interface{}{"Hostname": "TestHostname"},
+		AlertSeverity:      model.AlertSeverityMajor,
+		Description:        "This is just an alert test to a mocked emailer.",
+		Date:               utils.P("2019-09-02T10:25:28Z"),
+		AlertCode:          model.AlertCodeNewLicense,
 	}
 
 	msg := hub.Message{
@@ -137,6 +140,8 @@ func TestProcessHostDataInsertion_SuccessNewHost(t *testing.T) {
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, "The server 'superhost1' was added to ercole", alert.Description)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
+		assert.Equal(t, model.AlertCategorySystem, alert.AlertCategory)
+		assert.Nil(t, alert.AlertAffectedAsset)
 	}).Times(1)
 
 	as.ProcessHostDataInsertion(hub.Fields{
@@ -236,11 +241,13 @@ This is just an alert test to a mocked emailer.`,
 
 	params := make(hub.Fields, 1)
 	params["alert"] = model.Alert{
-		OtherInfo:     map[string]interface{}{"Hostname": "TestHostname"},
-		AlertSeverity: model.AlertSeverityMajor,
-		Description:   "This is just an alert test to a mocked emailer.",
-		Date:          utils.P("2019-09-02T10:25:28Z"),
-		AlertCode:     model.AlertCodeNewLicense,
+		AlertAffectedAsset: model.AssetOracleDatabasePtr,
+		AlertCategory:      model.AlertCategoryLicense,
+		OtherInfo:          map[string]interface{}{"Hostname": "TestHostname"},
+		AlertSeverity:      model.AlertSeverityMajor,
+		Description:        "This is just an alert test to a mocked emailer.",
+		Date:               utils.P("2019-09-02T10:25:28Z"),
+		AlertCode:          model.AlertCodeNewLicense,
 	}
 
 	as.ProcessAlertInsertion(params)
@@ -276,11 +283,13 @@ This is just an alert test to a mocked emailer.`,
 
 	params := make(hub.Fields, 1)
 	params["alert"] = model.Alert{
-		OtherInfo:     map[string]interface{}{},
-		AlertSeverity: model.AlertSeverityMajor,
-		Description:   "This is just an alert test to a mocked emailer.",
-		Date:          utils.P("2019-09-02T10:25:28Z"),
-		AlertCode:     model.AlertCodeNewLicense,
+		AlertAffectedAsset: model.AssetOracleDatabasePtr,
+		AlertCategory:      model.AlertCategoryLicense,
+		OtherInfo:          map[string]interface{}{},
+		AlertSeverity:      model.AlertSeverityMajor,
+		Description:        "This is just an alert test to a mocked emailer.",
+		Date:               utils.P("2019-09-02T10:25:28Z"),
+		AlertCode:          model.AlertCodeNewLicense,
 	}
 
 	as.ProcessAlertInsertion(params)
@@ -317,11 +326,13 @@ This is just an alert test to a mocked emailer.`,
 
 	params := make(hub.Fields, 1)
 	params["alert"] = model.Alert{
-		OtherInfo:     map[string]interface{}{},
-		AlertSeverity: model.AlertSeverityMajor,
-		Description:   "This is just an alert test to a mocked emailer.",
-		Date:          utils.P("2019-09-02T10:25:28Z"),
-		AlertCode:     model.AlertCodeNewLicense,
+		AlertAffectedAsset: model.AssetOracleDatabasePtr,
+		AlertCategory:      model.AlertCategoryLicense,
+		OtherInfo:          map[string]interface{}{},
+		AlertSeverity:      model.AlertSeverityMajor,
+		Description:        "This is just an alert test to a mocked emailer.",
+		Date:               utils.P("2019-09-02T10:25:28Z"),
+		AlertCode:          model.AlertCodeNewLicense,
 	}
 
 	as.ProcessAlertInsertion(params)
@@ -347,7 +358,9 @@ func TestDiffHostDataMapAndGenerateAlert_SuccessNewHost(t *testing.T) {
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
-		AlertCode: model.AlertCodeNewServer,
+		AlertAffectedAsset: nil,
+		AlertCategory:      model.AlertCategorySystem,
+		AlertCode:          model.AlertCodeNewServer,
 		OtherInfo: map[string]interface{}{
 			"Hostname": "superhost1",
 		},
@@ -369,7 +382,9 @@ func TestDiffHostDataMapAndGenerateAlert_SuccessNewDatabase(t *testing.T) {
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
-		AlertCode: model.AlertCodeNewDatabase,
+		AlertAffectedAsset: model.AssetOracleDatabasePtr,
+		AlertCategory:      model.AlertCategoryLicense,
+		AlertCode:          model.AlertCodeNewDatabase,
 		OtherInfo: map[string]interface{}{
 			"Hostname": "superhost1",
 			"Dbname":   "acd",
@@ -392,13 +407,17 @@ func TestDiffHostDataMapAndGenerateAlert_SuccessNewEnterpriseLicense(t *testing.
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
-		AlertCode: model.AlertCodeNewLicense,
+		AlertAffectedAsset: model.AssetOracleDatabasePtr,
+		AlertCategory:      model.AlertCategoryLicense,
+		AlertCode:          model.AlertCodeNewLicense,
 		OtherInfo: map[string]interface{}{
 			"Hostname": "superhost1",
 		},
 	}}).Return(nil, nil).Times(1)
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
-		AlertCode: model.AlertCodeNewOption,
+		AlertAffectedAsset: model.AssetOracleDatabasePtr,
+		AlertCategory:      model.AlertCategoryLicense,
+		AlertCode:          model.AlertCodeNewOption,
 		OtherInfo: map[string]interface{}{
 			"Hostname": "superhost1",
 			"Dbname":   "acd",
@@ -421,7 +440,9 @@ func TestDiffHostDataMapAndGenerateAlert_DatabaseError1(t *testing.T) {
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
-		AlertCode: model.AlertCodeNewServer,
+		AlertAffectedAsset: nil,
+		AlertCategory:      model.AlertCategorySystem,
+		AlertCode:          model.AlertCodeNewServer,
 		OtherInfo: map[string]interface{}{
 			"Hostname": "superhost1",
 		},
@@ -442,7 +463,9 @@ func TestDiffHostDataMapAndGenerateAlert_DatabaseError2(t *testing.T) {
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
-		AlertCode: model.AlertCodeNewDatabase,
+		AlertAffectedAsset: model.AssetOracleDatabasePtr,
+		AlertCategory:      model.AlertCategoryLicense,
+		AlertCode:          model.AlertCodeNewDatabase,
 		OtherInfo: map[string]interface{}{
 			"Hostname": "superhost1",
 			"Dbname":   "acd",
@@ -464,7 +487,9 @@ func TestDiffHostDataMapAndGenerateAlert_DatabaseError3(t *testing.T) {
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
-		AlertCode: model.AlertCodeNewLicense,
+		AlertAffectedAsset: model.AssetOracleDatabasePtr,
+		AlertCategory:      model.AlertCategoryLicense,
+		AlertCode:          model.AlertCodeNewLicense,
 		OtherInfo: map[string]interface{}{
 			"Hostname": "superhost1",
 		},
@@ -486,13 +511,17 @@ func TestDiffHostDataMapAndGenerateAlert_DatabaseError4(t *testing.T) {
 	}
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
-		AlertCode: model.AlertCodeNewLicense,
+		AlertAffectedAsset: model.AssetOracleDatabasePtr,
+		AlertCategory:      model.AlertCategoryLicense,
+		AlertCode:          model.AlertCodeNewLicense,
 		OtherInfo: map[string]interface{}{
 			"Hostname": "superhost1",
 		},
 	}}).Return(nil, nil).Times(1)
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
-		AlertCode: model.AlertCodeNewOption,
+		AlertAffectedAsset: model.AssetOracleDatabasePtr,
+		AlertCategory:      model.AlertCategoryLicense,
+		AlertCode:          model.AlertCodeNewOption,
 		OtherInfo: map[string]interface{}{
 			"Hostname": "superhost1",
 			"Dbname":   "acd",

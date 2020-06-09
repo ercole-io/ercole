@@ -18,6 +18,7 @@ package service
 import (
 	"testing"
 
+	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -36,6 +37,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		"Alerts": []map[string]interface{}{
 			{
 				"AffectedHosts": 12,
+				"Category":      "SYSTEM",
 				"Code":          "NEW_SERVER",
 				"Count":         12,
 				"OldestAlert":   "2020-05-06T15:40:04.543+02:00",
@@ -43,6 +45,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 			},
 			{
 				"AffectedHosts": 12,
+				"Category":      "SYSTEM",
 				"Code":          "NEW_SERVER",
 				"Count":         12,
 				"OldestAlert":   "2020-05-06T15:40:04.543+02:00",
@@ -54,7 +57,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 				{
 					"Compliance": false,
 					"Count":      7,
-					"Name":       "Oracle/Database",
+					"Name":       model.AssetOracleDatabase,
 					"Used":       10,
 					"TotalCost":  130,
 					"PaidCost":   85,
@@ -123,6 +126,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 
 	searchAlertsRes := []interface{}{
 		map[string]interface{}{
+			"Category":      "SYSTEM",
 			"AffectedHosts": 12,
 			"Code":          "NEW_SERVER",
 			"Count":         12,
@@ -130,6 +134,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 			"Severity":      "NOTICE",
 		},
 		map[string]interface{}{
+			"Category":      "SYSTEM",
 			"AffectedHosts": 12,
 			"Code":          "NEW_SERVER",
 			"Count":         12,
@@ -138,9 +143,9 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		},
 	}
 	db.EXPECT().SearchAlerts(
-		"aggregated-code-severity",
+		"aggregated-category-severity",
 		[]string{""}, "", false,
-		-1, -1, "Italy", "PRD",
+		-1, -1, "", "",
 		utils.MIN_TIME, utils.P("2019-12-05T14:02:03Z"),
 	).Return(
 		searchAlertsRes,
@@ -239,9 +244,9 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 		},
 	}
 	db.EXPECT().SearchAlerts(
-		"aggregated-code-severity",
+		"aggregated-category-severity",
 		[]string{""}, "", false,
-		-1, -1, "Italy", "PRD",
+		-1, -1, "", "",
 		utils.MIN_TIME, utils.P("2019-12-05T14:02:03Z"),
 	).Return(
 		searchAlertsRes,
