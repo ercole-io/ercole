@@ -142,6 +142,20 @@ func (as *APIService) SetPatchingFunction(hostname string, pf model.PatchingFunc
 	return pf.ID, nil
 }
 
+// DeletePatchingFunction delete the patching function of a host
+func (as *APIService) DeletePatchingFunction(hostname string) utils.AdvancedErrorInterface {
+	//Check host existence
+	exist, err := as.Database.ExistHostdata(hostname)
+	if err != nil {
+		return err
+	} else if !exist {
+		return utils.AerrHostNotFound
+	}
+
+	//Delete the patching function
+	return as.Database.DeletePatchingFunction(hostname)
+}
+
 // AddTagToDatabase add the tag to the database if it hasn't the tag
 func (as *APIService) AddTagToDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface {
 	//Find the patching function

@@ -118,3 +118,15 @@ func (md *MongoDatabase) SearchLicenseModifiers(keywords []string, sortBy string
 	}
 	return out, nil
 }
+
+// DeletePatchingFunction delete the patching function
+func (md *MongoDatabase) DeletePatchingFunction(hostname string) utils.AdvancedErrorInterface {
+	//Find the informations
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("patching_functions").DeleteOne(context.TODO(), bson.M{
+		"Hostname": hostname,
+	}, nil)
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+	return nil
+}

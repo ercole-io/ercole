@@ -122,6 +122,8 @@ type APIControllerInterface interface {
 
 	// SetPatchingFunction set the patching function of a host specified in the hostname path variable to the content of the request body
 	SetPatchingFunction(w http.ResponseWriter, r *http.Request)
+	// DeletePatchingFunction remove the patching function of a host specified in the hostname path variable
+	DeletePatchingFunction(w http.ResponseWriter, r *http.Request)
 	// AddTagToDatabase add a tag to the database if it hasn't the tag
 	AddTagToDatabase(w http.ResponseWriter, r *http.Request)
 	// DeleteTagOfDatabase remove a certain tag from a database if it has the tag
