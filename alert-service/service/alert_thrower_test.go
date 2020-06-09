@@ -47,6 +47,8 @@ func TestThrowNewDatabaseAlert_Success(t *testing.T) {
 	}
 
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
+		assert.Equal(t, model.AlertCategoryLicense, alert.AlertCategory)
+		assert.Equal(t, model.AssetOracleDatabase, *alert.AlertAffectedAsset)
 		assert.Equal(t, model.AlertCodeNewDatabase, alert.AlertCode)
 		assert.Equal(t, model.AlertSeverityNotice, alert.AlertSeverity)
 		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)
@@ -93,6 +95,8 @@ func TestThrowNewServerAlert_Success(t *testing.T) {
 	}
 
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
+		assert.Equal(t, model.AlertCategorySystem, alert.AlertCategory)
+		assert.Nil(t, alert.AlertAffectedAsset)
 		assert.Equal(t, model.AlertCodeNewServer, alert.AlertCode)
 		assert.Equal(t, model.AlertSeverityNotice, alert.AlertSeverity)
 		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)
@@ -136,6 +140,8 @@ func TestThrowNewEnterpriseLicenseAlert_Success(t *testing.T) {
 		},
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
+		assert.Equal(t, model.AlertCategoryLicense, alert.AlertCategory)
+		assert.Equal(t, model.AssetOracleDatabase, *alert.AlertAffectedAsset)
 		assert.Equal(t, model.AlertCodeNewLicense, alert.AlertCode)
 		assert.Equal(t, model.AlertSeverityCritical, alert.AlertSeverity)
 		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)
@@ -178,6 +184,8 @@ func TestThrowActivatedFeaturesAlert_Success(t *testing.T) {
 		},
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
+		assert.Equal(t, model.AlertCategoryLicense, alert.AlertCategory)
+		assert.Equal(t, model.AssetOracleDatabase, *alert.AlertAffectedAsset)
 		assert.Equal(t, model.AlertCodeNewOption, alert.AlertCode)
 		assert.Equal(t, model.AlertSeverityCritical, alert.AlertSeverity)
 		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)
@@ -222,6 +230,8 @@ func TestThrowNoDataAlert_Success(t *testing.T) {
 		},
 	}
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
+		assert.Equal(t, model.AlertCategoryAgent, alert.AlertCategory)
+		assert.Nil(t, alert.AlertAffectedAsset)
 		assert.Equal(t, model.AlertCodeNoData, alert.AlertCode)
 		assert.Equal(t, model.AlertSeverityMajor, alert.AlertSeverity)
 		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)

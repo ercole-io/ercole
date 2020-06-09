@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	database "github.com/ercole-io/ercole/api-service/database"
+	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -135,11 +136,13 @@ func TestGetHost_Success(t *testing.T) {
 	expectedRes := map[string]interface{}{
 		"Alerts": []interface{}{
 			map[string]interface{}{
-				"AlertCode":     "NEW_SERVER",
-				"AlertSeverity": "NOTICE",
-				"AlertStatus":   "NEW",
-				"Date":          utils.P("2020-04-07T08:52:59.871+02:00"),
-				"Description":   "The server 'test-virt' was added to ercole",
+				"AlertAffectedAsset": nil,
+				"AlertCategory":      model.AlertCategorySystem,
+				"AlertCode":          "NEW_SERVER",
+				"AlertSeverity":      "NOTICE",
+				"AlertStatus":        "NEW",
+				"Date":               utils.P("2020-04-07T08:52:59.871+02:00"),
+				"Description":        "The server 'test-virt' was added to ercole",
 				"OtherInfo": map[string]interface{}{
 					"Hostname": "test-virt",
 				},

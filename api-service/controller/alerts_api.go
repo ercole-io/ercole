@@ -44,7 +44,7 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 	mode = r.URL.Query().Get("mode")
 	if mode == "" {
 		mode = "all"
-	} else if mode != "all" && mode != "aggregated-code-severity" {
+	} else if mode != "all" && mode != "aggregated-code-severity" && mode != "aggregated-category-severity" {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Invalid mode value"), http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}

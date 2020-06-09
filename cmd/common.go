@@ -77,7 +77,7 @@ var modeOption apiOption = apiOption{
 
 var modeAlertOption apiOption = apiOption{
 	addOption: func(cmd *cobra.Command) {
-		cmd.Flags().StringVarP(&mode2, "mode", "m", "all", "Output mode (all, aggregated-code-severity)")
+		cmd.Flags().StringVarP(&mode2, "mode", "m", "all", "Output mode (all, aggregated-code-severity, aggregated-category-severity)")
 	},
 	addParam: func(params url.Values) {
 		params.Set("mode", mode2)

@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -68,14 +69,14 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 					"Compliance": false,
 					"Cost":       0,
 					"Count":      0,
-					"Name":       "Oracle/Database",
+					"Name":       model.AssetOracleDatabase,
 					"Used":       8,
 				},
 				{
 					"Compliance": true,
 					"Cost":       0,
 					"Count":      2,
-					"Name":       "Oracle/Exadata",
+					"Name":       model.AssetOracleExadata,
 					"Used":       2,
 				},
 			},
