@@ -127,6 +127,9 @@ type APIServiceInterface interface {
 	SetLicensesCount(newLicenses []map[string]interface{}) utils.AdvancedErrorInterface
 	// SetPatchingFunction set the patching function of a host
 	SetPatchingFunction(hostname string, pf model.PatchingFunction) (interface{}, utils.AdvancedErrorInterface)
+	// DeletePatchingFunction delete the patching function of a host
+	DeletePatchingFunction(hostname string) utils.AdvancedErrorInterface
+
 	// AddTagToDatabase add the tag to the database if it hasn't the tag
 	AddTagToDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface
 	// DeleteTagOfDatabase delete the tag from the database if it hasn't the tag
