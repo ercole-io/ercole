@@ -15,24 +15,9 @@
 
 package model
 
-type AssetStatus struct {
-	Name       string
-	Used       float32
-	Count      float32
-	Compliance bool
-	TotalCost  float32
-	PaidCost   float32
-	HostsCount int
+// str2CopyPtr return a pointer to a copy of s
+func str2CopyPtr(s string) *string {
+	out := new(string)
+	*out = s
+	return out
 }
-
-// Asset names
-const (
-	AssetOracleDatabase string = "Oracle/Database"
-	AssetOracleExadata  string = "Oracle/Exadata"
-)
-
-// Pointers to asset names
-var (
-	AssetOracleDatabasePtr *string = str2CopyPtr(AssetOracleDatabase)
-	AssetOracleExadataPtr  *string = str2CopyPtr(AssetOracleExadata)
-)
