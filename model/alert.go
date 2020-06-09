@@ -24,14 +24,26 @@ import (
 
 // Alert holds informations about a alert
 type Alert struct {
-	ID            primitive.ObjectID     `bson:"_id"`
-	AlertCode     string                 `bson:"AlertCode"`
-	AlertSeverity string                 `bson:"AlertSeverity"`
-	AlertStatus   string                 `bson:"AlertStatus"`
-	Description   string                 `bson:"Description"`
-	Date          time.Time              `bson:"Date"`
-	OtherInfo     map[string]interface{} `bson:"OtherInfo"`
+	ID                 primitive.ObjectID     `bson:"_id"`
+	AlertCategory      string                 `bson:"AlertCategory"`
+	AlertAffectedAsset *string                `bson:"AlertAffectedAsset"`
+	AlertCode          string                 `bson:"AlertCode"`
+	AlertSeverity      string                 `bson:"AlertSeverity"`
+	AlertStatus        string                 `bson:"AlertStatus"`
+	Description        string                 `bson:"Description"`
+	Date               time.Time              `bson:"Date"`
+	OtherInfo          map[string]interface{} `bson:"OtherInfo"`
 }
+
+// Alert codes
+const (
+	// AlertCategorySystem contains string "SYSTEM"
+	AlertCategorySystem string = "SYSTEM"
+	// AlertCategoryAgent contains string "AGENT"
+	AlertCategoryAgent string = "AGENT"
+	// AlertCategoryLicense contains string "LICENSE"
+	AlertCategoryLicense string = "LICENSE"
+)
 
 // Alert codes
 const (
@@ -81,12 +93,28 @@ var AlertBsonValidatorRules = bson.M{
 		"Date",
 	},
 	"properties": bson.M{
+		"AlertCategory": bson.M{
+			"bsonType": "string",
+			"enum": bson.A{
+				AlertCategorySystem,
+				AlertCategoryAgent,
+				AlertCategoryLicense,
+			},
+		},
+		"AlertAffectedAsset": bson.M{
+			"bsonType": bson.A{"null", "string"},
+			"enum": bson.A{
+				nil,
+				AssetOracleDatabase,
+				AssetOracleExadata,
+			},
+		},
 		"AlertCode": bson.M{
 			"bsonType": "string",
 			"enum": bson.A{
 				AlertCodeNewDatabase,
 				AlertCodeNewOption,
-				AlertCodeNewLicense,
+				AlertCategoryLicense,
 				AlertCodeNewServer,
 				AlertCodeNoData,
 			},
