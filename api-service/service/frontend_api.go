@@ -37,7 +37,7 @@ func (as *APIService) GetInfoForFrontendDashboard(location string, environment s
 		return nil, err
 	}
 
-	out["Alerts"], err = as.SearchAlerts("aggregated-code-severity", "", "", false, -1, -1, location, environment, utils.MIN_TIME, olderThan)
+	out["Alerts"], err = as.SearchAlerts("aggregated-category-severity", "", "", false, -1, -1, "", "", utils.MIN_TIME, olderThan)
 	if err != nil {
 		return nil, err
 	}
