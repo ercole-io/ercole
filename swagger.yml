@@ -496,12 +496,39 @@ components:
       properties:
         Name:
           type: string
+        Environment: 
+          type: string
+          nullable: true
+        Location: 
+          type: string
+          nullable: true
+        Hostname:
+          type: string
+          nullable: true
+        HostnameAgentVirtualization:
+          type: string
+          nullable: true
+        PhysicalHosts:
+          nullable: true
+          anyOf:
+            - type: string
+              nullable: true
+            - type: array
+              items:
+                type: string
+              uniqueItems: true
         Type:
           type: string
         CPU:
           type: integer
         Sockets:
           type: integer
+        VMsCount:
+          type: integer
+          nullable: true
+        VMsErcoleAgentCount:
+          type: integer
+          nullable: true
         VMs:
           type: array
           items:
