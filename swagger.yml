@@ -517,6 +517,26 @@ components:
               items:
                 type: string
               uniqueItems: true
+        PhysicalHostsCount:
+          nullable: true
+          type: integer
+        PhysicalHostsStats:
+          nullable: true
+          type: object
+          required:
+            - PhysicalHost
+            - TotalVMsCount
+            - TotalVMsWithErcoleAgentCount
+            - TotalVMsWithoutErcoleAgentCount
+          properties:
+            PhysicalHost:
+              type: string
+            TotalVMsCount:
+              type: integer
+            TotalVMsWithErcoleAgentCount:
+              type: integer
+            TotalVMsWithoutErcoleAgentCount:
+              type: integer
         Type:
           type: string
         CPU:
@@ -2172,90 +2192,6 @@ paths:
                     required:
                       - Content
                       - Metadata
-              examples:
-                json without paging:
-                  value:
-                    - CPU: 216
-                      Environment: PROD
-                      Hostname: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
-                      HostnameAgentVirtualization: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
-                      Location: Italy
-                      Name: Malawi-14ae10546e26f501903775d69ca71ed6
-                      PhysicalHosts: aip-f7ac72d65c3d0f28b3be0c26ef19b67e core4-946e846e3266aef1b0a5caf0853bd1e2 globe-1c7ed122094a9a20e7e4dc94db586829 hi-tech-ad02f9047e0d90b2316bfee07ce932b7 kabinet-d14b782bb1b7fd8156149d3a3979f27d kodeks-e21341c5c7820452c7448790c4ce7965 nikita-54069d32da6d7577e88feff9bbcdb5b7 sail-b5add97f3e182af4c87bd608bc967b89 srvc22-163b8c9d378f6f8895d0e156b16ca1af
-                      Sockets: 18
-                      Type: ovm
-                      _id: 5e96fde91a65b0bf4e9802a4
-                    - CPU: 24
-                      Environment: PROD
-                      Hostname: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
-                      HostnameAgentVirtualization: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
-                      Location: Italy
-                      Name: Benin-0195679dbe594b14abe5c277a849f71a
-                      PhysicalHosts: kernel-c3b26054af731b58a4a5dd0afc33d1a3 rad2-94ac849abaafdf1133fa71d76f365676
-                      Sockets: 4
-                      Type: ovm
-                      _id: 5e96fde91a65b0bf4e9802a4
-                    - CPU: 0
-                      Environment: PROD
-                      Hostname: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
-                      HostnameAgentVirtualization: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
-                      Location: Italy
-                      Name: not_in_cluster
-                      PhysicalHosts: aspera-b1fe49e8501c9ef031e5acff4b5e69a9
-                      Sockets: 0
-                      Type: unknown
-                      _id: 5e96fde91a65b0bf4e9802a4
-                    - CPU: 140
-                      Environment: PROD
-                      Hostname: test-virt
-                      HostnameAgentVirtualization: test-virt
-                      Location: Italy
-                      Name: Puzzait
-                      PhysicalHosts: s157-cb32c10a56c256746c337e21b3f82402
-                      Sockets: 10
-                      Type: vmware
-                      _id: 5e96fdfb1a65b0bf4e9802a8
-                json with paging of size 3:
-                  value:
-                    Content:
-                      - CPU: 140
-                        Environment: PROD
-                        Hostname: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
-                        HostnameAgentVirtualization: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
-                        Location: Italy
-                        Name: Kuwait-57b3056c82e683f48cb2bb6540c11400
-                        PhysicalHosts: 120-90be671af89eaf0e30be81da23e1b84e mtm-33b6dd0ffed21137cb3d43d19cac46ad pdd-d50ecef60a81d7774731c614002d1f6f s157-cb32c10a56c256746c337e21b3f82402 wts-e4371401590b884eb8b617b484981e7f
-                        Sockets: 10
-                        Type: vmware
-                        _id: 5e96fde91a65b0bf4e9802a4
-                      - CPU: 120
-                        Environment: PROD
-                        Hostname: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
-                        HostnameAgentVirtualization: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
-                        Location: Italy
-                        Name: Angola-1dac9f7418db9b52c259ce4ba087cdb6
-                        PhysicalHosts: 85-fe26dd53fd3f1def9629e01cdf2a3f2f 85st-98267410e051fa5158808a97be4461d5 localmail-0a8ec10dc2e5a2eaff1e12bfda9ac2e4 masters-ce97f9677cdff85c88f230999361894d suspended-290dce22a939f3868f8f23a6e1f57dd8
-                        Sockets: 10
-                        Type: vmware
-                        _id: 5e96fde91a65b0bf4e9802a4
-                      - CPU: 36
-                        Environment: PROD
-                        Hostname: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
-                        HostnameAgentVirtualization: fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9
-                        Location: Italy
-                        Name: Oman-8937f71ed6f3971555e15e2771db239e
-                        PhysicalHosts: duma-facdfcc851a2913f903df31abce563c3 isms-9a1b83714ea7a358aa14b71b6c2405a5 tree-f96e941ab35a2bc95b1c50fc01bbf963
-                        Sockets: 6
-                        Type: vmware
-                        _id: 5e96fde91a65b0bf4e9802a4
-                    Metadata:
-                      Empty: false
-                      First: true
-                      Last: false
-                      Number: 0
-                      Size: 3
-                      TotalElements: 23
-                      TotalPages: 7
             application/xml:
               schema:
                 type: object
@@ -2278,6 +2214,32 @@ paths:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
         - $ref: '#/components/parameters/older-than'
+  /clusters/{name}:
+    get:
+      summary: Get a cluster
+      tags:
+        - api-service
+        - fe-user
+        - read
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cluster'
+      operationId: GetCluster
+      description: |-
+        Get cluster data using the filters in the request.
+      parameters:
+        - $ref: '#/components/parameters/older-than'
+        - in: path
+          name: name
+          schema:
+            type: string
+          required: true
+          description: cluster name
   /exadata:
     get:
       summary: Search a list of exadata

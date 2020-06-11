@@ -35,3 +35,7 @@ var AerrLicenseNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrLicenseN
 // ErrAlertNotFound contains "Alert not found" error
 var ErrAlertNotFound = errors.New("Alert not found")
 var AerrAlertNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrAlertNotFound, "DB ERROR")
+
+// ErrClusterNotFound contains "Cluster not found" error
+var ErrClusterNotFound = errors.New("Cluster not found")
+var AerrClusterNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrClusterNotFound, "DB ERROR")
