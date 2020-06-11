@@ -42,6 +42,8 @@ type MongoDatabaseInterface interface {
 	SearchAlerts(mode string, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, severity string, status string, from time.Time, to time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchClusters search clusters
 	SearchClusters(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
+	// GetCluster fetch all information about a cluster in the database
+	GetCluster(clusterName string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
 	// SearchAddms search addms
 	SearchAddms(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// SearchSegmentAdvisors search segment advisors
