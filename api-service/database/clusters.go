@@ -103,3 +103,89 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 	}
 	return out, nil
 }
+
+// GetCluster fetch all information about a cluster in the database
+func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
+	var out map[string]interface{}
+
+	//Find the matching hostdata
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
+			mu.APUnwind("$Extra.Clusters"),
+			mu.APProject(bson.M{
+				"Hostname":    1,
+				"Environment": 1,
+				"Location":    1,
+				"CreatedAt":   1,
+				"Cluster":     "$Extra.Clusters",
+			}),
+			mu.APMatch(bson.M{
+				"Cluster.Name": clusterName,
+			}),
+			mu.APProject(bson.M{
+				"_id":                         true,
+				"Environment":                 true,
+				"Location":                    true,
+				"CreatedAt":                   1,
+				"HostnameAgentVirtualization": "$Hostname",
+				"Hostname":                    true,
+				"Name":                        "$Cluster.Name",
+				"Type":                        "$Cluster.Type",
+				"CPU":                         "$Cluster.CPU",
+				"Sockets":                     "$Cluster.Sockets",
+				"VMs":                         "$Cluster.VMs",
+				"PhysicalHosts":               mu.APOSetUnion(mu.APOMap("$Cluster.VMs", "vm", "$$vm.PhysicalHost")),
+				"VMsCount":                    mu.APOSize("$Cluster.VMs"),
+			}),
+			mu.APUnset("VMs.ClusterName"),
+			mu.APLookupPipeline("hosts", bson.M{
+				"vms": "$VMs",
+			}, "VMsErcoleAgentCount", mu.MAPipeline(
+				FilterByOldnessSteps(olderThan),
+				mu.APProject(bson.M{
+					"Hostname": 1,
+				}),
+				mu.APSet(bson.M{
+					"PhysicalHost": mu.APOArrayElemAt(mu.APOFilter("$$vms", "vm", mu.APOEqual("$$vm.Hostname", "$Hostname")), 0),
+				}),
+				mu.APMatch(bson.M{
+					"PhysicalHost": mu.QONotEqual(nil),
+				}),
+				mu.APSet(bson.M{
+					"PhysicalHost": "$PhysicalHost.PhysicalHost",
+				}),
+			)),
+			mu.APSet(bson.M{
+				"PhysicalHostsCount": mu.APOSize("$PhysicalHosts"),
+				"PhysicalHostsStats": mu.APOMap("$PhysicalHosts", "ph", mu.APOLet(bson.M{
+					"vmCount":                mu.APOSize(mu.APOFilter("$VMs", "vm", mu.APOEqual("$$vm.PhysicalHost", "$$ph"))),
+					"vmWithErcoleAgentCount": mu.APOSize(mu.APOFilter("$VMsErcoleAgentCount", "vmea", mu.APOEqual("$$vmea.PhysicalHost", "$$ph"))),
+				}, bson.M{
+					"PhysicalHost":                    "$$ph",
+					"TotalVMsCount":                   "$$vmCount",
+					"TotalVMsWithErcoleAgentCount":    "$$vmWithErcoleAgentCount",
+					"TotalVMsWithoutErcoleAgentCount": mu.APOSubtract("$$vmCount", "$$vmWithErcoleAgentCount"),
+				})),
+				"VMsErcoleAgentCount": mu.APOSize("$VMsErcoleAgentCount"),
+			}),
+		),
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Next the cursor. If there is no document return a empty document
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return nil, utils.AerrHostNotFound
+	}
+
+	//Decode the document
+	if err := cur.Decode(&out); err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return out, nil
+}

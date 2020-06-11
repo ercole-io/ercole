@@ -21,6 +21,7 @@ import (
 
 	"github.com/ercole-io/ercole/utils"
 	"github.com/golang/gddo/httputil"
+	"github.com/gorilla/mux"
 	"github.com/plandem/xlsx"
 )
 
@@ -148,4 +149,30 @@ func (ctrl *APIController) SearchClustersXLSX(w http.ResponseWriter, r *http.Req
 
 	//Write it to the response
 	utils.WriteXLSXResponse(w, sheets)
+}
+
+// GetCluster get cluster data using the filters in the request
+func (ctrl *APIController) GetCluster(w http.ResponseWriter, r *http.Request) {
+	var olderThan time.Time
+	var err utils.AdvancedErrorInterface
+
+	clusterName := mux.Vars(r)["name"]
+
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	//get the data
+	data, err := ctrl.Service.GetCluster(clusterName, olderThan)
+	if err == utils.AerrClusterNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+		return
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, data)
 }
