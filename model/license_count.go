@@ -24,6 +24,7 @@ type LicenseCount struct {
 	Name             string  `bson:"_id"`
 	Count            int     `bson:"Count"`
 	CostPerProcessor float32 `bson:"CostPerProcessor"`
+	Unlimited        bool    `bson:"Unlimited"`
 }
 
 // LicenseCountBsonValidatorRules contains mongodb validation rules for licenseCount
@@ -33,6 +34,7 @@ var LicenseCountBsonValidatorRules = bson.M{
 		"_id",
 		"Count",
 		"CostPerProcessor",
+		"Unlimited",
 	},
 	"properties": bson.M{
 		"_id": bson.M{
@@ -43,6 +45,9 @@ var LicenseCountBsonValidatorRules = bson.M{
 		},
 		"CostPerProcessor": bson.M{
 			"bsonType": "number",
+		},
+		"Unlimited": bson.M{
+			"bsonType": "bool",
 		},
 	},
 }
