@@ -114,6 +114,8 @@ type MongoDatabaseInterface interface {
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license
 	SetLicenseCostPerProcessor(name string, costPerProcessor float32) utils.AdvancedErrorInterface
+	// SetLicenseUnlimitedStatus set the unlimited status of a certain license
+	SetLicenseUnlimitedStatus(name string, unlimitedStatus bool) utils.AdvancedErrorInterface
 
 	// SavePatchingFunction saves the patching function
 	SavePatchingFunction(pf model.PatchingFunction) utils.AdvancedErrorInterface
