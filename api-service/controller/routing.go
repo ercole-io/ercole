@@ -74,6 +74,7 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/stats/top-unused-instance-resource", ctrl.GetTopUnusedInstanceResourceStats).Methods("GET")
 	router.HandleFunc("/stats/assets/compliance", ctrl.GetTotalAssetsComplianceStats).Methods("GET")
 	router.HandleFunc("/stats/databases/environments", ctrl.GetDatabaseEnvironmentStats).Methods("GET")
+	router.HandleFunc("/stats/databases/high-reliability", ctrl.GetDatabaseHighReliabilityStats).Methods("GET")
 	router.HandleFunc("/stats/databases/versions", ctrl.GetDatabaseVersionStats).Methods("GET")
 	router.HandleFunc("/stats/databases/top-reclaimable", ctrl.GetTopReclaimableDatabaseStats).Methods("GET")
 	router.HandleFunc("/stats/databases/patch-status", ctrl.GetDatabasePatchStatusStats).Methods("GET")

@@ -72,6 +72,8 @@ type APIControllerInterface interface {
 	GetTopUnusedInstanceResourceStats(w http.ResponseWriter, r *http.Request)
 	// GetDatabaseEnvironmentStats return all statistics about the environments of the databases using the filters in the request
 	GetDatabaseEnvironmentStats(w http.ResponseWriter, r *http.Request)
+	// GetDatabaseHighReliabilityStats return all statistics about the high-reliability status of the databases using the filters in the request
+	GetDatabaseHighReliabilityStats(w http.ResponseWriter, r *http.Request)
 	// GetDatabaseVersionStats return all statistics about the versions of the databases using the filters in the request
 	GetDatabaseVersionStats(w http.ResponseWriter, r *http.Request)
 	// GetTopReclaimableDatabaseStats return top databases by reclaimable segment advisors using the filters in the request
