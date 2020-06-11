@@ -35,6 +35,8 @@ type APIControllerInterface interface {
 	SearchDatabases(w http.ResponseWriter, r *http.Request)
 	// SearchClusters search clusters data using the filters in the request
 	SearchClusters(w http.ResponseWriter, r *http.Request)
+	// GetCluster get cluster data using the filters in the request
+	GetCluster(w http.ResponseWriter, r *http.Request)
 	// SearchAddms search addms data using the filters in the request
 	SearchAddms(w http.ResponseWriter, r *http.Request)
 	// SearchSegmentAdvisors search segment advisors data using the filters in the request
