@@ -596,17 +596,18 @@ func (md *MongoDatabase) GetDatabaseLicenseComplianceStatusStats(location string
 				"Used": mu.APOIfNull(mu.APOCeil("$Used.Value"), 0),
 			}),
 			mu.APSet(bson.M{
-				"Compliance": mu.APOGreaterOrEqual("$Count", "$Used"),
+				"Compliance": mu.APOGreaterOrEqual(mu.APOCond("$Unlimited", "$Used", "$Count"), "$Used"),
 			}),
 			mu.APGroup(bson.M{
 				"_id":                     0,
 				"LicensesNumber":          mu.APOSum(1),
-				"Count":                   mu.APOSum("$Count"),
+				"Count":                   mu.APOSum(mu.APOCond("$Unlimited", "$Used", "$Count")),
 				"Used":                    mu.APOSum("$Used"),
 				"CompliantLicensesNumber": mu.APOSum(mu.APOCond("$Compliance", 1, 0)),
 			}),
 			mu.APProject(bson.M{
 				"_id":       0,
+				"Unlimited": 1,
 				"Count":     1,
 				"Used":      1,
 				"Compliant": mu.APOEqual("$LicensesNumber", "$CompliantLicensesNumber"),

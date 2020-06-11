@@ -133,12 +133,18 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 				"Used": mu.APOIfNull(mu.APOCeil("$Used.Value"), 0),
 			}),
 			mu.APSet(bson.M{
-				"Compliance": mu.APOGreaterOrEqual("$Count", "$Used"),
+				"Compliance": mu.APOGreaterOrEqual(
+					mu.APOCond("$Unlimited", "$Used", "$Count"),
+					"$Used",
+				),
 				"TotalCost": bson.M{
 					"$multiply": bson.A{"$Used", "$CostPerProcessor"},
 				},
 				"PaidCost": bson.M{
-					"$multiply": bson.A{"$Count", "$CostPerProcessor"},
+					"$multiply": bson.A{
+						mu.APOCond("$Unlimited", "$Used", "$Count"),
+						"$CostPerProcessor",
+					},
 				},
 			}),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
@@ -268,12 +274,18 @@ func (md *MongoDatabase) GetLicense(name string, olderThan time.Time) (interface
 				"Used": mu.APOIfNull(mu.APOCeil("$Used.Value"), 0),
 			}),
 			mu.APSet(bson.M{
-				"Compliance": mu.APOGreaterOrEqual("$Count", "$Used"),
+				"Compliance": mu.APOGreaterOrEqual(
+					mu.APOCond("$Unlimited", "$Used", "$Count"),
+					"$Used",
+				),
 				"TotalCost": bson.M{
 					"$multiply": bson.A{"$Used", "$CostPerProcessor"},
 				},
 				"PaidCost": bson.M{
-					"$multiply": bson.A{"$Count", "$CostPerProcessor"},
+					"$multiply": bson.A{
+						mu.APOCond("$Unlimited", "$Used", "$Count"),
+						"$CostPerProcessor",
+					},
 				},
 			}),
 		),
@@ -323,6 +335,26 @@ func (md *MongoDatabase) SetLicenseCostPerProcessor(name string, count float32) 
 		"_id": name,
 	}, mu.UOSet(bson.M{
 		"CostPerProcessor": count,
+	}))
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Check the existance of the result
+	if res.MatchedCount == 0 {
+		return utils.AerrLicenseNotFound
+	} else {
+		return nil
+	}
+}
+
+// SetLicenseUnlimitedStatus set the unlimited status of a certain license
+func (md *MongoDatabase) SetLicenseUnlimitedStatus(name string, unlimitedStatus bool) utils.AdvancedErrorInterface {
+	//Find the informations
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses").UpdateOne(context.TODO(), bson.M{
+		"_id": name,
+	}, mu.UOSet(bson.M{
+		"Unlimited": unlimitedStatus,
 	}))
 	if err != nil {
 		return utils.NewAdvancedErrorPtr(err, "DB ERROR")

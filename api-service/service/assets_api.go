@@ -57,6 +57,7 @@ func (as *APIService) ListAssets(sortBy string, sortDesc bool, location string, 
 		Used      float32
 		PaidCost  float32
 		TotalCost float32
+		Unlimited bool
 	}
 	oracleLicenseList := make([]License, 0)
 	json.Unmarshal([]byte(utils.ToJSON(oracleLicenseListRaw)), &oracleLicenseList)
@@ -67,7 +68,7 @@ func (as *APIService) ListAssets(sortBy string, sortDesc bool, location string, 
 	for _, lic := range oracleLicenseList {
 		used += lic.Used
 		totalCost += lic.TotalCost
-		if lic.Count > lic.Used {
+		if lic.Count > lic.Used || lic.Unlimited {
 			holded += lic.Used
 			paidCost += lic.TotalCost
 		} else {
