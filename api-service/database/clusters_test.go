@@ -69,6 +69,8 @@ func (m *MongodbSuite) TestSearchClusters() {
 						"PhysicalHosts":               "s157-cb32c10a56c256746c337e21b3f82402",
 						"Sockets":                     10,
 						"Type":                        "vmware",
+						"VMsCount":                    2,
+						"VMsErcoleAgentCount":         1,
 						"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
 					},
 				},
@@ -101,6 +103,8 @@ func (m *MongodbSuite) TestSearchClusters() {
 				"PhysicalHosts":               "s157-cb32c10a56c256746c337e21b3fffeua s157-cb32c10a56c256746c337e21b3ffffff",
 				"Sockets":                     13,
 				"Type":                        "vmware",
+				"VMsCount":                    2,
+				"VMsErcoleAgentCount":         0,
 				"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
 			}, map[string]interface{}{
 				"CPU":                         140,
@@ -112,6 +116,8 @@ func (m *MongodbSuite) TestSearchClusters() {
 				"PhysicalHosts":               "s157-cb32c10a56c256746c337e21b3f82402",
 				"Sockets":                     10,
 				"Type":                        "vmware",
+				"VMsCount":                    2,
+				"VMsErcoleAgentCount":         1,
 				"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
 			},
 		}
@@ -140,6 +146,8 @@ func (m *MongodbSuite) TestSearchClusters() {
 				"PhysicalHosts":               "s157-cb32c10a56c256746c337e21b3fffeua s157-cb32c10a56c256746c337e21b3ffffff",
 				"Sockets":                     13,
 				"Type":                        "vmware",
+				"VMsCount":                    2,
+				"VMsErcoleAgentCount":         0,
 				"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
 			},
 		}
@@ -163,6 +171,8 @@ func (m *MongodbSuite) TestSearchClusters() {
 				"Type":                        "vmware",
 				"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
 				"CreatedAt":                   utils.P("2020-05-04T16:09:46.608+02:00").Local(),
+				"VMsCount":                    2,
+				"VMsErcoleAgentCount":         1,
 				"VMs": []interface{}{
 					map[string]interface{}{
 						"CappedCPU":    false,
@@ -190,6 +200,8 @@ func (m *MongodbSuite) TestSearchClusters() {
 				"Type":                        "vmware",
 				"_id":                         utils.Str2oid("5eb0222a45d85f4193704944"),
 				"CreatedAt":                   utils.P("2020-05-04T16:09:46.608+02:00").Local(),
+				"VMsCount":                    2,
+				"VMsErcoleAgentCount":         0,
 				"VMs": []interface{}{
 					map[string]interface{}{
 						"CappedCPU":    false,

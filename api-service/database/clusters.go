@@ -56,8 +56,21 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 				"Sockets":                     "$Cluster.Sockets",
 				"VMs":                         "$Cluster.VMs",
 				"PhysicalHosts":               mu.APOSetUnion(mu.APOMap("$Cluster.VMs", "vm", "$$vm.PhysicalHost")),
+				"VMsCount":                    mu.APOSize("$Cluster.VMs"),
 			}),
 			mu.APUnset("VMs.ClusterName"),
+			mu.APLookupPipeline("hosts", bson.M{
+				"vms": "$VMs",
+			}, "VMsErcoleAgentCount", mu.MAPipeline(
+				FilterByOldnessSteps(olderThan),
+				mu.APProject(bson.M{
+					"Hostname": 1,
+				}),
+				mu.APMatch(mu.QOExpr(mu.APOAny("$$vms", "vm", mu.APOEqual("$$vm.Hostname", "$Hostname")))),
+			)),
+			mu.APSet(bson.M{
+				"VMsErcoleAgentCount": mu.APOSize("$VMsErcoleAgentCount"),
+			}),
 			mu.APOptionalStage(!full, mu.APProject(bson.M{
 				"_id":                         true,
 				"Environment":                 true,
@@ -69,6 +82,8 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 				"CPU":                         true,
 				"Sockets":                     true,
 				"PhysicalHosts":               mu.APOJoin("$PhysicalHosts", " "),
+				"VMsCount":                    true,
+				"VMsErcoleAgentCount":         true,
 			})),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),
