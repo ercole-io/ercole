@@ -32,6 +32,11 @@ func (as *APIService) GetDatabaseEnvironmentStats(location string, olderThan tim
 	return as.Database.GetDatabaseEnvironmentStats(location, olderThan)
 }
 
+// GetDatabaseHighReliabilityStats return a array containing the number of databases per high-reliability status
+func (as *APIService) GetDatabaseHighReliabilityStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetDatabaseHighReliabilityStats(location, environment, olderThan)
+}
+
 // GetDatabaseVersionStats return a array containing the number of databases per version
 func (as *APIService) GetDatabaseVersionStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetDatabaseVersionStats(location, olderThan)
