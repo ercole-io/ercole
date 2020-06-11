@@ -27,3 +27,8 @@ import (
 func (as *APIService) SearchClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.SearchClusters(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
+
+// GetCluster return the cluster specified in the clusterName param
+func (as *APIService) GetCluster(clusterName string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.GetCluster(clusterName, olderThan)
+}
