@@ -339,6 +339,7 @@ func InitLicenses(log *logrus.Logger, client *mongo.Database, list []string) {
 				Name:             l,
 				Count:            0,
 				CostPerProcessor: 0,
+				Unlimited:        false,
 			})
 			if err != nil {
 				log.Fatalf("Unable to insert a license in the licenses collection: %v\n", err)

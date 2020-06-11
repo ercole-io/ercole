@@ -63,6 +63,11 @@ func (as *APIService) SetLicenseCostPerProcessor(name string, costPerProcessor f
 	return as.Database.SetLicenseCostPerProcessor(name, costPerProcessor)
 }
 
+// SetLicenseUnlimitedStatus set the unlimited status of a certain license
+func (as *APIService) SetLicenseUnlimitedStatus(name string, unlimitedStatus bool) utils.AdvancedErrorInterface {
+	return as.Database.SetLicenseUnlimitedStatus(name, unlimitedStatus)
+}
+
 // SetLicensesCount set the count of all licenses in newLicenses
 // It assumes that newLicenses maps contain the string _id and the int Count
 func (as *APIService) SetLicensesCount(newLicenses []map[string]interface{}) utils.AdvancedErrorInterface {

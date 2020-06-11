@@ -1098,6 +1098,8 @@ components:
           type: number
         CostPerProcessor:
           type: number
+        Unlimited:
+          type: boolean
         PaidCost:
           type: number
         TotalCost:
@@ -1128,6 +1130,7 @@ components:
         - PaidCost
         - CostPerProcessor
         - Compliance
+        - Unlimited
     LicenseModifier:
       type: object
       required:
@@ -3487,6 +3490,39 @@ paths:
             schema:
               type: number
               description: new cost per processor value
+      responses:
+        '200':
+          description: OK
+        '404':
+          $ref: '#/components/responses/error'
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  '/licenses/{name}/unlimited-status':
+    put:
+      operationId: SetLicenseUnlimitedStatus
+      description: Set the unlimited value of a certain license
+      summary: Set true if the license is unlimited, otherwise false
+      tags:
+        - api-service
+        - fe-user
+        - read
+      parameters:
+        - in: path
+          name: name
+          description: name of the license
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: boolean
+              description: new unlimited status
       responses:
         '200':
           description: OK
