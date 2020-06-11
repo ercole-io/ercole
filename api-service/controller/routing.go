@@ -53,6 +53,7 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/environments", ctrl.ListEnvironments).Methods("GET")
 	router.HandleFunc("/assets", ctrl.ListAssets).Methods("GET")
 	router.HandleFunc("/clusters", ctrl.SearchClusters).Methods("GET")
+	router.HandleFunc("/clusters/{name}", ctrl.GetCluster).Methods("GET")
 	router.HandleFunc("/databases", ctrl.SearchDatabases).Methods("GET")
 	router.HandleFunc("/addms", ctrl.SearchAddms).Methods("GET")
 	router.HandleFunc("/segment-advisors", ctrl.SearchSegmentAdvisors).Methods("GET")
