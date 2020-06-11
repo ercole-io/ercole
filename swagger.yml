@@ -2570,6 +2570,42 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
+  /stats/databases/high-reliability-status:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetDatabaseHighReliabilityStats
+      summary: Get the stats about the high reliability status of the databases 
+      description: Get the stats about the high reliability status of the databases
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    HA:
+                      type: boolean
+                    Count:
+                      type: string
+                  required:
+                    - HA
+                    - Count
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
   /stats/databases/versions:
     get:
       tags:

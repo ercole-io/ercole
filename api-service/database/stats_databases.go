@@ -62,6 +62,47 @@ func (md *MongoDatabase) GetDatabaseEnvironmentStats(location string, olderThan 
 	return out, nil
 }
 
+// GetDatabaseHighReliabilityStats return a array containing the number of databases per high-reliability status
+func (md *MongoDatabase) GetDatabaseHighReliabilityStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	var out []interface{} = make([]interface{}, 0)
+	//Calculate the stats
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
+			FilterByLocationAndEnvironmentSteps(location, ""),
+			mu.APSet(bson.M{
+				"HA": mu.APOOr("$Info.SunCluster", "$Info.VeritasCluster", "$Info.OracleCluster", "$Info.AixCluster"),
+			}),
+			mu.APGroup(bson.M{
+				"_id":   "$HA",
+				"Count": mu.APOSum(mu.APOCond("$Extra.Databases", mu.APOSize("$Extra.Databases"), 0)),
+			}),
+			mu.APProject(bson.M{
+				"_id":   false,
+				"HA":    "$_id",
+				"Count": true,
+			}),
+			mu.APSort(bson.M{
+				"HA": 1,
+			}),
+		),
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Decode the documents
+	for cur.Next(context.TODO()) {
+		var item map[string]interface{}
+		if cur.Decode(&item) != nil {
+			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		}
+		out = append(out, &item)
+	}
+	return out, nil
+}
+
 // GetDatabaseVersionStats return a array containing the number of databases per version
 func (md *MongoDatabase) GetDatabaseVersionStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	var out []interface{} = make([]interface{}, 0)

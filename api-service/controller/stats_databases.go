@@ -47,6 +47,34 @@ func (ctrl *APIController) GetDatabaseEnvironmentStats(w http.ResponseWriter, r 
 	utils.WriteJSONResponse(w, http.StatusOK, stats)
 }
 
+// GetDatabaseHighReliabilityStats return all statistics about the high-reliability status of the databases using the filters in the request
+func (ctrl *APIController) GetDatabaseHighReliabilityStats(w http.ResponseWriter, r *http.Request) {
+	var olderThan time.Time
+	var location string
+	var environment string
+
+	var err utils.AdvancedErrorInterface
+
+	//parse the query params
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	//get the data
+	stats, err := ctrl.Service.GetDatabaseHighReliabilityStats(location, environment, olderThan)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	//Write the data
+	utils.WriteJSONResponse(w, http.StatusOK, stats)
+}
+
 // GetDatabaseVersionStats return all statistics about the versions of the databases using the filters in the request
 func (ctrl *APIController) GetDatabaseVersionStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time

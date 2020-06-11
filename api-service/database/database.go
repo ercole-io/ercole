@@ -75,6 +75,8 @@ type MongoDatabaseInterface interface {
 	GetTopUnusedInstanceResourceStats(location string, environment string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetDatabaseEnvironmentStats return a array containing the number of databases per environment
 	GetDatabaseEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetDatabaseHighReliabilityStats return a array containing the number of databases per high-reliability status
+	GetDatabaseHighReliabilityStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetDatabaseVersionStats return a array containing the number of databases per version
 	GetDatabaseVersionStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetTopReclaimableDatabaseStats return a array containing the total sum of reclaimable of segments advisors of the top reclaimable databases
