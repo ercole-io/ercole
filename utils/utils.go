@@ -129,7 +129,7 @@ func NewAPIUrlNoParams(baseURL string, username string, password string, path st
 	}
 
 	u.User = url.UserPassword(username, password)
-	u.Path = path
+	u.Path += path
 
 	return u
 }
