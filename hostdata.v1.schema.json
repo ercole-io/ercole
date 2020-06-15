@@ -222,7 +222,8 @@
                                                             "PSUs",
                                                             "Backups",
                                                             "FeatureUsageStats",
-                                                            "PDBs"
+                                                            "PDBs",
+                                                            "Services"
                                                         ],
                                                         "properties": {
                                                             "InstanceNumber": {
@@ -681,6 +682,22 @@
                                                                     }
                                                                 }
                                                             },
+                                                            "Services": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "object",
+                                                                    "required": [
+                                                                        "Name"
+                                                                    ],
+                                                                    "properties": {
+                                                                        "Name": {
+                                                                            "type": "string",
+                                                                            "minLength": 1,
+                                                                            "maxLength": 32
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
                                                             "PDBs": {
                                                                 "type": "array",
                                                                 "items": {
@@ -689,7 +706,8 @@
                                                                         "Name",
                                                                         "Status",
                                                                         "Tablespaces",
-                                                                        "Schemas"
+                                                                        "Schemas",
+                                                                        "Services"
                                                                     ],
                                                                     "properties": {
                                                                         "Name": {
@@ -779,6 +797,22 @@
                                                                                         "minimum": 0
                                                                                     },
                                                                                     "User": {
+                                                                                        "type": "string",
+                                                                                        "minLength": 1,
+                                                                                        "maxLength": 32
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "Services": {
+                                                                            "type": "array",
+                                                                            "items": {
+                                                                                "type": "object",
+                                                                                "required": [
+                                                                                    "Name"
+                                                                                ],
+                                                                                "properties": {
+                                                                                    "Name": {
                                                                                         "type": "string",
                                                                                         "minLength": 1,
                                                                                         "maxLength": 32
