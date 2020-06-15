@@ -41,7 +41,7 @@ func init() {
 				ercoleConfig.APIService.RemoteEndpoint,
 				ercoleConfig.APIService.AuthenticationProvider.Username,
 				ercoleConfig.APIService.AuthenticationProvider.Password,
-				"/clusters/"+args[0],
+				"/hosts/clusters/"+args[0],
 				params,
 			).String(), bytes.NewReader([]byte{}))
 

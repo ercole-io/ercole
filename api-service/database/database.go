@@ -138,8 +138,8 @@ type MongoDatabaseInterface interface {
 	FindHostData(hostname string) (model.HostData, utils.AdvancedErrorInterface)
 	// ExistHostdata return true if the host specified by hostname exist, otherwise false
 	ExistHostdata(hostname string) (bool, utils.AdvancedErrorInterface)
-	// GetAssetsUsage return a map that contains the number of usages for every features
-	GetAssetsUsage(location string, environment string, olderThan time.Time) (map[string]float32, utils.AdvancedErrorInterface)
+	// GetTechnologiesUsage return a map that contains the number of usages for every features
+	GetTechnologiesUsage(location string, environment string, olderThan time.Time) (map[string]float32, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation
@@ -187,7 +187,7 @@ func (md *MongoDatabase) ConnectToMongodb() {
 type SearchHostsFilters struct {
 	Hostname                      string
 	Database                      string
-	Asset                         string
+	Technology                    string
 	HardwareAbstractionTechnology string
 	Cluster                       *string
 	PhysicalHost                  string

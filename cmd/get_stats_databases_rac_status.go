@@ -20,7 +20,7 @@ func init() {
 		"Get databases RAC status stats",
 		`Get stats about the RAC status of the databases`,
 		false, []apiOption{locationOption, environmentOption, olderThanOptions}, false,
-		"/stats/databases/rac-status",
+		"/hosts/technologies/oracle/databases/rac-status",
 		"Failed to get databases RAC status stats: %v\n",
 		"Failed to get databases RAC status stats(Status: %d): %s\n",
 	)

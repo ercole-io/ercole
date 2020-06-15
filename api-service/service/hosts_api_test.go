@@ -136,13 +136,13 @@ func TestGetHost_Success(t *testing.T) {
 	expectedRes := map[string]interface{}{
 		"Alerts": []interface{}{
 			map[string]interface{}{
-				"AlertAffectedAsset": nil,
-				"AlertCategory":      model.AlertCategorySystem,
-				"AlertCode":          "NEW_SERVER",
-				"AlertSeverity":      "NOTICE",
-				"AlertStatus":        "NEW",
-				"Date":               utils.P("2020-04-07T08:52:59.871+02:00"),
-				"Description":        "The server 'test-virt' was added to ercole",
+				"AlertAffectedTechnology": nil,
+				"AlertCategory":           model.AlertCategorySystem,
+				"AlertCode":               "NEW_SERVER",
+				"AlertSeverity":           "NOTICE",
+				"AlertStatus":             "NEW",
+				"Date":                    utils.P("2020-04-07T08:52:59.871+02:00"),
+				"Description":             "The server 'test-virt' was added to ercole",
 				"OtherInfo": map[string]interface{}{
 					"Hostname": "test-virt",
 				},

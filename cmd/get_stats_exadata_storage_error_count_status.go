@@ -20,7 +20,7 @@ func init() {
 		"Get exadata storage error count status stats",
 		`Get stats about the error count status of the storage of the exadata`,
 		false, []apiOption{locationOption, environmentOption, olderThanOptions}, false,
-		"/stats/exadata/storage-error-count-status",
+		"/hosts/technologies/oracle/exadata/storage-error-count-status",
 		"Failed to get exadata storage error count status stats: %v\n",
 		"Failed to get exadata storage error count status stats(Status: %d): %s\n",
 	)

@@ -26,13 +26,13 @@ import (
 func (as *APIService) GetInfoForFrontendDashboard(location string, environment string, olderThan time.Time) (map[string]interface{}, utils.AdvancedErrorInterface) {
 	var err utils.AdvancedErrorInterface
 	out := map[string]interface{}{}
-	assetsObject := map[string]interface{}{}
+	technologiesObject := map[string]interface{}{}
 
-	assetsObject["Total"], err = as.GetTotalAssetsComplianceStats(location, environment, olderThan)
+	technologiesObject["Total"], err = as.GetTotalTechnologiesComplianceStats(location, environment, olderThan)
 	if err != nil {
 		return nil, err
 	}
-	assetsObject["Assets"], err = as.ListAssets("", false, location, environment, olderThan)
+	technologiesObject["Technologies"], err = as.ListTechnologies("", false, location, environment, olderThan)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (as *APIService) GetInfoForFrontendDashboard(location string, environment s
 	if err != nil {
 		return nil, err
 	}
-	out["Assets"] = assetsObject
+	out["Technologies"] = technologiesObject
 
 	return out, nil
 }

@@ -20,7 +20,7 @@ func init() {
 		"List locations",
 		`list-locations list the locations`,
 		false, true, true, true,
-		"/locations",
+		"/hosts/locations",
 		"Failed to list locations data: %v\n",
 		"Failed to list locations data(Status: %d): %s\n",
 	)
