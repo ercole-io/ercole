@@ -20,7 +20,7 @@ func init() {
 		"Get databases license compliance stats",
 		`Get stats about the compliance of licenses of the databases`,
 		false, true, true, true,
-		"/stats/databases/license-compliance",
+		"/hosts/technologies/oracle/databases/license-compliance",
 		"Failed to get databases license compliance stats: %v\n",
 		"Failed to get databases license compliance stats(Status: %d): %s\n",
 	)

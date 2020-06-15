@@ -20,7 +20,7 @@ func init() {
 		"Get top reclaimable databases stats",
 		`Get stats about top reclaimable databases`,
 		false, []apiOption{locationOption, limitOption, olderThanOptions}, false,
-		"/stats/databases/top-reclaimable",
+		"/hosts/technologies/oracle/databases/top-reclaimable",
 		"Failed to get top reclaimable databases stats: %v\n",
 		"Failed to get top reclaimable databases stats(Status: %d): %s\n",
 	)

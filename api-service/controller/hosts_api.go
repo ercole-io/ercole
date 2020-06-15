@@ -280,7 +280,7 @@ func (ctrl *APIController) GetSearchHostFilters(r *http.Request) (database.Searc
 
 	filters.Hostname = r.URL.Query().Get("hostname")
 	filters.Database = r.URL.Query().Get("database")
-	filters.Asset = r.URL.Query().Get("asset")
+	filters.Technology = r.URL.Query().Get("technology")
 	filters.HardwareAbstractionTechnology = r.URL.Query().Get("hardware-abstraction-technology")
 	if r.URL.Query().Get("cluster") == "NULL" {
 		filters.Cluster = nil

@@ -63,20 +63,20 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 				"Severity":      "CRITICAL",
 			},
 		},
-		"Assets": map[string]interface{}{
-			"Assets": []map[string]interface{}{
+		"Technologies": map[string]interface{}{
+			"Technologies": []map[string]interface{}{
 				{
 					"Compliance": false,
 					"Cost":       0,
 					"Count":      0,
-					"Name":       model.AssetOracleDatabase,
+					"Name":       model.TechnologyOracleDatabase,
 					"Used":       8,
 				},
 				{
 					"Compliance": true,
 					"Cost":       0,
 					"Count":      2,
-					"Name":       model.AssetOracleExadata,
+					"Name":       model.TechnologyOracleExadata,
 					"Used":       2,
 				},
 			},

@@ -121,7 +121,7 @@ func (sa *alertSimilarTo) Matches(x interface{}) bool {
 		return false
 	} else if val.AlertCode != sa.al.AlertCode {
 		return false
-	} else if (sa.al.AlertAffectedAsset == nil && val.AlertAffectedAsset != sa.al.AlertAffectedAsset) || (sa.al.AlertAffectedAsset != nil && *val.AlertAffectedAsset != *sa.al.AlertAffectedAsset) {
+	} else if (sa.al.AlertAffectedTechnology == nil && val.AlertAffectedTechnology != sa.al.AlertAffectedTechnology) || (sa.al.AlertAffectedTechnology != nil && *val.AlertAffectedTechnology != *sa.al.AlertAffectedTechnology) {
 		return false
 	} else if val.AlertCategory != sa.al.AlertCategory {
 		return false

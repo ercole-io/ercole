@@ -912,7 +912,7 @@ components:
             - SYSTEM
             - AGENT
             - LICENSE
-        AlertAffectedAsset:
+        AlertAffectedTechnology:
           nullable: true
           type: string
           enum:
@@ -948,7 +948,7 @@ components:
         - Hostname
         - Description
         - AlertCategory
-        - AlertAffectedAsset
+        - AlertAffectedTechnology
         - AlertStatus
         - AlertSeverity
         - AlertCode
@@ -1028,7 +1028,7 @@ components:
         Microsoft/SQLServer:
           type: boolean
           nullable: true
-    AssetStatus:
+    TechnologyStatus:
       type: object
       required:
         - Name
@@ -1053,7 +1053,7 @@ components:
           type: number
         HostsCount:
           type: integer
-    AllAssetComplianceStatus:
+    AllTechnologyComplianceStatus:
       type: object
       required:
         - Used
@@ -1395,8 +1395,8 @@ paths:
           schema:
             type: string
         - in: query
-          name: asset
-          description: filter by a asset
+          name: technology
+          description: filter by a technology
           allowEmptyValue: true
           schema:
             type: string
@@ -1823,15 +1823,15 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /assets:
+  /hosts/technologies:
     get:
       tags:
         - api-service
         - fe-user
         - read
-      operationId: ListAssets
-      summary: List all assets 
-      description:  List all assets
+      operationId: ListTechnologies
+      summary: List all Technologies 
+      description:  List all Technologies
       parameters:
         - $ref: '#/components/parameters/sort-by'
         - $ref: '#/components/parameters/sort-desc'
@@ -1846,14 +1846,14 @@ paths:
               schema:
                 type: array
                 items: 
-                  $ref: '#/components/schemas/AssetStatus'
+                  $ref: '#/components/schemas/TechnologyStatus'
         '401':
           $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /databases:
+  /hosts/technologies/databases:
     get:
       tags:
         - api-service
@@ -1924,7 +1924,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /addms:
+  /hosts/technologies/oracle/databases/addms:
     get:
       tags:
         - api-service
@@ -1972,7 +1972,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /locations:
+  /hosts/locations:
     get:
       tags:
         - api-service
@@ -2001,7 +2001,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /environments:
+  /hosts/environments:
     get:
       tags:
         - api-service
@@ -2163,7 +2163,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /clusters:
+  /hosts/clusters:
     get:
       summary: Search a list of clusters
       tags:
@@ -2214,7 +2214,7 @@ paths:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
         - $ref: '#/components/parameters/older-than'
-  /clusters/{name}:
+  /hosts/clusters/{name}:
     get:
       summary: Get a cluster
       tags:
@@ -2240,7 +2240,7 @@ paths:
             type: string
           required: true
           description: cluster name
-  /exadata:
+  /hosts/technologies/oracle/exadata:
     get:
       summary: Search a list of exadata
       tags:
@@ -2282,7 +2282,7 @@ paths:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
         - $ref: '#/components/parameters/older-than'
-  /license-modifiers:
+  /hosts/technologies/oracle/databases/license-modifiers:
     get:
       tags:
         - api-service
@@ -2326,7 +2326,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/count:
+  /hosts/count:
     get:
       tags:
         - api-service
@@ -2352,7 +2352,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/environments:
+  /hosts/environments/frequency:
     get:
       tags:
         - api-service
@@ -2388,7 +2388,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/types:
+  /hosts/types:
     get:
       tags:
         - api-service
@@ -2424,7 +2424,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/operating-systems:
+  /hosts/operating-systems:
     get:
       tags:
         - api-service
@@ -2460,7 +2460,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/top-unused-instance-resource:
+  /hosts/technologies/oracle/databases/top-unused-instance-resource:
     get:
       tags:
         - api-service
@@ -2497,15 +2497,15 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/assets/compliance:
+  /hosts/technologies/compliance:
     get:
       tags:
         - api-service
         - fe-user
         - read
-      operationId: GetTotalAssetsCompliance
-      summary: Get the total compliance status of all assets 
-      description: Get the total compliance status of all assets 
+      operationId: GetTotalTechnologiesCompliance
+      summary: Get the total compliance status of all Technologies 
+      description: Get the total compliance status of all Technologies 
       parameters:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
@@ -2516,14 +2516,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AllAssetComplianceStatus'
+                $ref: '#/components/schemas/AllTechnologyComplianceStatus'
         '401':
           $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/databases/environments:
+  /hosts/technologies/oracle/databases/environments:
     get:
       tags:
         - api-service
@@ -2559,7 +2559,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/databases/high-reliability-status:
+  /hosts/technologies/oracle/databases/high-reliability:
     get:
       tags:
         - api-service
@@ -2595,7 +2595,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/databases/versions:
+  /hosts/technologies/oracle/databases/versions:
     get:
       tags:
         - api-service
@@ -2631,7 +2631,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/databases/top-reclaimable:
+  /hosts/technologies/oracle/databases/top-reclaimable:
     get:
       tags:
         - api-service
@@ -2671,7 +2671,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/databases/patch-status:
+  /hosts/technologies/oracle/databases/patch-status:
     get:
       tags:
         - api-service
@@ -2708,7 +2708,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/databases/top-workload:
+  /hosts/technologies/oracle/databases/top-workload:
     get:
       tags:
         - api-service
@@ -2748,7 +2748,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/databases/dataguard-status:
+  /hosts/technologies/oracle/databases/dataguard-status:
     get:
       tags:
         - api-service
@@ -2784,7 +2784,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/databases/archivelog-status:
+  /hosts/technologies/oracle/databases/archivelog-status:
     get:
       tags:
         - api-service
@@ -2820,7 +2820,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/databases/rac-status:
+  /hosts/technologies/oracle/databases/rac-status:
     get:
       tags:
         - api-service
@@ -2856,7 +2856,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/databases/total-work:
+  /hosts/technologies/oracle/databases/total-work:
     get:
       tags:
         - api-service
@@ -2882,7 +2882,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/databases/total-memory-size:
+  /hosts/technologies/oracle/databases/total-memory-size:
     get:
       tags:
         - api-service
@@ -2908,7 +2908,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/databases/total-datafile-size:
+  /hosts/technologies/oracle/databases/total-datafile-size:
     get:
       tags:
         - api-service
@@ -2934,7 +2934,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/databases/total-segment-size:
+  /hosts/technologies/oracle/databases/total-segment-size:
     get:
       tags:
         - api-service
@@ -2960,7 +2960,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/databases/license-compliance:
+  /hosts/technologies/oracle/databases/license-compliance:
     get:
       tags:
         - api-service
@@ -2997,7 +2997,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error' 
-  /stats/exadata/total-memory-size:
+  /hosts/technologies/oracle/exadata/total-memory-size:
     get:
       tags:
         - api-service
@@ -3023,7 +3023,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/exadata/total-cpu:
+  /hosts/technologies/oracle/exadata/total-cpu:
     get:
       tags:
         - api-service
@@ -3057,7 +3057,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error' 
-  /stats/exadata/average-storage-usage:
+  /hosts/technologies/oracle/exadata/average-storage-usage:
     get:
       tags:
         - api-service
@@ -3083,7 +3083,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/exadata/storage-error-count-status:
+  /hosts/technologies/oracle/exadata/storage-error-count-status:
     get:
       tags:
         - api-service
@@ -3119,7 +3119,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /stats/exadata/patch-status:
+  /hosts/technologies/oracle/exadata/patch-status:
     get:
       tags:
         - api-service
@@ -3155,7 +3155,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /segment-advisors:
+  /hosts/technologies/oracle/databases/segment-advisors:
     get:
       parameters:
         - in: query
@@ -3207,7 +3207,7 @@ paths:
         - api-service
         - fe-user
         - read
-  /patch-advisors:
+  /hosts/technologies/oracle/databases/patch-advisors:
     get:
       parameters:
         - $ref: '#/components/parameters/search'
@@ -3624,23 +3624,23 @@ paths:
                 type: object
                 required:
                   - Features
-                  - Assets
+                  - Technologies
                   - Alerts
                 properties:
                   Features:
                     $ref: '#/components/schemas/Features' 
                   Alerts: 
                     $ref: '#/components/schemas/AggregatedCodeSeverityAlerts'
-                  Assets:
+                  Technologies:
                     type: object
                     required:
-                      - Assets
+                      - Technologies
                       - Total
                     properties:
-                      Assets:
-                        $ref: '#/components/schemas/AssetStatus' 
+                      Technologies:
+                        $ref: '#/components/schemas/TechnologyStatus' 
                       Total:
-                        $ref: '#/components/schemas/AllAssetComplianceStatus' 
+                        $ref: '#/components/schemas/AllTechnologyComplianceStatus' 
         '401':
           $ref: '#/components/responses/error'
         '422':

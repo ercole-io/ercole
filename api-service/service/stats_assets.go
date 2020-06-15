@@ -22,9 +22,9 @@ import (
 	"github.com/ercole-io/ercole/utils"
 )
 
-// GetTotalAssetsComplianceStats return the total compliance of all assets
-func (as *APIService) GetTotalAssetsComplianceStats(location string, environment string, olderThan time.Time) (map[string]interface{}, utils.AdvancedErrorInterface) {
-	data, err := as.ListAssets("", false, location, environment, olderThan)
+// GetTotalTechnologiesComplianceStats return the total compliance of all technologies
+func (as *APIService) GetTotalTechnologiesComplianceStats(location string, environment string, olderThan time.Time) (map[string]interface{}, utils.AdvancedErrorInterface) {
+	data, err := as.ListTechnologies("", false, location, environment, olderThan)
 	if err != nil {
 		return nil, err
 	}

@@ -27,14 +27,14 @@ import (
 // ThrowNewDatabaseAlert create and insert in the database a new NEW_DATABASE alert
 func (as *AlertService) ThrowNewDatabaseAlert(dbname string, hostname string) utils.AdvancedErrorInterface {
 	alr := model.Alert{
-		ID:                 primitive.NewObjectIDFromTimestamp(as.TimeNow()),
-		AlertAffectedAsset: model.AssetOracleDatabasePtr,
-		AlertCategory:      model.AlertCategoryLicense,
-		AlertCode:          model.AlertCodeNewDatabase,
-		AlertSeverity:      model.AlertSeverityNotice,
-		AlertStatus:        model.AlertStatusNew,
-		Date:               as.TimeNow(),
-		Description:        fmt.Sprintf("The database '%s' was created on the server %s", dbname, hostname),
+		ID:                      primitive.NewObjectIDFromTimestamp(as.TimeNow()),
+		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+		AlertCategory:           model.AlertCategoryLicense,
+		AlertCode:               model.AlertCodeNewDatabase,
+		AlertSeverity:           model.AlertSeverityNotice,
+		AlertStatus:             model.AlertStatusNew,
+		Date:                    as.TimeNow(),
+		Description:             fmt.Sprintf("The database '%s' was created on the server %s", dbname, hostname),
 		OtherInfo: map[string]interface{}{
 			"Hostname": hostname,
 			"Dbname":   dbname,
@@ -55,14 +55,14 @@ func (as *AlertService) ThrowNewDatabaseAlert(dbname string, hostname string) ut
 // ThrowNewServerAlert create and insert in the database a new NEW_SERVER alert
 func (as *AlertService) ThrowNewServerAlert(hostname string) utils.AdvancedErrorInterface {
 	alr := model.Alert{
-		ID:                 primitive.NewObjectIDFromTimestamp(as.TimeNow()),
-		AlertAffectedAsset: nil,
-		AlertCategory:      model.AlertCategorySystem,
-		AlertCode:          model.AlertCodeNewServer,
-		AlertSeverity:      model.AlertSeverityNotice,
-		AlertStatus:        model.AlertStatusNew,
-		Date:               as.TimeNow(),
-		Description:        fmt.Sprintf("The server '%s' was added to ercole", hostname),
+		ID:                      primitive.NewObjectIDFromTimestamp(as.TimeNow()),
+		AlertAffectedTechnology: nil,
+		AlertCategory:           model.AlertCategorySystem,
+		AlertCode:               model.AlertCodeNewServer,
+		AlertSeverity:           model.AlertSeverityNotice,
+		AlertStatus:             model.AlertStatusNew,
+		Date:                    as.TimeNow(),
+		Description:             fmt.Sprintf("The server '%s' was added to ercole", hostname),
 		OtherInfo: map[string]interface{}{
 			"Hostname": hostname,
 		},
@@ -82,14 +82,14 @@ func (as *AlertService) ThrowNewServerAlert(hostname string) utils.AdvancedError
 // ThrowNewEnterpriseLicenseAlert create and insert in the database a new NEW_DATABASE alert
 func (as *AlertService) ThrowNewEnterpriseLicenseAlert(hostname string) utils.AdvancedErrorInterface {
 	alr := model.Alert{
-		ID:                 primitive.NewObjectIDFromTimestamp(as.TimeNow()),
-		AlertAffectedAsset: model.AssetOracleDatabasePtr,
-		AlertCategory:      model.AlertCategoryLicense,
-		AlertCode:          model.AlertCodeNewLicense,
-		AlertSeverity:      model.AlertSeverityCritical,
-		AlertStatus:        model.AlertStatusNew,
-		Date:               as.TimeNow(),
-		Description:        fmt.Sprintf("A new Enterprise license has been enabled to %s", hostname),
+		ID:                      primitive.NewObjectIDFromTimestamp(as.TimeNow()),
+		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+		AlertCategory:           model.AlertCategoryLicense,
+		AlertCode:               model.AlertCodeNewLicense,
+		AlertSeverity:           model.AlertSeverityCritical,
+		AlertStatus:             model.AlertStatusNew,
+		Date:                    as.TimeNow(),
+		Description:             fmt.Sprintf("A new Enterprise license has been enabled to %s", hostname),
 		OtherInfo: map[string]interface{}{
 			"Hostname": hostname,
 		},
@@ -109,14 +109,14 @@ func (as *AlertService) ThrowNewEnterpriseLicenseAlert(hostname string) utils.Ad
 // ThrowActivatedFeaturesAlert create and insert in the database a new NEW_OPTION alert
 func (as *AlertService) ThrowActivatedFeaturesAlert(dbname string, hostname string, activatedFeatures []string) utils.AdvancedErrorInterface {
 	alr := model.Alert{
-		ID:                 primitive.NewObjectIDFromTimestamp(as.TimeNow()),
-		AlertAffectedAsset: model.AssetOracleDatabasePtr,
-		AlertCategory:      model.AlertCategoryLicense,
-		AlertCode:          model.AlertCodeNewOption,
-		AlertSeverity:      model.AlertSeverityCritical,
-		AlertStatus:        model.AlertStatusNew,
-		Date:               as.TimeNow(),
-		Description:        fmt.Sprintf("The database %s on %s has enabled new features (%s) on server", dbname, hostname, strings.Join(activatedFeatures, ", ")),
+		ID:                      primitive.NewObjectIDFromTimestamp(as.TimeNow()),
+		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+		AlertCategory:           model.AlertCategoryLicense,
+		AlertCode:               model.AlertCodeNewOption,
+		AlertSeverity:           model.AlertSeverityCritical,
+		AlertStatus:             model.AlertStatusNew,
+		Date:                    as.TimeNow(),
+		Description:             fmt.Sprintf("The database %s on %s has enabled new features (%s) on server", dbname, hostname, strings.Join(activatedFeatures, ", ")),
 		OtherInfo: map[string]interface{}{
 			"Hostname": hostname,
 			"Dbname":   dbname,
@@ -138,14 +138,14 @@ func (as *AlertService) ThrowActivatedFeaturesAlert(dbname string, hostname stri
 // ThrowNoDataAlert create and insert in the database a new NO_DATA alert
 func (as *AlertService) ThrowNoDataAlert(hostname string, freshnessThreshold int) utils.AdvancedErrorInterface {
 	alr := model.Alert{
-		ID:                 primitive.NewObjectIDFromTimestamp(as.TimeNow()),
-		AlertAffectedAsset: nil,
-		AlertCategory:      model.AlertCategoryAgent,
-		AlertCode:          model.AlertCodeNoData,
-		AlertSeverity:      model.AlertSeverityMajor,
-		AlertStatus:        model.AlertStatusNew,
-		Date:               as.TimeNow(),
-		Description:        fmt.Sprintf("No data received from the host %s in the last %d days", hostname, freshnessThreshold),
+		ID:                      primitive.NewObjectIDFromTimestamp(as.TimeNow()),
+		AlertAffectedTechnology: nil,
+		AlertCategory:           model.AlertCategoryAgent,
+		AlertCode:               model.AlertCodeNoData,
+		AlertSeverity:           model.AlertSeverityMajor,
+		AlertStatus:             model.AlertStatusNew,
+		Date:                    as.TimeNow(),
+		Description:             fmt.Sprintf("No data received from the host %s in the last %d days", hostname, freshnessThreshold),
 		OtherInfo: map[string]interface{}{
 			"Hostname": hostname,
 		},

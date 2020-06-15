@@ -29,8 +29,8 @@ import (
 type APIControllerInterface interface {
 	// SearchHosts search hosts data using the filters in the request
 	SearchHosts(w http.ResponseWriter, r *http.Request)
-	// ListAssets returns the list of assets with some stats using the filters in the request
-	ListAssets(w http.ResponseWriter, r *http.Request)
+	// ListTechnologies returns the list of Technologies with some stats using the filters in the request
+	ListTechnologies(w http.ResponseWriter, r *http.Request)
 	// SearchDatabases search databases data using the filters in the request
 	SearchDatabases(w http.ResponseWriter, r *http.Request)
 	// SearchClusters search clusters data using the filters in the request
@@ -80,8 +80,8 @@ type APIControllerInterface interface {
 	GetDatabaseVersionStats(w http.ResponseWriter, r *http.Request)
 	// GetTopReclaimableDatabaseStats return top databases by reclaimable segment advisors using the filters in the request
 	GetTopReclaimableDatabaseStats(w http.ResponseWriter, r *http.Request)
-	// GetTotalAssetsComplianceStats return the total compliance of all assets using the filters in the request
-	GetTotalAssetsComplianceStats(w http.ResponseWriter, r *http.Request)
+	// GetTotalTechnologiesComplianceStats return the total compliance of all technologies using the filters in the request
+	GetTotalTechnologiesComplianceStats(w http.ResponseWriter, r *http.Request)
 	// GetDatabasePatchStatusStats return all statistics about the patch status of the databases using the filters in the request
 	GetDatabasePatchStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetTopWorkloadDatabaseStats return top databases by workload advisors using the filters in the request

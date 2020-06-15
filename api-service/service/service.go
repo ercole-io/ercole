@@ -36,8 +36,8 @@ type APIServiceInterface interface {
 	SearchHosts(mode string, search string, otherFilters database.SearchHostsFilters, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// GetHost return the host specified in the hostname param
 	GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, utils.AdvancedErrorInterface)
-	// ListAssets returns the list of assets with some stats
-	ListAssets(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.AssetStatus, utils.AdvancedErrorInterface)
+	// ListTechnologies returns the list of technologies with some stats
+	ListTechnologies(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.TechnologyStatus, utils.AdvancedErrorInterface)
 	// SearchAlerts search alerts
 	SearchAlerts(mode string, search string, sortBy string, sortDesc bool, page int, pageSize int, severity string, status string, from time.Time, to time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchClusters search clusters
@@ -86,8 +86,8 @@ type APIServiceInterface interface {
 	GetDatabaseVersionStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetTopReclaimableDatabaseStats return a array containing the total sum of reclaimable of segments advisors of the top reclaimable databases
 	GetTopReclaimableDatabaseStats(location string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
-	// GetTotalAssetsComplianceStats return the total compliance of all assets
-	GetTotalAssetsComplianceStats(location string, environment string, olderThan time.Time) (map[string]interface{}, utils.AdvancedErrorInterface)
+	// GetTotalTechnologiesComplianceStats return the total compliance of all technologie
+	GetTotalTechnologiesComplianceStats(location string, environment string, olderThan time.Time) (map[string]interface{}, utils.AdvancedErrorInterface)
 	// GetDatabasePatchStatusStats return a array containing the number of databases per patch status
 	GetDatabasePatchStatusStats(location string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetTopWorkloadDatabaseStats return a array containing top databases by workload

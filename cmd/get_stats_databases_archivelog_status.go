@@ -20,7 +20,7 @@ func init() {
 		"Get databases archivelog status stats",
 		`Get stats about the archivelog status of the databases`,
 		false, []apiOption{locationOption, environmentOption, olderThanOptions}, false,
-		"/stats/databases/archivelog-status",
+		"/hosts/technologies/oracle/databases/archivelog-status",
 		"Failed to get databases archivelog status stats: %v\n",
 		"Failed to get databases archivelog status stats(Status: %d): %s\n",
 	)
