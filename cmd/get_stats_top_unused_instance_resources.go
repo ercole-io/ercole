@@ -20,7 +20,7 @@ func init() {
 		"Get top unused instance resource stats",
 		`Get stats about top unused instance resource`,
 		false, []apiOption{locationOption, limitOption, olderThanOptions}, false,
-		"/stats/top-unused-instance-resource",
+		"/hosts/technologies/oracle/databases/top-unused-instance-resource",
 		"Failed to get top unused instance resource stats: %v\n",
 		"Failed to get top unused instance resource stats(Status: %d): %s\n",
 	)

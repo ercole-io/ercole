@@ -320,14 +320,14 @@ func (m *MongodbSuite) TestGetHost() {
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_15.json"))
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_16.json"))
 	m.InsertAlert(model.Alert{
-		ID:                 utils.Str2oid("5e96ade270c184faca93fe1b"),
-		AlertCategory:      model.AlertCategorySystem,
-		AlertAffectedAsset: nil,
-		AlertCode:          model.AlertCodeNewServer,
-		AlertSeverity:      model.AlertSeverityNotice,
-		AlertStatus:        model.AlertStatusAck,
-		Date:               utils.P("2020-04-10T08:46:58.38+02:00"),
-		Description:        "The server 'test-virt' was added to ercole",
+		ID:                      utils.Str2oid("5e96ade270c184faca93fe1b"),
+		AlertCategory:           model.AlertCategorySystem,
+		AlertAffectedTechnology: nil,
+		AlertCode:               model.AlertCodeNewServer,
+		AlertSeverity:           model.AlertSeverityNotice,
+		AlertStatus:             model.AlertStatusAck,
+		Date:                    utils.P("2020-04-10T08:46:58.38+02:00"),
+		Description:             "The server 'test-virt' was added to ercole",
 		OtherInfo: map[string]interface{}{
 			"Hostname": "test-virt",
 		},
@@ -349,14 +349,14 @@ func (m *MongodbSuite) TestGetHost() {
 		expectedResult := map[string]interface{}{
 			"Alerts": []interface{}{
 				map[string]interface{}{
-					"_id":                utils.Str2oid("5e96ade270c184faca93fe1b"),
-					"AlertCategory":      model.AlertCategorySystem,
-					"AlertAffectedAsset": nil,
-					"AlertCode":          model.AlertCodeNewServer,
-					"AlertSeverity":      model.AlertSeverityNotice,
-					"AlertStatus":        model.AlertStatusAck,
-					"Date":               utils.P("2020-04-10T08:46:58.38+02:00").Local(),
-					"Description":        "The server 'test-virt' was added to ercole",
+					"_id":                     utils.Str2oid("5e96ade270c184faca93fe1b"),
+					"AlertCategory":           model.AlertCategorySystem,
+					"AlertAffectedTechnology": nil,
+					"AlertCode":               model.AlertCodeNewServer,
+					"AlertSeverity":           model.AlertSeverityNotice,
+					"AlertStatus":             model.AlertStatusAck,
+					"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
+					"Description":             "The server 'test-virt' was added to ercole",
 					"OtherInfo": map[string]interface{}{
 						"Hostname": "test-virt",
 					},

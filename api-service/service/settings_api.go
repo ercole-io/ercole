@@ -11,7 +11,7 @@ func (as *APIService) GetDefaultDatabaseTags() ([]string, utils.AdvancedErrorInt
 
 // GetErcoleFeatures return a map of active/inactive features
 func (as *APIService) GetErcoleFeatures() (map[string]bool, utils.AdvancedErrorInterface) {
-	partialList, err := as.Database.GetAssetsUsage("", "", utils.MAX_TIME)
+	partialList, err := as.Database.GetTechnologiesUsage("", "", utils.MAX_TIME)
 	if err != nil {
 		return nil, err
 	}

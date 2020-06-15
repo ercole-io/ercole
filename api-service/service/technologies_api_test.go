@@ -24,7 +24,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestListAssets_Success(t *testing.T) {
+func TestListTechnologies_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -53,13 +53,13 @@ func TestListAssets_Success(t *testing.T) {
 		},
 	}
 
-	getAssetsUsageRes := map[string]float32{
+	getTechnologiesUsageRes := map[string]float32{
 		"Oracle/Database_HostsCount": 8,
 		"Oracle/Exadata":             2,
 	}
 	db.EXPECT().
-		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
-		Return(getAssetsUsageRes, nil)
+		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		Return(getTechnologiesUsageRes, nil)
 	listLicensesRes := []interface{}{
 		map[string]interface{}{
 			"Compliance":       false,
@@ -93,7 +93,7 @@ func TestListAssets_Success(t *testing.T) {
 		ListLicenses(false, "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(listLicensesRes, nil)
 
-	res, err := as.ListAssets(
+	res, err := as.ListTechnologies(
 		"Count", true,
 		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
 	)
@@ -101,7 +101,7 @@ func TestListAssets_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
 }
 
-func TestListAssets_SuccessEmpty(t *testing.T) {
+func TestListTechnologies_SuccessEmpty(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -111,10 +111,10 @@ func TestListAssets_SuccessEmpty(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{}
 
-	getAssetsUsageRes := map[string]float32{}
+	getTechnologiesUsageRes := map[string]float32{}
 	db.EXPECT().
-		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
-		Return(getAssetsUsageRes, nil)
+		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		Return(getTechnologiesUsageRes, nil)
 	listLicensesRes := []interface{}{
 		map[string]interface{}{
 			"Compliance": false,
@@ -127,7 +127,7 @@ func TestListAssets_SuccessEmpty(t *testing.T) {
 		ListLicenses(false, "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(listLicensesRes, nil)
 
-	res, err := as.ListAssets(
+	res, err := as.ListTechnologies(
 		"Count", true,
 		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
 	)
@@ -136,7 +136,7 @@ func TestListAssets_SuccessEmpty(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
 }
 
-func TestListAssets_FailInternalServerError1(t *testing.T) {
+func TestListTechnologies_FailInternalServerError1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -145,10 +145,10 @@ func TestListAssets_FailInternalServerError1(t *testing.T) {
 	}
 
 	db.EXPECT().
-		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(nil, aerrMock)
 
-	_, err := as.ListAssets(
+	_, err := as.ListTechnologies(
 		"Count", true,
 		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
 	)
@@ -156,7 +156,7 @@ func TestListAssets_FailInternalServerError1(t *testing.T) {
 	require.Equal(t, aerrMock, err)
 }
 
-func TestListAssets_FailInternalServerError2(t *testing.T) {
+func TestListTechnologies_FailInternalServerError2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -164,15 +164,15 @@ func TestListAssets_FailInternalServerError2(t *testing.T) {
 		Database: db,
 	}
 
-	getAssetsUsageRes := map[string]float32{}
+	getTechnologiesUsageRes := map[string]float32{}
 	db.EXPECT().
-		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
-		Return(getAssetsUsageRes, nil)
+		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		Return(getTechnologiesUsageRes, nil)
 	db.EXPECT().
 		ListLicenses(false, "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(nil, aerrMock)
 
-	_, err := as.ListAssets(
+	_, err := as.ListTechnologies(
 		"Count", true,
 		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
 	)

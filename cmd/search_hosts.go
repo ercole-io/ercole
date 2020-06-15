@@ -24,7 +24,7 @@ import (
 
 var searchHostsHostname string
 var searchHostsDatabase string
-var searchHostsAsset string
+var searchHostsTechnology string
 var searchHostsHardwareAbstractionTechnology string
 var searchHostsCluster string
 var searchHostsPhysicalHost string
@@ -45,7 +45,7 @@ var searchHostsOption apiOption = apiOption{
 	addOption: func(cmd *cobra.Command) {
 		cmd.Flags().StringVar(&searchHostsHostname, "hostname", "", "Filter by hostname")
 		cmd.Flags().StringVar(&searchHostsDatabase, "database", "", "Filter by a database")
-		cmd.Flags().StringVar(&searchHostsAsset, "asset", "", "Filter by a asset")
+		cmd.Flags().StringVar(&searchHostsTechnology, "technology", "", "Filter by a technology")
 		cmd.Flags().StringVar(&searchHostsHardwareAbstractionTechnology, "hardware-abstraction-technology", "", "Filter by the HA technology")
 		cmd.Flags().StringVar(&searchHostsCluster, "cluster", "", "Filter by the name of virtualization cluster. use 'NULL' for searching host that aren't part of a virtualization cluster")
 		cmd.Flags().StringVar(&searchHostsPhysicalHost, "physical-host", "", "Filter by the name of physical host on which the host runs")
@@ -65,7 +65,7 @@ var searchHostsOption apiOption = apiOption{
 	addParam: func(params url.Values) {
 		params.Set("hostname", searchHostsHostname)
 		params.Set("database", searchHostsDatabase)
-		params.Set("asset", searchHostsAsset)
+		params.Set("technology", searchHostsTechnology)
 		params.Set("hardware-abstraction-technology", searchHostsHardwareAbstractionTechnology)
 		params.Set("cluster", searchHostsCluster)
 		params.Set("physical-host", searchHostsPhysicalHost)

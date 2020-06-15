@@ -20,7 +20,7 @@ func init() {
 		"Get operating system stats",
 		`Get stats about the info.operating_system field`,
 		false, []apiOption{locationOption, olderThanOptions}, false,
-		"/stats/operating-systems",
+		"/hosts/operating-systems",
 		"Failed to get operating system stats: %v\n",
 		"Failed to get operating system stats(Status: %d): %s\n",
 	)
