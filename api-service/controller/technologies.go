@@ -22,8 +22,8 @@ import (
 	"github.com/ercole-io/ercole/utils"
 )
 
-// ListAssets returns the list of assets with some stats using the filters in the request
-func (ctrl *APIController) ListAssets(w http.ResponseWriter, r *http.Request) {
+// ListTechnologies returns the list of Technologies with some stats using the filters in the request
+func (ctrl *APIController) ListTechnologies(w http.ResponseWriter, r *http.Request) {
 	var sortBy string
 	var sortDesc bool
 	var location string
@@ -47,7 +47,7 @@ func (ctrl *APIController) ListAssets(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//get the data
-	data, err := ctrl.Service.ListAssets(sortBy, sortDesc, location, environment, olderThan)
+	data, err := ctrl.Service.ListTechnologies(sortBy, sortDesc, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return

@@ -52,12 +52,12 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 				"Severity":      "NOTICE",
 			},
 		},
-		"Assets": map[string]interface{}{
-			"Assets": []map[string]interface{}{
+		"Technologies": map[string]interface{}{
+			"Technologies": []map[string]interface{}{
 				{
 					"Compliance": false,
 					"Count":      7,
-					"Name":       model.AssetOracleDatabase,
+					"Name":       model.TechnologyOracleDatabase,
 					"Used":       10,
 					"TotalCost":  130,
 					"PaidCost":   85,
@@ -79,13 +79,13 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		},
 	}
 
-	getAssetsUsageRes := map[string]float32{
+	getTechnologiesUsageRes := map[string]float32{
 		"Oracle/Database_HostsCount": 8,
 		"Oracle/Exadata":             0,
 	}
 	db.EXPECT().
-		GetAssetsUsage("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
-		Return(getAssetsUsageRes, nil).AnyTimes().MinTimes(1)
+		GetTechnologiesUsage("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		Return(getTechnologiesUsageRes, nil).AnyTimes().MinTimes(1)
 
 	db.EXPECT().
 		GetHostsCountStats("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
@@ -152,13 +152,13 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		nil,
 	)
 
-	getAssetsUsageRes2 := map[string]float32{
+	getTechnologiesUsageRes2 := map[string]float32{
 		"Oracle/Database_HostsCount": 8,
 		"Oracle/Exadata":             2,
 	}
 	db.EXPECT().
-		GetAssetsUsage("", "", utils.MAX_TIME).
-		Return(getAssetsUsageRes2, nil)
+		GetTechnologiesUsage("", "", utils.MAX_TIME).
+		Return(getTechnologiesUsageRes2, nil)
 
 	res, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
 
@@ -175,7 +175,7 @@ func TestGetInfoForFrontendDashboard_Fail1(t *testing.T) {
 	}
 
 	db.EXPECT().
-		GetAssetsUsage("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		GetTechnologiesUsage("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 		Return(nil, aerrMock).AnyTimes().MinTimes(1)
 
 	_, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
@@ -191,14 +191,14 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 		Database: db,
 	}
 
-	getAssetsUsageRes := map[string]float32{
+	getTechnologiesUsageRes := map[string]float32{
 		"Oracle/Database": 8,
 		"Oracle/Exadata":  0,
 	}
 
 	db.EXPECT().
-		GetAssetsUsage("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
-		Return(getAssetsUsageRes, nil).AnyTimes().MinTimes(1)
+		GetTechnologiesUsage("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		Return(getTechnologiesUsageRes, nil).AnyTimes().MinTimes(1)
 	db.EXPECT().
 		GetHostsCountStats("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 		Return(20, nil).AnyTimes().MinTimes(1)
@@ -254,7 +254,7 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 	)
 
 	db.EXPECT().
-		GetAssetsUsage("", "", utils.MAX_TIME).
+		GetTechnologiesUsage("", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	_, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))

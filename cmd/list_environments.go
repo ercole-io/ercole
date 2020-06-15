@@ -20,7 +20,7 @@ func init() {
 		"List environments",
 		`list-environments list the environments`,
 		false, true, true, true,
-		"/environments",
+		"/hosts/environments",
 		"Failed to list environments data: %v\n",
 		"Failed to list environments data(Status: %d): %s\n",
 	)

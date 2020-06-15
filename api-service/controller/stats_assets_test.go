@@ -27,7 +27,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetTotalAssetsComplianceStats_Success(t *testing.T) {
+func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -46,11 +46,11 @@ func TestGetTotalAssetsComplianceStats_Success(t *testing.T) {
 	}
 
 	as.EXPECT().
-		GetTotalAssetsComplianceStats("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		GetTotalTechnologiesComplianceStats("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTotalAssetsComplianceStats)
+	handler := http.HandlerFunc(ac.GetTotalTechnologiesComplianceStats)
 	req, err := http.NewRequest("GET", "/stats/assets/compliance?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
@@ -60,7 +60,7 @@ func TestGetTotalAssetsComplianceStats_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 
-func TestGetTotalAssetsComplianceStats_FailUnprocessableEntity(t *testing.T) {
+func TestGetTotalTechnologiesComplianceStats_FailUnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -72,7 +72,7 @@ func TestGetTotalAssetsComplianceStats_FailUnprocessableEntity(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTotalAssetsComplianceStats)
+	handler := http.HandlerFunc(ac.GetTotalTechnologiesComplianceStats)
 	req, err := http.NewRequest("GET", "/stats/assets/compliance?older-than=sdfsdfsdf", nil)
 	require.NoError(t, err)
 
@@ -81,7 +81,7 @@ func TestGetTotalAssetsComplianceStats_FailUnprocessableEntity(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestGetTotalAssetsComplianceStats_FailInternalServerError(t *testing.T) {
+func TestGetTotalTechnologiesComplianceStats_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -93,11 +93,11 @@ func TestGetTotalAssetsComplianceStats_FailInternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		GetTotalAssetsComplianceStats("", "", utils.MAX_TIME).
+		GetTotalTechnologiesComplianceStats("", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTotalAssetsComplianceStats)
+	handler := http.HandlerFunc(ac.GetTotalTechnologiesComplianceStats)
 	req, err := http.NewRequest("GET", "/stats/assets/compliance", nil)
 	require.NoError(t, err)
 

@@ -28,7 +28,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestListAssets_Success(t *testing.T) {
+func TestListTechnologies_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -39,13 +39,13 @@ func TestListAssets_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []model.AssetStatus{
+	expectedRes := []model.TechnologyStatus{
 		{
 			Compliance: false,
 			TotalCost:  100,
 			PaidCost:   20,
 			Count:      0,
-			Name:       model.AssetOracleDatabase,
+			Name:       model.TechnologyOracleDatabase,
 			Used:       8,
 			HostsCount: 10,
 		},
@@ -54,18 +54,18 @@ func TestListAssets_Success(t *testing.T) {
 			TotalCost:  15,
 			PaidCost:   3,
 			Count:      2,
-			Name:       model.AssetOracleExadata,
+			Name:       model.TechnologyOracleExadata,
 			Used:       2,
 			HostsCount: 1,
 		},
 	}
 
 	as.EXPECT().
-		ListAssets("Count", true, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		ListTechnologies("Count", true, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ListAssets)
+	handler := http.HandlerFunc(ac.ListTechnologies)
 	req, err := http.NewRequest("GET", "/assets?sort-by=Count&sort-desc=true&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
@@ -75,7 +75,7 @@ func TestListAssets_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 
-func TestListAssets_FailUnprocessableEntity1(t *testing.T) {
+func TestListTechnologies_FailUnprocessableEntity1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -87,7 +87,7 @@ func TestListAssets_FailUnprocessableEntity1(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ListAssets)
+	handler := http.HandlerFunc(ac.ListTechnologies)
 	req, err := http.NewRequest("GET", "/assets?sort-desc=asdasd", nil)
 	require.NoError(t, err)
 
@@ -96,7 +96,7 @@ func TestListAssets_FailUnprocessableEntity1(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestListAssets_FailUnprocessableEntity2(t *testing.T) {
+func TestListTechnologies_FailUnprocessableEntity2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -108,7 +108,7 @@ func TestListAssets_FailUnprocessableEntity2(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ListAssets)
+	handler := http.HandlerFunc(ac.ListTechnologies)
 	req, err := http.NewRequest("GET", "/assets?older-than=asdasdasd", nil)
 	require.NoError(t, err)
 
@@ -117,7 +117,7 @@ func TestListAssets_FailUnprocessableEntity2(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestListAssets_FailInternalServerError(t *testing.T) {
+func TestListTechnologies_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -129,11 +129,11 @@ func TestListAssets_FailInternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		ListAssets("", false, "", "", utils.MAX_TIME).
+		ListTechnologies("", false, "", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ListAssets)
+	handler := http.HandlerFunc(ac.ListTechnologies)
 	req, err := http.NewRequest("GET", "/assets", nil)
 	require.NoError(t, err)
 

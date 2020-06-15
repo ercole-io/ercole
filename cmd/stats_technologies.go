@@ -19,13 +19,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// statsAssetsCmd represents the stats/assets command
-var statsAssetsCmd = &cobra.Command{
-	Use:   "assets",
-	Short: "perform a api request about stats of assets",
-	Long:  `stats perform a api request to ercole api-service /stats/assets endpoints`,
+// statsTechnologiesCmd represents the stats/technologie command
+var statsTechnologiesCmd = &cobra.Command{
+	Use:   "technologies",
+	Short: "perform a api request about stats of technologies",
+	Long:  `stats perform a api request to ercole api-service /hosts/technologies endpoints`,
 }
 
 func init() {
-	statsCmd.AddCommand(statsAssetsCmd)
+	statsCmd.AddCommand(statsTechnologiesCmd)
 }

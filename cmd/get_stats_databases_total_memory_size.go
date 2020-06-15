@@ -20,7 +20,7 @@ func init() {
 		"Get databases total memory size stats",
 		`Get stats about the total size of memory(PGATarget+SGATarget+MemoryTarget) of databases`,
 		false, true, true, true,
-		"/stats/databases/total-memory-size",
+		"/hosts/technologies/oracle/databases/total-memory-size",
 		"Failed to get databases total memory size stats: %v\n",
 		"Failed to get databases total memory size stats(Status: %d): %s\n",
 	)
