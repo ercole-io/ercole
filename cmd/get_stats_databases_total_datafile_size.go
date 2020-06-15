@@ -20,7 +20,7 @@ func init() {
 		"Get databases total datafile size stats",
 		`Get stats about the total size of datafiles of databases`,
 		false, true, true, true,
-		"/stats/databases/total-datafile-size",
+		"/hosts/technologies/oracle/databases/total-datafile-size",
 		"Failed to get databases total datafile size stats: %v\n",
 		"Failed to get databases total datafile size stats(Status: %d): %s\n",
 	)

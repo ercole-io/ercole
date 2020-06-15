@@ -20,7 +20,7 @@ func init() {
 		"Search current databases",
 		`search-databases search the most matching databases to the arguments`,
 		true, []apiOption{fullOption, locationOption, environmentOption, sortingOptions, olderThanOptions}, true,
-		"/databases",
+		"/hosts/technologies/databases",
 		"Failed to search databases data: %v\n",
 		"Failed to search databases data(Status: %d): %s\n",
 	)

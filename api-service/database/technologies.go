@@ -24,8 +24,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// GetAssetsUsage return a map that contains the number of usages for every features
-func (md *MongoDatabase) GetAssetsUsage(location string, environment string, olderThan time.Time) (map[string]float32, utils.AdvancedErrorInterface) {
+// GetTechnologiesUsage return a map that contains the number of usages for every features
+func (md *MongoDatabase) GetTechnologiesUsage(location string, environment string, olderThan time.Time) (map[string]float32, utils.AdvancedErrorInterface) {
 	var out map[string]float32 = make(map[string]float32)
 
 	//Find the matching hostdata

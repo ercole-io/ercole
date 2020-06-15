@@ -24,15 +24,15 @@ import (
 
 // Alert holds informations about a alert
 type Alert struct {
-	ID                 primitive.ObjectID     `bson:"_id"`
-	AlertCategory      string                 `bson:"AlertCategory"`
-	AlertAffectedAsset *string                `bson:"AlertAffectedAsset"`
-	AlertCode          string                 `bson:"AlertCode"`
-	AlertSeverity      string                 `bson:"AlertSeverity"`
-	AlertStatus        string                 `bson:"AlertStatus"`
-	Description        string                 `bson:"Description"`
-	Date               time.Time              `bson:"Date"`
-	OtherInfo          map[string]interface{} `bson:"OtherInfo"`
+	ID                      primitive.ObjectID     `bson:"_id"`
+	AlertCategory           string                 `bson:"AlertCategory"`
+	AlertAffectedTechnology *string                `bson:"AlertAffectedTechnology"`
+	AlertCode               string                 `bson:"AlertCode"`
+	AlertSeverity           string                 `bson:"AlertSeverity"`
+	AlertStatus             string                 `bson:"AlertStatus"`
+	Description             string                 `bson:"Description"`
+	Date                    time.Time              `bson:"Date"`
+	OtherInfo               map[string]interface{} `bson:"OtherInfo"`
 }
 
 // Alert codes
@@ -101,12 +101,12 @@ var AlertBsonValidatorRules = bson.M{
 				AlertCategoryLicense,
 			},
 		},
-		"AlertAffectedAsset": bson.M{
+		"AlertAffectedTechnology": bson.M{
 			"bsonType": bson.A{"null", "string"},
 			"enum": bson.A{
 				nil,
-				AssetOracleDatabase,
-				AssetOracleExadata,
+				TechnologyOracleDatabase,
+				TechnologyOracleExadata,
 			},
 		},
 		"AlertCode": bson.M{

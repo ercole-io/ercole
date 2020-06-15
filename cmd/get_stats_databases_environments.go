@@ -20,7 +20,7 @@ func init() {
 		"Get databases environment stats",
 		`Get stats about the environment of the databases`,
 		false, []apiOption{locationOption, olderThanOptions}, false,
-		"/stats/databases/environments",
+		"/hosts/technologies/oracle/databases/environments",
 		"Failed to get databases environment stats: %v\n",
 		"Failed to get databases environment stats(Status: %d): %s\n",
 	)

@@ -20,7 +20,7 @@ func init() {
 		"Search license modifiers",
 		`search-license-modifiers search the most matching license modifiers to the arguments`,
 		true, []apiOption{sortingOptions}, true,
-		"/license-modifiers",
+		"/hosts/technologies/oracle/databases/license-modifiers",
 		"Failed to search license modifiers data: %v\n",
 		"Failed to search license modifiers data(Status: %d): %s\n",
 	)

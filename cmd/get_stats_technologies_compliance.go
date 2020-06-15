@@ -16,14 +16,14 @@
 package cmd
 
 func init() {
-	getAssetsComplianceStatusStatsCmd := simpleSingleValueAPIRequestCommand("compliance",
-		"Get assets compliance status stats",
-		`Get stats about the compliance of assets`,
+	getTechnologiesComplianceStatusStatsCmd := simpleSingleValueAPIRequestCommand("compliance",
+		"Get technologies compliance status stats",
+		`Get stats about the compliance of technologies`,
 		false, true, true, true,
-		"/stats/assets/compliance",
-		"Failed to get assets compliance status stats: %v\n",
-		"Failed to get assets compliance status stats(Status: %d): %s\n",
+		"/hosts/technologies/compliance",
+		"Failed to get technologies compliance status stats: %v\n",
+		"Failed to get technologies compliance status stats(Status: %d): %s\n",
 	)
 
-	statsAssetsCmd.AddCommand(getAssetsComplianceStatusStatsCmd)
+	statsTechnologiesCmd.AddCommand(getTechnologiesComplianceStatusStatsCmd)
 }

@@ -22,8 +22,8 @@ import (
 	"github.com/ercole-io/ercole/utils"
 )
 
-// GetTotalAssetsComplianceStats return the total compliance of all assets using the filters in the request
-func (ctrl *APIController) GetTotalAssetsComplianceStats(w http.ResponseWriter, r *http.Request) {
+// GetTotalTechnologiesComplianceStats return the total compliance of all technologies using the filters in the request
+func (ctrl *APIController) GetTotalTechnologiesComplianceStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
 	var location string
 	var environment string
@@ -39,7 +39,7 @@ func (ctrl *APIController) GetTotalAssetsComplianceStats(w http.ResponseWriter, 
 	}
 
 	//get the data
-	stats, err := ctrl.Service.GetTotalAssetsComplianceStats(location, environment, olderThan)
+	stats, err := ctrl.Service.GetTotalTechnologiesComplianceStats(location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
