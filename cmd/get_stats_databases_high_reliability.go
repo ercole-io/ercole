@@ -20,7 +20,7 @@ func init() {
 		"Get databases high reliability status stats",
 		`Get stats about the status of high reliability of the databases`,
 		false, []apiOption{locationOption, environmentOption, olderThanOptions}, false,
-		"/stats/databases/high-reliability",
+		"/hosts/technologies/oracle/databases/high-reliability",
 		"Failed to get databases high reliability status stats: %v\n",
 		"Failed to get databases high reliability status stats(Status: %d): %s\n",
 	)

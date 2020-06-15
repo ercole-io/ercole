@@ -20,7 +20,7 @@ func init() {
 		"Get databases dataguard status stats",
 		`Get stats about the dataguard status of the databases`,
 		false, []apiOption{locationOption, environmentOption, olderThanOptions}, false,
-		"/stats/databases/dataguard-status",
+		"/hosts/technologies/oracle/databases/dataguard-status",
 		"Failed to get databases dataguard status stats: %v\n",
 		"Failed to get databases dataguard status stats(Status: %d): %s\n",
 	)

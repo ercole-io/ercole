@@ -20,7 +20,7 @@ func init() {
 		"Get databases version stats",
 		`Get stats about the version of the databases`,
 		false, []apiOption{locationOption, olderThanOptions}, false,
-		"/stats/databases/versions",
+		"/hosts/technologies/oracle/databases/versions",
 		"Failed to get databases version stats: %v\n",
 		"Failed to get databases version stats(Status: %d): %s\n",
 	)

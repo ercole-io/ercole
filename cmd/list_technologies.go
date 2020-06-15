@@ -16,14 +16,14 @@
 package cmd
 
 func init() {
-	listAssetsCmd := simpleAPIRequestCommand("list-assets",
-		"List current assets",
-		`list-assets list the informations about the assets`,
+	listTechnologiesCmd := simpleAPIRequestCommand("list-technologies",
+		"List current technologies",
+		`list-technologies list the informations about the technologies`,
 		false, []apiOption{locationOption, environmentOption, sortingOptions, olderThanOptions}, false,
-		"/assets",
-		"Failed to list assets data: %v\n",
-		"Failed to list assets data(Status: %d): %s\n",
+		"/hosts/technologies",
+		"Failed to list technologies data: %v\n",
+		"Failed to list technologies data(Status: %d): %s\n",
 	)
 
-	apiCmd.AddCommand(listAssetsCmd)
+	apiCmd.AddCommand(listTechnologiesCmd)
 }

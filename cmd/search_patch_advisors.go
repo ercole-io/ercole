@@ -20,7 +20,7 @@ func init() {
 		"Search current patch advisors",
 		`search-patch-advisors search the most matching patch advisors to the arguments`,
 		true, []apiOption{windowTimeOption, locationOption, environmentOption, sortingOptions, olderThanOptions}, true,
-		"/patch-advisors",
+		"/hosts/technologies/oracle/databases/patch-advisors",
 		"Failed to search patch advisors data: %v\n",
 		"Failed to search patch advisors data(Status: %d): %s\n",
 	)

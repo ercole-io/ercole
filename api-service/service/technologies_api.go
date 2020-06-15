@@ -24,9 +24,9 @@ import (
 	"github.com/ercole-io/ercole/utils"
 )
 
-// ListAssets returns the list of assets with some stats
-func (as *APIService) ListAssets(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.AssetStatus, utils.AdvancedErrorInterface) {
-	partialList, err := as.Database.GetAssetsUsage(location, environment, olderThan)
+// ListTechnologies returns the list of Technologies with some stats
+func (as *APIService) ListTechnologies(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.TechnologyStatus, utils.AdvancedErrorInterface) {
+	partialList, err := as.Database.GetTechnologiesUsage(location, environment, olderThan)
 	if err != nil {
 		return nil, err
 	}
@@ -36,11 +36,11 @@ func (as *APIService) ListAssets(sortBy string, sortDesc bool, location string, 
 		return nil, err
 	}
 
-	finalList := make([]model.AssetStatus, 0)
+	finalList := make([]model.TechnologyStatus, 0)
 
 	//Oracle/Exadata
 	if partialList["Oracle/Exadata"] > 0 {
-		finalList = append(finalList, model.AssetStatus{
+		finalList = append(finalList, model.TechnologyStatus{
 			Name:       "Oracle/Exadata",
 			Used:       partialList["Oracle/Exadata"],
 			Count:      partialList["Oracle/Exadata"],
@@ -77,7 +77,7 @@ func (as *APIService) ListAssets(sortBy string, sortDesc bool, location string, 
 		}
 	}
 	if used > 0 {
-		finalList = append(finalList, model.AssetStatus{
+		finalList = append(finalList, model.TechnologyStatus{
 			Name:       "Oracle/Database",
 			Used:       used,
 			Count:      holded,

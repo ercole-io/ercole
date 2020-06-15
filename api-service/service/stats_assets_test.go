@@ -24,7 +24,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetTotalAssetsComplianceStats_Success(t *testing.T) {
+func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -41,13 +41,13 @@ func TestGetTotalAssetsComplianceStats_Success(t *testing.T) {
 		"HostsCount": 20,
 	}
 
-	getAssetsUsageRes := map[string]float32{
+	getTechnologiesUsageRes := map[string]float32{
 		"Oracle/Exadata": 2,
 	}
 
 	db.EXPECT().
-		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
-		Return(getAssetsUsageRes, nil)
+		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		Return(getTechnologiesUsageRes, nil)
 	db.EXPECT().
 		GetHostsCountStats("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(20, nil).AnyTimes().MinTimes(1)
@@ -85,7 +85,7 @@ func TestGetTotalAssetsComplianceStats_Success(t *testing.T) {
 		ListLicenses(false, "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(listLicensesRes, nil).AnyTimes().MinTimes(1)
 
-	res, err := as.GetTotalAssetsComplianceStats(
+	res, err := as.GetTotalTechnologiesComplianceStats(
 		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
 	)
 
@@ -93,7 +93,7 @@ func TestGetTotalAssetsComplianceStats_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
 }
 
-func TestGetTotalAssetsComplianceStats_FailInternalServerError(t *testing.T) {
+func TestGetTotalTechnologiesComplianceStats_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -102,10 +102,10 @@ func TestGetTotalAssetsComplianceStats_FailInternalServerError(t *testing.T) {
 	}
 
 	db.EXPECT().
-		GetAssetsUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(nil, aerrMock)
 
-	_, err := as.GetTotalAssetsComplianceStats(
+	_, err := as.GetTotalTechnologiesComplianceStats(
 		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
 	)
 

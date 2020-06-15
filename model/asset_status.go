@@ -15,7 +15,7 @@
 
 package model
 
-type AssetStatus struct {
+type TechnologyStatus struct {
 	Name       string
 	Used       float32
 	Count      float32
@@ -25,14 +25,14 @@ type AssetStatus struct {
 	HostsCount int
 }
 
-// Asset names
+// Technology names
 const (
-	AssetOracleDatabase string = "Oracle/Database"
-	AssetOracleExadata  string = "Oracle/Exadata"
+	TechnologyOracleDatabase string = "Oracle/Database"
+	TechnologyOracleExadata  string = "Oracle/Exadata"
 )
 
-// Pointers to asset names
+// Pointers to technology names
 var (
-	AssetOracleDatabasePtr *string = str2CopyPtr(AssetOracleDatabase)
-	AssetOracleExadataPtr  *string = str2CopyPtr(AssetOracleExadata)
+	TechnologyOracleDatabasePtr *string = str2CopyPtr(TechnologyOracleDatabase)
+	TechnologyOracleExadataPtr  *string = str2CopyPtr(TechnologyOracleExadata)
 )

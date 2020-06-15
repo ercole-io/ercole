@@ -20,7 +20,7 @@ func init() {
 		"Get the number of hosts",
 		`Get the number of hosts`,
 		false, true, true, true,
-		"/stats/count",
+		"/hosts/count",
 		"Failed to get the number of hosts: %v\n",
 		"Failed to get the number of hostswork (Status: %d): %s\n",
 	)

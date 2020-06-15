@@ -21,13 +21,13 @@ import (
 )
 
 var alert1 model.Alert = model.Alert{
-	AlertCode:          model.AlertCodeNewServer,
-	AlertSeverity:      model.AlertSeverityNotice,
-	AlertAffectedAsset: nil,
-	AlertCategory:      model.AlertCategorySystem,
-	AlertStatus:        model.AlertStatusNew,
-	Date:               utils.P("2019-11-05T18:02:03Z"),
-	Description:        "pippo",
+	AlertCode:               model.AlertCodeNewServer,
+	AlertSeverity:           model.AlertSeverityNotice,
+	AlertAffectedTechnology: nil,
+	AlertCategory:           model.AlertCategorySystem,
+	AlertStatus:             model.AlertStatusNew,
+	Date:                    utils.P("2019-11-05T18:02:03Z"),
+	Description:             "pippo",
 	OtherInfo: map[string]interface{}{
 		"Hostname": "myhost",
 	},
@@ -35,13 +35,13 @@ var alert1 model.Alert = model.Alert{
 }
 
 var alert2 model.Alert = model.Alert{
-	AlertAffectedAsset: nil,
-	AlertCategory:      model.AlertCategoryAgent,
-	AlertCode:          model.AlertCodeNoData,
-	AlertSeverity:      model.AlertSeverityMajor,
-	AlertStatus:        model.AlertStatusNew,
-	Date:               utils.P("2019-11-05T18:02:03Z"),
-	Description:        "No data received from the host myhost in the last 90 days",
+	AlertAffectedTechnology: nil,
+	AlertCategory:           model.AlertCategoryAgent,
+	AlertCode:               model.AlertCodeNoData,
+	AlertSeverity:           model.AlertSeverityMajor,
+	AlertStatus:             model.AlertStatusNew,
+	Date:                    utils.P("2019-11-05T18:02:03Z"),
+	Description:             "No data received from the host myhost in the last 90 days",
 	OtherInfo: map[string]interface{}{
 		"Hostname": "myhost",
 	},
