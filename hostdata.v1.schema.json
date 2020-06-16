@@ -8,12 +8,11 @@
         "Environment",
         "Tags",
         "AgentVersion",
-        "SchemaVersion",
+        "HostDataSchemaVersion",
         "Info",
         "ClusterMembershipStatus",
         "Features",
-        "Filesystems",
-        "Clusters"
+        "Filesystems"
     ],
     "properties": {
         "Hostname": {
@@ -50,7 +49,7 @@
             "maxLength": 64,
             "pattern": "^(([0-9]+([.][0-9]+)*)|(git-[0-9a-f]+)|(latest))$"
         },
-        "SchemaVersion": {
+        "HostDataSchemaVersion": {
             "type": "integer",
             "const": 1
         },
