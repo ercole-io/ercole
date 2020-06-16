@@ -166,7 +166,6 @@
             "properties": {
                 "Oracle": {
                     "anyOf": [
-                        { "type": "null" },
                         { 
                             "type": "object",
                             "properties": {
@@ -249,7 +248,7 @@
                                                             "Platform": {
                                                                 "type": "string",
                                                                 "minLength": 1,
-                                                                "maxLength": 32
+                                                                "maxLength": 64
                                                             },
                                                             "Archivelog": {
                                                                 "type": "boolean"
@@ -832,7 +831,8 @@
                                     ]
                                 }
                             }
-                        }
+                        },
+                        { "type": "null" }
                     ]
                 },
                 "Postgresql": {
