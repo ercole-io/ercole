@@ -353,7 +353,8 @@
                                                                             "maxLength": 256
                                                                         },
                                                                         "Date": {
-                                                                            "type": "string"
+                                                                            "type": "string",
+                                                                            "format": "date"
                                                                         }
                                                                     }
                                                                 }
