@@ -51,7 +51,7 @@
         },
         "SchemaVersion": {
             "type": "integer",
-            "const": 20
+            "const": 1
         },
         "Info": {
             "type": "object",
