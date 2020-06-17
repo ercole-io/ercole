@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,55 +22,45 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// ExadataCellDisk holds info about a exadata cell disk
-type ExadataCellDisk struct {
-	Name      string                 `bson:"Name"`
-	Status    string                 `bson:"Status"`
-	ErrCount  string                 `bson:"ErrCount"`
-	UsedPerc  string                 `bson:"UsedPerc"`
-	OtherInfo map[string]interface{} `bson:"-"`
+// OracleDatabasePSU holds information about a OracleDatabasePSU
+type OracleDatabasePSU struct {
+	Date        string                 `bson:"Date"`
+	Description string                 `bson:"Description"`
+	OtherInfo   map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v ExadataCellDisk) MarshalJSON() ([]byte, error) {
+func (v OracleDatabasePSU) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *ExadataCellDisk) UnmarshalJSON(data []byte) error {
+func (v *OracleDatabasePSU) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v ExadataCellDisk) MarshalBSON() ([]byte, error) {
+func (v OracleDatabasePSU) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *ExadataCellDisk) UnmarshalBSON(data []byte) error {
+func (v *OracleDatabasePSU) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// ExadataCellDiskBsonValidatorRules contains mongodb validation rules for ExadataCellDisk
-var ExadataCellDiskBsonValidatorRules = bson.M{
+// PSUBsonValidatorRules contains mongodb validation rules for psu
+var PSUBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Name",
-		"Status",
-		"ErrCount",
-		"UsedPerc",
+		"Date",
+		"Description",
 	},
 	"properties": bson.M{
-		"Name": bson.M{
+		"Date": bson.M{
 			"bsonType": "string",
 		},
-		"Status": bson.M{
-			"bsonType": "string",
-		},
-		"ErrCount": bson.M{
-			"bsonType": "string",
-		},
-		"UsedPerc": bson.M{
+		"Description": bson.M{
 			"bsonType": "string",
 		},
 	},
