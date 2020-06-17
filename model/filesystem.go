@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,14 +24,13 @@ import (
 
 // Filesystem holds information about mounted filesystem and used space
 type Filesystem struct {
-	Filesystem string                 `bson:"Filesystem"`
-	FsType     string                 `bson:"FsType"`
-	Size       string                 `bson:"Size"`
-	Used       string                 `bson:"Used"`
-	Available  string                 `bson:"Available"`
-	UsedPerc   string                 `bson:"UsedPerc"`
-	MountedOn  string                 `bson:"MountedOn"`
-	OtherInfo  map[string]interface{} `bson:"-"`
+	Filesystem     string                 `bson:"Filesystem"`
+	Type           string                 `bson:"Type"`
+	Size           int                    `bson:"Size"`
+	UsedSpace      int                    `bson:"UsedSpace"`
+	AvailableSpace int                    `bson:"AvailableSpace"`
+	MountedOn      string                 `bson:"MountedOn"`
+	OtherInfo      map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

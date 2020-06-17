@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,69 +19,33 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
-// Schema holds information about Oracle database schema.
-type Schema struct {
-	Database  string                 `bson:"Database"`
-	User      string                 `bson:"User"`
-	Total     int                    `bson:"Total"`
-	Tables    int                    `bson:"Tables"`
-	Indexes   int                    `bson:"Indexes"`
-	LOB       int                    `bson:"LOB"`
-	OtherInfo map[string]interface{} `bson:"-"`
+//ClusterMembershipStatus hold informations about the cluster membership
+type ClusterMembershipStatus struct {
+	OracleClusterware    bool                   `bson:"OracleClusterware"`
+	VeritasClusterServer bool                   `bson:"VeritasClusterServer"`
+	SunCluster           bool                   `bson:"SunCluster"`
+	HACMP                bool                   `bson:"HACMP"`
+	OtherInfo            map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v Schema) MarshalJSON() ([]byte, error) {
+func (v ClusterMembershipStatus) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *Schema) UnmarshalJSON(data []byte) error {
+func (v *ClusterMembershipStatus) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v Schema) MarshalBSON() ([]byte, error) {
+func (v ClusterMembershipStatus) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *Schema) UnmarshalBSON(data []byte) error {
+func (v *ClusterMembershipStatus) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// SchemaBsonValidatorRules contains mongodb validation rules for schema
-var SchemaBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"Database",
-		"User",
-		"Total",
-		"Tables",
-		"Indexes",
-		"LOB",
-	},
-	"properties": bson.M{
-		"Database": bson.M{
-			"bsonType": "string",
-		},
-		"User": bson.M{
-			"bsonType": "string",
-		},
-		"Total": bson.M{
-			"bsonType": "number",
-		},
-		"Tables": bson.M{
-			"bsonType": "number",
-		},
-		"Indexes": bson.M{
-			"bsonType": "number",
-		},
-		"LOB": bson.M{
-			"bsonType": "number",
-		},
-	},
 }

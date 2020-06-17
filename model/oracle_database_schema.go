@@ -22,86 +22,65 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// SchemaVersion contains the version of the schema
-const SchemaVersion int = 1
-
-// HostData holds all informations about a host & services
-type HostData struct {
-	Hostname                string
-	Location                string
-	Environment             string
-	Tags                    []string
-	AgentVersion            string
-	SchemaVersion           int
-	Info                    Host
-	ClusterMembershipStatus ClusterMembershipStatus
-	Features                Features
-	Filesystems             []Filesystem
-	Clusters                []ClusterInfo
-	OtherInfo               map[string]interface{}
+// OracleDatabaseSchema holds information about Oracle database schema.
+type OracleDatabaseSchema struct {
+	Indexes   int                    `bson:"Indexes"`
+	LOB       int                    `bson:"LOB"`
+	Tables    int                    `bson:"Tables"`
+	Total     int                    `bson:"Total"`
+	User      string                 `bson:"User"`
+	OtherInfo map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v HostData) MarshalJSON() ([]byte, error) {
+func (v OracleDatabaseSchema) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *HostData) UnmarshalJSON(data []byte) error {
+func (v *OracleDatabaseSchema) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v HostData) MarshalBSON() ([]byte, error) {
+func (v OracleDatabaseSchema) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *HostData) UnmarshalBSON(data []byte) error {
+func (v *OracleDatabaseSchema) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// HostDataBsonValidatorRules contains mongodb validation rules for hostData
-var HostDataBsonValidatorRules = bson.M{
+// SchemaBsonValidatorRules contains mongodb validation rules for schema
+var SchemaBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Hostname",
-		"Environment",
-		"Location",
-		"Version",
-		"ServerVersion",
-		"SchemaVersion",
-		"Info",
-		"Extra",
-		"Archived",
-		"CreatedAt",
+		"Database",
+		"User",
+		"Total",
+		"Tables",
+		"Indexes",
+		"LOB",
 	},
 	"properties": bson.M{
-		"Hostname": bson.M{
+		"Database": bson.M{
 			"bsonType": "string",
 		},
-		"Environment": bson.M{
+		"User": bson.M{
 			"bsonType": "string",
 		},
-		"Location": bson.M{
-			"bsonType": "string",
-		},
-		"Version": bson.M{
-			"bsonType": "string",
-		},
-		"ServerVersion": bson.M{
-			"bsonType": "string",
-		},
-		"SchemaVersion": bson.M{
+		"Total": bson.M{
 			"bsonType": "number",
 		},
-		"Info":  HostBsonValidatorRules,
-		"Extra": ExtraInfoBsonValidatorRules,
-		"Archived": bson.M{
-			"bsonType": "bool",
+		"Tables": bson.M{
+			"bsonType": "number",
 		},
-		"CreatedAt": bson.M{
-			"bsonType": "date",
+		"Indexes": bson.M{
+			"bsonType": "number",
+		},
+		"LOB": bson.M{
+			"bsonType": "number",
 		},
 	},
 }

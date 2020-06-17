@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,12 +24,11 @@ import (
 
 // VMInfo holds info about the vm
 type VMInfo struct {
-	Name         string                 `bson:"Name"`
-	ClusterName  string                 `bson:"ClusterName"`
-	Hostname     string                 `bson:"Hostname"` //Hostname or IP address
-	CappedCPU    bool                   `bson:"CappedCPU"`
-	PhysicalHost string                 `bson:"PhysicalHost"`
-	OtherInfo    map[string]interface{} `bson:"-"`
+	Name               string                 `bson:"Name"`
+	Hostname           string                 `bson:"Hostname"` //Hostname or IP address
+	CappedCPU          bool                   `bson:"CappedCPU"`
+	VirtualizationNode string                 `bson:"VirtualizationNode"`
+	OtherInfo          map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

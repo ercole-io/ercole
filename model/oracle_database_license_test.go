@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,14 +22,14 @@ import (
 )
 
 func TestDiffLicenses(t *testing.T) {
-	differences := DiffLicenses([]License{
+	differences := DiffLicenses([]OracleDatabaseLicense{
 		{Name: "Spatial queryes", Count: 10},
 		{Name: "High heavy database", Count: 0},
 		{Name: "Power saving", Count: 0},
 		{Name: "Crackked", Count: 12},
 		{Name: "Star wars support", Count: 6},
 		{Name: "Star wars support SP3", Count: 0},
-	}, []License{
+	}, []OracleDatabaseLicense{
 		{Name: "Spatial queryes", Count: 5},
 		{Name: "High heavy database", Count: 7},
 		{Name: "Power saving", Count: 0},
