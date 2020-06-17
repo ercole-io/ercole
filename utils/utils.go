@@ -177,7 +177,7 @@ func DownloadFile(filepath string, url string) (err error) {
 
 // PatchHostdata patch a single hostdata using the pf PatchingFunction.
 // It doesn't check if pf.Hostname equals hostdata["Hostname"]
-func PatchHostdata(pf model.PatchingFunction, hostdata model.HostData) (model.HostData, AdvancedErrorInterface) {
+func PatchHostdata(pf model.PatchingFunction, hostdata model.HostDataBE) (model.HostDataBE, AdvancedErrorInterface) {
 	//FIXME: avoid repeated marshalling/unmarshalling...
 
 	//Initialize the vm
@@ -187,37 +187,37 @@ func PatchHostdata(pf model.PatchingFunction, hostdata model.HostData) (model.Ho
 	var tempHD map[string]interface{}
 	tempRaw, err := json.Marshal(hostdata)
 	if err != nil {
-		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 	err = json.Unmarshal(tempRaw, &tempHD)
 	if err != nil {
-		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 
 	//Set the global variables
 	err = vm.Set("hostdata", tempHD)
 	if err != nil {
-		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 	err = vm.Set("vars", pf.Vars)
 	if err != nil {
-		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 
 	//Run the code
 	_, err = vm.Run(pf.Code)
 	if err != nil {
-		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 
 	//Convert tempHD to hostdata
 	tempRaw, err = json.Marshal(tempHD)
 	if err != nil {
-		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 	err = json.Unmarshal(tempRaw, &hostdata)
 	if err != nil {
-		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 
 	return hostdata, nil

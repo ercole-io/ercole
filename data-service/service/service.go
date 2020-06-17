@@ -38,7 +38,7 @@ type HostDataServiceInterface interface {
 	Init()
 
 	// UpdateHostInfo update the host informations using the provided hostdata
-	UpdateHostInfo(hostdata model.HostData) (interface{}, utils.AdvancedErrorInterface)
+	UpdateHostInfo(hostdata model.HostDataBE) (interface{}, utils.AdvancedErrorInterface)
 
 	// ArchiveHost archive the host
 	// ArchiveHost(hostname string) utils.AdvancedError
@@ -74,13 +74,13 @@ func (hds *HostDataService) Init() {
 }
 
 // UpdateHostInfo saves the hostdata
-func (hds *HostDataService) UpdateHostInfo(hostdata model.HostData) (interface{}, utils.AdvancedErrorInterface) {
+func (hds *HostDataService) UpdateHostInfo(hostdata model.HostDataBE) (interface{}, utils.AdvancedErrorInterface) {
 	var aerr utils.AdvancedErrorInterface
 
 	hostdata.ServerVersion = hds.Version
 	hostdata.Archived = false
 	hostdata.CreatedAt = hds.TimeNow()
-	hostdata.SchemaVersion = model.SchemaVersion
+	hostdata.ServerSchemaVersion = model.SchemaVersion
 	hostdata.ID = primitive.NewObjectIDFromTimestamp(hds.TimeNow())
 
 	//Patch the data
@@ -124,11 +124,11 @@ func (hds *HostDataService) UpdateHostInfo(hostdata model.HostData) (interface{}
 }
 
 // PatchHostData patch the hostdata using the pf stored in the db
-func (hds *HostDataService) PatchHostData(hostdata model.HostData) (model.HostData, utils.AdvancedErrorInterface) {
+func (hds *HostDataService) PatchHostData(hostdata model.HostDataBE) (model.HostDataBE, utils.AdvancedErrorInterface) {
 	//Find the patch
 	patch, err := hds.Database.FindPatchingFunction(hostdata.Hostname)
 	if err != nil {
-		return model.HostData{}, err
+		return model.HostDataBE{}, err
 	}
 
 	//If patch is valid, apply the path the data
