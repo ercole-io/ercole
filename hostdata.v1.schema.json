@@ -104,6 +104,14 @@
                     "type": "integer",
                     "minimum": 1
                 },
+                "ThreadsPerCore": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "CoresPerSocket": {
+                    "type": "integer",
+                    "minimum": 1
+                },
                 "HardwareAbstraction": {
                     "type": "string",
                     "enum": [ "PH", "VIRT" ]
@@ -210,7 +218,6 @@
                                                             "Patches",
                                                             "Tablespaces",
                                                             "Schemas",
-                                                            "Features",
                                                             "Licenses",
                                                             "ADDMs",
                                                             "SegmentAdvisors",
