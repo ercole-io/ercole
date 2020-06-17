@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,71 +22,72 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// Tablespace holds the informations about a tablespace.
-type Tablespace struct {
-	Database  string                 `bson:"Database"`
-	Name      string                 `bson:"Name"`
-	MaxSize   string                 `bson:"MaxSize"`
-	Total     string                 `bson:"Total"`
-	Used      string                 `bson:"Used"`
-	UsedPerc  string                 `bson:"UsedPerc"`
-	Status    string                 `bson:"Status"`
+// Features holds various informations about the features of the host.
+type Features struct {
+	Oracle    *OracleFeature         `bson:"Oracle"`
 	OtherInfo map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v Tablespace) MarshalJSON() ([]byte, error) {
+func (v Features) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *Tablespace) UnmarshalJSON(data []byte) error {
+func (v *Features) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v Tablespace) MarshalBSON() ([]byte, error) {
+func (v Features) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *Tablespace) UnmarshalBSON(data []byte) error {
+func (v *Features) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// TablespaceBsonValidatorRules contains mongodb validation rules for tablespace
-var TablespaceBsonValidatorRules = bson.M{
+// ExtraInfoBsonValidatorRules contains mongodb validation rules for extraInfo
+var ExtraInfoBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Database",
-		"Name",
-		"MaxSize",
-		"Total",
-		"Used",
-		"UsedPerc",
-		"Status",
+		"Filesystems",
 	},
 	"properties": bson.M{
-		"Database": bson.M{
-			"bsonType": "string",
+		"Databases": bson.M{
+			"anyOf": bson.A{
+				bson.M{
+					"bsonType": "null",
+				},
+				bson.M{
+					"bsonType": "array",
+					"items":    DatabaseBsonValidatorRules,
+				},
+			},
 		},
-		"Name": bson.M{
-			"bsonType": "string",
+		"Filesystems": bson.M{
+			"bsonType": "array",
+			"items":    FilesystemBsonValidatorRules,
 		},
-		"MaxSize": bson.M{
-			"bsonType": "string",
+		"Clusters": bson.M{
+			"anyOf": bson.A{
+				bson.M{
+					"bsonType": "null",
+				},
+				bson.M{
+					"bsonType": "array",
+					"items":    ClusterInfoBsonValidatorRules,
+				},
+			},
 		},
-		"Total": bson.M{
-			"bsonType": "string",
-		},
-		"Used": bson.M{
-			"bsonType": "string",
-		},
-		"UsedPerc": bson.M{
-			"bsonType": "string",
-		},
-		"Status": bson.M{
-			"bsonType": "string",
+		"Exadata": bson.M{
+			"anyOf": bson.A{
+				bson.M{
+					"bsonType": "null",
+				},
+				ExadataBsonValidatorRules,
+			},
 		},
 	},
 }

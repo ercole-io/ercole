@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,30 +22,30 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// License holds information about Oracle database license
-type License struct {
+// OracleDatabaseLicense holds information about a Oracle database license
+type OracleDatabaseLicense struct {
 	Name      string                 `bson:"Name"`
 	Count     float32                `bson:"Count"`
 	OtherInfo map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v License) MarshalJSON() ([]byte, error) {
+func (v OracleDatabaseLicense) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *License) UnmarshalJSON(data []byte) error {
+func (v *OracleDatabaseLicense) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v License) MarshalBSON() ([]byte, error) {
+func (v OracleDatabaseLicense) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *License) UnmarshalBSON(data []byte) error {
+func (v *OracleDatabaseLicense) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
@@ -81,7 +81,7 @@ const (
 )
 
 // DiffLicenses return a map that contains the difference of status between the oldLicenses and newLicenses
-func DiffLicenses(oldLicenses []License, newLicenses []License) map[string]int {
+func DiffLicenses(oldLicenses []OracleDatabaseLicense, newLicenses []OracleDatabaseLicense) map[string]int {
 	result := make(map[string]int)
 
 	//Add the features to the result assuming that the all new features are inactive

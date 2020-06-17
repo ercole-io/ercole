@@ -12,8 +12,7 @@
         "Info",
         "ClusterMembershipStatus",
         "Features",
-        "Filesystems",
-        "Clusters"
+        "Filesystems"
     ],
     "properties": {
         "Hostname": {
@@ -22,17 +21,17 @@
             "maxLength": 253,
             "format": "idn-hostname"
         },
-        "Environment": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 16,
-            "pattern": "^[A-Z0-9]+$"
-        },
         "Location": {
             "type": "string",
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[a-zA-Z0-9-]+$"
+        },
+        "Environment": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16,
+            "pattern": "^[A-Z0-9]+$"
         },
         "Tags": {
             "type": "array",
@@ -102,6 +101,14 @@
                     "minimum": 1
                 },
                 "CPUThreads": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "ThreadsPerCore": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "CoresPerSocket": {
                     "type": "integer",
                     "minimum": 1
                 },
@@ -215,7 +222,6 @@
                                                             "Patches",
                                                             "Tablespaces",
                                                             "Schemas",
-                                                            "Features",
                                                             "Licenses",
                                                             "ADDMs",
                                                             "SegmentAdvisors",
@@ -258,7 +264,7 @@
                                                             "Platform": {
                                                                 "type": "string",
                                                                 "minLength": 1,
-                                                                "maxLength": 32
+                                                                "maxLength": 64
                                                             },
                                                             "Archivelog": {
                                                                 "type": "boolean"
@@ -375,7 +381,8 @@
                                                                             "maxLength": 256
                                                                         },
                                                                         "Date": {
-                                                                            "type": "string"
+                                                                            "type": "string",
+                                                                            "format": "date"
                                                                         }
                                                                     }
                                                                 }
@@ -888,6 +895,11 @@
                                                                 "minLength": 1,
                                                                 "maxLength": 32
                                                             },
+                                                            "SwVersion": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 32
+                                                            },
                                                             "SwReleaseDate": {
                                                                 "type": "string",
                                                                 "format": "date"
@@ -995,7 +1007,8 @@
                                     ]
                                 }
                             }
-                        }
+                        },
+                        { "type": "null" }
                     ]
                 },
                 "Postgresql": {

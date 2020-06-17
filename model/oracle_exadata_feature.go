@@ -22,66 +22,42 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-//ClusterInfo hold informations about a cluster
-type ClusterInfo struct {
-	FetchEndpoint string                 `bson:"FetchEndpoint"`
-	Type          string                 `bson:"Type"`
-	Name          string                 `bson:"Name"`
-	CPU           int                    `bson:"CPU"`
-	Sockets       int                    `bson:"Sockets"`
-	VMs           []VMInfo               `bson:"VMs"`
-	OtherInfo     map[string]interface{} `bson:"-"`
+// OracleExadataFeature holds specific informations about a exadata.
+type OracleExadataFeature struct {
+	Components []OracleExadataComponent `bson:"Components"`
+	OtherInfo  map[string]interface{}   `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v ClusterInfo) MarshalJSON() ([]byte, error) {
+func (v OracleExadataFeature) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *ClusterInfo) UnmarshalJSON(data []byte) error {
+func (v *OracleExadataFeature) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v ClusterInfo) MarshalBSON() ([]byte, error) {
+func (v OracleExadataFeature) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *ClusterInfo) UnmarshalBSON(data []byte) error {
+func (v *OracleExadataFeature) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// ClusterInfoBsonValidatorRules contains mongodb validation rules for clusterInfo
-var ClusterInfoBsonValidatorRules = bson.M{
+// ExadataBsonValidatorRules contains mongodb validation rules for exadata
+var ExadataBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Name",
-		"Type",
-		"CPU",
-		"Sockets",
-		"VMs",
+		"Devices",
 	},
 	"properties": bson.M{
-		"Name": bson.M{
-			"bsonType": "string",
-		},
-		"Hour": bson.M{
-			"bsonType": "string",
-		},
-		"Type": bson.M{
-			"bsonType": "string",
-		},
-		"CPU": bson.M{
-			"bsonType": "number",
-		},
-		"Sockets": bson.M{
-			"bsonType": "number",
-		},
-		"VMs": bson.M{
+		"Devices": bson.M{
 			"bsonType": "array",
-			"items":    VMInfoBsonValidatorRules,
+			"items":    ExadataDeviceBsonValidatorRules,
 		},
 	},
 }

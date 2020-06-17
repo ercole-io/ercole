@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ import (
 )
 
 func TestDatabasesArrayAsMap(t *testing.T) {
-	dbs := []Database{
+	dbs := []OracleDatabase{
 		{
 			Name:     "superdb",
 			Platform: "HPP 1.2.3",
@@ -35,20 +35,20 @@ func TestDatabasesArrayAsMap(t *testing.T) {
 
 	dbsMap := DatabasesArrayAsMap(dbs)
 	assert.Len(t, dbsMap, 2)
-	assert.Equal(t, Database{
+	assert.Equal(t, OracleDatabase{
 		Name:     "superdb",
 		Platform: "HPP 1.2.3",
 	}, dbsMap["superdb"])
-	assert.Equal(t, Database{
+	assert.Equal(t, OracleDatabase{
 		Name:     "superdb2",
 		Platform: "PPH 1.2.3",
 	}, dbsMap["superdb2"])
 }
 
 func TestHasEnterpriseLicense_NoEnterpriseLicense(t *testing.T) {
-	assert.False(t, HasEnterpriseLicense(Database{
+	assert.False(t, HasEnterpriseLicense(OracleDatabase{
 		Name: "superdb",
-		Licenses: []License{
+		Licenses: []OracleDatabaseLicense{
 			{Name: "Driving", Count: 10},
 			{Name: "Illegal query engine", Count: 9},
 		},
@@ -56,9 +56,9 @@ func TestHasEnterpriseLicense_NoEnterpriseLicense(t *testing.T) {
 }
 
 func TestHasEnterpriseLicense_WithEnterpriseLicense(t *testing.T) {
-	assert.True(t, HasEnterpriseLicense(Database{
+	assert.True(t, HasEnterpriseLicense(OracleDatabase{
 		Name: "superdb",
-		Licenses: []License{
+		Licenses: []OracleDatabaseLicense{
 			{Name: "Oracle ENT", Count: 10},
 			{Name: "Illegal query engine", Count: 9},
 		},
@@ -66,7 +66,7 @@ func TestHasEnterpriseLicense_WithEnterpriseLicense(t *testing.T) {
 }
 
 func TestHasEnterpriseLicense_NilLicense(t *testing.T) {
-	assert.False(t, HasEnterpriseLicense(Database{
+	assert.False(t, HasEnterpriseLicense(OracleDatabase{
 		Name:     "superdb",
 		Licenses: nil,
 	}))
