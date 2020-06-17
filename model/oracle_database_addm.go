@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,65 +22,55 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// SegmentAdvisor holds information about a segment advisor
-type SegmentAdvisor struct {
-	SegmentOwner   string                 `bson:"SegmentOwner"`
-	SegmentName    string                 `bson:"SegmentName"`
-	SegmentType    string                 `bson:"SegmentType"`
-	PartitionName  string                 `bson:"PartitionName"`
-	Reclaimable    string                 `bson:"Reclaimable"`
+// OracleDatabaseAddm contains info about a addm
+type OracleDatabaseAddm struct {
+	Finding        string                 `bson:"Finding"`
 	Recommendation string                 `bson:"Recommendation"`
+	Action         string                 `bson:"Action"`
+	Benefit        float32                `bson:"Benefit"`
 	OtherInfo      map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v SegmentAdvisor) MarshalJSON() ([]byte, error) {
+func (v OracleDatabaseAddm) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *SegmentAdvisor) UnmarshalJSON(data []byte) error {
+func (v *OracleDatabaseAddm) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v SegmentAdvisor) MarshalBSON() ([]byte, error) {
+func (v OracleDatabaseAddm) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *SegmentAdvisor) UnmarshalBSON(data []byte) error {
+func (v *OracleDatabaseAddm) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// SegmentAdvisorBsonValidatorRules contains mongodb validation rules for segmentAdvisor
-var SegmentAdvisorBsonValidatorRules = bson.M{
+// AddmBsonValidatorRules contains mongodb validation rules for addm
+var AddmBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"SegmentOwner",
-		"SegmentName",
-		"SegmentType",
-		"PartitionName",
-		"Reclaimable",
+		"Finding",
 		"Recommendation",
+		"Action",
+		"Benefit",
 	},
 	"properties": bson.M{
-		"SegmentOwner": bson.M{
-			"bsonType": "string",
-		},
-		"SegmentName": bson.M{
-			"bsonType": "string",
-		},
-		"SegmentType": bson.M{
-			"bsonType": "string",
-		},
-		"PartitionName": bson.M{
-			"bsonType": "string",
-		},
-		"Reclaimable": bson.M{
+		"Finding": bson.M{
 			"bsonType": "string",
 		},
 		"Recommendation": bson.M{
+			"bsonType": "string",
+		},
+		"Action": bson.M{
+			"bsonType": "string",
+		},
+		"Benefit": bson.M{
 			"bsonType": "string",
 		},
 	},
