@@ -83,7 +83,7 @@ var OracleDatabasePatchBsonValidatorRules = bson.M{
 		},
 		"Date": bson.M{
 			"bsonType": "string",
-			"format":   "date",
+			"pattern":  "[0-9]{4}-[0-9]{2}-[0-9]{2}",
 		},
 	},
 }

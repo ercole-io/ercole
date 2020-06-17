@@ -89,7 +89,7 @@ func MigrateHostsSchema(log *logrus.Logger, client *mongo.Database) {
 	if err := client.RunCommand(context.TODO(), bson.D{
 		{"collMod", "hosts"},
 		{"validator", bson.D{
-			{"$jsonSchema", model.HostDataBsonValidatorRules},
+			{"$jsonSchema", model.HostDataBEBsonValidatorRules},
 		}},
 		{"validationAction", "error"},
 	}).Err(); err != nil {

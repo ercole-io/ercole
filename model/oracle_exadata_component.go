@@ -101,7 +101,7 @@ var OracleExadataComponentBsonValidatorRules = bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 253,
-			"format":    "idn-hostname",
+			"pattern":   "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$",
 		},
 		"ServerType": bson.M{
 			"bsonType": "string",
@@ -123,7 +123,7 @@ var OracleExadataComponentBsonValidatorRules = bson.M{
 		},
 		"SwReleaseDate": bson.M{
 			"bsonType": "string",
-			"format":   "date",
+			"pattern":  "[0-9]{4}-[0-9]{2}-[0-9]{2}",
 		},
 		"RunningCPUCount": bson.M{
 			"bsonType": "number",
@@ -136,7 +136,6 @@ var OracleExadataComponentBsonValidatorRules = bson.M{
 		"Memory": bson.M{
 			"bsonType": "string",
 			"minimum":  0,
-			"$comment": "Memory in GB",
 		},
 		"Status": bson.M{
 			"bsonType": "string",

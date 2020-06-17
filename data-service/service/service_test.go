@@ -55,11 +55,11 @@ func TestUpdateHostInfo_Success(t *testing.T) {
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
 	db.EXPECT().FindPatchingFunction(gomock.Any()).Return(model.PatchingFunction{}, nil).Times(0)
-	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD model.HostData) {
+	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD model.HostDataBE) {
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
 		assert.False(t, newHD.Archived)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
-		assert.Equal(t, model.SchemaVersion, newHD.SchemaVersion)
+		assert.Equal(t, model.SchemaVersion, newHD.ServerSchemaVersion)
 		assert.Equal(t, "1.6.6", newHD.ServerVersion)
 		assert.Equal(t, hd.Hostname, newHD.Hostname)
 		assert.Equal(t, hd.Environment, newHD.Environment)
@@ -127,11 +127,11 @@ func TestUpdateHostInfo_DatabaseError2(t *testing.T) {
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
 	db.EXPECT().FindPatchingFunction(gomock.Any()).Return(model.PatchingFunction{}, nil).Times(0)
-	db.EXPECT().InsertHostData(gomock.Any()).Return(nil, aerrMock).Do(func(newHD model.HostData) {
+	db.EXPECT().InsertHostData(gomock.Any()).Return(nil, aerrMock).Do(func(newHD model.HostDataBE) {
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
 		assert.False(t, newHD.Archived)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
-		assert.Equal(t, model.SchemaVersion, newHD.SchemaVersion)
+		assert.Equal(t, model.SchemaVersion, newHD.ServerSchemaVersion)
 		assert.Equal(t, "1.6.6", newHD.ServerVersion)
 		assert.Equal(t, hd.Hostname, newHD.Hostname)
 		assert.Equal(t, hd.Environment, newHD.Environment)
@@ -164,11 +164,11 @@ func TestUpdateHostInfo_HttpError(t *testing.T) {
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
 	db.EXPECT().FindPatchingFunction(gomock.Any()).Return(model.PatchingFunction{}, nil).Times(0)
-	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD model.HostData) {
+	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD model.HostDataBE) {
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
 		assert.False(t, newHD.Archived)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
-		assert.Equal(t, model.SchemaVersion, newHD.SchemaVersion)
+		assert.Equal(t, model.SchemaVersion, newHD.ServerSchemaVersion)
 		assert.Equal(t, "1.6.6", newHD.ServerVersion)
 		assert.Equal(t, hd.Hostname, newHD.Hostname)
 		assert.Equal(t, hd.Environment, newHD.Environment)
@@ -207,11 +207,11 @@ func TestUpdateHostInfo_HttpError2(t *testing.T) {
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
 	db.EXPECT().FindPatchingFunction(gomock.Any()).Return(model.PatchingFunction{}, nil).Times(0)
-	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD model.HostData) {
+	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD model.HostDataBE) {
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
 		assert.False(t, newHD.Archived)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
-		assert.Equal(t, model.SchemaVersion, newHD.SchemaVersion)
+		assert.Equal(t, model.SchemaVersion, newHD.ServerSchemaVersion)
 		assert.Equal(t, "1.6.6", newHD.ServerVersion)
 		assert.Equal(t, hd.Hostname, newHD.Hostname)
 		assert.Equal(t, hd.Environment, newHD.Environment)

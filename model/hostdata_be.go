@@ -92,7 +92,7 @@ var HostDataBEBsonValidatorRules = bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 253,
-			"format":    "idn-hostname",
+			"pattern":   "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$",
 		},
 		"Location": bson.M{
 			"bsonType":  "string",
@@ -144,7 +144,8 @@ var HostDataBEBsonValidatorRules = bson.M{
 		},
 		"ServerSchemaVersion": bson.M{
 			"bsonType": "number",
-			"const":    1,
+			"minimum":  1,
+			"maximum":  1,
 		},
 	},
 }
