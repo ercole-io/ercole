@@ -68,75 +68,98 @@ var HostBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
 		"Hostname",
-		"Environment",
-		"Location",
 		"CPUModel",
+		"CPUFrequency",
+		"CPUSockets",
 		"CPUCores",
 		"CPUThreads",
-		"Socket",
-		"Type",
-		"Virtual",
+		"ThreadsPerCore",
+		"CoresPerSocket",
+		"HardwareAbstraction",
+		"HardwareAbstractionTechnology",
 		"Kernel",
+		"KernelVersion",
 		"OS",
+		"OSVersion",
 		"MemoryTotal",
 		"SwapTotal",
-		"OracleCluster",
-		"VeritasCluster",
-		"SunCluster",
-		"AixCluster",
 	},
 	"properties": bson.M{
 		"Hostname": bson.M{
-			"bsonType": "string",
-			"pattern":  "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$",
-		},
-		"Environment": bson.M{
-			"bsonType": "string",
-		},
-		"Location": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 253,
+			"format":    "idn-hostname",
 		},
 		"CPUModel": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 64,
+			"pattern":   "^[^\n]+$",
+		},
+		"CPUFrequency": bson.M{
+			"bsonType":  "string",
+			"minLength": 3,
+			"maxLength": 16,
+			"pattern":   "^[0-9]+([.][0-9]+)?[ ]*(?i)(GHz|MHz)$",
+		},
+		"CPUSockets": bson.M{
+			"bsonType": "number",
+			"minimum":  0,
 		},
 		"CPUCores": bson.M{
 			"bsonType": "number",
+			"minimum":  1,
 		},
 		"CPUThreads": bson.M{
 			"bsonType": "number",
+			"minimum":  1,
 		},
-		"Socket": bson.M{
+		"ThreadsPerCore": bson.M{
 			"bsonType": "number",
+			"minimum":  1,
 		},
-		"Type": bson.M{
+		"CoresPerSocket": bson.M{
+			"bsonType": "number",
+			"minimum":  1,
+		},
+		"HardwareAbstraction": bson.M{
 			"bsonType": "string",
+			"enum":     bson.A{"PH", "VIRT"},
 		},
-		"Virtual": bson.M{
-			"bsonType": "bool",
+		"HardwareAbstractionTechnology": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 32,
+			"pattern":   "^[A-Z0-9]+$",
 		},
 		"Kernel": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 64,
+		},
+		"KernelVersion": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 64,
 		},
 		"OS": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 64,
+		},
+		"OSVersion": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 64,
 		},
 		"MemoryTotal": bson.M{
 			"bsonType": "double",
+			"minimum":  0,
 		},
 		"SwapTotal": bson.M{
 			"bsonType": "double",
-		},
-		"OracleCluster": bson.M{
-			"bsonType": "bool",
-		},
-		"VeritasCluster": bson.M{
-			"bsonType": "bool",
-		},
-		"SunCluster": bson.M{
-			"bsonType": "bool",
-		},
-		"AixCluster": bson.M{
-			"bsonType": "bool",
+			"minimum":  1,
 		},
 	},
 }

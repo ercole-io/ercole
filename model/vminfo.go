@@ -56,26 +56,30 @@ var VMInfoBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
 		"Name",
-		"ClusterName",
 		"Hostname",
 		"CappedCPU",
-		"PhysicalHost",
+		"VirtualizationNode",
 	},
 	"properties": bson.M{
 		"Name": bson.M{
-			"bsonType": "string",
-		},
-		"ClusterName": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 128,
 		},
 		"Hostname": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 253,
+			"format":    "idn-hostname",
 		},
 		"CappedCPU": bson.M{
 			"bsonType": "bool",
 		},
 		"PhysicalHost": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 253,
+			"format":    "idn-hostname",
 		},
 	},
 }

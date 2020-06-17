@@ -49,8 +49,8 @@ func (v *OracleDatabasePSU) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// PSUBsonValidatorRules contains mongodb validation rules for psu
-var PSUBsonValidatorRules = bson.M{
+// OracleDatabasePSUBsonValidatorRules contains mongodb validation rules for OracleDatabasePSU
+var OracleDatabasePSUBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
 		"Date",
@@ -59,9 +59,12 @@ var PSUBsonValidatorRules = bson.M{
 	"properties": bson.M{
 		"Date": bson.M{
 			"bsonType": "string",
+			"format":   "date",
 		},
 		"Description": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 128,
 		},
 	},
 }
