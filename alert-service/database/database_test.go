@@ -88,7 +88,7 @@ func (m *MongodbSuite) TestFindHostData_FailWrongID() {
 	hd2, err := m.db.FindHostData(notExistingID)
 	require.Error(m.T(), err)
 
-	assert.Equal(m.T(), model.HostData{}, hd2)
+	assert.Equal(m.T(), model.HostDataBE{}, hd2)
 }
 
 func (m *MongodbSuite) TestFindMostRecentHostDataOlderThan_OnlyOne() {

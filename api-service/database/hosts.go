@@ -414,27 +414,27 @@ func (md *MongoDatabase) ListEnvironments(location string, environment string, o
 }
 
 // FindHostData find the current hostdata with a certain hostname
-func (md *MongoDatabase) FindHostData(hostname string) (model.HostData, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) FindHostData(hostname string) (model.HostDataBE, utils.AdvancedErrorInterface) {
 	//Find the hostdata
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").FindOne(context.TODO(), bson.M{
 		"Hostname": hostname,
 		"Archived": false,
 	})
 	if res.Err() == mongo.ErrNoDocuments {
-		return model.HostData{}, utils.AerrHostNotFound
+		return model.HostDataBE{}, utils.AerrHostNotFound
 	} else if res.Err() != nil {
-		return model.HostData{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+		return model.HostDataBE{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
 	}
 
 	//Decode the data
-	var out model.HostData
+	var out model.HostDataBE
 	if err := res.Decode(&out); err != nil {
-		return model.HostData{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+		return model.HostDataBE{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
 	}
 
 	var out2 map[string]interface{}
 	if err := res.Decode(&out2); err != nil {
-		// return model.HostData{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+		// return model.HostDataBE{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
 	}
 
 	//Return it!
@@ -442,7 +442,7 @@ func (md *MongoDatabase) FindHostData(hostname string) (model.HostData, utils.Ad
 }
 
 // ReplaceHostData adds a new hostdata to the database
-func (md *MongoDatabase) ReplaceHostData(hostData model.HostData) utils.AdvancedErrorInterface {
+func (md *MongoDatabase) ReplaceHostData(hostData model.HostDataBE) utils.AdvancedErrorInterface {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").ReplaceOne(context.TODO(),
 		bson.M{
 			"_id": hostData.ID,

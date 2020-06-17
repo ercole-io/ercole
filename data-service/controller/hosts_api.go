@@ -73,7 +73,7 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	var updatedHostData model.HostData
+	var updatedHostData model.HostDataBE
 	err = json.Unmarshal(tempUpdatedRawJSON, &updatedHostData)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
