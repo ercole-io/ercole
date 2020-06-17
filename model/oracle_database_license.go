@@ -49,8 +49,8 @@ func (v *OracleDatabaseLicense) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// LicenseBsonValidatorRules contains mongodb validation rules for license
-var LicenseBsonValidatorRules = bson.M{
+// OracleDatabaseLicenseBsonValidatorRules contains mongodb validation rules for OracleDatabaseLicense
+var OracleDatabaseLicenseBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
 		"Name",
@@ -58,10 +58,13 @@ var LicenseBsonValidatorRules = bson.M{
 	},
 	"properties": bson.M{
 		"Name": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 32,
 		},
 		"Count": bson.M{
 			"bsonType": "number",
+			"minimum":  0,
 		},
 	},
 }

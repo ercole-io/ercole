@@ -69,31 +69,39 @@ func (v *OracleExadataComponent) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// ExadataDeviceBsonValidatorRules contains mongodb validation rules for exadata device
-var ExadataDeviceBsonValidatorRules = bson.M{
+// OracleExadataComponentBsonValidatorRules contains mongodb validation rules for OracleExadataComponentBsonValidatorRules
+var OracleExadataComponentBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
 		"Hostname",
 		"ServerType",
 		"Model",
-		"ExaSwVersion",
-		"CPUEnabled",
+		"SwVersion",
+		"SwReleaseDate",
+		"RunningCPUCount",
+		"TotalCPUCount",
 		"Memory",
 		"Status",
-		"PowerCount",
+		"RunningPowerSupply",
+		"TotalPowerSupply",
 		"PowerStatus",
-		"FanCount",
+		"RunningFanCount",
+		"TotalFanCount",
 		"FanStatus",
 		"TempActual",
 		"TempStatus",
-		"CellsrvService",
-		"MsService",
-		"RsService",
+		"CellsrvServiceStatus",
+		"MsServiceStatus",
+		"RsServiceStatus",
 		"FlashcacheMode",
+		"CellDisks",
 	},
 	"properties": bson.M{
 		"Hostname": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 253,
+			"format":    "idn-hostname",
 		},
 		"ServerType": bson.M{
 			"bsonType": "string",
@@ -104,53 +112,86 @@ var ExadataDeviceBsonValidatorRules = bson.M{
 			},
 		},
 		"Model": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 32,
 		},
-		"ExaSwVersion": bson.M{
-			"bsonType": "string",
+		"SwVersion": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 32,
 		},
-		"CPUEnabled": bson.M{
+		"SwReleaseDate": bson.M{
 			"bsonType": "string",
+			"format":   "date",
+		},
+		"RunningCPUCount": bson.M{
+			"bsonType": "number",
+			"minimum":  1,
+		},
+		"TotalCPUCount": bson.M{
+			"bsonType": "number",
+			"minimum":  1,
 		},
 		"Memory": bson.M{
 			"bsonType": "string",
+			"minimum":  0,
+			"$comment": "Memory in GB",
 		},
 		"Status": bson.M{
 			"bsonType": "string",
+			"enum": bson.A{
+				"online",
+				"offline",
+			},
 		},
-		"PowerCount": bson.M{
-			"bsonType": "string",
+		"RunningPowerSupply": bson.M{
+			"bsonType": "number",
+			"minimum":  1,
+		},
+		"TotalPowerSupply": bson.M{
+			"bsonType": "number",
+			"minimum":  1,
 		},
 		"PowerStatus": bson.M{
 			"bsonType": "string",
 		},
-		"FanCount": bson.M{
-			"bsonType": "string",
+		"RunningFanCount": bson.M{
+			"bsonType": "number",
+			"minimum":  1,
+		},
+		"TotalFanCount": bson.M{
+			"bsonType": "number",
+			"minimum":  1,
 		},
 		"FanStatus": bson.M{
 			"bsonType": "string",
 		},
 		"TempActual": bson.M{
-			"bsonType": "string",
+			"bsonType": "number",
 		},
 		"TempStatus": bson.M{
 			"bsonType": "string",
 		},
-		"CellsrvService": bson.M{
+		"CellsrvServiceStatus": bson.M{
 			"bsonType": "string",
 		},
-		"MsService": bson.M{
+		"MsServiceStatus": bson.M{
 			"bsonType": "string",
 		},
-		"RsService": bson.M{
+		"RsServiceStatus": bson.M{
 			"bsonType": "string",
 		},
 		"FlashcacheMode": bson.M{
 			"bsonType": "string",
+			"enum": bson.A{
+				"WriteBack",
+				"WriteThrough",
+			},
 		},
 		"CellDisks": bson.M{
 			"bsonType": bson.A{"array", "null"},
-			"items":    ExadataCellDiskBsonValidatorRules,
+			"items":    OracleExadataCellDiskBsonValidatorRules,
 		},
 	},
 }

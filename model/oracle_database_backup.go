@@ -52,8 +52,8 @@ func (v *OracleDatabaseBackup) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// BackupBsonValidatorRules contains mongodb validation rules for backup
-var BackupBsonValidatorRules = bson.M{
+// OracleDatabaseBackupBsonValidatorRules contains mongodb validation rules for OracleDatabaseBackup
+var OracleDatabaseBackupBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
 		"BackupType",
@@ -65,18 +65,43 @@ var BackupBsonValidatorRules = bson.M{
 	"properties": bson.M{
 		"BackupType": bson.M{
 			"bsonType": "string",
+			"enum": bson.A{
+				"Archivelog",
+				"Full",
+				"Level0",
+				"Level1",
+			},
 		},
 		"Hour": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 5,
+			"maxLength": 5,
+			"pattern":   "^[0-9]{2}:[0-9]{2}$",
 		},
 		"WeekDays": bson.M{
-			"bsonType": "string",
+			"bsonType": "array",
+			"items": bson.M{
+				"bsonType": "string",
+				"enum": bson.A{
+					"Monday",
+					"Tuesday",
+					"Wednesday",
+					"Thursday",
+					"Friday",
+					"Saturday",
+					"Sunday",
+				},
+			},
+			"uniqueItems": true,
 		},
 		"AvgBckSize": bson.M{
-			"bsonType": "string",
+			"bsonType": "number",
+			"minimum":  0,
 		},
 		"Retention": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 16,
 		},
 	},
 }

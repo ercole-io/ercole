@@ -48,16 +48,16 @@ func (v *OracleExadataFeature) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// ExadataBsonValidatorRules contains mongodb validation rules for exadata
-var ExadataBsonValidatorRules = bson.M{
+// OracleExadataFeatureBsonValidatorRules contains mongodb validation rules for OracleExadataFeature
+var OracleExadataFeatureBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Devices",
+		"Components",
 	},
 	"properties": bson.M{
-		"Devices": bson.M{
+		"Components": bson.M{
 			"bsonType": "array",
-			"items":    ExadataDeviceBsonValidatorRules,
+			"items":    OracleExadataComponentBsonValidatorRules,
 		},
 	},
 }

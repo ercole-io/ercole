@@ -48,45 +48,16 @@ func (v *Features) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// ExtraInfoBsonValidatorRules contains mongodb validation rules for extraInfo
-var ExtraInfoBsonValidatorRules = bson.M{
+// FeaturesBsonValidatorRules contains mongodb validation rules for Features
+var FeaturesBsonValidatorRules = bson.M{
 	"bsonType": "object",
-	"required": bson.A{
-		"Filesystems",
-	},
 	"properties": bson.M{
-		"Databases": bson.M{
+		"Oracle": bson.M{
 			"anyOf": bson.A{
 				bson.M{
 					"bsonType": "null",
 				},
-				bson.M{
-					"bsonType": "array",
-					"items":    DatabaseBsonValidatorRules,
-				},
-			},
-		},
-		"Filesystems": bson.M{
-			"bsonType": "array",
-			"items":    FilesystemBsonValidatorRules,
-		},
-		"Clusters": bson.M{
-			"anyOf": bson.A{
-				bson.M{
-					"bsonType": "null",
-				},
-				bson.M{
-					"bsonType": "array",
-					"items":    ClusterInfoBsonValidatorRules,
-				},
-			},
-		},
-		"Exadata": bson.M{
-			"anyOf": bson.A{
-				bson.M{
-					"bsonType": "null",
-				},
-				ExadataBsonValidatorRules,
+				OracleFeatureBsonValidatorRules,
 			},
 		},
 	},

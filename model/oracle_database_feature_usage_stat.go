@@ -17,8 +17,10 @@ package model
 
 import (
 	"reflect"
+	"time"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // OracleDatabaseFeatureUsageStat holds information about a oracle database feature usage stat.
@@ -27,8 +29,8 @@ type OracleDatabaseFeatureUsageStat struct {
 	Feature          string                 `bson:"Feature"`
 	DetectedUsages   int                    `bson:"DetectedUsages"`
 	CurrentlyUsed    bool                   `bson:"CurrentlyUsed"`
-	FirstUsageDate   string                 `bson:"FirstUsageDate"`
-	LastUsageDate    string                 `bson:"LastUsageDate"`
+	FirstUsageDate   time.Time              `bson:"FirstUsageDate"`
+	LastUsageDate    time.Time              `bson:"LastUsageDate"`
 	ExtraFeatureInfo string                 `bson:"ExtraFeatureInfo"`
 	OtherInfo        map[string]interface{} `bson:"-"`
 }
@@ -51,4 +53,47 @@ func (v OracleDatabaseFeatureUsageStat) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *OracleDatabaseFeatureUsageStat) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+}
+
+// OracleDatabaseFeatureUsageStatBsonValidatorRules contains mongodb validation rules for OracleDatabaseFeatureUsageStat
+var OracleDatabaseFeatureUsageStatBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
+		"Product",
+		"Feature",
+		"DetectedUsages",
+		"CurrentlyUsed",
+		"FirstUsageDate",
+		"LastUsageDate",
+		"ExtraFeatureInfo",
+	},
+	"properties": bson.M{
+		"Product": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 32,
+		},
+		"Feature": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 32,
+		},
+		"DetectedUsages": bson.M{
+			"bsonType": "number",
+			"minimum":  0,
+		},
+		"CurrentlyUsed": bson.M{
+			"bsonType": "bool",
+		},
+		"FirstUsageDate": bson.M{
+			"bsonType": "date",
+		},
+		"LastUsageDate": bson.M{
+			"bsonType": "date",
+		},
+		"ExtraFeatureInfo": bson.M{
+			"bsonType":  "string",
+			"maxLength": 64,
+		},
+	},
 }

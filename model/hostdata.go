@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // SchemaVersion contains the version of the schema
@@ -59,49 +58,4 @@ func (v HostData) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *HostData) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// HostDataBsonValidatorRules contains mongodb validation rules for hostData
-var HostDataBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"Hostname",
-		"Environment",
-		"Location",
-		"Version",
-		"ServerVersion",
-		"SchemaVersion",
-		"Info",
-		"Extra",
-		"Archived",
-		"CreatedAt",
-	},
-	"properties": bson.M{
-		"Hostname": bson.M{
-			"bsonType": "string",
-		},
-		"Environment": bson.M{
-			"bsonType": "string",
-		},
-		"Location": bson.M{
-			"bsonType": "string",
-		},
-		"Version": bson.M{
-			"bsonType": "string",
-		},
-		"ServerVersion": bson.M{
-			"bsonType": "string",
-		},
-		"SchemaVersion": bson.M{
-			"bsonType": "number",
-		},
-		"Info":  HostBsonValidatorRules,
-		"Extra": ExtraInfoBsonValidatorRules,
-		"Archived": bson.M{
-			"bsonType": "bool",
-		},
-		"CreatedAt": bson.M{
-			"bsonType": "date",
-		},
-	},
 }

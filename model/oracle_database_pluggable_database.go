@@ -19,6 +19,7 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // OracleDatabasePluggableDatabase holds information about a oracle pluggable database.
@@ -49,4 +50,34 @@ func (v OracleDatabasePluggableDatabase) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *OracleDatabasePluggableDatabase) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+}
+
+// OracleDatabasePluggableDatabaseBsonValidatorRules contains mongodb validation rules for OracleDatabasePluggableDatabase
+var OracleDatabasePluggableDatabaseBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
+		"Name",
+		"Status",
+		"Tablespaces",
+		"Schemas",
+		"Services",
+	},
+	"properties": bson.M{
+		"Name": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 32,
+		},
+		"Status": bson.M{
+			"bsonType": "string",
+			"enum": bson.A{
+				"OPEN",
+				"READ WRITE",
+				"MOUNTED",
+			},
+		},
+		"Tablespaces": OracleDatabaseTablespaceBsonValidatorRules,
+		"Schemas":     OracleDatabaseSchemaBsonValidatorRules,
+		"Services":    OracleDatabaseServiceBsonValidatorRules,
+	},
 }
