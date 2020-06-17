@@ -53,11 +53,10 @@ func (v *OracleDatabaseTablespace) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// TablespaceBsonValidatorRules contains mongodb validation rules for tablespace
-var TablespaceBsonValidatorRules = bson.M{
+// OracleDatabaseTablespaceBsonValidatorRules contains mongodb validation rules for OracleDatabaseTablespace
+var OracleDatabaseTablespaceBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Database",
 		"Name",
 		"MaxSize",
 		"Total",
@@ -66,26 +65,34 @@ var TablespaceBsonValidatorRules = bson.M{
 		"Status",
 	},
 	"properties": bson.M{
-		"Database": bson.M{
-			"bsonType": "string",
-		},
 		"Name": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 32,
 		},
 		"MaxSize": bson.M{
-			"bsonType": "string",
+			"bsonType": "number",
+			"minimum":  0,
 		},
 		"Total": bson.M{
-			"bsonType": "string",
+			"bsonType": "number",
+			"minimum":  0,
 		},
 		"Used": bson.M{
-			"bsonType": "string",
+			"bsonType": "number",
+			"minimum":  0,
 		},
 		"UsedPerc": bson.M{
-			"bsonType": "string",
+			"bsonType": "number",
+			"minimum":  0,
+			"maximum":  100,
 		},
 		"Status": bson.M{
 			"bsonType": "string",
+			"enum": bson.A{
+				"ONLINE",
+				"OFFLINE",
+			},
 		},
 	},
 }

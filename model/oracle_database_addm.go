@@ -51,8 +51,8 @@ func (v *OracleDatabaseAddm) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// AddmBsonValidatorRules contains mongodb validation rules for addm
-var AddmBsonValidatorRules = bson.M{
+// OracleDatabaseAddmBsonValidatorRules contains mongodb validation rules for OracleDatabaseAddm
+var OracleDatabaseAddmBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
 		"Finding",
@@ -62,16 +62,24 @@ var AddmBsonValidatorRules = bson.M{
 	},
 	"properties": bson.M{
 		"Finding": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 256,
 		},
 		"Recommendation": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 32,
 		},
 		"Action": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 256,
 		},
 		"Benefit": bson.M{
 			"bsonType": "string",
+			"minimum":  0,
+			"maximum":  100,
 		},
 	},
 }
