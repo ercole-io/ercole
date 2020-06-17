@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,45 +22,60 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// PSU holds information about a PSU
-type PSU struct {
-	Date        string                 `bson:"Date"`
-	Description string                 `bson:"Description"`
-	OtherInfo   map[string]interface{} `bson:"-"`
+// OracleDatabaseBackup holds informations about a backup
+type OracleDatabaseBackup struct {
+	BackupType string                 `bson:"BackupType"`
+	Hour       string                 `bson:"Hour"`
+	WeekDays   []string               `bson:"WeekDays"`
+	AvgBckSize float32                `bson:"AvgBckSize"`
+	Retention  string                 `bson:"Retention"`
+	OtherInfo  map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v PSU) MarshalJSON() ([]byte, error) {
+func (v OracleDatabaseBackup) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *PSU) UnmarshalJSON(data []byte) error {
+func (v *OracleDatabaseBackup) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v PSU) MarshalBSON() ([]byte, error) {
+func (v OracleDatabaseBackup) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *PSU) UnmarshalBSON(data []byte) error {
+func (v *OracleDatabaseBackup) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// PSUBsonValidatorRules contains mongodb validation rules for psu
-var PSUBsonValidatorRules = bson.M{
+// BackupBsonValidatorRules contains mongodb validation rules for backup
+var BackupBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Date",
-		"Description",
+		"BackupType",
+		"Hour",
+		"WeekDays",
+		"AvgBckSize",
+		"Retention",
 	},
 	"properties": bson.M{
-		"Date": bson.M{
+		"BackupType": bson.M{
 			"bsonType": "string",
 		},
-		"Description": bson.M{
+		"Hour": bson.M{
+			"bsonType": "string",
+		},
+		"WeekDays": bson.M{
+			"bsonType": "string",
+		},
+		"AvgBckSize": bson.M{
+			"bsonType": "string",
+		},
+		"Retention": bson.M{
 			"bsonType": "string",
 		},
 	},

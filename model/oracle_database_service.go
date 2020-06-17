@@ -19,69 +19,30 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
-//ClusterInfo hold informations about a cluster
-type ClusterInfo struct {
-	FetchEndpoint string                 `bson:"FetchEndpoint"`
-	Type          string                 `bson:"Type"`
-	Name          string                 `bson:"Name"`
-	CPU           int                    `bson:"CPU"`
-	Sockets       int                    `bson:"Sockets"`
-	VMs           []VMInfo               `bson:"VMs"`
-	OtherInfo     map[string]interface{} `bson:"-"`
+// OracleDatabaseService holds information about a Oracle database service
+type OracleDatabaseService struct {
+	Name      string                 `bson:"Name"`
+	OtherInfo map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v ClusterInfo) MarshalJSON() ([]byte, error) {
+func (v OracleDatabaseService) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *ClusterInfo) UnmarshalJSON(data []byte) error {
+func (v *OracleDatabaseService) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v ClusterInfo) MarshalBSON() ([]byte, error) {
+func (v OracleDatabaseService) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *ClusterInfo) UnmarshalBSON(data []byte) error {
+func (v *OracleDatabaseService) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// ClusterInfoBsonValidatorRules contains mongodb validation rules for clusterInfo
-var ClusterInfoBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"Name",
-		"Type",
-		"CPU",
-		"Sockets",
-		"VMs",
-	},
-	"properties": bson.M{
-		"Name": bson.M{
-			"bsonType": "string",
-		},
-		"Hour": bson.M{
-			"bsonType": "string",
-		},
-		"Type": bson.M{
-			"bsonType": "string",
-		},
-		"CPU": bson.M{
-			"bsonType": "number",
-		},
-		"Sockets": bson.M{
-			"bsonType": "number",
-		},
-		"VMs": bson.M{
-			"bsonType": "array",
-			"items":    VMInfoBsonValidatorRules,
-		},
-	},
 }

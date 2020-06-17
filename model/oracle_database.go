@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,60 +22,64 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// Database holds information about a database.
-type Database struct {
-	InstanceNumber  string                 `bson:"InstanceNumber"`
-	Name            string                 `bson:"Name"`
-	UniqueName      string                 `bson:"UniqueName"`
-	Status          string                 `bson:"Status"`
-	Version         string                 `bson:"Version"`
-	Platform        string                 `bson:"Platform"`
-	Archivelog      string                 `bson:"Archivelog"`
-	Charset         string                 `bson:"Charset"`
-	NCharset        string                 `bson:"NCharset"`
-	BlockSize       string                 `bson:"BlockSize"`
-	CPUCount        string                 `bson:"CPUCount"`
-	SGATarget       string                 `bson:"SGATarget"`
-	PGATarget       string                 `bson:"PGATarget"`
-	MemoryTarget    string                 `bson:"MemoryTarget"`
-	SGAMaxSize      string                 `bson:"SGAMaxSize"`
-	SegmentsSize    string                 `bson:"SegmentsSize"`
-	Used            string                 `bson:"Used"`
-	Allocated       string                 `bson:"Allocated"`
-	Elapsed         string                 `bson:"Elapsed"`
-	DBTime          string                 `bson:"DBTime"`
-	DailyCPUUsage   string                 `bson:"DailyCPUUsage"`
-	Work            string                 `bson:"Work"`
-	ASM             bool                   `bson:"ASM"`
-	Dataguard       bool                   `bson:"Dataguard"`
-	Patches         []Patch                `bson:"Patches"`
-	Tablespaces     []Tablespace           `bson:"Tablespaces"`
-	Schemas         []Schema               `bson:"Schemas"`
-	Licenses        []License              `bson:"Licenses"`
-	ADDMs           []Addm                 `bson:"ADDMs"`
-	SegmentAdvisors []SegmentAdvisor       `bson:"SegmentAdvisors"`
-	LastPSUs        []PSU                  `bson:"LastPSUs"`
-	Backups         []Backup               `bson:"Backups"`
-	OtherInfo       map[string]interface{} `bson:"-"`
+// OracleDatabase holds information about a oracle database.
+type OracleDatabase struct {
+	InstanceNumber    int                               `bson:"InstanceNumber"`
+	Name              string                            `bson:"Name"`
+	UniqueName        string                            `bson:"UniqueName"`
+	Status            string                            `bson:"Status"`
+	IsCDB             bool                              `bson:"IsCDB"`
+	Version           string                            `bson:"Version"`
+	Platform          string                            `bson:"Platform"`
+	Archivelog        bool                              `bson:"Archivelog"`
+	Charset           string                            `bson:"Charset"`
+	NCharset          string                            `bson:"NCharset"`
+	BlockSize         int                               `bson:"BlockSize"`
+	CPUCount          int                               `bson:"CPUCount"`
+	SGATarget         float32                           `bson:"SGATarget"`
+	PGATarget         float32                           `bson:"PGATarget"`
+	MemoryTarget      float32                           `bson:"MemoryTarget"`
+	SGAMaxSize        float32                           `bson:"SGAMaxSize"`
+	SegmentsSize      float32                           `bson:"SegmentsSize"`
+	DatafileSize      float32                           `bson:"DatafileSize"`
+	Allocated         float32                           `bson:"Allocated"`
+	Elapsed           *float32                          `bson:"Elapsed"`
+	DBTime            *float32                          `bson:"DBTime"`
+	DailyCPUUsage     *float32                          `bson:"DailyCPUUsage"`
+	Work              *float32                          `bson:"Work"`
+	ASM               bool                              `bson:"ASM"`
+	Dataguard         bool                              `bson:"Dataguard"`
+	Patches           []OracleDatabasePatch             `bson:"Patches"`
+	Tablespaces       []OracleDatabaseTablespace        `bson:"Tablespaces"`
+	Schemas           []OracleDatabaseSchema            `bson:"Schemas"`
+	Licenses          []OracleDatabaseLicense           `bson:"Licenses"`
+	ADDMs             []OracleDatabaseAddm              `bson:"ADDMs"`
+	SegmentAdvisors   []OracleDatabaseSegmentAdvisor    `bson:"SegmentAdvisors"`
+	PSUs              []OracleDatabasePSU               `bson:"PSUs"`
+	Backups           []OracleDatabaseBackup            `bson:"Backups"`
+	FeatureUsageStats []OracleDatabaseFeatureUsageStat  `bson:"FeatureUsageStats"`
+	PDBs              []OracleDatabasePluggableDatabase `bson:"PDBs"`
+	Services          []OracleDatabaseService           `bson:"Services"`
+	OtherInfo         map[string]interface{}            `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v Database) MarshalJSON() ([]byte, error) {
+func (v OracleDatabase) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *Database) UnmarshalJSON(data []byte) error {
+func (v *OracleDatabase) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v Database) MarshalBSON() ([]byte, error) {
+func (v OracleDatabase) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *Database) UnmarshalBSON(data []byte) error {
+func (v *OracleDatabase) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
@@ -225,8 +229,8 @@ var DatabaseBsonValidatorRules = bson.M{
 }
 
 // DatabasesArrayAsMap return the equivalent map of the database array with Database.Name as Key
-func DatabasesArrayAsMap(dbs []Database) map[string]Database {
-	out := make(map[string]Database)
+func DatabasesArrayAsMap(dbs []OracleDatabase) map[string]OracleDatabase {
+	out := make(map[string]OracleDatabase)
 	for _, db := range dbs {
 		out[db.Name] = db
 	}
@@ -234,7 +238,7 @@ func DatabasesArrayAsMap(dbs []Database) map[string]Database {
 }
 
 // HasEnterpriseLicense return true if the database has enterprise license.
-func HasEnterpriseLicense(db Database) bool {
+func HasEnterpriseLicense(db OracleDatabase) bool {
 	//The database may not support the "license" feature
 	if db.Licenses == nil {
 		return false

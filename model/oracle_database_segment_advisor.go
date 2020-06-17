@@ -22,86 +22,66 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// SchemaVersion contains the version of the schema
-const SchemaVersion int = 1
-
-// HostData holds all informations about a host & services
-type HostData struct {
-	Hostname                string
-	Location                string
-	Environment             string
-	Tags                    []string
-	AgentVersion            string
-	SchemaVersion           int
-	Info                    Host
-	ClusterMembershipStatus ClusterMembershipStatus
-	Features                Features
-	Filesystems             []Filesystem
-	Clusters                []ClusterInfo
-	OtherInfo               map[string]interface{}
+// OracleDatabaseSegmentAdvisor holds information about a segment advisor
+type OracleDatabaseSegmentAdvisor struct {
+	SegmentOwner   string                 `bson:"SegmentOwner"`
+	SegmentName    string                 `bson:"SegmentName"`
+	SegmentType    string                 `bson:"SegmentType"`
+	PartitionName  string                 `bson:"PartitionName"`
+	Reclaimable    float32                `bson:"Reclaimable"`
+	Recommendation string                 `bson:"Recommendation"`
+	OtherInfo      map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v HostData) MarshalJSON() ([]byte, error) {
+func (v OracleDatabaseSegmentAdvisor) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *HostData) UnmarshalJSON(data []byte) error {
+func (v *OracleDatabaseSegmentAdvisor) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v HostData) MarshalBSON() ([]byte, error) {
+func (v OracleDatabaseSegmentAdvisor) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *HostData) UnmarshalBSON(data []byte) error {
+func (v *OracleDatabaseSegmentAdvisor) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// HostDataBsonValidatorRules contains mongodb validation rules for hostData
-var HostDataBsonValidatorRules = bson.M{
+// SegmentAdvisorBsonValidatorRules contains mongodb validation rules for segmentAdvisor
+var SegmentAdvisorBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Hostname",
-		"Environment",
-		"Location",
-		"Version",
-		"ServerVersion",
-		"SchemaVersion",
-		"Info",
-		"Extra",
-		"Archived",
-		"CreatedAt",
+		"SegmentOwner",
+		"SegmentName",
+		"SegmentType",
+		"PartitionName",
+		"Reclaimable",
+		"Recommendation",
 	},
 	"properties": bson.M{
-		"Hostname": bson.M{
+		"SegmentOwner": bson.M{
 			"bsonType": "string",
 		},
-		"Environment": bson.M{
+		"SegmentName": bson.M{
 			"bsonType": "string",
 		},
-		"Location": bson.M{
+		"SegmentType": bson.M{
 			"bsonType": "string",
 		},
-		"Version": bson.M{
+		"PartitionName": bson.M{
 			"bsonType": "string",
 		},
-		"ServerVersion": bson.M{
+		"Reclaimable": bson.M{
 			"bsonType": "string",
 		},
-		"SchemaVersion": bson.M{
-			"bsonType": "number",
-		},
-		"Info":  HostBsonValidatorRules,
-		"Extra": ExtraInfoBsonValidatorRules,
-		"Archived": bson.M{
-			"bsonType": "bool",
-		},
-		"CreatedAt": bson.M{
-			"bsonType": "date",
+		"Recommendation": bson.M{
+			"bsonType": "string",
 		},
 	},
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,46 +22,50 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// ExadataDevice holds informations about a device in a exadata
-type ExadataDevice struct {
-	Hostname       string                 `bson:"Hostname"`
-	ServerType     string                 `bson:"ServerType"`
-	Model          string                 `bson:"Model"`
-	ExaSwVersion   string                 `bson:"ExaSwVersion"`
-	CPUEnabled     string                 `bson:"CPUEnabled"`
-	Memory         string                 `bson:"Memory"`
-	Status         string                 `bson:"Status"`
-	PowerCount     string                 `bson:"PowerCount"`
-	PowerStatus    string                 `bson:"PowerStatus"`
-	FanCount       string                 `bson:"FanCount"`
-	FanStatus      string                 `bson:"FanStatus"`
-	TempActual     string                 `bson:"TempActual"`
-	TempStatus     string                 `bson:"TempStatus"`
-	CellsrvService string                 `bson:"CellsrvService"`
-	MsService      string                 `bson:"MsService"`
-	RsService      string                 `bson:"RsService"`
-	FlashcacheMode string                 `bson:"FlashcacheMode"`
-	CellDisks      []ExadataCellDisk      `bson:"CellDisks"`
-	OtherInfo      map[string]interface{} `bson:"-"`
+// OracleExadataComponent holds informations about a device in a exadata
+type OracleExadataComponent struct {
+	Hostname             string                  `bson:"Hostname"`
+	ServerType           string                  `bson:"ServerType"`
+	Model                string                  `bson:"Model"`
+	SwVersion            string                  `bson:"SwVersion"`
+	SwReleaseDate        string                  `bson:"SwReleaseDate"`
+	RunningCPUCount      int                     `bson:"RunningCPUCount"`
+	TotalCPUCount        int                     `bson:"TotalCPUCount"`
+	Memory               int                     `bson:"Memory"`
+	Status               string                  `bson:"Status"`
+	RunningPowerSupply   int                     `bson:"RunningPowerSupply"`
+	TotalPowerSupply     int                     `bson:"TotalPowerSupply"`
+	PowerStatus          string                  `bson:"PowerStatus"`
+	RunningFanCount      int                     `bson:"RunningFanCount"`
+	TotalFanCount        int                     `bson:"TotalFanCount"`
+	FanStatus            string                  `bson:"FanStatus"`
+	TempActual           float32                 `bson:"TempActual"`
+	TempStatus           string                  `bson:"TempStatus"`
+	CellsrvServiceStatus string                  `bson:"CellsrvServiceStatus"`
+	MsServiceStatus      string                  `bson:"MsServiceStatus"`
+	RsServiceStatus      string                  `bson:"RsServiceStatus"`
+	FlashcacheMode       string                  `bson:"FlashcacheMode"`
+	CellDisks            []OracleExadataCellDisk `bson:"CellDisks"`
+	OtherInfo            map[string]interface{}  `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v ExadataDevice) MarshalJSON() ([]byte, error) {
+func (v OracleExadataComponent) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *ExadataDevice) UnmarshalJSON(data []byte) error {
+func (v *OracleExadataComponent) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v ExadataDevice) MarshalBSON() ([]byte, error) {
+func (v OracleExadataComponent) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *ExadataDevice) UnmarshalBSON(data []byte) error {
+func (v *OracleExadataComponent) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 

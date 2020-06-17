@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,45 +19,34 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
-// Exadata holds specific informations about a exadata.
-type Exadata struct {
-	Devices   []ExadataDevice        `bson:"Devices"`
-	OtherInfo map[string]interface{} `bson:"-"`
+// OracleDatabasePluggableDatabase holds information about a oracle pluggable database.
+type OracleDatabasePluggableDatabase struct {
+	Name        string                     `bson:"Name"`
+	Status      string                     `bson:"Status"`
+	Tablespaces []OracleDatabaseTablespace `bson:"Tablespaces"`
+	Schemas     []OracleDatabaseSchema     `bson:"Schemas"`
+	Services    []OracleDatabaseService    `bson:"Services"`
+	OtherInfo   map[string]interface{}     `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v Exadata) MarshalJSON() ([]byte, error) {
+func (v OracleDatabasePluggableDatabase) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *Exadata) UnmarshalJSON(data []byte) error {
+func (v *OracleDatabasePluggableDatabase) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v Exadata) MarshalBSON() ([]byte, error) {
+func (v OracleDatabasePluggableDatabase) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *Exadata) UnmarshalBSON(data []byte) error {
+func (v *OracleDatabasePluggableDatabase) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// ExadataBsonValidatorRules contains mongodb validation rules for exadata
-var ExadataBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"Devices",
-	},
-	"properties": bson.M{
-		"Devices": bson.M{
-			"bsonType": "array",
-			"items":    ExadataDeviceBsonValidatorRules,
-		},
-	},
 }

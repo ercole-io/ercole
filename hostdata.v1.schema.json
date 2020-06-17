@@ -21,17 +21,17 @@
             "maxLength": 253,
             "format": "idn-hostname"
         },
-        "Environment": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 16,
-            "pattern": "^[A-Z0-9]+$"
-        },
         "Location": {
             "type": "string",
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[a-zA-Z0-9-]+$"
+        },
+        "Environment": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16,
+            "pattern": "^[A-Z0-9]+$"
         },
         "Tags": {
             "type": "array",
@@ -891,6 +891,11 @@
                                                                 ]
                                                             },
                                                             "Model": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 32
+                                                            },
+                                                            "SwVersion": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 32
