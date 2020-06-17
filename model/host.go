@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,24 +24,23 @@ import (
 
 // Host contains info about the host
 type Host struct {
-	Hostname       string                 `bson:"Hostname"`
-	Environment    string                 `bson:"Environment"`
-	Location       string                 `bson:"Location"`
-	CPUModel       string                 `bson:"CPUModel"`
-	CPUCores       int                    `bson:"CPUCores"`
-	CPUThreads     int                    `bson:"CPUThreads"`
-	Socket         int                    `bson:"Socket"`
-	Type           string                 `bson:"Type"`
-	Virtual        bool                   `bson:"Virtual"`
-	Kernel         string                 `bson:"Kernel"`
-	OS             string                 `bson:"OS"`
-	MemoryTotal    float32                `bson:"MemoryTotal"`
-	SwapTotal      float32                `bson:"SwapTotal"`
-	OracleCluster  bool                   `bson:"OracleCluster"`
-	VeritasCluster bool                   `bson:"VeritasCluster"`
-	SunCluster     bool                   `bson:"SunCluster"`
-	AixCluster     bool                   `bson:"AixCluster"`
-	OtherInfo      map[string]interface{} `bson:"-"`
+	Hostname                      string                 `bson:"Hostname"`
+	CPUModel                      string                 `bson:"CPUModel"`
+	CPUFrequency                  string                 `bson:"CPUFrequency"`
+	CPUSockets                    int                    `bson:"CPUSockets"`
+	CPUCores                      int                    `bson:"CPUCores"`
+	CPUThreads                    int                    `bson:"CPUThreads"`
+	ThreadsPerCore                int                    `bson:"ThreadsPerCore"`
+	CoresPerSocket                int                    `bson:"CoresPerSocket"`
+	HardwareAbstraction           string                 `bson:"HardwareAbstraction"`
+	HardwareAbstractionTechnology string                 `bson:"HardwareAbstractionTechnology"`
+	Kernel                        string                 `bson:"Kernel"`
+	KernelVersion                 string                 `bson:"KernelVersion"`
+	OS                            string                 `bson:"OS"`
+	OSVersion                     string                 `bson:"OSVersion"`
+	MemoryTotal                   float32                `bson:"MemoryTotal"`
+	SwapTotal                     float32                `bson:"SwapTotal"`
+	OtherInfo                     map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

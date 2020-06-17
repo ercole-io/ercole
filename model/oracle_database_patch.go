@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,11 +22,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// Patch holds information about a Oracle patch
-type Patch struct {
-	Database    string                 `bson:"Database"`
+// OracleDatabasePatch holds information about a Oracle database patch
+type OracleDatabasePatch struct {
 	Version     string                 `bson:"Version"`
-	PatchID     string                 `bson:"PatchID"`
+	PatchID     int                    `bson:"PatchID"`
 	Action      string                 `bson:"Action"`
 	Description string                 `bson:"Description"`
 	Date        string                 `bson:"Date"`
@@ -34,22 +33,22 @@ type Patch struct {
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v Patch) MarshalJSON() ([]byte, error) {
+func (v OracleDatabasePatch) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *Patch) UnmarshalJSON(data []byte) error {
+func (v *OracleDatabasePatch) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v Patch) MarshalBSON() ([]byte, error) {
+func (v OracleDatabasePatch) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *Patch) UnmarshalBSON(data []byte) error {
+func (v *OracleDatabasePatch) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 

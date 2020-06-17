@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,64 +19,29 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
-// Backup holds informations about a backup
-type Backup struct {
-	BackupType string                 `bson:"BackupType"`
-	Hour       string                 `bson:"Hour"`
-	WeekDays   string                 `bson:"WeekDays"`
-	AvgBckSize string                 `bson:"AvgBckSize"`
-	Retention  string                 `bson:"Retention"`
-	OtherInfo  map[string]interface{} `bson:"-"`
+type OracleDatabaseFeature struct {
+	Databases []OracleDatabase       `bson:"Databases"`
+	OtherInfo map[string]interface{} `bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v Backup) MarshalJSON() ([]byte, error) {
+func (v OracleDatabaseFeature) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *Backup) UnmarshalJSON(data []byte) error {
+func (v *OracleDatabaseFeature) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v Backup) MarshalBSON() ([]byte, error) {
+func (v OracleDatabaseFeature) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *Backup) UnmarshalBSON(data []byte) error {
+func (v *OracleDatabaseFeature) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// BackupBsonValidatorRules contains mongodb validation rules for backup
-var BackupBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"BackupType",
-		"Hour",
-		"WeekDays",
-		"AvgBckSize",
-		"Retention",
-	},
-	"properties": bson.M{
-		"BackupType": bson.M{
-			"bsonType": "string",
-		},
-		"Hour": bson.M{
-			"bsonType": "string",
-		},
-		"WeekDays": bson.M{
-			"bsonType": "string",
-		},
-		"AvgBckSize": bson.M{
-			"bsonType": "string",
-		},
-		"Retention": bson.M{
-			"bsonType": "string",
-		},
-	},
 }
