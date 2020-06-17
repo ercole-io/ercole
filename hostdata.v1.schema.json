@@ -60,7 +60,7 @@
                 "Hostname",
                 "CPUModel",
                 "CPUFrequency",
-                "CPUSockets",   
+                "CPUSockets",
                 "CPUCores",
                 "CPUThreads",
                 "ThreadsPerCore",
@@ -107,7 +107,7 @@
                 },
                 "HardwareAbstraction": {
                     "type": "string",
-                    "enum": [ "PH", "VIRT" ]
+                    "enum": ["PH", "VIRT"]
                 },
                 "HardwareAbstractionTechnology": {
                     "type": "string",
@@ -166,20 +166,22 @@
             "type": "object",
             "properties": {
                 "Oracle": {
-                    "anyOf": [
-                        { "type": "null" },
-                        { 
+                    "anyOf": [{
+                            "type": "null"
+                        },
+                        {
                             "type": "object",
                             "properties": {
                                 "Database": {
-                                    "anyOf": [
-                                        { "type": "null" },
-                                        { 
+                                    "anyOf": [{
+                                            "type": "null"
+                                        },
+                                        {
                                             "type": "object",
                                             "required": [
                                                 "Databases"
                                             ],
-                                            "properties":  {
+                                            "properties": {
                                                 "Databases": {
                                                     "type": "array",
                                                     "items": {
@@ -189,6 +191,7 @@
                                                             "Name",
                                                             "UniqueName",
                                                             "Status",
+                                                            "IsCDB",
                                                             "Version",
                                                             "Platform",
                                                             "Archivelog",
@@ -218,7 +221,9 @@
                                                             "SegmentAdvisors",
                                                             "PSUs",
                                                             "Backups",
-                                                            "FeatureUsageStats"
+                                                            "FeatureUsageStats",
+                                                            "PDBs",
+                                                            "Services"
                                                         ],
                                                         "properties": {
                                                             "InstanceNumber": {
@@ -237,10 +242,13 @@
                                                             },
                                                             "Status": {
                                                                 "type": "string",
-                                                                "enum": [ 
+                                                                "enum": [
                                                                     "OPEN",
                                                                     "MOUNTED"
                                                                 ]
+                                                            },
+                                                            "IsCDB": {
+                                                                "type": "boolean"
                                                             },
                                                             "Version": {
                                                                 "type": "string",
@@ -295,27 +303,39 @@
                                                                 "type": "number"
                                                             },
                                                             "Elapsed": {
-                                                                "anyOf": [
-                                                                    { "type": "null" },
-                                                                    { "type": "number" }
+                                                                "anyOf": [{
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "number"
+                                                                    }
                                                                 ]
                                                             },
                                                             "DBTime": {
-                                                                "anyOf": [
-                                                                    { "type": "null" },
-                                                                    { "type": "number" }
+                                                                "anyOf": [{
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "number"
+                                                                    }
                                                                 ]
                                                             },
                                                             "DailyCPUUsage": {
-                                                                "anyOf": [
-                                                                    { "type": "null" },
-                                                                    { "type": "number" }
+                                                                "anyOf": [{
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "number"
+                                                                    }
                                                                 ]
                                                             },
                                                             "Work": {
-                                                                "anyOf": [
-                                                                    { "type": "null" },
-                                                                    { "type": "number" }
+                                                                "anyOf": [{
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "number"
+                                                                    }
                                                                 ]
                                                             },
                                                             "ASM": {
@@ -661,6 +681,147 @@
                                                                         }
                                                                     }
                                                                 }
+                                                            },
+                                                            "Services": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "object",
+                                                                    "required": [
+                                                                        "Name"
+                                                                    ],
+                                                                    "properties": {
+                                                                        "Name": {
+                                                                            "type": "string",
+                                                                            "minLength": 1,
+                                                                            "maxLength": 32
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            "PDBs": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "object",
+                                                                    "required": [
+                                                                        "Name",
+                                                                        "Status",
+                                                                        "Tablespaces",
+                                                                        "Schemas",
+                                                                        "Services"
+                                                                    ],
+                                                                    "properties": {
+                                                                        "Name": {
+                                                                            "type": "string",
+                                                                            "minLength": 1,
+                                                                            "maxLength": 32
+                                                                        },
+                                                                        "Status": {
+                                                                            "type": "string",
+                                                                            "enum": [
+                                                                                "OPEN",
+                                                                                "READ WRITE",
+                                                                                "MOUNTED"
+                                                                            ]
+                                                                        },
+                                                                        "Tablespaces": {
+                                                                            "type": "array",
+                                                                            "items": {
+                                                                                "type": "object",
+                                                                                "required": [
+                                                                                    "Name",
+                                                                                    "MaxSize",
+                                                                                    "Total",
+                                                                                    "Used",
+                                                                                    "UsedPerc",
+                                                                                    "Status"
+                                                                                ],
+                                                                                "properties": {
+                                                                                    "Name": {
+                                                                                        "type": "string",
+                                                                                        "minLength": 1,
+                                                                                        "maxLength": 32
+                                                                                    },
+                                                                                    "MaxSize": {
+                                                                                        "type": "number",
+                                                                                        "minimum": 0
+                                                                                    },
+                                                                                    "Total": {
+                                                                                        "type": "number",
+                                                                                        "minimum": 0
+                                                                                    },
+                                                                                    "Used": {
+                                                                                        "type": "number",
+                                                                                        "minimum": 0
+                                                                                    },
+                                                                                    "UsedPerc": {
+                                                                                        "type": "number",
+                                                                                        "minimum": 0,
+                                                                                        "maximum": 100
+                                                                                    },
+                                                                                    "Status": {
+                                                                                        "type": "string",
+                                                                                        "enum": [
+                                                                                            "ONLINE",
+                                                                                            "OFFLINE"
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "Schemas": {
+                                                                            "type": "array",
+                                                                            "items": {
+                                                                                "type": "object",
+                                                                                "required": [
+                                                                                    "Indexes",
+                                                                                    "LOB",
+                                                                                    "Tables",
+                                                                                    "Total",
+                                                                                    "User"
+                                                                                ],
+                                                                                "properties": {
+                                                                                    "Indexes": {
+                                                                                        "type": "integer",
+                                                                                        "minimum": 0
+                                                                                    },
+                                                                                    "LOB": {
+                                                                                        "type": "integer",
+                                                                                        "minimum": 0
+                                                                                    },
+                                                                                    "Tables": {
+                                                                                        "type": "integer",
+                                                                                        "minimum": 0
+                                                                                    },
+                                                                                    "Total": {
+                                                                                        "type": "integer",
+                                                                                        "minimum": 0
+                                                                                    },
+                                                                                    "User": {
+                                                                                        "type": "string",
+                                                                                        "minLength": 1,
+                                                                                        "maxLength": 32
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "Services": {
+                                                                            "type": "array",
+                                                                            "items": {
+                                                                                "type": "object",
+                                                                                "required": [
+                                                                                    "Name"
+                                                                                ],
+                                                                                "properties": {
+                                                                                    "Name": {
+                                                                                        "type": "string",
+                                                                                        "minLength": 1,
+                                                                                        "maxLength": 32
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -670,8 +831,9 @@
                                     ]
                                 },
                                 "Exadata": {
-                                    "anyOf": [
-                                        { "type": "null" },
+                                    "anyOf": [{
+                                            "type": "null"
+                                        },
                                         {
                                             "type": "object",
                                             "required": [
@@ -797,7 +959,7 @@
                                                             "CellDisks": {
                                                                 "type": "array",
                                                                 "items": {
-                                                                    "type":"object",
+                                                                    "type": "object",
                                                                     "required": [
                                                                         "ErrCount",
                                                                         "Name",
@@ -837,15 +999,17 @@
                     ]
                 },
                 "Postgresql": {
-                    "anyOf": [
-                        { "type": "null" }, 
+                    "anyOf": [{
+                            "type": "null"
+                        },
                         {
                             "type": "object",
                             "properties": {
                                 "Postgresql": {
-                                    "anyOf": [
-                                        { "type": "null" },
-                                        { 
+                                    "anyOf": [{
+                                            "type": "null"
+                                        },
+                                        {
                                             "type": "object",
                                             "required": [
                                                 "WorkMem",
@@ -1029,12 +1193,12 @@
                     "Filesystem": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 64    
+                        "maxLength": 64
                     },
                     "Type": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 16    
+                        "maxLength": 16
                     },
                     "Size": {
                         "type": "integer",
@@ -1054,21 +1218,22 @@
                     "MountedOn": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 64    
+                        "maxLength": 64
                     }
                 }
             }
         },
         "Clusters": {
-            "anyOf": [
-                { "type": "null" },
-                { 
+            "anyOf": [{
+                    "type": "null"
+                },
+                {
                     "type": "array",
                     "items": {
                         "type": "object",
                         "required": [
                             "FetchEndpoint",
-                            "Type", 
+                            "Type",
                             "Name",
                             "CPU",
                             "Sockets",
@@ -1078,7 +1243,7 @@
                             "FetchEndpoint": {
                                 "type": "string",
                                 "minLength": 1,
-                                "maxLength": 64                                 
+                                "maxLength": 64
                             },
                             "Type": {
                                 "type": "string",
