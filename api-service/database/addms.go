@@ -33,13 +33,13 @@ func (md *MongoDatabase) SearchAddms(keywords []string, sortBy string, sortDesc 
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$Extra.Databases"),
+			mu.APUnwind("$Features.Oracle.Database.Databases"),
 			mu.APProject(bson.M{
 				"Hostname":    1,
 				"Environment": 1,
 				"Location":    1,
 				"CreatedAt":   1,
-				"Database":    "$Extra.Databases",
+				"Database":    "$Features.Oracle.Database.Databases",
 			}),
 			mu.APSearchFilterStage([]interface{}{"$Hostname", "$Database.Name"}, keywords),
 			mu.APProject(bson.M{
@@ -58,7 +58,7 @@ func (md *MongoDatabase) SearchAddms(keywords []string, sortBy string, sortDesc 
 				"CreatedAt":      true,
 				"Dbname":         "$Database.Name",
 				"Action":         "$Database.ADDMs.Action",
-				"Benefit":        mu.APOToDouble("$Database.ADDMs.Benefit"),
+				"Benefit":        "$Database.ADDMs.Benefit",
 				"Finding":        "$Database.ADDMs.Finding",
 				"Recommendation": "$Database.ADDMs.Recommendation",
 			}),

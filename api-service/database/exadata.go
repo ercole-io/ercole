@@ -35,11 +35,11 @@ func (md *MongoDatabase) SearchExadata(full bool, keywords []string, sortBy stri
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APMatch(bson.M{
-				"Extra.Exadata": mu.QONotEqual(nil),
+				"Features.Oracle.Exadata": mu.QONotEqual(nil),
 			}),
 			mu.APSearchFilterStage([]interface{}{
 				"$Hostname",
-				"$Extra.Exadata.Devices.Hostname",
+				"$Features.Oracle.Exadata.Components.Hostname",
 			}, keywords),
 			mu.APProject(bson.M{
 				"Hostname":    true,
@@ -47,7 +47,7 @@ func (md *MongoDatabase) SearchExadata(full bool, keywords []string, sortBy stri
 				"Environment": true,
 				"CreatedAt":   true,
 				"DBServers": mu.APOMap(
-					mu.APOFilter("$Extra.Exadata.Devices", "dev", mu.APOEqual("$$dev.ServerType", "DBServer")),
+					mu.APOFilter("$Features.Oracle.Exadata.Components", "dev", mu.APOEqual("$$dev.ServerType", "DBServer")),
 					"dev",
 					mu.BsonOptionalExtension(full,
 						bson.M{
@@ -72,7 +72,7 @@ func (md *MongoDatabase) SearchExadata(full bool, keywords []string, sortBy stri
 					),
 				),
 				"StorageServers": mu.APOMap(
-					mu.APOFilter("$Extra.Exadata.Devices", "dev", mu.APOEqual("$$dev.ServerType", "StorageServer")),
+					mu.APOFilter("$Features.Oracle.Exadata.Components", "dev", mu.APOEqual("$$dev.ServerType", "StorageServer")),
 					"dev",
 					mu.BsonOptionalExtension(full,
 						bson.M{
@@ -99,7 +99,7 @@ func (md *MongoDatabase) SearchExadata(full bool, keywords []string, sortBy stri
 					),
 				),
 				"IBSwitches": mu.APOMap(
-					mu.APOFilter("$Extra.Exadata.Devices", "dev", mu.APOEqual("$$dev.ServerType", "IBSwitch")),
+					mu.APOFilter("$Features.Oracle.Exadata.Components", "dev", mu.APOEqual("$$dev.ServerType", "IBSwitch")),
 					"dev",
 					bson.M{
 						"Hostname":     "$$dev.Hostname",
