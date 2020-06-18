@@ -26,9 +26,9 @@ import (
 type Filesystem struct {
 	Filesystem     string                 `bson:"Filesystem"`
 	Type           string                 `bson:"Type"`
-	Size           int                    `bson:"Size"`
-	UsedSpace      int                    `bson:"UsedSpace"`
-	AvailableSpace int                    `bson:"AvailableSpace"`
+	Size           int64                  `bson:"Size"`
+	UsedSpace      int64                  `bson:"UsedSpace"`
+	AvailableSpace int64                  `bson:"AvailableSpace"`
 	MountedOn      string                 `bson:"MountedOn"`
 	OtherInfo      map[string]interface{} `bson:"-"`
 }
