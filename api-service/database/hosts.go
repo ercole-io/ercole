@@ -44,10 +44,10 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 					"Hostname": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.Hostname), Options: "i"},
 				})),
 				mu.APOptionalStage(otherFilters.Database != "", mu.APMatch(bson.M{
-					"Extra.Databases.Name": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.Database), Options: "i"},
+					"Features.Oracle.Database.Databases.Name": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.Database), Options: "i"},
 				})),
 				mu.APOptionalStage(otherFilters.HardwareAbstractionTechnology != "", mu.APMatch(bson.M{
-					"Info.Type": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.HardwareAbstractionTechnology), Options: "i"},
+					"Info.HardwareAbstractionTechnology": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.HardwareAbstractionTechnology), Options: "i"},
 				})),
 				mu.APOptionalStage(otherFilters.OperatingSystem != "", mu.APMatch(bson.M{
 					"Info.OS": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.OperatingSystem), Options: "i"},
@@ -94,18 +94,18 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 			),
 			mu.APSearchFilterStage([]interface{}{
 				"$Hostname",
-				"$Extra.Databases.Name",
-				"$Extra.Databases.UniqueName",
-				"$Extra.Clusters.Name",
+				"$Features.Oracle.Database.Databases.Name",
+				"$Features.Oracle.Database.UniqueName",
+				"$Clusters.Name",
 			}, keywords),
 			mu.APOptionalStage(mode != "mongo", mu.MAPipeline(
 				mu.APOptionalStage(mode == "lms", mu.APMatch(
-					mu.QOExpr(mu.APOGreater(mu.APOSize(mu.APOIfNull("$Extra.Databases", bson.A{})), 0))),
+					mu.QOExpr(mu.APOGreater(mu.APOSize(mu.APOIfNull("$Features.Oracle.Database.Databases", bson.A{})), 0))),
 				),
 				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
 					FilterByOldnessSteps(olderThan),
-					mu.APUnwind("$Extra.Clusters"),
-					mu.APReplaceWith("$Extra.Clusters"),
+					mu.APUnwind("$Clusters"),
+					mu.APReplaceWith("$Clusters"),
 					mu.APUnwind("$VMs"),
 					mu.APReplaceWith("$VMs"),
 					mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
@@ -126,42 +126,43 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 					})),
 				),
 				mu.APOptionalStage(mode == "summary", mu.APProject(bson.M{
-					"Hostname":       true,
-					"Location":       true,
-					"Environment":    true,
-					"HostType":       true,
-					"Cluster":        true,
-					"Version":        true,
-					"PhysicalHost":   true,
-					"CreatedAt":      true,
-					"Databases":      true,
-					"OS":             "$Info.OS",
-					"Kernel":         "$Info.Kernel",
-					"OracleCluster":  "$Info.OracleCluster",
-					"SunCluster":     "$Info.SunCluster",
-					"VeritasCluster": "$Info.VeritasCluster",
-					"Virtual":        "$Info.Virtual",
-					"Type":           "$Info.Type",
-					"CPUThreads":     "$Info.CPUThreads",
-					"CPUCores":       "$Info.CPUCores",
-					"Socket":         "$Info.Socket",
-					"MemTotal":       "$Info.MemoryTotal",
-					"SwapTotal":      "$Info.SwapTotal",
-					"CPUModel":       "$Info.CPUModel",
+					"Hostname":                      true,
+					"Location":                      true,
+					"Environment":                   true,
+					"HostType":                      true,
+					"Cluster":                       true,
+					"Version":                       true,
+					"PhysicalHost":                  true,
+					"CreatedAt":                     true,
+					"Databases":                     true,
+					"OS":                            "$Info.OS",
+					"Kernel":                        "$Info.Kernel",
+					"OracleClusterware":             "$ClusterMembershipStatus.OracleClusterware",
+					"VeritasClusterServer":          "$ClusterMembershipStatus.VeritasClusterServer",
+					"SunCluster":                    "$ClusterMembershipStatus.SunCluster",
+					"HACMP":                         "$ClusterMembershipStatus.HACMP",
+					"HardwareAbstraction":           "$Info.HardwareAbstraction",
+					"HardwareAbstractionTechnology": "$Info.HardwareAbstractionTechnology",
+					"CPUThreads":                    "$Info.CPUThreads",
+					"CPUCores":                      "$Info.CPUCores",
+					"CPUSockets":                    "$Info.CPUSockets",
+					"MemTotal":                      "$Info.MemoryTotal",
+					"SwapTotal":                     "$Info.SwapTotal",
+					"CPUModel":                      "$Info.CPUModel",
 				})),
 				mu.APOptionalStage(mode == "lms", mu.MAPipeline(
-					mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$Extra.Databases"), 0))),
+					mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$Features.Oracle.Database.Databases"), 0))),
 					mu.APSet(bson.M{
-						"Database": mu.APOArrayElemAt("$Extra.Databases", 0),
+						"Database": mu.APOArrayElemAt("$Features.Oracle.Database.Databases", 0),
 					}),
 					mu.APUnset("Extra"),
 					mu.APSet(bson.M{
-						"VmwareOrOVM": mu.APOOr(mu.APOEqual("$Info.Type", "VMWARE"), mu.APOEqual("$Info.Type", "OVM")),
+						"VmwareOrOVM": mu.APOOr(mu.APOEqual("$Info.HardwareAbstractionPlatform", "VMWARE"), mu.APOEqual("$Info.HardwareAbstractionPlatform", "OVM")),
 					}),
 					mu.APProject(bson.M{
 						"PhysicalServerName":       mu.APOCond("$VmwareOrOVM", mu.APOIfNull("$Cluster", ""), "$Hostname"),
 						"VirtualServerName":        mu.APOCond("$VmwareOrOVM", "$Hostname", mu.APOIfNull("$Cluster", "")),
-						"VirtualizationTechnology": "$Info.Type",
+						"VirtualizationTechnology": "$Info.HardwareAbstractionTechnology",
 						"DBInstanceName":           "$Databases",
 						"PluggableDatabaseName":    "",
 						"ConnectString":            "",
@@ -175,13 +176,13 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 						), ", "),
 						"RacNodeNames":   "",
 						"ProcessorModel": "$Info.CPUModel",
-						"Processors":     "$Info.Socket",
+						"Processors":     "$Info.CPUSockets",
 						"CoresPerProcessor": mu.APOCond(
 							mu.APOAnd(
-								mu.APOGreaterOrEqual("$Info.CPUCores", "$Info.Socket"),
-								mu.APONotEqual("$Info.Socket", 0),
+								mu.APOGreaterOrEqual("$Info.CPUCores", "$Info.CPUSockets"),
+								mu.APONotEqual("$Info.CPUSockets", 0),
 							),
-							mu.APODivide("$Info.CPUCores", "$Info.Socket"),
+							mu.APODivide("$Info.CPUCores", "$Info.CPUSockets"),
 							"$Info.CPUCores",
 						),
 						"ThreadsPerCore": mu.APOCond(
@@ -189,27 +190,13 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 							8,
 							2,
 						),
-						"ProcessorSpeed": mu.APOLet(
-							bson.M{
-								"indexAt": mu.APOIndexOfCp("$Info.CPUModel", "@"),
-							}, mu.APOCond(
-								mu.APOGreaterOrEqual("$$indexAt", 0),
-								mu.APOTrim(
-									mu.APOSubstrCP(
-										"$Info.CPUModel",
-										mu.APOAdd("$$indexAt", 1),
-										mu.APOSubtract(mu.APOStrLenCP("$Info.CPUModel"), mu.APOAdd("$$indexAt", 1)),
-									),
-								),
-								"???",
-							),
-						),
+						"ProcessorSpeed":     "$Info.CPUFrequency",
 						"ServerPurchaseDate": "",
 						"OperatingSystem":    "$Info.OS",
 						"Notes":              "",
 					}),
 					mu.APSet(bson.M{
-						"PhysicalCores": mu.APOCond(mu.APOEqual("$Info.Socket", 0), "$CoresPerProcessor", bson.M{
+						"PhysicalCores": mu.APOCond(mu.APOEqual("$Info.CPUSockets", 0), "$CoresPerProcessor", bson.M{
 							"$multiply": bson.A{"$CoresPerProcessor", "$Processors"},
 						}),
 					}),
@@ -251,7 +238,7 @@ func getClusterFilterStep(cl *string) interface{} {
 func getIsMemberOfClusterFilterStep(member *bool) interface{} {
 	if member != nil {
 		return mu.APMatch(mu.QOExpr(
-			mu.APOEqual(*member, mu.APOOr("$Info.SunCluster", "$Info.VeritasCluster", "$Info.OracleCluster", "$Info.AixCluster")),
+			mu.APOEqual(*member, mu.APOOr("$ClusterMembershipStatus.OracleClusterware", "$ClusterMembershipStatus.VeritasClusterServer", "$ClusterMembershipStatus.SunCluster", "$ClusterMembershipStatus.HACMP")),
 		))
 	}
 	return bson.A{}
@@ -275,8 +262,8 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 				)),
 				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
 					FilterByOldnessSteps(olderThan),
-					mu.APUnwind("$Extra.Clusters"),
-					mu.APReplaceWith("$Extra.Clusters"),
+					mu.APUnwind("$Clusters"),
+					mu.APReplaceWith("$Clusters"),
 					mu.APUnwind("$VMs"),
 					mu.APReplaceWith("$VMs"),
 					mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
@@ -300,18 +287,18 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 					mu.MAPipeline(
 						mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$Hostname", "$$hn"), mu.APOGreaterOrEqual("$$ca", "$CreatedAt")))),
 						mu.APProject(bson.M{
-							"CreatedAt":                     1,
-							"Extra.Databases.Name":          1,
-							"Extra.Databases.Used":          1,
-							"Extra.Databases.SegmentsSize":  1,
-							"Extra.Databases.DailyCPUUsage": 1,
-							"TotalDailyCPUUsage":            mu.APOSumReducer("$Extra.Databases", mu.APOConvertToDoubleOrZero("$$this.DailyCPUUsage")),
+							"CreatedAt": 1,
+							"Features.Oracle.Database.Databases.Name":          1,
+							"Features.Oracle.Database.Databases.Used":          1,
+							"Features.Oracle.Database.Databases.SegmentsSize":  1,
+							"Features.Oracle.Database.Databases.DailyCPUUsage": 1,
+							"TotalDailyCPUUsage":                               mu.APOSumReducer("$Features.Oracle.Database.Databases", mu.APOConvertToDoubleOrZero("$$this.DailyCPUUsage")),
 						}),
 					),
 				),
 				mu.APSet(bson.M{
-					"Extra.Databases": mu.APOMap(
-						"$Extra.Databases",
+					"Features.Oracle.Database.Databases": mu.APOMap(
+						"$Features.Oracle.Database.Databases",
 						"db",
 						mu.APOMergeObjects(
 							"$$db",
@@ -319,7 +306,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 								"Changes": mu.APOFilter(
 									mu.APOMap("$History", "hh", mu.APOMergeObjects(
 										bson.M{"Updated": "$$hh.CreatedAt"},
-										mu.APOArrayElemAt(mu.APOFilter("$$hh.Extra.Databases", "hdb", mu.APOEqual("$$hdb.Name", "$$db.Name")), 0),
+										mu.APOArrayElemAt(mu.APOFilter("$$hh.Features.Oracle.Database.Databases", "hdb", mu.APOEqual("$$hdb.Name", "$$db.Name")), 0),
 									)),
 									"time_frame",
 									"$$time_frame.SegmentsSize",
@@ -329,8 +316,8 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 					),
 				}),
 				mu.APUnset(
-					"Extra.Databases.Changes.Name",
-					"History.Extra",
+					"Features.Oracle.Database.Databases.Changes.Name",
+					"History.Features",
 				),
 			)),
 		),

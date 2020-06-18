@@ -59,3 +59,9 @@ func FilterByOldnessSteps(olderThan time.Time) bson.A {
 		}),
 	)
 }
+
+func AddHardwareAbstraction(field string) bson.A {
+	return mu.MAPipeline(mu.APAddFields(bson.M{
+		field: mu.APOOr("$ClusterMembershipStatus.OracleClusterware", "$ClusterMembershipStatus.VeritasClusterServer", "$ClusterMembershipStatus.SunCluster", "$ClusterMembershipStatus.HACMP"),
+	}))
+}

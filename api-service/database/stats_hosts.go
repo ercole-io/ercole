@@ -94,9 +94,9 @@ func (md *MongoDatabase) GetTypeStats(location string, olderThan time.Time) ([]i
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APGroupAndCountStages("Type", "Count", "$Info.Type"),
+			mu.APGroupAndCountStages("Type", "Count", "$Info.HardwareAbstractionTechnology"),
 			mu.APSort(bson.M{
-				"Type": 1,
+				"HardwareAbstractionTechnology": 1,
 			}),
 		),
 	)
@@ -127,7 +127,7 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 			aggregationBranches = append(aggregationBranches, bson.M{
 				"case": bson.M{
 					"$regexMatch": bson.M{
-						"input": "$Info.OS",
+						"input": mu.APOConcat("$Info.OS", " ", "$Info.OSVersion"),
 						"regex": v.Regex,
 					},
 				},
@@ -138,11 +138,11 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 		switchExpr = bson.M{
 			"$switch": bson.M{
 				"branches": aggregationBranches,
-				"default":  "$Info.OS",
+				"default":  mu.APOConcat("$Info.OS", " ", "$Info.OSVersion"),
 			},
 		}
 	} else {
-		switchExpr = "$Info.OS"
+		switchExpr = mu.APOConcat("$Info.OS", " ", "$Info.OSVersion")
 	}
 
 	//Calculate the stats
@@ -185,11 +185,11 @@ func (md *MongoDatabase) GetTopUnusedInstanceResourceStats(location string, envi
 			mu.APProject(bson.M{
 				"Hostname": 1,
 				"Works": mu.APOReduce(
-					mu.APOFilter("$Extra.Databases", "db", mu.APONotEqual("$$db.Work", "N/A")),
+					mu.APOFilter("$Features.Oracle.Database.Databases", "db", mu.APONotEqual("$$db.Work", nil)),
 					bson.M{"TotalWork": 0, "TotalCPUCount": 0},
 					bson.M{
-						"TotalWork":     mu.APOAdd("$$value.TotalWork", mu.APOConvertErrorableNullable("$$this.Work", "double", 0, 0)),
-						"TotalCPUCount": mu.APOAdd("$$value.TotalCPUCount", mu.APOConvertErrorableNullable("$$this.CPUCount", "double", 0, 0)),
+						"TotalWork":     mu.APOAdd("$$value.TotalWork", "$$this.Work"),
+						"TotalCPUCount": mu.APOAdd("$$value.TotalCPUCount", "$$this.CPUCount"),
 					},
 				),
 			}),

@@ -40,7 +40,7 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 					"Hostname": 1,
 					"Databases": mu.APOReduce(
 						mu.APOFilter(
-							mu.APOMap("$Extra.Databases", "db", bson.M{
+							mu.APOMap("$Features.Oracle.Database.Databases", "db", bson.M{
 								"Name": "$$db.Name",
 								"Count": mu.APOLet(
 									bson.M{
@@ -71,8 +71,8 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 				}),
 				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
 					FilterByOldnessSteps(olderThan),
-					mu.APUnwind("$Extra.Clusters"),
-					mu.APReplaceWith("$Extra.Clusters"),
+					mu.APUnwind("$Clusters"),
+					mu.APReplaceWith("$Clusters"),
 					mu.APUnwind("$VMs"),
 					mu.APReplaceWith("$VMs"),
 					mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
@@ -185,7 +185,7 @@ func (md *MongoDatabase) GetLicense(name string, olderThan time.Time) (interface
 					"Hostname": 1,
 					"Databases": mu.APOReduce(
 						mu.APOFilter(
-							mu.APOMap("$Extra.Databases", "db", bson.M{
+							mu.APOMap("$Features.Oracle.Database.Databases", "db", bson.M{
 								"Name": "$$db.Name",
 								"Count": mu.APOLet(
 									bson.M{
@@ -216,8 +216,8 @@ func (md *MongoDatabase) GetLicense(name string, olderThan time.Time) (interface
 				}),
 				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
 					FilterByOldnessSteps(olderThan),
-					mu.APUnwind("$Extra.Clusters"),
-					mu.APReplaceWith("$Extra.Clusters"),
+					mu.APUnwind("$Clusters"),
+					mu.APReplaceWith("$Clusters"),
 					mu.APUnwind("$VMs"),
 					mu.APReplaceWith("$VMs"),
 					mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
