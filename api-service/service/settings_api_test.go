@@ -58,7 +58,7 @@ func TestGetErcoleFeatures_Success(t *testing.T) {
 		"Oracle/Exadata":  false,
 	}
 
-	getTechnologiesUsageRes := map[string]float32{
+	getTechnologiesUsageRes := map[string]float64{
 		"Oracle/Database_HostsCount": 8,
 		"Oracle/Exadata":             0,
 	}

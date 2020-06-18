@@ -53,7 +53,7 @@ func TestListTechnologies_Success(t *testing.T) {
 		},
 	}
 
-	getTechnologiesUsageRes := map[string]float32{
+	getTechnologiesUsageRes := map[string]float64{
 		"Oracle/Database_HostsCount": 8,
 		"Oracle/Exadata":             2,
 	}
@@ -111,7 +111,7 @@ func TestListTechnologies_SuccessEmpty(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{}
 
-	getTechnologiesUsageRes := map[string]float32{}
+	getTechnologiesUsageRes := map[string]float64{}
 	db.EXPECT().
 		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(getTechnologiesUsageRes, nil)
@@ -164,7 +164,7 @@ func TestListTechnologies_FailInternalServerError2(t *testing.T) {
 		Database: db,
 	}
 
-	getTechnologiesUsageRes := map[string]float32{}
+	getTechnologiesUsageRes := map[string]float64{}
 	db.EXPECT().
 		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(getTechnologiesUsageRes, nil)

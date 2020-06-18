@@ -23,7 +23,7 @@ import (
 )
 
 // GetTotalExadataMemorySizeStats return the total size of memory of exadata
-func (as *APIService) GetTotalExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+func (as *APIService) GetTotalExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
 	return as.Database.GetTotalExadataMemorySizeStats(location, environment, olderThan)
 }
 
@@ -33,7 +33,7 @@ func (as *APIService) GetTotalExadataCPUStats(location string, environment strin
 }
 
 // GetAverageExadataStorageUsageStats return the average usage of cell disks of exadata
-func (as *APIService) GetAverageExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+func (as *APIService) GetAverageExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
 	return as.Database.GetAverageExadataStorageUsageStats(location, environment, olderThan)
 }
 

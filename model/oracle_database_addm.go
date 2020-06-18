@@ -27,7 +27,7 @@ type OracleDatabaseAddm struct {
 	Finding        string                 `bson:"Finding"`
 	Recommendation string                 `bson:"Recommendation"`
 	Action         string                 `bson:"Action"`
-	Benefit        float32                `bson:"Benefit"`
+	Benefit        float64                `bson:"Benefit"`
 	OtherInfo      map[string]interface{} `bson:"-"`
 }
 

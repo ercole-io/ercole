@@ -36,17 +36,17 @@ type OracleDatabase struct {
 	NCharset          string                            `bson:"NCharset"`
 	BlockSize         int                               `bson:"BlockSize"`
 	CPUCount          int                               `bson:"CPUCount"`
-	SGATarget         float32                           `bson:"SGATarget"`
-	PGATarget         float32                           `bson:"PGATarget"`
-	MemoryTarget      float32                           `bson:"MemoryTarget"`
-	SGAMaxSize        float32                           `bson:"SGAMaxSize"`
-	SegmentsSize      float32                           `bson:"SegmentsSize"`
-	DatafileSize      float32                           `bson:"DatafileSize"`
-	Allocated         float32                           `bson:"Allocated"`
-	Elapsed           *float32                          `bson:"Elapsed"`
-	DBTime            *float32                          `bson:"DBTime"`
-	DailyCPUUsage     *float32                          `bson:"DailyCPUUsage"`
-	Work              *float32                          `bson:"Work"`
+	SGATarget         float64                           `bson:"SGATarget"`
+	PGATarget         float64                           `bson:"PGATarget"`
+	MemoryTarget      float64                           `bson:"MemoryTarget"`
+	SGAMaxSize        float64                           `bson:"SGAMaxSize"`
+	SegmentsSize      float64                           `bson:"SegmentsSize"`
+	DatafileSize      float64                           `bson:"DatafileSize"`
+	Allocated         float64                           `bson:"Allocated"`
+	Elapsed           *float64                          `bson:"Elapsed"`
+	DBTime            *float64                          `bson:"DBTime"`
+	DailyCPUUsage     *float64                          `bson:"DailyCPUUsage"`
+	Work              *float64                          `bson:"Work"`
 	ASM               bool                              `bson:"ASM"`
 	Dataguard         bool                              `bson:"Dataguard"`
 	Patches           []OracleDatabasePatch             `bson:"Patches"`

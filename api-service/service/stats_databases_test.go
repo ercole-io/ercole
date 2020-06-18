@@ -450,14 +450,14 @@ func TestGetTotalDatabaseWorkStats_Success(t *testing.T) {
 
 	db.EXPECT().GetTotalDatabaseWorkStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float32(5), nil).Times(1)
+	).Return(float64(5), nil).Times(1)
 
 	res, err := as.GetTotalDatabaseWorkStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
 
 	require.NoError(t, err)
-	assert.Equal(t, float32(5), res)
+	assert.Equal(t, float64(5), res)
 }
 
 func TestGetTotalDatabaseWorkStatsStats_Fail(t *testing.T) {
@@ -470,7 +470,7 @@ func TestGetTotalDatabaseWorkStatsStats_Fail(t *testing.T) {
 
 	db.EXPECT().GetTotalDatabaseWorkStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float32(0), aerrMock).Times(1)
+	).Return(float64(0), aerrMock).Times(1)
 
 	res, err := as.GetTotalDatabaseWorkStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
@@ -490,14 +490,14 @@ func TestGetTotalDatabaseMemorySizeStats_Success(t *testing.T) {
 
 	db.EXPECT().GetTotalDatabaseMemorySizeStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float32(17.151), nil).Times(1)
+	).Return(float64(17.151), nil).Times(1)
 
 	res, err := as.GetTotalDatabaseMemorySizeStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
 
 	require.NoError(t, err)
-	assert.Equal(t, float32(17.151), res)
+	assert.Equal(t, float64(17.151), res)
 }
 
 func TestGetTotalDatabaseMemorySizeStats_Fail(t *testing.T) {
@@ -510,7 +510,7 @@ func TestGetTotalDatabaseMemorySizeStats_Fail(t *testing.T) {
 
 	db.EXPECT().GetTotalDatabaseMemorySizeStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float32(0), aerrMock).Times(1)
+	).Return(float64(0), aerrMock).Times(1)
 
 	res, err := as.GetTotalDatabaseMemorySizeStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
@@ -530,14 +530,14 @@ func TestGetTotalDatabaseDatafileSizeStats_Success(t *testing.T) {
 
 	db.EXPECT().GetTotalDatabaseDatafileSizeStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float32(158), nil).Times(1)
+	).Return(float64(158), nil).Times(1)
 
 	res, err := as.GetTotalDatabaseDatafileSizeStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
 
 	require.NoError(t, err)
-	assert.Equal(t, float32(158), res)
+	assert.Equal(t, float64(158), res)
 }
 
 func TestGetTotalDatabaseDatafileSizeStats_Fail(t *testing.T) {
@@ -550,7 +550,7 @@ func TestGetTotalDatabaseDatafileSizeStats_Fail(t *testing.T) {
 
 	db.EXPECT().GetTotalDatabaseDatafileSizeStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float32(0), aerrMock).Times(1)
+	).Return(float64(0), aerrMock).Times(1)
 
 	res, err := as.GetTotalDatabaseDatafileSizeStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
@@ -570,14 +570,14 @@ func TestGetTotalDatabaseSegmentSizeStats_Success(t *testing.T) {
 
 	db.EXPECT().GetTotalDatabaseSegmentSizeStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float32(117), nil).Times(1)
+	).Return(float64(117), nil).Times(1)
 
 	res, err := as.GetTotalDatabaseSegmentSizeStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
 
 	require.NoError(t, err)
-	assert.Equal(t, float32(117), res)
+	assert.Equal(t, float64(117), res)
 }
 
 func TestGetTotalDatabaseSegmentSizeStats_Fail(t *testing.T) {
@@ -590,7 +590,7 @@ func TestGetTotalDatabaseSegmentSizeStats_Fail(t *testing.T) {
 
 	db.EXPECT().GetTotalDatabaseSegmentSizeStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float32(0), aerrMock).Times(1)
+	).Return(float64(0), aerrMock).Times(1)
 
 	res, err := as.GetTotalDatabaseSegmentSizeStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),

@@ -27,7 +27,7 @@ type OracleDatabaseBackup struct {
 	BackupType string                 `bson:"BackupType"`
 	Hour       string                 `bson:"Hour"`
 	WeekDays   []string               `bson:"WeekDays"`
-	AvgBckSize float32                `bson:"AvgBckSize"`
+	AvgBckSize float64                `bson:"AvgBckSize"`
 	Retention  string                 `bson:"Retention"`
 	OtherInfo  map[string]interface{} `bson:"-"`
 }

@@ -28,7 +28,7 @@ type OracleDatabaseSegmentAdvisor struct {
 	SegmentName    string                 `bson:"SegmentName"`
 	SegmentType    string                 `bson:"SegmentType"`
 	PartitionName  string                 `bson:"PartitionName"`
-	Reclaimable    float32                `bson:"Reclaimable"`
+	Reclaimable    float64                `bson:"Reclaimable"`
 	Recommendation string                 `bson:"Recommendation"`
 	OtherInfo      map[string]interface{} `bson:"-"`
 }

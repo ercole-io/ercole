@@ -59,7 +59,7 @@ func (as *APIService) SetLicenseCount(name string, count int) utils.AdvancedErro
 }
 
 // SetLicenseCostPerProcessor set the cost per processor of a certain license
-func (as *APIService) SetLicenseCostPerProcessor(name string, costPerProcessor float32) utils.AdvancedErrorInterface {
+func (as *APIService) SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface {
 	return as.Database.SetLicenseCostPerProcessor(name, costPerProcessor)
 }
 

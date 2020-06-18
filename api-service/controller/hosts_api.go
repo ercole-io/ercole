@@ -291,16 +291,16 @@ func (ctrl *APIController) GetSearchHostFilters(r *http.Request) (database.Searc
 	filters.PhysicalHost = r.URL.Query().Get("physical-host")
 	filters.OperatingSystem = r.URL.Query().Get("operating-system")
 	filters.Kernel = r.URL.Query().Get("kernel")
-	if filters.LTEMemoryTotal, aerr = utils.Str2float32(r.URL.Query().Get("memory-total-lte"), -1); aerr != nil {
+	if filters.LTEMemoryTotal, aerr = utils.Str2float64(r.URL.Query().Get("memory-total-lte"), -1); aerr != nil {
 		return database.SearchHostsFilters{}, aerr
 	}
-	if filters.GTEMemoryTotal, aerr = utils.Str2float32(r.URL.Query().Get("memory-total-gte"), -1); aerr != nil {
+	if filters.GTEMemoryTotal, aerr = utils.Str2float64(r.URL.Query().Get("memory-total-gte"), -1); aerr != nil {
 		return database.SearchHostsFilters{}, aerr
 	}
-	if filters.LTESwapTotal, aerr = utils.Str2float32(r.URL.Query().Get("swap-total-lte"), -1); aerr != nil {
+	if filters.LTESwapTotal, aerr = utils.Str2float64(r.URL.Query().Get("swap-total-lte"), -1); aerr != nil {
 		return database.SearchHostsFilters{}, aerr
 	}
-	if filters.GTESwapTotal, aerr = utils.Str2float32(r.URL.Query().Get("swap-total-gte"), -1); aerr != nil {
+	if filters.GTESwapTotal, aerr = utils.Str2float64(r.URL.Query().Get("swap-total-gte"), -1); aerr != nil {
 		return database.SearchHostsFilters{}, aerr
 	}
 	if r.URL.Query().Get("is-member-of-cluster") == "" {

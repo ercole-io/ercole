@@ -38,8 +38,8 @@ type Host struct {
 	KernelVersion                 string                 `bson:"KernelVersion"`
 	OS                            string                 `bson:"OS"`
 	OSVersion                     string                 `bson:"OSVersion"`
-	MemoryTotal                   float32                `bson:"MemoryTotal"`
-	SwapTotal                     float32                `bson:"SwapTotal"`
+	MemoryTotal                   float64                `bson:"MemoryTotal"`
+	SwapTotal                     float64                `bson:"SwapTotal"`
 	OtherInfo                     map[string]interface{} `bson:"-"`
 }
 

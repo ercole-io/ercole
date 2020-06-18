@@ -25,8 +25,8 @@ import (
 )
 
 // GetTechnologiesUsage return a map that contains the number of usages for every features
-func (md *MongoDatabase) GetTechnologiesUsage(location string, environment string, olderThan time.Time) (map[string]float32, utils.AdvancedErrorInterface) {
-	var out map[string]float32 = make(map[string]float32)
+func (md *MongoDatabase) GetTechnologiesUsage(location string, environment string, olderThan time.Time) (map[string]float64, utils.AdvancedErrorInterface) {
+	var out map[string]float64 = make(map[string]float64)
 
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(

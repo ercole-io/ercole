@@ -385,7 +385,7 @@ func (md *MongoDatabase) GetDatabaseArchivelogStatusStats(location string, envir
 }
 
 // GetTotalDatabaseWorkStats return the total work of databases
-func (md *MongoDatabase) GetTotalDatabaseWorkStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalDatabaseWorkStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -419,11 +419,11 @@ func (md *MongoDatabase) GetTotalDatabaseWorkStats(location string, environment 
 		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return float32(out["Value"]), nil
+	return float64(out["Value"]), nil
 }
 
 // GetTotalDatabaseMemorySizeStats return the total of memory size of databases
-func (md *MongoDatabase) GetTotalDatabaseMemorySizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalDatabaseMemorySizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -461,11 +461,11 @@ func (md *MongoDatabase) GetTotalDatabaseMemorySizeStats(location string, enviro
 		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return float32(out["Value"]), nil
+	return float64(out["Value"]), nil
 }
 
 // GetTotalDatabaseDatafileSizeStats return the total size of datafiles of databases
-func (md *MongoDatabase) GetTotalDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -499,11 +499,11 @@ func (md *MongoDatabase) GetTotalDatabaseDatafileSizeStats(location string, envi
 		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return float32(out["Value"]), nil
+	return float64(out["Value"]), nil
 }
 
 // GetTotalDatabaseSegmentSizeStats return the total size of segments of databases
-func (md *MongoDatabase) GetTotalDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -537,7 +537,7 @@ func (md *MongoDatabase) GetTotalDatabaseSegmentSizeStats(location string, envir
 		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return float32(out["Value"]), nil
+	return float64(out["Value"]), nil
 }
 
 // GetDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
