@@ -38,7 +38,7 @@ func TestGetTotalExadataMemorySizeStats_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := float32(10.3)
+	expectedRes := float64(10.3)
 
 	as.EXPECT().
 		GetTotalExadataMemorySizeStats("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
@@ -89,7 +89,7 @@ func TestGetTotalExadataMemorySizeStats_FailInternalServerError(t *testing.T) {
 
 	as.EXPECT().
 		GetTotalExadataMemorySizeStats("", "", utils.MAX_TIME).
-		Return(float32(0), aerrMock)
+		Return(float64(0), aerrMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetTotalExadataMemorySizeStats)
@@ -166,7 +166,7 @@ func TestGetTotalExadataCPUStats_FailInternalServerError(t *testing.T) {
 
 	as.EXPECT().
 		GetTotalExadataCPUStats("", "", utils.MAX_TIME).
-		Return(float32(0), aerrMock)
+		Return(float64(0), aerrMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetTotalExadataCPUStats)
@@ -189,7 +189,7 @@ func TestGetAverageExadataStorageUsageStats_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := float32(10.3)
+	expectedRes := float64(10.3)
 
 	as.EXPECT().
 		GetAverageExadataStorageUsageStats("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
@@ -240,7 +240,7 @@ func TestGetAverageExadataStorageUsageStats_FailInternalServerError(t *testing.T
 
 	as.EXPECT().
 		GetAverageExadataStorageUsageStats("", "", utils.MAX_TIME).
-		Return(float32(0), aerrMock)
+		Return(float64(0), aerrMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetAverageExadataStorageUsageStats)

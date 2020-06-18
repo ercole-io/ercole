@@ -95,7 +95,7 @@ func (ctrl *APIController) SearchAddmsJSON(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-// SearchAddmsJSON search addms data using the filters in the request returning it in JSON format
+// SearchAddmsXLSX search addms data using the filters in the request returning it in XLSX format
 func (ctrl *APIController) SearchAddmsXLSX(w http.ResponseWriter, r *http.Request) {
 	var search string
 	var location string
@@ -689,7 +689,7 @@ func (ctrl *APIController) SetLicenseCostPerProcessor(w http.ResponseWriter, r *
 	}
 
 	//set the value
-	aerr := ctrl.Service.SetLicenseCostPerProcessor(name, float32(costPerProcessor))
+	aerr := ctrl.Service.SetLicenseCostPerProcessor(name, costPerProcessor)
 	if aerr == utils.AerrLicenseNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
 		return

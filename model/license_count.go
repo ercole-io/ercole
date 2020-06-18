@@ -23,7 +23,7 @@ import (
 type LicenseCount struct {
 	Name             string  `bson:"_id"`
 	Count            int     `bson:"Count"`
-	CostPerProcessor float32 `bson:"CostPerProcessor"`
+	CostPerProcessor float64 `bson:"CostPerProcessor"`
 	Unlimited        bool    `bson:"Unlimited"`
 }
 

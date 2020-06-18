@@ -41,7 +41,7 @@ func (m *MongodbSuite) TestGetTotalExadataMemorySizeStats() {
 		out, err := m.db.GetTotalExadataMemorySizeStats("France", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
-		assert.Equal(t, float32(0.0), out)
+		assert.Equal(t, float64(0.0), out)
 	})
 
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
@@ -125,7 +125,7 @@ func (m *MongodbSuite) TestGetAverageExadataStorageUsageStats() {
 		out, err := m.db.GetAverageExadataStorageUsageStats("France", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
-		assert.Equal(t, float32(0.0), out)
+		assert.Equal(t, float64(0.0), out)
 	})
 
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {

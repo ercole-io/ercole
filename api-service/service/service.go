@@ -99,21 +99,21 @@ type APIServiceInterface interface {
 	// GetDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
 	GetDatabaseArchivelogStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetTotalDatabaseWorkStats return the total work of databases
-	GetTotalDatabaseWorkStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface)
+	GetTotalDatabaseWorkStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
 	// GetTotalDatabaseMemorySizeStats return the total of memory size of databases
-	GetTotalDatabaseMemorySizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface)
+	GetTotalDatabaseMemorySizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
 	// GetTotalDatabaseDatafileSizeStats return the total size of datafiles of databases
-	GetTotalDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface)
+	GetTotalDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
 	// GetTotalDatabaseSegmentSizeStats return the total size of segments of databases
-	GetTotalDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface)
+	GetTotalDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
 	// GetDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
 	GetDatabaseLicenseComplianceStatusStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
 	// GetTotalExadataMemorySizeStats return the total size of memory of exadata
-	GetTotalExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface)
+	GetTotalExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
 	// GetTotalExadataCPUStats return the total cpu of exadata
 	GetTotalExadataCPUStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
 	// GetAverageExadataStorageUsageStats return the average usage of cell disks of exadata
-	GetAverageExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface)
+	GetAverageExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
 	// GetExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
 	GetExadataStorageErrorCountStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetExadataPatchStatusStats return a array containing the number of exadata per patch status
@@ -125,7 +125,7 @@ type APIServiceInterface interface {
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license
-	SetLicenseCostPerProcessor(name string, costPerProcessor float32) utils.AdvancedErrorInterface
+	SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface
 	// SetLicenseUnlimitedStatus set the unlimited status of a certain license
 	SetLicenseUnlimitedStatus(name string, unlimitedStatus bool) utils.AdvancedErrorInterface
 

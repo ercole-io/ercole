@@ -25,7 +25,7 @@ import (
 // OracleDatabaseLicense holds information about a Oracle database license
 type OracleDatabaseLicense struct {
 	Name      string                 `bson:"Name"`
-	Count     float32                `bson:"Count"`
+	Count     float64                `bson:"Count"`
 	OtherInfo map[string]interface{} `bson:"-"`
 }
 

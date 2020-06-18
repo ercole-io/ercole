@@ -39,7 +39,7 @@ type OracleExadataComponent struct {
 	RunningFanCount      int                     `bson:"RunningFanCount"`
 	TotalFanCount        int                     `bson:"TotalFanCount"`
 	FanStatus            string                  `bson:"FanStatus"`
-	TempActual           float32                 `bson:"TempActual"`
+	TempActual           float64                 `bson:"TempActual"`
 	TempStatus           string                  `bson:"TempStatus"`
 	CellsrvServiceStatus string                  `bson:"CellsrvServiceStatus"`
 	MsServiceStatus      string                  `bson:"MsServiceStatus"`

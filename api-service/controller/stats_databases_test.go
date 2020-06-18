@@ -773,7 +773,7 @@ func TestGetTotalDatabaseWorkStats_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := float32(10.3)
+	expectedRes := float64(10.3)
 
 	as.EXPECT().
 		GetTotalDatabaseWorkStats("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
@@ -824,7 +824,7 @@ func TestGetTotalDatabaseWorkStats_FailInternalServerError(t *testing.T) {
 
 	as.EXPECT().
 		GetTotalDatabaseWorkStats("", "", utils.MAX_TIME).
-		Return(float32(0), aerrMock)
+		Return(float64(0), aerrMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetTotalDatabaseWorkStats)
@@ -847,7 +847,7 @@ func TestGetTotalDatabaseMemorySizeStats_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := float32(10.3)
+	expectedRes := float64(10.3)
 
 	as.EXPECT().
 		GetTotalDatabaseMemorySizeStats("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
@@ -898,7 +898,7 @@ func TestGetTotalDatabaseMemorySizeStats_FailInternalServerError(t *testing.T) {
 
 	as.EXPECT().
 		GetTotalDatabaseMemorySizeStats("", "", utils.MAX_TIME).
-		Return(float32(0), aerrMock)
+		Return(float64(0), aerrMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetTotalDatabaseMemorySizeStats)
@@ -921,7 +921,7 @@ func TestGetTotalDatabaseDatafileSizeStats_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := float32(10.3)
+	expectedRes := float64(10.3)
 
 	as.EXPECT().
 		GetTotalDatabaseDatafileSizeStats("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
@@ -972,7 +972,7 @@ func TestGetTotalDatabaseDatafileSizeStats_FailInternalServerError(t *testing.T)
 
 	as.EXPECT().
 		GetTotalDatabaseDatafileSizeStats("", "", utils.MAX_TIME).
-		Return(float32(0), aerrMock)
+		Return(float64(0), aerrMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetTotalDatabaseDatafileSizeStats)
@@ -995,7 +995,7 @@ func TestGetTotalDatabaseSegmentSizeStats_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := float32(10.3)
+	expectedRes := float64(10.3)
 
 	as.EXPECT().
 		GetTotalDatabaseSegmentSizeStats("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
@@ -1046,7 +1046,7 @@ func TestGetTotalDatabaseSegmentSizeStats_FailInternalServerError(t *testing.T) 
 
 	as.EXPECT().
 		GetTotalDatabaseSegmentSizeStats("", "", utils.MAX_TIME).
-		Return(float32(0), aerrMock)
+		Return(float64(0), aerrMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetTotalDatabaseSegmentSizeStats)

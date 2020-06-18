@@ -445,7 +445,7 @@ func (m *MongodbSuite) TestGetTotalDatabaseWorkStats() {
 		out, err := m.db.GetTotalDatabaseWorkStats("France", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
-		assert.Equal(t, float32(0.0), out)
+		assert.Equal(t, float64(0.0), out)
 	})
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
@@ -480,7 +480,7 @@ func (m *MongodbSuite) TestGetTotalDatabaseDatafileSizeStats() {
 		out, err := m.db.GetTotalDatabaseDatafileSizeStats("France", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
-		assert.Equal(t, float32(0.0), out)
+		assert.Equal(t, float64(0.0), out)
 	})
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
@@ -515,7 +515,7 @@ func (m *MongodbSuite) TestGetTotalDatabaseMemorySizeStats() {
 		out, err := m.db.GetTotalDatabaseMemorySizeStats("France", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
-		assert.Equal(t, float32(0.0), out)
+		assert.Equal(t, float64(0.0), out)
 	})
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
@@ -550,7 +550,7 @@ func (m *MongodbSuite) TestGetTotalDatabaseSegmentSizeStats() {
 		out, err := m.db.GetTotalDatabaseSegmentSizeStats("France", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
-		assert.Equal(t, float32(0.0), out)
+		assert.Equal(t, float64(0.0), out)
 	})
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {

@@ -25,7 +25,7 @@ import (
 )
 
 // GetTotalExadataMemorySizeStats return the total size of memory of exadata
-func (md *MongoDatabase) GetTotalExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -55,7 +55,7 @@ func (md *MongoDatabase) GetTotalExadataMemorySizeStats(location string, environ
 		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return float32(out["Value"]), nil
+	return float64(out["Value"]), nil
 }
 
 // GetTotalExadataCPUStats return the total cpu of exadata
@@ -99,7 +99,7 @@ func (md *MongoDatabase) GetTotalExadataCPUStats(location string, environment st
 }
 
 // GetAverageExadataStorageUsageStats return the average usage of cell disks of exadata
-func (md *MongoDatabase) GetAverageExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetAverageExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -158,7 +158,7 @@ func (md *MongoDatabase) GetAverageExadataStorageUsageStats(location string, env
 		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return float32(out["Value"]), nil
+	return float64(out["Value"]), nil
 }
 
 // GetExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
