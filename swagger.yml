@@ -2411,12 +2411,12 @@ paths:
                 items:
                   type: object
                   properties:
-                    Type:
+                    HardwareAbstractionTechnology:
                       type: string
                     Count:
                       type: integer
                   required:
-                    - Type
+                    - HardwareAbstractionTechnology
                     - Count
         '401':
           $ref: '#/components/responses/error'
@@ -3044,10 +3044,10 @@ paths:
               schema:
                 type: object
                 required:
-                  - Enabled
+                  - Running
                   - Total
                 properties:
-                  Enabled: 
+                  Running: 
                     type: number
                   Total: 
                     type: number

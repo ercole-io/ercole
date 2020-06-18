@@ -33,27 +33,27 @@ func (md *MongoDatabase) SearchPatchAdvisors(keywords []string, sortBy string, s
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$Extra.Databases"),
+			mu.APUnwind("$Features.Oracle.Database.Databases"),
 			mu.APProject(bson.M{
 				"Hostname":    1,
 				"Environment": 1,
 				"Location":    1,
 				"CreatedAt":   1,
-				"Database":    "$Extra.Databases",
+				"Database":    "$Features.Oracle.Database.Databases",
 			}),
 			mu.APSearchFilterStage([]interface{}{"$Hostname", "$Database.Name"}, keywords),
 			mu.APProject(bson.M{
-				"Hostname":          true,
-				"Location":          true,
-				"Environment":       true,
-				"CreatedAt":         true,
-				"Database.Name":     true,
-				"Database.Version":  true,
-				"Database.LastPSUs": true,
+				"Hostname":         true,
+				"Location":         true,
+				"Environment":      true,
+				"CreatedAt":        true,
+				"Database.Name":    true,
+				"Database.Version": true,
+				"Database.PSUs":    true,
 			}),
 			mu.APSet(bson.M{
-				"Database.LastPSUs": mu.APOReduce(
-					mu.APOMap("$Database.LastPSUs", "psu", mu.APOMergeObjects(
+				"Database.PSUs": mu.APOReduce(
+					mu.APOMap("$Database.PSUs", "psu", mu.APOMergeObjects(
 						"$$psu",
 						bson.M{
 							"Date": mu.APODateFromString("$$psu.Date", "%Y-%m-%d"),
@@ -70,9 +70,9 @@ func (md *MongoDatabase) SearchPatchAdvisors(keywords []string, sortBy string, s
 				"CreatedAt":   true,
 				"Dbname":      "$Database.Name",
 				"Dbver":       "$Database.Version",
-				"Description": mu.APOCond("$Database.LastPSUs.Description", "$Database.LastPSUs.Description", ""),
-				"Date":        mu.APOCond("$Database.LastPSUs.Date", "$Database.LastPSUs.Date", time.Unix(0, 0)),
-				"Status":      mu.APOCond(mu.APOGreater("$Database.LastPSUs.Date", windowTime), "OK", "KO"),
+				"Description": mu.APOCond("$Database.PSUs.Description", "$Database.PSUs.Description", ""),
+				"Date":        mu.APOCond("$Database.PSUs.Date", "$Database.PSUs.Date", time.Unix(0, 0)),
+				"Status":      mu.APOCond(mu.APOGreater("$Database.PSUs.Date", windowTime), "OK", "KO"),
 			}),
 			mu.APOptionalStage(status != "", mu.APMatch(bson.M{
 				"Status": status,

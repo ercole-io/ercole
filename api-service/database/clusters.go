@@ -34,13 +34,13 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$Extra.Clusters"),
+			mu.APUnwind("$Clusters"),
 			mu.APProject(bson.M{
 				"Hostname":    1,
 				"Environment": 1,
 				"Location":    1,
 				"CreatedAt":   1,
-				"Cluster":     "$Extra.Clusters",
+				"Cluster":     "$Clusters",
 			}),
 			mu.APSearchFilterStage([]interface{}{"$Cluster.Name"}, keywords),
 			mu.APProject(bson.M{
@@ -50,6 +50,7 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 				"CreatedAt":                   1,
 				"HostnameAgentVirtualization": "$Hostname",
 				"Hostname":                    true,
+				"FetchEndpoint":               "$Cluster.FetchEndpoint",
 				"Name":                        "$Cluster.Name",
 				"Type":                        "$Cluster.Type",
 				"CPU":                         "$Cluster.CPU",
@@ -58,7 +59,6 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 				"PhysicalHosts":               mu.APOSetUnion(mu.APOMap("$Cluster.VMs", "vm", "$$vm.PhysicalHost")),
 				"VMsCount":                    mu.APOSize("$Cluster.VMs"),
 			}),
-			mu.APUnset("VMs.ClusterName"),
 			mu.APLookupPipeline("hosts", bson.M{
 				"vms": "$VMs",
 			}, "VMsErcoleAgentCount", mu.MAPipeline(
@@ -113,13 +113,13 @@ func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (in
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
-			mu.APUnwind("$Extra.Clusters"),
+			mu.APUnwind("$Clusters"),
 			mu.APProject(bson.M{
 				"Hostname":    1,
 				"Environment": 1,
 				"Location":    1,
 				"CreatedAt":   1,
-				"Cluster":     "$Extra.Clusters",
+				"Cluster":     "$Clusters",
 			}),
 			mu.APMatch(bson.M{
 				"Cluster.Name": clusterName,
@@ -131,6 +131,7 @@ func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (in
 				"CreatedAt":                   1,
 				"HostnameAgentVirtualization": "$Hostname",
 				"Hostname":                    true,
+				"FetchEndpoint":               "$Cluster.FetchEndpoint",
 				"Name":                        "$Cluster.Name",
 				"Type":                        "$Cluster.Type",
 				"CPU":                         "$Cluster.CPU",
@@ -139,7 +140,6 @@ func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (in
 				"PhysicalHosts":               mu.APOSetUnion(mu.APOMap("$Cluster.VMs", "vm", "$$vm.PhysicalHost")),
 				"VMsCount":                    mu.APOSize("$Cluster.VMs"),
 			}),
-			mu.APUnset("VMs.ClusterName"),
 			mu.APLookupPipeline("hosts", bson.M{
 				"vms": "$VMs",
 			}, "VMsErcoleAgentCount", mu.MAPipeline(

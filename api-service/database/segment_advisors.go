@@ -34,16 +34,13 @@ func (md *MongoDatabase) SearchSegmentAdvisors(keywords []string, sortBy string,
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$Extra.Databases"),
-			mu.APAddFields(bson.M{
-				"Extra.Databases.HA": mu.APOOr("$Info.SunCluster", "$Info.VeritasCluster", "$Info.OracleCluster", "$Info.AixCluster"),
-			}),
+			mu.APUnwind("$Features.Oracle.Database.Databases"),
 			mu.APProject(bson.M{
 				"Hostname":    1,
 				"Environment": 1,
 				"Location":    1,
 				"CreatedAt":   1,
-				"Database":    "$Extra.Databases",
+				"Database":    "$Features.Oracle.Database.Databases",
 			}),
 			mu.APSearchFilterStage([]interface{}{"$Hostname", "$Database.Name"}, keywords),
 			mu.APProject(bson.M{
