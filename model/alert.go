@@ -116,7 +116,7 @@ var AlertBsonValidatorRules = bson.M{
 			"enum": bson.A{
 				AlertCodeNewDatabase,
 				AlertCodeNewOption,
-				AlertCategoryLicense,
+				AlertCodeNewLicense,
 				AlertCodeNewServer,
 				AlertCodeNoData,
 			},
