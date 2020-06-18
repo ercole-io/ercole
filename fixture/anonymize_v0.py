@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#!/usr/bin/env python3
 import json, sys, io
 from hashlib import md5
 from functools import reduce 
