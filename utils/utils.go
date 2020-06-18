@@ -101,14 +101,14 @@ func Str2int(in string, defaultValue int) (int, AdvancedErrorInterface) {
 	}
 }
 
-// Str2float32 parse a string to a float32
-func Str2float32(in string, defaultValue float32) (float32, AdvancedErrorInterface) {
+// Str2float64 parse a string to a float64
+func Str2float64(in string, defaultValue float64) (float64, AdvancedErrorInterface) {
 	if in == "" {
 		return defaultValue, nil
 	} else if val, err := strconv.ParseFloat(in, 32); err != nil {
 		return -1, NewAdvancedErrorPtr(err, "Unable to parse string to float")
 	} else {
-		return float32(val), nil
+		return float64(val), nil
 	}
 }
 

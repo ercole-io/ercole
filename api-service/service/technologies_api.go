@@ -53,18 +53,18 @@ func (as *APIService) ListTechnologies(sortBy string, sortDesc bool, location st
 
 	//Oracle/Databases
 	type License struct {
-		Count     float32
-		Used      float32
-		PaidCost  float32
-		TotalCost float32
+		Count     float64
+		Used      float64
+		PaidCost  float64
+		TotalCost float64
 		Unlimited bool
 	}
 	oracleLicenseList := make([]License, 0)
 	json.Unmarshal([]byte(utils.ToJSON(oracleLicenseListRaw)), &oracleLicenseList)
-	used := float32(0.0)
-	holded := float32(0.0)
-	totalCost := float32(0.0)
-	paidCost := float32(0.0)
+	used := float64(0.0)
+	holded := float64(0.0)
+	totalCost := float64(0.0)
+	paidCost := float64(0.0)
 	for _, lic := range oracleLicenseList {
 		used += lic.Used
 		totalCost += lic.TotalCost

@@ -68,22 +68,22 @@ func (as *APIService) GetDatabaseDataguardStatusStats(location string, environme
 }
 
 // GetTotalDatabaseWorkStats return the total work of databases
-func (as *APIService) GetTotalDatabaseWorkStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+func (as *APIService) GetTotalDatabaseWorkStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
 	return as.Database.GetTotalDatabaseWorkStats(location, environment, olderThan)
 }
 
 // GetTotalDatabaseMemorySizeStats return the total of memory size of databases
-func (as *APIService) GetTotalDatabaseMemorySizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+func (as *APIService) GetTotalDatabaseMemorySizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
 	return as.Database.GetTotalDatabaseMemorySizeStats(location, environment, olderThan)
 }
 
 // GetTotalDatabaseDatafileSizeStats return the total size of datafiles of databases
-func (as *APIService) GetTotalDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+func (as *APIService) GetTotalDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
 	return as.Database.GetTotalDatabaseDatafileSizeStats(location, environment, olderThan)
 }
 
 // GetTotalDatabaseSegmentSizeStats return the total size of segments of databases
-func (as *APIService) GetTotalDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float32, utils.AdvancedErrorInterface) {
+func (as *APIService) GetTotalDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
 	return as.Database.GetTotalDatabaseSegmentSizeStats(location, environment, olderThan)
 }
 

@@ -329,7 +329,7 @@ func (md *MongoDatabase) SetLicenseCount(name string, count int) utils.AdvancedE
 }
 
 // SetLicenseCostPerProcessor set the cost per processor of a certain license
-func (md *MongoDatabase) SetLicenseCostPerProcessor(name string, count float32) utils.AdvancedErrorInterface {
+func (md *MongoDatabase) SetLicenseCostPerProcessor(name string, count float64) utils.AdvancedErrorInterface {
 	//Find the informations
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses").UpdateOne(context.TODO(), bson.M{
 		"_id": name,

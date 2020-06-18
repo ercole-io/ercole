@@ -34,14 +34,14 @@ func TestGetTotalExadataMemorySizeStats_Success(t *testing.T) {
 
 	db.EXPECT().GetTotalExadataMemorySizeStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float32(1316), nil).Times(1)
+	).Return(float64(1316), nil).Times(1)
 
 	res, err := as.GetTotalExadataMemorySizeStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
 
 	require.NoError(t, err)
-	assert.Equal(t, float32(1316), res)
+	assert.Equal(t, float64(1316), res)
 }
 
 func TestGetTotalExadataMemorySizeStats_Fail(t *testing.T) {
@@ -54,7 +54,7 @@ func TestGetTotalExadataMemorySizeStats_Fail(t *testing.T) {
 
 	db.EXPECT().GetTotalExadataMemorySizeStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float32(0), aerrMock).Times(1)
+	).Return(float64(0), aerrMock).Times(1)
 
 	res, err := as.GetTotalExadataMemorySizeStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
@@ -119,14 +119,14 @@ func TestGetAverageExadataStorageUsageStats_Success(t *testing.T) {
 
 	db.EXPECT().GetAverageExadataStorageUsageStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float32(54.666668), nil).Times(1)
+	).Return(float64(54.666668), nil).Times(1)
 
 	res, err := as.GetAverageExadataStorageUsageStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
 
 	require.NoError(t, err)
-	assert.Equal(t, float32(54.666668), res)
+	assert.Equal(t, float64(54.666668), res)
 }
 
 func TestGetAverageExadataStorageUsageStats_Fail(t *testing.T) {
@@ -139,7 +139,7 @@ func TestGetAverageExadataStorageUsageStats_Fail(t *testing.T) {
 
 	db.EXPECT().GetAverageExadataStorageUsageStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float32(0), aerrMock).Times(1)
+	).Return(float64(0), aerrMock).Times(1)
 
 	res, err := as.GetAverageExadataStorageUsageStats(
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
