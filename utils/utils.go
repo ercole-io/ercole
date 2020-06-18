@@ -31,6 +31,7 @@ import (
 
 	"github.com/ercole-io/ercole/model"
 	"github.com/robertkrimen/otto"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 var MIN_TIME time.Time = time.Unix(0, 0)
@@ -39,6 +40,15 @@ var MAX_TIME time.Time = time.Now().AddDate(1000, 0, 0)
 //ToJSON convert v to a string containing the equivalent json rappresentation
 func ToJSON(v interface{}) string {
 	raw, _ := json.Marshal(v)
+	return string(raw)
+}
+
+//ToMongoJSON convert v to a string containing the equivalent json rappresentation
+func ToMongoJSON(v interface{}) string {
+	raw, err := bson.MarshalExtJSON(v, false, false)
+	if err != nil {
+		panic(err)
+	}
 	return string(raw)
 }
 

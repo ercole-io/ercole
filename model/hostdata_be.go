@@ -33,7 +33,7 @@ type HostDataBE struct {
 	Archived            bool               `bson:"Archived"`
 	CreatedAt           time.Time          `bson:"CreatedAt"`
 	ServerVersion       string             `bson:"ServerVersion"`
-	ServerSchemaVersion int                `bson:"SchemaVersion"`
+	ServerSchemaVersion int                `bson:"ServerSchemaVersion"`
 
 	Hostname                string                  `bson:"Hostname"`
 	Location                string                  `bson:"Location"`
@@ -126,10 +126,14 @@ var HostDataBEBsonValidatorRules = bson.M{
 		"ClusterMembershipStatus": ClusterMembershipStatusBsonValidatorRules,
 		"Features":                FeaturesBsonValidatorRules,
 		"Clusters": bson.M{
-			"bsonType": "array",
-			"items":    ClusterInfoBsonValidatorRules,
+			"anyOf": bson.A{
+				bson.M{"bsonType": "null"},
+				bson.M{
+					"bsonType": "array",
+					"items":    ClusterInfoBsonValidatorRules,
+				},
+			},
 		},
-
 		"Archived": bson.M{
 			"bsonType": "bool",
 		},
