@@ -27,7 +27,7 @@ import (
 type OracleDatabaseFeatureUsageStat struct {
 	Product          string                 `bson:"Product"`
 	Feature          string                 `bson:"Feature"`
-	DetectedUsages   int                    `bson:"DetectedUsages"`
+	DetectedUsages   int64                  `bson:"DetectedUsages"`
 	CurrentlyUsed    bool                   `bson:"CurrentlyUsed"`
 	FirstUsageDate   time.Time              `bson:"FirstUsageDate"`
 	LastUsageDate    time.Time              `bson:"LastUsageDate"`
