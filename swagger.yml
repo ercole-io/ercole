@@ -1662,7 +1662,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  '/hosts/{hostname}/databases/{dbname}/tags':
+  '/hosts/{hostname}/technologies/oracle/databases/{dbname}/tags':
     parameters:
       - in: path
         name: hostname
@@ -1681,7 +1681,7 @@ paths:
         - api-service
         - fe-user
         - write
-      operationId: AddTagToDatabase
+      operationId: AddTagToOracleDatabase
       summary: Add a tag to a database of a host
       description: Add a tag to a database of a host
       requestBody:
@@ -1701,7 +1701,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  '/hosts/{hostname}/databases/{dbname}/tags/{tagname}':
+  '/hosts/{hostname}/technologies/oracle/databases/{dbname}/tags/{tagname}':
     parameters:
       - in: path
         name: hostname
@@ -1726,7 +1726,7 @@ paths:
         - api-service
         - fe-user
         - write
-      operationId: DeleteTagOfDatabase
+      operationId: DeleteTagOfOracleDatabase
       summary: Delete a tag of a database of a host
       description: Add a tag of a database of a host
       responses:
@@ -1740,7 +1740,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  '/hosts/{hostname}/databases/{dbname}/licenses/{licenseName}':
+  '/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseName}':
     parameters:
       - in: path
         name: hostname
@@ -1765,7 +1765,7 @@ paths:
         - api-service
         - fe-user
         - write
-      operationId: SetLicenseModifier
+      operationId: SetOracleDatabaseLicenseModifier
       summary: Change the value of a license of a database
       description: Change the value of a license of a database
       requestBody:
@@ -1784,7 +1784,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  '/hosts/{hostname}/databases/{dbname}/license-modifiers/{licenseName}':
+  '/hosts/{hostname}/technologies/oracle/databases/{dbname}/license-modifiers/{licenseName}':
     parameters:
       - in: path
         name: hostname
@@ -1809,7 +1809,7 @@ paths:
         - api-service
         - fe-user
         - write
-      operationId: DeleteLicenseModifier
+      operationId: DeleteOracleDatabaseLicenseModifier
       summary: Delete a license modifier of a database
       description: Delete a license modifier of a database
       responses:
@@ -1853,13 +1853,13 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /hosts/technologies/databases:
+  /hosts/technologies/oracle/databases/databases:
     get:
       tags:
         - api-service
         - fe-user
         - read
-      operationId: SearchDatabases
+      operationId: SearchOracleDatabases
       summary: Search a list of databases
       description: Get a list of databases filtered using various search terms and various params. Can also generate a XLSX file
       parameters:
@@ -1930,7 +1930,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: SearchAddms
+      operationId: SearchOracleDatabaseAddms
       summary: Search a list of ADDMs
       description: Get a list of ADDMs filtered using various search terms and various params. Can also generate a XLSX file
       parameters:
@@ -2269,7 +2269,7 @@ paths:
                     required:
                       - Content
                       - Metadata
-      operationId: SearchExadata
+      operationId: SearchOracleExadata
       description: |-
         Search exadata data using the filters in the request.
         Return content type could be JSON or XLSX.
@@ -2288,7 +2288,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: SearchLicenseModifiers
+      operationId: SearchOracleDatabaseLicenseModifiers
       summary: Search a list of license modifiers
       description: Get a list of license modifiers using various search terms and various params.
       parameters:
@@ -2466,7 +2466,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetTopUnusedInstanceResourceStats
+      operationId: GetTopUnusedOracleDatabaseInstanceResourceStats
       summary: Get the stats about the top unused instance resource by databases work
       description: Get the stats about the top unused instance resource by databases work
       parameters:
@@ -2529,7 +2529,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetDatabaseEnvironmentStats
+      operationId: GetOracleDatabaseEnvironmentStats
       summary: Get the stats about the environment of the databases 
       description: Get the stats about the environment of the databases
       parameters:
@@ -2565,7 +2565,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetDatabaseHighReliabilityStats
+      operationId: GetOracleDatabaseHighReliabilityStats
       summary: Get the stats about the high reliability status of the databases 
       description: Get the stats about the high reliability status of the databases
       parameters:
@@ -2601,7 +2601,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetDatabaseVersionStats
+      operationId: GetOracleDatabaseVersionStats
       summary: Get the stats about the version of the databases 
       description: Get the stats about the version of the databases
       parameters:
@@ -2637,7 +2637,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetTopReclaimableDatabaseStats
+      operationId: GetTopReclaimableOracleDatabaseStats
       summary: Get the list of top databases by reclaimable segment advisors 
       description: Get the list of top databases by reclaimable segment advisors
       parameters:
@@ -2677,7 +2677,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetDatabasePatchStatusStats
+      operationId: GetOracleDatabasePatchStatusStats
       summary: Get the statistics about the patch status of the databases
       description: Get the statistics about the patch status of the databases
       parameters:
@@ -2714,7 +2714,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetTopWorkloadDatabaseStats
+      operationId: GetTopWorkloadOracleDatabaseStats
       summary: Get the list of top databases by workload
       description: Get the list of top databases by workload
       parameters:
@@ -2754,7 +2754,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetDatabaseDataguardStatusStats
+      operationId: GetOracleDatabaseDataguardStatusStats
       summary: Get the statistics about the dataguard status of the databases
       description: Get the statistics about the dataguard status of the databases
       parameters:
@@ -2790,7 +2790,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetDatabaseArchivelogStatusStats
+      operationId: GetOracleDatabaseArchivelogStatusStats
       summary: Get the statistics about the archive log status of the databases
       description: Get the statistics about the archive log status of the databases
       parameters:
@@ -2826,7 +2826,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetDatabaseRACStatusStats
+      operationId: GetOracleDatabaseRACStatusStats
       summary: Get the statistics about the RAC status of the databases
       description: Get the statistics about the RAC status of the databases
       parameters:
@@ -2862,7 +2862,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetTotalDatabaseWorkStats
+      operationId: GetTotalOracleDatabaseWorkStats
       summary: Get the total work of the databases
       description: Get the total work of the databases
       parameters:
@@ -2888,7 +2888,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetTotalDatabaseMemorySizeStats
+      operationId: GetTotalOracleDatabaseMemorySizeStats
       summary: Get the total size of the memory of the databases
       description: Get the total size of the memory of the databases
       parameters:
@@ -2914,7 +2914,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetTotalDatabaseDatafileSizeStats
+      operationId: GetTotalOracleDatabaseDatafileSizeStats
       summary: Get the total size of the datafile of the databases
       description: Get the total size of the datafile of the databases
       parameters:
@@ -2940,7 +2940,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetTotalDatabaseSegmentSizeStats
+      operationId: GetTotalOracleDatabaseSegmentSizeStats
       summary: Get the total size of the segments of the databases
       description: Get the total size of the segments of the databases
       parameters:
@@ -2966,7 +2966,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetDatabaseLicenseComplianceStatusStats
+      operationId: GetOracleDatabaseLicenseComplianceStatusStats
       summary: Get the status of the license compliance of the databases
       description: Get the status of the license compliance of the databases
       parameters:
@@ -3003,7 +3003,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetTotalExadataMemorySizeStats
+      operationId: GetTotalOracleExadataMemorySizeStats
       summary: Get the total size of the memory of the exadata
       description: Get the total size of the memory of the exadata
       parameters:
@@ -3029,7 +3029,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetTotalExadataCPUStats
+      operationId: GetTotalOracleExadataCPUStats
       summary: Get the total cpu of the exadata
       description: Get the total cpu of the exadata
       parameters:
@@ -3063,7 +3063,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetAverageExadataStorageUsageStats
+      operationId: GetAverageOracleExadataStorageUsageStats
       summary: Get the average usage of the storage of the exadata
       description: Get the average usage of the storage of the exadata
       parameters:
@@ -3089,7 +3089,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetExadataStorageErrorCountStatusStats
+      operationId: GetOracleExadataStorageErrorCountStatusStats
       summary: Get the statistics about the ErrorCount status of the storage of the exadata
       description: Get the statistics about the ErrorCount status of the storage of the  exadata
       parameters:
@@ -3125,7 +3125,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: GetExadataPatchStatusStats
+      operationId: GetOracleExadataPatchStatusStats
       summary: Get the statistics about the patch status of the exadata
       description: Get the statistics about the patch status of the exadata
       parameters:
@@ -3200,7 +3200,7 @@ paths:
                 type: object
                 properties: {}
               examples: {}
-      operationId: SearchSegmentAdvisors
+      operationId: SearchOracleDatabaseSegmentAdvisors
       description: Search segment advisors data using the filters in the request
       summary: Search a list of segment advisors
       tags:
@@ -3249,90 +3249,6 @@ paths:
                     required:
                       - Content
                       - Metadata
-              examples:
-                json without paging:
-                  value:
-                    - CreatedAt: '2020-04-15T14:28:09.783+02:00'
-                      Date: '1970-01-01T01:00:00+01:00'
-                      Dbname: ERCOLE
-                      Dbver: 12.2.0.1.0 Enterprise Edition
-                      Description: ''
-                      Environment: TST
-                      Hostname: itl-csllab-112.sorint.localpippo
-                      Location: Germany
-                      Status: KO
-                      _id: 5e96fdd91a65b0bf4e980295
-                    - CreatedAt: '2020-04-15T14:28:09.783+02:00'
-                      Date: '1970-01-01T01:00:00+01:00'
-                      Dbname: urcole
-                      Dbver: 12.2.0.1.0 Enterprise Edition
-                      Description: ''
-                      Environment: TST
-                      Hostname: itl-csllab-112.sorint.localpippo
-                      Location: Germany
-                      Status: KO
-                      _id: 5e96fdd91a65b0bf4e980295
-                    - CreatedAt: '2020-04-15T14:28:47.792+02:00'
-                      Date: '2012-04-16T02:00:00+02:00'
-                      Dbname: ERCOLE
-                      Dbver: 12.2.0.1.0 Enterprise Edition
-                      Description: PSU 11.2.0.3.2
-                      Environment: TST
-                      Hostname: test-db
-                      Location: Germany
-                      Status: KO
-                      _id: 5e96fdff1a65b0bf4e9802aa
-                json with paging:
-                  value:
-                    Content:
-                      - CreatedAt: '2020-04-15T14:28:09.783+02:00'
-                        Date: '1970-01-01T01:00:00+01:00'
-                        Dbname: ERCOLE
-                        Dbver: 12.2.0.1.0 Enterprise Edition
-                        Description: ''
-                        Environment: TST
-                        Hostname: itl-csllab-112.sorint.localpippo
-                        Location: Germany
-                        Status: KO
-                        _id: 5e96fdd91a65b0bf4e980295
-                      - CreatedAt: '2020-04-15T14:28:09.783+02:00'
-                        Date: '1970-01-01T01:00:00+01:00'
-                        Dbname: urcole
-                        Dbver: 12.2.0.1.0 Enterprise Edition
-                        Description: ''
-                        Environment: TST
-                        Hostname: itl-csllab-112.sorint.localpippo
-                        Location: Germany
-                        Status: KO
-                        _id: 5e96fdd91a65b0bf4e980295
-                      - CreatedAt: '2020-04-15T14:28:19.443+02:00'
-                        Date: '2012-04-16T02:00:00+02:00'
-                        Dbname: rudeboy-fb3160a04ffea22b55555bbb58137f77
-                        Dbver: 11.2.0.3.0 Enterprise Edition
-                        Description: PSU 11.2.0.3.2
-                        Environment: SVIL
-                        Hostname: publicitate-36d06ca83eafa454423d2097f4965517
-                        Location: Germany
-                        Status: KO
-                        _id: 5e96fde31a65b0bf4e980299
-                      - CreatedAt: '2020-04-15T14:28:19.443+02:00'
-                        Date: '2012-04-16T02:00:00+02:00'
-                        Dbname: 007bond-f260462ca34bbd17deeda88f042e42a1
-                        Dbver: 11.2.0.3.0 Enterprise Edition
-                        Description: PSU 11.2.0.3.2
-                        Environment: SVIL
-                        Hostname: publicitate-36d06ca83eafa454423d2097f4965517
-                        Location: Germany
-                        Status: KO
-                        _id: 5e96fde31a65b0bf4e980299
-                    Metadata:
-                      Empty: false
-                      First: true
-                      Last: false
-                      Number: 0
-                      Size: 4
-                      TotalElements: 8
-                      TotalPages: 2
             application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
               schema:
                 type: object
@@ -3344,7 +3260,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-      operationId: SearchPatchAdvisors
+      operationId: SearchOracleDatabasePatchAdvisors
       description: Search patch advisors data using the filters in the request
       summary: Search a list of patch advisors
       tags:

@@ -107,8 +107,8 @@ func (ctrl *APIController) DeletePatchingFunction(w http.ResponseWriter, r *http
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
-// AddTagToDatabase add a tag to the database if it hasn't the tag
-func (ctrl *APIController) AddTagToDatabase(w http.ResponseWriter, r *http.Request) {
+// AddTagToOracleDatabase add a tag to the database if it hasn't the tag
+func (ctrl *APIController) AddTagToOracleDatabase(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
@@ -125,7 +125,7 @@ func (ctrl *APIController) AddTagToDatabase(w http.ResponseWriter, r *http.Reque
 	}
 
 	//set the value
-	aerr := ctrl.Service.AddTagToDatabase(hostname, dbname, string(raw))
+	aerr := ctrl.Service.AddTagToOracleDatabase(hostname, dbname, string(raw))
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
@@ -135,8 +135,8 @@ func (ctrl *APIController) AddTagToDatabase(w http.ResponseWriter, r *http.Reque
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
-// DeleteTagOfDatabase remove a certain tag from a database if it has the tag
-func (ctrl *APIController) DeleteTagOfDatabase(w http.ResponseWriter, r *http.Request) {
+// DeleteTagOfOracleDatabase remove a certain tag from a database if it has the tag
+func (ctrl *APIController) DeleteTagOfOracleDatabase(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
@@ -148,7 +148,7 @@ func (ctrl *APIController) DeleteTagOfDatabase(w http.ResponseWriter, r *http.Re
 	tagname := mux.Vars(r)["tagname"]
 
 	//set the value
-	aerr := ctrl.Service.DeleteTagOfDatabase(hostname, dbname, tagname)
+	aerr := ctrl.Service.DeleteTagOfOracleDatabase(hostname, dbname, tagname)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
@@ -158,8 +158,8 @@ func (ctrl *APIController) DeleteTagOfDatabase(w http.ResponseWriter, r *http.Re
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
-// SetLicenseModifier set the license modifier of specified license/db/host in the request to the value in the body
-func (ctrl *APIController) SetLicenseModifier(w http.ResponseWriter, r *http.Request) {
+// SetOracleDatabaseLicenseModifier set the license modifier of specified license/db/host in the request to the value in the body
+func (ctrl *APIController) SetOracleDatabaseLicenseModifier(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
@@ -183,7 +183,7 @@ func (ctrl *APIController) SetLicenseModifier(w http.ResponseWriter, r *http.Req
 	}
 
 	//set the value
-	aerr := ctrl.Service.SetLicenseModifier(hostname, dbname, licensename, newValue)
+	aerr := ctrl.Service.SetOracleDatabaseLicenseModifier(hostname, dbname, licensename, newValue)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
@@ -193,8 +193,8 @@ func (ctrl *APIController) SetLicenseModifier(w http.ResponseWriter, r *http.Req
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
-// DeleteLicenseModifier delete the license modifier of specified license/db/host in the request
-func (ctrl *APIController) DeleteLicenseModifier(w http.ResponseWriter, r *http.Request) {
+// DeleteOracleDatabaseLicenseModifier delete the license modifier of specified license/db/host in the request
+func (ctrl *APIController) DeleteOracleDatabaseLicenseModifier(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
@@ -206,7 +206,7 @@ func (ctrl *APIController) DeleteLicenseModifier(w http.ResponseWriter, r *http.
 	licensename := mux.Vars(r)["licenseName"]
 
 	//set the value
-	aerr := ctrl.Service.DeleteLicenseModifier(hostname, dbname, licensename)
+	aerr := ctrl.Service.DeleteOracleDatabaseLicenseModifier(hostname, dbname, licensename)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
@@ -216,8 +216,8 @@ func (ctrl *APIController) DeleteLicenseModifier(w http.ResponseWriter, r *http.
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
-// SearchLicenseModifiers search a license modifier using the filters in the request
-func (ctrl *APIController) SearchLicenseModifiers(w http.ResponseWriter, r *http.Request) {
+// SearchOracleDatabaseLicenseModifiers search a license modifier using the filters in the request
+func (ctrl *APIController) SearchOracleDatabaseLicenseModifiers(w http.ResponseWriter, r *http.Request) {
 	var search string
 	var sortBy string
 	var sortDesc bool
@@ -243,7 +243,7 @@ func (ctrl *APIController) SearchLicenseModifiers(w http.ResponseWriter, r *http
 	}
 
 	//get the data
-	data, err := ctrl.Service.SearchLicenseModifiers(search, sortBy, sortDesc, pageNumber, pageSize)
+	data, err := ctrl.Service.SearchOracleDatabaseLicenseModifiers(search, sortBy, sortDesc, pageNumber, pageSize)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return

@@ -156,8 +156,8 @@ func (as *APIService) DeletePatchingFunction(hostname string) utils.AdvancedErro
 	return as.Database.DeletePatchingFunction(hostname)
 }
 
-// AddTagToDatabase add the tag to the database if it hasn't the tag
-func (as *APIService) AddTagToDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface {
+// AddTagToOracleDatabase add the tag to the database if it hasn't the tag
+func (as *APIService) AddTagToOracleDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface {
 	//Find the patching function
 	pf, err := as.Database.FindPatchingFunction(hostname)
 	if err != nil {
@@ -226,8 +226,8 @@ func (as *APIService) AddTagToDatabase(hostname string, dbname string, tagname s
 	return as.ApplyPatch(pf)
 }
 
-// DeleteTagOfDatabase delete the tag from the database if it hasn't the tag
-func (as *APIService) DeleteTagOfDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface {
+// DeleteTagOfOracleDatabase delete the tag from the database if it hasn't the tag
+func (as *APIService) DeleteTagOfOracleDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface {
 	//Find the patching function
 	pf, err := as.Database.FindPatchingFunction(hostname)
 	if err != nil {
@@ -311,8 +311,8 @@ func (as *APIService) ApplyPatch(pf model.PatchingFunction) utils.AdvancedErrorI
 	return as.Database.ReplaceHostData(data)
 }
 
-// SetLicenseModifier set the value of certain license to newValue
-func (as *APIService) SetLicenseModifier(hostname string, dbname string, licenseName string, newValue int) utils.AdvancedErrorInterface {
+// SetOracleDatabaseLicenseModifier set the value of certain license to newValue
+func (as *APIService) SetOracleDatabaseLicenseModifier(hostname string, dbname string, licenseName string, newValue int) utils.AdvancedErrorInterface {
 	//Find the patching function
 	pf, err := as.Database.FindPatchingFunction(hostname)
 	if err != nil {
@@ -382,8 +382,8 @@ func (as *APIService) SetLicenseModifier(hostname string, dbname string, license
 	return as.ApplyPatch(pf)
 }
 
-// DeleteLicenseModifier delete the modifier of a certain license
-func (as *APIService) DeleteLicenseModifier(hostname string, dbname string, licenseName string) utils.AdvancedErrorInterface {
+// DeleteOracleDatabaseLicenseModifier delete the modifier of a certain license
+func (as *APIService) DeleteOracleDatabaseLicenseModifier(hostname string, dbname string, licenseName string) utils.AdvancedErrorInterface {
 	//Find the patching function
 	pf, err := as.Database.FindPatchingFunction(hostname)
 	if err != nil {
@@ -434,7 +434,7 @@ func (as *APIService) DeleteLicenseModifier(hostname string, dbname string, lice
 	return as.ApplyPatch(pf)
 }
 
-// SearchLicenseModifiers search license modifiers
-func (as *APIService) SearchLicenseModifiers(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchLicenseModifiers(strings.Split(search, " "), sortBy, sortDesc, page, pageSize)
+// SearchOracleDatabaseLicenseModifiers search license modifiers
+func (as *APIService) SearchOracleDatabaseLicenseModifiers(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchOracleDatabaseLicenseModifiers(strings.Split(search, " "), sortBy, sortDesc, page, pageSize)
 }
