@@ -276,7 +276,7 @@ func TestGetOperatingSystemStats_FailInternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestGetTopUnusedInstanceResourceStats_Success(t *testing.T) {
+func TestGetTopUnusedOracleDatabaseInstanceResourceStats_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -301,11 +301,11 @@ func TestGetTopUnusedInstanceResourceStats_Success(t *testing.T) {
 	}
 
 	as.EXPECT().
-		GetTopUnusedInstanceResourceStats("Italy", "TST", 10, utils.P("2020-06-10T11:54:59Z")).
+		GetTopUnusedOracleDatabaseInstanceResourceStats("Italy", "TST", 10, utils.P("2020-06-10T11:54:59Z")).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTopUnusedInstanceResourceStats)
+	handler := http.HandlerFunc(ac.GetTopUnusedOracleDatabaseInstanceResourceStats)
 	req, err := http.NewRequest("GET", "/stats/top-unused-instance-resource?location=Italy&environment=TST&limit=10&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
@@ -315,7 +315,7 @@ func TestGetTopUnusedInstanceResourceStats_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 
-func TestGetTopUnusedInstanceResourceStats_FailUnprocessableEntity1(t *testing.T) {
+func TestGetTopUnusedOracleDatabaseInstanceResourceStats_FailUnprocessableEntity1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -327,7 +327,7 @@ func TestGetTopUnusedInstanceResourceStats_FailUnprocessableEntity1(t *testing.T
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTopUnusedInstanceResourceStats)
+	handler := http.HandlerFunc(ac.GetTopUnusedOracleDatabaseInstanceResourceStats)
 	req, err := http.NewRequest("GET", "/stats/top-unused-instance-resource?limit=sdfsdfsdf", nil)
 	require.NoError(t, err)
 
@@ -336,7 +336,7 @@ func TestGetTopUnusedInstanceResourceStats_FailUnprocessableEntity1(t *testing.T
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestGetTopUnusedInstanceResourceStats_FailUnprocessableEntity2(t *testing.T) {
+func TestGetTopUnusedOracleDatabaseInstanceResourceStats_FailUnprocessableEntity2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -348,7 +348,7 @@ func TestGetTopUnusedInstanceResourceStats_FailUnprocessableEntity2(t *testing.T
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTopUnusedInstanceResourceStats)
+	handler := http.HandlerFunc(ac.GetTopUnusedOracleDatabaseInstanceResourceStats)
 	req, err := http.NewRequest("GET", "/stats/top-unused-instance-resource?older-than=sdfsdfsdf", nil)
 	require.NoError(t, err)
 
@@ -357,7 +357,7 @@ func TestGetTopUnusedInstanceResourceStats_FailUnprocessableEntity2(t *testing.T
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestGetTopUnusedInstanceResourceStats_FailInternalServerError(t *testing.T) {
+func TestGetTopUnusedOracleDatabaseInstanceResourceStats_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -369,11 +369,11 @@ func TestGetTopUnusedInstanceResourceStats_FailInternalServerError(t *testing.T)
 	}
 
 	as.EXPECT().
-		GetTopUnusedInstanceResourceStats("", "", 15, utils.MAX_TIME).
+		GetTopUnusedOracleDatabaseInstanceResourceStats("", "", 15, utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTopUnusedInstanceResourceStats)
+	handler := http.HandlerFunc(ac.GetTopUnusedOracleDatabaseInstanceResourceStats)
 	req, err := http.NewRequest("GET", "/stats/top-unused-instance-resource", nil)
 	require.NoError(t, err)
 

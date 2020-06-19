@@ -44,16 +44,16 @@ type APIServiceInterface interface {
 	SearchClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// GetCluster return the cluster specified in the clusterName param
 	GetCluster(clusterName string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
-	// SearchAddms search addm
-	SearchAddms(search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
-	// SearchSegmentAdvisors search segment advisors
-	SearchSegmentAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
-	// SearchPatchAdvisors search patch advisors
-	SearchPatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) ([]map[string]interface{}, utils.AdvancedErrorInterface)
-	// SearchDatabases search databases
-	SearchDatabases(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
-	// SearchExadata search exadata
-	SearchExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// SearchOracleDatabaseAddms search addm
+	SearchOracleDatabaseAddms(search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
+	// SearchOracleDatabaseSegmentAdvisors search segment advisors
+	SearchOracleDatabaseSegmentAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
+	// SearchOracleDatabasePatchAdvisors search patch advisors
+	SearchOracleDatabasePatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) ([]map[string]interface{}, utils.AdvancedErrorInterface)
+	// SearchOracleDatabases search databases
+	SearchOracleDatabases(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
+	// SearchOracleExadata search exadata
+	SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// ListLicenses list licenses
 	ListLicenses(full bool, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetLicense return the license specified in the name param
@@ -62,8 +62,8 @@ type APIServiceInterface interface {
 	ListLocations(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface)
 	// ListEnvironments list environments
 	ListEnvironments(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface)
-	// SearchLicenseModifiers search license modifiers
-	SearchLicenseModifiers(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, utils.AdvancedErrorInterface)
+	// SearchOracleDatabaseLicenseModifiers search license modifiers
+	SearchOracleDatabaseLicenseModifiers(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 
 	// GetPatchingFunction return the patching function specified in the hostname param
 	GetPatchingFunction(hostname string) (interface{}, utils.AdvancedErrorInterface)
@@ -76,48 +76,48 @@ type APIServiceInterface interface {
 	GetOperatingSystemStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetTypeStats return a array containing the number of hosts per type
 	GetTypeStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
-	// GetTopUnusedInstanceResourceStats return a array containing top unused instance resource by workload
-	GetTopUnusedInstanceResourceStats(location string, environment string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
-	// GetDatabaseEnvironmentStats return a array containing the number of databases per environment
-	GetDatabaseEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
-	// GetDatabaseHighReliabilityStats return a array containing the number of databases per high-reliability status
-	GetDatabaseHighReliabilityStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
-	// GetDatabaseVersionStats return a array containing the number of databases per version
-	GetDatabaseVersionStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
-	// GetTopReclaimableDatabaseStats return a array containing the total sum of reclaimable of segments advisors of the top reclaimable databases
-	GetTopReclaimableDatabaseStats(location string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetTopUnusedOracleDatabaseInstanceResourceStats return a array containing top unused instance resource by workload
+	GetTopUnusedOracleDatabaseInstanceResourceStats(location string, environment string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetOracleDatabaseEnvironmentStats return a array containing the number of databases per environment
+	GetOracleDatabaseEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetOracleDatabaseHighReliabilityStats return a array containing the number of databases per high-reliability status
+	GetOracleDatabaseHighReliabilityStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetOracleDatabaseVersionStats return a array containing the number of databases per version
+	GetOracleDatabaseVersionStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetTopReclaimableOracleDatabaseStats return a array containing the total sum of reclaimable of segments advisors of the top reclaimable databases
+	GetTopReclaimableOracleDatabaseStats(location string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetTotalTechnologiesComplianceStats return the total compliance of all technologie
 	GetTotalTechnologiesComplianceStats(location string, environment string, olderThan time.Time) (map[string]interface{}, utils.AdvancedErrorInterface)
-	// GetDatabasePatchStatusStats return a array containing the number of databases per patch status
-	GetDatabasePatchStatusStats(location string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
-	// GetTopWorkloadDatabaseStats return a array containing top databases by workload
-	GetTopWorkloadDatabaseStats(location string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
-	// GetDatabaseDataguardStatusStats return a array containing the number of databases per dataguard status
-	GetDatabaseDataguardStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
-	// GetDatabaseRACStatusStats return a array containing the number of databases per RAC status
-	GetDatabaseRACStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
-	// GetDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
-	GetDatabaseArchivelogStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
-	// GetTotalDatabaseWorkStats return the total work of databases
-	GetTotalDatabaseWorkStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
-	// GetTotalDatabaseMemorySizeStats return the total of memory size of databases
-	GetTotalDatabaseMemorySizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
-	// GetTotalDatabaseDatafileSizeStats return the total size of datafiles of databases
-	GetTotalDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
-	// GetTotalDatabaseSegmentSizeStats return the total size of segments of databases
-	GetTotalDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
-	// GetDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
-	GetDatabaseLicenseComplianceStatusStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
-	// GetTotalExadataMemorySizeStats return the total size of memory of exadata
-	GetTotalExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
-	// GetTotalExadataCPUStats return the total cpu of exadata
-	GetTotalExadataCPUStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
-	// GetAverageExadataStorageUsageStats return the average usage of cell disks of exadata
-	GetAverageExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
-	// GetExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
-	GetExadataStorageErrorCountStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
-	// GetExadataPatchStatusStats return a array containing the number of exadata per patch status
-	GetExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetOracleDatabasePatchStatusStats return a array containing the number of databases per patch status
+	GetOracleDatabasePatchStatusStats(location string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetTopWorkloadOracleDatabaseStats return a array containing top databases by workload
+	GetTopWorkloadOracleDatabaseStats(location string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetOracleDatabaseDataguardStatusStats return a array containing the number of databases per dataguard status
+	GetOracleDatabaseDataguardStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetOracleDatabaseRACStatusStats return a array containing the number of databases per RAC status
+	GetOracleDatabaseRACStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetOracleDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
+	GetOracleDatabaseArchivelogStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetTotalOracleDatabaseWorkStats return the total work of databases
+	GetTotalOracleDatabaseWorkStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
+	// GetTotalOracleDatabaseMemorySizeStats return the total of memory size of databases
+	GetTotalOracleDatabaseMemorySizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
+	// GetTotalOracleDatabaseDatafileSizeStats return the total size of datafiles of databases
+	GetTotalOracleDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
+	// GetTotalOracleDatabaseSegmentSizeStats return the total size of segments of databases
+	GetTotalOracleDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
+	// GetOracleDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
+	GetOracleDatabaseLicenseComplianceStatusStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
+	// GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata
+	GetTotalOracleExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
+	// GetTotalOracleExadataCPUStats return the total cpu of exadata
+	GetTotalOracleExadataCPUStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
+	// GetAverageOracleExadataStorageUsageStats return the average usage of cell disks of exadata
+	GetAverageOracleExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
+	// GetOracleExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
+	GetOracleExadataStorageErrorCountStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// GetOracleExadataPatchStatusStats return a array containing the number of exadata per patch status
+	GetOracleExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetDefaultDatabaseTags return the default list of database tags from configuration
 	GetDefaultDatabaseTags() ([]string, utils.AdvancedErrorInterface)
 	// GetErcoleFeatures return a map of active/inactive features
@@ -137,14 +137,14 @@ type APIServiceInterface interface {
 	// DeletePatchingFunction delete the patching function of a host
 	DeletePatchingFunction(hostname string) utils.AdvancedErrorInterface
 
-	// AddTagToDatabase add the tag to the database if it hasn't the tag
-	AddTagToDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface
-	// DeleteTagOfDatabase delete the tag from the database if it hasn't the tag
-	DeleteTagOfDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface
-	// SetLicenseModifier set the value of certain license to newValue
-	SetLicenseModifier(hostname string, dbname string, licenseName string, newValue int) utils.AdvancedErrorInterface
-	// DeleteLicenseModifier delete the modifier of a certain license
-	DeleteLicenseModifier(hostname string, dbname string, licenseName string) utils.AdvancedErrorInterface
+	// AddTagToOracleDatabase add the tag to the database if it hasn't the tag
+	AddTagToOracleDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface
+	// DeleteTagOfOracleDatabase delete the tag from the database if it hasn't the tag
+	DeleteTagOfOracleDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface
+	// SetOracleDatabaseLicenseModifier set the value of certain license to newValue
+	SetOracleDatabaseLicenseModifier(hostname string, dbname string, licenseName string, newValue int) utils.AdvancedErrorInterface
+	// DeleteOracleDatabaseLicenseModifier delete the modifier of a certain license
+	DeleteOracleDatabaseLicenseModifier(hostname string, dbname string, licenseName string) utils.AdvancedErrorInterface
 	// AckAlert ack the specified alert
 	AckAlert(id primitive.ObjectID) utils.AdvancedErrorInterface
 	// ArchiveHost archive the specified host
