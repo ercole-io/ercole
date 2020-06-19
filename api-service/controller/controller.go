@@ -31,30 +31,30 @@ type APIControllerInterface interface {
 	SearchHosts(w http.ResponseWriter, r *http.Request)
 	// ListTechnologies returns the list of Technologies with some stats using the filters in the request
 	ListTechnologies(w http.ResponseWriter, r *http.Request)
-	// SearchDatabases search databases data using the filters in the request
-	SearchDatabases(w http.ResponseWriter, r *http.Request)
+	// SearchOracleDatabases search databases data using the filters in the request
+	SearchOracleDatabases(w http.ResponseWriter, r *http.Request)
 	// SearchClusters search clusters data using the filters in the request
 	SearchClusters(w http.ResponseWriter, r *http.Request)
 	// GetCluster get cluster data using the filters in the request
 	GetCluster(w http.ResponseWriter, r *http.Request)
-	// SearchAddms search addms data using the filters in the request
-	SearchAddms(w http.ResponseWriter, r *http.Request)
-	// SearchSegmentAdvisors search segment advisors data using the filters in the request
-	SearchSegmentAdvisors(w http.ResponseWriter, r *http.Request)
-	// SearchPatchAdvisors search patch advisors data using the filters in the request
-	SearchPatchAdvisors(w http.ResponseWriter, r *http.Request)
+	// SearchOracleDatabaseAddms search addms data using the filters in the request
+	SearchOracleDatabaseAddms(w http.ResponseWriter, r *http.Request)
+	// SearchOracleDatabaseSegmentAdvisors search segment advisors data using the filters in the request
+	SearchOracleDatabaseSegmentAdvisors(w http.ResponseWriter, r *http.Request)
+	// SearchOracleDatabasePatchAdvisors search patch advisors data using the filters in the request
+	SearchOracleDatabasePatchAdvisors(w http.ResponseWriter, r *http.Request)
 	// GetHost return all informations about the host requested in the id path variable
 	GetHost(w http.ResponseWriter, r *http.Request)
 	// SearchAlerts search alerts using the filters in the request
 	SearchAlerts(w http.ResponseWriter, r *http.Request)
-	// SearchExadata search exadata data using the filters in the request
-	SearchExadata(w http.ResponseWriter, r *http.Request)
+	// SearchOracleExadata search exadata data using the filters in the request
+	SearchOracleExadata(w http.ResponseWriter, r *http.Request)
 	// ListLicenses list licenses using the filters in the request
 	ListLicenses(w http.ResponseWriter, r *http.Request)
 	// GetLicense return a certain license asked in the request
 	GetLicense(w http.ResponseWriter, r *http.Request)
-	// SearchLicenseModifiers search a license modifier using the filters in the request
-	SearchLicenseModifiers(w http.ResponseWriter, r *http.Request)
+	// SearchOracleDatabaseLicenseModifiers search a license modifier using the filters in the request
+	SearchOracleDatabaseLicenseModifiers(w http.ResponseWriter, r *http.Request)
 
 	// GetPatchingFunction return all'informations about the patching function of the host requested in the hostnmae path variable
 	GetPatchingFunction(w http.ResponseWriter, r *http.Request)
@@ -70,48 +70,48 @@ type APIControllerInterface interface {
 	GetTypeStats(w http.ResponseWriter, r *http.Request)
 	// GetOperatingSystemStats return all statistics about the operating systems of the hosts using the filters in the request
 	GetOperatingSystemStats(w http.ResponseWriter, r *http.Request)
-	// GetTopUnusedInstanceResourceStats return top unused instance resource by databases work using the filters in the request
-	GetTopUnusedInstanceResourceStats(w http.ResponseWriter, r *http.Request)
-	// GetDatabaseEnvironmentStats return all statistics about the environments of the databases using the filters in the request
-	GetDatabaseEnvironmentStats(w http.ResponseWriter, r *http.Request)
+	// GetTopOracleDatabaseUnusedInstanceResourceStats return top unused instance resource by databases work using the filters in the request
+	GetTopUnusedOracleDatabaseInstanceResourceStats(w http.ResponseWriter, r *http.Request)
+	// GetOracleDatabaseEnvironmentStats return all statistics about the environments of the databases using the filters in the request
+	GetOracleDatabaseEnvironmentStats(w http.ResponseWriter, r *http.Request)
 	// GetDatabaseHighReliabilityStats return all statistics about the high-reliability status of the databases using the filters in the request
-	GetDatabaseHighReliabilityStats(w http.ResponseWriter, r *http.Request)
-	// GetDatabaseVersionStats return all statistics about the versions of the databases using the filters in the request
-	GetDatabaseVersionStats(w http.ResponseWriter, r *http.Request)
-	// GetTopReclaimableDatabaseStats return top databases by reclaimable segment advisors using the filters in the request
-	GetTopReclaimableDatabaseStats(w http.ResponseWriter, r *http.Request)
+	GetOracleDatabaseHighReliabilityStats(w http.ResponseWriter, r *http.Request)
+	// GetOracleDatabaseVersionStats return all statistics about the versions of the databases using the filters in the request
+	GetOracleDatabaseVersionStats(w http.ResponseWriter, r *http.Request)
+	// GetTopReclaimableOracleDatabaseStats return top databases by reclaimable segment advisors using the filters in the request
+	GetTopReclaimableOracleDatabaseStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalTechnologiesComplianceStats return the total compliance of all technologies using the filters in the request
 	GetTotalTechnologiesComplianceStats(w http.ResponseWriter, r *http.Request)
-	// GetDatabasePatchStatusStats return all statistics about the patch status of the databases using the filters in the request
-	GetDatabasePatchStatusStats(w http.ResponseWriter, r *http.Request)
-	// GetTopWorkloadDatabaseStats return top databases by workload advisors using the filters in the request
-	GetTopWorkloadDatabaseStats(w http.ResponseWriter, r *http.Request)
-	// GetDatabaseDataguardStatusStats return all statistics about the dataguard status of the databases using the filters in the request
-	GetDatabaseDataguardStatusStats(w http.ResponseWriter, r *http.Request)
-	// GetDatabaseRACStatusStats return all statistics about the RAC status of the databases using the filters in the request
-	GetDatabaseRACStatusStats(w http.ResponseWriter, r *http.Request)
+	// GetOracleDatabasePatchStatusStats return all statistics about the patch status of the databases using the filters in the request
+	GetOracleDatabasePatchStatusStats(w http.ResponseWriter, r *http.Request)
+	// GetTopWorkloadOracleDatabaseStats return top databases by workload advisors using the filters in the request
+	GetTopWorkloadOracleDatabaseStats(w http.ResponseWriter, r *http.Request)
+	// GetOracleDatabaseDataguardStatusStats return all statistics about the dataguard status of the databases using the filters in the request
+	GetOracleDatabaseDataguardStatusStats(w http.ResponseWriter, r *http.Request)
+	// GetOracleDatabaseRACStatusStats return all statistics about the RAC status of the databases using the filters in the request
+	GetOracleDatabaseRACStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetDatabasArchivelogStatusStats return all statistics about the archivelog status of the databases using the filters in the request
-	GetDatabaseArchivelogStatusStats(w http.ResponseWriter, r *http.Request)
-	// GetTotalDatabaseWorkStats return the total work of databases using the filters in the request
-	GetTotalDatabaseWorkStats(w http.ResponseWriter, r *http.Request)
-	// GetTotalDatabaseMemorySizeStats return the total size of memory of databases using the filters in the request
-	GetTotalDatabaseMemorySizeStats(w http.ResponseWriter, r *http.Request)
-	// GetTotalDatabaseDatafileSizeStats return the total size of datafiles of databases using the filters in the request
-	GetTotalDatabaseDatafileSizeStats(w http.ResponseWriter, r *http.Request)
-	// GetTotalDatabaseSegmentSizeStats return the total size of segments of databases using the filters in the request
-	GetTotalDatabaseSegmentSizeStats(w http.ResponseWriter, r *http.Request)
-	// GetDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases using the filters in the request
-	GetDatabaseLicenseComplianceStatusStats(w http.ResponseWriter, r *http.Request)
-	// GetTotalExadataMemorySizeStats return the total size of memory of exadata using the filters in the request
-	GetTotalExadataMemorySizeStats(w http.ResponseWriter, r *http.Request)
-	// GetTotalExadataCPUStats return the total cpu of exadata using the filters in the request
-	GetTotalExadataCPUStats(w http.ResponseWriter, r *http.Request)
-	// GetAverageExadataStorageUsageStats return the average usage of cell disks of exadata using the filters in the request
-	GetAverageExadataStorageUsageStats(w http.ResponseWriter, r *http.Request)
-	// GetExadataStorageErrorCountStatusStats return all statistics about the ErrorCount status of the storage of the exadata using the filters in the request
-	GetExadataStorageErrorCountStatusStats(w http.ResponseWriter, r *http.Request)
-	// GetExadataPatchStatusStats return all statistics about the patch status of the exadata using the filters in the request
-	GetExadataPatchStatusStats(w http.ResponseWriter, r *http.Request)
+	GetOracleDatabaseArchivelogStatusStats(w http.ResponseWriter, r *http.Request)
+	// GetTotalOracleDatabaseWorkStats return the total work of databases using the filters in the request
+	GetTotalOracleDatabaseWorkStats(w http.ResponseWriter, r *http.Request)
+	// GetTotalOracleDatabaseMemorySizeStats return the total size of memory of databases using the filters in the request
+	GetTotalOracleDatabaseMemorySizeStats(w http.ResponseWriter, r *http.Request)
+	// GetTotalOracleDatabaseDatafileSizeStats return the total size of datafiles of databases using the filters in the request
+	GetTotalOracleDatabaseDatafileSizeStats(w http.ResponseWriter, r *http.Request)
+	// GetTotalOracleDatabaseSegmentSizeStats return the total size of segments of databases using the filters in the request
+	GetTotalOracleDatabaseSegmentSizeStats(w http.ResponseWriter, r *http.Request)
+	// GetOracleDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases using the filters in the request
+	GetOracleDatabaseLicenseComplianceStatusStats(w http.ResponseWriter, r *http.Request)
+	// GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata using the filters in the request
+	GetTotalOracleExadataMemorySizeStats(w http.ResponseWriter, r *http.Request)
+	// GetTotalOracleExadataCPUStats return the total cpu of exadata using the filters in the request
+	GetTotalOracleExadataCPUStats(w http.ResponseWriter, r *http.Request)
+	// GetAverageOracleExadataStorageUsageStats return the average usage of cell disks of exadata using the filters in the request
+	GetAverageOracleExadataStorageUsageStats(w http.ResponseWriter, r *http.Request)
+	// GetOracleExadataStorageErrorCountStatusStats return all statistics about the ErrorCount status of the storage of the exadata using the filters in the request
+	GetOracleExadataStorageErrorCountStatusStats(w http.ResponseWriter, r *http.Request)
+	// GetOracleExadataPatchStatusStats return all statistics about the patch status of the exadata using the filters in the request
+	GetOracleExadataPatchStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetDefaultDatabaseTags return the default list of database tags from configuration
 	GetDefaultDatabaseTags(w http.ResponseWriter, r *http.Request)
 	// GetErcoleFeatures return a map of active/inactive features
@@ -130,14 +130,14 @@ type APIControllerInterface interface {
 	SetPatchingFunction(w http.ResponseWriter, r *http.Request)
 	// DeletePatchingFunction remove the patching function of a host specified in the hostname path variable
 	DeletePatchingFunction(w http.ResponseWriter, r *http.Request)
-	// AddTagToDatabase add a tag to the database if it hasn't the tag
-	AddTagToDatabase(w http.ResponseWriter, r *http.Request)
-	// DeleteTagOfDatabase remove a certain tag from a database if it has the tag
-	DeleteTagOfDatabase(w http.ResponseWriter, r *http.Request)
-	// SetLicenseModifier set the license modifier of specified license/db/host in the request to the value in the body
-	SetLicenseModifier(w http.ResponseWriter, r *http.Request)
-	// DeleteLicenseModifier delete the license modifier of specified license/db/host in the request
-	DeleteLicenseModifier(w http.ResponseWriter, r *http.Request)
+	// AddTagToOracleDatabase add a tag to the database if it hasn't the tag
+	AddTagToOracleDatabase(w http.ResponseWriter, r *http.Request)
+	// DeleteTagOfOracleDatabase remove a certain tag from a database if it has the tag
+	DeleteTagOfOracleDatabase(w http.ResponseWriter, r *http.Request)
+	// SetOracleDatabaseLicenseModifier set the license modifier of specified license/db/host in the request to the value in the body
+	SetOracleDatabaseLicenseModifier(w http.ResponseWriter, r *http.Request)
+	// DeleteOracleDatabaseLicenseModifier delete the license modifier of specified license/db/host in the request
+	DeleteOracleDatabaseLicenseModifier(w http.ResponseWriter, r *http.Request)
 	// AckAlert ack the specified alert in the request
 	AckAlert(w http.ResponseWriter, r *http.Request)
 	// ArchiveHost archive the specified host in the request

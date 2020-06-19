@@ -189,7 +189,7 @@ func (m *MongodbSuite) TestGetOperatingSystemStats() {
 	})
 }
 
-func (m *MongodbSuite) TestGetTopUnusedInstanceResourceStats() {
+func (m *MongodbSuite) TestGetTopUnusedOracleDatabaseInstanceResourceStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_04.json"))
@@ -197,7 +197,7 @@ func (m *MongodbSuite) TestGetTopUnusedInstanceResourceStats() {
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_12.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
-		out, err := m.db.GetTopUnusedInstanceResourceStats("France", "", 15, utils.MAX_TIME)
+		out, err := m.db.GetTopUnusedOracleDatabaseInstanceResourceStats("France", "", 15, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
@@ -205,7 +205,7 @@ func (m *MongodbSuite) TestGetTopUnusedInstanceResourceStats() {
 	})
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
-		out, err := m.db.GetTopUnusedInstanceResourceStats("", "FOOBAR", 15, utils.MAX_TIME)
+		out, err := m.db.GetTopUnusedOracleDatabaseInstanceResourceStats("", "FOOBAR", 15, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
@@ -213,7 +213,7 @@ func (m *MongodbSuite) TestGetTopUnusedInstanceResourceStats() {
 	})
 
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
-		out, err := m.db.GetTopUnusedInstanceResourceStats("", "", 15, utils.MIN_TIME)
+		out, err := m.db.GetTopUnusedOracleDatabaseInstanceResourceStats("", "", 15, utils.MIN_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
@@ -221,7 +221,7 @@ func (m *MongodbSuite) TestGetTopUnusedInstanceResourceStats() {
 	})
 
 	m.T().Run("should_limit_the_result", func(t *testing.T) {
-		out, err := m.db.GetTopUnusedInstanceResourceStats("", "", 1, utils.MAX_TIME)
+		out, err := m.db.GetTopUnusedOracleDatabaseInstanceResourceStats("", "", 1, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
@@ -235,7 +235,7 @@ func (m *MongodbSuite) TestGetTopUnusedInstanceResourceStats() {
 	})
 
 	m.T().Run("should_return_all_results", func(t *testing.T) {
-		out, err := m.db.GetTopUnusedInstanceResourceStats("", "", 15, utils.MAX_TIME)
+		out, err := m.db.GetTopUnusedOracleDatabaseInstanceResourceStats("", "", 15, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{

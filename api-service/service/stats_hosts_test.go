@@ -177,7 +177,7 @@ func TestGetOperatingSystemStats_Fail(t *testing.T) {
 	assert.Equal(t, aerrMock, err)
 }
 
-func TestGetTopUnusedInstanceResourceStats_Success(t *testing.T) {
+func TestGetTopUnusedOracleDatabaseInstanceResourceStats_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -198,11 +198,11 @@ func TestGetTopUnusedInstanceResourceStats_Success(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().GetTopUnusedInstanceResourceStats(
+	db.EXPECT().GetTopUnusedOracleDatabaseInstanceResourceStats(
 		"Italy", "PROD", 10, utils.P("2019-12-05T14:02:03Z"),
 	).Return(expectedRes, nil).Times(1)
 
-	res, err := as.GetTopUnusedInstanceResourceStats(
+	res, err := as.GetTopUnusedOracleDatabaseInstanceResourceStats(
 		"Italy", "PROD", 10, utils.P("2019-12-05T14:02:03Z"),
 	)
 
@@ -210,7 +210,7 @@ func TestGetTopUnusedInstanceResourceStats_Success(t *testing.T) {
 	assert.Equal(t, expectedRes, res)
 }
 
-func TestGetTopUnusedInstanceResourceStats_Fail(t *testing.T) {
+func TestGetTopUnusedOracleDatabaseInstanceResourceStats_Fail(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -218,11 +218,11 @@ func TestGetTopUnusedInstanceResourceStats_Fail(t *testing.T) {
 		Database: db,
 	}
 
-	db.EXPECT().GetTopUnusedInstanceResourceStats(
+	db.EXPECT().GetTopUnusedOracleDatabaseInstanceResourceStats(
 		"Italy", "PROD", 10, utils.P("2019-12-05T14:02:03Z"),
 	).Return(nil, aerrMock).Times(1)
 
-	res, err := as.GetTopUnusedInstanceResourceStats(
+	res, err := as.GetTopUnusedOracleDatabaseInstanceResourceStats(
 		"Italy", "PROD", 10, utils.P("2019-12-05T14:02:03Z"),
 	)
 
