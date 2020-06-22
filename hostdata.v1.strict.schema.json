@@ -1141,9 +1141,9 @@
                                                                         }
                                                                     }
                                                                 ]
-                                                            },
-                                                            "additionalProperties": false
-                                                        }
+                                                            }
+                                                        },
+                                                        "additionalProperties": false
                                                     }
                                                 }
                                             }
