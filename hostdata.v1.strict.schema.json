@@ -1055,7 +1055,7 @@
                                                                         "type": "null"
                                                                     },
                                                                     {
-                                                                        "type": "number"
+                                                                        "type": "string"
                                                                     }
                                                                 ]
                                                             },
@@ -1065,7 +1065,7 @@
                                                                         "type": "null"
                                                                     },
                                                                     {
-                                                                        "type": "number"
+                                                                        "type": "string"
                                                                     }
                                                                 ]
                                                             },
@@ -1075,7 +1075,7 @@
                                                                         "type": "null"
                                                                     },
                                                                     {
-                                                                        "type": "number"
+                                                                        "type": "string"
                                                                     }
                                                                 ]
                                                             },
@@ -1085,7 +1085,7 @@
                                                                         "type": "null"
                                                                     },
                                                                     {
-                                                                        "type": "number"
+                                                                        "type": "string"
                                                                     }
                                                                 ]
                                                             },
