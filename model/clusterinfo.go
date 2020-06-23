@@ -82,11 +82,11 @@ var ClusterInfoBsonValidatorRules = bson.M{
 		},
 		"CPU": bson.M{
 			"bsonType": "number",
-			"minimum":  1,
+			"minimum":  0,
 		},
 		"Sockets": bson.M{
 			"bsonType": "number",
-			"minimum":  1,
+			"minimum":  0,
 		},
 		"VMs": bson.M{
 			"bsonType": "array",

@@ -75,7 +75,7 @@ var VMInfoBsonValidatorRules = bson.M{
 		"CappedCPU": bson.M{
 			"bsonType": "bool",
 		},
-		"PhysicalHost": bson.M{
+		"VirtualizationNode": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 253,
