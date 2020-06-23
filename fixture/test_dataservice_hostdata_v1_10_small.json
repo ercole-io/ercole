@@ -1,0 +1,52 @@
+{
+    "Hostname": "test-small",
+    "Environment": "TST",
+    "Location": "Germany",
+    "Info": {
+        "Hostname": "test-small",
+        "CPUModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+        "CPUCores": 1,
+        "CPUThreads": 2,
+        "Kernel": "3.10.0-514.el7.x86_64",
+        "OS": "Red Hat Enterprise Linux",
+        "MemoryTotal": 3,
+        "SwapTotal": 1,
+        "CPUFrequency": "2.53GHz",
+        "CPUSockets": 2,
+        "CoresPerSocket": 1,
+        "ThreadsPerCore": 2,
+        "KernelVersion": "3.10.0-514.el7.x86_64",
+        "OSVersion": "7.6",
+        "HardwareAbstraction": "VIRT",
+        "HardwareAbstractionTechnology": "VMWARE"
+    },
+    "AgentVersion": "latest",
+    "Tags": [],
+    "SchemaVersion": 1,
+    "ClusterMembershipStatus": {
+        "OracleClusterware": false,
+        "VeritasClusterServer": false,
+        "SunCluster": false,
+        "HACMP": false
+    },
+    "Filesystems": [
+        {
+            "Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+            "Size": 13958643712,
+            "MountedOn": "/",
+            "AvailableSpace": 5798205849,
+            "UsedSpace": 7194070220,
+            "Type": "ext4"
+        },
+        {
+            "Filesystem": "/dev/sda1",
+            "Size": 511705088,
+            "MountedOn": "/boot",
+            "AvailableSpace": 335544320,
+            "UsedSpace": 139460608,
+            "Type": "ext4"
+        }
+    ],
+    "Features": {},
+    "Clusters": null
+}
