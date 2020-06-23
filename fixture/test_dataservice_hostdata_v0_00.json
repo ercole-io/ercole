@@ -32,7 +32,7 @@
 			"Filesystem": "/dev/mapper/rootvg-root",
 			"FsType": "ext4",
 			"Size": "22G",
-			"Used": "3,5G",
+			"Used": "3.5G",
 			"Available": "17G",
 			"UsedPerc": "18%",
 			"MountedOn": "/"

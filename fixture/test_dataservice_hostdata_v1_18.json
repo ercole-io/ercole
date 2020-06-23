@@ -1,550 +1,550 @@
 {
-    "AgentVersion": "latest",
-    "Tags": [],
-    "Info": {
-      "CPUSockets": 8,
-      "KernelVersion": "5.11",
-      "MemoryTotal": 8,
-      "CPUFrequency": "1700 MHz",
-      "CPUThreads": 8,
-      "ThreadsPerCore": 2,
-      "CPUCores": 4,
-      "Kernel": "SunOS",
-      "OSVersion": "11.4.0.15.0",
-      "OS": "Solaris",
-      "HardwareAbstractionTechnology": "PH",
-      "HardwareAbstraction": "PH",
-      "CoresPerSocket": 1,
-      "CPUModel": "Intel Core Processor (Broadwell) @ 1700 MHz",
-      "SwapTotal": 2048,
-      "Hostname": "ercsoldbx"
-    },
-    "Environment": "PROD",
-    "SchemaVersion": 1,
-    "Hostname": "ercsoldbx",
-    "Features": {
-      "Oracle": {
-        "Database": {
-          "Databases": [
-            {
-              "MemoryTarget": 0,
-              "PDBs": [],
-              "DatafileSize": 3,
-              "Name": "ERCSOL19",
-              "InstanceNumber": 1,
-              "PSUs": [
-                {
-                  "Description": "Database Release Update : 19.5.0.0.191015 (30125133)",
-                  "Date": "2019-10-15"
-                }
-              ],
-              "Work": 1,
-              "NCharset": "AL16UTF16",
-              "Elapsed": 12060.69,
-              "PGATarget": 0.253,
-              "DailyCPUUsage": 0,
-              "SGATarget": 0.762,
-              "IsCDB": false,
-              "Version": "19.0.0.0.0 Enterprise Edition",
-              "ADDMs": [
-                {
-                  "Benefit": 57.68,
-                  "Recommendation": "DB Configuration",
-                  "Action": "Increase the size of the SGA by setting the parameter \"sga_target\" to 975 M.",
-                  "Finding": "The SGA was inadequately sized, causing additional I/O or hard parses."
-                }
-              ],
-              "CPUCount": 8,
-              "Dataguard": false,
-              "Schemas": [
-                {
-                  "Tables": 0,
-                  "LOB": 0,
-                  "Total": 0,
-                  "User": "GSMROOTUSER",
-                  "Indexes": 0
-                },
-                {
-                  "Tables": 0,
-                  "User": "SYS$UMF",
-                  "Indexes": 0,
-                  "LOB": 0,
-                  "Total": 0
-                },
-                {
-                  "Indexes": 0,
-                  "User": "GGSYS",
-                  "Total": 0,
-                  "LOB": 0,
-                  "Tables": 0
-                },
-                {
-                  "Tables": 0,
-                  "Total": 0,
-                  "LOB": 0,
-                  "User": "REMOTE_SCHEDULER_AGENT",
-                  "Indexes": 0
-                },
-                {
-                  "User": "SYSRAC",
-                  "Indexes": 0,
-                  "LOB": 0,
-                  "Total": 0,
-                  "Tables": 0
-                },
-                {
-                  "Tables": 0,
-                  "User": "HR",
-                  "Indexes": 1,
-                  "Total": 2,
-                  "LOB": 0
-                },
-                {
-                  "Tables": 0,
-                  "Total": 0,
-                  "LOB": 0,
-                  "User": "DBSFWUSER",
-                  "Indexes": 0
-                }
-              ],
-              "BlockSize": 8192,
-              "Allocated": 129,
-              "Services": [],
-              "Tablespaces": [
-                {
-                  "UsedPerc": 2.89,
-                  "Used": 945.9375,
-                  "Total": 950,
-                  "MaxSize": 32767.9844,
-                  "Name": "SYSTEM",
-                  "Status": "ONLINE"
-                },
-                {
-                  "Used": 1.6875,
-                  "Total": 5,
-                  "Name": "USERS",
-                  "Status": "ONLINE",
-                  "MaxSize": 32767.9844,
-                  "UsedPerc": 0.01
-                },
-                {
-                  "Total": 115,
-                  "Used": 18.3125,
-                  "MaxSize": 32767.9844,
-                  "Name": "UNDOTBS1",
-                  "Status": "ONLINE",
-                  "UsedPerc": 0.06
-                },
-                {
-                  "Used": 962.6875,
-                  "Total": 1030,
-                  "Name": "SYSAUX",
-                  "Status": "ONLINE",
-                  "MaxSize": 32767.9844,
-                  "UsedPerc": 2.94
-                }
-              ],
-              "FeatureUsageStats": [
-                {
-                  "Product": "Diagnostics Pack",
-                  "LastUsageDate": "2020-06-18T12:04:29Z",
-                  "ExtraFeatureInfo": "",
-                  "CurrentlyUsed": false,
-                  "FirstUsageDate": "2020-06-17T11:51:08Z",
-                  "DetectedUsages": 17,
-                  "Feature": "ADDM"
-                },
-                {
-                  "ExtraFeatureInfo": "",
-                  "LastUsageDate": "2020-06-18T12:04:29Z",
-                  "Product": "Diagnostics Pack",
-                  "Feature": "AWR Report",
-                  "CurrentlyUsed": false,
-                  "FirstUsageDate": "2020-06-17T11:51:08Z",
-                  "DetectedUsages": 17
-                }
-              ],
-              "Status": "OPEN",
-              "Charset": "AL32UTF8",
-              "Licenses": [
-                {
-                  "Name": "Oracle EXE",
-                  "Count": 0
-                },
-                {
-                  "Name": "Oracle ENT",
-                  "Count": 2
-                },
-                {
-                  "Name": "Oracle STD",
-                  "Count": 0
-                },
-                {
-                  "Name": "WebLogic Server Management Pack Enterprise Edition",
-                  "Count": 0
-                },
-                {
-                  "Name": "Tuning Pack",
-                  "Count": 0
-                },
-                {
-                  "Name": "Spatial and Graph",
-                  "Count": 0
-                },
-                {
-                  "Count": 0,
-                  "Name": "Secure Backup"
-                },
-                {
-                  "Name": "Real Application Testing",
-                  "Count": 0
-                },
-                {
-                  "Count": 0,
-                  "Name": "Real Application Clusters"
-                },
-                {
-                  "Name": "Real Application Clusters One Node",
-                  "Count": 0
-                },
-                {
-                  "Name": "RAC or RAC One Node",
-                  "Count": 0
-                },
-                {
-                  "Name": "Provisioning and Patch Automation Pack",
-                  "Count": 0
-                },
-                {
-                  "Name": "Provisioning and Patch Automation Pack for Database",
-                  "Count": 0
-                },
-                {
-                  "Count": 0,
-                  "Name": "Pillar Storage"
-                },
-                {
-                  "Count": 0,
-                  "Name": "Partitioning"
-                },
-                {
-                  "Count": 0,
-                  "Name": "OLAP"
-                },
-                {
-                  "Count": 0,
-                  "Name": "Multitenant"
-                },
-                {
-                  "Count": 0,
-                  "Name": "Label Security"
-                },
-                {
-                  "Count": 0,
-                  "Name": "HW"
-                },
-                {
-                  "Name": "GoldenGate",
-                  "Count": 0
-                },
-                {
-                  "Count": 0,
-                  "Name": "Exadata"
-                },
-                {
-                  "Count": 8,
-                  "Name": "Diagnostics Pack"
-                },
-                {
-                  "Name": "Database Vault",
-                  "Count": 0
-                },
-                {
-                  "Name": "Database In-Memory",
-                  "Count": 0
-                },
-                {
-                  "Count": 0,
-                  "Name": "Database Gateway"
-                },
-                {
-                  "Count": 0,
-                  "Name": "Data Masking Pack"
-                },
-                {
-                  "Name": "Configuration Management Pack for Oracle Database",
-                  "Count": 0
-                },
-                {
-                  "Count": 0,
-                  "Name": "Change Management Pack"
-                },
-                {
-                  "Name": "Advanced Security",
-                  "Count": 0
-                },
-                {
-                  "Name": "Advanced Compression",
-                  "Count": 0
-                },
-                {
-                  "Name": "Advanced Analytics",
-                  "Count": 0
-                },
-                {
-                  "Name": "Active Data Guard",
-                  "Count": 0
-                },
-                {
-                  "Name": "Active Data Guard or Real Application Clusters",
-                  "Count": 0
-                }
-              ],
-              "Patches": [
-                {
-                  "Action": "APPLY",
-                  "Version": "19.0.0.0.0",
-                  "Description": "Database Release Update : 19.5.0.0.191015 (30125133)",
-                  "Date": "2020-05-28",
-                  "PatchID": 30125133
-                },
-                {
-                  "Description": "Database Release Update : 19.5.0.0.191015 (30125133)",
-                  "Action": "APPLY",
-                  "Version": "19.0.0.0.0",
-                  "PatchID": 30125133,
-                  "Date": "2020-05-28"
-                }
-              ],
-              "SegmentsSize": 2,
-              "Backups": [],
-              "Archivelog": false,
-              "Platform": "Solaris Operating System (x86-64)",
-              "DBTime": 17.61,
-              "ASM": false,
-              "SGAMaxSize": 0.762,
-              "SegmentAdvisors": [],
-              "UniqueName": "ERCSOL19"
-            }
-          ]
-        }
+  "AgentVersion": "latest",
+  "Tags": [],
+  "Info": {
+    "CPUSockets": 8,
+    "KernelVersion": "5.11",
+    "MemoryTotal": 8,
+    "CPUFrequency": "1700 MHz",
+    "CPUThreads": 8,
+    "ThreadsPerCore": 2,
+    "CPUCores": 4,
+    "Kernel": "SunOS",
+    "OSVersion": "11.4.0.15.0",
+    "OS": "Solaris",
+    "HardwareAbstractionTechnology": "PH",
+    "HardwareAbstraction": "PH",
+    "CoresPerSocket": 1,
+    "CPUModel": "Intel Core Processor (Broadwell) @ 1700 MHz",
+    "SwapTotal": 2048,
+    "Hostname": "ercsoldbx"
+  },
+  "Environment": "PROD",
+  "SchemaVersion": 1,
+  "Hostname": "ercsoldbx",
+  "Features": {
+    "Oracle": {
+      "Database": {
+        "Databases": [
+          {
+            "MemoryTarget": 0,
+            "PDBs": [],
+            "DatafileSize": 3,
+            "Name": "ERCSOL19",
+            "InstanceNumber": 1,
+            "PSUs": [
+              {
+                "Description": "Database Release Update : 19.5.0.0.191015 (30125133)",
+                "Date": "2019-10-15"
+              }
+            ],
+            "Work": 1,
+            "NCharset": "AL16UTF16",
+            "Elapsed": 12060.69,
+            "PGATarget": 0.253,
+            "DailyCPUUsage": 0,
+            "SGATarget": 0.762,
+            "IsCDB": false,
+            "Version": "19.0.0.0.0 Enterprise Edition",
+            "ADDMs": [
+              {
+                "Benefit": 57.68,
+                "Recommendation": "DB Configuration",
+                "Action": "Increase the size of the SGA by setting the parameter \"sga_target\" to 975 M.",
+                "Finding": "The SGA was inadequately sized, causing additional I/O or hard parses."
+              }
+            ],
+            "CPUCount": 8,
+            "Dataguard": false,
+            "Schemas": [
+              {
+                "Tables": 0,
+                "LOB": 0,
+                "Total": 0,
+                "User": "GSMROOTUSER",
+                "Indexes": 0
+              },
+              {
+                "Tables": 0,
+                "User": "SYS$UMF",
+                "Indexes": 0,
+                "LOB": 0,
+                "Total": 0
+              },
+              {
+                "Indexes": 0,
+                "User": "GGSYS",
+                "Total": 0,
+                "LOB": 0,
+                "Tables": 0
+              },
+              {
+                "Tables": 0,
+                "Total": 0,
+                "LOB": 0,
+                "User": "REMOTE_SCHEDULER_AGENT",
+                "Indexes": 0
+              },
+              {
+                "User": "SYSRAC",
+                "Indexes": 0,
+                "LOB": 0,
+                "Total": 0,
+                "Tables": 0
+              },
+              {
+                "Tables": 0,
+                "User": "HR",
+                "Indexes": 1,
+                "Total": 2,
+                "LOB": 0
+              },
+              {
+                "Tables": 0,
+                "Total": 0,
+                "LOB": 0,
+                "User": "DBSFWUSER",
+                "Indexes": 0
+              }
+            ],
+            "BlockSize": 8192,
+            "Allocated": 129,
+            "Services": [],
+            "Tablespaces": [
+              {
+                "UsedPerc": 2.89,
+                "Used": 945.9375,
+                "Total": 950,
+                "MaxSize": 32767.9844,
+                "Name": "SYSTEM",
+                "Status": "ONLINE"
+              },
+              {
+                "Used": 1.6875,
+                "Total": 5,
+                "Name": "USERS",
+                "Status": "ONLINE",
+                "MaxSize": 32767.9844,
+                "UsedPerc": 0.01
+              },
+              {
+                "Total": 115,
+                "Used": 18.3125,
+                "MaxSize": 32767.9844,
+                "Name": "UNDOTBS1",
+                "Status": "ONLINE",
+                "UsedPerc": 0.06
+              },
+              {
+                "Used": 962.6875,
+                "Total": 1030,
+                "Name": "SYSAUX",
+                "Status": "ONLINE",
+                "MaxSize": 32767.9844,
+                "UsedPerc": 2.94
+              }
+            ],
+            "FeatureUsageStats": [
+              {
+                "Product": "Diagnostics Pack",
+                "LastUsageDate": "2020-06-18T12:04:29Z",
+                "ExtraFeatureInfo": "",
+                "CurrentlyUsed": false,
+                "FirstUsageDate": "2020-06-17T11:51:08Z",
+                "DetectedUsages": 17,
+                "Feature": "ADDM"
+              },
+              {
+                "ExtraFeatureInfo": "",
+                "LastUsageDate": "2020-06-18T12:04:29Z",
+                "Product": "Diagnostics Pack",
+                "Feature": "AWR Report",
+                "CurrentlyUsed": false,
+                "FirstUsageDate": "2020-06-17T11:51:08Z",
+                "DetectedUsages": 17
+              }
+            ],
+            "Status": "OPEN",
+            "Charset": "AL32UTF8",
+            "Licenses": [
+              {
+                "Name": "Oracle EXE",
+                "Count": 0
+              },
+              {
+                "Name": "Oracle ENT",
+                "Count": 2
+              },
+              {
+                "Name": "Oracle STD",
+                "Count": 0
+              },
+              {
+                "Name": "WebLogic Server Management Pack Enterprise Edition",
+                "Count": 0
+              },
+              {
+                "Name": "Tuning Pack",
+                "Count": 0
+              },
+              {
+                "Name": "Spatial and Graph",
+                "Count": 0
+              },
+              {
+                "Count": 0,
+                "Name": "Secure Backup"
+              },
+              {
+                "Name": "Real Application Testing",
+                "Count": 0
+              },
+              {
+                "Count": 0,
+                "Name": "Real Application Clusters"
+              },
+              {
+                "Name": "Real Application Clusters One Node",
+                "Count": 0
+              },
+              {
+                "Name": "RAC or RAC One Node",
+                "Count": 0
+              },
+              {
+                "Name": "Provisioning and Patch Automation Pack",
+                "Count": 0
+              },
+              {
+                "Name": "Provisioning and Patch Automation Pack for Database",
+                "Count": 0
+              },
+              {
+                "Count": 0,
+                "Name": "Pillar Storage"
+              },
+              {
+                "Count": 0,
+                "Name": "Partitioning"
+              },
+              {
+                "Count": 0,
+                "Name": "OLAP"
+              },
+              {
+                "Count": 0,
+                "Name": "Multitenant"
+              },
+              {
+                "Count": 0,
+                "Name": "Label Security"
+              },
+              {
+                "Count": 0,
+                "Name": "HW"
+              },
+              {
+                "Name": "GoldenGate",
+                "Count": 0
+              },
+              {
+                "Count": 0,
+                "Name": "Exadata"
+              },
+              {
+                "Count": 8,
+                "Name": "Diagnostics Pack"
+              },
+              {
+                "Name": "Database Vault",
+                "Count": 0
+              },
+              {
+                "Name": "Database In-Memory",
+                "Count": 0
+              },
+              {
+                "Count": 0,
+                "Name": "Database Gateway"
+              },
+              {
+                "Count": 0,
+                "Name": "Data Masking Pack"
+              },
+              {
+                "Name": "Configuration Management Pack for Oracle Database",
+                "Count": 0
+              },
+              {
+                "Count": 0,
+                "Name": "Change Management Pack"
+              },
+              {
+                "Name": "Advanced Security",
+                "Count": 0
+              },
+              {
+                "Name": "Advanced Compression",
+                "Count": 0
+              },
+              {
+                "Name": "Advanced Analytics",
+                "Count": 0
+              },
+              {
+                "Name": "Active Data Guard",
+                "Count": 0
+              },
+              {
+                "Name": "Active Data Guard or Real Application Clusters",
+                "Count": 0
+              }
+            ],
+            "Patches": [
+              {
+                "Action": "APPLY",
+                "Version": "19.0.0.0.0",
+                "Description": "Database Release Update : 19.5.0.0.191015 (30125133)",
+                "Date": "2020-05-28",
+                "PatchID": 30125133
+              },
+              {
+                "Description": "Database Release Update : 19.5.0.0.191015 (30125133)",
+                "Action": "APPLY",
+                "Version": "19.0.0.0.0",
+                "PatchID": 30125133,
+                "Date": "2020-05-28"
+              }
+            ],
+            "SegmentsSize": 2,
+            "Backups": [],
+            "Archivelog": false,
+            "Platform": "Solaris Operating System (x86-64)",
+            "DBTime": 17.61,
+            "ASM": false,
+            "SGAMaxSize": 0.762,
+            "SegmentAdvisors": [],
+            "UniqueName": "ERCSOL19"
+          }
+        ]
       }
+    }
+  },
+  "Filesystems": [
+    {
+      "MountedOn": "/",
+      "Filesystem": "rpool/ROOT/solaris-backup-1",
+      "Size": 20742930432,
+      "UsedSpace": 2890398720,
+      "AvailableSpace": 10500794368,
+      "Type": "zfs"
     },
-    "Filesystems": [
-      {
-        "MountedOn": "/",
-        "Filesystem": "rpool/ROOT/solaris-backup-1",
-        "Size": 20742930432,
-        "UsedSpace": 2890398720,
-        "AvailableSpace": 10500794368,
-        "Type": "zfs"
-      },
-      {
-        "Type": "dev",
-        "AvailableSpace": 0,
-        "UsedSpace": 0,
-        "Size": 0,
-        "Filesystem": "/dev",
-        "MountedOn": "/dev"
-      },
-      {
-        "Type": "fd",
-        "AvailableSpace": 0,
-        "UsedSpace": 0,
-        "Size": 0,
-        "Filesystem": "fd",
-        "MountedOn": "/dev/fd"
-      },
-      {
-        "AvailableSpace": 0,
-        "UsedSpace": 0,
-        "Type": "devfs",
-        "Filesystem": "/devices",
-        "MountedOn": "/devices",
-        "Size": 0
-      },
-      {
-        "UsedSpace": 0,
-        "AvailableSpace": 0,
-        "Type": "sharefs",
-        "MountedOn": "/etc/dfs/sharetab",
-        "Filesystem": "sharefs",
-        "Size": 0
-      },
-      {
-        "Size": 0,
-        "MountedOn": "/etc/mnttab",
-        "Filesystem": "mnttab",
-        "Type": "mntfs",
-        "AvailableSpace": 0,
-        "UsedSpace": 0
-      },
-      {
-        "AvailableSpace": 10500794368,
-        "UsedSpace": 32768,
-        "Type": "zfs",
-        "MountedOn": "/export",
-        "Filesystem": "rpool/export",
-        "Size": 20742930432
-      },
-      {
-        "Size": 20742930432,
-        "Filesystem": "rpool/export/home",
-        "MountedOn": "/export/home",
-        "Type": "zfs",
-        "UsedSpace": 306176,
-        "AvailableSpace": 10500794368
-      },
-      {
-        "Size": 13391193088,
-        "Filesystem": "/usr/lib/libc/libc_hwcap1.so.1",
-        "MountedOn": "/lib/libc.so.1",
-        "Type": "lofs",
-        "AvailableSpace": 10500794368,
-        "UsedSpace": 2890398720
-      },
-      {
-        "Type": "hsfs",
-        "AvailableSpace": 0,
-        "UsedSpace": 741826560,
-        "Size": 741826560,
-        "MountedOn": "/media/Oracle_Solaris-11_4-Text-X86",
-        "Filesystem": "/dev/dsk/c2t0d0s2"
-      },
-      {
-        "UsedSpace": 0,
-        "AvailableSpace": 0,
-        "Type": "proc",
-        "MountedOn": "/proc",
-        "Filesystem": "proc",
-        "Size": 0
-      },
-      {
-        "Filesystem": "rpool",
-        "MountedOn": "/rpool",
-        "Size": 20742930432,
-        "AvailableSpace": 10500794368,
-        "UsedSpace": 4539392,
-        "Type": "zfs"
-      },
-      {
-        "Type": "ctfs",
-        "UsedSpace": 0,
-        "AvailableSpace": 0,
-        "Size": 0,
-        "MountedOn": "/system/contract",
-        "Filesystem": "ctfs"
-      },
-      {
-        "Filesystem": "objfs",
-        "MountedOn": "/system/object",
-        "Size": 0,
-        "AvailableSpace": 0,
-        "UsedSpace": 0,
-        "Type": "objfs"
-      },
-      {
-        "Size": 2446188544,
-        "MountedOn": "/system/volatile",
-        "Filesystem": "swap",
-        "Type": "tmpfs",
-        "UsedSpace": 6881280,
-        "AvailableSpace": 2439307264
-      },
-      {
-        "Filesystem": "rpool/VARSHARE/zones",
-        "MountedOn": "/system/zones",
-        "Size": 20742930432,
-        "UsedSpace": 31744,
-        "AvailableSpace": 10500794368,
-        "Type": "zfs"
-      },
-      {
-        "MountedOn": "/tmp",
-        "Filesystem": "swap",
-        "Size": 2440638464,
-        "AvailableSpace": 2439307264,
-        "UsedSpace": 1331200,
-        "Type": "tmpfs"
-      },
-      {
-        "Type": "zfs",
-        "AvailableSpace": 7101223936,
-        "UsedSpace": 14961774592,
-        "Size": 22064136192,
-        "Filesystem": "u01",
-        "MountedOn": "/u01"
-      },
-      {
-        "Type": "zfs",
-        "UsedSpace": 31744,
-        "AvailableSpace": 7101223936,
-        "Size": 22064136192,
-        "Filesystem": "u01/u01",
-        "MountedOn": "/u01/u01"
-      },
-      {
-        "MountedOn": "/var",
-        "Filesystem": "rpool/ROOT/solaris-backup-1/var",
-        "Size": 20742930432,
-        "UsedSpace": 216152064,
-        "AvailableSpace": 10500794368,
-        "Type": "zfs"
-      },
-      {
-        "Filesystem": "rpool/VARSHARE",
-        "MountedOn": "/var/share",
-        "Size": 20742930432,
-        "AvailableSpace": 10500794368,
-        "UsedSpace": 3486720,
-        "Type": "zfs"
-      },
-      {
-        "AvailableSpace": 10500794368,
-        "UsedSpace": 31744,
-        "Type": "zfs",
-        "MountedOn": "/var/share/kvol",
-        "Filesystem": "rpool/VARSHARE/kvol",
-        "Size": 20742930432
-      },
-      {
-        "Type": "zfs",
-        "AvailableSpace": 10500794368,
-        "UsedSpace": 32768,
-        "Size": 20742930432,
-        "Filesystem": "rpool/VARSHARE/pkg",
-        "MountedOn": "/var/share/pkg"
-      },
-      {
-        "Filesystem": "rpool/VARSHARE/pkg/repositories",
-        "MountedOn": "/var/share/pkg/repositories",
-        "Size": 20742930432,
-        "AvailableSpace": 10500794368,
-        "UsedSpace": 31744,
-        "Type": "zfs"
-      },
-      {
-        "Filesystem": "rpool/VARSHARE/sstore",
-        "MountedOn": "/var/share/sstore/repo",
-        "Size": 20742930432,
-        "AvailableSpace": 10500794368,
-        "UsedSpace": 10877952,
-        "Type": "zfs"
-      },
-      {
-        "Type": "zfs",
-        "AvailableSpace": 10500794368,
-        "UsedSpace": 20487168,
-        "Size": 20742930432,
-        "MountedOn": "/var/tmp",
-        "Filesystem": "rpool/VARSHARE/tmp"
-      }
-    ],
-    "ClusterMembershipStatus": {
-      "SunCluster": false,
-      "VeritasClusterServer": false,
-      "OracleClusterware": false,
-      "HACMP": false
+    {
+      "Type": "dev",
+      "AvailableSpace": 0,
+      "UsedSpace": 0,
+      "Size": 0,
+      "Filesystem": "/dev",
+      "MountedOn": "/dev"
     },
-    "Location": "Germany"
-  }
+    {
+      "Type": "fd",
+      "AvailableSpace": 0,
+      "UsedSpace": 0,
+      "Size": 0,
+      "Filesystem": "fd",
+      "MountedOn": "/dev/fd"
+    },
+    {
+      "AvailableSpace": 0,
+      "UsedSpace": 0,
+      "Type": "devfs",
+      "Filesystem": "/devices",
+      "MountedOn": "/devices",
+      "Size": 0
+    },
+    {
+      "UsedSpace": 0,
+      "AvailableSpace": 0,
+      "Type": "sharefs",
+      "MountedOn": "/etc/dfs/sharetab",
+      "Filesystem": "sharefs",
+      "Size": 0
+    },
+    {
+      "Size": 0,
+      "MountedOn": "/etc/mnttab",
+      "Filesystem": "mnttab",
+      "Type": "mntfs",
+      "AvailableSpace": 0,
+      "UsedSpace": 0
+    },
+    {
+      "AvailableSpace": 10500794368,
+      "UsedSpace": 32768,
+      "Type": "zfs",
+      "MountedOn": "/export",
+      "Filesystem": "rpool/export",
+      "Size": 20742930432
+    },
+    {
+      "Size": 20742930432,
+      "Filesystem": "rpool/export/home",
+      "MountedOn": "/export/home",
+      "Type": "zfs",
+      "UsedSpace": 306176,
+      "AvailableSpace": 10500794368
+    },
+    {
+      "Size": 13391193088,
+      "Filesystem": "/usr/lib/libc/libc_hwcap1.so.1",
+      "MountedOn": "/lib/libc.so.1",
+      "Type": "lofs",
+      "AvailableSpace": 10500794368,
+      "UsedSpace": 2890398720
+    },
+    {
+      "Type": "hsfs",
+      "AvailableSpace": 0,
+      "UsedSpace": 741826560,
+      "Size": 741826560,
+      "MountedOn": "/media/Oracle_Solaris-11_4-Text-X86",
+      "Filesystem": "/dev/dsk/c2t0d0s2"
+    },
+    {
+      "UsedSpace": 0,
+      "AvailableSpace": 0,
+      "Type": "proc",
+      "MountedOn": "/proc",
+      "Filesystem": "proc",
+      "Size": 0
+    },
+    {
+      "Filesystem": "rpool",
+      "MountedOn": "/rpool",
+      "Size": 20742930432,
+      "AvailableSpace": 10500794368,
+      "UsedSpace": 4539392,
+      "Type": "zfs"
+    },
+    {
+      "Type": "ctfs",
+      "UsedSpace": 0,
+      "AvailableSpace": 0,
+      "Size": 0,
+      "MountedOn": "/system/contract",
+      "Filesystem": "ctfs"
+    },
+    {
+      "Filesystem": "objfs",
+      "MountedOn": "/system/object",
+      "Size": 0,
+      "AvailableSpace": 0,
+      "UsedSpace": 0,
+      "Type": "objfs"
+    },
+    {
+      "Size": 2446188544,
+      "MountedOn": "/system/volatile",
+      "Filesystem": "swap",
+      "Type": "tmpfs",
+      "UsedSpace": 6881280,
+      "AvailableSpace": 2439307264
+    },
+    {
+      "Filesystem": "rpool/VARSHARE/zones",
+      "MountedOn": "/system/zones",
+      "Size": 20742930432,
+      "UsedSpace": 31744,
+      "AvailableSpace": 10500794368,
+      "Type": "zfs"
+    },
+    {
+      "MountedOn": "/tmp",
+      "Filesystem": "swap",
+      "Size": 2440638464,
+      "AvailableSpace": 2439307264,
+      "UsedSpace": 1331200,
+      "Type": "tmpfs"
+    },
+    {
+      "Type": "zfs",
+      "AvailableSpace": 7101223936,
+      "UsedSpace": 14961774592,
+      "Size": 22064136192,
+      "Filesystem": "u01",
+      "MountedOn": "/u01"
+    },
+    {
+      "Type": "zfs",
+      "UsedSpace": 31744,
+      "AvailableSpace": 7101223936,
+      "Size": 22064136192,
+      "Filesystem": "u01/u01",
+      "MountedOn": "/u01/u01"
+    },
+    {
+      "MountedOn": "/var",
+      "Filesystem": "rpool/ROOT/solaris-backup-1/var",
+      "Size": 20742930432,
+      "UsedSpace": 216152064,
+      "AvailableSpace": 10500794368,
+      "Type": "zfs"
+    },
+    {
+      "Filesystem": "rpool/VARSHARE",
+      "MountedOn": "/var/share",
+      "Size": 20742930432,
+      "AvailableSpace": 10500794368,
+      "UsedSpace": 3486720,
+      "Type": "zfs"
+    },
+    {
+      "AvailableSpace": 10500794368,
+      "UsedSpace": 31744,
+      "Type": "zfs",
+      "MountedOn": "/var/share/kvol",
+      "Filesystem": "rpool/VARSHARE/kvol",
+      "Size": 20742930432
+    },
+    {
+      "Type": "zfs",
+      "AvailableSpace": 10500794368,
+      "UsedSpace": 32768,
+      "Size": 20742930432,
+      "Filesystem": "rpool/VARSHARE/pkg",
+      "MountedOn": "/var/share/pkg"
+    },
+    {
+      "Filesystem": "rpool/VARSHARE/pkg/repositories",
+      "MountedOn": "/var/share/pkg/repositories",
+      "Size": 20742930432,
+      "AvailableSpace": 10500794368,
+      "UsedSpace": 31744,
+      "Type": "zfs"
+    },
+    {
+      "Filesystem": "rpool/VARSHARE/sstore",
+      "MountedOn": "/var/share/sstore/repo",
+      "Size": 20742930432,
+      "AvailableSpace": 10500794368,
+      "UsedSpace": 10877952,
+      "Type": "zfs"
+    },
+    {
+      "Type": "zfs",
+      "AvailableSpace": 10500794368,
+      "UsedSpace": 20487168,
+      "Size": 20742930432,
+      "MountedOn": "/var/tmp",
+      "Filesystem": "rpool/VARSHARE/tmp"
+    }
+  ],
+  "ClusterMembershipStatus": {
+    "SunCluster": false,
+    "VeritasClusterServer": false,
+    "OracleClusterware": false,
+    "HACMP": false
+  },
+  "Location": "Germany"
+}

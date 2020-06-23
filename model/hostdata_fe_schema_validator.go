@@ -257,12 +257,12 @@ var FrontendHostdataSchemaValidator string = `
                                                             "Name": {
                                                                 "type": "string",
                                                                 "minLength": 1,
-                                                                "maxLength": 32
+                                                                "maxLength": 64
                                                             },
                                                             "UniqueName": {
                                                                 "type": "string",
                                                                 "minLength": 1,
-                                                                "maxLength": 32
+                                                                "maxLength": 64
                                                             },
                                                             "Status": {
                                                                 "type": "string",
@@ -421,7 +421,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                         "Name": {
                                                                             "type": "string",
                                                                             "minLength": 1,
-                                                                            "maxLength": 32
+                                                                            "maxLength": 64
                                                                         },
                                                                         "MaxSize": {
                                                                             "type": "number",
@@ -444,6 +444,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                             "type": "string",
                                                                             "enum": [
                                                                                 "ONLINE",
+                                                                                "READ ONLY",
                                                                                 "OFFLINE"
                                                                             ]
                                                                         }
@@ -481,7 +482,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                         "User": {
                                                                             "type": "string",
                                                                             "minLength": 1,
-                                                                            "maxLength": 32
+                                                                            "maxLength": 64
                                                                         }
                                                                     }
                                                                 }
@@ -557,12 +558,12 @@ var FrontendHostdataSchemaValidator string = `
                                                                         "SegmentOwner": {
                                                                             "type": "string",
                                                                             "minLength": 1,
-                                                                            "maxLength": 32
+                                                                            "maxLength": 64
                                                                         },
                                                                         "SegmentName": {
                                                                             "type": "string",
                                                                             "minLength": 1,
-                                                                            "maxLength": 32
+                                                                            "maxLength": 64
                                                                         },
                                                                         "SegmentType": {
                                                                             "type": "string",
@@ -787,6 +788,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                                         "type": "string",
                                                                                         "enum": [
                                                                                             "ONLINE",
+                                                                                            "READ ONLY",
                                                                                             "OFFLINE"
                                                                                         ]
                                                                                     }
@@ -923,99 +925,218 @@ var FrontendHostdataSchemaValidator string = `
                                                                 "format": "date"
                                                             },
                                                             "RunningCPUCount": {
-                                                                "type": "integer",
-                                                                "minimum": 1
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "integer",
+                                                                        "minimum": 1
+                                                                    }
+                                                                ]
                                                             },
                                                             "TotalCPUCount": {
-                                                                "type": "integer",
-                                                                "minimum": 1
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "integer",
+                                                                        "minimum": 1
+                                                                    }
+                                                                ]
                                                             },
                                                             "Memory": {
-                                                                "type": "integer",
-                                                                "minimum": 0,
-                                                                "$comment": "Memory in GB"
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "integer",
+                                                                        "$comment": "Memory in GB",
+                                                                        "minimum": 1
+                                                                    }
+                                                                ]
                                                             },
                                                             "Status": {
-                                                                "type": "string",
-                                                                "enum": [
-                                                                    "online",
-                                                                    "offline"
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "string",
+                                                                        "enum": [
+                                                                            "online",
+                                                                            "offline"
+                                                                        ]
+                                                                    }
                                                                 ]
                                                             },
                                                             "RunningPowerSupply": {
-                                                                "type": "integer",
-                                                                "minimum": 1
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "integer",
+                                                                        "minimum": 1
+                                                                    }
+                                                                ]
                                                             },
                                                             "TotalPowerSupply": {
-                                                                "type": "integer",
-                                                                "minimum": 1
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "integer",
+                                                                        "minimum": 1
+                                                                    }
+                                                                ]
                                                             },
                                                             "PowerStatus": {
-                                                                "type": "string"
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "string"
+                                                                    }
+                                                                ]
                                                             },
                                                             "RunningFanCount": {
-                                                                "type": "integer",
-                                                                "minimum": 1
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "integer",
+                                                                        "minimum": 1
+                                                                    }
+                                                                ]
                                                             },
                                                             "TotalFanCount": {
-                                                                "type": "integer",
-                                                                "minimum": 1
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "integer",
+                                                                        "minimum": 1
+                                                                    }
+                                                                ]
                                                             },
                                                             "FanStatus": {
-                                                                "type": "string"
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "string"
+                                                                    }
+                                                                ]
                                                             },
                                                             "TempActual": {
-                                                                "type": "number"
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "number"
+                                                                    }
+                                                                ]
                                                             },
                                                             "TempStatus": {
-                                                                "type": "string"
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "string"
+                                                                    }
+                                                                ]
                                                             },
                                                             "CellsrvServiceStatus": {
-                                                                "type": "string"
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "string"
+                                                                    }
+                                                                ]
                                                             },
                                                             "MsServiceStatus": {
-                                                                "type": "string"
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "string"
+                                                                    }
+                                                                ]
                                                             },
                                                             "RsServiceStatus": {
-                                                                "type": "string"
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "string"
+                                                                    }
+                                                                ]
                                                             },
                                                             "FlashcacheMode": {
-                                                                "type": "string",
-                                                                "enum": [
-                                                                    "WriteBack",
-                                                                    "WriteThrough"
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "string",
+                                                                        "enum": [
+                                                                            "WriteBack",
+                                                                            "WriteThrough"
+                                                                        ]
+                                                                    }
                                                                 ]
                                                             },
                                                             "CellDisks": {
-                                                                "type": "array",
-                                                                "items": {
-                                                                    "type": "object",
-                                                                    "required": [
-                                                                        "ErrCount",
-                                                                        "Name",
-                                                                        "Status",
-                                                                        "UsedPerc"
-                                                                    ],
-                                                                    "properties": {
-                                                                        "ErrCount": {
-                                                                            "type": "integer",
-                                                                            "minimum": 0
-                                                                        },
-                                                                        "Name": {
-                                                                            "type": "string",
-                                                                            "minLength": 1,
-                                                                            "maxLength": 64
-                                                                        },
-                                                                        "Status": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "UsedPerc": {
-                                                                            "type": "integer",
-                                                                            "minimum": 0,
-                                                                            "maximum": 100
+                                                                "anyOf": [
+                                                                    {
+                                                                        "type": "null"
+                                                                    },
+                                                                    {
+                                                                        "type": "array",
+                                                                        "items": {
+                                                                            "type": "object",
+                                                                            "required": [
+                                                                                "ErrCount",
+                                                                                "Name",
+                                                                                "Status",
+                                                                                "UsedPerc"
+                                                                            ],
+                                                                            "properties": {
+                                                                                "ErrCount": {
+                                                                                    "type": "integer",
+                                                                                    "minimum": 0
+                                                                                },
+                                                                                "Name": {
+                                                                                    "type": "string",
+                                                                                    "minLength": 1,
+                                                                                    "maxLength": 64
+                                                                                },
+                                                                                "Status": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "UsedPerc": {
+                                                                                    "type": "integer",
+                                                                                    "minimum": 0,
+                                                                                    "maximum": 100
+                                                                                }
+                                                                            }
                                                                         }
                                                                     }
-                                                                }
+                                                                ]
                                                             }
                                                         }
                                                     }
@@ -1288,11 +1409,11 @@ var FrontendHostdataSchemaValidator string = `
                             },
                             "CPU": {
                                 "type": "integer",
-                                "minimum": 1
+                                "minimum": 0
                             },
                             "Sockets": {
                                 "type": "integer",
-                                "minimum": 1
+                                "minimum": 0
                             },
                             "VMs": {
                                 "type": "array",

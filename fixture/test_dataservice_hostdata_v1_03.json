@@ -1,0 +1,397 @@
+{
+    "Hostname": "itl-csllab-112.sorint.localpippo",
+    "Environment": "TST",
+    "Location": "Germany",
+    "Info": {
+        "Hostname": "itl-csllab-112.sorint.localpippo",
+        "CPUModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+        "CPUCores": 1,
+        "CPUThreads": 2,
+        "Kernel": "3.10.0-514.el7.x86_64",
+        "OS": "Red Hat Enterprise Linux",
+        "MemoryTotal": 3,
+        "SwapTotal": 1,
+        "CPUFrequency": "2.53GHz",
+        "CPUSockets": 2,
+        "CoresPerSocket": 1,
+        "ThreadsPerCore": 2,
+        "KernelVersion": "3.10.0-514.el7.x86_64",
+        "OSVersion": "7.6",
+        "HardwareAbstraction": "VIRT",
+        "HardwareAbstractionTechnology": "VMWARE"
+    },
+    "AgentVersion": "latest",
+    "Tags": [],
+    "SchemaVersion": 1,
+    "ClusterMembershipStatus": {
+        "OracleClusterware": false,
+        "VeritasClusterServer": false,
+        "SunCluster": false,
+        "HACMP": false
+    },
+    "Filesystems": [
+        {
+            "Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+            "Size": 13958643712,
+            "MountedOn": "/",
+            "AvailableSpace": 5798205849,
+            "UsedSpace": 7194070220,
+            "Type": "ext4"
+        },
+        {
+            "Filesystem": "/dev/sda1",
+            "Size": 511705088,
+            "MountedOn": "/boot",
+            "AvailableSpace": 335544320,
+            "UsedSpace": 139460608,
+            "Type": "ext4"
+        },
+        {
+            "Filesystem": "/dev/mapper/cl_itl--csllab--112-data",
+            "Size": 42949672960,
+            "MountedOn": "/data",
+            "AvailableSpace": 23622320128,
+            "UsedSpace": 18253611008,
+            "Type": "ext4"
+        },
+        {
+            "Filesystem": "devtmpfs",
+            "Size": 2040109465,
+            "MountedOn": "/dev",
+            "AvailableSpace": 2040109465,
+            "UsedSpace": 0,
+            "Type": "devtmpfs"
+        },
+        {
+            "Filesystem": "tmpfs",
+            "Size": 2040109465,
+            "MountedOn": "/dev/shm",
+            "AvailableSpace": 931135488,
+            "UsedSpace": 1056964608,
+            "Type": "tmpfs"
+        },
+        {
+            "Filesystem": "tmpfs",
+            "Size": 2040109465,
+            "MountedOn": "/run",
+            "AvailableSpace": 1932735283,
+            "UsedSpace": 143654912,
+            "Type": "tmpfs"
+        },
+        {
+            "Filesystem": "tmpfs",
+            "Size": 398458880,
+            "MountedOn": "/run/user/0",
+            "AvailableSpace": 398458880,
+            "UsedSpace": 0,
+            "Type": "tmpfs"
+        },
+        {
+            "Filesystem": "tmpfs",
+            "Size": 398458880,
+            "MountedOn": "/run/user/54321",
+            "AvailableSpace": 398458880,
+            "UsedSpace": 0,
+            "Type": "tmpfs"
+        },
+        {
+            "Filesystem": "tmpfs",
+            "Size": 2040109465,
+            "MountedOn": "/sys/fs/cgroup",
+            "AvailableSpace": 2040109465,
+            "UsedSpace": 0,
+            "Type": "tmpfs"
+        }
+    ],
+    "Features": {
+        "Oracle": {
+            "Database": {
+                "Databases": [
+                    {
+                        "InstanceNumber": 1,
+                        "Name": "ERCOLE",
+                        "UniqueName": "ERCOLE",
+                        "Status": "OPEN",
+                        "Version": "12.2.0.1.0 Enterprise Edition",
+                        "Platform": "Linux x86 64-bit",
+                        "Archivelog": false,
+                        "Charset": "AL32UTF8",
+                        "NCharset": "AL16UTF16",
+                        "BlockSize": 8192,
+                        "CPUCount": 2,
+                        "SGATarget": 0.0,
+                        "PGATarget": 0.0,
+                        "MemoryTarget": 1.484,
+                        "SGAMaxSize": 1.484,
+                        "SegmentsSize": 3.0,
+                        "Allocated": 129.0,
+                        "Elapsed": 12059.18,
+                        "DBTime": 184.81,
+                        "DailyCPUUsage": 1.3,
+                        "Work": 1.0,
+                        "ASM": false,
+                        "Dataguard": false,
+                        "Patches": [],
+                        "Tablespaces": [
+                            {
+                                "Name": "SYSTEM",
+                                "MaxSize": 32767.9844,
+                                "Total": 850.0,
+                                "Used": 842.875,
+                                "UsedPerc": 2.57,
+                                "Status": "ONLINE"
+                            },
+                            {
+                                "Name": "USERS",
+                                "MaxSize": 32767.9844,
+                                "Total": 1024.0,
+                                "Used": 576.0,
+                                "UsedPerc": 1.76,
+                                "Status": "ONLINE"
+                            },
+                            {
+                                "Name": "UNDOTBS1",
+                                "MaxSize": 32767.9844,
+                                "Total": 895.0,
+                                "Used": 41.25,
+                                "UsedPerc": 0.13,
+                                "Status": "ONLINE"
+                            },
+                            {
+                                "Name": "SYSAUX",
+                                "MaxSize": 32767.9844,
+                                "Total": 1870.0,
+                                "Used": 1749.625,
+                                "UsedPerc": 5.34,
+                                "Status": "ONLINE"
+                            }
+                        ],
+                        "Schemas": [
+                            {
+                                "User": "RAF",
+                                "Total": 192,
+                                "Tables": 192,
+                                "Indexes": 0,
+                                "LOB": 0
+                            },
+                            {
+                                "User": "REMOTE_SCHEDULER_AGENT",
+                                "Total": 0,
+                                "Tables": 0,
+                                "Indexes": 0,
+                                "LOB": 0
+                            },
+                            {
+                                "User": "SYS$UMF",
+                                "Total": 0,
+                                "Tables": 0,
+                                "Indexes": 0,
+                                "LOB": 0
+                            },
+                            {
+                                "User": "GGSYS",
+                                "Total": 0,
+                                "Tables": 0,
+                                "Indexes": 0,
+                                "LOB": 0
+                            },
+                            {
+                                "User": "DBSFWUSER",
+                                "Total": 0,
+                                "Tables": 0,
+                                "Indexes": 0,
+                                "LOB": 0
+                            },
+                            {
+                                "User": "ERCOLE",
+                                "Total": 384,
+                                "Tables": 384,
+                                "Indexes": 0,
+                                "LOB": 0
+                            },
+                            {
+                                "User": "SYSRAC",
+                                "Total": 0,
+                                "Tables": 0,
+                                "Indexes": 0,
+                                "LOB": 0
+                            }
+                        ],
+                        "Licenses": [
+                            {
+                                "Name": "Oracle EXE",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Oracle ENT",
+                                "Count": 0.5
+                            },
+                            {
+                                "Name": "Oracle STD",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "WebLogic Server Management Pack Enterprise Edition",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Tuning Pack",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Spatial and Graph",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Secure Backup",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Real Application Testing",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Real Application Clusters",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Real Application Clusters One Node",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "RAC or RAC One Node",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Provisioning and Patch Automation Pack",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Provisioning and Patch Automation Pack for Database",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Pillar Storage",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Partitioning",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "OLAP",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Multitenant",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Label Security",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "HW",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "GoldenGate",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Exadata",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Diagnostics Pack",
+                                "Count": 0.5
+                            },
+                            {
+                                "Name": "Database Vault",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Database In-Memory",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Database Gateway",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Data Masking Pack",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Configuration Management Pack for Oracle Database",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Change Management Pack",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Advanced Security",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Advanced Compression",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Advanced Analytics",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Active Data Guard",
+                                "Count": 0
+                            },
+                            {
+                                "Name": "Active Data Guard or Real Application Clusters",
+                                "Count": 0
+                            }
+                        ],
+                        "ADDMs": [],
+                        "SegmentAdvisors": [],
+                        "Backups": [],
+                        "DatafileSize": 6.0,
+                        "PSUs": [],
+                        "FeatureUsageStats": [
+                            {
+                                "Product": "Diagnostics Pack",
+                                "Feature": "ADDM",
+                                "DetectedUsages": 91,
+                                "CurrentlyUsed": false,
+                                "FirstUsageDate": "2019-06-24T17:34:20Z",
+                                "LastUsageDate": "2019-11-09T04:48:23Z",
+                                "ExtraFeatureInfo": ""
+                            },
+                            {
+                                "Product": "Diagnostics Pack",
+                                "Feature": "AWR Report",
+                                "DetectedUsages": 90,
+                                "CurrentlyUsed": false,
+                                "FirstUsageDate": "2019-06-27T15:15:44Z",
+                                "LastUsageDate": "2019-11-09T04:48:23Z",
+                                "ExtraFeatureInfo": ""
+                            },
+                            {
+                                "Product": "Diagnostics Pack",
+                                "Feature": "Automatic Workload Repository",
+                                "DetectedUsages": 7,
+                                "CurrentlyUsed": false,
+                                "FirstUsageDate": "2019-06-27T17:01:09Z",
+                                "LastUsageDate": "2019-07-02T05:35:05Z",
+                                "ExtraFeatureInfo": ""
+                            }
+                        ],
+                        "IsCDB": false,
+                        "PDBs": [],
+                        "Services": []
+                    }
+                ]
+            }
+        }
+    },
+    "Clusters": null
+}

@@ -1,0 +1,235 @@
+{
+    "Hostname": "test-exadata",
+    "Environment": "PROD",
+    "Location": "Italy",
+    "Info": {
+        "Hostname": "test-exadata",
+        "CPUModel": "Intel(R) Xeon(R) Platinum 8160 CPU @ 2.10GHz",
+        "CPUCores": 24,
+        "CPUThreads": 48,
+        "Kernel": "4.1.12-124.26.12.el7uek.x86_64",
+        "OS": "Red Hat Enterprise Linux",
+        "MemoryTotal": 376,
+        "SwapTotal": 23,
+        "CPUFrequency": "2.10GHz",
+        "CPUSockets": 1,
+        "CoresPerSocket": 24,
+        "ThreadsPerCore": 2,
+        "KernelVersion": "4.1.12-124.26.12.el7uek.x86_64",
+        "OSVersion": "7.6",
+        "HardwareAbstraction": "PH",
+        "HardwareAbstractionTechnology": "PH"
+    },
+    "AgentVersion": "latest",
+    "Tags": [],
+    "SchemaVersion": 1,
+    "ClusterMembershipStatus": {
+        "OracleClusterware": true,
+        "VeritasClusterServer": false,
+        "SunCluster": false,
+        "HACMP": false
+    },
+    "Filesystems": [
+        {
+            "Filesystem": "KEENAN-f4e458d4320a271207b301c8c6442d77",
+            "Size": 32212254720,
+            "MountedOn": "BENTON-6666cd76f96956469e7be39d750cc7d9",
+            "AvailableSpace": 8589934592,
+            "UsedSpace": 21474836480,
+            "Type": "ext4"
+        },
+        {
+            "Filesystem": "JUAN-45e177f34dddc33a5b1537ce8f4913ba",
+            "Size": 511705088,
+            "MountedOn": "MICHAEL-a53bfb333437907a8d5bdc636d15c75d",
+            "AvailableSpace": 425721856,
+            "UsedSpace": 50331648,
+            "Type": "ext4"
+        }
+    ],
+    "Features": {
+        "Oracle": {
+            "Exadata": {
+                "Components": [
+                    {
+                        "Hostname": "s75-c2449b0e89e5a0b38401636eaa07abd5",
+                        "ServerType": "StorageServer",
+                        "Model": "X7-2L_High_Capacity",
+                        "Memory": 188,
+                        "Status": "online",
+                        "PowerStatus": "normal",
+                        "FanStatus": "normal",
+                        "TempActual": 23.0,
+                        "TempStatus": "normal",
+                        "FlashcacheMode": "WriteBack",
+                        "CellDisks": [
+                            {
+                                "Name": "fanshop-5bde7badf2c9deceea5f615c3840c0b9",
+                                "Status": "normal",
+                                "ErrCount": 0,
+                                "UsedPerc": 32
+                            },
+                            {
+                                "Name": "globe-b31fa3756675a5c8ac052437ff7e439b",
+                                "Status": "normal",
+                                "ErrCount": 0,
+                                "UsedPerc": 54
+                            },
+                            {
+                                "Name": "srvc28-3807c977788c598cfa31fe21c0d3d5be",
+                                "Status": "normal",
+                                "ErrCount": 3,
+                                "UsedPerc": 90
+                            }
+                        ],
+                        "SwVersion": "19.2.4.0.0.190709",
+                        "SwReleaseDate": "2019-07-09",
+                        "RunningCPUCount": 20,
+                        "TotalCPUCount": 40,
+                        "RunningPowerSupply": 2,
+                        "TotalPowerSupply": 2,
+                        "RunningFanCount": 8,
+                        "TotalFanCount": 8,
+                        "CellsrvServiceStatus": "running",
+                        "MsServiceStatus": "running",
+                        "RsServiceStatus": "running"
+                    },
+                    {
+                        "Hostname": "itl-b22fa37cad1326aba990cdec7facace2",
+                        "ServerType": "StorageServer",
+                        "Model": "X7-2L_High_Capacity",
+                        "Memory": 188,
+                        "Status": "online",
+                        "PowerStatus": "normal",
+                        "FanStatus": "normal",
+                        "TempActual": 24.0,
+                        "TempStatus": "normal",
+                        "FlashcacheMode": "WriteBack",
+                        "CellDisks": [
+                            {
+                                "Name": "server52-390b5dac8c3b68e3471c657ef97a7ae6",
+                                "Status": "normal",
+                                "ErrCount": 0,
+                                "UsedPerc": 32
+                            },
+                            {
+                                "Name": "srvc07-5b888ab40dbd25e106309fd482f859a0",
+                                "Status": "normal",
+                                "ErrCount": 1,
+                                "UsedPerc": 54
+                            }
+                        ],
+                        "SwVersion": "19.2.4.0.0.190709",
+                        "SwReleaseDate": "2019-07-09",
+                        "RunningCPUCount": 20,
+                        "TotalCPUCount": 40,
+                        "RunningPowerSupply": 2,
+                        "TotalPowerSupply": 2,
+                        "RunningFanCount": 8,
+                        "TotalFanCount": 8,
+                        "CellsrvServiceStatus": "running",
+                        "MsServiceStatus": "running",
+                        "RsServiceStatus": "running"
+                    },
+                    {
+                        "Hostname": "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
+                        "ServerType": "DBServer",
+                        "Model": "X7-2",
+                        "Memory": 376,
+                        "Status": "online",
+                        "PowerStatus": "normal",
+                        "FanStatus": "normal",
+                        "TempActual": 24.0,
+                        "TempStatus": "normal",
+                        "FlashcacheMode": null,
+                        "CellDisks": null,
+                        "SwVersion": "19.2.4.0.0.190709",
+                        "SwReleaseDate": "2019-07-09",
+                        "RunningCPUCount": 48,
+                        "TotalCPUCount": 48,
+                        "RunningPowerSupply": 2,
+                        "TotalPowerSupply": 2,
+                        "RunningFanCount": 16,
+                        "TotalFanCount": 16,
+                        "CellsrvServiceStatus": null,
+                        "MsServiceStatus": "running",
+                        "RsServiceStatus": "running"
+                    },
+                    {
+                        "Hostname": "kantoor-43a6cdc54bb211eb127bca5c6651950c",
+                        "ServerType": "DBServer",
+                        "Model": "X7-2",
+                        "Memory": 376,
+                        "Status": "online",
+                        "PowerStatus": "normal",
+                        "FanStatus": "normal",
+                        "TempActual": 24.0,
+                        "TempStatus": "normal",
+                        "FlashcacheMode": null,
+                        "CellDisks": null,
+                        "SwVersion": "19.2.4.0.0.190709",
+                        "SwReleaseDate": "2019-07-09",
+                        "RunningCPUCount": 48,
+                        "TotalCPUCount": 48,
+                        "RunningPowerSupply": 2,
+                        "TotalPowerSupply": 2,
+                        "RunningFanCount": 16,
+                        "TotalFanCount": 16,
+                        "CellsrvServiceStatus": null,
+                        "MsServiceStatus": "running",
+                        "RsServiceStatus": "running"
+                    },
+                    {
+                        "Hostname": "off-df8b95a01746a464e69203c840a6a46a",
+                        "ServerType": "IBSwitch",
+                        "Model": "SUN_DCS_36p",
+                        "Memory": null,
+                        "Status": null,
+                        "PowerStatus": null,
+                        "FanStatus": null,
+                        "TempActual": null,
+                        "TempStatus": null,
+                        "FlashcacheMode": null,
+                        "CellDisks": null,
+                        "SwVersion": "2.2.13-2.190326",
+                        "SwReleaseDate": "2019-03-26",
+                        "RunningCPUCount": null,
+                        "TotalCPUCount": null,
+                        "RunningPowerSupply": null,
+                        "TotalPowerSupply": null,
+                        "RunningFanCount": null,
+                        "TotalFanCount": null,
+                        "CellsrvServiceStatus": null,
+                        "MsServiceStatus": null,
+                        "RsServiceStatus": null
+                    },
+                    {
+                        "Hostname": "aspen-8d1d1b210625b1f1024b686135f889a1",
+                        "ServerType": "IBSwitch",
+                        "Model": "SUN_DCS_36p",
+                        "Memory": null,
+                        "Status": null,
+                        "PowerStatus": null,
+                        "FanStatus": null,
+                        "TempActual": null,
+                        "TempStatus": null,
+                        "FlashcacheMode": null,
+                        "CellDisks": null,
+                        "SwVersion": "2.2.13-2.190326",
+                        "SwReleaseDate": "2019-03-26",
+                        "RunningCPUCount": null,
+                        "TotalCPUCount": null,
+                        "RunningPowerSupply": null,
+                        "TotalPowerSupply": null,
+                        "RunningFanCount": null,
+                        "TotalFanCount": null,
+                        "CellsrvServiceStatus": null,
+                        "MsServiceStatus": null,
+                        "RsServiceStatus": null
+                    }
+                ]
+            }
+        }
+    },
+    "Clusters": null
+}

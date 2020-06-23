@@ -134,14 +134,19 @@ var OracleExadataComponentBsonValidatorRules = bson.M{
 			"minimum":  1,
 		},
 		"Memory": bson.M{
-			"bsonType": bson.A{"null", "string"},
+			"bsonType": bson.A{"null", "number"},
 			"minimum":  0,
 		},
 		"Status": bson.M{
-			"bsonType": bson.A{"null", "string"},
-			"enum": bson.A{
-				"online",
-				"offline",
+			"anyOf": bson.A{
+				bson.M{"bsonType": "null"},
+				bson.M{
+					"bsonType": "string",
+					"enum": bson.A{
+						"online",
+						"offline",
+					},
+				},
 			},
 		},
 		"RunningPowerSupply": bson.M{
@@ -182,10 +187,15 @@ var OracleExadataComponentBsonValidatorRules = bson.M{
 			"bsonType": bson.A{"null", "string"},
 		},
 		"FlashcacheMode": bson.M{
-			"bsonType": bson.A{"null", "string"},
-			"enum": bson.A{
-				"WriteBack",
-				"WriteThrough",
+			"anyOf": bson.A{
+				bson.M{"bsonType": "null"},
+				bson.M{
+					"bsonType": "string",
+					"enum": bson.A{
+						"WriteBack",
+						"WriteThrough",
+					},
+				},
 			},
 		},
 		"CellDisks": bson.M{

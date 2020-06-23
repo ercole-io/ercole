@@ -50,7 +50,7 @@ func TestUpdateHostInfo_Success(t *testing.T) {
 		},
 		Version: "1.6.6",
 	}
-	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_00.json")
+	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
@@ -97,7 +97,7 @@ func TestUpdateHostInfo_DatabaseError1(t *testing.T) {
 		},
 		Version: "1.6.6",
 	}
-	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_00.json")
+	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, aerrMock).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
 	db.EXPECT().FindPatchingFunction(gomock.Any()).Return(model.PatchingFunction{}, nil).Times(0)
@@ -122,7 +122,7 @@ func TestUpdateHostInfo_DatabaseError2(t *testing.T) {
 		},
 		Version: "1.6.6",
 	}
-	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_00.json")
+	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
@@ -159,7 +159,7 @@ func TestUpdateHostInfo_HttpError(t *testing.T) {
 		},
 		Version: "1.6.6",
 	}
-	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_00.json")
+	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
@@ -202,7 +202,7 @@ func TestUpdateHostInfo_HttpError2(t *testing.T) {
 		},
 		Version: "1.6.6",
 	}
-	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_00.json")
+	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
