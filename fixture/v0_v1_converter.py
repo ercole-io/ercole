@@ -40,11 +40,11 @@ data["Info"]["KernelVersion"] = data["Info"]["Kernel"]
 if "Red Hat Enterprise Linux Server" in data["Info"]["OS"]:
     data["Info"]["OSVersion"] = data["Info"]["OS"].split(" ")[6]
     data["Info"]["OS"] = "Red Hat Enterprise Linux"
-    data["Info"]["Kernel"] = data["Info"]["Kernel"]
+    data["Info"]["Kernel"] = "Linux"
 elif "Ubuntu" in data["Info"]["OS"]:
     data["Info"]["OSVersion"] = data["Info"]["OS"].split(" ")[-1]
     data["Info"]["OS"] = "Ubuntu"
-    data["Info"]["Kernel"] = data["Info"]["Kernel"]
+    data["Info"]["Kernel"] = "Linux"
 else:
     print("I don't know which operating system is ", data["Info"]["OS"])
 data["ClusterMembershipStatus"] = {
