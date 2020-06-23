@@ -1,66 +1,80 @@
 {
+    "AgentVersion": "latest",
     "Archived": true,
+    "ClusterMembershipStatus": {
+        "HACMP": false,
+        "OracleClusterware": false,
+        "SunCluster": false,
+        "VeritasClusterServer": false
+    },
+    "Clusters": null,
     "CreatedAt": {
         "$date": {
             "$numberLong": "1587729353150"
         }
     },
-    "Databases": "ERCOLE",
     "Environment": "TST",
-    "Extra": {
-        "Filesystems": [
-            {
-                "Available": "320M",
-                "Filesystem": "/dev/sda1",
-                "FsType": "ext4",
-                "MountedOn": "/boot",
-                "Size": "488M",
-                "Used": "133M",
-                "UsedPerc": "30%"
+    "Features": {
+        "Oracle": null
+    },
+    "Filesystems": [
+        {
+            "AvailableSpace": {
+                "$numberLong": "335544320"
+            },
+            "Filesystem": "/dev/sda1",
+            "MountedOn": "/boot",
+            "Size": {
+                "$numberLong": "511705088"
+            },
+            "Type": "ext4",
+            "UsedSpace": {
+                "$numberLong": "139460608"
             }
-        ]
-    },
-    "HostDataSchemaVersion": {
-        "$numberDouble": "4.0"
-    },
-    "HostType": "oracledb",
+        }
+    ],
     "Hostname": "test-small3",
     "Info": {
-        "AixCluster": false,
         "CPUCores": {
-            "$numberDouble": "1.0"
+            "$numberInt": "1"
         },
+        "CPUFrequency": "2.53GHz",
         "CPUModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-        "CPUThreads": {
-            "$numberDouble": "2.0"
+        "CPUSockets": {
+            "$numberInt": "2"
         },
-        "Environment": "TST",
+        "CPUThreads": {
+            "$numberInt": "2"
+        },
+        "CoresPerSocket": {
+            "$numberInt": "1"
+        },
+        "HardwareAbstraction": "VIRT",
+        "HardwareAbstractionTechnology": "VMWARE",
         "Hostname": "test-small3",
-        "Kernel": "3.10.0-514.el7.x86_64",
-        "Location": "Italy",
+        "Kernel": "Linux",
+        "KernelVersion": "3.10.0-514.el7.x86_64",
         "MemoryTotal": {
             "$numberDouble": "3.0"
         },
-        "OS": "Red Hat Enterprise Linux Server release 7.6 (Maipo)",
-        "OracleCluster": false,
-        "Socket": {
-            "$numberDouble": "2.0"
-        },
-        "SunCluster": false,
+        "OS": "Red Hat Enterprise Linux",
+        "OSVersion": "7.6",
         "SwapTotal": {
             "$numberDouble": "1.0"
         },
-        "Type": "VMWARE",
-        "VeritasCluster": false,
-        "Virtual": true
+        "ThreadsPerCore": {
+            "$numberInt": "2"
+        }
     },
     "Location": "Italy",
     "SchemaVersion": {
+        "$numberDouble": "1.0"
+    },
+    "ServerSchemaVersion": {
         "$numberInt": "1"
     },
-    "Schemas": "RAF REMOTE_SCHEDULER_AGENT",
     "ServerVersion": "latest",
-    "Version": "latest",
+    "Tags": [],
     "_id": {
         "$oid": "5ea2d3c920d55cbdc35022b7"
     }
