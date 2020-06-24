@@ -46,7 +46,7 @@ func init() {
 				req, _ := http.NewRequest("DELETE", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
 					ercoleConfig.APIService.AuthenticationProvider.Username,
 					ercoleConfig.APIService.AuthenticationProvider.Password,
-					"/hosts/"+hostname+"/databases/"+dbname+"/tags/"+tagname,
+					"/hosts/"+hostname+"/technologies/oracle/databases/"+dbname+"/tags/"+tagname,
 				).String(), bytes.NewReader([]byte{}))
 
 				//Make the http request
