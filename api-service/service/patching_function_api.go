@@ -39,11 +39,13 @@ import (
 const DatabaseTagsAdderMarker = "DATABASE_TAGS_ADDER"
 const DatabaseTagsAdderCode = `
 	/*<DATABASE_TAGS_ADDER>*/
-	hostdata.Extra.Databases.forEach(function addTag(db) {
-		if (db.Name in vars.Tags) {
-			db.Tags = vars.Tags[db.Name];
-		}
-	});
+	if (hostdata.Features.Oracle != undefined && hostdata.Features.Oracle.Database != undefined) {
+		hostdata.Features.Oracle.Database.Databases.forEach(function addTag(db) {
+			if (db.Name in vars.Tags) {
+				db.Tags = vars.Tags[db.Name];
+			}
+		});
+	}
 	/*</DATABASE_TAGS_ADDER>*/
 `
 
@@ -69,19 +71,21 @@ const DatabaseTagsAdderCode = `
 const DatabaseLicensesFixerMarker = "DATABASE_LICENSES_FIXER"
 const DatabaseLicensesFixerCode = `
 	/*<DATABASE_LICENSES_FIXER>*/
-	hostdata.Extra.Databases.forEach(function fixLicensesDb(db) {
-		db.Licenses.forEach(function fixLicense(lic) {
-			if (db.Name in vars.LicenseModifiers && lic.Name in vars.LicenseModifiers[db.Name]) {
-				if (! ("OldCount" in lic)) {
-					lic.OldCount = lic.Count;
+	if (hostdata.Features.Oracle != undefined && hostdata.Features.Oracle.Database != undefined) { 
+		hostdata.Features.Oracle.Database.Databases.forEach(function fixLicensesDb(db) {
+			db.Licenses.forEach(function fixLicense(lic) {
+				if (db.Name in vars.LicenseModifiers && lic.Name in vars.LicenseModifiers[db.Name]) {
+					if (! ("OldCount" in lic)) {
+						lic.OldCount = lic.Count;
+					}
+					lic.Count = vars.LicenseModifiers[db.Name][lic.Name];
+				} else if ("OldCount" in lic) {
+					lic.Count = lic.OldCount;
+					delete lic.OldCount;
 				}
-				lic.Count = vars.LicenseModifiers[db.Name][lic.Name];
-			} else if ("OldCount" in lic) {
-				lic.Count = lic.OldCount;
-				delete lic.OldCount;
-			}
+			});
 		});
-	});
+	}
 	/*</DATABASE_LICENSES_FIXER>*/
 `
 
