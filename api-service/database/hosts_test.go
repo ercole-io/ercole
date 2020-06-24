@@ -458,6 +458,7 @@ func (m *MongodbSuite) TestGetHost() {
 			"SchemaVersion":       1,
 			"ServerSchemaVersion": 1,
 			"ServerVersion":       "latest",
+			"Hostname":            "test-virt",
 			"Tags":                []interface{}{},
 			"_id":                 utils.Str2oid("5eb0222a45d85f4193704944"),
 		}
