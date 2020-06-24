@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -89,7 +89,7 @@ func MigrateHostsSchema(log *logrus.Logger, client *mongo.Database) {
 	if err := client.RunCommand(context.TODO(), bson.D{
 		{"collMod", "hosts"},
 		{"validator", bson.D{
-			{"$jsonSchema", model.HostDataBsonValidatorRules},
+			{"$jsonSchema", model.HostDataBEBsonValidatorRules},
 		}},
 		{"validationAction", "error"},
 	}).Err(); err != nil {
@@ -105,15 +105,6 @@ func MigrateHostsSchema(log *logrus.Logger, client *mongo.Database) {
 		Options: (&options.IndexOptions{
 			PartialFilterExpression: bson.D{{"Archived", false}},
 		}).SetUnique(true),
-	}); err != nil {
-		log.Panicln(err)
-	}
-	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
-		Keys: bson.D{
-			{"Archived", 1},
-			{"HostType", 1},
-			{"Hostname", 1},
-		},
 	}); err != nil {
 		log.Panicln(err)
 	}
@@ -150,7 +141,6 @@ func MigrateHostsSchema(log *logrus.Logger, client *mongo.Database) {
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
 			{"Archived", 1},
-			{"HostType", 1},
 			{"Extra.clusters.Name", 1},
 		},
 	}); err != nil {
@@ -159,7 +149,6 @@ func MigrateHostsSchema(log *logrus.Logger, client *mongo.Database) {
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
 			{"Archived", 1},
-			{"HostType", 1},
 			{"Extra.Clusters.VMs.Hostname", 1},
 		},
 	}); err != nil {

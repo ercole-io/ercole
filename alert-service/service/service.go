@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -181,15 +181,26 @@ func (as *AlertService) ProcessAlertInsertion(params hub.Fields) {
 }
 
 // DiffHostDataMapAndGenerateAlert find the difference between the data and generate eventually alerts for such difference
-func (as *AlertService) DiffHostDataMapAndGenerateAlert(oldData model.HostData, newData model.HostData) utils.AdvancedErrorInterface {
+func (as *AlertService) DiffHostDataMapAndGenerateAlert(oldData model.HostDataBE, newData model.HostDataBE) utils.AdvancedErrorInterface {
 	newEnterpriseLicenseAlertThrown := false
 
-	oldExtra := oldData.Extra
-	newExtra := newData.Extra
+	var oldOracleDbs []model.OracleDatabase
+	var newOracleDbs []model.OracleDatabase
+
+	if oldData.Features.Oracle != nil && oldData.Features.Oracle.Database != nil && oldData.Features.Oracle.Database.Databases != nil {
+		oldOracleDbs = oldData.Features.Oracle.Database.Databases
+	} else {
+		oldOracleDbs = []model.OracleDatabase{}
+	}
+	if newData.Features.Oracle != nil && newData.Features.Oracle.Database != nil && newData.Features.Oracle.Database.Databases != nil {
+		newOracleDbs = newData.Features.Oracle.Database.Databases
+	} else {
+		newOracleDbs = []model.OracleDatabase{}
+	}
 
 	//Convert databases array to map
-	oldDatabases := model.DatabasesArrayAsMap(oldExtra.Databases)
-	newDatabases := model.DatabasesArrayAsMap(newExtra.Databases)
+	oldDatabases := model.DatabasesArrayAsMap(oldOracleDbs)
+	newDatabases := model.DatabasesArrayAsMap(newOracleDbs)
 
 	//If the oldData is empty, fire a new server
 	if oldData.Hostname == "" {
@@ -201,12 +212,12 @@ func (as *AlertService) DiffHostDataMapAndGenerateAlert(oldData model.HostData, 
 	//For each new database
 	for _, newDb := range newDatabases {
 		//Get the old database if exist
-		var oldDb model.Database
+		var oldDb model.OracleDatabase
 		if val, ok := oldDatabases[newDb.Name]; ok {
 			oldDb = val
 		} else {
-			oldDb = model.Database{
-				Licenses: []model.License{},
+			oldDb = model.OracleDatabase{
+				Licenses: []model.OracleDatabaseLicense{},
 			}
 			// fire NEW_DATABASE alert
 			if err := as.ThrowNewDatabaseAlert(newDb.Name, newData.Hostname); err != nil {

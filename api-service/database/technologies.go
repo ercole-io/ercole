@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@ import (
 )
 
 // GetTechnologiesUsage return a map that contains the number of usages for every features
-func (md *MongoDatabase) GetTechnologiesUsage(location string, environment string, olderThan time.Time) (map[string]float32, utils.AdvancedErrorInterface) {
-	var out map[string]float32 = make(map[string]float32)
+func (md *MongoDatabase) GetTechnologiesUsage(location string, environment string, olderThan time.Time) (map[string]float64, utils.AdvancedErrorInterface) {
+	var out map[string]float64 = make(map[string]float64)
 
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -37,12 +37,12 @@ func (md *MongoDatabase) GetTechnologiesUsage(location string, environment strin
 			mu.APGroup(bson.M{
 				"_id": 1,
 				"Oracle/Database_HostsCount": mu.APOSum(
-					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$Extra.Databases", bson.A{})), 0), 1, 0),
+					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$Features.Oracle.Database.Databases", bson.A{})), 0), 1, 0),
 				),
 				"Oracle/Exadata": mu.APOSum(
 					mu.APOCond(
 						mu.APOEqual(bson.M{
-							"$type": "$Extra.Exadata",
+							"$type": "$Features.Oracle.Exadata",
 						}, "object"),
 						1,
 						0,

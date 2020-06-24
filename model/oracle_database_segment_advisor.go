@@ -28,7 +28,7 @@ type OracleDatabaseSegmentAdvisor struct {
 	SegmentName    string                 `bson:"SegmentName"`
 	SegmentType    string                 `bson:"SegmentType"`
 	PartitionName  string                 `bson:"PartitionName"`
-	Reclaimable    float32                `bson:"Reclaimable"`
+	Reclaimable    float64                `bson:"Reclaimable"`
 	Recommendation string                 `bson:"Recommendation"`
 	OtherInfo      map[string]interface{} `bson:"-"`
 }
@@ -53,8 +53,8 @@ func (v *OracleDatabaseSegmentAdvisor) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// SegmentAdvisorBsonValidatorRules contains mongodb validation rules for segmentAdvisor
-var SegmentAdvisorBsonValidatorRules = bson.M{
+// OracleDatabaseSegmentAdvisorBsonValidatorRules contains mongodb validation rules for OracleDatabaseSegmentAdvisor
+var OracleDatabaseSegmentAdvisorBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
 		"SegmentOwner",
@@ -66,22 +66,32 @@ var SegmentAdvisorBsonValidatorRules = bson.M{
 	},
 	"properties": bson.M{
 		"SegmentOwner": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 32,
 		},
 		"SegmentName": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 32,
 		},
 		"SegmentType": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 32,
 		},
 		"PartitionName": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"maxLength": 32,
 		},
 		"Reclaimable": bson.M{
-			"bsonType": "string",
+			"bsonType": "number",
+			"minimum":  0,
 		},
 		"Recommendation": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 256,
 		},
 	},
 }

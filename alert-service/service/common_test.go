@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -33,52 +33,12 @@ import (
 var errMock error = errors.New("MockError")
 var aerrMock utils.AdvancedErrorInterface = utils.NewAdvancedErrorPtr(errMock, "mock")
 
-var emptyHostData model.HostData = model.HostData{
+var emptyHostData model.HostDataBE = model.HostDataBE{
 	Hostname: "",
-	Extra: model.ExtraInfo{
-		Databases: []model.Database{},
-	},
-	Info: model.Host{
-		CPUCores: 0,
-	},
-}
-
-var hostData1 model.HostData = model.HostData{
-	ID:        utils.Str2oid("5dc3f534db7e81a98b726a52"),
-	Hostname:  "superhost1",
-	Archived:  false,
-	CreatedAt: utils.P("2019-11-05T14:02:03Z"),
-	Extra: model.ExtraInfo{
-		Databases: []model.Database{},
-	},
-	Info: model.Host{
-		CPUCores: 0,
-	},
-}
-
-var hostData2 model.HostData = model.HostData{
-	ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
-	Hostname:  "superhost1",
-	Archived:  true,
-	CreatedAt: utils.P("2019-11-05T12:02:03Z"),
-	Extra: model.ExtraInfo{
-		Databases: []model.Database{},
-	},
-	Info: model.Host{
-		CPUCores: 0,
-	},
-}
-
-var hostData3 model.HostData = model.HostData{
-	ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
-	Hostname:  "superhost1",
-	Archived:  true,
-	CreatedAt: utils.P("2019-11-05T16:02:03Z"),
-	Extra: model.ExtraInfo{
-		Databases: []model.Database{
-			{
-				Name:     "acd",
-				Licenses: []model.License{},
+	Features: model.Features{
+		Oracle: &model.OracleFeature{
+			Database: &model.OracleDatabaseFeature{
+				Databases: []model.OracleDatabase{},
 			},
 		},
 	},
@@ -87,23 +47,83 @@ var hostData3 model.HostData = model.HostData{
 	},
 }
 
-var hostData4 model.HostData = model.HostData{
+var hostData1 model.HostDataBE = model.HostDataBE{
+	ID:        utils.Str2oid("5dc3f534db7e81a98b726a52"),
+	Hostname:  "superhost1",
+	Archived:  false,
+	CreatedAt: utils.P("2019-11-05T14:02:03Z"),
+	Features: model.Features{
+		Oracle: &model.OracleFeature{
+			Database: &model.OracleDatabaseFeature{
+				Databases: []model.OracleDatabase{},
+			},
+		},
+	},
+	Info: model.Host{
+		CPUCores: 0,
+	},
+}
+
+var hostData2 model.HostDataBE = model.HostDataBE{
+	ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
+	Hostname:  "superhost1",
+	Archived:  true,
+	CreatedAt: utils.P("2019-11-05T12:02:03Z"),
+	Features: model.Features{
+		Oracle: &model.OracleFeature{
+			Database: &model.OracleDatabaseFeature{
+				Databases: []model.OracleDatabase{},
+			},
+		},
+	},
+	Info: model.Host{
+		CPUCores: 0,
+	},
+}
+
+var hostData3 model.HostDataBE = model.HostDataBE{
+	ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
+	Hostname:  "superhost1",
+	Archived:  true,
+	CreatedAt: utils.P("2019-11-05T16:02:03Z"),
+	Features: model.Features{
+		Oracle: &model.OracleFeature{
+			Database: &model.OracleDatabaseFeature{
+				Databases: []model.OracleDatabase{
+					{
+						Name:     "acd",
+						Licenses: []model.OracleDatabaseLicense{},
+					},
+				},
+			},
+		},
+	},
+	Info: model.Host{
+		CPUCores: 0,
+	},
+}
+
+var hostData4 model.HostDataBE = model.HostDataBE{
 	ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
 	Hostname:  "superhost1",
 	Archived:  true,
 	CreatedAt: utils.P("2019-11-05T18:02:03Z"),
-	Extra: model.ExtraInfo{
-		Databases: []model.Database{
-			{
-				Name: "acd",
-				Licenses: []model.License{
+	Features: model.Features{
+		Oracle: &model.OracleFeature{
+			Database: &model.OracleDatabaseFeature{
+				Databases: []model.OracleDatabase{
 					{
-						Name:  "Oracle ENT",
-						Count: 10,
-					},
-					{
-						Name:  "Driving",
-						Count: 100,
+						Name: "acd",
+						Licenses: []model.OracleDatabaseLicense{
+							{
+								Name:  "Oracle ENT",
+								Count: 10,
+							},
+							{
+								Name:  "Driving",
+								Count: 100,
+							},
+						},
 					},
 				},
 			},

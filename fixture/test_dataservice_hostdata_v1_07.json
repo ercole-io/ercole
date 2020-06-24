@@ -1,0 +1,434 @@
+{
+    "Hostname": "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
+    "Environment": "PROD",
+    "Location": "Italy",
+    "Info": {
+        "Hostname": "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
+        "CPUModel": "Intel(R) Xeon(R) Platinum 8160 CPU @ 2.10GHz",
+        "CPUCores": 24,
+        "CPUThreads": 48,
+        "Kernel": "4.1.12-124.26.12.el7uek.x86_64",
+        "OS": "Red Hat Enterprise Linux",
+        "MemoryTotal": 376,
+        "SwapTotal": 23,
+        "CPUFrequency": "2.10GHz",
+        "CPUSockets": 1,
+        "CoresPerSocket": 24,
+        "ThreadsPerCore": 2,
+        "KernelVersion": "4.1.12-124.26.12.el7uek.x86_64",
+        "OSVersion": "7.6",
+        "HardwareAbstraction": "PH",
+        "HardwareAbstractionTechnology": "PH"
+    },
+    "AgentVersion": "latest",
+    "Tags": [],
+    "SchemaVersion": 1,
+    "ClusterMembershipStatus": {
+        "OracleClusterware": true,
+        "VeritasClusterServer": false,
+        "SunCluster": false,
+        "HACMP": false
+    },
+    "Filesystems": [
+        {
+            "Filesystem": "KEENAN-f4e458d4320a271207b301c8c6442d77",
+            "Size": 32212254720,
+            "MountedOn": "BENTON-6666cd76f96956469e7be39d750cc7d9",
+            "AvailableSpace": 8589934592,
+            "UsedSpace": 21474836480,
+            "Type": "ext4"
+        },
+        {
+            "Filesystem": "JUAN-45e177f34dddc33a5b1537ce8f4913ba",
+            "Size": 511705088,
+            "MountedOn": "MICHAEL-a53bfb333437907a8d5bdc636d15c75d",
+            "AvailableSpace": 425721856,
+            "UsedSpace": 50331648,
+            "Type": "ext4"
+        },
+        {
+            "Filesystem": "ALONSO-ff9331f2487c4bc14edce1327ff51203",
+            "Size": 266338304,
+            "MountedOn": "BRENT-3dc8258ea1ab1dda459bb7d5cd39c64e",
+            "AvailableSpace": 227540992,
+            "UsedSpace": 39845888,
+            "Type": "vfat"
+        },
+        {
+            "Filesystem": "ALONSO-65cd6ce3d06b4b81169330f9acd01e66",
+            "Size": 202937204736,
+            "MountedOn": "ROLF-5a500f0368bd01ae8dc965a89133d5b3",
+            "AvailableSpace": 202937204736,
+            "UsedSpace": 0,
+            "Type": "devtmpfs"
+        },
+        {
+            "Filesystem": "WAYLON-516e4aeb5a71200f6c8d74409b1f1b07",
+            "Size": 404800667648,
+            "MountedOn": "TROY-edd846be807ebc0ca06f1fcb0258172c",
+            "AvailableSpace": 403726925824,
+            "UsedSpace": 272629760,
+            "Type": "tmpfs"
+        },
+        {
+            "Filesystem": "MICHEAL-1910e6ad9e82aff0f011efef83b0ad79",
+            "Size": 6597069766656,
+            "MountedOn": "FRANCESCO-832c7636116d7ee7dc3dd2455ec70269",
+            "AvailableSpace": 2308974418329,
+            "UsedSpace": 4398046511104,
+            "Type": "nfs"
+        },
+        {
+            "Filesystem": "ERIC-c3b6b788e7f75983db3e2d78f81b563c",
+            "Size": 211527139328,
+            "MountedOn": "ALAN-d660a7080bdb51de5ec0f0fb9086a6f2",
+            "AvailableSpace": 165356240896,
+            "UsedSpace": 35433480192,
+            "Type": "ext4"
+        },
+        {
+            "Filesystem": "WAYLON-516e4aeb5a71200f6c8d74409b1f1b07",
+            "Size": 202937204736,
+            "MountedOn": "KENTON-61d2c5338290839e067190b2927f1f0d",
+            "AvailableSpace": 202937204736,
+            "UsedSpace": 6396313,
+            "Type": "tmpfs"
+        },
+        {
+            "Filesystem": "WAYLON-516e4aeb5a71200f6c8d74409b1f1b07",
+            "Size": 40802189312,
+            "MountedOn": "LINDSAY-c89d78716a39b0f75e94e6790f9aee71",
+            "AvailableSpace": 40802189312,
+            "UsedSpace": 0,
+            "Type": "tmpfs"
+        },
+        {
+            "Filesystem": "WAYLON-516e4aeb5a71200f6c8d74409b1f1b07",
+            "Size": 40802189312,
+            "MountedOn": "ARLEN-e9ed425637438b6d6f2214c14f4a0b89",
+            "AvailableSpace": 40802189312,
+            "UsedSpace": 0,
+            "Type": "tmpfs"
+        },
+        {
+            "Filesystem": "WAYLON-516e4aeb5a71200f6c8d74409b1f1b07",
+            "Size": 40802189312,
+            "MountedOn": "MAN-edcf3075b469a5acf3a9c12526068950",
+            "AvailableSpace": 40802189312,
+            "UsedSpace": 0,
+            "Type": "tmpfs"
+        },
+        {
+            "Filesystem": "BRODERICK-2226ed3c14ebae66eb456f477320ce44",
+            "Size": 161061273600,
+            "MountedOn": "ZACKARY-78ed3923ea8097291a660197a5cffd58",
+            "AvailableSpace": 30064771072,
+            "UsedSpace": 132070244352,
+            "Type": "nfs"
+        },
+        {
+            "Filesystem": "WAYLON-516e4aeb5a71200f6c8d74409b1f1b07",
+            "Size": 202937204736,
+            "MountedOn": "VON-beb8321407a866f268040ddfb3a2a525",
+            "AvailableSpace": 202937204736,
+            "UsedSpace": 0,
+            "Type": "tmpfs"
+        },
+        {
+            "Filesystem": "BRANDON-bf45d8723597390ffaa90e09c85fdcb3",
+            "Size": 106300440576,
+            "MountedOn": "ANTONIA-a8946fa5f211c5345e3610710e471cb4",
+            "AvailableSpace": 30064771072,
+            "UsedSpace": 71940702208,
+            "Type": "ext4"
+        }
+    ],
+    "Features": {
+        "Oracle": {
+            "Exadata": {
+                "Components": [
+                    {
+                        "Hostname": "s75-c2449b0e89e5a0b38401636eaa07abd5",
+                        "ServerType": "StorageServer",
+                        "Model": "X7-2L_High_Capacity",
+                        "Memory": 188,
+                        "Status": "online",
+                        "PowerStatus": "normal",
+                        "FanStatus": "normal",
+                        "TempActual": 23.0,
+                        "TempStatus": "normal",
+                        "FlashcacheMode": "WriteBack",
+                        "CellDisks": [
+                            {
+                                "Name": "fanshop-5bde7badf2c9deceea5f615c3840c0b9",
+                                "Status": "normal",
+                                "ErrCount": 0,
+                                "UsedPerc": 32
+                            },
+                            {
+                                "Name": "globe-b31fa3756675a5c8ac052437ff7e439b",
+                                "Status": "normal",
+                                "ErrCount": 0,
+                                "UsedPerc": 54
+                            },
+                            {
+                                "Name": "srvc28-3807c977788c598cfa31fe21c0d3d5be",
+                                "Status": "normal",
+                                "ErrCount": 3,
+                                "UsedPerc": 67
+                            },
+                            {
+                                "Name": "cashier-fac3ccf76cf716cf6d83ffc853cbe425",
+                                "Status": "normal",
+                                "ErrCount": 0,
+                                "UsedPerc": 32
+                            },
+                            {
+                                "Name": "cco-e2affc833f3c94ac4b449a02a32ec5bb",
+                                "Status": "normal",
+                                "ErrCount": 0,
+                                "UsedPerc": 76
+                            },
+                            {
+                                "Name": "caronte-0b9573d49d7136c39df2919a599092ac",
+                                "Status": "normal",
+                                "ErrCount": 0,
+                                "UsedPerc": 45
+                            }
+                        ],
+                        "SwVersion": "19.2.4.0.0.190709",
+                        "SwReleaseDate": "2019-07-09",
+                        "RunningCPUCount": 20,
+                        "TotalCPUCount": 40,
+                        "RunningPowerSupply": 2,
+                        "TotalPowerSupply": 2,
+                        "RunningFanCount": 8,
+                        "TotalFanCount": 8,
+                        "CellsrvServiceStatus": "running",
+                        "MsServiceStatus": "running",
+                        "RsServiceStatus": "running"
+                    },
+                    {
+                        "Hostname": "itl-b22fa37cad1326aba990cdec7facace2",
+                        "ServerType": "StorageServer",
+                        "Model": "X7-2L_High_Capacity",
+                        "Memory": 188,
+                        "Status": "online",
+                        "PowerStatus": "normal",
+                        "FanStatus": "normal",
+                        "TempActual": 24.0,
+                        "TempStatus": "normal",
+                        "FlashcacheMode": "WriteBack",
+                        "CellDisks": [
+                            {
+                                "Name": "server52-390b5dac8c3b68e3471c657ef97a7ae6",
+                                "Status": "normal",
+                                "ErrCount": 0,
+                                "UsedPerc": 32
+                            },
+                            {
+                                "Name": "srvc07-5b888ab40dbd25e106309fd482f859a0",
+                                "Status": "normal",
+                                "ErrCount": 0,
+                                "UsedPerc": 54
+                            },
+                            {
+                                "Name": "apd-b0377141dedf7eda0962043325f50670",
+                                "Status": "normal",
+                                "ErrCount": 0,
+                                "UsedPerc": 78
+                            },
+                            {
+                                "Name": "peanut-e1b14d53b56e75a83c6d0d041f5f6b93",
+                                "Status": "normal",
+                                "ErrCount": 0,
+                                "UsedPerc": 23
+                            },
+                            {
+                                "Name": "ebony-da06b952ac63266027135a7622fe3ee7",
+                                "Status": "normal",
+                                "ErrCount": 0,
+                                "UsedPerc": 90
+                            },
+                            {
+                                "Name": "relief-3f3c3133a37ea483399ee13a2056d152",
+                                "Status": "normal",
+                                "ErrCount": 2,
+                                "UsedPerc": 4
+                            }
+                        ],
+                        "SwVersion": "19.2.4.0.0.190709",
+                        "SwReleaseDate": "2019-07-09",
+                        "RunningCPUCount": 20,
+                        "TotalCPUCount": 40,
+                        "RunningPowerSupply": 2,
+                        "TotalPowerSupply": 2,
+                        "RunningFanCount": 8,
+                        "TotalFanCount": 8,
+                        "CellsrvServiceStatus": "running",
+                        "MsServiceStatus": "running",
+                        "RsServiceStatus": "running"
+                    },
+                    {
+                        "Hostname": "relief-08921a25540ca522a1660d92f81eef35",
+                        "ServerType": "StorageServer",
+                        "Model": "X7-2L_High_Capacity",
+                        "Memory": 188,
+                        "Status": "online",
+                        "PowerStatus": "normal",
+                        "FanStatus": "normal",
+                        "TempActual": 24.0,
+                        "TempStatus": "normal",
+                        "FlashcacheMode": "WriteBack",
+                        "CellDisks": [
+                            {
+                                "Name": "hosting01-875e9885c0f2d06e6f562b6294cdea44",
+                                "Status": "normal",
+                                "ErrCount": 43,
+                                "UsedPerc": 43
+                            },
+                            {
+                                "Name": "srvc08-abf7888ef056229b458572acab50115f",
+                                "Status": "normal",
+                                "ErrCount": 65,
+                                "UsedPerc": 76
+                            },
+                            {
+                                "Name": "ex1-751423b2e24bac8b9942b968067e7ef2",
+                                "Status": "normal",
+                                "ErrCount": 76,
+                                "UsedPerc": 99
+                            },
+                            {
+                                "Name": "tromso-gw2-9ae8ef1a92129068a5a8fd6bac9ea3a0",
+                                "Status": "normal",
+                                "ErrCount": 43,
+                                "UsedPerc": 100
+                            },
+                            {
+                                "Name": "imga-06c76dd6b79f652cdfc5313060fb6ed0",
+                                "Status": "normal",
+                                "ErrCount": 43,
+                                "UsedPerc": 23
+                            },
+                            {
+                                "Name": "ibk-1db40a936ab7053e29871f23ce1ffaf4",
+                                "Status": "normal",
+                                "ErrCount": 87,
+                                "UsedPerc": 56
+                            }
+                        ],
+                        "SwVersion": "19.2.4.0.0.190709",
+                        "SwReleaseDate": "2019-07-09",
+                        "RunningCPUCount": 20,
+                        "TotalCPUCount": 40,
+                        "RunningPowerSupply": 2,
+                        "TotalPowerSupply": 2,
+                        "RunningFanCount": 8,
+                        "TotalFanCount": 8,
+                        "CellsrvServiceStatus": "running",
+                        "MsServiceStatus": "running",
+                        "RsServiceStatus": "running"
+                    },
+                    {
+                        "Hostname": "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
+                        "ServerType": "DBServer",
+                        "Model": "X7-2",
+                        "Memory": 376,
+                        "Status": "online",
+                        "PowerStatus": "normal",
+                        "FanStatus": "normal",
+                        "TempActual": 24.0,
+                        "TempStatus": "normal",
+                        "FlashcacheMode": null,
+                        "CellDisks": null,
+                        "SwVersion": "19.2.4.0.0.190709",
+                        "SwReleaseDate": "2019-07-09",
+                        "RunningCPUCount": 48,
+                        "TotalCPUCount": 48,
+                        "RunningPowerSupply": 2,
+                        "TotalPowerSupply": 2,
+                        "RunningFanCount": 16,
+                        "TotalFanCount": 16,
+                        "CellsrvServiceStatus": null,
+                        "MsServiceStatus": "running",
+                        "RsServiceStatus": "running"
+                    },
+                    {
+                        "Hostname": "kantoor-43a6cdc54bb211eb127bca5c6651950c",
+                        "ServerType": "DBServer",
+                        "Model": "X7-2",
+                        "Memory": 376,
+                        "Status": "online",
+                        "PowerStatus": "normal",
+                        "FanStatus": "normal",
+                        "TempActual": 24.0,
+                        "TempStatus": "normal",
+                        "FlashcacheMode": null,
+                        "CellDisks": null,
+                        "SwVersion": "19.2.4.0.0.190709",
+                        "SwReleaseDate": "2019-07-09",
+                        "RunningCPUCount": 48,
+                        "TotalCPUCount": 48,
+                        "RunningPowerSupply": 2,
+                        "TotalPowerSupply": 2,
+                        "RunningFanCount": 16,
+                        "TotalFanCount": 16,
+                        "CellsrvServiceStatus": null,
+                        "MsServiceStatus": "running",
+                        "RsServiceStatus": "running"
+                    },
+                    {
+                        "Hostname": "off-df8b95a01746a464e69203c840a6a46a",
+                        "ServerType": "IBSwitch",
+                        "Model": "SUN_DCS_36p",
+                        "Memory": null,
+                        "Status": null,
+                        "PowerStatus": null,
+                        "FanStatus": null,
+                        "TempActual": null,
+                        "TempStatus": null,
+                        "FlashcacheMode": null,
+                        "CellDisks": null,
+                        "SwVersion": "2.2.13-2.190326",
+                        "SwReleaseDate": "2019-03-26",
+                        "RunningCPUCount": null,
+                        "TotalCPUCount": null,
+                        "RunningPowerSupply": null,
+                        "TotalPowerSupply": null,
+                        "RunningFanCount": null,
+                        "TotalFanCount": null,
+                        "CellsrvServiceStatus": null,
+                        "MsServiceStatus": null,
+                        "RsServiceStatus": null
+                    },
+                    {
+                        "Hostname": "aspen-8d1d1b210625b1f1024b686135f889a1",
+                        "ServerType": "IBSwitch",
+                        "Model": "SUN_DCS_36p",
+                        "Memory": null,
+                        "Status": null,
+                        "PowerStatus": null,
+                        "FanStatus": null,
+                        "TempActual": null,
+                        "TempStatus": null,
+                        "FlashcacheMode": null,
+                        "CellDisks": null,
+                        "SwVersion": "2.2.13-2.190326",
+                        "SwReleaseDate": "2019-03-26",
+                        "RunningCPUCount": null,
+                        "TotalCPUCount": null,
+                        "RunningPowerSupply": null,
+                        "TotalPowerSupply": null,
+                        "RunningFanCount": null,
+                        "TotalFanCount": null,
+                        "CellsrvServiceStatus": null,
+                        "MsServiceStatus": null,
+                        "RsServiceStatus": null
+                    }
+                ]
+            }
+        }
+    },
+    "Clusters": null
+}

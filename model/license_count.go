@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ import (
 type LicenseCount struct {
 	Name             string  `bson:"_id"`
 	Count            int     `bson:"Count"`
-	CostPerProcessor float32 `bson:"CostPerProcessor"`
+	CostPerProcessor float64 `bson:"CostPerProcessor"`
 	Unlimited        bool    `bson:"Unlimited"`
 }
 

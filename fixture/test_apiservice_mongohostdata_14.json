@@ -1,112 +1,166 @@
 {
+    "AgentVersion": "latest",
     "Archived": true,
+    "ClusterMembershipStatus": {
+        "HACMP": false,
+        "OracleClusterware": false,
+        "SunCluster": false,
+        "VeritasClusterServer": false
+    },
+    "Clusters": null,
     "CreatedAt": {
         "$date": {
             "$numberLong": "1590053455061"
         }
     },
-    "Databases": "pippodb",
     "Environment": "TST",
-    "Extra": {
-        "Databases": [
-            {
-                "ADDMs": [],
-                "ASM": false,
-                "Allocated": "129",
-                "Archivelog": "NOARCHIVELOG",
-                "Backups": [],
-                "BlockSize": "8192",
-                "CPUCount": "2",
-                "Charset": "AL32UTF8",
-                "DBTime": "184.81",
-                "DailyCPUUsage": "0.7",
-                "Dataguard": false,
-                "Elapsed": "12059.18",
-                "Features2": [],
-                "InstanceNumber": "1",
-                "LastPSUs": [],
-                "Licenses": [],
-                "MemoryTarget": "1.484",
-                "NCharset": "AL16UTF16",
-                "Name": "pippodb",
-                "PGATarget": "0.",
-                "Patches": [],
-                "Platform": "Linux x86 64-bit",
-                "SGAMaxSize": "1.484",
-                "SGATarget": "0.",
-                "Schemas": [],
-                "SegmentAdvisors": [],
-                "SegmentsSize": "3",
-                "Status": "OPEN",
-                "Tablespaces": [],
-                "UniqueName": "pippodb",
-                "Used": "6",
-                "Version": "12.2.0.1.0 Enterprise Edition",
-                "Work": "1"
-            }
-        ],
-        "Filesystems": [
-            {
-                "Available": "5.4G",
-                "Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
-                "FsType": "ext4",
-                "MountedOn": "/",
-                "Size": "13G",
-                "Used": "6.7G",
-                "UsedPerc": "56%"
+    "Features": {
+        "Oracle": {
+            "Database": {
+                "Databases": [
+                    {
+                        "ADDMs": [],
+                        "ASM": false,
+                        "Allocated": {
+                            "$numberDouble": "129.0"
+                        },
+                        "Archivelog": false,
+                        "Backups": [],
+                        "BlockSize": {
+                            "$numberInt": "8192"
+                        },
+                        "CPUCount": {
+                            "$numberInt": "2"
+                        },
+                        "Charset": "AL32UTF8",
+                        "DBTime": {
+                            "$numberDouble": "184.81"
+                        },
+                        "DailyCPUUsage": {
+                            "$numberDouble": "0.7"
+                        },
+                        "DatafileSize": {
+                            "$numberDouble": "6.0"
+                        },
+                        "Dataguard": false,
+                        "Elapsed": {
+                            "$numberDouble": "12059.18"
+                        },
+                        "FeatureUsageStats": [],
+                        "InstanceNumber": {
+                            "$numberInt": "1"
+                        },
+                        "IsCDB": false,
+                        "Licenses": [],
+                        "MemoryTarget": {
+                            "$numberDouble": "1.484"
+                        },
+                        "NCharset": "AL16UTF16",
+                        "Name": "pippodb",
+                        "PDBs": [],
+                        "PGATarget": {
+                            "$numberDouble": "0.0"
+                        },
+                        "PSUs": [],
+                        "Patches": [],
+                        "Platform": "Linux x86 64-bit",
+                        "SGAMaxSize": {
+                            "$numberDouble": "1.484"
+                        },
+                        "SGATarget": {
+                            "$numberDouble": "0.0"
+                        },
+                        "Schemas": [],
+                        "SegmentAdvisors": [],
+                        "SegmentsSize": {
+                            "$numberDouble": "3.0"
+                        },
+                        "Services": [],
+                        "Status": "OPEN",
+                        "Tablespaces": [],
+                        "UniqueName": "pippodb",
+                        "Version": "12.2.0.1.0 Enterprise Edition",
+                        "Work": {
+                            "$numberDouble": "1.0"
+                        }
+                    }
+                ]
             },
-            {
-                "Available": "320M",
-                "Filesystem": "/dev/sda1",
-                "FsType": "ext4",
-                "MountedOn": "/boot",
-                "Size": "488M",
-                "Used": "133M",
-                "UsedPerc": "30%"
+            "Exadata": null
+        }
+    },
+    "Filesystems": [
+        {
+            "AvailableSpace": {
+                "$numberLong": "5798205849"
+            },
+            "Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+            "MountedOn": "/",
+            "Size": {
+                "$numberLong": "13958643712"
+            },
+            "Type": "ext4",
+            "UsedSpace": {
+                "$numberLong": "7194070220"
             }
-        ]
-    },
-    "HostDataSchemaVersion": {
-        "$numberDouble": "4.0"
-    },
-    "HostType": "oracledb",
+        },
+        {
+            "AvailableSpace": {
+                "$numberLong": "335544320"
+            },
+            "Filesystem": "/dev/sda1",
+            "MountedOn": "/boot",
+            "Size": {
+                "$numberLong": "511705088"
+            },
+            "Type": "ext4",
+            "UsedSpace": {
+                "$numberLong": "139460608"
+            }
+        }
+    ],
     "Hostname": "newdb",
     "Info": {
-        "AixCluster": false,
         "CPUCores": {
-            "$numberDouble": "1.0"
+            "$numberInt": "1"
         },
+        "CPUFrequency": "2.53GHz",
         "CPUModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-        "CPUThreads": {
-            "$numberDouble": "2.0"
+        "CPUSockets": {
+            "$numberInt": "2"
         },
-        "Environment": "TST",
+        "CPUThreads": {
+            "$numberInt": "2"
+        },
+        "CoresPerSocket": {
+            "$numberInt": "1"
+        },
+        "HardwareAbstraction": "VIRT",
+        "HardwareAbstractionTechnology": "VMWARE",
         "Hostname": "newdb",
-        "Kernel": "3.10.0-514.el7.x86_64",
-        "Location": "Germany",
+        "Kernel": "Linux",
+        "KernelVersion": "3.10.0-514.el7.x86_64",
         "MemoryTotal": {
             "$numberDouble": "3.0"
         },
-        "OS": "Red Hat Enterprise Linux Server release 7.6 (Maipo)",
-        "OracleCluster": false,
-        "Socket": {
-            "$numberDouble": "2.0"
-        },
-        "SunCluster": false,
+        "OS": "Red Hat Enterprise Linux",
+        "OSVersion": "7.6",
         "SwapTotal": {
             "$numberDouble": "1.0"
         },
-        "Type": "VMWARE",
-        "VeritasCluster": false,
-        "Virtual": true
+        "ThreadsPerCore": {
+            "$numberInt": "2"
+        }
     },
     "Location": "Germany",
     "SchemaVersion": {
+        "$numberDouble": "1.0"
+    },
+    "ServerSchemaVersion": {
         "$numberInt": "1"
     },
-    "Schemas": "RAF REMOTE_SCHEDULER_AGENT",
     "ServerVersion": "latest",
-    "Version": "latest",
+    "Tags": [],
     "_id": {
         "$oid": "5ec64a4f40c089c5aff44e99"
     }

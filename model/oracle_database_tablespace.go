@@ -25,10 +25,10 @@ import (
 // OracleDatabaseTablespace holds the informations about a tablespace.
 type OracleDatabaseTablespace struct {
 	Name      string                 `bson:"Name"`
-	MaxSize   float32                `bson:"MaxSize"`
-	Total     float32                `bson:"Total"`
-	Used      float32                `bson:"Used"`
-	UsedPerc  float32                `bson:"UsedPerc"`
+	MaxSize   float64                `bson:"MaxSize"`
+	Total     float64                `bson:"Total"`
+	Used      float64                `bson:"Used"`
+	UsedPerc  float64                `bson:"UsedPerc"`
 	Status    string                 `bson:"Status"`
 	OtherInfo map[string]interface{} `bson:"-"`
 }
@@ -53,11 +53,10 @@ func (v *OracleDatabaseTablespace) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// TablespaceBsonValidatorRules contains mongodb validation rules for tablespace
-var TablespaceBsonValidatorRules = bson.M{
+// OracleDatabaseTablespaceBsonValidatorRules contains mongodb validation rules for OracleDatabaseTablespace
+var OracleDatabaseTablespaceBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Database",
 		"Name",
 		"MaxSize",
 		"Total",
@@ -66,26 +65,34 @@ var TablespaceBsonValidatorRules = bson.M{
 		"Status",
 	},
 	"properties": bson.M{
-		"Database": bson.M{
-			"bsonType": "string",
-		},
 		"Name": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 32,
 		},
 		"MaxSize": bson.M{
-			"bsonType": "string",
+			"bsonType": "number",
+			"minimum":  0,
 		},
 		"Total": bson.M{
-			"bsonType": "string",
+			"bsonType": "number",
+			"minimum":  0,
 		},
 		"Used": bson.M{
-			"bsonType": "string",
+			"bsonType": "number",
+			"minimum":  0,
 		},
 		"UsedPerc": bson.M{
-			"bsonType": "string",
+			"bsonType": "number",
+			"minimum":  0,
+			"maximum":  100,
 		},
 		"Status": bson.M{
 			"bsonType": "string",
+			"enum": bson.A{
+				"ONLINE",
+				"OFFLINE",
+			},
 		},
 	},
 }

@@ -56,26 +56,30 @@ var VMInfoBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
 		"Name",
-		"ClusterName",
 		"Hostname",
 		"CappedCPU",
-		"PhysicalHost",
+		"VirtualizationNode",
 	},
 	"properties": bson.M{
 		"Name": bson.M{
-			"bsonType": "string",
-		},
-		"ClusterName": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 128,
 		},
 		"Hostname": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 253,
+			"pattern":   "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$",
 		},
 		"CappedCPU": bson.M{
 			"bsonType": "bool",
 		},
-		"PhysicalHost": bson.M{
-			"bsonType": "string",
+		"VirtualizationNode": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 253,
+			"pattern":   "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$",
 		},
 	},
 }

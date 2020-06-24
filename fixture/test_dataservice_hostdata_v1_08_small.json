@@ -1,0 +1,66 @@
+{
+    "Hostname": "test-virt",
+    "Environment": "PROD",
+    "Location": "Italy",
+    "Info": {
+        "Hostname": "test-virt",
+        "CPUModel": "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
+        "CPUCores": 1,
+        "CPUThreads": 2,
+        "Kernel": "3.10.0-862.9.1.el7.x86_64",
+        "OS": "Red Hat Enterprise Linux",
+        "MemoryTotal": 3,
+        "SwapTotal": 4,
+        "CPUFrequency": "2.50GHz",
+        "CPUSockets": 2,
+        "CoresPerSocket": 1,
+        "ThreadsPerCore": 2,
+        "KernelVersion": "3.10.0-862.9.1.el7.x86_64",
+        "OSVersion": "7.5",
+        "HardwareAbstraction": "VIRT",
+        "HardwareAbstractionTechnology": "VMWARE"
+    },
+    "AgentVersion": "1.6.1",
+    "Tags": [],
+    "SchemaVersion": 1,
+    "ClusterMembershipStatus": {
+        "OracleClusterware": false,
+        "VeritasClusterServer": false,
+        "SunCluster": false,
+        "HACMP": false
+    },
+    "Filesystems": [
+        {
+            "Filesystem": "/dev/mapper/vg_os-lv_root",
+            "Size": 8589934592,
+            "MountedOn": "/",
+            "AvailableSpace": 4939212390,
+            "UsedSpace": 3758096384,
+            "Type": "xfs"
+        }
+    ],
+    "Features": {},
+    "Clusters": [
+        {
+            "Name": "Puzzait",
+            "Type": "vmware",
+            "CPU": 140,
+            "Sockets": 10,
+            "VMs": [
+                {
+                    "Name": "test-virt",
+                    "Hostname": "test-virt",
+                    "CappedCPU": false,
+                    "VirtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402"
+                },
+                {
+                    "Name": "test-db",
+                    "Hostname": "test-db",
+                    "CappedCPU": false,
+                    "VirtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402"
+                }
+            ],
+            "FetchEndpoint": "???"
+        }
+    ]
+}

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ type MongoDatabaseInterface interface {
 	// ArchiveHost archives tho host with hostname as hostname
 	ArchiveHost(hostname string) (*mongo.UpdateResult, utils.AdvancedErrorInterface)
 	// InsertHostData adds a new hostdata to the database
-	InsertHostData(hostData model.HostData) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
+	InsertHostData(hostData model.HostDataBE) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
 	// FindOldCurrentHost return the list of current hosts that haven't sent hostdata after time t
 	FindOldCurrentHosts(t time.Time) ([]string, utils.AdvancedErrorInterface)
 	// FindOldArchivedHosts return the list of archived hosts older than t
@@ -83,7 +83,7 @@ func (md *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, util
 }
 
 // InsertHostData adds a new hostdata to the database
-func (md *MongoDatabase) InsertHostData(hostData model.HostData) (*mongo.InsertOneResult, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) InsertHostData(hostData model.HostDataBE) (*mongo.InsertOneResult, utils.AdvancedErrorInterface) {
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").InsertOne(context.TODO(), hostData)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")

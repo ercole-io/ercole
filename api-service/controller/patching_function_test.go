@@ -358,7 +358,7 @@ func TestSetPatchingFunction_FailInternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestAddTagToDatabase_Success(t *testing.T) {
+func TestAddTagToOracleDatabase_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -373,10 +373,10 @@ func TestAddTagToDatabase_Success(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AddTagToDatabase("test-db", "ERCOLE", "awesome").Return(nil)
+	as.EXPECT().AddTagToOracleDatabase("test-db", "ERCOLE", "awesome").Return(nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AddTagToDatabase)
+	handler := http.HandlerFunc(ac.AddTagToOracleDatabase)
 	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/tags", strings.NewReader("awesome"))
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "test-db",
@@ -389,7 +389,7 @@ func TestAddTagToDatabase_Success(t *testing.T) {
 	require.Equal(t, http.StatusOK, rr.Code)
 }
 
-func TestAddTagToDatabase_FailReadOnly(t *testing.T) {
+func TestAddTagToOracleDatabase_FailReadOnly(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -405,7 +405,7 @@ func TestAddTagToDatabase_FailReadOnly(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AddTagToDatabase)
+	handler := http.HandlerFunc(ac.AddTagToOracleDatabase)
 	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/tags", strings.NewReader("awesome"))
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "test-db",
@@ -418,7 +418,7 @@ func TestAddTagToDatabase_FailReadOnly(t *testing.T) {
 	require.Equal(t, http.StatusForbidden, rr.Code)
 }
 
-func TestAddTagToDatabase_FailBadRequest(t *testing.T) {
+func TestAddTagToOracleDatabase_FailBadRequest(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -434,7 +434,7 @@ func TestAddTagToDatabase_FailBadRequest(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AddTagToDatabase)
+	handler := http.HandlerFunc(ac.AddTagToOracleDatabase)
 	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/tags", &FailingReader{})
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "test-db",
@@ -447,7 +447,7 @@ func TestAddTagToDatabase_FailBadRequest(t *testing.T) {
 	require.Equal(t, http.StatusBadRequest, rr.Code)
 }
 
-func TestAddTagToDatabase_FailInternalServerError(t *testing.T) {
+func TestAddTagToOracleDatabase_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -462,10 +462,10 @@ func TestAddTagToDatabase_FailInternalServerError(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AddTagToDatabase("test-db", "ERCOLE", "awesome").Return(aerrMock)
+	as.EXPECT().AddTagToOracleDatabase("test-db", "ERCOLE", "awesome").Return(aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AddTagToDatabase)
+	handler := http.HandlerFunc(ac.AddTagToOracleDatabase)
 	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/tags", strings.NewReader("awesome"))
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "test-db",
@@ -478,7 +478,7 @@ func TestAddTagToDatabase_FailInternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestDeleteTagOfDatabase_Success(t *testing.T) {
+func TestDeleteTagOfOracleDatabase_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -493,10 +493,10 @@ func TestDeleteTagOfDatabase_Success(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DeleteTagOfDatabase("test-db", "ERCOLE", "awesome").Return(nil)
+	as.EXPECT().DeleteTagOfOracleDatabase("test-db", "ERCOLE", "awesome").Return(nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.DeleteTagOfDatabase)
+	handler := http.HandlerFunc(ac.DeleteTagOfOracleDatabase)
 	req, err := http.NewRequest("DELETE", "/hosts/test-db/databases/ERCOLE/tags/awesome", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "test-db",
@@ -510,7 +510,7 @@ func TestDeleteTagOfDatabase_Success(t *testing.T) {
 	require.Equal(t, http.StatusOK, rr.Code)
 }
 
-func TestDeleteTagOfDatabase_FailReadOnly(t *testing.T) {
+func TestDeleteTagOfOracleDatabase_FailReadOnly(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -526,7 +526,7 @@ func TestDeleteTagOfDatabase_FailReadOnly(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.DeleteTagOfDatabase)
+	handler := http.HandlerFunc(ac.DeleteTagOfOracleDatabase)
 	req, err := http.NewRequest("DELETE", "/hosts/test-db/databases/ERCOLE/tags/awesome", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "test-db",
@@ -540,7 +540,7 @@ func TestDeleteTagOfDatabase_FailReadOnly(t *testing.T) {
 	require.Equal(t, http.StatusForbidden, rr.Code)
 }
 
-func TestDeleteTagOfDatabase_FailInternalServerError(t *testing.T) {
+func TestDeleteTagOfOracleDatabase_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -555,10 +555,10 @@ func TestDeleteTagOfDatabase_FailInternalServerError(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DeleteTagOfDatabase("test-db", "ERCOLE", "awesome").Return(aerrMock)
+	as.EXPECT().DeleteTagOfOracleDatabase("test-db", "ERCOLE", "awesome").Return(aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.DeleteTagOfDatabase)
+	handler := http.HandlerFunc(ac.DeleteTagOfOracleDatabase)
 	req, err := http.NewRequest("DELETE", "/hosts/test-db/databases/ERCOLE/tags/awesome", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "test-db",
@@ -572,7 +572,7 @@ func TestDeleteTagOfDatabase_FailInternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestSetLicenseModifier_Success(t *testing.T) {
+func TestSetOracleDatabaseLicenseModifier_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -587,10 +587,10 @@ func TestSetLicenseModifier_Success(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().SetLicenseModifier("test-db", "ERCOLE", "Diagnostics Pack", 20).Return(nil)
+	as.EXPECT().SetOracleDatabaseLicenseModifier("test-db", "ERCOLE", "Diagnostics Pack", 20).Return(nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SetLicenseModifier)
+	handler := http.HandlerFunc(ac.SetOracleDatabaseLicenseModifier)
 	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/licenses/Diagnostics%20Pack", strings.NewReader("20"))
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname":    "test-db",
@@ -604,7 +604,7 @@ func TestSetLicenseModifier_Success(t *testing.T) {
 	require.Equal(t, http.StatusOK, rr.Code)
 }
 
-func TestSetLicenseModifier_FailReadOnly(t *testing.T) {
+func TestSetOracleDatabaseLicenseModifier_FailReadOnly(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -620,7 +620,7 @@ func TestSetLicenseModifier_FailReadOnly(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SetLicenseModifier)
+	handler := http.HandlerFunc(ac.SetOracleDatabaseLicenseModifier)
 	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/licenses/Diagnostics%20Pack", strings.NewReader("20"))
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname":    "test-db",
@@ -634,7 +634,7 @@ func TestSetLicenseModifier_FailReadOnly(t *testing.T) {
 	require.Equal(t, http.StatusForbidden, rr.Code)
 }
 
-func TestSetLicenseModifier_FailBadRequest(t *testing.T) {
+func TestSetOracleDatabaseLicenseModifier_FailBadRequest(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -650,7 +650,7 @@ func TestSetLicenseModifier_FailBadRequest(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SetLicenseModifier)
+	handler := http.HandlerFunc(ac.SetOracleDatabaseLicenseModifier)
 	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/licenses/Diagnostics%20Pack", &FailingReader{})
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname":    "test-db",
@@ -664,7 +664,7 @@ func TestSetLicenseModifier_FailBadRequest(t *testing.T) {
 	require.Equal(t, http.StatusBadRequest, rr.Code)
 }
 
-func TestSetLicenseModifier_FailUnprocessableEntity(t *testing.T) {
+func TestSetOracleDatabaseLicenseModifier_FailUnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -680,7 +680,7 @@ func TestSetLicenseModifier_FailUnprocessableEntity(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SetLicenseModifier)
+	handler := http.HandlerFunc(ac.SetOracleDatabaseLicenseModifier)
 	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/licenses/Diagnostics%20Pack", strings.NewReader("sdfsdfsd"))
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname":    "test-db",
@@ -694,7 +694,7 @@ func TestSetLicenseModifier_FailUnprocessableEntity(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSetLicenseModifier_FailInternalServerError(t *testing.T) {
+func TestSetOracleDatabaseLicenseModifier_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -709,10 +709,10 @@ func TestSetLicenseModifier_FailInternalServerError(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().SetLicenseModifier("test-db", "ERCOLE", "Diagnostics Pack", 20).Return(aerrMock)
+	as.EXPECT().SetOracleDatabaseLicenseModifier("test-db", "ERCOLE", "Diagnostics Pack", 20).Return(aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SetLicenseModifier)
+	handler := http.HandlerFunc(ac.SetOracleDatabaseLicenseModifier)
 	req, err := http.NewRequest("PUT", "/hosts/test-db/databases/ERCOLE/licenses/Diagnostics%20Pack", strings.NewReader("20"))
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname":    "test-db",
@@ -726,7 +726,7 @@ func TestSetLicenseModifier_FailInternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestDeleteLicenseModifier_Success(t *testing.T) {
+func TestDeleteOracleDatabaseLicenseModifier_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -741,10 +741,10 @@ func TestDeleteLicenseModifier_Success(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DeleteLicenseModifier("test-db", "ERCOLE", "Diagnostics Pack").Return(nil)
+	as.EXPECT().DeleteOracleDatabaseLicenseModifier("test-db", "ERCOLE", "Diagnostics Pack").Return(nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.DeleteLicenseModifier)
+	handler := http.HandlerFunc(ac.DeleteOracleDatabaseLicenseModifier)
 	req, err := http.NewRequest("DELETE", "/hosts/test-db/databases/ERCOLE/license-modifiers/Diagnostics%20Pack", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname":    "test-db",
@@ -758,7 +758,7 @@ func TestDeleteLicenseModifier_Success(t *testing.T) {
 	require.Equal(t, http.StatusOK, rr.Code)
 }
 
-func TestDeleteLicenseModifier_FailReadOnly(t *testing.T) {
+func TestDeleteOracleDatabaseLicenseModifier_FailReadOnly(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -774,7 +774,7 @@ func TestDeleteLicenseModifier_FailReadOnly(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.DeleteLicenseModifier)
+	handler := http.HandlerFunc(ac.DeleteOracleDatabaseLicenseModifier)
 	req, err := http.NewRequest("DELETE", "/hosts/test-db/databases/ERCOLE/license-modifiers/Diagnostics%20Pack", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname":    "test-db",
@@ -788,7 +788,7 @@ func TestDeleteLicenseModifier_FailReadOnly(t *testing.T) {
 	require.Equal(t, http.StatusForbidden, rr.Code)
 }
 
-func TestDeleteLicenseModifier_FailInternalServerError(t *testing.T) {
+func TestDeleteOracleDatabaseLicenseModifier_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -803,10 +803,10 @@ func TestDeleteLicenseModifier_FailInternalServerError(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DeleteLicenseModifier("test-db", "ERCOLE", "Diagnostics Pack").Return(aerrMock)
+	as.EXPECT().DeleteOracleDatabaseLicenseModifier("test-db", "ERCOLE", "Diagnostics Pack").Return(aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.DeleteLicenseModifier)
+	handler := http.HandlerFunc(ac.DeleteOracleDatabaseLicenseModifier)
 	req, err := http.NewRequest("DELETE", "/hosts/test-db/databases/ERCOLE/license-modifiers/Diagnostics%20Pack", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname":    "test-db",
@@ -820,7 +820,7 @@ func TestDeleteLicenseModifier_FailInternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestSearchLicenseModifiers_SuccessPaged(t *testing.T) {
+func TestSearchOracleDatabaseLicenseModifiers_SuccessPaged(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -864,11 +864,11 @@ func TestSearchLicenseModifiers_SuccessPaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchLicenseModifiers("foobar", "Hostname", true, 2, 3).
+		SearchOracleDatabaseLicenseModifiers("foobar", "Hostname", true, 2, 3).
 		Return(resFromService, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchLicenseModifiers)
+	handler := http.HandlerFunc(ac.SearchOracleDatabaseLicenseModifiers)
 	req, err := http.NewRequest("GET", "/license-modifiers?search=foobar&sort-by=Hostname&sort-desc=true&page=2&size=3", nil)
 	require.NoError(t, err)
 
@@ -878,7 +878,7 @@ func TestSearchLicenseModifiers_SuccessPaged(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 
-func TestSearchLicenseModifiers_FailedUnprocessableEntity1(t *testing.T) {
+func TestSearchOracleDatabaseLicenseModifiers_FailedUnprocessableEntity1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -890,7 +890,7 @@ func TestSearchLicenseModifiers_FailedUnprocessableEntity1(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchLicenseModifiers)
+	handler := http.HandlerFunc(ac.SearchOracleDatabaseLicenseModifiers)
 	req, err := http.NewRequest("GET", "/license-modifiers?sort-desc=sdffsd", nil)
 	require.NoError(t, err)
 
@@ -899,7 +899,7 @@ func TestSearchLicenseModifiers_FailedUnprocessableEntity1(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchLicenseModifiers_FailedUnprocessableEntity2(t *testing.T) {
+func TestSearchOracleDatabaseLicenseModifiers_FailedUnprocessableEntity2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -911,7 +911,7 @@ func TestSearchLicenseModifiers_FailedUnprocessableEntity2(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchLicenseModifiers)
+	handler := http.HandlerFunc(ac.SearchOracleDatabaseLicenseModifiers)
 	req, err := http.NewRequest("GET", "/license-modifiers?page=sdffsd", nil)
 	require.NoError(t, err)
 
@@ -920,7 +920,7 @@ func TestSearchLicenseModifiers_FailedUnprocessableEntity2(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchLicenseModifiers_FailedUnprocessableEntity3(t *testing.T) {
+func TestSearchOracleDatabaseLicenseModifiers_FailedUnprocessableEntity3(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -932,7 +932,7 @@ func TestSearchLicenseModifiers_FailedUnprocessableEntity3(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchLicenseModifiers)
+	handler := http.HandlerFunc(ac.SearchOracleDatabaseLicenseModifiers)
 	req, err := http.NewRequest("GET", "/license-modifiers?size=sdffsd", nil)
 	require.NoError(t, err)
 
@@ -941,7 +941,7 @@ func TestSearchLicenseModifiers_FailedUnprocessableEntity3(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchLicenseModifiers_FailedInternalServerError(t *testing.T) {
+func TestSearchOracleDatabaseLicenseModifiers_FailedInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -953,11 +953,11 @@ func TestSearchLicenseModifiers_FailedInternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchLicenseModifiers("", "", false, -1, -1).
+		SearchOracleDatabaseLicenseModifiers("", "", false, -1, -1).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchLicenseModifiers)
+	handler := http.HandlerFunc(ac.SearchOracleDatabaseLicenseModifiers)
 	req, err := http.NewRequest("GET", "/license-modifiers", nil)
 	require.NoError(t, err)
 
