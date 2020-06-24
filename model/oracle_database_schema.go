@@ -52,35 +52,37 @@ func (v *OracleDatabaseSchema) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// SchemaBsonValidatorRules contains mongodb validation rules for schema
-var SchemaBsonValidatorRules = bson.M{
+// OracleDatabaseSchemaBsonValidatorRules contains mongodb validation rules for OracleDatabaseSchema
+var OracleDatabaseSchemaBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Database",
-		"User",
-		"Total",
-		"Tables",
 		"Indexes",
 		"LOB",
+		"Tables",
+		"Total",
+		"User",
 	},
 	"properties": bson.M{
-		"Database": bson.M{
-			"bsonType": "string",
-		},
-		"User": bson.M{
-			"bsonType": "string",
-		},
-		"Total": bson.M{
-			"bsonType": "number",
-		},
-		"Tables": bson.M{
-			"bsonType": "number",
-		},
 		"Indexes": bson.M{
 			"bsonType": "number",
+			"minimum":  0,
 		},
 		"LOB": bson.M{
 			"bsonType": "number",
+			"minimum":  0,
+		},
+		"Tables": bson.M{
+			"bsonType": "number",
+			"minimum":  0,
+		},
+		"Total": bson.M{
+			"bsonType": "number",
+			"minimum":  0,
+		},
+		"User": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 32,
 		},
 	},
 }

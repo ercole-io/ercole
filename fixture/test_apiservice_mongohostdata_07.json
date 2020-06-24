@@ -1,274 +1,382 @@
 {
+    "AgentVersion": "latest",
     "Archived": false,
+    "ClusterMembershipStatus": {
+        "HACMP": false,
+        "OracleClusterware": false,
+        "SunCluster": false,
+        "VeritasClusterServer": false
+    },
+    "Clusters": null,
     "CreatedAt": {
         "$date": {
             "$numberLong": "1586933218471"
         }
     },
-    "Databases": "ERCOLE",
     "Environment": "TST",
-    "Extra": {
-        "Databases": [
-            {
-                "ADDMs": [
+    "Features": {
+        "Oracle": {
+            "Database": {
+                "Databases": [
                     {
-                        "Action": "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
-                        "Benefit": "83.34",
-                        "Finding": "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
-                        "Recommendation": "SQL Tuning"
-                    },
-                    {
-                        "Action": "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
-                        "Benefit": "68.24",
-                        "Finding": "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
-                        "Recommendation": "Segment Tuning"
+                        "ADDMs": [
+                            {
+                                "Action": "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
+                                "Benefit": {
+                                    "$numberDouble": "83.34"
+                                },
+                                "Finding": "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
+                                "Recommendation": "SQL Tuning"
+                            },
+                            {
+                                "Action": "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
+                                "Benefit": {
+                                    "$numberDouble": "68.24"
+                                },
+                                "Finding": "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
+                                "Recommendation": "Segment Tuning"
+                            }
+                        ],
+                        "ASM": false,
+                        "Allocated": {
+                            "$numberDouble": "129.0"
+                        },
+                        "Archivelog": false,
+                        "Backups": [
+                            {
+                                "AvgBckSize": {
+                                    "$numberDouble": "13.0"
+                                },
+                                "BackupType": "Archivelog",
+                                "Hour": "01:30",
+                                "Retention": "1 NUMBERS",
+                                "WeekDays": [
+                                    "Wednesday"
+                                ]
+                            },
+                            {
+                                "AvgBckSize": {
+                                    "$numberDouble": "45.0"
+                                },
+                                "BackupType": "Archivelog",
+                                "Hour": "03:00",
+                                "Retention": "1 NUMBERS",
+                                "WeekDays": [
+                                    "Tuesday",
+                                    "Sunday",
+                                    "Monday",
+                                    "Saturday",
+                                    "Wednesday"
+                                ]
+                            }
+                        ],
+                        "BlockSize": {
+                            "$numberInt": "8192"
+                        },
+                        "CPUCount": {
+                            "$numberInt": "2"
+                        },
+                        "Charset": "AL32UTF8",
+                        "DBTime": {
+                            "$numberDouble": "184.81"
+                        },
+                        "DailyCPUUsage": {
+                            "$numberDouble": "0.7"
+                        },
+                        "DatafileSize": {
+                            "$numberDouble": "6.0"
+                        },
+                        "Dataguard": false,
+                        "Elapsed": {
+                            "$numberDouble": "12059.18"
+                        },
+                        "FeatureUsageStats": [
+                            {
+                                "CurrentlyUsed": false,
+                                "DetectedUsages": {
+                                    "$numberLong": "91"
+                                },
+                                "ExtraFeatureInfo": "",
+                                "Feature": "ADDM",
+                                "FirstUsageDate": {
+                                    "$date": {
+                                        "$numberLong": "1561397660000"
+                                    }
+                                },
+                                "LastUsageDate": {
+                                    "$date": {
+                                        "$numberLong": "1573274903000"
+                                    }
+                                },
+                                "Product": "Diagnostics Pack"
+                            },
+                            {
+                                "CurrentlyUsed": false,
+                                "DetectedUsages": {
+                                    "$numberLong": "90"
+                                },
+                                "ExtraFeatureInfo": "",
+                                "Feature": "AWR Report",
+                                "FirstUsageDate": {
+                                    "$date": {
+                                        "$numberLong": "1561648544000"
+                                    }
+                                },
+                                "LastUsageDate": {
+                                    "$date": {
+                                        "$numberLong": "1573274903000"
+                                    }
+                                },
+                                "Product": "Diagnostics Pack"
+                            },
+                            {
+                                "CurrentlyUsed": false,
+                                "DetectedUsages": {
+                                    "$numberLong": "7"
+                                },
+                                "ExtraFeatureInfo": "",
+                                "Feature": "Automatic Workload Repository",
+                                "FirstUsageDate": {
+                                    "$date": {
+                                        "$numberLong": "1561654869000"
+                                    }
+                                },
+                                "LastUsageDate": {
+                                    "$date": {
+                                        "$numberLong": "1562045705000"
+                                    }
+                                },
+                                "Product": "Diagnostics Pack"
+                            }
+                        ],
+                        "InstanceNumber": {
+                            "$numberInt": "1"
+                        },
+                        "IsCDB": false,
+                        "Licenses": [
+                            {
+                                "Count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "Name": "Oracle EXE"
+                            },
+                            {
+                                "Count": {
+                                    "$numberDouble": "0.5"
+                                },
+                                "Name": "Oracle ENT"
+                            },
+                            {
+                                "Count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "Name": "Oracle STD"
+                            },
+                            {
+                                "Count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "Name": "WebLogic Server Management Pack Enterprise Edition"
+                            },
+                            {
+                                "Count": {
+                                    "$numberDouble": "0.5"
+                                },
+                                "Name": "Diagnostics Pack"
+                            }
+                        ],
+                        "MemoryTarget": {
+                            "$numberDouble": "1.484"
+                        },
+                        "NCharset": "AL16UTF16",
+                        "Name": "ERCOLE",
+                        "PDBs": [],
+                        "PGATarget": {
+                            "$numberDouble": "0.0"
+                        },
+                        "PSUs": [
+                            {
+                                "Date": "2012-04-16",
+                                "Description": "PSU 11.2.0.3.2"
+                            }
+                        ],
+                        "Patches": [],
+                        "Platform": "Linux x86 64-bit",
+                        "SGAMaxSize": {
+                            "$numberDouble": "1.484"
+                        },
+                        "SGATarget": {
+                            "$numberDouble": "0.0"
+                        },
+                        "Schemas": [
+                            {
+                                "Indexes": {
+                                    "$numberInt": "0"
+                                },
+                                "LOB": {
+                                    "$numberInt": "0"
+                                },
+                                "Tables": {
+                                    "$numberInt": "192"
+                                },
+                                "Total": {
+                                    "$numberInt": "192"
+                                },
+                                "User": "RAF"
+                            },
+                            {
+                                "Indexes": {
+                                    "$numberInt": "0"
+                                },
+                                "LOB": {
+                                    "$numberInt": "0"
+                                },
+                                "Tables": {
+                                    "$numberInt": "0"
+                                },
+                                "Total": {
+                                    "$numberInt": "0"
+                                },
+                                "User": "REMOTE_SCHEDULER_AGENT"
+                            }
+                        ],
+                        "SegmentAdvisors": [
+                            {
+                                "PartitionName": "iyyiuyyoy",
+                                "Reclaimable": {
+                                    "$numberDouble": "0.5"
+                                },
+                                "Recommendation": "32b36a77e7481343ef175483c086859e",
+                                "SegmentName": "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+                                "SegmentOwner": "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+                                "SegmentType": "TABLE"
+                            }
+                        ],
+                        "SegmentsSize": {
+                            "$numberDouble": "3.0"
+                        },
+                        "Services": [],
+                        "Status": "OPEN",
+                        "Tablespaces": [
+                            {
+                                "MaxSize": {
+                                    "$numberDouble": "32767.9844"
+                                },
+                                "Name": "SYSTEM",
+                                "Status": "ONLINE",
+                                "Total": {
+                                    "$numberDouble": "850.0"
+                                },
+                                "Used": {
+                                    "$numberDouble": "842.875"
+                                },
+                                "UsedPerc": {
+                                    "$numberDouble": "2.57"
+                                }
+                            },
+                            {
+                                "MaxSize": {
+                                    "$numberDouble": "32767.9844"
+                                },
+                                "Name": "USERS",
+                                "Status": "ONLINE",
+                                "Total": {
+                                    "$numberDouble": "1024.0"
+                                },
+                                "Used": {
+                                    "$numberDouble": "576.0"
+                                },
+                                "UsedPerc": {
+                                    "$numberDouble": "1.76"
+                                }
+                            }
+                        ],
+                        "UniqueName": "ERCOLE",
+                        "Version": "12.2.0.1.0 Enterprise Edition",
+                        "Work": {
+                            "$numberDouble": "1.0"
+                        },
+                        "Tags": [
+                            "foobar"
+                        ]
                     }
-                ],
-                "ASM": false,
-                "Allocated": "129",
-                "Archivelog": "NOARCHIVELOG",
-                "Backups": [
-                    {
-                        "AvgBckSize": "13",
-                        "BackupType": "Archivelog",
-                        "Hour": "01:30",
-                        "Retention": "1 NUMBERS",
-                        "WeekDays": "Wednesday"
-                    },
-                    {
-                        "AvgBckSize": "45",
-                        "BackupType": "Archivelog",
-                        "Hour": "03:00",
-                        "Retention": "1 NUMBERS",
-                        "WeekDays": "Tuesday,Sunday,Monday,Saturday,Wednesday"
-                    }
-                ],
-                "BlockSize": "8192",
-                "CPUCount": "2",
-                "Charset": "AL32UTF8",
-                "DBTime": "184.81",
-                "DailyCPUUsage": "0.7",
-                "Dataguard": false,
-                "Elapsed": "12059.18",
-                "Features2": [
-                    {
-                        "CurrentlyUsed": false,
-                        "DetectedUsages": {
-                            "$numberDouble": "91.0"
-                        },
-                        "ExtraFeatureInfo": "",
-                        "Feature": "ADDM",
-                        "FirstUsageDate": "2019-06-24 17:34:20",
-                        "LastUsageDate": "2019-11-09 04:48:23",
-                        "Product": "Diagnostics Pack"
-                    },
-                    {
-                        "CurrentlyUsed": false,
-                        "DetectedUsages": {
-                            "$numberDouble": "90.0"
-                        },
-                        "ExtraFeatureInfo": "",
-                        "Feature": "AWR Report",
-                        "FirstUsageDate": "2019-06-27 15:15:44",
-                        "LastUsageDate": "2019-11-09 04:48:23",
-                        "Product": "Diagnostics Pack"
-                    },
-                    {
-                        "CurrentlyUsed": false,
-                        "DetectedUsages": {
-                            "$numberDouble": "7.0"
-                        },
-                        "ExtraFeatureInfo": "",
-                        "Feature": "Automatic Workload Repository",
-                        "FirstUsageDate": "2019-06-27 17:01:09",
-                        "LastUsageDate": "2019-07-02 05:35:05",
-                        "Product": "Diagnostics Pack"
-                    }
-                ],
-                "InstanceNumber": "1",
-                "LastPSUs": [
-                    {
-                        "Date": "2012-04-16",
-                        "Description": "PSU 11.2.0.3.2"
-                    }
-                ],
-                "Licenses": [
-                    {
-                        "Count": {
-                            "$numberDouble": "0.0"
-                        },
-                        "Name": "Oracle EXE"
-                    },
-                    {
-                        "Count": {
-                            "$numberDouble": "0.5"
-                        },
-                        "Name": "Oracle ENT"
-                    },
-                    {
-                        "Count": {
-                            "$numberDouble": "0.0"
-                        },
-                        "Name": "Oracle STD"
-                    },
-                    {
-                        "Count": {
-                            "$numberDouble": "0.0"
-                        },
-                        "Name": "WebLogic Server Management Pack Enterprise Edition"
-                    },
-                    {
-                        "Count": {
-                            "$numberDouble": "0.5"
-                        },
-                        "Name": "Diagnostics Pack"
-                    }
-                ],
-                "MemoryTarget": "1.484",
-                "NCharset": "AL16UTF16",
-                "Name": "ERCOLE",
-                "PGATarget": "0.",
-                "Patches": [],
-                "Platform": "Linux x86 64-bit",
-                "SGAMaxSize": "1.484",
-                "SGATarget": "0.",
-                "Schemas": [
-                    {
-                        "Database": "ERCOLE",
-                        "Indexes": {
-                            "$numberDouble": "0.0"
-                        },
-                        "LOB": {
-                            "$numberDouble": "0.0"
-                        },
-                        "Tables": {
-                            "$numberDouble": "192.0"
-                        },
-                        "Total": {
-                            "$numberDouble": "192.0"
-                        },
-                        "User": "RAF"
-                    },
-                    {
-                        "Database": "ERCOLE",
-                        "Indexes": {
-                            "$numberDouble": "0.0"
-                        },
-                        "LOB": {
-                            "$numberDouble": "0.0"
-                        },
-                        "Tables": {
-                            "$numberDouble": "0.0"
-                        },
-                        "Total": {
-                            "$numberDouble": "0.0"
-                        },
-                        "User": "REMOTE_SCHEDULER_AGENT"
-                    }
-                ],
-                "SegmentAdvisors": [
-                    {
-                        "PartitionName": "iyyiuyyoy",
-                        "Reclaimable": "\u003c1",
-                        "Recommendation": "32b36a77e7481343ef175483c086859e",
-                        "SegmentName": "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-                        "SegmentOwner": "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-                        "SegmentType": "TABLE"
-                    }
-                ],
-                "SegmentsSize": "3",
-                "Status": "OPEN",
-                "Tablespaces": [
-                    {
-                        "Database": "ERCOLE",
-                        "MaxSize": "32767.9844",
-                        "Name": "SYSTEM",
-                        "Status": "ONLINE",
-                        "Total": "850",
-                        "Used": "842.875",
-                        "UsedPerc": "2.57"
-                    },
-                    {
-                        "Database": "ERCOLE",
-                        "MaxSize": "32767.9844",
-                        "Name": "USERS",
-                        "Status": "ONLINE",
-                        "Total": "1024",
-                        "Used": "576",
-                        "UsedPerc": "1.76"
-                    }
-                ],
-                "Tags": [
-                    "foobar"
-                ],
-                "UniqueName": "ERCOLE",
-                "Used": "6",
-                "Version": "12.2.0.1.0 Enterprise Edition",
-                "Work": "1"
-            }
-        ],
-        "Filesystems": [
-            {
-                "Available": "5.4G",
-                "Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
-                "FsType": "ext4",
-                "MountedOn": "/",
-                "Size": "13G",
-                "Used": "6.7G",
-                "UsedPerc": "56%"
+                ]
             },
-            {
-                "Available": "320M",
-                "Filesystem": "/dev/sda1",
-                "FsType": "ext4",
-                "MountedOn": "/boot",
-                "Size": "488M",
-                "Used": "133M",
-                "UsedPerc": "30%"
+            "Exadata": null
+        }
+    },
+    "Filesystems": [
+        {
+            "AvailableSpace": {
+                "$numberLong": "5798205849"
+            },
+            "Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+            "MountedOn": "/",
+            "Size": {
+                "$numberLong": "13958643712"
+            },
+            "Type": "ext4",
+            "UsedSpace": {
+                "$numberLong": "7194070220"
             }
-        ]
-    },
-    "HostDataSchemaVersion": {
-        "$numberDouble": "4.0"
-    },
-    "HostType": "oracledb",
+        },
+        {
+            "AvailableSpace": {
+                "$numberLong": "335544320"
+            },
+            "Filesystem": "/dev/sda1",
+            "MountedOn": "/boot",
+            "Size": {
+                "$numberLong": "511705088"
+            },
+            "Type": "ext4",
+            "UsedSpace": {
+                "$numberLong": "139460608"
+            }
+        }
+    ],
     "Hostname": "test-db",
     "Info": {
-        "AixCluster": false,
         "CPUCores": {
-            "$numberDouble": "1.0"
+            "$numberInt": "1"
         },
+        "CPUFrequency": "2.53GHz",
         "CPUModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-        "CPUThreads": {
-            "$numberDouble": "2.0"
+        "CPUSockets": {
+            "$numberInt": "2"
         },
-        "Environment": "TST",
+        "CPUThreads": {
+            "$numberInt": "2"
+        },
+        "CoresPerSocket": {
+            "$numberInt": "1"
+        },
+        "HardwareAbstraction": "VIRT",
+        "HardwareAbstractionTechnology": "VMWARE",
         "Hostname": "test-db",
-        "Kernel": "3.10.0-514.el7.x86_64",
-        "Location": "Germany",
+        "Kernel": "Linux",
+        "KernelVersion": "3.10.0-514.el7.x86_64",
         "MemoryTotal": {
             "$numberDouble": "3.0"
         },
-        "OS": "Red Hat Enterprise Linux Server release 7.6 (Maipo)",
-        "OracleCluster": false,
-        "Socket": {
-            "$numberDouble": "2.0"
-        },
-        "SunCluster": false,
+        "OS": "Red Hat Enterprise Linux",
+        "OSVersion": "7.6",
         "SwapTotal": {
             "$numberDouble": "1.0"
         },
-        "Type": "VMWARE",
-        "VeritasCluster": false,
-        "Virtual": true
+        "ThreadsPerCore": {
+            "$numberInt": "2"
+        }
     },
     "Location": "Germany",
     "SchemaVersion": {
+        "$numberDouble": "1.0"
+    },
+    "ServerSchemaVersion": {
         "$numberInt": "1"
     },
-    "Schemas": "RAF REMOTE_SCHEDULER_AGENT",
     "ServerVersion": "latest",
-    "Version": "latest",
+    "Tags": [],
     "_id": {
         "$oid": "5e96ade270c184faca93fe36"
     }

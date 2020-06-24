@@ -1,66 +1,80 @@
 {
+    "AgentVersion": "latest",
     "Archived": false,
+    "ClusterMembershipStatus": {
+        "HACMP": false,
+        "OracleClusterware": false,
+        "SunCluster": false,
+        "VeritasClusterServer": true
+    },
+    "Clusters": null,
     "CreatedAt": {
         "$date": {
             "$numberLong": "1589354837557"
         }
     },
-    "Databases": "",
     "Environment": "TST",
-    "Extra": {
-        "Filesystems": [
-            {
-                "Available": "320M",
-                "Filesystem": "/dev/sda1",
-                "FsType": "ext4",
-                "MountedOn": "/boot",
-                "Size": "488M",
-                "Used": "133M",
-                "UsedPerc": "30%"
+    "Features": {
+        "Oracle": null
+    },
+    "Filesystems": [
+        {
+            "AvailableSpace": {
+                "$numberLong": "335544320"
+            },
+            "Filesystem": "/dev/sda1",
+            "MountedOn": "/boot",
+            "Size": {
+                "$numberLong": "511705088"
+            },
+            "Type": "ext4",
+            "UsedSpace": {
+                "$numberLong": "139460608"
             }
-        ]
-    },
-    "HostDataSchemaVersion": {
-        "$numberDouble": "4.0"
-    },
-    "HostType": "oracledb",
+        }
+    ],
     "Hostname": "test-small4",
     "Info": {
-        "AixCluster": false,
         "CPUCores": {
-            "$numberDouble": "1.0"
+            "$numberInt": "1"
         },
+        "CPUFrequency": "1.60GHz",
         "CPUModel": "Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz",
-        "CPUThreads": {
-            "$numberDouble": "2.0"
+        "CPUSockets": {
+            "$numberInt": "2"
         },
-        "Environment": "DEV",
+        "CPUThreads": {
+            "$numberInt": "2"
+        },
+        "CoresPerSocket": {
+            "$numberInt": "1"
+        },
+        "HardwareAbstraction": "VIRT",
+        "HardwareAbstractionTechnology": "VMWARE",
         "Hostname": "test-small3",
-        "Kernel": "5.3.0-45-generic",
-        "Location": "Italy",
+        "Kernel": "Linux",
+        "KernelVersion": "5.3.0-45-generic",
         "MemoryTotal": {
             "$numberDouble": "3.0"
         },
-        "OS": "Ubuntu Server 18.04.4",
-        "OracleCluster": false,
-        "Socket": {
-            "$numberDouble": "2.0"
-        },
-        "SunCluster": false,
+        "OS": "Ubuntu",
+        "OSVersion": "18.04.4",
         "SwapTotal": {
             "$numberDouble": "1.0"
         },
-        "Type": "VMWARE",
-        "VeritasCluster": true,
-        "Virtual": true
+        "ThreadsPerCore": {
+            "$numberInt": "2"
+        }
     },
     "Location": "Italy",
     "SchemaVersion": {
+        "$numberDouble": "1.0"
+    },
+    "ServerSchemaVersion": {
         "$numberInt": "1"
     },
-    "Schemas": "",
     "ServerVersion": "latest",
-    "Version": "latest",
+    "Tags": [],
     "_id": {
         "$oid": "5ebba15547c3fcf9dc0a1f4d"
     }

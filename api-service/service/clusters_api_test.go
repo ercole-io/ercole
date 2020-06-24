@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ func TestSearchClusters_Success(t *testing.T) {
 			"HostnameAgentVirtualization": "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
 			"Location":                    "Italy",
 			"Name":                        "not_in_cluster",
-			"PhysicalHosts":               "aspera-b1fe49e8501c9ef031e5acff4b5e69a9",
+			"VirtualizationNodes":         "aspera-b1fe49e8501c9ef031e5acff4b5e69a9",
 			"Sockets":                     0,
 			"Type":                        "unknown",
 			"_id":                         utils.Str2oid("5e8c234b24f648a08585bd3d"),
@@ -52,7 +52,7 @@ func TestSearchClusters_Success(t *testing.T) {
 			"HostnameAgentVirtualization": "test-virt",
 			"Location":                    "Italy",
 			"Name":                        "Puzzait",
-			"PhysicalHosts":               "s157-cb32c10a56c256746c337e21b3f82402",
+			"VirtualizationNodes":         "s157-cb32c10a56c256746c337e21b3f82402",
 			"Sockets":                     10,
 			"Type":                        "vmware",
 			"_id":                         utils.Str2oid("5e8c234b24f648a08585bd41"),

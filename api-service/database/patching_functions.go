@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -66,8 +66,8 @@ func (md *MongoDatabase) SavePatchingFunction(pf model.PatchingFunction) utils.A
 	return nil
 }
 
-// SearchLicenseModifiers search license modifiers
-func (md *MongoDatabase) SearchLicenseModifiers(keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+// SearchOracleDatabaseLicenseModifiers search license modifiers
+func (md *MongoDatabase) SearchOracleDatabaseLicenseModifiers(keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
 	var out []map[string]interface{} = make([]map[string]interface{}, 0)
 
 	//Find the matching hostdata

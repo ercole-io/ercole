@@ -18,7 +18,6 @@ matrix:
     - env: PACKAGE_BUILD_IMAGE=amreo/rpmbuild-centos7 DIST=rhel7
     - env: PACKAGE_BUILD_IMAGE=amreo/rpmbuild-centos8 DIST=rhel8
 
-
 services:
   - docker
 

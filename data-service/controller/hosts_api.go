@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -73,7 +73,7 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	var updatedHostData model.HostData
+	var updatedHostData model.HostDataBE
 	err = json.Unmarshal(tempUpdatedRawJSON, &updatedHostData)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
@@ -82,7 +82,7 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 
 	//Save the HostData
 	id, aerr := ctrl.Service.UpdateHostInfo(updatedHostData)
-	if err != nil {
+	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
 	}
@@ -93,63 +93,6 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 
 // updateAndDecodeData return a decoded and updated hostdata from raw data
 func updateData(data map[string]interface{}) utils.AdvancedErrorInterface {
-	var hostDataSchemaVersion int
 
-	//get correct hostDataSchemaVersion and fix the version
-	if val, ok := data["HostDataSchemaVersion"]; !ok {
-		hostDataSchemaVersion = 0
-	} else if val, ok := val.(float64); !ok {
-		return utils.NewAdvancedErrorPtr(
-			errors.New("Invalid type for $hostDataSchemaVersion property"),
-			http.StatusText(http.StatusUnprocessableEntity))
-	} else {
-		hostDataSchemaVersion = int(val)
-	}
-
-	//fix the version
-	if val, ok := data["Version"]; !ok {
-		data["Version"] = "pre1.5.6"
-	} else if val, ok := val.(string); !ok {
-		return utils.NewAdvancedErrorPtr(
-			errors.New("Invalid type for $version property"),
-			http.StatusText(http.StatusUnprocessableEntity))
-	} else if val == "${VERSION}" {
-		data["Version"] = "pre1.5.11"
-	}
-
-	//Update the hostData to the version 1
-	if hostDataSchemaVersion < 1 {
-		if err := updateHostDataSchemaTo1(data); err != nil {
-			return err
-		}
-	}
-
-	//Update the hostData to the version 3
-	if hostDataSchemaVersion < 3 {
-		if err := updateHostDataSchemaTo3(data); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// updateHostDataSchemaTo1 update the schema in the data to the version one
-func updateHostDataSchemaTo1(data map[string]interface{}) utils.AdvancedErrorInterface {
-	if _, ok := data["HostType"]; !ok {
-		data["HostType"] = "oracledb"
-	}
-
-	data["HostDataSchemaVersion"] = 1
-	return nil
-}
-
-// updateHostDataSchemaTo3 update the schema in the data to the version 3
-func updateHostDataSchemaTo3(data map[string]interface{}) utils.AdvancedErrorInterface {
-	if _, ok := data["Info"]; !ok {
-
-	}
-
-	data["HostDataSchemaVersion"] = 1
 	return nil
 }

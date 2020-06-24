@@ -24,7 +24,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSearchLicenseModifiers_Success(t *testing.T) {
+func TestSearchOracleDatabaseLicenseModifiers_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -49,12 +49,12 @@ func TestSearchLicenseModifiers_Success(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().SearchLicenseModifiers(
+	db.EXPECT().SearchOracleDatabaseLicenseModifiers(
 		[]string{"foo", "bar", "foobarx"}, "Hostname",
 		true, 1, 1,
 	).Return(expectedRes, nil).Times(1)
 
-	res, err := as.SearchLicenseModifiers(
+	res, err := as.SearchOracleDatabaseLicenseModifiers(
 		"foo bar foobarx", "Hostname",
 		true, 1, 1,
 	)
@@ -63,7 +63,7 @@ func TestSearchLicenseModifiers_Success(t *testing.T) {
 	assert.Equal(t, expectedRes, res)
 }
 
-func TestSearchLicenseModifiers_Fail(t *testing.T) {
+func TestSearchOracleDatabaseLicenseModifiers_Fail(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -71,12 +71,12 @@ func TestSearchLicenseModifiers_Fail(t *testing.T) {
 		Database: db,
 	}
 
-	db.EXPECT().SearchLicenseModifiers(
+	db.EXPECT().SearchOracleDatabaseLicenseModifiers(
 		[]string{"foo", "bar", "foobarx"}, "Hostname",
 		true, 1, 1,
 	).Return(nil, aerrMock).Times(1)
 
-	res, err := as.SearchLicenseModifiers(
+	res, err := as.SearchOracleDatabaseLicenseModifiers(
 		"foo bar foobarx", "Hostname",
 		true, 1, 1,
 	)

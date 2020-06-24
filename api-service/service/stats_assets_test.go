@@ -41,7 +41,7 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 		"HostsCount": 20,
 	}
 
-	getTechnologiesUsageRes := map[string]float32{
+	getTechnologiesUsageRes := map[string]float64{
 		"Oracle/Exadata": 2,
 	}
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,9 +40,4 @@ func (as *APIService) GetTypeStats(location string, olderThan time.Time) ([]inte
 // GetOperatingSystemStats return a array containing the number of hosts per operating system
 func (as *APIService) GetOperatingSystemStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetOperatingSystemStats(location, olderThan)
-}
-
-// GetTopUnusedInstanceResourceStats return a array containing top unused instance resource by workload
-func (as *APIService) GetTopUnusedInstanceResourceStats(location string, environment string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetTopUnusedInstanceResourceStats(location, environment, limit, olderThan)
 }

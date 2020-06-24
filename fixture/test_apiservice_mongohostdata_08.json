@@ -1,121 +1,130 @@
 {
+    "AgentVersion": "1.6.1",
     "Archived": false,
+    "ClusterMembershipStatus": {
+        "HACMP": false,
+        "OracleClusterware": false,
+        "SunCluster": false,
+        "VeritasClusterServer": false
+    },
+    "Clusters": [
+        {
+            "CPU": {
+                "$numberInt": "140"
+            },
+            "FetchEndpoint": "???",
+            "Name": "Puzzait",
+            "Sockets": {
+                "$numberInt": "10"
+            },
+            "Type": "vmware",
+            "VMs": [
+                {
+                    "CappedCPU": false,
+                    "Hostname": "test-virt",
+                    "Name": "test-virt",
+                    "VirtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402"
+                },
+                {
+                    "CappedCPU": false,
+                    "Hostname": "test-db",
+                    "Name": "test-db",
+                    "VirtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402"
+                }
+            ]
+        },
+        {
+            "CPU": {
+                "$numberInt": "130"
+            },
+            "FetchEndpoint": "???",
+            "Name": "Puzzait2",
+            "Sockets": {
+                "$numberInt": "13"
+            },
+            "Type": "vmware",
+            "VMs": [
+                {
+                    "CappedCPU": false,
+                    "Hostname": "test-virt2",
+                    "Name": "test-virt2",
+                    "VirtualizationNode": "s157-cb32c10a56c256746c337e21b3ffffff"
+                },
+                {
+                    "CappedCPU": false,
+                    "Hostname": "test-db2",
+                    "Name": "test-db2",
+                    "VirtualizationNode": "s157-cb32c10a56c256746c337e21b3fffeua"
+                }
+            ]
+        }
+    ],
     "CreatedAt": {
         "$date": {
             "$numberLong": "1588601386608"
         }
     },
-    "Databases": "",
     "Environment": "PROD",
-    "Extra": {
-        "Clusters": [
-            {
-                "CPU": {
-                    "$numberDouble": "140.0"
-                },
-                "Name": "Puzzait",
-                "Sockets": {
-                    "$numberDouble": "10.0"
-                },
-                "Type": "vmware",
-                "VMs": [
-                    {
-                        "CappedCPU": false,
-                        "ClusterName": "Puzzait",
-                        "Hostname": "test-virt",
-                        "Name": "test-virt",
-                        "PhysicalHost": "s157-cb32c10a56c256746c337e21b3f82402"
-                    },
-                    {
-                        "CappedCPU": false,
-                        "ClusterName": "Puzzait",
-                        "Hostname": "test-db",
-                        "Name": "test-db",
-                        "PhysicalHost": "s157-cb32c10a56c256746c337e21b3f82402"
-                    }
-                ]
+    "Features": {
+    },
+    "Filesystems": [
+        {
+            "AvailableSpace": {
+                "$numberLong": "4939212390"
             },
-            {
-                "CPU": {
-                    "$numberDouble": "130.0"
-                },
-                "Name": "Puzzait2",
-                "Sockets": {
-                    "$numberDouble": "13.0"
-                },
-                "Type": "vmware",
-                "VMs": [
-                    {
-                        "CappedCPU": false,
-                        "ClusterName": "Puzzait2",
-                        "Hostname": "test-virt2",
-                        "Name": "test-virt2",
-                        "PhysicalHost": "s157-cb32c10a56c256746c337e21b3ffffff"
-                    },
-                    {
-                        "CappedCPU": false,
-                        "ClusterName": "Puzzait2",
-                        "Hostname": "test-db2",
-                        "Name": "test-db2",
-                        "PhysicalHost": "s157-cb32c10a56c256746c337e21b3fffeua"
-                    }
-                ]
+            "Filesystem": "/dev/mapper/vg_os-lv_root",
+            "MountedOn": "/",
+            "Size": {
+                "$numberLong": "8589934592"
+            },
+            "Type": "xfs",
+            "UsedSpace": {
+                "$numberLong": "3758096384"
             }
-        ],
-        "Databases": [],
-        "Filesystems": [
-            {
-                "Available": "4.6G",
-                "Filesystem": "/dev/mapper/vg_os-lv_root",
-                "FsType": "xfs",
-                "MountedOn": "/",
-                "Size": "8.0G",
-                "Used": "3.5G",
-                "UsedPerc": "43%"
-            }
-        ]
-    },
-    "HostDataSchemaVersion": {
-        "$numberDouble": "3.0"
-    },
-    "HostType": "virtualization",
+        }
+    ],
     "Hostname": "test-virt",
     "Info": {
-        "AixCluster": false,
         "CPUCores": {
-            "$numberDouble": "1.0"
+            "$numberInt": "1"
         },
+        "CPUFrequency": "2.50GHz",
         "CPUModel": "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
-        "CPUThreads": {
-            "$numberDouble": "2.0"
+        "CPUSockets": {
+            "$numberInt": "2"
         },
-        "Environment": "PROD",
+        "CPUThreads": {
+            "$numberInt": "2"
+        },
+        "CoresPerSocket": {
+            "$numberInt": "1"
+        },
+        "HardwareAbstraction": "VIRT",
+        "HardwareAbstractionTechnology": "VMWARE",
         "Hostname": "test-virt",
-        "Kernel": "3.10.0-862.9.1.el7.x86_64",
-        "Location": "Italy",
+        "Kernel": "Linux",
+        "KernelVersion": "3.10.0-862.9.1.el7.x86_64",
         "MemoryTotal": {
             "$numberDouble": "3.0"
         },
-        "OS": "Red Hat Enterprise Linux Server release 7.5 (Maipo)",
-        "OracleCluster": false,
-        "Socket": {
-            "$numberDouble": "2.0"
-        },
-        "SunCluster": false,
+        "OS": "Red Hat Enterprise Linux",
+        "OSVersion": "7.5",
         "SwapTotal": {
             "$numberDouble": "4.0"
         },
-        "Type": "VMWARE",
-        "VeritasCluster": false,
-        "Virtual": true
+        "ThreadsPerCore": {
+            "$numberInt": "2"
+        }
     },
     "Location": "Italy",
     "SchemaVersion": {
+        "$numberDouble": "1.0"
+    },
+    "ServerSchemaVersion": {
         "$numberInt": "1"
     },
-    "Schemas": "",
     "ServerVersion": "latest",
-    "Version": "1.6.1",
+    "Tags": [],
     "_id": {
         "$oid": "5eb0222a45d85f4193704944"
     }
