@@ -5,7 +5,7 @@ RemoteEndpoint = "http://127.0.0.1:11111"
 BindIP = "0.0.0.0"
 Port = 11111
 LogHTTPRequest = true
-LogInsertingHostdata = true
+LogInsertingHostdata = false
 LogDataPatching = true
 EnablePatching = true
 AgentUsername = "user"
@@ -59,15 +59,15 @@ DefaultDatabaseTags = [
   TokenValidityTimeout = 900
 
   [[APIService.OperatingSystemAggregationRules]]
-  Regex = "^Red Hat Enterprise Linux Server release 7.*$"
+  Regex = "^Red Hat Enterprise Linux 7.*$"
   Group = "RHEL7"
 
   [[APIService.OperatingSystemAggregationRules]]
-  Regex = "^Red Hat Enterprise Linux Server release 6.*$"
+  Regex = "^Red Hat Enterprise Linux 6.*$"
   Group = "RHEL6"
 
   [[APIService.OperatingSystemAggregationRules]]
-  Regex = "^Red Hat Enterprise Linux Server release 5.*$"
+  Regex = "^Red Hat Enterprise Linux 5.*$"
   Group = "RHEL5"
 
   [[APIService.OperatingSystemAggregationRules]]

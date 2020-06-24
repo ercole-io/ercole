@@ -361,9 +361,7 @@ func (md *MongoDatabase) GetOracleDatabaseArchivelogStatusStats(location string,
 			mu.APProject(bson.M{
 				"Database": "$Features.Oracle.Database.Databases",
 			}),
-			mu.APGroupAndCountStages("Archivelog", "Count",
-				mu.APOEqual("$Database.Archivelog", "ARCHIVELOG"),
-			),
+			mu.APGroupAndCountStages("Archivelog", "Count", "$Database.Archivelog"),
 			mu.APSort(bson.M{
 				"Archivelog": 1,
 			}),
@@ -480,7 +478,7 @@ func (md *MongoDatabase) GetTotalOracleDatabaseDatafileSizeStats(location string
 			}),
 			mu.APGroup(bson.M{
 				"_id":   0,
-				"Value": mu.APOSum(mu.APOConvertToDoubleOrZero("$Database.DatafileSize")),
+				"Value": mu.APOSum("$Database.DatafileSize"),
 			}),
 		),
 	)
@@ -589,22 +587,7 @@ func (md *MongoDatabase) GetOracleDatabaseLicenseComplianceStatusStats(location 
 						"$gt": 0,
 					},
 				}),
-				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
-					FilterByOldnessSteps(olderThan),
-					mu.APUnwind("$Clusters"),
-					mu.APReplaceWith("$Clusters"),
-					mu.APUnwind("$VMs"),
-					mu.APMatch(mu.QOExpr(mu.APOEqual("$VMs.Hostname", "$$hn"))),
-					mu.APLimit(1),
-				)),
-				mu.APSet(bson.M{
-					"VM": mu.APOArrayElemAt("$VM", 0),
-				}),
-				mu.APAddFields(bson.M{
-					"ClusterName":  mu.APOIfNull("$VM.ClusterName", nil),
-					"PhysicalHost": mu.APOIfNull("$VM.PhysicalHost", nil),
-				}),
-				mu.APUnset("VM"),
+				AddAssociatedClusterNameAndVirtualizationNode(olderThan),
 				mu.APGroup(bson.M{
 					"_id": mu.APOCond(
 						"$ClusterName",

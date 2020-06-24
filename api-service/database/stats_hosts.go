@@ -94,7 +94,7 @@ func (md *MongoDatabase) GetTypeStats(location string, olderThan time.Time) ([]i
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APGroupAndCountStages("Type", "Count", "$Info.HardwareAbstractionTechnology"),
+			mu.APGroupAndCountStages("HardwareAbstractionTechnology", "Count", "$Info.HardwareAbstractionTechnology"),
 			mu.APSort(bson.M{
 				"HardwareAbstractionTechnology": 1,
 			}),

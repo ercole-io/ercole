@@ -190,7 +190,7 @@ type SearchHostsFilters struct {
 	Technology                    string
 	HardwareAbstractionTechnology string
 	Cluster                       *string
-	PhysicalHost                  string
+	VirtualizationNode            string
 	OperatingSystem               string
 	Kernel                        string
 	LTEMemoryTotal                float64

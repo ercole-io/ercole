@@ -186,7 +186,7 @@
                             }
                         ],
                         "MemoryTarget": {
-                            "$numberDouble": "9.34"
+                            "$numberDouble": "10.484"
                         },
                         "NCharset": "AL16UTF16",
                         "Name": "foobar3",
@@ -324,7 +324,7 @@
                         "Allocated": {
                             "$numberDouble": "129.0"
                         },
-                        "Archivelog": true,
+                        "Archivelog": false,
                         "Backups": [
                             {
                                 "AvgBckSize": {
@@ -367,9 +367,9 @@
                             "$numberDouble": "0.7"
                         },
                         "DatafileSize": {
-                            "$numberDouble": "5.0"
+                            "$numberDouble": "76.0"
                         },
-                        "Dataguard": false,
+                        "Dataguard": true,
                         "Elapsed": {
                             "$numberDouble": "12059.18"
                         },
@@ -478,21 +478,12 @@
                             "$numberDouble": "9.34"
                         },
                         "NCharset": "AL16UTF16",
-                        "Name": "foobar3",
+                        "Name": "foobar4",
                         "PDBs": [],
                         "PGATarget": {
-                            "$numberDouble": "0.45"
+                            "$numberDouble": "6.3"
                         },
-                        "PSUs": [
-                            {
-                                "Date": "2012-04-16",
-                                "Description": "PSU 11.2.0.3.2"
-                            },
-                            {
-                                "Date": "2020-04-16",
-                                "Description": "PSU 11.2.0.3.7"
-                            }
-                        ],
+                        "PSUs": [],
                         "Patches": [],
                         "Platform": "Linux x86 64-bit",
                         "SGAMaxSize": {
@@ -537,7 +528,7 @@
                             {
                                 "PartitionName": "iyyiuyyoy",
                                 "Reclaimable": {
-                                    "$numberDouble": "4.3"
+                                    "$numberDouble": "534.34"
                                 },
                                 "Recommendation": "32b36a77e7481343ef175483c086859e",
                                 "SegmentName": "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
@@ -546,7 +537,7 @@
                             }
                         ],
                         "SegmentsSize": {
-                            "$numberDouble": "6.0"
+                            "$numberDouble": "18.0"
                         },
                         "Services": [],
                         "Status": "OPEN",
@@ -584,10 +575,10 @@
                                 }
                             }
                         ],
-                        "UniqueName": "foobar2",
-                        "Version": "12.2.0.1.0 Enterprise Edition",
+                        "UniqueName": "foobar4",
+                        "Version": "18.2.0.1.0 Enterprise Edition",
                         "Work": {
-                            "$numberDouble": "6.4"
+                            "$numberDouble": "10"
                         }
                     }
                 ]
@@ -625,7 +616,7 @@
             }
         }
     ],
-    "Hostname": "test-db2",
+    "Hostname": "test-db3",
     "Info": {
         "CPUCores": {
             "$numberInt": "1"
@@ -643,7 +634,7 @@
         },
         "HardwareAbstraction": "VIRT",
         "HardwareAbstractionTechnology": "OVM",
-        "Hostname": "test-db2",
+        "Hostname": "test-db3",
         "Kernel": "Linux",
         "KernelVersion": "3.10.0-514.el7.x86_64",
         "MemoryTotal": {

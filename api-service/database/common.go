@@ -65,3 +65,28 @@ func AddHardwareAbstraction(field string) bson.A {
 		field: mu.APOOr("$ClusterMembershipStatus.OracleClusterware", "$ClusterMembershipStatus.VeritasClusterServer", "$ClusterMembershipStatus.SunCluster", "$ClusterMembershipStatus.HACMP"),
 	}))
 }
+
+func AddAssociatedClusterNameAndVirtualizationNode(olderThan time.Time) bson.A {
+	return mu.MAPipeline(
+		mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
+			mu.APUnwind("$Clusters"),
+			mu.APReplaceWith("$Clusters"),
+			mu.APUnwind("$VMs"),
+			mu.APSet(bson.M{
+				"VMs.ClusterName": "$Name",
+			}),
+			mu.APReplaceWith("$VMs"),
+			mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
+			mu.APLimit(1),
+		)),
+		mu.APSet(bson.M{
+			"VM": mu.APOArrayElemAt("$VM", 0),
+		}),
+		mu.APAddFields(bson.M{
+			"Cluster":            mu.APOIfNull("$VM.ClusterName", nil),
+			"VirtualizationNode": mu.APOIfNull("$VM.VirtualizationNode", nil),
+		}),
+		mu.APUnset("VM"),
+	)
+}

@@ -253,7 +253,7 @@
                             }
                         ],
                         "SegmentsSize": {
-                            "$numberDouble": "3.0"
+                            "$numberDouble": "6.0"
                         },
                         "Services": [],
                         "Status": "OPEN",
@@ -363,7 +363,7 @@
                             "$numberDouble": "3.1"
                         },
                         "DatafileSize": {
-                            "$numberDouble": "6.0"
+                            "$numberDouble": "5.0"
                         },
                         "Dataguard": false,
                         "Elapsed": {
