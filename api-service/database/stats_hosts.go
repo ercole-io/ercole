@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -94,9 +94,9 @@ func (md *MongoDatabase) GetTypeStats(location string, olderThan time.Time) ([]i
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APGroupAndCountStages("Type", "Count", "$Info.Type"),
+			mu.APGroupAndCountStages("HardwareAbstractionTechnology", "Count", "$Info.HardwareAbstractionTechnology"),
 			mu.APSort(bson.M{
-				"Type": 1,
+				"HardwareAbstractionTechnology": 1,
 			}),
 		),
 	)
@@ -127,7 +127,7 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 			aggregationBranches = append(aggregationBranches, bson.M{
 				"case": bson.M{
 					"$regexMatch": bson.M{
-						"input": "$Info.OS",
+						"input": mu.APOConcat("$Info.OS", " ", "$Info.OSVersion"),
 						"regex": v.Regex,
 					},
 				},
@@ -138,11 +138,11 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 		switchExpr = bson.M{
 			"$switch": bson.M{
 				"branches": aggregationBranches,
-				"default":  "$Info.OS",
+				"default":  mu.APOConcat("$Info.OS", " ", "$Info.OSVersion"),
 			},
 		}
 	} else {
-		switchExpr = "$Info.OS"
+		switchExpr = mu.APOConcat("$Info.OS", " ", "$Info.OSVersion")
 	}
 
 	//Calculate the stats
@@ -155,52 +155,6 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 			mu.APSort(bson.M{
 				"OperatingSystem": 1,
 			}),
-		),
-	)
-	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
-	}
-
-	//Decode the documents
-	for cur.Next(context.TODO()) {
-		var item map[string]interface{}
-		if cur.Decode(&item) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
-		}
-		out = append(out, &item)
-	}
-	return out, nil
-}
-
-// GetTopUnusedInstanceResourceStats return a array containing top unused instance resource by workload
-func (md *MongoDatabase) GetTopUnusedInstanceResourceStats(location string, environment string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{} = make([]interface{}, 0)
-
-	//Calculate the stats
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
-		context.TODO(),
-		mu.MAPipeline(
-			FilterByOldnessSteps(olderThan),
-			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APProject(bson.M{
-				"Hostname": 1,
-				"Works": mu.APOReduce(
-					mu.APOFilter("$Extra.Databases", "db", mu.APONotEqual("$$db.Work", "N/A")),
-					bson.M{"TotalWork": 0, "TotalCPUCount": 0},
-					bson.M{
-						"TotalWork":     mu.APOAdd("$$value.TotalWork", mu.APOConvertErrorableNullable("$$this.Work", "double", 0, 0)),
-						"TotalCPUCount": mu.APOAdd("$$value.TotalCPUCount", mu.APOConvertErrorableNullable("$$this.CPUCount", "double", 0, 0)),
-					},
-				),
-			}),
-			mu.APProject(bson.M{
-				"Hostname": 1,
-				"Unused":   mu.APOSubtract("$Works.TotalCPUCount", "$Works.TotalWork"),
-			}),
-			mu.APSort(bson.M{
-				"Unused": -1,
-			}),
-			mu.APLimit(limit),
 		),
 	)
 	if err != nil {

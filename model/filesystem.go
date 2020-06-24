@@ -26,9 +26,9 @@ import (
 type Filesystem struct {
 	Filesystem     string                 `bson:"Filesystem"`
 	Type           string                 `bson:"Type"`
-	Size           int                    `bson:"Size"`
-	UsedSpace      int                    `bson:"UsedSpace"`
-	AvailableSpace int                    `bson:"AvailableSpace"`
+	Size           int64                  `bson:"Size"`
+	UsedSpace      int64                  `bson:"UsedSpace"`
+	AvailableSpace int64                  `bson:"AvailableSpace"`
 	MountedOn      string                 `bson:"MountedOn"`
 	OtherInfo      map[string]interface{} `bson:"-"`
 }
@@ -53,36 +53,38 @@ func (v *Filesystem) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// FilesystemBsonValidatorRules contains mongodb validation rules for filesystem
+// FilesystemBsonValidatorRules contains mongodb validation rules for Filesystem
 var FilesystemBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
 		"Filesystem",
-		"FsType",
+		"Type",
 		"Size",
-		"Used",
-		"Available",
-		"UsedPerc",
+		"UsedSpace",
+		"AvailableSpace",
 		"MountedOn",
 	},
 	"properties": bson.M{
 		"Filesystem": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 64,
 		},
-		"FsType": bson.M{
-			"bsonType": "string",
+		"Type": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 16,
 		},
 		"Size": bson.M{
-			"bsonType": "string",
+			"bsonType": "number",
+			"minimum":  0,
 		},
-		"Used": bson.M{
-			"bsonType": "string",
+		"UsedSpace": bson.M{
+			"bsonType": "number",
+			"minimum":  0,
 		},
-		"Available": bson.M{
-			"bsonType": "string",
-		},
-		"UsedPerc": bson.M{
-			"bsonType": "string",
+		"AvailableSpace": bson.M{
+			"bsonType": "number",
 		},
 		"MountedOn": bson.M{
 			"bsonType": "string",

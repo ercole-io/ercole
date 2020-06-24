@@ -19,6 +19,7 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 //ClusterMembershipStatus hold informations about the cluster membership
@@ -48,4 +49,29 @@ func (v ClusterMembershipStatus) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *ClusterMembershipStatus) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+}
+
+// ClusterMembershipStatusBsonValidatorRules contains mongodb validation rules for ClusterMembershipStatus
+var ClusterMembershipStatusBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
+		"OracleClusterware",
+		"VeritasClusterServer",
+		"SunCluster",
+		"HACMP",
+	},
+	"properties": bson.M{
+		"OracleClusterware": bson.M{
+			"bsonType": "bool",
+		},
+		"VeritasClusterServer": bson.M{
+			"bsonType": "bool",
+		},
+		"SunCluster": bson.M{
+			"bsonType": "bool",
+		},
+		"HACMP": bson.M{
+			"bsonType": "bool",
+		},
+	},
 }

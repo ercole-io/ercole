@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ func TestGetErcoleFeatures_Success(t *testing.T) {
 		"Oracle/Exadata":  false,
 	}
 
-	getTechnologiesUsageRes := map[string]float32{
+	getTechnologiesUsageRes := map[string]float64{
 		"Oracle/Database_HostsCount": 8,
 		"Oracle/Exadata":             0,
 	}

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -57,5 +57,36 @@ func FilterByOldnessSteps(olderThan time.Time) bson.A {
 			}),
 			mu.APUnset("Check"),
 		}),
+	)
+}
+
+func AddHardwareAbstraction(field string) bson.A {
+	return mu.MAPipeline(mu.APAddFields(bson.M{
+		field: mu.APOOr("$ClusterMembershipStatus.OracleClusterware", "$ClusterMembershipStatus.VeritasClusterServer", "$ClusterMembershipStatus.SunCluster", "$ClusterMembershipStatus.HACMP"),
+	}))
+}
+
+func AddAssociatedClusterNameAndVirtualizationNode(olderThan time.Time) bson.A {
+	return mu.MAPipeline(
+		mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
+			mu.APUnwind("$Clusters"),
+			mu.APReplaceWith("$Clusters"),
+			mu.APUnwind("$VMs"),
+			mu.APSet(bson.M{
+				"VMs.ClusterName": "$Name",
+			}),
+			mu.APReplaceWith("$VMs"),
+			mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
+			mu.APLimit(1),
+		)),
+		mu.APSet(bson.M{
+			"VM": mu.APOArrayElemAt("$VM", 0),
+		}),
+		mu.APAddFields(bson.M{
+			"Cluster":            mu.APOIfNull("$VM.ClusterName", nil),
+			"VirtualizationNode": mu.APOIfNull("$VM.VirtualizationNode", nil),
+		}),
+		mu.APUnset("VM"),
 	)
 }

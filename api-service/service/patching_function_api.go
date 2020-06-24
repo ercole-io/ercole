@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -39,11 +39,13 @@ import (
 const DatabaseTagsAdderMarker = "DATABASE_TAGS_ADDER"
 const DatabaseTagsAdderCode = `
 	/*<DATABASE_TAGS_ADDER>*/
-	hostdata.Extra.Databases.forEach(function addTag(db) {
-		if (db.Name in vars.Tags) {
-			db.Tags = vars.Tags[db.Name];
-		}
-	});
+	if (hostdata.Features.Oracle != undefined && hostdata.Features.Oracle.Database != undefined) {
+		hostdata.Features.Oracle.Database.Databases.forEach(function addTag(db) {
+			if (db.Name in vars.Tags) {
+				db.Tags = vars.Tags[db.Name];
+			}
+		});
+	}
 	/*</DATABASE_TAGS_ADDER>*/
 `
 
@@ -69,19 +71,21 @@ const DatabaseTagsAdderCode = `
 const DatabaseLicensesFixerMarker = "DATABASE_LICENSES_FIXER"
 const DatabaseLicensesFixerCode = `
 	/*<DATABASE_LICENSES_FIXER>*/
-	hostdata.Extra.Databases.forEach(function fixLicensesDb(db) {
-		db.Licenses.forEach(function fixLicense(lic) {
-			if (db.Name in vars.LicenseModifiers && lic.Name in vars.LicenseModifiers[db.Name]) {
-				if (! ("OldCount" in lic)) {
-					lic.OldCount = lic.Count;
+	if (hostdata.Features.Oracle != undefined && hostdata.Features.Oracle.Database != undefined) { 
+		hostdata.Features.Oracle.Database.Databases.forEach(function fixLicensesDb(db) {
+			db.Licenses.forEach(function fixLicense(lic) {
+				if (db.Name in vars.LicenseModifiers && lic.Name in vars.LicenseModifiers[db.Name]) {
+					if (! ("OldCount" in lic)) {
+						lic.OldCount = lic.Count;
+					}
+					lic.Count = vars.LicenseModifiers[db.Name][lic.Name];
+				} else if ("OldCount" in lic) {
+					lic.Count = lic.OldCount;
+					delete lic.OldCount;
 				}
-				lic.Count = vars.LicenseModifiers[db.Name][lic.Name];
-			} else if ("OldCount" in lic) {
-				lic.Count = lic.OldCount;
-				delete lic.OldCount;
-			}
+			});
 		});
-	});
+	}
 	/*</DATABASE_LICENSES_FIXER>*/
 `
 
@@ -156,8 +160,8 @@ func (as *APIService) DeletePatchingFunction(hostname string) utils.AdvancedErro
 	return as.Database.DeletePatchingFunction(hostname)
 }
 
-// AddTagToDatabase add the tag to the database if it hasn't the tag
-func (as *APIService) AddTagToDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface {
+// AddTagToOracleDatabase add the tag to the database if it hasn't the tag
+func (as *APIService) AddTagToOracleDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface {
 	//Find the patching function
 	pf, err := as.Database.FindPatchingFunction(hostname)
 	if err != nil {
@@ -226,8 +230,8 @@ func (as *APIService) AddTagToDatabase(hostname string, dbname string, tagname s
 	return as.ApplyPatch(pf)
 }
 
-// DeleteTagOfDatabase delete the tag from the database if it hasn't the tag
-func (as *APIService) DeleteTagOfDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface {
+// DeleteTagOfOracleDatabase delete the tag from the database if it hasn't the tag
+func (as *APIService) DeleteTagOfOracleDatabase(hostname string, dbname string, tagname string) utils.AdvancedErrorInterface {
 	//Find the patching function
 	pf, err := as.Database.FindPatchingFunction(hostname)
 	if err != nil {
@@ -311,8 +315,8 @@ func (as *APIService) ApplyPatch(pf model.PatchingFunction) utils.AdvancedErrorI
 	return as.Database.ReplaceHostData(data)
 }
 
-// SetLicenseModifier set the value of certain license to newValue
-func (as *APIService) SetLicenseModifier(hostname string, dbname string, licenseName string, newValue int) utils.AdvancedErrorInterface {
+// SetOracleDatabaseLicenseModifier set the value of certain license to newValue
+func (as *APIService) SetOracleDatabaseLicenseModifier(hostname string, dbname string, licenseName string, newValue int) utils.AdvancedErrorInterface {
 	//Find the patching function
 	pf, err := as.Database.FindPatchingFunction(hostname)
 	if err != nil {
@@ -382,8 +386,8 @@ func (as *APIService) SetLicenseModifier(hostname string, dbname string, license
 	return as.ApplyPatch(pf)
 }
 
-// DeleteLicenseModifier delete the modifier of a certain license
-func (as *APIService) DeleteLicenseModifier(hostname string, dbname string, licenseName string) utils.AdvancedErrorInterface {
+// DeleteOracleDatabaseLicenseModifier delete the modifier of a certain license
+func (as *APIService) DeleteOracleDatabaseLicenseModifier(hostname string, dbname string, licenseName string) utils.AdvancedErrorInterface {
 	//Find the patching function
 	pf, err := as.Database.FindPatchingFunction(hostname)
 	if err != nil {
@@ -434,7 +438,7 @@ func (as *APIService) DeleteLicenseModifier(hostname string, dbname string, lice
 	return as.ApplyPatch(pf)
 }
 
-// SearchLicenseModifiers search license modifiers
-func (as *APIService) SearchLicenseModifiers(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchLicenseModifiers(strings.Split(search, " "), sortBy, sortDesc, page, pageSize)
+// SearchOracleDatabaseLicenseModifiers search license modifiers
+func (as *APIService) SearchOracleDatabaseLicenseModifiers(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.SearchOracleDatabaseLicenseModifiers(strings.Split(search, " "), sortBy, sortDesc, page, pageSize)
 }

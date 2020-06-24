@@ -20,6 +20,7 @@ import (
 	"time"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -28,16 +29,17 @@ const ServerSchemaVersion int = 1
 
 // HostDataBE holds all informations about a host & services
 type HostDataBE struct {
-	ID        primitive.ObjectID `bson:"_id"`
-	Archived  bool               `bson:"Archived"`
-	CreatedAt time.Time          `bson:"CreatedAt"`
+	ID                  primitive.ObjectID `bson:"_id"`
+	Archived            bool               `bson:"Archived"`
+	CreatedAt           time.Time          `bson:"CreatedAt"`
+	ServerVersion       string             `bson:"ServerVersion"`
+	ServerSchemaVersion int                `bson:"ServerSchemaVersion"`
 
 	Hostname                string                  `bson:"Hostname"`
 	Location                string                  `bson:"Location"`
 	Environment             string                  `bson:"Environment"`
-	Tags                    []string                `bson:"Tags"`
 	AgentVersion            string                  `bson:"AgentVersion"`
-	SchemaVersion           int                     `bson:"SchemaVersion"`
+	Tags                    []string                `bson:"Tags"`
 	Info                    Host                    `bson:"Info"`
 	ClusterMembershipStatus ClusterMembershipStatus `bson:"ClusterMembershipStatus"`
 	Features                Features                `bson:"Features"`
@@ -64,4 +66,90 @@ func (v HostDataBE) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *HostDataBE) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+}
+
+// HostDataBEBsonValidatorRules contains mongodb validation rules for HostDataBE
+var HostDataBEBsonValidatorRules = bson.M{
+	"bsonType": "object",
+	"required": bson.A{
+		"Archived",
+		"CreatedAt",
+		"ServerVersion",
+		"ServerSchemaVersion",
+
+		"Hostname",
+		"Location",
+		"Environment",
+		"Tags",
+		"AgentVersion",
+		"Info",
+		"ClusterMembershipStatus",
+		"Features",
+		"Filesystems",
+	},
+	"properties": bson.M{
+		"Hostname": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 253,
+			"pattern":   "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$",
+		},
+		"Location": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 64,
+			"pattern":   "^[a-zA-Z0-9-]+$",
+		},
+		"Environment": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 16,
+			"pattern":   "^[A-Z0-9]+$",
+		},
+		"Tags": bson.M{
+			"bsonType": "array",
+			"items": bson.M{
+				"bsonType":  "string",
+				"minLength": 1,
+				"maxLength": 64,
+				"pattern":   "^[a-zA-Z0-9-]+$",
+			},
+			"uniqueItems": true,
+		},
+		"AgentVersion": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 64,
+			"pattern":   "^(([0-9]+([.][0-9]+)*)|(git-[0-9a-f]+)|(latest))$",
+		},
+		"Info":                    HostBsonValidatorRules,
+		"ClusterMembershipStatus": ClusterMembershipStatusBsonValidatorRules,
+		"Features":                FeaturesBsonValidatorRules,
+		"Clusters": bson.M{
+			"anyOf": bson.A{
+				bson.M{"bsonType": "null"},
+				bson.M{
+					"bsonType": "array",
+					"items":    ClusterInfoBsonValidatorRules,
+				},
+			},
+		},
+		"Archived": bson.M{
+			"bsonType": "bool",
+		},
+		"CreatedAt": bson.M{
+			"bsonType": "date",
+		},
+		"ServerVersion": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 64,
+			"pattern":   "^(([0-9]+([.][0-9]+)*)|(git-[0-9a-f]+)|(latest))$",
+		},
+		"ServerSchemaVersion": bson.M{
+			"bsonType": "number",
+			"minimum":  1,
+			"maximum":  1,
+		},
+	},
 }

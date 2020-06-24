@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ func (m *MongodbSuite) TestSaveAndFindPatchingFunction() {
 
 }
 
-func (m *MongodbSuite) TestSearchLicenseModifiers() {
+func (m *MongodbSuite) TestSearchOracleDatabaseLicenseModifiers() {
 	defer m.db.Client.Database(m.dbname).Collection("patching_functions").DeleteMany(context.TODO(), bson.M{})
 
 	id := utils.Str2oid("5ece29086437750f8b114d60")
@@ -107,7 +107,7 @@ func (m *MongodbSuite) TestSearchLicenseModifiers() {
 	}))
 
 	m.T().Run("should_be_paging", func(t *testing.T) {
-		out, err := m.db.SearchLicenseModifiers([]string{""}, "NewValue", false, 0, 1)
+		out, err := m.db.SearchOracleDatabaseLicenseModifiers([]string{""}, "NewValue", false, 0, 1)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -136,7 +136,7 @@ func (m *MongodbSuite) TestSearchLicenseModifiers() {
 	})
 
 	m.T().Run("should_be_sorting", func(t *testing.T) {
-		out, err := m.db.SearchLicenseModifiers([]string{""}, "NewValue", true, -1, -1)
+		out, err := m.db.SearchOracleDatabaseLicenseModifiers([]string{""}, "NewValue", true, -1, -1)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -172,7 +172,7 @@ func (m *MongodbSuite) TestSearchLicenseModifiers() {
 	})
 
 	m.T().Run("should_search_return_anything", func(t *testing.T) {
-		out, err := m.db.SearchLicenseModifiers([]string{"barfoo"}, "NewValue", false, -1, -1)
+		out, err := m.db.SearchOracleDatabaseLicenseModifiers([]string{"barfoo"}, "NewValue", false, -1, -1)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
@@ -180,7 +180,7 @@ func (m *MongodbSuite) TestSearchLicenseModifiers() {
 	})
 
 	m.T().Run("should_search_return_found", func(t *testing.T) {
-		out, err := m.db.SearchLicenseModifiers([]string{"foobar2", "foobar3", "Diagnostics Pack"}, "NewValue", false, -1, -1)
+		out, err := m.db.SearchOracleDatabaseLicenseModifiers([]string{"foobar2", "foobar3", "Diagnostics Pack"}, "NewValue", false, -1, -1)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -196,7 +196,7 @@ func (m *MongodbSuite) TestSearchLicenseModifiers() {
 	})
 
 	m.T().Run("should_return_all_results", func(t *testing.T) {
-		out, err := m.db.SearchLicenseModifiers([]string{""}, "NewValue", false, -1, -1)
+		out, err := m.db.SearchOracleDatabaseLicenseModifiers([]string{""}, "NewValue", false, -1, -1)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{

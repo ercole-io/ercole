@@ -52,11 +52,10 @@ func (v *OracleDatabasePatch) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// PatchBsonValidatorRules contains mongodb validation rules for patch
-var PatchBsonValidatorRules = bson.M{
+// OracleDatabasePatchBsonValidatorRules contains mongodb validation rules for OracleDatabasePatch
+var OracleDatabasePatchBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Database",
 		"Version",
 		"PatchID",
 		"Action",
@@ -64,23 +63,27 @@ var PatchBsonValidatorRules = bson.M{
 		"Date",
 	},
 	"properties": bson.M{
-		"Database": bson.M{
-			"bsonType": "string",
-		},
 		"Version": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 16,
 		},
 		"PatchID": bson.M{
-			"bsonType": "string",
+			"bsonType": "number",
 		},
 		"Action": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 128,
 		},
 		"Description": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 256,
 		},
 		"Date": bson.M{
 			"bsonType": "string",
+			"pattern":  "[0-9]{4}-[0-9]{2}-[0-9]{2}",
 		},
 	},
 }

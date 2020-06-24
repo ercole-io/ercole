@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 					"Hostname": 1,
 					"Databases": mu.APOReduce(
 						mu.APOFilter(
-							mu.APOMap("$Extra.Databases", "db", bson.M{
+							mu.APOMap("$Features.Oracle.Database.Databases", "db", bson.M{
 								"Name": "$$db.Name",
 								"Count": mu.APOLet(
 									bson.M{
@@ -69,23 +69,7 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 						"$gt": 0,
 					},
 				}),
-				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
-					FilterByOldnessSteps(olderThan),
-					mu.APUnwind("$Extra.Clusters"),
-					mu.APReplaceWith("$Extra.Clusters"),
-					mu.APUnwind("$VMs"),
-					mu.APReplaceWith("$VMs"),
-					mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
-					mu.APLimit(1),
-				)),
-				mu.APSet(bson.M{
-					"VM": mu.APOArrayElemAt("$VM", 0),
-				}),
-				mu.APAddFields(bson.M{
-					"ClusterName":  mu.APOIfNull("$VM.ClusterName", nil),
-					"PhysicalHost": mu.APOIfNull("$VM.PhysicalHost", nil),
-				}),
-				mu.APUnset("VM"),
+				AddAssociatedClusterNameAndVirtualizationNode(olderThan),
 				mu.APGroup(mu.BsonOptionalExtension(full, bson.M{
 					"_id": mu.APOCond(
 						"$ClusterName",
@@ -185,7 +169,7 @@ func (md *MongoDatabase) GetLicense(name string, olderThan time.Time) (interface
 					"Hostname": 1,
 					"Databases": mu.APOReduce(
 						mu.APOFilter(
-							mu.APOMap("$Extra.Databases", "db", bson.M{
+							mu.APOMap("$Features.Oracle.Database.Databases", "db", bson.M{
 								"Name": "$$db.Name",
 								"Count": mu.APOLet(
 									bson.M{
@@ -214,23 +198,7 @@ func (md *MongoDatabase) GetLicense(name string, olderThan time.Time) (interface
 						"$gt": 0,
 					},
 				}),
-				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
-					FilterByOldnessSteps(olderThan),
-					mu.APUnwind("$Extra.Clusters"),
-					mu.APReplaceWith("$Extra.Clusters"),
-					mu.APUnwind("$VMs"),
-					mu.APReplaceWith("$VMs"),
-					mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
-					mu.APLimit(1),
-				)),
-				mu.APSet(bson.M{
-					"VM": mu.APOArrayElemAt("$VM", 0),
-				}),
-				mu.APAddFields(bson.M{
-					"ClusterName":  mu.APOIfNull("$VM.ClusterName", nil),
-					"PhysicalHost": mu.APOIfNull("$VM.PhysicalHost", nil),
-				}),
-				mu.APUnset("VM"),
+				AddAssociatedClusterNameAndVirtualizationNode(olderThan),
 				mu.APGroup(bson.M{
 					"_id": mu.APOCond(
 						"$ClusterName",
@@ -329,7 +297,7 @@ func (md *MongoDatabase) SetLicenseCount(name string, count int) utils.AdvancedE
 }
 
 // SetLicenseCostPerProcessor set the cost per processor of a certain license
-func (md *MongoDatabase) SetLicenseCostPerProcessor(name string, count float32) utils.AdvancedErrorInterface {
+func (md *MongoDatabase) SetLicenseCostPerProcessor(name string, count float64) utils.AdvancedErrorInterface {
 	//Find the informations
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses").UpdateOne(context.TODO(), bson.M{
 		"_id": name,

@@ -44,8 +44,8 @@ func Str2oid(str string) primitive.ObjectID {
 }
 
 //LoadFixtureHostData load the hostdata in the filename and return it
-func LoadFixtureHostData(t *testing.T, filename string) model.HostData {
-	var hd model.HostData
+func LoadFixtureHostData(t *testing.T, filename string) model.HostDataBE {
+	var hd model.HostDataBE
 	raw, err := ioutil.ReadFile(filename)
 
 	require.NoError(t, err)
@@ -77,11 +77,11 @@ func LoadFixtureMongoHostDataMap(t *testing.T, filename string) model.RawObject 
 }
 
 //LoadFixtureMongoHostDataMapAsHostData load the mongohostdata in the filename and return it as hostdata
-func LoadFixtureMongoHostDataMapAsHostData(t *testing.T, filename string) model.HostData {
+func LoadFixtureMongoHostDataMapAsHostData(t *testing.T, filename string) model.HostDataBE {
 	raw, err := ioutil.ReadFile(filename)
 	require.NoError(t, err)
 
-	var hd model.HostData
+	var hd model.HostDataBE
 	require.NoError(t, bson.UnmarshalExtJSON(raw, true, &hd))
 
 	return hd

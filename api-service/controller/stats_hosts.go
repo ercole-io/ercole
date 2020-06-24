@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -115,38 +115,6 @@ func (ctrl *APIController) GetOperatingSystemStats(w http.ResponseWriter, r *htt
 
 	//get the data
 	stats, err := ctrl.Service.GetOperatingSystemStats(location, olderThan)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	//Write the data
-	utils.WriteJSONResponse(w, http.StatusOK, stats)
-}
-
-// GetTopUnusedInstanceResourceStats return top unused instance resource by databases work using the filters in the request
-func (ctrl *APIController) GetTopUnusedInstanceResourceStats(w http.ResponseWriter, r *http.Request) {
-	var olderThan time.Time
-	var location string
-	var environment string
-	var limit int
-	var err utils.AdvancedErrorInterface
-
-	//parse the query params
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-	if limit, err = utils.Str2int(r.URL.Query().Get("limit"), 15); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	//get the data
-	stats, err := ctrl.Service.GetTopUnusedInstanceResourceStats(location, environment, limit, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return

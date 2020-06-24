@@ -57,27 +57,36 @@ func (v *ClusterInfo) UnmarshalBSON(data []byte) error {
 var ClusterInfoBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Name",
+		"FetchEndpoint",
 		"Type",
+		"Name",
 		"CPU",
 		"Sockets",
 		"VMs",
 	},
 	"properties": bson.M{
-		"Name": bson.M{
-			"bsonType": "string",
-		},
-		"Hour": bson.M{
-			"bsonType": "string",
+		"FetchEndpoint": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 64,
 		},
 		"Type": bson.M{
-			"bsonType": "string",
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 16,
+		},
+		"Name": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 128,
 		},
 		"CPU": bson.M{
 			"bsonType": "number",
+			"minimum":  0,
 		},
 		"Sockets": bson.M{
 			"bsonType": "number",
+			"minimum":  0,
 		},
 		"VMs": bson.M{
 			"bsonType": "array",

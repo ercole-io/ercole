@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ import (
 
 	"github.com/ercole-io/ercole/model"
 	"github.com/robertkrimen/otto"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 var MIN_TIME time.Time = time.Unix(0, 0)
@@ -39,6 +40,15 @@ var MAX_TIME time.Time = time.Now().AddDate(1000, 0, 0)
 //ToJSON convert v to a string containing the equivalent json rappresentation
 func ToJSON(v interface{}) string {
 	raw, _ := json.Marshal(v)
+	return string(raw)
+}
+
+//ToMongoJSON convert v to a string containing the equivalent json rappresentation
+func ToMongoJSON(v interface{}) string {
+	raw, err := bson.MarshalExtJSON(v, false, false)
+	if err != nil {
+		panic(err)
+	}
 	return string(raw)
 }
 
@@ -91,14 +101,14 @@ func Str2int(in string, defaultValue int) (int, AdvancedErrorInterface) {
 	}
 }
 
-// Str2float32 parse a string to a float32
-func Str2float32(in string, defaultValue float32) (float32, AdvancedErrorInterface) {
+// Str2float64 parse a string to a float64
+func Str2float64(in string, defaultValue float64) (float64, AdvancedErrorInterface) {
 	if in == "" {
 		return defaultValue, nil
 	} else if val, err := strconv.ParseFloat(in, 32); err != nil {
 		return -1, NewAdvancedErrorPtr(err, "Unable to parse string to float")
 	} else {
-		return float32(val), nil
+		return float64(val), nil
 	}
 }
 
@@ -177,7 +187,7 @@ func DownloadFile(filepath string, url string) (err error) {
 
 // PatchHostdata patch a single hostdata using the pf PatchingFunction.
 // It doesn't check if pf.Hostname equals hostdata["Hostname"]
-func PatchHostdata(pf model.PatchingFunction, hostdata model.HostData) (model.HostData, AdvancedErrorInterface) {
+func PatchHostdata(pf model.PatchingFunction, hostdata model.HostDataBE) (model.HostDataBE, AdvancedErrorInterface) {
 	//FIXME: avoid repeated marshalling/unmarshalling...
 
 	//Initialize the vm
@@ -187,37 +197,37 @@ func PatchHostdata(pf model.PatchingFunction, hostdata model.HostData) (model.Ho
 	var tempHD map[string]interface{}
 	tempRaw, err := json.Marshal(hostdata)
 	if err != nil {
-		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 	err = json.Unmarshal(tempRaw, &tempHD)
 	if err != nil {
-		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 
 	//Set the global variables
 	err = vm.Set("hostdata", tempHD)
 	if err != nil {
-		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 	err = vm.Set("vars", pf.Vars)
 	if err != nil {
-		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 
 	//Run the code
 	_, err = vm.Run(pf.Code)
 	if err != nil {
-		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 
 	//Convert tempHD to hostdata
 	tempRaw, err = json.Marshal(tempHD)
 	if err != nil {
-		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 	err = json.Unmarshal(tempRaw, &hostdata)
 	if err != nil {
-		return model.HostData{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
 	}
 
 	return hostdata, nil
