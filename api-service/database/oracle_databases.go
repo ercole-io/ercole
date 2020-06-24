@@ -72,7 +72,7 @@ func (md *MongoDatabase) SearchOracleDatabases(full bool, keywords []string, sor
 				"Memory":       true,
 				"DatafileSize": true,
 				"SegmentsSize": true,
-				"ArchiveLog":   true,
+				"Archivelog":   true,
 				"Dataguard":    true,
 				"RAC":          true,
 				"HA":           true,

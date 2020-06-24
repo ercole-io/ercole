@@ -27,7 +27,7 @@ var searchHostsDatabase string
 var searchHostsTechnology string
 var searchHostsHardwareAbstractionTechnology string
 var searchHostsCluster string
-var searchHostsPhysicalHost string
+var searchHostsVirtualizationNode string
 var searchHostsOperatingSystem string
 var searchHostsKernel string
 var searchHostsLTEMemoryTotal float64
@@ -48,7 +48,7 @@ var searchHostsOption apiOption = apiOption{
 		cmd.Flags().StringVar(&searchHostsTechnology, "technology", "", "Filter by a technology")
 		cmd.Flags().StringVar(&searchHostsHardwareAbstractionTechnology, "hardware-abstraction-technology", "", "Filter by the HA technology")
 		cmd.Flags().StringVar(&searchHostsCluster, "cluster", "", "Filter by the name of virtualization cluster. use 'NULL' for searching host that aren't part of a virtualization cluster")
-		cmd.Flags().StringVar(&searchHostsPhysicalHost, "physical-host", "", "Filter by the name of physical host on which the host runs")
+		cmd.Flags().StringVar(&searchHostsVirtualizationNode, "virtualization-node", "", "Filter by the name of virtualization node on which the host runs")
 		cmd.Flags().StringVar(&searchHostsOperatingSystem, "operating-system", "", "Filter by the operating system")
 		cmd.Flags().StringVar(&searchHostsKernel, "kernel", "", "Filter by the kernel")
 		cmd.Flags().Float64Var(&searchHostsLTEMemoryTotal, "memory-total-lte", -1, "Filter the hosts with the Info.MemoryTotal less than memory-total-lte value")
@@ -68,7 +68,7 @@ var searchHostsOption apiOption = apiOption{
 		params.Set("technology", searchHostsTechnology)
 		params.Set("hardware-abstraction-technology", searchHostsHardwareAbstractionTechnology)
 		params.Set("cluster", searchHostsCluster)
-		params.Set("physical-host", searchHostsPhysicalHost)
+		params.Set("virtualization-node", searchHostsVirtualizationNode)
 		params.Set("operating-system", searchHostsOperatingSystem)
 		params.Set("kernel", searchHostsKernel)
 		params.Set("memory-total-lte", fmt.Sprintf("%f", searchHostsLTEMemoryTotal))

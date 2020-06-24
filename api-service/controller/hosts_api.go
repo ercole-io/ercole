@@ -245,10 +245,9 @@ func (ctrl *APIController) SearchHostsXLSX(w http.ResponseWriter, r *http.Reques
 	for i, val := range hosts {
 		sheet.Cell(0, i+1).SetText(val["Hostname"])
 		sheet.Cell(1, i+1).SetText(val["Environment"])
-		sheet.Cell(2, i+1).SetText(val["HostType"])
-		if val["Cluster"] != nil && val["PhysicalHost"] != nil {
+		if val["Cluster"] != nil && val["VirtualizationNode"] != nil {
 			sheet.Cell(3, i+1).SetText(val["Cluster"])
-			sheet.Cell(4, i+1).SetText(val["PhysicalHost"])
+			sheet.Cell(4, i+1).SetText(val["VirtualizationNode"])
 		}
 		sheet.Cell(5, i+1).SetText(val["Version"])
 		sheet.Cell(6, i+1).SetText(val["CreatedAt"].(primitive.DateTime).Time().UTC().String())
@@ -258,8 +257,8 @@ func (ctrl *APIController) SearchHostsXLSX(w http.ResponseWriter, r *http.Reques
 		sheet.Cell(10, i+1).SetBool(val["OracleCluster"].(bool))
 		sheet.Cell(11, i+1).SetBool(val["SunCluster"].(bool))
 		sheet.Cell(12, i+1).SetBool(val["VeritasCluster"].(bool))
-		sheet.Cell(13, i+1).SetBool(val["Virtual"].(bool))
-		sheet.Cell(14, i+1).SetText(val["Type"])
+		sheet.Cell(13, i+1).SetText(val["HardwareAbstraction"])
+		sheet.Cell(14, i+1).SetText(val["HardwareAbstractionTechnology"])
 		sheet.Cell(15, i+1).SetInt(int(val["CPUThreads"].(float64)))
 		sheet.Cell(16, i+1).SetInt(int(val["CPUCores"].(float64)))
 		sheet.Cell(17, i+1).SetInt(int(val["Socket"].(float64)))
@@ -288,7 +287,7 @@ func (ctrl *APIController) GetSearchHostFilters(r *http.Request) (database.Searc
 		filters.Cluster = new(string)
 		*filters.Cluster = r.URL.Query().Get("cluster")
 	}
-	filters.PhysicalHost = r.URL.Query().Get("physical-host")
+	filters.VirtualizationNode = r.URL.Query().Get("virtualization-node")
 	filters.OperatingSystem = r.URL.Query().Get("operating-system")
 	filters.Kernel = r.URL.Query().Get("kernel")
 	if filters.LTEMemoryTotal, aerr = utils.Str2float64(r.URL.Query().Get("memory-total-lte"), -1); aerr != nil {

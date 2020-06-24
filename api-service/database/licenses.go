@@ -69,23 +69,7 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 						"$gt": 0,
 					},
 				}),
-				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
-					FilterByOldnessSteps(olderThan),
-					mu.APUnwind("$Clusters"),
-					mu.APReplaceWith("$Clusters"),
-					mu.APUnwind("$VMs"),
-					mu.APReplaceWith("$VMs"),
-					mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
-					mu.APLimit(1),
-				)),
-				mu.APSet(bson.M{
-					"VM": mu.APOArrayElemAt("$VM", 0),
-				}),
-				mu.APAddFields(bson.M{
-					"ClusterName":  mu.APOIfNull("$VM.ClusterName", nil),
-					"PhysicalHost": mu.APOIfNull("$VM.PhysicalHost", nil),
-				}),
-				mu.APUnset("VM"),
+				AddAssociatedClusterNameAndVirtualizationNode(olderThan),
 				mu.APGroup(mu.BsonOptionalExtension(full, bson.M{
 					"_id": mu.APOCond(
 						"$ClusterName",
@@ -214,23 +198,7 @@ func (md *MongoDatabase) GetLicense(name string, olderThan time.Time) (interface
 						"$gt": 0,
 					},
 				}),
-				mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
-					FilterByOldnessSteps(olderThan),
-					mu.APUnwind("$Clusters"),
-					mu.APReplaceWith("$Clusters"),
-					mu.APUnwind("$VMs"),
-					mu.APReplaceWith("$VMs"),
-					mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
-					mu.APLimit(1),
-				)),
-				mu.APSet(bson.M{
-					"VM": mu.APOArrayElemAt("$VM", 0),
-				}),
-				mu.APAddFields(bson.M{
-					"ClusterName":  mu.APOIfNull("$VM.ClusterName", nil),
-					"PhysicalHost": mu.APOIfNull("$VM.PhysicalHost", nil),
-				}),
-				mu.APUnset("VM"),
+				AddAssociatedClusterNameAndVirtualizationNode(olderThan),
 				mu.APGroup(bson.M{
 					"_id": mu.APOCond(
 						"$ClusterName",

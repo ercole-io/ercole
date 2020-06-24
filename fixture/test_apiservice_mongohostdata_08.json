@@ -32,6 +32,31 @@
                     "VirtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402"
                 }
             ]
+        },
+        {
+            "CPU": {
+                "$numberInt": "130"
+            },
+            "FetchEndpoint": "???",
+            "Name": "Puzzait2",
+            "Sockets": {
+                "$numberInt": "13"
+            },
+            "Type": "vmware",
+            "VMs": [
+                {
+                    "CappedCPU": false,
+                    "Hostname": "test-virt2",
+                    "Name": "test-virt2",
+                    "VirtualizationNode": "s157-cb32c10a56c256746c337e21b3ffffff"
+                },
+                {
+                    "CappedCPU": false,
+                    "Hostname": "test-db2",
+                    "Name": "test-db2",
+                    "VirtualizationNode": "s157-cb32c10a56c256746c337e21b3fffeua"
+                }
+            ]
         }
     ],
     "CreatedAt": {

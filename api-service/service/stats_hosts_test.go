@@ -85,12 +85,12 @@ func TestGetTypeStats_Success(t *testing.T) {
 
 	expectedRes := []interface{}{
 		map[string]interface{}{
-			"Count": 2,
-			"Type":  "PH",
+			"Count":                         2,
+			"HardwareAbstractionTechnology": "PH",
 		},
 		map[string]interface{}{
-			"Count": 4,
-			"Type":  "VMWARE",
+			"Count":                         4,
+			"HardwareAbstractionTechnology": "VMWARE",
 		},
 	}
 

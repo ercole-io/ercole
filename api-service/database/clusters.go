@@ -56,7 +56,7 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 				"CPU":                         "$Cluster.CPU",
 				"Sockets":                     "$Cluster.Sockets",
 				"VMs":                         "$Cluster.VMs",
-				"PhysicalHosts":               mu.APOSetUnion(mu.APOMap("$Cluster.VMs", "vm", "$$vm.PhysicalHost")),
+				"VirtualizationNodes":         mu.APOSetUnion(mu.APOMap("$Cluster.VMs", "vm", "$$vm.VirtualizationNode")),
 				"VMsCount":                    mu.APOSize("$Cluster.VMs"),
 			}),
 			mu.APLookupPipeline("hosts", bson.M{
@@ -81,7 +81,7 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 				"Type":                        true,
 				"CPU":                         true,
 				"Sockets":                     true,
-				"PhysicalHosts":               mu.APOJoin("$PhysicalHosts", " "),
+				"VirtualizationNodes":         mu.APOJoin("$VirtualizationNodes", " "),
 				"VMsCount":                    true,
 				"VMsErcoleAgentCount":         true,
 			})),
@@ -137,7 +137,7 @@ func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (in
 				"CPU":                         "$Cluster.CPU",
 				"Sockets":                     "$Cluster.Sockets",
 				"VMs":                         "$Cluster.VMs",
-				"PhysicalHosts":               mu.APOSetUnion(mu.APOMap("$Cluster.VMs", "vm", "$$vm.PhysicalHost")),
+				"VirtualizationNodes":         mu.APOSetUnion(mu.APOMap("$Cluster.VMs", "vm", "$$vm.VirtualizationNode")),
 				"VMsCount":                    mu.APOSize("$Cluster.VMs"),
 			}),
 			mu.APLookupPipeline("hosts", bson.M{
@@ -148,22 +148,22 @@ func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (in
 					"Hostname": 1,
 				}),
 				mu.APSet(bson.M{
-					"PhysicalHost": mu.APOArrayElemAt(mu.APOFilter("$$vms", "vm", mu.APOEqual("$$vm.Hostname", "$Hostname")), 0),
+					"VirtualizationNode": mu.APOArrayElemAt(mu.APOFilter("$$vms", "vm", mu.APOEqual("$$vm.Hostname", "$Hostname")), 0),
 				}),
 				mu.APMatch(bson.M{
-					"PhysicalHost": mu.QONotEqual(nil),
+					"VirtualizationNode": mu.QONotEqual(nil),
 				}),
 				mu.APSet(bson.M{
-					"PhysicalHost": "$PhysicalHost.PhysicalHost",
+					"VirtualizationNode": "$VirtualizationNode.VirtualizationNode",
 				}),
 			)),
 			mu.APSet(bson.M{
-				"PhysicalHostsCount": mu.APOSize("$PhysicalHosts"),
-				"PhysicalHostsStats": mu.APOMap("$PhysicalHosts", "ph", mu.APOLet(bson.M{
-					"vmCount":                mu.APOSize(mu.APOFilter("$VMs", "vm", mu.APOEqual("$$vm.PhysicalHost", "$$ph"))),
-					"vmWithErcoleAgentCount": mu.APOSize(mu.APOFilter("$VMsErcoleAgentCount", "vmea", mu.APOEqual("$$vmea.PhysicalHost", "$$ph"))),
+				"VirtualizationNodesCount": mu.APOSize("$VirtualizationNodes"),
+				"VirtualizationNodesStats": mu.APOMap("$VirtualizationNodes", "ph", mu.APOLet(bson.M{
+					"vmCount":                mu.APOSize(mu.APOFilter("$VMs", "vm", mu.APOEqual("$$vm.VirtualizationNode", "$$ph"))),
+					"vmWithErcoleAgentCount": mu.APOSize(mu.APOFilter("$VMsErcoleAgentCount", "vmea", mu.APOEqual("$$vmea.VirtualizationNode", "$$ph"))),
 				}, bson.M{
-					"PhysicalHost":                    "$$ph",
+					"VirtualizationNode":              "$$ph",
 					"TotalVMsCount":                   "$$vmCount",
 					"TotalVMsWithErcoleAgentCount":    "$$vmWithErcoleAgentCount",
 					"TotalVMsWithoutErcoleAgentCount": mu.APOSubtract("$$vmCount", "$$vmWithErcoleAgentCount"),

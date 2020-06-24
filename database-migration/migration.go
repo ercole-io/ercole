@@ -110,15 +110,6 @@ func MigrateHostsSchema(log *logrus.Logger, client *mongo.Database) {
 	}
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
-			{"Archived", 1},
-			{"HostType", 1},
-			{"Hostname", 1},
-		},
-	}); err != nil {
-		log.Panicln(err)
-	}
-	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
-		Keys: bson.D{
 			{"Hostname", 1},
 			{"CreatedAt", -1},
 		},
@@ -150,7 +141,6 @@ func MigrateHostsSchema(log *logrus.Logger, client *mongo.Database) {
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
 			{"Archived", 1},
-			{"HostType", 1},
 			{"Extra.clusters.Name", 1},
 		},
 	}); err != nil {
@@ -159,7 +149,6 @@ func MigrateHostsSchema(log *logrus.Logger, client *mongo.Database) {
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
 			{"Archived", 1},
-			{"HostType", 1},
 			{"Extra.Clusters.VMs.Hostname", 1},
 		},
 	}); err != nil {
