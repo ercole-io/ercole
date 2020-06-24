@@ -100,16 +100,16 @@ func (m *MongodbSuite) TestGetTypeStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"Type":  "OVM",
-				"Count": 1,
+				"HardwareAbstractionTechnology": "OVM",
+				"Count":                         1,
 			},
 			{
-				"Type":  "PH",
-				"Count": 1,
+				"HardwareAbstractionTechnology": "PH",
+				"Count":                         1,
 			},
 			{
-				"Type":  "VMWARE",
-				"Count": 2,
+				"HardwareAbstractionTechnology": "VMWARE",
+				"Count":                         2,
 			},
 		}
 
@@ -149,11 +149,11 @@ func (m *MongodbSuite) TestGetOperatingSystemStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"OperatingSystem": "Red Hat Enterprise Linux Server release 7.6 (Maipo)",
+				"OperatingSystem": "Red Hat Enterprise Linux 7.6",
 				"Count":           3,
 			},
 			{
-				"OperatingSystem": "Ubuntu Server 18.04.4",
+				"OperatingSystem": "Ubuntu 18.04.4",
 				"Count":           1,
 			},
 		}
@@ -164,11 +164,11 @@ func (m *MongodbSuite) TestGetOperatingSystemStats() {
 	m.T().Run("should_aggregate_correctly", func(t *testing.T) {
 		m.db.OperatingSystemAggregationRules = []config.AggregationRule{
 			{
-				Regex: "^Red Hat Enterprise Linux Server release 7.*$",
+				Regex: "^Red Hat Enterprise Linux 7.*$",
 				Group: "RHEL7",
 			},
 			{
-				Regex: "^Ubuntu Server 18\\.04.*$",
+				Regex: "^Ubuntu 18\\.04.*$",
 				Group: "Ubuntu Server",
 			},
 		}

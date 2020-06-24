@@ -4,7 +4,7 @@
     "ClusterMembershipStatus": {
         "HACMP": false,
         "OracleClusterware": false,
-        "SunCluster": false,
+        "SunCluster": true,
         "VeritasClusterServer": false
     },
     "Clusters": null,
@@ -41,7 +41,7 @@
                         "Allocated": {
                             "$numberDouble": "129.0"
                         },
-                        "Archivelog": false,
+                        "Archivelog": true,
                         "Backups": [
                             {
                                 "AvgBckSize": {
@@ -86,7 +86,7 @@
                         "DatafileSize": {
                             "$numberDouble": "6.0"
                         },
-                        "Dataguard": false,
+                        "Dataguard": true,
                         "Elapsed": {
                             "$numberDouble": "12059.18"
                         },
@@ -183,16 +183,22 @@
                                     "$numberDouble": "0.5"
                                 },
                                 "Name": "Diagnostics Pack"
+                            },
+                            {
+                                "Count": {
+                                    "$numberDouble": "0.5"
+                                },
+                                "Name": "Real Application Clusters"
                             }
                         ],
                         "MemoryTarget": {
                             "$numberDouble": "1.484"
                         },
                         "NCharset": "AL16UTF16",
-                        "Name": "foobar1",
+                        "Name": "pokemons",
                         "PDBs": [],
                         "PGATarget": {
-                            "$numberDouble": "0.0"
+                            "$numberDouble": "53.45"
                         },
                         "PSUs": [
                             {
@@ -206,7 +212,7 @@
                             "$numberDouble": "1.484"
                         },
                         "SGATarget": {
-                            "$numberDouble": "0.0"
+                            "$numberDouble": "35.32"
                         },
                         "Schemas": [
                             {
@@ -291,289 +297,10 @@
                                 }
                             }
                         ],
-                        "UniqueName": "foobar1",
+                        "UniqueName": "pokemons",
                         "Version": "12.2.0.1.0 Enterprise Edition",
                         "Work": {
                             "$numberDouble": "1.0"
-                        }
-                    },
-                    {
-                        "ADDMs": [
-                            {
-                                "Action": "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
-                                "Benefit": {
-                                    "$numberDouble": "83.34"
-                                },
-                                "Finding": "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
-                                "Recommendation": "SQL Tuning"
-                            },
-                            {
-                                "Action": "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
-                                "Benefit": {
-                                    "$numberDouble": "68.24"
-                                },
-                                "Finding": "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
-                                "Recommendation": "Segment Tuning"
-                            }
-                        ],
-                        "ASM": false,
-                        "Allocated": {
-                            "$numberDouble": "129.0"
-                        },
-                        "Archivelog": false,
-                        "Backups": [
-                            {
-                                "AvgBckSize": {
-                                    "$numberDouble": "13.0"
-                                },
-                                "BackupType": "Archivelog",
-                                "Hour": "01:30",
-                                "Retention": "1 NUMBERS",
-                                "WeekDays": [
-                                    "Wednesday"
-                                ]
-                            },
-                            {
-                                "AvgBckSize": {
-                                    "$numberDouble": "45.0"
-                                },
-                                "BackupType": "Archivelog",
-                                "Hour": "03:00",
-                                "Retention": "1 NUMBERS",
-                                "WeekDays": [
-                                    "Tuesday",
-                                    "Sunday",
-                                    "Monday",
-                                    "Saturday",
-                                    "Wednesday"
-                                ]
-                            }
-                        ],
-                        "BlockSize": {
-                            "$numberInt": "8192"
-                        },
-                        "CPUCount": {
-                            "$numberInt": "8"
-                        },
-                        "Charset": "AL32UTF8",
-                        "DBTime": {
-                            "$numberDouble": "184.81"
-                        },
-                        "DailyCPUUsage": {
-                            "$numberDouble": "3.1"
-                        },
-                        "DatafileSize": {
-                            "$numberDouble": "6.0"
-                        },
-                        "Dataguard": false,
-                        "Elapsed": {
-                            "$numberDouble": "12059.18"
-                        },
-                        "FeatureUsageStats": [
-                            {
-                                "CurrentlyUsed": false,
-                                "DetectedUsages": {
-                                    "$numberLong": "91"
-                                },
-                                "ExtraFeatureInfo": "",
-                                "Feature": "ADDM",
-                                "FirstUsageDate": {
-                                    "$date": {
-                                        "$numberLong": "1561397660000"
-                                    }
-                                },
-                                "LastUsageDate": {
-                                    "$date": {
-                                        "$numberLong": "1573274903000"
-                                    }
-                                },
-                                "Product": "Diagnostics Pack"
-                            },
-                            {
-                                "CurrentlyUsed": false,
-                                "DetectedUsages": {
-                                    "$numberLong": "90"
-                                },
-                                "ExtraFeatureInfo": "",
-                                "Feature": "AWR Report",
-                                "FirstUsageDate": {
-                                    "$date": {
-                                        "$numberLong": "1561648544000"
-                                    }
-                                },
-                                "LastUsageDate": {
-                                    "$date": {
-                                        "$numberLong": "1573274903000"
-                                    }
-                                },
-                                "Product": "Diagnostics Pack"
-                            },
-                            {
-                                "CurrentlyUsed": false,
-                                "DetectedUsages": {
-                                    "$numberLong": "7"
-                                },
-                                "ExtraFeatureInfo": "",
-                                "Feature": "Automatic Workload Repository",
-                                "FirstUsageDate": {
-                                    "$date": {
-                                        "$numberLong": "1561654869000"
-                                    }
-                                },
-                                "LastUsageDate": {
-                                    "$date": {
-                                        "$numberLong": "1562045705000"
-                                    }
-                                },
-                                "Product": "Diagnostics Pack"
-                            }
-                        ],
-                        "InstanceNumber": {
-                            "$numberInt": "1"
-                        },
-                        "IsCDB": false,
-                        "Licenses": [
-                            {
-                                "Count": {
-                                    "$numberDouble": "0.0"
-                                },
-                                "Name": "Oracle EXE"
-                            },
-                            {
-                                "Count": {
-                                    "$numberDouble": "0.5"
-                                },
-                                "Name": "Oracle ENT"
-                            },
-                            {
-                                "Count": {
-                                    "$numberDouble": "0.0"
-                                },
-                                "Name": "Oracle STD"
-                            },
-                            {
-                                "Count": {
-                                    "$numberDouble": "0.0"
-                                },
-                                "Name": "WebLogic Server Management Pack Enterprise Edition"
-                            },
-                            {
-                                "Count": {
-                                    "$numberDouble": "0.5"
-                                },
-                                "Name": "Diagnostics Pack"
-                            }
-                        ],
-                        "MemoryTarget": {
-                            "$numberDouble": "1.484"
-                        },
-                        "NCharset": "AL16UTF16",
-                        "Name": "foobar2",
-                        "PDBs": [],
-                        "PGATarget": {
-                            "$numberDouble": "0.0"
-                        },
-                        "PSUs": [
-                            {
-                                "Date": "2012-04-16",
-                                "Description": "PSU 11.2.0.3.2"
-                            }
-                        ],
-                        "Patches": [],
-                        "Platform": "Linux x86 64-bit",
-                        "SGAMaxSize": {
-                            "$numberDouble": "1.484"
-                        },
-                        "SGATarget": {
-                            "$numberDouble": "0.0"
-                        },
-                        "Schemas": [
-                            {
-                                "Indexes": {
-                                    "$numberInt": "0"
-                                },
-                                "LOB": {
-                                    "$numberInt": "0"
-                                },
-                                "Tables": {
-                                    "$numberInt": "192"
-                                },
-                                "Total": {
-                                    "$numberInt": "192"
-                                },
-                                "User": "RAF"
-                            },
-                            {
-                                "Indexes": {
-                                    "$numberInt": "0"
-                                },
-                                "LOB": {
-                                    "$numberInt": "0"
-                                },
-                                "Tables": {
-                                    "$numberInt": "0"
-                                },
-                                "Total": {
-                                    "$numberInt": "0"
-                                },
-                                "User": "REMOTE_SCHEDULER_AGENT"
-                            }
-                        ],
-                        "SegmentAdvisors": [
-                            {
-                                "PartitionName": "iyyiuyyoy",
-                                "Reclaimable": {
-                                    "$numberDouble": "0.5"
-                                },
-                                "Recommendation": "32b36a77e7481343ef175483c086859e",
-                                "SegmentName": "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-                                "SegmentOwner": "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-                                "SegmentType": "TABLE"
-                            }
-                        ],
-                        "SegmentsSize": {
-                            "$numberDouble": "3.0"
-                        },
-                        "Services": [],
-                        "Status": "OPEN",
-                        "Tablespaces": [
-                            {
-                                "MaxSize": {
-                                    "$numberDouble": "32767.9844"
-                                },
-                                "Name": "SYSTEM",
-                                "Status": "ONLINE",
-                                "Total": {
-                                    "$numberDouble": "850.0"
-                                },
-                                "Used": {
-                                    "$numberDouble": "842.875"
-                                },
-                                "UsedPerc": {
-                                    "$numberDouble": "2.57"
-                                }
-                            },
-                            {
-                                "MaxSize": {
-                                    "$numberDouble": "32767.9844"
-                                },
-                                "Name": "USERS",
-                                "Status": "ONLINE",
-                                "Total": {
-                                    "$numberDouble": "1024.0"
-                                },
-                                "Used": {
-                                    "$numberDouble": "576.0"
-                                },
-                                "UsedPerc": {
-                                    "$numberDouble": "1.76"
-                                }
-                            }
-                        ],
-                        "UniqueName": "foobar2",
-                        "Version": "12.2.0.1.0 Enterprise Edition",
-                        "Work": {
-                            "$numberDouble": "6.4"
                         }
                     }
                 ]

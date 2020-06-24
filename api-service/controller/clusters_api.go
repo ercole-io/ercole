@@ -144,7 +144,7 @@ func (ctrl *APIController) SearchClustersXLSX(w http.ResponseWriter, r *http.Req
 		sheet.Cell(1, i+1).SetText(val["Type"])
 		sheet.Cell(2, i+1).SetInt(int(val["CPU"].(float64)))
 		sheet.Cell(3, i+1).SetInt(int(val["Sockets"].(float64)))
-		sheet.Cell(4, i+1).SetText(val["PhysicalHosts"])
+		sheet.Cell(4, i+1).SetText(val["VirtualizationNodes"])
 	}
 
 	//Write it to the response

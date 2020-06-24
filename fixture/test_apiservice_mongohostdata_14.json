@@ -40,7 +40,7 @@
                             "$numberDouble": "0.7"
                         },
                         "DatafileSize": {
-                            "$numberDouble": "1.0"
+                            "$numberDouble": "6.0"
                         },
                         "Dataguard": false,
                         "Elapsed": {

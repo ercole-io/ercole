@@ -148,7 +148,7 @@ try:
                 try:
                     vm["Name"] = assoc_list(vm["Name"], list0)
                     vm["Hostname"] = assoc_list(vm["Hostname"], list0)
-                    vm["PhysicalHost"] = assoc_list(vm["PhysicalHost"], list0)
+                    vm["VirtualizationNode"] = assoc_list(vm["VirtualizationNode"], list0)
                     vm["ClusterName"] = assoc_list(vm["ClusterName"], list1)
                 except Exception:
                     pass

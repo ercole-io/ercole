@@ -508,7 +508,7 @@ components:
         HostnameAgentVirtualization:
           type: string
           nullable: true
-        PhysicalHosts:
+        VirtualizationNodes:
           nullable: true
           anyOf:
             - type: string
@@ -517,19 +517,19 @@ components:
               items:
                 type: string
               uniqueItems: true
-        PhysicalHostsCount:
+        VirtualizationNodesCount:
           nullable: true
           type: integer
-        PhysicalHostsStats:
+        VirtualizationNodesStats:
           nullable: true
           type: object
           required:
-            - PhysicalHost
+            - VirtualizationNode
             - TotalVMsCount
             - TotalVMsWithErcoleAgentCount
             - TotalVMsWithoutErcoleAgentCount
           properties:
-            PhysicalHost:
+            VirtualizationNode:
               type: string
             TotalVMsCount:
               type: integer
@@ -562,14 +562,14 @@ components:
                 type: string
               CappedCPU:
                 type: boolean
-              PhysicalHost:
+              VirtualizationNode:
                 type: string
             required:
               - Name
               - ClusterName
               - Hostname
               - CappedCPU
-              - PhysicalHost
+              - VirtualizationNode
       required:
         - Name
         - Type
@@ -602,7 +602,7 @@ components:
           nullable: true
         Model:
           type: string
-        ExaSwVersion:
+        SwVersion:
           type: string
         CPUEnabled:
           type: string
@@ -651,7 +651,7 @@ components:
       required:
         - Hostname
         - Model
-        - ExaSwVersion
+        - SwVersion
     HostData:
       description: A hostdata from FE
       type: object
@@ -662,11 +662,6 @@ components:
           type: string
         Location:
           type: string
-        HostType:
-          enum:
-            - oracledb
-            - virtualization
-            - exadata
         Version:
           type: string
         HostDataSchemaVersion:
@@ -808,7 +803,7 @@ components:
         Cluster:
           type: string
           nullable: true
-        PhysicalHost:
+        VirtualizationNode:
           type: string
           nullable: true
       required:

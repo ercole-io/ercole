@@ -34,9 +34,11 @@ func (md *MongoDatabase) GetTotalOracleExadataMemorySizeStats(location string, e
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
+			mu.APUnwind("$Features.Oracle.Exadata.Components"),
+			mu.APReplaceWith("$Features.Oracle.Exadata.Components"),
 			mu.APGroup(bson.M{
 				"_id":   0,
-				"Value": mu.APOSum(mu.APOSumReducer("$Features.Oracle.Exadata.Components", "$$this.Memory")),
+				"Value": mu.APOSum("$Memory"),
 			}),
 		),
 	)
@@ -216,7 +218,7 @@ func (md *MongoDatabase) GetOracleExadataPatchStatusStats(location string, envir
 			mu.APProject(bson.M{
 				"Status": mu.APOMap("$Features.Oracle.Exadata.Components", "dev",
 					mu.APOGreater(
-						mu.APODateFromString("$$dev.ExaSwVersion", "%Y%m%d"),
+						mu.APODateFromString("$$dev.SwReleaseDate", "%Y-%m-%d"),
 						windowTime,
 					),
 				),

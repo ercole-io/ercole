@@ -68,7 +68,7 @@ func (m *MongodbSuite) TestGetTotalOracleExadataCPUStats() {
 		out, err := m.db.GetTotalOracleExadataCPUStats("France", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = map[string]interface{}{
-			"Enabled": 0,
+			"Running": 0,
 			"Total":   0,
 		}
 
@@ -79,7 +79,7 @@ func (m *MongodbSuite) TestGetTotalOracleExadataCPUStats() {
 		out, err := m.db.GetTotalOracleExadataCPUStats("", "FOOBAR", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = map[string]interface{}{
-			"Enabled": 0,
+			"Running": 0,
 			"Total":   0,
 		}
 
@@ -90,7 +90,7 @@ func (m *MongodbSuite) TestGetTotalOracleExadataCPUStats() {
 		out, err := m.db.GetTotalOracleExadataCPUStats("", "", utils.MIN_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = map[string]interface{}{
-			"Enabled": 0,
+			"Running": 0,
 			"Total":   0,
 		}
 
@@ -101,7 +101,7 @@ func (m *MongodbSuite) TestGetTotalOracleExadataCPUStats() {
 		out, err := m.db.GetTotalOracleExadataCPUStats("", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = map[string]interface{}{
-			"Enabled": 136,
+			"Running": 136,
 			"Total":   176,
 		}
 
