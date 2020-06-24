@@ -47,7 +47,7 @@ func init() {
 				req, _ := http.NewRequest("PUT", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
 					ercoleConfig.APIService.AuthenticationProvider.Username,
 					ercoleConfig.APIService.AuthenticationProvider.Password,
-					"/hosts/"+hostname+"/databases/"+dbname+"/licenses/"+licenseName,
+					"/hosts/"+hostname+"/technologies/oracle/databases/"+dbname+"/licenses/"+licenseName,
 				).String(), bytes.NewReader([]byte(newValue)))
 
 				//Make the http request
