@@ -409,7 +409,7 @@ func (m *MongodbSuite) TestGetHost() {
 					},
 				},
 			},
-			"CreatedAt":   utils.P("2020-05-04T16:09:46.608+02:00"),
+			"CreatedAt":   utils.P("2020-05-04T16:09:46.608+02:00").Local(),
 			"Environment": "PROD",
 			"Features": map[string]interface{}{
 				"Oracle": map[string]interface{}{
@@ -430,7 +430,7 @@ func (m *MongodbSuite) TestGetHost() {
 			},
 			"History": []interface{}{
 				map[string]interface{}{
-					"CreatedAt":          utils.P("2020-05-04T16:09:46.608+02:00"),
+					"CreatedAt":          utils.P("2020-05-04T16:09:46.608+02:00").Local(),
 					"TotalDailyCPUUsage": nil,
 					"_id":                utils.Str2oid("5eb0222a45d85f4193704944"),
 				},
@@ -481,7 +481,7 @@ func (m *MongodbSuite) TestGetHost() {
 				"VeritasClusterServer": false,
 			},
 			"Clusters":    nil,
-			"CreatedAt":   utils.P("2020-05-21T11:32:54.83+02:00"),
+			"CreatedAt":   utils.P("2020-05-21T11:32:54.83+02:00").Local(),
 			"Environment": "TST",
 			"Features": map[string]interface{}{
 				"Oracle": map[string]interface{}{
@@ -499,19 +499,19 @@ func (m *MongodbSuite) TestGetHost() {
 									map[string]interface{}{
 										"DailyCPUUsage": 3.4,
 										"SegmentsSize":  50,
-										"Updated":       utils.P("2020-05-21T11:32:54.83+02:00"),
+										"Updated":       utils.P("2020-05-21T11:32:54.83+02:00").Local(),
 										"DatafileSize":  8,
 									},
 									map[string]interface{}{
 										"DailyCPUUsage": 5.3,
 										"SegmentsSize":  100,
-										"Updated":       utils.P("2020-05-21T11:32:09.288+02:00"),
+										"Updated":       utils.P("2020-05-21T11:32:09.288+02:00").Local(),
 										"DatafileSize":  10,
 									},
 									map[string]interface{}{
 										"DailyCPUUsage": 0.7,
 										"SegmentsSize":  3,
-										"Updated":       utils.P("2020-05-21T11:30:55.061+02:00"),
+										"Updated":       utils.P("2020-05-21T11:30:55.061+02:00").Local(),
 										"DatafileSize":  6,
 									},
 								},
@@ -570,17 +570,17 @@ func (m *MongodbSuite) TestGetHost() {
 			},
 			"History": []interface{}{
 				map[string]interface{}{
-					"CreatedAt":          utils.P("2020-05-21T11:32:54.83+02:00"),
+					"CreatedAt":          utils.P("2020-05-21T11:32:54.83+02:00").Local(),
 					"TotalDailyCPUUsage": 3.4,
 					"_id":                utils.Str2oid("5ec64ac640c089c5aff44e9d"),
 				},
 				map[string]interface{}{
-					"CreatedAt":          utils.P("2020-05-21T11:32:09.288+02:00"),
+					"CreatedAt":          utils.P("2020-05-21T11:32:09.288+02:00").Local(),
 					"TotalDailyCPUUsage": 5.3,
 					"_id":                utils.Str2oid("5ec64a9940c089c5aff44e9c"),
 				},
 				map[string]interface{}{
-					"CreatedAt":          utils.P("2020-05-21T11:30:55.061+02:00"),
+					"CreatedAt":          utils.P("2020-05-21T11:30:55.061+02:00").Local(),
 					"TotalDailyCPUUsage": 0.7,
 					"_id":                utils.Str2oid("5ec64a4f40c089c5aff44e99"),
 				},
@@ -630,7 +630,7 @@ func (m *MongodbSuite) TestGetHost() {
 				"VeritasClusterServer": false,
 			},
 			"Clusters":    nil,
-			"CreatedAt":   utils.P("2020-05-21T11:32:54.83+02:00"),
+			"CreatedAt":   utils.P("2020-05-21T11:32:54.83+02:00").Local(),
 			"Environment": "TST",
 			"Features": map[string]interface{}{
 				"Oracle": map[string]interface{}{
