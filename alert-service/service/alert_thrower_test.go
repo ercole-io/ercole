@@ -95,7 +95,7 @@ func TestThrowNewServerAlert_Success(t *testing.T) {
 	}
 
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
-		assert.Equal(t, model.AlertCategorySystem, alert.AlertCategory)
+		assert.Equal(t, model.AlertCategoryEngine, alert.AlertCategory)
 		assert.Nil(t, alert.AlertAffectedTechnology)
 		assert.Equal(t, model.AlertCodeNewServer, alert.AlertCode)
 		assert.Equal(t, model.AlertSeverityNotice, alert.AlertSeverity)

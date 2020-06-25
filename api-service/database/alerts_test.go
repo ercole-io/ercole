@@ -47,7 +47,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 	m.InsertAlert(model.Alert{
 		ID:                      utils.Str2oid("5e96ade270c184faca93fe1b"),
 		AlertAffectedTechnology: nil,
-		AlertCategory:           model.AlertCategorySystem,
+		AlertCategory:           model.AlertCategoryEngine,
 		AlertCode:               model.AlertCodeNewServer,
 		AlertSeverity:           model.AlertSeverityNotice,
 		AlertStatus:             model.AlertStatusAck,
@@ -60,7 +60,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 	m.InsertAlert(model.Alert{
 		ID:                      utils.Str2oid("5eb5057f780da34946c353fb"),
 		AlertAffectedTechnology: nil,
-		AlertCategory:           model.AlertCategorySystem,
+		AlertCategory:           model.AlertCategoryEngine,
 		AlertCode:               model.AlertCodeNewServer,
 		AlertSeverity:           model.AlertSeverityNotice,
 		AlertStatus:             model.AlertStatusAck,
@@ -73,7 +73,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 	m.InsertAlert(model.Alert{
 		ID:                      utils.Str2oid("5eb5058de2a09300d98aab67"),
 		AlertAffectedTechnology: nil,
-		AlertCategory:           model.AlertCategorySystem,
+		AlertCategory:           model.AlertCategoryEngine,
 		AlertCode:               model.AlertCodeNewServer,
 		AlertSeverity:           model.AlertSeverityNotice,
 		AlertStatus:             model.AlertStatusAck,
@@ -130,7 +130,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5e96ade270c184faca93fe1b"),
 				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategorySystem,
+				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               model.AlertCodeNewServer,
 				"AlertSeverity":           model.AlertSeverityNotice,
 				"AlertStatus":             model.AlertStatusAck,
@@ -144,7 +144,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5eb5057f780da34946c353fb"),
 				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategorySystem,
+				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               model.AlertCodeNewServer,
 				"AlertSeverity":           model.AlertSeverityNotice,
 				"AlertStatus":             model.AlertStatusAck,
@@ -158,7 +158,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5eb5058de2a09300d98aab67"),
 				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategorySystem,
+				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               model.AlertCodeNewServer,
 				"AlertSeverity":           model.AlertSeverityNotice,
 				"AlertStatus":             model.AlertStatusAck,
@@ -275,7 +275,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5e96ade270c184faca93fe1b"),
 				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategorySystem,
+				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               model.AlertCodeNewServer,
 				"AlertSeverity":           model.AlertSeverityNotice,
 				"AlertStatus":             model.AlertStatusAck,
@@ -289,7 +289,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5eb5057f780da34946c353fb"),
 				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategorySystem,
+				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               model.AlertCodeNewServer,
 				"AlertSeverity":           model.AlertSeverityNotice,
 				"AlertStatus":             model.AlertStatusAck,
@@ -303,7 +303,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5eb5058de2a09300d98aab67"),
 				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategorySystem,
+				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               model.AlertCodeNewServer,
 				"AlertSeverity":           model.AlertSeverityNotice,
 				"AlertStatus":             model.AlertStatusAck,
@@ -332,7 +332,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5e96ade270c184faca93fe1b"),
 				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategorySystem,
+				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               model.AlertCodeNewServer,
 				"AlertSeverity":           model.AlertSeverityNotice,
 				"AlertStatus":             model.AlertStatusAck,
@@ -346,7 +346,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5eb5057f780da34946c353fb"),
 				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategorySystem,
+				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               model.AlertCodeNewServer,
 				"AlertSeverity":           model.AlertSeverityNotice,
 				"AlertStatus":             model.AlertStatusAck,
@@ -402,7 +402,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 				"Severity":      "CRITICAL",
 			},
 			map[string]interface{}{
-				"Category":      "SYSTEM",
+				"Category":      "ENGINE",
 				"AffectedHosts": 2,
 				"Code":          "NEW_SERVER",
 				"Count":         3,
@@ -426,7 +426,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 				"Severity":      "CRITICAL",
 			},
 			map[string]interface{}{
-				"Category":      "SYSTEM",
+				"Category":      "ENGINE",
 				"AffectedHosts": 2,
 				"Count":         3,
 				"OldestAlert":   utils.P("2020-04-10T08:46:58.38+02:00").Local(),
