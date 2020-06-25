@@ -37,8 +37,8 @@ type Alert struct {
 
 // Alert codes
 const (
-	// AlertCategorySystem contains string "SYSTEM"
-	AlertCategorySystem string = "SYSTEM"
+	// AlertCategoryEngine contains string "ENGINE"
+	AlertCategoryEngine string = "ENGINE"
 	// AlertCategoryAgent contains string "AGENT"
 	AlertCategoryAgent string = "AGENT"
 	// AlertCategoryLicense contains string "LICENSE"
@@ -98,7 +98,7 @@ var AlertBsonValidatorRules = bson.M{
 		"AlertCategory": bson.M{
 			"bsonType": "string",
 			"enum": bson.A{
-				AlertCategorySystem,
+				AlertCategoryEngine,
 				AlertCategoryAgent,
 				AlertCategoryLicense,
 			},
