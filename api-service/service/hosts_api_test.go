@@ -135,7 +135,7 @@ func TestGetHost_Success(t *testing.T) {
 		"Alerts": []interface{}{
 			map[string]interface{}{
 				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategorySystem,
+				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               "NEW_SERVER",
 				"AlertSeverity":           "NOTICE",
 				"AlertStatus":             "NEW",

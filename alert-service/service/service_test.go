@@ -140,7 +140,7 @@ func TestProcessHostDataInsertion_SuccessNewHost(t *testing.T) {
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, "The server 'superhost1' was added to ercole", alert.Description)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
-		assert.Equal(t, model.AlertCategorySystem, alert.AlertCategory)
+		assert.Equal(t, model.AlertCategoryEngine, alert.AlertCategory)
 		assert.Nil(t, alert.AlertAffectedTechnology)
 	}).Times(1)
 
@@ -359,7 +359,7 @@ func TestDiffHostDataMapAndGenerateAlert_SuccessNewHost(t *testing.T) {
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
 		AlertAffectedTechnology: nil,
-		AlertCategory:           model.AlertCategorySystem,
+		AlertCategory:           model.AlertCategoryEngine,
 		AlertCode:               model.AlertCodeNewServer,
 		OtherInfo: map[string]interface{}{
 			"Hostname": "superhost1",
@@ -441,7 +441,7 @@ func TestDiffHostDataMapAndGenerateAlert_DatabaseError1(t *testing.T) {
 
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
 		AlertAffectedTechnology: nil,
-		AlertCategory:           model.AlertCategorySystem,
+		AlertCategory:           model.AlertCategoryEngine,
 		AlertCode:               model.AlertCodeNewServer,
 		OtherInfo: map[string]interface{}{
 			"Hostname": "superhost1",
