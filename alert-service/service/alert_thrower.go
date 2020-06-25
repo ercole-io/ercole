@@ -57,7 +57,7 @@ func (as *AlertService) ThrowNewServerAlert(hostname string) utils.AdvancedError
 	alr := model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(as.TimeNow()),
 		AlertAffectedTechnology: nil,
-		AlertCategory:           model.AlertCategorySystem,
+		AlertCategory:           model.AlertCategoryEngine,
 		AlertCode:               model.AlertCodeNewServer,
 		AlertSeverity:           model.AlertSeverityNotice,
 		AlertStatus:             model.AlertStatusNew,

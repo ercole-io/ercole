@@ -24,7 +24,7 @@ var alert1 model.Alert = model.Alert{
 	AlertCode:               model.AlertCodeNewServer,
 	AlertSeverity:           model.AlertSeverityNotice,
 	AlertAffectedTechnology: nil,
-	AlertCategory:           model.AlertCategorySystem,
+	AlertCategory:           model.AlertCategoryEngine,
 	AlertStatus:             model.AlertStatusNew,
 	Date:                    utils.P("2019-11-05T18:02:03Z"),
 	Description:             "pippo",

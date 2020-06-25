@@ -315,7 +315,7 @@ func (m *MongodbSuite) TestGetHost() {
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_16.json"))
 	m.InsertAlert(model.Alert{
 		ID:                      utils.Str2oid("5e96ade270c184faca93fe1b"),
-		AlertCategory:           model.AlertCategorySystem,
+		AlertCategory:           model.AlertCategoryEngine,
 		AlertAffectedTechnology: nil,
 		AlertCode:               model.AlertCodeNewServer,
 		AlertSeverity:           model.AlertSeverityNotice,
@@ -345,7 +345,7 @@ func (m *MongodbSuite) TestGetHost() {
 			"Alerts": []interface{}{
 				map[string]interface{}{
 					"AlertAffectedTechnology": nil,
-					"AlertCategory":           "SYSTEM",
+					"AlertCategory":           "ENGINE",
 					"AlertCode":               "NEW_SERVER",
 					"AlertSeverity":           "NOTICE",
 					"AlertStatus":             "ACK",
