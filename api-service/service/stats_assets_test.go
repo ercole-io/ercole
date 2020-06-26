@@ -33,11 +33,8 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Compliant":  false,
-		"Count":      9,
-		"Used":       12,
-		"TotalCost":  130,
-		"PaidCost":   85,
+		"Compliance": 9.0 / 12,
+		"UnpaidDues": 45,
 		"HostsCount": 20,
 	}
 
