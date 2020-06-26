@@ -1026,50 +1026,32 @@ components:
     TechnologyStatus:
       type: object
       required:
-        - Name
-        - Used
-        - Count
-        - Compliance
-        - TotalCost
-        - PaidCost
+        - Product
         - HostsCount
+        - Compliance
+        - UnpaidDues
       properties:
-        Name:
+        Product:
           type: string
-        Used:
-          type: integer
-        Count:
-          type: integer
-        Compliant:
-          type: boolean
-        TotalCost:
-          type: number
-        PaidCost:
-          type: number
         HostsCount:
           type: integer
+        Compliance:
+          type: number
+        UnpaidDues:
+          type: number
     AllTechnologyComplianceStatus:
       type: object
       required:
-        - Used
-        - Count
-        - Compliant
-        - TotalCost
-        - PaidCost
         - HostsCount
+        - Compliance
+        - UnpaidDues
       properties:
-        Used:
-          type: integer
-        Count:
-          type: integer
-        Compliant:
-          type: boolean
-        TotalCost:
-          type: number
-        PaidCost:
-          type: number
         HostsCount:
           type: integer
+        Compliance:
+          type: number
+        UnpaidDues:
+          type: number
     AggregatedCodeSeverityAlerts:
       type: object
       required:

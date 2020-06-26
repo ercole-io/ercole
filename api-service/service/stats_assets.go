@@ -36,7 +36,6 @@ func (as *APIService) GetTotalTechnologiesComplianceStats(location string, envir
 
 	totalUsed := float64(0.0)
 	totalCount := float64(0.0)
-	totalCompliant := true
 	totalTotalCost := float64(0.0)
 	totalPaidCost := float64(0.0)
 
@@ -45,16 +44,15 @@ func (as *APIService) GetTotalTechnologiesComplianceStats(location string, envir
 		totalCount += ass.Count
 		totalTotalCost += ass.TotalCost
 		totalPaidCost += ass.PaidCost
-
-		totalCompliant = totalCompliant && ass.Compliance
+	}
+	if totalUsed == 0 {
+		totalUsed = 1
+		totalCount = 1
 	}
 
 	return map[string]interface{}{
-		"Used":       totalUsed,
-		"Count":      totalCount,
-		"Compliant":  totalCompliant,
-		"TotalCost":  totalTotalCost,
-		"PaidCost":   totalPaidCost,
+		"UnpaidDues": totalTotalCost - totalPaidCost,
+		"Compliance": totalCount / totalUsed,
 		"HostsCount": hostsCount,
 	}, nil
 }
