@@ -55,21 +55,21 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		"Technologies": map[string]interface{}{
 			"Technologies": []map[string]interface{}{
 				{
-					"Compliance": false,
-					"Count":      7,
-					"Name":       model.TechnologyOracleDatabase,
-					"Used":       10,
-					"TotalCost":  130,
-					"PaidCost":   85,
+					"Compliance": 1.0,
+					"Product":    model.TechnologyOracleExadata,
+					"HostsCount": 0.0,
+					"UnpaidDues": 0,
+				},
+				{
+					"Compliance": 7.0 / 10.0,
+					"Product":    model.TechnologyOracleDatabase,
 					"HostsCount": 8,
+					"UnpaidDues": 45,
 				},
 			},
 			"Total": map[string]interface{}{
-				"Compliant":  false,
-				"TotalCost":  130,
-				"PaidCost":   85,
-				"Count":      7,
-				"Used":       10,
+				"Compliance": 7.0 / 10.0,
+				"UnpaidDues": 45,
 				"HostsCount": 20,
 			},
 		},
