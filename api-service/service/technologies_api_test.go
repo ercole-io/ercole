@@ -34,21 +34,15 @@ func TestListTechnologies_Success(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"Compliance": true,
-			"TotalCost":  0,
-			"PaidCost":   0,
-			"Count":      2,
-			"Name":       "Oracle/Exadata",
-			"Used":       2,
+			"Compliance": 1.0,
+			"UnpaidDues": 0,
+			"Product":    "Oracle/Exadata",
 			"HostsCount": 2,
 		},
 		{
-			"Compliance": false,
-			"TotalCost":  130,
-			"PaidCost":   85,
-			"Count":      7,
-			"Name":       "Oracle/Database",
-			"Used":       10,
+			"Compliance": 7.0 / 10,
+			"UnpaidDues": 45,
+			"Product":    "Oracle/Database",
 			"HostsCount": 8,
 		},
 	}
@@ -109,7 +103,10 @@ func TestListTechnologies_SuccessEmpty(t *testing.T) {
 		Database: db,
 	}
 
-	expectedRes := []map[string]interface{}{}
+	expectedRes := []map[string]interface{}{
+		{"Compliance": 1, "HostsCount": 0, "Product": "Oracle/Exadata", "UnpaidDues": 0},
+		{"Compliance": 1, "HostsCount": 0, "Product": "Oracle/Database", "UnpaidDues": 0},
+	}
 
 	getTechnologiesUsageRes := map[string]float64{}
 	db.EXPECT().
