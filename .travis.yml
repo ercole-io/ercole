@@ -40,7 +40,7 @@ install:
 
 script:
   - go generate -v ./...
-  - go build -o ercole
+  - go build -ldflags "-X github.com/ercole-io/ercole/cmd.serverVersion=${VERSION}" -o ercole
   - go test -v ./...
   - "./ercole version"
   - docker exec -it package_builder /bin/sh -c "mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}"
