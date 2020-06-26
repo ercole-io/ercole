@@ -40,13 +40,7 @@ func (md *MongoDatabase) GetTechnologiesUsage(location string, environment strin
 					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$Features.Oracle.Database.Databases", bson.A{})), 0), 1, 0),
 				),
 				"Oracle/Exadata": mu.APOSum(
-					mu.APOCond(
-						mu.APOEqual(bson.M{
-							"$type": "$Features.Oracle.Exadata",
-						}, "object"),
-						1,
-						0,
-					),
+					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$Features.Oracle.Exadata.Components", bson.A{})), 0), 1, 0),
 				),
 			}),
 			mu.APUnset("_id"),
