@@ -29,7 +29,7 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
-//go:generate mockgen -source ../service/service.go -destination=fake_service.go -package=controller
+//go:generate mockgen -source ../service/service.go -destination=fake_service_test.go -package=controller
 
 //Common data
 var errMock error = errors.New("MockError")
