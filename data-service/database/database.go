@@ -126,7 +126,7 @@ func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]string, utils.Advan
 	}
 
 	//Convert the slice of interface{} to []string
-	var hosts []string
+	var hosts []string = make([]string, 0)
 	for _, val := range values {
 		hosts = append(hosts, val.(string))
 	}
@@ -150,7 +150,7 @@ func (md *MongoDatabase) FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID
 	}
 
 	//Convert the slice of interface{} to []primitive.ObjectID
-	var ids []primitive.ObjectID
+	var ids []primitive.ObjectID = make([]primitive.ObjectID, 0)
 	for _, val := range values {
 		ids = append(ids, val.(primitive.ObjectID))
 	}
