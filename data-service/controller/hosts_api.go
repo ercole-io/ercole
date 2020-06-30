@@ -18,6 +18,7 @@ package controller
 import (
 	"encoding/json"
 	"errors"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/ercole-io/ercole/model"
@@ -34,25 +35,20 @@ func (ctrl *HostDataController) AuthenticateMiddleware() func(http.Handler) http
 
 // UpdateHostInfo update the informations about a host using the HostData in the request
 func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Request) {
-	//Parse the hostdata from the request
-	var originalHostData model.RawObject
+	var hostdata model.HostDataBE
 	var aerr utils.AdvancedErrorInterface
 
-	if err := json.NewDecoder(r.Body).Decode(&originalHostData); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+	//Read all bytes for the request
+	raw, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
 		return
 	}
-
-	//Update and decode originalHostData
-	if err := updateData(originalHostData); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
+	defer r.Body.Close()
 
 	//Validate the data
-	documentLoader := gojsonschema.NewGoLoader(originalHostData)
+	documentLoader := gojsonschema.NewBytesLoader(raw)
 	schemaLoader := gojsonschema.NewStringLoader(model.FrontendHostdataSchemaValidator)
-
 	if result, err := gojsonschema.Validate(schemaLoader, documentLoader); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, "HOSTDATA_VALIDATION"))
 		return
@@ -61,27 +57,16 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 		for _, desc := range result.Errors() {
 			ctrl.Log.Printf("- %s\n", desc)
 		}
-		ctrl.Log.Println(utils.ToJSON(originalHostData))
+		ctrl.Log.Println(utils.ToJSON(hostdata))
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Invalid schema. See the log"), "HOSTDATA_VALIDATION"))
 		return
 	}
 
-	//Convert the originalHostData to a hostdata
-	tempUpdatedRawJSON, err := json.Marshal(originalHostData)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
-		return
-	}
-
-	var updatedHostData model.HostDataBE
-	err = json.Unmarshal(tempUpdatedRawJSON, &updatedHostData)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
-		return
-	}
+	//Unmarshal raw to hostdata. The err checking is not needed
+	_ = json.Unmarshal(raw, &hostdata)
 
 	//Save the HostData
-	id, aerr := ctrl.Service.UpdateHostInfo(updatedHostData)
+	id, aerr := ctrl.Service.UpdateHostInfo(hostdata)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
@@ -89,10 +74,4 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 
 	//Write the created id
 	utils.WriteJSONResponse(w, http.StatusOK, id)
-}
-
-// updateAndDecodeData return a decoded and updated hostdata from raw data
-func updateData(data map[string]interface{}) utils.AdvancedErrorInterface {
-
-	return nil
 }
