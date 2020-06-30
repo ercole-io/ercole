@@ -309,13 +309,6 @@ func TestPatchHostData_SuccessPatchingFunction(t *testing.T) {
 			"Tags": []string{"topolino", "pluto"},
 		},
 		Code: `
-			// console.log("qui");
-			// console.log(typeof vars.Tags);
-			// console.log(typeof [ "topolino", "pluto"]);
-			// console.log(JSON.stringify(vars.Tags));
-			// console.log(JSON.stringify([ "topolino", "pluto"]));
-			// console.log("qui2");
-			// hostdata.Tags = [ "topolino", "pluto" ];
 			hostdata.Tags = vars.Tags;
 		`,
 	}, nil)
