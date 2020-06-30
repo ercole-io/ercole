@@ -47,14 +47,19 @@ func TestUpdateHostInfo_Success(t *testing.T) {
 				PublisherPassword: "M0stS3cretP4ssw0rd",
 				RemoteEndpoint:    "http://ercole.example.org",
 			},
+			DataService: config.DataService{
+				EnablePatching:       true,
+				LogInsertingHostdata: true,
+			},
 		},
 		Version: "1.6.6",
+		Log:     utils.NewLogger("TEST"),
 	}
 	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
-	db.EXPECT().FindPatchingFunction(gomock.Any()).Return(model.PatchingFunction{}, nil).Times(0)
+	db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{}, nil)
 	db.EXPECT().InsertHostData(gomock.Any()).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil).Do(func(newHD model.HostDataBE) {
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
 		assert.False(t, newHD.Archived)
@@ -138,6 +143,34 @@ func TestUpdateHostInfo_DatabaseError2(t *testing.T) {
 		//I assume that other fields are correct
 	}).Times(1)
 	db.EXPECT().InsertHostData(gomock.Any()).Times(0)
+
+	_, err := hds.UpdateHostInfo(hd)
+	require.Equal(t, aerrMock, err)
+}
+
+func TestUpdateHostInfo_DatabaseError3(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	hds := HostDataService{
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database: db,
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				PublisherUsername: "publ1sh3r",
+				PublisherPassword: "M0stS3cretP4ssw0rd",
+				RemoteEndpoint:    "http://ercole.example.org",
+			},
+			DataService: config.DataService{
+				EnablePatching:       true,
+				LogInsertingHostdata: true,
+			},
+		},
+		Version: "1.6.6",
+	}
+	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+
+	db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{}, aerrMock)
 
 	_, err := hds.UpdateHostInfo(hd)
 	require.Equal(t, aerrMock, err)
@@ -230,4 +263,106 @@ func TestUpdateHostInfo_HttpError2(t *testing.T) {
 	_, err := hds.UpdateHostInfo(hd)
 	require.Equal(t, "EVENT ENQUEUE", err.ErrorClass())
 	require.EqualError(t, err, "Failed to enqueue event")
+}
+
+func TestPatchHostData_SuccessNoPatchingFunction(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	hds := HostDataService{
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database: db,
+	}
+	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+
+	db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{}, nil)
+
+	res, err := hds.PatchHostData(hd)
+	require.NoError(t, err)
+	assert.Equal(t, hd, res)
+}
+
+func TestPatchHostData_SuccessPatchingFunction(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	hds := HostDataService{
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database: db,
+		Config: config.Configuration{
+			DataService: config.DataService{
+				LogDataPatching: true,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+	patchedHd := hd
+	patchedHd.Tags = []string{"topolino", "pluto"}
+
+	objID := utils.Str2oid("5ef9b4bcda4e04c0c1a94e9e")
+	db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{
+		ID:        &objID,
+		CreatedAt: utils.P("2020-06-29T09:30:55+00:00"),
+		Hostname:  "rac1_x",
+		Vars: map[string]interface{}{
+			"Tags": []string{"topolino", "pluto"},
+		},
+		Code: `
+			hostdata.Tags = vars.Tags;
+		`,
+	}, nil)
+
+	res, err := hds.PatchHostData(hd)
+	require.NoError(t, err)
+	assert.Equal(t, patchedHd, res)
+}
+
+func TestPatchHostData_FailPatchingFunction(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	hds := HostDataService{
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database: db,
+	}
+	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+
+	db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{}, aerrMock)
+
+	_, err := hds.PatchHostData(hd)
+	require.Equal(t, aerrMock, err)
+}
+
+func TestPatchHostData_FailPatchingFunction2(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	hds := HostDataService{
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database: db,
+		Config: config.Configuration{
+			DataService: config.DataService{
+				LogDataPatching: true,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+
+	objID := utils.Str2oid("5ef9b4bcda4e04c0c1a94e9e")
+	db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{
+		ID:        &objID,
+		CreatedAt: utils.P("2020-06-29T09:30:55+00:00"),
+		Hostname:  "rac1_x",
+		Vars: map[string]interface{}{
+			"Tags": []string{"topolino", "pluto"},
+		},
+		Code: `
+			sdfsdasdfsdf
+		`,
+	}, nil)
+
+	_, err := hds.PatchHostData(hd)
+	assert.Error(t, err)
 }

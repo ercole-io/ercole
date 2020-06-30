@@ -19,6 +19,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"testing"
 	"time"
 
 	"github.com/ercole-io/ercole/config"
@@ -67,6 +68,16 @@ func (db *MongodbSuite) SetupSuite() {
 	db.db.ConnectToMongodb()
 }
 
+func TestMongodbSuite(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skip test for mongodb database(alert-service)")
+	}
+
+	mongodbHandlerSuiteTest := &MongodbSuite{}
+
+	suite.Run(t, mongodbHandlerSuiteTest)
+}
+
 func (db *MongodbSuite) TearDownSuite() {
 	db.db.Client.Database(db.db.Config.Mongodb.DBName).Drop(context.TODO())
 	db.db.Client.Disconnect(context.TODO())
@@ -92,14 +103,7 @@ func (db *MongodbSuite) RunTestQuery(testName string, query bson.A, check func(o
 	})
 }
 
-// InsertAlert inser the alert in the database
-func (db *MongodbSuite) InsertAlert(alert model.Alert) {
-	_, err := db.db.Client.Database(db.db.Config.Mongodb.DBName).Collection("alerts").InsertOne(context.TODO(), alert)
-	db.Require().NoError(err)
-}
-
-// InsertLicense insert the license in the database
-func (db *MongodbSuite) InsertLicense(lic model.LicenseCount) {
-	_, err := db.db.Client.Database(db.db.Config.Mongodb.DBName).Collection("licenses").InsertOne(context.TODO(), lic)
+func (db *MongodbSuite) InsertPatchingFunction(pf model.PatchingFunction) {
+	_, err := db.db.Client.Database(db.dbname).Collection("patching_functions").InsertOne(context.TODO(), pf)
 	db.Require().NoError(err)
 }
