@@ -12,6 +12,7 @@ require (
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
 	github.com/golang/gddo v0.0.0-20200219175727-df439dd5819e
 	github.com/golang/mock v1.4.3
+	github.com/google/go-cmp v0.4.0 // indirect
 	github.com/google/go-github/v28 v28.1.1
 	github.com/goraz/onion v0.1.3
 	github.com/gorilla/handlers v1.4.2
@@ -21,14 +22,11 @@ require (
 	github.com/jtblin/go-ldap-client v0.0.0-20170223121919-b73f66626b33
 	github.com/leandro-lugaresi/hub v1.1.0
 	github.com/pkg/sftp v1.10.1
-	github.com/plandem/xlsx v1.0.4
 	github.com/robertkrimen/otto v0.0.0-20191219234010-c382bd3c16ff
 	github.com/rs/cors v1.7.0
 	github.com/sirupsen/logrus v1.5.0
 	github.com/spf13/cobra v0.0.6
 	github.com/stretchr/testify v1.5.1
-	github.com/tealeg/xlsx v1.0.5
-	github.com/tealeg/xlsx/v3 v3.2.0 // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0
 	go.mongodb.org/mongo-driver v1.3.3
