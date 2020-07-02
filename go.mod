@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/1set/gut v0.0.0-20200225162230-3995492b8589
+	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/OpenPeeDeeP/xdg v0.2.0
 	github.com/amreo/go-dyn-struct v1.1.0
 	github.com/amreo/mu v0.0.0-20200428112942-b72352edfdf1
@@ -26,6 +27,8 @@ require (
 	github.com/sirupsen/logrus v1.5.0
 	github.com/spf13/cobra v0.0.6
 	github.com/stretchr/testify v1.5.1
+	github.com/tealeg/xlsx v1.0.5
+	github.com/tealeg/xlsx/v3 v3.2.0 // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0
 	go.mongodb.org/mongo-driver v1.3.3

@@ -21,11 +21,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/config"
 	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
-	"github.com/plandem/xlsx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -345,50 +345,48 @@ func TestSearchHosts_LMSSuccess(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"ConnectString":            "",
-			"CoresPerProcessor":        float64(1),
+			"CoresPerProcessor":        1,
 			"DBInstanceName":           "ERCOLE",
 			"Environment":              "TST",
-			"Features":                 "Diagnostics Pack",
-			"Notes":                    "",
-			"OperatingSystem":          "Red Hat Enterprise Linux Server release 7.6 (Maipo)",
-			"PhysicalCores":            float64(2),
+			"LicenseMetricAllocated":   "processor",
+			"OperatingSystem":          "Red Hat Enterprise Linux",
+			"Options":                  "Diagnostics Pack",
+			"PhysicalCores":            2,
 			"PhysicalServerName":       "",
 			"PluggableDatabaseName":    "",
 			"ProcessorModel":           "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
 			"ProcessorSpeed":           "2.53GHz",
-			"Processors":               float64(2),
-			"ProductEdition":           "Enterprise",
+			"Processors":               2,
+			"ProductLicenseAllocated":  "EE",
 			"ProductVersion":           "12",
-			"RacNodeNames":             "",
-			"ServerPurchaseDate":       "",
-			"ThreadsPerCore":           int32(2),
+			"ThreadsPerCore":           2,
+			"UsedManagementPacks":      "Diagnostics Pack",
+			"UsingLicenseCount":        0.5,
 			"VirtualServerName":        "itl-csllab-112.sorint.localpippo",
-			"VirtualizationTechnology": "VMWARE",
-			"_id":                      utils.Str2oid("5e96ade270c184faca93fe20"),
+			"VirtualizationTechnology": "VMware",
+			"_id":                      utils.Str2oid("5efc38ab79f92e4cbf283b03"),
 		},
 		{
-			"ConnectString":            "",
-			"CoresPerProcessor":        float64(4),
-			"DBInstanceName":           "rudeboy-fb3160a04ffea22b55555bbb58137f77 007bond-f260462ca34bbd17deeda88f042e42a1 jacket-d4a157354d91bfc68fce6f45546d8f3d allstate-9a6a2a820a3f61aeb345a834abf40fba 4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"CoresPerProcessor":        4,
+			"DBInstanceName":           "rudeboy-fb3160a04ffea22b55555bbb58137f77",
 			"Environment":              "SVIL",
-			"Features":                 "",
-			"Notes":                    "",
-			"OperatingSystem":          "Red Hat Enterprise Linux Server release 5.5 (Tikanga)",
-			"PhysicalCores":            float64(8),
+			"LicenseMetricAllocated":   "processor",
+			"OperatingSystem":          "Red Hat Enterprise Linux",
+			"Options":                  "",
+			"PhysicalCores":            8,
 			"PhysicalServerName":       "publicitate-36d06ca83eafa454423d2097f4965517",
 			"PluggableDatabaseName":    "",
 			"ProcessorModel":           "Intel(R) Xeon(R) CPU           X5570  @ 2.93GHz",
 			"ProcessorSpeed":           "2.93GHz",
-			"Processors":               float64(2),
-			"ProductEdition":           "Enterprise",
+			"Processors":               2,
+			"ProductLicenseAllocated":  "EE",
 			"ProductVersion":           "11",
-			"RacNodeNames":             "",
-			"ServerPurchaseDate":       "",
-			"ThreadsPerCore":           int32(2),
+			"ThreadsPerCore":           2,
+			"UsedManagementPacks":      "",
+			"UsingLicenseCount":        4,
 			"VirtualServerName":        "",
-			"VirtualizationTechnology": "PH",
-			"_id":                      utils.Str2oid("5e96ade270c184faca93fe25"),
+			"VirtualizationTechnology": "",
+			"_id":                      utils.Str2oid("5efc38ab79f92e4cbf283b04"),
 		},
 	}
 
@@ -405,51 +403,48 @@ func TestSearchHosts_LMSSuccess(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	sp, err := xlsx.Open(rr.Body)
+	sp, err := excelize.OpenReader(rr.Body)
 	require.NoError(t, err)
-	sh := sp.SheetByName("Database_&_EBS")
-	require.NotNil(t, sh)
-	assert.Equal(t, "", sh.Cell(0, 3).String())
-	assert.Equal(t, "itl-csllab-112.sorint.localpippo", sh.Cell(1, 3).String())
-	assert.Equal(t, "VMWARE", sh.Cell(2, 3).String())
-	assert.Equal(t, "ERCOLE", sh.Cell(3, 3).String())
-	assert.Equal(t, "", sh.Cell(4, 3).String())
-	assert.Equal(t, "", sh.Cell(5, 3).String())
-	assert.Equal(t, "12", sh.Cell(7, 3).String())
-	assert.Equal(t, "Enterprise", sh.Cell(8, 3).String())
-	assert.Equal(t, "TST", sh.Cell(9, 3).String())
-	assert.Equal(t, "Diagnostics Pack", sh.Cell(10, 3).String())
-	assert.Equal(t, "", sh.Cell(11, 3).String())
-	assert.Equal(t, "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz", sh.Cell(12, 3).String())
-	AssertXLSXFloat(t, 2, sh.Cell(13, 3))
-	AssertXLSXFloat(t, 1, sh.Cell(14, 3))
-	AssertXLSXFloat(t, 2, sh.Cell(15, 3))
-	AssertXLSXFloat(t, 2, sh.Cell(16, 3))
-	assert.Equal(t, "2.53GHz", sh.Cell(17, 3).String())
-	assert.Equal(t, "", sh.Cell(18, 3).String())
-	assert.Equal(t, "Red Hat Enterprise Linux Server release 7.6 (Maipo)", sh.Cell(19, 3).String())
-	assert.Equal(t, "", sh.Cell(20, 3).String())
 
-	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sh.Cell(0, 4).String())
-	assert.Equal(t, "", sh.Cell(1, 4).String())
-	assert.Equal(t, "PH", sh.Cell(2, 4).String())
-	assert.Equal(t, "rudeboy-fb3160a04ffea22b55555bbb58137f77 007bond-f260462ca34bbd17deeda88f042e42a1 jacket-d4a157354d91bfc68fce6f45546d8f3d allstate-9a6a2a820a3f61aeb345a834abf40fba 4wcqjn-ecf040bdfab7695ab332aef7401f185c", sh.Cell(3, 4).String())
-	assert.Equal(t, "", sh.Cell(4, 4).String())
-	assert.Equal(t, "", sh.Cell(5, 4).String())
-	assert.Equal(t, "11", sh.Cell(7, 4).String())
-	assert.Equal(t, "Enterprise", sh.Cell(8, 4).String())
-	assert.Equal(t, "SVIL", sh.Cell(9, 4).String())
-	assert.Equal(t, "", sh.Cell(10, 4).String())
-	assert.Equal(t, "", sh.Cell(11, 4).String())
-	assert.Equal(t, "Intel(R) Xeon(R) CPU           X5570  @ 2.93GHz", sh.Cell(12, 4).String())
-	AssertXLSXFloat(t, 2, sh.Cell(13, 4))
-	AssertXLSXFloat(t, 4, sh.Cell(14, 4))
-	AssertXLSXFloat(t, 8, sh.Cell(15, 4))
-	AssertXLSXFloat(t, 2, sh.Cell(16, 4))
-	assert.Equal(t, "2.93GHz", sh.Cell(17, 4).String())
-	assert.Equal(t, "", sh.Cell(18, 4).String())
-	assert.Equal(t, "Red Hat Enterprise Linux Server release 5.5 (Tikanga)", sh.Cell(19, 4).String())
-	assert.Equal(t, "", sh.Cell(20, 4).String())
+	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "B4"))
+	assert.Equal(t, "itl-csllab-112.sorint.localpippo", sp.GetCellValue("Database_&_EBS_DB_Tier", "C4"))
+	assert.Equal(t, "VMware", sp.GetCellValue("Database_&_EBS_DB_Tier", "D4"))
+	assert.Equal(t, "ERCOLE", sp.GetCellValue("Database_&_EBS_DB_Tier", "E4"))
+	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "F4"))
+	assert.Equal(t, "TST", sp.GetCellValue("Database_&_EBS_DB_Tier", "G4"))
+	assert.Equal(t, "Diagnostics Pack", sp.GetCellValue("Database_&_EBS_DB_Tier", "H4"))
+	assert.Equal(t, "Diagnostics Pack", sp.GetCellValue("Database_&_EBS_DB_Tier", "I4"))
+	assert.Equal(t, "12", sp.GetCellValue("Database_&_EBS_DB_Tier", "N4"))
+	assert.Equal(t, "EE", sp.GetCellValue("Database_&_EBS_DB_Tier", "O4"))
+	assert.Equal(t, "processor", sp.GetCellValue("Database_&_EBS_DB_Tier", "P4"))
+	assert.Equal(t, "0.5", sp.GetCellValue("Database_&_EBS_DB_Tier", "Q4"))
+	assert.Equal(t, "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AC4"))
+	assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AD4"))
+	assert.Equal(t, "1", sp.GetCellValue("Database_&_EBS_DB_Tier", "AE4"))
+	assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AF4"))
+	assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AG4"))
+	assert.Equal(t, "2.53GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AH4"))
+	assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue("Database_&_EBS_DB_Tier", "AJ4"))
+
+	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sp.GetCellValue("Database_&_EBS_DB_Tier", "B5"))
+	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "C5"))
+	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "D5"))
+	assert.Equal(t, "rudeboy-fb3160a04ffea22b55555bbb58137f77", sp.GetCellValue("Database_&_EBS_DB_Tier", "E5"))
+	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "F5"))
+	assert.Equal(t, "SVIL", sp.GetCellValue("Database_&_EBS_DB_Tier", "G5"))
+	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "H5"))
+	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "I5"))
+	assert.Equal(t, "11", sp.GetCellValue("Database_&_EBS_DB_Tier", "N5"))
+	assert.Equal(t, "EE", sp.GetCellValue("Database_&_EBS_DB_Tier", "O5"))
+	assert.Equal(t, "processor", sp.GetCellValue("Database_&_EBS_DB_Tier", "P5"))
+	assert.Equal(t, "4", sp.GetCellValue("Database_&_EBS_DB_Tier", "Q5"))
+	assert.Equal(t, "Intel(R) Xeon(R) CPU           X5570  @ 2.93GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AC5"))
+	assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AD5"))
+	assert.Equal(t, "4", sp.GetCellValue("Database_&_EBS_DB_Tier", "AE5"))
+	assert.Equal(t, "8", sp.GetCellValue("Database_&_EBS_DB_Tier", "AF5"))
+	assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AG5"))
+	assert.Equal(t, "2.93GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AH5"))
+	assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue("Database_&_EBS_DB_Tier", "AJ5"))
 }
 
 func TestSearchHosts_LMSUnprocessableEntity1(t *testing.T) {
@@ -541,50 +536,7 @@ func TestSearchHosts_LMSSuccessInternalServerError2(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"ConnectString":            "",
-			"CoresPerProcessor":        float64(1),
-			"DBInstanceName":           "ERCOLE",
-			"Environment":              "TST",
-			"Features":                 "Diagnostics Pack",
-			"Notes":                    "",
-			"OperatingSystem":          "Red Hat Enterprise Linux Server release 7.6 (Maipo)",
-			"PhysicalCores":            float64(2),
-			"PhysicalServerName":       "",
-			"PluggableDatabaseName":    "",
-			"ProcessorModel":           "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-			"ProcessorSpeed":           "2.53GHz",
-			"Processors":               float64(2),
-			"ProductEdition":           "Enterprise",
-			"ProductVersion":           "12",
-			"RacNodeNames":             "",
-			"ServerPurchaseDate":       "",
-			"ThreadsPerCore":           int32(2),
-			"VirtualServerName":        "itl-csllab-112.sorint.localpippo",
-			"VirtualizationTechnology": "VMWARE",
-			"_id":                      utils.Str2oid("5e96ade270c184faca93fe20"),
-		},
-		{
-			"ConnectString":            "",
-			"CoresPerProcessor":        float64(4),
-			"DBInstanceName":           "rudeboy-fb3160a04ffea22b55555bbb58137f77 007bond-f260462ca34bbd17deeda88f042e42a1 jacket-d4a157354d91bfc68fce6f45546d8f3d allstate-9a6a2a820a3f61aeb345a834abf40fba 4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"Environment":              "SVIL",
-			"Features":                 "",
-			"Notes":                    "",
-			"OperatingSystem":          "Red Hat Enterprise Linux Server release 5.5 (Tikanga)",
-			"PhysicalCores":            float64(8),
-			"PhysicalServerName":       "publicitate-36d06ca83eafa454423d2097f4965517",
-			"PluggableDatabaseName":    "",
-			"ProcessorModel":           "Intel(R) Xeon(R) CPU           X5570  @ 2.93GHz",
-			"ProcessorSpeed":           "2.93GHz",
-			"Processors":               float64(2),
-			"ProductEdition":           "Enterprise",
-			"ProductVersion":           "11",
-			"RacNodeNames":             "",
-			"ServerPurchaseDate":       "",
-			"ThreadsPerCore":           int32(2),
-			"VirtualServerName":        "",
-			"VirtualizationTechnology": "PH",
-			"_id":                      utils.Str2oid("5e96ade270c184faca93fe25"),
+			"OK": true,
 		},
 	}
 
@@ -618,52 +570,52 @@ func TestSearchHosts_XLSXSuccess(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"CPUCores":                      float64(24),
+			"AgentVersion":                  "latest",
+			"CPUCores":                      24,
 			"CPUModel":                      "Intel(R) Xeon(R) Platinum 8160 CPU @ 2.10GHz",
-			"CPUThreads":                    float64(48),
+			"CPUSockets":                    1,
+			"CPUThreads":                    48,
 			"Cluster":                       nil,
-			"CreatedAt":                     utils.PDT("2020-04-15T08:46:58.461+02:00"),
-			"Databases":                     "8888888-d41d8cd98f00b204e9800998ecf8427e",
+			"CreatedAt":                     utils.PDT("2020-07-01T09:18:03.715+02:00"),
 			"Environment":                   "PROD",
-			"Hostname":                      "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
-			"Kernel":                        "4.1.12-124.26.12.el7uek.x86_64",
-			"Location":                      "Italy",
-			"MemTotal":                      float64(376),
-			"OS":                            "Red Hat Enterprise Linux Server release 7.6 (Maipo)",
-			"OracleCluster":                 true,
-			"VirtualizationNode":            nil,
-			"Socket":                        float64(1),
-			"SunCluster":                    false,
-			"SwapTotal":                     float64(23),
-			"HardwareAbstractionTechnology": "PH",
-			"VeritasCluster":                false,
-			"Version":                       "latest",
+			"HACMP":                         false,
 			"HardwareAbstraction":           "PH",
-			"_id":                           utils.Str2oid("5e96ade270c184faca93fe31"),
+			"HardwareAbstractionTechnology": "PH",
+			"Hostname":                      "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
+			"Kernel":                        "Linux 4.1.12-124.26.12.el7uek.x86_64",
+			"Location":                      "Italy",
+			"MemTotal":                      376,
+			"OS":                            "Red Hat Enterprise Linux 7.6",
+			"OracleClusterware":             true,
+			"SunCluster":                    false,
+			"SwapTotal":                     23,
+			"VeritasClusterServer":          false,
+			"VirtualizationNode":            nil,
+			"_id":                           utils.Str2oid("5efc38ab79f92e4cbf283b0b"),
 		},
 		{
-			"CPUCores":                      float64(1),
+			"AgentVersion":                  "latest",
+			"CPUCores":                      1,
 			"CPUModel":                      "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-			"CPUThreads":                    float64(2),
+			"CPUSockets":                    2,
+			"CPUThreads":                    2,
 			"Cluster":                       "Puzzait",
-			"CreatedAt":                     utils.PDT("2020-04-15T08:46:58.471+02:00"),
-			"Databases":                     "ERCOLE",
+			"CreatedAt":                     utils.PDT("2020-07-01T09:18:03.726+02:00"),
 			"Environment":                   "TST",
-			"Hostname":                      "test-db",
-			"Kernel":                        "3.10.0-514.el7.x86_64",
-			"Location":                      "Germany",
-			"MemTotal":                      float64(3),
-			"OS":                            "Red Hat Enterprise Linux Server release 7.6 (Maipo)",
-			"OracleCluster":                 false,
-			"VirtualizationNode":            "s157-cb32c10a56c256746c337e21b3f82402",
-			"Socket":                        float64(2),
-			"SunCluster":                    false,
-			"SwapTotal":                     float64(1),
-			"HardwareAbstractionTechnology": "VMWARE",
-			"VeritasCluster":                false,
-			"Version":                       "latest",
+			"HACMP":                         false,
 			"HardwareAbstraction":           "VIRT",
-			"_id":                           utils.Str2oid("5e96ade270c184faca93fe36"),
+			"HardwareAbstractionTechnology": "VMWARE",
+			"Hostname":                      "test-db",
+			"Kernel":                        "Linux 3.10.0-514.el7.x86_64",
+			"Location":                      "Germany",
+			"MemTotal":                      3,
+			"OS":                            "Red Hat Enterprise Linux 7.6",
+			"OracleClusterware":             false,
+			"SunCluster":                    false,
+			"SwapTotal":                     1,
+			"VeritasClusterServer":          false,
+			"VirtualizationNode":            "s157-cb32c10a56c256746c337e21b3f82402",
+			"_id":                           utils.Str2oid("5efc38ab79f92e4cbf283b13"),
 		},
 	}
 
@@ -680,49 +632,51 @@ func TestSearchHosts_XLSXSuccess(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	sp, err := xlsx.Open(rr.Body)
+	sp, err := excelize.OpenReader(rr.Body)
 	require.NoError(t, err)
-	sh := sp.SheetByName("Hosts")
-	require.NotNil(t, sh)
-	assert.Equal(t, "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804", sh.Cell(0, 1).String())
-	assert.Equal(t, "PROD", sh.Cell(1, 1).String())
-	assert.Equal(t, "latest", sh.Cell(5, 1).String())
-	assert.Equal(t, utils.P("2020-04-15T08:46:58.461+02:00").UTC().String(), sh.Cell(6, 1).String())
-	assert.Equal(t, "8888888-d41d8cd98f00b204e9800998ecf8427e", sh.Cell(7, 1).String())
-	assert.Equal(t, "Red Hat Enterprise Linux Server release 7.6 (Maipo)", sh.Cell(8, 1).String())
-	assert.Equal(t, "4.1.12-124.26.12.el7uek.x86_64", sh.Cell(9, 1).String())
-	AssertXLSXBool(t, true, sh.Cell(10, 1))
-	AssertXLSXBool(t, false, sh.Cell(11, 1))
-	AssertXLSXBool(t, false, sh.Cell(12, 1))
-	assert.Equal(t, "PH", sh.Cell(13, 1).String())
-	assert.Equal(t, "PH", sh.Cell(14, 1).String())
-	AssertXLSXInt(t, 48, sh.Cell(15, 1))
-	AssertXLSXInt(t, 24, sh.Cell(16, 1))
-	AssertXLSXInt(t, 1, sh.Cell(17, 1))
-	AssertXLSXInt(t, 376, sh.Cell(18, 1))
-	AssertXLSXInt(t, 23, sh.Cell(19, 1))
-	assert.Equal(t, "Intel(R) Xeon(R) Platinum 8160 CPU @ 2.10GHz", sh.Cell(20, 1).String())
+	assert.Equal(t, "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804", sp.GetCellValue("Hosts", "A2"))
+	assert.Equal(t, "PROD", sp.GetCellValue("Hosts", "B2"))
+	assert.Equal(t, "", sp.GetCellValue("Hosts", "C2"))
+	assert.Equal(t, "", sp.GetCellValue("Hosts", "D2"))
+	assert.Equal(t, "", sp.GetCellValue("Hosts", "E2"))
+	assert.Equal(t, "latest", sp.GetCellValue("Hosts", "F2"))
+	assert.Equal(t, utils.P("2020-07-01T09:18:03.715+02:00").UTC().String(), sp.GetCellValue("Hosts", "G2"))
+	assert.Equal(t, "", sp.GetCellValue("Hosts", "H2"))
+	assert.Equal(t, "Red Hat Enterprise Linux 7.6", sp.GetCellValue("Hosts", "I2"))
+	assert.Equal(t, "Linux 4.1.12-124.26.12.el7uek.x86_64", sp.GetCellValue("Hosts", "J2"))
+	assert.Equal(t, "1", sp.GetCellValue("Hosts", "K2"))
+	assert.Equal(t, "0", sp.GetCellValue("Hosts", "L2"))
+	assert.Equal(t, "0", sp.GetCellValue("Hosts", "M2"))
+	assert.Equal(t, "PH", sp.GetCellValue("Hosts", "N2"))
+	assert.Equal(t, "PH", sp.GetCellValue("Hosts", "O2"))
+	assert.Equal(t, "48", sp.GetCellValue("Hosts", "P2"))
+	assert.Equal(t, "24", sp.GetCellValue("Hosts", "Q2"))
+	assert.Equal(t, "1", sp.GetCellValue("Hosts", "R2"))
+	assert.Equal(t, "376", sp.GetCellValue("Hosts", "S2"))
+	assert.Equal(t, "23", sp.GetCellValue("Hosts", "T2"))
+	assert.Equal(t, "Intel(R) Xeon(R) Platinum 8160 CPU @ 2.10GHz", sp.GetCellValue("Hosts", "U2"))
 
-	assert.Equal(t, "test-db", sh.Cell(0, 2).String())
-	assert.Equal(t, "TST", sh.Cell(1, 2).String())
-	assert.Equal(t, "Puzzait", sh.Cell(3, 2).String())
-	assert.Equal(t, "s157-cb32c10a56c256746c337e21b3f82402", sh.Cell(4, 2).String())
-	assert.Equal(t, "latest", sh.Cell(5, 2).String())
-	assert.Equal(t, utils.P("2020-04-15T08:46:58.471+02:00").UTC().String(), sh.Cell(6, 2).String())
-	assert.Equal(t, "ERCOLE", sh.Cell(7, 2).String())
-	assert.Equal(t, "Red Hat Enterprise Linux Server release 7.6 (Maipo)", sh.Cell(8, 2).String())
-	assert.Equal(t, "3.10.0-514.el7.x86_64", sh.Cell(9, 2).String())
-	AssertXLSXBool(t, false, sh.Cell(10, 2))
-	AssertXLSXBool(t, false, sh.Cell(11, 2))
-	AssertXLSXBool(t, false, sh.Cell(12, 2))
-	assert.Equal(t, "VIRT", sh.Cell(13, 2).String())
-	assert.Equal(t, "VMWARE", sh.Cell(14, 2).String())
-	AssertXLSXInt(t, 2, sh.Cell(15, 2))
-	AssertXLSXInt(t, 1, sh.Cell(16, 2))
-	AssertXLSXInt(t, 2, sh.Cell(17, 2))
-	AssertXLSXInt(t, 3, sh.Cell(18, 2))
-	AssertXLSXInt(t, 1, sh.Cell(19, 2))
-	assert.Equal(t, "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz", sh.Cell(20, 2).String())
+	assert.Equal(t, "test-db", sp.GetCellValue("Hosts", "A3"))
+	assert.Equal(t, "TST", sp.GetCellValue("Hosts", "B3"))
+	assert.Equal(t, "", sp.GetCellValue("Hosts", "C3"))
+	assert.Equal(t, "Puzzait", sp.GetCellValue("Hosts", "D3"))
+	assert.Equal(t, "s157-cb32c10a56c256746c337e21b3f82402", sp.GetCellValue("Hosts", "E3"))
+	assert.Equal(t, "latest", sp.GetCellValue("Hosts", "F3"))
+	assert.Equal(t, utils.P("2020-07-01T09:18:03.726+02:00").UTC().String(), sp.GetCellValue("Hosts", "G3"))
+	assert.Equal(t, "", sp.GetCellValue("Hosts", "H3"))
+	assert.Equal(t, "Red Hat Enterprise Linux 7.6", sp.GetCellValue("Hosts", "I3"))
+	assert.Equal(t, "Linux 3.10.0-514.el7.x86_64", sp.GetCellValue("Hosts", "J3"))
+	assert.Equal(t, "0", sp.GetCellValue("Hosts", "K3"))
+	assert.Equal(t, "0", sp.GetCellValue("Hosts", "L3"))
+	assert.Equal(t, "0", sp.GetCellValue("Hosts", "M3"))
+	assert.Equal(t, "VIRT", sp.GetCellValue("Hosts", "N3"))
+	assert.Equal(t, "VMWARE", sp.GetCellValue("Hosts", "O3"))
+	assert.Equal(t, "2", sp.GetCellValue("Hosts", "P3"))
+	assert.Equal(t, "1", sp.GetCellValue("Hosts", "Q3"))
+	assert.Equal(t, "2", sp.GetCellValue("Hosts", "R3"))
+	assert.Equal(t, "3", sp.GetCellValue("Hosts", "S3"))
+	assert.Equal(t, "1", sp.GetCellValue("Hosts", "T3"))
+	assert.Equal(t, "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz", sp.GetCellValue("Hosts", "U3"))
 }
 
 func TestSearchHosts_XLSXUnprocessableEntity1(t *testing.T) {
@@ -814,52 +768,7 @@ func TestSearchHosts_XLSXInternalServerError2(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"CPUCores":                      float64(24),
-			"CPUModel":                      "Intel(R) Xeon(R) Platinum 8160 CPU @ 2.10GHz",
-			"CPUThreads":                    float64(48),
-			"Cluster":                       nil,
-			"CreatedAt":                     utils.PDT("2020-04-15T08:46:58.461+02:00"),
-			"Databases":                     "8888888-d41d8cd98f00b204e9800998ecf8427e",
-			"Environment":                   "PROD",
-			"Hostname":                      "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
-			"Kernel":                        "4.1.12-124.26.12.el7uek.x86_64",
-			"Location":                      "Italy",
-			"MemTotal":                      float64(376),
-			"OS":                            "Red Hat Enterprise Linux Server release 7.6 (Maipo)",
-			"OracleCluster":                 true,
-			"VirtualizationNode":            nil,
-			"Socket":                        float64(1),
-			"SunCluster":                    false,
-			"SwapTotal":                     float64(23),
-			"HardwareAbstractionTechnology": "PH",
-			"VeritasCluster":                false,
-			"Version":                       "latest",
-			"HardwareAbstraction":           "PH",
-			"_id":                           utils.Str2oid("5e96ade270c184faca93fe31"),
-		},
-		{
-			"CPUCores":                      float64(1),
-			"CPUModel":                      "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-			"CPUThreads":                    float64(2),
-			"Cluster":                       "Puzzait",
-			"CreatedAt":                     utils.PDT("2020-04-15T08:46:58.471+02:00"),
-			"Databases":                     "ERCOLE",
-			"Environment":                   "TST",
-			"Hostname":                      "test-db",
-			"Kernel":                        "3.10.0-514.el7.x86_64",
-			"Location":                      "Germany",
-			"MemTotal":                      float64(3),
-			"OS":                            "Red Hat Enterprise Linux Server release 7.6 (Maipo)",
-			"OracleCluster":                 false,
-			"VirtualizationNode":            "s157-cb32c10a56c256746c337e21b3f82402",
-			"Socket":                        float64(2),
-			"SunCluster":                    false,
-			"SwapTotal":                     float64(1),
-			"HardwareAbstractionTechnology": "VMWARE",
-			"VeritasCluster":                false,
-			"Version":                       "latest",
-			"HardwareAbstraction":           "VIRT",
-			"_id":                           utils.Str2oid("5e96ade270c184faca93fe36"),
+			"OK": true,
 		},
 	}
 

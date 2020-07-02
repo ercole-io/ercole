@@ -22,11 +22,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/config"
 	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
-	"github.com/plandem/xlsx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -278,26 +278,26 @@ func TestSearchOracleDatabaseAddms_XLSXSuccess(t *testing.T) {
 		{
 			"Action":         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
 			"Benefit":        83.34,
-			"CreatedAt":      utils.P("2020-04-07T08:52:59.872+02:00"),
+			"CreatedAt":      utils.P("2020-07-01T09:18:03.726+02:00"),
 			"Dbname":         "ERCOLE",
 			"Environment":    "TST",
 			"Finding":        "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
 			"Hostname":       "test-db",
 			"Location":       "Germany",
 			"Recommendation": "SQL Tuning",
-			"_id":            utils.Str2oid("5e8c234b24f648a08585bd43"),
+			"_id":            utils.Str2oid("5efc38ab79f92e4cbf283b13"),
 		},
 		{
 			"Action":         "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
 			"Benefit":        68.24,
-			"CreatedAt":      utils.P("2020-04-07T08:52:59.872+02:00"),
+			"CreatedAt":      utils.P("2020-07-01T09:18:03.726+02:00"),
 			"Dbname":         "ERCOLE",
 			"Environment":    "TST",
 			"Finding":        "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
 			"Hostname":       "test-db",
 			"Location":       "Germany",
 			"Recommendation": "Segment Tuning",
-			"_id":            utils.Str2oid("5e8c234b24f648a08585bd43"),
+			"_id":            utils.Str2oid("5efc38ab79f92e4cbf283b13"),
 		},
 	}
 
@@ -314,25 +314,24 @@ func TestSearchOracleDatabaseAddms_XLSXSuccess(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	sp, err := xlsx.Open(rr.Body)
+	sp, err := excelize.OpenReader(rr.Body)
 	require.NoError(t, err)
-	sh := sp.SheetByName("Addm")
-	require.NotNil(t, sh)
-	assert.Equal(t, "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".", sh.Cell(0, 1).String())
-	AssertXLSXFloat(t, 83.34, sh.Cell(1, 1))
-	assert.Equal(t, "ERCOLE", sh.Cell(2, 1).String())
-	assert.Equal(t, "TST", sh.Cell(3, 1).String())
-	assert.Equal(t, "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.", sh.Cell(4, 1).String())
-	assert.Equal(t, "test-db", sh.Cell(5, 1).String())
-	assert.Equal(t, "SQL Tuning", sh.Cell(6, 1).String())
 
-	assert.Equal(t, "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.", sh.Cell(0, 2).String())
-	AssertXLSXFloat(t, 68.24, sh.Cell(1, 2))
-	assert.Equal(t, "ERCOLE", sh.Cell(2, 2).String())
-	assert.Equal(t, "TST", sh.Cell(3, 2).String())
-	assert.Equal(t, "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.", sh.Cell(4, 2).String())
-	assert.Equal(t, "test-db", sh.Cell(5, 2).String())
-	assert.Equal(t, "Segment Tuning", sh.Cell(6, 2).String())
+	assert.Equal(t, "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".", sp.GetCellValue("Addm", "A2"))
+	assert.Equal(t, "83.34", sp.GetCellValue("Addm", "B2"))
+	assert.Equal(t, "ERCOLE", sp.GetCellValue("Addm", "C2"))
+	assert.Equal(t, "TST", sp.GetCellValue("Addm", "D2"))
+	assert.Equal(t, "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.", sp.GetCellValue("Addm", "E2"))
+	assert.Equal(t, "test-db", sp.GetCellValue("Addm", "F2"))
+	assert.Equal(t, "SQL Tuning", sp.GetCellValue("Addm", "G2"))
+
+	assert.Equal(t, "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.", sp.GetCellValue("Addm", "A3"))
+	assert.Equal(t, "68.24", sp.GetCellValue("Addm", "B3"))
+	assert.Equal(t, "ERCOLE", sp.GetCellValue("Addm", "C3"))
+	assert.Equal(t, "TST", sp.GetCellValue("Addm", "D3"))
+	assert.Equal(t, "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.", sp.GetCellValue("Addm", "E3"))
+	assert.Equal(t, "test-db", sp.GetCellValue("Addm", "F3"))
+	assert.Equal(t, "Segment Tuning", sp.GetCellValue("Addm", "G3"))
 }
 
 func TestSearchOracleDatabaseAddms_XLSXUnprocessableEntity1(t *testing.T) {
@@ -400,28 +399,7 @@ func TestSearchOracleDatabaseAddms_XLSXInternalServerError2(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"Action":         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
-			"Benefit":        83.34,
-			"CreatedAt":      utils.P("2020-04-07T08:52:59.872+02:00"),
-			"Dbname":         "ERCOLE",
-			"Environment":    "TST",
-			"Finding":        "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
-			"Hostname":       "test-db",
-			"Location":       "Germany",
-			"Recommendation": "SQL Tuning",
-			"_id":            utils.Str2oid("5e8c234b24f648a08585bd43"),
-		},
-		{
-			"Action":         "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
-			"Benefit":        68.24,
-			"CreatedAt":      utils.P("2020-04-07T08:52:59.872+02:00"),
-			"Dbname":         "ERCOLE",
-			"Environment":    "TST",
-			"Finding":        "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
-			"Hostname":       "test-db",
-			"Location":       "Germany",
-			"Recommendation": "Segment Tuning",
-			"_id":            utils.Str2oid("5e8c234b24f648a08585bd43"),
+			"OK": true,
 		},
 	}
 
@@ -693,32 +671,32 @@ func TestSearchOracleDatabaseSegmentAdvisors_XLSXSuccess(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"CreatedAt":      utils.P("2020-04-07T08:52:59.82+02:00"),
+			"CreatedAt":      utils.P("2020-07-01T09:18:03.704+02:00"),
 			"Dbname":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
 			"Environment":    "SVIL",
 			"Hostname":       "publicitate-36d06ca83eafa454423d2097f4965517",
 			"Location":       "Germany",
 			"PartitionName":  "",
-			"Reclaimable":    "\u003c1",
+			"Reclaimable":    0.5,
 			"Recommendation": "3d7e603f515ed171fc99bdb908f38fb2",
 			"SegmentName":    "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3",
 			"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
 			"SegmentType":    "TABLE",
-			"_id":            utils.Str2oid("5e8c234b24f648a08585bd32"),
+			"_id":            utils.Str2oid("5efc38ab79f92e4cbf283b04"),
 		},
 		{
-			"CreatedAt":      utils.P("2020-04-07T08:52:59.872+02:00"),
+			"CreatedAt":      utils.P("2020-07-01T09:18:03.726+02:00"),
 			"Dbname":         "ERCOLE",
 			"Environment":    "TST",
 			"Hostname":       "test-db",
 			"Location":       "Germany",
 			"PartitionName":  "iyyiuyyoy",
-			"Reclaimable":    "\u003c1",
+			"Reclaimable":    0.5,
 			"Recommendation": "32b36a77e7481343ef175483c086859e",
 			"SegmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
 			"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
 			"SegmentType":    "TABLE",
-			"_id":            utils.Str2oid("5e8c234b24f648a08585bd43"),
+			"_id":            utils.Str2oid("5efc38ab79f92e4cbf283b13"),
 		},
 	}
 
@@ -735,29 +713,28 @@ func TestSearchOracleDatabaseSegmentAdvisors_XLSXSuccess(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	sp, err := xlsx.Open(rr.Body)
+	sp, err := excelize.OpenReader(rr.Body)
 	require.NoError(t, err)
-	sh := sp.SheetByName("Segment_Advisor")
-	require.NotNil(t, sh)
-	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sh.Cell(0, 1).String())
-	assert.Equal(t, "SVIL", sh.Cell(1, 1).String())
-	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sh.Cell(2, 1).String())
-	assert.Equal(t, "", sh.Cell(3, 1).String())
-	assert.Equal(t, "\u003c1", sh.Cell(4, 1).String())
-	assert.Equal(t, "3d7e603f515ed171fc99bdb908f38fb2", sh.Cell(5, 1).String())
-	assert.Equal(t, "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3", sh.Cell(6, 1).String())
-	assert.Equal(t, "Brittany-424f6a749eef846fa40a1ad1ee3d3674", sh.Cell(7, 1).String())
-	assert.Equal(t, "TABLE", sh.Cell(8, 1).String())
 
-	assert.Equal(t, "ERCOLE", sh.Cell(0, 2).String())
-	assert.Equal(t, "TST", sh.Cell(1, 2).String())
-	assert.Equal(t, "test-db", sh.Cell(2, 2).String())
-	assert.Equal(t, "iyyiuyyoy", sh.Cell(3, 2).String())
-	assert.Equal(t, "\u003c1", sh.Cell(4, 2).String())
-	assert.Equal(t, "32b36a77e7481343ef175483c086859e", sh.Cell(5, 2).String())
-	assert.Equal(t, "pasta-973e4d1f937da4d9bc1b092f934ab0ec", sh.Cell(6, 2).String())
-	assert.Equal(t, "Brittany-424f6a749eef846fa40a1ad1ee3d3674", sh.Cell(7, 2).String())
-	assert.Equal(t, "TABLE", sh.Cell(8, 2).String())
+	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sp.GetCellValue("Segment_Advisor", "A2"))
+	assert.Equal(t, "SVIL", sp.GetCellValue("Segment_Advisor", "B2"))
+	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sp.GetCellValue("Segment_Advisor", "C2"))
+	assert.Equal(t, "", sp.GetCellValue("Segment_Advisor", "D2"))
+	assert.Equal(t, "0.5", sp.GetCellValue("Segment_Advisor", "E2"))
+	assert.Equal(t, "3d7e603f515ed171fc99bdb908f38fb2", sp.GetCellValue("Segment_Advisor", "F2"))
+	assert.Equal(t, "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3", sp.GetCellValue("Segment_Advisor", "G2"))
+	assert.Equal(t, "Brittany-424f6a749eef846fa40a1ad1ee3d3674", sp.GetCellValue("Segment_Advisor", "H2"))
+	assert.Equal(t, "TABLE", sp.GetCellValue("Segment_Advisor", "I2"))
+
+	assert.Equal(t, "ERCOLE", sp.GetCellValue("Segment_Advisor", "A3"))
+	assert.Equal(t, "TST", sp.GetCellValue("Segment_Advisor", "B3"))
+	assert.Equal(t, "test-db", sp.GetCellValue("Segment_Advisor", "C3"))
+	assert.Equal(t, "iyyiuyyoy", sp.GetCellValue("Segment_Advisor", "D3"))
+	assert.Equal(t, "0.5", sp.GetCellValue("Segment_Advisor", "E3"))
+	assert.Equal(t, "32b36a77e7481343ef175483c086859e", sp.GetCellValue("Segment_Advisor", "F3"))
+	assert.Equal(t, "pasta-973e4d1f937da4d9bc1b092f934ab0ec", sp.GetCellValue("Segment_Advisor", "G3"))
+	assert.Equal(t, "Brittany-424f6a749eef846fa40a1ad1ee3d3674", sp.GetCellValue("Segment_Advisor", "H3"))
+	assert.Equal(t, "TABLE", sp.GetCellValue("Segment_Advisor", "I3"))
 }
 
 func TestSearchOracleDatabaseSegmentAdvisors_XLSXUnprocessableEntity1(t *testing.T) {
@@ -849,32 +826,7 @@ func TestSearchOracleDatabaseSegmentAdvisors_XLSXInternalServerError2(t *testing
 
 	expectedRes := []map[string]interface{}{
 		{
-			"CreatedAt":      utils.P("2020-04-07T08:52:59.82+02:00"),
-			"Dbname":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"Environment":    "SVIL",
-			"Hostname":       "publicitate-36d06ca83eafa454423d2097f4965517",
-			"Location":       "Germany",
-			"PartitionName":  "",
-			"Reclaimable":    "\u003c1",
-			"Recommendation": "3d7e603f515ed171fc99bdb908f38fb2",
-			"SegmentName":    "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3",
-			"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-			"SegmentType":    "TABLE",
-			"_id":            utils.Str2oid("5e8c234b24f648a08585bd32"),
-		},
-		{
-			"CreatedAt":      utils.P("2020-04-07T08:52:59.872+02:00"),
-			"Dbname":         "ERCOLE",
-			"Environment":    "TST",
-			"Hostname":       "test-db",
-			"Location":       "Germany",
-			"PartitionName":  "iyyiuyyoy",
-			"Reclaimable":    "\u003c1",
-			"Recommendation": "32b36a77e7481343ef175483c086859e",
-			"SegmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-			"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-			"SegmentType":    "TABLE",
-			"_id":            utils.Str2oid("5e8c234b24f648a08585bd43"),
+			"OK": true,
 		},
 	}
 
@@ -1180,7 +1132,7 @@ func TestSearchOracleDatabasePatchAdvisors_XLSXSuccess(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"CreatedAt":   utils.P("2020-04-07T08:52:59.82+02:00"),
+			"CreatedAt":   utils.P("2020-07-01T09:18:03.704+02:00"),
 			"Date":        utils.PDT("2012-04-16T02:00:00+02:00"),
 			"Dbname":      "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
 			"Dbver":       "11.2.0.3.0 Enterprise Edition",
@@ -1189,7 +1141,7 @@ func TestSearchOracleDatabasePatchAdvisors_XLSXSuccess(t *testing.T) {
 			"Hostname":    "publicitate-36d06ca83eafa454423d2097f4965517",
 			"Location":    "Germany",
 			"Status":      "KO",
-			"_id":         utils.Str2oid("5e8c234b24f648a08585bd32"),
+			"_id":         utils.Str2oid("5efc38ab79f92e4cbf283b04"),
 		},
 		{
 			"CreatedAt":   utils.P("2020-04-07T08:52:59.872+02:00"),
@@ -1218,23 +1170,22 @@ func TestSearchOracleDatabasePatchAdvisors_XLSXSuccess(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	sp, err := xlsx.Open(rr.Body)
+	sp, err := excelize.OpenReader(rr.Body)
 	require.NoError(t, err)
-	sh := sp.SheetByName("Patch_Advisor")
-	require.NotNil(t, sh)
-	assert.Equal(t, "PSU 11.2.0.3.2", sh.Cell(0, 1).String())
-	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sh.Cell(1, 1).String())
-	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sh.Cell(2, 1).String())
-	assert.Equal(t, "11.2.0.3.0 Enterprise Edition", sh.Cell(3, 1).String())
-	assert.Equal(t, utils.P("2012-04-16T00:00:00Z").String(), sh.Cell(4, 1).String())
-	assert.Equal(t, "KO", sh.Cell(5, 1).String())
 
-	assert.Equal(t, "PSU 11.2.0.3.2", sh.Cell(0, 2).String())
-	assert.Equal(t, "test-db", sh.Cell(1, 2).String())
-	assert.Equal(t, "ERCOLE", sh.Cell(2, 2).String())
-	assert.Equal(t, "12.2.0.1.0 Enterprise Edition", sh.Cell(3, 2).String())
-	assert.Equal(t, utils.P("2012-04-16T00:00:00Z").String(), sh.Cell(4, 2).String())
-	assert.Equal(t, "KO", sh.Cell(5, 2).String())
+	assert.Equal(t, "PSU 11.2.0.3.2", sp.GetCellValue("Patch_Advisor", "A2"))
+	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sp.GetCellValue("Patch_Advisor", "B2"))
+	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sp.GetCellValue("Patch_Advisor", "C2"))
+	assert.Equal(t, "11.2.0.3.0 Enterprise Edition", sp.GetCellValue("Patch_Advisor", "D2"))
+	assert.Equal(t, utils.P("2012-04-16T00:00:00Z").String(), sp.GetCellValue("Patch_Advisor", "E2"))
+	assert.Equal(t, "KO", sp.GetCellValue("Patch_Advisor", "F2"))
+
+	assert.Equal(t, "PSU 11.2.0.3.2", sp.GetCellValue("Patch_Advisor", "A3"))
+	assert.Equal(t, "test-db", sp.GetCellValue("Patch_Advisor", "B3"))
+	assert.Equal(t, "ERCOLE", sp.GetCellValue("Patch_Advisor", "C3"))
+	assert.Equal(t, "12.2.0.1.0 Enterprise Edition", sp.GetCellValue("Patch_Advisor", "D3"))
+	assert.Equal(t, utils.P("2012-04-16T00:00:00Z").String(), sp.GetCellValue("Patch_Advisor", "E3"))
+	assert.Equal(t, "KO", sp.GetCellValue("Patch_Advisor", "F3"))
 }
 
 func TestSearchOracleDatabasePatchAdvisors_XLSXUnprocessableEntity1(t *testing.T) {
@@ -1372,28 +1323,7 @@ func TestSearchOracleDatabasePatchAdvisors_XLSXInternalServerError2(t *testing.T
 
 	expectedRes := []map[string]interface{}{
 		{
-			"CreatedAt":   utils.P("2020-04-07T08:52:59.82+02:00"),
-			"Date":        utils.PDT("2012-04-16T02:00:00+02:00"),
-			"Dbname":      "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"Dbver":       "11.2.0.3.0 Enterprise Edition",
-			"Description": "PSU 11.2.0.3.2",
-			"Environment": "SVIL",
-			"Hostname":    "publicitate-36d06ca83eafa454423d2097f4965517",
-			"Location":    "Germany",
-			"Status":      "KO",
-			"_id":         utils.Str2oid("5e8c234b24f648a08585bd32"),
-		},
-		{
-			"CreatedAt":   utils.P("2020-04-07T08:52:59.872+02:00"),
-			"Date":        utils.PDT("2012-04-16T02:00:00+02:00"),
-			"Dbname":      "ERCOLE",
-			"Dbver":       "12.2.0.1.0 Enterprise Edition",
-			"Description": "PSU 11.2.0.3.2",
-			"Environment": "TST",
-			"Hostname":    "test-db",
-			"Location":    "Germany",
-			"Status":      "KO",
-			"_id":         utils.Str2oid("5e8c234b24f648a08585bd43"),
+			"OK": true,
 		},
 	}
 
@@ -1718,48 +1648,48 @@ func TestSearchOracleDatabases_XLSXSuccess(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"ArchiveLogStatus": false,
-			"BlockSize":        "8192",
-			"CPUCount":         "16",
-			"Charset":          "AL32UTF8",
-			"CreatedAt":        utils.P("2020-04-07T08:52:59.82+02:00"),
-			"DatafileSize":     "61",
-			"Dataguard":        false,
-			"Environment":      "SVIL",
-			"HA":               false,
-			"Hostname":         "publicitate-36d06ca83eafa454423d2097f4965517",
-			"Location":         "Germany",
-			"Memory":           4.199,
-			"Name":             "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"RAC":              false,
-			"SegmentsSize":     "41",
-			"Status":           "OPEN",
-			"UniqueName":       "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"Version":          "11.2.0.3.0 Enterprise Edition",
-			"Work":             "1",
-			"_id":              utils.Str2oid("5e8c234b24f648a08585bd32"),
+			"Archivelog":   true,
+			"BlockSize":    8192,
+			"CPUCount":     16,
+			"Charset":      "AL32UTF8",
+			"CreatedAt":    utils.P("2020-07-01T09:18:03.704+02:00"),
+			"DatafileSize": 61,
+			"Dataguard":    false,
+			"Environment":  "SVIL",
+			"HA":           false,
+			"Hostname":     "publicitate-36d06ca83eafa454423d2097f4965517",
+			"Location":     "Germany",
+			"Memory":       4.199,
+			"Name":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"RAC":          false,
+			"SegmentsSize": 41,
+			"Status":       "OPEN",
+			"UniqueName":   "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"Version":      "11.2.0.3.0 Enterprise Edition",
+			"Work":         1,
+			"_id":          utils.Str2oid("5efc38ab79f92e4cbf283b04"),
 		},
 		{
-			"ArchiveLogStatus": false,
-			"BlockSize":        "8192",
-			"CPUCount":         "2",
-			"Charset":          "AL32UTF8",
-			"CreatedAt":        utils.P("2020-04-07T08:52:59.872+02:00"),
-			"DatafileSize":     "6",
-			"Dataguard":        false,
-			"Environment":      "TST",
-			"HA":               false,
-			"Hostname":         "test-db",
-			"Location":         "Germany",
-			"Memory":           1.484,
-			"Name":             "ERCOLE",
-			"RAC":              false,
-			"SegmentsSize":     "3",
-			"Status":           "OPEN",
-			"UniqueName":       "ERCOLE",
-			"Version":          "12.2.0.1.0 Enterprise Edition",
-			"Work":             "1",
-			"_id":              utils.Str2oid("5e8c234b24f648a08585bd43"),
+			"Archivelog":   false,
+			"BlockSize":    8192,
+			"CPUCount":     2,
+			"Charset":      "AL32UTF8",
+			"CreatedAt":    utils.P("2020-07-01T09:18:03.726+02:00"),
+			"DatafileSize": 6,
+			"Dataguard":    false,
+			"Environment":  "TST",
+			"HA":           false,
+			"Hostname":     "test-db",
+			"Location":     "Germany",
+			"Memory":       1.484,
+			"Name":         "ERCOLE",
+			"RAC":          false,
+			"SegmentsSize": 3,
+			"Status":       "OPEN",
+			"UniqueName":   "ERCOLE",
+			"Version":      "12.2.0.1.0 Enterprise Edition",
+			"Work":         nil,
+			"_id":          utils.Str2oid("5efc38ab79f92e4cbf283b13"),
 		},
 	}
 
@@ -1776,47 +1706,46 @@ func TestSearchOracleDatabases_XLSXSuccess(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	sp, err := xlsx.Open(rr.Body)
+	sp, err := excelize.OpenReader(rr.Body)
 	require.NoError(t, err)
-	sh := sp.SheetByName("Databases")
-	require.NotNil(t, sh)
-	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sh.Cell(0, 1).String())
-	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sh.Cell(1, 1).String())
-	assert.Equal(t, "11.2.0.3.0 Enterprise Edition", sh.Cell(2, 1).String())
-	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sh.Cell(3, 1).String())
-	assert.Equal(t, "OPEN", sh.Cell(4, 1).String())
-	assert.Equal(t, "SVIL", sh.Cell(5, 1).String())
-	assert.Equal(t, "Germany", sh.Cell(6, 1).String())
-	assert.Equal(t, "AL32UTF8", sh.Cell(7, 1).String())
-	assert.Equal(t, "8192", sh.Cell(8, 1).String())
-	assert.Equal(t, "16", sh.Cell(9, 1).String())
-	assert.Equal(t, "1", sh.Cell(10, 1).String())
-	AssertXLSXFloat(t, 4.199, sh.Cell(11, 1))
-	assert.Equal(t, "61", sh.Cell(12, 1).String())
-	assert.Equal(t, "41", sh.Cell(13, 1).String())
-	AssertXLSXBool(t, false, sh.Cell(14, 1))
-	AssertXLSXBool(t, false, sh.Cell(15, 1))
-	AssertXLSXBool(t, false, sh.Cell(16, 1))
-	AssertXLSXBool(t, false, sh.Cell(17, 1))
 
-	assert.Equal(t, "ERCOLE", sh.Cell(0, 2).String())
-	assert.Equal(t, "ERCOLE", sh.Cell(1, 2).String())
-	assert.Equal(t, "12.2.0.1.0 Enterprise Edition", sh.Cell(2, 2).String())
-	assert.Equal(t, "test-db", sh.Cell(3, 2).String())
-	assert.Equal(t, "OPEN", sh.Cell(4, 2).String())
-	assert.Equal(t, "TST", sh.Cell(5, 2).String())
-	assert.Equal(t, "Germany", sh.Cell(6, 2).String())
-	assert.Equal(t, "AL32UTF8", sh.Cell(7, 2).String())
-	assert.Equal(t, "8192", sh.Cell(8, 2).String())
-	assert.Equal(t, "2", sh.Cell(9, 2).String())
-	assert.Equal(t, "1", sh.Cell(10, 2).String())
-	AssertXLSXFloat(t, 1.484, sh.Cell(11, 2))
-	assert.Equal(t, "6", sh.Cell(12, 2).String())
-	assert.Equal(t, "3", sh.Cell(13, 2).String())
-	AssertXLSXBool(t, false, sh.Cell(14, 2))
-	AssertXLSXBool(t, false, sh.Cell(15, 2))
-	AssertXLSXBool(t, false, sh.Cell(16, 2))
-	AssertXLSXBool(t, false, sh.Cell(17, 2))
+	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sp.GetCellValue("Databases", "A2"))
+	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sp.GetCellValue("Databases", "B2"))
+	assert.Equal(t, "11.2.0.3.0 Enterprise Edition", sp.GetCellValue("Databases", "C2"))
+	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sp.GetCellValue("Databases", "D2"))
+	assert.Equal(t, "OPEN", sp.GetCellValue("Databases", "E2"))
+	assert.Equal(t, "SVIL", sp.GetCellValue("Databases", "F2"))
+	assert.Equal(t, "Germany", sp.GetCellValue("Databases", "G2"))
+	assert.Equal(t, "AL32UTF8", sp.GetCellValue("Databases", "H2"))
+	assert.Equal(t, "8192", sp.GetCellValue("Databases", "I2"))
+	assert.Equal(t, "16", sp.GetCellValue("Databases", "J2"))
+	assert.Equal(t, "1", sp.GetCellValue("Databases", "K2"))
+	assert.Equal(t, "4.199", sp.GetCellValue("Databases", "L2"))
+	assert.Equal(t, "61", sp.GetCellValue("Databases", "M2"))
+	assert.Equal(t, "41", sp.GetCellValue("Databases", "N2"))
+	assert.Equal(t, "1", sp.GetCellValue("Databases", "O2"))
+	assert.Equal(t, "0", sp.GetCellValue("Databases", "P2"))
+	assert.Equal(t, "0", sp.GetCellValue("Databases", "Q2"))
+	assert.Equal(t, "0", sp.GetCellValue("Databases", "R2"))
+
+	assert.Equal(t, "ERCOLE", sp.GetCellValue("Databases", "A3"))
+	assert.Equal(t, "ERCOLE", sp.GetCellValue("Databases", "B3"))
+	assert.Equal(t, "12.2.0.1.0 Enterprise Edition", sp.GetCellValue("Databases", "C3"))
+	assert.Equal(t, "test-db", sp.GetCellValue("Databases", "D3"))
+	assert.Equal(t, "OPEN", sp.GetCellValue("Databases", "E3"))
+	assert.Equal(t, "TST", sp.GetCellValue("Databases", "F3"))
+	assert.Equal(t, "Germany", sp.GetCellValue("Databases", "G3"))
+	assert.Equal(t, "AL32UTF8", sp.GetCellValue("Databases", "H3"))
+	assert.Equal(t, "8192", sp.GetCellValue("Databases", "I3"))
+	assert.Equal(t, "2", sp.GetCellValue("Databases", "J3"))
+	assert.Equal(t, "", sp.GetCellValue("Databases", "K3"))
+	assert.Equal(t, "1.484", sp.GetCellValue("Databases", "L3"))
+	assert.Equal(t, "6", sp.GetCellValue("Databases", "M3"))
+	assert.Equal(t, "3", sp.GetCellValue("Databases", "N3"))
+	assert.Equal(t, "0", sp.GetCellValue("Databases", "O3"))
+	assert.Equal(t, "0", sp.GetCellValue("Databases", "P3"))
+	assert.Equal(t, "0", sp.GetCellValue("Databases", "Q3"))
+	assert.Equal(t, "0", sp.GetCellValue("Databases", "R3"))
 }
 
 func TestSearchOracleDatabases_XLSXUnprocessableEntity1(t *testing.T) {
@@ -1907,48 +1836,7 @@ func TestSearchOracleDatabases_XLSXInternalServerError2(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"ArchiveLogStatus": false,
-			"BlockSize":        "8192",
-			"CPUCount":         "16",
-			"Charset":          "AL32UTF8",
-			"CreatedAt":        utils.P("2020-04-07T08:52:59.82+02:00"),
-			"DatafileSize":     "61",
-			"Dataguard":        false,
-			"Environment":      "SVIL",
-			"HA":               false,
-			"Hostname":         "publicitate-36d06ca83eafa454423d2097f4965517",
-			"Location":         "Germany",
-			"Memory":           4.199,
-			"Name":             "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"RAC":              false,
-			"SegmentsSize":     "41",
-			"Status":           "OPEN",
-			"UniqueName":       "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"Version":          "11.2.0.3.0 Enterprise Edition",
-			"Work":             "1",
-			"_id":              utils.Str2oid("5e8c234b24f648a08585bd32"),
-		},
-		{
-			"ArchiveLogStatus": false,
-			"BlockSize":        "8192",
-			"CPUCount":         "2",
-			"Charset":          "AL32UTF8",
-			"CreatedAt":        utils.P("2020-04-07T08:52:59.872+02:00"),
-			"DatafileSize":     "6",
-			"Dataguard":        false,
-			"Environment":      "TST",
-			"HA":               false,
-			"Hostname":         "test-db",
-			"Location":         "Germany",
-			"Memory":           1.484,
-			"Name":             "ERCOLE",
-			"RAC":              false,
-			"SegmentsSize":     "3",
-			"Status":           "OPEN",
-			"UniqueName":       "ERCOLE",
-			"Version":          "12.2.0.1.0 Enterprise Edition",
-			"Work":             "1",
-			"_id":              utils.Str2oid("5e8c234b24f648a08585bd43"),
+			"OK": true,
 		},
 	}
 

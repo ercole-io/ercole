@@ -61,7 +61,7 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/technologies/oracle/databases/total-datafile-size", ctrl.GetTotalOracleDatabaseDatafileSizeStats).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/total-segment-size", ctrl.GetTotalOracleDatabaseSegmentSizeStats).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/license-compliance", ctrl.GetOracleDatabaseLicenseComplianceStatusStats).Methods("GET")
-	router.HandleFunc("/hosts/technologies/oracle/databases/databases", ctrl.SearchOracleDatabases).Methods("GET")
+	router.HandleFunc("/hosts/technologies/oracle/databases", ctrl.SearchOracleDatabases).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/addms", ctrl.SearchOracleDatabaseAddms).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/segment-advisors", ctrl.SearchOracleDatabaseSegmentAdvisors).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/patch-advisors", ctrl.SearchOracleDatabasePatchAdvisors).Methods("GET")
