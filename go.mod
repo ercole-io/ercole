@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/1set/gut v0.0.0-20200225162230-3995492b8589
+	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/OpenPeeDeeP/xdg v0.2.0
 	github.com/amreo/go-dyn-struct v1.1.0
 	github.com/amreo/mu v0.0.0-20200428112942-b72352edfdf1
@@ -11,6 +12,7 @@ require (
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
 	github.com/golang/gddo v0.0.0-20200219175727-df439dd5819e
 	github.com/golang/mock v1.4.3
+	github.com/google/go-cmp v0.4.0 // indirect
 	github.com/google/go-github/v28 v28.1.1
 	github.com/goraz/onion v0.1.3
 	github.com/gorilla/handlers v1.4.2
@@ -20,7 +22,6 @@ require (
 	github.com/jtblin/go-ldap-client v0.0.0-20170223121919-b73f66626b33
 	github.com/leandro-lugaresi/hub v1.1.0
 	github.com/pkg/sftp v1.10.1
-	github.com/plandem/xlsx v1.0.4
 	github.com/robertkrimen/otto v0.0.0-20191219234010-c382bd3c16ff
 	github.com/rs/cors v1.7.0
 	github.com/sirupsen/logrus v1.5.0

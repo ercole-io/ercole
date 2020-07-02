@@ -20,10 +20,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/config"
 	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
-	"github.com/plandem/xlsx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -304,19 +304,23 @@ func TestSearchCluster_XLSXSuccess(t *testing.T) {
 			"VirtualizationNodes":         "aspera-b1fe49e8501c9ef031e5acff4b5e69a9",
 			"Sockets":                     0.0,
 			"Type":                        "unknown",
+			"VMsCount":                    4,
+			"VMsErcoleAgentCount":         1,
 			"_id":                         utils.Str2oid("5e8c234b24f648a08585bd3d"),
 		},
 		{
-			"CPU":                         140.0,
+			"CPU":                         140,
 			"Environment":                 "PROD",
 			"Hostname":                    "test-virt",
 			"HostnameAgentVirtualization": "test-virt",
 			"Location":                    "Italy",
 			"Name":                        "Puzzait",
-			"VirtualizationNodes":         "s157-cb32c10a56c256746c337e21b3f82402",
-			"Sockets":                     10.0,
+			"Sockets":                     10,
 			"Type":                        "vmware",
-			"_id":                         utils.Str2oid("5e8c234b24f648a08585bd41"),
+			"VMsCount":                    2,
+			"VMsErcoleAgentCount":         2,
+			"VirtualizationNodes":         "s157-cb32c10a56c256746c337e21b3f82402",
+			"_id":                         utils.Str2oid("5efc38ab79f92e4cbf283b11"),
 		},
 	}
 
@@ -333,20 +337,20 @@ func TestSearchCluster_XLSXSuccess(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	sp, err := xlsx.Open(rr.Body)
+	sp, err := excelize.OpenReader(rr.Body)
 	require.NoError(t, err)
-	sh := sp.SheetByName("Hypervisor")
-	require.NotNil(t, sh)
-	assert.Equal(t, "not_in_cluster", sh.Cell(0, 1).String())
-	assert.Equal(t, "unknown", sh.Cell(1, 1).String())
-	AssertXLSXInt(t, 0, sh.Cell(2, 1))
-	AssertXLSXInt(t, 0, sh.Cell(3, 1))
-	assert.Equal(t, "aspera-b1fe49e8501c9ef031e5acff4b5e69a9", sh.Cell(4, 1).String())
-	assert.Equal(t, "Puzzait", sh.Cell(0, 2).String())
-	assert.Equal(t, "vmware", sh.Cell(1, 2).String())
-	AssertXLSXInt(t, 140, sh.Cell(2, 2))
-	AssertXLSXInt(t, 10, sh.Cell(3, 2))
-	assert.Equal(t, "s157-cb32c10a56c256746c337e21b3f82402", sh.Cell(4, 2).String())
+
+	assert.Equal(t, "not_in_cluster", sp.GetCellValue("Hypervisor", "A2"))
+	assert.Equal(t, "unknown", sp.GetCellValue("Hypervisor", "B2"))
+	assert.Equal(t, "0", sp.GetCellValue("Hypervisor", "C2"))
+	assert.Equal(t, "0", sp.GetCellValue("Hypervisor", "D2"))
+	assert.Equal(t, "aspera-b1fe49e8501c9ef031e5acff4b5e69a9", sp.GetCellValue("Hypervisor", "E2"))
+
+	assert.Equal(t, "Puzzait", sp.GetCellValue("Hypervisor", "A3"))
+	assert.Equal(t, "vmware", sp.GetCellValue("Hypervisor", "B3"))
+	assert.Equal(t, "140", sp.GetCellValue("Hypervisor", "C3"))
+	assert.Equal(t, "10", sp.GetCellValue("Hypervisor", "D3"))
+	assert.Equal(t, "s157-cb32c10a56c256746c337e21b3f82402", sp.GetCellValue("Hypervisor", "E3"))
 }
 
 func TestSearchCluster_XLSXUnprocessableEntity1(t *testing.T) {
@@ -442,28 +446,7 @@ func TestSearchCluster_XLSXInternalServerError2(t *testing.T) {
 
 	res := []map[string]interface{}{
 		{
-			"CPU":                         0.0,
-			"Environment":                 "PROD",
-			"Hostname":                    "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
-			"HostnameAgentVirtualization": "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
-			"Location":                    "Italy",
-			"Name":                        "not_in_cluster",
-			"VirtualizationNodes":         "aspera-b1fe49e8501c9ef031e5acff4b5e69a9",
-			"Sockets":                     0.0,
-			"Type":                        "unknown",
-			"_id":                         utils.Str2oid("5e8c234b24f648a08585bd3d"),
-		},
-		{
-			"CPU":                         140.0,
-			"Environment":                 "PROD",
-			"Hostname":                    "test-virt",
-			"HostnameAgentVirtualization": "test-virt",
-			"Location":                    "Italy",
-			"Name":                        "Puzzait",
-			"VirtualizationNodes":         "s157-cb32c10a56c256746c337e21b3f82402",
-			"Sockets":                     10.0,
-			"Type":                        "vmware",
-			"_id":                         utils.Str2oid("5e8c234b24f648a08585bd41"),
+			"OK": true,
 		},
 	}
 
