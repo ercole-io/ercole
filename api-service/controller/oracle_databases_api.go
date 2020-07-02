@@ -18,15 +18,16 @@ package controller
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
-	"github.com/plandem/xlsx"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -122,22 +123,21 @@ func (ctrl *APIController) SearchOracleDatabaseAddmsXLSX(w http.ResponseWriter, 
 	}
 
 	//Open the sheet
-	sheets, err := xlsx.Open(ctrl.Config.ResourceFilePath + "/templates/template_addm.xlsx")
+	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_addm.xlsx")
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
 		return
 	}
-	sheet := sheets.SheetByName("Addm")
 
 	//Add the data to the sheet
 	for i, val := range addms {
-		sheet.Cell(0, i+1).SetText(val["Action"])             //Action column
-		sheet.Cell(1, i+1).SetFloat(val["Benefit"].(float64)) //Benefit column
-		sheet.Cell(2, i+1).SetText(val["Dbname"])             //Dbname column
-		sheet.Cell(3, i+1).SetText(val["Environment"])        //Environment column
-		sheet.Cell(4, i+1).SetText(val["Finding"])            //Finding column
-		sheet.Cell(5, i+1).SetText(val["Hostname"])           //Hostname column
-		sheet.Cell(6, i+1).SetText(val["Recommendation"])     //Recommendation column
+		sheets.SetCellValue("Addm", fmt.Sprintf("A%d", i+2), val["Action"])         //Action column
+		sheets.SetCellValue("Addm", fmt.Sprintf("B%d", i+2), val["Benefit"])        //Benefit column
+		sheets.SetCellValue("Addm", fmt.Sprintf("C%d", i+2), val["Dbname"])         //Dbname column
+		sheets.SetCellValue("Addm", fmt.Sprintf("D%d", i+2), val["Environment"])    //Environment column
+		sheets.SetCellValue("Addm", fmt.Sprintf("E%d", i+2), val["Finding"])        //Finding column
+		sheets.SetCellValue("Addm", fmt.Sprintf("F%d", i+2), val["Hostname"])       //Hostname column
+		sheets.SetCellValue("Addm", fmt.Sprintf("G%d", i+2), val["Recommendation"]) //Recommendation column
 	}
 
 	//Write it to the response
@@ -243,24 +243,23 @@ func (ctrl *APIController) SearchOracleDatabaseSegmentAdvisorsXLSX(w http.Respon
 	}
 
 	//Open the sheet
-	sheets, err := xlsx.Open(ctrl.Config.ResourceFilePath + "/templates/template_segment_advisor.xlsx")
+	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_segment_advisor.xlsx")
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
 		return
 	}
-	sheet := sheets.SheetByName("Segment_Advisor")
 
 	//Add the data to the sheet
 	for i, val := range segmentAdvisors {
-		sheet.Cell(0, i+1).SetText(val["Dbname"])         //Dbname column
-		sheet.Cell(1, i+1).SetText(val["Environment"])    //Environment column
-		sheet.Cell(2, i+1).SetText(val["Hostname"])       //Hostname column
-		sheet.Cell(3, i+1).SetText(val["PartitionName"])  //PartitionName column
-		sheet.Cell(4, i+1).SetText(val["Reclaimable"])    //Reclaimable column
-		sheet.Cell(5, i+1).SetText(val["Recommendation"]) //Recommendation column
-		sheet.Cell(6, i+1).SetText(val["SegmentName"])    //SegmentName column
-		sheet.Cell(7, i+1).SetText(val["SegmentOwner"])   //SegmentOwner column
-		sheet.Cell(8, i+1).SetText(val["SegmentType"])    //SegmentType column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("A%d", i+2), val["Dbname"])         //Dbname column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("B%d", i+2), val["Environment"])    //Environment column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("C%d", i+2), val["Hostname"])       //Hostname column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("D%d", i+2), val["PartitionName"])  //PartitionName column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("E%d", i+2), val["Reclaimable"])    //Reclaimable column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("F%d", i+2), val["Recommendation"]) //Recommendation column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("G%d", i+2), val["SegmentName"])    //SegmentName column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("H%d", i+2), val["SegmentOwner"])   //SegmentOwner column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("I%d", i+2), val["SegmentType"])    //SegmentType column
 	}
 
 	//Write it to the response
@@ -388,21 +387,20 @@ func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsXLSX(w http.Response
 	}
 
 	//Open the sheet
-	sheets, err := xlsx.Open(ctrl.Config.ResourceFilePath + "/templates/template_patch_advisor.xlsx")
+	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_patch_advisor.xlsx")
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
 		return
 	}
-	sheet := sheets.SheetByName("Patch_Advisor")
 
 	//Add the data to the sheet
 	for i, val := range patchAdvisors {
-		sheet.Cell(0, i+1).SetText(val["Description"])                                     //Description column
-		sheet.Cell(1, i+1).SetText(val["Hostname"])                                        //Hostname column
-		sheet.Cell(2, i+1).SetText(val["Dbname"])                                          //Dbname column
-		sheet.Cell(3, i+1).SetText(val["Dbver"])                                           //Dbver column
-		sheet.Cell(4, i+1).SetText(val["Date"].(primitive.DateTime).Time().UTC().String()) //Date column
-		sheet.Cell(5, i+1).SetText(val["Status"])                                          //Status column
+		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("A%d", i+2), val["Description"])                                     //Description column
+		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("B%d", i+2), val["Hostname"])                                        //Hostname column
+		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("C%d", i+2), val["Dbname"])                                          //Dbname column
+		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("D%d", i+2), val["Dbver"])                                           //Dbver column
+		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("E%d", i+2), val["Date"].(primitive.DateTime).Time().UTC().String()) //Date column
+		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("F%d", i+2), val["Status"])                                          //Status column
 	}
 
 	//Write it to the response
@@ -514,33 +512,32 @@ func (ctrl *APIController) SearchOracleDatabasesXLSX(w http.ResponseWriter, r *h
 	}
 
 	//Open the sheet
-	sheets, err := xlsx.Open(ctrl.Config.ResourceFilePath + "/templates/template_databases.xlsx")
+	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_databases.xlsx")
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
 		return
 	}
-	sheet := sheets.SheetByName("Databases")
 
 	//Add the data to the sheet
 	for i, val := range databases {
-		sheet.Cell(0, i+1).SetText(val["Name"])                     //Name column
-		sheet.Cell(1, i+1).SetText(val["UniqueName"])               //UniqueName column
-		sheet.Cell(2, i+1).SetText(val["Version"])                  //Version column
-		sheet.Cell(3, i+1).SetText(val["Hostname"])                 //Hostname column
-		sheet.Cell(4, i+1).SetText(val["Status"])                   //Status column
-		sheet.Cell(5, i+1).SetText(val["Environment"])              //Environment column
-		sheet.Cell(6, i+1).SetText(val["Location"])                 //Location column
-		sheet.Cell(7, i+1).SetText(val["Charset"])                  //Charset column
-		sheet.Cell(8, i+1).SetText(val["BlockSize"])                //BlockSize column
-		sheet.Cell(9, i+1).SetText(val["CPUCount"])                 //CPUCount column
-		sheet.Cell(10, i+1).SetText(val["Work"])                    //Work column
-		sheet.Cell(11, i+1).SetFloat(val["Memory"].(float64))       //Memory column
-		sheet.Cell(12, i+1).SetText(val["DatafileSize"])            //DatafileSize column
-		sheet.Cell(13, i+1).SetText(val["SegmentsSize"])            //SegmentsSize column
-		sheet.Cell(14, i+1).SetBool(val["ArchiveLogStatus"].(bool)) //ArchiveLogStatus column
-		sheet.Cell(15, i+1).SetBool(val["Dataguard"].(bool))        //Dataguard column
-		sheet.Cell(16, i+1).SetBool(val["RAC"].(bool))              //RAC column
-		sheet.Cell(17, i+1).SetBool(val["HA"].(bool))               //HA column
+		sheets.SetCellValue("Databases", fmt.Sprintf("A%d", i+2), val["Name"])         //Name column
+		sheets.SetCellValue("Databases", fmt.Sprintf("B%d", i+2), val["UniqueName"])   //UniqueName column
+		sheets.SetCellValue("Databases", fmt.Sprintf("C%d", i+2), val["Version"])      //Version column
+		sheets.SetCellValue("Databases", fmt.Sprintf("D%d", i+2), val["Hostname"])     //Hostname column
+		sheets.SetCellValue("Databases", fmt.Sprintf("E%d", i+2), val["Status"])       //Status column
+		sheets.SetCellValue("Databases", fmt.Sprintf("F%d", i+2), val["Environment"])  //Environment column
+		sheets.SetCellValue("Databases", fmt.Sprintf("G%d", i+2), val["Location"])     //Location column
+		sheets.SetCellValue("Databases", fmt.Sprintf("H%d", i+2), val["Charset"])      //Charset column
+		sheets.SetCellValue("Databases", fmt.Sprintf("I%d", i+2), val["BlockSize"])    //BlockSize column
+		sheets.SetCellValue("Databases", fmt.Sprintf("J%d", i+2), val["CPUCount"])     //CPUCount column
+		sheets.SetCellValue("Databases", fmt.Sprintf("K%d", i+2), val["Work"])         //Work column
+		sheets.SetCellValue("Databases", fmt.Sprintf("L%d", i+2), val["Memory"])       //Memory column
+		sheets.SetCellValue("Databases", fmt.Sprintf("M%d", i+2), val["DatafileSize"]) //DatafileSize column
+		sheets.SetCellValue("Databases", fmt.Sprintf("N%d", i+2), val["SegmentsSize"]) //SegmentsSize column
+		sheets.SetCellValue("Databases", fmt.Sprintf("O%d", i+2), val["Archivelog"])   //ArchiveLogStatus column
+		sheets.SetCellValue("Databases", fmt.Sprintf("P%d", i+2), val["Dataguard"])    //Dataguard column
+		sheets.SetCellValue("Databases", fmt.Sprintf("Q%d", i+2), val["RAC"])          //RAC column
+		sheets.SetCellValue("Databases", fmt.Sprintf("R%d", i+2), val["HA"])           //HA column
 	}
 
 	//Write it to the response

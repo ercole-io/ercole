@@ -134,48 +134,113 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 				})),
 				mu.APOptionalStage(mode == "lms", mu.MAPipeline(
 					mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$Features.Oracle.Database.Databases"), 0))),
+					mu.APUnwind("$Features.Oracle.Database.Databases"),
 					mu.APSet(bson.M{
-						"Database": mu.APOArrayElemAt("$Features.Oracle.Database.Databases", 0),
+						"Database": "$Features.Oracle.Database.Databases",
 					}),
-					mu.APUnset("Extra"),
+					mu.APUnset("Features"),
 					mu.APSet(bson.M{
-						"VmwareOrOVM": mu.APOOr(mu.APOEqual("$Info.HardwareAbstractionTechnology", "VMWARE"), mu.APOEqual("$Info.HardwareAbstractionPlatform", "OVM")),
+						"VmwareOrOVM": mu.APOOr(mu.APOEqual("$Info.HardwareAbstractionTechnology", model.HardwareAbstractionTechnologyVmware), mu.APOEqual("$Info.HardwareAbstractionPlatform", model.HardwareAbstractionTechnologyOvm)),
+						"Database.PDBs": mu.APOCond("$Database.IsCDB", bson.M{
+							"$concatArrays": bson.A{
+								bson.A{"CDB$ROOT"},
+								mu.APOMap("$Database.PDBs", "pdb", "$$pdb.Name"),
+							},
+						}, bson.A{""}),
 					}),
+					mu.APUnwind("$Database.PDBs"),
 					mu.APProject(bson.M{
-						"PhysicalServerName":       mu.APOCond("$VmwareOrOVM", mu.APOIfNull("$Cluster", ""), "$Hostname"),
-						"VirtualServerName":        mu.APOCond("$VmwareOrOVM", "$Hostname", mu.APOIfNull("$Cluster", "")),
-						"VirtualizationTechnology": "$Info.HardwareAbstractionTechnology",
-						"DBInstanceName":           "$Database.Name",
-						"PluggableDatabaseName":    "",
-						"ConnectString":            "",
-						"ProductVersion":           mu.APOArrayElemAt(mu.APOSplit("$Database.Version", "."), 0),
-						"ProductEdition":           mu.APOArrayElemAt(mu.APOSplit("$Database.Version", " "), 1),
-						"Environment":              "$Environment",
-						"Features": mu.APOJoin(mu.APOMap(
+						// "Database":           1,
+						"PhysicalServerName": mu.APOCond("$VmwareOrOVM", mu.APOIfNull("$Cluster", ""), "$Hostname"),
+						"VirtualServerName":  mu.APOCond("$VmwareOrOVM", "$Hostname", mu.APOIfNull("$Cluster", "")),
+						"VirtualizationTechnology": bson.M{
+							"$switch": bson.M{
+								"branches": bson.A{
+									bson.M{"case": mu.APOEqual("$Info.HardwareAbstractionTechnology", model.HardwareAbstractionTechnologyPhysical), "then": ""},
+									bson.M{
+										"case": mu.APOEqual("$Info.HardwareAbstractionTechnology", model.HardwareAbstractionTechnologyOvm),
+										"then": mu.APOCond(bson.M{
+											"$regexMatch": bson.M{
+												"input": "$Info.CPUModel",
+												"regex": primitive.Regex{
+													Options: "i",
+													Pattern: "sparc",
+												},
+											},
+										}, "OVM Server for SPARC", "OVM Server for x86"),
+									},
+									bson.M{"case": mu.APOEqual("$Info.HardwareAbstractionTechnology", model.HardwareAbstractionTechnologyVmware), "then": "VMware"},
+									bson.M{"case": mu.APOEqual("$Info.HardwareAbstractionTechnology", model.HardwareAbstractionTechnologyHyperv), "then": "Hyper-V"},
+									bson.M{"case": mu.APOEqual("$Info.HardwareAbstractionTechnology", model.HardwareAbstractionTechnologyXen), "then": "Xen"},
+									bson.M{"case": mu.APOEqual("$Info.HardwareAbstractionTechnology", model.HardwareAbstractionTechnologyHpvirt), "then": "HP Integrity Virtual Machine"},
+								},
+								"default": mu.APOConcat("$Info.HardwareAbstractionTechnology"),
+							},
+						},
+						"DBInstanceName":        "$Database.Name",
+						"PluggableDatabaseName": "$Database.PDBs",
+						"Environment":           "$Environment",
+						"Options": mu.APOJoin(mu.APOMap(
 							mu.APOFilter("$Database.Licenses", "lic", mu.APOAnd(mu.APOGreater("$$lic.Count", 0), mu.APONotEqual("$$lic.Name", "Oracle STD"), mu.APONotEqual("$$lic.Name", "Oracle EXE"), mu.APONotEqual("$$lic.Name", "Oracle ENT"))),
 							"lic",
 							"$$lic.Name",
 						), ", "),
-						"RacNodeNames":   "",
-						"ProcessorModel": "$Info.CPUModel",
-						"Processors":     "$Info.CPUSockets",
-						"CoresPerProcessor": mu.APOCond(
-							mu.APOAnd(
-								mu.APOGreaterOrEqual("$Info.CPUCores", "$Info.CPUSockets"),
-								mu.APONotEqual("$Info.CPUSockets", 0),
+						"UsedManagementPacks": mu.APOJoin(mu.APOMap(
+							mu.APOFilter("$Database.Licenses", "lic",
+								mu.APOAnd(
+									mu.APOGreater("$$lic.Count", 0),
+									mu.APOOr(
+										mu.APOEqual("$$lic.Name", "Diagnostics Pack"),
+										mu.APOEqual("$$lic.Name", "Tuning Pack"),
+									),
+								),
 							),
-							mu.APODivide("$Info.CPUCores", "$Info.CPUSockets"),
-							"$Info.CPUCores",
+							"lic",
+							"$$lic.Name",
+						), ", "),
+						"ProductVersion": mu.APOArrayElemAt(mu.APOSplit("$Database.Version", "."), 0),
+						"ProductLicenseAllocated": mu.APOLet(
+							bson.M{
+								"edition": mu.APOArrayElemAt(mu.APOSplit("$Database.Version", " "), 1),
+							},
+							bson.M{
+								"$switch": bson.M{
+									"branches": bson.A{
+										bson.M{"case": mu.APOEqual("$$edition", "Enterprise"), "then": "EE"},
+										bson.M{"case": mu.APOEqual("$$edition", "Standard"), "then": "SE"},
+									},
+									"default": mu.APOConcat("$$edition"),
+								},
+							},
 						),
+						"LicenseMetricAllocated": "processor",
+						"UsingLicenseCount": mu.APOIfNull(mu.APOArrayElemAt(
+							mu.APOMap(
+								mu.APOFilter("$Database.Licenses", "lic",
+									mu.APOAnd(
+										mu.APOGreater("$$lic.Count", 0),
+										mu.APOOr(
+											mu.APOEqual("$$lic.Name", "Oracle STD"),
+											mu.APOEqual("$$lic.Name", "Oracle EXE"),
+											mu.APOEqual("$$lic.Name", "Oracle ENT"),
+										),
+									),
+								),
+								"lic",
+								"$$lic.Count",
+							),
+							0,
+						), 0.0),
+						"ProcessorModel":    "$Info.CPUModel",
+						"Processors":        "$Info.CPUSockets",
+						"CoresPerProcessor": "$Info.CoresPerSocket",
 						"ThreadsPerCore": mu.APOCond(
 							mu.APOGreaterOrEqual(mu.APOIndexOfCp("$Info.CPUModel", "SPARC"), 0),
 							8,
 							2,
 						),
-						"ProcessorSpeed":     "$Info.CPUFrequency",
-						"ServerPurchaseDate": "",
-						"OperatingSystem":    mu.APOConcat("$Info.OS", " ", "$Info.OSVersion"),
-						"Notes":              "",
+						"ProcessorSpeed":  "$Info.CPUFrequency",
+						"OperatingSystem": "$Info.OS",
 					}),
 					mu.APSet(bson.M{
 						"PhysicalCores": mu.APOCond(mu.APOEqual("$Info.CPUSockets", 0), "$CoresPerProcessor", bson.M{
