@@ -19,7 +19,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/plandem/xlsx"
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -72,10 +72,11 @@ func WriteExtJSONResponse(log *logrus.Logger, w http.ResponseWriter, statusCode 
 	w.Write(raw)
 }
 
-// WriteJSONResponse write the statuscode and the response to w
-func WriteXLSXResponse(w http.ResponseWriter, resp *xlsx.Spreadsheet) {
+// WriteXLSXResponse write the statuscode and the response to w
+func WriteXLSXResponse(w http.ResponseWriter, resp *excelize.File) {
 	//Write the response
 	w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	w.WriteHeader(http.StatusOK)
-	resp.SaveAs(w)
+
+	resp.Write(w)
 }

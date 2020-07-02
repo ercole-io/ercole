@@ -16,13 +16,14 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
-	"github.com/plandem/xlsx"
 )
 
 // SearchClusters search clusters data using the filters in the request
@@ -130,21 +131,19 @@ func (ctrl *APIController) SearchClustersXLSX(w http.ResponseWriter, r *http.Req
 	}
 
 	//Open the sheet
-	sheets, err := xlsx.Open(ctrl.Config.ResourceFilePath + "/templates/template_clusters.xlsx")
+	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_clusters.xlsx")
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
 		return
 	}
 
-	sheet := sheets.SheetByName("Hypervisor")
-
 	//Add the data to the sheet
 	for i, val := range clusters {
-		sheet.Cell(0, i+1).SetText(val["Name"])
-		sheet.Cell(1, i+1).SetText(val["Type"])
-		sheet.Cell(2, i+1).SetInt(int(val["CPU"].(float64)))
-		sheet.Cell(3, i+1).SetInt(int(val["Sockets"].(float64)))
-		sheet.Cell(4, i+1).SetText(val["VirtualizationNodes"])
+		sheets.SetCellValue("Hypervisor", fmt.Sprintf("A%d", i+2), val["Name"])
+		sheets.SetCellValue("Hypervisor", fmt.Sprintf("B%d", i+2), val["Type"])
+		sheets.SetCellValue("Hypervisor", fmt.Sprintf("C%d", i+2), val["CPU"])
+		sheets.SetCellValue("Hypervisor", fmt.Sprintf("D%d", i+2), val["Sockets"])
+		sheets.SetCellValue("Hypervisor", fmt.Sprintf("E%d", i+2), val["VirtualizationNodes"])
 	}
 
 	//Write it to the response

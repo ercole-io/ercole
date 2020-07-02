@@ -17,14 +17,15 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/api-service/database"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
-	"github.com/plandem/xlsx"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -153,37 +154,34 @@ func (ctrl *APIController) SearchHostsLMS(w http.ResponseWriter, r *http.Request
 	}
 
 	//Open the sheet
-	sheets, err := xlsx.Open(ctrl.Config.ResourceFilePath + "/templates/template_lms.xlsm")
+	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_lms.xlsm")
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
 		return
 	}
 
-	sheet := sheets.SheetByName("Database_&_EBS")
-
-	i := 0
+	i := 1
 	//Add the data to the sheet
 	for _, val := range hosts {
-		sheet.Cell(0, i+3).SetText(val["PhysicalServerName"])
-		sheet.Cell(1, i+3).SetText(val["VirtualServerName"])
-		sheet.Cell(2, i+3).SetText(val["VirtualizationTechnology"])
-		sheet.Cell(3, i+3).SetText(val["DBInstanceName"])
-		sheet.Cell(4, i+3).SetText(val["PluggableDatabaseName"])
-		sheet.Cell(5, i+3).SetText(val["ConnectString"])
-		sheet.Cell(7, i+3).SetText(val["ProductVersion"])
-		sheet.Cell(8, i+3).SetText(val["ProductEdition"])
-		sheet.Cell(9, i+3).SetText(val["Environment"])
-		sheet.Cell(10, i+3).SetText(val["Features"])
-		sheet.Cell(11, i+3).SetText(val["RacNodeNames"])
-		sheet.Cell(12, i+3).SetText(val["ProcessorModel"])
-		sheet.Cell(13, i+3).SetInt(int(val["Processors"].(float64)))
-		sheet.Cell(14, i+3).SetInt(int(val["CoresPerProcessor"].(float64)))
-		sheet.Cell(15, i+3).SetInt(int(val["PhysicalCores"].(float64)))
-		sheet.Cell(16, i+3).SetInt(int(val["ThreadsPerCore"].(int32)))
-		sheet.Cell(17, i+3).SetText(val["ProcessorSpeed"])
-		sheet.Cell(18, i+3).SetText(val["ServerPurchaseDate"])
-		sheet.Cell(19, i+3).SetText(val["OperatingSystem"])
-		sheet.Cell(20, i+3).SetText(val["Notes"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("B%d", i+3), val["PhysicalServerName"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("C%d", i+3), val["VirtualServerName"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("D%d", i+3), val["VirtualizationTechnology"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("E%d", i+3), val["DBInstanceName"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("F%d", i+3), val["PluggableDatabaseName"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("G%d", i+3), val["Environment"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("H%d", i+3), val["Options"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("I%d", i+3), val["UsedManagementPacks"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("N%d", i+3), val["ProductVersion"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("O%d", i+3), val["ProductLicenseAllocated"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("P%d", i+3), val["LicenseMetricAllocated"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("Q%d", i+3), val["UsingLicenseCount"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AC%d", i+3), val["ProcessorModel"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AD%d", i+3), val["Processors"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AE%d", i+3), val["CoresPerProcessor"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AF%d", i+3), val["PhysicalCores"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AG%d", i+3), val["ThreadsPerCore"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AH%d", i+3), val["ProcessorSpeed"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AJ%d", i+3), val["OperatingSystem"])
 		i++
 	}
 
@@ -233,38 +231,36 @@ func (ctrl *APIController) SearchHostsXLSX(w http.ResponseWriter, r *http.Reques
 	}
 
 	//Open the sheet
-	sheets, err := xlsx.Open(ctrl.Config.ResourceFilePath + "/templates/template_hosts.xlsx")
+	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_hosts.xlsx")
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
 		return
 	}
 
-	sheet := sheets.SheetByName("Hosts")
-
 	//Add the data to the sheet
 	for i, val := range hosts {
-		sheet.Cell(0, i+1).SetText(val["Hostname"])
-		sheet.Cell(1, i+1).SetText(val["Environment"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("A%d", i+2), val["Hostname"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("B%d", i+2), val["Environment"])
 		if val["Cluster"] != nil && val["VirtualizationNode"] != nil {
-			sheet.Cell(3, i+1).SetText(val["Cluster"])
-			sheet.Cell(4, i+1).SetText(val["VirtualizationNode"])
+			sheets.SetCellValue("Hosts", fmt.Sprintf("D%d", i+2), val["Cluster"])
+			sheets.SetCellValue("Hosts", fmt.Sprintf("E%d", i+2), val["VirtualizationNode"])
 		}
-		sheet.Cell(5, i+1).SetText(val["Version"])
-		sheet.Cell(6, i+1).SetText(val["CreatedAt"].(primitive.DateTime).Time().UTC().String())
-		sheet.Cell(7, i+1).SetText(val["Databases"])
-		sheet.Cell(8, i+1).SetText(val["OS"])
-		sheet.Cell(9, i+1).SetText(val["Kernel"])
-		sheet.Cell(10, i+1).SetBool(val["OracleCluster"].(bool))
-		sheet.Cell(11, i+1).SetBool(val["SunCluster"].(bool))
-		sheet.Cell(12, i+1).SetBool(val["VeritasCluster"].(bool))
-		sheet.Cell(13, i+1).SetText(val["HardwareAbstraction"])
-		sheet.Cell(14, i+1).SetText(val["HardwareAbstractionTechnology"])
-		sheet.Cell(15, i+1).SetInt(int(val["CPUThreads"].(float64)))
-		sheet.Cell(16, i+1).SetInt(int(val["CPUCores"].(float64)))
-		sheet.Cell(17, i+1).SetInt(int(val["Socket"].(float64)))
-		sheet.Cell(18, i+1).SetInt(int(val["MemTotal"].(float64)))
-		sheet.Cell(19, i+1).SetInt(int(val["SwapTotal"].(float64)))
-		sheet.Cell(20, i+1).SetText(val["CPUModel"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("F%d", i+2), val["AgentVersion"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("G%d", i+2), val["CreatedAt"].(primitive.DateTime).Time().UTC().String())
+		// sheets.SetCellValue("Hosts", fmt.Sprintf("H%d", i+2), val["Databases"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("I%d", i+2), val["OS"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("J%d", i+2), val["Kernel"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("K%d", i+2), val["OracleClusterware"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("L%d", i+2), val["SunCluster"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("M%d", i+2), val["VeritasClusterServer"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("N%d", i+2), val["HardwareAbstraction"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("O%d", i+2), val["HardwareAbstractionTechnology"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("P%d", i+2), val["CPUThreads"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("Q%d", i+2), val["CPUCores"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("R%d", i+2), val["CPUSockets"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("S%d", i+2), val["MemTotal"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("T%d", i+2), val["SwapTotal"])
+		sheets.SetCellValue("Hosts", fmt.Sprintf("U%d", i+2), val["CPUModel"])
 	}
 
 	//Write it to the response
