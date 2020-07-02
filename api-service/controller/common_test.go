@@ -17,11 +17,8 @@ package controller
 
 import (
 	"errors"
-	"testing"
 
 	"github.com/ercole-io/ercole/utils"
-	"github.com/plandem/xlsx"
-	"github.com/stretchr/testify/assert"
 )
 
 //go:generate mockgen -source ../service/service.go -destination=fake_service_test.go -package=controller
@@ -29,24 +26,6 @@ import (
 //Common data
 var errMock error = errors.New("MockError")
 var aerrMock utils.AdvancedErrorInterface = utils.NewAdvancedErrorPtr(errMock, "mock")
-
-func AssertXLSXFloat(t *testing.T, expected float64, cell *xlsx.Cell) {
-	actual, err := cell.Float()
-	assert.NoError(t, err)
-	assert.Equal(t, expected, actual)
-}
-
-func AssertXLSXInt(t *testing.T, expected int, cell *xlsx.Cell) {
-	actual, err := cell.Int()
-	assert.NoError(t, err)
-	assert.Equal(t, expected, actual)
-}
-
-func AssertXLSXBool(t *testing.T, expected bool, cell *xlsx.Cell) {
-	actual, err := cell.Bool()
-	assert.NoError(t, err)
-	assert.Equal(t, expected, actual)
-}
 
 type FailingReader struct{}
 
