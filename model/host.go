@@ -22,6 +22,17 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// HardwareAbstractionTechnology list
+const (
+	HardwareAbstractionTechnologyPhysical string = "PH"
+	HardwareAbstractionTechnologyOvm      string = "OVM"
+	HardwareAbstractionTechnologyVmware   string = "VMWARE"
+	HardwareAbstractionTechnologyHyperv   string = "HYPERV"
+	HardwareAbstractionTechnologyVmother  string = "VMOTHER"
+	HardwareAbstractionTechnologyXen      string = "XEN"
+	HardwareAbstractionTechnologyHpvirt   string = "HPVIRT"
+)
+
 // Host contains info about the host
 type Host struct {
 	Hostname                      string                 `bson:"Hostname"`

@@ -1830,7 +1830,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /hosts/technologies/oracle/databases/databases:
+  /hosts/technologies/oracle/databases:
     get:
       tags:
         - api-service
