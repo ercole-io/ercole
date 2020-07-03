@@ -1171,6 +1171,23 @@ components:
           type: string
         NewValue:
           type: number
+    TechnologyInfo:
+      type: object
+      required:
+        - Product
+        - PrettyName
+        - Color
+        - Logo
+      properties:
+        Product:
+          type: string
+        PrettyName:
+          type: string
+        Color:
+          type: string
+        Logo:
+          type: string
+          description: base64 encoded png 256x256 image
   parameters:
     search:
       in: query
@@ -3489,6 +3506,25 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
+  /settings/technologies:
+    get:
+      operationId: GetTechnologyList
+      description: Return a list of technology
+      summary: Return a list of technology
+      tags:
+        - api-service
+        - fe-user
+        - read
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json::
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TechnologyInfo'
   /frontend/dashboard:
     get: 
       operationId: GetFrontendDashboardData

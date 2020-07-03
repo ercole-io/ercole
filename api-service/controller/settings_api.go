@@ -27,3 +27,14 @@ func (ctrl *APIController) GetErcoleFeatures(w http.ResponseWriter, r *http.Requ
 
 	utils.WriteJSONResponse(w, http.StatusOK, data)
 }
+
+// GetTechnologyList return the list of techonlogies
+func (ctrl *APIController) GetTechnologyList(w http.ResponseWriter, r *http.Request) {
+	data, err := ctrl.Service.GetTechnologyList()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, data)
+}
