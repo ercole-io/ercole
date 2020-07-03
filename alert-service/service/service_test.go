@@ -81,9 +81,9 @@ func TestProcessMsg_AlertInsertion(t *testing.T) {
 	}
 
 	emailer.EXPECT().SendEmail(
-		"MAJOR This is just an alert test to a mocked emailer. on TestHostname",
+		"CRITICAL This is just an alert test to a mocked emailer. on TestHostname",
 		`Date: 2019-09-02 10:25:28 +0000 UTC
-Severity: MAJOR
+Severity: CRITICAL
 Host: TestHostname
 Code: NEW_LICENSE
 This is just an alert test to a mocked emailer.`,
@@ -95,7 +95,7 @@ This is just an alert test to a mocked emailer.`,
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
 		AlertStatus:             model.AlertStatusNew,
 		OtherInfo:               map[string]interface{}{"Hostname": "TestHostname"},
-		AlertSeverity:           model.AlertSeverityMajor,
+		AlertSeverity:           model.AlertSeverityCritical,
 		Description:             "This is just an alert test to a mocked emailer.",
 		Date:                    utils.P("2019-09-02T10:25:28Z"),
 		AlertCode:               model.AlertCodeNewLicense,
@@ -231,9 +231,9 @@ func TestProcessAlertInsertion_WithHostname(t *testing.T) {
 	}
 
 	emailer.EXPECT().SendEmail(
-		"MAJOR This is just an alert test to a mocked emailer. on TestHostname",
+		"CRITICAL This is just an alert test to a mocked emailer. on TestHostname",
 		`Date: 2019-09-02 10:25:28 +0000 UTC
-Severity: MAJOR
+Severity: CRITICAL
 Host: TestHostname
 Code: NEW_LICENSE
 This is just an alert test to a mocked emailer.`,
@@ -244,7 +244,7 @@ This is just an alert test to a mocked emailer.`,
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
 		AlertCategory:           model.AlertCategoryLicense,
 		OtherInfo:               map[string]interface{}{"Hostname": "TestHostname"},
-		AlertSeverity:           model.AlertSeverityMajor,
+		AlertSeverity:           model.AlertSeverityCritical,
 		Description:             "This is just an alert test to a mocked emailer.",
 		Date:                    utils.P("2019-09-02T10:25:28Z"),
 		AlertCode:               model.AlertCodeNewLicense,
@@ -274,9 +274,9 @@ func TestProcessAlertInsertion_WithoutHostname(t *testing.T) {
 	}
 
 	emailer.EXPECT().SendEmail(
-		"MAJOR This is just an alert test to a mocked emailer.",
+		"CRITICAL This is just an alert test to a mocked emailer.",
 		`Date: 2019-09-02 10:25:28 +0000 UTC
-Severity: MAJOR
+Severity: CRITICAL
 Code: NEW_LICENSE
 This is just an alert test to a mocked emailer.`,
 		as.Config.AlertService.Emailer.To)
@@ -286,7 +286,7 @@ This is just an alert test to a mocked emailer.`,
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
 		AlertCategory:           model.AlertCategoryLicense,
 		OtherInfo:               map[string]interface{}{},
-		AlertSeverity:           model.AlertSeverityMajor,
+		AlertSeverity:           model.AlertSeverityCritical,
 		Description:             "This is just an alert test to a mocked emailer.",
 		Date:                    utils.P("2019-09-02T10:25:28Z"),
 		AlertCode:               model.AlertCodeNewLicense,
@@ -316,9 +316,9 @@ func TestProcessAlertInsertion_EmailerError(t *testing.T) {
 	}
 
 	emailer.EXPECT().SendEmail(
-		"MAJOR This is just an alert test to a mocked emailer.",
+		"CRITICAL This is just an alert test to a mocked emailer.",
 		`Date: 2019-09-02 10:25:28 +0000 UTC
-Severity: MAJOR
+Severity: CRITICAL
 Code: NEW_LICENSE
 This is just an alert test to a mocked emailer.`,
 		as.Config.AlertService.Emailer.To).
@@ -329,7 +329,7 @@ This is just an alert test to a mocked emailer.`,
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
 		AlertCategory:           model.AlertCategoryLicense,
 		OtherInfo:               map[string]interface{}{},
-		AlertSeverity:           model.AlertSeverityMajor,
+		AlertSeverity:           model.AlertSeverityCritical,
 		Description:             "This is just an alert test to a mocked emailer.",
 		Date:                    utils.P("2019-09-02T10:25:28Z"),
 		AlertCode:               model.AlertCodeNewLicense,
