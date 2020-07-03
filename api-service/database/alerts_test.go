@@ -49,7 +49,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		AlertAffectedTechnology: nil,
 		AlertCategory:           model.AlertCategoryEngine,
 		AlertCode:               model.AlertCodeNewServer,
-		AlertSeverity:           model.AlertSeverityNotice,
+		AlertSeverity:           model.AlertSeverityInfo,
 		AlertStatus:             model.AlertStatusAck,
 		Date:                    utils.P("2020-04-10T08:46:58.38+02:00"),
 		Description:             "The server 'rac1_x' was added to ercole",
@@ -62,7 +62,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		AlertAffectedTechnology: nil,
 		AlertCategory:           model.AlertCategoryEngine,
 		AlertCode:               model.AlertCodeNewServer,
-		AlertSeverity:           model.AlertSeverityNotice,
+		AlertSeverity:           model.AlertSeverityInfo,
 		AlertStatus:             model.AlertStatusAck,
 		Date:                    utils.P("2020-04-10T08:46:58.38+02:00"),
 		Description:             "The server 'rac1_x' was added to ercole",
@@ -75,7 +75,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		AlertAffectedTechnology: nil,
 		AlertCategory:           model.AlertCategoryEngine,
 		AlertCode:               model.AlertCodeNewServer,
-		AlertSeverity:           model.AlertSeverityNotice,
+		AlertSeverity:           model.AlertSeverityInfo,
 		AlertStatus:             model.AlertStatusAck,
 		Date:                    utils.P("2020-04-10T08:46:58.38+02:00"),
 		Description:             "The server 'rac2_x' was added to ercole",
@@ -132,7 +132,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 				"AlertAffectedTechnology": nil,
 				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               model.AlertCodeNewServer,
-				"AlertSeverity":           model.AlertSeverityNotice,
+				"AlertSeverity":           model.AlertSeverityInfo,
 				"AlertStatus":             model.AlertStatusAck,
 				"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
 				"Description":             "The server 'rac1_x' was added to ercole",
@@ -146,7 +146,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 				"AlertAffectedTechnology": nil,
 				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               model.AlertCodeNewServer,
-				"AlertSeverity":           model.AlertSeverityNotice,
+				"AlertSeverity":           model.AlertSeverityInfo,
 				"AlertStatus":             model.AlertStatusAck,
 				"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
 				"Description":             "The server 'rac1_x' was added to ercole",
@@ -160,7 +160,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 				"AlertAffectedTechnology": nil,
 				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               model.AlertCodeNewServer,
-				"AlertSeverity":           model.AlertSeverityNotice,
+				"AlertSeverity":           model.AlertSeverityInfo,
 				"AlertStatus":             model.AlertStatusAck,
 				"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
 				"Description":             "The server 'rac2_x' was added to ercole",
@@ -277,7 +277,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 				"AlertAffectedTechnology": nil,
 				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               model.AlertCodeNewServer,
-				"AlertSeverity":           model.AlertSeverityNotice,
+				"AlertSeverity":           model.AlertSeverityInfo,
 				"AlertStatus":             model.AlertStatusAck,
 				"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
 				"Description":             "The server 'rac1_x' was added to ercole",
@@ -291,7 +291,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 				"AlertAffectedTechnology": nil,
 				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               model.AlertCodeNewServer,
-				"AlertSeverity":           model.AlertSeverityNotice,
+				"AlertSeverity":           model.AlertSeverityInfo,
 				"AlertStatus":             model.AlertStatusAck,
 				"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
 				"Description":             "The server 'rac1_x' was added to ercole",
@@ -305,7 +305,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 				"AlertAffectedTechnology": nil,
 				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               model.AlertCodeNewServer,
-				"AlertSeverity":           model.AlertSeverityNotice,
+				"AlertSeverity":           model.AlertSeverityInfo,
 				"AlertStatus":             model.AlertStatusAck,
 				"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
 				"Description":             "The server 'rac2_x' was added to ercole",
@@ -326,7 +326,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_search2", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("all", []string{"added", model.AlertCodeNewServer, model.AlertSeverityNotice, "rac1_x"}, "", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
+		out, err := m.db.SearchAlerts("all", []string{"added", model.AlertCodeNewServer, model.AlertSeverityInfo, "rac1_x"}, "", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -334,7 +334,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 				"AlertAffectedTechnology": nil,
 				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               model.AlertCodeNewServer,
-				"AlertSeverity":           model.AlertSeverityNotice,
+				"AlertSeverity":           model.AlertSeverityInfo,
 				"AlertStatus":             model.AlertStatusAck,
 				"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
 				"Description":             "The server 'rac1_x' was added to ercole",
@@ -348,7 +348,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 				"AlertAffectedTechnology": nil,
 				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               model.AlertCodeNewServer,
-				"AlertSeverity":           model.AlertSeverityNotice,
+				"AlertSeverity":           model.AlertSeverityInfo,
 				"AlertStatus":             model.AlertStatusAck,
 				"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
 				"Description":             "The server 'rac1_x' was added to ercole",
@@ -407,7 +407,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 				"Code":          "NEW_SERVER",
 				"Count":         3,
 				"OldestAlert":   utils.P("2020-04-10T08:46:58.38+02:00").Local(),
-				"Severity":      "NOTICE",
+				"Severity":      "INFO",
 			},
 		}
 
@@ -430,7 +430,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 				"AffectedHosts": 2,
 				"Count":         3,
 				"OldestAlert":   utils.P("2020-04-10T08:46:58.38+02:00").Local(),
-				"Severity":      "NOTICE",
+				"Severity":      "INFO",
 			},
 		}
 

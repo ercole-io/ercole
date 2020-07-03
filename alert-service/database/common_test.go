@@ -22,7 +22,7 @@ import (
 
 var alert1 model.Alert = model.Alert{
 	AlertCode:               model.AlertCodeNewServer,
-	AlertSeverity:           model.AlertSeverityNotice,
+	AlertSeverity:           model.AlertSeverityInfo,
 	AlertAffectedTechnology: nil,
 	AlertCategory:           model.AlertCategoryEngine,
 	AlertStatus:             model.AlertStatusNew,
@@ -38,7 +38,7 @@ var alert2 model.Alert = model.Alert{
 	AlertAffectedTechnology: nil,
 	AlertCategory:           model.AlertCategoryAgent,
 	AlertCode:               model.AlertCodeNoData,
-	AlertSeverity:           model.AlertSeverityMajor,
+	AlertSeverity:           model.AlertSeverityCritical,
 	AlertStatus:             model.AlertStatusNew,
 	Date:                    utils.P("2019-11-05T18:02:03Z"),
 	Description:             "No data received from the host myhost in the last 90 days",
