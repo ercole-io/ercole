@@ -1,0 +1,12 @@
+[
+    {
+        "Product": "Oracle/Database",
+        "PrettyName": "Oracle Database",
+        "Color": "#C1181E"
+    },
+    {
+        "Product": "Microsoft/SQLServer",
+        "PrettyName": "SQL Server",
+        "Color": "#98A1AD"
+    }
+]
