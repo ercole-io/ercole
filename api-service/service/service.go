@@ -17,6 +17,9 @@
 package service
 
 import (
+	"encoding/base64"
+	"encoding/json"
+	"io/ioutil"
 	"time"
 
 	"github.com/ercole-io/ercole/api-service/database"
@@ -122,6 +125,8 @@ type APIServiceInterface interface {
 	GetDefaultDatabaseTags() ([]string, utils.AdvancedErrorInterface)
 	// GetErcoleFeatures return a map of active/inactive features
 	GetErcoleFeatures() (map[string]bool, utils.AdvancedErrorInterface)
+	// GetErcoleFeatures return the list of technologies
+	GetTechnologyList() ([]model.TechnologyInfo, utils.AdvancedErrorInterface)
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license
@@ -166,8 +171,35 @@ type APIService struct {
 	TimeNow func() time.Time
 	// Log contains logger formatted
 	Log *logrus.Logger
+	// TechnologyInfos contains the list of technologies with their informations
+	TechnologyInfos []model.TechnologyInfo
 }
 
 // Init initializes the service and database
 func (as *APIService) Init() {
+	// read the list content
+	listContentRaw, err := ioutil.ReadFile(as.Config.ResourceFilePath + "/technologies/list.json")
+	if err != nil {
+		as.Log.Warnf("Unable to read %s: %v\n", as.Config.ResourceFilePath+"/technologies/list.json", err)
+		return
+	}
+
+	// unmarshal to TechnologyInfos
+	err = json.Unmarshal(listContentRaw, &as.TechnologyInfos)
+	if err != nil {
+		as.Log.Warnf("Unable to unmarshal %s: %v\n", as.Config.ResourceFilePath+"/technologies/list.json", err)
+		return
+	}
+
+	// Load every image and encode it to base64
+	for i, info := range as.TechnologyInfos {
+		// read image content
+		raw, err := ioutil.ReadFile(as.Config.ResourceFilePath + "/technologies/" + info.Product + ".png")
+		if err != nil {
+			as.Log.Warnf("Unable to read %s: %v\n", as.Config.ResourceFilePath+"/technologies/"+info.Product+".png", err)
+		} else {
+			// encode it!
+			as.TechnologyInfos[i].Logo = base64.StdEncoding.EncodeToString(raw)
+		}
+	}
 }
