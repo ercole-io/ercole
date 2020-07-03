@@ -13,6 +13,8 @@ github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuy
 github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
 github.com/amreo/go-dyn-struct v1.1.0 h1:VNExoIUaFqgBJX5tnW6iya/6f2/egY3zwETVXa15vvk=
 github.com/amreo/go-dyn-struct v1.1.0/go.mod h1:0tC/4/GW8i37+O26wvg9+mCEb6WKdAn3w3iC6GBazYE=
+github.com/amreo/go-dyn-struct v1.2.0 h1:jGdU454F/wRXH8CmvmInBoDSwKwvgch9XmkuugCuAZI=
+github.com/amreo/go-dyn-struct v1.2.0/go.mod h1:0tC/4/GW8i37+O26wvg9+mCEb6WKdAn3w3iC6GBazYE=
 github.com/amreo/mu v0.0.0-20200428112942-b72352edfdf1 h1:+0Oqu8KN1ajM2fNTxkqSVZ98bh6NX1jOWPs7MoNCyok=
 github.com/amreo/mu v0.0.0-20200428112942-b72352edfdf1/go.mod h1:Z4dSBwGqIVMf3JyIv/P/5RSHXkSzdbZLrRC/xoKYPIA=
 github.com/amreo/sftp v1.10.2-0.20200107133605-5981645e4b3b h1:GpQHWqvka4/Y8GQI47k2n33cwlXS/+G3aha7sZnhesU=
