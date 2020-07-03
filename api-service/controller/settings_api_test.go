@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -129,6 +130,61 @@ func TestGetErcoleFeatures_FailInternalServerError(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetErcoleFeatures)
 	req, err := http.NewRequest("GET", "/settings/features", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestGetTechnologyList_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	res := []model.TechnologyInfo{
+		{},
+	}
+
+	as.EXPECT().
+		GetTechnologyList().
+		Return(res, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetTechnologyList)
+	req, err := http.NewRequest("GET", "/foo", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, utils.ToJSON(res), rr.Body.String())
+}
+
+func TestGetTechnologyList_FailInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		GetTechnologyList().
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetTechnologyList)
+	req, err := http.NewRequest("GET", "/foo", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)

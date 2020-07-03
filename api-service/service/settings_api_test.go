@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -88,4 +89,22 @@ func TestGetErcoleFeatures_FailInternalServerError(t *testing.T) {
 	_, err := as.GetErcoleFeatures()
 
 	require.Equal(t, aerrMock, err)
+}
+
+func TestGetTechnologyList_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+		TechnologyInfos: []model.TechnologyInfo{
+			{},
+		},
+	}
+	res, err := as.GetTechnologyList()
+	require.NoError(t, err)
+	assert.Equal(t, []model.TechnologyInfo{
+		{},
+	}, res)
 }
