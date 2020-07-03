@@ -35,7 +35,7 @@ install -m 0755 package/ercole-setup %{buildroot}/usr/bin/ercole-setup
 install -m 0644 resources/initial_oracle_licenses_list.txt %{buildroot}/usr/share/ercole
 install -m 0644 package/config.toml %{buildroot}/usr/share/ercole/config.toml
 install -m 0644 resources/templates/* %{buildroot}/usr/share/ercole/templates/
-install -m 0644 resources/technologies/* %{buildroot}/usr/share/ercole/technologies/
+install -m 0644 resources/technologies/list.json %{buildroot}/usr/share/ercole/technologies/list.json
 install -m 0644 resources/technologies/Oracle/* %{buildroot}/usr/share/ercole/technologies/Oracle/
 install -m 0644 resources/technologies/Microsoft/* %{buildroot}/usr/share/ercole/technologies/Microsoft/
 install -m 0644 package/systemd/*.service %{buildroot}%{_unitdir}/
