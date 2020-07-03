@@ -112,10 +112,13 @@ type APIControllerInterface interface {
 	GetOracleExadataStorageErrorCountStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetOracleExadataPatchStatusStats return all statistics about the patch status of the exadata using the filters in the request
 	GetOracleExadataPatchStatusStats(w http.ResponseWriter, r *http.Request)
+
 	// GetDefaultDatabaseTags return the default list of database tags from configuration
 	GetDefaultDatabaseTags(w http.ResponseWriter, r *http.Request)
 	// GetErcoleFeatures return a map of active/inactive features
 	GetErcoleFeatures(w http.ResponseWriter, r *http.Request)
+	// GetTechnologyList return the list of techonlogies
+	GetTechnologyList(w http.ResponseWriter, r *http.Request)
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(w http.ResponseWriter, r *http.Request)

@@ -15,25 +15,23 @@
 
 package model
 
-type TechnologyStatus struct {
-	Product    string
-	Used       float64 `json:"-"`
-	Count      float64 `json:"-"`
-	TotalCost  float64 `json:"-"`
-	PaidCost   float64 `json:"-"`
-	Compliance float64
-	UnpaidDues float64
-	HostsCount int
-}
-
 // Technology names
 const (
-	TechnologyOracleDatabase string = "Oracle/Database"
-	TechnologyOracleExadata  string = "Oracle/Exadata"
+	TechnologyOracleDatabase     string = "Oracle/Database"
+	TechnologyOracleExadata      string = "Oracle/Exadata"
+	TechnologyMicrosoftSQLServer string = "Microsoft/SQLServer"
 )
 
 // Pointers to technology names
 var (
-	TechnologyOracleDatabasePtr *string = str2CopyPtr(TechnologyOracleDatabase)
-	TechnologyOracleExadataPtr  *string = str2CopyPtr(TechnologyOracleExadata)
+	TechnologyOracleDatabasePtr     *string = str2CopyPtr(TechnologyOracleDatabase)
+	TechnologyOracleExadataPtr      *string = str2CopyPtr(TechnologyOracleExadata)
+	TechnologyMicrosoftSQLServerPrt *string = str2CopyPtr(TechnologyMicrosoftSQLServer)
 )
+
+type TechnologyInfo struct {
+	Product    string
+	PrettyName string
+	Color      string
+	Logo       string
+}

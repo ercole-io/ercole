@@ -100,7 +100,7 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 func setupSettingsRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/default-database-tag-choiches", ctrl.GetDefaultDatabaseTags).Methods("GET")
 	router.HandleFunc("/features", ctrl.GetErcoleFeatures).Methods("GET")
-
+	router.HandleFunc("/technologies", ctrl.GetTechnologyList).Methods("GET")
 }
 
 func setupFrontendAPIRoutes(router *mux.Router, ctrl APIControllerInterface) {

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 )
 
@@ -22,4 +23,9 @@ func (as *APIService) GetErcoleFeatures() (map[string]bool, utils.AdvancedErrorI
 	out["Oracle/Exadata"] = partialList["Oracle/Exadata"] > 0
 
 	return out, nil
+}
+
+// GetTechnologyList return the list of technologies
+func (as *APIService) GetTechnologyList() ([]model.TechnologyInfo, utils.AdvancedErrorInterface) {
+	return as.TechnologyInfos, nil
 }
