@@ -46,14 +46,14 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 				"Code":          "NEW_DATABASE",
 				"Count":         9,
 				"OldestAlert":   "2020-05-11T11:38:11.992+02:00",
-				"Severity":      "NOTICE",
+				"Severity":      "INFO",
 			},
 			{
 				"AffectedHosts": 12,
 				"Code":          "NEW_SERVER",
 				"Count":         12,
 				"OldestAlert":   "2020-05-11T11:38:11.988+02:00",
-				"Severity":      "NOTICE",
+				"Severity":      "INFO",
 			},
 			{
 				"AffectedHosts": 4,

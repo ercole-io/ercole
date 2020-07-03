@@ -64,7 +64,7 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	severity = r.URL.Query().Get("severity")
-	if severity != "" && severity != model.AlertSeverityMinor && severity != model.AlertSeverityWarning && severity != model.AlertSeverityMajor && severity != model.AlertSeverityCritical && severity != model.AlertSeverityNotice {
+	if severity != "" && severity != model.AlertSeverityWarning && severity != model.AlertSeverityCritical && severity != model.AlertSeverityInfo {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid severity"), "Invalid  severity"))
 		return
 	}
