@@ -137,7 +137,7 @@ func TestGetHost_Success(t *testing.T) {
 				"AlertAffectedTechnology": nil,
 				"AlertCategory":           model.AlertCategoryEngine,
 				"AlertCode":               "NEW_SERVER",
-				"AlertSeverity":           "NOTICE",
+				"AlertSeverity":           "INFO",
 				"AlertStatus":             "NEW",
 				"Date":                    utils.P("2020-04-07T08:52:59.871+02:00"),
 				"Description":             "The server 'test-virt' was added to ercole",

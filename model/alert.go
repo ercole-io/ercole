@@ -61,16 +61,12 @@ const (
 
 // Alert severity
 const (
-	// Minor contains string "MINOR"
-	AlertSeverityMinor string = "MINOR"
-	// Warning contains string "WARNING"
+	// AlertSeverityWarning contains string "WARNING"
 	AlertSeverityWarning string = "WARNING"
-	// Major contains string "MAJOR"
-	AlertSeverityMajor string = "MAJOR"
-	// Critical contains string "CRITICAL"
+	// AlertSeverityCritical contains string "CRITICAL"
 	AlertSeverityCritical string = "CRITICAL"
-	// Notice contains string "NOTICE"
-	AlertSeverityNotice string = "NOTICE"
+	// AlertSeverityInfo contains string "INFO"
+	AlertSeverityInfo string = "INFO"
 )
 
 // Alert status
@@ -124,11 +120,9 @@ var AlertBsonValidatorRules = bson.M{
 		"AlertSeverity": bson.M{
 			"bsonType": "string",
 			"enum": bson.A{
-				AlertSeverityMinor,
 				AlertSeverityWarning,
-				AlertSeverityMajor,
 				AlertSeverityCritical,
-				AlertSeverityNotice,
+				AlertSeverityInfo,
 			},
 		},
 		"AlertStatus": bson.M{
