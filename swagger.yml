@@ -922,12 +922,9 @@ components:
         AlertSeverity:
           type: string
           enum:
-            - MINOR
             - WARNING
-            - MAJOR
             - CRITICAL
-            - NOTICE
-          example: MAJOR
+            - INFO
         AlertCode:
           type: string
           enum:
@@ -2036,11 +2033,9 @@ paths:
           schema:
             type: string
             enum:
-              - MINOR
               - WARNING
-              - MAJOR
               - CRITICAL
-              - NOTICE
+              - INFO
           name: severity
           description: Filter by severity
           allowEmptyValue: true
