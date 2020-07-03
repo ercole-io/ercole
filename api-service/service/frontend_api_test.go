@@ -34,24 +34,6 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Alerts": []map[string]interface{}{
-			{
-				"AffectedHosts": 12,
-				"Category":      "ENGINE",
-				"Code":          "NEW_SERVER",
-				"Count":         12,
-				"OldestAlert":   "2020-05-06T15:40:04.543+02:00",
-				"Severity":      "NOTICE",
-			},
-			{
-				"AffectedHosts": 12,
-				"Category":      "ENGINE",
-				"Code":          "NEW_SERVER",
-				"Count":         12,
-				"OldestAlert":   "2020-05-06T15:40:04.543+02:00",
-				"Severity":      "NOTICE",
-			},
-		},
 		"Technologies": map[string]interface{}{
 			"Technologies": []map[string]interface{}{
 				{
@@ -123,34 +105,6 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 	db.EXPECT().
 		ListLicenses(false, "", false, -1, -1, "Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 		Return(listLicensesRes, nil).AnyTimes().MinTimes(1)
-
-	searchAlertsRes := []interface{}{
-		map[string]interface{}{
-			"Category":      "ENGINE",
-			"AffectedHosts": 12,
-			"Code":          "NEW_SERVER",
-			"Count":         12,
-			"OldestAlert":   "2020-05-06T15:40:04.543+02:00",
-			"Severity":      "NOTICE",
-		},
-		map[string]interface{}{
-			"Category":      "ENGINE",
-			"AffectedHosts": 12,
-			"Code":          "NEW_SERVER",
-			"Count":         12,
-			"OldestAlert":   "2020-05-06T15:40:04.543+02:00",
-			"Severity":      "NOTICE",
-		},
-	}
-	db.EXPECT().SearchAlerts(
-		"aggregated-category-severity",
-		[]string{""}, "", false,
-		-1, -1, "", "",
-		utils.MIN_TIME, utils.P("2019-12-05T14:02:03Z"),
-	).Return(
-		searchAlertsRes,
-		nil,
-	)
 
 	getTechnologiesUsageRes2 := map[string]float64{
 		"Oracle/Database_HostsCount": 8,
@@ -226,32 +180,6 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 	db.EXPECT().
 		ListLicenses(false, "", false, -1, -1, "Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 		Return(listLicensesRes, nil).AnyTimes().MinTimes(1)
-
-	searchAlertsRes := []interface{}{
-		map[string]interface{}{
-			"AffectedHosts": 12,
-			"Code":          "NEW_SERVER",
-			"Count":         12,
-			"OldestAlert":   "2020-05-06T15:40:04.543+02:00",
-			"Severity":      "NOTICE",
-		},
-		map[string]interface{}{
-			"AffectedHosts": 12,
-			"Code":          "NEW_SERVER",
-			"Count":         12,
-			"OldestAlert":   "2020-05-06T15:40:04.543+02:00",
-			"Severity":      "NOTICE",
-		},
-	}
-	db.EXPECT().SearchAlerts(
-		"aggregated-category-severity",
-		[]string{""}, "", false,
-		-1, -1, "", "",
-		utils.MIN_TIME, utils.P("2019-12-05T14:02:03Z"),
-	).Return(
-		searchAlertsRes,
-		nil,
-	)
 
 	db.EXPECT().
 		GetTechnologiesUsage("", "", utils.MAX_TIME).
