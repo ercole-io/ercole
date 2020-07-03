@@ -6,7 +6,7 @@ require (
 	github.com/1set/gut v0.0.0-20200225162230-3995492b8589
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/OpenPeeDeeP/xdg v0.2.0
-	github.com/amreo/go-dyn-struct v1.1.0
+	github.com/amreo/go-dyn-struct v1.2.0
 	github.com/amreo/mu v0.0.0-20200428112942-b72352edfdf1
 	github.com/bamzi/jobrunner v0.0.0-20190810144113-852b7ca4d475
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
