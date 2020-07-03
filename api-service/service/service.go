@@ -199,7 +199,7 @@ func (as *APIService) Init() {
 			as.Log.Warnf("Unable to read %s: %v\n", as.Config.ResourceFilePath+"/technologies/"+info.Product+".png", err)
 		} else {
 			// encode it!
-			as.TechnologyInfos[i].Image = base64.StdEncoding.EncodeToString(raw)
+			as.TechnologyInfos[i].Logo = base64.StdEncoding.EncodeToString(raw)
 		}
 	}
 }
