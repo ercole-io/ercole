@@ -50,7 +50,7 @@ func TestThrowNewDatabaseAlert_Success(t *testing.T) {
 		assert.Equal(t, model.AlertCategoryLicense, alert.AlertCategory)
 		assert.Equal(t, model.TechnologyOracleDatabase, *alert.AlertAffectedTechnology)
 		assert.Equal(t, model.AlertCodeNewDatabase, alert.AlertCode)
-		assert.Equal(t, model.AlertSeverityNotice, alert.AlertSeverity)
+		assert.Equal(t, model.AlertSeverityInfo, alert.AlertSeverity)
 		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)
 		assert.Equal(t, "The database 'bestdb' was created on the server myhost", alert.Description)
 		assert.Equal(t, map[string]interface{}{
@@ -98,7 +98,7 @@ func TestThrowNewServerAlert_Success(t *testing.T) {
 		assert.Equal(t, model.AlertCategoryEngine, alert.AlertCategory)
 		assert.Nil(t, alert.AlertAffectedTechnology)
 		assert.Equal(t, model.AlertCodeNewServer, alert.AlertCode)
-		assert.Equal(t, model.AlertSeverityNotice, alert.AlertSeverity)
+		assert.Equal(t, model.AlertSeverityInfo, alert.AlertSeverity)
 		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)
 		assert.Equal(t, "The server 'myhost' was added to ercole", alert.Description)
 		assert.Equal(t, map[string]interface{}{
@@ -233,7 +233,7 @@ func TestThrowNoDataAlert_Success(t *testing.T) {
 		assert.Equal(t, model.AlertCategoryAgent, alert.AlertCategory)
 		assert.Nil(t, alert.AlertAffectedTechnology)
 		assert.Equal(t, model.AlertCodeNoData, alert.AlertCode)
-		assert.Equal(t, model.AlertSeverityMajor, alert.AlertSeverity)
+		assert.Equal(t, model.AlertSeverityCritical, alert.AlertSeverity)
 		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)
 		assert.Equal(t, "No data received from the host myhost in the last 90 days", alert.Description)
 		assert.Equal(t, map[string]interface{}{

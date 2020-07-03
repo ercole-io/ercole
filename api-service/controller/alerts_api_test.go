@@ -47,7 +47,7 @@ func TestSearchAlerts_SuccessPaged(t *testing.T) {
 				"Code":          "NEW_SERVER",
 				"Count":         12,
 				"OldestAlert":   utils.P("2020-05-06T15:40:04.543+02:00"),
-				"Severity":      "NOTICE",
+				"Severity":      "INFO",
 			},
 			map[string]interface{}{
 				"AffectedHosts": 1,
@@ -73,12 +73,12 @@ func TestSearchAlerts_SuccessPaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchAlerts("aggregated-code-severity", "foo", "CreatedAt", true, 10, 2, model.AlertSeverityMinor, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
+		SearchAlerts("aggregated-code-severity", "foo", "CreatedAt", true, 10, 2, model.AlertSeverityCritical, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
 		Return(resFromService, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts?mode=aggregated-code-severity&search=foo&sort-by=CreatedAt&sort-desc=true&page=10&size=2&severity=MINOR&status=ACK&from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
+	req, err := http.NewRequest("GET", "/alerts?mode=aggregated-code-severity&search=foo&sort-by=CreatedAt&sort-desc=true&page=10&size=2&severity=CRITICAL&status=ACK&from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -104,7 +104,7 @@ func TestSearchAlerts_SuccessUnpaged(t *testing.T) {
 			"Code":          "NEW_SERVER",
 			"Count":         12,
 			"OldestAlert":   utils.P("2020-05-06T15:40:04.543+02:00"),
-			"Severity":      "NOTICE",
+			"Severity":      "INFO",
 		},
 		map[string]interface{}{
 			"AffectedHosts": 1,
@@ -116,12 +116,12 @@ func TestSearchAlerts_SuccessUnpaged(t *testing.T) {
 	}
 	as.EXPECT().
 		SearchAlerts("aggregated-code-severity",
-			"foo", "CreatedAt", true, -1, -1, model.AlertSeverityMinor, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
+			"foo", "CreatedAt", true, -1, -1, model.AlertSeverityCritical, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts?mode=aggregated-code-severity&search=foo&sort-by=CreatedAt&sort-desc=true&severity=MINOR&status=ACK&from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
+	req, err := http.NewRequest("GET", "/alerts?mode=aggregated-code-severity&search=foo&sort-by=CreatedAt&sort-desc=true&severity=CRITICAL&status=ACK&from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
