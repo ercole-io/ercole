@@ -33,5 +33,5 @@ type TechnologyInfo struct {
 	Product    string
 	PrettyName string
 	Color      string
-	Image      string
+	Logo       string
 }

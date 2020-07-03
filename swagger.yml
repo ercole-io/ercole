@@ -1177,7 +1177,7 @@ components:
         - Product
         - PrettyName
         - Color
-        - Image
+        - Logo
       properties:
         Product:
           type: string
@@ -1185,7 +1185,7 @@ components:
           type: string
         Color:
           type: string
-        Image:
+        Logo:
           type: string
           description: base64 encoded png 256x256 image
   parameters:
