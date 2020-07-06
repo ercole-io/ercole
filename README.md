@@ -11,6 +11,7 @@ Ercole is a open-source software for proactive software asset management:
 Ercole is made by multiple services:
 * Alert: generate alerts, send notifications. Expose data for 3rd party usage (i.e. prometheus)
 * API: provides REST APIs for the User Interface
+* Chart: provides REST APIs for the charts
 * Data: receives data from the agent
 * Repo: provides a yum repository (proxy?) for the agent binaries
 

@@ -12,6 +12,8 @@ info:
 servers:
   - description: Api service on dev.ercole.io
     url: 'https://dev.ercole.io/api'
+  - description: Chart service on dev.ercole.io
+    url: 'https://dev.ercole.io/chart'
   - description: Data service on dev.ercole.io
     url: 'https://dev.ercole.io/data'
   - description: Alert service on dev.ercole.io
@@ -27,6 +29,8 @@ tags:
     description: API served by alert-service
   - name: api-service
     description: API served by api-service
+  - name: chart-service
+    description: API served by chart-service
   - name: fe-user
     description: API used by the end user
   - name: agent-user

@@ -78,6 +78,12 @@ DefaultDatabaseTags = [
   Regex = "^AIX.*$"
   Group = "AIX"
 
+[ChartService]
+RemoteEndpoint = "http://127.0.0.1:11116"
+BindIP = "0.0.0.0"
+Port = 11116
+LogHTTPRequest = true
+
 [RepoService]
 DistributedFiles = "distributed_files/"
 
