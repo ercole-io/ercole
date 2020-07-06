@@ -45,12 +45,17 @@ import (
 	apiservice_database "github.com/ercole-io/ercole/api-service/database"
 	apiservice_service "github.com/ercole-io/ercole/api-service/service"
 
+	chartservice_controller "github.com/ercole-io/ercole/chart-service/controller"
+	chartservice_database "github.com/ercole-io/ercole/chart-service/database"
+	chartservice_service "github.com/ercole-io/ercole/chart-service/service"
+
 	reposervice_service "github.com/ercole-io/ercole/repo-service/service"
 )
 
 var enableDataService bool
 var enableAlertService bool
 var enableAPIService bool
+var enableChartService bool
 var enableRepoService bool
 
 // serveCmd represents the serve command
@@ -59,10 +64,10 @@ var serveCmd = &cobra.Command{
 	Short: "Run ercole services",
 	Long:  `Run ercole services`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if !enableDataService && !enableAlertService && !enableAPIService && !enableRepoService {
-			serve(true, true, true, true)
+		if !enableDataService && !enableAlertService && !enableAPIService && !enableRepoService && !enableChartService {
+			serve(true, true, true, true, true)
 		} else {
-			serve(enableDataService, enableAlertService, enableAPIService, enableRepoService)
+			serve(enableDataService, enableAlertService, enableAPIService, enableChartService, enableRepoService)
 		}
 	},
 }
@@ -73,12 +78,13 @@ func init() {
 	serveCmd.Flags().BoolVarP(&enableDataService, "enable-data-service", "d", false, "Enable the data service")
 	serveCmd.Flags().BoolVarP(&enableAlertService, "enable-alert-service", "a", false, "Enable the alert service")
 	serveCmd.Flags().BoolVarP(&enableAPIService, "enable-api-service", "u", false, "Enable the api service")
+	serveCmd.Flags().BoolVarP(&enableChartService, "enable-chart-service", "t", false, "Enable the chart service")
 	serveCmd.Flags().BoolVarP(&enableRepoService, "enable-repo-service", "r", false, "Enable the repo service")
 }
 
 // serve setup and start the services
 func serve(enableDataService bool,
-	enableAlertService bool, enableAPIService bool, enableRepoService bool) {
+	enableAlertService bool, enableAPIService bool, enableChartService bool, enableRepoService bool) {
 	log := utils.NewLogger("SERV")
 
 	if !utils.FileExists(ercoleConfig.RepoService.DistributedFiles) {
@@ -116,6 +122,10 @@ func serve(enableDataService bool,
 
 	if enableAPIService {
 		serveAPIService(ercoleConfig, &wg)
+	}
+
+	if enableChartService {
+		serveChartService(ercoleConfig, &wg)
 	}
 
 	if enableRepoService {
@@ -188,7 +198,7 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 	db.Init()
 
 	//Setup the emailer
-	emailer := &alertservice_service.SmtpEmailer{
+	emailer := &alertservice_service.SMTPEmailer{
 		Config: config,
 	}
 
@@ -281,6 +291,60 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 		log.Info("Start api-service: listening at ", config.APIService.Port)
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.APIService.BindIP, config.APIService.Port), cors.AllowAll().Handler(logRouter))
 		log.Warn("Stopping api-service", err)
+		wg.Done()
+	}()
+}
+
+// serveChartService setup and start the chart-service
+func serveChartService(config config.Configuration, wg *sync.WaitGroup) {
+	log := utils.NewLogger("CHRT")
+
+	//Setup the database
+	db := &chartservice_database.MongoDatabase{
+		Config:  config,
+		TimeNow: time.Now,
+		Log:     log,
+	}
+	db.Init()
+
+	//Setup the service
+	service := &chartservice_service.ChartService{
+		Config:   config,
+		Database: db,
+		TimeNow:  time.Now,
+		Log:      log,
+	}
+	service.Init()
+
+	auth := apiservice_auth.BuildAuthenticationProvider(config.APIService.AuthenticationProvider, time.Now, log)
+
+	auth.Init()
+	//Setup the controller
+	router := mux.NewRouter()
+	ctrl := &chartservice_controller.ChartController{
+		Config:        config,
+		Service:       service,
+		TimeNow:       time.Now,
+		Log:           log,
+		Authenticator: auth,
+	}
+	chartservice_controller.SetupRoutesForChartController(router, ctrl, auth)
+
+	//Setup the logger
+	var logRouter http.Handler
+	if config.DataService.LogHTTPRequest {
+		logRouter = utils.CustomLoggingHandler(router, log)
+	} else {
+		logRouter = router
+	}
+
+	wg.Add(1)
+
+	//Start the api-service
+	go func() {
+		log.Info("Start chart-service: listening at ", config.ChartService.Port)
+		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.ChartService.BindIP, config.ChartService.Port), cors.AllowAll().Handler(logRouter))
+		log.Warn("Stopping chart-service", err)
 		wg.Done()
 	}()
 }

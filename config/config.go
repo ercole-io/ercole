@@ -40,6 +40,8 @@ type Configuration struct {
 	APIService APIService
 	// RepoService contains configuration about the repo service
 	RepoService RepoService
+	// ChartService contains configuration about the chart service
+	ChartService ChartService
 	// Mongodb contains configuration about database connection, some data logic and migration
 	Mongodb Mongodb
 	// Version contains the version of the server
@@ -132,6 +134,18 @@ type RepoService struct {
 	HTTP HTTPRepoService
 	// SFTP contains the configuration about the SFTP server
 	SFTP SFTPRepoService
+}
+
+// ChartService contains configuration about the chart service
+type ChartService struct {
+	// RemoteEndpoint contains the endpoint used to connect to the ChartService
+	RemoteEndpoint string
+	// BindIP contains the bind ip
+	BindIP string
+	// Port contains the port of the internal http server
+	Port uint16
+	// LogHTTPRequest enable the logging of the internal http serverl
+	LogHTTPRequest bool
 }
 
 // Mongodb contains configuration about the database connection, some data logic and migration
@@ -235,14 +249,14 @@ type Emailer struct {
 	From string
 	// To contains the destinations
 	To []string
-	// SmtpServer contains the address or hostname of the server
-	SmtpServer string
-	// SmtpPort contains the port of the server
-	SmtpPort int
-	// SmtpUsername contains the username used to connect to the server
-	SmtpUsername string
-	// SmtpPassword contains the password used to connect to the server
-	SmtpPassword string
+	// SMTPServer contains the address or hostname of the server
+	SMTPServer string
+	// SMTPPort contains the port of the server
+	SMTPPort int
+	// SMTPUsername contains the username used to connect to the server
+	SMTPUsername string
+	// SMTPPassword contains the password used to connect to the server
+	SMTPPassword string
 	// DisableSSLCertificateValidation contains true if disable the certification validation, otherwise false
 	DisableSSLCertificateValidation bool
 }

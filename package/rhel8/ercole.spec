@@ -48,10 +48,12 @@ install -m 0644 distributed_files/shared/*.repo %{buildroot}/usr/share/ercole/ex
 /usr/bin/systemctl preset %{name}.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-alertservice.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-apiservice.service >/dev/null 2>&1 ||:
+/usr/bin/systemctl preset %{name}-chartservice.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-reposervice.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-dataservice.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl is-active --quiet %{name}-alertservice.service && /usr/bin/systemctl restart %{name}-alertservice.service
 /usr/bin/systemctl is-active --quiet %{name}-apiservice.service && /usr/bin/systemctl restart %{name}-apiservice.service
+/usr/bin/systemctl is-active --quiet %{name}-chartservice.service && /usr/bin/systemctl restart %{name}-chartservice.service
 /usr/bin/systemctl is-active --quiet %{name}-reposervice.service && /usr/bin/systemctl restart %{name}-reposervice.service
 /usr/bin/systemctl is-active --quiet %{name}-dataservice.service && /usr/bin/systemctl restart %{name}-dataservice.service
 NOINTERACTIVE=1 /usr/bin/ercole-setup
@@ -71,6 +73,7 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 %{_presetdir}/60-ercole.preset
 %{_unitdir}/ercole-alertservice.service
 %{_unitdir}/ercole-apiservice.service
+%{_unitdir}/ercole-chartservice.service
 %{_unitdir}/ercole-dataservice.service
 %{_unitdir}/ercole-reposervice.service
 %{_unitdir}/ercole.service
