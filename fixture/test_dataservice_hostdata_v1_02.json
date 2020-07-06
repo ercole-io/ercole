@@ -110,6 +110,7 @@
                     {
                         "InstanceNumber": 1,
                         "Name": "ERCOLE",
+                        "InstanceName": "ERCOLE1",
                         "UniqueName": "ERCOLE",
                         "Status": "OPEN",
                         "Version": "12.2.0.1.0 Enterprise Edition",
@@ -392,6 +393,7 @@
                     {
                         "InstanceNumber": 1,
                         "Name": "urcole",
+                        "InstanceName": "urcole1",
                         "UniqueName": "urcole",
                         "Status": "OPEN",
                         "Version": "12.2.0.1.0 Enterprise Edition",

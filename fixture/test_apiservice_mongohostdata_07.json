@@ -152,6 +152,7 @@
                         "InstanceNumber": {
                             "$numberInt": "1"
                         },
+                        "InstanceName": "ERCOLE1",
                         "IsCDB": false,
                         "Licenses": [
                             {

@@ -61,6 +61,7 @@
                 "Databases": [
                     {
                         "InstanceNumber": 1,
+                        "InstanceName": "pokemons1",
                         "Name": "pokemons",
                         "UniqueName": "pokemons",
                         "Status": "OPEN",
