@@ -152,6 +152,7 @@
                         "InstanceNumber": {
                             "$numberInt": "1"
                         },
+                        "InstanceName": "foobar11",
                         "IsCDB": false,
                         "Licenses": [
                             {
@@ -431,6 +432,7 @@
                         "InstanceNumber": {
                             "$numberInt": "1"
                         },
+                        "InstanceName": "foobar21",
                         "IsCDB": false,
                         "Licenses": [
                             {

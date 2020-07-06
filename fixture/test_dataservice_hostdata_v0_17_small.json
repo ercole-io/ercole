@@ -27,57 +27,63 @@
 		"AixCluster": false
 	},
 	"Extra": {
-		"Databases": [{
-			"InstanceNumber": "1",
-			"Name": "pippodb",
-			"UniqueName": "pippodb",
-			"Status": "OPEN",
-			"Version": "12.2.0.1.0 Enterprise Edition",
-			"Platform": "Linux x86 64-bit",
-			"Archivelog": "NOARCHIVELOG",
-			"Charset": "AL32UTF8",
-			"NCharset": "AL16UTF16",
-			"BlockSize": "8192",
-			"CPUCount": "2",
-			"SGATarget": "0.",
-			"PGATarget": "0.",
-			"MemoryTarget": "1.484",
-			"SGAMaxSize": "1.484",
-			"SegmentsSize": "3",
-			"Used": "6",
-			"Allocated": "129",
-			"Elapsed": "12059.18",
-			"DBTime": "184.81",
-			"DailyCPUUsage": "0.7",
-			"Work": "1",
-			"ASM": false,
-			"Dataguard": false,
-			"Patches": [],
-			"Tablespaces": [],
-			"Schemas": [],
-			"Licenses": [],
-			"ADDMs": [],
-			"SegmentAdvisors": [],
-			"LastPSUs": [],
-			"Backups": [],
-			"Features2": []
-		}],
-		"Filesystems": [{
-			"Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
-			"FsType": "ext4",
-			"Size": "13G",
-			"Used": "6.7G",
-			"Available": "5.4G",
-			"UsedPerc": "56%",
-			"MountedOn": "/"
-		}, {
-			"Filesystem": "/dev/sda1",
-			"FsType": "ext4",
-			"Size": "488M",
-			"Used": "133M",
-			"Available": "320M",
-			"UsedPerc": "30%",
-			"MountedOn": "/boot"
-		}]
+		"Databases": [
+			{
+				"InstanceNumber": "1",
+				"Name": "pippodb",
+				"InstanceName": "pippodb1",
+				"UniqueName": "pippodb",
+				"Status": "OPEN",
+				"Version": "12.2.0.1.0 Enterprise Edition",
+				"Platform": "Linux x86 64-bit",
+				"Archivelog": "NOARCHIVELOG",
+				"Charset": "AL32UTF8",
+				"NCharset": "AL16UTF16",
+				"BlockSize": "8192",
+				"CPUCount": "2",
+				"SGATarget": "0.",
+				"PGATarget": "0.",
+				"MemoryTarget": "1.484",
+				"SGAMaxSize": "1.484",
+				"SegmentsSize": "3",
+				"Used": "6",
+				"Allocated": "129",
+				"Elapsed": "12059.18",
+				"DBTime": "184.81",
+				"DailyCPUUsage": "0.7",
+				"Work": "1",
+				"ASM": false,
+				"Dataguard": false,
+				"Patches": [],
+				"Tablespaces": [],
+				"Schemas": [],
+				"Licenses": [],
+				"ADDMs": [],
+				"SegmentAdvisors": [],
+				"LastPSUs": [],
+				"Backups": [],
+				"Features2": []
+			}
+		],
+		"Filesystems": [
+			{
+				"Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+				"FsType": "ext4",
+				"Size": "13G",
+				"Used": "6.7G",
+				"Available": "5.4G",
+				"UsedPerc": "56%",
+				"MountedOn": "/"
+			},
+			{
+				"Filesystem": "/dev/sda1",
+				"FsType": "ext4",
+				"Size": "488M",
+				"Used": "133M",
+				"Available": "320M",
+				"UsedPerc": "30%",
+				"MountedOn": "/boot"
+			}
+		]
 	}
 }
