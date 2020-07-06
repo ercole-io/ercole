@@ -326,6 +326,7 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				"HA":             false,
 				"Hostname":       "test-db",
 				"InstanceNumber": 1,
+				"InstanceName":   "ERCOLE1",
 				"IsCDB":          false,
 				"Licenses": []interface{}{
 					map[string]interface{}{
@@ -501,6 +502,7 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				"HA":             true,
 				"Hostname":       "test-db2",
 				"InstanceNumber": 1,
+				"InstanceName":   "pokemons1",
 				"IsCDB":          false,
 				"Licenses": []interface{}{
 					map[string]interface{}{
