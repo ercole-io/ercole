@@ -213,6 +213,7 @@ var FrontendHostdataSchemaValidator string = `
                                                         "type": "object",
                                                         "required": [
                                                             "InstanceNumber",
+                                                            "InstanceName",
                                                             "Name",
                                                             "UniqueName",
                                                             "Status",
@@ -254,7 +255,11 @@ var FrontendHostdataSchemaValidator string = `
                                                                 "type": "integer",
                                                                 "minimum": 1
                                                             },
-                                                            "Name": {
+                                                            "InstanceName": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
+                                                            },"Name": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 64

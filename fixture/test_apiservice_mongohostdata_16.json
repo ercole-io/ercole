@@ -50,6 +50,7 @@
                         "InstanceNumber": {
                             "$numberInt": "1"
                         },
+                        "InstanceName": "pippodb1",
                         "IsCDB": false,
                         "Licenses": [],
                         "MemoryTarget": {

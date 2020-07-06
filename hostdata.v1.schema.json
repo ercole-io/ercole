@@ -114,7 +114,10 @@
                 },
                 "HardwareAbstraction": {
                     "type": "string",
-                    "enum": ["PH", "VIRT"]
+                    "enum": [
+                        "PH",
+                        "VIRT"
+                    ]
                 },
                 "HardwareAbstractionTechnology": {
                     "type": "string",
@@ -173,14 +176,16 @@
             "type": "object",
             "properties": {
                 "Oracle": {
-                    "anyOf": [{
+                    "anyOf": [
+                        {
                             "type": "null"
                         },
                         {
                             "type": "object",
                             "properties": {
                                 "Database": {
-                                    "anyOf": [{
+                                    "anyOf": [
+                                        {
                                             "type": "null"
                                         },
                                         {
@@ -195,6 +200,7 @@
                                                         "type": "object",
                                                         "required": [
                                                             "InstanceNumber",
+                                                            "InstanceName",
                                                             "Name",
                                                             "UniqueName",
                                                             "Status",
@@ -235,6 +241,11 @@
                                                             "InstanceNumber": {
                                                                 "type": "integer",
                                                                 "minimum": 1
+                                                            },
+                                                            "InstanceName": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
                                                             },
                                                             "Name": {
                                                                 "type": "string",
@@ -309,7 +320,8 @@
                                                                 "type": "number"
                                                             },
                                                             "Elapsed": {
-                                                                "anyOf": [{
+                                                                "anyOf": [
+                                                                    {
                                                                         "type": "null"
                                                                     },
                                                                     {
@@ -318,7 +330,8 @@
                                                                 ]
                                                             },
                                                             "DBTime": {
-                                                                "anyOf": [{
+                                                                "anyOf": [
+                                                                    {
                                                                         "type": "null"
                                                                     },
                                                                     {
@@ -327,7 +340,8 @@
                                                                 ]
                                                             },
                                                             "DailyCPUUsage": {
-                                                                "anyOf": [{
+                                                                "anyOf": [
+                                                                    {
                                                                         "type": "null"
                                                                     },
                                                                     {
@@ -336,7 +350,8 @@
                                                                 ]
                                                             },
                                                             "Work": {
-                                                                "anyOf": [{
+                                                                "anyOf": [
+                                                                    {
                                                                         "type": "null"
                                                                     },
                                                                     {
@@ -840,7 +855,8 @@
                                     ]
                                 },
                                 "Exadata": {
-                                    "anyOf": [{
+                                    "anyOf": [
+                                        {
                                             "type": "null"
                                         },
                                         {
@@ -1129,18 +1145,22 @@
                                 }
                             }
                         },
-                        { "type": "null" }
+                        {
+                            "type": "null"
+                        }
                     ]
                 },
                 "Postgresql": {
-                    "anyOf": [{
+                    "anyOf": [
+                        {
                             "type": "null"
                         },
                         {
                             "type": "object",
                             "properties": {
                                 "Postgresql": {
-                                    "anyOf": [{
+                                    "anyOf": [
+                                        {
                                             "type": "null"
                                         },
                                         {
@@ -1358,7 +1378,8 @@
             }
         },
         "Clusters": {
-            "anyOf": [{
+            "anyOf": [
+                {
                     "type": "null"
                 },
                 {

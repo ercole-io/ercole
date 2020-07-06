@@ -25,6 +25,7 @@ import (
 // OracleDatabase holds information about a oracle database.
 type OracleDatabase struct {
 	InstanceNumber    int                               `bson:"InstanceNumber"`
+	InstanceName      string                            `bson:"InstanceName"`
 	Name              string                            `bson:"Name"`
 	UniqueName        string                            `bson:"UniqueName"`
 	Status            string                            `bson:"Status"`
@@ -88,6 +89,7 @@ var OracleDatabaseBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
 		"InstanceNumber",
+		"InstanceName",
 		"Name",
 		"UniqueName",
 		"Status",
@@ -128,6 +130,11 @@ var OracleDatabaseBsonValidatorRules = bson.M{
 		"InstanceNumber": bson.M{
 			"bsonType": "number",
 			"minimum":  1,
+		},
+		"InstanceName": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 32,
 		},
 		"Name": bson.M{
 			"bsonType":  "string",

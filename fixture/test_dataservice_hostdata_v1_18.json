@@ -32,6 +32,7 @@
             "DatafileSize": 3,
             "Name": "ERCSOL19",
             "InstanceNumber": 1,
+            "InstanceName": "ERCSOL191",
             "PSUs": [
               {
                 "Description": "Database Release Update : 19.5.0.0.191015 (30125133)",
