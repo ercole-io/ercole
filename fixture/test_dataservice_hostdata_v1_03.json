@@ -109,6 +109,7 @@
                 "Databases": [
                     {
                         "InstanceNumber": 1,
+                        "InstanceName": "ERCOLE1",
                         "Name": "ERCOLE",
                         "UniqueName": "ERCOLE",
                         "Status": "OPEN",
