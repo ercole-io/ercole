@@ -53,6 +53,7 @@
                 "Databases": [
                     {
                         "InstanceNumber": 1,
+                        "InstanceName": "pippodb1",
                         "Name": "pippodb",
                         "UniqueName": "pippodb",
                         "Status": "OPEN",
