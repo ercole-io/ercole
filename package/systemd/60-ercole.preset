@@ -2,4 +2,5 @@ enable ercole.service
 enable ercole-dataservice.service
 enable ercole-alertservice.service
 enable ercole-apiservice.service
+enable ercole-chartservice.service
 enable ercole-reposervice.service
