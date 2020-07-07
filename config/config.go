@@ -226,6 +226,8 @@ type AggregationRule struct {
 	Regex string
 	// Group contains the name of the group
 	Group string
+	// Product contains vendor/name of the operating system
+	Product string
 }
 
 // UpstreamRepository contains info about a upstream repository
