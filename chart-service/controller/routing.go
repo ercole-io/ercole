@@ -38,5 +38,5 @@ func SetupRoutesForChartController(router *mux.Router, ctrl ChartControllerInter
 }
 
 func setupProtectedRoutes(router *mux.Router, ctrl ChartControllerInterface) {
-
+	router.HandleFunc("/settings/technologies", ctrl.GetTechnologyList).Methods("GET")
 }
