@@ -498,10 +498,10 @@ components:
       properties:
         Name:
           type: string
-        Environment: 
+        Environment:
           type: string
           nullable: true
-        Location: 
+        Location:
           type: string
           nullable: true
         Hostname:
@@ -1007,7 +1007,7 @@ components:
           $ref: '#/components/schemas/ExadataDev'
         IBSwitches:
           $ref: '#/components/schemas/ExadataDev'
-    Features: 
+    Features:
       type: object
       properties:
         Oracle/Database:
@@ -1067,15 +1067,15 @@ components:
             - SYSTEM
             - AGENT
             - LICENSE
-        Code: 
+        Code:
           type: string
           externalDocs:
-            url: https://github.com/ercole-io/ercole/blob/master/model/alert.go
+            url: 'https://github.com/ercole-io/ercole/blob/master/model/alert.go'
         Severity:
           type: string
           externalDocs:
-            url: https://github.com/ercole-io/ercole/blob/master/model/alert.go
-        Count: 
+            url: 'https://github.com/ercole-io/ercole/blob/master/model/alert.go'
+        Count:
           type: integer
         AffectedHosts:
           type: integer
@@ -1101,8 +1101,8 @@ components:
         Severity:
           type: string
           externalDocs:
-            url: https://github.com/ercole-io/ercole/blob/master/model/alert.go
-        Count: 
+            url: 'https://github.com/ercole-io/ercole/blob/master/model/alert.go'
+        Count:
           type: integer
         AffectedHosts:
           type: integer
@@ -1163,7 +1163,7 @@ components:
         - LicenseName
         - NewValue
       properties:
-        _id: 
+        _id:
           type: string
         Hostname:
           type: string
@@ -1274,7 +1274,7 @@ components:
         default: 6
       in: query
       name: window-time
-      description: window time to check the patch date, in months
+      description: 'window time to check the patch date, in months'
 paths:
   /ping:
     get:
@@ -1401,7 +1401,7 @@ paths:
             type: string
         - in: query
           name: cluster
-          description: filter by the name of virtualization cluster. use 'NULL' for searching host that aren't part of a virtualization cluster
+          description: "filter by the name of virtualization cluster. use 'NULL' for searching host that aren't part of a virtualization cluster"
           allowEmptyValue: true
           schema:
             type: string
@@ -1823,8 +1823,8 @@ paths:
         - fe-user
         - read
       operationId: ListTechnologies
-      summary: List all Technologies 
-      description:  List all Technologies
+      summary: List all Technologies
+      description: List all Technologies
       parameters:
         - $ref: '#/components/parameters/sort-by'
         - $ref: '#/components/parameters/sort-desc'
@@ -1838,7 +1838,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: 
+                items:
                   $ref: '#/components/schemas/TechnologyStatus'
         '401':
           $ref: '#/components/responses/error'
@@ -2205,7 +2205,7 @@ paths:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
         - $ref: '#/components/parameters/older-than'
-  /hosts/clusters/{name}:
+  '/hosts/clusters/{name}':
     get:
       summary: Get a cluster
       tags:
@@ -2221,8 +2221,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Cluster'
       operationId: GetCluster
-      description: |-
-        Get cluster data using the filters in the request.
+      description: Get cluster data using the filters in the request.
       parameters:
         - $ref: '#/components/parameters/older-than'
         - in: path
@@ -2422,7 +2421,7 @@ paths:
         - fe-user
         - read
       operationId: GetOperatingSystemStats
-      summary: Get the stats about the operating systems 
+      summary: Get the stats about the operating systems
       description: Get the stats about the operating systems
       parameters:
         - $ref: '#/components/parameters/location'
@@ -2495,8 +2494,8 @@ paths:
         - fe-user
         - read
       operationId: GetTotalTechnologiesCompliance
-      summary: Get the total compliance status of all Technologies 
-      description: Get the total compliance status of all Technologies 
+      summary: Get the total compliance status of all Technologies
+      description: Get the total compliance status of all Technologies
       parameters:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
@@ -2521,7 +2520,7 @@ paths:
         - fe-user
         - read
       operationId: GetOracleDatabaseEnvironmentStats
-      summary: Get the stats about the environment of the databases 
+      summary: Get the stats about the environment of the databases
       description: Get the stats about the environment of the databases
       parameters:
         - $ref: '#/components/parameters/location'
@@ -2557,7 +2556,7 @@ paths:
         - fe-user
         - read
       operationId: GetOracleDatabaseHighReliabilityStats
-      summary: Get the stats about the high reliability status of the databases 
+      summary: Get the stats about the high reliability status of the databases
       description: Get the stats about the high reliability status of the databases
       parameters:
         - $ref: '#/components/parameters/location'
@@ -2593,7 +2592,7 @@ paths:
         - fe-user
         - read
       operationId: GetOracleDatabaseVersionStats
-      summary: Get the stats about the version of the databases 
+      summary: Get the stats about the version of the databases
       description: Get the stats about the version of the databases
       parameters:
         - $ref: '#/components/parameters/location'
@@ -2629,7 +2628,7 @@ paths:
         - fe-user
         - read
       operationId: GetTopReclaimableOracleDatabaseStats
-      summary: Get the list of top databases by reclaimable segment advisors 
+      summary: Get the list of top databases by reclaimable segment advisors
       description: Get the list of top databases by reclaimable segment advisors
       parameters:
         - $ref: '#/components/parameters/location'
@@ -2650,7 +2649,7 @@ paths:
                       type: string
                     Dbname:
                       type: string
-                    ReclaimableSegmentAdvisors: 
+                    ReclaimableSegmentAdvisors:
                       type: number
                   required:
                     - Hostname
@@ -2727,7 +2726,7 @@ paths:
                       type: string
                     Dbname:
                       type: string
-                    Workload: 
+                    Workload:
                       type: number
                   required:
                     - Hostname
@@ -2976,9 +2975,9 @@ paths:
                   - Used
                   - Compliant
                 properties:
-                  Count: 
+                  Count:
                     type: number
-                  Used: 
+                  Used:
                     type: number
                   Compliant:
                     type: boolean
@@ -2987,7 +2986,7 @@ paths:
         '422':
           $ref: '#/components/responses/error'
         '500':
-          $ref: '#/components/responses/error' 
+          $ref: '#/components/responses/error'
   /hosts/technologies/oracle/exadata/total-memory-size:
     get:
       tags:
@@ -3038,16 +3037,16 @@ paths:
                   - Running
                   - Total
                 properties:
-                  Running: 
+                  Running:
                     type: number
-                  Total: 
+                  Total:
                     type: number
         '401':
           $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
         '500':
-          $ref: '#/components/responses/error' 
+          $ref: '#/components/responses/error'
   /hosts/technologies/oracle/exadata/average-storage-usage:
     get:
       tags:
@@ -3392,9 +3391,9 @@ paths:
       responses:
         '200':
           description: OK
-        '404':
-          $ref: '#/components/responses/error'
         '401':
+          $ref: '#/components/responses/error'
+        '404':
           $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
@@ -3425,9 +3424,9 @@ paths:
       responses:
         '200':
           description: OK
-        '404':
-          $ref: '#/components/responses/error'
         '401':
+          $ref: '#/components/responses/error'
+        '404':
           $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
@@ -3437,7 +3436,7 @@ paths:
     put:
       operationId: SetLicenseUnlimitedStatus
       description: Set the unlimited value of a certain license
-      summary: Set true if the license is unlimited, otherwise false
+      summary: 'Set true if the license is unlimited, otherwise false'
       tags:
         - api-service
         - fe-user
@@ -3458,9 +3457,9 @@ paths:
       responses:
         '200':
           description: OK
-        '404':
-          $ref: '#/components/responses/error'
         '401':
+          $ref: '#/components/responses/error'
+        '404':
           $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
@@ -3499,9 +3498,9 @@ paths:
           description: OK
           headers: {}
           content:
-            application/json::
+            'application/json:':
               schema:
-                $ref: '#/components/schemas/Features' 
+                $ref: '#/components/schemas/Features'
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -3522,13 +3521,13 @@ paths:
           description: OK
           headers: {}
           content:
-            application/json::
+            'application/json:':
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/TechnologyInfo'
   /frontend/dashboard:
-    get: 
+    get:
       operationId: GetFrontendDashboardData
       description: Return the information required by ercole-web dashboard page
       summary: Return the information required by ercole-web dashboard page
@@ -3548,31 +3547,80 @@ paths:
             application/json:
               schema:
                 type: object
-                required:
-                  - Features
-                  - Technologies
-                  - Alerts
                 properties:
                   Features:
-                    $ref: '#/components/schemas/Features' 
-                  Alerts: 
-                    $ref: '#/components/schemas/AggregatedCodeSeverityAlerts'
-                  Technologies:
+                    $ref: '#/components/schemas/Features'
+                  technologies:
                     type: object
-                    required:
-                      - Technologies
-                      - Total
+                    description: Available technologies
                     properties:
+                      technologies:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            product:
+                              type: string
+                              description: technologial product code
+                            Compliance:
+                              type: number
+                              description: |-
+                                a metric ranging [0..1] calculated as follows:
+
+                                if a ULA exists for a given product, its compliance := 1. When calculating the total, this product's purchasedLicenses := usedLicenses
+                                else if usedLicenses <= purchasedLicenses the product's compliance := 1. When calculating the total, this product's purchasedLicenses := usedLicenses
+                                else this product's compliance := purchasedLicenses / usedLicenses.
+                            unpaidDues:
+                              type: number
+                              description: |-
+                                "unpaidDues" = difference between calculated cost of used and purchased licenses:
+
+                                if usedLicensesCost <= purchasedLicensesCost, then unpaidDues := 0
+                                else unpaidDues := usedLicensesCost - purchasedLicensesCost
+                            hostsCount:
+                              type: number
+                              description: number of hosts found supporting the current product / total hosts found
+                      total:
+                        type: object
+                        properties:
+                          compliance:
+                            type: number
+                            description: sum(purchasedLicenses) / sum(usedLicenses) fore each product
+                          hostsCount:
+                            type: number
+                            description: sum of hostsCount
+                          unpaidDues:
+                            type: number
+                            description: sum(unpaidDues)
+              examples:
+                example-1:
+                  value:
+                    Features:
+                      Oracle/Database: true
+                      Oracle/Exadata: true
+                    Technologies:
                       Technologies:
-                        $ref: '#/components/schemas/TechnologyStatus' 
+                        - Product: Oracle/Exadata
+                          Compliance: 1
+                          UnpaidDues: 0
+                          HostsCount: 2
+                        - Product: Oracle/Database
+                          Compliance: 0
+                          UnpaidDues: 0
+                          HostsCount: 6
                       Total:
-                        $ref: '#/components/schemas/AllTechnologyComplianceStatus' 
+                        Compliance: 0.05555555555555555
+                        HostsCount: 14
+                        UnpaidDues: 0
         '401':
           $ref: '#/components/responses/error'
+          description: Token is invalid / it is not present
         '422':
           $ref: '#/components/responses/error'
+          description: Invalid parameters / null path/body
         '500':
           $ref: '#/components/responses/error'
+          description: Generic error
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []
