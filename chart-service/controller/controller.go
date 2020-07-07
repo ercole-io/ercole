@@ -16,17 +16,22 @@
 package controller
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/ercole-io/ercole/api-service/auth"
 	"github.com/ercole-io/ercole/chart-service/service"
+	"github.com/ercole-io/ercole/utils"
 
 	"github.com/ercole-io/ercole/config"
 	"github.com/sirupsen/logrus"
 )
 
 // ChartControllerInterface is a interface that wrap methods used to querying data
-type ChartControllerInterface interface{}
+type ChartControllerInterface interface {
+	// GetTechnologyList return the list of techonlogies
+	GetTechnologyList(w http.ResponseWriter, r *http.Request)
+}
 
 // ChartController is the struct used to handle the requests from agents and contains the concrete implementation of ChartControllerInterface
 type ChartController struct {
@@ -40,4 +45,15 @@ type ChartController struct {
 	Log *logrus.Logger
 	// Authenticator contains the authenticator
 	Authenticator auth.AuthenticationProvider
+}
+
+// GetTechnologyList return the list of techonlogies
+func (ctrl *ChartController) GetTechnologyList(w http.ResponseWriter, r *http.Request) {
+	data, err := ctrl.Service.GetTechnologyList()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, data)
 }
