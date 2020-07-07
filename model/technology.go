@@ -29,9 +29,24 @@ var (
 	TechnologyMicrosoftSQLServerPrt *string = str2CopyPtr(TechnologyMicrosoftSQLServer)
 )
 
+// TechnologyInfo contains the informations about a technology
 type TechnologyInfo struct {
 	Product    string
 	PrettyName string
 	Color      string
 	Logo       string
+}
+
+// TechnologySupportedMetrics contains the informations about the supported metrics of a technology
+type TechnologySupportedMetrics struct {
+	Product string
+	Metrics []string
+}
+
+// TechnologySupportedMetricsMap contains all metrics of all technology
+var TechnologySupportedMetricsMap map[string]TechnologySupportedMetrics = map[string]TechnologySupportedMetrics{
+	TechnologyOracleDatabase: TechnologySupportedMetrics{
+		Product: TechnologyOracleDatabase,
+		Metrics: []string{"work", "version"},
+	},
 }
