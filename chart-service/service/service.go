@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/chart-service/database"
+	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/sirupsen/logrus"
 
@@ -32,7 +33,7 @@ type ChartServiceInterface interface {
 	Init()
 
 	// GetErcoleFeatures return the list of technologies
-	GetTechnologyList() (map[string]interface{}, utils.AdvancedErrorInterface)
+	GetTechnologyList() (map[string]model.TechnologySupportedMetrics, utils.AdvancedErrorInterface)
 }
 
 // ChartService is the concrete implementation of APIServiceInterface.
@@ -53,7 +54,7 @@ func (as *ChartService) Init() {
 }
 
 // GetTechnologyList return the list of technologies
-func (as *ChartService) GetTechnologyList() (map[string]interface{}, utils.AdvancedErrorInterface) {
+func (as *ChartService) GetTechnologyList() (map[string]model.TechnologySupportedMetrics, utils.AdvancedErrorInterface) {
 	// at the moment, the list of technologies is hardcoded here
-	return TechnologySupportedMetricsMap, nil
+	return model.TechnologySupportedMetricsMap, nil
 }
