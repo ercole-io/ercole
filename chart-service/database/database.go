@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Database contains methods used to perform CRUD operations to the MongoDB database
+// Package database contains methods used to perform CRUD operations to the MongoDB database
 package database
 
 import (
@@ -22,7 +22,9 @@ import (
 
 	"github.com/sirupsen/logrus"
 
+	"github.com/ercole-io/ercole/chart-service/chartmodel"
 	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -31,6 +33,12 @@ import (
 type MongoDatabaseInterface interface {
 	// Init initializes the connection to the database
 	Init()
+
+	// GetOracleDatabaseChartByVersion return the chart data about oracle database version
+	GetOracleDatabaseChartByVersion(location string, environment string, olderThan time.Time) ([]chartmodel.ChartBubble, utils.AdvancedErrorInterface)
+
+	// GetOracleDatabaseChartByWork return the chart data about the work of all database
+	GetOracleDatabaseChartByWork(location string, environment string, olderThan time.Time) ([]chartmodel.ChartBubble, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation

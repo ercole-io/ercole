@@ -39,8 +39,8 @@ type TechnologyInfo struct {
 
 // TechnologySupportedMetrics contains the informations about the supported metrics of a technology
 type TechnologySupportedMetrics struct {
-	Product string
-	Metrics []string
+	Product string   `json:"product"`
+	Metrics []string `json:"metrics"`
 }
 
 // TechnologySupportedMetricsMap contains all metrics of all technology
