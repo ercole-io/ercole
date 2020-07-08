@@ -17,8 +17,10 @@
 package service
 
 import (
+	"math/rand"
 	"time"
 
+	"github.com/ercole-io/ercole/chart-service/chartmodel"
 	"github.com/ercole-io/ercole/chart-service/database"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
@@ -31,6 +33,9 @@ import (
 type ChartServiceInterface interface {
 	// Init initialize the service
 	Init()
+
+	// GetOracleDatabaseChart return a chart associated to teh
+	GetOracleDatabaseChart(metric string, location string, environment string, olderThan time.Time) (chartmodel.Chart, utils.AdvancedErrorInterface)
 
 	// GetErcoleFeatures return the list of technologies
 	GetTechnologyList() (map[string]model.TechnologySupportedMetrics, utils.AdvancedErrorInterface)
@@ -46,11 +51,13 @@ type ChartService struct {
 	TimeNow func() time.Time
 	// Log contains logger formatted
 	Log *logrus.Logger
+	// Random contains the generator used to generate colors
+	Random *rand.Rand
 }
 
 // Init initializes the service and database
 func (as *ChartService) Init() {
-
+	as.Random = rand.New(rand.NewSource(as.TimeNow().UnixNano()))
 }
 
 // GetTechnologyList return the list of technologies

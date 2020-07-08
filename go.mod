@@ -21,6 +21,7 @@ require (
 	github.com/jinzhu/now v1.1.1
 	github.com/jtblin/go-ldap-client v0.0.0-20170223121919-b73f66626b33
 	github.com/leandro-lugaresi/hub v1.1.0
+	github.com/lucasb-eyer/go-colorful v1.0.3
 	github.com/pkg/sftp v1.10.1
 	github.com/robertkrimen/otto v0.0.0-20191219234010-c382bd3c16ff
 	github.com/rs/cors v1.7.0

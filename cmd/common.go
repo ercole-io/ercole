@@ -51,6 +51,7 @@ var olderThan string
 var outputFormat string
 var mode string
 var mode2 string
+var metric string
 
 type apiOption struct {
 	addOption func(cmd *cobra.Command)
@@ -203,6 +204,15 @@ var olderThanOptions apiOption = apiOption{
 			}
 		}
 		params.Set("older-than", olderThan)
+	},
+}
+
+var metricOption apiOption = apiOption{
+	addOption: func(cmd *cobra.Command) {
+		cmd.Flags().StringVarP(&metric, "metric", "m", "all", "metric (work, version)")
+	},
+	addParam: func(params url.Values) {
+		params.Set("metric", metric)
 	},
 }
 
@@ -378,6 +388,92 @@ func simpleSingleValueAPIRequestCommand(
 	}
 	if olderThanOption {
 		olderThanOptions.addOption(cmd)
+	}
+	return cmd
+}
+
+func simpleChartRequestCommandSingleValue(
+	use string,
+	short string,
+	long string,
+	searchArguments bool,
+	anotherOptions []apiOption,
+	customResponseTypes bool,
+	endpointPath string,
+	errorMessageFormat string,
+	httpErrorMessageFormat string) *cobra.Command {
+
+	cmd := &cobra.Command{
+		Use:   use,
+		Short: short,
+		Long:  long,
+		Run: func(cmd *cobra.Command, args []string) {
+			//Set query params
+			params := url.Values{}
+			if searchArguments {
+				params.Set("search", strings.Join(args, " "))
+			}
+			for _, opt := range anotherOptions {
+				opt.addParam(params)
+			}
+
+			//Make the http request
+			req, _ := http.NewRequest("GET", utils.NewAPIUrl(
+				ercoleConfig.ChartService.RemoteEndpoint,
+				ercoleConfig.APIService.AuthenticationProvider.Username,
+				ercoleConfig.APIService.AuthenticationProvider.Password,
+				endpointPath,
+				params,
+			).String(), bytes.NewReader([]byte{}))
+
+			if customResponseTypes {
+				switch outputFormat {
+				case "json":
+					outputFormat = "application/json"
+				}
+				req.Header.Set("Accept", outputFormat)
+			}
+
+			resp, err := http.DefaultClient.Do(req)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, errorMessageFormat, err)
+				os.Exit(1)
+			} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
+				out, _ := ioutil.ReadAll(resp.Body)
+				defer resp.Body.Close()
+				fmt.Fprintf(os.Stderr, httpErrorMessageFormat, resp.StatusCode, string(out))
+				os.Exit(1)
+			} else {
+				out, _ := ioutil.ReadAll(resp.Body)
+				defer resp.Body.Close()
+
+				if resp.Header.Get("Content-Type") == "application/json" {
+					var res interface{}
+					err = json.Unmarshal(out, &res)
+					if err != nil {
+						fmt.Fprintf(os.Stderr, "Failed to unmarshal response body: %v (%s)\n", err, string(out))
+						os.Exit(1)
+					}
+
+					enc := json.NewEncoder(os.Stdout)
+					enc.SetIndent("", "    ")
+					enc.Encode(res)
+				} else {
+					os.Stdout.Write(out)
+				}
+			}
+
+		},
+	}
+
+	if !searchArguments {
+		cmd.Args = cobra.ExactArgs(0)
+	}
+	for _, opt := range anotherOptions {
+		opt.addOption(cmd)
+	}
+	if customResponseTypes {
+		cmd.Flags().StringVarP(&outputFormat, "format", "f", "application/json", "Output format")
 	}
 	return cmd
 }

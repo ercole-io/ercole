@@ -29,6 +29,9 @@ import (
 
 // ChartControllerInterface is a interface that wrap methods used to querying data
 type ChartControllerInterface interface {
+	// GetOracleDatabaseChart return the chart data related to oracle databases
+	GetOracleDatabaseChart(w http.ResponseWriter, r *http.Request)
+
 	// GetTechnologyList return the list of techonlogies
 	GetTechnologyList(w http.ResponseWriter, r *http.Request)
 }
