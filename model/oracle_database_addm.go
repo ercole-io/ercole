@@ -24,11 +24,11 @@ import (
 
 // OracleDatabaseAddm contains info about a addm
 type OracleDatabaseAddm struct {
-	Finding        string                 `bson:"Finding"`
-	Recommendation string                 `bson:"Recommendation"`
-	Action         string                 `bson:"Action"`
-	Benefit        float64                `bson:"Benefit"`
-	OtherInfo      map[string]interface{} `bson:"-"`
+	Finding        string                 `json:"finding"`
+	Recommendation string                 `json:"recommendation"`
+	Action         string                 `json:"action"`
+	Benefit        float64                `json:"benefit"`
+	OtherInfo      map[string]interface{} `json:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -55,28 +55,28 @@ func (v *OracleDatabaseAddm) UnmarshalBSON(data []byte) error {
 var OracleDatabaseAddmBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Finding",
-		"Recommendation",
-		"Action",
-		"Benefit",
+		"finding",
+		"recommendation",
+		"action",
+		"benefit",
 	},
 	"properties": bson.M{
-		"Finding": bson.M{
+		"finding": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 256,
 		},
-		"Recommendation": bson.M{
+		"recommendation": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
 		},
-		"Action": bson.M{
+		"action": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 256,
 		},
-		"Benefit": bson.M{
+		"benefit": bson.M{
 			"bsonType": "string",
 			"minimum":  0,
 			"maximum":  100,

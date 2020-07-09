@@ -24,9 +24,9 @@ import (
 
 // OracleDatabasePSU holds information about a OracleDatabasePSU
 type OracleDatabasePSU struct {
-	Date        string                 `bson:"Date"`
-	Description string                 `bson:"Description"`
-	OtherInfo   map[string]interface{} `bson:"-"`
+	Date        string                 `json:"date"`
+	Description string                 `json:"description"`
+	OtherInfo   map[string]interface{} `json:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -53,15 +53,15 @@ func (v *OracleDatabasePSU) UnmarshalBSON(data []byte) error {
 var OracleDatabasePSUBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Date",
-		"Description",
+		"date",
+		"description",
 	},
 	"properties": bson.M{
-		"Date": bson.M{
+		"date": bson.M{
 			"bsonType": "string",
 			"pattern":  "[0-9]{4}-[0-9]{2}-[0-9]{2}",
 		},
-		"Description": bson.M{
+		"description": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 128,
