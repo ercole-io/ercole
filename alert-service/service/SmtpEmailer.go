@@ -23,12 +23,12 @@ import (
 	gomail "gopkg.in/gomail.v2"
 )
 
-type SmtpEmailer struct {
+type SMTPEmailer struct {
 	// Config contains the dataservice global configuration
 	Config config.Configuration
 }
 
-func (this *SmtpEmailer) SendEmail(subject string, text string, to []string) utils.AdvancedErrorInterface {
+func (this *SMTPEmailer) SendEmail(subject string, text string, to []string) utils.AdvancedErrorInterface {
 	if !this.Config.AlertService.Emailer.Enabled {
 		return nil
 	}
@@ -38,10 +38,10 @@ func (this *SmtpEmailer) SendEmail(subject string, text string, to []string) uti
 	m.SetHeader("Subject", subject)
 	m.SetBody("text/plain", text)
 
-	d := gomail.NewDialer(this.Config.AlertService.Emailer.SmtpServer,
-		this.Config.AlertService.Emailer.SmtpPort,
-		this.Config.AlertService.Emailer.SmtpUsername,
-		this.Config.AlertService.Emailer.SmtpPassword)
+	d := gomail.NewDialer(this.Config.AlertService.Emailer.SMTPServer,
+		this.Config.AlertService.Emailer.SMTPPort,
+		this.Config.AlertService.Emailer.SMTPUsername,
+		this.Config.AlertService.Emailer.SMTPPassword)
 	if this.Config.AlertService.Emailer.DisableSSLCertificateValidation {
 		d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 	}

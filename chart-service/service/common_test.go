@@ -13,17 +13,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package cmd
+package service
 
-func init() {
-	listTechnologiesCmd := simpleSingleValueAPIRequestCommand("list-technologies",
-		"List current technologies",
-		`list-technologies list the informations about the technologies`,
-		false, false, false, false,
-		"/settings/technologies",
-		"Failed to list technologies data: %v\n",
-		"Failed to list technologies data(Status: %d): %s\n",
-	)
+import (
+	"errors"
 
-	apiCmd.AddCommand(listTechnologiesCmd)
-}
+	"github.com/ercole-io/ercole/utils"
+)
+
+//go:generate mockgen -source ../database/database.go -destination=fake_database_test.go -package=service
+
+//Common data
+var errMock error = errors.New("MockError")
+var aerrMock utils.AdvancedErrorInterface = utils.NewAdvancedErrorPtr(errMock, "mock")

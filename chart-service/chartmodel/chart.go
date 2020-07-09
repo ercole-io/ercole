@@ -13,17 +13,29 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package cmd
+// Package chartmodel is a package that provides struct that contains charts
+package chartmodel
 
-func init() {
-	listTechnologiesCmd := simpleSingleValueAPIRequestCommand("list-technologies",
-		"List current technologies",
-		`list-technologies list the informations about the technologies`,
-		false, false, false, false,
-		"/settings/technologies",
-		"Failed to list technologies data: %v\n",
-		"Failed to list technologies data(Status: %d): %s\n",
-	)
+import (
+	"math/rand"
 
-	apiCmd.AddCommand(listTechnologiesCmd)
+	"github.com/lucasb-eyer/go-colorful"
+)
+
+type Chart struct {
+	Data   []ChartBubble `json:"data"`
+	Legend ChartLegend   `json:"legend"`
+}
+
+type ChartBubble struct {
+	Name  string  `json:"name" bson:"name"`
+	Color string  `json:"color" bson:"color"`
+	Size  float64 `json:"size" bson:"size"`
+}
+
+type ChartLegend map[string]string
+
+// RandomColorize return a good looking random color
+func RandomColorize(rnd rand.Rand) string {
+	return colorful.Hcl(rnd.Float64()*360, 0.5, 0.5).Hex()
 }

@@ -17,21 +17,38 @@ package model
 
 // Technology names
 const (
-	TechnologyOracleDatabase     string = "Oracle/Database"
-	TechnologyOracleExadata      string = "Oracle/Exadata"
-	TechnologyMicrosoftSQLServer string = "Microsoft/SQLServer"
+	TechnologyOracleDatabase         string = "Oracle/Database"
+	TechnologyOracleExadata          string = "Oracle/Exadata"
+	TechnologyMicrosoftSQLServer     string = "Microsoft/SQLServer"
+	TechnologyUnknownOperatingSystem string = "Unknown/Unknown"
 )
 
 // Pointers to technology names
 var (
-	TechnologyOracleDatabasePtr     *string = str2CopyPtr(TechnologyOracleDatabase)
-	TechnologyOracleExadataPtr      *string = str2CopyPtr(TechnologyOracleExadata)
-	TechnologyMicrosoftSQLServerPrt *string = str2CopyPtr(TechnologyMicrosoftSQLServer)
+	TechnologyOracleDatabasePtr         *string = str2CopyPtr(TechnologyOracleDatabase)
+	TechnologyOracleExadataPtr          *string = str2CopyPtr(TechnologyOracleExadata)
+	TechnologyMicrosoftSQLServerPrt     *string = str2CopyPtr(TechnologyMicrosoftSQLServer)
+	TechnologyUnknownOperatingSystemPrt *string = str2CopyPtr(TechnologyUnknownOperatingSystem)
 )
 
+// TechnologyInfo contains the informations about a technology
 type TechnologyInfo struct {
 	Product    string
 	PrettyName string
 	Color      string
 	Logo       string
+}
+
+// TechnologySupportedMetrics contains the informations about the supported metrics of a technology
+type TechnologySupportedMetrics struct {
+	Product string   `json:"product"`
+	Metrics []string `json:"metrics"`
+}
+
+// TechnologySupportedMetricsMap contains all metrics of all technology
+var TechnologySupportedMetricsMap map[string]TechnologySupportedMetrics = map[string]TechnologySupportedMetrics{
+	TechnologyOracleDatabase: TechnologySupportedMetrics{
+		Product: TechnologyOracleDatabase,
+		Metrics: []string{"work", "version"},
+	},
 }

@@ -1,0 +1,11 @@
+[Unit]
+Description=Ercole chartservice
+PartOf=ercole.service
+After=ercole.service syslog.target network.target
+
+[Service]
+ExecStart=/usr/bin/ercole serve --enable-chart-service
+User=ercole
+
+[Install]
+WantedBy=ercole.service
