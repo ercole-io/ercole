@@ -18,5 +18,5 @@ COPY --from=builder /app/resources/ /app/resources/
 # Mount this volume to add your config file as ercole.toml and to insert ssh keys
 VOLUME [ "/etc/ercole" ]
 
-EXPOSE 11111 11112 11113 11114 11115
+EXPOSE 11111 11112 11113 11114 11115 11116
 CMD ["./ercole-services", "serve"]

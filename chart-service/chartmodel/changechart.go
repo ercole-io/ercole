@@ -13,17 +13,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package cmd
+// Package chartmodel is a package that provides struct that contains charts
+package chartmodel
 
-func init() {
-	listTechnologiesCmd := simpleSingleValueAPIRequestCommand("list-technologies",
-		"List current technologies",
-		`list-technologies list the informations about the technologies`,
-		false, false, false, false,
-		"/settings/technologies",
-		"Failed to list technologies data: %v\n",
-		"Failed to list technologies data(Status: %d): %s\n",
-	)
+type ChangeChart struct {
+	Data   []ChangeChartBubble `json:"data"`
+	Legend ChartLegend         `json:"legend"`
+}
 
-	apiCmd.AddCommand(listTechnologiesCmd)
+type ChangeChartBubble struct {
+	Name   string  `json:"name" bson:"name"`
+	Size   float64 `json:"size" bson:"size"`
+	Change float64 `json:"change" bson:"change"`
 }

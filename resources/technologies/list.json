@@ -8,5 +8,65 @@
         "Product": "Microsoft/SQLServer",
         "PrettyName": "SQL Server",
         "Color": "#98A1AD"
+    },
+    {
+        "Product": "RedHat/EnterpriseLinux5",
+        "PrettyName": "RHEL5",
+        "Color": "#f80000"
+    },
+    {
+        "Product": "RedHat/EnterpriseLinux6",
+        "PrettyName": "RHEL6",
+        "Color": "#f80000"
+    },
+    {
+        "Product": "RedHat/EnterpriseLinux7",
+        "PrettyName": "RHEL7",
+        "Color": "#f80000"
+    },
+    {
+        "Product": "RedHat/EnterpriseLinux8",
+        "PrettyName": "RHEL8",
+        "Color": "#f80000"
+    },
+    {
+        "Product": "Oracle/Solaris",
+        "PrettyName": "Solaris",
+        "Color": "#ec7414"
+    },
+    {
+        "Product": "HP/HPUX",
+        "PrettyName": "HPUX",
+        "Color": "#0494d4"
+    },
+    {
+        "Product": "IBM/AIX",
+        "PrettyName": "AIX",
+        "Color": "#7cbc04"
+    },
+    {
+        "Product": "Unknown/Unknown",
+        "PrettyName": "Unknown",
+        "Color": "#595959"
+    },
+    {
+        "Product": "Microsoft/WindowsServer2008",
+        "PrettyName": "Windows Server 2008",
+        "Color": "#06abeb"
+    },
+    {
+        "Product": "Microsoft/WindowsServer2012",
+        "PrettyName": "Windows Server 2012",
+        "Color": "#06abeb"
+    },
+    {
+        "Product": "Microsoft/WindowsServer2016",
+        "PrettyName": "Windows Server 2016",
+        "Color": "#06abeb"
+    },
+    {
+        "Product": "Microsoft/WindowsServer2019",
+        "PrettyName": "Windows Server 2016",
+        "Color": "#06abeb"
     }
 ]
