@@ -24,11 +24,11 @@ import (
 
 // OracleExadataCellDisk holds info about a exadata cell disk
 type OracleExadataCellDisk struct {
-	ErrCount  int                    `bson:"ErrCount"`
-	Name      string                 `bson:"Name"`
-	Status    string                 `bson:"Status"`
-	UsedPerc  int                    `bson:"UsedPerc"`
-	OtherInfo map[string]interface{} `bson:"-"`
+	ErrCount  int                    `json:"errCount bson:errCount"`
+	Name      string                 `json:"name"`
+	Status    string                 `json:"status"`
+	UsedPerc  int                    `json:"usedPerc bson:usedPerc"`
+	OtherInfo map[string]interface{} `json:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -55,25 +55,25 @@ func (v *OracleExadataCellDisk) UnmarshalBSON(data []byte) error {
 var OracleExadataCellDiskBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"ErrCount",
-		"Name",
-		"Status",
-		"UsedPerc",
+		"errCount",
+		"name",
+		"status",
+		"usedPerc",
 	},
 	"properties": bson.M{
-		"ErrCount": bson.M{
+		"errCount": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},
-		"Name": bson.M{
+		"name": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 64,
 		},
-		"Status": bson.M{
+		"status": bson.M{
 			"bsonType": "string",
 		},
-		"UsedPerc": bson.M{
+		"usedPerc": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 			"maximum":  100,

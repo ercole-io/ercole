@@ -35,23 +35,23 @@ const (
 
 // Host contains info about the host
 type Host struct {
-	Hostname                      string                 `bson:"Hostname"`
-	CPUModel                      string                 `bson:"CPUModel"`
-	CPUFrequency                  string                 `bson:"CPUFrequency"`
-	CPUSockets                    int                    `bson:"CPUSockets"`
-	CPUCores                      int                    `bson:"CPUCores"`
-	CPUThreads                    int                    `bson:"CPUThreads"`
-	ThreadsPerCore                int                    `bson:"ThreadsPerCore"`
-	CoresPerSocket                int                    `bson:"CoresPerSocket"`
-	HardwareAbstraction           string                 `bson:"HardwareAbstraction"`
-	HardwareAbstractionTechnology string                 `bson:"HardwareAbstractionTechnology"`
-	Kernel                        string                 `bson:"Kernel"`
-	KernelVersion                 string                 `bson:"KernelVersion"`
-	OS                            string                 `bson:"OS"`
-	OSVersion                     string                 `bson:"OSVersion"`
-	MemoryTotal                   float64                `bson:"MemoryTotal"`
-	SwapTotal                     float64                `bson:"SwapTotal"`
-	OtherInfo                     map[string]interface{} `bson:"-"`
+	Hostname                      string                 `json:"hostname"`
+	CPUModel                      string                 `json:"cpuModel bson:cpuModel"`
+	CPUFrequency                  string                 `json:"cpuFrequency bson:cpuFrequency"`
+	CPUSockets                    int                    `json:"cpuSockets bson:cpuSockets"`
+	CPUCores                      int                    `json:"cpuCores bson:cpuCores"`
+	CPUThreads                    int                    `json:"cpuThreads bson:cpuThreads"`
+	ThreadsPerCore                int                    `json:"threadsPerCore bson:threadsPerCore"`
+	CoresPerSocket                int                    `json:"coresPerSocket bson:coresPerSocket"`
+	HardwareAbstraction           string                 `json:"hardwareAbstraction bson:hardwareAbstraction"`
+	HardwareAbstractionTechnology string                 `json:"hardwareAbstractionTechnology bson:hardwareAbstractionTechnology"`
+	Kernel                        string                 `json:"kernel"`
+	KernelVersion                 string                 `json:"kernelVersion bson:kernelVersion"`
+	OS                            string                 `json:"os"`
+	OSVersion                     string                 `json:"osVersion bson:osVersion"`
+	MemoryTotal                   float64                `json:"memoryTotal bson:memoryTotal"`
+	SwapTotal                     float64                `json:"swapTotal bson:swapTotal"`
+	OtherInfo                     map[string]interface{} `json:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -78,97 +78,97 @@ func (v *Host) UnmarshalBSON(data []byte) error {
 var HostBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Hostname",
-		"CPUModel",
-		"CPUFrequency",
-		"CPUSockets",
-		"CPUCores",
-		"CPUThreads",
-		"ThreadsPerCore",
-		"CoresPerSocket",
-		"HardwareAbstraction",
-		"HardwareAbstractionTechnology",
-		"Kernel",
-		"KernelVersion",
-		"OS",
-		"OSVersion",
-		"MemoryTotal",
-		"SwapTotal",
+		"hostname",
+		"cpuModel",
+		"cpuFrequency",
+		"cpuSockets",
+		"cpuCores",
+		"cpuThreads",
+		"threadsPerCore",
+		"coresPerSocket",
+		"hardwareAbstraction",
+		"hardwareAbstractionTechnology",
+		"kernel",
+		"kernelVersion",
+		"os",
+		"osVersion",
+		"memoryTotal",
+		"swapTotal",
 	},
 	"properties": bson.M{
-		"Hostname": bson.M{
+		"hostname": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 253,
 			"pattern":   "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$",
 		},
-		"CPUModel": bson.M{
+		"cpuModel": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 64,
 			"pattern":   "^[^\n]+$",
 		},
-		"CPUFrequency": bson.M{
+		"cpuFrequency": bson.M{
 			"bsonType":  "string",
 			"minLength": 3,
 			"maxLength": 16,
 			"pattern":   "^[0-9]+([.][0-9]+)?[ ]*(?i)(GHz|MHz)$",
 		},
-		"CPUSockets": bson.M{
+		"cpuSockets": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},
-		"CPUCores": bson.M{
+		"cpuCores": bson.M{
 			"bsonType": "number",
 			"minimum":  1,
 		},
-		"CPUThreads": bson.M{
+		"cpuThreads": bson.M{
 			"bsonType": "number",
 			"minimum":  1,
 		},
-		"ThreadsPerCore": bson.M{
+		"threadsPerCore": bson.M{
 			"bsonType": "number",
 			"minimum":  1,
 		},
-		"CoresPerSocket": bson.M{
+		"coresPerSocket": bson.M{
 			"bsonType": "number",
 			"minimum":  1,
 		},
-		"HardwareAbstraction": bson.M{
+		"hardwareAbstraction": bson.M{
 			"bsonType": "string",
 			"enum":     bson.A{"PH", "VIRT"},
 		},
-		"HardwareAbstractionTechnology": bson.M{
+		"hardwareAbstractionTechnology": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
 			"pattern":   "^[A-Z0-9]+$",
 		},
-		"Kernel": bson.M{
+		"kernel": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 64,
 		},
-		"KernelVersion": bson.M{
+		"kernelVersion": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 64,
 		},
-		"OS": bson.M{
+		"os": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 64,
 		},
-		"OSVersion": bson.M{
+		"osVersion": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 64,
 		},
-		"MemoryTotal": bson.M{
+		"memoryTotal": bson.M{
 			"bsonType": "double",
 			"minimum":  0,
 		},
-		"SwapTotal": bson.M{
+		"swapTotal": bson.M{
 			"bsonType": "double",
 			"minimum":  1,
 		},

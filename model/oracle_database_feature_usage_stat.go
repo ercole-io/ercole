@@ -25,14 +25,14 @@ import (
 
 // OracleDatabaseFeatureUsageStat holds information about a oracle database feature usage stat.
 type OracleDatabaseFeatureUsageStat struct {
-	Product          string                 `bson:"Product"`
-	Feature          string                 `bson:"Feature"`
-	DetectedUsages   int64                  `bson:"DetectedUsages"`
-	CurrentlyUsed    bool                   `bson:"CurrentlyUsed"`
-	FirstUsageDate   time.Time              `bson:"FirstUsageDate"`
-	LastUsageDate    time.Time              `bson:"LastUsageDate"`
-	ExtraFeatureInfo string                 `bson:"ExtraFeatureInfo"`
-	OtherInfo        map[string]interface{} `bson:"-"`
+	Product          string                 `json:"product"`
+	Feature          string                 `json:"feature"`
+	DetectedUsages   int64                  `json:"detectedUsages bson:detectedUsages"`
+	CurrentlyUsed    bool                   `json:"currentlyUsed bson:currentlyUsed"`
+	FirstUsageDate   time.Time              `json:"firstUsageDate bson:firstUsageDate"`
+	LastUsageDate    time.Time              `json:"lastUsageDate bson:lastUsageDate"`
+	ExtraFeatureInfo string                 `json:"extraFeatureInfo bson:extraFeatureInfo"`
+	OtherInfo        map[string]interface{} `json:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -59,39 +59,39 @@ func (v *OracleDatabaseFeatureUsageStat) UnmarshalBSON(data []byte) error {
 var OracleDatabaseFeatureUsageStatBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Product",
-		"Feature",
-		"DetectedUsages",
-		"CurrentlyUsed",
-		"FirstUsageDate",
-		"LastUsageDate",
-		"ExtraFeatureInfo",
+		"product",
+		"feature",
+		"detectedUsages",
+		"currentlyUsed",
+		"firstUsageDate",
+		"lastUsageDate",
+		"extraFeatureInfo",
 	},
 	"properties": bson.M{
-		"Product": bson.M{
+		"product": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
 		},
-		"Feature": bson.M{
+		"feature": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
 		},
-		"DetectedUsages": bson.M{
+		"detectedUsages": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},
-		"CurrentlyUsed": bson.M{
+		"currentlyUsed": bson.M{
 			"bsonType": "bool",
 		},
-		"FirstUsageDate": bson.M{
+		"firstUsageDate": bson.M{
 			"bsonType": "date",
 		},
-		"LastUsageDate": bson.M{
+		"lastUsageDate": bson.M{
 			"bsonType": "date",
 		},
-		"ExtraFeatureInfo": bson.M{
+		"extraFeatureInfo": bson.M{
 			"bsonType":  "string",
 			"maxLength": 64,
 		},

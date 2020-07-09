@@ -21,10 +21,10 @@ import (
 
 // LicenseCount holds information about Oracle database license
 type LicenseCount struct {
-	Name             string  `bson:"_id"`
-	Count            int     `bson:"Count"`
-	CostPerProcessor float64 `bson:"CostPerProcessor"`
-	Unlimited        bool    `bson:"Unlimited"`
+	Name             string  `json:"name" bson:"_id"`
+	Count            int     `json:"count"`
+	CostPerProcessor float64 `json:"costPerProcessor bson:costPerProcessor"`
+	Unlimited        bool    `json:"unlimited"`
 }
 
 // LicenseCountBsonValidatorRules contains mongodb validation rules for licenseCount
@@ -32,21 +32,21 @@ var LicenseCountBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
 		"_id",
-		"Count",
-		"CostPerProcessor",
-		"Unlimited",
+		"count",
+		"costPerProcessor",
+		"unlimited",
 	},
 	"properties": bson.M{
 		"_id": bson.M{
 			"bsonType": "string",
 		},
-		"Count": bson.M{
+		"count": bson.M{
 			"bsonType": "number",
 		},
-		"CostPerProcessor": bson.M{
+		"costPerProcessor": bson.M{
 			"bsonType": "number",
 		},
-		"Unlimited": bson.M{
+		"unlimited": bson.M{
 			"bsonType": "bool",
 		},
 	},

@@ -24,12 +24,12 @@ import (
 
 // OracleDatabaseBackup holds informations about a backup
 type OracleDatabaseBackup struct {
-	BackupType string                 `bson:"BackupType"`
-	Hour       string                 `bson:"Hour"`
-	WeekDays   []string               `bson:"WeekDays"`
-	AvgBckSize float64                `bson:"AvgBckSize"`
-	Retention  string                 `bson:"Retention"`
-	OtherInfo  map[string]interface{} `bson:"-"`
+	BackupType string                 `json:"backupType bson:backupType"`
+	Hour       string                 `json:"hour"`
+	WeekDays   []string               `json:"weekDays bson:weekDays"`
+	AvgBckSize float64                `json:"avgBckSize bson:avgBckSize"`
+	Retention  string                 `json:"retention"`
+	OtherInfo  map[string]interface{} `json:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -56,14 +56,14 @@ func (v *OracleDatabaseBackup) UnmarshalBSON(data []byte) error {
 var OracleDatabaseBackupBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"BackupType",
-		"Hour",
-		"WeekDays",
-		"AvgBckSize",
-		"Retention",
+		"backupType",
+		"hour",
+		"weekDays",
+		"avgBckSize",
+		"retention",
 	},
 	"properties": bson.M{
-		"BackupType": bson.M{
+		"backupType": bson.M{
 			"bsonType": "string",
 			"enum": bson.A{
 				"Archivelog",
@@ -72,13 +72,13 @@ var OracleDatabaseBackupBsonValidatorRules = bson.M{
 				"Level1",
 			},
 		},
-		"Hour": bson.M{
+		"hour": bson.M{
 			"bsonType":  "string",
 			"minLength": 5,
 			"maxLength": 5,
 			"pattern":   "^[0-9]{2}:[0-9]{2}$",
 		},
-		"WeekDays": bson.M{
+		"weekDays": bson.M{
 			"bsonType": "array",
 			"items": bson.M{
 				"bsonType": "string",
@@ -94,11 +94,11 @@ var OracleDatabaseBackupBsonValidatorRules = bson.M{
 			},
 			"uniqueItems": true,
 		},
-		"AvgBckSize": bson.M{
+		"avgBckSize": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},
-		"Retention": bson.M{
+		"retention": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 16,

@@ -24,13 +24,13 @@ import (
 
 // Filesystem holds information about mounted filesystem and used space
 type Filesystem struct {
-	Filesystem     string                 `bson:"Filesystem"`
-	Type           string                 `bson:"Type"`
-	Size           int64                  `bson:"Size"`
-	UsedSpace      int64                  `bson:"UsedSpace"`
-	AvailableSpace int64                  `bson:"AvailableSpace"`
-	MountedOn      string                 `bson:"MountedOn"`
-	OtherInfo      map[string]interface{} `bson:"-"`
+	Filesystem     string                 `json:"filesystem"`
+	Type           string                 `json:"type"`
+	Size           int64                  `json:"size"`
+	UsedSpace      int64                  `json:"usedSpace bson:usedSpace"`
+	AvailableSpace int64                  `json:"availableSpace bson:availableSpace"`
+	MountedOn      string                 `json:"mountedOn bson:mountedOn"`
+	OtherInfo      map[string]interface{} `json:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -57,36 +57,36 @@ func (v *Filesystem) UnmarshalBSON(data []byte) error {
 var FilesystemBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Filesystem",
-		"Type",
-		"Size",
-		"UsedSpace",
-		"AvailableSpace",
-		"MountedOn",
+		"filesystem",
+		"type",
+		"size",
+		"usedSpace",
+		"availableSpace",
+		"mountedOn",
 	},
 	"properties": bson.M{
-		"Filesystem": bson.M{
+		"filesystem": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 64,
 		},
-		"Type": bson.M{
+		"type": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 16,
 		},
-		"Size": bson.M{
+		"size": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},
-		"UsedSpace": bson.M{
+		"usedSpace": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},
-		"AvailableSpace": bson.M{
+		"availableSpace": bson.M{
 			"bsonType": "number",
 		},
-		"MountedOn": bson.M{
+		"mountedOn": bson.M{
 			"bsonType": "string",
 		},
 	},
