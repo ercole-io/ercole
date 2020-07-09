@@ -24,8 +24,8 @@ import (
 
 // OracleDatabaseService holds information about a Oracle database service
 type OracleDatabaseService struct {
-	Name      string                 `bson:"Name"`
-	OtherInfo map[string]interface{} `bson:"-"`
+	Name      string                 `json:"name"`
+	OtherInfo map[string]interface{} `json:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -52,10 +52,10 @@ func (v *OracleDatabaseService) UnmarshalBSON(data []byte) error {
 var OracleDatabaseServiceBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Name",
+		"name",
 	},
 	"properties": bson.M{
-		"Name": bson.M{
+		"name": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,

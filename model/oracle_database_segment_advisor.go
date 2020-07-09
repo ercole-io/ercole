@@ -24,13 +24,13 @@ import (
 
 // OracleDatabaseSegmentAdvisor holds information about a segment advisor
 type OracleDatabaseSegmentAdvisor struct {
-	SegmentOwner   string                 `bson:"SegmentOwner"`
-	SegmentName    string                 `bson:"SegmentName"`
-	SegmentType    string                 `bson:"SegmentType"`
-	PartitionName  string                 `bson:"PartitionName"`
-	Reclaimable    float64                `bson:"Reclaimable"`
-	Recommendation string                 `bson:"Recommendation"`
-	OtherInfo      map[string]interface{} `bson:"-"`
+	SegmentOwner   string                 `json:"segmentOwner bson:segmentOwner"`
+	SegmentName    string                 `json:"segmentName bson:segmentName"`
+	SegmentType    string                 `json:"segmentType bson:segmentType"`
+	PartitionName  string                 `json:"partitionName bson:partitionName"`
+	Reclaimable    float64                `json:"reclaimable"`
+	Recommendation string                 `json:"recommendation"`
+	OtherInfo      map[string]interface{} `json:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -57,38 +57,38 @@ func (v *OracleDatabaseSegmentAdvisor) UnmarshalBSON(data []byte) error {
 var OracleDatabaseSegmentAdvisorBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"SegmentOwner",
-		"SegmentName",
-		"SegmentType",
-		"PartitionName",
-		"Reclaimable",
-		"Recommendation",
+		"segmentOwner",
+		"segmentName",
+		"segmentType",
+		"partitionName",
+		"reclaimable",
+		"recommendation",
 	},
 	"properties": bson.M{
-		"SegmentOwner": bson.M{
+		"segmentOwner": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
 		},
-		"SegmentName": bson.M{
+		"segmentName": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
 		},
-		"SegmentType": bson.M{
+		"segmentType": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
 		},
-		"PartitionName": bson.M{
+		"partitionName": bson.M{
 			"bsonType":  "string",
 			"maxLength": 32,
 		},
-		"Reclaimable": bson.M{
+		"reclaimable": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},
-		"Recommendation": bson.M{
+		"recommendation": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 256,

@@ -24,15 +24,15 @@ import (
 
 // Alert holds informations about a alert
 type Alert struct {
-	ID                      primitive.ObjectID     `bson:"_id"`
-	AlertCategory           string                 `bson:"AlertCategory"`
-	AlertAffectedTechnology *string                `bson:"AlertAffectedTechnology"`
-	AlertCode               string                 `bson:"AlertCode"`
-	AlertSeverity           string                 `bson:"AlertSeverity"`
-	AlertStatus             string                 `bson:"AlertStatus"`
-	Description             string                 `bson:"Description"`
-	Date                    time.Time              `bson:"Date"`
-	OtherInfo               map[string]interface{} `bson:"OtherInfo"`
+	ID                      primitive.ObjectID     `json:"id" bson:"_id"`
+	AlertCategory           string                 `json:"alertCategory bson:alertCategory"`
+	AlertAffectedTechnology *string                `json:"alertAffectedTechnology bson:alertAffectedTechnology"`
+	AlertCode               string                 `json:"alertCode bson:alertCode"`
+	AlertSeverity           string                 `json:"alertSeverity bson:alertSeverity"`
+	AlertStatus             string                 `json:"alertStatus bson:alertStatus"`
+	Description             string                 `json:"description"`
+	Date                    time.Time              `json:"date"`
+	OtherInfo               map[string]interface{} `json:"otherInfo bson:otherInfo"`
 }
 
 // Alert codes
@@ -82,16 +82,16 @@ var AlertBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
 		"_id",
-		"AlertCategory",
-		"AlertAffectedTechnology",
-		"AlertCode",
-		"AlertSeverity",
-		"AlertStatus",
-		"Description",
-		"Date",
+		"alertCategory",
+		"alertAffectedTechnology",
+		"alertCode",
+		"alertSeverity",
+		"alertStatus",
+		"description",
+		"date",
 	},
 	"properties": bson.M{
-		"AlertCategory": bson.M{
+		"alertCategory": bson.M{
 			"bsonType": "string",
 			"enum": bson.A{
 				AlertCategoryEngine,
@@ -99,7 +99,7 @@ var AlertBsonValidatorRules = bson.M{
 				AlertCategoryLicense,
 			},
 		},
-		"AlertAffectedTechnology": bson.M{
+		"alertAffectedTechnology": bson.M{
 			"bsonType": bson.A{"null", "string"},
 			"enum": bson.A{
 				nil,
@@ -107,7 +107,7 @@ var AlertBsonValidatorRules = bson.M{
 				TechnologyOracleExadata,
 			},
 		},
-		"AlertCode": bson.M{
+		"alertCode": bson.M{
 			"bsonType": "string",
 			"enum": bson.A{
 				AlertCodeNewDatabase,
@@ -117,7 +117,7 @@ var AlertBsonValidatorRules = bson.M{
 				AlertCodeNoData,
 			},
 		},
-		"AlertSeverity": bson.M{
+		"alertSeverity": bson.M{
 			"bsonType": "string",
 			"enum": bson.A{
 				AlertSeverityWarning,
@@ -125,17 +125,17 @@ var AlertBsonValidatorRules = bson.M{
 				AlertSeverityInfo,
 			},
 		},
-		"AlertStatus": bson.M{
+		"alertStatus": bson.M{
 			"bsonType": "string",
 			"enum": bson.A{
 				AlertStatusNew,
 				AlertStatusAck,
 			},
 		},
-		"Description": bson.M{
+		"description": bson.M{
 			"bsonType": "string",
 		},
-		"Date": bson.M{
+		"date": bson.M{
 			"bsonType": "date",
 		},
 		"OtherInfo": bson.M{
