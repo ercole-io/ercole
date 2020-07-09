@@ -35,7 +35,7 @@ func TestInit_Success(t *testing.T) {
 	}
 	as.Init()
 
-	assert.Len(t, as.TechnologyInfos, 2)
+	assert.Len(t, as.TechnologyInfos, 14)
 	assert.Equal(t, "Oracle/Database", as.TechnologyInfos[0].Product)
 	assert.Equal(t, "Microsoft/SQLServer", as.TechnologyInfos[1].Product)
 	assert.Equal(t, "iVBORw0K", as.TechnologyInfos[0].Logo[:8])
