@@ -33,6 +33,8 @@ type ChartControllerInterface interface {
 	GetOracleDatabaseChart(w http.ResponseWriter, r *http.Request)
 	// GetChangeChart return the chart data related to changes
 	GetChangeChart(w http.ResponseWriter, r *http.Request)
+	// GetTechnologyTypes return the types of techonlogies
+	GetTechnologyTypes(w http.ResponseWriter, r *http.Request)
 
 	// GetTechnologyList return the list of techonlogies
 	GetTechnologyList(w http.ResponseWriter, r *http.Request)

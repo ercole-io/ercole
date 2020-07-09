@@ -1240,6 +1240,54 @@ components:
                 type: number
               change:
                 type: number
+    TechnologyTypesChart:
+      type: object
+      required: 
+        - databases
+        - middlewares
+        - operatingSystems
+        - legend
+      properties:
+        legend:
+          additionalProperties: 
+            type: string
+        databases:
+          type: array
+          items: 
+            type: object
+            required:
+              - name
+              - size
+            properties:
+              name:
+                type: string
+              size:
+                type: number
+        middlewares:
+          type: array
+          items: 
+            type: object
+            required:
+              - name
+              - size
+            properties:
+              name:
+                type: string
+              size:
+                type: number
+        operatingSystems:
+          type: array
+          items: 
+            type: object
+            required:
+              - name
+              - size
+            properties:
+              name:
+                type: string
+              size:
+                type: number
+
   parameters:
     search:
       in: query
@@ -3701,6 +3749,29 @@ paths:
         '200':
           description: statistics
           $ref: '#/components/responses/ChangeChart'
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /technologies/types:
+    get:
+      tags:
+        - chart-service
+        - fe-user
+        - read
+      operationId: GetTechnologyTypesChart
+      summary: Get the chart data about the types of technologies 
+      description: Get the chart data about the types of technologies
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          $ref: '#/components/responses/TechnologyTypesChart'
         '401':
           $ref: '#/components/responses/error'
         '422':

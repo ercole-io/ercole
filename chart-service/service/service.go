@@ -36,12 +36,12 @@ type ChartServiceInterface interface {
 
 	// GetChangeChart return the chart data related to changes to databases
 	GetChangeChart(from time.Time, location string, environment string, olderThan time.Time) (chartmodel.ChangeChart, utils.AdvancedErrorInterface)
-
 	// GetOracleDatabaseChart return a chart associated to teh
 	GetOracleDatabaseChart(metric string, location string, environment string, olderThan time.Time) (chartmodel.Chart, utils.AdvancedErrorInterface)
-
 	// GetErcoleFeatures return the list of technologies
 	GetTechnologyList() (map[string]model.TechnologySupportedMetrics, utils.AdvancedErrorInterface)
+	// GetTechnologyTypes return the types of techonlogies
+	GetTechnologyTypesChart(location string, environment string, olderThan time.Time) (chartmodel.TechnologyTypesChart, utils.AdvancedErrorInterface)
 }
 
 // ChartService is the concrete implementation of APIServiceInterface.

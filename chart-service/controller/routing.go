@@ -41,4 +41,5 @@ func setupProtectedRoutes(router *mux.Router, ctrl ChartControllerInterface) {
 	router.HandleFunc("/settings/technologiy-metrics", ctrl.GetTechnologyList).Methods("GET")
 	router.HandleFunc("/technologies/oracle/database", ctrl.GetOracleDatabaseChart).Methods("GET")
 	router.HandleFunc("/technologies/changes", ctrl.GetChangeChart).Methods("GET")
+	router.HandleFunc("/technologies/types", ctrl.GetTechnologyTypes).Methods("GET")
 }
