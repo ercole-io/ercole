@@ -16,14 +16,14 @@
 package cmd
 
 func init() {
-	listTechnologiesCmd := simpleSingleValueAPIRequestCommand("list-technologies",
-		"List current technologies",
-		`list-technologies list the informations about the technologies`,
-		false, false, false, false,
-		"/settings/technologies",
-		"Failed to list technologies data: %v\n",
-		"Failed to list technologies data(Status: %d): %s\n",
+	oracleDatabaseChartCmd := simpleChartRequestCommandSingleValue("oracle-databases",
+		"Get the chart about oracle databases",
+		`oracle-databases return the chart about oracle databases`,
+		false, []apiOption{metricOption, locationOption, environmentOption, olderThanOptions}, false,
+		"/technologies/oracle/database",
+		"Failed get the chart about oracle databases: %v\n",
+		"Failed get the chart about oracle databases: %d): %s\n",
 	)
 
-	apiCmd.AddCommand(listTechnologiesCmd)
+	chartCmd.AddCommand(oracleDatabaseChartCmd)
 }

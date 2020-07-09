@@ -15,15 +15,17 @@
 
 package cmd
 
-func init() {
-	listTechnologiesCmd := simpleSingleValueAPIRequestCommand("list-technologies",
-		"List current technologies",
-		`list-technologies list the informations about the technologies`,
-		false, false, false, false,
-		"/settings/technologies",
-		"Failed to list technologies data: %v\n",
-		"Failed to list technologies data(Status: %d): %s\n",
-	)
+import (
+	"github.com/spf13/cobra"
+)
 
-	apiCmd.AddCommand(listTechnologiesCmd)
+// chartCmd represents the chart command
+var chartCmd = &cobra.Command{
+	Use:   "chart",
+	Short: "Perform an api request",
+	Long:  `Api perform an api request to ercole chart-service`,
+}
+
+func init() {
+	rootCmd.AddCommand(chartCmd)
 }

@@ -12,6 +12,8 @@ info:
 servers:
   - description: Api service on dev.ercole.io
     url: 'https://dev.ercole.io/api'
+  - description: Chart service on dev.ercole.io
+    url: 'https://dev.ercole.io/chart'
   - description: Data service on dev.ercole.io
     url: 'https://dev.ercole.io/data'
   - description: Alert service on dev.ercole.io
@@ -27,6 +29,8 @@ tags:
     description: API served by alert-service
   - name: api-service
     description: API served by api-service
+  - name: chart-service
+    description: API served by chart-service
   - name: fe-user
     description: API used by the end user
   - name: agent-user
@@ -1190,6 +1194,102 @@ components:
         Logo:
           type: string
           description: base64 encoded png 256x256 image
+    Chart:
+      type: object
+      required: 
+        - data
+        - legend
+      properties:
+        legend:
+          additionalProperties: 
+            type: string
+        data:
+          type: array
+          items: 
+            type: object
+            required:
+              - color
+              - name
+              - size
+            properties:
+              color: 
+                type: string
+              name:
+                type: string
+              size:
+                type: number
+    ChangeChart:
+      type: object
+      required: 
+        - data
+        - legend
+      properties:
+        legend:
+          additionalProperties: 
+            type: string
+        data:
+          type: array
+          items: 
+            type: object
+            required:
+              - name
+              - size
+              - change
+            properties:
+              name:
+                type: string
+              size:
+                type: number
+              change:
+                type: number
+    TechnologyTypesChart:
+      type: object
+      required: 
+        - databases
+        - middlewares
+        - operatingSystems
+        - legend
+      properties:
+        legend:
+          additionalProperties: 
+            type: string
+        databases:
+          type: array
+          items: 
+            type: object
+            required:
+              - name
+              - size
+            properties:
+              name:
+                type: string
+              size:
+                type: number
+        middlewares:
+          type: array
+          items: 
+            type: object
+            required:
+              - name
+              - size
+            properties:
+              name:
+                type: string
+              size:
+                type: number
+        operatingSystems:
+          type: array
+          items: 
+            type: object
+            required:
+              - name
+              - size
+            properties:
+              name:
+                type: string
+              size:
+                type: number
+
   parameters:
     search:
       in: query
@@ -3567,6 +3667,113 @@ paths:
                         $ref: '#/components/schemas/TechnologyStatus' 
                       Total:
                         $ref: '#/components/schemas/AllTechnologyComplianceStatus' 
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /settings/technology-metrics:
+    get:
+      operationId: GetTechnologyList
+      description: Return a list of technology
+      summary: Return a list of technology
+      tags:
+        - chart-service
+        - fe-user
+        - read
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json::
+              schema:
+                type: object
+                additionalProperties: 
+                  type: object
+                  required:
+                    - product
+                    - metrics
+                  properties:
+                    product:
+                      type: string
+                    metrics:
+                      type: array
+                      items:
+                        type: string
+                      uniqueItems: true
+  /technologies/oracle/database:
+    get:
+      tags:
+        - chart-service
+        - fe-user
+        - read
+      operationId: GetOracleDatabaseChart
+      summary: Get the chart data about oracle databases using various metric 
+      description: Get the stats about the environment of the databases
+      parameters:
+        - in: query
+          name: metric  
+          schema:
+            type: string
+            enum:
+              - work
+              - version
+          required: true
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          $ref: '#/components/responses/Chart'
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /technologies/changes:
+    get:
+      tags:
+        - chart-service
+        - fe-user
+        - read
+      operationId: GetChangeChart
+      summary: Get the chart data about the changes of technologies 
+      description: Get the chart data about the changes of technologies
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          $ref: '#/components/responses/ChangeChart'
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /technologies/types:
+    get:
+      tags:
+        - chart-service
+        - fe-user
+        - read
+      operationId: GetTechnologyTypesChart
+      summary: Get the chart data about the types of technologies 
+      description: Get the chart data about the types of technologies
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          $ref: '#/components/responses/TechnologyTypesChart'
         '401':
           $ref: '#/components/responses/error'
         '422':

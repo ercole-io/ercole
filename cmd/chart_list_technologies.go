@@ -16,14 +16,14 @@
 package cmd
 
 func init() {
-	listTechnologiesCmd := simpleSingleValueAPIRequestCommand("list-technologies",
+	listTechnologiesCmd := simpleChartRequestCommandSingleValue("list-technologies",
 		"List current technologies",
 		`list-technologies list the informations about the technologies`,
-		false, false, false, false,
-		"/settings/technologies",
+		false, []apiOption{locationOption, environmentOption, sortingOptions, olderThanOptions}, false,
+		"/settings/technologiy-metrics",
 		"Failed to list technologies data: %v\n",
 		"Failed to list technologies data(Status: %d): %s\n",
 	)
 
-	apiCmd.AddCommand(listTechnologiesCmd)
+	chartCmd.AddCommand(listTechnologiesCmd)
 }
