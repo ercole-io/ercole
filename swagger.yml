@@ -1216,6 +1216,30 @@ components:
                 type: string
               size:
                 type: number
+    ChangeChart:
+      type: object
+      required: 
+        - data
+        - legend
+      properties:
+        legend:
+          additionalProperties: 
+            type: string
+        data:
+          type: array
+          items: 
+            type: object
+            required:
+              - name
+              - size
+              - change
+            properties:
+              name:
+                type: string
+              size:
+                type: number
+              change:
+                type: number
   parameters:
     search:
       in: query
@@ -3654,6 +3678,29 @@ paths:
         '200':
           description: statistics
           $ref: '#/components/responses/Chart'
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+  /technologies/changes:
+    get:
+      tags:
+        - chart-service
+        - fe-user
+        - read
+      operationId: GetChangeChart
+      summary: Get the chart data about the changes of technologies 
+      description: Get the chart data about the changes of technologies
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          $ref: '#/components/responses/ChangeChart'
         '401':
           $ref: '#/components/responses/error'
         '422':

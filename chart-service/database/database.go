@@ -34,9 +34,11 @@ type MongoDatabaseInterface interface {
 	// Init initializes the connection to the database
 	Init()
 
+	// GetTechnologyCount return the number of occurence per technology
+	GetTechnologyCount(location string, environment string, olderThan time.Time) (map[string]float64, utils.AdvancedErrorInterface)
+
 	// GetOracleDatabaseChartByVersion return the chart data about oracle database version
 	GetOracleDatabaseChartByVersion(location string, environment string, olderThan time.Time) ([]chartmodel.ChartBubble, utils.AdvancedErrorInterface)
-
 	// GetOracleDatabaseChartByWork return the chart data about the work of all database
 	GetOracleDatabaseChartByWork(location string, environment string, olderThan time.Time) ([]chartmodel.ChartBubble, utils.AdvancedErrorInterface)
 }
@@ -51,6 +53,8 @@ type MongoDatabase struct {
 	TimeNow func() time.Time
 	// Log contains logger formatted
 	Log *logrus.Logger
+	// OperatingSystemAggregationRules contains rules used to aggregate various operating systems
+	OperatingSystemAggregationRules []config.AggregationRule
 }
 
 // Init initializes the connection to the database

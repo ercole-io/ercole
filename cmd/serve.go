@@ -301,9 +301,10 @@ func serveChartService(config config.Configuration, wg *sync.WaitGroup) {
 
 	//Setup the database
 	db := &chartservice_database.MongoDatabase{
-		Config:  config,
-		TimeNow: time.Now,
-		Log:     log,
+		Config:                          config,
+		TimeNow:                         time.Now,
+		Log:                             log,
+		OperatingSystemAggregationRules: config.APIService.OperatingSystemAggregationRules,
 	}
 	db.Init()
 

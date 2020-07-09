@@ -81,6 +81,11 @@ EnableInsertingCustomPatchingFunction = true
   Group = "AIX"
   Product = "IBM/AIX"
 
+  [[APIService.OperatingSystemAggregationRules]]
+  Regex = "^Solaris .*$"
+  Group = "Solaris"
+  Product = "Oracle/Solaris"
+
 [ChartService]
 RemoteEndpoint = "http://127.0.0.1:11116"
 BindIP = "0.0.0.0"
