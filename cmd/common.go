@@ -157,6 +157,25 @@ var alertStatusOptions apiOption = apiOption{
 	},
 }
 
+var fromOption apiOption = apiOption{
+	addOption: func(cmd *cobra.Command) {
+		cmd.Flags().StringVarP(&from, "from", "f", "", "From")
+	},
+	addParam: func(params url.Values) {
+		if from != "" {
+			if val, err := time.Parse(time.RFC3339, from); err == nil {
+				from = val.Format(time.RFC3339)
+			} else if val, err := time.Parse("2006-01-02", from); err == nil {
+				from = val.Format(time.RFC3339)
+			} else {
+				fmt.Fprintf(os.Stderr, "Unable to parse the value of the from option: %v\n", err)
+				os.Exit(1)
+			}
+		}
+		params.Set("from", from)
+	},
+}
+
 var fromToWindowOptions apiOption = apiOption{
 	addOption: func(cmd *cobra.Command) {
 		cmd.Flags().StringVarP(&from, "from", "f", "", "Filter alerts with a date >= from")
