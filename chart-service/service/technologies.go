@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/chart-service/chartmodel"
+	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 )
 
@@ -58,4 +59,48 @@ func (as *ChartService) GetChangeChart(from time.Time, location string, environm
 			"size": "Number of occurrences",
 		},
 	}, nil
+}
+
+// GetTechnologyTypesChart return the types of techonlogies
+func (as *ChartService) GetTechnologyTypesChart(location string, environment string, olderThan time.Time) (chartmodel.TechnologyTypesChart, utils.AdvancedErrorInterface) {
+	// get the counts
+	counts, err := as.Database.GetTechnologyCount(location, environment, olderThan)
+	if err != nil {
+		return chartmodel.TechnologyTypesChart{}, err
+	}
+
+	out := chartmodel.TechnologyTypesChart{
+		Legend: map[string]string{
+			"size": "Number of occurrences",
+		},
+		OperatingSystems: make([]chartmodel.TechnologyTypeChartBubble, 0),
+		Databases:        make([]chartmodel.TechnologyTypeChartBubble, 0),
+		Middlewares:      make([]chartmodel.TechnologyTypeChartBubble, 0),
+	}
+
+	//databases
+	if counts[model.TechnologyOracleDatabase] > 0 {
+		out.Databases = append(out.Databases, chartmodel.TechnologyTypeChartBubble{
+			Name: model.TechnologyOracleDatabase,
+			Size: counts[model.TechnologyOracleDatabase],
+		})
+	}
+	//middlewares
+	//operating system
+	for _, v := range as.Config.APIService.OperatingSystemAggregationRules {
+		if counts[v.Product] > 0 {
+			out.OperatingSystems = append(out.OperatingSystems, chartmodel.TechnologyTypeChartBubble{
+				Name: v.Product,
+				Size: counts[v.Product],
+			})
+		}
+	}
+	if counts[model.TechnologyUnknownOperatingSystem] > 0 {
+		out.OperatingSystems = append(out.OperatingSystems, chartmodel.TechnologyTypeChartBubble{
+			Name: model.TechnologyUnknownOperatingSystem,
+			Size: counts[model.TechnologyUnknownOperatingSystem],
+		})
+	}
+
+	return out, nil
 }

@@ -49,3 +49,26 @@ func (ctrl *ChartController) GetChangeChart(w http.ResponseWriter, r *http.Reque
 
 	utils.WriteJSONResponse(w, http.StatusOK, data)
 }
+
+// GetTechnologyTypes return the types of techonlogies
+func (ctrl *ChartController) GetTechnologyTypes(w http.ResponseWriter, r *http.Request) {
+	var err utils.AdvancedErrorInterface
+	var location string
+	var environment string
+	var olderThan time.Time
+
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	data, err := ctrl.Service.GetTechnologyTypesChart(location, environment, olderThan)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, data)
+}
