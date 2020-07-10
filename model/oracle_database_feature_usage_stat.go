@@ -27,11 +27,11 @@ import (
 type OracleDatabaseFeatureUsageStat struct {
 	Product          string                 `json:"product"`
 	Feature          string                 `json:"feature"`
-	DetectedUsages   int64                  `json:"detectedUsages bson:detectedUsages"`
-	CurrentlyUsed    bool                   `json:"currentlyUsed bson:currentlyUsed"`
-	FirstUsageDate   time.Time              `json:"firstUsageDate bson:firstUsageDate"`
-	LastUsageDate    time.Time              `json:"lastUsageDate bson:lastUsageDate"`
-	ExtraFeatureInfo string                 `json:"extraFeatureInfo bson:extraFeatureInfo"`
+	DetectedUsages   int64                  `json:"detectedUsages" bson:"detectedUsages"`
+	CurrentlyUsed    bool                   `json:"currentlyUsed" bson:"currentlyUsed"`
+	FirstUsageDate   time.Time              `json:"firstUsageDate" bson:"firstUsageDate"`
+	LastUsageDate    time.Time              `json:"lastUsageDate" bson:"lastUsageDate"`
+	ExtraFeatureInfo string                 `json:"extraFeatureInfo" bson:"extraFeatureInfo"`
 	OtherInfo        map[string]interface{} `json:"-"`
 }
 

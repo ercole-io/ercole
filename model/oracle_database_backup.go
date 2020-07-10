@@ -24,10 +24,10 @@ import (
 
 // OracleDatabaseBackup holds informations about a backup
 type OracleDatabaseBackup struct {
-	BackupType string                 `json:"backupType bson:backupType"`
+	BackupType string                 `json:"backupType" bson:"backupType"`
 	Hour       string                 `json:"hour"`
-	WeekDays   []string               `json:"weekDays bson:weekDays"`
-	AvgBckSize float64                `json:"avgBckSize bson:avgBckSize"`
+	WeekDays   []string               `json:"weekDays" bson:"weekDays"`
+	AvgBckSize float64                `json:"avgBckSize" bson:"avgBckSize"`
 	Retention  string                 `json:"retention"`
 	OtherInfo  map[string]interface{} `json:"-"`
 }

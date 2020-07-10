@@ -24,10 +24,10 @@ import (
 
 // OracleDatabaseSegmentAdvisor holds information about a segment advisor
 type OracleDatabaseSegmentAdvisor struct {
-	SegmentOwner   string                 `json:"segmentOwner bson:segmentOwner"`
-	SegmentName    string                 `json:"segmentName bson:segmentName"`
-	SegmentType    string                 `json:"segmentType bson:segmentType"`
-	PartitionName  string                 `json:"partitionName bson:partitionName"`
+	SegmentOwner   string                 `json:"segmentOwner" bson:"segmentOwner"`
+	SegmentName    string                 `json:"segmentName" bson:"segmentName"`
+	SegmentType    string                 `json:"segmentType" bson:"segmentType"`
+	PartitionName  string                 `json:"partitionName" bson:"partitionName"`
 	Reclaimable    float64                `json:"reclaimable"`
 	Recommendation string                 `json:"recommendation"`
 	OtherInfo      map[string]interface{} `json:"-"`
