@@ -207,6 +207,7 @@
                                                         "additionalProperties": false,
                                                         "required": [
                                                             "instanceNumber",
+                                                            "instanceName",
                                                             "name",
                                                             "uniqueName",
                                                             "status",
@@ -217,16 +218,16 @@
                                                             "charset",
                                                             "nCharset",
                                                             "blockSize",
-                                                            "cpucount",
-                                                            "sgatarget",
-                                                            "pgatarget",
+                                                            "cpuCount",
+                                                            "sgaTarget",
+                                                            "pgaTarget",
                                                             "memoryTarget",
-                                                            "sgamaxSize",
+                                                            "sgaMaxSize",
                                                             "segmentsSize",
                                                             "datafileSize",
                                                             "allocated",
                                                             "elapsed",
-                                                            "dbtime",
+                                                            "dbTime",
                                                             "dailyCPUUsage",
                                                             "work",
                                                             "asm",
@@ -247,6 +248,11 @@
                                                             "instanceNumber": {
                                                                 "type": "integer",
                                                                 "minimum": 1
+                                                            },
+                                                            "instanceName": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
                                                             },
                                                             "name": {
                                                                 "type": "string",
@@ -295,20 +301,20 @@
                                                                 "type": "integer",
                                                                 "minimum": 1
                                                             },
-                                                            "cpucount": {
+                                                            "cpuCount": {
                                                                 "type": "integer",
                                                                 "minimum": 1
                                                             },
-                                                            "sgatarget": {
+                                                            "sgaTarget": {
                                                                 "type": "number"
                                                             },
-                                                            "pgatarget": {
+                                                            "pgaTarget": {
                                                                 "type": "number"
                                                             },
                                                             "memoryTarget": {
                                                                 "type": "number"
                                                             },
-                                                            "sgamaxSize": {
+                                                            "sgaMaxSize": {
                                                                 "type": "number"
                                                             },
                                                             "segmentsSize": {
@@ -330,7 +336,7 @@
                                                                     }
                                                                 ]
                                                             },
-                                                            "dbtime": {
+                                                            "dbTime": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -876,6 +882,7 @@
                                         },
                                         {
                                             "type": "object",
+                                            "additionalProperties": false,
                                             "required": [
                                                 "components"
                                             ],
@@ -884,6 +891,7 @@
                                                     "type": "array",
                                                     "items": {
                                                         "type": "object",
+                                                        "additionalProperties": false,
                                                         "required": [
                                                             "hostname",
                                                             "serverType",
@@ -1107,8 +1115,8 @@
                                                                     {
                                                                         "type": "string",
                                                                         "enum": [
-                                                                            "WriteBack",
-                                                                            "WriteThrough"
+                                                                            "writeBack",
+                                                                            "writeThrough"
                                                                         ]
                                                                     }
                                                                 ]
@@ -1122,6 +1130,7 @@
                                                                         "type": "array",
                                                                         "items": {
                                                                             "type": "object",
+                                                                            "additionalProperties": false,
                                                                             "required": [
                                                                                 "errCount",
                                                                                 "name",
@@ -1146,14 +1155,12 @@
                                                                                     "minimum": 0,
                                                                                     "maximum": 100
                                                                                 }
-                                                                            },
-                                                                            "additionalProperties": false
+                                                                            }
                                                                         }
                                                                     }
                                                                 ]
                                                             }
-                                                        },
-                                                        "additionalProperties": false
+                                                        }
                                                     }
                                                 }
                                             }
@@ -1413,7 +1420,7 @@
                             "fetchEndpoint",
                             "type",
                             "name",
-                            "CPU",
+                            "cpu",
                             "sockets",
                             "vms"
                         ],
@@ -1433,7 +1440,7 @@
                                 "minLength": 1,
                                 "maxLength": 128
                             },
-                            "CPU": {
+                            "cpu": {
                                 "type": "integer",
                                 "minimum": 0
                             },
