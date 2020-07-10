@@ -25,11 +25,11 @@ import (
 // OracleDatabaseBackup holds informations about a backup
 type OracleDatabaseBackup struct {
 	BackupType string                 `json:"backupType" bson:"backupType"`
-	Hour       string                 `json:"hour"`
+	Hour       string                 `json:"hour" bson:"hour"`
 	WeekDays   []string               `json:"weekDays" bson:"weekDays"`
 	AvgBckSize float64                `json:"avgBckSize" bson:"avgBckSize"`
-	Retention  string                 `json:"retention"`
-	OtherInfo  map[string]interface{} `json:"-"`
+	Retention  string                 `json:"retention" bson:"retention"`
+	OtherInfo  map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

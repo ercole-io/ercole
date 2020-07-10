@@ -22,9 +22,9 @@ import (
 // LicenseCount holds information about Oracle database license
 type LicenseCount struct {
 	Name             string  `json:"name" bson:"_id"`
-	Count            int     `json:"count"`
+	Count            int     `json:"count" bson:"count"`
 	CostPerProcessor float64 `json:"costPerProcessor" bson:"costPerProcessor"`
-	Unlimited        bool    `json:"unlimited"`
+	Unlimited        bool    `json:"unlimited" bson:"unlimited"`
 }
 
 // LicenseCountBsonValidatorRules contains mongodb validation rules for licenseCount

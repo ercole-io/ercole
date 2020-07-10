@@ -24,8 +24,8 @@ import (
 
 // OracleExadataFeature holds specific informations about a exadata.
 type OracleExadataFeature struct {
-	Components []OracleExadataComponent `json:"components"`
-	OtherInfo  map[string]interface{}   `json:"-"`
+	Components []OracleExadataComponent `json:"components" bson:"components"`
+	OtherInfo  map[string]interface{}   `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

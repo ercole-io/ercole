@@ -25,14 +25,14 @@ import (
 
 // OracleDatabaseFeatureUsageStat holds information about a oracle database feature usage stat.
 type OracleDatabaseFeatureUsageStat struct {
-	Product          string                 `json:"product"`
-	Feature          string                 `json:"feature"`
+	Product          string                 `json:"product" bson:"product"`
+	Feature          string                 `json:"feature" bson:"feature"`
 	DetectedUsages   int64                  `json:"detectedUsages" bson:"detectedUsages"`
 	CurrentlyUsed    bool                   `json:"currentlyUsed" bson:"currentlyUsed"`
 	FirstUsageDate   time.Time              `json:"firstUsageDate" bson:"firstUsageDate"`
 	LastUsageDate    time.Time              `json:"lastUsageDate" bson:"lastUsageDate"`
 	ExtraFeatureInfo string                 `json:"extraFeatureInfo" bson:"extraFeatureInfo"`
-	OtherInfo        map[string]interface{} `json:"-"`
+	OtherInfo        map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

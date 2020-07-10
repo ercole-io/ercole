@@ -24,13 +24,13 @@ import (
 
 // Filesystem holds information about mounted filesystem and used space
 type Filesystem struct {
-	Filesystem     string                 `json:"filesystem"`
-	Type           string                 `json:"type"`
-	Size           int64                  `json:"size"`
+	Filesystem     string                 `json:"filesystem" bson:"filesystem"`
+	Type           string                 `json:"type" bson:"type"`
+	Size           int64                  `json:"size" bson:"size"`
 	UsedSpace      int64                  `json:"usedSpace" bson:"usedSpace"`
 	AvailableSpace int64                  `json:"availableSpace" bson:"availableSpace"`
 	MountedOn      string                 `json:"mountedOn" bson:"mountedOn"`
-	OtherInfo      map[string]interface{} `json:"-"`
+	OtherInfo      map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

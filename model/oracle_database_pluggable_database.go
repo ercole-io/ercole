@@ -24,12 +24,12 @@ import (
 
 // OracleDatabasePluggableDatabase holds information about a oracle pluggable database.
 type OracleDatabasePluggableDatabase struct {
-	Name        string                     `json:"name"`
-	Status      string                     `json:"status"`
-	Tablespaces []OracleDatabaseTablespace `json:"tablespaces"`
-	Schemas     []OracleDatabaseSchema     `json:"schemas"`
-	Services    []OracleDatabaseService    `json:"services"`
-	OtherInfo   map[string]interface{}     `json:"-"`
+	Name        string                     `json:"name" bson:"name"`
+	Status      string                     `json:"status" bson:"status"`
+	Tablespaces []OracleDatabaseTablespace `json:"tablespaces" bson:"tablespaces"`
+	Schemas     []OracleDatabaseSchema     `json:"schemas" bson:"schemas"`
+	Services    []OracleDatabaseService    `json:"services" bson:"services"`
+	OtherInfo   map[string]interface{}     `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

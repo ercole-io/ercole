@@ -24,11 +24,11 @@ import (
 
 // OracleDatabaseAddm contains info about a addm
 type OracleDatabaseAddm struct {
-	Finding        string                 `json:"finding"`
-	Recommendation string                 `json:"recommendation"`
-	Action         string                 `json:"action"`
-	Benefit        float64                `json:"benefit"`
-	OtherInfo      map[string]interface{} `json:"-"`
+	Finding        string                 `json:"finding" bson:"finding"`
+	Recommendation string                 `json:"recommendation" bson:"recommendation"`
+	Action         string                 `json:"action" bson:"action"`
+	Benefit        float64                `json:"benefit" bson:"benefit"`
+	OtherInfo      map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

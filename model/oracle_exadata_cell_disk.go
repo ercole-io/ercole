@@ -25,10 +25,10 @@ import (
 // OracleExadataCellDisk holds info about a exadata cell disk
 type OracleExadataCellDisk struct {
 	ErrCount  int                    `json:"errCount" bson:"errCount"`
-	Name      string                 `json:"name"`
-	Status    string                 `json:"status"`
+	Name      string                 `json:"name" bson:"name"`
+	Status    string                 `json:"status" bson:"status"`
 	UsedPerc  int                    `json:"usedPerc" bson:"usedPerc"`
-	OtherInfo map[string]interface{} `json:"-"`
+	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

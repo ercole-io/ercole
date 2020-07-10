@@ -28,9 +28,9 @@ type OracleDatabaseSegmentAdvisor struct {
 	SegmentName    string                 `json:"segmentName" bson:"segmentName"`
 	SegmentType    string                 `json:"segmentType" bson:"segmentType"`
 	PartitionName  string                 `json:"partitionName" bson:"partitionName"`
-	Reclaimable    float64                `json:"reclaimable"`
-	Recommendation string                 `json:"recommendation"`
-	OtherInfo      map[string]interface{} `json:"-"`
+	Reclaimable    float64                `json:"reclaimable" bson:"reclaimable"`
+	Recommendation string                 `json:"recommendation" bson:"recommendation"`
+	OtherInfo      map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
