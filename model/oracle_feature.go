@@ -23,9 +23,9 @@ import (
 )
 
 type OracleFeature struct {
-	Database  *OracleDatabaseFeature `json:"database"`
-	Exadata   *OracleExadataFeature  `json:"exadata"`
-	OtherInfo map[string]interface{} `json:"-"`
+	Database  *OracleDatabaseFeature `json:"database" bson:"database"`
+	Exadata   *OracleExadataFeature  `json:"exadata" bson:"exadata"`
+	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

@@ -23,8 +23,8 @@ import (
 )
 
 type OracleDatabaseFeature struct {
-	Databases []OracleDatabase       `json:"databases"`
-	OtherInfo map[string]interface{} `json:"-"`
+	Databases []OracleDatabase       `json:"databases" bson:"databases"`
+	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

@@ -24,9 +24,9 @@ import (
 
 // OracleDatabasePSU holds information about a OracleDatabasePSU
 type OracleDatabasePSU struct {
-	Date        string                 `json:"date"`
-	Description string                 `json:"description"`
-	OtherInfo   map[string]interface{} `json:"-"`
+	Date        string                 `json:"date" bson:"date"`
+	Description string                 `json:"description" bson:"description"`
+	OtherInfo   map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

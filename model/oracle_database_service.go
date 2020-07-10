@@ -24,8 +24,8 @@ import (
 
 // OracleDatabaseService holds information about a Oracle database service
 type OracleDatabaseService struct {
-	Name      string                 `json:"name"`
-	OtherInfo map[string]interface{} `json:"-"`
+	Name      string                 `json:"name" bson:"name"`
+	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

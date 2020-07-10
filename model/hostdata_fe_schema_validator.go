@@ -152,7 +152,7 @@ var FrontendHostdataSchemaValidator string = `
                     "minLength": 1,
                     "maxLength": 64
                 },
-                "OS": {
+                "os": {
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 64
@@ -184,7 +184,7 @@ var FrontendHostdataSchemaValidator string = `
                 "sunCluster": {
                     "type": "boolean"
                 },
-                "HACMP": {
+                "hacmp": {
                     "type": "boolean"
                 }
             }

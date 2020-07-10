@@ -35,7 +35,7 @@ const (
 
 // Host contains info about the host
 type Host struct {
-	Hostname                      string                 `json:"hostname"`
+	Hostname                      string                 `json:"hostname" bson:"hostname"`
 	CPUModel                      string                 `json:"cpuModel" bson:"cpuModel"`
 	CPUFrequency                  string                 `json:"cpuFrequency" bson:"cpuFrequency"`
 	CPUSockets                    int                    `json:"cpuSockets" bson:"cpuSockets"`
@@ -45,13 +45,13 @@ type Host struct {
 	CoresPerSocket                int                    `json:"coresPerSocket" bson:"coresPerSocket"`
 	HardwareAbstraction           string                 `json:"hardwareAbstraction" bson:"hardwareAbstraction"`
 	HardwareAbstractionTechnology string                 `json:"hardwareAbstractionTechnology" bson:"hardwareAbstractionTechnology"`
-	Kernel                        string                 `json:"kernel"`
+	Kernel                        string                 `json:"kernel" bson:"kernel"`
 	KernelVersion                 string                 `json:"kernelVersion" bson:"kernelVersion"`
-	OS                            string                 `json:"os"`
+	OS                            string                 `json:"os" bson:"os"`
 	OSVersion                     string                 `json:"osVersion" bson:"osVersion"`
 	MemoryTotal                   float64                `json:"memoryTotal" bson:"memoryTotal"`
 	SwapTotal                     float64                `json:"swapTotal" bson:"swapTotal"`
-	OtherInfo                     map[string]interface{} `json:"-"`
+	OtherInfo                     map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

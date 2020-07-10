@@ -27,16 +27,30 @@ func TestClusterMembershipStatus(t *testing.T) {
 
 	cms := ClusterMembershipStatus{
 		OracleClusterware:    false,
-		VeritasClusterServer: false,
+		VeritasClusterServer: true,
 		SunCluster:           false,
-		HACMP:                false,
+		HACMP:                true,
 		OtherInfo: map[string]interface{}{
 			"pippo":    "pluto",
 			"topolino": float64(42),
 		},
 	}
 
-	out, err := cms.MarshalJSON()
+	//out, err := cms.MarshalJSON()
+
+	//if err != nil {
+	//	t.Fail()
+	//}
+
+	//fmt.Println(string(out))
+
+	//var newCMS ClusterMembershipStatus
+	//newCMS.UnmarshalJSON(out)
+
+	//assert.Equal(t, cms, newCMS)
+
+	// BSON /////////////////////////////
+	out, err := cms.MarshalBSON()
 
 	if err != nil {
 		t.Fail()
@@ -44,25 +58,14 @@ func TestClusterMembershipStatus(t *testing.T) {
 
 	fmt.Println(string(out))
 
-	var newCMS ClusterMembershipStatus
-	newCMS.UnmarshalJSON(out)
+	newCMS2 := new(ClusterMembershipStatus)
 
-	assert.Equal(t, cms, newCMS)
+	err = newCMS2.UnmarshalBSON(out)
+	if err != nil {
+		t.Fail()
+	}
 
-	//out, err := cms.MarshalBSON()
-
-	//if err != nil {
-
-	//	t.Fail()
-	//}
-
-	//fmt.Println(string(out))
-
-	//var newCMS ClusterMembershipStatus
-
-	//newCMS.UnmarshalBSON(out)
-
-	//assert.Equal(t, cms, newCMS)
+	assert.Equal(t, cms, *newCMS2)
 }
 
 func TestLicenseCount(t *testing.T) {
@@ -70,7 +73,7 @@ func TestLicenseCount(t *testing.T) {
 		Name:             "pippo",
 		CostPerProcessor: 42.42,
 		Count:            12,
-		Unlimited:        false,
+		Unlimited:        true,
 	}
 
 	out, err := bson.Marshal(l)
@@ -81,8 +84,12 @@ func TestLicenseCount(t *testing.T) {
 
 	fmt.Println("#####################", string(out), "##########################")
 
-	var l2 LicenseCount
-	bson.Unmarshal(out, l2)
+	l2 := new(LicenseCount)
+	err = bson.Unmarshal(out, l2)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
 
-	assert.Equal(t, l, l2)
+	assert.Equal(t, l, *l2)
 }

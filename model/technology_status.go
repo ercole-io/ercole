@@ -17,10 +17,10 @@ package model
 
 type TechnologyStatus struct {
 	Product    string
-	Used       float64 `json:"-"`
-	Count      float64 `json:"-"`
-	TotalCost  float64 `json:"-"`
-	PaidCost   float64 `json:"-"`
+	Used       float64 `json:"-" bson:"-"`
+	Count      float64 `json:"-" bson:"-"`
+	TotalCost  float64 `json:"-" bson:"-"`
+	PaidCost   float64 `json:"-" bson:"-"`
 	Compliance float64
 	UnpaidDues float64
 	HostsCount int

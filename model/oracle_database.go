@@ -26,14 +26,14 @@ import (
 type OracleDatabase struct {
 	InstanceNumber    int                               `json:"instanceNumber" bson:"instanceNumber"`
 	InstanceName      string                            `json:"instanceName" bson:"instanceName"`
-	Name              string                            `json:"name"`
+	Name              string                            `json:"name" bson:"name"`
 	UniqueName        string                            `json:"uniqueName" bson:"uniqueName"`
-	Status            string                            `json:"status"`
+	Status            string                            `json:"status" bson:"status"`
 	IsCDB             bool                              `json:"isCDB" bson:"isCDB"`
-	Version           string                            `json:"version"`
-	Platform          string                            `json:"platform"`
-	Archivelog        bool                              `json:"archivelog"`
-	Charset           string                            `json:"charset"`
+	Version           string                            `json:"version" bson:"version"`
+	Platform          string                            `json:"platform" bson:"platform"`
+	Archivelog        bool                              `json:"archivelog" bson:"archivelog"`
+	Charset           string                            `json:"charset" bson:"charset"`
 	NCharset          string                            `json:"nCharset" bson:"nCharset"`
 	BlockSize         int                               `json:"blockSize" bson:"blockSize"`
 	CPUCount          int                               `json:"cpuCount" bson:"cpuCount"`
@@ -43,25 +43,25 @@ type OracleDatabase struct {
 	SGAMaxSize        float64                           `json:"sgaMaxSize" bson:"sgaMaxSize"`
 	SegmentsSize      float64                           `json:"segmentsSize" bson:"segmentsSize"`
 	DatafileSize      float64                           `json:"datafileSize" bson:"datafileSize"`
-	Allocated         float64                           `json:"allocated"`
-	Elapsed           *float64                          `json:"elapsed"`
+	Allocated         float64                           `json:"allocated" bson:"allocated"`
+	Elapsed           *float64                          `json:"elapsed" bson:"elapsed"`
 	DBTime            *float64                          `json:"dbTime" bson:"dbTime"`
 	DailyCPUUsage     *float64                          `json:"dailyCPUUsage" bson:"dailyCPUUsage"`
-	Work              *float64                          `json:"work"`
-	ASM               bool                              `json:"asm"`
-	Dataguard         bool                              `json:"dataguard"`
-	Patches           []OracleDatabasePatch             `json:"patches"`
-	Tablespaces       []OracleDatabaseTablespace        `json:"tablespaces"`
-	Schemas           []OracleDatabaseSchema            `json:"schemas"`
-	Licenses          []OracleDatabaseLicense           `json:"licenses"`
-	ADDMs             []OracleDatabaseAddm              `json:"addms"`
+	Work              *float64                          `json:"work" bson:"work"`
+	ASM               bool                              `json:"asm" bson:"asm"`
+	Dataguard         bool                              `json:"dataguard" bson:"dataguard"`
+	Patches           []OracleDatabasePatch             `json:"patches" bson:"patches"`
+	Tablespaces       []OracleDatabaseTablespace        `json:"tablespaces" bson:"tablespaces"`
+	Schemas           []OracleDatabaseSchema            `json:"schemas" bson:"schemas"`
+	Licenses          []OracleDatabaseLicense           `json:"licenses" bson:"licenses"`
+	ADDMs             []OracleDatabaseAddm              `json:"addms" bson:"addms"`
 	SegmentAdvisors   []OracleDatabaseSegmentAdvisor    `json:"segmentAdvisors" bson:"segmentAdvisors"`
-	PSUs              []OracleDatabasePSU               `json:"psus"`
-	Backups           []OracleDatabaseBackup            `json:"backups"`
+	PSUs              []OracleDatabasePSU               `json:"psus" bson:"psus"`
+	Backups           []OracleDatabaseBackup            `json:"backups" bson:"backups"`
 	FeatureUsageStats []OracleDatabaseFeatureUsageStat  `json:"featureUsageStats" bson:"featureUsageStats"`
-	PDBs              []OracleDatabasePluggableDatabase `json:"pdbs"`
-	Services          []OracleDatabaseService           `json:"services"`
-	OtherInfo         map[string]interface{}            `json:"-"`
+	PDBs              []OracleDatabasePluggableDatabase `json:"pdbs" bson:"pdbs"`
+	Services          []OracleDatabaseService           `json:"services" bson:"services"`
+	OtherInfo         map[string]interface{}            `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
