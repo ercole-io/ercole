@@ -26,8 +26,8 @@ import (
 type VMInfo struct {
 	Name               string                 `json:"name"`
 	Hostname           string                 `json:"hostname"` //Hostname or IP address
-	CappedCPU          bool                   `json:"cappedCPU bson:cappedCPU"`
-	VirtualizationNode string                 `json:"virtualizationNode bson:virtualizationNode"`
+	CappedCPU          bool                   `json:"cappedCPU" bson:"cappedCPU"`
+	VirtualizationNode string                 `json:"virtualizationNode" bson:"virtualizationNode"`
 	OtherInfo          map[string]interface{} `json:"-"`
 }
 

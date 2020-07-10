@@ -26,7 +26,7 @@ import (
 type PatchingFunction struct {
 	ID        *primitive.ObjectID `bson:"_id"`
 	Hostname  string              `json:"hostname"`
-	CreatedAt time.Time           `json:"createdAt bson:createdAt"`
+	CreatedAt time.Time           `json:"createdAt" bson:"createdAt"`
 	// PatchingFunction contains the javascript code that patch the hostdata
 	// the hostdata is given via the hostdata global variable.
 	// the static vars is given via the vars global variable

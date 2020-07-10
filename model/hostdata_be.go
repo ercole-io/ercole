@@ -31,21 +31,21 @@ const ServerSchemaVersion int = 1
 type HostDataBE struct {
 	ID                  primitive.ObjectID `json:"id" bson:"_id"`
 	Archived            bool               `json:"archived"`
-	CreatedAt           time.Time          `json:"createdAt bson:createdAt"`
-	ServerVersion       string             `json:"serverVersion bson:serverVersion"`
-	ServerSchemaVersion int                `json:"serverSchemaVersion bson:serverSchemaVersion"`
+	CreatedAt           time.Time          `json:"createdAt" bson:"createdAt"`
+	ServerVersion       string             `json:"serverVersion" bson:"serverVersion"`
+	ServerSchemaVersion int                `json:"serverSchemaVersion" bson:"serverSchemaVersion"`
 
 	Hostname                string                  `json:"hostname"`
 	Location                string                  `json:"location"`
 	Environment             string                  `json:"environment"`
-	AgentVersion            string                  `json:"agentVersion bson:agentVersion"`
+	AgentVersion            string                  `json:"agentVersion" bson:"agentVersion"`
 	Tags                    []string                `json:"tags"`
 	Info                    Host                    `json:"info"`
-	ClusterMembershipStatus ClusterMembershipStatus `json:"clusterMembershipStatus bson:clusterMembershipStatus"`
+	ClusterMembershipStatus ClusterMembershipStatus `json:"clusterMembershipStatus" bson:"clusterMembershipStatus"`
 	Features                Features                `json:"features"`
 	Filesystems             []Filesystem            `json:"filesystems"`
 	Clusters                []ClusterInfo           `json:"clusters"`
-	OtherInfo               map[string]interface{}  `json:"otherInfo bson:otherInfo"`
+	OtherInfo               map[string]interface{}  `json:"otherInfo" bson:"otherInfo"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

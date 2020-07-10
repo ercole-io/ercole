@@ -24,9 +24,9 @@ import (
 
 //ClusterMembershipStatus hold informations about the cluster membership
 type ClusterMembershipStatus struct {
-	OracleClusterware    bool                   `json:"oracleClusterware bson:oracleClusterware"`
-	VeritasClusterServer bool                   `json:"veritasClusterServer bson:veritasClusterServer"`
-	SunCluster           bool                   `json:"sunCluster bson:sunCluster"`
+	OracleClusterware    bool                   `json:"oracleClusterware" bson:"oracleClusterware"`
+	VeritasClusterServer bool                   `json:"veritasClusterServer" bson:"veritasClusterServer"`
+	SunCluster           bool                   `json:"sunCluster" bson:"sunCluster"`
 	HACMP                bool                   `json:"hacmp"`
 	OtherInfo            map[string]interface{} `json:"-"`
 }

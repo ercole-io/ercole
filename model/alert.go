@@ -25,14 +25,14 @@ import (
 // Alert holds informations about a alert
 type Alert struct {
 	ID                      primitive.ObjectID     `json:"id" bson:"_id"`
-	AlertCategory           string                 `json:"alertCategory bson:alertCategory"`
-	AlertAffectedTechnology *string                `json:"alertAffectedTechnology bson:alertAffectedTechnology"`
-	AlertCode               string                 `json:"alertCode bson:alertCode"`
-	AlertSeverity           string                 `json:"alertSeverity bson:alertSeverity"`
-	AlertStatus             string                 `json:"alertStatus bson:alertStatus"`
+	AlertCategory           string                 `json:"alertCategory" bson:"alertCategory"`
+	AlertAffectedTechnology *string                `json:"alertAffectedTechnology" bson:"alertAffectedTechnology"`
+	AlertCode               string                 `json:"alertCode" bson:"alertCode"`
+	AlertSeverity           string                 `json:"alertSeverity" bson:"alertSeverity"`
+	AlertStatus             string                 `json:"alertStatus" bson:"alertStatus"`
 	Description             string                 `json:"description"`
 	Date                    time.Time              `json:"date"`
-	OtherInfo               map[string]interface{} `json:"otherInfo bson:otherInfo"`
+	OtherInfo               map[string]interface{} `json:"otherInfo" bson:"otherInfo"`
 }
 
 // Alert codes

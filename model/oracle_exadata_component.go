@@ -25,27 +25,27 @@ import (
 // OracleExadataComponent holds informations about a device in a exadata
 type OracleExadataComponent struct {
 	Hostname             string                   `json:"hostname"`
-	ServerType           string                   `json:"serverType bson:serverType"`
+	ServerType           string                   `json:"serverType" bson:"serverType"`
 	Model                string                   `json:"model"`
-	SwVersion            string                   `json:"swVersion bson:swVersion"`
-	SwReleaseDate        string                   `json:"swReleaseDate bson:swReleaseDate"`
-	RunningCPUCount      *int                     `json:"runningCPUCount bson:runningCPUCount"`
-	TotalCPUCount        *int                     `json:"totalCPUCount bson:totalCPUCount"`
+	SwVersion            string                   `json:"swVersion" bson:"swVersion"`
+	SwReleaseDate        string                   `json:"swReleaseDate" bson:"swReleaseDate"`
+	RunningCPUCount      *int                     `json:"runningCPUCount" bson:"runningCPUCount"`
+	TotalCPUCount        *int                     `json:"totalCPUCount" bson:"totalCPUCount"`
 	Memory               *int                     `json:"memory"`
 	Status               *string                  `json:"status"`
-	RunningPowerSupply   *int                     `json:"runningPowerSupply bson:runningPowerSupply"`
-	TotalPowerSupply     *int                     `json:"totalPowerSupply bson:totalPowerSupply"`
-	PowerStatus          *string                  `json:"powerStatus bson:powerStatus"`
-	RunningFanCount      *int                     `json:"runningFanCount bson:runningFanCount"`
-	TotalFanCount        *int                     `json:"totalFanCount bson:totalFanCount"`
-	FanStatus            *string                  `json:"fanStatus bson:fanStatus"`
-	TempActual           *float64                 `json:"tempActual bson:tempActual"`
-	TempStatus           *string                  `json:"tempStatus bson:tempStatus"`
-	CellsrvServiceStatus *string                  `json:"cellsrvServiceStatus bson:cellsrvServiceStatus"`
-	MsServiceStatus      *string                  `json:"msServiceStatus bson:msServiceStatus"`
-	RsServiceStatus      *string                  `json:"rsServiceStatus bson:rsServiceStatus"`
-	FlashcacheMode       *string                  `json:"flashcacheMode bson:flashcacheMode"`
-	CellDisks            *[]OracleExadataCellDisk `json:"cellDisks bson:cellDisks"`
+	RunningPowerSupply   *int                     `json:"runningPowerSupply" bson:"runningPowerSupply"`
+	TotalPowerSupply     *int                     `json:"totalPowerSupply" bson:"totalPowerSupply"`
+	PowerStatus          *string                  `json:"powerStatus" bson:"powerStatus"`
+	RunningFanCount      *int                     `json:"runningFanCount" bson:"runningFanCount"`
+	TotalFanCount        *int                     `json:"totalFanCount" bson:"totalFanCount"`
+	FanStatus            *string                  `json:"fanStatus" bson:"fanStatus"`
+	TempActual           *float64                 `json:"tempActual" bson:"tempActual"`
+	TempStatus           *string                  `json:"tempStatus" bson:"tempStatus"`
+	CellsrvServiceStatus *string                  `json:"cellsrvServiceStatus" bson:"cellsrvServiceStatus"`
+	MsServiceStatus      *string                  `json:"msServiceStatus" bson:"msServiceStatus"`
+	RsServiceStatus      *string                  `json:"rsServiceStatus" bson:"rsServiceStatus"`
+	FlashcacheMode       *string                  `json:"flashcacheMode" bson:"flashcacheMode"`
+	CellDisks            *[]OracleExadataCellDisk `json:"cellDisks" bson:"cellDisks"`
 	OtherInfo            map[string]interface{}   `json:"-"`
 }
 
