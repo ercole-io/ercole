@@ -167,7 +167,7 @@
                 "sunCluster": {
                     "type": "boolean"
                 },
-                "HACMP": {
+                "hacmp": {
                     "type": "boolean"
                 }
             }
