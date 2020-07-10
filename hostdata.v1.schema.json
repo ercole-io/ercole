@@ -211,16 +211,16 @@
                                                             "charset",
                                                             "nCharset",
                                                             "blockSize",
-                                                            "cpucount",
-                                                            "sgatarget",
-                                                            "pgatarget",
+                                                            "cpuCount",
+                                                            "sgaTarget",
+                                                            "pgaTarget",
                                                             "memoryTarget",
-                                                            "sgamaxSize",
+                                                            "sgaMaxSize",
                                                             "segmentsSize",
                                                             "datafileSize",
                                                             "allocated",
                                                             "elapsed",
-                                                            "dbtime",
+                                                            "dbTime",
                                                             "dailyCPUUsage",
                                                             "work",
                                                             "asm",
@@ -294,20 +294,20 @@
                                                                 "type": "integer",
                                                                 "minimum": 1
                                                             },
-                                                            "cpucount": {
+                                                            "cpuCount": {
                                                                 "type": "integer",
                                                                 "minimum": 1
                                                             },
-                                                            "sgatarget": {
+                                                            "sgaTarget": {
                                                                 "type": "number"
                                                             },
-                                                            "pgatarget": {
+                                                            "pgaTarget": {
                                                                 "type": "number"
                                                             },
                                                             "memoryTarget": {
                                                                 "type": "number"
                                                             },
-                                                            "sgamaxSize": {
+                                                            "sgaMaxSize": {
                                                                 "type": "number"
                                                             },
                                                             "segmentsSize": {
@@ -329,7 +329,7 @@
                                                                     }
                                                                 ]
                                                             },
-                                                            "dbtime": {
+                                                            "dbTime": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -1390,7 +1390,7 @@
                             "fetchEndpoint",
                             "type",
                             "name",
-                            "CPU",
+                            "cpu",
                             "sockets",
                             "vms"
                         ],
@@ -1410,7 +1410,7 @@
                                 "minLength": 1,
                                 "maxLength": 128
                             },
-                            "CPU": {
+                            "cpu": {
                                 "type": "integer",
                                 "minimum": 0
                             },
