@@ -38,7 +38,7 @@ func (md *MongoDatabase) GetTechnologyCount(location string, environment string,
 	for _, v := range md.OperatingSystemAggregationRules {
 		technologyDetector[v.Product] = mu.APOCond(bson.M{
 			"$regexMatch": bson.M{
-				"input": mu.APOConcat("$Info.OS", " ", "$Info.OSVersion"),
+				"input": mu.APOConcat("$info.os", " ", "$info.osVersion"),
 				"regex": v.Regex,
 			},
 		}, 1, 0)
@@ -46,7 +46,7 @@ func (md *MongoDatabase) GetTechnologyCount(location string, environment string,
 		unknownOSMatcher = append(unknownOSMatcher, bson.M{
 			"$not": bson.M{
 				"$regexMatch": bson.M{
-					"input": mu.APOConcat("$Info.OS", " ", "$Info.OSVersion"),
+					"input": mu.APOConcat("$info.os", " ", "$info.osVersion"),
 					"regex": v.Regex,
 				},
 			},
@@ -54,7 +54,7 @@ func (md *MongoDatabase) GetTechnologyCount(location string, environment string,
 	}
 	technologyDetector[model.TechnologyUnknownOperatingSystem] = mu.APOCond(mu.APOAnd(unknownOSMatcher...), 1, 0)
 	// database
-	technologyDetector[model.TechnologyOracleDatabase] = mu.APOSize(mu.APOIfNull("$Features.Oracle.Database.Databases", bson.A{}))
+	technologyDetector[model.TechnologyOracleDatabase] = mu.APOSize(mu.APOIfNull("$features.oracle.database.databases", bson.A{}))
 
 	// build the technology counter
 	technologyCounter["_id"] = 0
