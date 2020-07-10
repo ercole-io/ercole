@@ -116,11 +116,11 @@ func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time
 		context.TODO(),
 		mu.MAPipeline(
 			mu.APMatch(bson.M{
-				"Hostname":  hostname,
-				"CreatedAt": mu.QOLessThan(t),
+				"hostname":  hostname,
+				"createdAt": mu.QOLessThan(t),
 			}),
 			mu.APSort(bson.M{
-				"CreatedAt": -1,
+				"createdAt": -1,
 			}),
 			mu.APLimit(1),
 		),
@@ -154,10 +154,10 @@ func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]string, utils.Advan
 	//Get the list of old current hosts
 	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
 		context.TODO(),
-		"Hostname",
+		"hostname",
 		bson.M{
-			"Archived":  false,
-			"CreatedAt": mu.QOLessThan(t),
+			"archived":  false,
+			"createdAt": mu.QOLessThan(t),
 		})
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -177,9 +177,9 @@ func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]string, utils.Advan
 func (md *MongoDatabase) ExistNoDataAlertByHost(hostname string) (bool, utils.AdvancedErrorInterface) {
 	//Count the number of new NO_DATA alerts associated to the host
 	val, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").CountDocuments(context.TODO(), bson.M{
-		"AlertCode":          model.AlertCodeNoData,
-		"AlertStatus":        model.AlertStatusNew,
-		"OtherInfo.Hostname": hostname,
+		"alertCode":          model.AlertCodeNoData,
+		"alertStatus":        model.AlertStatusNew,
+		"otherInfo.Hostname": hostname,
 	}, &options.CountOptions{
 		Limit: utils.Intptr(1),
 	})

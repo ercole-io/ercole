@@ -94,7 +94,7 @@ This is just an alert test to a mocked emailer.`,
 		AlertCategory:           model.AlertCategoryLicense,
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
 		AlertStatus:             model.AlertStatusNew,
-		OtherInfo:               map[string]interface{}{"Hostname": "TestHostname"},
+		OtherInfo:               map[string]interface{}{"hostname": "TestHostname"},
 		AlertSeverity:           model.AlertSeverityCritical,
 		Description:             "This is just an alert test to a mocked emailer.",
 		Date:                    utils.P("2019-09-02T10:25:28Z"),
@@ -243,7 +243,7 @@ This is just an alert test to a mocked emailer.`,
 	params["alert"] = model.Alert{
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
 		AlertCategory:           model.AlertCategoryLicense,
-		OtherInfo:               map[string]interface{}{"Hostname": "TestHostname"},
+		OtherInfo:               map[string]interface{}{"hostname": "TestHostname"},
 		AlertSeverity:           model.AlertSeverityCritical,
 		Description:             "This is just an alert test to a mocked emailer.",
 		Date:                    utils.P("2019-09-02T10:25:28Z"),
@@ -362,7 +362,7 @@ func TestDiffHostDataMapAndGenerateAlert_SuccessNewHost(t *testing.T) {
 		AlertCategory:           model.AlertCategoryEngine,
 		AlertCode:               model.AlertCodeNewServer,
 		OtherInfo: map[string]interface{}{
-			"Hostname": "superhost1",
+			"hostname": "superhost1",
 		},
 	}}).Return(nil, nil).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
@@ -386,8 +386,8 @@ func TestDiffHostDataMapAndGenerateAlert_SuccessNewDatabase(t *testing.T) {
 		AlertCategory:           model.AlertCategoryLicense,
 		AlertCode:               model.AlertCodeNewDatabase,
 		OtherInfo: map[string]interface{}{
-			"Hostname": "superhost1",
-			"Dbname":   "acd",
+			"hostname": "superhost1",
+			"dbname":   "acd",
 		},
 	}}).Return(nil, nil).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
@@ -411,7 +411,7 @@ func TestDiffHostDataMapAndGenerateAlert_SuccessNewEnterpriseLicense(t *testing.
 		AlertCategory:           model.AlertCategoryLicense,
 		AlertCode:               model.AlertCodeNewLicense,
 		OtherInfo: map[string]interface{}{
-			"Hostname": "superhost1",
+			"hostname": "superhost1",
 		},
 	}}).Return(nil, nil).Times(1)
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
@@ -419,9 +419,9 @@ func TestDiffHostDataMapAndGenerateAlert_SuccessNewEnterpriseLicense(t *testing.
 		AlertCategory:           model.AlertCategoryLicense,
 		AlertCode:               model.AlertCodeNewOption,
 		OtherInfo: map[string]interface{}{
-			"Hostname": "superhost1",
-			"Dbname":   "acd",
-			"Features": []string{"Driving"},
+			"hostname": "superhost1",
+			"dbname":   "acd",
+			"features": []string{"Driving"},
 		},
 	}}).Return(nil, nil).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
@@ -444,7 +444,7 @@ func TestDiffHostDataMapAndGenerateAlert_DatabaseError1(t *testing.T) {
 		AlertCategory:           model.AlertCategoryEngine,
 		AlertCode:               model.AlertCodeNewServer,
 		OtherInfo: map[string]interface{}{
-			"Hostname": "superhost1",
+			"hostname": "superhost1",
 		},
 	}}).Return(nil, aerrMock).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
@@ -467,8 +467,8 @@ func TestDiffHostDataMapAndGenerateAlert_DatabaseError2(t *testing.T) {
 		AlertCategory:           model.AlertCategoryLicense,
 		AlertCode:               model.AlertCodeNewDatabase,
 		OtherInfo: map[string]interface{}{
-			"Hostname": "superhost1",
-			"Dbname":   "acd",
+			"hostname": "superhost1",
+			"dbname":   "acd",
 		},
 	}}).Return(nil, aerrMock).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
@@ -491,7 +491,7 @@ func TestDiffHostDataMapAndGenerateAlert_DatabaseError3(t *testing.T) {
 		AlertCategory:           model.AlertCategoryLicense,
 		AlertCode:               model.AlertCodeNewLicense,
 		OtherInfo: map[string]interface{}{
-			"Hostname": "superhost1",
+			"hostname": "superhost1",
 		},
 	}}).Return(nil, aerrMock).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
@@ -515,7 +515,7 @@ func TestDiffHostDataMapAndGenerateAlert_DatabaseError4(t *testing.T) {
 		AlertCategory:           model.AlertCategoryLicense,
 		AlertCode:               model.AlertCodeNewLicense,
 		OtherInfo: map[string]interface{}{
-			"Hostname": "superhost1",
+			"hostname": "superhost1",
 		},
 	}}).Return(nil, nil).Times(1)
 	db.EXPECT().InsertAlert(&alertSimilarTo{al: model.Alert{
@@ -523,9 +523,9 @@ func TestDiffHostDataMapAndGenerateAlert_DatabaseError4(t *testing.T) {
 		AlertCategory:           model.AlertCategoryLicense,
 		AlertCode:               model.AlertCodeNewOption,
 		OtherInfo: map[string]interface{}{
-			"Hostname": "superhost1",
-			"Dbname":   "acd",
-			"Features": []string{"Driving"},
+			"hostname": "superhost1",
+			"dbname":   "acd",
+			"features": []string{"Driving"},
 		},
 	}}).Return(nil, aerrMock).Times(1)
 	db.EXPECT().InsertAlert(gomock.Any()).Times(0)
