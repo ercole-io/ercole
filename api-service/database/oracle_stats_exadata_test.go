@@ -68,8 +68,8 @@ func (m *MongodbSuite) TestGetTotalOracleExadataCPUStats() {
 		out, err := m.db.GetTotalOracleExadataCPUStats("France", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = map[string]interface{}{
-			"Running": 0,
-			"Total":   0,
+			"running": 0,
+			"total":   0,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -79,8 +79,8 @@ func (m *MongodbSuite) TestGetTotalOracleExadataCPUStats() {
 		out, err := m.db.GetTotalOracleExadataCPUStats("", "FOOBAR", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = map[string]interface{}{
-			"Running": 0,
-			"Total":   0,
+			"running": 0,
+			"total":   0,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -90,8 +90,8 @@ func (m *MongodbSuite) TestGetTotalOracleExadataCPUStats() {
 		out, err := m.db.GetTotalOracleExadataCPUStats("", "", utils.MIN_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = map[string]interface{}{
-			"Running": 0,
-			"Total":   0,
+			"running": 0,
+			"total":   0,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -101,8 +101,8 @@ func (m *MongodbSuite) TestGetTotalOracleExadataCPUStats() {
 		out, err := m.db.GetTotalOracleExadataCPUStats("", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = map[string]interface{}{
-			"Running": 136,
-			"Total":   176,
+			"running": 136,
+			"total":   176,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -177,12 +177,12 @@ func (m *MongodbSuite) TestGetOracleExadataStorageErrorCountStatusStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"Failing": false,
-				"Count":   3,
+				"failing": false,
+				"count":   3,
 			},
 			{
-				"Failing": true,
-				"Count":   2,
+				"failing": true,
+				"count":   2,
 			},
 		}
 
@@ -224,12 +224,12 @@ func (m *MongodbSuite) TestGetOracleExadataPatchStatusStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"Count":  2,
-				"Status": false,
+				"count":  2,
+				"status": false,
 			},
 			{
-				"Count":  4,
-				"Status": true,
+				"count":  4,
+				"status": true,
 			},
 		}
 

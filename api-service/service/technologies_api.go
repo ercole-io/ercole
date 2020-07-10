@@ -81,7 +81,7 @@ func (as *APIService) ListTechnologies(sortBy string, sortDesc bool, location st
 		Count:      holded,
 		TotalCost:  totalCost,
 		PaidCost:   paidCost,
-		HostsCount: int(partialList["Oracle/Database_HostsCount"]),
+		HostsCount: int(partialList["Oracle/Database_hostsCount"]),
 		Compliance: holded / used,
 		UnpaidDues: totalCost - paidCost,
 	})

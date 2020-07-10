@@ -72,7 +72,7 @@ func (as *APIService) SetLicenseUnlimitedStatus(name string, unlimitedStatus boo
 // It assumes that newLicenses maps contain the string _id and the int Count
 func (as *APIService) SetLicensesCount(newLicenses []map[string]interface{}) utils.AdvancedErrorInterface {
 	for _, lic := range newLicenses {
-		err := as.Database.SetLicenseCount(lic["_id"].(string), lic["Count"].(int))
+		err := as.Database.SetLicenseCount(lic["_id"].(string), lic["count"].(int))
 		if err != nil {
 			return err
 		}

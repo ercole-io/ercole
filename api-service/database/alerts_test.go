@@ -37,11 +37,11 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		Date:                    utils.P("2020-04-15T08:46:58.475+02:00"),
 		Description:             "The database ERCOLE on test-db has enabled new features (Diagnostics Pack) on server",
 		OtherInfo: map[string]interface{}{
-			"Dbname": "ERCOLE",
-			"Features": []interface{}{
+			"dbname": "ERCOLE",
+			"features": []interface{}{
 				"Diagnostics Pack",
 			},
-			"Hostname": "test-db",
+			"hostname": "test-db",
 		},
 	})
 	m.InsertAlert(model.Alert{
@@ -54,7 +54,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		Date:                    utils.P("2020-04-10T08:46:58.38+02:00"),
 		Description:             "The server 'rac1_x' was added to ercole",
 		OtherInfo: map[string]interface{}{
-			"Hostname": "rac1_x",
+			"hostname": "rac1_x",
 		},
 	})
 	m.InsertAlert(model.Alert{
@@ -67,7 +67,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		Date:                    utils.P("2020-04-10T08:46:58.38+02:00"),
 		Description:             "The server 'rac1_x' was added to ercole",
 		OtherInfo: map[string]interface{}{
-			"Hostname": "rac1_x",
+			"hostname": "rac1_x",
 		},
 	})
 	m.InsertAlert(model.Alert{
@@ -80,7 +80,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		Date:                    utils.P("2020-04-10T08:46:58.38+02:00"),
 		Description:             "The server 'rac2_x' was added to ercole",
 		OtherInfo: map[string]interface{}{
-			"Hostname": "rac2_x",
+			"hostname": "rac2_x",
 		},
 	})
 
@@ -92,31 +92,31 @@ func (m *MongodbSuite) TestSearchAlerts() {
 				"Content": []interface{}{
 					map[string]interface{}{
 						"_id":                     utils.Str2oid("5ea6a65bb2e36eb58da2f67c"),
-						"AlertAffectedTechnology": "Oracle/Database",
-						"AlertCategory":           model.AlertCategoryLicense,
-						"AlertCode":               model.AlertCodeNewOption,
-						"AlertSeverity":           model.AlertSeverityCritical,
-						"AlertStatus":             model.AlertStatusNew,
-						"Date":                    utils.P("2020-04-15T08:46:58.475+02:00").Local(),
-						"Description":             "The database ERCOLE on test-db has enabled new features (Diagnostics Pack) on server",
-						"OtherInfo": map[string]interface{}{
-							"Dbname": "ERCOLE",
-							"Features": []interface{}{
+						"alertAffectedTechnology": "Oracle/Database",
+						"alertCategory":           model.AlertCategoryLicense,
+						"alertCode":               model.AlertCodeNewOption,
+						"alertSeverity":           model.AlertSeverityCritical,
+						"alertStatus":             model.AlertStatusNew,
+						"date":                    utils.P("2020-04-15T08:46:58.475+02:00").Local(),
+						"description":             "The database ERCOLE on test-db has enabled new features (Diagnostics Pack) on server",
+						"otherInfo": map[string]interface{}{
+							"dbname": "ERCOLE",
+							"features": []interface{}{
 								"Diagnostics Pack",
 							},
-							"Hostname": "test-db",
+							"hostname": "test-db",
 						},
-						"Hostname": "test-db",
+						"hostname": "test-db",
 					},
 				},
-				"Metadata": map[string]interface{}{
-					"Empty":         false,
-					"First":         true,
-					"Last":          false,
-					"Number":        0,
-					"Size":          1,
-					"TotalElements": 4,
-					"TotalPages":    4,
+				"metadata": map[string]interface{}{
+					"empty":         false,
+					"first":         true,
+					"last":          false,
+					"number":        0,
+					"size":          1,
+					"totalElements": 4,
+					"totalPages":    4,
 				},
 			},
 		}
@@ -124,68 +124,68 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_be_sorting", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("all", []string{}, "AlertSeverity", true, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
+		out, err := m.db.SearchAlerts("all", []string{}, "alertSeverity", true, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5e96ade270c184faca93fe1b"),
-				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategoryEngine,
-				"AlertCode":               model.AlertCodeNewServer,
-				"AlertSeverity":           model.AlertSeverityInfo,
-				"AlertStatus":             model.AlertStatusAck,
-				"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
-				"Description":             "The server 'rac1_x' was added to ercole",
-				"OtherInfo": map[string]interface{}{
-					"Hostname": "rac1_x",
+				"alertAffectedTechnology": nil,
+				"alertCategory":           model.AlertCategoryEngine,
+				"alertCode":               model.AlertCodeNewServer,
+				"alertSeverity":           model.AlertSeverityInfo,
+				"alertStatus":             model.AlertStatusAck,
+				"date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
+				"description":             "The server 'rac1_x' was added to ercole",
+				"otherInfo": map[string]interface{}{
+					"hostname": "rac1_x",
 				},
-				"Hostname": "rac1_x",
+				"hostname": "rac1_x",
 			},
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5eb5057f780da34946c353fb"),
-				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategoryEngine,
-				"AlertCode":               model.AlertCodeNewServer,
-				"AlertSeverity":           model.AlertSeverityInfo,
-				"AlertStatus":             model.AlertStatusAck,
-				"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
-				"Description":             "The server 'rac1_x' was added to ercole",
-				"OtherInfo": map[string]interface{}{
-					"Hostname": "rac1_x",
+				"alertAffectedTechnology": nil,
+				"alertCategory":           model.AlertCategoryEngine,
+				"alertCode":               model.AlertCodeNewServer,
+				"alertSeverity":           model.AlertSeverityInfo,
+				"alertStatus":             model.AlertStatusAck,
+				"date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
+				"description":             "The server 'rac1_x' was added to ercole",
+				"otherInfo": map[string]interface{}{
+					"hostname": "rac1_x",
 				},
-				"Hostname": "rac1_x",
+				"hostname": "rac1_x",
 			},
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5eb5058de2a09300d98aab67"),
-				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategoryEngine,
-				"AlertCode":               model.AlertCodeNewServer,
-				"AlertSeverity":           model.AlertSeverityInfo,
-				"AlertStatus":             model.AlertStatusAck,
-				"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
-				"Description":             "The server 'rac2_x' was added to ercole",
-				"OtherInfo": map[string]interface{}{
-					"Hostname": "rac2_x",
+				"alertAffectedTechnology": nil,
+				"alertCategory":           model.AlertCategoryEngine,
+				"alertCode":               model.AlertCodeNewServer,
+				"alertSeverity":           model.AlertSeverityInfo,
+				"alertStatus":             model.AlertStatusAck,
+				"date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
+				"description":             "The server 'rac2_x' was added to ercole",
+				"otherInfo": map[string]interface{}{
+					"hostname": "rac2_x",
 				},
-				"Hostname": "rac2_x",
+				"hostname": "rac2_x",
 			},
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5ea6a65bb2e36eb58da2f67c"),
-				"AlertAffectedTechnology": "Oracle/Database",
-				"AlertCategory":           model.AlertCategoryLicense,
-				"AlertCode":               model.AlertCodeNewOption,
-				"AlertSeverity":           model.AlertSeverityCritical,
-				"AlertStatus":             model.AlertStatusNew,
-				"Date":                    utils.P("2020-04-15T08:46:58.475+02:00").Local(),
-				"Description":             "The database ERCOLE on test-db has enabled new features (Diagnostics Pack) on server",
-				"OtherInfo": map[string]interface{}{
-					"Dbname": "ERCOLE",
-					"Features": []interface{}{
+				"alertAffectedTechnology": "Oracle/Database",
+				"alertCategory":           model.AlertCategoryLicense,
+				"alertCode":               model.AlertCodeNewOption,
+				"alertSeverity":           model.AlertSeverityCritical,
+				"alertStatus":             model.AlertStatusNew,
+				"date":                    utils.P("2020-04-15T08:46:58.475+02:00").Local(),
+				"description":             "The database ERCOLE on test-db has enabled new features (Diagnostics Pack) on server",
+				"otherInfo": map[string]interface{}{
+					"dbname": "ERCOLE",
+					"features": []interface{}{
 						"Diagnostics Pack",
 					},
-					"Hostname": "test-db",
+					"hostname": "test-db",
 				},
-				"Hostname": "test-db",
+				"hostname": "test-db",
 			},
 		}
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -196,21 +196,21 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5ea6a65bb2e36eb58da2f67c"),
-				"AlertAffectedTechnology": "Oracle/Database",
-				"AlertCategory":           model.AlertCategoryLicense,
-				"AlertCode":               model.AlertCodeNewOption,
-				"AlertSeverity":           model.AlertSeverityCritical,
-				"AlertStatus":             model.AlertStatusNew,
-				"Date":                    utils.P("2020-04-15T08:46:58.475+02:00").Local(),
-				"Description":             "The database ERCOLE on test-db has enabled new features (Diagnostics Pack) on server",
-				"OtherInfo": map[string]interface{}{
-					"Dbname": "ERCOLE",
-					"Features": []interface{}{
+				"alertAffectedTechnology": "Oracle/Database",
+				"alertCategory":           model.AlertCategoryLicense,
+				"alertCode":               model.AlertCodeNewOption,
+				"alertSeverity":           model.AlertSeverityCritical,
+				"alertStatus":             model.AlertStatusNew,
+				"date":                    utils.P("2020-04-15T08:46:58.475+02:00").Local(),
+				"description":             "The database ERCOLE on test-db has enabled new features (Diagnostics Pack) on server",
+				"otherInfo": map[string]interface{}{
+					"dbname": "ERCOLE",
+					"features": []interface{}{
 						"Diagnostics Pack",
 					},
-					"Hostname": "test-db",
+					"hostname": "test-db",
 				},
-				"Hostname": "test-db",
+				"hostname": "test-db",
 			},
 		}
 
@@ -222,21 +222,21 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5ea6a65bb2e36eb58da2f67c"),
-				"AlertAffectedTechnology": "Oracle/Database",
-				"AlertCategory":           model.AlertCategoryLicense,
-				"AlertCode":               model.AlertCodeNewOption,
-				"AlertSeverity":           model.AlertSeverityCritical,
-				"AlertStatus":             model.AlertStatusNew,
-				"Date":                    utils.P("2020-04-15T08:46:58.475+02:00").Local(),
-				"Description":             "The database ERCOLE on test-db has enabled new features (Diagnostics Pack) on server",
-				"OtherInfo": map[string]interface{}{
-					"Dbname": "ERCOLE",
-					"Features": []interface{}{
+				"alertAffectedTechnology": "Oracle/Database",
+				"alertCategory":           model.AlertCategoryLicense,
+				"alertCode":               model.AlertCodeNewOption,
+				"alertSeverity":           model.AlertSeverityCritical,
+				"alertStatus":             model.AlertStatusNew,
+				"date":                    utils.P("2020-04-15T08:46:58.475+02:00").Local(),
+				"description":             "The database ERCOLE on test-db has enabled new features (Diagnostics Pack) on server",
+				"otherInfo": map[string]interface{}{
+					"dbname": "ERCOLE",
+					"features": []interface{}{
 						"Diagnostics Pack",
 					},
-					"Hostname": "test-db",
+					"hostname": "test-db",
 				},
-				"Hostname": "test-db",
+				"hostname": "test-db",
 			},
 		}
 
@@ -248,21 +248,21 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5ea6a65bb2e36eb58da2f67c"),
-				"AlertAffectedTechnology": "Oracle/Database",
-				"AlertCategory":           model.AlertCategoryLicense,
-				"AlertCode":               model.AlertCodeNewOption,
-				"AlertSeverity":           model.AlertSeverityCritical,
-				"AlertStatus":             model.AlertStatusNew,
-				"Date":                    utils.P("2020-04-15T08:46:58.475+02:00").Local(),
-				"Description":             "The database ERCOLE on test-db has enabled new features (Diagnostics Pack) on server",
-				"OtherInfo": map[string]interface{}{
-					"Dbname": "ERCOLE",
-					"Features": []interface{}{
+				"alertAffectedTechnology": "Oracle/Database",
+				"alertCategory":           model.AlertCategoryLicense,
+				"alertCode":               model.AlertCodeNewOption,
+				"alertSeverity":           model.AlertSeverityCritical,
+				"alertStatus":             model.AlertStatusNew,
+				"date":                    utils.P("2020-04-15T08:46:58.475+02:00").Local(),
+				"description":             "The database ERCOLE on test-db has enabled new features (Diagnostics Pack) on server",
+				"otherInfo": map[string]interface{}{
+					"dbname": "ERCOLE",
+					"features": []interface{}{
 						"Diagnostics Pack",
 					},
-					"Hostname": "test-db",
+					"hostname": "test-db",
 				},
-				"Hostname": "test-db",
+				"hostname": "test-db",
 			},
 		}
 
@@ -274,45 +274,45 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5e96ade270c184faca93fe1b"),
-				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategoryEngine,
-				"AlertCode":               model.AlertCodeNewServer,
-				"AlertSeverity":           model.AlertSeverityInfo,
-				"AlertStatus":             model.AlertStatusAck,
-				"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
-				"Description":             "The server 'rac1_x' was added to ercole",
-				"OtherInfo": map[string]interface{}{
-					"Hostname": "rac1_x",
+				"alertAffectedTechnology": nil,
+				"alertCategory":           model.AlertCategoryEngine,
+				"alertCode":               model.AlertCodeNewServer,
+				"alertSeverity":           model.AlertSeverityInfo,
+				"alertStatus":             model.AlertStatusAck,
+				"date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
+				"description":             "The server 'rac1_x' was added to ercole",
+				"otherInfo": map[string]interface{}{
+					"hostname": "rac1_x",
 				},
-				"Hostname": "rac1_x",
+				"hostname": "rac1_x",
 			},
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5eb5057f780da34946c353fb"),
-				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategoryEngine,
-				"AlertCode":               model.AlertCodeNewServer,
-				"AlertSeverity":           model.AlertSeverityInfo,
-				"AlertStatus":             model.AlertStatusAck,
-				"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
-				"Description":             "The server 'rac1_x' was added to ercole",
-				"OtherInfo": map[string]interface{}{
-					"Hostname": "rac1_x",
+				"alertAffectedTechnology": nil,
+				"alertCategory":           model.AlertCategoryEngine,
+				"alertCode":               model.AlertCodeNewServer,
+				"alertSeverity":           model.AlertSeverityInfo,
+				"alertStatus":             model.AlertStatusAck,
+				"date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
+				"description":             "The server 'rac1_x' was added to ercole",
+				"otherInfo": map[string]interface{}{
+					"hostname": "rac1_x",
 				},
-				"Hostname": "rac1_x",
+				"hostname": "rac1_x",
 			},
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5eb5058de2a09300d98aab67"),
-				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategoryEngine,
-				"AlertCode":               model.AlertCodeNewServer,
-				"AlertSeverity":           model.AlertSeverityInfo,
-				"AlertStatus":             model.AlertStatusAck,
-				"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
-				"Description":             "The server 'rac2_x' was added to ercole",
-				"OtherInfo": map[string]interface{}{
-					"Hostname": "rac2_x",
+				"alertAffectedTechnology": nil,
+				"alertCategory":           model.AlertCategoryEngine,
+				"alertCode":               model.AlertCodeNewServer,
+				"alertSeverity":           model.AlertSeverityInfo,
+				"alertStatus":             model.AlertStatusAck,
+				"date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
+				"description":             "The server 'rac2_x' was added to ercole",
+				"otherInfo": map[string]interface{}{
+					"hostname": "rac2_x",
 				},
-				"Hostname": "rac2_x",
+				"hostname": "rac2_x",
 			},
 		}
 
@@ -331,31 +331,31 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5e96ade270c184faca93fe1b"),
-				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategoryEngine,
-				"AlertCode":               model.AlertCodeNewServer,
-				"AlertSeverity":           model.AlertSeverityInfo,
-				"AlertStatus":             model.AlertStatusAck,
-				"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
-				"Description":             "The server 'rac1_x' was added to ercole",
-				"OtherInfo": map[string]interface{}{
-					"Hostname": "rac1_x",
+				"alertAffectedTechnology": nil,
+				"alertCategory":           model.AlertCategoryEngine,
+				"alertCode":               model.AlertCodeNewServer,
+				"alertSeverity":           model.AlertSeverityInfo,
+				"alertStatus":             model.AlertStatusAck,
+				"date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
+				"description":             "The server 'rac1_x' was added to ercole",
+				"otherInfo": map[string]interface{}{
+					"hostname": "rac1_x",
 				},
-				"Hostname": "rac1_x",
+				"hostname": "rac1_x",
 			},
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5eb5057f780da34946c353fb"),
-				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategoryEngine,
-				"AlertCode":               model.AlertCodeNewServer,
-				"AlertSeverity":           model.AlertSeverityInfo,
-				"AlertStatus":             model.AlertStatusAck,
-				"Date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
-				"Description":             "The server 'rac1_x' was added to ercole",
-				"OtherInfo": map[string]interface{}{
-					"Hostname": "rac1_x",
+				"alertAffectedTechnology": nil,
+				"alertCategory":           model.AlertCategoryEngine,
+				"alertCode":               model.AlertCodeNewServer,
+				"alertSeverity":           model.AlertSeverityInfo,
+				"alertStatus":             model.AlertStatusAck,
+				"date":                    utils.P("2020-04-10T08:46:58.38+02:00").Local(),
+				"description":             "The server 'rac1_x' was added to ercole",
+				"otherInfo": map[string]interface{}{
+					"hostname": "rac1_x",
 				},
-				"Hostname": "rac1_x",
+				"hostname": "rac1_x",
 			},
 		}
 
@@ -368,21 +368,21 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
 				"_id":                     utils.Str2oid("5ea6a65bb2e36eb58da2f67c"),
-				"AlertAffectedTechnology": "Oracle/Database",
-				"AlertCategory":           model.AlertCategoryLicense,
-				"AlertCode":               model.AlertCodeNewOption,
-				"AlertSeverity":           model.AlertSeverityCritical,
-				"AlertStatus":             model.AlertStatusNew,
-				"Date":                    utils.P("2020-04-15T08:46:58.475+02:00").Local(),
-				"Description":             "The database ERCOLE on test-db has enabled new features (Diagnostics Pack) on server",
-				"OtherInfo": map[string]interface{}{
-					"Dbname": "ERCOLE",
-					"Features": []interface{}{
+				"alertAffectedTechnology": "Oracle/Database",
+				"alertCategory":           model.AlertCategoryLicense,
+				"alertCode":               model.AlertCodeNewOption,
+				"alertSeverity":           model.AlertSeverityCritical,
+				"alertStatus":             model.AlertStatusNew,
+				"date":                    utils.P("2020-04-15T08:46:58.475+02:00").Local(),
+				"description":             "The database ERCOLE on test-db has enabled new features (Diagnostics Pack) on server",
+				"otherInfo": map[string]interface{}{
+					"dbname": "ERCOLE",
+					"features": []interface{}{
 						"Diagnostics Pack",
 					},
-					"Hostname": "test-db",
+					"hostname": "test-db",
 				},
-				"Hostname": "test-db",
+				"hostname": "test-db",
 			},
 		}
 
@@ -390,24 +390,24 @@ func (m *MongodbSuite) TestSearchAlerts() {
 	})
 
 	m.T().Run("should_aggregate_result_code_severity", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("aggregated-code-severity", []string{}, "Count", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
+		out, err := m.db.SearchAlerts("aggregated-code-severity", []string{}, "count", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
-				"Category":      "LICENSE",
-				"AffectedHosts": 1,
-				"Code":          "NEW_OPTION",
-				"Count":         1,
-				"OldestAlert":   utils.P("2020-04-15T08:46:58.475+02:00").Local(),
-				"Severity":      "CRITICAL",
+				"category":      "LICENSE",
+				"affectedHosts": 1,
+				"code":          "NEW_OPTION",
+				"count":         1,
+				"oldestAlert":   utils.P("2020-04-15T08:46:58.475+02:00").Local(),
+				"severity":      "CRITICAL",
 			},
 			map[string]interface{}{
-				"Category":      "ENGINE",
-				"AffectedHosts": 2,
-				"Code":          "NEW_SERVER",
-				"Count":         3,
-				"OldestAlert":   utils.P("2020-04-10T08:46:58.38+02:00").Local(),
-				"Severity":      "INFO",
+				"category":      "ENGINE",
+				"affectedHosts": 2,
+				"code":          "NEW_SERVER",
+				"count":         3,
+				"oldestAlert":   utils.P("2020-04-10T08:46:58.38+02:00").Local(),
+				"severity":      "INFO",
 			},
 		}
 
@@ -415,22 +415,22 @@ func (m *MongodbSuite) TestSearchAlerts() {
 	})
 
 	m.T().Run("should_aggregate_result_category_severity", func(t *testing.T) {
-		out, err := m.db.SearchAlerts("aggregated-category-severity", []string{}, "Count", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
+		out, err := m.db.SearchAlerts("aggregated-category-severity", []string{}, "count", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
-				"Category":      "LICENSE",
-				"AffectedHosts": 1,
-				"Count":         1,
-				"OldestAlert":   utils.P("2020-04-15T08:46:58.475+02:00").Local(),
-				"Severity":      "CRITICAL",
+				"category":      "LICENSE",
+				"affectedHosts": 1,
+				"count":         1,
+				"oldestAlert":   utils.P("2020-04-15T08:46:58.475+02:00").Local(),
+				"severity":      "CRITICAL",
 			},
 			map[string]interface{}{
-				"Category":      "ENGINE",
-				"AffectedHosts": 2,
-				"Count":         3,
-				"OldestAlert":   utils.P("2020-04-10T08:46:58.38+02:00").Local(),
-				"Severity":      "INFO",
+				"category":      "ENGINE",
+				"affectedHosts": 2,
+				"count":         3,
+				"oldestAlert":   utils.P("2020-04-10T08:46:58.38+02:00").Local(),
+				"severity":      "INFO",
 			},
 		}
 
@@ -450,11 +450,11 @@ func (m *MongodbSuite) TestUpdateAlertStatus() {
 		Date:                    utils.P("2020-04-15T08:46:58.475Z"),
 		Description:             "The database ERCOLE on test-db has enabled new features (Diagnostics Pack) on server",
 		OtherInfo: map[string]interface{}{
-			"Dbname": "ERCOLE",
-			"Features": bson.A{
+			"dbname": "ERCOLE",
+			"features": bson.A{
 				"Diagnostics Pack",
 			},
-			"Hostname": "test-db",
+			"hostname": "test-db",
 		},
 	}
 	m.InsertAlert(alert)
