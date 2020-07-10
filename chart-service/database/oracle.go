@@ -35,10 +35,10 @@ func (md *MongoDatabase) GetOracleDatabaseChartByVersion(location string, enviro
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$Features.Oracle.Database.Databases"),
+			mu.APUnwind("$features.oracle.database.databases"),
 			mu.APProject(bson.M{
 				"_id":     0,
-				"version": "$Features.Oracle.Database.Databases.Version",
+				"version": "$features.oracle.database.databases.version",
 			}),
 			mu.APGroupAndCountStages("name", "size", "$version"),
 		),
@@ -67,14 +67,14 @@ func (md *MongoDatabase) GetOracleDatabaseChartByWork(location string, environme
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$Features.Oracle.Database.Databases"),
+			mu.APUnwind("$features.oracle.database.databases"),
 			mu.APMatch(bson.M{
-				"Features.Oracle.Database.Databases.Work": mu.QONotEqual(nil),
+				"features.oracle.database.databases.work": mu.QONotEqual(nil),
 			}),
 			mu.APProject(bson.M{
 				"_id":  0,
-				"name": mu.APOConcat("$Hostname", "/", "$Features.Oracle.Database.Databases.Name"),
-				"size": "$Features.Oracle.Database.Databases.Work",
+				"name": mu.APOConcat("$hostname", "/", "$features.oracle.database.databases.name"),
+				"size": "$features.oracle.database.databases.work",
 			}),
 		),
 	)
