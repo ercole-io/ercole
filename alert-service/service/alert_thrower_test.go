@@ -54,8 +54,8 @@ func TestThrowNewDatabaseAlert_Success(t *testing.T) {
 		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)
 		assert.Equal(t, "The database 'bestdb' was created on the server myhost", alert.Description)
 		assert.Equal(t, map[string]interface{}{
-			"Hostname": "myhost",
-			"Dbname":   "bestdb",
+			"hostname": "myhost",
+			"dbname":   "bestdb",
 		}, alert.OtherInfo)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
@@ -102,7 +102,7 @@ func TestThrowNewServerAlert_Success(t *testing.T) {
 		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)
 		assert.Equal(t, "The server 'myhost' was added to ercole", alert.Description)
 		assert.Equal(t, map[string]interface{}{
-			"Hostname": "myhost",
+			"hostname": "myhost",
 		}, alert.OtherInfo)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
@@ -147,7 +147,7 @@ func TestThrowNewEnterpriseLicenseAlert_Success(t *testing.T) {
 		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)
 		assert.Equal(t, "A new Enterprise license has been enabled to myhost", alert.Description)
 		assert.Equal(t, map[string]interface{}{
-			"Hostname": "myhost",
+			"hostname": "myhost",
 		}, alert.OtherInfo)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
@@ -191,9 +191,9 @@ func TestThrowActivatedFeaturesAlert_Success(t *testing.T) {
 		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)
 		assert.Equal(t, "The database mydb on myhost has enabled new features (fastibility, slowibility) on server", alert.Description)
 		assert.Equal(t, map[string]interface{}{
-			"Hostname": "myhost",
-			"Dbname":   "mydb",
-			"Features": []string{"fastibility", "slowibility"},
+			"hostname": "myhost",
+			"dbname":   "mydb",
+			"features": []string{"fastibility", "slowibility"},
 		}, alert.OtherInfo)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
@@ -237,7 +237,7 @@ func TestThrowNoDataAlert_Success(t *testing.T) {
 		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)
 		assert.Equal(t, "No data received from the host myhost in the last 90 days", alert.Description)
 		assert.Equal(t, map[string]interface{}{
-			"Hostname": "myhost",
+			"hostname": "myhost",
 		}, alert.OtherInfo)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
