@@ -24,7 +24,7 @@ import (
 
 //ClusterInfo hold informations about a cluster
 type ClusterInfo struct {
-	FetchEndpoint string                 `json:"fetchEndpoint bson:fetchEndpoint"`
+	FetchEndpoint string                 `json:"fetchEndpoint" bson:"fetchEndpoint"`
 	Type          string                 `json:"type"`
 	Name          string                 `json:"name"`
 	CPU           int                    `json:"cpu"`

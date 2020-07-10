@@ -25,7 +25,7 @@ import (
 // OracleDatabasePatch holds information about a Oracle database patch
 type OracleDatabasePatch struct {
 	Version     string                 `json:"version"`
-	PatchID     int                    `json:"patchID bson:patchID"`
+	PatchID     int                    `json:"patchID" bson:"patchID"`
 	Action      string                 `json:"action"`
 	Description string                 `json:"description"`
 	Date        string                 `json:"date"`

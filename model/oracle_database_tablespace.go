@@ -25,10 +25,10 @@ import (
 // OracleDatabaseTablespace holds the informations about a tablespace.
 type OracleDatabaseTablespace struct {
 	Name      string                 `json:"name"`
-	MaxSize   float64                `json:"maxSize bson:maxSize"`
+	MaxSize   float64                `json:"maxSize" bson:"maxSize"`
 	Total     float64                `json:"total"`
 	Used      float64                `json:"used"`
-	UsedPerc  float64                `json:"usedPerc bson:usedPerc"`
+	UsedPerc  float64                `json:"usedPerc" bson:"usedPerc"`
 	Status    string                 `json:"status"`
 	OtherInfo map[string]interface{} `json:"-"`
 }

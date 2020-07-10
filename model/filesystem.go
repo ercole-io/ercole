@@ -27,9 +27,9 @@ type Filesystem struct {
 	Filesystem     string                 `json:"filesystem"`
 	Type           string                 `json:"type"`
 	Size           int64                  `json:"size"`
-	UsedSpace      int64                  `json:"usedSpace bson:usedSpace"`
-	AvailableSpace int64                  `json:"availableSpace bson:availableSpace"`
-	MountedOn      string                 `json:"mountedOn bson:mountedOn"`
+	UsedSpace      int64                  `json:"usedSpace" bson:"usedSpace"`
+	AvailableSpace int64                  `json:"availableSpace" bson:"availableSpace"`
+	MountedOn      string                 `json:"mountedOn" bson:"mountedOn"`
 	OtherInfo      map[string]interface{} `json:"-"`
 }
 

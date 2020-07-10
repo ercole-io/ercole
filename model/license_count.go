@@ -23,7 +23,7 @@ import (
 type LicenseCount struct {
 	Name             string  `json:"name" bson:"_id"`
 	Count            int     `json:"count"`
-	CostPerProcessor float64 `json:"costPerProcessor bson:costPerProcessor"`
+	CostPerProcessor float64 `json:"costPerProcessor" bson:"costPerProcessor"`
 	Unlimited        bool    `json:"unlimited"`
 }
 

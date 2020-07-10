@@ -36,21 +36,21 @@ const (
 // Host contains info about the host
 type Host struct {
 	Hostname                      string                 `json:"hostname"`
-	CPUModel                      string                 `json:"cpuModel bson:cpuModel"`
-	CPUFrequency                  string                 `json:"cpuFrequency bson:cpuFrequency"`
-	CPUSockets                    int                    `json:"cpuSockets bson:cpuSockets"`
-	CPUCores                      int                    `json:"cpuCores bson:cpuCores"`
-	CPUThreads                    int                    `json:"cpuThreads bson:cpuThreads"`
-	ThreadsPerCore                int                    `json:"threadsPerCore bson:threadsPerCore"`
-	CoresPerSocket                int                    `json:"coresPerSocket bson:coresPerSocket"`
-	HardwareAbstraction           string                 `json:"hardwareAbstraction bson:hardwareAbstraction"`
-	HardwareAbstractionTechnology string                 `json:"hardwareAbstractionTechnology bson:hardwareAbstractionTechnology"`
+	CPUModel                      string                 `json:"cpuModel" bson:"cpuModel"`
+	CPUFrequency                  string                 `json:"cpuFrequency" bson:"cpuFrequency"`
+	CPUSockets                    int                    `json:"cpuSockets" bson:"cpuSockets"`
+	CPUCores                      int                    `json:"cpuCores" bson:"cpuCores"`
+	CPUThreads                    int                    `json:"cpuThreads" bson:"cpuThreads"`
+	ThreadsPerCore                int                    `json:"threadsPerCore" bson:"threadsPerCore"`
+	CoresPerSocket                int                    `json:"coresPerSocket" bson:"coresPerSocket"`
+	HardwareAbstraction           string                 `json:"hardwareAbstraction" bson:"hardwareAbstraction"`
+	HardwareAbstractionTechnology string                 `json:"hardwareAbstractionTechnology" bson:"hardwareAbstractionTechnology"`
 	Kernel                        string                 `json:"kernel"`
-	KernelVersion                 string                 `json:"kernelVersion bson:kernelVersion"`
+	KernelVersion                 string                 `json:"kernelVersion" bson:"kernelVersion"`
 	OS                            string                 `json:"os"`
-	OSVersion                     string                 `json:"osVersion bson:osVersion"`
-	MemoryTotal                   float64                `json:"memoryTotal bson:memoryTotal"`
-	SwapTotal                     float64                `json:"swapTotal bson:swapTotal"`
+	OSVersion                     string                 `json:"osVersion" bson:"osVersion"`
+	MemoryTotal                   float64                `json:"memoryTotal" bson:"memoryTotal"`
+	SwapTotal                     float64                `json:"swapTotal" bson:"swapTotal"`
 	OtherInfo                     map[string]interface{} `json:"-"`
 }
 
