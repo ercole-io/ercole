@@ -30,21 +30,21 @@ const ServerSchemaVersion int = 1
 // HostDataBE holds all informations about a host & services
 type HostDataBE struct {
 	ID                  primitive.ObjectID `json:"id" bson:"_id"`
-	Archived            bool               `json:"archived"`
+	Archived            bool               `json:"archived" bson:"archived"`
 	CreatedAt           time.Time          `json:"createdAt" bson:"createdAt"`
 	ServerVersion       string             `json:"serverVersion" bson:"serverVersion"`
 	ServerSchemaVersion int                `json:"serverSchemaVersion" bson:"serverSchemaVersion"`
 
-	Hostname                string                  `json:"hostname"`
-	Location                string                  `json:"location"`
-	Environment             string                  `json:"environment"`
+	Hostname                string                  `json:"hostname" bson:"hostname"`
+	Location                string                  `json:"location" bson:"location"`
+	Environment             string                  `json:"environment" bson:"environment"`
 	AgentVersion            string                  `json:"agentVersion" bson:"agentVersion"`
-	Tags                    []string                `json:"tags"`
-	Info                    Host                    `json:"info"`
+	Tags                    []string                `json:"tags" bson:"tags"`
+	Info                    Host                    `json:"info" bson:"info"`
 	ClusterMembershipStatus ClusterMembershipStatus `json:"clusterMembershipStatus" bson:"clusterMembershipStatus"`
-	Features                Features                `json:"features"`
-	Filesystems             []Filesystem            `json:"filesystems"`
-	Clusters                []ClusterInfo           `json:"clusters"`
+	Features                Features                `json:"features" bson:"features"`
+	Filesystems             []Filesystem            `json:"filesystems" bson:"filesystems"`
+	Clusters                []ClusterInfo           `json:"clusters" bson:"clusters"`
 	OtherInfo               map[string]interface{}  `json:"otherInfo" bson:"otherInfo"`
 }
 

@@ -30,8 +30,8 @@ type Alert struct {
 	AlertCode               string                 `json:"alertCode" bson:"alertCode"`
 	AlertSeverity           string                 `json:"alertSeverity" bson:"alertSeverity"`
 	AlertStatus             string                 `json:"alertStatus" bson:"alertStatus"`
-	Description             string                 `json:"description"`
-	Date                    time.Time              `json:"date"`
+	Description             string                 `json:"description" bson:"description"`
+	Date                    time.Time              `json:"date" bson:"date"`
 	OtherInfo               map[string]interface{} `json:"otherInfo" bson:"otherInfo"`
 }
 

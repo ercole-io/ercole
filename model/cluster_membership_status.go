@@ -27,8 +27,8 @@ type ClusterMembershipStatus struct {
 	OracleClusterware    bool                   `json:"oracleClusterware" bson:"oracleClusterware"`
 	VeritasClusterServer bool                   `json:"veritasClusterServer" bson:"veritasClusterServer"`
 	SunCluster           bool                   `json:"sunCluster" bson:"sunCluster"`
-	HACMP                bool                   `json:"hacmp"`
-	OtherInfo            map[string]interface{} `json:"-"`
+	HACMP                bool                   `json:"hacmp" bson:"hacmp"`
+	OtherInfo            map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

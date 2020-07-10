@@ -24,13 +24,13 @@ import (
 
 // OracleDatabaseTablespace holds the informations about a tablespace.
 type OracleDatabaseTablespace struct {
-	Name      string                 `json:"name"`
+	Name      string                 `json:"name" bson:"name"`
 	MaxSize   float64                `json:"maxSize" bson:"maxSize"`
-	Total     float64                `json:"total"`
-	Used      float64                `json:"used"`
+	Total     float64                `json:"total" bson:"total"`
+	Used      float64                `json:"used" bson:"used"`
 	UsedPerc  float64                `json:"usedPerc" bson:"usedPerc"`
-	Status    string                 `json:"status"`
-	OtherInfo map[string]interface{} `json:"-"`
+	Status    string                 `json:"status" bson:"status"`
+	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

@@ -24,8 +24,8 @@ import (
 
 // Features holds various informations about the features of the host.
 type Features struct {
-	Oracle    *OracleFeature         `json:"oracle"`
-	OtherInfo map[string]interface{} `json:"-"`
+	Oracle    *OracleFeature         `json:"oracle" bson:"oracle"`
+	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

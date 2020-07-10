@@ -24,15 +24,15 @@ import (
 
 // OracleExadataComponent holds informations about a device in a exadata
 type OracleExadataComponent struct {
-	Hostname             string                   `json:"hostname"`
+	Hostname             string                   `json:"hostname" bson:"hostname"`
 	ServerType           string                   `json:"serverType" bson:"serverType"`
-	Model                string                   `json:"model"`
+	Model                string                   `json:"model" bson:"model"`
 	SwVersion            string                   `json:"swVersion" bson:"swVersion"`
 	SwReleaseDate        string                   `json:"swReleaseDate" bson:"swReleaseDate"`
 	RunningCPUCount      *int                     `json:"runningCPUCount" bson:"runningCPUCount"`
 	TotalCPUCount        *int                     `json:"totalCPUCount" bson:"totalCPUCount"`
-	Memory               *int                     `json:"memory"`
-	Status               *string                  `json:"status"`
+	Memory               *int                     `json:"memory" bson:"memory"`
+	Status               *string                  `json:"status" bson:"status"`
 	RunningPowerSupply   *int                     `json:"runningPowerSupply" bson:"runningPowerSupply"`
 	TotalPowerSupply     *int                     `json:"totalPowerSupply" bson:"totalPowerSupply"`
 	PowerStatus          *string                  `json:"powerStatus" bson:"powerStatus"`
@@ -46,7 +46,7 @@ type OracleExadataComponent struct {
 	RsServiceStatus      *string                  `json:"rsServiceStatus" bson:"rsServiceStatus"`
 	FlashcacheMode       *string                  `json:"flashcacheMode" bson:"flashcacheMode"`
 	CellDisks            *[]OracleExadataCellDisk `json:"cellDisks" bson:"cellDisks"`
-	OtherInfo            map[string]interface{}   `json:"-"`
+	OtherInfo            map[string]interface{}   `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

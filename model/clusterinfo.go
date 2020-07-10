@@ -25,12 +25,12 @@ import (
 //ClusterInfo hold informations about a cluster
 type ClusterInfo struct {
 	FetchEndpoint string                 `json:"fetchEndpoint" bson:"fetchEndpoint"`
-	Type          string                 `json:"type"`
-	Name          string                 `json:"name"`
-	CPU           int                    `json:"cpu"`
-	Sockets       int                    `json:"sockets"`
-	VMs           []VMInfo               `json:"vms"`
-	OtherInfo     map[string]interface{} `json:"-"`
+	Type          string                 `json:"type" bson:"type"`
+	Name          string                 `json:"name" bson:"name"`
+	CPU           int                    `json:"cpu" bson:"cpu"`
+	Sockets       int                    `json:"sockets" bson:"sockets"`
+	VMs           []VMInfo               `json:"vms" bson:"vms"`
+	OtherInfo     map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

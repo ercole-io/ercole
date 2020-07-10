@@ -24,11 +24,11 @@ import (
 
 // VMInfo holds info about the vm
 type VMInfo struct {
-	Name               string                 `json:"name"`
-	Hostname           string                 `json:"hostname"` //Hostname or IP address
+	Name               string                 `json:"name" bson:"name"`
+	Hostname           string                 `json:"hostname" bson:"hostname"` //Hostname or IP address
 	CappedCPU          bool                   `json:"cappedCPU" bson:"cappedCPU"`
 	VirtualizationNode string                 `json:"virtualizationNode" bson:"virtualizationNode"`
-	OtherInfo          map[string]interface{} `json:"-"`
+	OtherInfo          map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
