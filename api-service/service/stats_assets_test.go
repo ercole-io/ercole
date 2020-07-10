@@ -33,9 +33,9 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Compliance": 9.0 / 12,
-		"UnpaidDues": 45,
-		"HostsCount": 20,
+		"compliance": 9.0 / 12,
+		"unpaidDues": 45,
+		"hostsCount": 20,
 	}
 
 	getTechnologiesUsageRes := map[string]float64{
@@ -51,31 +51,31 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 
 	listLicensesRes := []interface{}{
 		map[string]interface{}{
-			"Compliance":       false,
-			"Count":            4,
-			"Used":             4,
+			"compliance":       false,
+			"count":            4,
+			"used":             4,
 			"_id":              "Partitioning",
-			"TotalCost":        40,
-			"PaidCost":         40,
-			"CostPerProcessor": 10,
+			"totalCost":        40,
+			"paidCost":         40,
+			"costPerProcessor": 10,
 		},
 		map[string]interface{}{
-			"Compliance":       false,
-			"Count":            3,
-			"Used":             6,
+			"compliance":       false,
+			"count":            3,
+			"used":             6,
 			"_id":              "Diagnostics Pack",
-			"TotalCost":        90,
-			"PaidCost":         45,
-			"CostPerProcessor": 15,
+			"totalCost":        90,
+			"paidCost":         45,
+			"costPerProcessor": 15,
 		},
 		map[string]interface{}{
-			"Compliance":       true,
-			"Count":            5,
-			"Used":             0,
+			"compliance":       true,
+			"count":            5,
+			"used":             0,
 			"_id":              "Advanced Analytics",
-			"TotalCost":        0,
-			"PaidCost":         5,
-			"CostPerProcessor": 1,
+			"totalCost":        0,
+			"paidCost":         5,
+			"costPerProcessor": 1,
 		},
 	}
 	db.EXPECT().
