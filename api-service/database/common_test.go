@@ -47,15 +47,15 @@ func (m *MongodbSuite) TestFilterByLocationAndEnvironmentSteps() {
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps("", ""),
 			mu.APProject(bson.M{
-				"Hostname": 1,
+				"hostname": 1,
 				"_id":      0,
 			}),
 		),
 		func(out []map[string]interface{}) {
 			var expectedOut string = `[
-				{ "Hostname": "test-small" },
-				{ "Hostname": "test-small2" },
-				{ "Hostname": "test-small3" }
+				{ "hostname": "test-small" },
+				{ "hostname": "test-small2" },
+				{ "hostname": "test-small3" }
 			]`
 
 			assert.JSONEq(m.T(), expectedOut, utils.ToJSON(out))
@@ -67,14 +67,14 @@ func (m *MongodbSuite) TestFilterByLocationAndEnvironmentSteps() {
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps("Italy", ""),
 			mu.APProject(bson.M{
-				"Hostname": 1,
+				"hostname": 1,
 				"_id":      0,
 			}),
 		),
 		func(out []map[string]interface{}) {
 			var expectedOut string = `[
-				{ "Hostname": "test-small2" },
-				{ "Hostname": "test-small3" }
+				{ "hostname": "test-small2" },
+				{ "hostname": "test-small3" }
 			]`
 
 			assert.JSONEq(m.T(), expectedOut, utils.ToJSON(out))
@@ -86,14 +86,14 @@ func (m *MongodbSuite) TestFilterByLocationAndEnvironmentSteps() {
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps("", "TST"),
 			mu.APProject(bson.M{
-				"Hostname": 1,
+				"hostname": 1,
 				"_id":      0,
 			}),
 		),
 		func(out []map[string]interface{}) {
 			var expectedOut string = `[
-				{ "Hostname": "test-small" },
-				{ "Hostname": "test-small3" }
+				{ "hostname": "test-small" },
+				{ "hostname": "test-small3" }
 			]`
 
 			assert.JSONEq(m.T(), expectedOut, utils.ToJSON(out))
@@ -105,13 +105,13 @@ func (m *MongodbSuite) TestFilterByLocationAndEnvironmentSteps() {
 		mu.MAPipeline(
 			FilterByLocationAndEnvironmentSteps("Italy", "DEV"),
 			mu.APProject(bson.M{
-				"Hostname": 1,
+				"hostname": 1,
 				"_id":      0,
 			}),
 		),
 		func(out []map[string]interface{}) {
 			var expectedOut string = `[
-				{ "Hostname": "test-small2" }
+				{ "hostname": "test-small2" }
 			]`
 
 			assert.JSONEq(m.T(), expectedOut, utils.ToJSON(out))

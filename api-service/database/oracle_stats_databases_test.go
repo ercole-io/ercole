@@ -52,12 +52,12 @@ func (m *MongodbSuite) TestGetOracleDatabaseEnvironmentStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"Environment": "PRD",
-				"Count":       2,
+				"environment": "PRD",
+				"count":       2,
 			},
 			{
-				"Environment": "TST",
-				"Count":       2,
+				"environment": "TST",
+				"count":       2,
 			},
 		}
 
@@ -92,16 +92,16 @@ func (m *MongodbSuite) TestGetOracleDatabaseVersionStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"Version": "12.2.0.1.0 Enterprise Edition",
-				"Count":   2,
+				"version": "12.2.0.1.0 Enterprise Edition",
+				"count":   2,
 			},
 			{
-				"Version": "16.2.0.1.0 Enterprise Edition",
-				"Count":   1,
+				"version": "16.2.0.1.0 Enterprise Edition",
+				"count":   1,
 			},
 			{
-				"Version": "18.2.0.1.0 Enterprise Edition",
-				"Count":   1,
+				"version": "18.2.0.1.0 Enterprise Edition",
+				"count":   1,
 			},
 		}
 
@@ -136,9 +136,9 @@ func (m *MongodbSuite) TestGetTopReclaimableOracleDatabaseStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"Hostname":                   "test-db3",
-				"Dbname":                     "foobar4",
-				"ReclaimableSegmentAdvisors": 534.34,
+				"hostname":                   "test-db3",
+				"dbname":                     "foobar4",
+				"reclaimableSegmentAdvisors": 534.34,
 				"_id":                        "5ec2518bbc4991e955e2cb3f",
 			},
 		}
@@ -151,27 +151,27 @@ func (m *MongodbSuite) TestGetTopReclaimableOracleDatabaseStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"Hostname":                   "test-db3",
-				"Dbname":                     "foobar4",
-				"ReclaimableSegmentAdvisors": 534.34,
+				"hostname":                   "test-db3",
+				"dbname":                     "foobar4",
+				"reclaimableSegmentAdvisors": 534.34,
 				"_id":                        "5ec2518bbc4991e955e2cb3f",
 			},
 			{
-				"Hostname":                   "test-db3",
-				"Dbname":                     "foobar3",
-				"ReclaimableSegmentAdvisors": 4.3,
+				"hostname":                   "test-db3",
+				"dbname":                     "foobar3",
+				"reclaimableSegmentAdvisors": 4.3,
 				"_id":                        "5ec2518bbc4991e955e2cb3f",
 			},
 			{
-				"Hostname":                   "test-db2",
-				"Dbname":                     "foobar1",
-				"ReclaimableSegmentAdvisors": 0.5,
+				"hostname":                   "test-db2",
+				"dbname":                     "foobar1",
+				"reclaimableSegmentAdvisors": 0.5,
 				"_id":                        "5ebbaaf747c3fcf9dc0a1f51",
 			},
 			{
-				"Hostname":                   "test-db2",
-				"Dbname":                     "foobar2",
-				"ReclaimableSegmentAdvisors": 0.5,
+				"hostname":                   "test-db2",
+				"dbname":                     "foobar2",
+				"reclaimableSegmentAdvisors": 0.5,
 				"_id":                        "5ebbaaf747c3fcf9dc0a1f51",
 			},
 		}
@@ -207,9 +207,9 @@ func (m *MongodbSuite) TestGetTopWorkloadOracleDatabaseStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"Hostname": "test-db3",
-				"Dbname":   "foobar3",
-				"Workload": 99,
+				"hostname": "test-db3",
+				"dbname":   "foobar3",
+				"workload": 99,
 				"_id":      "5ec2518bbc4991e955e2cb3f",
 			},
 		}
@@ -222,27 +222,27 @@ func (m *MongodbSuite) TestGetTopWorkloadOracleDatabaseStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"Hostname": "test-db3",
-				"Dbname":   "foobar3",
-				"Workload": 99,
+				"hostname": "test-db3",
+				"dbname":   "foobar3",
+				"workload": 99,
 				"_id":      "5ec2518bbc4991e955e2cb3f",
 			},
 			{
-				"Hostname": "test-db3",
-				"Dbname":   "foobar4",
-				"Workload": 10,
+				"hostname": "test-db3",
+				"dbname":   "foobar4",
+				"workload": 10,
 				"_id":      "5ec2518bbc4991e955e2cb3f",
 			},
 			{
-				"Hostname": "test-db2",
-				"Dbname":   "foobar2",
-				"Workload": 6.4,
+				"hostname": "test-db2",
+				"dbname":   "foobar2",
+				"workload": 6.4,
 				"_id":      "5ebbaaf747c3fcf9dc0a1f51",
 			},
 			{
-				"Hostname": "test-db2",
-				"Dbname":   "foobar1",
-				"Workload": 1,
+				"hostname": "test-db2",
+				"dbname":   "foobar1",
+				"workload": 1,
 				"_id":      "5ebbaaf747c3fcf9dc0a1f51",
 			},
 		}
@@ -278,12 +278,12 @@ func (m *MongodbSuite) TestGetOracleDatabasePatchStatusStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"Status": "KO",
-				"Count":  3,
+				"status": "KO",
+				"count":  3,
 			},
 			{
-				"Status": "OK",
-				"Count":  1,
+				"status": "OK",
+				"count":  1,
 			},
 		}
 
@@ -326,12 +326,12 @@ func (m *MongodbSuite) TestGetOracleDatabaseDataguardStatusStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"Dataguard": false,
-				"Count":     3,
+				"dataguard": false,
+				"count":     3,
 			},
 			{
-				"Dataguard": true,
-				"Count":     1,
+				"dataguard": true,
+				"count":     1,
 			},
 		}
 
@@ -374,12 +374,12 @@ func (m *MongodbSuite) TestGetOracleDatabaseRACStatusStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"RAC":   false,
-				"Count": 3,
+				"rac":   false,
+				"count": 3,
 			},
 			{
-				"RAC":   true,
-				"Count": 1,
+				"rac":   true,
+				"count": 1,
 			},
 		}
 
@@ -422,12 +422,12 @@ func (m *MongodbSuite) TestGetOracleDatabaseArchivelogStatusStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"Archivelog": false,
-				"Count":      3,
+				"archivelog": false,
+				"count":      3,
 			},
 			{
-				"Archivelog": true,
-				"Count":      1,
+				"archivelog": true,
+				"count":      1,
 			},
 		}
 

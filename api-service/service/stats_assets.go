@@ -51,8 +51,8 @@ func (as *APIService) GetTotalTechnologiesComplianceStats(location string, envir
 	}
 
 	return map[string]interface{}{
-		"UnpaidDues": totalTotalCost - totalPaidCost,
-		"Compliance": totalCount / totalUsed,
-		"HostsCount": hostsCount,
+		"unpaidDues": totalTotalCost - totalPaidCost,
+		"compliance": totalCount / totalUsed,
+		"hostsCount": hostsCount,
 	}, nil
 }

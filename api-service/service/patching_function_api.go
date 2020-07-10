@@ -29,7 +29,7 @@ import (
 // It assumes that the vars has the following structure:
 /*
 {
-	"Tags": {
+	"tags": {
 		"dbname1": ["tag1", "tag2", ...],
 		"dbname2": ["tag1", "tag2", ...],
 		"..."
@@ -39,10 +39,10 @@ import (
 const DatabaseTagsAdderMarker = "DATABASE_TAGS_ADDER"
 const DatabaseTagsAdderCode = `
 	/*<DATABASE_TAGS_ADDER>*/
-	if (hostdata.Features.Oracle != undefined && hostdata.Features.Oracle.Database != undefined) {
-		hostdata.Features.Oracle.Database.Databases.forEach(function addTag(db) {
-			if (db.Name in vars.Tags) {
-				db.Tags = vars.Tags[db.Name];
+	if (hostdata.features.oracle != undefined && hostdata.features.oracle.database != undefined) {
+		hostdata.features.oracle.database.databases.forEach(function addTag(db) {
+			if (db.name in vars.tags) {
+				db.tags = vars.tags[db.name];
 			}
 		});
 	}
@@ -53,7 +53,7 @@ const DatabaseTagsAdderCode = `
 // It assumes that the vars has the following structure:
 /*
 {
-	"LicenseModifiers": {
+	"licenseModifiers": {
 		"dbname1": {
 			"license1": 0,
 			"license2": 2,
@@ -71,17 +71,17 @@ const DatabaseTagsAdderCode = `
 const DatabaseLicensesFixerMarker = "DATABASE_LICENSES_FIXER"
 const DatabaseLicensesFixerCode = `
 	/*<DATABASE_LICENSES_FIXER>*/
-	if (hostdata.Features.Oracle != undefined && hostdata.Features.Oracle.Database != undefined) { 
-		hostdata.Features.Oracle.Database.Databases.forEach(function fixLicensesDb(db) {
-			db.Licenses.forEach(function fixLicense(lic) {
-				if (db.Name in vars.LicenseModifiers && lic.Name in vars.LicenseModifiers[db.Name]) {
-					if (! ("OldCount" in lic)) {
-						lic.OldCount = lic.Count;
+	if (hostdata.features.oracle != undefined && hostdata.features.oracle.database != undefined) { 
+		hostdata.features.oracle.database.databases.forEach(function fixLicensesDb(db) {
+			db.licenses.forEach(function fixLicense(lic) {
+				if (db.name in vars.licenseModifiers && lic.name in vars.licenseModifiers[db.name]) {
+					if (! ("oldCount" in lic)) {
+						lic.oldCount = lic.count;
 					}
-					lic.Count = vars.LicenseModifiers[db.Name][lic.Name];
-				} else if ("OldCount" in lic) {
-					lic.Count = lic.OldCount;
-					delete lic.OldCount;
+					lic.count = vars.licenseModifiers[db.name][lic.name];
+				} else if ("oldCount" in lic) {
+					lic.count = lic.oldCount;
+					delete lic.oldCount;
 				}
 			});
 		});
@@ -174,7 +174,7 @@ func (as *APIService) AddTagToOracleDatabase(hostname string, dbname string, tag
 		pf.Hostname = hostname
 		pf.Code = DatabaseTagsAdderCode
 		pf.Vars = map[string]interface{}{
-			"Tags": map[string]interface{}{
+			"tags": map[string]interface{}{
 				dbname: []interface{}{
 					tagname,
 				},
@@ -188,12 +188,12 @@ func (as *APIService) AddTagToOracleDatabase(hostname string, dbname string, tag
 		}
 
 		//Check the presence and the type of Tags key in Vars. If not (re)initialize it!
-		if val, ok := pf.Vars["Tags"]; !ok {
-			pf.Vars["Tags"] = make(map[string]interface{})
+		if val, ok := pf.Vars["tags"]; !ok {
+			pf.Vars["tags"] = make(map[string]interface{})
 		} else if _, ok := val.(map[string]interface{}); !ok {
-			pf.Vars["Tags"] = make(map[string]interface{})
+			pf.Vars["tags"] = make(map[string]interface{})
 		}
-		tags := pf.Vars["Tags"].(map[string]interface{})
+		tags := pf.Vars["tags"].(map[string]interface{})
 
 		//Check the presence of the database with a slice inside
 		if val, ok := tags[dbname]; !ok {
@@ -249,12 +249,12 @@ func (as *APIService) DeleteTagOfOracleDatabase(hostname string, dbname string, 
 	}
 
 	//Check the presence and the type of Tags key in Vars. If not (re)initialize it!
-	if val, ok := pf.Vars["Tags"]; !ok {
+	if val, ok := pf.Vars["tags"]; !ok {
 		return nil
 	} else if _, ok := val.(map[string]interface{}); !ok {
 		return nil
 	}
-	tags := pf.Vars["Tags"].(map[string]interface{})
+	tags := pf.Vars["tags"].(map[string]interface{})
 
 	//Check the presence of the database with a slice inside
 	if val, ok := tags[dbname]; !ok {
@@ -329,7 +329,7 @@ func (as *APIService) SetOracleDatabaseLicenseModifier(hostname string, dbname s
 		pf.Hostname = hostname
 		pf.Code = DatabaseLicensesFixerCode
 		pf.Vars = map[string]interface{}{
-			"LicenseModifiers": map[string]interface{}{
+			"licenseModifiers": map[string]interface{}{
 				dbname: map[string]interface{}{
 					licenseName: newValue,
 				},
@@ -343,12 +343,12 @@ func (as *APIService) SetOracleDatabaseLicenseModifier(hostname string, dbname s
 		}
 
 		//Check the presence and the type of LicenseModifiers key in Vars. If not (re)initialize it!
-		if val, ok := pf.Vars["LicenseModifiers"]; !ok {
-			pf.Vars["LicenseModifiers"] = make(map[string]interface{})
+		if val, ok := pf.Vars["licenseModifiers"]; !ok {
+			pf.Vars["licenseModifiers"] = make(map[string]interface{})
 		} else if _, ok := val.(map[string]interface{}); !ok {
-			pf.Vars["LicenseModifiers"] = make(map[string]interface{})
+			pf.Vars["licenseModifiers"] = make(map[string]interface{})
 		}
-		licenseModifiers := pf.Vars["LicenseModifiers"].(map[string]interface{})
+		licenseModifiers := pf.Vars["licenseModifiers"].(map[string]interface{})
 
 		// Check the presence of the database with a slice inside
 		switch licenseModifiers[dbname].(type) {
@@ -405,12 +405,12 @@ func (as *APIService) DeleteOracleDatabaseLicenseModifier(hostname string, dbnam
 	}
 
 	//Check the presence and the type of LicenseModifiers key in Vars. If not (re)initialize it!
-	if val, ok := pf.Vars["LicenseModifiers"]; !ok {
+	if val, ok := pf.Vars["licenseModifiers"]; !ok {
 		return nil
 	} else if _, ok := val.(map[string]interface{}); !ok {
 		return nil
 	}
-	licenseModifiers := pf.Vars["LicenseModifiers"].(map[string]interface{})
+	licenseModifiers := pf.Vars["licenseModifiers"].(map[string]interface{})
 
 	//Check the presence of the database with a slice inside
 	if val, ok := licenseModifiers[dbname]; !ok {

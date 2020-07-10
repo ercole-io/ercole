@@ -31,7 +31,7 @@ func (md *MongoDatabase) FindPatchingFunction(hostname string) (model.PatchingFu
 
 	//Find the hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("patching_functions").Find(context.TODO(), bson.M{
-		"Hostname": hostname,
+		"hostname": hostname,
 	})
 	if err != nil {
 		return model.PatchingFunction{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -75,30 +75,30 @@ func (md *MongoDatabase) SearchOracleDatabaseLicenseModifiers(keywords []string,
 		context.TODO(),
 		mu.MAPipeline(
 			mu.APProject(bson.M{
-				"Hostname": 1,
-				"LicenseModifiers": bson.M{
-					"$objectToArray": "$Vars.LicenseModifiers",
+				"hostname": 1,
+				"licenseModifiers": bson.M{
+					"$objectToArray": "$vars.licenseModifiers",
 				},
 			}),
-			mu.APUnwind("$LicenseModifiers"),
+			mu.APUnwind("$licenseModifiers"),
 			mu.APProject(bson.M{
-				"Hostname":     1,
-				"DatabaseName": "$LicenseModifiers.k",
-				"License": bson.M{
-					"$objectToArray": "$LicenseModifiers.v",
+				"hostname":     1,
+				"databaseName": "$licenseModifiers.k",
+				"license": bson.M{
+					"$objectToArray": "$licenseModifiers.v",
 				},
 			}),
-			mu.APUnwind("$License"),
+			mu.APUnwind("$license"),
 			mu.APProject(bson.M{
-				"Hostname":     1,
-				"DatabaseName": 1,
-				"LicenseName":  "$License.k",
-				"NewValue":     "$License.v",
+				"hostname":     1,
+				"databaseName": 1,
+				"licenseName":  "$license.k",
+				"newValue":     "$license.v",
 			}),
 			mu.APSearchFilterStage([]interface{}{
-				"$Hostname",
-				"$DatabaseName",
-				"$LicenseName",
+				"$hostname",
+				"$databaseName",
+				"$licenseName",
 			}, keywords),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),
@@ -123,7 +123,7 @@ func (md *MongoDatabase) SearchOracleDatabaseLicenseModifiers(keywords []string,
 func (md *MongoDatabase) DeletePatchingFunction(hostname string) utils.AdvancedErrorInterface {
 	//Find the informations
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("patching_functions").DeleteOne(context.TODO(), bson.M{
-		"Hostname": hostname,
+		"hostname": hostname,
 	}, nil)
 	if err != nil {
 		return utils.NewAdvancedErrorPtr(err, "DB ERROR")

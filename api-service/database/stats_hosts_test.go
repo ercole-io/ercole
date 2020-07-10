@@ -54,16 +54,16 @@ func (m *MongodbSuite) TestGetEnvironmentStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"Environment": "DEV",
-				"Count":       1,
+				"environment": "DEV",
+				"count":       1,
 			},
 			{
-				"Environment": "PROD",
-				"Count":       1,
+				"environment": "PROD",
+				"count":       1,
 			},
 			{
-				"Environment": "TST",
-				"Count":       2,
+				"environment": "TST",
+				"count":       2,
 			},
 		}
 
@@ -100,16 +100,16 @@ func (m *MongodbSuite) TestGetTypeStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"HardwareAbstractionTechnology": "OVM",
-				"Count":                         1,
+				"hardwareAbstractionTechnology": "OVM",
+				"count":                         1,
 			},
 			{
-				"HardwareAbstractionTechnology": "PH",
-				"Count":                         1,
+				"hardwareAbstractionTechnology": "PH",
+				"count":                         1,
 			},
 			{
-				"HardwareAbstractionTechnology": "VMWARE",
-				"Count":                         2,
+				"hardwareAbstractionTechnology": "VMWARE",
+				"count":                         2,
 			},
 		}
 
@@ -149,12 +149,12 @@ func (m *MongodbSuite) TestGetOperatingSystemStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"OperatingSystem": "Red Hat Enterprise Linux 7.6",
-				"Count":           3,
+				"operatingSystem": "Red Hat Enterprise Linux 7.6",
+				"count":           3,
 			},
 			{
-				"OperatingSystem": "Ubuntu 18.04.4",
-				"Count":           1,
+				"operatingSystem": "Ubuntu 18.04.4",
+				"count":           1,
 			},
 		}
 
@@ -176,12 +176,12 @@ func (m *MongodbSuite) TestGetOperatingSystemStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"OperatingSystem": "RHEL7",
-				"Count":           3,
+				"operatingSystem": "RHEL7",
+				"count":           3,
 			},
 			{
-				"OperatingSystem": "Ubuntu Server",
-				"Count":           1,
+				"operatingSystem": "Ubuntu Server",
+				"count":           1,
 			},
 		}
 
@@ -225,8 +225,8 @@ func (m *MongodbSuite) TestGetTopUnusedOracleDatabaseInstanceResourceStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"Hostname": "test-db2",
-				"Unused":   2.5999999999999996,
+				"hostname": "test-db2",
+				"unused":   2.5999999999999996,
 				"_id":      "5ebbaaf747c3fcf9dc0a1f51",
 			},
 		}
@@ -239,18 +239,18 @@ func (m *MongodbSuite) TestGetTopUnusedOracleDatabaseInstanceResourceStats() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"Hostname": "test-db2",
-				"Unused":   2.5999999999999996,
+				"hostname": "test-db2",
+				"unused":   2.5999999999999996,
 				"_id":      "5ebbaaf747c3fcf9dc0a1f51",
 			},
 			{
-				"Hostname": "test-db",
-				"Unused":   1,
+				"hostname": "test-db",
+				"unused":   1,
 				"_id":      "5e96ade270c184faca93fe36",
 			},
 			{
-				"Hostname": "test-small2",
-				"Unused":   nil,
+				"hostname": "test-small2",
+				"unused":   nil,
 				"_id":      "5ea2d3c520d55cbdc35022b5",
 			},
 		}
