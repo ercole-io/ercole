@@ -99,19 +99,19 @@ func MigrateHostsSchema(log *logrus.Logger, client *mongo.Database) {
 	//index creations
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
-			{"Archived", 1},
-			{"Hostname", 1},
+			{"archived", 1},
+			{"hostname", 1},
 		},
 		Options: (&options.IndexOptions{
-			PartialFilterExpression: bson.D{{"Archived", false}},
+			PartialFilterExpression: bson.D{{"archived", false}},
 		}).SetUnique(true),
 	}); err != nil {
 		log.Panicln(err)
 	}
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
-			{"Hostname", 1},
-			{"CreatedAt", -1},
+			{"hostname", 1},
+			{"createdAt", -1},
 		},
 	}); err != nil {
 		log.Panicln(err)
@@ -140,16 +140,16 @@ func MigrateHostsSchema(log *logrus.Logger, client *mongo.Database) {
 	// }
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
-			{"Archived", 1},
-			{"Extra.clusters.Name", 1},
+			{"archived", 1},
+			{"clusters.name", 1},
 		},
 	}); err != nil {
 		log.Panicln(err)
 	}
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
-			{"Archived", 1},
-			{"Extra.Clusters.VMs.Hostname", 1},
+			{"archived", 1},
+			{"clusters.vms.hostname", 1},
 		},
 	}); err != nil {
 		log.Panicln(err)
@@ -364,7 +364,7 @@ func MigratePatchingFunctionsSchema(log *logrus.Logger, client *mongo.Database) 
 	//index creations
 	if _, err := client.Collection("patching_functions").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
-			{"Hostname", 1},
+			{"hostname", 1},
 		},
 	}); err != nil {
 		log.Panicln(err)
