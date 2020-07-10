@@ -628,10 +628,10 @@
                                                                         "backupType": {
                                                                             "type": "string",
                                                                             "enum": [
-                                                                                "archivelog",
-                                                                                "full",
-                                                                                "level0",
-                                                                                "level1"
+                                                                                "Archivelog",
+                                                                                "Full",
+                                                                                "Level0",
+                                                                                "Level1"
                                                                             ]
                                                                         },
                                                                         "hour": {
@@ -645,13 +645,13 @@
                                                                             "items": {
                                                                                 "type": "string",
                                                                                 "enum": [
-                                                                                    "monday",
-                                                                                    "tuesday",
-                                                                                    "wednesday",
-                                                                                    "thursday",
-                                                                                    "friday",
-                                                                                    "saturday",
-                                                                                    "sunday"
+                                                                                    "Monday",
+                                                                                    "Tuesday",
+                                                                                    "Wednesday",
+                                                                                    "Thursday",
+                                                                                    "Friday",
+                                                                                    "Saturday",
+                                                                                    "Sunday"
                                                                                 ]
                                                                             },
                                                                             "uniqueItems": true
@@ -918,9 +918,9 @@
                                                             "serverType": {
                                                                 "type": "string",
                                                                 "enum": [
-                                                                    "dbserver",
-                                                                    "ibswitch",
-                                                                    "storageServer"
+                                                                    "DBServer",
+                                                                    "IBSwitch",
+                                                                    "StorageServer"
                                                                 ]
                                                             },
                                                             "model": {
@@ -1107,8 +1107,8 @@
                                                                     {
                                                                         "type": "string",
                                                                         "enum": [
-                                                                            "writeBack",
-                                                                            "writeThrough"
+                                                                            "WriteBack",
+                                                                            "WriteThrough"
                                                                         ]
                                                                     }
                                                                 ]
