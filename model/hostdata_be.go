@@ -29,23 +29,23 @@ const ServerSchemaVersion int = 1
 
 // HostDataBE holds all informations about a host & services
 type HostDataBE struct {
-	ID                  primitive.ObjectID `bson:"_id"`
-	Archived            bool               `bson:"Archived"`
-	CreatedAt           time.Time          `bson:"CreatedAt"`
-	ServerVersion       string             `bson:"ServerVersion"`
-	ServerSchemaVersion int                `bson:"ServerSchemaVersion"`
+	ID                  primitive.ObjectID `json:"id" bson:"_id"`
+	Archived            bool               `json:"archived" bson:"archived"`
+	CreatedAt           time.Time          `json:"createdAt" bson:"createdAt"`
+	ServerVersion       string             `json:"serverVersion" bson:"serverVersion"`
+	ServerSchemaVersion int                `json:"serverSchemaVersion" bson:"serverSchemaVersion"`
 
-	Hostname                string                  `bson:"Hostname"`
-	Location                string                  `bson:"Location"`
-	Environment             string                  `bson:"Environment"`
-	AgentVersion            string                  `bson:"AgentVersion"`
-	Tags                    []string                `bson:"Tags"`
-	Info                    Host                    `bson:"Info"`
-	ClusterMembershipStatus ClusterMembershipStatus `bson:"ClusterMembershipStatus"`
-	Features                Features                `bson:"Features"`
-	Filesystems             []Filesystem            `bson:"Filesystems"`
-	Clusters                []ClusterInfo           `bson:"Clusters"`
-	OtherInfo               map[string]interface{}  `bson:"OtherInfo"`
+	Hostname                string                  `json:"hostname" bson:"hostname"`
+	Location                string                  `json:"location" bson:"location"`
+	Environment             string                  `json:"environment" bson:"environment"`
+	AgentVersion            string                  `json:"agentVersion" bson:"agentVersion"`
+	Tags                    []string                `json:"tags" bson:"tags"`
+	Info                    Host                    `json:"info" bson:"info"`
+	ClusterMembershipStatus ClusterMembershipStatus `json:"clusterMembershipStatus" bson:"clusterMembershipStatus"`
+	Features                Features                `json:"features" bson:"features"`
+	Filesystems             []Filesystem            `json:"filesystems" bson:"filesystems"`
+	Clusters                []ClusterInfo           `json:"clusters" bson:"clusters"`
+	OtherInfo               map[string]interface{}  `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -72,41 +72,41 @@ func (v *HostDataBE) UnmarshalBSON(data []byte) error {
 var HostDataBEBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Archived",
-		"CreatedAt",
-		"ServerVersion",
-		"ServerSchemaVersion",
+		"archived",
+		"createdAt",
+		"serverVersion",
+		"serverSchemaVersion",
 
-		"Hostname",
-		"Location",
-		"Environment",
-		"Tags",
-		"AgentVersion",
-		"Info",
-		"ClusterMembershipStatus",
-		"Features",
-		"Filesystems",
+		"hostname",
+		"location",
+		"environment",
+		"tags",
+		"agentVersion",
+		"info",
+		"clusterMembershipStatus",
+		"features",
+		"filesystems",
 	},
 	"properties": bson.M{
-		"Hostname": bson.M{
+		"hostname": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 253,
 			"pattern":   "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$",
 		},
-		"Location": bson.M{
+		"location": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 64,
 			"pattern":   "^[a-zA-Z0-9-]+$",
 		},
-		"Environment": bson.M{
+		"environment": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 16,
 			"pattern":   "^[A-Z0-9]+$",
 		},
-		"Tags": bson.M{
+		"tags": bson.M{
 			"bsonType": "array",
 			"items": bson.M{
 				"bsonType":  "string",
@@ -116,16 +116,16 @@ var HostDataBEBsonValidatorRules = bson.M{
 			},
 			"uniqueItems": true,
 		},
-		"AgentVersion": bson.M{
+		"agentVersion": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 64,
 			"pattern":   "^(([0-9]+([.][0-9]+)*)|(git-[0-9a-f]+)|(latest))$",
 		},
-		"Info":                    HostBsonValidatorRules,
-		"ClusterMembershipStatus": ClusterMembershipStatusBsonValidatorRules,
-		"Features":                FeaturesBsonValidatorRules,
-		"Clusters": bson.M{
+		"info":                    HostBsonValidatorRules,
+		"clusterMembershipStatus": ClusterMembershipStatusBsonValidatorRules,
+		"features":                FeaturesBsonValidatorRules,
+		"clusters": bson.M{
 			"anyOf": bson.A{
 				bson.M{"bsonType": "null"},
 				bson.M{
@@ -134,19 +134,19 @@ var HostDataBEBsonValidatorRules = bson.M{
 				},
 			},
 		},
-		"Archived": bson.M{
+		"archived": bson.M{
 			"bsonType": "bool",
 		},
-		"CreatedAt": bson.M{
+		"createdAt": bson.M{
 			"bsonType": "date",
 		},
-		"ServerVersion": bson.M{
+		"serverVersion": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 64,
 			"pattern":   "^(([0-9]+([.][0-9]+)*)|(git-[0-9a-f]+)|(latest))$",
 		},
-		"ServerSchemaVersion": bson.M{
+		"serverSchemaVersion": bson.M{
 			"bsonType": "number",
 			"minimum":  1,
 			"maximum":  1,

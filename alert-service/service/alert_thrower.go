@@ -36,8 +36,8 @@ func (as *AlertService) ThrowNewDatabaseAlert(dbname string, hostname string) ut
 		Date:                    as.TimeNow(),
 		Description:             fmt.Sprintf("The database '%s' was created on the server %s", dbname, hostname),
 		OtherInfo: map[string]interface{}{
-			"Hostname": hostname,
-			"Dbname":   dbname,
+			"hostname": hostname,
+			"dbname":   dbname,
 		},
 	}
 	_, err := as.Database.InsertAlert(alr)
@@ -64,7 +64,7 @@ func (as *AlertService) ThrowNewServerAlert(hostname string) utils.AdvancedError
 		Date:                    as.TimeNow(),
 		Description:             fmt.Sprintf("The server '%s' was added to ercole", hostname),
 		OtherInfo: map[string]interface{}{
-			"Hostname": hostname,
+			"hostname": hostname,
 		},
 	}
 	_, err := as.Database.InsertAlert(alr)
@@ -91,7 +91,7 @@ func (as *AlertService) ThrowNewEnterpriseLicenseAlert(hostname string) utils.Ad
 		Date:                    as.TimeNow(),
 		Description:             fmt.Sprintf("A new Enterprise license has been enabled to %s", hostname),
 		OtherInfo: map[string]interface{}{
-			"Hostname": hostname,
+			"hostname": hostname,
 		},
 	}
 	_, err := as.Database.InsertAlert(alr)
@@ -118,9 +118,9 @@ func (as *AlertService) ThrowActivatedFeaturesAlert(dbname string, hostname stri
 		Date:                    as.TimeNow(),
 		Description:             fmt.Sprintf("The database %s on %s has enabled new features (%s) on server", dbname, hostname, strings.Join(activatedFeatures, ", ")),
 		OtherInfo: map[string]interface{}{
-			"Hostname": hostname,
-			"Dbname":   dbname,
-			"Features": activatedFeatures,
+			"hostname": hostname,
+			"dbname":   dbname,
+			"features": activatedFeatures,
 		},
 	}
 	_, err := as.Database.InsertAlert(alr)
@@ -147,7 +147,7 @@ func (as *AlertService) ThrowNoDataAlert(hostname string, freshnessThreshold int
 		Date:                    as.TimeNow(),
 		Description:             fmt.Sprintf("No data received from the host %s in the last %d days", hostname, freshnessThreshold),
 		OtherInfo: map[string]interface{}{
-			"Hostname": hostname,
+			"hostname": hostname,
 		},
 	}
 	_, err := as.Database.InsertAlert(alr)

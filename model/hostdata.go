@@ -26,18 +26,18 @@ const SchemaVersion int = 1
 
 // HostData holds all informations about a host & services
 type HostData struct {
-	Hostname                string
-	Location                string
-	Environment             string
-	Tags                    []string
-	AgentVersion            string
-	SchemaVersion           int
-	Info                    Host
-	ClusterMembershipStatus ClusterMembershipStatus
-	Features                Features
-	Filesystems             []Filesystem
-	Clusters                []ClusterInfo
-	OtherInfo               map[string]interface{}
+	Hostname                string                  `json:"hostname"`
+	Location                string                  `json:"location"`
+	Environment             string                  `json:"environment"`
+	Tags                    []string                `json:"tags"`
+	AgentVersion            string                  `json:"agentVersion"`
+	SchemaVersion           int                     `json:"schemaVersion"`
+	Info                    Host                    `json:"info"`
+	ClusterMembershipStatus ClusterMembershipStatus `json:"clusterMembershipStatus"`
+	Features                Features                `json:"features"`
+	Filesystems             []Filesystem            `json:"filesystems"`
+	Clusters                []ClusterInfo           `json:"clusters"`
+	OtherInfo               map[string]interface{}  `json:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this

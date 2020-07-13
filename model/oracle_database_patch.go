@@ -24,12 +24,12 @@ import (
 
 // OracleDatabasePatch holds information about a Oracle database patch
 type OracleDatabasePatch struct {
-	Version     string                 `bson:"Version"`
-	PatchID     int                    `bson:"PatchID"`
-	Action      string                 `bson:"Action"`
-	Description string                 `bson:"Description"`
-	Date        string                 `bson:"Date"`
-	OtherInfo   map[string]interface{} `bson:"-"`
+	Version     string                 `json:"version" bson:"version"`
+	PatchID     int                    `json:"patchID" bson:"patchID"`
+	Action      string                 `json:"action" bson:"action"`
+	Description string                 `json:"description" bson:"description"`
+	Date        string                 `json:"date" bson:"date"`
+	OtherInfo   map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -56,32 +56,32 @@ func (v *OracleDatabasePatch) UnmarshalBSON(data []byte) error {
 var OracleDatabasePatchBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Version",
-		"PatchID",
-		"Action",
-		"Description",
-		"Date",
+		"version",
+		"patchID",
+		"action",
+		"description",
+		"date",
 	},
 	"properties": bson.M{
-		"Version": bson.M{
+		"version": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 16,
 		},
-		"PatchID": bson.M{
+		"patchID": bson.M{
 			"bsonType": "number",
 		},
-		"Action": bson.M{
+		"action": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 128,
 		},
-		"Description": bson.M{
+		"description": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 256,
 		},
-		"Date": bson.M{
+		"date": bson.M{
 			"bsonType": "string",
 			"pattern":  "[0-9]{4}-[0-9]{2}-[0-9]{2}",
 		},
