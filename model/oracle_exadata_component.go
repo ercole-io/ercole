@@ -106,9 +106,9 @@ var OracleExadataComponentBsonValidatorRules = bson.M{
 		"serverType": bson.M{
 			"bsonType": "string",
 			"enum": bson.A{
-				"storageServer",
-				"dbServer",
-				"ibSwitch",
+				"StorageServer",
+				"DBServer",
+				"IBSwitch",
 			},
 		},
 		"model": bson.M{
@@ -192,8 +192,8 @@ var OracleExadataComponentBsonValidatorRules = bson.M{
 				bson.M{
 					"bsonType": "string",
 					"enum": bson.A{
-						"writeBack",
-						"writeThrough",
+						"WriteBack",
+						"WriteThrough",
 					},
 				},
 			},

@@ -116,7 +116,7 @@ var FrontendHostdataSchemaValidator string = `
                     "type": "integer",
                     "minimum": 0
                 },
-                "cpucores": {
+                "cpuCores": {
                     "type": "integer",
                     "minimum": 1
                 },
@@ -134,7 +134,10 @@ var FrontendHostdataSchemaValidator string = `
                 },
                 "hardwareAbstraction": {
                     "type": "string",
-                    "enum": ["PH", "VIRT"]
+                    "enum": [
+                        "PH",
+                        "VIRT"
+                    ]
                 },
                 "hardwareAbstractionTechnology": {
                     "type": "string",
@@ -157,7 +160,7 @@ var FrontendHostdataSchemaValidator string = `
                     "minLength": 1,
                     "maxLength": 64
                 },
-                "osversion": {
+                "osVersion": {
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 64
@@ -193,14 +196,16 @@ var FrontendHostdataSchemaValidator string = `
             "type": "object",
             "properties": {
                 "oracle": {
-                    "anyOf": [{
+                    "anyOf": [
+                        {
                             "type": "null"
                         },
                         {
                             "type": "object",
                             "properties": {
                                 "database": {
-                                    "anyOf": [{
+                                    "anyOf": [
+                                        {
                                             "type": "null"
                                         },
                                         {
@@ -228,17 +233,17 @@ var FrontendHostdataSchemaValidator string = `
                                                             "blockSize",
                                                             "cpuCount",
                                                             "sgaTarget",
-                                                            "pgatarget",
+                                                            "pgaTarget",
                                                             "memoryTarget",
-                                                            "sgamaxSize",
+                                                            "sgaMaxSize",
                                                             "segmentsSize",
                                                             "datafileSize",
                                                             "allocated",
                                                             "elapsed",
-                                                            "dbtime",
+                                                            "dbTime",
                                                             "dailyCPUUsage",
                                                             "work",
-                                                            "ASM",
+                                                            "asm",
                                                             "dataguard",
                                                             "patches",
                                                             "tablespaces",
@@ -261,7 +266,8 @@ var FrontendHostdataSchemaValidator string = `
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 64
-                                                            },"name": {
+                                                            },
+                                                            "name": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 64
@@ -315,13 +321,13 @@ var FrontendHostdataSchemaValidator string = `
                                                             "sgaTarget": {
                                                                 "type": "number"
                                                             },
-                                                            "pgatarget": {
+                                                            "pgaTarget": {
                                                                 "type": "number"
                                                             },
                                                             "memoryTarget": {
                                                                 "type": "number"
                                                             },
-                                                            "sgamaxSize": {
+                                                            "sgaMaxSize": {
                                                                 "type": "number"
                                                             },
                                                             "segmentsSize": {
@@ -334,7 +340,8 @@ var FrontendHostdataSchemaValidator string = `
                                                                 "type": "number"
                                                             },
                                                             "elapsed": {
-                                                                "anyOf": [{
+                                                                "anyOf": [
+                                                                    {
                                                                         "type": "null"
                                                                     },
                                                                     {
@@ -342,8 +349,9 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "dbtime": {
-                                                                "anyOf": [{
+                                                            "dbTime": {
+                                                                "anyOf": [
+                                                                    {
                                                                         "type": "null"
                                                                     },
                                                                     {
@@ -352,7 +360,8 @@ var FrontendHostdataSchemaValidator string = `
                                                                 ]
                                                             },
                                                             "dailyCPUUsage": {
-                                                                "anyOf": [{
+                                                                "anyOf": [
+                                                                    {
                                                                         "type": "null"
                                                                     },
                                                                     {
@@ -361,7 +370,8 @@ var FrontendHostdataSchemaValidator string = `
                                                                 ]
                                                             },
                                                             "work": {
-                                                                "anyOf": [{
+                                                                "anyOf": [
+                                                                    {
                                                                         "type": "null"
                                                                     },
                                                                     {
@@ -369,7 +379,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "ASM": {
+                                                            "asm": {
                                                                 "type": "boolean"
                                                             },
                                                             "dataguard": {
@@ -464,7 +474,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     "type": "object",
                                                                     "required": [
                                                                         "indexes",
-                                                                        "LOB",
+                                                                        "lob",
                                                                         "tables",
                                                                         "total",
                                                                         "user"
@@ -474,7 +484,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                             "type": "integer",
                                                                             "minimum": 0
                                                                         },
-                                                                        "LOB": {
+                                                                        "lob": {
                                                                             "type": "integer",
                                                                             "minimum": 0
                                                                         },
@@ -629,10 +639,10 @@ var FrontendHostdataSchemaValidator string = `
                                                                         "backupType": {
                                                                             "type": "string",
                                                                             "enum": [
-                                                                                "archivelog",
-                                                                                "full",
-                                                                                "level0",
-                                                                                "level1"
+                                                                                "Archivelog",
+                                                                                "Full",
+                                                                                "Level0",
+                                                                                "Level1"
                                                                             ]
                                                                         },
                                                                         "hour": {
@@ -646,13 +656,13 @@ var FrontendHostdataSchemaValidator string = `
                                                                             "items": {
                                                                                 "type": "string",
                                                                                 "enum": [
-                                                                                    "monday",
-                                                                                    "tuesday",
-                                                                                    "wednesday",
-                                                                                    "thursday",
-                                                                                    "friday",
-                                                                                    "saturday",
-                                                                                    "sunday"
+                                                                                    "Monday",
+                                                                                    "Tuesday",
+                                                                                    "Wednesday",
+                                                                                    "Thursday",
+                                                                                    "Friday",
+                                                                                    "Saturday",
+                                                                                    "Sunday"
                                                                                 ]
                                                                             },
                                                                             "uniqueItems": true
@@ -808,7 +818,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                                 "type": "object",
                                                                                 "required": [
                                                                                     "indexes",
-                                                                                    "LOB",
+                                                                                    "lob",
                                                                                     "tables",
                                                                                     "total",
                                                                                     "user"
@@ -818,7 +828,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                                         "type": "integer",
                                                                                         "minimum": 0
                                                                                     },
-                                                                                    "LOB": {
+                                                                                    "lob": {
                                                                                         "type": "integer",
                                                                                         "minimum": 0
                                                                                     },
@@ -865,7 +875,8 @@ var FrontendHostdataSchemaValidator string = `
                                     ]
                                 },
                                 "exadata": {
-                                    "anyOf": [{
+                                    "anyOf": [
+                                        {
                                             "type": "null"
                                         },
                                         {
@@ -912,9 +923,9 @@ var FrontendHostdataSchemaValidator string = `
                                                             "serverType": {
                                                                 "type": "string",
                                                                 "enum": [
-                                                                    "dbserver",
-                                                                    "ibswitch",
-                                                                    "storageServer"
+                                                                    "DBServer",
+                                                                    "IBSwitch",
+                                                                    "StorageServer"
                                                                 ]
                                                             },
                                                             "model": {
@@ -1101,8 +1112,8 @@ var FrontendHostdataSchemaValidator string = `
                                                                     {
                                                                         "type": "string",
                                                                         "enum": [
-                                                                            "writeBack",
-                                                                            "writeThrough"
+                                                                            "WriteBack",
+                                                                            "WriteThrough"
                                                                         ]
                                                                     }
                                                                 ]
@@ -1154,18 +1165,22 @@ var FrontendHostdataSchemaValidator string = `
                                 }
                             }
                         },
-                        { "type": "null" }
+                        {
+                            "type": "null"
+                        }
                     ]
                 },
                 "postgresql": {
-                    "anyOf": [{
+                    "anyOf": [
+                        {
                             "type": "null"
                         },
                         {
                             "type": "object",
                             "properties": {
                                 "postgresql": {
-                                    "anyOf": [{
+                                    "anyOf": [
+                                        {
                                             "type": "null"
                                         },
                                         {
@@ -1383,7 +1398,8 @@ var FrontendHostdataSchemaValidator string = `
             }
         },
         "clusters": {
-            "anyOf": [{
+            "anyOf": [
+                {
                     "type": "null"
                 },
                 {
@@ -1394,7 +1410,7 @@ var FrontendHostdataSchemaValidator string = `
                             "fetchEndpoint",
                             "type",
                             "name",
-                            "CPU",
+                            "cpu",
                             "sockets",
                             "vms"
                         ],
@@ -1414,7 +1430,7 @@ var FrontendHostdataSchemaValidator string = `
                                 "minLength": 1,
                                 "maxLength": 128
                             },
-                            "CPU": {
+                            "cpu": {
                                 "type": "integer",
                                 "minimum": 0
                             },
