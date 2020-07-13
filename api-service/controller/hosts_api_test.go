@@ -43,7 +43,7 @@ func TestSearchHosts_JSONPaged(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Content": []interface{}{
+		"content": []interface{}{
 			map[string]interface{}{
 				"CPUCores":                      1,
 				"CPUModel":                      "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",

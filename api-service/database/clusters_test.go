@@ -58,7 +58,7 @@ func (m *MongodbSuite) TestSearchClusters() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
-				"Content": []interface{}{
+				"content": []interface{}{
 					map[string]interface{}{
 						"cpu":                         140,
 						"environment":                 "PROD",

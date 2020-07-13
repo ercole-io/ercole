@@ -176,7 +176,7 @@ func (md *MongoDatabase) GetOracleExadataStorageErrorCountStatusStats(location s
 			mu.APProject(bson.M{
 				"devs": mu.APOMap(
 					mu.APOFilter("$features.oracle.exadata.components", "dev",
-						mu.APOEqual("$$dev.serverType", "storageServer"),
+						mu.APOEqual("$$dev.serverType", "StorageServer"),
 					),
 					"dev",
 					mu.APOMap("$$dev.cellDisks", "cd", mu.APOGreater("$$cd.errCount", 0)),

@@ -89,7 +89,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
-				"Content": []interface{}{
+				"content": []interface{}{
 					map[string]interface{}{
 						"_id":                     utils.Str2oid("5ea6a65bb2e36eb58da2f67c"),
 						"alertAffectedTechnology": "Oracle/Database",
