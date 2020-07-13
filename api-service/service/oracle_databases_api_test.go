@@ -534,11 +534,11 @@ func TestSetLicensesCount_Success(t *testing.T) {
 	err := as.SetLicensesCount([]map[string]interface{}{
 		{
 			"_id":   "Oracle ENT",
-			"Count": 10,
+			"count": 10,
 		},
 		{
 			"_id":   "Oracle STD",
-			"Count": 20,
+			"count": 20,
 		},
 	})
 
@@ -571,11 +571,11 @@ func TestSetLicensesCount_Fail(t *testing.T) {
 	err := as.SetLicensesCount([]map[string]interface{}{
 		{
 			"_id":   "Oracle ENT",
-			"Count": 10,
+			"count": 10,
 		},
 		{
 			"_id":   "Oracle STD",
-			"Count": 20,
+			"count": 20,
 		},
 	})
 

@@ -34,74 +34,74 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 		context.TODO(),
 		mu.MAPipeline(
 			mu.APOptionalStage(status != "", mu.APMatch(bson.M{
-				"AlertStatus": status,
+				"alertStatus": status,
 			})),
 			mu.APOptionalStage(severity != "", mu.APMatch(bson.M{
-				"AlertSeverity": severity,
+				"alertSeverity": severity,
 			})),
 			mu.APMatch(bson.M{
-				"Date": bson.M{
+				"date": bson.M{
 					"$gte": from,
 					"$lt":  to,
 				},
 			}),
 			mu.APSearchFilterStage([]interface{}{
-				"$Description",
-				"$AlertCode",
-				"$AlertSeverity",
-				"$OtherInfo.Hostname",
-				"$OtherInfo.Dbname",
-				"$OtherInfo.Features",
+				"$description",
+				"$alertCode",
+				"$alertSeverity",
+				"$otherInfo.Hostname",
+				"$otherInfo.Dbname",
+				"$otherInfo.Features",
 			}, keywords),
 			mu.APSet(bson.M{
-				"Hostname": "$OtherInfo.Hostname",
+				"hostname": "$otherInfo.hostname",
 			}),
 			mu.APOptionalStage(mode == "aggregated-code-severity", mu.MAPipeline(
 				mu.APGroup(bson.M{
 					"_id": bson.M{
-						"Code":     "$AlertCode",
-						"Severity": "$AlertSeverity",
-						"Category": "$AlertCategory",
+						"code":     "$alertCode",
+						"severity": "$alertSeverity",
+						"category": "$alertCategory",
 					},
-					"Count": mu.APOSum(1),
-					"OldestAlert": bson.M{
-						"$min": "$Date",
+					"count": mu.APOSum(1),
+					"oldestAlert": bson.M{
+						"$min": "$date",
 					},
-					"AffectedHosts": bson.M{
-						"$addToSet": "$Hostname",
+					"affectedHosts": bson.M{
+						"$addToSet": "$hostname",
 					},
 				}),
 				mu.APProject(bson.M{
 					"_id":           false,
-					"Category":      "$_id.Category",
-					"Code":          "$_id.Code",
-					"Severity":      "$_id.Severity",
-					"Count":         true,
-					"AffectedHosts": mu.APOSize("$AffectedHosts"),
-					"OldestAlert":   true,
+					"category":      "$_id.category",
+					"code":          "$_id.code",
+					"severity":      "$_id.severity",
+					"count":         true,
+					"affectedHosts": mu.APOSize("$affectedHosts"),
+					"oldestAlert":   true,
 				}),
 			)),
 			mu.APOptionalStage(mode == "aggregated-category-severity", mu.MAPipeline(
 				mu.APGroup(bson.M{
 					"_id": bson.M{
-						"Severity": "$AlertSeverity",
-						"Category": "$AlertCategory",
+						"severity": "$alertSeverity",
+						"category": "$alertCategory",
 					},
-					"Count": mu.APOSum(1),
-					"OldestAlert": bson.M{
-						"$min": "$Date",
+					"count": mu.APOSum(1),
+					"oldestAlert": bson.M{
+						"$min": "$date",
 					},
-					"AffectedHosts": bson.M{
-						"$addToSet": "$Hostname",
+					"affectedHosts": bson.M{
+						"$addToSet": "$hostname",
 					},
 				}),
 				mu.APProject(bson.M{
 					"_id":           false,
-					"Category":      "$_id.Category",
-					"Severity":      "$_id.Severity",
-					"Count":         true,
-					"AffectedHosts": mu.APOSize("$AffectedHosts"),
-					"OldestAlert":   true,
+					"category":      "$_id.category",
+					"severity":      "$_id.severity",
+					"count":         true,
+					"affectedHosts": mu.APOSize("$affectedHosts"),
+					"oldestAlert":   true,
 				}),
 			)),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
@@ -129,7 +129,7 @@ func (md *MongoDatabase) UpdateAlertStatus(id primitive.ObjectID, newStatus stri
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").UpdateOne(context.TODO(), bson.M{
 		"_id": id,
 	}, mu.UOSet(bson.M{
-		"AlertStatus": newStatus,
+		"alertStatus": newStatus,
 	}))
 	if err != nil {
 		return utils.NewAdvancedErrorPtr(err, "DB ERROR")

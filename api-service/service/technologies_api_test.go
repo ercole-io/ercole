@@ -34,21 +34,21 @@ func TestListTechnologies_Success(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"Compliance": 1.0,
-			"UnpaidDues": 0,
-			"Product":    "Oracle/Exadata",
-			"HostsCount": 2,
+			"compliance": 1.0,
+			"unpaidDues": 0,
+			"product":    "Oracle/Exadata",
+			"hostsCount": 2,
 		},
 		{
-			"Compliance": 7.0 / 10,
-			"UnpaidDues": 45,
-			"Product":    "Oracle/Database",
-			"HostsCount": 8,
+			"compliance": 7.0 / 10,
+			"unpaidDues": 45,
+			"product":    "Oracle/Database",
+			"hostsCount": 8,
 		},
 	}
 
 	getTechnologiesUsageRes := map[string]float64{
-		"Oracle/Database_HostsCount": 8,
+		"Oracle/Database_hostsCount": 8,
 		"Oracle/Exadata":             2,
 	}
 	db.EXPECT().
@@ -56,31 +56,31 @@ func TestListTechnologies_Success(t *testing.T) {
 		Return(getTechnologiesUsageRes, nil)
 	listLicensesRes := []interface{}{
 		map[string]interface{}{
-			"Compliance":       false,
-			"Count":            4,
-			"Used":             4,
+			"compliance":       false,
+			"count":            4,
+			"used":             4,
 			"_id":              "Partitioning",
-			"TotalCost":        40,
-			"PaidCost":         40,
-			"CostPerProcessor": 10,
+			"totalCost":        40,
+			"paidCost":         40,
+			"costPerProcessor": 10,
 		},
 		map[string]interface{}{
-			"Compliance":       false,
-			"Count":            3,
-			"Used":             6,
+			"compliance":       false,
+			"count":            3,
+			"used":             6,
 			"_id":              "Diagnostics Pack",
-			"TotalCost":        90,
-			"PaidCost":         45,
-			"CostPerProcessor": 15,
+			"totalCost":        90,
+			"paidCost":         45,
+			"costPerProcessor": 15,
 		},
 		map[string]interface{}{
-			"Compliance":       true,
-			"Count":            5,
-			"Used":             0,
+			"compliance":       true,
+			"count":            5,
+			"used":             0,
 			"_id":              "Advanced Analytics",
-			"TotalCost":        0,
-			"PaidCost":         5,
-			"CostPerProcessor": 1,
+			"totalCost":        0,
+			"paidCost":         5,
+			"costPerProcessor": 1,
 		},
 	}
 	db.EXPECT().
@@ -104,8 +104,8 @@ func TestListTechnologies_SuccessEmpty(t *testing.T) {
 	}
 
 	expectedRes := []map[string]interface{}{
-		{"Compliance": 1, "HostsCount": 0, "Product": "Oracle/Exadata", "UnpaidDues": 0},
-		{"Compliance": 1, "HostsCount": 0, "Product": "Oracle/Database", "UnpaidDues": 0},
+		{"compliance": 1, "hostsCount": 0, "product": "Oracle/Exadata", "unpaidDues": 0},
+		{"compliance": 1, "hostsCount": 0, "product": "Oracle/Database", "unpaidDues": 0},
 	}
 
 	getTechnologiesUsageRes := map[string]float64{}
@@ -114,9 +114,9 @@ func TestListTechnologies_SuccessEmpty(t *testing.T) {
 		Return(getTechnologiesUsageRes, nil)
 	listLicensesRes := []interface{}{
 		map[string]interface{}{
-			"Compliance": false,
-			"Count":      10,
-			"Used":       0,
+			"compliance": false,
+			"count":      10,
+			"used":       0,
 			"_id":        "Partitioning",
 		},
 	}

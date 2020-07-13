@@ -71,10 +71,10 @@ func (md *MongoDatabase) Init() {
 // ArchiveHost archives tho host with hostname as hostname
 func (md *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, utils.AdvancedErrorInterface) {
 	if res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.M{
-		"Hostname": hostname,
-		"Archived": false,
+		"hostname": hostname,
+		"archived": false,
 	}, mu.UOSet(bson.M{
-		"Archived": true,
+		"archived": true,
 	})); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	} else {
@@ -116,10 +116,10 @@ func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]string, utils.Advan
 	//Get the list of old current hosts
 	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
 		context.TODO(),
-		"Hostname",
+		"hostname",
 		bson.M{
-			"Archived":  false,
-			"CreatedAt": mu.QOLessThan(t),
+			"archived":  false,
+			"createdAt": mu.QOLessThan(t),
 		})
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -142,8 +142,8 @@ func (md *MongoDatabase) FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID
 		context.TODO(),
 		"_id",
 		bson.M{
-			"Archived":  true,
-			"CreatedAt": mu.QOLessThan(t),
+			"archived":  true,
+			"createdAt": mu.QOLessThan(t),
 		})
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -179,7 +179,7 @@ func (md *MongoDatabase) FindPatchingFunction(hostname string) (model.PatchingFu
 
 	//Find the hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("patching_functions").Find(context.TODO(), bson.M{
-		"Hostname": hostname,
+		"hostname": hostname,
 	})
 	if err != nil {
 		return model.PatchingFunction{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
