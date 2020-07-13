@@ -131,13 +131,13 @@ func (ctrl *APIController) SearchOracleDatabaseAddmsXLSX(w http.ResponseWriter, 
 
 	//Add the data to the sheet
 	for i, val := range addms {
-		sheets.SetCellValue("Addm", fmt.Sprintf("A%d", i+2), val["Action"])         //Action column
-		sheets.SetCellValue("Addm", fmt.Sprintf("B%d", i+2), val["Benefit"])        //Benefit column
-		sheets.SetCellValue("Addm", fmt.Sprintf("C%d", i+2), val["Dbname"])         //Dbname column
-		sheets.SetCellValue("Addm", fmt.Sprintf("D%d", i+2), val["Environment"])    //Environment column
-		sheets.SetCellValue("Addm", fmt.Sprintf("E%d", i+2), val["Finding"])        //Finding column
-		sheets.SetCellValue("Addm", fmt.Sprintf("F%d", i+2), val["Hostname"])       //Hostname column
-		sheets.SetCellValue("Addm", fmt.Sprintf("G%d", i+2), val["Recommendation"]) //Recommendation column
+		sheets.SetCellValue("Addm", fmt.Sprintf("A%d", i+2), val["action"])         //Action column
+		sheets.SetCellValue("Addm", fmt.Sprintf("B%d", i+2), val["benefit"])        //Benefit column
+		sheets.SetCellValue("Addm", fmt.Sprintf("C%d", i+2), val["dbname"])         //Dbname column
+		sheets.SetCellValue("Addm", fmt.Sprintf("D%d", i+2), val["environment"])    //Environment column
+		sheets.SetCellValue("Addm", fmt.Sprintf("E%d", i+2), val["finding"])        //Finding column
+		sheets.SetCellValue("Addm", fmt.Sprintf("F%d", i+2), val["hostname"])       //Hostname column
+		sheets.SetCellValue("Addm", fmt.Sprintf("G%d", i+2), val["recommendation"]) //Recommendation column
 	}
 
 	//Write it to the response
@@ -251,15 +251,15 @@ func (ctrl *APIController) SearchOracleDatabaseSegmentAdvisorsXLSX(w http.Respon
 
 	//Add the data to the sheet
 	for i, val := range segmentAdvisors {
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("A%d", i+2), val["Dbname"])         //Dbname column
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("B%d", i+2), val["Environment"])    //Environment column
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("C%d", i+2), val["Hostname"])       //Hostname column
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("D%d", i+2), val["PartitionName"])  //PartitionName column
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("E%d", i+2), val["Reclaimable"])    //Reclaimable column
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("F%d", i+2), val["Recommendation"]) //Recommendation column
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("G%d", i+2), val["SegmentName"])    //SegmentName column
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("H%d", i+2), val["SegmentOwner"])   //SegmentOwner column
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("I%d", i+2), val["SegmentType"])    //SegmentType column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("A%d", i+2), val["dbname"])         //Dbname column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("B%d", i+2), val["environment"])    //Environment column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("C%d", i+2), val["hostname"])       //Hostname column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("D%d", i+2), val["partitionName"])  //PartitionName column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("E%d", i+2), val["reclaimable"])    //Reclaimable column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("F%d", i+2), val["recommendation"]) //Recommendation column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("G%d", i+2), val["segmentName"])    //SegmentName column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("H%d", i+2), val["segmentOwner"])   //SegmentOwner column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("I%d", i+2), val["segmentType"])    //SegmentType column
 	}
 
 	//Write it to the response
@@ -395,12 +395,12 @@ func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsXLSX(w http.Response
 
 	//Add the data to the sheet
 	for i, val := range patchAdvisors {
-		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("A%d", i+2), val["Description"])                                     //Description column
-		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("B%d", i+2), val["Hostname"])                                        //Hostname column
-		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("C%d", i+2), val["Dbname"])                                          //Dbname column
-		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("D%d", i+2), val["Dbver"])                                           //Dbver column
-		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("E%d", i+2), val["Date"].(primitive.DateTime).Time().UTC().String()) //Date column
-		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("F%d", i+2), val["Status"])                                          //Status column
+		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("A%d", i+2), val["description"])                                     //Description column
+		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("B%d", i+2), val["hostname"])                                        //Hostname column
+		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("C%d", i+2), val["dbname"])                                          //Dbname column
+		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("D%d", i+2), val["dbver"])                                           //Dbver column
+		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("E%d", i+2), val["date"].(primitive.DateTime).Time().UTC().String()) //Date column
+		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("F%d", i+2), val["status"])                                          //Status column
 	}
 
 	//Write it to the response
@@ -520,24 +520,24 @@ func (ctrl *APIController) SearchOracleDatabasesXLSX(w http.ResponseWriter, r *h
 
 	//Add the data to the sheet
 	for i, val := range databases {
-		sheets.SetCellValue("Databases", fmt.Sprintf("A%d", i+2), val["Name"])         //Name column
-		sheets.SetCellValue("Databases", fmt.Sprintf("B%d", i+2), val["UniqueName"])   //UniqueName column
-		sheets.SetCellValue("Databases", fmt.Sprintf("C%d", i+2), val["Version"])      //Version column
-		sheets.SetCellValue("Databases", fmt.Sprintf("D%d", i+2), val["Hostname"])     //Hostname column
-		sheets.SetCellValue("Databases", fmt.Sprintf("E%d", i+2), val["Status"])       //Status column
-		sheets.SetCellValue("Databases", fmt.Sprintf("F%d", i+2), val["Environment"])  //Environment column
-		sheets.SetCellValue("Databases", fmt.Sprintf("G%d", i+2), val["Location"])     //Location column
-		sheets.SetCellValue("Databases", fmt.Sprintf("H%d", i+2), val["Charset"])      //Charset column
-		sheets.SetCellValue("Databases", fmt.Sprintf("I%d", i+2), val["BlockSize"])    //BlockSize column
-		sheets.SetCellValue("Databases", fmt.Sprintf("J%d", i+2), val["CPUCount"])     //CPUCount column
-		sheets.SetCellValue("Databases", fmt.Sprintf("K%d", i+2), val["Work"])         //Work column
-		sheets.SetCellValue("Databases", fmt.Sprintf("L%d", i+2), val["Memory"])       //Memory column
-		sheets.SetCellValue("Databases", fmt.Sprintf("M%d", i+2), val["DatafileSize"]) //DatafileSize column
-		sheets.SetCellValue("Databases", fmt.Sprintf("N%d", i+2), val["SegmentsSize"]) //SegmentsSize column
-		sheets.SetCellValue("Databases", fmt.Sprintf("O%d", i+2), val["Archivelog"])   //ArchiveLogStatus column
-		sheets.SetCellValue("Databases", fmt.Sprintf("P%d", i+2), val["Dataguard"])    //Dataguard column
-		sheets.SetCellValue("Databases", fmt.Sprintf("Q%d", i+2), val["RAC"])          //RAC column
-		sheets.SetCellValue("Databases", fmt.Sprintf("R%d", i+2), val["HA"])           //HA column
+		sheets.SetCellValue("Databases", fmt.Sprintf("A%d", i+2), val["name"])         //Name column
+		sheets.SetCellValue("Databases", fmt.Sprintf("B%d", i+2), val["uniqueName"])   //UniqueName column
+		sheets.SetCellValue("Databases", fmt.Sprintf("C%d", i+2), val["version"])      //Version column
+		sheets.SetCellValue("Databases", fmt.Sprintf("D%d", i+2), val["hostname"])     //Hostname column
+		sheets.SetCellValue("Databases", fmt.Sprintf("E%d", i+2), val["status"])       //Status column
+		sheets.SetCellValue("Databases", fmt.Sprintf("F%d", i+2), val["environment"])  //Environment column
+		sheets.SetCellValue("Databases", fmt.Sprintf("G%d", i+2), val["location"])     //Location column
+		sheets.SetCellValue("Databases", fmt.Sprintf("H%d", i+2), val["charset"])      //Charset column
+		sheets.SetCellValue("Databases", fmt.Sprintf("I%d", i+2), val["blockSize"])    //BlockSize column
+		sheets.SetCellValue("Databases", fmt.Sprintf("J%d", i+2), val["cpuCount"])     //CPUCount column
+		sheets.SetCellValue("Databases", fmt.Sprintf("K%d", i+2), val["work"])         //Work column
+		sheets.SetCellValue("Databases", fmt.Sprintf("L%d", i+2), val["memory"])       //Memory column
+		sheets.SetCellValue("Databases", fmt.Sprintf("M%d", i+2), val["datafileSize"]) //DatafileSize column
+		sheets.SetCellValue("Databases", fmt.Sprintf("N%d", i+2), val["segmentsSize"]) //SegmentsSize column
+		sheets.SetCellValue("Databases", fmt.Sprintf("O%d", i+2), val["archivelog"])   //ArchiveLogStatus column
+		sheets.SetCellValue("Databases", fmt.Sprintf("P%d", i+2), val["dataguard"])    //Dataguard column
+		sheets.SetCellValue("Databases", fmt.Sprintf("Q%d", i+2), val["rac"])          //RAC column
+		sheets.SetCellValue("Databases", fmt.Sprintf("R%d", i+2), val["ha"])           //HA column
 	}
 
 	//Write it to the response

@@ -36,11 +36,11 @@ func (md *MongoDatabase) GetTechnologiesUsage(location string, environment strin
 			FilterByOldnessSteps(olderThan),
 			mu.APGroup(bson.M{
 				"_id": 1,
-				"Oracle/Database_HostsCount": mu.APOSum(
-					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$Features.Oracle.Database.Databases", bson.A{})), 0), 1, 0),
+				"Oracle/Database_hostsCount": mu.APOSum(
+					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.oracle.database.databases", bson.A{})), 0), 1, 0),
 				),
 				"Oracle/Exadata": mu.APOSum(
-					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$Features.Oracle.Exadata.Components", bson.A{})), 0), 1, 0),
+					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.oracle.exadata.components", bson.A{})), 0), 1, 0),
 				),
 			}),
 			mu.APUnset("_id"),

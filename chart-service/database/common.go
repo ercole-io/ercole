@@ -27,10 +27,10 @@ import (
 func FilterByLocationAndEnvironmentSteps(location string, environment string) interface{} {
 	return bson.A{
 		mu.APOptionalStage(location != "", mu.APMatch(bson.M{
-			"Location": location,
+			"location": location,
 		})),
 		mu.APOptionalStage(environment != "", mu.APMatch(bson.M{
-			"Environment": environment,
+			"environment": environment,
 		})),
 	}
 }
@@ -38,24 +38,24 @@ func FilterByLocationAndEnvironmentSteps(location string, environment string) in
 func FilterByOldnessSteps(olderThan time.Time) bson.A {
 	return mu.MAPipeline(
 		mu.APOptionalStage(olderThan == utils.MAX_TIME, mu.APMatch(bson.M{
-			"Archived": false,
+			"archived": false,
 		})),
 		mu.APOptionalStage(olderThan != utils.MAX_TIME, bson.A{
 			mu.APMatch(bson.M{
-				"CreatedAt": mu.QOLessThanOrEqual(olderThan),
+				"createdAt": mu.QOLessThanOrEqual(olderThan),
 			}),
-			mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname", "ca": "$CreatedAt"}, "Check", mu.MAPipeline(
+			mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname", "ca": "$createdAt"}, "check", mu.MAPipeline(
 				mu.APProject(bson.M{
-					"Hostname":  1,
-					"CreatedAt": 1,
+					"hostname":  1,
+					"createdAt": 1,
 				}),
-				mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$Hostname", "$$hn"), mu.APOGreater("$CreatedAt", "$$ca"), mu.APOGreaterOrEqual(olderThan, "$CreatedAt")))),
+				mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$hostname", "$$hn"), mu.APOGreater("$createdAt", "$$ca"), mu.APOGreaterOrEqual(olderThan, "$createdAt")))),
 				mu.APLimit(1),
 			)),
 			mu.APMatch(bson.M{
-				"Check": mu.QOSize(0),
+				"check": mu.QOSize(0),
 			}),
-			mu.APUnset("Check"),
+			mu.APUnset("check"),
 		}),
 	)
 }
