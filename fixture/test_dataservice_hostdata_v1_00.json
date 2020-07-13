@@ -1,52 +1,52 @@
 {
-    "Hostname": "rac1_x",
-    "Environment": "TST",
-    "Location": "Germany",
-    "Info": {
-        "Hostname": "rac1",
-        "CPUModel": "Intel(R) Xeon(R) CPU E5-2609 v4 @ 1.70GHz",
-        "CPUCores": 1,
-        "CPUThreads": 2,
-        "Kernel": "4.1.12-103.3.8.1.el7uek.x86_64",
-        "OS": "Red Hat Enterprise Linux",
-        "MemoryTotal": 7,
-        "SwapTotal": 7,
-        "CPUFrequency": "1.70GHz",
-        "CPUSockets": 1,
-        "CoresPerSocket": 1,
-        "ThreadsPerCore": 2,
-        "KernelVersion": "4.1.12-103.3.8.1.el7uek.x86_64",
-        "OSVersion": "7.4",
-        "HardwareAbstraction": "VIRT",
-        "HardwareAbstractionTechnology": "OVM"
+    "hostname": "rac1_x",
+    "environment": "TST",
+    "location": "Germany",
+    "info": {
+        "hostname": "rac1",
+        "cpuModel": "Intel(R) Xeon(R) CPU E5-2609 v4 @ 1.70GHz",
+        "cpuCores": 1,
+        "cpuThreads": 2,
+        "kernel": "4.1.12-103.3.8.1.el7uek.x86_64",
+        "os": "Red Hat Enterprise Linux",
+        "memoryTotal": 7,
+        "swapTotal": 7,
+        "cpuFrequency": "1.70GHz",
+        "cpuSockets": 1,
+        "coresPerSocket": 1,
+        "threadsPerCore": 2,
+        "kernelVersion": "4.1.12-103.3.8.1.el7uek.x86_64",
+        "osVersion": "7.4",
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "OVM"
     },
-    "AgentVersion": "1.6.5",
-    "Tags": [],
-    "SchemaVersion": 1,
-    "ClusterMembershipStatus": {
-        "OracleClusterware": true,
-        "VeritasClusterServer": false,
-        "SunCluster": false,
-        "HACMP": false
+    "agentVersion": "1.6.5",
+    "tags": [],
+    "schemaVersion": 1,
+    "clusterMembershipStatus": {
+        "oracleClusterware": true,
+        "veritasClusterServer": false,
+        "sunCluster": false,
+        "hacmp": false
     },
-    "Filesystems": [
+    "filesystems": [
         {
-            "Filesystem": "/dev/mapper/rootvg-root",
-            "Size": 23622320128,
-            "MountedOn": "/",
-            "AvailableSpace": 18253611008,
-            "UsedSpace": 3758096384,
-            "Type": "ext4"
+            "filesystem": "/dev/mapper/rootvg-root",
+            "size": 23622320128,
+            "mountedOn": "/",
+            "availableSpace": 18253611008,
+            "usedSpace": 3758096384,
+            "type": "ext4"
         },
         {
-            "Filesystem": "/dev/xvda1",
-            "Size": 296747008,
-            "MountedOn": "/boot",
-            "AvailableSpace": 81788928,
-            "UsedSpace": 196083712,
-            "Type": "ext4"
+            "filesystem": "/dev/xvda1",
+            "size": 296747008,
+            "mountedOn": "/boot",
+            "availableSpace": 81788928,
+            "usedSpace": 196083712,
+            "type": "ext4"
         }
     ],
-    "Features": {},
-    "Clusters": null
+    "features": {},
+    "clusters": null
 }

@@ -34,35 +34,35 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Technologies": map[string]interface{}{
-			"Technologies": []map[string]interface{}{
+		"technologies": map[string]interface{}{
+			"technologies": []map[string]interface{}{
 				{
-					"Compliance": 1.0,
-					"Product":    model.TechnologyOracleExadata,
-					"HostsCount": 0.0,
-					"UnpaidDues": 0,
+					"compliance": 1.0,
+					"product":    model.TechnologyOracleExadata,
+					"hostsCount": 0.0,
+					"unpaidDues": 0,
 				},
 				{
-					"Compliance": 7.0 / 10.0,
-					"Product":    model.TechnologyOracleDatabase,
-					"HostsCount": 8,
-					"UnpaidDues": 45,
+					"compliance": 7.0 / 10.0,
+					"product":    model.TechnologyOracleDatabase,
+					"hostsCount": 8,
+					"unpaidDues": 45,
 				},
 			},
-			"Total": map[string]interface{}{
-				"Compliance": 7.0 / 10.0,
-				"UnpaidDues": 45,
-				"HostsCount": 20,
+			"total": map[string]interface{}{
+				"compliance": 7.0 / 10.0,
+				"unpaidDues": 45,
+				"hostsCount": 20,
 			},
 		},
-		"Features": map[string]interface{}{
+		"features": map[string]interface{}{
 			"Oracle/Database": true,
 			"Oracle/Exadata":  true,
 		},
 	}
 
 	getTechnologiesUsageRes := map[string]float64{
-		"Oracle/Database_HostsCount": 8,
+		"Oracle/Database_hostsCount": 8,
 		"Oracle/Exadata":             0,
 	}
 	db.EXPECT().
@@ -75,31 +75,31 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 
 	listLicensesRes := []interface{}{
 		map[string]interface{}{
-			"Compliance":       false,
-			"Count":            4,
-			"Used":             4,
+			"compliance":       false,
+			"count":            4,
+			"used":             4,
 			"_id":              "Partitioning",
-			"TotalCost":        40,
-			"PaidCost":         40,
-			"CostPerProcessor": 10,
+			"totalCost":        40,
+			"paidCost":         40,
+			"costPerProcessor": 10,
 		},
 		map[string]interface{}{
-			"Compliance":       false,
-			"Count":            3,
-			"Used":             6,
+			"compliance":       false,
+			"count":            3,
+			"used":             6,
 			"_id":              "Diagnostics Pack",
-			"TotalCost":        90,
-			"PaidCost":         45,
-			"CostPerProcessor": 15,
+			"totalCost":        90,
+			"paidCost":         45,
+			"costPerProcessor": 15,
 		},
 		map[string]interface{}{
-			"Compliance":       true,
-			"Count":            5,
-			"Used":             0,
+			"compliance":       true,
+			"count":            5,
+			"used":             0,
 			"_id":              "Advanced Analytics",
-			"TotalCost":        0,
-			"PaidCost":         5,
-			"CostPerProcessor": 1,
+			"totalCost":        0,
+			"paidCost":         5,
+			"costPerProcessor": 1,
 		},
 	}
 	db.EXPECT().
@@ -107,7 +107,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		Return(listLicensesRes, nil).AnyTimes().MinTimes(1)
 
 	getTechnologiesUsageRes2 := map[string]float64{
-		"Oracle/Database_HostsCount": 8,
+		"Oracle/Database_hostsCount": 8,
 		"Oracle/Exadata":             2,
 	}
 	db.EXPECT().

@@ -44,7 +44,7 @@ func (md *MongoDatabase) SearchOracleDatabases(full bool, keywords []string, sor
 			}),
 			mu.APSearchFilterStage([]interface{}{"$hostname", "$database.name"}, keywords),
 			mu.APAddFields(bson.M{
-				"database.Memory": mu.APOAdd(
+				"database.memory": mu.APOAdd(
 					"$database.pgaTarget",
 					"$database.sgaTarget",
 					"$database.memoryTarget",

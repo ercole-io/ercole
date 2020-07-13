@@ -61,7 +61,7 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 			}),
 			mu.APLookupPipeline("hosts", bson.M{
 				"vms": "$vms",
-			}, "VMsErcoleAgentCount", mu.MAPipeline(
+			}, "vmsErcoleAgentCount", mu.MAPipeline(
 				FilterByOldnessSteps(olderThan),
 				mu.APProject(bson.M{
 					"hostname": 1,
