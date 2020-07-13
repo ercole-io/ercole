@@ -1,399 +1,399 @@
 {
-    "Hostname": "test-db2",
-    "Environment": "TST",
-    "Location": "Germany",
-    "Info": {
-        "Hostname": "test-db2",
-        "CPUModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-        "CPUCores": 1,
-        "CPUThreads": 2,
-        "Kernel": "3.10.0-514.el7.x86_64",
-        "OS": "Red Hat Enterprise Linux",
-        "MemoryTotal": 3,
-        "SwapTotal": 1,
-        "CPUFrequency": "2.53GHz",
-        "CPUSockets": 2,
-        "CoresPerSocket": 1,
-        "ThreadsPerCore": 2,
-        "KernelVersion": "3.10.0-514.el7.x86_64",
-        "OSVersion": "7.6",
-        "HardwareAbstraction": "VIRT",
-        "HardwareAbstractionTechnology": "OVM"
+    "hostname": "test-db2",
+    "environment": "TST",
+    "location": "Germany",
+    "info": {
+        "hostname": "test-db2",
+        "cpuModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+        "cpuCores": 1,
+        "cpuThreads": 2,
+        "kernel": "3.10.0-514.el7.x86_64",
+        "os": "Red Hat Enterprise Linux",
+        "memoryTotal": 3,
+        "swapTotal": 1,
+        "cpuFrequency": "2.53GHz",
+        "cpuSockets": 2,
+        "coresPerSocket": 1,
+        "threadsPerCore": 2,
+        "kernelVersion": "3.10.0-514.el7.x86_64",
+        "osVersion": "7.6",
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "OVM"
     },
-    "AgentVersion": "latest",
-    "Tags": [],
-    "SchemaVersion": 1,
-    "ClusterMembershipStatus": {
-        "OracleClusterware": false,
-        "VeritasClusterServer": false,
-        "SunCluster": false,
-        "HACMP": false
+    "agentVersion": "latest",
+    "tags": [],
+    "schemaVersion": 1,
+    "clusterMembershipStatus": {
+        "oracleClusterware": false,
+        "veritasClusterServer": false,
+        "sunCluster": false,
+        "hacmp": false
     },
-    "Filesystems": [
+    "filesystems": [
         {
-            "Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
-            "Size": 13958643712,
-            "MountedOn": "/",
-            "AvailableSpace": 5798205849,
-            "UsedSpace": 7194070220,
-            "Type": "ext4"
+            "filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+            "size": 13958643712,
+            "mountedOn": "/",
+            "availableSpace": 5798205849,
+            "usedSpace": 7194070220,
+            "type": "ext4"
         },
         {
-            "Filesystem": "/dev/sda1",
-            "Size": 511705088,
-            "MountedOn": "/boot",
-            "AvailableSpace": 335544320,
-            "UsedSpace": 139460608,
-            "Type": "ext4"
+            "filesystem": "/dev/sda1",
+            "size": 511705088,
+            "mountedOn": "/boot",
+            "availableSpace": 335544320,
+            "usedSpace": 139460608,
+            "type": "ext4"
         }
     ],
-    "Features": {
-        "Oracle": {
-            "Database": {
-                "Databases": [
+    "features": {
+        "oracle": {
+            "database": {
+                "databases": [
                     {
-                        "InstanceNumber": 1,
-                        "InstanceName": "foobar11",
-                        "Name": "foobar1",
-                        "UniqueName": "foobar1",
-                        "Status": "OPEN",
-                        "Version": "12.2.0.1.0 Enterprise Edition",
-                        "Platform": "Linux x86 64-bit",
-                        "Archivelog": false,
-                        "Charset": "AL32UTF8",
-                        "NCharset": "AL16UTF16",
-                        "BlockSize": 8192,
-                        "CPUCount": 2,
-                        "SGATarget": 0.0,
-                        "PGATarget": 0.0,
-                        "MemoryTarget": 1.484,
-                        "SGAMaxSize": 1.484,
-                        "SegmentsSize": 3.0,
-                        "Allocated": 129.0,
-                        "Elapsed": 12059.18,
-                        "DBTime": 184.81,
-                        "DailyCPUUsage": 0.7,
-                        "Work": 1.0,
-                        "ASM": false,
-                        "Dataguard": false,
-                        "Patches": [],
-                        "Tablespaces": [
+                        "instanceNumber": 1,
+                        "instanceName": "foobar11",
+                        "name": "foobar1",
+                        "uniqueName": "foobar1",
+                        "status": "OPEN",
+                        "version": "12.2.0.1.0 Enterprise Edition",
+                        "platform": "Linux x86 64-bit",
+                        "archivelog": false,
+                        "charset": "AL32UTF8",
+                        "nCharset": "AL16UTF16",
+                        "blockSize": 8192,
+                        "cpuCount": 2,
+                        "sgaTarget": 0.0,
+                        "pgaTarget": 0.0,
+                        "memoryTarget": 1.484,
+                        "sgaMaxSize": 1.484,
+                        "segmentsSize": 3.0,
+                        "allocated": 129.0,
+                        "elapsed": 12059.18,
+                        "dbTime": 184.81,
+                        "dailyCPUUsage": 0.7,
+                        "work": 1.0,
+                        "asm": false,
+                        "dataguard": false,
+                        "patches": [],
+                        "tablespaces": [
                             {
-                                "Name": "SYSTEM",
-                                "MaxSize": 32767.9844,
-                                "Total": 850.0,
-                                "Used": 842.875,
-                                "UsedPerc": 2.57,
-                                "Status": "ONLINE"
+                                "name": "SYSTEM",
+                                "maxSize": 32767.9844,
+                                "total": 850.0,
+                                "used": 842.875,
+                                "usedPerc": 2.57,
+                                "status": "ONLINE"
                             },
                             {
-                                "Name": "USERS",
-                                "MaxSize": 32767.9844,
-                                "Total": 1024.0,
-                                "Used": 576.0,
-                                "UsedPerc": 1.76,
-                                "Status": "ONLINE"
+                                "name": "USERS",
+                                "maxSize": 32767.9844,
+                                "total": 1024.0,
+                                "used": 576.0,
+                                "usedPerc": 1.76,
+                                "status": "ONLINE"
                             }
                         ],
-                        "Schemas": [
+                        "schemas": [
                             {
-                                "User": "RAF",
-                                "Total": 192,
-                                "Tables": 192,
-                                "Indexes": 0,
-                                "LOB": 0
+                                "user": "RAF",
+                                "total": 192,
+                                "tables": 192,
+                                "indexes": 0,
+                                "lob": 0
                             },
                             {
-                                "User": "REMOTE_SCHEDULER_AGENT",
-                                "Total": 0,
-                                "Tables": 0,
-                                "Indexes": 0,
-                                "LOB": 0
+                                "user": "REMOTE_SCHEDULER_AGENT",
+                                "total": 0,
+                                "tables": 0,
+                                "indexes": 0,
+                                "lob": 0
                             }
                         ],
-                        "Licenses": [
+                        "licenses": [
                             {
-                                "Name": "Oracle EXE",
-                                "Count": 0
+                                "name": "Oracle EXE",
+                                "count": 0
                             },
                             {
-                                "Name": "Oracle ENT",
-                                "Count": 0.5
+                                "name": "Oracle ENT",
+                                "count": 0.5
                             },
                             {
-                                "Name": "Oracle STD",
-                                "Count": 0
+                                "name": "Oracle STD",
+                                "count": 0
                             },
                             {
-                                "Name": "WebLogic Server Management Pack Enterprise Edition",
-                                "Count": 0
+                                "name": "WebLogic Server Management Pack Enterprise Edition",
+                                "count": 0
                             },
                             {
-                                "Name": "Diagnostics Pack",
-                                "Count": 0.5
+                                "name": "Diagnostics Pack",
+                                "count": 0.5
                             }
                         ],
-                        "ADDMs": [
+                        "addms": [
                             {
-                                "Finding": "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
-                                "Recommendation": "SQL Tuning",
-                                "Action": "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
-                                "Benefit": 83.34
+                                "finding": "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
+                                "recommendation": "SQL Tuning",
+                                "action": "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
+                                "benefit": 83.34
                             },
                             {
-                                "Finding": "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
-                                "Recommendation": "Segment Tuning",
-                                "Action": "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
-                                "Benefit": 68.24
+                                "finding": "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
+                                "recommendation": "Segment Tuning",
+                                "action": "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
+                                "benefit": 68.24
                             }
                         ],
-                        "SegmentAdvisors": [
+                        "segmentAdvisors": [
                             {
-                                "SegmentOwner": "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-                                "SegmentName": "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-                                "SegmentType": "TABLE",
-                                "PartitionName": "iyyiuyyoy",
-                                "Reclaimable": 0.5,
-                                "Recommendation": "32b36a77e7481343ef175483c086859e"
+                                "segmentOwner": "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+                                "segmentName": "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+                                "segmentType": "TABLE",
+                                "partitionName": "iyyiuyyoy",
+                                "reclaimable": 0.5,
+                                "recommendation": "32b36a77e7481343ef175483c086859e"
                             }
                         ],
-                        "Backups": [
+                        "backups": [
                             {
-                                "BackupType": "Archivelog",
-                                "Hour": "01:30",
-                                "WeekDays": [
+                                "backupType": "Archivelog",
+                                "hour": "01:30",
+                                "weekDays": [
                                     "Wednesday"
                                 ],
-                                "AvgBckSize": 13.0,
-                                "Retention": "1 NUMBERS"
+                                "avgBckSize": 13.0,
+                                "retention": "1 NUMBERS"
                             },
                             {
-                                "BackupType": "Archivelog",
-                                "Hour": "03:00",
-                                "WeekDays": [
+                                "backupType": "Archivelog",
+                                "hour": "03:00",
+                                "weekDays": [
                                     "Tuesday",
                                     "Sunday",
                                     "Monday",
                                     "Saturday",
                                     "Wednesday"
                                 ],
-                                "AvgBckSize": 45.0,
-                                "Retention": "1 NUMBERS"
+                                "avgBckSize": 45.0,
+                                "retention": "1 NUMBERS"
                             }
                         ],
-                        "DatafileSize": 6.0,
-                        "PSUs": [
+                        "datafileSize": 6.0,
+                        "psus": [
                             {
-                                "Date": "2012-04-16",
-                                "Description": "PSU 11.2.0.3.2"
+                                "date": "2012-04-16",
+                                "description": "PSU 11.2.0.3.2"
                             }
                         ],
-                        "FeatureUsageStats": [
+                        "featureUsageStats": [
                             {
-                                "Product": "Diagnostics Pack",
-                                "Feature": "ADDM",
-                                "DetectedUsages": 91,
-                                "CurrentlyUsed": false,
-                                "FirstUsageDate": "2019-06-24T17:34:20Z",
-                                "LastUsageDate": "2019-11-09T04:48:23Z",
-                                "ExtraFeatureInfo": ""
+                                "product": "Diagnostics Pack",
+                                "feature": "ADDM",
+                                "detectedUsages": 91,
+                                "currentlyUsed": false,
+                                "firstUsageDate": "2019-06-24T17:34:20Z",
+                                "lastUsageDate": "2019-11-09T04:48:23Z",
+                                "extraFeatureInfo": ""
                             },
                             {
-                                "Product": "Diagnostics Pack",
-                                "Feature": "AWR Report",
-                                "DetectedUsages": 90,
-                                "CurrentlyUsed": false,
-                                "FirstUsageDate": "2019-06-27T15:15:44Z",
-                                "LastUsageDate": "2019-11-09T04:48:23Z",
-                                "ExtraFeatureInfo": ""
+                                "product": "Diagnostics Pack",
+                                "feature": "AWR Report",
+                                "detectedUsages": 90,
+                                "currentlyUsed": false,
+                                "firstUsageDate": "2019-06-27T15:15:44Z",
+                                "lastUsageDate": "2019-11-09T04:48:23Z",
+                                "extraFeatureInfo": ""
                             },
                             {
-                                "Product": "Diagnostics Pack",
-                                "Feature": "Automatic Workload Repository",
-                                "DetectedUsages": 7,
-                                "CurrentlyUsed": false,
-                                "FirstUsageDate": "2019-06-27T17:01:09Z",
-                                "LastUsageDate": "2019-07-02T05:35:05Z",
-                                "ExtraFeatureInfo": ""
+                                "product": "Diagnostics Pack",
+                                "feature": "Automatic Workload Repository",
+                                "detectedUsages": 7,
+                                "currentlyUsed": false,
+                                "firstUsageDate": "2019-06-27T17:01:09Z",
+                                "lastUsageDate": "2019-07-02T05:35:05Z",
+                                "extraFeatureInfo": ""
                             }
                         ],
-                        "IsCDB": false,
-                        "PDBs": [],
-                        "Services": []
+                        "isCDB": false,
+                        "pdbs": [],
+                        "services": []
                     },
                     {
-                        "InstanceNumber": 1,
-                        "InstanceName": "foobar21",
-                        "Name": "foobar2",
-                        "UniqueName": "foobar2",
-                        "Status": "OPEN",
-                        "Version": "12.2.0.1.0 Enterprise Edition",
-                        "Platform": "Linux x86 64-bit",
-                        "Archivelog": false,
-                        "Charset": "AL32UTF8",
-                        "NCharset": "AL16UTF16",
-                        "BlockSize": 8192,
-                        "CPUCount": 8,
-                        "SGATarget": 0.0,
-                        "PGATarget": 0.0,
-                        "MemoryTarget": 1.484,
-                        "SGAMaxSize": 1.484,
-                        "SegmentsSize": 3.0,
-                        "Allocated": 129.0,
-                        "Elapsed": 12059.18,
-                        "DBTime": 184.81,
-                        "DailyCPUUsage": 3.1,
-                        "Work": 6.4,
-                        "ASM": false,
-                        "Dataguard": false,
-                        "Patches": [],
-                        "Tablespaces": [
+                        "instanceNumber": 1,
+                        "instanceName": "foobar21",
+                        "name": "foobar2",
+                        "uniqueName": "foobar2",
+                        "status": "OPEN",
+                        "version": "12.2.0.1.0 Enterprise Edition",
+                        "platform": "Linux x86 64-bit",
+                        "archivelog": false,
+                        "charset": "AL32UTF8",
+                        "nCharset": "AL16UTF16",
+                        "blockSize": 8192,
+                        "cpuCount": 8,
+                        "sgaTarget": 0.0,
+                        "pgaTarget": 0.0,
+                        "memoryTarget": 1.484,
+                        "sgaMaxSize": 1.484,
+                        "segmentsSize": 3.0,
+                        "allocated": 129.0,
+                        "elapsed": 12059.18,
+                        "dbTime": 184.81,
+                        "dailyCPUUsage": 3.1,
+                        "work": 6.4,
+                        "asm": false,
+                        "dataguard": false,
+                        "patches": [],
+                        "tablespaces": [
                             {
-                                "Name": "SYSTEM",
-                                "MaxSize": 32767.9844,
-                                "Total": 850.0,
-                                "Used": 842.875,
-                                "UsedPerc": 2.57,
-                                "Status": "ONLINE"
+                                "name": "SYSTEM",
+                                "maxSize": 32767.9844,
+                                "total": 850.0,
+                                "used": 842.875,
+                                "usedPerc": 2.57,
+                                "status": "ONLINE"
                             },
                             {
-                                "Name": "USERS",
-                                "MaxSize": 32767.9844,
-                                "Total": 1024.0,
-                                "Used": 576.0,
-                                "UsedPerc": 1.76,
-                                "Status": "ONLINE"
+                                "name": "USERS",
+                                "maxSize": 32767.9844,
+                                "total": 1024.0,
+                                "used": 576.0,
+                                "usedPerc": 1.76,
+                                "status": "ONLINE"
                             }
                         ],
-                        "Schemas": [
+                        "schemas": [
                             {
-                                "User": "RAF",
-                                "Total": 192,
-                                "Tables": 192,
-                                "Indexes": 0,
-                                "LOB": 0
+                                "user": "RAF",
+                                "total": 192,
+                                "tables": 192,
+                                "indexes": 0,
+                                "lob": 0
                             },
                             {
-                                "User": "REMOTE_SCHEDULER_AGENT",
-                                "Total": 0,
-                                "Tables": 0,
-                                "Indexes": 0,
-                                "LOB": 0
+                                "user": "REMOTE_SCHEDULER_AGENT",
+                                "total": 0,
+                                "tables": 0,
+                                "indexes": 0,
+                                "lob": 0
                             }
                         ],
-                        "Licenses": [
+                        "licenses": [
                             {
-                                "Name": "Oracle EXE",
-                                "Count": 0
+                                "name": "Oracle EXE",
+                                "count": 0
                             },
                             {
-                                "Name": "Oracle ENT",
-                                "Count": 0.5
+                                "name": "Oracle ENT",
+                                "count": 0.5
                             },
                             {
-                                "Name": "Oracle STD",
-                                "Count": 0
+                                "name": "Oracle STD",
+                                "count": 0
                             },
                             {
-                                "Name": "WebLogic Server Management Pack Enterprise Edition",
-                                "Count": 0
+                                "name": "WebLogic Server Management Pack Enterprise Edition",
+                                "count": 0
                             },
                             {
-                                "Name": "Diagnostics Pack",
-                                "Count": 0.5
+                                "name": "Diagnostics Pack",
+                                "count": 0.5
                             }
                         ],
-                        "ADDMs": [
+                        "addms": [
                             {
-                                "Finding": "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
-                                "Recommendation": "SQL Tuning",
-                                "Action": "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
-                                "Benefit": 83.34
+                                "finding": "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
+                                "recommendation": "SQL Tuning",
+                                "action": "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
+                                "benefit": 83.34
                             },
                             {
-                                "Finding": "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
-                                "Recommendation": "Segment Tuning",
-                                "Action": "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
-                                "Benefit": 68.24
+                                "finding": "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
+                                "recommendation": "Segment Tuning",
+                                "action": "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
+                                "benefit": 68.24
                             }
                         ],
-                        "SegmentAdvisors": [
+                        "segmentAdvisors": [
                             {
-                                "SegmentOwner": "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-                                "SegmentName": "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-                                "SegmentType": "TABLE",
-                                "PartitionName": "iyyiuyyoy",
-                                "Reclaimable": 0.5,
-                                "Recommendation": "32b36a77e7481343ef175483c086859e"
+                                "segmentOwner": "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+                                "segmentName": "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+                                "segmentType": "TABLE",
+                                "partitionName": "iyyiuyyoy",
+                                "reclaimable": 0.5,
+                                "recommendation": "32b36a77e7481343ef175483c086859e"
                             }
                         ],
-                        "Backups": [
+                        "backups": [
                             {
-                                "BackupType": "Archivelog",
-                                "Hour": "01:30",
-                                "WeekDays": [
+                                "backupType": "Archivelog",
+                                "hour": "01:30",
+                                "weekDays": [
                                     "Wednesday"
                                 ],
-                                "AvgBckSize": 13.0,
-                                "Retention": "1 NUMBERS"
+                                "avgBckSize": 13.0,
+                                "retention": "1 NUMBERS"
                             },
                             {
-                                "BackupType": "Archivelog",
-                                "Hour": "03:00",
-                                "WeekDays": [
+                                "backupType": "Archivelog",
+                                "hour": "03:00",
+                                "weekDays": [
                                     "Tuesday",
                                     "Sunday",
                                     "Monday",
                                     "Saturday",
                                     "Wednesday"
                                 ],
-                                "AvgBckSize": 45.0,
-                                "Retention": "1 NUMBERS"
+                                "avgBckSize": 45.0,
+                                "retention": "1 NUMBERS"
                             }
                         ],
-                        "DatafileSize": 6.0,
-                        "PSUs": [
+                        "datafileSize": 6.0,
+                        "psus": [
                             {
-                                "Date": "2012-04-16",
-                                "Description": "PSU 11.2.0.3.2"
+                                "date": "2012-04-16",
+                                "description": "PSU 11.2.0.3.2"
                             }
                         ],
-                        "FeatureUsageStats": [
+                        "featureUsageStats": [
                             {
-                                "Product": "Diagnostics Pack",
-                                "Feature": "ADDM",
-                                "DetectedUsages": 91,
-                                "CurrentlyUsed": false,
-                                "FirstUsageDate": "2019-06-24T17:34:20Z",
-                                "LastUsageDate": "2019-11-09T04:48:23Z",
-                                "ExtraFeatureInfo": ""
+                                "product": "Diagnostics Pack",
+                                "feature": "ADDM",
+                                "detectedUsages": 91,
+                                "currentlyUsed": false,
+                                "firstUsageDate": "2019-06-24T17:34:20Z",
+                                "lastUsageDate": "2019-11-09T04:48:23Z",
+                                "extraFeatureInfo": ""
                             },
                             {
-                                "Product": "Diagnostics Pack",
-                                "Feature": "AWR Report",
-                                "DetectedUsages": 90,
-                                "CurrentlyUsed": false,
-                                "FirstUsageDate": "2019-06-27T15:15:44Z",
-                                "LastUsageDate": "2019-11-09T04:48:23Z",
-                                "ExtraFeatureInfo": ""
+                                "product": "Diagnostics Pack",
+                                "feature": "AWR Report",
+                                "detectedUsages": 90,
+                                "currentlyUsed": false,
+                                "firstUsageDate": "2019-06-27T15:15:44Z",
+                                "lastUsageDate": "2019-11-09T04:48:23Z",
+                                "extraFeatureInfo": ""
                             },
                             {
-                                "Product": "Diagnostics Pack",
-                                "Feature": "Automatic Workload Repository",
-                                "DetectedUsages": 7,
-                                "CurrentlyUsed": false,
-                                "FirstUsageDate": "2019-06-27T17:01:09Z",
-                                "LastUsageDate": "2019-07-02T05:35:05Z",
-                                "ExtraFeatureInfo": ""
+                                "product": "Diagnostics Pack",
+                                "feature": "Automatic Workload Repository",
+                                "detectedUsages": 7,
+                                "currentlyUsed": false,
+                                "firstUsageDate": "2019-06-27T17:01:09Z",
+                                "lastUsageDate": "2019-07-02T05:35:05Z",
+                                "extraFeatureInfo": ""
                             }
                         ],
-                        "IsCDB": false,
-                        "PDBs": [],
-                        "Services": []
+                        "isCDB": false,
+                        "pdbs": [],
+                        "services": []
                     }
                 ]
             }
         }
     },
-    "Clusters": null
+    "clusters": null
 }
