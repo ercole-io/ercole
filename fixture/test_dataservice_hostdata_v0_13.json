@@ -27,172 +27,203 @@
 		"AixCluster": false
 	},
 	"Extra": {
-		"Databases": [{
-			"InstanceNumber": "1",
-			"Name": "pokemons",
-			"UniqueName": "pokemons",
-			"Status": "OPEN",
-			"Version": "12.2.0.1.0 Enterprise Edition",
-			"Platform": "Linux x86 64-bit",
-			"Archivelog": "ARCHIVELOG",
-			"Charset": "AL32UTF8",
-			"NCharset": "AL16UTF16",
-			"BlockSize": "8192",
-			"CPUCount": "2",
-			"SGATarget": "35.32",
-			"PGATarget": "53.45",
-			"MemoryTarget": "1.484",
-			"SGAMaxSize": "1.484",
-			"SegmentsSize": "3",
-			"Used": "6",
-			"Allocated": "129",
-			"Elapsed": "12059.18",
-			"DBTime": "184.81",
-			"DailyCPUUsage": "1.3",
-			"Work": "1",
-			"ASM": false,
-			"Dataguard": true,
-			"Patches": [],
-			"Tablespaces": [{
-				"Database": "pokemons",
-				"Name": "SYSTEM",
-				"MaxSize": "32767.9844",
-				"Total": "850",
-				"Used": "842.875",
-				"UsedPerc": "2.57",
-				"Status": "ONLINE"
-			}, {
-				"Database": "pokemons",
-				"Name": "USERS",
-				"MaxSize": "32767.9844",
-				"Total": "1024",
-				"Used": "576",
-				"UsedPerc": "1.76",
-				"Status": "ONLINE"
-			}, {
-				"Database": "pokemons",
-				"Name": "UNDOTBS1",
-				"MaxSize": "32767.9844",
-				"Total": "895",
-				"Used": "41.25",
-				"UsedPerc": "0.13",
-				"Status": "ONLINE"
-			}, {
-				"Database": "pokemons",
-				"Name": "SYSAUX",
-				"MaxSize": "32767.9844",
-				"Total": "1870",
-				"Used": "1749.625",
-				"UsedPerc": "5.34",
-				"Status": "ONLINE"
-			}],
-			"Schemas": [{
-				"Database": "pokemons",
-				"User": "RAF",
-				"Total": 192,
-				"Tables": 192,
-				"Indexes": 0,
-				"LOB": 0
-			}, {
-				"Database": "pokemons",
-				"User": "REMOTE_SCHEDULER_AGENT",
-				"Total": 0,
-				"Tables": 0,
-				"Indexes": 0,
-				"LOB": 0
-			}, {
-				"Database": "pokemons",
-				"User": "SYS$UMF",
-				"Total": 0,
-				"Tables": 0,
-				"Indexes": 0,
-				"LOB": 0
-			}],
-			"Licenses": [{
-				"Name": "Oracle EXE",
-				"Count": 0
-			}, {
-				"Name": "Oracle ENT",
-				"Count": 0.5
-			}, {
-				"Name": "Oracle STD",
-				"Count": 0
-			}, {
-				"Name": "WebLogic Server Management Pack Enterprise Edition",
-				"Count": 0
-			}, {
-				"Name": "RAC or RAC One Node",
-				"Count": 0
-			}, {
-				"Name": "Provisioning and Patch Automation Pack",
-				"Count": 0
-			}, {
-				"Name": "Provisioning and Patch Automation Pack for Database",
-				"Count": 0
-			}, {
-				"Name": "Pillar Storage",
-				"Count": 0
-			}, {
-				"Name": "Partitioning",
-				"Count": 0
-			}, {
-				"Name": "Diagnostics Pack",
-				"Count": 0.5
-			}],
-			"ADDMs": [],
-			"SegmentAdvisors": [],
-			"LastPSUs": [],
-			"Backups": [],
-			"Features2": [{
-				"Product": "Diagnostics Pack",
-				"Feature": "ADDM",
-				"DetectedUsages": 91,
-				"CurrentlyUsed": false,
-				"FirstUsageDate": "2019-06-24 17:34:20",
-				"LastUsageDate": "2019-11-09 04:48:23",
-				"ExtraFeatureInfo": ""
-			}, {
-				"Product": "Diagnostics Pack",
-				"Feature": "AWR Report",
-				"DetectedUsages": 90,
-				"CurrentlyUsed": false,
-				"FirstUsageDate": "2019-06-27 15:15:44",
-				"LastUsageDate": "2019-11-09 04:48:23",
-				"ExtraFeatureInfo": ""
-			}, {
-				"Product": "Diagnostics Pack",
-				"Feature": "Automatic Workload Repository",
-				"DetectedUsages": 7,
-				"CurrentlyUsed": false,
-				"FirstUsageDate": "2019-06-27 17:01:09",
-				"LastUsageDate": "2019-07-02 05:35:05",
-				"ExtraFeatureInfo": ""
-			}]
-		}],
-		"Filesystems": [{
-			"Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
-			"FsType": "ext4",
-			"Size": "13G",
-			"Used": "6.7G",
-			"Available": "5.4G",
-			"UsedPerc": "56%",
-			"MountedOn": "/"
-		}, {
-			"Filesystem": "/dev/sda1",
-			"FsType": "ext4",
-			"Size": "488M",
-			"Used": "133M",
-			"Available": "320M",
-			"UsedPerc": "30%",
-			"MountedOn": "/boot"
-		}, {
-			"Filesystem": "/dev/mapper/cl_itl--csllab--112-data",
-			"FsType": "ext4",
-			"Size": "40G",
-			"Used": "17G",
-			"Available": "22G",
-			"UsedPerc": "44%",
-			"MountedOn": "/data"
-		}]
+		"Databases": [
+			{
+				"InstanceNumber": "1",
+				"InstanceName": "pokemons1",
+				"Name": "pokemons",
+				"UniqueName": "pokemons",
+				"Status": "OPEN",
+				"Version": "12.2.0.1.0 Enterprise Edition",
+				"Platform": "Linux x86 64-bit",
+				"Archivelog": "ARCHIVELOG",
+				"Charset": "AL32UTF8",
+				"NCharset": "AL16UTF16",
+				"BlockSize": "8192",
+				"CPUCount": "2",
+				"SGATarget": "35.32",
+				"PGATarget": "53.45",
+				"MemoryTarget": "1.484",
+				"SGAMaxSize": "1.484",
+				"SegmentsSize": "3",
+				"Used": "6",
+				"Allocated": "129",
+				"Elapsed": "12059.18",
+				"DBTime": "184.81",
+				"DailyCPUUsage": "1.3",
+				"Work": "1",
+				"ASM": false,
+				"Dataguard": true,
+				"Patches": [],
+				"Tablespaces": [
+					{
+						"Database": "pokemons",
+						"Name": "SYSTEM",
+						"MaxSize": "32767.9844",
+						"Total": "850",
+						"Used": "842.875",
+						"UsedPerc": "2.57",
+						"Status": "ONLINE"
+					},
+					{
+						"Database": "pokemons",
+						"Name": "USERS",
+						"MaxSize": "32767.9844",
+						"Total": "1024",
+						"Used": "576",
+						"UsedPerc": "1.76",
+						"Status": "ONLINE"
+					},
+					{
+						"Database": "pokemons",
+						"Name": "UNDOTBS1",
+						"MaxSize": "32767.9844",
+						"Total": "895",
+						"Used": "41.25",
+						"UsedPerc": "0.13",
+						"Status": "ONLINE"
+					},
+					{
+						"Database": "pokemons",
+						"Name": "SYSAUX",
+						"MaxSize": "32767.9844",
+						"Total": "1870",
+						"Used": "1749.625",
+						"UsedPerc": "5.34",
+						"Status": "ONLINE"
+					}
+				],
+				"Schemas": [
+					{
+						"Database": "pokemons",
+						"User": "RAF",
+						"Total": 192,
+						"Tables": 192,
+						"Indexes": 0,
+						"LOB": 0
+					},
+					{
+						"Database": "pokemons",
+						"User": "REMOTE_SCHEDULER_AGENT",
+						"Total": 0,
+						"Tables": 0,
+						"Indexes": 0,
+						"LOB": 0
+					},
+					{
+						"Database": "pokemons",
+						"User": "SYS$UMF",
+						"Total": 0,
+						"Tables": 0,
+						"Indexes": 0,
+						"LOB": 0
+					}
+				],
+				"Licenses": [
+					{
+						"Name": "Oracle EXE",
+						"Count": 0
+					},
+					{
+						"Name": "Oracle ENT",
+						"Count": 0.5
+					},
+					{
+						"Name": "Oracle STD",
+						"Count": 0
+					},
+					{
+						"Name": "WebLogic Server Management Pack Enterprise Edition",
+						"Count": 0
+					},
+					{
+						"Name": "RAC or RAC One Node",
+						"Count": 0
+					},
+					{
+						"Name": "Provisioning and Patch Automation Pack",
+						"Count": 0
+					},
+					{
+						"Name": "Provisioning and Patch Automation Pack for Database",
+						"Count": 0
+					},
+					{
+						"Name": "Pillar Storage",
+						"Count": 0
+					},
+					{
+						"Name": "Partitioning",
+						"Count": 0
+					},
+					{
+						"Name": "Diagnostics Pack",
+						"Count": 0.5
+					}
+				],
+				"ADDMs": [],
+				"SegmentAdvisors": [],
+				"LastPSUs": [],
+				"Backups": [],
+				"Features2": [
+					{
+						"Product": "Diagnostics Pack",
+						"Feature": "ADDM",
+						"DetectedUsages": 91,
+						"CurrentlyUsed": false,
+						"FirstUsageDate": "2019-06-24 17:34:20",
+						"LastUsageDate": "2019-11-09 04:48:23",
+						"ExtraFeatureInfo": ""
+					},
+					{
+						"Product": "Diagnostics Pack",
+						"Feature": "AWR Report",
+						"DetectedUsages": 90,
+						"CurrentlyUsed": false,
+						"FirstUsageDate": "2019-06-27 15:15:44",
+						"LastUsageDate": "2019-11-09 04:48:23",
+						"ExtraFeatureInfo": ""
+					},
+					{
+						"Product": "Diagnostics Pack",
+						"Feature": "Automatic Workload Repository",
+						"DetectedUsages": 7,
+						"CurrentlyUsed": false,
+						"FirstUsageDate": "2019-06-27 17:01:09",
+						"LastUsageDate": "2019-07-02 05:35:05",
+						"ExtraFeatureInfo": ""
+					}
+				]
+			}
+		],
+		"Filesystems": [
+			{
+				"Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+				"FsType": "ext4",
+				"Size": "13G",
+				"Used": "6.7G",
+				"Available": "5.4G",
+				"UsedPerc": "56%",
+				"MountedOn": "/"
+			},
+			{
+				"Filesystem": "/dev/sda1",
+				"FsType": "ext4",
+				"Size": "488M",
+				"Used": "133M",
+				"Available": "320M",
+				"UsedPerc": "30%",
+				"MountedOn": "/boot"
+			},
+			{
+				"Filesystem": "/dev/mapper/cl_itl--csllab--112-data",
+				"FsType": "ext4",
+				"Size": "40G",
+				"Used": "17G",
+				"Available": "22G",
+				"UsedPerc": "44%",
+				"MountedOn": "/data"
+			}
+		]
 	}
 }

@@ -179,7 +179,7 @@ func (md *MongoDatabase) ExistNoDataAlertByHost(hostname string) (bool, utils.Ad
 	val, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").CountDocuments(context.TODO(), bson.M{
 		"alertCode":          model.AlertCodeNoData,
 		"alertStatus":        model.AlertStatusNew,
-		"otherInfo.Hostname": hostname,
+		"otherInfo.hostname": hostname,
 	}, &options.CountOptions{
 		Limit: utils.Intptr(1),
 	})

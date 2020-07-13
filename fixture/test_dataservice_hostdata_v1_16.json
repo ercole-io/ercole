@@ -53,6 +53,7 @@
                 "Databases": [
                     {
                         "InstanceNumber": 1,
+                        "InstanceName": "foobar11",
                         "Name": "foobar1",
                         "UniqueName": "foobar1",
                         "Status": "OPEN",
@@ -222,6 +223,7 @@
                     },
                     {
                         "InstanceNumber": 1,
+                        "InstanceName": "foobar21",
                         "Name": "foobar2",
                         "UniqueName": "foobar2",
                         "Status": "OPEN",
