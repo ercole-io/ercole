@@ -40,7 +40,7 @@ func TestSearchCluster_JSONPaged(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Content": []interface{}{
+		"content": []interface{}{
 			map[string]interface{}{
 				"CPU":                         0,
 				"Environment":                 "PROD",

@@ -33,10 +33,10 @@ var (
 
 // TechnologyInfo contains the informations about a technology
 type TechnologyInfo struct {
-	Product    string
-	PrettyName string
-	Color      string
-	Logo       string
+	Product    string `json:"product"`
+	PrettyName string `json:"prettyName"`
+	Color      string `json:"color"`
+	Logo       string `json:"logo"`
 }
 
 // TechnologySupportedMetrics contains the informations about the supported metrics of a technology
