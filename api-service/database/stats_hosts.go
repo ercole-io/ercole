@@ -34,7 +34,7 @@ func (md *MongoDatabase) GetHostsCountStats(location string, environment string,
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APCount("Value"),
+			mu.APCount("value"),
 		),
 	)
 	if err != nil {
@@ -52,7 +52,7 @@ func (md *MongoDatabase) GetHostsCountStats(location string, environment string,
 		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return out["Value"], nil
+	return out["value"], nil
 }
 
 // GetEnvironmentStats return a array containing the number of hosts per environment
@@ -64,9 +64,9 @@ func (md *MongoDatabase) GetEnvironmentStats(location string, olderThan time.Tim
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APGroupAndCountStages("Environment", "Count", "$Environment"),
+			mu.APGroupAndCountStages("environment", "count", "$environment"),
 			mu.APSort(bson.M{
-				"Environment": 1,
+				"environment": 1,
 			}),
 		),
 	)
@@ -94,9 +94,9 @@ func (md *MongoDatabase) GetTypeStats(location string, olderThan time.Time) ([]i
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APGroupAndCountStages("HardwareAbstractionTechnology", "Count", "$Info.HardwareAbstractionTechnology"),
+			mu.APGroupAndCountStages("hardwareAbstractionTechnology", "count", "$info.hardwareAbstractionTechnology"),
 			mu.APSort(bson.M{
-				"HardwareAbstractionTechnology": 1,
+				"hardwareAbstractionTechnology": 1,
 			}),
 		),
 	)
@@ -127,7 +127,7 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 			aggregationBranches = append(aggregationBranches, bson.M{
 				"case": bson.M{
 					"$regexMatch": bson.M{
-						"input": mu.APOConcat("$Info.OS", " ", "$Info.OSVersion"),
+						"input": mu.APOConcat("$info.os", " ", "$info.osVersion"),
 						"regex": v.Regex,
 					},
 				},
@@ -138,11 +138,11 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 		switchExpr = bson.M{
 			"$switch": bson.M{
 				"branches": aggregationBranches,
-				"default":  mu.APOConcat("$Info.OS", " ", "$Info.OSVersion"),
+				"default":  mu.APOConcat("$info.os", " ", "$info.osVersion"),
 			},
 		}
 	} else {
-		switchExpr = mu.APOConcat("$Info.OS", " ", "$Info.OSVersion")
+		switchExpr = mu.APOConcat("$info.os", " ", "$info.osVersion")
 	}
 
 	//Calculate the stats
@@ -151,9 +151,9 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APGroupAndCountStages("OperatingSystem", "Count", switchExpr),
+			mu.APGroupAndCountStages("operatingSystem", "count", switchExpr),
 			mu.APSort(bson.M{
-				"OperatingSystem": 1,
+				"operatingSystem": 1,
 			}),
 		),
 	)

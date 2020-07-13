@@ -57,7 +57,7 @@ func (m *MongodbSuite) TestGetTechnologiesUsage() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = map[string]interface{}{
 			"Oracle/Exadata":             1,
-			"Oracle/Database_HostsCount": 2,
+			"Oracle/Database_hostsCount": 2,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))

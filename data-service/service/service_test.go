@@ -306,10 +306,10 @@ func TestPatchHostData_SuccessPatchingFunction(t *testing.T) {
 		CreatedAt: utils.P("2020-06-29T09:30:55+00:00"),
 		Hostname:  "rac1_x",
 		Vars: map[string]interface{}{
-			"Tags": []string{"topolino", "pluto"},
+			"tags": []string{"topolino", "pluto"},
 		},
 		Code: `
-			hostdata.Tags = vars.Tags;
+			hostdata.tags = vars.tags;
 		`,
 	}, nil)
 
@@ -356,7 +356,7 @@ func TestPatchHostData_FailPatchingFunction2(t *testing.T) {
 		CreatedAt: utils.P("2020-06-29T09:30:55+00:00"),
 		Hostname:  "rac1_x",
 		Vars: map[string]interface{}{
-			"Tags": []string{"topolino", "pluto"},
+			"tags": []string{"topolino", "pluto"},
 		},
 		Code: `
 			sdfsdasdfsdf

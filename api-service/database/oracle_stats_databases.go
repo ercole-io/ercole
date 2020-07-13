@@ -34,16 +34,16 @@ func (md *MongoDatabase) GetOracleDatabaseEnvironmentStats(location string, olde
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
 			mu.APGroup(bson.M{
-				"_id":   "$Environment",
-				"Count": mu.APOSum(mu.APOCond("$Features.Oracle.Database.Databases", mu.APOSize("$Features.Oracle.Database.Databases"), 0)),
+				"_id":   "$environment",
+				"count": mu.APOSum(mu.APOCond("$features.oracle.database.databases", mu.APOSize("$features.oracle.database.databases"), 0)),
 			}),
 			mu.APProject(bson.M{
 				"_id":         false,
-				"Environment": "$_id",
-				"Count":       true,
+				"environment": "$_id",
+				"count":       true,
 			}),
 			mu.APSort(bson.M{
-				"Environment": 1,
+				"environment": 1,
 			}),
 		),
 	)
@@ -71,18 +71,18 @@ func (md *MongoDatabase) GetOracleDatabaseHighReliabilityStats(location string, 
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			AddHardwareAbstraction("HA"),
+			AddHardwareAbstraction("ha"),
 			mu.APGroup(bson.M{
-				"_id":   "$HA",
-				"Count": mu.APOSum(mu.APOCond("$Features.Oracle.Database.Databases", mu.APOSize("$Features.Oracle.Database.Databases"), 0)),
+				"_id":   "$ha",
+				"count": mu.APOSum(mu.APOCond("$features.oracle.database.databases", mu.APOSize("$features.oracle.database.databases"), 0)),
 			}),
 			mu.APProject(bson.M{
 				"_id":   false,
-				"HA":    "$_id",
-				"Count": true,
+				"ha":    "$_id",
+				"count": true,
 			}),
 			mu.APSort(bson.M{
-				"HA": 1,
+				"ha": 1,
 			}),
 		),
 	)
@@ -111,13 +111,13 @@ func (md *MongoDatabase) GetOracleDatabaseVersionStats(location string, olderTha
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APUnwind("$Features.Oracle.Database.Databases"),
+			mu.APUnwind("$features.oracle.database.databases"),
 			mu.APProject(bson.M{
-				"Database": "$Features.Oracle.Database.Databases",
+				"database": "$features.oracle.database.databases",
 			}),
-			mu.APGroupAndCountStages("Version", "Count", "$Database.Version"),
+			mu.APGroupAndCountStages("version", "count", "$database.version"),
 			mu.APSort(bson.M{
-				"Version": 1,
+				"version": 1,
 			}),
 		),
 	)
@@ -146,18 +146,18 @@ func (md *MongoDatabase) GetTopReclaimableOracleDatabaseStats(location string, l
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APUnwind("$Features.Oracle.Database.Databases"),
+			mu.APUnwind("$features.oracle.database.databases"),
 			mu.APProject(bson.M{
-				"Database": "$Features.Oracle.Database.Databases",
-				"Hostname": true,
+				"database": "$features.oracle.database.databases",
+				"hostname": true,
 			}),
 			mu.APProject(bson.M{
-				"Hostname":                   true,
-				"Dbname":                     "$Database.Name",
-				"ReclaimableSegmentAdvisors": mu.APOSumReducer("$Database.SegmentAdvisors", "$$this.Reclaimable"),
+				"hostname":                   true,
+				"dbname":                     "$database.name",
+				"reclaimableSegmentAdvisors": mu.APOSumReducer("$database.segmentAdvisors", "$$this.reclaimable"),
 			}),
 			mu.APSort(bson.M{
-				"ReclaimableSegmentAdvisors": -1,
+				"reclaimableSegmentAdvisors": -1,
 			}),
 			mu.APLimit(limit),
 		),
@@ -187,18 +187,18 @@ func (md *MongoDatabase) GetTopWorkloadOracleDatabaseStats(location string, limi
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APUnwind("$Features.Oracle.Database.Databases"),
+			mu.APUnwind("$features.oracle.database.databases"),
 			mu.APProject(bson.M{
-				"Database": "$Features.Oracle.Database.Databases",
-				"Hostname": true,
+				"database": "$features.oracle.database.databases",
+				"hostname": true,
 			}),
 			mu.APProject(bson.M{
-				"Hostname": true,
-				"Dbname":   "$Database.Name",
-				"Workload": mu.APOConvertToDoubleOrZero("$Database.Work"),
+				"hostname": true,
+				"dbname":   "$database.name",
+				"workload": mu.APOConvertToDoubleOrZero("$database.work"),
 			}),
 			mu.APSort(bson.M{
-				"Workload": -1,
+				"workload": -1,
 			}),
 			mu.APLimit(limit),
 		),
@@ -228,32 +228,32 @@ func (md *MongoDatabase) GetOracleDatabasePatchStatusStats(location string, wind
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, ""),
-			mu.APUnwind("$Features.Oracle.Database.Databases"),
+			mu.APUnwind("$features.oracle.database.databases"),
 			mu.APProject(bson.M{
-				"Database": "$Features.Oracle.Database.Databases",
+				"database": "$features.oracle.database.databases",
 			}),
 			//TODO: we can map directly PSU to date instead of mapping indirectly using a object that contain the Date field
 			mu.APProject(bson.M{
-				"Database.PSUs": mu.APOReduce(
-					mu.APOMap("$Database.PSUs", "psu", mu.APOMergeObjects(
+				"database.psus": mu.APOReduce(
+					mu.APOMap("$database.psus", "psu", mu.APOMergeObjects(
 						"$$psu",
 						bson.M{
-							"Date": mu.APODateFromString("$$psu.Date", "%Y-%m-%d"),
+							"date": mu.APODateFromString("$$psu.date", "%Y-%m-%d"),
 						},
 					)),
 					nil,
 					mu.APOCond(
 						mu.APOEqual("$$value", nil),
 						"$$this",
-						mu.APOMaxWithCmpExpr("$$value.Date", "$$this.Date", "$$value", "$$this"),
+						mu.APOMaxWithCmpExpr("$$value.date", "$$this.date", "$$value", "$$this"),
 					),
 				),
 			}),
-			mu.APGroupAndCountStages("Status", "Count",
-				mu.APOCond(mu.APOGreater("$Database.PSUs.Date", windowTime), "OK", "KO"),
+			mu.APGroupAndCountStages("status", "count",
+				mu.APOCond(mu.APOGreater("$database.psus.date", windowTime), "OK", "KO"),
 			),
 			mu.APSort(bson.M{
-				"Status": 1,
+				"status": 1,
 			}),
 		),
 	)
@@ -282,13 +282,13 @@ func (md *MongoDatabase) GetOracleDatabaseDataguardStatusStats(location string, 
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$Features.Oracle.Database.Databases"),
+			mu.APUnwind("$features.oracle.database.databases"),
 			mu.APProject(bson.M{
-				"Database": "$Features.Oracle.Database.Databases",
+				"database": "$features.oracle.database.databases",
 			}),
-			mu.APGroupAndCountStages("Dataguard", "Count", "$Database.Dataguard"),
+			mu.APGroupAndCountStages("dataguard", "count", "$database.dataguard"),
 			mu.APSort(bson.M{
-				"Dataguard": 1,
+				"dataguard": 1,
 			}),
 		),
 	)
@@ -317,18 +317,18 @@ func (md *MongoDatabase) GetOracleDatabaseRACStatusStats(location string, enviro
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$Features.Oracle.Database.Databases"),
+			mu.APUnwind("$features.oracle.database.databases"),
 			mu.APProject(bson.M{
-				"Database": "$Features.Oracle.Database.Databases",
+				"database": "$features.oracle.database.databases",
 			}),
-			mu.APGroupAndCountStages("RAC", "Count", mu.APOAny("$Database.Licenses", "lic",
+			mu.APGroupAndCountStages("rac", "count", mu.APOAny("$database.licenses", "lic",
 				mu.APOAnd(
-					mu.APOEqual("$$lic.Name", "Real Application Clusters"),
-					mu.APOGreater("$$lic.Count", 0),
+					mu.APOEqual("$$lic.name", "Real Application Clusters"),
+					mu.APOGreater("$$lic.count", 0),
 				),
 			)),
 			mu.APSort(bson.M{
-				"RAC": 1,
+				"rac": 1,
 			}),
 		),
 	)
@@ -357,13 +357,13 @@ func (md *MongoDatabase) GetOracleDatabaseArchivelogStatusStats(location string,
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$Features.Oracle.Database.Databases"),
+			mu.APUnwind("$features.oracle.database.databases"),
 			mu.APProject(bson.M{
-				"Database": "$Features.Oracle.Database.Databases",
+				"database": "$features.oracle.database.databases",
 			}),
-			mu.APGroupAndCountStages("Archivelog", "Count", "$Database.Archivelog"),
+			mu.APGroupAndCountStages("archivelog", "count", "$database.archivelog"),
 			mu.APSort(bson.M{
-				"Archivelog": 1,
+				"archivelog": 1,
 			}),
 		),
 	)
@@ -392,13 +392,13 @@ func (md *MongoDatabase) GetTotalOracleDatabaseWorkStats(location string, enviro
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$Features.Oracle.Database.Databases"),
+			mu.APUnwind("$features.oracle.database.databases"),
 			mu.APProject(bson.M{
-				"Database": "$Features.Oracle.Database.Databases",
+				"database": "$features.oracle.database.databases",
 			}),
 			mu.APGroup(bson.M{
 				"_id":   0,
-				"Value": mu.APOSum(mu.APOConvertToDoubleOrZero("$Database.Work")),
+				"value": mu.APOSum(mu.APOConvertToDoubleOrZero("$database.work")),
 			}),
 		),
 	)
@@ -417,7 +417,7 @@ func (md *MongoDatabase) GetTotalOracleDatabaseWorkStats(location string, enviro
 		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return float64(out["Value"]), nil
+	return float64(out["value"]), nil
 }
 
 // GetTotalOracleDatabaseMemorySizeStats return the total of memory size of databases
@@ -430,16 +430,16 @@ func (md *MongoDatabase) GetTotalOracleDatabaseMemorySizeStats(location string, 
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$Features.Oracle.Database.Databases"),
+			mu.APUnwind("$features.oracle.database.databases"),
 			mu.APProject(bson.M{
-				"Database": "$Features.Oracle.Database.Databases",
+				"database": "$features.oracle.database.databases",
 			}),
 			mu.APGroup(bson.M{
 				"_id": 0,
-				"Value": mu.APOSum(mu.APOAdd(
-					"$Database.PGATarget",
-					"$Database.SGATarget",
-					"$Database.MemoryTarget",
+				"value": mu.APOSum(mu.APOAdd(
+					"$database.pgaTarget",
+					"$database.sgaTarget",
+					"$database.memoryTarget",
 				)),
 			}),
 		),
@@ -459,7 +459,7 @@ func (md *MongoDatabase) GetTotalOracleDatabaseMemorySizeStats(location string, 
 		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return float64(out["Value"]), nil
+	return float64(out["value"]), nil
 }
 
 // GetTotalOracleDatabaseDatafileSizeStats return the total size of datafiles of databases
@@ -472,13 +472,13 @@ func (md *MongoDatabase) GetTotalOracleDatabaseDatafileSizeStats(location string
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$Features.Oracle.Database.Databases"),
+			mu.APUnwind("$features.oracle.database.databases"),
 			mu.APProject(bson.M{
-				"Database": "$Features.Oracle.Database.Databases",
+				"database": "$features.oracle.database.databases",
 			}),
 			mu.APGroup(bson.M{
 				"_id":   0,
-				"Value": mu.APOSum("$Database.DatafileSize"),
+				"value": mu.APOSum("$database.datafileSize"),
 			}),
 		),
 	)
@@ -497,7 +497,7 @@ func (md *MongoDatabase) GetTotalOracleDatabaseDatafileSizeStats(location string
 		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return float64(out["Value"]), nil
+	return float64(out["value"]), nil
 }
 
 // GetTotalOracleDatabaseSegmentSizeStats return the total size of segments of databases
@@ -510,13 +510,13 @@ func (md *MongoDatabase) GetTotalOracleDatabaseSegmentSizeStats(location string,
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$Features.Oracle.Database.Databases"),
+			mu.APUnwind("$features.oracle.database.databases"),
 			mu.APProject(bson.M{
-				"Database": "$Features.Oracle.Database.Databases",
+				"database": "$features.oracle.database.databases",
 			}),
 			mu.APGroup(bson.M{
 				"_id":   0,
-				"Value": mu.APOSum(mu.APOConvertToDoubleOrZero("$Database.SegmentsSize")),
+				"value": mu.APOSum(mu.APOConvertToDoubleOrZero("$database.segmentsSize")),
 			}),
 		),
 	)
@@ -535,15 +535,15 @@ func (md *MongoDatabase) GetTotalOracleDatabaseSegmentSizeStats(location string,
 		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return float64(out["Value"]), nil
+	return float64(out["value"]), nil
 }
 
 // GetOracleDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
 func (md *MongoDatabase) GetOracleDatabaseLicenseComplianceStatusStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
 	var out map[string]interface{} = map[string]interface{}{
-		"Count":     0,
-		"Used":      0,
-		"Compliant": true,
+		"count":     0,
+		"used":      0,
+		"compliant": true,
 	}
 
 	//Find the informations
@@ -552,85 +552,85 @@ func (md *MongoDatabase) GetOracleDatabaseLicenseComplianceStatusStats(location 
 		mu.MAPipeline(
 			mu.APLookupPipeline("hosts", bson.M{
 				"ln": "$_id",
-			}, "Used", mu.MAPipeline(
+			}, "used", mu.MAPipeline(
 				FilterByOldnessSteps(olderThan),
 				mu.APProject(bson.M{
-					"Hostname": 1,
-					"Databases": mu.APOReduce(
+					"hostname": 1,
+					"databases": mu.APOReduce(
 						mu.APOFilter(
-							mu.APOMap("$Features.Oracle.Database.Databases", "db", bson.M{
-								"Name": "$$db.Name",
-								"Count": mu.APOLet(
+							mu.APOMap("$features.oracle.database.databases", "db", bson.M{
+								"name": "$$db.name",
+								"count": mu.APOLet(
 									bson.M{
-										"val": mu.APOArrayElemAt(mu.APOFilter("$$db.Licenses", "lic", mu.APOEqual("$$lic.Name", "$$ln")), 0),
+										"val": mu.APOArrayElemAt(mu.APOFilter("$$db.licenses", "lic", mu.APOEqual("$$lic.name", "$$ln")), 0),
 									},
-									"$$val.Count",
+									"$$val.count",
 								),
 							}),
 							"db",
-							mu.APOGreater("$$db.Count", 0),
+							mu.APOGreater("$$db.count", 0),
 						),
-						bson.M{"Count": 0, "DBs": bson.A{}},
+						bson.M{"count": 0, "dbs": bson.A{}},
 						bson.M{
-							"Count": mu.APOMax("$$value.Count", "$$this.Count"),
-							"DBs": bson.M{
+							"count": mu.APOMax("$$value.count", "$$this.count"),
+							"dbs": bson.M{
 								"$concatArrays": bson.A{
-									"$$value.DBs",
-									bson.A{"$$this.Name"},
+									"$$value.dbs",
+									bson.A{"$$this.name"},
 								},
 							},
 						},
 					),
 				}),
 				mu.APMatch(bson.M{
-					"Databases.Count": bson.M{
+					"databases.count": bson.M{
 						"$gt": 0,
 					},
 				}),
 				AddAssociatedClusterNameAndVirtualizationNode(olderThan),
 				mu.APGroup(bson.M{
 					"_id": mu.APOCond(
-						"$ClusterName",
-						mu.APOConcat("cluster_§$#$§_", "$ClusterName"),
-						mu.APOConcat("hostname_§$#$§_", "$Hostname"),
+						"$clustername",
+						mu.APOConcat("cluster_§$#$§_", "$clustername"),
+						mu.APOConcat("hostname_§$#$§_", "$hostname"),
 					),
-					"License":    mu.APOMaxAggr("$Databases.Count"),
-					"ClusterCpu": mu.APOMaxAggr("$ClusterCpu"),
+					"license":    mu.APOMaxAggr("$databases.count"),
+					"clusterCpu": mu.APOMaxAggr("$clusterCpu"),
 				}),
 				mu.APSet(bson.M{
-					"License": mu.APOCond(
-						"$ClusterCpu",
-						mu.APODivide("$ClusterCpu", 2),
-						"$License",
+					"license": mu.APOCond(
+						"$clusterCpu",
+						mu.APODivide("$clusterCpu", 2),
+						"$license",
 					),
 				}),
 				mu.APGroup(bson.M{
 					"_id":   0,
-					"Value": mu.APOSum("$License"),
+					"value": mu.APOSum("$license"),
 				}),
 			)),
 			mu.APSet(bson.M{
-				"Used": mu.APOArrayElemAt("$Used", 0),
+				"used": mu.APOArrayElemAt("$used", 0),
 			}),
 			mu.APSet(bson.M{
-				"Used": mu.APOIfNull(mu.APOCeil("$Used.Value"), 0),
+				"used": mu.APOIfNull(mu.APOCeil("$used.value"), 0),
 			}),
 			mu.APSet(bson.M{
-				"Compliance": mu.APOGreaterOrEqual(mu.APOCond("$Unlimited", "$Used", "$Count"), "$Used"),
+				"compliance": mu.APOGreaterOrEqual(mu.APOCond("$unlimited", "$used", "$count"), "$used"),
 			}),
 			mu.APGroup(bson.M{
 				"_id":                     0,
-				"LicensesNumber":          mu.APOSum(1),
-				"Count":                   mu.APOSum(mu.APOCond("$Unlimited", "$Used", "$Count")),
-				"Used":                    mu.APOSum("$Used"),
-				"CompliantLicensesNumber": mu.APOSum(mu.APOCond("$Compliance", 1, 0)),
+				"licensesNumber":          mu.APOSum(1),
+				"count":                   mu.APOSum(mu.APOCond("$unlimited", "$used", "$count")),
+				"used":                    mu.APOSum("$used"),
+				"compliantLicensesNumber": mu.APOSum(mu.APOCond("$compliance", 1, 0)),
 			}),
 			mu.APProject(bson.M{
 				"_id":       0,
-				"Unlimited": 1,
-				"Count":     1,
-				"Used":      1,
-				"Compliant": mu.APOEqual("$LicensesNumber", "$CompliantLicensesNumber"),
+				"unlimited": 1,
+				"count":     1,
+				"used":      1,
+				"compliant": mu.APOEqual("$licensesNumber", "$compliantLicensesNumber"),
 			}),
 		),
 	)
@@ -663,22 +663,22 @@ func (md *MongoDatabase) GetTopUnusedOracleDatabaseInstanceResourceStats(locatio
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APProject(bson.M{
-				"Hostname": 1,
-				"Works": mu.APOReduce(
-					mu.APOFilter("$Features.Oracle.Database.Databases", "db", mu.APONotEqual("$$db.Work", nil)),
-					bson.M{"TotalWork": 0, "TotalCPUCount": 0},
+				"hostname": 1,
+				"works": mu.APOReduce(
+					mu.APOFilter("$features.oracle.database.databases", "db", mu.APONotEqual("$$db.work", nil)),
+					bson.M{"totalWork": 0, "totalCPUCount": 0},
 					bson.M{
-						"TotalWork":     mu.APOAdd("$$value.TotalWork", "$$this.Work"),
-						"TotalCPUCount": mu.APOAdd("$$value.TotalCPUCount", "$$this.CPUCount"),
+						"totalWork":     mu.APOAdd("$$value.totalWork", "$$this.work"),
+						"totalCPUCount": mu.APOAdd("$$value.totalCPUCount", "$$this.cpuCount"),
 					},
 				),
 			}),
 			mu.APProject(bson.M{
-				"Hostname": 1,
-				"Unused":   mu.APOSubtract("$Works.TotalCPUCount", "$Works.TotalWork"),
+				"hostname": 1,
+				"unused":   mu.APOSubtract("$works.totalCPUCount", "$works.totalWork"),
 			}),
 			mu.APSort(bson.M{
-				"Unused": -1,
+				"unused": -1,
 			}),
 			mu.APLimit(limit),
 		),

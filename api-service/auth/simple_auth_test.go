@@ -69,8 +69,8 @@ pGjyq0RrXmoLoKLqsB+d###+jvcXvk0kaOJgcX50C+hUp5AxtQU/bU=
 
 var correctLoginRequest string = `
 {
-	"Username": "foobar",
-	"Password": "C0rr3ctP4ssw0rd"
+	"username": "foobar",
+	"password": "C0rr3ctP4ssw0rd"
 }`
 var invalidLoginRequest string = `
 {
@@ -78,8 +78,8 @@ var invalidLoginRequest string = `
 }`
 var incorrectLoginRequest string = `
 {
-	"Username": "foobar",
-	"Password": "N0tC0rrectP4ssW0rd"
+	"username": "foobar",
+	"password": "N0tC0rrectP4ssW0rd"
 }`
 
 var validToken string = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiZm9vYmFyIl0sImV4cCI6MTU3Mjk2MjU0MywiaWF0IjoxNTcyOTYyNTIzLCJpc3MiOiJlcmNvbGUiLCJqdGkiOiJmb29iYXIiLCJuYmYiOjE1NzI5NjI1MjMsInN1YiI6ImZvb2JhciJ9.Ki3LzVISVOgW_tNnLumDRbLEef2dAL4nTAcK0jLSgwPj1nQErkXi9YM1Fs2r2yByZ0gJLsj9ok3kxPMp1_qdwqqrvgdiDqj-hcdrL76C0poWkystVJgxtjFgi683zYyfjvLjPCqQnNuI8icIGJTogzjZoKjJg7KPeqHjBr0Qsb2epMzD-Cj5ir4PGM3LYCAX6ui7gxGMIGg-zrqcMvQ8EIa5Kn_Xp4bVGjjkvOxpql7ivGE9BlRggVHRjX9iUtD_aC6WfgKHyQDmyECtB_A0jMK3mHUBoXc28axkML9i4AXE3Nw7z_qA47HDeVY99CrvQhFRy30JCxJh_pmRbyETzw"
