@@ -1,52 +1,52 @@
 {
-    "Hostname": "test-small",
-    "Environment": "TST",
-    "Location": "Germany",
-    "Info": {
-        "Hostname": "test-small",
-        "CPUModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-        "CPUCores": 1,
-        "CPUThreads": 2,
-        "Kernel": "3.10.0-514.el7.x86_64",
-        "OS": "Red Hat Enterprise Linux",
-        "MemoryTotal": 3,
-        "SwapTotal": 1,
-        "CPUFrequency": "2.53GHz",
-        "CPUSockets": 2,
-        "CoresPerSocket": 1,
-        "ThreadsPerCore": 2,
-        "KernelVersion": "3.10.0-514.el7.x86_64",
-        "OSVersion": "7.6",
-        "HardwareAbstraction": "VIRT",
-        "HardwareAbstractionTechnology": "VMWARE"
+    "hostname": "test-small",
+    "environment": "TST",
+    "location": "Germany",
+    "info": {
+        "hostname": "test-small",
+        "cpuModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+        "cpuCores": 1,
+        "cpuThreads": 2,
+        "kernel": "3.10.0-514.el7.x86_64",
+        "os": "Red Hat Enterprise Linux",
+        "memoryTotal": 3,
+        "swapTotal": 1,
+        "cpuFrequency": "2.53GHz",
+        "cpuSockets": 2,
+        "coresPerSocket": 1,
+        "threadsPerCore": 2,
+        "kernelVersion": "3.10.0-514.el7.x86_64",
+        "osVersion": "7.6",
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "VMWARE"
     },
-    "AgentVersion": "latest",
-    "Tags": [],
-    "SchemaVersion": 1,
-    "ClusterMembershipStatus": {
-        "OracleClusterware": false,
-        "VeritasClusterServer": false,
-        "SunCluster": false,
-        "HACMP": false
+    "agentVersion": "latest",
+    "tags": [],
+    "schemaVersion": 1,
+    "clusterMembershipStatus": {
+        "oracleClusterware": false,
+        "veritasClusterServer": false,
+        "sunCluster": false,
+        "hacmp": false
     },
-    "Filesystems": [
+    "filesystems": [
         {
-            "Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
-            "Size": 13958643712,
-            "MountedOn": "/",
-            "AvailableSpace": 5798205849,
-            "UsedSpace": 7194070220,
-            "Type": "ext4"
+            "filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+            "size": 13958643712,
+            "mountedOn": "/",
+            "availableSpace": 5798205849,
+            "usedSpace": 7194070220,
+            "type": "ext4"
         },
         {
-            "Filesystem": "/dev/sda1",
-            "Size": 511705088,
-            "MountedOn": "/boot",
-            "AvailableSpace": 335544320,
-            "UsedSpace": 139460608,
-            "Type": "ext4"
+            "filesystem": "/dev/sda1",
+            "size": 511705088,
+            "mountedOn": "/boot",
+            "availableSpace": 335544320,
+            "usedSpace": 139460608,
+            "type": "ext4"
         }
     ],
-    "Features": {},
-    "Clusters": null
+    "features": {},
+    "clusters": null
 }

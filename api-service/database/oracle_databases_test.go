@@ -242,7 +242,7 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 	})
 
 	m.T().Run("fullmode", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabases(true, []string{""}, "Memory", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabases(true, []string{""}, "memory", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -326,6 +326,7 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				"ha":             false,
 				"hostname":       "test-db",
 				"instanceNumber": 1,
+				"instanceName":   "ERCOLE1",
 				"isCDB":          false,
 				"licenses": []interface{}{
 					map[string]interface{}{
@@ -501,6 +502,7 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				"ha":             true,
 				"hostname":       "test-db2",
 				"instanceNumber": 1,
+				"instanceName":   "pokemons1",
 				"isCDB":          false,
 				"licenses": []interface{}{
 					map[string]interface{}{

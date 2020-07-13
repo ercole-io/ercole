@@ -1,360 +1,360 @@
 {
-    "AgentVersion": "latest",
-    "Archived": false,
-    "ClusterMembershipStatus": {
-        "HACMP": false,
-        "OracleClusterware": true,
-        "SunCluster": false,
-        "VeritasClusterServer": false
+    "agentVersion": "latest",
+    "archived": false,
+    "clusterMembershipStatus": {
+        "hacmp": false,
+        "oracleClusterware": true,
+        "sunCluster": false,
+        "veritasClusterServer": false
     },
-    "Clusters": null,
-    "CreatedAt": {
+    "clusters": null,
+    "createdAt": {
         "$date": {
             "$numberLong": "1589272784831"
         }
     },
-    "Environment": "PROD",
-    "Features": {
-        "Oracle": {
-            "Database": null,
-            "Exadata": {
-                "Components": [
+    "environment": "PROD",
+    "features": {
+        "oracle": {
+            "database": null,
+            "exadata": {
+                "components": [
                     {
-                        "CellDisks": [
+                        "cellDisks": [
                             {
-                                "ErrCount": {
+                                "errCount": {
                                     "$numberInt": "0"
                                 },
-                                "Name": "fanshop-5bde7badf2c9deceea5f615c3840c0b9",
-                                "Status": "normal",
-                                "UsedPerc": {
+                                "name": "fanshop-5bde7badf2c9deceea5f615c3840c0b9",
+                                "status": "normal",
+                                "usedPerc": {
                                     "$numberInt": "32"
                                 }
                             },
                             {
-                                "ErrCount": {
+                                "errCount": {
                                     "$numberInt": "0"
                                 },
-                                "Name": "globe-b31fa3756675a5c8ac052437ff7e439b",
-                                "Status": "normal",
-                                "UsedPerc": {
+                                "name": "globe-b31fa3756675a5c8ac052437ff7e439b",
+                                "status": "normal",
+                                "usedPerc": {
                                     "$numberInt": "54"
                                 }
                             },
                             {
-                                "ErrCount": {
+                                "errCount": {
                                     "$numberInt": "3"
                                 },
-                                "Name": "srvc28-3807c977788c598cfa31fe21c0d3d5be",
-                                "Status": "normal",
-                                "UsedPerc": {
+                                "name": "srvc28-3807c977788c598cfa31fe21c0d3d5be",
+                                "status": "normal",
+                                "usedPerc": {
                                     "$numberInt": "90"
                                 }
                             }
                         ],
-                        "CellsrvServiceStatus": "running",
-                        "FanStatus": "normal",
-                        "FlashcacheMode": "WriteBack",
-                        "Hostname": "s75-c2449b0e89e5a0b38401636eaa07abd5",
-                        "Memory": {
+                        "cellsrvServiceStatus": "running",
+                        "fanStatus": "normal",
+                        "flashcacheMode": "WriteBack",
+                        "hostname": "s75-c2449b0e89e5a0b38401636eaa07abd5",
+                        "memory": {
                             "$numberInt": "188"
                         },
-                        "Model": "X7-2L_High_Capacity",
-                        "MsServiceStatus": "running",
-                        "PowerStatus": "normal",
-                        "RsServiceStatus": "running",
-                        "RunningCPUCount": {
+                        "model": "X7-2L_High_Capacity",
+                        "msServiceStatus": "running",
+                        "powerStatus": "normal",
+                        "rsServiceStatus": "running",
+                        "runningCPUCount": {
                             "$numberInt": "20"
                         },
-                        "RunningFanCount": {
+                        "runningFanCount": {
                             "$numberInt": "8"
                         },
-                        "RunningPowerSupply": {
+                        "runningPowerSupply": {
                             "$numberInt": "2"
                         },
-                        "ServerType": "StorageServer",
-                        "Status": "online",
-                        "SwReleaseDate": "2019-07-09",
-                        "SwVersion": "19.2.4.0.0.190709",
-                        "TempActual": {
+                        "serverType": "StorageServer",
+                        "status": "online",
+                        "swReleaseDate": "2019-07-09",
+                        "swVersion": "19.2.4.0.0.190709",
+                        "tempActual": {
                             "$numberDouble": "23.0"
                         },
-                        "TempStatus": "normal",
-                        "TotalCPUCount": {
+                        "tempStatus": "normal",
+                        "totalCPUCount": {
                             "$numberInt": "40"
                         },
-                        "TotalFanCount": {
+                        "totalFanCount": {
                             "$numberInt": "8"
                         },
-                        "TotalPowerSupply": {
+                        "totalPowerSupply": {
                             "$numberInt": "2"
                         }
                     },
                     {
-                        "CellDisks": [
+                        "cellDisks": [
                             {
-                                "ErrCount": {
+                                "errCount": {
                                     "$numberInt": "0"
                                 },
-                                "Name": "server52-390b5dac8c3b68e3471c657ef97a7ae6",
-                                "Status": "normal",
-                                "UsedPerc": {
+                                "name": "server52-390b5dac8c3b68e3471c657ef97a7ae6",
+                                "status": "normal",
+                                "usedPerc": {
                                     "$numberInt": "32"
                                 }
                             },
                             {
-                                "ErrCount": {
+                                "errCount": {
                                     "$numberInt": "1"
                                 },
-                                "Name": "srvc07-5b888ab40dbd25e106309fd482f859a0",
-                                "Status": "normal",
-                                "UsedPerc": {
+                                "name": "srvc07-5b888ab40dbd25e106309fd482f859a0",
+                                "status": "normal",
+                                "usedPerc": {
                                     "$numberInt": "54"
                                 }
                             }
                         ],
-                        "CellsrvServiceStatus": "running",
-                        "FanStatus": "normal",
-                        "FlashcacheMode": "WriteBack",
-                        "Hostname": "itl-b22fa37cad1326aba990cdec7facace2",
-                        "Memory": {
+                        "cellsrvServiceStatus": "running",
+                        "fanStatus": "normal",
+                        "flashcacheMode": "WriteBack",
+                        "hostname": "itl-b22fa37cad1326aba990cdec7facace2",
+                        "memory": {
                             "$numberInt": "188"
                         },
-                        "Model": "X7-2L_High_Capacity",
-                        "MsServiceStatus": "running",
-                        "PowerStatus": "normal",
-                        "RsServiceStatus": "running",
-                        "RunningCPUCount": {
+                        "model": "X7-2L_High_Capacity",
+                        "msServiceStatus": "running",
+                        "powerStatus": "normal",
+                        "rsServiceStatus": "running",
+                        "runningCPUCount": {
                             "$numberInt": "20"
                         },
-                        "RunningFanCount": {
+                        "runningFanCount": {
                             "$numberInt": "8"
                         },
-                        "RunningPowerSupply": {
+                        "runningPowerSupply": {
                             "$numberInt": "2"
                         },
-                        "ServerType": "StorageServer",
-                        "Status": "online",
-                        "SwReleaseDate": "2019-07-09",
-                        "SwVersion": "19.2.4.0.0.190709",
-                        "TempActual": {
+                        "serverType": "StorageServer",
+                        "status": "online",
+                        "swReleaseDate": "2019-07-09",
+                        "swVersion": "19.2.4.0.0.190709",
+                        "tempActual": {
                             "$numberDouble": "24.0"
                         },
-                        "TempStatus": "normal",
-                        "TotalCPUCount": {
+                        "tempStatus": "normal",
+                        "totalCPUCount": {
                             "$numberInt": "40"
                         },
-                        "TotalFanCount": {
+                        "totalFanCount": {
                             "$numberInt": "8"
                         },
-                        "TotalPowerSupply": {
+                        "totalPowerSupply": {
                             "$numberInt": "2"
                         }
                     },
                     {
-                        "CellDisks": null,
-                        "CellsrvServiceStatus": null,
-                        "FanStatus": "normal",
-                        "FlashcacheMode": null,
-                        "Hostname": "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
-                        "Memory": {
+                        "cellDisks": null,
+                        "cellsrvServiceStatus": null,
+                        "fanStatus": "normal",
+                        "flashcacheMode": null,
+                        "hostname": "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
+                        "memory": {
                             "$numberInt": "376"
                         },
-                        "Model": "X7-2",
-                        "MsServiceStatus": "running",
-                        "PowerStatus": "normal",
-                        "RsServiceStatus": "running",
-                        "RunningCPUCount": {
+                        "model": "X7-2",
+                        "msServiceStatus": "running",
+                        "powerStatus": "normal",
+                        "rsServiceStatus": "running",
+                        "runningCPUCount": {
                             "$numberInt": "48"
                         },
-                        "RunningFanCount": {
+                        "runningFanCount": {
                             "$numberInt": "16"
                         },
-                        "RunningPowerSupply": {
+                        "runningPowerSupply": {
                             "$numberInt": "2"
                         },
-                        "ServerType": "DBServer",
-                        "Status": "online",
-                        "SwReleaseDate": "2019-07-09",
-                        "SwVersion": "19.2.4.0.0.190709",
-                        "TempActual": {
+                        "serverType": "DBServer",
+                        "status": "online",
+                        "swReleaseDate": "2019-07-09",
+                        "swVersion": "19.2.4.0.0.190709",
+                        "tempActual": {
                             "$numberDouble": "24.0"
                         },
-                        "TempStatus": "normal",
-                        "TotalCPUCount": {
+                        "tempStatus": "normal",
+                        "totalCPUCount": {
                             "$numberInt": "48"
                         },
-                        "TotalFanCount": {
+                        "totalFanCount": {
                             "$numberInt": "16"
                         },
-                        "TotalPowerSupply": {
+                        "totalPowerSupply": {
                             "$numberInt": "2"
                         }
                     },
                     {
-                        "CellDisks": null,
-                        "CellsrvServiceStatus": null,
-                        "FanStatus": "normal",
-                        "FlashcacheMode": null,
-                        "Hostname": "kantoor-43a6cdc54bb211eb127bca5c6651950c",
-                        "Memory": {
+                        "cellDisks": null,
+                        "cellsrvServiceStatus": null,
+                        "fanStatus": "normal",
+                        "flashcacheMode": null,
+                        "hostname": "kantoor-43a6cdc54bb211eb127bca5c6651950c",
+                        "memory": {
                             "$numberInt": "376"
                         },
-                        "Model": "X7-2",
-                        "MsServiceStatus": "running",
-                        "PowerStatus": "normal",
-                        "RsServiceStatus": "running",
-                        "RunningCPUCount": {
+                        "model": "X7-2",
+                        "msServiceStatus": "running",
+                        "powerStatus": "normal",
+                        "rsServiceStatus": "running",
+                        "runningCPUCount": {
                             "$numberInt": "48"
                         },
-                        "RunningFanCount": {
+                        "runningFanCount": {
                             "$numberInt": "16"
                         },
-                        "RunningPowerSupply": {
+                        "runningPowerSupply": {
                             "$numberInt": "2"
                         },
-                        "ServerType": "DBServer",
-                        "Status": "online",
-                        "SwReleaseDate": "2019-07-09",
-                        "SwVersion": "19.2.4.0.0.190709",
-                        "TempActual": {
+                        "serverType": "DBServer",
+                        "status": "online",
+                        "swReleaseDate": "2019-07-09",
+                        "swVersion": "19.2.4.0.0.190709",
+                        "tempActual": {
                             "$numberDouble": "24.0"
                         },
-                        "TempStatus": "normal",
-                        "TotalCPUCount": {
+                        "tempStatus": "normal",
+                        "totalCPUCount": {
                             "$numberInt": "48"
                         },
-                        "TotalFanCount": {
+                        "totalFanCount": {
                             "$numberInt": "16"
                         },
-                        "TotalPowerSupply": {
+                        "totalPowerSupply": {
                             "$numberInt": "2"
                         }
                     },
                     {
-                        "CellDisks": null,
-                        "CellsrvServiceStatus": null,
-                        "FanStatus": null,
-                        "FlashcacheMode": null,
-                        "Hostname": "off-df8b95a01746a464e69203c840a6a46a",
-                        "Memory": null,
-                        "Model": "SUN_DCS_36p",
-                        "MsServiceStatus": null,
-                        "PowerStatus": null,
-                        "RsServiceStatus": null,
-                        "RunningCPUCount": null,
-                        "RunningFanCount": null,
-                        "RunningPowerSupply": null,
-                        "ServerType": "IBSwitch",
-                        "Status": null,
-                        "SwReleaseDate": "2019-03-26",
-                        "SwVersion": "2.2.13-2.190326",
-                        "TempActual": null,
-                        "TempStatus": null,
-                        "TotalCPUCount": null,
-                        "TotalFanCount": null,
-                        "TotalPowerSupply": null
+                        "cellDisks": null,
+                        "cellsrvServiceStatus": null,
+                        "fanStatus": null,
+                        "flashcacheMode": null,
+                        "hostname": "off-df8b95a01746a464e69203c840a6a46a",
+                        "memory": null,
+                        "model": "SUN_DCS_36p",
+                        "msServiceStatus": null,
+                        "powerStatus": null,
+                        "rsServiceStatus": null,
+                        "runningCPUCount": null,
+                        "runningFanCount": null,
+                        "runningPowerSupply": null,
+                        "serverType": "IBSwitch",
+                        "status": null,
+                        "swReleaseDate": "2019-03-26",
+                        "swVersion": "2.2.13-2.190326",
+                        "tempActual": null,
+                        "tempStatus": null,
+                        "totalCPUCount": null,
+                        "totalFanCount": null,
+                        "totalPowerSupply": null
                     },
                     {
-                        "CellDisks": null,
-                        "CellsrvServiceStatus": null,
-                        "FanStatus": null,
-                        "FlashcacheMode": null,
-                        "Hostname": "aspen-8d1d1b210625b1f1024b686135f889a1",
-                        "Memory": null,
-                        "Model": "SUN_DCS_36p",
-                        "MsServiceStatus": null,
-                        "PowerStatus": null,
-                        "RsServiceStatus": null,
-                        "RunningCPUCount": null,
-                        "RunningFanCount": null,
-                        "RunningPowerSupply": null,
-                        "ServerType": "IBSwitch",
-                        "Status": null,
-                        "SwReleaseDate": "2019-03-26",
-                        "SwVersion": "2.2.13-2.190326",
-                        "TempActual": null,
-                        "TempStatus": null,
-                        "TotalCPUCount": null,
-                        "TotalFanCount": null,
-                        "TotalPowerSupply": null
+                        "cellDisks": null,
+                        "cellsrvServiceStatus": null,
+                        "fanStatus": null,
+                        "flashcacheMode": null,
+                        "hostname": "aspen-8d1d1b210625b1f1024b686135f889a1",
+                        "memory": null,
+                        "model": "SUN_DCS_36p",
+                        "msServiceStatus": null,
+                        "powerStatus": null,
+                        "rsServiceStatus": null,
+                        "runningCPUCount": null,
+                        "runningFanCount": null,
+                        "runningPowerSupply": null,
+                        "serverType": "IBSwitch",
+                        "status": null,
+                        "swReleaseDate": "2019-03-26",
+                        "swVersion": "2.2.13-2.190326",
+                        "tempActual": null,
+                        "tempStatus": null,
+                        "totalCPUCount": null,
+                        "totalFanCount": null,
+                        "totalPowerSupply": null
                     }
                 ]
             }
         }
     },
-    "Filesystems": [
+    "filesystems": [
         {
-            "AvailableSpace": {
+            "availableSpace": {
                 "$numberLong": "8589934592"
             },
-            "Filesystem": "KEENAN-f4e458d4320a271207b301c8c6442d77",
-            "MountedOn": "BENTON-6666cd76f96956469e7be39d750cc7d9",
-            "Size": {
+            "filesystem": "KEENAN-f4e458d4320a271207b301c8c6442d77",
+            "mountedOn": "BENTON-6666cd76f96956469e7be39d750cc7d9",
+            "size": {
                 "$numberLong": "32212254720"
             },
-            "Type": "ext4",
-            "UsedSpace": {
+            "type": "ext4",
+            "usedSpace": {
                 "$numberLong": "21474836480"
             }
         },
         {
-            "AvailableSpace": {
+            "availableSpace": {
                 "$numberLong": "425721856"
             },
-            "Filesystem": "JUAN-45e177f34dddc33a5b1537ce8f4913ba",
-            "MountedOn": "MICHAEL-a53bfb333437907a8d5bdc636d15c75d",
-            "Size": {
+            "filesystem": "JUAN-45e177f34dddc33a5b1537ce8f4913ba",
+            "mountedOn": "MICHAEL-a53bfb333437907a8d5bdc636d15c75d",
+            "size": {
                 "$numberLong": "511705088"
             },
-            "Type": "ext4",
-            "UsedSpace": {
+            "type": "ext4",
+            "usedSpace": {
                 "$numberLong": "50331648"
             }
         }
     ],
-    "Hostname": "test-exadata",
-    "Info": {
-        "CPUCores": {
+    "hostname": "test-exadata",
+    "info": {
+        "cpuCores": {
             "$numberInt": "24"
         },
-        "CPUFrequency": "2.10GHz",
-        "CPUModel": "Intel(R) Xeon(R) Platinum 8160 CPU @ 2.10GHz",
-        "CPUSockets": {
+        "cpuFrequency": "2.10GHz",
+        "cpuModel": "Intel(R) Xeon(R) Platinum 8160 CPU @ 2.10GHz",
+        "cpuSockets": {
             "$numberInt": "1"
         },
-        "CPUThreads": {
+        "cpuThreads": {
             "$numberInt": "48"
         },
-        "CoresPerSocket": {
+        "coresPerSocket": {
             "$numberInt": "24"
         },
-        "HardwareAbstraction": "PH",
-        "HardwareAbstractionTechnology": "PH",
-        "Hostname": "test-exadata",
-        "Kernel": "Linux",
-        "KernelVersion": "4.1.12-124.26.12.el7uek.x86_64",
-        "MemoryTotal": {
+        "hardwareAbstraction": "PH",
+        "hardwareAbstractionTechnology": "PH",
+        "hostname": "test-exadata",
+        "kernel": "Linux",
+        "kernelVersion": "4.1.12-124.26.12.el7uek.x86_64",
+        "memoryTotal": {
             "$numberDouble": "376.0"
         },
-        "OS": "Red Hat Enterprise Linux",
-        "OSVersion": "7.6",
-        "SwapTotal": {
+        "os": "Red Hat Enterprise Linux",
+        "osVersion": "7.6",
+        "swapTotal": {
             "$numberDouble": "23.0"
         },
-        "ThreadsPerCore": {
+        "threadsPerCore": {
             "$numberInt": "2"
         }
     },
-    "Location": "Italy",
-    "SchemaVersion": {
+    "location": "Italy",
+    "schemaVersion": {
         "$numberDouble": "1.0"
     },
-    "ServerSchemaVersion": {
+    "serverSchemaVersion": {
         "$numberInt": "1"
     },
-    "ServerVersion": "latest",
-    "Tags": [],
+    "serverVersion": "latest",
+    "tags": [],
     "_id": {
         "$oid": "5eba60d00b606515fdc2c554"
     }

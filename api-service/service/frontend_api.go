@@ -28,20 +28,20 @@ func (as *APIService) GetInfoForFrontendDashboard(location string, environment s
 	out := map[string]interface{}{}
 	technologiesObject := map[string]interface{}{}
 
-	technologiesObject["Total"], err = as.GetTotalTechnologiesComplianceStats(location, environment, olderThan)
+	technologiesObject["total"], err = as.GetTotalTechnologiesComplianceStats(location, environment, olderThan)
 	if err != nil {
 		return nil, err
 	}
-	technologiesObject["Technologies"], err = as.ListTechnologies("", false, location, environment, olderThan)
+	technologiesObject["technologies"], err = as.ListTechnologies("", false, location, environment, olderThan)
 	if err != nil {
 		return nil, err
 	}
 
-	out["Features"], err = as.GetErcoleFeatures()
+	out["features"], err = as.GetErcoleFeatures()
 	if err != nil {
 		return nil, err
 	}
-	out["Technologies"] = technologiesObject
+	out["technologies"] = technologiesObject
 
 	return out, nil
 }

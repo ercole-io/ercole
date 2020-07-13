@@ -1,167 +1,167 @@
 {
-    "AgentVersion": "latest",
-    "Archived": false,
-    "ClusterMembershipStatus": {
-        "HACMP": false,
-        "OracleClusterware": false,
-        "SunCluster": false,
-        "VeritasClusterServer": false
+    "agentVersion": "latest",
+    "archived": false,
+    "clusterMembershipStatus": {
+        "hacmp": false,
+        "oracleClusterware": false,
+        "sunCluster": false,
+        "veritasClusterServer": false
     },
-    "Clusters": null,
-    "CreatedAt": {
+    "clusters": null,
+    "createdAt": {
         "$date": {
             "$numberLong": "1590053574830"
         }
     },
-    "Environment": "TST",
-    "Features": {
-        "Oracle": {
-            "Database": {
-                "Databases": [
+    "environment": "TST",
+    "features": {
+        "oracle": {
+            "database": {
+                "databases": [
                     {
-                        "ADDMs": [],
-                        "ASM": false,
-                        "Allocated": {
+                        "addms": [],
+                        "asm": false,
+                        "allocated": {
                             "$numberDouble": "129.0"
                         },
-                        "Archivelog": false,
-                        "Backups": [],
-                        "BlockSize": {
+                        "archivelog": false,
+                        "backups": [],
+                        "blockSize": {
                             "$numberInt": "8192"
                         },
-                        "CPUCount": {
+                        "cpuCount": {
                             "$numberInt": "2"
                         },
-                        "Charset": "AL32UTF8",
-                        "DBTime": {
+                        "charset": "AL32UTF8",
+                        "dbTime": {
                             "$numberDouble": "184.81"
                         },
-                        "DailyCPUUsage": {
+                        "dailyCPUUsage": {
                             "$numberDouble": "3.4"
                         },
-                        "DatafileSize": {
+                        "datafileSize": {
                             "$numberDouble": "8.0"
                         },
-                        "Dataguard": false,
-                        "Elapsed": {
+                        "dataguard": false,
+                        "elapsed": {
                             "$numberDouble": "12059.18"
                         },
-                        "FeatureUsageStats": [],
-                        "InstanceNumber": {
+                        "featureUsageStats": [],
+                        "instanceNumber": {
                             "$numberInt": "1"
                         },
-                        "InstanceName": "pippodb1",
-                        "IsCDB": false,
-                        "Licenses": [],
-                        "MemoryTarget": {
+                        "instanceName": "pippodb1",
+                        "isCDB": false,
+                        "licenses": [],
+                        "memoryTarget": {
                             "$numberDouble": "1.484"
                         },
-                        "NCharset": "AL16UTF16",
-                        "Name": "pippodb",
-                        "PDBs": [],
-                        "PGATarget": {
+                        "nCharset": "AL16UTF16",
+                        "name": "pippodb",
+                        "pdbs": [],
+                        "pgaTarget": {
                             "$numberDouble": "0.0"
                         },
-                        "PSUs": [],
-                        "Patches": [],
-                        "Platform": "Linux x86 64-bit",
-                        "SGAMaxSize": {
+                        "psus": [],
+                        "patches": [],
+                        "platform": "Linux x86 64-bit",
+                        "sgaMaxSize": {
                             "$numberDouble": "1.484"
                         },
-                        "SGATarget": {
+                        "sgaTarget": {
                             "$numberDouble": "0.0"
                         },
-                        "Schemas": [],
-                        "SegmentAdvisors": [],
-                        "SegmentsSize": {
+                        "schemas": [],
+                        "segmentAdvisors": [],
+                        "segmentsSize": {
                             "$numberDouble": "50.0"
                         },
-                        "Services": [],
-                        "Status": "OPEN",
-                        "Tablespaces": [],
-                        "UniqueName": "pippodb",
-                        "Version": "12.2.0.1.0 Enterprise Edition",
-                        "Work": {
+                        "services": [],
+                        "status": "OPEN",
+                        "tablespaces": [],
+                        "uniqueName": "pippodb",
+                        "version": "12.2.0.1.0 Enterprise Edition",
+                        "work": {
                             "$numberDouble": "1.0"
                         }
                     }
                 ]
             },
-            "Exadata": null
+            "exadata": null
         }
     },
-    "Filesystems": [
+    "filesystems": [
         {
-            "AvailableSpace": {
+            "availableSpace": {
                 "$numberLong": "5798205849"
             },
-            "Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
-            "MountedOn": "/",
-            "Size": {
+            "filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+            "mountedOn": "/",
+            "size": {
                 "$numberLong": "13958643712"
             },
-            "Type": "ext4",
-            "UsedSpace": {
+            "type": "ext4",
+            "usedSpace": {
                 "$numberLong": "7194070220"
             }
         },
         {
-            "AvailableSpace": {
+            "availableSpace": {
                 "$numberLong": "335544320"
             },
-            "Filesystem": "/dev/sda1",
-            "MountedOn": "/boot",
-            "Size": {
+            "filesystem": "/dev/sda1",
+            "mountedOn": "/boot",
+            "size": {
                 "$numberLong": "511705088"
             },
-            "Type": "ext4",
-            "UsedSpace": {
+            "type": "ext4",
+            "usedSpace": {
                 "$numberLong": "139460608"
             }
         }
     ],
-    "Hostname": "newdb",
-    "Info": {
-        "CPUCores": {
+    "hostname": "newdb",
+    "info": {
+        "cpuCores": {
             "$numberInt": "1"
         },
-        "CPUFrequency": "2.53GHz",
-        "CPUModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-        "CPUSockets": {
+        "cpuFrequency": "2.53GHz",
+        "cpuModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+        "cpuSockets": {
             "$numberInt": "2"
         },
-        "CPUThreads": {
+        "cpuThreads": {
             "$numberInt": "2"
         },
-        "CoresPerSocket": {
+        "coresPerSocket": {
             "$numberInt": "1"
         },
-        "HardwareAbstraction": "VIRT",
-        "HardwareAbstractionTechnology": "VMWARE",
-        "Hostname": "newdb",
-        "Kernel": "Linux",
-        "KernelVersion": "3.10.0-514.el7.x86_64",
-        "MemoryTotal": {
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "VMWARE",
+        "hostname": "newdb",
+        "kernel": "Linux",
+        "kernelVersion": "3.10.0-514.el7.x86_64",
+        "memoryTotal": {
             "$numberDouble": "3.0"
         },
-        "OS": "Red Hat Enterprise Linux",
-        "OSVersion": "7.6",
-        "SwapTotal": {
+        "os": "Red Hat Enterprise Linux",
+        "osVersion": "7.6",
+        "swapTotal": {
             "$numberDouble": "1.0"
         },
-        "ThreadsPerCore": {
+        "threadsPerCore": {
             "$numberInt": "2"
         }
     },
-    "Location": "Germany",
-    "SchemaVersion": {
+    "location": "Germany",
+    "schemaVersion": {
         "$numberDouble": "1.0"
     },
-    "ServerSchemaVersion": {
+    "serverSchemaVersion": {
         "$numberInt": "1"
     },
-    "ServerVersion": "latest",
-    "Tags": [],
+    "serverVersion": "latest",
+    "tags": [],
     "_id": {
         "$oid": "5ec64ac640c089c5aff44e9d"
     }

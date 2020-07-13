@@ -1,98 +1,98 @@
 {
-    "Hostname": "newdb",
-    "Environment": "TST",
-    "Location": "Germany",
-    "Info": {
-        "Hostname": "newdb",
-        "CPUModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-        "CPUCores": 1,
-        "CPUThreads": 2,
-        "Kernel": "3.10.0-514.el7.x86_64",
-        "OS": "Red Hat Enterprise Linux",
-        "MemoryTotal": 3,
-        "SwapTotal": 1,
-        "CPUFrequency": "2.53GHz",
-        "CPUSockets": 2,
-        "CoresPerSocket": 1,
-        "ThreadsPerCore": 2,
-        "KernelVersion": "3.10.0-514.el7.x86_64",
-        "OSVersion": "7.6",
-        "HardwareAbstraction": "VIRT",
-        "HardwareAbstractionTechnology": "VMWARE"
+    "hostname": "newdb",
+    "environment": "TST",
+    "location": "Germany",
+    "info": {
+        "hostname": "newdb",
+        "cpuModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+        "cpuCores": 1,
+        "cpuThreads": 2,
+        "kernel": "3.10.0-514.el7.x86_64",
+        "os": "Red Hat Enterprise Linux",
+        "memoryTotal": 3,
+        "swapTotal": 1,
+        "cpuFrequency": "2.53GHz",
+        "cpuSockets": 2,
+        "coresPerSocket": 1,
+        "threadsPerCore": 2,
+        "kernelVersion": "3.10.0-514.el7.x86_64",
+        "osVersion": "7.6",
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "VMWARE"
     },
-    "AgentVersion": "latest",
-    "Tags": [],
-    "SchemaVersion": 1,
-    "ClusterMembershipStatus": {
-        "OracleClusterware": false,
-        "VeritasClusterServer": false,
-        "SunCluster": false,
-        "HACMP": false
+    "agentVersion": "latest",
+    "tags": [],
+    "schemaVersion": 1,
+    "clusterMembershipStatus": {
+        "oracleClusterware": false,
+        "veritasClusterServer": false,
+        "sunCluster": false,
+        "hacmp": false
     },
-    "Filesystems": [
+    "filesystems": [
         {
-            "Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
-            "Size": 13958643712,
-            "MountedOn": "/",
-            "AvailableSpace": 5798205849,
-            "UsedSpace": 7194070220,
-            "Type": "ext4"
+            "filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+            "size": 13958643712,
+            "mountedOn": "/",
+            "availableSpace": 5798205849,
+            "usedSpace": 7194070220,
+            "type": "ext4"
         },
         {
-            "Filesystem": "/dev/sda1",
-            "Size": 511705088,
-            "MountedOn": "/boot",
-            "AvailableSpace": 335544320,
-            "UsedSpace": 139460608,
-            "Type": "ext4"
+            "filesystem": "/dev/sda1",
+            "size": 511705088,
+            "mountedOn": "/boot",
+            "availableSpace": 335544320,
+            "usedSpace": 139460608,
+            "type": "ext4"
         }
     ],
-    "Features": {
-        "Oracle": {
-            "Database": {
-                "Databases": [
+    "features": {
+        "oracle": {
+            "database": {
+                "databases": [
                     {
-                        "InstanceNumber": 1,
-                        "InstanceName": "pippodb1",
-                        "Name": "pippodb",
-                        "UniqueName": "pippodb",
-                        "Status": "OPEN",
-                        "Version": "12.2.0.1.0 Enterprise Edition",
-                        "Platform": "Linux x86 64-bit",
-                        "Archivelog": false,
-                        "Charset": "AL32UTF8",
-                        "NCharset": "AL16UTF16",
-                        "BlockSize": 8192,
-                        "CPUCount": 2,
-                        "SGATarget": 0.0,
-                        "PGATarget": 0.0,
-                        "MemoryTarget": 1.484,
-                        "SGAMaxSize": 1.484,
-                        "SegmentsSize": 3.0,
-                        "Allocated": 129.0,
-                        "Elapsed": 12059.18,
-                        "DBTime": 184.81,
-                        "DailyCPUUsage": 0.7,
-                        "Work": 1.0,
-                        "ASM": false,
-                        "Dataguard": false,
-                        "Patches": [],
-                        "Tablespaces": [],
-                        "Schemas": [],
-                        "Licenses": [],
-                        "ADDMs": [],
-                        "SegmentAdvisors": [],
-                        "Backups": [],
-                        "DatafileSize": 6.0,
-                        "PSUs": [],
-                        "FeatureUsageStats": [],
-                        "IsCDB": false,
-                        "PDBs": [],
-                        "Services": []
+                        "instanceNumber": 1,
+                        "instanceName": "pippodb1",
+                        "name": "pippodb",
+                        "uniqueName": "pippodb",
+                        "status": "OPEN",
+                        "version": "12.2.0.1.0 Enterprise Edition",
+                        "platform": "Linux x86 64-bit",
+                        "archivelog": false,
+                        "charset": "AL32UTF8",
+                        "nCharset": "AL16UTF16",
+                        "blockSize": 8192,
+                        "cpuCount": 2,
+                        "sgaTarget": 0.0,
+                        "pgaTarget": 0.0,
+                        "memoryTarget": 1.484,
+                        "sgaMaxSize": 1.484,
+                        "segmentsSize": 3.0,
+                        "allocated": 129.0,
+                        "elapsed": 12059.18,
+                        "dbTime": 184.81,
+                        "dailyCPUUsage": 0.7,
+                        "work": 1.0,
+                        "asm": false,
+                        "dataguard": false,
+                        "patches": [],
+                        "tablespaces": [],
+                        "schemas": [],
+                        "licenses": [],
+                        "addms": [],
+                        "segmentAdvisors": [],
+                        "backups": [],
+                        "datafileSize": 6.0,
+                        "psus": [],
+                        "featureUsageStats": [],
+                        "isCDB": false,
+                        "pdbs": [],
+                        "services": []
                     }
                 ]
             }
         }
     },
-    "Clusters": null
+    "clusters": null
 }

@@ -241,7 +241,7 @@ func (ctrl *APIController) SearchHostsXLSX(w http.ResponseWriter, r *http.Reques
 	for i, val := range hosts {
 		sheets.SetCellValue("Hosts", fmt.Sprintf("A%d", i+2), val["hostname"])
 		sheets.SetCellValue("Hosts", fmt.Sprintf("B%d", i+2), val["environment"])
-		if val["Cluster"] != nil && val["VirtualizationNode"] != nil {
+		if val["cluster"] != nil && val["virtualizationNode"] != nil {
 			sheets.SetCellValue("Hosts", fmt.Sprintf("D%d", i+2), val["cluster"])
 			sheets.SetCellValue("Hosts", fmt.Sprintf("E%d", i+2), val["virtualizationNode"])
 		}

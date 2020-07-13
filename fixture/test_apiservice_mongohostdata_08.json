@@ -1,130 +1,129 @@
 {
-    "AgentVersion": "1.6.1",
-    "Archived": false,
-    "ClusterMembershipStatus": {
-        "HACMP": false,
-        "OracleClusterware": false,
-        "SunCluster": false,
-        "VeritasClusterServer": false
+    "agentVersion": "1.6.1",
+    "archived": false,
+    "clusterMembershipStatus": {
+        "hacmp": false,
+        "oracleClusterware": false,
+        "sunCluster": false,
+        "veritasClusterServer": false
     },
-    "Clusters": [
+    "clusters": [
         {
-            "CPU": {
+            "cpu": {
                 "$numberInt": "140"
             },
-            "FetchEndpoint": "???",
-            "Name": "Puzzait",
-            "Sockets": {
+            "fetchEndpoint": "???",
+            "name": "Puzzait",
+            "sockets": {
                 "$numberInt": "10"
             },
-            "Type": "vmware",
-            "VMs": [
+            "type": "vmware",
+            "vms": [
                 {
-                    "CappedCPU": false,
-                    "Hostname": "test-virt",
-                    "Name": "test-virt",
-                    "VirtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402"
+                    "cappedCPU": false,
+                    "hostname": "test-virt",
+                    "name": "test-virt",
+                    "virtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402"
                 },
                 {
-                    "CappedCPU": false,
-                    "Hostname": "test-db",
-                    "Name": "test-db",
-                    "VirtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402"
+                    "cappedCPU": false,
+                    "hostname": "test-db",
+                    "name": "test-db",
+                    "virtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402"
                 }
             ]
         },
         {
-            "CPU": {
+            "cpu": {
                 "$numberInt": "130"
             },
-            "FetchEndpoint": "???",
-            "Name": "Puzzait2",
-            "Sockets": {
+            "fetchEndpoint": "???",
+            "name": "Puzzait2",
+            "sockets": {
                 "$numberInt": "13"
             },
-            "Type": "vmware",
-            "VMs": [
+            "type": "vmware",
+            "vms": [
                 {
-                    "CappedCPU": false,
-                    "Hostname": "test-virt2",
-                    "Name": "test-virt2",
-                    "VirtualizationNode": "s157-cb32c10a56c256746c337e21b3ffffff"
+                    "cappedCPU": false,
+                    "hostname": "test-virt2",
+                    "name": "test-virt2",
+                    "virtualizationNode": "s157-cb32c10a56c256746c337e21b3ffffff"
                 },
                 {
-                    "CappedCPU": false,
-                    "Hostname": "test-db2",
-                    "Name": "test-db2",
-                    "VirtualizationNode": "s157-cb32c10a56c256746c337e21b3fffeua"
+                    "cappedCPU": false,
+                    "hostname": "test-db2",
+                    "name": "test-db2",
+                    "virtualizationNode": "s157-cb32c10a56c256746c337e21b3fffeua"
                 }
             ]
         }
     ],
-    "CreatedAt": {
+    "createdAt": {
         "$date": {
             "$numberLong": "1588601386608"
         }
     },
-    "Environment": "PROD",
-    "Features": {
-    },
-    "Filesystems": [
+    "environment": "PROD",
+    "features": {},
+    "filesystems": [
         {
-            "AvailableSpace": {
+            "availableSpace": {
                 "$numberLong": "4939212390"
             },
-            "Filesystem": "/dev/mapper/vg_os-lv_root",
-            "MountedOn": "/",
-            "Size": {
+            "filesystem": "/dev/mapper/vg_os-lv_root",
+            "mountedOn": "/",
+            "size": {
                 "$numberLong": "8589934592"
             },
-            "Type": "xfs",
-            "UsedSpace": {
+            "type": "xfs",
+            "usedSpace": {
                 "$numberLong": "3758096384"
             }
         }
     ],
-    "Hostname": "test-virt",
-    "Info": {
-        "CPUCores": {
+    "hostname": "test-virt",
+    "info": {
+        "cpuCores": {
             "$numberInt": "1"
         },
-        "CPUFrequency": "2.50GHz",
-        "CPUModel": "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
-        "CPUSockets": {
+        "cpuFrequency": "2.50GHz",
+        "cpuModel": "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
+        "cpuSockets": {
             "$numberInt": "2"
         },
-        "CPUThreads": {
+        "cpuThreads": {
             "$numberInt": "2"
         },
-        "CoresPerSocket": {
+        "coresPerSocket": {
             "$numberInt": "1"
         },
-        "HardwareAbstraction": "VIRT",
-        "HardwareAbstractionTechnology": "VMWARE",
-        "Hostname": "test-virt",
-        "Kernel": "Linux",
-        "KernelVersion": "3.10.0-862.9.1.el7.x86_64",
-        "MemoryTotal": {
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "VMWARE",
+        "hostname": "test-virt",
+        "kernel": "Linux",
+        "kernelVersion": "3.10.0-862.9.1.el7.x86_64",
+        "memoryTotal": {
             "$numberDouble": "3.0"
         },
-        "OS": "Red Hat Enterprise Linux",
-        "OSVersion": "7.5",
-        "SwapTotal": {
+        "os": "Red Hat Enterprise Linux",
+        "osVersion": "7.5",
+        "swapTotal": {
             "$numberDouble": "4.0"
         },
-        "ThreadsPerCore": {
+        "threadsPerCore": {
             "$numberInt": "2"
         }
     },
-    "Location": "Italy",
-    "SchemaVersion": {
+    "location": "Italy",
+    "schemaVersion": {
         "$numberDouble": "1.0"
     },
-    "ServerSchemaVersion": {
+    "serverSchemaVersion": {
         "$numberInt": "1"
     },
-    "ServerVersion": "latest",
-    "Tags": [],
+    "serverVersion": "latest",
+    "tags": [],
     "_id": {
         "$oid": "5eb0222a45d85f4193704944"
     }
