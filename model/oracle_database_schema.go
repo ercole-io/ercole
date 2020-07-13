@@ -24,12 +24,12 @@ import (
 
 // OracleDatabaseSchema holds information about Oracle database schema.
 type OracleDatabaseSchema struct {
-	Indexes   int                    `bson:"Indexes"`
-	LOB       int                    `bson:"LOB"`
-	Tables    int                    `bson:"Tables"`
-	Total     int                    `bson:"Total"`
-	User      string                 `bson:"User"`
-	OtherInfo map[string]interface{} `bson:"-"`
+	Indexes   int                    `json:"indexes" bson:"indexes"`
+	LOB       int                    `json:"lob" bson:"lob"`
+	Tables    int                    `json:"tables" bson:"tables"`
+	Total     int                    `json:"total" bson:"total"`
+	User      string                 `json:"user" bson:"user"`
+	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -56,14 +56,14 @@ func (v *OracleDatabaseSchema) UnmarshalBSON(data []byte) error {
 var OracleDatabaseSchemaBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Indexes",
+		"indexes",
 		"LOB",
-		"Tables",
-		"Total",
-		"User",
+		"tables",
+		"total",
+		"user",
 	},
 	"properties": bson.M{
-		"Indexes": bson.M{
+		"indexes": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},
@@ -71,15 +71,15 @@ var OracleDatabaseSchemaBsonValidatorRules = bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},
-		"Tables": bson.M{
+		"tables": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},
-		"Total": bson.M{
+		"total": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},
-		"User": bson.M{
+		"user": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
