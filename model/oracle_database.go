@@ -104,12 +104,12 @@ var OracleDatabaseBsonValidatorRules = bson.M{
 		"sgaTarget",
 		"pgatarget",
 		"memoryTarget",
-		"sgamaxSize",
+		"sgaMaxSize",
 		"segmentsSize",
 		"datafileSize",
 		"allocated",
 		"elapsed",
-		"dbtime",
+		"dbTime",
 		"dailyCPUUsage",
 		"work",
 		"asm",
@@ -196,7 +196,7 @@ var OracleDatabaseBsonValidatorRules = bson.M{
 		"memoryTarget": bson.M{
 			"bsonType": "number",
 		},
-		"sgamaxSize": bson.M{
+		"sgaMaxSize": bson.M{
 			"bsonType": "number",
 		},
 		"segmentsSize": bson.M{
@@ -214,7 +214,7 @@ var OracleDatabaseBsonValidatorRules = bson.M{
 				bson.M{"type": "number"},
 			},
 		},
-		"dbtime": bson.M{
+		"dbTime": bson.M{
 			"anyOf": bson.A{
 				bson.M{"type": "null"},
 				bson.M{"type": "number"},
