@@ -43,7 +43,7 @@ func TestSearchOracleDatabaseAddms_JSONPaged(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Content": []interface{}{
+		"content": []interface{}{
 			map[string]interface{}{
 				"Action":         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
 				"Benefit":        83.34,
@@ -430,7 +430,7 @@ func TestSearchOracleDatabaseSegmentAdvisors_JSONPaged(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Content": []interface{}{
+		"content": []interface{}{
 			map[string]interface{}{
 				"CreatedAt":      utils.P("2020-04-07T08:52:59.82+02:00"),
 				"Dbname":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
@@ -857,7 +857,7 @@ func TestSearchOracleDatabasePatchAdvisors_JSONPaged(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Content": []interface{}{
+		"content": []interface{}{
 			map[string]interface{}{
 				"CreatedAt":   utils.P("2020-04-07T08:52:59.82+02:00"),
 				"Date":        utils.P("2012-04-16T02:00:00+02:00"),
@@ -1354,7 +1354,7 @@ func TestSearchOracleDatabases_JSONPaged(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Content": []interface{}{
+		"content": []interface{}{
 			map[string]interface{}{
 				"ArchiveLogStatus": false,
 				"BlockSize":        "8192",
@@ -1867,7 +1867,7 @@ func TestListLicenses_JSONPaged(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Content": []interface{}{
+		"content": []interface{}{
 			map[string]interface{}{
 				"Compliance": false,
 				"Count":      0,

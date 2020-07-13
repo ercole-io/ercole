@@ -41,30 +41,30 @@ func TestSearchAlerts_SuccessPaged(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Content": []interface{}{
+		"content": []interface{}{
 			map[string]interface{}{
-				"AffectedHosts": 12,
-				"Code":          "NEW_SERVER",
-				"Count":         12,
-				"OldestAlert":   utils.P("2020-05-06T15:40:04.543+02:00"),
-				"Severity":      "INFO",
+				"affectedHosts": 12,
+				"code":          "NEW_SERVER",
+				"count":         12,
+				"oldestAlert":   utils.P("2020-05-06T15:40:04.543+02:00"),
+				"severity":      "INFO",
 			},
 			map[string]interface{}{
-				"AffectedHosts": 1,
-				"Code":          "NEW_LICENSE",
-				"Count":         1,
-				"OldestAlert":   utils.P("2020-05-06T15:40:04.62+02:00"),
-				"Severity":      "CRITICAL",
+				"affectedHosts": 1,
+				"code":          "NEW_LICENSE",
+				"count":         1,
+				"oldestAlert":   utils.P("2020-05-06T15:40:04.62+02:00"),
+				"severity":      "CRITICAL",
 			},
 		},
-		"Metadata": map[string]interface{}{
-			"Empty":         false,
-			"First":         true,
-			"Last":          true,
-			"Number":        0,
-			"Size":          20,
-			"TotalElements": 25,
-			"TotalPages":    1,
+		"metadata": map[string]interface{}{
+			"empty":         false,
+			"first":         true,
+			"last":          true,
+			"number":        0,
+			"ize":           20,
+			"totalElements": 25,
+			"totalPages":    1,
 		},
 	}
 
@@ -100,18 +100,18 @@ func TestSearchAlerts_SuccessUnpaged(t *testing.T) {
 
 	expectedRes := []interface{}{
 		map[string]interface{}{
-			"AffectedHosts": 12,
-			"Code":          "NEW_SERVER",
-			"Count":         12,
-			"OldestAlert":   utils.P("2020-05-06T15:40:04.543+02:00"),
-			"Severity":      "INFO",
+			"affectedHosts": 12,
+			"code":          "NEW_SERVER",
+			"count":         12,
+			"oldestAlert":   utils.P("2020-05-06T15:40:04.543+02:00"),
+			"severity":      "INFO",
 		},
 		map[string]interface{}{
-			"AffectedHosts": 1,
-			"Code":          "NEW_LICENSE",
-			"Count":         1,
-			"OldestAlert":   utils.P("2020-05-06T15:40:04.62+02:00"),
-			"Severity":      "CRITICAL",
+			"affectedHosts": 1,
+			"code":          "NEW_LICENSE",
+			"count":         1,
+			"oldestAlert":   utils.P("2020-05-06T15:40:04.62+02:00"),
+			"severity":      "CRITICAL",
 		},
 	}
 	as.EXPECT().

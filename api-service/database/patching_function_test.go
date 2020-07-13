@@ -196,7 +196,7 @@ func (m *MongodbSuite) TestSearchOracleDatabaseLicenseModifiers() {
 	})
 
 	m.T().Run("should_return_all_results", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabaseLicenseModifiers([]string{""}, "NewValue", false, -1, -1)
+		out, err := m.db.SearchOracleDatabaseLicenseModifiers([]string{""}, "newValue", false, -1, -1)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
