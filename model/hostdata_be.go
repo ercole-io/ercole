@@ -45,7 +45,7 @@ type HostDataBE struct {
 	Features                Features                `json:"features" bson:"features"`
 	Filesystems             []Filesystem            `json:"filesystems" bson:"filesystems"`
 	Clusters                []ClusterInfo           `json:"clusters" bson:"clusters"`
-	OtherInfo               map[string]interface{}  `json:"otherInfo" bson:"otherInfo"`
+	OtherInfo               map[string]interface{}  `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
