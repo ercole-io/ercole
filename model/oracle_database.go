@@ -102,7 +102,7 @@ var OracleDatabaseBsonValidatorRules = bson.M{
 		"blockSize",
 		"cpuCount",
 		"sgaTarget",
-		"pgatarget",
+		"pgaTarget",
 		"memoryTarget",
 		"sgaMaxSize",
 		"segmentsSize",
@@ -190,7 +190,7 @@ var OracleDatabaseBsonValidatorRules = bson.M{
 		"sgaTarget": bson.M{
 			"bsonType": "number",
 		},
-		"pgatarget": bson.M{
+		"pgaTarget": bson.M{
 			"bsonType": "number",
 		},
 		"memoryTarget": bson.M{
@@ -232,7 +232,7 @@ var OracleDatabaseBsonValidatorRules = bson.M{
 				bson.M{"type": "number"},
 			},
 		},
-		"ASM": bson.M{
+		"asm": bson.M{
 			"bsonType": "bool",
 		},
 		"dataguard": bson.M{
