@@ -23,9 +23,9 @@ import (
 )
 
 type OracleFeature struct {
-	Database  *OracleDatabaseFeature `bson:"Database"`
-	Exadata   *OracleExadataFeature  `bson:"Exadata"`
-	OtherInfo map[string]interface{} `bson:"-"`
+	Database  *OracleDatabaseFeature `json:"database" bson:"database"`
+	Exadata   *OracleExadataFeature  `json:"exadata" bson:"exadata"`
+	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -52,13 +52,13 @@ func (v *OracleFeature) UnmarshalBSON(data []byte) error {
 var OracleFeatureBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"properties": bson.M{
-		"Oracle": bson.M{
+		"oracle": bson.M{
 			"anyOf": bson.A{
 				bson.M{"bsonType": "null"},
 				OracleDatabaseFeatureBsonValidatorRules,
 			},
 		},
-		"Exadata": bson.M{
+		"exadata": bson.M{
 			"anyOf": bson.A{
 				bson.M{"bsonType": "null"},
 				OracleExadataFeatureBsonValidatorRules,

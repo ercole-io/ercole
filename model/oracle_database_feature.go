@@ -23,8 +23,8 @@ import (
 )
 
 type OracleDatabaseFeature struct {
-	Databases []OracleDatabase       `bson:"Databases"`
-	OtherInfo map[string]interface{} `bson:"-"`
+	Databases []OracleDatabase       `json:"databases" bson:"databases"`
+	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -51,7 +51,7 @@ func (v *OracleDatabaseFeature) UnmarshalBSON(data []byte) error {
 var OracleDatabaseFeatureBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"properties": bson.M{
-		"Databases": bson.M{
+		"databases": bson.M{
 			"bsonType": "array",
 			"items":    OracleDatabaseBsonValidatorRules,
 		},

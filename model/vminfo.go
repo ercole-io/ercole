@@ -24,11 +24,11 @@ import (
 
 // VMInfo holds info about the vm
 type VMInfo struct {
-	Name               string                 `bson:"Name"`
-	Hostname           string                 `bson:"Hostname"` //Hostname or IP address
-	CappedCPU          bool                   `bson:"CappedCPU"`
-	VirtualizationNode string                 `bson:"VirtualizationNode"`
-	OtherInfo          map[string]interface{} `bson:"-"`
+	Name               string                 `json:"name" bson:"name"`
+	Hostname           string                 `json:"hostname" bson:"hostname"` //Hostname or IP address
+	CappedCPU          bool                   `json:"cappedCPU" bson:"cappedCPU"`
+	VirtualizationNode string                 `json:"virtualizationNode" bson:"virtualizationNode"`
+	OtherInfo          map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -55,27 +55,27 @@ func (v *VMInfo) UnmarshalBSON(data []byte) error {
 var VMInfoBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Name",
-		"Hostname",
-		"CappedCPU",
-		"VirtualizationNode",
+		"name",
+		"hostname",
+		"cappedCPU",
+		"virtualizationNode",
 	},
 	"properties": bson.M{
-		"Name": bson.M{
+		"name": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 128,
 		},
-		"Hostname": bson.M{
+		"hostname": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 253,
 			"pattern":   "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$",
 		},
-		"CappedCPU": bson.M{
+		"cappedCPU": bson.M{
 			"bsonType": "bool",
 		},
-		"VirtualizationNode": bson.M{
+		"virtualizationNode": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 253,
