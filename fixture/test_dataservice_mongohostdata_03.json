@@ -1,693 +1,693 @@
 {
-    "AgentVersion": "latest",
-    "Archived": false,
-    "ClusterMembershipStatus": {
-        "HACMP": false,
-        "OracleClusterware": false,
-        "SunCluster": false,
-        "VeritasClusterServer": false
+    "agentVersion": "latest",
+    "archived": false,
+    "clusterMembershipStatus": {
+        "hacmp": false,
+        "oracleClusterware": false,
+        "sunCluster": false,
+        "veritasClusterServer": false
     },
-    "Clusters": null,
-    "CreatedAt": {
+    "clusters": null,
+    "createdAt": {
         "$date": {
             "$numberLong": "1578929938000"
         }
     },
-    "Environment": "TST",
-    "Features": {
-        "Oracle": {
-            "Database": {
-                "Databases": [
+    "environment": "TST",
+    "features": {
+        "oracle": {
+            "database": {
+                "databases": [
                     {
-                        "ADDMs": [],
-                        "ASM": false,
-                        "Allocated": {
+                        "addms": [],
+                        "asm": false,
+                        "allocated": {
                             "$numberDouble": "129.0"
                         },
-                        "Archivelog": false,
-                        "Backups": [],
-                        "BlockSize": {
+                        "archivelog": false,
+                        "backups": [],
+                        "blockSize": {
                             "$numberInt": "8192"
                         },
-                        "CPUCount": {
+                        "cpuCount": {
                             "$numberInt": "2"
                         },
-                        "Charset": "AL32UTF8",
-                        "DBTime": {
+                        "charset": "AL32UTF8",
+                        "dbTime": {
                             "$numberDouble": "184.81"
                         },
-                        "DailyCPUUsage": {
+                        "dailyCPUUsage": {
                             "$numberDouble": "1.3"
                         },
-                        "DatafileSize": {
+                        "datafileSize": {
                             "$numberDouble": "6.0"
                         },
-                        "Dataguard": false,
-                        "Elapsed": {
+                        "dataguard": false,
+                        "elapsed": {
                             "$numberDouble": "12059.18"
                         },
-                        "FeatureUsageStats": [
+                        "featureUsageStats": [
                             {
-                                "CurrentlyUsed": false,
-                                "DetectedUsages": {
+                                "currentlyUsed": false,
+                                "detectedUsages": {
                                     "$numberLong": "91"
                                 },
-                                "ExtraFeatureInfo": "",
-                                "Feature": "ADDM",
-                                "FirstUsageDate": {
+                                "extraFeatureInfo": "",
+                                "feature": "ADDM",
+                                "firstUsageDate": {
                                     "$date": {
                                         "$numberLong": "1561397660000"
                                     }
                                 },
-                                "LastUsageDate": {
+                                "lastUsageDate": {
                                     "$date": {
                                         "$numberLong": "1573274903000"
                                     }
                                 },
-                                "Product": "Diagnostics Pack"
+                                "product": "Diagnostics Pack"
                             },
                             {
-                                "CurrentlyUsed": false,
-                                "DetectedUsages": {
+                                "currentlyUsed": false,
+                                "detectedUsages": {
                                     "$numberLong": "90"
                                 },
-                                "ExtraFeatureInfo": "",
-                                "Feature": "AWR Report",
-                                "FirstUsageDate": {
+                                "extraFeatureInfo": "",
+                                "feature": "AWR Report",
+                                "firstUsageDate": {
                                     "$date": {
                                         "$numberLong": "1561648544000"
                                     }
                                 },
-                                "LastUsageDate": {
+                                "lastUsageDate": {
                                     "$date": {
                                         "$numberLong": "1573274903000"
                                     }
                                 },
-                                "Product": "Diagnostics Pack"
+                                "product": "Diagnostics Pack"
                             },
                             {
-                                "CurrentlyUsed": false,
-                                "DetectedUsages": {
+                                "currentlyUsed": false,
+                                "detectedUsages": {
                                     "$numberLong": "7"
                                 },
-                                "ExtraFeatureInfo": "",
-                                "Feature": "Automatic Workload Repository",
-                                "FirstUsageDate": {
+                                "extraFeatureInfo": "",
+                                "feature": "Automatic Workload Repository",
+                                "firstUsageDate": {
                                     "$date": {
                                         "$numberLong": "1561654869000"
                                     }
                                 },
-                                "LastUsageDate": {
+                                "lastUsageDate": {
                                     "$date": {
                                         "$numberLong": "1562045705000"
                                     }
                                 },
-                                "Product": "Diagnostics Pack"
+                                "product": "Diagnostics Pack"
                             }
                         ],
-                        "InstanceNumber": {
+                        "instanceNumber": {
                             "$numberInt": "1"
                         },
-                        "InstanceName": "ERCOLE1",
-                        "IsCDB": false,
-                        "Licenses": [
+                        "instanceName": "ERCOLE1",
+                        "isCDB": false,
+                        "licenses": [
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Oracle EXE"
+                                "name": "Oracle EXE"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.5"
                                 },
-                                "Name": "Oracle ENT"
+                                "name": "Oracle ENT"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Oracle STD"
+                                "name": "Oracle STD"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "WebLogic Server Management Pack Enterprise Edition"
+                                "name": "WebLogic Server Management Pack Enterprise Edition"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Tuning Pack"
+                                "name": "Tuning Pack"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Spatial and Graph"
+                                "name": "Spatial and Graph"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Secure Backup"
+                                "name": "Secure Backup"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Real Application Testing"
+                                "name": "Real Application Testing"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Real Application Clusters"
+                                "name": "Real Application Clusters"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Real Application Clusters One Node"
+                                "name": "Real Application Clusters One Node"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "RAC or RAC One Node"
+                                "name": "RAC or RAC One Node"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Provisioning and Patch Automation Pack"
+                                "name": "Provisioning and Patch Automation Pack"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Provisioning and Patch Automation Pack for Database"
+                                "name": "Provisioning and Patch Automation Pack for Database"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Pillar Storage"
+                                "name": "Pillar Storage"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Partitioning"
+                                "name": "Partitioning"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "OLAP"
+                                "name": "OLAP"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Multitenant"
+                                "name": "Multitenant"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Label Security"
+                                "name": "Label Security"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "HW"
+                                "name": "HW"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "GoldenGate"
+                                "name": "GoldenGate"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Exadata"
+                                "name": "Exadata"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.5"
                                 },
-                                "Name": "Diagnostics Pack"
+                                "name": "Diagnostics Pack"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Database Vault"
+                                "name": "Database Vault"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Database In-Memory"
+                                "name": "Database In-Memory"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Database Gateway"
+                                "name": "Database Gateway"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Data Masking Pack"
+                                "name": "Data Masking Pack"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Configuration Management Pack for Oracle Database"
+                                "name": "Configuration Management Pack for Oracle Database"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Change Management Pack"
+                                "name": "Change Management Pack"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Advanced Security"
+                                "name": "Advanced Security"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Advanced Compression"
+                                "name": "Advanced Compression"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Advanced Analytics"
+                                "name": "Advanced Analytics"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Active Data Guard"
+                                "name": "Active Data Guard"
                             },
                             {
-                                "Count": {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "Name": "Active Data Guard or Real Application Clusters"
+                                "name": "Active Data Guard or Real Application Clusters"
                             }
                         ],
-                        "MemoryTarget": {
+                        "memoryTarget": {
                             "$numberDouble": "1.484"
                         },
-                        "NCharset": "AL16UTF16",
-                        "Name": "ERCOLE",
-                        "PDBs": [],
-                        "PGATarget": {
+                        "nCharset": "AL16UTF16",
+                        "name": "ERCOLE",
+                        "pdbs": [],
+                        "pgaTarget": {
                             "$numberDouble": "0.0"
                         },
-                        "PSUs": [],
-                        "Patches": [],
-                        "Platform": "Linux x86 64-bit",
-                        "SGAMaxSize": {
+                        "psus": [],
+                        "patches": [],
+                        "platform": "Linux x86 64-bit",
+                        "sgaMaxSize": {
                             "$numberDouble": "1.484"
                         },
-                        "SGATarget": {
+                        "sgaTarget": {
                             "$numberDouble": "0.0"
                         },
-                        "Schemas": [
+                        "schemas": [
                             {
-                                "Indexes": {
+                                "indexes": {
                                     "$numberInt": "0"
                                 },
-                                "LOB": {
+                                "lob": {
                                     "$numberInt": "0"
                                 },
-                                "Tables": {
+                                "tables": {
                                     "$numberInt": "192"
                                 },
-                                "Total": {
+                                "total": {
                                     "$numberInt": "192"
                                 },
-                                "User": "RAF"
+                                "user": "RAF"
                             },
                             {
-                                "Indexes": {
+                                "indexes": {
                                     "$numberInt": "0"
                                 },
-                                "LOB": {
+                                "lob": {
                                     "$numberInt": "0"
                                 },
-                                "Tables": {
+                                "tables": {
                                     "$numberInt": "0"
                                 },
-                                "Total": {
+                                "total": {
                                     "$numberInt": "0"
                                 },
-                                "User": "REMOTE_SCHEDULER_AGENT"
+                                "user": "REMOTE_SCHEDULER_AGENT"
                             },
                             {
-                                "Indexes": {
+                                "indexes": {
                                     "$numberInt": "0"
                                 },
-                                "LOB": {
+                                "lob": {
                                     "$numberInt": "0"
                                 },
-                                "Tables": {
+                                "tables": {
                                     "$numberInt": "0"
                                 },
-                                "Total": {
+                                "total": {
                                     "$numberInt": "0"
                                 },
-                                "User": "SYS$UMF"
+                                "user": "SYS$UMF"
                             },
                             {
-                                "Indexes": {
+                                "indexes": {
                                     "$numberInt": "0"
                                 },
-                                "LOB": {
+                                "lob": {
                                     "$numberInt": "0"
                                 },
-                                "Tables": {
+                                "tables": {
                                     "$numberInt": "0"
                                 },
-                                "Total": {
+                                "total": {
                                     "$numberInt": "0"
                                 },
-                                "User": "GGSYS"
+                                "user": "GGSYS"
                             },
                             {
-                                "Indexes": {
+                                "indexes": {
                                     "$numberInt": "0"
                                 },
-                                "LOB": {
+                                "lob": {
                                     "$numberInt": "0"
                                 },
-                                "Tables": {
+                                "tables": {
                                     "$numberInt": "0"
                                 },
-                                "Total": {
+                                "total": {
                                     "$numberInt": "0"
                                 },
-                                "User": "DBSFWUSER"
+                                "user": "DBSFWUSER"
                             },
                             {
-                                "Indexes": {
+                                "indexes": {
                                     "$numberInt": "0"
                                 },
-                                "LOB": {
+                                "lob": {
                                     "$numberInt": "0"
                                 },
-                                "Tables": {
+                                "tables": {
                                     "$numberInt": "384"
                                 },
-                                "Total": {
+                                "total": {
                                     "$numberInt": "384"
                                 },
-                                "User": "ERCOLE"
+                                "user": "ERCOLE"
                             },
                             {
-                                "Indexes": {
+                                "indexes": {
                                     "$numberInt": "0"
                                 },
-                                "LOB": {
+                                "lob": {
                                     "$numberInt": "0"
                                 },
-                                "Tables": {
+                                "tables": {
                                     "$numberInt": "0"
                                 },
-                                "Total": {
+                                "total": {
                                     "$numberInt": "0"
                                 },
-                                "User": "SYSRAC"
+                                "user": "SYSRAC"
                             }
                         ],
-                        "SegmentAdvisors": [],
-                        "SegmentsSize": {
+                        "segmentAdvisors": [],
+                        "segmentsSize": {
                             "$numberDouble": "3.0"
                         },
-                        "Services": [],
-                        "Status": "OPEN",
-                        "Tablespaces": [
+                        "services": [],
+                        "status": "OPEN",
+                        "tablespaces": [
                             {
-                                "MaxSize": {
+                                "maxSize": {
                                     "$numberDouble": "32767.9844"
                                 },
-                                "Name": "SYSTEM",
-                                "Status": "ONLINE",
-                                "Total": {
+                                "name": "SYSTEM",
+                                "status": "ONLINE",
+                                "total": {
                                     "$numberDouble": "850.0"
                                 },
-                                "Used": {
+                                "used": {
                                     "$numberDouble": "842.875"
                                 },
-                                "UsedPerc": {
+                                "usedPerc": {
                                     "$numberDouble": "2.57"
                                 }
                             },
                             {
-                                "MaxSize": {
+                                "maxSize": {
                                     "$numberDouble": "32767.9844"
                                 },
-                                "Name": "USERS",
-                                "Status": "ONLINE",
-                                "Total": {
+                                "name": "USERS",
+                                "status": "ONLINE",
+                                "total": {
                                     "$numberDouble": "1024.0"
                                 },
-                                "Used": {
+                                "used": {
                                     "$numberDouble": "576.0"
                                 },
-                                "UsedPerc": {
+                                "usedPerc": {
                                     "$numberDouble": "1.76"
                                 }
                             },
                             {
-                                "MaxSize": {
+                                "maxSize": {
                                     "$numberDouble": "32767.9844"
                                 },
-                                "Name": "UNDOTBS1",
-                                "Status": "ONLINE",
-                                "Total": {
+                                "name": "UNDOTBS1",
+                                "status": "ONLINE",
+                                "total": {
                                     "$numberDouble": "895.0"
                                 },
-                                "Used": {
+                                "used": {
                                     "$numberDouble": "41.25"
                                 },
-                                "UsedPerc": {
+                                "usedPerc": {
                                     "$numberDouble": "0.13"
                                 }
                             },
                             {
-                                "MaxSize": {
+                                "maxSize": {
                                     "$numberDouble": "32767.9844"
                                 },
-                                "Name": "SYSAUX",
-                                "Status": "ONLINE",
-                                "Total": {
+                                "name": "SYSAUX",
+                                "status": "ONLINE",
+                                "total": {
                                     "$numberDouble": "1870.0"
                                 },
-                                "Used": {
+                                "used": {
                                     "$numberDouble": "1749.625"
                                 },
-                                "UsedPerc": {
+                                "usedPerc": {
                                     "$numberDouble": "5.34"
                                 }
                             }
                         ],
-                        "UniqueName": "ERCOLE",
-                        "Version": "12.2.0.1.0 Enterprise Edition",
-                        "Work": {
+                        "uniqueName": "ERCOLE",
+                        "version": "12.2.0.1.0 Enterprise Edition",
+                        "work": {
                             "$numberDouble": "1.0"
                         }
                     }
                 ]
             },
-            "Exadata": null
+            "exadata": null
         }
     },
-    "Filesystems": [
+    "filesystems": [
         {
-            "AvailableSpace": {
+            "availableSpace": {
                 "$numberLong": "5798205849"
             },
-            "Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
-            "MountedOn": "/",
-            "Size": {
+            "filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+            "mountedOn": "/",
+            "size": {
                 "$numberLong": "13958643712"
             },
-            "Type": "ext4",
-            "UsedSpace": {
+            "type": "ext4",
+            "usedSpace": {
                 "$numberLong": "7194070220"
             }
         },
         {
-            "AvailableSpace": {
+            "availableSpace": {
                 "$numberLong": "335544320"
             },
-            "Filesystem": "/dev/sda1",
-            "MountedOn": "/boot",
-            "Size": {
+            "filesystem": "/dev/sda1",
+            "mountedOn": "/boot",
+            "size": {
                 "$numberLong": "511705088"
             },
-            "Type": "ext4",
-            "UsedSpace": {
+            "type": "ext4",
+            "usedSpace": {
                 "$numberLong": "139460608"
             }
         },
         {
-            "AvailableSpace": {
+            "availableSpace": {
                 "$numberLong": "23622320128"
             },
-            "Filesystem": "/dev/mapper/cl_itl--csllab--112-data",
-            "MountedOn": "/data",
-            "Size": {
+            "filesystem": "/dev/mapper/cl_itl--csllab--112-data",
+            "mountedOn": "/data",
+            "size": {
                 "$numberLong": "42949672960"
             },
-            "Type": "ext4",
-            "UsedSpace": {
+            "type": "ext4",
+            "usedSpace": {
                 "$numberLong": "18253611008"
             }
         },
         {
-            "AvailableSpace": {
+            "availableSpace": {
                 "$numberLong": "2040109465"
             },
-            "Filesystem": "devtmpfs",
-            "MountedOn": "/dev",
-            "Size": {
+            "filesystem": "devtmpfs",
+            "mountedOn": "/dev",
+            "size": {
                 "$numberLong": "2040109465"
             },
-            "Type": "devtmpfs",
-            "UsedSpace": {
+            "type": "devtmpfs",
+            "usedSpace": {
                 "$numberLong": "0"
             }
         },
         {
-            "AvailableSpace": {
+            "availableSpace": {
                 "$numberLong": "931135488"
             },
-            "Filesystem": "tmpfs",
-            "MountedOn": "/dev/shm",
-            "Size": {
+            "filesystem": "tmpfs",
+            "mountedOn": "/dev/shm",
+            "size": {
                 "$numberLong": "2040109465"
             },
-            "Type": "tmpfs",
-            "UsedSpace": {
+            "type": "tmpfs",
+            "usedSpace": {
                 "$numberLong": "1056964608"
             }
         },
         {
-            "AvailableSpace": {
+            "availableSpace": {
                 "$numberLong": "1932735283"
             },
-            "Filesystem": "tmpfs",
-            "MountedOn": "/run",
-            "Size": {
+            "filesystem": "tmpfs",
+            "mountedOn": "/run",
+            "size": {
                 "$numberLong": "2040109465"
             },
-            "Type": "tmpfs",
-            "UsedSpace": {
+            "type": "tmpfs",
+            "usedSpace": {
                 "$numberLong": "143654912"
             }
         },
         {
-            "AvailableSpace": {
+            "availableSpace": {
                 "$numberLong": "398458880"
             },
-            "Filesystem": "tmpfs",
-            "MountedOn": "/run/user/0",
-            "Size": {
+            "filesystem": "tmpfs",
+            "mountedOn": "/run/user/0",
+            "size": {
                 "$numberLong": "398458880"
             },
-            "Type": "tmpfs",
-            "UsedSpace": {
+            "type": "tmpfs",
+            "usedSpace": {
                 "$numberLong": "0"
             }
         },
         {
-            "AvailableSpace": {
+            "availableSpace": {
                 "$numberLong": "398458880"
             },
-            "Filesystem": "tmpfs",
-            "MountedOn": "/run/user/54321",
-            "Size": {
+            "filesystem": "tmpfs",
+            "mountedOn": "/run/user/54321",
+            "size": {
                 "$numberLong": "398458880"
             },
-            "Type": "tmpfs",
-            "UsedSpace": {
+            "type": "tmpfs",
+            "usedSpace": {
                 "$numberLong": "0"
             }
         },
         {
-            "AvailableSpace": {
+            "availableSpace": {
                 "$numberLong": "2040109465"
             },
-            "Filesystem": "tmpfs",
-            "MountedOn": "/sys/fs/cgroup",
-            "Size": {
+            "filesystem": "tmpfs",
+            "mountedOn": "/sys/fs/cgroup",
+            "size": {
                 "$numberLong": "2040109465"
             },
-            "Type": "tmpfs",
-            "UsedSpace": {
+            "type": "tmpfs",
+            "usedSpace": {
                 "$numberLong": "0"
             }
         }
     ],
-    "Hostname": "itl-csllab-223.sorint.localpippo",
-    "Info": {
-        "CPUCores": {
+    "hostname": "itl-csllab-223.sorint.localpippo",
+    "info": {
+        "cpuCores": {
             "$numberInt": "1"
         },
-        "CPUFrequency": "2.53GHz",
-        "CPUModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-        "CPUSockets": {
+        "cpuFrequency": "2.53GHz",
+        "cpuModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+        "cpuSockets": {
             "$numberInt": "2"
         },
-        "CPUThreads": {
+        "cpuThreads": {
             "$numberInt": "2"
         },
-        "CoresPerSocket": {
+        "coresPerSocket": {
             "$numberInt": "1"
         },
-        "HardwareAbstraction": "VIRT",
-        "HardwareAbstractionTechnology": "VMWARE",
-        "Hostname": "itl-csllab-223.sorint.localpippo",
-        "Kernel": "3.10.0-514.el7.x86_64",
-        "KernelVersion": "3.10.0-514.el7.x86_64",
-        "MemoryTotal": {
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "VMWARE",
+        "hostname": "itl-csllab-223.sorint.localpippo",
+        "kernel": "3.10.0-514.el7.x86_64",
+        "kernelVersion": "3.10.0-514.el7.x86_64",
+        "memoryTotal": {
             "$numberDouble": "3.0"
         },
-        "OS": "Red Hat Enterprise Linux",
-        "OSVersion": "7.6",
-        "SwapTotal": {
+        "os": "Red Hat Enterprise Linux",
+        "osVersion": "7.6",
+        "swapTotal": {
             "$numberDouble": "1.0"
         },
-        "ThreadsPerCore": {
+        "threadsPerCore": {
             "$numberInt": "2"
         }
     },
-    "Location": "Germany",
-    "SchemaVersion": {
+    "location": "Germany",
+    "schemaVersion": {
         "$numberDouble": "1.0"
     },
-    "ServerSchemaVersion": {
+    "serverSchemaVersion": {
         "$numberInt": "1"
     },
-    "ServerVersion": "latest",
-    "Tags": [],
+    "serverVersion": "latest",
+    "tags": [],
     "_id": {
         "$oid": "5e1c9d2297840f297b537327"
     }

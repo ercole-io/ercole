@@ -55,7 +55,7 @@ func TestHostdatas(t *testing.T) {
 			assert.True(t, result.Valid())
 
 			if !result.Valid() {
-				fmt.Println("The input hostdata is not valid:")
+				fmt.Printf("The input hostdata for file [%v] is not valid:\n", file.Name())
 				for _, desc := range result.Errors() {
 					fmt.Printf("- %s\n", desc)
 				}
