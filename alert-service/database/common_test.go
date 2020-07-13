@@ -29,7 +29,7 @@ var alert1 model.Alert = model.Alert{
 	Date:                    utils.P("2019-11-05T18:02:03Z"),
 	Description:             "pippo",
 	OtherInfo: map[string]interface{}{
-		"Hostname": "myhost",
+		"hostname": "myhost",
 	},
 	ID: utils.Str2oid("5dd40bfb12f54dfda7b1c291"),
 }
@@ -43,7 +43,7 @@ var alert2 model.Alert = model.Alert{
 	Date:                    utils.P("2019-11-05T18:02:03Z"),
 	Description:             "No data received from the host myhost in the last 90 days",
 	OtherInfo: map[string]interface{}{
-		"Hostname": "myhost",
+		"hostname": "myhost",
 	},
 	ID: utils.Str2oid("5dd4113f0085a6fac03c4fed"),
 }

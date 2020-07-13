@@ -24,12 +24,12 @@ import (
 
 // OracleDatabasePluggableDatabase holds information about a oracle pluggable database.
 type OracleDatabasePluggableDatabase struct {
-	Name        string                     `bson:"Name"`
-	Status      string                     `bson:"Status"`
-	Tablespaces []OracleDatabaseTablespace `bson:"Tablespaces"`
-	Schemas     []OracleDatabaseSchema     `bson:"Schemas"`
-	Services    []OracleDatabaseService    `bson:"Services"`
-	OtherInfo   map[string]interface{}     `bson:"-"`
+	Name        string                     `json:"name" bson:"name"`
+	Status      string                     `json:"status" bson:"status"`
+	Tablespaces []OracleDatabaseTablespace `json:"tablespaces" bson:"tablespaces"`
+	Schemas     []OracleDatabaseSchema     `json:"schemas" bson:"schemas"`
+	Services    []OracleDatabaseService    `json:"services" bson:"services"`
+	OtherInfo   map[string]interface{}     `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -56,19 +56,19 @@ func (v *OracleDatabasePluggableDatabase) UnmarshalBSON(data []byte) error {
 var OracleDatabasePluggableDatabaseBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Name",
-		"Status",
-		"Tablespaces",
-		"Schemas",
-		"Services",
+		"name",
+		"status",
+		"tablespaces",
+		"schemas",
+		"services",
 	},
 	"properties": bson.M{
-		"Name": bson.M{
+		"name": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
 		},
-		"Status": bson.M{
+		"status": bson.M{
 			"bsonType": "string",
 			"enum": bson.A{
 				"OPEN",
@@ -76,8 +76,8 @@ var OracleDatabasePluggableDatabaseBsonValidatorRules = bson.M{
 				"MOUNTED",
 			},
 		},
-		"Tablespaces": OracleDatabaseTablespaceBsonValidatorRules,
-		"Schemas":     OracleDatabaseSchemaBsonValidatorRules,
-		"Services":    OracleDatabaseServiceBsonValidatorRules,
+		"tablespaces": OracleDatabaseTablespaceBsonValidatorRules,
+		"schemas":     OracleDatabaseSchemaBsonValidatorRules,
+		"services":    OracleDatabaseServiceBsonValidatorRules,
 	},
 }

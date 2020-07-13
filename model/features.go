@@ -24,8 +24,8 @@ import (
 
 // Features holds various informations about the features of the host.
 type Features struct {
-	Oracle    *OracleFeature         `bson:"Oracle"`
-	OtherInfo map[string]interface{} `bson:"-"`
+	Oracle    *OracleFeature         `json:"oracle" bson:"oracle"`
+	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -52,7 +52,7 @@ func (v *Features) UnmarshalBSON(data []byte) error {
 var FeaturesBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"properties": bson.M{
-		"Oracle": bson.M{
+		"oracle": bson.M{
 			"anyOf": bson.A{
 				bson.M{
 					"bsonType": "null",
