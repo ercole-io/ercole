@@ -76,7 +76,7 @@ func (m *MongodbSuite) TestSearchHosts() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
-				"Content": []interface{}{
+				"content": []interface{}{
 					map[string]interface{}{
 						"cpuCores":                      1,
 						"cpuModel":                      "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
@@ -522,6 +522,7 @@ func (m *MongodbSuite) TestGetHost() {
 								"elapsed":           12059.18,
 								"featureUsageStats": []interface{}{},
 								"instanceNumber":    1,
+								"instanceName":      "pippodb1",
 								"isCDB":             false,
 								"licenses":          []interface{}{},
 								"memoryTarget":      1.484,
@@ -651,6 +652,7 @@ func (m *MongodbSuite) TestGetHost() {
 								"elapsed":           12059.18,
 								"featureUsageStats": []interface{}{},
 								"instanceNumber":    1,
+								"instanceName":      "pippodb1",
 								"isCDB":             false,
 								"licenses":          []interface{}{},
 								"memoryTarget":      1.484,

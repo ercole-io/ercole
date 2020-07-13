@@ -68,7 +68,7 @@ func AddHardwareAbstraction(field string) bson.A {
 
 func AddAssociatedClusterNameAndVirtualizationNode(olderThan time.Time) bson.A {
 	return mu.MAPipeline(
-		mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "VM", mu.MAPipeline(
+		mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "vm", mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			mu.APUnwind("$clusters"),
 			mu.APReplaceWith("$clusters"),
@@ -87,6 +87,6 @@ func AddAssociatedClusterNameAndVirtualizationNode(olderThan time.Time) bson.A {
 			"cluster":            mu.APOIfNull("$vm.clusterName", nil),
 			"virtualizationNode": mu.APOIfNull("$vm.virtualizationNode", nil),
 		}),
-		mu.APUnset("VM"),
+		mu.APUnset("vm"),
 	)
 }

@@ -832,7 +832,7 @@ func TestSearchOracleDatabaseLicenseModifiers_SuccessPaged(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Content": []interface{}{
+		"content": []interface{}{
 			map[string]interface{}{
 				"DatabaseName": "foobar1",
 				"Hostname":     "test-db1",

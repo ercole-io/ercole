@@ -39,7 +39,7 @@ func TestSearchOracleExadata_SuccessPaged(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Content": []interface{}{
+		"content": []interface{}{
 			map[string]interface{}{
 				"CreatedAt": utils.P("2020-04-07T08:52:59.865+02:00"),
 				"DBServers": []interface{}{

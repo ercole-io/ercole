@@ -56,7 +56,7 @@ func (md *MongoDatabase) SearchOracleDatabasePatchAdvisors(keywords []string, so
 					mu.APOMap("$database.psus", "psu", mu.APOMergeObjects(
 						"$$psu",
 						bson.M{
-							"Date": mu.APODateFromString("$$psu.date", "%Y-%m-%d"),
+							"date": mu.APODateFromString("$$psu.date", "%Y-%m-%d"),
 						},
 					)),
 					nil,

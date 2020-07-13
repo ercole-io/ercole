@@ -196,7 +196,7 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 								),
 							),
 							"lic",
-							"$$lic.Name",
+							"$$lic.name",
 						), ", "),
 						"productVersion": mu.APOArrayElemAt(mu.APOSplit("$database.version", "."), 0),
 						"productLicenseAllocated": mu.APOLet(
@@ -243,7 +243,7 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 						"operatingSystem": "$info.os",
 					}),
 					mu.APSet(bson.M{
-						"shysicalCores": mu.APOCond(mu.APOEqual("$info.cpuSockets", 0), "$coresPerProcessor", bson.M{
+						"physicalCores": mu.APOCond(mu.APOEqual("$info.cpuSockets", 0), "$coresPerProcessor", bson.M{
 							"$multiply": bson.A{"$coresPerProcessor", "$processors"},
 						}),
 					}),
@@ -334,7 +334,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 						mu.APOMergeObjects(
 							"$$db",
 							bson.M{
-								"Changes": mu.APOFilter(
+								"changes": mu.APOFilter(
 									mu.APOMap("$history", "hh", mu.APOMergeObjects(
 										bson.M{"updated": "$$hh.createdAt"},
 										mu.APOArrayElemAt(mu.APOFilter("$$hh.features.oracle.database.databases", "hdb", mu.APOEqual("$$hdb.name", "$$db.name")), 0),
