@@ -891,42 +891,63 @@ components:
     Alert:
       title: Alert
       type: object
+      x-examples:
+        example-1:
+          AlertAffectedTechnology: null
+          AlertCategory: AGENT
+          AlertCode: NO_DATA
+          AlertSeverity: CRITICAL
+          AlertStatus: NEW
+          Date: '2020-07-08T06:15:24.391Z'
+          Description: No data received from the host publicitate-36d06ca83eafa454423d2097f4965517 in the last 0 days
+          Hostname: publicitate-36d06ca83eafa454423d2097f4965517
+          OtherInfo:
+            Hostname: publicitate-36d06ca83eafa454423d2097f4965517
+          _id: 5f05647c682a867d4bdb28a1
       properties:
         OtherInfo:
           type: object
           properties:
             DbName:
               type: string
+              description: The name of the database
             Hostname:
               type: string
+              description: The name of the host
         Hostname:
           type: string
+          description: The name of the host(probably a bug)
         Description:
           type: string
+          description: 'The message alert receive from the host at that time '
         AlertCategory:
           type: string
           enum:
             - SYSTEM
             - AGENT
             - LICENSE
+          description: 'contains: "ENGINE", "AGENT", "LICENSE"'
         AlertAffectedTechnology:
           nullable: true
           type: string
           enum:
             - Oracle/Database
             - Oracle/Exadata
+          description: '"NULL" for now '
         AlertStatus:
           type: string
           enum:
             - NEW
             - ACK
           example: NEW
+          description: '"NEW", "ACK"'
         AlertSeverity:
           type: string
           enum:
             - WARNING
             - CRITICAL
             - INFO
+          description: '"WARNING", "CRITICAL", "INFO"'
         AlertCode:
           type: string
           enum:
@@ -935,6 +956,7 @@ components:
             - NEW_LICENSE
             - NEW_SERVER
             - NO_DATA
+          description: '"NEW_DATABASE", "NEW_OPTION", "NEW_LICENSE", "NEW_SERVER", "NO_DATA"'
         _id:
           type: string
           description: ID of the alert
@@ -1024,11 +1046,7 @@ components:
           nullable: true
     TechnologyStatus:
       type: object
-      required:
-        - Product
-        - HostsCount
-        - Compliance
-        - UnpaidDues
+      title: ''
       properties:
         Product:
           type: string
@@ -1038,6 +1056,11 @@ components:
           type: number
         UnpaidDues:
           type: number
+      required:
+        - Product
+        - HostsCount
+        - Compliance
+        - UnpaidDues
     AllTechnologyComplianceStatus:
       type: object
       required:
@@ -1051,6 +1074,7 @@ components:
           type: number
         UnpaidDues:
           type: number
+      description: ''
     AggregatedCodeSeverityAlerts:
       type: object
       required:
@@ -2025,8 +2049,8 @@ paths:
           $ref: '#/components/responses/error'
   /alerts:
     get:
-      summary: search alerts using the filters in the request
-      description: search alerts using the filters in the request
+      summary: search alerts
+      description: 'This API fetches all alerts. The parameters in version 2.0 are not used since all filters are executed by the frontend. This API is also called by the Dashboard. '
       tags:
         - api-service
         - fe-user
@@ -2113,8 +2137,10 @@ paths:
                             type: boolean
                           Number:
                             type: integer
+                            description: 'The Page number '
                           Size:
                             type: integer
+                            description: How many hosts per page
                           TotalElements:
                             type: integer
                           TotalPages:
@@ -2122,12 +2148,38 @@ paths:
                   - type: array
                     items:
                       $ref: '#/components/schemas/AggregatedCodeSeverityAlerts'
+              examples:
+                example-1:
+                  value:
+                    Content:
+                      - AlertAffectedTechnology: null
+                        AlertCategory: LICENSE
+                        AlertCode: NEW_LICENSE
+                        AlertSeverity: INFO
+                        AlertStatus: NEW
+                        Date: '2019-02-03T13:17:10.359Z'
+                        Description: This is an info alert manually created by myselft
+                        Hostname: test-db
+                        OtherInfo:
+                          Hostname: test-db
+                        _id: 5f05646c9d672ed6ecd7d7c4
+                    Metadata:
+                      Empty: false
+                      First: false
+                      Last: false
+                      Number: 1
+                      Size: 1
+                      TotalElements: 20
+                      TotalPages: 20
         '401':
           $ref: '#/components/responses/error'
+          description: Unauthorized
         '422':
           $ref: '#/components/responses/error'
+          description: Unprocessable Entity
         '500':
           $ref: '#/components/responses/error'
+          description: Internal server error
   '/alerts/{id}':
     parameters:
       - in: path
@@ -3556,42 +3608,11 @@ paths:
                     properties:
                       technologies:
                         type: array
+                        description: All available technologies must be returned by default with values at zero if not used.
                         items:
-                          type: object
-                          properties:
-                            product:
-                              type: string
-                              description: technologial product code
-                            Compliance:
-                              type: number
-                              description: |-
-                                a metric ranging [0..1] calculated as follows:
-
-                                if a ULA exists for a given product, its compliance := 1. When calculating the total, this product's purchasedLicenses := usedLicenses
-                                else if usedLicenses <= purchasedLicenses the product's compliance := 1. When calculating the total, this product's purchasedLicenses := usedLicenses
-                                else this product's compliance := purchasedLicenses / usedLicenses.
-                            unpaidDues:
-                              type: number
-                              description: |-
-                                "unpaidDues" = difference between calculated cost of used and purchased licenses:
-
-                                if usedLicensesCost <= purchasedLicensesCost, then unpaidDues := 0
-                                else unpaidDues := usedLicensesCost - purchasedLicensesCost
-                            hostsCount:
-                              type: number
-                              description: number of hosts found supporting the current product / total hosts found
+                          $ref: '#/components/schemas/TechnologyStatus'
                       total:
-                        type: object
-                        properties:
-                          compliance:
-                            type: number
-                            description: sum(purchasedLicenses) / sum(usedLicenses) fore each product
-                          hostsCount:
-                            type: number
-                            description: sum of hostsCount
-                          unpaidDues:
-                            type: number
-                            description: sum(unpaidDues)
+                        $ref: '#/components/schemas/AllTechnologyComplianceStatus'
               examples:
                 example-1:
                   value:
@@ -3612,6 +3633,8 @@ paths:
                         Compliance: 0.05555555555555555
                         HostsCount: 14
                         UnpaidDues: 0
+        '201':
+          description: Created
         '401':
           $ref: '#/components/responses/error'
           description: Token is invalid / it is not present
