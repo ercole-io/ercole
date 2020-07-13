@@ -24,43 +24,44 @@ import (
 
 // OracleDatabase holds information about a oracle database.
 type OracleDatabase struct {
-	InstanceNumber    int                               `bson:"InstanceNumber"`
-	Name              string                            `bson:"Name"`
-	UniqueName        string                            `bson:"UniqueName"`
-	Status            string                            `bson:"Status"`
-	IsCDB             bool                              `bson:"IsCDB"`
-	Version           string                            `bson:"Version"`
-	Platform          string                            `bson:"Platform"`
-	Archivelog        bool                              `bson:"Archivelog"`
-	Charset           string                            `bson:"Charset"`
-	NCharset          string                            `bson:"NCharset"`
-	BlockSize         int                               `bson:"BlockSize"`
-	CPUCount          int                               `bson:"CPUCount"`
-	SGATarget         float64                           `bson:"SGATarget"`
-	PGATarget         float64                           `bson:"PGATarget"`
-	MemoryTarget      float64                           `bson:"MemoryTarget"`
-	SGAMaxSize        float64                           `bson:"SGAMaxSize"`
-	SegmentsSize      float64                           `bson:"SegmentsSize"`
-	DatafileSize      float64                           `bson:"DatafileSize"`
-	Allocated         float64                           `bson:"Allocated"`
-	Elapsed           *float64                          `bson:"Elapsed"`
-	DBTime            *float64                          `bson:"DBTime"`
-	DailyCPUUsage     *float64                          `bson:"DailyCPUUsage"`
-	Work              *float64                          `bson:"Work"`
-	ASM               bool                              `bson:"ASM"`
-	Dataguard         bool                              `bson:"Dataguard"`
-	Patches           []OracleDatabasePatch             `bson:"Patches"`
-	Tablespaces       []OracleDatabaseTablespace        `bson:"Tablespaces"`
-	Schemas           []OracleDatabaseSchema            `bson:"Schemas"`
-	Licenses          []OracleDatabaseLicense           `bson:"Licenses"`
-	ADDMs             []OracleDatabaseAddm              `bson:"ADDMs"`
-	SegmentAdvisors   []OracleDatabaseSegmentAdvisor    `bson:"SegmentAdvisors"`
-	PSUs              []OracleDatabasePSU               `bson:"PSUs"`
-	Backups           []OracleDatabaseBackup            `bson:"Backups"`
-	FeatureUsageStats []OracleDatabaseFeatureUsageStat  `bson:"FeatureUsageStats"`
-	PDBs              []OracleDatabasePluggableDatabase `bson:"PDBs"`
-	Services          []OracleDatabaseService           `bson:"Services"`
-	OtherInfo         map[string]interface{}            `bson:"-"`
+	InstanceNumber    int                               `json:"instanceNumber" bson:"instanceNumber"`
+	InstanceName      string                            `json:"instanceName" bson:"instanceName"`
+	Name              string                            `json:"name" bson:"name"`
+	UniqueName        string                            `json:"uniqueName" bson:"uniqueName"`
+	Status            string                            `json:"status" bson:"status"`
+	IsCDB             bool                              `json:"isCDB" bson:"isCDB"`
+	Version           string                            `json:"version" bson:"version"`
+	Platform          string                            `json:"platform" bson:"platform"`
+	Archivelog        bool                              `json:"archivelog" bson:"archivelog"`
+	Charset           string                            `json:"charset" bson:"charset"`
+	NCharset          string                            `json:"nCharset" bson:"nCharset"`
+	BlockSize         int                               `json:"blockSize" bson:"blockSize"`
+	CPUCount          int                               `json:"cpuCount" bson:"cpuCount"`
+	SGATarget         float64                           `json:"sgaTarget" bson:"sgaTarget"`
+	PGATarget         float64                           `json:"pgaTarget" bson:"pgaTarget"`
+	MemoryTarget      float64                           `json:"memoryTarget" bson:"memoryTarget"`
+	SGAMaxSize        float64                           `json:"sgaMaxSize" bson:"sgaMaxSize"`
+	SegmentsSize      float64                           `json:"segmentsSize" bson:"segmentsSize"`
+	DatafileSize      float64                           `json:"datafileSize" bson:"datafileSize"`
+	Allocated         float64                           `json:"allocated" bson:"allocated"`
+	Elapsed           *float64                          `json:"elapsed" bson:"elapsed"`
+	DBTime            *float64                          `json:"dbTime" bson:"dbTime"`
+	DailyCPUUsage     *float64                          `json:"dailyCPUUsage" bson:"dailyCPUUsage"`
+	Work              *float64                          `json:"work" bson:"work"`
+	ASM               bool                              `json:"asm" bson:"asm"`
+	Dataguard         bool                              `json:"dataguard" bson:"dataguard"`
+	Patches           []OracleDatabasePatch             `json:"patches" bson:"patches"`
+	Tablespaces       []OracleDatabaseTablespace        `json:"tablespaces" bson:"tablespaces"`
+	Schemas           []OracleDatabaseSchema            `json:"schemas" bson:"schemas"`
+	Licenses          []OracleDatabaseLicense           `json:"licenses" bson:"licenses"`
+	ADDMs             []OracleDatabaseAddm              `json:"addms" bson:"addms"`
+	SegmentAdvisors   []OracleDatabaseSegmentAdvisor    `json:"segmentAdvisors" bson:"segmentAdvisors"`
+	PSUs              []OracleDatabasePSU               `json:"psus" bson:"psus"`
+	Backups           []OracleDatabaseBackup            `json:"backups" bson:"backups"`
+	FeatureUsageStats []OracleDatabaseFeatureUsageStat  `json:"featureUsageStats" bson:"featureUsageStats"`
+	PDBs              []OracleDatabasePluggableDatabase `json:"pdbs" bson:"pdbs"`
+	Services          []OracleDatabaseService           `json:"services" bson:"services"`
+	OtherInfo         map[string]interface{}            `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -87,191 +88,197 @@ func (v *OracleDatabase) UnmarshalBSON(data []byte) error {
 var OracleDatabaseBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"InstanceNumber",
-		"Name",
-		"UniqueName",
-		"Status",
-		"IsCDB",
-		"Version",
-		"Platform",
-		"Archivelog",
-		"Charset",
-		"NCharset",
-		"BlockSize",
-		"CPUCount",
-		"SGATarget",
-		"PGATarget",
-		"MemoryTarget",
-		"SGAMaxSize",
-		"SegmentsSize",
-		"DatafileSize",
-		"Allocated",
-		"Elapsed",
-		"DBTime",
-		"DailyCPUUsage",
-		"Work",
-		"ASM",
-		"Dataguard",
-		"Patches",
-		"Tablespaces",
-		"Schemas",
-		"Licenses",
-		"ADDMs",
-		"SegmentAdvisors",
-		"PSUs",
-		"Backups",
-		"FeatureUsageStats",
-		"PDBs",
-		"Services",
+		"instanceNumber",
+		"instanceName",
+		"name",
+		"uniqueName",
+		"status",
+		"isCDB",
+		"version",
+		"platform",
+		"archivelog",
+		"charset",
+		"nCharset",
+		"blockSize",
+		"cpuCount",
+		"sgaTarget",
+		"pgaTarget",
+		"memoryTarget",
+		"sgaMaxSize",
+		"segmentsSize",
+		"datafileSize",
+		"allocated",
+		"elapsed",
+		"dbTime",
+		"dailyCPUUsage",
+		"work",
+		"asm",
+		"dataguard",
+		"patches",
+		"tablespaces",
+		"schemas",
+		"licenses",
+		"addms",
+		"segmentAdvisors",
+		"psus",
+		"backups",
+		"featureUsageStats",
+		"pdbs",
+		"services",
 	},
 	"properties": bson.M{
-		"InstanceNumber": bson.M{
+		"instanceNumber": bson.M{
 			"bsonType": "number",
 			"minimum":  1,
 		},
-		"Name": bson.M{
+		"instanceName": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
 		},
-		"UniqueName": bson.M{
+		"name": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
 		},
-		"Status": bson.M{
+		"uniqueName": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 32,
+		},
+		"status": bson.M{
 			"bsonType": "string",
 			"enum": bson.A{
 				"OPEN",
 				"MOUNTED",
 			},
 		},
-		"IsCDB": bson.M{
+		"isCDB": bson.M{
 			"bsonType": "bool",
 		},
-		"Version": bson.M{
+		"version": bson.M{
 			"bsonType":  "string",
 			"minLength": 8,
 			"maxLength": 64,
 		},
-		"Platform": bson.M{
+		"platform": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 64,
 		},
-		"Archivelog": bson.M{
+		"archivelog": bson.M{
 			"bsonType": "bool",
 		},
-		"Charset": bson.M{
+		"charset": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
 		},
-		"NCharset": bson.M{
+		"nCharset": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
 		},
-		"BlockSize": bson.M{
+		"blockSize": bson.M{
 			"bsonType": "string",
 			"minimum":  1,
 		},
-		"CPUCount": bson.M{
+		"cpuCount": bson.M{
 			"bsonType": "string",
 			"minimum":  1,
 		},
-		"SGATarget": bson.M{
+		"sgaTarget": bson.M{
 			"bsonType": "number",
 		},
-		"PGATarget": bson.M{
+		"pgaTarget": bson.M{
 			"bsonType": "number",
 		},
-		"MemoryTarget": bson.M{
+		"memoryTarget": bson.M{
 			"bsonType": "number",
 		},
-		"SGAMaxSize": bson.M{
+		"sgaMaxSize": bson.M{
 			"bsonType": "number",
 		},
-		"SegmentsSize": bson.M{
+		"segmentsSize": bson.M{
 			"bsonType": "number",
 		},
-		"DatafileSize": bson.M{
+		"datafileSize": bson.M{
 			"bsonType": "number",
 		},
-		"Allocated": bson.M{
+		"allocated": bson.M{
 			"bsonType": "number",
 		},
-		"Elapsed": bson.M{
+		"elapsed": bson.M{
 			"anyOf": bson.A{
 				bson.M{"type": "null"},
 				bson.M{"type": "number"},
 			},
 		},
-		"DBTime": bson.M{
+		"dbTime": bson.M{
 			"anyOf": bson.A{
 				bson.M{"type": "null"},
 				bson.M{"type": "number"},
 			},
 		},
-		"DailyCPUUsage": bson.M{
+		"dailyCPUUsage": bson.M{
 			"anyOf": bson.A{
 				bson.M{"type": "null"},
 				bson.M{"type": "number"},
 			},
 		},
-		"Work": bson.M{
+		"work": bson.M{
 			"anyOf": bson.A{
 				bson.M{"type": "null"},
 				bson.M{"type": "number"},
 			},
 		},
-		"ASM": bson.M{
+		"asm": bson.M{
 			"bsonType": "bool",
 		},
-		"Dataguard": bson.M{
+		"dataguard": bson.M{
 			"bsonType": "bool",
 		},
-		"Patches": bson.M{
+		"patches": bson.M{
 			"bsonType": "array",
 			"items":    OracleDatabasePatchBsonValidatorRules,
 		},
-		"Tablespaces": bson.M{
+		"tablespaces": bson.M{
 			"bsonType": "array",
 			"items":    OracleDatabaseTablespaceBsonValidatorRules,
 		},
-		"Schemas": bson.M{
+		"schemas": bson.M{
 			"bsonType": "array",
 			"items":    OracleDatabaseSchemaBsonValidatorRules,
 		},
-		"Licenses": bson.M{
+		"licenses": bson.M{
 			"bsonType": "array",
 			"items":    OracleDatabaseLicenseBsonValidatorRules,
 		},
-		"ADDMs": bson.M{
+		"addms": bson.M{
 			"bsonType": "array",
 			"items":    OracleDatabaseAddmBsonValidatorRules,
 		},
-		"SegmentAdvisors": bson.M{
+		"segmentAdvisors": bson.M{
 			"bsonType": "array",
 			"items":    OracleDatabaseSegmentAdvisorBsonValidatorRules,
 		},
-		"PSUs": bson.M{
+		"psus": bson.M{
 			"bsonType": "array",
 			"items":    OracleDatabasePSUBsonValidatorRules,
 		},
-		"Backups": bson.M{
+		"backups": bson.M{
 			"bsonType": "array",
 			"items":    OracleDatabaseBackupBsonValidatorRules,
 		},
-		"FeatureUsageStats": bson.M{
+		"featureUsageStats": bson.M{
 			"bsonType": "array",
 			"items":    OracleDatabaseFeatureUsageStatBsonValidatorRules,
 		},
-		"Services": bson.M{
+		"services": bson.M{
 			"bsonType": "array",
 			"items":    OracleDatabaseServiceBsonValidatorRules,
 		},
-		"PDBs": bson.M{
+		"pdbs": bson.M{
 			"bsonType": "array",
 			"items":    OracleDatabasePluggableDatabaseBsonValidatorRules,
 		},

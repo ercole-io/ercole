@@ -24,13 +24,13 @@ import (
 
 //ClusterInfo hold informations about a cluster
 type ClusterInfo struct {
-	FetchEndpoint string                 `bson:"FetchEndpoint"`
-	Type          string                 `bson:"Type"`
-	Name          string                 `bson:"Name"`
-	CPU           int                    `bson:"CPU"`
-	Sockets       int                    `bson:"Sockets"`
-	VMs           []VMInfo               `bson:"VMs"`
-	OtherInfo     map[string]interface{} `bson:"-"`
+	FetchEndpoint string                 `json:"fetchEndpoint" bson:"fetchEndpoint"`
+	Type          string                 `json:"type" bson:"type"`
+	Name          string                 `json:"name" bson:"name"`
+	CPU           int                    `json:"cpu" bson:"cpu"`
+	Sockets       int                    `json:"sockets" bson:"sockets"`
+	VMs           []VMInfo               `json:"vms" bson:"vms"`
+	OtherInfo     map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -57,38 +57,38 @@ func (v *ClusterInfo) UnmarshalBSON(data []byte) error {
 var ClusterInfoBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"FetchEndpoint",
-		"Type",
-		"Name",
-		"CPU",
-		"Sockets",
-		"VMs",
+		"fetchEndpoint",
+		"type",
+		"name",
+		"cpu",
+		"sockets",
+		"vms",
 	},
 	"properties": bson.M{
-		"FetchEndpoint": bson.M{
+		"fetchEndpoint": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 64,
 		},
-		"Type": bson.M{
+		"type": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 16,
 		},
-		"Name": bson.M{
+		"name": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 128,
 		},
-		"CPU": bson.M{
+		"cpu": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},
-		"Sockets": bson.M{
+		"sockets": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},
-		"VMs": bson.M{
+		"vms": bson.M{
 			"bsonType": "array",
 			"items":    VMInfoBsonValidatorRules,
 		},

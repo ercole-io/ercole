@@ -24,11 +24,11 @@ import (
 
 //ClusterMembershipStatus hold informations about the cluster membership
 type ClusterMembershipStatus struct {
-	OracleClusterware    bool                   `bson:"OracleClusterware"`
-	VeritasClusterServer bool                   `bson:"VeritasClusterServer"`
-	SunCluster           bool                   `bson:"SunCluster"`
-	HACMP                bool                   `bson:"HACMP"`
-	OtherInfo            map[string]interface{} `bson:"-"`
+	OracleClusterware    bool                   `json:"oracleClusterware" bson:"oracleClusterware"`
+	VeritasClusterServer bool                   `json:"veritasClusterServer" bson:"veritasClusterServer"`
+	SunCluster           bool                   `json:"sunCluster" bson:"sunCluster"`
+	HACMP                bool                   `json:"hacmp" bson:"hacmp"`
+	OtherInfo            map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -55,22 +55,22 @@ func (v *ClusterMembershipStatus) UnmarshalBSON(data []byte) error {
 var ClusterMembershipStatusBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"OracleClusterware",
-		"VeritasClusterServer",
-		"SunCluster",
-		"HACMP",
+		"oracleClusterware",
+		"veritasClusterServer",
+		"sunCluster",
+		"hacmp",
 	},
 	"properties": bson.M{
-		"OracleClusterware": bson.M{
+		"oracleClusterware": bson.M{
 			"bsonType": "bool",
 		},
-		"VeritasClusterServer": bson.M{
+		"veritasClusterServer": bson.M{
 			"bsonType": "bool",
 		},
-		"SunCluster": bson.M{
+		"sunCluster": bson.M{
 			"bsonType": "bool",
 		},
-		"HACMP": bson.M{
+		"hacmp": bson.M{
 			"bsonType": "bool",
 		},
 	},

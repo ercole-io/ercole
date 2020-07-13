@@ -24,8 +24,8 @@ import (
 
 // OracleExadataFeature holds specific informations about a exadata.
 type OracleExadataFeature struct {
-	Components []OracleExadataComponent `bson:"Components"`
-	OtherInfo  map[string]interface{}   `bson:"-"`
+	Components []OracleExadataComponent `json:"components" bson:"components"`
+	OtherInfo  map[string]interface{}   `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -52,10 +52,10 @@ func (v *OracleExadataFeature) UnmarshalBSON(data []byte) error {
 var OracleExadataFeatureBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Components",
+		"components",
 	},
 	"properties": bson.M{
-		"Components": bson.M{
+		"components": bson.M{
 			"bsonType": "array",
 			"items":    OracleExadataComponentBsonValidatorRules,
 		},

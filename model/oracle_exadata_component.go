@@ -24,29 +24,29 @@ import (
 
 // OracleExadataComponent holds informations about a device in a exadata
 type OracleExadataComponent struct {
-	Hostname             string                   `bson:"Hostname"`
-	ServerType           string                   `bson:"ServerType"`
-	Model                string                   `bson:"Model"`
-	SwVersion            string                   `bson:"SwVersion"`
-	SwReleaseDate        string                   `bson:"SwReleaseDate"`
-	RunningCPUCount      *int                     `bson:"RunningCPUCount"`
-	TotalCPUCount        *int                     `bson:"TotalCPUCount"`
-	Memory               *int                     `bson:"Memory"`
-	Status               *string                  `bson:"Status"`
-	RunningPowerSupply   *int                     `bson:"RunningPowerSupply"`
-	TotalPowerSupply     *int                     `bson:"TotalPowerSupply"`
-	PowerStatus          *string                  `bson:"PowerStatus"`
-	RunningFanCount      *int                     `bson:"RunningFanCount"`
-	TotalFanCount        *int                     `bson:"TotalFanCount"`
-	FanStatus            *string                  `bson:"FanStatus"`
-	TempActual           *float64                 `bson:"TempActual"`
-	TempStatus           *string                  `bson:"TempStatus"`
-	CellsrvServiceStatus *string                  `bson:"CellsrvServiceStatus"`
-	MsServiceStatus      *string                  `bson:"MsServiceStatus"`
-	RsServiceStatus      *string                  `bson:"RsServiceStatus"`
-	FlashcacheMode       *string                  `bson:"FlashcacheMode"`
-	CellDisks            *[]OracleExadataCellDisk `bson:"CellDisks"`
-	OtherInfo            map[string]interface{}   `bson:"-"`
+	Hostname             string                   `json:"hostname" bson:"hostname"`
+	ServerType           string                   `json:"serverType" bson:"serverType"`
+	Model                string                   `json:"model" bson:"model"`
+	SwVersion            string                   `json:"swVersion" bson:"swVersion"`
+	SwReleaseDate        string                   `json:"swReleaseDate" bson:"swReleaseDate"`
+	RunningCPUCount      *int                     `json:"runningCPUCount" bson:"runningCPUCount"`
+	TotalCPUCount        *int                     `json:"totalCPUCount" bson:"totalCPUCount"`
+	Memory               *int                     `json:"memory" bson:"memory"`
+	Status               *string                  `json:"status" bson:"status"`
+	RunningPowerSupply   *int                     `json:"runningPowerSupply" bson:"runningPowerSupply"`
+	TotalPowerSupply     *int                     `json:"totalPowerSupply" bson:"totalPowerSupply"`
+	PowerStatus          *string                  `json:"powerStatus" bson:"powerStatus"`
+	RunningFanCount      *int                     `json:"runningFanCount" bson:"runningFanCount"`
+	TotalFanCount        *int                     `json:"totalFanCount" bson:"totalFanCount"`
+	FanStatus            *string                  `json:"fanStatus" bson:"fanStatus"`
+	TempActual           *float64                 `json:"tempActual" bson:"tempActual"`
+	TempStatus           *string                  `json:"tempStatus" bson:"tempStatus"`
+	CellsrvServiceStatus *string                  `json:"cellsrvServiceStatus" bson:"cellsrvServiceStatus"`
+	MsServiceStatus      *string                  `json:"msServiceStatus" bson:"msServiceStatus"`
+	RsServiceStatus      *string                  `json:"rsServiceStatus" bson:"rsServiceStatus"`
+	FlashcacheMode       *string                  `json:"flashcacheMode" bson:"flashcacheMode"`
+	CellDisks            *[]OracleExadataCellDisk `json:"cellDisks" bson:"cellDisks"`
+	OtherInfo            map[string]interface{}   `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -73,37 +73,37 @@ func (v *OracleExadataComponent) UnmarshalBSON(data []byte) error {
 var OracleExadataComponentBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Hostname",
-		"ServerType",
-		"Model",
-		"SwVersion",
-		"SwReleaseDate",
-		"RunningCPUCount",
-		"TotalCPUCount",
-		"Memory",
-		"Status",
-		"RunningPowerSupply",
-		"TotalPowerSupply",
-		"PowerStatus",
-		"RunningFanCount",
-		"TotalFanCount",
-		"FanStatus",
-		"TempActual",
-		"TempStatus",
-		"CellsrvServiceStatus",
-		"MsServiceStatus",
-		"RsServiceStatus",
-		"FlashcacheMode",
-		"CellDisks",
+		"hostname",
+		"serverType",
+		"model",
+		"swVersion",
+		"swReleaseDate",
+		"runningCPUCount",
+		"totalCPUCount",
+		"memory",
+		"status",
+		"runningPowerSupply",
+		"totalPowerSupply",
+		"powerStatus",
+		"runningFanCount",
+		"totalFanCount",
+		"fanStatus",
+		"tempActual",
+		"tempStatus",
+		"cellsrvServiceStatus",
+		"msServiceStatus",
+		"rsServiceStatus",
+		"flashcacheMode",
+		"cellDisks",
 	},
 	"properties": bson.M{
-		"Hostname": bson.M{
+		"hostname": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 253,
 			"pattern":   "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$",
 		},
-		"ServerType": bson.M{
+		"serverType": bson.M{
 			"bsonType": "string",
 			"enum": bson.A{
 				"StorageServer",
@@ -111,33 +111,33 @@ var OracleExadataComponentBsonValidatorRules = bson.M{
 				"IBSwitch",
 			},
 		},
-		"Model": bson.M{
+		"model": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
 		},
-		"SwVersion": bson.M{
+		"swVersion": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
 		},
-		"SwReleaseDate": bson.M{
+		"swReleaseDate": bson.M{
 			"bsonType": "string",
 			"pattern":  "[0-9]{4}-[0-9]{2}-[0-9]{2}",
 		},
-		"RunningCPUCount": bson.M{
+		"runningCPUCount": bson.M{
 			"bsonType": bson.A{"null", "number"},
 			"minimum":  1,
 		},
-		"TotalCPUCount": bson.M{
+		"totalCPUCount": bson.M{
 			"bsonType": bson.A{"null", "number"},
 			"minimum":  1,
 		},
-		"Memory": bson.M{
+		"memory": bson.M{
 			"bsonType": bson.A{"null", "number"},
 			"minimum":  0,
 		},
-		"Status": bson.M{
+		"status": bson.M{
 			"anyOf": bson.A{
 				bson.M{"bsonType": "null"},
 				bson.M{
@@ -149,44 +149,44 @@ var OracleExadataComponentBsonValidatorRules = bson.M{
 				},
 			},
 		},
-		"RunningPowerSupply": bson.M{
+		"runningPowerSupply": bson.M{
 			"bsonType": bson.A{"null", "number"},
 			"minimum":  1,
 		},
-		"TotalPowerSupply": bson.M{
+		"totalPowerSupply": bson.M{
 			"bsonType": bson.A{"null", "number"},
 			"minimum":  1,
 		},
-		"PowerStatus": bson.M{
+		"powerStatus": bson.M{
 			"bsonType": bson.A{"null", "string"},
 		},
-		"RunningFanCount": bson.M{
+		"runningFanCount": bson.M{
 			"bsonType": bson.A{"null", "number"},
 			"minimum":  1,
 		},
-		"TotalFanCount": bson.M{
+		"totalFanCount": bson.M{
 			"bsonType": bson.A{"null", "number"},
 			"minimum":  1,
 		},
-		"FanStatus": bson.M{
+		"fanStatus": bson.M{
 			"bsonType": bson.A{"null", "string"},
 		},
-		"TempActual": bson.M{
+		"tempActual": bson.M{
 			"bsonType": bson.A{"null", "number"},
 		},
-		"TempStatus": bson.M{
+		"tempStatus": bson.M{
 			"bsonType": bson.A{"null", "string"},
 		},
-		"CellsrvServiceStatus": bson.M{
+		"cellsrvServiceStatus": bson.M{
 			"bsonType": bson.A{"null", "string"},
 		},
-		"MsServiceStatus": bson.M{
+		"msServiceStatus": bson.M{
 			"bsonType": bson.A{"null", "string"},
 		},
-		"RsServiceStatus": bson.M{
+		"rsServiceStatus": bson.M{
 			"bsonType": bson.A{"null", "string"},
 		},
-		"FlashcacheMode": bson.M{
+		"flashcacheMode": bson.M{
 			"anyOf": bson.A{
 				bson.M{"bsonType": "null"},
 				bson.M{
@@ -198,7 +198,7 @@ var OracleExadataComponentBsonValidatorRules = bson.M{
 				},
 			},
 		},
-		"CellDisks": bson.M{
+		"cellDisks": bson.M{
 			"bsonType": bson.A{"array", "null"},
 			"items":    OracleExadataCellDiskBsonValidatorRules,
 		},

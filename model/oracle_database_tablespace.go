@@ -24,13 +24,13 @@ import (
 
 // OracleDatabaseTablespace holds the informations about a tablespace.
 type OracleDatabaseTablespace struct {
-	Name      string                 `bson:"Name"`
-	MaxSize   float64                `bson:"MaxSize"`
-	Total     float64                `bson:"Total"`
-	Used      float64                `bson:"Used"`
-	UsedPerc  float64                `bson:"UsedPerc"`
-	Status    string                 `bson:"Status"`
-	OtherInfo map[string]interface{} `bson:"-"`
+	Name      string                 `json:"name" bson:"name"`
+	MaxSize   float64                `json:"maxSize" bson:"maxSize"`
+	Total     float64                `json:"total" bson:"total"`
+	Used      float64                `json:"used" bson:"used"`
+	UsedPerc  float64                `json:"usedPerc" bson:"usedPerc"`
+	Status    string                 `json:"status" bson:"status"`
+	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -57,37 +57,37 @@ func (v *OracleDatabaseTablespace) UnmarshalBSON(data []byte) error {
 var OracleDatabaseTablespaceBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Name",
-		"MaxSize",
-		"Total",
-		"Used",
-		"UsedPerc",
-		"Status",
+		"name",
+		"maxSize",
+		"total",
+		"used",
+		"usedPerc",
+		"status",
 	},
 	"properties": bson.M{
-		"Name": bson.M{
+		"name": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
 		},
-		"MaxSize": bson.M{
+		"maxSize": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},
-		"Total": bson.M{
+		"total": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},
-		"Used": bson.M{
+		"used": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},
-		"UsedPerc": bson.M{
+		"usedPerc": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 			"maximum":  100,
 		},
-		"Status": bson.M{
+		"status": bson.M{
 			"bsonType": "string",
 			"enum": bson.A{
 				"ONLINE",

@@ -83,18 +83,18 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 	}
 
 	//get the data
-	hosts, err := ctrl.Service.SearchAlerts(mode, search, sortBy, sortDesc, pageNumber, pageSize, severity, status, from, to)
+	response, err := ctrl.Service.SearchAlerts(mode, search, sortBy, sortDesc, pageNumber, pageSize, severity, status, from, to)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
+	//Write the data
 	if pageNumber == -1 || pageSize == -1 {
-		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, hosts)
+		utils.WriteJSONResponse(w, http.StatusOK, response)
 	} else {
-		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, hosts[0])
+		alerts := response[0]
+		utils.WriteJSONResponse(w, http.StatusOK, alerts)
 	}
 }
 
