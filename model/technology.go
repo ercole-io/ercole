@@ -47,7 +47,7 @@ type TechnologySupportedMetrics struct {
 
 // TechnologySupportedMetricsMap contains all metrics of all technology
 var TechnologySupportedMetricsMap map[string]TechnologySupportedMetrics = map[string]TechnologySupportedMetrics{
-	TechnologyOracleDatabase: TechnologySupportedMetrics{
+	TechnologyOracleDatabase: {
 		Product: TechnologyOracleDatabase,
 		Metrics: []string{"work", "version"},
 	},

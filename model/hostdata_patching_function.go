@@ -24,7 +24,7 @@ import (
 
 // PatchingFunction holds all informations about a patching function
 type PatchingFunction struct {
-	ID        *primitive.ObjectID `bson:"_id"`
+	ID        *primitive.ObjectID `json:"id" bson:"_id"`
 	Hostname  string              `json:"hostname" bson:"hostname"`
 	CreatedAt time.Time           `json:"createdAt" bson:"createdAt"`
 	// PatchingFunction contains the javascript code that patch the hostdata
