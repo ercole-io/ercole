@@ -79,7 +79,7 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 					"license":    mu.APOMaxAggr("$databases.count"),
 					"clusterCpu": mu.APOMaxAggr("$clusterCpu"),
 				}, bson.M{
-					"Hosts": mu.APOPush(bson.M{
+					"hosts": mu.APOPush(bson.M{
 						"hostname":  "$hostname",
 						"databases": "$databases.dbs",
 					}),
