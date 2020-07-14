@@ -3693,11 +3693,11 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /settings/technology-metrics:
+  /settings/technologies-metrics:
     get:
       operationId: GetTechnologiesMetrics
-      description: Return a list of technology
-      summary: Return a list of technology
+      description: Return a list of metrics for each technology
+      summary: Return a list of metrics for each technology
       tags:
         - chart-service
         - fe-user
