@@ -71,154 +71,154 @@ components:
             type: object
             additionalProperties: false
             required:
-              - Error
-              - ErrorDescription
-              - SourceFilename
-              - LineNumber
+              - error
+              - errorDescription
+              - sourceFilename
+              - lineNumber
             properties:
-              Error:
+              error:
                 type: string
-              ErrorDescription:
+              errorDescription:
                 type: string
-              SourceFilename:
+              sourceFilename:
                 type: string
-              LineNumber:
+              lineNumber:
                 type: integer
           examples:
             Test1:
               value:
-                Error: Invalid  status
-                ErrorDescription: invalid status
-                SourceFilename: /home/travis/go/src/github.com/ercole-io/ercole/api-service/controller/alerts_api.go
-                LineNumber: 65
+                error: Invalid  status
+                errorDescription: invalid status
+                sourceFilename: /home/travis/go/src/github.com/ercole-io/ercole/api-service/controller/alerts_api.go
+                lineNumber: 65
   schemas:
     HostDataInfo:
       type: object
       required:
-        - Hostname
-        - Environment
-        - Location
-        - CPUModel
-        - CPUCores
-        - CPUThreads
-        - Socket
-        - Type
-        - Virtual
-        - Kernel
-        - OS
-        - MemoryTotal
-        - SwapTotal
-        - OracleCluster
-        - VeritasCluster
-        - SunCluster
-        - AixCluster
+        - hostname
+        - environment
+        - location
+        - cpuModel
+        - cpuCores
+        - cpuThreads
+        - socket
+        - type
+        - virtual
+        - kernel
+        - os
+        - memoryTotal
+        - swapTotal
+        - oracleCluster
+        - veritasCluster
+        - sunCluster
+        - aixCluster
       properties:
-        Hostname:
+        hostname:
           type: string
           pattern: "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$"
-        Environment:
+        environment:
           type: string
-        Location:
+        location:
           type: string
-        CPUModel:
+        cpuModel:
           type: string
-        CPUCores:
+        cpuCores:
           type: integer
-        CPUThreads:
+        cpuThreads:
           type: integer
-        Socket:
+        socket:
           type: integer
-        Type:
+        type:
           type: string
-        Virtual:
+        virtual:
           type: boolean
-        Kernel:
+        kernel:
           type: string
-        OS:
+        os: 
           type: string
-        MemoryTotal:
+        memoryTotal:
           type: number
-        SwapTotal:
+        swapTotal:
           type: number
-        OracleCluster:
+        oracleCluster:
           type: boolean
-        VeritasCluster:
+        veritasCluster:
           type: boolean
-        SunCluster:
+        sunCluster:
           type: boolean
-        AixCluster:
+        aixCluster:
           type: boolean
     Filesystems:
       type: array
       items:
         type: object
         properties:
-          Filesystem:
+          filesystem:
             type: string
-          FsType:
+          fsType:
             type: string
-          Size:
+          size:
             type: string
-          Used:
+          used:
             type: string
-          UsedPerc:
+          usedPerc:
             type: string
-          MountedOn:
+          mountedOn:
             type: string
         required:
-          - Filesystem
-          - FsType
-          - Size
-          - Used
-          - UsedPerc
-          - MountedOn
+          - filesystem
+          - fsType
+          - size
+          - used
+          - usedPerc
+          - mountedOn
     Patch:
       type: object
       properties:
-        Database:
+        database:
           type: string
-        Version:
+        version:
           type: string
-        PatchID:
+        patchID:
           type: string
-        Action:
+        action:
           type: string
-        Description:
+        description:
           type: string
-        Date:
+        date:
           type: string
       required:
-        - Database
-        - Version
-        - PatchID
-        - Action
-        - Description
-        - Date
+        - database
+        - version
+        - patchID
+        - action
+        - description
+        - date
     Tablespace:
       type: object
       properties:
-        Database:
+        database:
           type: string
-        Name:
+        name:
           type: string
-        MaxSize:
+        maxSize:
           type: string
-        Total:
+        total:
           type: string
-        Used:
+        used:
           type: string
-        UsedPerc:
+        usedPerc:
           type: string
-        Status:
+        status:
           type: string
       required:
-        - Database
-        - Name
-        - MaxSize
-        - Total
-        - Used
-        - UsedPerc
-        - Status
+        - database
+        - name
+        - maxSize
+        - total
+        - used
+        - usedPerc
+        - status
     Schema:
       type: object
       properties:
@@ -232,7 +232,7 @@ components:
           type: integer
         Indexes:
           type: integer
-        LOB:
+        lob: 
           type: integer
       required:
         - Database
@@ -261,7 +261,7 @@ components:
       required:
         - Name
         - Count
-    ADDM:
+    addm: 
       type: object
       properties:
         Finding:
@@ -313,7 +313,7 @@ components:
         - PartitionName
         - Reclaimable
         - Recommendation
-    LastPSU:
+    LastpsU:
       type: object
       properties:
         Date:
@@ -367,23 +367,23 @@ components:
         Charset:
           type: string
           nullable: true
-        NCharset:
+        nCharset:
           type: string
           nullable: true
         BlockSize:
           type: string
-        CPUCount:
+        cpuCount:
           type: string
-        SGATarget:
+        sgaTarget:
           type: string
           nullable: true
-        PGATarget:
+        pgaTarget:
           type: string
           nullable: true
         MemoryTarget:
           type: string
           nullable: true
-        SGAMaxSize:
+        sgaMaxSize:
           type: string
           nullable: true
         SegmentsSize:
@@ -397,23 +397,23 @@ components:
         Elapsed:
           type: string
           nullable: true
-        DBTime:
+        dbTime:
           type: string
           nullable: true
-        DailyCPUUsage:
+        DailycpuUsage:
           type: string
           nullable: true
         Work:
           type: string
-        ASM:
+        asm: 
           type: boolean
           nullable: true
         Dataguard:
           type: boolean
-        RAC:
+        rac: 
           nullable: true
           type: boolean
-        HA:
+        ha: 
           nullable: true
           type: boolean
         Hostname:
@@ -462,7 +462,7 @@ components:
           nullable: true
           items:
             $ref: '#/components/schemas/License'
-        ADDMs:
+        addms:
           type: array
           nullable: true
           items:
@@ -472,7 +472,7 @@ components:
           nullable: true
           items:
             $ref: '#/components/schemas/SegmentAdvisor'
-        LastPSUs:
+        LastpsUs:
           type: array
           nullable: true
           items:
@@ -537,401 +537,401 @@ components:
           properties:
             VirtualizationNode:
               type: string
-            TotalVMsCount:
+            TotalvMsCount:
               type: integer
-            TotalVMsWithErcoleAgentCount:
+            TotalvMsWithErcoleAgentCount:
               type: integer
-            TotalVMsWithoutErcoleAgentCount:
+            TotalvMsWithoutErcoleAgentCount:
               type: integer
         Type:
           type: string
-        CPU:
+        cpu: 
           type: integer
         Sockets:
           type: integer
-        VMsCount:
+        vmsCount:
           type: integer
           nullable: true
-        VMsErcoleAgentCount:
+        vmsErcoleAgentCount:
           type: integer
           nullable: true
-        VMs:
+        vms:
           type: array
           items:
             type: object
             properties:
-              Name:
+              name:
                 type: string
-              ClusterName:
+              clusterName:
                 type: string
-              Hostname:
+              hostname:
                 type: string
-              CappedCPU:
+              cappedCPU:
                 type: boolean
-              VirtualizationNode:
+              virtualizationNode:
                 type: string
             required:
-              - Name
-              - ClusterName
-              - Hostname
-              - CappedCPU
-              - VirtualizationNode
+              - name
+              - clusterName
+              - hostname
+              - cappedCPU
+              - virtualizationNode
       required:
-        - Name
-        - Type
-        - CPU
-        - Sockets
-        - VMs
-    CellDisk:
+        - name
+        - type
+        - cpu
+        - sockets
+        - vms
+    cellDisk:
       type: object
       properties:
-        Name:
+        name:
           type: string
-        Status:
+        status:
           type: string
-        ErrCount:
+        errCount:
           type: string
-        UsedPerc:
+        usedPerc:
           type: string
       required:
-        - Name
-        - Status
-        - ErrCount
-        - UsedPerc
-    ExadataDev:
+        - name
+        - status
+        - errCount
+        - usedPerc
+    exadataDev:
       type: object
       properties:
-        Hostname:
+        hostname:
           type: string
-        ServerType:
-          type: string
-          nullable: true
-        Model:
-          type: string
-        SwVersion:
-          type: string
-        CPUEnabled:
+        serverType:
           type: string
           nullable: true
-        Memory:
+        model:
+          type: string
+        swVersion:
+          type: string
+        cpuEnabled:
           type: string
           nullable: true
-        Status:
+        memory:
           type: string
           nullable: true
-        PowerCount:
+        status:
           type: string
           nullable: true
-        PowerStatus:
+        powerCount:
           type: string
           nullable: true
-        FanCount:
+        powerStatus:
           type: string
           nullable: true
-        FanStatus:
+        fanCount:
           type: string
           nullable: true
-        TempActual:
+        fanStatus:
           type: string
           nullable: true
-        TempStatus:
+        tempActual:
           type: string
           nullable: true
-        CellsrvService:
+        tempStatus:
           type: string
           nullable: true
-        MsService:
+        cellsrvService:
           type: string
           nullable: true
-        RsService:
+        msService:
           type: string
           nullable: true
-        FlashcacheMode:
+        rsService:
           type: string
           nullable: true
-        CellDisks:
+        flashcacheMode:
+          type: string
+          nullable: true
+        cellDisks:
           nullable: true
           type: array
           items:
             $ref: '#/components/schemas/CellDisk'
       required:
-        - Hostname
-        - Model
-        - SwVersion
+        - hostname
+        - model
+        - swVersion
     HostData:
       description: A hostdata from FE
       type: object
       properties:
-        Hostname:
+        hostname:
           type: string
-        Environment:
+        environment:
           type: string
-        Location:
+        location:
           type: string
-        Version:
+        version:
           type: string
-        HostDataSchemaVersion:
+        hostDataSchemaVersion:
           type: integer
-        Databases:
+        databases:
           type: string
-        Schemas:
+        schemas:
           type: string
           nullable: true
-        Info:
+        info:
           $ref: '#/components/schemas/HostDataInfo'
-        OS:
+        os: 
           type: string
           nullable: true
-        Kernel:
+        kernel:
           type: string
           nullable: true
-        OracleCluster:
+        oracleCluster:
           type: boolean
           nullable: true
-        SunCluster:
+        sunCluster:
           type: boolean
           nullable: true
-        VeritasCluster:
+        veritasCluster:
           type: boolean
           nullable: true
-        Virtual:
+        virtual:
           type: boolean
           nullable: true
-        Type:
+        type:
           type: string
           nullable: true
-        CPUThreads:
+        cpuThreads:
           type: integer
           nullable: true
-        CPUCores:
+        cpuCores:
           type: integer
           nullable: true
-        Socket:
+        socket:
           type: integer
           nullable: true
-        MemTotal:
+        memTotal:
           type: integer
           nullable: true
-        SwapTotal:
+        swapTotal:
           type: integer
           nullable: true
-        CPUModel:
+        cpuModel:
           type: string
           nullable: true
-        PhysicalServerName:
+        physicalServerName:
           type: string
           nullable: true
-        VirtualServerName:
+        virtualServerName:
           type: string
           nullable: true
-        VirtualizationTechnology:
+        virtualizationTechnology:
           type: string
           nullable: true
-        DBInstanceName:
+        dbInstanceName:
           type: string
           nullable: true
-        PluggableDatabaseName:
+        pluggableDatabaseName:
           type: string
           nullable: true
-        ConnectString:
+        connectString:
           type: string
           nullable: true
-        ProductVersion:
+        productVersion:
           type: string
           nullable: true
-        ProductEdition:
+        productEdition:
           type: string
           nullable: true
-        Features:
+        features:
           type: string
           nullable: true
-        RacNodeNames:
+        racNodeNames:
           type: string
           nullable: true
-        ProcessorModel:
+        processorModel:
           type: string
           nullable: true
-        Processors:
+        processors:
           type: integer
           nullable: true
-        CoresPerProcessor:
+        coresPerProcessor:
           type: integer
           nullable: true
-        ThreadsPerCore:
+        threadsPerCore:
           type: integer
           nullable: true
-        ProcessorSpeed:
+        processorSpeed:
           type: string
           nullable: true
-        ServerPurchaseDate:
+        serverPurchaseDate:
           type: string
           nullable: true
-        OperatingSystem:
+        operatingSystem:
           type: string
           nullable: true
-        Notes:
+        notes:
           type: string
           nullable: true
-        PhysicalCores:
+        physicalCores:
           type: integer
           nullable: true
-        History:
+        history:
           type: array
           items:
             $ref: '#/components/schemas/HistoryEntry'
-        Extra:
+        extra:
           type: object
           required:
-            - Filesystems
+            - filesystems
           properties:
-            Filesystems:
+            filesystems:
               $ref: '#/components/schemas/Filesystems'
-            Databases:
+            databases:
               nullable: true
               type: array
               items:
                 $ref: '#/components/schemas/Database'
-            Clusters:
+            clusters:
               nullable: true
               type: array
               items:
                 $ref: '#/components/schemas/Cluster'
-            Exadata:
+            exadata:
               nullable: true
               type: object
               properties:
-                Devices:
+                devices:
                   type: array
                   items:
                     $ref: '#/components/schemas/ExadataDev'
               required:
-                - Devices
-        Cluster:
+                - devices
+        cluster:
           type: string
           nullable: true
-        VirtualizationNode:
+        virtualizationNode:
           type: string
           nullable: true
       required:
-        - Hostname
-        - Environment
-        - Location
-        - Version
-        - HostDataSchemaVersion
-        - Info
-        - Extra
+        - hostname
+        - environment
+        - location
+        - version
+        - hostDataSchemaVersion
+        - info
+        - extra
     PageMetadata:
       type: object
       required:
-        - Empty
-        - First
-        - Last
-        - Number
-        - Size
-        - TotalElements
-        - TotalPages
+        - empty
+        - first
+        - last
+        - number
+        - size
+        - totalElements
+        - totalPages
       properties:
-        Empty:
+        empty:
           type: boolean
-        First:
+        first:
           type: boolean
-        Last:
+        last:
           type: boolean
-        Number:
+        number:
           type: integer
-        Size:
+        size:
           type: integer
-        TotalElements:
+        totalElements:
           type: integer
-        TotalPages:
+        totalPages:
           type: integer
     HistoryEntry:
       type: object
       required:
         - _id
-        - CreatedAt
+        - createdAt
       properties:
         _id:
           type: string
-        CreatedAt:
+        createdAt:
           type: string
-        TotalDailyCPUUsage:
+        totalDailycpuUsage:
           type: number
     DatabaseChange:
       type: object
       required:
-        - DailyCPUUsage
-        - SegmentsSize
-        - Updated
-        - Used
+        - dailyCPUUsage
+        - segmentsSize
+        - updated
+        - used
       properties:
-        DailyCPUUsage:
+        dailycpuUsage:
           type: string
-        SegmentsSize:
+        segmentsSize:
           type: string
-        Updated:
+        updated:
           type: string
-        Used:
+        used:
           type: string
     PatchingFunction:
       type: object
       required:
-        - Code
-        - Vars
+        - code
+        - vars
       properties:
-        ID:
+        id: 
           type: string
           nullable: true
-        Hostname:
+        hostname:
           type: string
           nullable: true
-        CreatedAt:
+        createdAt:
           type: string
           nullable: true
-        Code:
+        code:
           type: string
-        Vars:
+        vars:
           type: object
     Alert:
       title: Alert
       type: object
       properties:
-        OtherInfo:
+        otherInfo:
           type: object
           properties:
-            DbName:
+            dbName:
               type: string
-            Hostname:
+            hostname:
               type: string
-        Hostname:
+        hostname:
           type: string
-        Description:
+        description:
           type: string
-        AlertCategory:
+        alertCategory:
           type: string
           enum:
             - SYSTEM
             - AGENT
             - LICENSE
-        AlertAffectedTechnology:
+        alertAffectedTechnology:
           nullable: true
           type: string
           enum:
             - Oracle/Database
             - Oracle/Exadata
-        AlertStatus:
+        alertStatus:
           type: string
           enum:
             - NEW
             - ACK
           example: NEW
-        AlertSeverity:
+        alertSeverity:
           type: string
           enum:
             - WARNING
             - CRITICAL
             - INFO
-        AlertCode:
+        alertCode:
           type: string
           enum:
             - NEW_DATABASE
@@ -943,73 +943,73 @@ components:
           type: string
           description: ID of the alert
       required:
-        - Hostname
-        - Description
-        - AlertCategory
-        - AlertAffectedTechnology
-        - AlertStatus
-        - AlertSeverity
-        - AlertCode
+        - hostname
+        - description
+        - alertCategory
+        - alertAffectedTechnology
+        - alertStatus
+        - alertSeverity
+        - alertCode
         - _id
     PatchAdvisorInfo:
       type: object
       properties:
-        Location:
+        location:
           type: string
-        Environment:
+        environment:
           type: string
-        Hostname:
+        hostname:
           type: string
           pattern: "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$"
-        CreatedAt:
+        createdAt:
           type: string
-        Date:
+        date:
           type: string
-        Dbname:
+        dbname:
           type: string
-        Dbver:
+        dbver:
           type: string
-        Description:
+        description:
           type: string
-        Status:
+        status:
           type: string
         _id:
           type: string
       required:
-        - Location
-        - Environment
-        - Hostname
-        - CreatedAt
-        - Date
-        - Dbname
-        - Dbver
-        - Description
-        - Status
+        - location
+        - environment
+        - hostname
+        - createdAt
+        - date
+        - dbname
+        - dbver
+        - description
+        - status
         - _id
     ExadataSummary:
       type: object
       required:
-        - Hostname
-        - Location
-        - Environment
-        - CreatedAt
-        - DBServers
-        - StorageServers
-        - IBSwitches
+        - hostname
+        - location
+        - environment
+        - createdAt
+        - dbServers
+        - storageServers
+        - ibSwitches
       properties:
-        Hostname:
+        hostname:
           type: string
-        Location:
+        location:
           type: string
-        Environment:
+        environment:
           type: string
-        CreatedAt:
+        createdAt:
           type: string
-        DBServers:
+        dbServers:
           $ref: '#/components/schemas/ExadataDev'
-        StorageServers:
+        storageServers:
           $ref: '#/components/schemas/ExadataDev'
-        IBSwitches:
+        ibSwitches:
           $ref: '#/components/schemas/ExadataDev'
     Features: 
       type: object
@@ -1023,94 +1023,94 @@ components:
         Postgresql/Postgresql:
           type: boolean
           nullable: true
-        Microsoft/SQLServer:
+        Microsoft/sqlServer:
           type: boolean
           nullable: true
     TechnologyStatus:
       type: object
       required:
-        - Product
-        - HostsCount
-        - Compliance
-        - UnpaidDues
+        - product
+        - hostsCount
+        - compliance
+        - unpaidDues
       properties:
-        Product:
+        product:
           type: string
-        HostsCount:
+        hostsCount:
           type: integer
-        Compliance:
+        compliance:
           type: number
-        UnpaidDues:
+        unpaidDues:
           type: number
     AllTechnologyComplianceStatus:
       type: object
       required:
-        - HostsCount
-        - Compliance
-        - UnpaidDues
+        - hostsCount
+        - compliance
+        - unpaidDues
       properties:
-        HostsCount:
+        hostsCount:
           type: integer
-        Compliance:
+        compliance:
           type: number
-        UnpaidDues:
+        unpaidDues:
           type: number
     AggregatedCodeSeverityAlerts:
       type: object
       required:
-        - Category
-        - Code
-        - Severity
-        - Count
-        - AffectedHosts
-        - OldestAlert
+        - category
+        - code
+        - severity
+        - count
+        - affectedHosts
+        - oldestAlert
       properties:
-        Category:
+        category:
           type: string
           enum:
             - SYSTEM
             - AGENT
             - LICENSE
-        Code: 
+        code: 
           type: string
           externalDocs:
             url: https://github.com/ercole-io/ercole/blob/master/model/alert.go
-        Severity:
+        severity:
           type: string
           externalDocs:
             url: https://github.com/ercole-io/ercole/blob/master/model/alert.go
-        Count: 
+        count: 
           type: integer
-        AffectedHosts:
+        affectedHosts:
           type: integer
-        OldestAlert:
+        oldestAlert:
           type: string
           format: date-time
           example: '2020-05-05T08:23:40+00:00'
     AggregatedCategorySeverityAlerts:
       type: object
       required:
-        - Category
-        - Severity
-        - Count
-        - AffectedHosts
-        - OldestAlert
+        - category
+        - severity
+        - count
+        - affectedHosts
+        - oldestAlert
       properties:
-        Category:
+        category:
           type: string
           enum:
             - SYSTEM
             - AGENT
             - LICENSE
-        Severity:
+        severity:
           type: string
           externalDocs:
             url: https://github.com/ercole-io/ercole/blob/master/model/alert.go
-        Count: 
+        count: 
           type: integer
-        AffectedHosts:
+        affectedHosts:
           type: integer
-        OldestAlert:
+        oldestAlert:
           type: string
           format: date-time
           example: '2020-05-05T08:23:40+00:00'
@@ -1119,79 +1119,79 @@ components:
       properties:
         _id:
           type: string
-        Used:
+        used:
           type: number
-        Count:
+        count:
           type: number
-        CostPerProcessor:
+        costPerProcessor:
           type: number
-        Unlimited:
+        unlimited:
           type: boolean
-        PaidCost:
+        paidCost:
           type: number
-        TotalCost:
+        totalCost:
           type: number
-        Compliance:
+        compliance:
           type: boolean
-        Hosts:
+        hosts:
           nullable: true
           type: array
           items:
             type: object
             required:
-              - Hostname
-              - Databases
+              - hostname
+              - databases
             properties:
-              Hostname:
+              hostname:
                 type: string
-              Databases:
+              databases:
                 type: array
                 uniqueItems: true
                 items:
                   type: string
       required:
         - _id
-        - Used
-        - Count
-        - TotalCost
-        - PaidCost
-        - CostPerProcessor
-        - Compliance
-        - Unlimited
+        - used
+        - count
+        - totalCost
+        - paidCost
+        - costPerProcessor
+        - compliance
+        - unlimited
     LicenseModifier:
       type: object
       required:
         - _id
-        - Hostname
-        - DatabaseName
-        - LicenseName
-        - NewValue
+        - hostname
+        - databaseName
+        - licenseName
+        - newValue
       properties:
         _id: 
           type: string
-        Hostname:
+        hostname:
           type: string
-        DatabaseName:
+        databaseName:
           type: string
-        LicenseName:
+        licenseName:
           type: string
-        NewValue:
+        newValue:
           type: number
     TechnologyInfo:
       type: object
       required:
-        - Product
-        - PrettyName
-        - Color
-        - Logo
+        - product
+        - prettyName
+        - color
+        - logo
       properties:
-        Product:
+        product:
           type: string
-        PrettyName:
+        prettyName:
           type: string
-        Color:
+        color:
           type: string
-        Logo:
+        logo:
           type: string
           description: base64 encoded png 256x256 image
     Chart:
@@ -1289,7 +1289,6 @@ components:
                 type: string
               size:
                 type: number
-
   parameters:
     search:
       in: query
@@ -1600,15 +1599,15 @@ paths:
                   - type: object
                     description: full paged
                     properties:
-                      Content:
+                      content:
                         type: array
                         items:
                           $ref: '#/components/schemas/HostData'
-                      Metadata:
+                      metadata:
                         $ref: '#/components/schemas/PageMetadata'
                     required:
-                      - Content
-                      - Metadata
+                      - content
+                      - metadata
                   - type: array
                     description: full non paged
                     items:
@@ -1616,15 +1615,15 @@ paths:
                   - type: object
                     description: summary paged
                     properties:
-                      Content:
+                      content:
                         type: array
                         items:
                           $ref: '#/components/schemas/HostData'
-                      Metadata:
+                      metadata:
                         $ref: '#/components/schemas/PageMetadata'
                     required:
-                      - Content
-                      - Metadata
+                      - content
+                      - metadata
                   - type: array
                     description: summary non paged
                     items:
@@ -1632,15 +1631,15 @@ paths:
                   - type: object
                     description: lms paged
                     properties:
-                      Content:
+                      content:
                         type: array
                         items:
                           $ref: '#/components/schemas/HostData'
-                      Metadata:
+                      metadata:
                         $ref: '#/components/schemas/PageMetadata'
                     required:
-                      - Content
-                      - Metadata
+                      - content
+                      - metadata
                   - type: array
                     description: lms non paged
                     items:
@@ -1981,15 +1980,15 @@ paths:
                   - type: object
                     description: full paged
                     properties:
-                      Content:
+                      content:
                         type: array
                         items:
                           $ref: '#/components/schemas/Database'
-                      Metadata:
+                      metadata:
                         $ref: '#/components/schemas/PageMetadata'
                     required:
-                      - Content
-                      - Metadata
+                      - content
+                      - metadata
                   - type: array
                     description: full non paged
                     items:
@@ -1997,15 +1996,15 @@ paths:
                   - type: object
                     description: not full paged
                     properties:
-                      Content:
+                      content:
                         type: array
                         items:
                           $ref: '#/components/schemas/Database'
-                      Metadata:
+                      metadata:
                         $ref: '#/components/schemas/PageMetadata'
                     required:
-                      - Content
-                      - Metadata
+                      - content
+                      - metadata
                   - type: array
                     description: not full non paged
                     items:
@@ -2045,15 +2044,15 @@ paths:
                   - type: object
                     description: paged
                     properties:
-                      Content:
+                      content:
                         type: array
                         items:
                           $ref: '#/components/schemas/ADDM'
-                      Metadata:
+                      metadata:
                         $ref: '#/components/schemas/PageMetadata'
                     required:
-                      - Content
-                      - Metadata
+                      - content
+                      - metadata
                   - type: array
                     description: non paged
                     items:
@@ -2198,27 +2197,12 @@ paths:
                       $ref: '#/components/schemas/Alert'
                   - type: object
                     properties:
-                      Content:
+                      content:
                         type: array
                         items:
                           $ref: '#/components/schemas/Alert'
-                      Metadata:
-                        type: object
-                        properties:
-                          Empty:
-                            type: boolean
-                          First:
-                            type: boolean
-                          Last:
-                            type: boolean
-                          Number:
-                            type: integer
-                          Size:
-                            type: integer
-                          TotalElements:
-                            type: integer
-                          TotalPages:
-                            type: integer
+                      metadata:
+                        $ref: '#/components/schemas/PageMetadata'
                   - type: array
                     items:
                       $ref: '#/components/schemas/AggregatedCodeSeverityAlerts'
@@ -2274,15 +2258,15 @@ paths:
                       $ref: '#/components/schemas/Cluster'
                   - type: object
                     properties:
-                      Content:
+                      content:
                         type: array
                         items:
                           $ref: '#/components/schemas/Cluster'
-                      Metadata:
+                      metadata:
                         $ref: '#/components/schemas/PageMetadata'
                     required:
-                      - Content
-                      - Metadata
+                      - content
+                      - metadata
             application/xml:
               schema:
                 type: object
@@ -2351,15 +2335,15 @@ paths:
                       $ref: '#/components/schemas/ExadataSummary'
                   - type: object
                     properties:
-                      Content:
+                      content:
                         type: array
                         items:
                           $ref: '#/components/schemas/ExadataSummary'
-                      Metadata:
+                      metadata:
                         $ref: '#/components/schemas/PageMetadata'
                     required:
-                      - Content
-                      - Metadata
+                      - content
+                      - metadata
       operationId: SearchOracleExadata
       description: |-
         Search exadata data using the filters in the request.
@@ -2398,15 +2382,15 @@ paths:
                   - type: object
                     description: paged
                     properties:
-                      Content:
+                      content:
                         type: array
                         items:
                           $ref: '#/components/schemas/LicenseModifier'
-                      Metadata:
+                      metadata:
                         $ref: '#/components/schemas/PageMetadata'
                     required:
-                      - Content
-                      - Metadata
+                      - content
+                      - metadata
                   - type: array
                     description: non paged
                     items:
@@ -2466,13 +2450,13 @@ paths:
                 items:
                   type: object
                   properties:
-                    Environment:
+                    environment:
                       type: string
-                    Count:
+                    count:
                       type: integer
                   required:
-                    - Environment
-                    - Count
+                    - environment
+                    - count
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -2502,13 +2486,13 @@ paths:
                 items:
                   type: object
                   properties:
-                    HardwareAbstractionTechnology:
+                    hardwareAbstractionTechnology:
                       type: string
-                    Count:
+                    count:
                       type: integer
                   required:
-                    - HardwareAbstractionTechnology
-                    - Count
+                    - hardwareAbstractionTechnology
+                    - count
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -2538,13 +2522,13 @@ paths:
                 items:
                   type: object
                   properties:
-                    OperatingSystem:
+                    operatingSystem:
                       type: string
-                    Count:
+                    count:
                       type: integer
                   required:
-                    - OperatingSystem
-                    - Count
+                    - operatingSystem
+                    - count
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -2575,13 +2559,13 @@ paths:
                 items:
                   type: object
                   properties:
-                    Hostname:
+                    hostname:
                       type: string
-                    Unused:
+                    unused:
                       type: number
                   required:
-                    - Hostname
-                    - Used
+                    - hostname
+                    - used
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -2637,13 +2621,13 @@ paths:
                 items:
                   type: object
                   properties:
-                    Environment:
+                    environment:
                       type: string
-                    Count:
+                    count:
                       type: string
                   required:
-                    - Environment
-                    - Count
+                    - environment
+                    - count
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -2673,13 +2657,13 @@ paths:
                 items:
                   type: object
                   properties:
-                    HA:
+                    ha: 
                       type: boolean
-                    Count:
+                    count:
                       type: string
                   required:
-                    - HA
-                    - Count
+                    - ha
+                    - count
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -2709,13 +2693,13 @@ paths:
                 items:
                   type: object
                   properties:
-                    Version:
+                    version:
                       type: string
-                    Count:
+                    count:
                       type: string
                   required:
-                    - Version
-                    - Count
+                    - version
+                    - count
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -2746,16 +2730,16 @@ paths:
                 items:
                   type: object
                   properties:
-                    Hostname:
+                    hostname:
                       type: string
-                    Dbname:
+                    dbname:
                       type: string
-                    ReclaimableSegmentAdvisors: 
+                    reclaimableSegmentAdvisors: 
                       type: number
                   required:
-                    - Hostname
-                    - Dbname
-                    - ReclaimableSegmentAdvisors
+                    - hostname
+                    - dbname
+                    - reclaimableSegmentAdvisors
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -2786,13 +2770,13 @@ paths:
                 items:
                   type: object
                   properties:
-                    Status:
+                    status:
                       type: boolean
-                    Count:
+                    count:
                       type: integer
                   required:
-                    - Status
-                    - Count
+                    - status
+                    - count
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -2823,16 +2807,16 @@ paths:
                 items:
                   type: object
                   properties:
-                    Hostname:
+                    hostname:
                       type: string
-                    Dbname:
+                    dbname:
                       type: string
-                    Workload: 
+                    workload: 
                       type: number
                   required:
-                    - Hostname
-                    - Dbname
-                    - Workload
+                    - hostname
+                    - dbname
+                    - workload
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -2862,13 +2846,13 @@ paths:
                 items:
                   type: object
                   properties:
-                    Dataguard:
+                    dataguard:
                       type: boolean
-                    Count:
+                    count:
                       type: integer
                   required:
-                    - Dataguard
-                    - Count
+                    - dataguard
+                    - count
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -2898,13 +2882,13 @@ paths:
                 items:
                   type: object
                   properties:
-                    ArchiveLog:
+                    archiveLog:
                       type: boolean
-                    Count:
+                    count:
                       type: integer
                   required:
-                    - ArchiveLog
-                    - Count
+                    - archiveLog
+                    - count
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -2934,13 +2918,13 @@ paths:
                 items:
                   type: object
                   properties:
-                    RAC:
+                    rac: 
                       type: boolean
-                    Count:
+                    count:
                       type: integer
                   required:
-                    - RAC
-                    - Count
+                    - rac
+                    - count
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -3072,15 +3056,15 @@ paths:
               schema:
                 type: object
                 required:
-                  - Count
-                  - Used
-                  - Compliant
+                  - count
+                  - used
+                  - compliant
                 properties:
-                  Count: 
+                  count: 
                     type: number
-                  Used: 
+                  used: 
                     type: number
-                  Compliant:
+                  compliant:
                     type: boolean
         '401':
           $ref: '#/components/responses/error'
@@ -3135,12 +3119,12 @@ paths:
               schema:
                 type: object
                 required:
-                  - Running
-                  - Total
+                  - running
+                  - total
                 properties:
-                  Running: 
+                  running: 
                     type: number
-                  Total: 
+                  total: 
                     type: number
         '401':
           $ref: '#/components/responses/error'
@@ -3197,13 +3181,13 @@ paths:
                 items:
                   type: object
                   properties:
-                    Failing:
+                    failing:
                       type: boolean
-                    Count:
+                    count:
                       type: integer
                   required:
-                    - Failing
-                    - Count
+                    - failing
+                    - count
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -3233,13 +3217,13 @@ paths:
                 items:
                   type: object
                   properties:
-                    Status:
+                    status:
                       type: boolean
-                    Count:
+                    count:
                       type: integer
                   required:
-                    - Status
-                    - Count
+                    - status
+                    - count
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -3277,15 +3261,15 @@ paths:
                       $ref: '#/components/schemas/SegmentAdvisor'
                   - type: object
                     properties:
-                      Content:
+                      content:
                         type: array
                         items:
                           $ref: '#/components/schemas/SegmentAdvisor'
-                      Metadata:
+                      metadata:
                         $ref: '#/components/schemas/PageMetadata'
                     required:
-                      - Content
-                      - Metadata
+                      - content
+                      - metadata
             application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
               schema:
                 type: object
@@ -3331,15 +3315,15 @@ paths:
                       $ref: '#/components/schemas/PatchAdvisorInfo'
                   - type: object
                     properties:
-                      Content:
+                      content:
                         type: array
                         items:
                           $ref: '#/components/schemas/PatchAdvisorInfo'
-                      Metadata:
+                      metadata:
                         $ref: '#/components/schemas/PageMetadata'
                     required:
-                      - Content
-                      - Metadata
+                      - content
+                      - metadata
             application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
               schema:
                 type: object
@@ -3388,15 +3372,15 @@ paths:
                       $ref: '#/components/schemas/LicenseCount'
                   - type: object
                     properties:
-                      Content:
+                      content:
                         type: array
                         items:
                           $ref: '#/components/schemas/LicenseCount'
-                      Metadata:
+                      metadata:
                         $ref: '#/components/schemas/PageMetadata'
                     required:
-                      - Content
-                      - Metadata
+                      - content
+                      - metadata
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -3420,11 +3404,11 @@ paths:
                 type: object
                 required:
                   - _id
-                  - Count
+                  - count
                 properties:
                   _id:
                     type: string
-                  Count:
+                  count:
                     type: integer
       responses:
         '200':
@@ -3649,23 +3633,23 @@ paths:
               schema:
                 type: object
                 required:
-                  - Features
-                  - Technologies
-                  - Alerts
+                  - features
+                  - technologies
+                  - alerts
                 properties:
-                  Features:
+                  features:
                     $ref: '#/components/schemas/Features' 
-                  Alerts: 
+                  alerts: 
                     $ref: '#/components/schemas/AggregatedCodeSeverityAlerts'
-                  Technologies:
+                  technologies:
                     type: object
                     required:
-                      - Technologies
-                      - Total
+                      - technologies
+                      - total
                     properties:
-                      Technologies:
+                      technologies:
                         $ref: '#/components/schemas/TechnologyStatus' 
-                      Total:
+                      total:
                         $ref: '#/components/schemas/AllTechnologyComplianceStatus' 
         '401':
           $ref: '#/components/responses/error'
