@@ -891,6 +891,7 @@ components:
     Alert:
       title: Alert
       type: object
+      x-examples:
         example-1:
           AlertAffectedTechnology: null
           AlertCategory: AGENT
@@ -925,28 +926,23 @@ components:
             - SYSTEM
             - AGENT
             - LICENSE
-          description: ''
         AlertAffectedTechnology:
           nullable: true
           type: string
           enum:
             - Oracle/Database
             - Oracle/Exadata
-          description: ''
         AlertStatus:
           type: string
           enum:
             - NEW
             - ACK
-          example: NEW
-          description: ''
         AlertSeverity:
           type: string
           enum:
             - WARNING
             - CRITICAL
             - INFO
-          description: ''
         AlertCode:
           type: string
           enum:
@@ -955,7 +951,6 @@ components:
             - NEW_LICENSE
             - NEW_SERVER
             - NO_DATA
-          description: ''
         _id:
           type: string
           description: ID of the alert
@@ -1043,6 +1038,7 @@ components:
         Microsoft/SQLServer:
           type: boolean
           nullable: true
+      x-examples:
         example-1: {}
     TechnologyStatus:
       type: object
@@ -1060,7 +1056,6 @@ components:
           type: number
           description: |-
             "unpaidDues" = difference between calculated cost of used and purchased licenses:
-
             if usedLicensesCost <= purchasedLicensesCost, then unpaidDues := 0
             else unpaidDues := usedLicensesCost - purchasedLicensesCost
       required:
@@ -1068,6 +1063,7 @@ components:
         - HostsCount
         - Compliance
         - UnpaidDues
+      x-examples:
         example-1: {}
     AllTechnologyComplianceStatus:
       type: object
@@ -2060,7 +2056,7 @@ paths:
   /alerts:
     get:
       summary: search alerts
-      description: 'This API fetches all alerts. The parameters in version 2.0 are not used since all filters are executed by the frontend.'
+      description: This API fetches all alerts. The parameters in version 2.0 are not used since all filters are executed by the frontend.
       tags:
         - api-service
         - fe-user
@@ -2161,26 +2157,38 @@ paths:
               examples:
                 example-1:
                   value:
-                    Content:
-                      - AlertAffectedTechnology: null
-                        AlertCategory: LICENSE
-                        AlertCode: NEW_LICENSE
-                        AlertSeverity: INFO
-                        AlertStatus: NEW
-                        Date: '2019-02-03T13:17:10.359Z'
-                        Description: This is an info alert manually created by myselft
-                        Hostname: test-db
-                        OtherInfo:
-                          Hostname: test-db
-                        _id: 5f05646c9d672ed6ecd7d7c4
-                    Metadata:
-                      Empty: false
-                      First: false
-                      Last: false
-                      Number: 1
-                      Size: 1
-                      TotalElements: 20
-                      TotalPages: 20
+                    content:
+                      - _id: 5f0d6161cb1ec248b08e332f
+                        alertAffectedTechnology: Oracle/Database
+                        alertCategory: LICENSE
+                        alertCode: NEW_DATABASE
+                        alertSeverity: INFO
+                        alertStatus: NEW
+                        date: '2020-07-14T07:40:17.245Z'
+                        description: "The database 'rudeboy-fb3160a04ffea22b55555bbb58137f77' was created on the server publicitate-36d06ca83eafa454423d2097f4965517"
+                        hostname: publicitate-36d06ca83eafa454423d2097f4965517
+                        otherInfo:
+                          dbname: rudeboy-fb3160a04ffea22b55555bbb58137f77
+                          hostname: publicitate-36d06ca83eafa454423d2097f4965517
+                      - _id: 5f0d6161cb1ec248b08e3330
+                        alertAffectedTechnology: Oracle/Database
+                        alertCategory: LICENSE
+                        alertCode: NEW_LICENSE
+                        alertSeverity: CRITICAL
+                        alertStatus: NEW
+                        date: '2020-07-14T07:40:17.245Z'
+                        description: A new Enterprise license has been enabled to publicitate-36d06ca83eafa454423d2097f4965517
+                        hostname: publicitate-36d06ca83eafa454423d2097f4965517
+                        otherInfo:
+                          hostname: publicitate-36d06ca83eafa454423d2097f4965517
+                    metadata:
+                      empty: false
+                      first: false
+                      last: false
+                      number: 2
+                      size: 4
+                      totalElements: 113
+                      totalPages: 28
         '401':
           $ref: '#/components/responses/error'
           description: Unauthorized
@@ -3626,23 +3634,23 @@ paths:
               examples:
                 example-1:
                   value:
-                    Features:
+                    features:
                       Oracle/Database: true
                       Oracle/Exadata: true
-                    Technologies:
-                      Technologies:
-                        - Product: Oracle/Exadata
-                          Compliance: 1
-                          UnpaidDues: 0
-                          HostsCount: 2
-                        - Product: Oracle/Database
-                          Compliance: 0
-                          UnpaidDues: 0
-                          HostsCount: 6
-                      Total:
-                        Compliance: 0.05555555555555555
-                        HostsCount: 14
-                        UnpaidDues: 0
+                    technologies:
+                      technologies:
+                        - product: Oracle/Exadata
+                          compliance: 1
+                          unpaidDues: 0
+                          hostsCount: 2
+                        - product: Oracle/Database
+                          compliance: 0
+                          unpaidDues: 0
+                          hostsCount: 6
+                      total:
+                        compliance: 0.07142857142857142
+                        hostsCount: 14
+                        unpaidDues: 0
         '201':
           description: Created
         '401':
