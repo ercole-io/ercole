@@ -36,8 +36,8 @@ type ChartControllerInterface interface {
 	// GetTechnologyTypes return the types of techonlogies
 	GetTechnologyTypes(w http.ResponseWriter, r *http.Request)
 
-	// GetTechnologyList return the list of techonlogies
-	GetTechnologyList(w http.ResponseWriter, r *http.Request)
+	// GetTechnologiesMetrics return metrics of all technologies
+	GetTechnologiesMetrics(w http.ResponseWriter, r *http.Request)
 }
 
 // ChartController is the struct used to handle the requests from agents and contains the concrete implementation of ChartControllerInterface
@@ -54,9 +54,9 @@ type ChartController struct {
 	Authenticator auth.AuthenticationProvider
 }
 
-// GetTechnologyList return the list of techonlogies
-func (ctrl *ChartController) GetTechnologyList(w http.ResponseWriter, r *http.Request) {
-	data, err := ctrl.Service.GetTechnologyList()
+// GetTechnologiesMetrics return metrics of all technologies
+func (ctrl *ChartController) GetTechnologiesMetrics(w http.ResponseWriter, r *http.Request) {
+	data, err := ctrl.Service.GetTechnologiesMetrics()
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
