@@ -27,13 +27,13 @@ import (
 // ErrorResponseFE is a struct that contains informations about a error
 type ErrorResponseFE struct {
 	// Error contains the (generic) class of the error
-	Error string
+	Error string `json:"error"`
 	// ErrorDescription contains detailed informations about the error
-	ErrorDescription string
+	ErrorDescription string `json:"errorDescription"`
 	// File contains the filename of the source code where the error was detected
-	SourceFilename string
+	SourceFilename string `json:"sourceFilename"`
 	// LineNumber contains the number of the line where the error was detected
-	LineNumber int
+	LineNumber int `json:"lineNumber"`
 }
 
 // WriteAndLogError write the error to the w with the statusCode as statusCode and log the error to the stdout
