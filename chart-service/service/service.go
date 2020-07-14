@@ -38,8 +38,8 @@ type ChartServiceInterface interface {
 	GetChangeChart(from time.Time, location string, environment string, olderThan time.Time) (chartmodel.ChangeChart, utils.AdvancedErrorInterface)
 	// GetOracleDatabaseChart return a chart associated to teh
 	GetOracleDatabaseChart(metric string, location string, environment string, olderThan time.Time) (chartmodel.Chart, utils.AdvancedErrorInterface)
-	// GetErcoleFeatures return the list of technologies
-	GetTechnologyList() (map[string]model.TechnologySupportedMetrics, utils.AdvancedErrorInterface)
+	// GetTechnologiesMetrics return metrics of all technologies
+	GetTechnologiesMetrics() (map[string]model.TechnologySupportedMetrics, utils.AdvancedErrorInterface)
 	// GetTechnologyTypes return the types of techonlogies
 	GetTechnologyTypesChart(location string, environment string, olderThan time.Time) (chartmodel.TechnologyTypesChart, utils.AdvancedErrorInterface)
 }
@@ -63,8 +63,8 @@ func (as *ChartService) Init() {
 	as.Random = rand.New(rand.NewSource(as.TimeNow().UnixNano()))
 }
 
-// GetTechnologyList return the list of technologies
-func (as *ChartService) GetTechnologyList() (map[string]model.TechnologySupportedMetrics, utils.AdvancedErrorInterface) {
+// GetTechnologiesMetrics return the list of technologies
+func (as *ChartService) GetTechnologiesMetrics() (map[string]model.TechnologySupportedMetrics, utils.AdvancedErrorInterface) {
 	// at the moment, the list of technologies is hardcoded here
-	return model.TechnologySupportedMetricsMap, nil
+	return model.TechnologiesSupportedMetricsMap, nil
 }
