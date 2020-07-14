@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
-  title: API Ercole 2.0
-  version: 1.0.0
+  title: Ercole
+  version: 2.0.0
   license:
     name: GNU General Public License v3.0 or later
     url: 'https://www.gnu.org/licenses/gpl-3.0-standalone.html'
@@ -40,7 +40,7 @@ tags:
   - name: service-user
     description: API used by the services
   - name: read
-    description: "API that don't change the state of the informations"
+    description: API that don't change the state of the informations
   - name: write
     description: API that change the state of the informations
 components:
@@ -89,7 +89,8 @@ components:
               value:
                 error: Invalid  status
                 errorDescription: invalid status
-                sourceFilename: /home/travis/go/src/github.com/ercole-io/ercole/api-service/controller/alerts_api.go
+                sourceFilename: >-
+                  /home/travis/go/src/github.com/ercole-io/ercole/api-service/controller/alerts_api.go
                 lineNumber: 65
   schemas:
     HostDataInfo:
@@ -115,7 +116,8 @@ components:
       properties:
         hostname:
           type: string
-          pattern: "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$"
+          pattern: >-
+            ^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$
         environment:
           type: string
         location:
@@ -134,7 +136,7 @@ components:
           type: boolean
         kernel:
           type: string
-        os: 
+        os:
           type: string
         memoryTotal:
           type: number
@@ -232,7 +234,7 @@ components:
           type: integer
         Indexes:
           type: integer
-        lob: 
+        lob:
           type: integer
       required:
         - Database
@@ -261,7 +263,7 @@ components:
       required:
         - Name
         - Count
-    addm: 
+    ADDM:
       type: object
       properties:
         Finding:
@@ -313,7 +315,7 @@ components:
         - PartitionName
         - Reclaimable
         - Recommendation
-    LastpsU:
+    LastPSU:
       type: object
       properties:
         Date:
@@ -405,15 +407,15 @@ components:
           nullable: true
         Work:
           type: string
-        asm: 
+        asm:
           type: boolean
           nullable: true
         Dataguard:
           type: boolean
-        rac: 
+        rac:
           nullable: true
           type: boolean
-        ha: 
+        ha:
           nullable: true
           type: boolean
         Hostname:
@@ -451,7 +453,7 @@ components:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/Tablespace'
+            $ref: '#/components/schemas/Schema'
         Features:
           type: array
           nullable: true
@@ -502,10 +504,10 @@ components:
       properties:
         Name:
           type: string
-        Environment: 
+        Environment:
           type: string
           nullable: true
-        Location: 
+        Location:
           type: string
           nullable: true
         Hostname:
@@ -545,7 +547,7 @@ components:
               type: integer
         Type:
           type: string
-        cpu: 
+        cpu:
           type: integer
         Sockets:
           type: integer
@@ -582,7 +584,7 @@ components:
         - cpu
         - sockets
         - vms
-    cellDisk:
+    CellDisk:
       type: object
       properties:
         name:
@@ -598,7 +600,7 @@ components:
         - status
         - errCount
         - usedPerc
-    exadataDev:
+    ExadataDev:
       type: object
       properties:
         hostname:
@@ -679,7 +681,7 @@ components:
           nullable: true
         info:
           $ref: '#/components/schemas/HostDataInfo'
-        os: 
+        os:
           type: string
           nullable: true
         kernel:
@@ -879,7 +881,7 @@ components:
         - code
         - vars
       properties:
-        id: 
+        id:
           type: string
           nullable: true
         hostname:
@@ -960,7 +962,8 @@ components:
           type: string
         hostname:
           type: string
-          pattern: "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$"
+          pattern: >-
+            ^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$
         createdAt:
           type: string
         date:
@@ -1011,7 +1014,7 @@ components:
           $ref: '#/components/schemas/ExadataDev'
         ibSwitches:
           $ref: '#/components/schemas/ExadataDev'
-    Features: 
+    Features:
       type: object
       properties:
         Oracle/Database:
@@ -1071,15 +1074,15 @@ components:
             - SYSTEM
             - AGENT
             - LICENSE
-        code: 
+        code:
           type: string
           externalDocs:
-            url: https://github.com/ercole-io/ercole/blob/master/model/alert.go
+            url: 'https://github.com/ercole-io/ercole/blob/master/model/alert.go'
         severity:
           type: string
           externalDocs:
-            url: https://github.com/ercole-io/ercole/blob/master/model/alert.go
-        count: 
+            url: 'https://github.com/ercole-io/ercole/blob/master/model/alert.go'
+        count:
           type: integer
         affectedHosts:
           type: integer
@@ -1105,8 +1108,8 @@ components:
         severity:
           type: string
           externalDocs:
-            url: https://github.com/ercole-io/ercole/blob/master/model/alert.go
-        count: 
+            url: 'https://github.com/ercole-io/ercole/blob/master/model/alert.go'
+        count:
           type: integer
         affectedHosts:
           type: integer
@@ -1167,7 +1170,7 @@ components:
         - licenseName
         - newValue
       properties:
-        _id: 
+        _id:
           type: string
         hostname:
           type: string
@@ -1196,23 +1199,23 @@ components:
           description: base64 encoded png 256x256 image
     Chart:
       type: object
-      required: 
+      required:
         - data
         - legend
       properties:
         legend:
-          additionalProperties: 
+          additionalProperties:
             type: string
         data:
           type: array
-          items: 
+          items:
             type: object
             required:
               - color
               - name
               - size
             properties:
-              color: 
+              color:
                 type: string
               name:
                 type: string
@@ -1220,16 +1223,16 @@ components:
                 type: number
     ChangeChart:
       type: object
-      required: 
+      required:
         - data
         - legend
       properties:
         legend:
-          additionalProperties: 
+          additionalProperties:
             type: string
         data:
           type: array
-          items: 
+          items:
             type: object
             required:
               - name
@@ -1244,18 +1247,18 @@ components:
                 type: number
     TechnologyTypesChart:
       type: object
-      required: 
+      required:
         - databases
         - middlewares
         - operatingSystems
         - legend
       properties:
         legend:
-          additionalProperties: 
+          additionalProperties:
             type: string
         databases:
           type: array
-          items: 
+          items:
             type: object
             required:
               - name
@@ -1267,7 +1270,7 @@ components:
                 type: number
         middlewares:
           type: array
-          items: 
+          items:
             type: object
             required:
               - name
@@ -1279,7 +1282,7 @@ components:
                 type: number
         operatingSystems:
           type: array
-          items: 
+          items:
             type: object
             required:
               - name
@@ -1373,7 +1376,7 @@ components:
         default: 6
       in: query
       name: window-time
-      description: window time to check the patch date, in months
+      description: 'window time to check the patch date, in months'
 paths:
   /ping:
     get:
@@ -1393,7 +1396,7 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: 'PONG!'
+                example: PONG!
                 readOnly: true
   '/queue/host-data-insertion/{id}':
     post:
@@ -1433,7 +1436,10 @@ paths:
         - fe-user
       security: []
       summary: Request access token
-      description: Request a user access token given the credentials. Note that the behaviour and interface may change if the service is configured to use different authentication provider.
+      description: >-
+        Request a user access token given the credentials. Note that the
+        behaviour and interface may change if the service is configured to use
+        different authentication provider.
       operationId: GetToken
       responses:
         '200':
@@ -1443,7 +1449,8 @@ paths:
               schema:
                 type: string
                 readOnly: true
-                example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsidXNlciJdLCJleHAiOjE1ODg2NjExMjMsImlhdCI6MTU4ODY2MDIyMywiaXNzIjoiZXJjb2xlIiwianRpIjoidXNlciIsIm5iZiI6MTU4ODY2MDIyMywic3ViIjoidXNlciJ9.QJhUuBR4Z8uPncXITUjRVHktZXLVax1wstMMd4x6qSDPmxGbYTfOINUawgNNSV9ho-C0rh3icks3Q3227fiyUEcdV0Tfa2O5t7lJX0A4MdTnd2sVv_xxlMju8lCBGnf82fvtSg3C0rQsWnmxgC1rBDW3lzru0ffIJG_JrV3mNxhigniBzm_C0Gq1AaL2cmZ0POCnYJReYcLY-9maKRhMsjcart8pqGZ-5jEjMNWxSc7Lh2snCZklFE0NrmtxvaWITSjm4JGWvTwZcWIfTNBiZRABr5OKARVPMsdgOZ--a4kjIsdXngtIX-C5iaISrgRAUv89XInNBvrquqXnq7p5vg
+                example: >-
+                  eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsidXNlciJdLCJleHAiOjE1ODg2NjExMjMsImlhdCI6MTU4ODY2MDIyMywiaXNzIjoiZXJjb2xlIiwianRpIjoidXNlciIsIm5iZiI6MTU4ODY2MDIyMywic3ViIjoidXNlciJ9.QJhUuBR4Z8uPncXITUjRVHktZXLVax1wstMMd4x6qSDPmxGbYTfOINUawgNNSV9ho-C0rh3icks3Q3227fiyUEcdV0Tfa2O5t7lJX0A4MdTnd2sVv_xxlMju8lCBGnf82fvtSg3C0rQsWnmxgC1rBDW3lzru0ffIJG_JrV3mNxhigniBzm_C0Gq1AaL2cmZ0POCnYJReYcLY-9maKRhMsjcart8pqGZ-5jEjMNWxSc7Lh2snCZklFE0NrmtxvaWITSjm4JGWvTwZcWIfTNBiZRABr5OKARVPMsdgOZ--a4kjIsdXngtIX-C5iaISrgRAUv89XInNBvrquqXnq7p5vg
                 description: JWT access token
         '401':
           $ref: '#/components/responses/error'
@@ -1458,7 +1465,9 @@ paths:
         - fe-user
       operationId: SearchHosts
       summary: Search a list of hosts
-      description: Get a list of hosts filtered using various search terms and various params. Can also generate a XLSX file
+      description: >-
+        Get a list of hosts filtered using various search terms and various
+        params. Can also generate a XLSX file
       parameters:
         - in: query
           name: mode
@@ -1500,7 +1509,9 @@ paths:
             type: string
         - in: query
           name: cluster
-          description: filter by the name of virtualization cluster. use 'NULL' for searching host that aren't part of a virtualization cluster
+          description: >-
+            filter by the name of virtualization cluster. use 'NULL' for
+            searching host that aren't part of a virtualization cluster
           allowEmptyValue: true
           schema:
             type: string
@@ -1524,25 +1535,33 @@ paths:
             type: string
         - in: query
           name: memory-total-lte
-          description: filter the hosts with the Info.MemoryTotal less than memory-total-lte value
+          description: >-
+            filter the hosts with the Info.MemoryTotal less than
+            memory-total-lte value
           allowEmptyValue: true
           schema:
             type: number
         - in: query
           name: memory-total-gte
-          description: filter the hosts with the Info.MemoryTotal less than memory-total-gte value
+          description: >-
+            filter the hosts with the Info.MemoryTotal less than
+            memory-total-gte value
           allowEmptyValue: true
           schema:
             type: number
         - in: query
           name: swap-total-lte
-          description: filter the hosts with the Info.SwapTotal less than swap-total-lte value
+          description: >-
+            filter the hosts with the Info.SwapTotal less than swap-total-lte
+            value
           allowEmptyValue: true
           schema:
             type: number
         - in: query
           name: swap-total-gte
-          description: filter the hosts with the Info.SwapTotal less than swap-total-gte value
+          description: >-
+            filter the hosts with the Info.SwapTotal less than swap-total-gte
+            value
           allowEmptyValue: true
           schema:
             type: number
@@ -1560,25 +1579,33 @@ paths:
             type: boolean
         - in: query
           name: cpu-cores-lte
-          description: filter the hosts with the Info.CPUCores less than cpu-cores-lte value
+          description: >-
+            filter the hosts with the Info.CPUCores less than cpu-cores-lte
+            value
           allowEmptyValue: true
           schema:
             type: number
         - in: query
           name: cpu-cores-gte
-          description: filter the hosts with the Info.CPUCores less than cpu-cores-gte value
+          description: >-
+            filter the hosts with the Info.CPUCores less than cpu-cores-gte
+            value
           allowEmptyValue: true
           schema:
             type: number
         - in: query
           name: cpu-threads-lte
-          description: filter the hosts with the Info.CPUThreads less than cpu-threads-lte value
+          description: >-
+            filter the hosts with the Info.CPUThreads less than cpu-threads-lte
+            value
           allowEmptyValue: true
           schema:
             type: number
         - in: query
           name: cpu-threads-gte
-          description: filter the hosts with the Info.CPUThreads less than cpu-threads-gte value
+          description: >-
+            filter the hosts with the Info.CPUThreads less than cpu-threads-gte
+            value
           allowEmptyValue: true
           schema:
             type: number
@@ -1724,7 +1751,7 @@ paths:
         '401':
           $ref: '#/components/responses/error'
         '404':
-          description: 'The host or patching function don"t exist'
+          description: The host or patching function don"t exist
           $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
@@ -1748,7 +1775,7 @@ paths:
         '401':
           $ref: '#/components/responses/error'
         '404':
-          description: 'The host don"t exist'
+          description: The host don"t exist
           $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
@@ -1922,8 +1949,8 @@ paths:
         - fe-user
         - read
       operationId: ListTechnologies
-      summary: List all Technologies 
-      description:  List all Technologies
+      summary: List all Technologies
+      description: List all Technologies
       parameters:
         - $ref: '#/components/parameters/sort-by'
         - $ref: '#/components/parameters/sort-desc'
@@ -1937,7 +1964,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: 
+                items:
                   $ref: '#/components/schemas/TechnologyStatus'
         '401':
           $ref: '#/components/responses/error'
@@ -1953,7 +1980,9 @@ paths:
         - read
       operationId: SearchOracleDatabases
       summary: Search a list of databases
-      description: Get a list of databases filtered using various search terms and various params. Can also generate a XLSX file
+      description: >-
+        Get a list of databases filtered using various search terms and various
+        params. Can also generate a XLSX file
       parameters:
         - in: query
           name: full
@@ -2024,7 +2053,9 @@ paths:
         - read
       operationId: SearchOracleDatabaseAddms
       summary: Search a list of ADDMs
-      description: Get a list of ADDMs filtered using various search terms and various params. Can also generate a XLSX file
+      description: >-
+        Get a list of ADDMs filtered using various search terms and various
+        params. Can also generate a XLSX file
       parameters:
         - $ref: '#/components/parameters/search'
         - $ref: '#/components/parameters/sort-by'
@@ -2289,7 +2320,7 @@ paths:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
         - $ref: '#/components/parameters/older-than'
-  /hosts/clusters/{name}:
+  '/hosts/clusters/{name}':
     get:
       summary: Get a cluster
       tags:
@@ -2305,8 +2336,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Cluster'
       operationId: GetCluster
-      description: |-
-        Get cluster data using the filters in the request.
+      description: Get cluster data using the filters in the request.
       parameters:
         - $ref: '#/components/parameters/older-than'
         - in: path
@@ -2365,7 +2395,9 @@ paths:
         - read
       operationId: SearchOracleDatabaseLicenseModifiers
       summary: Search a list of license modifiers
-      description: Get a list of license modifiers using various search terms and various params.
+      description: >-
+        Get a list of license modifiers using various search terms and various
+        params.
       parameters:
         - $ref: '#/components/parameters/search'
         - $ref: '#/components/parameters/sort-by'
@@ -2506,7 +2538,7 @@ paths:
         - fe-user
         - read
       operationId: GetOperatingSystemStats
-      summary: Get the stats about the operating systems 
+      summary: Get the stats about the operating systems
       description: Get the stats about the operating systems
       parameters:
         - $ref: '#/components/parameters/location'
@@ -2579,8 +2611,8 @@ paths:
         - fe-user
         - read
       operationId: GetTotalTechnologiesCompliance
-      summary: Get the total compliance status of all Technologies 
-      description: Get the total compliance status of all Technologies 
+      summary: Get the total compliance status of all Technologies
+      description: Get the total compliance status of all Technologies
       parameters:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
@@ -2605,7 +2637,7 @@ paths:
         - fe-user
         - read
       operationId: GetOracleDatabaseEnvironmentStats
-      summary: Get the stats about the environment of the databases 
+      summary: Get the stats about the environment of the databases
       description: Get the stats about the environment of the databases
       parameters:
         - $ref: '#/components/parameters/location'
@@ -2641,7 +2673,7 @@ paths:
         - fe-user
         - read
       operationId: GetOracleDatabaseHighReliabilityStats
-      summary: Get the stats about the high reliability status of the databases 
+      summary: Get the stats about the high reliability status of the databases
       description: Get the stats about the high reliability status of the databases
       parameters:
         - $ref: '#/components/parameters/location'
@@ -2657,7 +2689,7 @@ paths:
                 items:
                   type: object
                   properties:
-                    ha: 
+                    ha:
                       type: boolean
                     count:
                       type: string
@@ -2677,7 +2709,7 @@ paths:
         - fe-user
         - read
       operationId: GetOracleDatabaseVersionStats
-      summary: Get the stats about the version of the databases 
+      summary: Get the stats about the version of the databases
       description: Get the stats about the version of the databases
       parameters:
         - $ref: '#/components/parameters/location'
@@ -2713,7 +2745,7 @@ paths:
         - fe-user
         - read
       operationId: GetTopReclaimableOracleDatabaseStats
-      summary: Get the list of top databases by reclaimable segment advisors 
+      summary: Get the list of top databases by reclaimable segment advisors
       description: Get the list of top databases by reclaimable segment advisors
       parameters:
         - $ref: '#/components/parameters/location'
@@ -2734,7 +2766,7 @@ paths:
                       type: string
                     dbname:
                       type: string
-                    reclaimableSegmentAdvisors: 
+                    reclaimableSegmentAdvisors:
                       type: number
                   required:
                     - hostname
@@ -2811,7 +2843,7 @@ paths:
                       type: string
                     dbname:
                       type: string
-                    workload: 
+                    workload:
                       type: number
                   required:
                     - hostname
@@ -2918,7 +2950,7 @@ paths:
                 items:
                   type: object
                   properties:
-                    rac: 
+                    rac:
                       type: boolean
                     count:
                       type: integer
@@ -3060,9 +3092,9 @@ paths:
                   - used
                   - compliant
                 properties:
-                  count: 
+                  count:
                     type: number
-                  used: 
+                  used:
                     type: number
                   compliant:
                     type: boolean
@@ -3071,7 +3103,7 @@ paths:
         '422':
           $ref: '#/components/responses/error'
         '500':
-          $ref: '#/components/responses/error' 
+          $ref: '#/components/responses/error'
   /hosts/technologies/oracle/exadata/total-memory-size:
     get:
       tags:
@@ -3122,16 +3154,16 @@ paths:
                   - running
                   - total
                 properties:
-                  running: 
+                  running:
                     type: number
-                  total: 
+                  total:
                     type: number
         '401':
           $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
         '500':
-          $ref: '#/components/responses/error' 
+          $ref: '#/components/responses/error'
   /hosts/technologies/oracle/exadata/average-storage-usage:
     get:
       tags:
@@ -3165,8 +3197,12 @@ paths:
         - fe-user
         - read
       operationId: GetOracleExadataStorageErrorCountStatusStats
-      summary: Get the statistics about the ErrorCount status of the storage of the exadata
-      description: Get the statistics about the ErrorCount status of the storage of the  exadata
+      summary: >-
+        Get the statistics about the ErrorCount status of the storage of the
+        exadata
+      description: >-
+        Get the statistics about the ErrorCount status of the storage of the 
+        exadata
       parameters:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
@@ -3389,7 +3425,7 @@ paths:
           $ref: '#/components/responses/error'
       operationId: ListLicenses
       description: List licenses using the filters in the request
-      summary: Search a list of patch advisors
+      summary: Search a list of licenses
       tags:
         - api-service
         - fe-user
@@ -3476,9 +3512,9 @@ paths:
       responses:
         '200':
           description: OK
-        '404':
-          $ref: '#/components/responses/error'
         '401':
+          $ref: '#/components/responses/error'
+        '404':
           $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
@@ -3509,9 +3545,9 @@ paths:
       responses:
         '200':
           description: OK
-        '404':
-          $ref: '#/components/responses/error'
         '401':
+          $ref: '#/components/responses/error'
+        '404':
           $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
@@ -3521,7 +3557,7 @@ paths:
     put:
       operationId: SetLicenseUnlimitedStatus
       description: Set the unlimited value of a certain license
-      summary: Set true if the license is unlimited, otherwise false
+      summary: 'Set true if the license is unlimited, otherwise false'
       tags:
         - api-service
         - fe-user
@@ -3542,9 +3578,9 @@ paths:
       responses:
         '200':
           description: OK
-        '404':
-          $ref: '#/components/responses/error'
         '401':
+          $ref: '#/components/responses/error'
+        '404':
           $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
@@ -3583,9 +3619,9 @@ paths:
           description: OK
           headers: {}
           content:
-            application/json::
+            'application/json:':
               schema:
-                $ref: '#/components/schemas/Features' 
+                $ref: '#/components/schemas/Features'
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -3606,13 +3642,13 @@ paths:
           description: OK
           headers: {}
           content:
-            application/json::
+            'application/json:':
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/TechnologyInfo'
   /frontend/dashboard:
-    get: 
+    get:
       operationId: GetFrontendDashboardData
       description: Return the information required by ercole-web dashboard page
       summary: Return the information required by ercole-web dashboard page
@@ -3638,8 +3674,8 @@ paths:
                   - alerts
                 properties:
                   features:
-                    $ref: '#/components/schemas/Features' 
-                  alerts: 
+                    $ref: '#/components/schemas/Features'
+                  alerts:
                     $ref: '#/components/schemas/AggregatedCodeSeverityAlerts'
                   technologies:
                     type: object
@@ -3648,9 +3684,9 @@ paths:
                       - total
                     properties:
                       technologies:
-                        $ref: '#/components/schemas/TechnologyStatus' 
+                        $ref: '#/components/schemas/TechnologyStatus'
                       total:
-                        $ref: '#/components/schemas/AllTechnologyComplianceStatus' 
+                        $ref: '#/components/schemas/AllTechnologyComplianceStatus'
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -3659,7 +3695,7 @@ paths:
           $ref: '#/components/responses/error'
   /settings/technology-metrics:
     get:
-      operationId: GetTechnologyList
+      operationId: GetTechnologiesMetrics
       description: Return a list of technology
       summary: Return a list of technology
       tags:
@@ -3671,10 +3707,10 @@ paths:
           description: OK
           headers: {}
           content:
-            application/json::
+            'application/json:':
               schema:
                 type: object
-                additionalProperties: 
+                additionalProperties:
                   type: object
                   required:
                     - product
@@ -3694,11 +3730,11 @@ paths:
         - fe-user
         - read
       operationId: GetOracleDatabaseChart
-      summary: Get the chart data about oracle databases using various metric 
+      summary: Get the chart data about oracle databases using various metric
       description: Get the stats about the environment of the databases
       parameters:
         - in: query
-          name: metric  
+          name: metric
           schema:
             type: string
             enum:
@@ -3710,8 +3746,7 @@ paths:
         - $ref: '#/components/parameters/older-than'
       responses:
         '200':
-          description: statistics
-          $ref: '#/components/responses/Chart'
+          $ref: '#/components/schemas/Chart'
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -3725,7 +3760,7 @@ paths:
         - fe-user
         - read
       operationId: GetChangeChart
-      summary: Get the chart data about the changes of technologies 
+      summary: Get the chart data about the changes of technologies
       description: Get the chart data about the changes of technologies
       parameters:
         - $ref: '#/components/parameters/location'
@@ -3733,8 +3768,7 @@ paths:
         - $ref: '#/components/parameters/older-than'
       responses:
         '200':
-          description: statistics
-          $ref: '#/components/responses/ChangeChart'
+          $ref: '#/components/schemas/ChangeChart'
         '401':
           $ref: '#/components/responses/error'
         '422':
@@ -3748,7 +3782,7 @@ paths:
         - fe-user
         - read
       operationId: GetTechnologyTypesChart
-      summary: Get the chart data about the types of technologies 
+      summary: Get the chart data about the types of technologies
       description: Get the chart data about the types of technologies
       parameters:
         - $ref: '#/components/parameters/location'
@@ -3756,8 +3790,7 @@ paths:
         - $ref: '#/components/parameters/older-than'
       responses:
         '200':
-          description: statistics
-          $ref: '#/components/responses/TechnologyTypesChart'
+          $ref: '#/components/schemas/TechnologyTypesChart'
         '401':
           $ref: '#/components/responses/error'
         '422':
