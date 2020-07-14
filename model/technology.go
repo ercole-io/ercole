@@ -45,9 +45,9 @@ type TechnologySupportedMetrics struct {
 	Metrics []string `json:"metrics"`
 }
 
-// TechnologySupportedMetricsMap contains all metrics of all technology
-var TechnologySupportedMetricsMap map[string]TechnologySupportedMetrics = map[string]TechnologySupportedMetrics{
-	TechnologyOracleDatabase: TechnologySupportedMetrics{
+// TechnologiesSupportedMetricsMap contains all metrics of all technology
+var TechnologiesSupportedMetricsMap map[string]TechnologySupportedMetrics = map[string]TechnologySupportedMetrics{
+	TechnologyOracleDatabase: {
 		Product: TechnologyOracleDatabase,
 		Metrics: []string{"work", "version"},
 	},
