@@ -891,7 +891,6 @@ components:
     Alert:
       title: Alert
       type: object
-      x-examples:
         example-1:
           AlertAffectedTechnology: null
           AlertCategory: AGENT
@@ -926,28 +925,28 @@ components:
             - SYSTEM
             - AGENT
             - LICENSE
-          description: 'contains: "ENGINE", "AGENT", "LICENSE"'
+          description: ''
         AlertAffectedTechnology:
           nullable: true
           type: string
           enum:
             - Oracle/Database
             - Oracle/Exadata
-          description: '"NULL" for now '
+          description: ''
         AlertStatus:
           type: string
           enum:
             - NEW
             - ACK
           example: NEW
-          description: '"NEW", "ACK"'
+          description: ''
         AlertSeverity:
           type: string
           enum:
             - WARNING
             - CRITICAL
             - INFO
-          description: '"WARNING", "CRITICAL", "INFO"'
+          description: ''
         AlertCode:
           type: string
           enum:
@@ -956,7 +955,7 @@ components:
             - NEW_LICENSE
             - NEW_SERVER
             - NO_DATA
-          description: '"NEW_DATABASE", "NEW_OPTION", "NEW_LICENSE", "NEW_SERVER", "NO_DATA"'
+          description: ''
         _id:
           type: string
           description: ID of the alert
@@ -1044,37 +1043,48 @@ components:
         Microsoft/SQLServer:
           type: boolean
           nullable: true
+        example-1: {}
     TechnologyStatus:
       type: object
-      title: ''
       properties:
         Product:
           type: string
+          description: technologial product code
         HostsCount:
           type: integer
+          description: number of hosts found supporting the current product / total hosts found
         Compliance:
           type: number
+          description: "a metric ranging [0..1] calculated as follows:\nif a ULA exists for a given product, its compliance := 1. \n\nWhen calculating the total, this product's purchasedLicenses := usedLicenses\nelse if usedLicenses <= purchasedLicenses the product's compliance := 1. \n\nWhen calculating the total, this product's purchasedLicenses := usedLicenses \nelse this product's compliance := purchasedLicenses / usedLicenses."
         UnpaidDues:
           type: number
+          description: |-
+            "unpaidDues" = difference between calculated cost of used and purchased licenses:
+
+            if usedLicensesCost <= purchasedLicensesCost, then unpaidDues := 0
+            else unpaidDues := usedLicensesCost - purchasedLicensesCost
       required:
         - Product
         - HostsCount
         - Compliance
         - UnpaidDues
+        example-1: {}
     AllTechnologyComplianceStatus:
       type: object
+      properties:
+        HostsCount:
+          type: integer
+          description: sum of hostsCount
+        Compliance:
+          type: number
+          description: sum(purchasedLicenses) / sum(usedLicenses) fore each product
+        UnpaidDues:
+          type: number
+          description: sum of unpaidDues
       required:
         - HostsCount
         - Compliance
         - UnpaidDues
-      properties:
-        HostsCount:
-          type: integer
-        Compliance:
-          type: number
-        UnpaidDues:
-          type: number
-      description: ''
     AggregatedCodeSeverityAlerts:
       type: object
       required:
@@ -2050,7 +2060,7 @@ paths:
   /alerts:
     get:
       summary: search alerts
-      description: 'This API fetches all alerts. The parameters in version 2.0 are not used since all filters are executed by the frontend. This API is also called by the Dashboard. '
+      description: 'This API fetches all alerts. The parameters in version 2.0 are not used since all filters are executed by the frontend.'
       tags:
         - api-service
         - fe-user
@@ -3608,7 +3618,7 @@ paths:
                     properties:
                       technologies:
                         type: array
-                        description: All available technologies must be returned by default with values at zero if not used.
+                        description: All available technologies that can be monitored by Ercole.
                         items:
                           $ref: '#/components/schemas/TechnologyStatus'
                       total:
