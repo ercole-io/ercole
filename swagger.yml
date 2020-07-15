@@ -891,19 +891,6 @@ components:
     Alert:
       title: Alert
       type: object
-      x-examples:
-        example-1:
-          AlertAffectedTechnology: null
-          AlertCategory: AGENT
-          AlertCode: NO_DATA
-          AlertSeverity: CRITICAL
-          AlertStatus: NEW
-          Date: '2020-07-08T06:15:24.391Z'
-          Description: No data received from the host publicitate-36d06ca83eafa454423d2097f4965517 in the last 0 days
-          Hostname: publicitate-36d06ca83eafa454423d2097f4965517
-          OtherInfo:
-            Hostname: publicitate-36d06ca83eafa454423d2097f4965517
-          _id: 5f05647c682a867d4bdb28a1
       properties:
         OtherInfo:
           type: object
@@ -1038,8 +1025,6 @@ components:
         Microsoft/SQLServer:
           type: boolean
           nullable: true
-      x-examples:
-        example-1: {}
     TechnologyStatus:
       type: object
       properties:
@@ -1063,8 +1048,6 @@ components:
         - HostsCount
         - Compliance
         - UnpaidDues
-      x-examples:
-        example-1: {}
     AllTechnologyComplianceStatus:
       type: object
       properties:
@@ -2133,62 +2116,11 @@ paths:
                         items:
                           $ref: '#/components/schemas/Alert'
                       Metadata:
-                        type: object
-                        properties:
-                          Empty:
-                            type: boolean
-                          First:
-                            type: boolean
-                          Last:
-                            type: boolean
-                          Number:
-                            type: integer
-                            description: 'The Page number '
-                          Size:
-                            type: integer
-                            description: How many hosts per page
-                          TotalElements:
-                            type: integer
-                          TotalPages:
-                            type: integer
+                        $ref: '#/components/schemas/PageMetadata'
                   - type: array
                     items:
                       $ref: '#/components/schemas/AggregatedCodeSeverityAlerts'
-              examples:
-                example-1:
-                  value:
-                    content:
-                      - _id: 5f0d6161cb1ec248b08e332f
-                        alertAffectedTechnology: Oracle/Database
-                        alertCategory: LICENSE
-                        alertCode: NEW_DATABASE
-                        alertSeverity: INFO
-                        alertStatus: NEW
-                        date: '2020-07-14T07:40:17.245Z'
-                        description: "The database 'rudeboy-fb3160a04ffea22b55555bbb58137f77' was created on the server publicitate-36d06ca83eafa454423d2097f4965517"
-                        hostname: publicitate-36d06ca83eafa454423d2097f4965517
-                        otherInfo:
-                          dbname: rudeboy-fb3160a04ffea22b55555bbb58137f77
-                          hostname: publicitate-36d06ca83eafa454423d2097f4965517
-                      - _id: 5f0d6161cb1ec248b08e3330
-                        alertAffectedTechnology: Oracle/Database
-                        alertCategory: LICENSE
-                        alertCode: NEW_LICENSE
-                        alertSeverity: CRITICAL
-                        alertStatus: NEW
-                        date: '2020-07-14T07:40:17.245Z'
-                        description: A new Enterprise license has been enabled to publicitate-36d06ca83eafa454423d2097f4965517
-                        hostname: publicitate-36d06ca83eafa454423d2097f4965517
-                        otherInfo:
-                          hostname: publicitate-36d06ca83eafa454423d2097f4965517
-                    metadata:
-                      empty: false
-                      first: false
-                      last: false
-                      number: 2
-                      size: 4
-                      totalElements: 113
-                      totalPages: 28
+              examples: {}
         '401':
           $ref: '#/components/responses/error'
           description: Unauthorized
