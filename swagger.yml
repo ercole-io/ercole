@@ -2251,9 +2251,9 @@ paths:
           type: string
         required: true
         description: alert id
-    delete:
-      summary: AckAlert ack the specified alert in the request
-      description: AckAlert ack the specified alert in the request
+    post:
+      summary: Update status of specified alert to ACK
+      description: Update status of specified alert to ACK
       tags:
         - api-service
         - fe-user
