@@ -916,7 +916,7 @@ components:
               description: The name of the host
         Hostname:
           type: string
-          description: The name of the host(probably a bug)
+          description: The name of the host
         Description:
           type: string
           description: 'The message alert receive from the host at that time '
@@ -1070,7 +1070,7 @@ components:
       properties:
         HostsCount:
           type: integer
-          description: sum of hostsCount
+          description: number of hosts
         Compliance:
           type: number
           description: sum(purchasedLicenses) / sum(usedLicenses) fore each product
@@ -3622,7 +3622,10 @@ paths:
                     $ref: '#/components/schemas/Features'
                   technologies:
                     type: object
-                    description: Available technologies
+                    description: Supported technologies
+                    required:
+                      - technologies
+                      - total
                     properties:
                       technologies:
                         type: array
@@ -3631,6 +3634,9 @@ paths:
                           $ref: '#/components/schemas/TechnologyStatus'
                       total:
                         $ref: '#/components/schemas/AllTechnologyComplianceStatus'
+                required:
+                  - Features
+                  - technologies
               examples:
                 example-1:
                   value:
