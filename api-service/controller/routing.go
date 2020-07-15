@@ -91,7 +91,7 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/licenses/{name}/cost-per-processor", ctrl.SetLicenseCostPerProcessor).Methods("PUT")
 	router.HandleFunc("/licenses/{name}/unlimited-status", ctrl.SetLicenseUnlimitedStatus).Methods("PUT")
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")
-	router.HandleFunc("/alerts/{id}", ctrl.AckAlert).Methods("DELETE")
+	router.HandleFunc("/alerts/{id}", ctrl.AckAlert).Methods("POST")
 
 	setupSettingsRoutes(router.PathPrefix("/settings").Subrouter(), ctrl)
 	setupFrontendAPIRoutes(router.PathPrefix("/frontend").Subrouter(), ctrl)
