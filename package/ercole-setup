@@ -39,7 +39,7 @@ if [ -z $API_SERVICE_REMOTE_ENDPOINT ]; then
 	echo "APIService.RemoteEndpoint = \"$API_SERVICE_REMOTE_ENDPOINT\"" >> /etc/ercole/conf.d/20-ercolesetup.toml
 fi
 if [ -z $CHART_SERVICE_REMOTE_ENDPOINT ]; then
-	CHART_SERVICE_REMOTE_ENDPOINT="http://$CURRENT_IP_ADDRESS:11113"
+	CHART_SERVICE_REMOTE_ENDPOINT="http://$CURRENT_IP_ADDRESS:11116"
 	echo "ChartService.RemoteEndpoint = \"$CHART_SERVICE_REMOTE_ENDPOINT\"" >> /etc/ercole/conf.d/20-ercolesetup.toml
 fi
 if [ -z $REPO_SERVICE_HTTP_REMOTE_ENDPOINT ]; then
