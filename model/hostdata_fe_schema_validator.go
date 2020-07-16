@@ -642,7 +642,9 @@ var FrontendHostdataSchemaValidator string = `
                                                                                 "Archivelog",
                                                                                 "Full",
                                                                                 "Level0",
-                                                                                "Level1"
+                                                                                "Level1",
+                                                                                "Incr Lvl 0",
+                                                                                "Incr Lvl 1"
                                                                             ]
                                                                         },
                                                                         "hour": {
