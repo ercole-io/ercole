@@ -139,11 +139,11 @@ func (ctrl *APIController) SearchClustersXLSX(w http.ResponseWriter, r *http.Req
 
 	//Add the data to the sheet
 	for i, val := range clusters {
-		sheets.SetCellValue("Hypervisor", fmt.Sprintf("A%d", i+2), val["Name"])
-		sheets.SetCellValue("Hypervisor", fmt.Sprintf("B%d", i+2), val["Type"])
-		sheets.SetCellValue("Hypervisor", fmt.Sprintf("C%d", i+2), val["CPU"])
-		sheets.SetCellValue("Hypervisor", fmt.Sprintf("D%d", i+2), val["Sockets"])
-		sheets.SetCellValue("Hypervisor", fmt.Sprintf("E%d", i+2), val["VirtualizationNodes"])
+		sheets.SetCellValue("Hypervisor", fmt.Sprintf("A%d", i+2), val["name"])
+		sheets.SetCellValue("Hypervisor", fmt.Sprintf("B%d", i+2), val["type"])
+		sheets.SetCellValue("Hypervisor", fmt.Sprintf("C%d", i+2), val["cpu"])
+		sheets.SetCellValue("Hypervisor", fmt.Sprintf("D%d", i+2), val["sockets"])
+		sheets.SetCellValue("Hypervisor", fmt.Sprintf("E%d", i+2), val["virtualizationNodes"])
 	}
 
 	//Write it to the response

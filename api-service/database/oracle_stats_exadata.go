@@ -34,11 +34,11 @@ func (md *MongoDatabase) GetTotalOracleExadataMemorySizeStats(location string, e
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$Features.Oracle.Exadata.Components"),
-			mu.APReplaceWith("$Features.Oracle.Exadata.Components"),
+			mu.APUnwind("$features.oracle.exadata.components"),
+			mu.APReplaceWith("$features.oracle.exadata.components"),
 			mu.APGroup(bson.M{
 				"_id":   0,
-				"Value": mu.APOSum("$Memory"),
+				"value": mu.APOSum("$memory"),
 			}),
 		),
 	)
@@ -57,7 +57,7 @@ func (md *MongoDatabase) GetTotalOracleExadataMemorySizeStats(location string, e
 		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return float64(out["Value"]), nil
+	return float64(out["value"]), nil
 }
 
 // GetTotalOracleExadataCPUStats return the total cpu of exadata
@@ -70,11 +70,11 @@ func (md *MongoDatabase) GetTotalOracleExadataCPUStats(location string, environm
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
-			mu.APUnwind("$Features.Oracle.Exadata.Components"),
+			mu.APUnwind("$features.oracle.exadata.components"),
 			mu.APGroup(bson.M{
 				"_id":     0,
-				"Running": mu.APOSum("$Features.Oracle.Exadata.Components.RunningCPUCount"),
-				"Total":   mu.APOSum("$Features.Oracle.Exadata.Components.TotalCPUCount"),
+				"running": mu.APOSum("$features.oracle.exadata.components.runningCPUCount"),
+				"total":   mu.APOSum("$features.oracle.exadata.components.totalCPUCount"),
 			}),
 			mu.APUnset("_id"),
 		),
@@ -87,8 +87,8 @@ func (md *MongoDatabase) GetTotalOracleExadataCPUStats(location string, environm
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
 		return map[string]interface{}{
-			"Running": 0,
-			"Total":   0,
+			"running": 0,
+			"total":   0,
 		}, nil
 	}
 
@@ -111,37 +111,37 @@ func (md *MongoDatabase) GetAverageOracleExadataStorageUsageStats(location strin
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APProject(bson.M{
-				"Value": mu.APOReduce("$Features.Oracle.Exadata.Components", bson.M{"Count": 0, "Sum": 0},
+				"value": mu.APOReduce("$features.oracle.exadata.components", bson.M{"count": 0, "sum": 0},
 					mu.APOLet(
 						bson.M{
 							"part": mu.APOIfNull(
-								mu.APOReduce("$$this.CellDisks", bson.M{"Count": 0, "Sum": 0},
+								mu.APOReduce("$$this.cellDisks", bson.M{"count": 0, "sum": 0},
 									bson.M{
-										"Count": mu.APOAdd("$$value.Count", 1),
-										"Sum": mu.APOAdd(
-											"$$value.Sum",
-											"$$this.UsedPerc",
+										"count": mu.APOAdd("$$value.count", 1),
+										"sum": mu.APOAdd(
+											"$$value.sum",
+											"$$this.usedPerc",
 										),
 									},
 								),
-								bson.M{"Count": 0, "Sum": 0},
+								bson.M{"count": 0, "sum": 0},
 							),
 						},
 						bson.M{
-							"Count": mu.APOAdd("$$value.Count", "$$part.Count"),
-							"Sum":   mu.APOAdd("$$value.Sum", "$$part.Sum"),
+							"count": mu.APOAdd("$$value.count", "$$part.count"),
+							"sum":   mu.APOAdd("$$value.sum", "$$part.sum"),
 						},
 					),
 				),
 			}),
 			mu.APGroup(bson.M{
 				"_id":   0,
-				"Count": mu.APOSum("$Value.Count"),
-				"Sum":   mu.APOSum("$Value.Sum"),
+				"count": mu.APOSum("$value.count"),
+				"sum":   mu.APOSum("$value.sum"),
 			}),
 			mu.APProject(bson.M{
 				"_id":   0,
-				"Value": mu.APODivide("$Sum", "$Count"),
+				"value": mu.APODivide("$sum", "$count"),
 			}),
 		),
 	)
@@ -160,7 +160,7 @@ func (md *MongoDatabase) GetAverageOracleExadataStorageUsageStats(location strin
 		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return float64(out["Value"]), nil
+	return float64(out["value"]), nil
 }
 
 // GetOracleExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
@@ -174,19 +174,19 @@ func (md *MongoDatabase) GetOracleExadataStorageErrorCountStatusStats(location s
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APProject(bson.M{
-				"Devs": mu.APOMap(
-					mu.APOFilter("$Features.Oracle.Exadata.Components", "dev",
-						mu.APOEqual("$$dev.ServerType", "StorageServer"),
+				"devs": mu.APOMap(
+					mu.APOFilter("$features.oracle.exadata.components", "dev",
+						mu.APOEqual("$$dev.serverType", "StorageServer"),
 					),
 					"dev",
-					mu.APOMap("$$dev.CellDisks", "cd", mu.APOGreater("$$cd.ErrCount", 0)),
+					mu.APOMap("$$dev.cellDisks", "cd", mu.APOGreater("$$cd.errCount", 0)),
 				),
 			}),
-			mu.APUnwind("$Devs"),
-			mu.APUnwind("$Devs"),
-			mu.APGroupAndCountStages("Failing", "Count", "$Devs"),
+			mu.APUnwind("$devs"),
+			mu.APUnwind("$devs"),
+			mu.APGroupAndCountStages("failing", "count", "$devs"),
 			mu.APSort(bson.M{
-				"Failing": 1,
+				"failing": 1,
 			}),
 		),
 	)
@@ -216,17 +216,17 @@ func (md *MongoDatabase) GetOracleExadataPatchStatusStats(location string, envir
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APProject(bson.M{
-				"Status": mu.APOMap("$Features.Oracle.Exadata.Components", "dev",
+				"status": mu.APOMap("$features.oracle.exadata.components", "dev",
 					mu.APOGreater(
-						mu.APODateFromString("$$dev.SwReleaseDate", "%Y-%m-%d"),
+						mu.APODateFromString("$$dev.swReleaseDate", "%Y-%m-%d"),
 						windowTime,
 					),
 				),
 			}),
-			mu.APUnwind("$Status"),
-			mu.APGroupAndCountStages("Status", "Count", "$Status"),
+			mu.APUnwind("$status"),
+			mu.APGroupAndCountStages("status", "count", "$status"),
 			mu.APSort(bson.M{
-				"Status": 1,
+				"status": 1,
 			}),
 		),
 	)

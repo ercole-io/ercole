@@ -24,9 +24,9 @@ import (
 
 // OracleDatabaseLicense holds information about a Oracle database license
 type OracleDatabaseLicense struct {
-	Name      string                 `bson:"Name"`
-	Count     float64                `bson:"Count"`
-	OtherInfo map[string]interface{} `bson:"-"`
+	Name      string                 `json:"name" bson:"name"`
+	Count     float64                `json:"count" bson:"count"`
+	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -53,16 +53,16 @@ func (v *OracleDatabaseLicense) UnmarshalBSON(data []byte) error {
 var OracleDatabaseLicenseBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Name",
-		"Count",
+		"name",
+		"count",
 	},
 	"properties": bson.M{
-		"Name": bson.M{
+		"name": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 32,
 		},
-		"Count": bson.M{
+		"count": bson.M{
 			"bsonType": "number",
 			"minimum":  0,
 		},

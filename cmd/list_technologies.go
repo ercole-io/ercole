@@ -16,11 +16,11 @@
 package cmd
 
 func init() {
-	listTechnologiesCmd := simpleAPIRequestCommand("list-technologies",
+	listTechnologiesCmd := simpleSingleValueAPIRequestCommand("list-technologies",
 		"List current technologies",
 		`list-technologies list the informations about the technologies`,
-		false, []apiOption{locationOption, environmentOption, sortingOptions, olderThanOptions}, false,
-		"/hosts/technologies",
+		false, false, false, false,
+		"/settings/technologies",
 		"Failed to list technologies data: %v\n",
 		"Failed to list technologies data(Status: %d): %s\n",
 	)

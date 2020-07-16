@@ -1,94 +1,94 @@
 {
-    "AgentVersion": "latest",
-    "Archived": true,
-    "ClusterMembershipStatus": {
-        "HACMP": false,
-        "OracleClusterware": false,
-        "SunCluster": false,
-        "VeritasClusterServer": false
+    "agentVersion": "latest",
+    "archived": true,
+    "clusterMembershipStatus": {
+        "hacmp": false,
+        "oracleClusterware": false,
+        "sunCluster": false,
+        "veritasClusterServer": false
     },
-    "Clusters": null,
-    "CreatedAt": {
+    "clusters": null,
+    "createdAt": {
         "$date": {
             "$numberLong": "1587728976435"
         }
     },
-    "Environment": "TST",
-    "Features": {
-        "Oracle": null
+    "environment": "TST",
+    "features": {
+        "oracle": null
     },
-    "Filesystems": [
+    "filesystems": [
         {
-            "AvailableSpace": {
+            "availableSpace": {
                 "$numberLong": "5798205849"
             },
-            "Filesystem": "/dev/mapper/cl_itl--csllab--112-root",
-            "MountedOn": "/",
-            "Size": {
+            "filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+            "mountedOn": "/",
+            "size": {
                 "$numberLong": "13958643712"
             },
-            "Type": "ext4",
-            "UsedSpace": {
+            "type": "ext4",
+            "usedSpace": {
                 "$numberLong": "7194070220"
             }
         },
         {
-            "AvailableSpace": {
+            "availableSpace": {
                 "$numberLong": "335544320"
             },
-            "Filesystem": "/dev/sda1",
-            "MountedOn": "/boot",
-            "Size": {
+            "filesystem": "/dev/sda1",
+            "mountedOn": "/boot",
+            "size": {
                 "$numberLong": "511705088"
             },
-            "Type": "ext4",
-            "UsedSpace": {
+            "type": "ext4",
+            "usedSpace": {
                 "$numberLong": "139460608"
             }
         }
     ],
-    "Hostname": "test-small",
-    "Info": {
-        "CPUCores": {
+    "hostname": "test-small",
+    "info": {
+        "cpuCores": {
             "$numberInt": "1"
         },
-        "CPUFrequency": "2.53GHz",
-        "CPUModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-        "CPUSockets": {
+        "cpuFrequency": "2.53GHz",
+        "cpuModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+        "cpuSockets": {
             "$numberInt": "2"
         },
-        "CPUThreads": {
+        "cpuThreads": {
             "$numberInt": "2"
         },
-        "CoresPerSocket": {
+        "coresPerSocket": {
             "$numberInt": "1"
         },
-        "HardwareAbstraction": "VIRT",
-        "HardwareAbstractionTechnology": "VMWARE",
-        "Hostname": "test-small",
-        "Kernel": "Linux",
-        "KernelVersion": "3.10.0-514.el7.x86_64",
-        "MemoryTotal": {
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "VMWARE",
+        "hostname": "test-small",
+        "kernel": "Linux",
+        "kernelVersion": "3.10.0-514.el7.x86_64",
+        "memoryTotal": {
             "$numberDouble": "3.0"
         },
-        "OS": "Red Hat Enterprise Linux",
-        "OSVersion": "7.6",
-        "SwapTotal": {
+        "os": "Red Hat Enterprise Linux",
+        "osVersion": "7.6",
+        "swapTotal": {
             "$numberDouble": "1.0"
         },
-        "ThreadsPerCore": {
+        "threadsPerCore": {
             "$numberInt": "2"
         }
     },
-    "Location": "Germany",
-    "SchemaVersion": {
+    "location": "Germany",
+    "schemaVersion": {
         "$numberDouble": "1.0"
     },
-    "ServerSchemaVersion": {
+    "serverSchemaVersion": {
         "$numberInt": "1"
     },
-    "ServerVersion": "latest",
-    "Tags": [],
+    "serverVersion": "latest",
+    "tags": [],
     "_id": {
         "$oid": "5ea2d25020d55cbdc35022b3"
     }

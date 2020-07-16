@@ -43,7 +43,7 @@ func TestSearchOracleDatabaseAddms_JSONPaged(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Content": []interface{}{
+		"content": []interface{}{
 			map[string]interface{}{
 				"Action":         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
 				"Benefit":        83.34,
@@ -276,27 +276,27 @@ func TestSearchOracleDatabaseAddms_XLSXSuccess(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"Action":         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
-			"Benefit":        83.34,
-			"CreatedAt":      utils.P("2020-07-01T09:18:03.726+02:00"),
-			"Dbname":         "ERCOLE",
-			"Environment":    "TST",
-			"Finding":        "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
-			"Hostname":       "test-db",
-			"Location":       "Germany",
-			"Recommendation": "SQL Tuning",
+			"action":         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
+			"benefit":        83.34,
+			"createdAt":      utils.P("2020-07-01T09:18:03.726+02:00"),
+			"dbname":         "ERCOLE",
+			"environment":    "TST",
+			"finding":        "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
+			"hostname":       "test-db",
+			"location":       "Germany",
+			"recommendation": "SQL Tuning",
 			"_id":            utils.Str2oid("5efc38ab79f92e4cbf283b13"),
 		},
 		{
-			"Action":         "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
-			"Benefit":        68.24,
-			"CreatedAt":      utils.P("2020-07-01T09:18:03.726+02:00"),
-			"Dbname":         "ERCOLE",
-			"Environment":    "TST",
-			"Finding":        "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
-			"Hostname":       "test-db",
-			"Location":       "Germany",
-			"Recommendation": "Segment Tuning",
+			"action":         "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
+			"benefit":        68.24,
+			"createdAt":      utils.P("2020-07-01T09:18:03.726+02:00"),
+			"dbname":         "ERCOLE",
+			"environment":    "TST",
+			"finding":        "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
+			"hostname":       "test-db",
+			"location":       "Germany",
+			"recommendation": "Segment Tuning",
 			"_id":            utils.Str2oid("5efc38ab79f92e4cbf283b13"),
 		},
 	}
@@ -430,7 +430,7 @@ func TestSearchOracleDatabaseSegmentAdvisors_JSONPaged(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Content": []interface{}{
+		"content": []interface{}{
 			map[string]interface{}{
 				"CreatedAt":      utils.P("2020-04-07T08:52:59.82+02:00"),
 				"Dbname":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
@@ -671,31 +671,31 @@ func TestSearchOracleDatabaseSegmentAdvisors_XLSXSuccess(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"CreatedAt":      utils.P("2020-07-01T09:18:03.704+02:00"),
-			"Dbname":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"Environment":    "SVIL",
-			"Hostname":       "publicitate-36d06ca83eafa454423d2097f4965517",
-			"Location":       "Germany",
-			"PartitionName":  "",
-			"Reclaimable":    0.5,
-			"Recommendation": "3d7e603f515ed171fc99bdb908f38fb2",
-			"SegmentName":    "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3",
-			"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-			"SegmentType":    "TABLE",
+			"createdAt":      utils.P("2020-07-01T09:18:03.704+02:00"),
+			"dbname":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"environment":    "SVIL",
+			"hostname":       "publicitate-36d06ca83eafa454423d2097f4965517",
+			"location":       "Germany",
+			"partitionName":  "",
+			"reclaimable":    0.5,
+			"recommendation": "3d7e603f515ed171fc99bdb908f38fb2",
+			"segmentName":    "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3",
+			"segmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+			"segmentType":    "TABLE",
 			"_id":            utils.Str2oid("5efc38ab79f92e4cbf283b04"),
 		},
 		{
-			"CreatedAt":      utils.P("2020-07-01T09:18:03.726+02:00"),
-			"Dbname":         "ERCOLE",
-			"Environment":    "TST",
-			"Hostname":       "test-db",
-			"Location":       "Germany",
-			"PartitionName":  "iyyiuyyoy",
-			"Reclaimable":    0.5,
-			"Recommendation": "32b36a77e7481343ef175483c086859e",
-			"SegmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-			"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-			"SegmentType":    "TABLE",
+			"createdAt":      utils.P("2020-07-01T09:18:03.726+02:00"),
+			"dbname":         "ERCOLE",
+			"environment":    "TST",
+			"hostname":       "test-db",
+			"location":       "Germany",
+			"partitionName":  "iyyiuyyoy",
+			"reclaimable":    0.5,
+			"recommendation": "32b36a77e7481343ef175483c086859e",
+			"segmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+			"segmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+			"segmentType":    "TABLE",
 			"_id":            utils.Str2oid("5efc38ab79f92e4cbf283b13"),
 		},
 	}
@@ -857,7 +857,7 @@ func TestSearchOracleDatabasePatchAdvisors_JSONPaged(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Content": []interface{}{
+		"content": []interface{}{
 			map[string]interface{}{
 				"CreatedAt":   utils.P("2020-04-07T08:52:59.82+02:00"),
 				"Date":        utils.P("2012-04-16T02:00:00+02:00"),
@@ -1132,27 +1132,27 @@ func TestSearchOracleDatabasePatchAdvisors_XLSXSuccess(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"CreatedAt":   utils.P("2020-07-01T09:18:03.704+02:00"),
-			"Date":        utils.PDT("2012-04-16T02:00:00+02:00"),
-			"Dbname":      "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"Dbver":       "11.2.0.3.0 Enterprise Edition",
-			"Description": "PSU 11.2.0.3.2",
-			"Environment": "SVIL",
-			"Hostname":    "publicitate-36d06ca83eafa454423d2097f4965517",
-			"Location":    "Germany",
-			"Status":      "KO",
+			"createdAt":   utils.P("2020-07-01T09:18:03.704+02:00"),
+			"date":        utils.PDT("2012-04-16T02:00:00+02:00"),
+			"dbname":      "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"dbver":       "11.2.0.3.0 Enterprise Edition",
+			"description": "PSU 11.2.0.3.2",
+			"environment": "SVIL",
+			"hostname":    "publicitate-36d06ca83eafa454423d2097f4965517",
+			"location":    "Germany",
+			"status":      "KO",
 			"_id":         utils.Str2oid("5efc38ab79f92e4cbf283b04"),
 		},
 		{
-			"CreatedAt":   utils.P("2020-04-07T08:52:59.872+02:00"),
-			"Date":        utils.PDT("2012-04-16T02:00:00+02:00"),
-			"Dbname":      "ERCOLE",
-			"Dbver":       "12.2.0.1.0 Enterprise Edition",
-			"Description": "PSU 11.2.0.3.2",
-			"Environment": "TST",
-			"Hostname":    "test-db",
-			"Location":    "Germany",
-			"Status":      "KO",
+			"createdAt":   utils.P("2020-04-07T08:52:59.872+02:00"),
+			"date":        utils.PDT("2012-04-16T02:00:00+02:00"),
+			"dbname":      "ERCOLE",
+			"dbver":       "12.2.0.1.0 Enterprise Edition",
+			"description": "PSU 11.2.0.3.2",
+			"environment": "TST",
+			"hostname":    "test-db",
+			"location":    "Germany",
+			"status":      "KO",
 			"_id":         utils.Str2oid("5e8c234b24f648a08585bd43"),
 		},
 	}
@@ -1354,7 +1354,7 @@ func TestSearchOracleDatabases_JSONPaged(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Content": []interface{}{
+		"content": []interface{}{
 			map[string]interface{}{
 				"ArchiveLogStatus": false,
 				"BlockSize":        "8192",
@@ -1648,47 +1648,47 @@ func TestSearchOracleDatabases_XLSXSuccess(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"Archivelog":   true,
-			"BlockSize":    8192,
-			"CPUCount":     16,
-			"Charset":      "AL32UTF8",
-			"CreatedAt":    utils.P("2020-07-01T09:18:03.704+02:00"),
-			"DatafileSize": 61,
-			"Dataguard":    false,
-			"Environment":  "SVIL",
-			"HA":           false,
-			"Hostname":     "publicitate-36d06ca83eafa454423d2097f4965517",
-			"Location":     "Germany",
-			"Memory":       4.199,
-			"Name":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"RAC":          false,
-			"SegmentsSize": 41,
-			"Status":       "OPEN",
-			"UniqueName":   "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"Version":      "11.2.0.3.0 Enterprise Edition",
-			"Work":         1,
+			"archivelog":   true,
+			"blockSize":    8192,
+			"cpuCount":     16,
+			"charset":      "AL32UTF8",
+			"createdAt":    utils.P("2020-07-01T09:18:03.704+02:00"),
+			"datafileSize": 61,
+			"dataguard":    false,
+			"environment":  "SVIL",
+			"ha":           false,
+			"hostname":     "publicitate-36d06ca83eafa454423d2097f4965517",
+			"location":     "Germany",
+			"memory":       4.199,
+			"name":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"rac":          false,
+			"segmentsSize": 41,
+			"status":       "OPEN",
+			"uniqueName":   "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			"version":      "11.2.0.3.0 Enterprise Edition",
+			"work":         1,
 			"_id":          utils.Str2oid("5efc38ab79f92e4cbf283b04"),
 		},
 		{
-			"Archivelog":   false,
-			"BlockSize":    8192,
-			"CPUCount":     2,
-			"Charset":      "AL32UTF8",
-			"CreatedAt":    utils.P("2020-07-01T09:18:03.726+02:00"),
-			"DatafileSize": 6,
-			"Dataguard":    false,
-			"Environment":  "TST",
-			"HA":           false,
-			"Hostname":     "test-db",
-			"Location":     "Germany",
-			"Memory":       1.484,
-			"Name":         "ERCOLE",
-			"RAC":          false,
-			"SegmentsSize": 3,
-			"Status":       "OPEN",
-			"UniqueName":   "ERCOLE",
-			"Version":      "12.2.0.1.0 Enterprise Edition",
-			"Work":         nil,
+			"archivelog":   false,
+			"blockSize":    8192,
+			"cpuCount":     2,
+			"charset":      "AL32UTF8",
+			"createdAt":    utils.P("2020-07-01T09:18:03.726+02:00"),
+			"datafileSize": 6,
+			"dataguard":    false,
+			"environment":  "TST",
+			"ha":           false,
+			"hostname":     "test-db",
+			"location":     "Germany",
+			"memory":       1.484,
+			"name":         "ERCOLE",
+			"rac":          false,
+			"segmentsSize": 3,
+			"status":       "OPEN",
+			"uniqueName":   "ERCOLE",
+			"version":      "12.2.0.1.0 Enterprise Edition",
+			"work":         nil,
 			"_id":          utils.Str2oid("5efc38ab79f92e4cbf283b13"),
 		},
 	}
@@ -1867,7 +1867,7 @@ func TestListLicenses_JSONPaged(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"Content": []interface{}{
+		"content": []interface{}{
 			map[string]interface{}{
 				"Compliance": false,
 				"Count":      0,

@@ -95,8 +95,8 @@ func (ap *LDAPAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(usernam
 // GetToken return the middleware used to check if the users are authenticated
 func (ap *LDAPAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.Request) {
 	type LoginRequest struct {
-		Username string
-		Password string
+		Username string `json:"username"`
+		Password string `json:"password"`
 	}
 
 	var err error

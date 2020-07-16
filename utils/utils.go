@@ -16,6 +16,7 @@
 package utils
 
 import (
+	"context"
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
@@ -32,6 +33,7 @@ import (
 	"github.com/ercole-io/ercole/model"
 	"github.com/robertkrimen/otto"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 var MIN_TIME time.Time = time.Unix(0, 0)
@@ -57,6 +59,26 @@ func FromJSON(str []byte) interface{} {
 	var out map[string]interface{}
 	json.Unmarshal(str, &out)
 	return out
+}
+
+//ToJSONMongoCursor extract all items from a cursors and return its json rappresentation
+func ToJSONMongoCursor(cur *mongo.Cursor) string {
+	var out []map[string]interface{} = make([]map[string]interface{}, 0)
+	//Decode the documents
+	for cur.Next(context.TODO()) {
+		var item map[string]interface{}
+		if err := cur.Decode(&item); err != nil {
+			panic(err)
+		}
+		out = append(out, item)
+	}
+	return ToIdentedJSON(out)
+}
+
+//ToIdentedJSON convert v to a string containing the equivalent idented json rappresentation
+func ToIdentedJSON(v interface{}) string {
+	raw, _ := json.MarshalIndent(v, "", "  ")
+	return string(raw)
 }
 
 //Intptr return a point to the int passed in the argument

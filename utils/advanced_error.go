@@ -35,13 +35,13 @@ type AdvancedErrorInterface interface {
 // AdvancedError is a struct that contains informations and class about a error
 type AdvancedError struct {
 	// Err contains the base error of the AdvancedError
-	Err error
+	Err error `json:"err"`
 	// Class contains the class of the error
-	Class string
+	Class string `json:"class"`
 	// File contains the filename of the source code where the error was detected
-	Source string
+	Source string `json:"source"`
 	// LineNumber contains the number of the line where the error was detected
-	Line int
+	Line int `json:"line"`
 }
 
 // Error return the representation string of the error

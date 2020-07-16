@@ -15,43 +15,45 @@
 
 package model
 
+//TODO
+
 var FrontendHostdataSchemaValidator string = `
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "ercole-hostdata",
     "type": "object",
     "required": [
-        "Hostname",
-        "Location",
-        "Environment",
-        "Tags",
-        "AgentVersion",
-        "SchemaVersion",
-        "Info",
-        "ClusterMembershipStatus",
-        "Features",
-        "Filesystems"
+        "hostname",
+        "location",
+        "environment",
+        "tags",
+        "agentVersion",
+        "schemaVersion",
+        "info",
+        "clusterMembershipStatus",
+        "features",
+        "filesystems"
     ],
     "properties": {
-        "Hostname": {
+        "hostname": {
             "type": "string",
             "minLength": 1,
             "maxLength": 253,
             "format": "idn-hostname"
         },
-        "Location": {
+        "location": {
             "type": "string",
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[a-zA-Z0-9-]+$"
         },
-        "Environment": {
+        "environment": {
             "type": "string",
             "minLength": 1,
             "maxLength": 16,
             "pattern": "^[A-Z0-9]+$"
         },
-        "Tags": {
+        "tags": {
             "type": "array",
             "items": {
                 "type": "string",
@@ -61,278 +63,285 @@ var FrontendHostdataSchemaValidator string = `
             },
             "uniqueItems": true
         },
-        "AgentVersion": {
+        "agentVersion": {
             "type": "string",
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^(([0-9]+([.][0-9]+)*)|(git-[0-9a-f]+)|(latest))$"
         },
-        "SchemaVersion": {
+        "schemaVersion": {
             "type": "integer",
             "const": 1
         },
-        "Info": {
+        "info": {
             "type": "object",
             "required": [
-                "Hostname",
-                "CPUModel",
-                "CPUFrequency",
-                "CPUSockets",
-                "CPUCores",
-                "CPUThreads",
-                "ThreadsPerCore",
-                "CoresPerSocket",
-                "HardwareAbstraction",
-                "HardwareAbstractionTechnology",
-                "Kernel",
-                "KernelVersion",
-                "OS",
-                "OSVersion",
-                "MemoryTotal",
-                "SwapTotal"
+                "hostname",
+                "cpuModel",
+                "cpuFrequency",
+                "cpuSockets",
+                "cpuCores",
+                "cpuThreads",
+                "threadsPerCore",
+                "coresPerSocket",
+                "hardwareAbstraction",
+                "hardwareAbstractionTechnology",
+                "kernel",
+                "kernelVersion",
+                "os",
+                "osVersion",
+                "memoryTotal",
+                "swapTotal"
             ],
             "properties": {
-                "Hostname": {
+                "hostname": {
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 253,
                     "format": "idn-hostname"
                 },
-                "CPUModel": {
+                "cpuModel": {
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 64,
                     "pattern": "^[^\n]+$"
                 },
-                "CPUFrequency": {
+                "cpuFrequency": {
                     "type": "string",
                     "minLength": 3,
                     "maxLength": 16,
                     "pattern": "^[0-9]+([.][0-9]+)?[ ]*(?i)(GHz|MHz)$"
                 },
-                "CPUSockets": {
+                "cpuSockets": {
                     "type": "integer",
                     "minimum": 0
                 },
-                "CPUCores": {
+                "cpuCores": {
                     "type": "integer",
                     "minimum": 1
                 },
-                "CPUThreads": {
+                "cpuThreads": {
                     "type": "integer",
                     "minimum": 1
                 },
-                "ThreadsPerCore": {
+                "threadsPerCore": {
                     "type": "integer",
                     "minimum": 1
                 },
-                "CoresPerSocket": {
+                "coresPerSocket": {
                     "type": "integer",
                     "minimum": 1
                 },
-                "HardwareAbstraction": {
+                "hardwareAbstraction": {
                     "type": "string",
-                    "enum": ["PH", "VIRT"]
+                    "enum": [
+                        "PH",
+                        "VIRT"
+                    ]
                 },
-                "HardwareAbstractionTechnology": {
+                "hardwareAbstractionTechnology": {
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 32,
                     "pattern": "^[A-Z0-9]+$"
                 },
-                "Kernel": {
+                "kernel": {
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 64
                 },
-                "KernelVersion": {
+                "kernelVersion": {
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 64
                 },
-                "OS": {
+                "os": {
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 64
                 },
-                "OSVersion": {
+                "osVersion": {
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 64
                 },
-                "MemoryTotal": {
+                "memoryTotal": {
                     "type": "number",
                     "minimum": 0
                 },
-                "SwapTotal": {
+                "swapTotal": {
                     "type": "number",
                     "minimum": 0
                 }
             }
         },
-        "ClusterMembershipStatus": {
+        "clusterMembershipStatus": {
             "type": "object",
             "properties": {
-                "OracleClusterware": {
+                "oracleClusterware": {
                     "type": "boolean"
                 },
-                "VeritasClusterServer": {
+                "veritasClusterServer": {
                     "type": "boolean"
                 },
-                "SunCluster": {
+                "sunCluster": {
                     "type": "boolean"
                 },
-                "HACMP": {
+                "hacmp": {
                     "type": "boolean"
                 }
             }
         },
-        "Features": {
+        "features": {
             "type": "object",
             "properties": {
-                "Oracle": {
-                    "anyOf": [{
+                "oracle": {
+                    "anyOf": [
+                        {
                             "type": "null"
                         },
                         {
                             "type": "object",
                             "properties": {
-                                "Database": {
-                                    "anyOf": [{
+                                "database": {
+                                    "anyOf": [
+                                        {
                                             "type": "null"
                                         },
                                         {
                                             "type": "object",
                                             "required": [
-                                                "Databases"
+                                                "databases"
                                             ],
                                             "properties": {
-                                                "Databases": {
+                                                "databases": {
                                                     "type": "array",
                                                     "items": {
                                                         "type": "object",
                                                         "required": [
-                                                            "InstanceNumber",
-                                                            "InstanceName",
-                                                            "Name",
-                                                            "UniqueName",
-                                                            "Status",
-                                                            "IsCDB",
-                                                            "Version",
-                                                            "Platform",
-                                                            "Archivelog",
-                                                            "Charset",
-                                                            "NCharset",
-                                                            "BlockSize",
-                                                            "CPUCount",
-                                                            "SGATarget",
-                                                            "PGATarget",
-                                                            "MemoryTarget",
-                                                            "SGAMaxSize",
-                                                            "SegmentsSize",
-                                                            "DatafileSize",
-                                                            "Allocated",
-                                                            "Elapsed",
-                                                            "DBTime",
-                                                            "DailyCPUUsage",
-                                                            "Work",
-                                                            "ASM",
-                                                            "Dataguard",
-                                                            "Patches",
-                                                            "Tablespaces",
-                                                            "Schemas",
-                                                            "Licenses",
-                                                            "ADDMs",
-                                                            "SegmentAdvisors",
-                                                            "PSUs",
-                                                            "Backups",
-                                                            "FeatureUsageStats",
-                                                            "PDBs",
-                                                            "Services"
+                                                            "instanceNumber",
+                                                            "instanceName",
+                                                            "name",
+                                                            "uniqueName",
+                                                            "status",
+                                                            "isCDB",
+                                                            "version",
+                                                            "platform",
+                                                            "archivelog",
+                                                            "charset",
+                                                            "nCharset",
+                                                            "blockSize",
+                                                            "cpuCount",
+                                                            "sgaTarget",
+                                                            "pgaTarget",
+                                                            "memoryTarget",
+                                                            "sgaMaxSize",
+                                                            "segmentsSize",
+                                                            "datafileSize",
+                                                            "allocated",
+                                                            "elapsed",
+                                                            "dbTime",
+                                                            "dailyCPUUsage",
+                                                            "work",
+                                                            "asm",
+                                                            "dataguard",
+                                                            "patches",
+                                                            "tablespaces",
+                                                            "schemas",
+                                                            "licenses",
+                                                            "addms",
+                                                            "segmentAdvisors",
+                                                            "psus",
+                                                            "backups",
+                                                            "featureUsageStats",
+                                                            "pdbs",
+                                                            "services"
                                                         ],
                                                         "properties": {
-                                                            "InstanceNumber": {
+                                                            "instanceNumber": {
                                                                 "type": "integer",
                                                                 "minimum": 1
                                                             },
-                                                            "InstanceName": {
-                                                                "type": "string",
-                                                                "minLength": 1,
-                                                                "maxLength": 64
-                                                            },"Name": {
+                                                            "instanceName": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 64
                                                             },
-                                                            "UniqueName": {
+                                                            "name": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 64
                                                             },
-                                                            "Status": {
+                                                            "uniqueName": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
+                                                            },
+                                                            "status": {
                                                                 "type": "string",
                                                                 "enum": [
                                                                     "OPEN",
                                                                     "MOUNTED"
                                                                 ]
                                                             },
-                                                            "IsCDB": {
+                                                            "isCDB": {
                                                                 "type": "boolean"
                                                             },
-                                                            "Version": {
+                                                            "version": {
                                                                 "type": "string",
                                                                 "minLength": 8,
                                                                 "maxLength": 64
                                                             },
-                                                            "Platform": {
+                                                            "platform": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 64
                                                             },
-                                                            "Archivelog": {
+                                                            "archivelog": {
                                                                 "type": "boolean"
                                                             },
-                                                            "Charset": {
+                                                            "charset": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 32
                                                             },
-                                                            "NCharset": {
+                                                            "nCharset": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 32
                                                             },
-                                                            "BlockSize": {
+                                                            "blockSize": {
                                                                 "type": "integer",
                                                                 "minimum": 1
                                                             },
-                                                            "CPUCount": {
+                                                            "cpuCount": {
                                                                 "type": "integer",
                                                                 "minimum": 1
                                                             },
-                                                            "SGATarget": {
+                                                            "sgaTarget": {
                                                                 "type": "number"
                                                             },
-                                                            "PGATarget": {
+                                                            "pgaTarget": {
                                                                 "type": "number"
                                                             },
-                                                            "MemoryTarget": {
+                                                            "memoryTarget": {
                                                                 "type": "number"
                                                             },
-                                                            "SGAMaxSize": {
+                                                            "sgaMaxSize": {
                                                                 "type": "number"
                                                             },
-                                                            "SegmentsSize": {
+                                                            "segmentsSize": {
                                                                 "type": "number"
                                                             },
-                                                            "DatafileSize": {
+                                                            "datafileSize": {
                                                                 "type": "number"
                                                             },
-                                                            "Allocated": {
+                                                            "allocated": {
                                                                 "type": "number"
                                                             },
-                                                            "Elapsed": {
-                                                                "anyOf": [{
+                                                            "elapsed": {
+                                                                "anyOf": [
+                                                                    {
                                                                         "type": "null"
                                                                     },
                                                                     {
@@ -340,8 +349,9 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "DBTime": {
-                                                                "anyOf": [{
+                                                            "dbTime": {
+                                                                "anyOf": [
+                                                                    {
                                                                         "type": "null"
                                                                     },
                                                                     {
@@ -349,8 +359,9 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "DailyCPUUsage": {
-                                                                "anyOf": [{
+                                                            "dailyCPUUsage": {
+                                                                "anyOf": [
+                                                                    {
                                                                         "type": "null"
                                                                     },
                                                                     {
@@ -358,8 +369,9 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "Work": {
-                                                                "anyOf": [{
+                                                            "work": {
+                                                                "anyOf": [
+                                                                    {
                                                                         "type": "null"
                                                                     },
                                                                     {
@@ -367,85 +379,85 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "ASM": {
+                                                            "asm": {
                                                                 "type": "boolean"
                                                             },
-                                                            "Dataguard": {
+                                                            "dataguard": {
                                                                 "type": "boolean"
                                                             },
-                                                            "Patches": {
+                                                            "patches": {
                                                                 "type": "array",
                                                                 "items": {
                                                                     "type": "object",
                                                                     "required": [
-                                                                        "Version",
-                                                                        "PatchID",
-                                                                        "Action",
-                                                                        "Description",
-                                                                        "Date"
+                                                                        "version",
+                                                                        "patchID",
+                                                                        "action",
+                                                                        "description",
+                                                                        "date"
                                                                     ],
                                                                     "properties": {
-                                                                        "Version": {
+                                                                        "version": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 16
                                                                         },
-                                                                        "PatchID": {
+                                                                        "patchID": {
                                                                             "type": "integer"
                                                                         },
-                                                                        "Action": {
+                                                                        "action": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 128
                                                                         },
-                                                                        "Description": {
+                                                                        "description": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 256
                                                                         },
-                                                                        "Date": {
+                                                                        "date": {
                                                                             "type": "string",
                                                                             "format": "date"
                                                                         }
                                                                     }
                                                                 }
                                                             },
-                                                            "Tablespaces": {
+                                                            "tablespaces": {
                                                                 "type": "array",
                                                                 "items": {
                                                                     "type": "object",
                                                                     "required": [
-                                                                        "Name",
-                                                                        "MaxSize",
-                                                                        "Total",
-                                                                        "Used",
-                                                                        "UsedPerc",
-                                                                        "Status"
+                                                                        "name",
+                                                                        "maxSize",
+                                                                        "total",
+                                                                        "used",
+                                                                        "usedPerc",
+                                                                        "status"
                                                                     ],
                                                                     "properties": {
-                                                                        "Name": {
+                                                                        "name": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 64
                                                                         },
-                                                                        "MaxSize": {
+                                                                        "maxSize": {
                                                                             "type": "number",
                                                                             "minimum": 0
                                                                         },
-                                                                        "Total": {
+                                                                        "total": {
                                                                             "type": "number",
                                                                             "minimum": 0
                                                                         },
-                                                                        "Used": {
+                                                                        "used": {
                                                                             "type": "number",
                                                                             "minimum": 0
                                                                         },
-                                                                        "UsedPerc": {
+                                                                        "usedPerc": {
                                                                             "type": "number",
                                                                             "minimum": 0,
                                                                             "maximum": 100
                                                                         },
-                                                                        "Status": {
+                                                                        "status": {
                                                                             "type": "string",
                                                                             "enum": [
                                                                                 "ONLINE",
@@ -456,35 +468,35 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 }
                                                             },
-                                                            "Schemas": {
+                                                            "schemas": {
                                                                 "type": "array",
                                                                 "items": {
                                                                     "type": "object",
                                                                     "required": [
-                                                                        "Indexes",
-                                                                        "LOB",
-                                                                        "Tables",
-                                                                        "Total",
-                                                                        "User"
+                                                                        "indexes",
+                                                                        "lob",
+                                                                        "tables",
+                                                                        "total",
+                                                                        "user"
                                                                     ],
                                                                     "properties": {
-                                                                        "Indexes": {
+                                                                        "indexes": {
                                                                             "type": "integer",
                                                                             "minimum": 0
                                                                         },
-                                                                        "LOB": {
+                                                                        "lob": {
                                                                             "type": "integer",
                                                                             "minimum": 0
                                                                         },
-                                                                        "Tables": {
+                                                                        "tables": {
                                                                             "type": "integer",
                                                                             "minimum": 0
                                                                         },
-                                                                        "Total": {
+                                                                        "total": {
                                                                             "type": "integer",
                                                                             "minimum": 0
                                                                         },
-                                                                        "User": {
+                                                                        "user": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 64
@@ -492,54 +504,54 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 }
                                                             },
-                                                            "Licenses": {
+                                                            "licenses": {
                                                                 "type": "array",
                                                                 "items": {
                                                                     "type": "object",
                                                                     "required": [
-                                                                        "Name",
-                                                                        "Count"
+                                                                        "name",
+                                                                        "count"
                                                                     ],
                                                                     "properties": {
-                                                                        "Name": {
+                                                                        "name": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 64
                                                                         },
-                                                                        "Count": {
+                                                                        "count": {
                                                                             "type": "number",
                                                                             "minimum": 0
                                                                         }
                                                                     }
                                                                 }
                                                             },
-                                                            "ADDMs": {
+                                                            "addms": {
                                                                 "type": "array",
                                                                 "items": {
                                                                     "type": "object",
                                                                     "required": [
-                                                                        "Finding",
-                                                                        "Recommendation",
-                                                                        "Action",
-                                                                        "Benefit"
+                                                                        "finding",
+                                                                        "recommendation",
+                                                                        "action",
+                                                                        "benefit"
                                                                     ],
                                                                     "properties": {
-                                                                        "Finding": {
+                                                                        "finding": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 256
                                                                         },
-                                                                        "Recommendation": {
+                                                                        "recommendation": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 32
                                                                         },
-                                                                        "Action": {
+                                                                        "action": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 256
                                                                         },
-                                                                        "Benefit": {
+                                                                        "benefit": {
                                                                             "type": "number",
                                                                             "minimum": 0,
                                                                             "maximum": 100
@@ -547,43 +559,43 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 }
                                                             },
-                                                            "SegmentAdvisors": {
+                                                            "segmentAdvisors": {
                                                                 "type": "array",
                                                                 "items": {
                                                                     "type": "object",
                                                                     "required": [
-                                                                        "SegmentOwner",
-                                                                        "SegmentName",
-                                                                        "SegmentType",
-                                                                        "PartitionName",
-                                                                        "Reclaimable",
-                                                                        "Recommendation"
+                                                                        "segmentOwner",
+                                                                        "segmentName",
+                                                                        "segmentType",
+                                                                        "partitionName",
+                                                                        "reclaimable",
+                                                                        "recommendation"
                                                                     ],
                                                                     "properties": {
-                                                                        "SegmentOwner": {
+                                                                        "segmentOwner": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 64
                                                                         },
-                                                                        "SegmentName": {
+                                                                        "segmentName": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 64
                                                                         },
-                                                                        "SegmentType": {
+                                                                        "segmentType": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 32
                                                                         },
-                                                                        "PartitionName": {
+                                                                        "partitionName": {
                                                                             "type": "string",
                                                                             "maxLength": 32
                                                                         },
-                                                                        "Reclaimable": {
+                                                                        "reclaimable": {
                                                                             "type": "number",
                                                                             "minimum": 0
                                                                         },
-                                                                        "Recommendation": {
+                                                                        "recommendation": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 256
@@ -591,20 +603,20 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 }
                                                             },
-                                                            "PSUs": {
+                                                            "psus": {
                                                                 "type": "array",
                                                                 "items": {
                                                                     "type": "object",
                                                                     "required": [
-                                                                        "Date",
-                                                                        "Description"
+                                                                        "date",
+                                                                        "description"
                                                                     ],
                                                                     "properties": {
-                                                                        "Date": {
+                                                                        "date": {
                                                                             "type": "string",
                                                                             "format": "date"
                                                                         },
-                                                                        "Description": {
+                                                                        "description": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 128
@@ -612,34 +624,36 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 }
                                                             },
-                                                            "Backups": {
+                                                            "backups": {
                                                                 "type": "array",
                                                                 "items": {
                                                                     "type": "object",
                                                                     "required": [
-                                                                        "BackupType",
-                                                                        "Hour",
-                                                                        "WeekDays",
-                                                                        "AvgBckSize",
-                                                                        "Retention"
+                                                                        "backupType",
+                                                                        "hour",
+                                                                        "weekDays",
+                                                                        "avgBckSize",
+                                                                        "retention"
                                                                     ],
                                                                     "properties": {
-                                                                        "BackupType": {
+                                                                        "backupType": {
                                                                             "type": "string",
                                                                             "enum": [
                                                                                 "Archivelog",
                                                                                 "Full",
                                                                                 "Level0",
-                                                                                "Level1"
+                                                                                "Level1",
+                                                                                "Incr Lvl 0",
+                                                                                "Incr Lvl 1"
                                                                             ]
                                                                         },
-                                                                        "Hour": {
+                                                                        "hour": {
                                                                             "type": "string",
                                                                             "minLength": 5,
                                                                             "maxLength": 5,
                                                                             "pattern": "^[0-9]{2}:[0-9]{2}$"
                                                                         },
-                                                                        "WeekDays": {
+                                                                        "weekDays": {
                                                                             "type": "array",
                                                                             "items": {
                                                                                 "type": "string",
@@ -655,11 +669,11 @@ var FrontendHostdataSchemaValidator string = `
                                                                             },
                                                                             "uniqueItems": true
                                                                         },
-                                                                        "AvgBckSize": {
+                                                                        "avgBckSize": {
                                                                             "type": "number",
                                                                             "minimum": 0
                                                                         },
-                                                                        "Retention": {
+                                                                        "retention": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 16
@@ -667,61 +681,61 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 }
                                                             },
-                                                            "FeatureUsageStats": {
+                                                            "featureUsageStats": {
                                                                 "type": "array",
                                                                 "items": {
                                                                     "type": "object",
                                                                     "required": [
-                                                                        "Product",
-                                                                        "Feature",
-                                                                        "DetectedUsages",
-                                                                        "CurrentlyUsed",
-                                                                        "FirstUsageDate",
-                                                                        "LastUsageDate",
-                                                                        "ExtraFeatureInfo"
+                                                                        "product",
+                                                                        "feature",
+                                                                        "detectedUsages",
+                                                                        "currentlyUsed",
+                                                                        "firstUsageDate",
+                                                                        "lastUsageDate",
+                                                                        "extraFeatureInfo"
                                                                     ],
                                                                     "properties": {
-                                                                        "Product": {
+                                                                        "product": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 32
                                                                         },
-                                                                        "Feature": {
+                                                                        "feature": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 32
                                                                         },
-                                                                        "DetectedUsages": {
+                                                                        "detectedUsages": {
                                                                             "type": "integer",
                                                                             "minimum": 0
                                                                         },
-                                                                        "CurrentlyUsed": {
+                                                                        "currentlyUsed": {
                                                                             "type": "boolean"
                                                                         },
-                                                                        "FirstUsageDate": {
+                                                                        "firstUsageDate": {
                                                                             "type": "string",
                                                                             "format": "date-time"
                                                                         },
-                                                                        "LastUsageDate": {
+                                                                        "lastUsageDate": {
                                                                             "type": "string",
                                                                             "format": "date-time"
                                                                         },
-                                                                        "ExtraFeatureInfo": {
+                                                                        "extraFeatureInfo": {
                                                                             "type": "string",
                                                                             "maxLength": 64
                                                                         }
                                                                     }
                                                                 }
                                                             },
-                                                            "Services": {
+                                                            "services": {
                                                                 "type": "array",
                                                                 "items": {
                                                                     "type": "object",
                                                                     "required": [
-                                                                        "Name"
+                                                                        "name"
                                                                     ],
                                                                     "properties": {
-                                                                        "Name": {
+                                                                        "name": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 32
@@ -729,24 +743,24 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 }
                                                             },
-                                                            "PDBs": {
+                                                            "pdbs": {
                                                                 "type": "array",
                                                                 "items": {
                                                                     "type": "object",
                                                                     "required": [
-                                                                        "Name",
-                                                                        "Status",
-                                                                        "Tablespaces",
-                                                                        "Schemas",
-                                                                        "Services"
+                                                                        "name",
+                                                                        "status",
+                                                                        "tablespaces",
+                                                                        "schemas",
+                                                                        "services"
                                                                     ],
                                                                     "properties": {
-                                                                        "Name": {
+                                                                        "name": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 32
                                                                         },
-                                                                        "Status": {
+                                                                        "status": {
                                                                             "type": "string",
                                                                             "enum": [
                                                                                 "OPEN",
@@ -754,42 +768,42 @@ var FrontendHostdataSchemaValidator string = `
                                                                                 "MOUNTED"
                                                                             ]
                                                                         },
-                                                                        "Tablespaces": {
+                                                                        "tablespaces": {
                                                                             "type": "array",
                                                                             "items": {
                                                                                 "type": "object",
                                                                                 "required": [
-                                                                                    "Name",
-                                                                                    "MaxSize",
-                                                                                    "Total",
-                                                                                    "Used",
-                                                                                    "UsedPerc",
-                                                                                    "Status"
+                                                                                    "name",
+                                                                                    "maxSize",
+                                                                                    "total",
+                                                                                    "used",
+                                                                                    "usedPerc",
+                                                                                    "status"
                                                                                 ],
                                                                                 "properties": {
-                                                                                    "Name": {
+                                                                                    "name": {
                                                                                         "type": "string",
                                                                                         "minLength": 1,
                                                                                         "maxLength": 32
                                                                                     },
-                                                                                    "MaxSize": {
+                                                                                    "maxSize": {
                                                                                         "type": "number",
                                                                                         "minimum": 0
                                                                                     },
-                                                                                    "Total": {
+                                                                                    "total": {
                                                                                         "type": "number",
                                                                                         "minimum": 0
                                                                                     },
-                                                                                    "Used": {
+                                                                                    "used": {
                                                                                         "type": "number",
                                                                                         "minimum": 0
                                                                                     },
-                                                                                    "UsedPerc": {
+                                                                                    "usedPerc": {
                                                                                         "type": "number",
                                                                                         "minimum": 0,
                                                                                         "maximum": 100
                                                                                     },
-                                                                                    "Status": {
+                                                                                    "status": {
                                                                                         "type": "string",
                                                                                         "enum": [
                                                                                             "ONLINE",
@@ -800,35 +814,35 @@ var FrontendHostdataSchemaValidator string = `
                                                                                 }
                                                                             }
                                                                         },
-                                                                        "Schemas": {
+                                                                        "schemas": {
                                                                             "type": "array",
                                                                             "items": {
                                                                                 "type": "object",
                                                                                 "required": [
-                                                                                    "Indexes",
-                                                                                    "LOB",
-                                                                                    "Tables",
-                                                                                    "Total",
-                                                                                    "User"
+                                                                                    "indexes",
+                                                                                    "lob",
+                                                                                    "tables",
+                                                                                    "total",
+                                                                                    "user"
                                                                                 ],
                                                                                 "properties": {
-                                                                                    "Indexes": {
+                                                                                    "indexes": {
                                                                                         "type": "integer",
                                                                                         "minimum": 0
                                                                                     },
-                                                                                    "LOB": {
+                                                                                    "lob": {
                                                                                         "type": "integer",
                                                                                         "minimum": 0
                                                                                     },
-                                                                                    "Tables": {
+                                                                                    "tables": {
                                                                                         "type": "integer",
                                                                                         "minimum": 0
                                                                                     },
-                                                                                    "Total": {
+                                                                                    "total": {
                                                                                         "type": "integer",
                                                                                         "minimum": 0
                                                                                     },
-                                                                                    "User": {
+                                                                                    "user": {
                                                                                         "type": "string",
                                                                                         "minLength": 1,
                                                                                         "maxLength": 32
@@ -836,15 +850,15 @@ var FrontendHostdataSchemaValidator string = `
                                                                                 }
                                                                             }
                                                                         },
-                                                                        "Services": {
+                                                                        "services": {
                                                                             "type": "array",
                                                                             "items": {
                                                                                 "type": "object",
                                                                                 "required": [
-                                                                                    "Name"
+                                                                                    "name"
                                                                                 ],
                                                                                 "properties": {
-                                                                                    "Name": {
+                                                                                    "name": {
                                                                                         "type": "string",
                                                                                         "minLength": 1,
                                                                                         "maxLength": 32
@@ -862,52 +876,53 @@ var FrontendHostdataSchemaValidator string = `
                                         }
                                     ]
                                 },
-                                "Exadata": {
-                                    "anyOf": [{
+                                "exadata": {
+                                    "anyOf": [
+                                        {
                                             "type": "null"
                                         },
                                         {
                                             "type": "object",
                                             "required": [
-                                                "Components"
+                                                "components"
                                             ],
                                             "properties": {
-                                                "Components": {
+                                                "components": {
                                                     "type": "array",
                                                     "items": {
                                                         "type": "object",
                                                         "required": [
-                                                            "Hostname",
-                                                            "ServerType",
-                                                            "Model",
-                                                            "SwVersion",
-                                                            "SwReleaseDate",
-                                                            "RunningCPUCount",
-                                                            "TotalCPUCount",
-                                                            "Memory",
-                                                            "Status",
-                                                            "RunningPowerSupply",
-                                                            "TotalPowerSupply",
-                                                            "PowerStatus",
-                                                            "RunningFanCount",
-                                                            "TotalFanCount",
-                                                            "FanStatus",
-                                                            "TempActual",
-                                                            "TempStatus",
-                                                            "CellsrvServiceStatus",
-                                                            "MsServiceStatus",
-                                                            "RsServiceStatus",
-                                                            "FlashcacheMode",
-                                                            "CellDisks"
+                                                            "hostname",
+                                                            "serverType",
+                                                            "model",
+                                                            "swVersion",
+                                                            "swReleaseDate",
+                                                            "runningCPUCount",
+                                                            "totalCPUCount",
+                                                            "memory",
+                                                            "status",
+                                                            "runningPowerSupply",
+                                                            "totalPowerSupply",
+                                                            "powerStatus",
+                                                            "runningFanCount",
+                                                            "totalFanCount",
+                                                            "fanStatus",
+                                                            "tempActual",
+                                                            "tempStatus",
+                                                            "cellsrvServiceStatus",
+                                                            "msServiceStatus",
+                                                            "rsServiceStatus",
+                                                            "flashcacheMode",
+                                                            "cellDisks"
                                                         ],
                                                         "properties": {
-                                                            "Hostname": {
+                                                            "hostname": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 253,
                                                                 "format": "idn-hostname"
                                                             },
-                                                            "ServerType": {
+                                                            "serverType": {
                                                                 "type": "string",
                                                                 "enum": [
                                                                     "DBServer",
@@ -915,21 +930,21 @@ var FrontendHostdataSchemaValidator string = `
                                                                     "StorageServer"
                                                                 ]
                                                             },
-                                                            "Model": {
+                                                            "model": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 32
                                                             },
-                                                            "SwVersion": {
+                                                            "swVersion": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 32
                                                             },
-                                                            "SwReleaseDate": {
+                                                            "swReleaseDate": {
                                                                 "type": "string",
                                                                 "format": "date"
                                                             },
-                                                            "RunningCPUCount": {
+                                                            "runningCPUCount": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -940,7 +955,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "TotalCPUCount": {
+                                                            "totalCPUCount": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -951,19 +966,19 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "Memory": {
+                                                            "memory": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
                                                                     },
                                                                     {
                                                                         "type": "integer",
-                                                                        "$comment": "Memory in GB",
+                                                                        "$comment": "memory in GB",
                                                                         "minimum": 1
                                                                     }
                                                                 ]
                                                             },
-                                                            "Status": {
+                                                            "status": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -977,7 +992,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "RunningPowerSupply": {
+                                                            "runningPowerSupply": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -988,7 +1003,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "TotalPowerSupply": {
+                                                            "totalPowerSupply": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -999,7 +1014,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "PowerStatus": {
+                                                            "powerStatus": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -1009,7 +1024,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "RunningFanCount": {
+                                                            "runningFanCount": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -1020,7 +1035,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "TotalFanCount": {
+                                                            "totalFanCount": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -1031,7 +1046,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "FanStatus": {
+                                                            "fanStatus": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -1041,7 +1056,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "TempActual": {
+                                                            "tempActual": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -1051,7 +1066,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "TempStatus": {
+                                                            "tempStatus": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -1061,7 +1076,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "CellsrvServiceStatus": {
+                                                            "cellsrvServiceStatus": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -1071,7 +1086,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "MsServiceStatus": {
+                                                            "msServiceStatus": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -1081,7 +1096,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "RsServiceStatus": {
+                                                            "rsServiceStatus": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -1091,7 +1106,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "FlashcacheMode": {
+                                                            "flashcacheMode": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -1105,7 +1120,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 ]
                                                             },
-                                                            "CellDisks": {
+                                                            "cellDisks": {
                                                                 "anyOf": [
                                                                     {
                                                                         "type": "null"
@@ -1115,25 +1130,25 @@ var FrontendHostdataSchemaValidator string = `
                                                                         "items": {
                                                                             "type": "object",
                                                                             "required": [
-                                                                                "ErrCount",
-                                                                                "Name",
-                                                                                "Status",
-                                                                                "UsedPerc"
+                                                                                "errCount",
+                                                                                "name",
+                                                                                "status",
+                                                                                "usedPerc"
                                                                             ],
                                                                             "properties": {
-                                                                                "ErrCount": {
+                                                                                "errCount": {
                                                                                     "type": "integer",
                                                                                     "minimum": 0
                                                                                 },
-                                                                                "Name": {
+                                                                                "name": {
                                                                                     "type": "string",
                                                                                     "minLength": 1,
                                                                                     "maxLength": 64
                                                                                 },
-                                                                                "Status": {
+                                                                                "status": {
                                                                                     "type": "string"
                                                                                 },
-                                                                                "UsedPerc": {
+                                                                                "usedPerc": {
                                                                                     "type": "integer",
                                                                                     "minimum": 0,
                                                                                     "maximum": 100
@@ -1152,169 +1167,173 @@ var FrontendHostdataSchemaValidator string = `
                                 }
                             }
                         },
-                        { "type": "null" }
+                        {
+                            "type": "null"
+                        }
                     ]
                 },
-                "Postgresql": {
-                    "anyOf": [{
+                "postgresql": {
+                    "anyOf": [
+                        {
                             "type": "null"
                         },
                         {
                             "type": "object",
                             "properties": {
-                                "Postgresql": {
-                                    "anyOf": [{
+                                "postgresql": {
+                                    "anyOf": [
+                                        {
                                             "type": "null"
                                         },
                                         {
                                             "type": "object",
                                             "required": [
-                                                "WorkMem",
-                                                "ArchiveMode",
-                                                "ArchivePath",
-                                                "MinWalSize",
-                                                "MaxWalSize",
-                                                "MaxConnections",
-                                                "CheckpointCompletionTarget",
-                                                "DefaultStatisticsTarget",
-                                                "RandomPageCost",
-                                                "MaintenanceWorkMem",
-                                                "SharedBuffers",
-                                                "EffectiveCacheSize",
-                                                "EffectiveIOConcurrency",
-                                                "MaxWorkerProcesses",
-                                                "MaxParallelWorkers",
-                                                "Databases"
+                                                "workMem",
+                                                "archiveMode",
+                                                "archivePath",
+                                                "minWalSize",
+                                                "maxWalSize",
+                                                "maxConnections",
+                                                "checkpointCompletionTarget",
+                                                "defaultStatisticsTarget",
+                                                "randomPageCost",
+                                                "maintenanceWorkMem",
+                                                "sharedBuffers",
+                                                "effectiveCacheSize",
+                                                "effectiveIOConcurrency",
+                                                "maxWorkerProcesses",
+                                                "maxParallelWorkers",
+                                                "databases"
                                             ],
                                             "properties": {
-                                                "WorkMem": {
+                                                "workMem": {
                                                     "type": "number",
                                                     "minimum": 0
                                                 },
-                                                "ArchiveMode": {
+                                                "archiveMode": {
                                                     "type": "boolean"
                                                 },
-                                                "ArchivePath": {
+                                                "archivePath": {
                                                     "type": "string",
                                                     "minLength": 0,
                                                     "maxLength": 128
                                                 },
-                                                "MinWalSize": {
+                                                "minWalSize": {
                                                     "type": "number",
                                                     "minimum": 0
                                                 },
-                                                "MaxWalSize": {
+                                                "maxWalSize": {
                                                     "type": "number",
                                                     "minimum": 0
                                                 },
-                                                "MaxConnections": {
+                                                "maxConnections": {
                                                     "type": "integer",
                                                     "minimum": 0
                                                 },
-                                                "CheckpointCompletionTarget": {
+                                                "checkpointCompletionTarget": {
                                                     "type": "number"
                                                 },
-                                                "DefaultStatisticsTarget": {
+                                                "defaultStatisticsTarget": {
                                                     "type": "number"
                                                 },
-                                                "RandomPageCost": {
+                                                "randomPageCost": {
                                                     "type": "number",
                                                     "minimum": 0
                                                 },
-                                                "MaintenanceWorkMem": {
+                                                "maintenanceWorkMem": {
                                                     "type": "number",
                                                     "minimum": 0
                                                 },
-                                                "SharedBuffers": {
+                                                "sharedBuffers": {
                                                     "type": "integer",
                                                     "minimum": 0
                                                 },
-                                                "EffectiveCacheSize": {
+                                                "effectiveCacheSize": {
                                                     "type": "number",
                                                     "minimum": 0
                                                 },
-                                                "EffectiveIOConcurrency": {
+                                                "effectiveIOConcurrency": {
                                                     "type": "integer",
                                                     "minimum": 0
                                                 },
-                                                "MaxWorkerProcesses": {
+                                                "maxWorkerProcesses": {
                                                     "type": "integer",
                                                     "minimum": 0
                                                 },
-                                                "MaxParallelWorkers": {
+                                                "maxParallelWorkers": {
                                                     "type": "integer",
                                                     "minimum": 0
                                                 },
-                                                "Databases": {
+                                                "databases": {
                                                     "type": "array",
                                                     "items": {
                                                         "type": "object",
                                                         "required": [
-                                                            "Name",
-                                                            "Replication",
-                                                            "ReplicationDelay",
-                                                            "EffectiveCacheSize",
-                                                            "Version",
-                                                            "Size",
-                                                            "Collation",
-                                                            "CharacterSet",
-                                                            "Schemas"
+                                                            "name",
+                                                            "replication",
+                                                            "replicationDelay",
+                                                            "effectiveCacheSize",
+                                                            "version",
+                                                            "size",
+                                                            "collation",
+                                                            "characterSet",
+                                                            "schemas"
                                                         ],
                                                         "properties": {
-                                                            "Name": {
+                                                            "name": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 64
                                                             },
-                                                            "Replication": {
+                                                            "replication": {
                                                                 "type": "boolean"
                                                             },
-                                                            "ReplicationDelay": {
+                                                            "replicationDelay": {
                                                                 "type": "boolean"
                                                             },
-                                                            "EffectiveCacheSize": {
+                                                            "effectiveCacheSize": {
                                                                 "type": "integer",
                                                                 "minimum": 0
                                                             },
-                                                            "Version": {
+                                                            "version": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 16
                                                             },
-                                                            "Size": {
+                                                            "size": {
                                                                 "type": "number",
                                                                 "minimum": 0
                                                             },
-                                                            "Collation": {
+                                                            "collation": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 16
                                                             },
-                                                            "CharacterSet": {
+                                                            "characterSet": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 16
                                                             },
-                                                            "Schemas": {
+                                                            "schemas": {
                                                                 "type": "array",
                                                                 "items": {
                                                                     "type": "object",
                                                                     "required": [
-                                                                        "Name",
-                                                                        "Size",
-                                                                        "TableCount"
+                                                                        "name",
+                                                                        "size",
+                                                                        "tableCount"
                                                                     ],
                                                                     "properties": {
-                                                                        "Name": {
+                                                                        "name": {
                                                                             "type": "string",
                                                                             "minLength": 1,
                                                                             "maxLength": 64
                                                                         },
-                                                                        "Size": {
+                                                                        "size": {
                                                                             "type": "number",
                                                                             "minimum": 0
                                                                         },
-                                                                        "TableCount": {
+                                                                        "tableCount": {
                                                                             "type": "integer",
                                                                             "minimum": 0
                                                                         }
@@ -1334,45 +1353,45 @@ var FrontendHostdataSchemaValidator string = `
                 }
             }
         },
-        "Filesystems": {
+        "filesystems": {
             "type": "array",
             "items": {
                 "type": "object",
                 "required": [
-                    "Filesystem",
-                    "Type",
-                    "Size",
-                    "UsedSpace",
-                    "AvailableSpace",
-                    "MountedOn"
+                    "filesystem",
+                    "type",
+                    "size",
+                    "usedSpace",
+                    "availableSpace",
+                    "mountedOn"
                 ],
                 "properties": {
-                    "Filesystem": {
+                    "filesystem": {
                         "type": "string",
                         "minLength": 1,
                         "maxLength": 64
                     },
-                    "Type": {
+                    "type": {
                         "type": "string",
                         "minLength": 1,
                         "maxLength": 16
                     },
-                    "Size": {
+                    "size": {
                         "type": "integer",
                         "minimum": 0,
-                        "$comment": "Size in bytes"
+                        "$comment": "size in bytes"
                     },
-                    "UsedSpace": {
+                    "usedSpace": {
                         "type": "integer",
                         "minimum": 0,
-                        "$comment": "Used in bytes"
+                        "$comment": "used in bytes"
                     },
-                    "AvailableSpace": {
+                    "availableSpace": {
                         "type": "integer",
                         "minimum": 0,
-                        "$comment": "AvailableSpace in bytes"
+                        "$comment": "availableSpace in bytes"
                     },
-                    "MountedOn": {
+                    "mountedOn": {
                         "type": "string",
                         "minLength": 1,
                         "maxLength": 64
@@ -1380,8 +1399,9 @@ var FrontendHostdataSchemaValidator string = `
                 }
             }
         },
-        "Clusters": {
-            "anyOf": [{
+        "clusters": {
+            "anyOf": [
+                {
                     "type": "null"
                 },
                 {
@@ -1389,63 +1409,63 @@ var FrontendHostdataSchemaValidator string = `
                     "items": {
                         "type": "object",
                         "required": [
-                            "FetchEndpoint",
-                            "Type",
-                            "Name",
-                            "CPU",
-                            "Sockets",
-                            "VMs"
+                            "fetchEndpoint",
+                            "type",
+                            "name",
+                            "cpu",
+                            "sockets",
+                            "vms"
                         ],
                         "properties": {
-                            "FetchEndpoint": {
+                            "fetchEndpoint": {
                                 "type": "string",
                                 "minLength": 1,
                                 "maxLength": 64
                             },
-                            "Type": {
+                            "type": {
                                 "type": "string",
                                 "minLength": 1,
                                 "maxLength": 16
                             },
-                            "Name": {
+                            "name": {
                                 "type": "string",
                                 "minLength": 1,
                                 "maxLength": 128
                             },
-                            "CPU": {
+                            "cpu": {
                                 "type": "integer",
                                 "minimum": 0
                             },
-                            "Sockets": {
+                            "sockets": {
                                 "type": "integer",
                                 "minimum": 0
                             },
-                            "VMs": {
+                            "vms": {
                                 "type": "array",
                                 "items": {
                                     "type": "object",
                                     "required": [
-                                        "Name",
-                                        "Hostname",
-                                        "CappedCPU",
-                                        "VirtualizationNode"
+                                        "name",
+                                        "hostname",
+                                        "cappedCPU",
+                                        "virtualizationNode"
                                     ],
                                     "properties": {
-                                        "Name": {
+                                        "name": {
                                             "type": "string",
                                             "minLength": 1,
                                             "maxLength": 128
                                         },
-                                        "Hostname": {
+                                        "hostname": {
                                             "type": "string",
                                             "minLength": 1,
                                             "maxLength": 253,
                                             "format": "idn-hostname"
                                         },
-                                        "CappedCPU": {
+                                        "cappedCPU": {
                                             "type": "boolean"
                                         },
-                                        "VirtualizationNode": {
+                                        "virtualizationNode": {
                                             "type": "string",
                                             "minLength": 1,
                                             "maxLength": 253,

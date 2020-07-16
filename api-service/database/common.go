@@ -27,10 +27,10 @@ import (
 func FilterByLocationAndEnvironmentSteps(location string, environment string) interface{} {
 	return bson.A{
 		mu.APOptionalStage(location != "", mu.APMatch(bson.M{
-			"Location": location,
+			"location": location,
 		})),
 		mu.APOptionalStage(environment != "", mu.APMatch(bson.M{
-			"Environment": environment,
+			"environment": environment,
 		})),
 	}
 }
@@ -38,55 +38,55 @@ func FilterByLocationAndEnvironmentSteps(location string, environment string) in
 func FilterByOldnessSteps(olderThan time.Time) bson.A {
 	return mu.MAPipeline(
 		mu.APOptionalStage(olderThan == utils.MAX_TIME, mu.APMatch(bson.M{
-			"Archived": false,
+			"archived": false,
 		})),
 		mu.APOptionalStage(olderThan != utils.MAX_TIME, bson.A{
 			mu.APMatch(bson.M{
-				"CreatedAt": mu.QOLessThanOrEqual(olderThan),
+				"createdAt": mu.QOLessThanOrEqual(olderThan),
 			}),
-			mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname", "ca": "$CreatedAt"}, "Check", mu.MAPipeline(
+			mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname", "ca": "$createdAt"}, "check", mu.MAPipeline(
 				mu.APProject(bson.M{
-					"Hostname":  1,
-					"CreatedAt": 1,
+					"hostname":  1,
+					"createdAt": 1,
 				}),
-				mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$Hostname", "$$hn"), mu.APOGreater("$CreatedAt", "$$ca"), mu.APOGreaterOrEqual(olderThan, "$CreatedAt")))),
+				mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$hostname", "$$hn"), mu.APOGreater("$createdAt", "$$ca"), mu.APOGreaterOrEqual(olderThan, "$createdAt")))),
 				mu.APLimit(1),
 			)),
 			mu.APMatch(bson.M{
-				"Check": mu.QOSize(0),
+				"check": mu.QOSize(0),
 			}),
-			mu.APUnset("Check"),
+			mu.APUnset("check"),
 		}),
 	)
 }
 
 func AddHardwareAbstraction(field string) bson.A {
 	return mu.MAPipeline(mu.APAddFields(bson.M{
-		field: mu.APOOr("$ClusterMembershipStatus.OracleClusterware", "$ClusterMembershipStatus.VeritasClusterServer", "$ClusterMembershipStatus.SunCluster", "$ClusterMembershipStatus.HACMP"),
+		field: mu.APOOr("$clusterMembershipStatus.oracleClusterware", "$clusterMembershipStatus.veritasClusterServer", "$clusterMembershipStatus.sunCluster", "$clusterMembershipStatus.hacmp"),
 	}))
 }
 
 func AddAssociatedClusterNameAndVirtualizationNode(olderThan time.Time) bson.A {
 	return mu.MAPipeline(
-		mu.APLookupPipeline("hosts", bson.M{"hn": "$Hostname"}, "VM", mu.MAPipeline(
+		mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "vm", mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
-			mu.APUnwind("$Clusters"),
-			mu.APReplaceWith("$Clusters"),
-			mu.APUnwind("$VMs"),
+			mu.APUnwind("$clusters"),
+			mu.APReplaceWith("$clusters"),
+			mu.APUnwind("$vms"),
 			mu.APSet(bson.M{
-				"VMs.ClusterName": "$Name",
+				"vms.clusterName": "$name",
 			}),
-			mu.APReplaceWith("$VMs"),
-			mu.APMatch(mu.QOExpr(mu.APOEqual("$Hostname", "$$hn"))),
+			mu.APReplaceWith("$vms"),
+			mu.APMatch(mu.QOExpr(mu.APOEqual("$hostname", "$$hn"))),
 			mu.APLimit(1),
 		)),
 		mu.APSet(bson.M{
-			"VM": mu.APOArrayElemAt("$VM", 0),
+			"vm": mu.APOArrayElemAt("$vm", 0),
 		}),
 		mu.APAddFields(bson.M{
-			"Cluster":            mu.APOIfNull("$VM.ClusterName", nil),
-			"VirtualizationNode": mu.APOIfNull("$VM.VirtualizationNode", nil),
+			"cluster":            mu.APOIfNull("$vm.clusterName", nil),
+			"virtualizationNode": mu.APOIfNull("$vm.virtualizationNode", nil),
 		}),
-		mu.APUnset("VM"),
+		mu.APUnset("vm"),
 	)
 }

@@ -52,24 +52,45 @@ EnableInsertingCustomPatchingFunction = true
   TokenValidityTimeout = 2700
 
   [[APIService.OperatingSystemAggregationRules]]
+  Regex = "^Red Hat Enterprise Linux 8.*$"
+  Group = "RHEL8"
+  Product = "RedHat/EnterpriseLinux8"
+
+  [[APIService.OperatingSystemAggregationRules]]
   Regex = "^Red Hat Enterprise Linux 7.*$"
   Group = "RHEL7"
+  Product = "RedHat/EnterpriseLinux7"
 
   [[APIService.OperatingSystemAggregationRules]]
   Regex = "^Red Hat Enterprise Linux 6.*$"
   Group = "RHEL6"
+  Product = "RedHat/EnterpriseLinux6"
 
   [[APIService.OperatingSystemAggregationRules]]
   Regex = "^Red Hat Enterprise Linux 5.*$"
   Group = "RHEL5"
+  Product = "RedHat/EnterpriseLinux5"
 
   [[APIService.OperatingSystemAggregationRules]]
   Regex = "^HPUX.*$"
   Group = "HPUX"
+  Product = "HP/HPUX"
 
   [[APIService.OperatingSystemAggregationRules]]
   Regex = "^AIX.*$"
   Group = "AIX"
+  Product = "IBM/AIX"
+
+  [[APIService.OperatingSystemAggregationRules]]
+  Regex = "^Solaris .*$"
+  Group = "Solaris"
+  Product = "Oracle/Solaris"
+
+[ChartService]
+RemoteEndpoint = "http://127.0.0.1:11116"
+BindIP = "0.0.0.0"
+Port = 11116
+LogHTTPRequest = true
 
 [RepoService]
 

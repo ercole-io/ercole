@@ -24,37 +24,37 @@ import (
 
 // PatchingFunction holds all informations about a patching function
 type PatchingFunction struct {
-	ID        *primitive.ObjectID `bson:"_id"`
-	Hostname  string              `bson:"Hostname"`
-	CreatedAt time.Time           `bson:"CreatedAt"`
+	ID        *primitive.ObjectID `json:"id" bson:"_id"`
+	Hostname  string              `json:"hostname" bson:"hostname"`
+	CreatedAt time.Time           `json:"createdAt" bson:"createdAt"`
 	// PatchingFunction contains the javascript code that patch the hostdata
 	// the hostdata is given via the hostdata global variable.
 	// the static vars is given via the vars global variable
 	// The function should be idempotent and reversible
 	// e.g. PF(hostdata) == PF(PF(hostdata)) && ∃ PF⁻¹ | PF⁻¹(patchedHostData) == hostdata
-	Code string                 `bson:"Code"`
-	Vars map[string]interface{} `bson:"Vars"`
+	Code string                 `json:"code" bson:"code"`
+	Vars map[string]interface{} `json:"vars" bson:"vars"`
 }
 
 // PatchingFunctionBsonValidatorRules contains mongodb validation rules for patching function
 var PatchingFunctionBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
-		"Hostname",
-		"CreatedAt",
-		"Code",
+		"hostname",
+		"createdAt",
+		"code",
 	},
 	"properties": bson.M{
-		"Hostname": bson.M{
+		"hostname": bson.M{
 			"bsonType": "string",
 		},
-		"CreatedAt": bson.M{
+		"createdAt": bson.M{
 			"bsonType": "date",
 		},
-		"Code": bson.M{
+		"code": bson.M{
 			"bsonType": "string",
 		},
-		"Vars": bson.M{
+		"vars": bson.M{
 			"bsonType": "object",
 		},
 	},

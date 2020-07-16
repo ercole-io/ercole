@@ -29,7 +29,7 @@ ls
 
 %install
 cd %{_builddir}/%{name}-%{version}
-mkdir -p %{buildroot}/usr/bin/ %{buildroot}/usr/share/ercole/{examples,templates} %{buildroot}/usr/share/ercole/technologies/{Microsoft,Oracle} %{buildroot}%{_unitdir} %{buildroot}%{_presetdir} %{buildroot}/var/lib/ercole/distributed_files
+mkdir -p %{buildroot}/usr/bin/ %{buildroot}/usr/share/ercole/{examples,templates} %{buildroot}/usr/share/ercole/technologies/{Microsoft,Oracle,HP,IBM,RedHat,Unknown} %{buildroot}%{_unitdir} %{buildroot}%{_presetdir} %{buildroot}/var/lib/ercole/distributed_files
 install -m 0755 ercole %{buildroot}/usr/bin/ercole
 install -m 0755 package/ercole-setup %{buildroot}/usr/bin/ercole-setup
 install -m 0644 resources/initial_oracle_licenses_list.txt %{buildroot}/usr/share/ercole
@@ -38,6 +38,10 @@ install -m 0644 resources/templates/* %{buildroot}/usr/share/ercole/templates/
 install -m 0644 resources/technologies/list.json %{buildroot}/usr/share/ercole/technologies/list.json
 install -m 0644 resources/technologies/Oracle/* %{buildroot}/usr/share/ercole/technologies/Oracle/
 install -m 0644 resources/technologies/Microsoft/* %{buildroot}/usr/share/ercole/technologies/Microsoft/
+install -m 0644 resources/technologies/HP/* %{buildroot}/usr/share/ercole/technologies/HP/
+install -m 0644 resources/technologies/IBM/* %{buildroot}/usr/share/ercole/technologies/IBM/
+install -m 0644 resources/technologies/RedHat/* %{buildroot}/usr/share/ercole/technologies/RedHat/
+install -m 0644 resources/technologies/Unknown/* %{buildroot}/usr/share/ercole/technologies/Unknown/
 install -m 0644 package/systemd/*.service %{buildroot}%{_unitdir}/
 install -m 0644 package/systemd/60-ercole.preset %{buildroot}%{_presetdir}/60-%{name}.preset
 install -m 0644 distributed_files/ping.txt %{buildroot}/var/lib/ercole/distributed_files/ping.txt
@@ -48,10 +52,12 @@ install -m 0644 distributed_files/shared/*.repo %{buildroot}/usr/share/ercole/ex
 /usr/bin/systemctl preset %{name}.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-alertservice.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-apiservice.service >/dev/null 2>&1 ||:
+/usr/bin/systemctl preset %{name}-chartservice.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-reposervice.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-dataservice.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl is-active --quiet %{name}-alertservice.service && /usr/bin/systemctl restart %{name}-alertservice.service
 /usr/bin/systemctl is-active --quiet %{name}-apiservice.service && /usr/bin/systemctl restart %{name}-apiservice.service
+/usr/bin/systemctl is-active --quiet %{name}-chartservice.service && /usr/bin/systemctl restart %{name}-chartservice.service
 /usr/bin/systemctl is-active --quiet %{name}-reposervice.service && /usr/bin/systemctl restart %{name}-reposervice.service
 /usr/bin/systemctl is-active --quiet %{name}-dataservice.service && /usr/bin/systemctl restart %{name}-dataservice.service
 NOINTERACTIVE=1 /usr/bin/ercole-setup
@@ -71,14 +77,28 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 %{_presetdir}/60-ercole.preset
 %{_unitdir}/ercole-alertservice.service
 %{_unitdir}/ercole-apiservice.service
+%{_unitdir}/ercole-chartservice.service
 %{_unitdir}/ercole-dataservice.service
 %{_unitdir}/ercole-reposervice.service
 %{_unitdir}/ercole.service
 /usr/share/ercole/config.toml
 /usr/share/ercole/initial_oracle_licenses_list.txt
 /usr/share/ercole/technologies/list.json
-/usr/share/ercole/technologies/Microsoft/SQLServer.png
 /usr/share/ercole/technologies/Oracle/Database.png
+/usr/share/ercole/technologies/Oracle/Solaris.png
+/usr/share/ercole/technologies/Microsoft/SQLServer.png
+/usr/share/ercole/technologies/Microsoft/WindowsServer2008.png
+/usr/share/ercole/technologies/Microsoft/WindowsServer2012.png
+/usr/share/ercole/technologies/Microsoft/WindowsServer2016.png
+/usr/share/ercole/technologies/Microsoft/WindowsServer2019.png
+/usr/share/ercole/technologies/Microsoft/SQLServer.png
+/usr/share/ercole/technologies/HP/HPUX.png
+/usr/share/ercole/technologies/IBM/AIX.png
+/usr/share/ercole/technologies/RedHat/EnterpriseLinux5.png
+/usr/share/ercole/technologies/RedHat/EnterpriseLinux6.png
+/usr/share/ercole/technologies/RedHat/EnterpriseLinux7.png
+/usr/share/ercole/technologies/RedHat/EnterpriseLinux8.png
+/usr/share/ercole/technologies/Unknown/Unknown.png
 /usr/share/ercole/templates/template_addm.xlsx
 /usr/share/ercole/templates/template_clusters.xlsx
 /usr/share/ercole/templates/template_databases.xlsx

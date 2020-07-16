@@ -164,7 +164,7 @@ func (as *AlertService) ProcessAlertInsertion(params hub.Fields) {
 	//Create the subject and message
 	var subject string
 	var message string
-	if val, ok := alert.OtherInfo["Hostname"]; ok {
+	if val, ok := alert.OtherInfo["hostname"]; ok {
 		subject = fmt.Sprintf("%s %s on %s", alert.AlertSeverity, alert.Description, val)
 		message = fmt.Sprintf("Date: %s\nSeverity: %s\nHost: %s\nCode: %s\n%s", alert.Date, alert.AlertSeverity, val, alert.AlertCode, alert.Description)
 	} else {

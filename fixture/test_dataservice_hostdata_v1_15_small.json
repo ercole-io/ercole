@@ -1,44 +1,44 @@
 {
-    "Hostname": "test-small4",
-    "Environment": "TST",
-    "Location": "Italy",
-    "Info": {
-        "Hostname": "test-small3",
-        "CPUModel": "Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz",
-        "CPUCores": 1,
-        "CPUThreads": 2,
-        "Kernel": "5.3.0-45-generic",
-        "OS": "Ubuntu",
-        "MemoryTotal": 3,
-        "SwapTotal": 1,
-        "CPUFrequency": "1.60GHz",
-        "CPUSockets": 2,
-        "CoresPerSocket": 1,
-        "ThreadsPerCore": 2,
-        "KernelVersion": "5.3.0-45-generic",
-        "OSVersion": "18.04.4",
-        "HardwareAbstraction": "VIRT",
-        "HardwareAbstractionTechnology": "VMWARE"
+    "hostname": "test-small4",
+    "environment": "TST",
+    "location": "Italy",
+    "info": {
+        "hostname": "test-small3",
+        "cpuModel": "Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz",
+        "cpuCores": 1,
+        "cpuThreads": 2,
+        "kernel": "5.3.0-45-generic",
+        "os": "Ubuntu",
+        "memoryTotal": 3,
+        "swapTotal": 1,
+        "cpuFrequency": "1.60GHz",
+        "cpuSockets": 2,
+        "coresPerSocket": 1,
+        "threadsPerCore": 2,
+        "kernelVersion": "5.3.0-45-generic",
+        "osVersion": "18.04.4",
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "VMWARE"
     },
-    "AgentVersion": "latest",
-    "Tags": [],
-    "SchemaVersion": 1,
-    "ClusterMembershipStatus": {
-        "OracleClusterware": false,
-        "VeritasClusterServer": true,
-        "SunCluster": false,
-        "HACMP": false
+    "agentVersion": "latest",
+    "tags": [],
+    "schemaVersion": 1,
+    "clusterMembershipStatus": {
+        "oracleClusterware": false,
+        "veritasClusterServer": true,
+        "sunCluster": false,
+        "hacmp": false
     },
-    "Filesystems": [
+    "filesystems": [
         {
-            "Filesystem": "/dev/sda1",
-            "Size": 511705088,
-            "MountedOn": "/boot",
-            "AvailableSpace": 335544320,
-            "UsedSpace": 139460608,
-            "Type": "ext4"
+            "filesystem": "/dev/sda1",
+            "size": 511705088,
+            "mountedOn": "/boot",
+            "availableSpace": 335544320,
+            "usedSpace": 139460608,
+            "type": "ext4"
         }
     ],
-    "Features": {},
-    "Clusters": null
+    "features": {},
+    "clusters": null
 }
