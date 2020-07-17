@@ -1350,6 +1350,553 @@ var FrontendHostdataSchemaValidator string = `
                             }
                         }
                     ]
+                },
+                "microsoft": {
+                    "anyOf": [
+                        { "type": "null"},
+                        {
+                            "type": "object",
+                            "properties": {
+                                "sqlServer": {
+                                    "anyOf": [
+                                        { "type": "object" },
+                                        {
+                                            "type": "object",
+                                            "required": [
+                                                "instances",
+                                                "patches",
+                                                "psu",
+                                                "features"
+                                            ],
+                                            "properties": {
+                                                "instances": {
+                                                    "type": "array",
+                                                    "required": [
+                                                        "status",
+                                                        "name",
+                                                        "connString",
+                                                        "displayName",
+                                                        "serverName",
+                                                        "databaseId",
+                                                        "databaseName",
+                                                        "stateDesc",
+                                                        "version",
+                                                        "platform",
+                                                        "recovertModel",
+                                                        "collationName",
+                                                        "blockSize",
+                                                        "schedulersCount",
+                                                        "affinityMask",
+                                                        "minServerMemory",
+                                                        "maxServerMemory",
+                                                        "ctp",
+                                                        "maxDop",
+                                                        "alloc",
+                                                        "edition",
+                                                        "productVersion",
+                                                        "editionType",
+                                                        "productCode",
+                                                        "licensingInfo",
+                                                        "databases"
+                                                    ],
+                                                    "properties": {
+                                                        "status": {
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "Running"
+                                                            ]
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "minLength": 1,
+                                                            "maxLength": 64
+                                                        },
+                                                        "connString": {
+                                                            "type": "string",
+                                                            "minLength": 1,
+                                                            "maxLength": 128
+                                                        },
+                                                        "displayName": {
+                                                            "type": "string",
+                                                            "minLength": 1,
+                                                            "maxLength": 64
+                                                        },
+                                                        "serverName": {
+                                                            "type": "string",
+                                                            "minLength": 1,
+                                                            "maxLength": 64
+                                                        },
+                                                        "databaseId": {
+                                                            "type": "integer",
+                                                            "minimum": 1
+                                                        },
+                                                        "databaseName": {
+                                                            "type": "string",
+                                                            "minLength": 1,
+                                                            "maxLength": 64
+                                                        },
+                                                        "stateDesc": {
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "ONLINE"
+                                                            ]
+                                                        },
+                                                        "version": {
+                                                            "type": "string",
+                                                            "minLength": 1,
+                                                            "maxLength": 32
+                                                        },
+                                                        "platform": {
+                                                            "type": "string",
+                                                            "minLength": 1,
+                                                            "maxLength": 16
+                                                        },
+                                                        "recoveryModel": {
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "SIMPLE"
+                                                            ]
+                                                        },
+                                                        "collationName": {
+                                                            "type": "string",
+                                                            "minLength": 1,
+                                                            "maxLength": 32
+                                                        },
+                                                        "blockSize": {
+                                                            "type": "integer",
+                                                            "minimum": 1
+                                                        },
+                                                        "schedulersCount": {
+                                                            "type": "integer",
+                                                            "minimum": 1
+                                                        },
+                                                        "affinityMask": {
+                                                            "type": "integer",
+                                                            "minimum": 0
+                                                        },
+                                                        "minServerMemory": {
+                                                            "type": "integer",
+                                                            "minimum": 1,
+                                                            "$comment": "size in bytes"
+                                                        },
+                                                        "maxServerMemory": {
+                                                            "type": "integer",
+                                                            "minimum": 1,
+                                                            "$comment": "size in bytes"
+                                                        },
+                                                        "ctp": {
+                                                            "type": "integer",
+                                                            "minimum": 1
+                                                        },
+                                                        "maxDop": {
+                                                            "type": "integer",
+                                                            "minimum": 0
+                                                        },
+                                                        "alloc": {
+                                                            "type": "number",
+                                                            "minimum": 0
+                                                        },
+                                                        "edition": {
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "ENT"
+                                                            ]
+                                                        },
+                                                        "productVersion": {
+                                                            "type": "string",
+                                                            "minLength": 1,
+                                                            "maxLength": 64
+                                                        },
+                                                        "productCode": {
+                                                            "type": "string",
+                                                            "minLength": 1,
+                                                            "maxLength": 64,
+                                                            "pattern": "^\\{[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}\\}$"
+                                                        },
+                                                        "licensingInfo": {
+                                                            "type": "string",
+                                                            "minLength": 1,
+                                                            "maxLength": 512
+                                                        },
+                                                        "databases": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "required": [
+                                                                    "databaseId",
+                                                                    "name",
+                                                                    "stateDesc",
+                                                                    "serverName",
+                                                                    "version",
+                                                                    "platform",
+                                                                    "recovertModel",
+                                                                    "collationName",
+                                                                    "blockSize",
+                                                                    "schedulersCount",
+                                                                    "affinityMask",
+                                                                    "minServerMemory",
+                                                                    "maxServerMemory",
+                                                                    "ctp",
+                                                                    "maxDop",
+                                                                    "alloc",
+                                                                    "status",
+                                                                    "backups",
+                                                                    "schemas",
+                                                                    "tablespaces"
+                                                                ],
+                                                                "properties": {
+                                                                    "databaseId": {
+                                                                        "type": "integer",
+                                                                        "minimum": 1
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "minLength": 1,
+                                                                        "maxLength": 64
+                                                                    },
+                                                                    "collationName": {
+                                                                        "type": "string",
+                                                                        "minLength": 1,
+                                                                        "maxLength": 32
+                                                                    },
+                                                                    "stateDesc": {
+                                                                        "type": "string",
+                                                                        "enum": [
+                                                                            "ONLINE"
+                                                                        ]
+                                                                    },
+                                                                    "serverName": {
+                                                                        "type": "string",
+                                                                        "minLength": 1,
+                                                                        "maxLength": 64
+                                                                    },
+                                                                    "version": {
+                                                                        "type": "string",
+                                                                        "minLength": 1,
+                                                                        "maxLength": 32
+                                                                    },
+                                                                    "platform": {
+                                                                        "type": "string",
+                                                                        "minLength": 1,
+                                                                        "maxLength": 16
+                                                                    },
+                                                                    "recoveryModel": {
+                                                                        "type": "string",
+                                                                        "enum": [
+                                                                            "SIMPLE"
+                                                                        ]
+                                                                    },
+                                                                    "blockSize": {
+                                                                        "type": "integer",
+                                                                        "minimum": 1
+                                                                    },
+                                                                    "schedulersCount": {
+                                                                        "type": "integer",
+                                                                        "minimum": 1
+                                                                    },
+                                                                    "affinityMask": {
+                                                                        "type": "integer",
+                                                                        "minimum": 0
+                                                                    },
+                                                                    "minServerMemory": {
+                                                                        "type": "integer",
+                                                                        "minimum": 1,
+                                                                        "$comment": "size in bytes"
+                                                                    },
+                                                                    "maxServerMemory": {
+                                                                        "type": "integer",
+                                                                        "minimum": 1,
+                                                                        "$comment": "size in bytes"
+                                                                    },
+                                                                    "ctp": {
+                                                                        "type": "integer",
+                                                                        "minimum": 1
+                                                                    },
+                                                                    "maxDop": {
+                                                                        "type": "integer",
+                                                                        "minimum": 0
+                                                                    },
+                                                                    "alloc": {
+                                                                        "type": "number",
+                                                                        "minimum": 0
+                                                                    },
+                                                                    "status": {
+                                                                        "type": "string",
+                                                                        "enum": [
+                                                                            "ONLINE"
+                                                                        ]
+                                                                    },
+                                                                    "backups": {
+                                                                        "type": "array",
+                                                                        "items": {
+                                                                            "type": "object",
+                                                                            "required": [
+                                                                                "backupType",
+                                                                                "hour",
+                                                                                "weekDays",
+                                                                                "avgBckSize"
+                                                                            ],
+                                                                            "properties": {
+                                                                                "backupType": {
+                                                                                    "type": "string",
+                                                                                    "enum": [
+                                                                                        "Database",
+                                                                                        "Log"
+                                                                                    ]
+                                                                                },
+                                                                                "hour": {
+                                                                                    "type": "string",
+                                                                                    "minLength": 5,
+                                                                                    "maxLength": 5,
+                                                                                    "pattern": "^[0-9]{2}:[0-9]{2}$"
+                                                                                },
+                                                                                "weekDays": {
+                                                                                    "type": "array",
+                                                                                    "items": {
+                                                                                        "type": "string",
+                                                                                        "enum": [
+                                                                                            "Monday",
+                                                                                            "Tuesday",
+                                                                                            "Wednesday",
+                                                                                            "Thursday",
+                                                                                            "Friday",
+                                                                                            "Saturday",
+                                                                                            "Sunday"
+                                                                                        ]
+                                                                                    },
+                                                                                    "uniqueItems": true
+                                                                                },
+                                                                                "avgBckSize": {
+                                                                                    "type": "number",
+                                                                                    "minimum": 0,
+                                                                                    "$comment": "size in GB"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "schemas": {
+                                                                        "type": "array",
+                                                                        "items": {
+                                                                            "type": "object",
+                                                                            "required": [
+                                                                                "allocationType",
+                                                                                "usedSpace",
+                                                                                "allocatedSpace"
+                                                                            ],
+                                                                            "properties": {
+                                                                                "allocationType": {
+                                                                                    "type": "string",
+                                                                                    "enum": [
+                                                                                        "Clustered Index Data",
+                                                                                        "LOB data",
+                                                                                        "Non Clustered Index Data",
+                                                                                        "Table Data"
+                                                                                    ]
+                                                                                },
+                                                                                "usedSpace": {
+                                                                                    "type": "integer",
+                                                                                    "minimum": 0,
+                                                                                    "$comment": "size in bytes"
+                                                                                },
+                                                                                "allocatedSpace": {
+                                                                                    "type": "integer",
+                                                                                    "minimum": 0,
+                                                                                    "$comment": "size in bytes"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "tablespaces": {
+                                                                        "type": "array",
+                                                                        "items": {
+                                                                            "type": "object",
+                                                                            "required": [
+                                                                                "fileName",
+                                                                                "alloc",
+                                                                                "used",
+                                                                                "usedPerc",
+                                                                                "growth",
+                                                                                "growthUnit",
+                                                                                "fileType",
+                                                                                "status"
+                                                                            ],
+                                                                            "properties": {
+                                                                                "fileName": {
+                                                                                    "type": "string",
+                                                                                    "minLength": 1,
+                                                                                    "maxLength": 32
+                                                                                },
+                                                                                "alloc": {
+                                                                                    "type": "integer",
+                                                                                    "minimum": 0,
+                                                                                    "$comment": "size in bytes"
+                                                                                },
+                                                                                "used": {
+                                                                                    "type": "integer",
+                                                                                    "minimum": 0,
+                                                                                    "$comment": "size in bytes"
+                                                                                },
+                                                                                "usedPerc": {
+                                                                                    "type": "number",
+                                                                                    "minimum": 0,
+                                                                                    "maximum": 100
+                                                                                },
+                                                                                "growth": {
+                                                                                    "type": "number"
+                                                                                },
+                                                                                "growthUnit": {
+                                                                                    "type": "string",
+                                                                                    "enum": [
+                                                                                        "%",
+                                                                                        "MB"
+                                                                                    ]
+                                                                                },
+                                                                                "fileType": {
+                                                                                    "type": "string",
+                                                                                    "enum": [
+                                                                                        "R",
+                                                                                        "L"
+                                                                                    ]
+                                                                                },
+                                                                                "status": {
+                                                                                    "type": "string",
+                                                                                    "enum": [
+                                                                                        "ONLINE"
+                                                                                    ]
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "patches": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "displayName",
+                                                            "displayVersion",
+                                                            "installDate"
+                                                        ],
+                                                        "properties": {
+                                                            "displayName": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
+                                                            },
+                                                            "displayVersion": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
+                                                            },
+                                                            "installDate": {
+                                                                "type": "string",
+                                                                "format": "date"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "psu": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "displayName",
+                                                        "displayVersion",
+                                                        "installDate"
+                                                    ],
+                                                    "properties": {
+                                                        "displayName": {
+                                                            "type": "string",
+                                                            "minLength": 1,
+                                                            "maxLength": 64
+                                                        },
+                                                        "displayVersion": {
+                                                            "type": "string",
+                                                            "minLength": 1,
+                                                            "maxLength": 64
+                                                        },
+                                                        "installDate": {
+                                                            "type": "string",
+                                                            "format": "date"
+                                                        }
+                                                    }
+                                                },
+                                                "features": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "product",
+                                                            "instance",
+                                                            "instanceID",
+                                                            "feature",
+                                                            "language",
+                                                            "edition",
+                                                            "version",
+                                                            "clustered",
+                                                            "configured"
+                                                        ],
+                                                        "properties": {
+                                                            "product": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
+                                                            },
+                                                            "instance": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
+                                                            },
+                                                            "instanceID": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
+                                                            },
+                                                            "feature": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
+                                                            },
+                                                            "language": {
+                                                                "type": "string",
+                                                                "minLength": 4,
+                                                                "maxLength": 4,
+                                                                "pattern": "[0-9]{4}"
+                                                            },
+                                                            "edition": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 32
+                                                            },
+                                                            "version": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 32
+                                                            },
+                                                            "clustered": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "???"
+                                                                ]
+                                                            },
+                                                            "configured": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "???"
+                                                                ]
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
                 }
             }
         },
