@@ -1032,27 +1032,34 @@ components:
           nullable: true
     TechnologyStatus:
       type: object
-      required:
-        - product
-        - hostsCount
-        - compliance
-        - unpaidDues
       properties:
         product:
           type: string
           description: technology product code
         hostsCount:
           type: integer
-          description: number of hosts found supporting the current product / total hosts found
+          description: number of hosts found supporting the current product
         compliance:
           type: number
-          description: "a metric ranging [0..1] calculated as follows:\nif a ULA exists for a given product, its compliance := 1. \n\nWhen calculating the total, this product's purchasedLicenses := usedLicenses\nelse if usedLicenses <= purchasedLicenses the product's compliance := 1. \n\nWhen calculating the total, this product's purchasedLicenses := usedLicenses \nelse this product's compliance := purchasedLicenses / usedLicenses."
+          description: |-
+            a metric ranging [0..1] calculated as follows:
+            if a ULA exists for a given product, its compliance := 1.
+
+            When calculating the total, this product's purchasedLicenses := usedLicenses
+            else if usedLicenses <= purchasedLicenses the product's compliance := 1.
+
+            When calculating the total, this product's purchasedLicenses := usedLicenses else this product's compliance := purchasedLicenses / usedLicenses.
         unpaidDues:
           type: number
           description: |-
             "unpaidDues" = difference between calculated cost of used and purchased licenses:
             if usedLicensesCost <= purchasedLicensesCost, then unpaidDues := 0
             else unpaidDues := usedLicensesCost - purchasedLicensesCost
+      required:
+        - product
+        - hostsCount
+        - compliance
+        - unpaidDues
     AllTechnologyComplianceStatus:
       type: object
       properties:
@@ -3687,12 +3694,12 @@ paths:
                           hostsCount: 6
                       total:
                         compliance: 0.07142857142857142
-                        hostsCount: 8
+                        hostsCount: 14
                         unpaidDues: 0
         '201':
           description: Created
-        '401':
-          $ref: '#/components/responses/error'
+        '400':
+          description: Bad Request
         '422':
           $ref: '#/components/responses/error'
         '500':
