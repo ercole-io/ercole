@@ -82,7 +82,7 @@ var MicrosoftSQLServerInstanceBsonValidatorRules = bson.M{
 		"stateDesc",
 		"version",
 		"platform",
-		"recovertModel",
+		"recoveryModel",
 		"collationName",
 		"blockSize",
 		"schedulersCount",
