@@ -26,7 +26,6 @@ type MicrosoftSQLServerDatabaseTablespace struct {
 	Filename   string                 `json:"filename" bson:"filename"`
 	Alloc      int                    `json:"alloc" bson:"alloc"`
 	Used       int                    `json:"used" bson:"used"`
-	UsedPerc   float64                `json:"usedPerc" bson:"usedPerc"`
 	Growth     float64                `json:"growth" bson:"growth"`
 	GrowthUnit string                 `json:"growthUnit" bson:"growthUnit"`
 	FileType   string                 `json:"fileType" bson:"fileType"`
@@ -61,7 +60,6 @@ var MicrosoftSQLServerDatabaseTablespaceBsonValidatorRules = bson.M{
 		"filename",
 		"alloc",
 		"used",
-		"usedPerc",
 		"growth",
 		"growthUnit",
 		"fileType",
@@ -80,11 +78,6 @@ var MicrosoftSQLServerDatabaseTablespaceBsonValidatorRules = bson.M{
 		"used": bson.M{
 			"bsonType": "integer",
 			"minimum":  0,
-		},
-		"usedPerc": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-			"maximum":  100,
 		},
 		"growth": bson.M{
 			"bsonType": "number",

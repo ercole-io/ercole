@@ -23,8 +23,9 @@ import (
 )
 
 type MicrosoftSQLServerFeature struct {
-	Instances []MicrosoftSQLServerInstance `json:"instances" bson:"instances"`
-	OtherInfo map[string]interface{}       `json:"-" bson:"-"`
+	Instances []MicrosoftSQLServerInstance       `json:"instances" bson:"instances"`
+	Features  []MicrosoftSQLServerProductFeature `json:"features" bson:"features"`
+	OtherInfo map[string]interface{}             `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -57,6 +58,10 @@ var MicrosoftSQLServerFeatureBsonValidatorRules = bson.M{
 		"instances": bson.M{
 			"bsonType": "array",
 			"items":    MicrosoftSQLServerInstanceBsonValidatorRules,
+		},
+		"features": bson.M{
+			"bsonType": "array",
+			"items":    MicrosoftSQLServerProductFeatureBsonValidatorRules,
 		},
 	},
 }

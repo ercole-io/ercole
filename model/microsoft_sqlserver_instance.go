@@ -23,31 +23,30 @@ import (
 )
 
 type MicrosoftSQLServerInstance struct {
-	Status          string                             `json:"status" bson:"status"`
-	Name            string                             `json:"name" bson:"name"`
-	DisplayName     string                             `json:"displayName" bson:"displayName"`
-	ServerName      string                             `json:"serverName" bson:"serverName"`
-	DatabaseID      int                                `json:"databaseID" bson:"databaseID"`
-	StateDesc       string                             `json:"stateDesc" bson:"stateDesc"`
-	Version         string                             `json:"version" bson:"version"`
-	Platform        string                             `json:"platform" bson:"platform"`
-	RecoveryModel   string                             `json:"recoveryModel" bson:"recoveryModel"`
-	CollationModel  string                             `json:"collationModel" bson:"collationModel"`
-	BlockSize       int                                `json:"blockSize" bson:"blockSize"`
-	SchedulersCount int                                `json:"schedulersCount" bson:"schedulersCount"`
-	AffinityMask    int                                `json:"affinityMask" bson:"affinityMask"`
-	MinServerMemory int                                `json:"minServerMemory" bson:"minServerMemory"`
-	MaxServerMemory int                                `json:"maxServerMemory" bson:"maxServerMemory"`
-	CTP             int                                `json:"ctp" bson:"ctp"`
-	MaxDop          int                                `json:"maxDop" bson:"maxDop"`
-	Alloc           float64                            `json:"alloc" bson:"alloc"`
-	Edition         string                             `json:"edition" bson:"edition"`
-	ProductCode     string                             `json:"productCode" bson:"productCode"`
-	LicensingInfo   string                             `json:"licensingInfo" bson:"licensingInfo"`
-	Databases       []MicrosoftSQLServerDatabase       `json:"databases" bson:"databases"`
-	Patches         []MicrosoftSQLServerPatch          `json:"patches" bson:"patches"`
-	Features        []MicrosoftSQLServerProductFeature `json:"features" bson:"features"`
-	OtherInfo       map[string]interface{}             `json:"-" bson:"-"`
+	Status          string                       `json:"status" bson:"status"`
+	Name            string                       `json:"name" bson:"name"`
+	DisplayName     string                       `json:"displayName" bson:"displayName"`
+	ServerName      string                       `json:"serverName" bson:"serverName"`
+	DatabaseID      int                          `json:"databaseID" bson:"databaseID"`
+	StateDesc       string                       `json:"stateDesc" bson:"stateDesc"`
+	Version         string                       `json:"version" bson:"version"`
+	Platform        string                       `json:"platform" bson:"platform"`
+	RecoveryModel   string                       `json:"recoveryModel" bson:"recoveryModel"`
+	CollationModel  string                       `json:"collationModel" bson:"collationModel"`
+	BlockSize       int                          `json:"blockSize" bson:"blockSize"`
+	SchedulersCount int                          `json:"schedulersCount" bson:"schedulersCount"`
+	AffinityMask    int                          `json:"affinityMask" bson:"affinityMask"`
+	MinServerMemory int                          `json:"minServerMemory" bson:"minServerMemory"`
+	MaxServerMemory int                          `json:"maxServerMemory" bson:"maxServerMemory"`
+	CTP             int                          `json:"ctp" bson:"ctp"`
+	MaxDop          int                          `json:"maxDop" bson:"maxDop"`
+	Alloc           float64                      `json:"alloc" bson:"alloc"`
+	Edition         string                       `json:"edition" bson:"edition"`
+	ProductCode     string                       `json:"productCode" bson:"productCode"`
+	LicensingInfo   string                       `json:"licensingInfo" bson:"licensingInfo"`
+	Databases       []MicrosoftSQLServerDatabase `json:"databases" bson:"databases"`
+	Patches         []MicrosoftSQLServerPatch    `json:"patches" bson:"patches"`
+	OtherInfo       map[string]interface{}       `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -100,7 +99,6 @@ var MicrosoftSQLServerInstanceBsonValidatorRules = bson.M{
 		"licensingInfo",
 		"databases",
 		"patches",
-		"features",
 	},
 	"properties": bson.M{
 		"status": bson.M{
@@ -233,10 +231,6 @@ var MicrosoftSQLServerInstanceBsonValidatorRules = bson.M{
 		"patches": bson.M{
 			"bsonType": "array",
 			"items":    MicrosoftSQLServerPatchBsonValidatorRules,
-		},
-		"features": bson.M{
-			"bsonType": "array",
-			"items":    MicrosoftSQLServerProductFeatureBsonValidatorRules,
 		},
 	},
 }
