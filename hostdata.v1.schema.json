@@ -411,6 +411,7 @@
                                                                         "maxSize",
                                                                         "total",
                                                                         "used",
+                                                                        "usedPerc",
                                                                         "status"
                                                                     ],
                                                                     "properties": {
@@ -430,6 +431,11 @@
                                                                         "used": {
                                                                             "type": "number",
                                                                             "minimum": 0
+                                                                        },
+                                                                        "usedPerc": {
+                                                                            "type": "number",
+                                                                            "minimum": 0,
+                                                                            "maximum": 100
                                                                         },
                                                                         "status": {
                                                                             "type": "string",
@@ -1632,7 +1638,6 @@
                                                                                 "filename",
                                                                                 "alloc",
                                                                                 "used",
-                                                                                "usedPerc",
                                                                                 "growth",
                                                                                 "growthUnit",
                                                                                 "fileType",
@@ -1653,11 +1658,6 @@
                                                                                     "type": "integer",
                                                                                     "minimum": 0,
                                                                                     "$comment": "size in bytes"
-                                                                                },
-                                                                                "usedPerc": {
-                                                                                    "type": "number",
-                                                                                    "minimum": 0,
-                                                                                    "maximum": 100
                                                                                 },
                                                                                 "growth": {
                                                                                     "type": "number"
