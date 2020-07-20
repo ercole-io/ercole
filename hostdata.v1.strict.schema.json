@@ -1388,7 +1388,7 @@
                                                         "stateDesc",
                                                         "version",
                                                         "platform",
-                                                        "recovertModel",
+                                                        "recoveryModel",
                                                         "collationName",
                                                         "blockSize",
                                                         "schedulersCount",
