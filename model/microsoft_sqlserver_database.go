@@ -67,7 +67,7 @@ var MicrosoftSQLServerDatabaseBsonValidatorRules = bson.M{
 	},
 	"properties": bson.M{
 		"databaseID": bson.M{
-			"bsonType": "integer",
+			"bsonType": "double",
 			"minimum":  1,
 		},
 		"name": bson.M{
