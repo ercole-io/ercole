@@ -1363,10 +1363,7 @@ var FrontendHostdataSchemaValidator string = `
                                         {
                                             "type": "object",
                                             "required": [
-                                                "instances",
-                                                "patches",
-                                                "psu",
-                                                "features"
+                                                "instances"
                                             ],
                                             "properties": {
                                                 "instances": {
@@ -1374,10 +1371,9 @@ var FrontendHostdataSchemaValidator string = `
                                                     "required": [
                                                         "status",
                                                         "name",
-                                                        "connString",
                                                         "displayName",
                                                         "serverName",
-                                                        "databaseId",
+                                                        "databaseID",
                                                         "databaseName",
                                                         "stateDesc",
                                                         "version",
@@ -1397,24 +1393,27 @@ var FrontendHostdataSchemaValidator string = `
                                                         "editionType",
                                                         "productCode",
                                                         "licensingInfo",
-                                                        "databases"
+                                                        "databases",
+                                                        "patches",
+                                                        "features"
                                                     ],
                                                     "properties": {
                                                         "status": {
                                                             "type": "string",
                                                             "enum": [
-                                                                "Running"
+                                                                "Running",
+                                                                "Stopped",
+                                                                "ContinuePending",
+                                                                "Paused",
+                                                                "PausePending",
+                                                                "StartPending",
+                                                                "StopPending"
                                                             ]
                                                         },
                                                         "name": {
                                                             "type": "string",
                                                             "minLength": 1,
                                                             "maxLength": 64
-                                                        },
-                                                        "connString": {
-                                                            "type": "string",
-                                                            "minLength": 1,
-                                                            "maxLength": 128
                                                         },
                                                         "displayName": {
                                                             "type": "string",
@@ -1426,19 +1425,22 @@ var FrontendHostdataSchemaValidator string = `
                                                             "minLength": 1,
                                                             "maxLength": 64
                                                         },
-                                                        "databaseId": {
+                                                        "databaseID": {
                                                             "type": "integer",
                                                             "minimum": 1
-                                                        },
-                                                        "databaseName": {
-                                                            "type": "string",
-                                                            "minLength": 1,
-                                                            "maxLength": 64
                                                         },
                                                         "stateDesc": {
                                                             "type": "string",
                                                             "enum": [
-                                                                "ONLINE"
+                                                                "ONLINE",
+                                                                "RESTORING",
+                                                                "RECOVERING",
+                                                                "RECOVERY_PENDING",
+                                                                "SUSPECT",
+                                                                "EMERGENCY",
+                                                                "OFFLINE",
+                                                                "COPYING",
+                                                                "OFFLINE_SECONDARY"
                                                             ]
                                                         },
                                                         "version": {
@@ -1454,6 +1456,8 @@ var FrontendHostdataSchemaValidator string = `
                                                         "recoveryModel": {
                                                             "type": "string",
                                                             "enum": [
+                                                                "FULL",
+                                                                "BULK_LOGGED",
                                                                 "SIMPLE"
                                                             ]
                                                         },
@@ -1499,13 +1503,14 @@ var FrontendHostdataSchemaValidator string = `
                                                         "edition": {
                                                             "type": "string",
                                                             "enum": [
-                                                                "ENT"
+                                                                "ENT",
+                                                                "EXP",
+                                                                "STD",
+                                                                "BI",
+                                                                "DEV",
+                                                                "WEB",
+                                                                "AZU"
                                                             ]
-                                                        },
-                                                        "productVersion": {
-                                                            "type": "string",
-                                                            "minLength": 1,
-                                                            "maxLength": 64
                                                         },
                                                         "productCode": {
                                                             "type": "string",
@@ -1523,29 +1528,16 @@ var FrontendHostdataSchemaValidator string = `
                                                             "items": {
                                                                 "type": "object",
                                                                 "required": [
-                                                                    "databaseId",
+                                                                    "databaseID",
                                                                     "name",
-                                                                    "stateDesc",
-                                                                    "serverName",
-                                                                    "version",
-                                                                    "platform",
-                                                                    "recovertModel",
                                                                     "collationName",
-                                                                    "blockSize",
-                                                                    "schedulersCount",
-                                                                    "affinityMask",
-                                                                    "minServerMemory",
-                                                                    "maxServerMemory",
-                                                                    "ctp",
-                                                                    "maxDop",
-                                                                    "alloc",
                                                                     "status",
                                                                     "backups",
                                                                     "schemas",
                                                                     "tablespaces"
                                                                 ],
                                                                 "properties": {
-                                                                    "databaseId": {
+                                                                    "databaseID": {
                                                                         "type": "integer",
                                                                         "minimum": 1
                                                                     },
@@ -1559,71 +1551,18 @@ var FrontendHostdataSchemaValidator string = `
                                                                         "minLength": 1,
                                                                         "maxLength": 32
                                                                     },
-                                                                    "stateDesc": {
-                                                                        "type": "string",
-                                                                        "enum": [
-                                                                            "ONLINE"
-                                                                        ]
-                                                                    },
-                                                                    "serverName": {
-                                                                        "type": "string",
-                                                                        "minLength": 1,
-                                                                        "maxLength": 64
-                                                                    },
-                                                                    "version": {
-                                                                        "type": "string",
-                                                                        "minLength": 1,
-                                                                        "maxLength": 32
-                                                                    },
-                                                                    "platform": {
-                                                                        "type": "string",
-                                                                        "minLength": 1,
-                                                                        "maxLength": 16
-                                                                    },
-                                                                    "recoveryModel": {
-                                                                        "type": "string",
-                                                                        "enum": [
-                                                                            "SIMPLE"
-                                                                        ]
-                                                                    },
-                                                                    "blockSize": {
-                                                                        "type": "integer",
-                                                                        "minimum": 1
-                                                                    },
-                                                                    "schedulersCount": {
-                                                                        "type": "integer",
-                                                                        "minimum": 1
-                                                                    },
-                                                                    "affinityMask": {
-                                                                        "type": "integer",
-                                                                        "minimum": 0
-                                                                    },
-                                                                    "minServerMemory": {
-                                                                        "type": "integer",
-                                                                        "minimum": 1,
-                                                                        "$comment": "size in bytes"
-                                                                    },
-                                                                    "maxServerMemory": {
-                                                                        "type": "integer",
-                                                                        "minimum": 1,
-                                                                        "$comment": "size in bytes"
-                                                                    },
-                                                                    "ctp": {
-                                                                        "type": "integer",
-                                                                        "minimum": 1
-                                                                    },
-                                                                    "maxDop": {
-                                                                        "type": "integer",
-                                                                        "minimum": 0
-                                                                    },
-                                                                    "alloc": {
-                                                                        "type": "number",
-                                                                        "minimum": 0
-                                                                    },
                                                                     "status": {
                                                                         "type": "string",
                                                                         "enum": [
-                                                                            "ONLINE"
+                                                                            "ONLINE",
+                                                                            "RESTORING",
+                                                                            "RECOVERING",
+                                                                            "RECOVERY_PENDING",
+                                                                            "SUSPECT",
+                                                                            "EMERGENCY",
+                                                                            "OFFLINE",
+                                                                            "COPYING",
+                                                                            "OFFLINE_SECONDARY"
                                                                         ]
                                                                     },
                                                                     "backups": {
@@ -1641,7 +1580,12 @@ var FrontendHostdataSchemaValidator string = `
                                                                                     "type": "string",
                                                                                     "enum": [
                                                                                         "Database",
-                                                                                        "Log"
+                                                                                        "Log",
+                                                                                        "File or filegroup",
+                                                                                        "Differential database",
+                                                                                        "Differential file",
+                                                                                        "Differential partial",
+                                                                                        "Partial"
                                                                                     ]
                                                                                 },
                                                                                 "hour": {
@@ -1711,7 +1655,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                         "items": {
                                                                             "type": "object",
                                                                             "required": [
-                                                                                "fileName",
+                                                                                "filename",
                                                                                 "alloc",
                                                                                 "used",
                                                                                 "usedPerc",
@@ -1721,7 +1665,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                                 "status"
                                                                             ],
                                                                             "properties": {
-                                                                                "fileName": {
+                                                                                "filename": {
                                                                                     "type": "string",
                                                                                     "minLength": 1,
                                                                                     "maxLength": 32
@@ -1754,14 +1698,22 @@ var FrontendHostdataSchemaValidator string = `
                                                                                 "fileType": {
                                                                                     "type": "string",
                                                                                     "enum": [
-                                                                                        "R",
-                                                                                        "L"
+                                                                                        "ROWS",
+                                                                                        "LOG",
+                                                                                        "FILESTREAM",
+                                                                                        "FULLTEXT"
                                                                                     ]
                                                                                 },
                                                                                 "status": {
                                                                                     "type": "string",
                                                                                     "enum": [
-                                                                                        "ONLINE"
+                                                                                        "ONLINE",
+                                                                                        "RESTORING",
+                                                                                        "RECOVERING",
+                                                                                        "RECOVERY_PENDING",
+                                                                                        "SUSPECT",
+                                                                                        "OFFLINE",
+                                                                                        "DEFUNCT"
                                                                                     ]
                                                                                 }
                                                                             }
@@ -1769,123 +1721,92 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 }
                                                             }
-                                                        }
-                                                    }
-                                                },
-                                                "patches": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "required": [
-                                                            "displayName",
-                                                            "displayVersion",
-                                                            "installDate"
-                                                        ],
-                                                        "properties": {
-                                                            "displayName": {
-                                                                "type": "string",
-                                                                "minLength": 1,
-                                                                "maxLength": 64
-                                                            },
-                                                            "displayVersion": {
-                                                                "type": "string",
-                                                                "minLength": 1,
-                                                                "maxLength": 64
-                                                            },
-                                                            "installDate": {
-                                                                "type": "string",
-                                                                "format": "date"
+                                                        },
+                                                        "patches": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "required": [
+                                                                    "displayName",
+                                                                    "displayVersion",
+                                                                    "installDate"
+                                                                ],
+                                                                "properties": {
+                                                                    "displayName": {
+                                                                        "type": "string",
+                                                                        "minLength": 1,
+                                                                        "maxLength": 64
+                                                                    },
+                                                                    "displayVersion": {
+                                                                        "type": "string",
+                                                                        "minLength": 1,
+                                                                        "maxLength": 64
+                                                                    },
+                                                                    "installDate": {
+                                                                        "type": "string",
+                                                                        "format": "date"
+                                                                    }
+                                                                }
                                                             }
-                                                        }
-                                                    }
-                                                },
-                                                "psu": {
-                                                    "type": "object",
-                                                    "required": [
-                                                        "displayName",
-                                                        "displayVersion",
-                                                        "installDate"
-                                                    ],
-                                                    "properties": {
-                                                        "displayName": {
-                                                            "type": "string",
-                                                            "minLength": 1,
-                                                            "maxLength": 64
                                                         },
-                                                        "displayVersion": {
-                                                            "type": "string",
-                                                            "minLength": 1,
-                                                            "maxLength": 64
-                                                        },
-                                                        "installDate": {
-                                                            "type": "string",
-                                                            "format": "date"
-                                                        }
-                                                    }
-                                                },
-                                                "features": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "required": [
-                                                            "product",
-                                                            "instance",
-                                                            "instanceID",
-                                                            "feature",
-                                                            "language",
-                                                            "edition",
-                                                            "version",
-                                                            "clustered",
-                                                            "configured"
-                                                        ],
-                                                        "properties": {
-                                                            "product": {
-                                                                "type": "string",
-                                                                "minLength": 1,
-                                                                "maxLength": 64
-                                                            },
-                                                            "instance": {
-                                                                "type": "string",
-                                                                "minLength": 1,
-                                                                "maxLength": 64
-                                                            },
-                                                            "instanceID": {
-                                                                "type": "string",
-                                                                "minLength": 1,
-                                                                "maxLength": 64
-                                                            },
-                                                            "feature": {
-                                                                "type": "string",
-                                                                "minLength": 1,
-                                                                "maxLength": 64
-                                                            },
-                                                            "language": {
-                                                                "type": "string",
-                                                                "minLength": 4,
-                                                                "maxLength": 4,
-                                                                "pattern": "[0-9]{4}"
-                                                            },
-                                                            "edition": {
-                                                                "type": "string",
-                                                                "minLength": 1,
-                                                                "maxLength": 32
-                                                            },
-                                                            "version": {
-                                                                "type": "string",
-                                                                "minLength": 1,
-                                                                "maxLength": 32
-                                                            },
-                                                            "clustered": {
-                                                                "type": "string",
-                                                                "enum": [
-                                                                    "???"
-                                                                ]
-                                                            },
-                                                            "configured": {
-                                                                "type": "string",
-                                                                "enum": [
-                                                                    "???"
-                                                                ]
+                                                        "features": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "required": [
+                                                                    "product",
+                                                                    "instance",
+                                                                    "instanceID",
+                                                                    "feature",
+                                                                    "language",
+                                                                    "edition",
+                                                                    "version",
+                                                                    "clustered",
+                                                                    "configured"
+                                                                ],
+                                                                "properties": {
+                                                                    "product": {
+                                                                        "type": "string",
+                                                                        "minLength": 1,
+                                                                        "maxLength": 64
+                                                                    },
+                                                                    "instance": {
+                                                                        "type": "string",
+                                                                        "minLength": 1,
+                                                                        "maxLength": 64
+                                                                    },
+                                                                    "instanceID": {
+                                                                        "type": "string",
+                                                                        "minLength": 1,
+                                                                        "maxLength": 64
+                                                                    },
+                                                                    "feature": {
+                                                                        "type": "string",
+                                                                        "minLength": 1,
+                                                                        "maxLength": 64
+                                                                    },
+                                                                    "language": {
+                                                                        "type": "string",
+                                                                        "minLength": 1,
+                                                                        "maxLength": 16
+                                                                    },
+                                                                    "edition": {
+                                                                        "type": "string",
+                                                                        "minLength": 1,
+                                                                        "maxLength": 32
+                                                                    },
+                                                                    "version": {
+                                                                        "type": "string",
+                                                                        "minLength": 1,
+                                                                        "maxLength": 32
+                                                                    },
+                                                                    "clustered": {
+                                                                        "type": "boolean"
+                                                                    },
+                                                                    "configured": {
+                                                                        "type": "boolean"
+                                                                    }
+                                                                }
                                                             }
                                                         }
                                                     }
