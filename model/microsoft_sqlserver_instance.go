@@ -78,7 +78,6 @@ var MicrosoftSQLServerInstanceBsonValidatorRules = bson.M{
 		"displayName",
 		"serverName",
 		"databaseID",
-		"databaseName",
 		"stateDesc",
 		"version",
 		"platform",
