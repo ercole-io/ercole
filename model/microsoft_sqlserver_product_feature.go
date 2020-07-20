@@ -106,10 +106,10 @@ var MicrosoftSQLServerProductFeatureBsonValidatorRules = bson.M{
 			"maxLength": 32,
 		},
 		"clustered": bson.M{
-			"bsonType": "boolean",
+			"bsonType": "bool",
 		},
 		"configured": bson.M{
-			"bsonType": "boolean",
+			"bsonType": "bool",
 		},
 	},
 }
