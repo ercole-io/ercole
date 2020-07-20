@@ -129,7 +129,7 @@ var MicrosoftSQLServerInstanceBsonValidatorRules = bson.M{
 			"maxLength": 64,
 		},
 		"databaseID": bson.M{
-			"bsonType": "integer",
+			"bsonType": "double",
 			"minimum":  1,
 		},
 		"stateDesc": bson.M{
@@ -170,35 +170,35 @@ var MicrosoftSQLServerInstanceBsonValidatorRules = bson.M{
 			"maxLength": 32,
 		},
 		"blockSize": bson.M{
-			"bsonType": "integer",
+			"bsonType": "double",
 			"minimum":  1,
 		},
 		"schedulersCount": bson.M{
-			"bsonType": "integer",
+			"bsonType": "double",
 			"minimum":  1,
 		},
 		"affinityMask": bson.M{
-			"bsonType": "integer",
+			"bsonType": "double",
 			"minimum":  0,
 		},
 		"minServerMemory": bson.M{
-			"bsonType": "integer",
+			"bsonType": "double",
 			"minimum":  1,
 		},
 		"maxServerMemory": bson.M{
-			"bsonType": "integer",
+			"bsonType": "double",
 			"minimum":  1,
 		},
 		"ctp": bson.M{
-			"bsonType": "integer",
+			"bsonType": "double",
 			"minimum":  1,
 		},
 		"maxDop": bson.M{
-			"bsonType": "integer",
+			"bsonType": "double",
 			"minimum":  0,
 		},
 		"alloc": bson.M{
-			"bsonType": "integer",
+			"bsonType": "double",
 			"minimum":  0,
 		},
 		"edition": bson.M{
