@@ -1068,7 +1068,7 @@ components:
           description: number of hosts
         compliance:
           type: number
-          description: sum(purchasedLicenses) / sum(usedLicenses) fore each product
+          description: sum(purchasedLicenses) / sum(usedLicenses) for each product
         unpaidDues:
           type: number
           description: sum of unpaidDues
@@ -2227,7 +2227,6 @@ paths:
                   - type: array
                     items:
                       $ref: '#/components/schemas/AggregatedCodeSeverityAlerts'
-              examples: {}
         '401':
           $ref: '#/components/responses/error'
           description: Unauthorized
