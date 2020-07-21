@@ -1363,7 +1363,8 @@ var FrontendHostdataSchemaValidator string = `
                                         {
                                             "type": "object",
                                             "required": [
-                                                "instances"
+                                                "instances",
+                                                "features"
                                             ],
                                             "properties": {
                                                 "instances": {
@@ -1374,11 +1375,10 @@ var FrontendHostdataSchemaValidator string = `
                                                         "displayName",
                                                         "serverName",
                                                         "databaseID",
-                                                        "databaseName",
                                                         "stateDesc",
                                                         "version",
                                                         "platform",
-                                                        "recovertModel",
+                                                        "recoveryModel",
                                                         "collationName",
                                                         "blockSize",
                                                         "schedulersCount",
@@ -1389,13 +1389,11 @@ var FrontendHostdataSchemaValidator string = `
                                                         "maxDop",
                                                         "alloc",
                                                         "edition",
-                                                        "productVersion",
                                                         "editionType",
                                                         "productCode",
                                                         "licensingInfo",
                                                         "databases",
-                                                        "patches",
-                                                        "features"
+                                                        "patches"
                                                     ],
                                                     "properties": {
                                                         "status": {
@@ -1658,7 +1656,6 @@ var FrontendHostdataSchemaValidator string = `
                                                                                 "filename",
                                                                                 "alloc",
                                                                                 "used",
-                                                                                "usedPerc",
                                                                                 "growth",
                                                                                 "growthUnit",
                                                                                 "fileType",
@@ -1679,11 +1676,6 @@ var FrontendHostdataSchemaValidator string = `
                                                                                     "type": "integer",
                                                                                     "minimum": 0,
                                                                                     "$comment": "size in bytes"
-                                                                                },
-                                                                                "usedPerc": {
-                                                                                    "type": "number",
-                                                                                    "minimum": 0,
-                                                                                    "maximum": 100
                                                                                 },
                                                                                 "growth": {
                                                                                     "type": "number"
@@ -1748,65 +1740,65 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 }
                                                             }
-                                                        },
-                                                        "features": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "type": "object",
-                                                                "required": [
-                                                                    "product",
-                                                                    "instance",
-                                                                    "instanceID",
-                                                                    "feature",
-                                                                    "language",
-                                                                    "edition",
-                                                                    "version",
-                                                                    "clustered",
-                                                                    "configured"
-                                                                ],
-                                                                "properties": {
-                                                                    "product": {
-                                                                        "type": "string",
-                                                                        "minLength": 1,
-                                                                        "maxLength": 64
-                                                                    },
-                                                                    "instance": {
-                                                                        "type": "string",
-                                                                        "minLength": 1,
-                                                                        "maxLength": 64
-                                                                    },
-                                                                    "instanceID": {
-                                                                        "type": "string",
-                                                                        "minLength": 1,
-                                                                        "maxLength": 64
-                                                                    },
-                                                                    "feature": {
-                                                                        "type": "string",
-                                                                        "minLength": 1,
-                                                                        "maxLength": 64
-                                                                    },
-                                                                    "language": {
-                                                                        "type": "string",
-                                                                        "minLength": 1,
-                                                                        "maxLength": 16
-                                                                    },
-                                                                    "edition": {
-                                                                        "type": "string",
-                                                                        "minLength": 1,
-                                                                        "maxLength": 32
-                                                                    },
-                                                                    "version": {
-                                                                        "type": "string",
-                                                                        "minLength": 1,
-                                                                        "maxLength": 32
-                                                                    },
-                                                                    "clustered": {
-                                                                        "type": "boolean"
-                                                                    },
-                                                                    "configured": {
-                                                                        "type": "boolean"
-                                                                    }
-                                                                }
+                                                        }
+                                                    }
+                                                },
+                                                "features": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "product",
+                                                            "instance",
+                                                            "instanceID",
+                                                            "feature",
+                                                            "language",
+                                                            "edition",
+                                                            "version",
+                                                            "clustered",
+                                                            "configured"
+                                                        ],
+                                                        "properties": {
+                                                            "product": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
+                                                            },
+                                                            "instance": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
+                                                            },
+                                                            "instanceID": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
+                                                            },
+                                                            "feature": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
+                                                            },
+                                                            "language": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 16
+                                                            },
+                                                            "edition": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 32
+                                                            },
+                                                            "version": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 32
+                                                            },
+                                                            "clustered": {
+                                                                "type": "boolean"
+                                                            },
+                                                            "configured": {
+                                                                "type": "boolean"
                                                             }
                                                         }
                                                     }
