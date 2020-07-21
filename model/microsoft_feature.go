@@ -22,46 +22,39 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type OracleFeature struct {
-	Database  *OracleDatabaseFeature `json:"database,omitempty" bson:"database,omitempty"`
-	Exadata   *OracleExadataFeature  `json:"exadata,omitempty" bson:"exadata,omitempty"`
-	OtherInfo map[string]interface{} `json:"-" bson:"-"`
+type MicrosoftFeature struct {
+	SQLServer *MicrosoftSQLServerFeature `json:"sqlServer,omitempty" bson:"sqlServer,omitempty"`
+	OtherInfo map[string]interface{}     `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v OracleFeature) MarshalJSON() ([]byte, error) {
+func (v MicrosoftFeature) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *OracleFeature) UnmarshalJSON(data []byte) error {
+func (v *MicrosoftFeature) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v OracleFeature) MarshalBSON() ([]byte, error) {
+func (v MicrosoftFeature) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *OracleFeature) UnmarshalBSON(data []byte) error {
+func (v *MicrosoftFeature) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// OracleFeatureBsonValidatorRules contains mongodb validation rules for OracleFeature
-var OracleFeatureBsonValidatorRules = bson.M{
+// MicrosoftFeatureBsonValidatorRules contains mongodb validation rules for MicrosoftFeature
+var MicrosoftFeatureBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"properties": bson.M{
-		"oracle": bson.M{
+		"sqlServer": bson.M{
 			"anyOf": bson.A{
 				bson.M{"bsonType": "null"},
-				OracleDatabaseFeatureBsonValidatorRules,
-			},
-		},
-		"exadata": bson.M{
-			"anyOf": bson.A{
-				bson.M{"bsonType": "null"},
-				OracleExadataFeatureBsonValidatorRules,
+				MicrosoftSQLServerFeatureBsonValidatorRules,
 			},
 		},
 	},

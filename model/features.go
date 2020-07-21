@@ -24,7 +24,8 @@ import (
 
 // Features holds various informations about the features of the host.
 type Features struct {
-	Oracle    *OracleFeature         `json:"oracle" bson:"oracle"`
+	Oracle    *OracleFeature         `json:"oracle,omitempty" bson:"oracle,omitempty"`
+	Microsoft *MicrosoftFeature      `json:"microsoft,omitempty" bson:"microsoft,omitempty"`
 	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }
 
@@ -58,6 +59,14 @@ var FeaturesBsonValidatorRules = bson.M{
 					"bsonType": "null",
 				},
 				OracleFeatureBsonValidatorRules,
+			},
+		},
+		"microsoft": bson.M{
+			"anyOf": bson.A{
+				bson.M{
+					"bsonType": "null",
+				},
+				MicrosoftFeatureBsonValidatorRules,
 			},
 		},
 	},
