@@ -42,6 +42,7 @@ type MicrosoftSQLServerInstance struct {
 	MaxDop          int                          `json:"maxDop" bson:"maxDop"`
 	Alloc           float64                      `json:"alloc" bson:"alloc"`
 	Edition         string                       `json:"edition" bson:"edition"`
+	EditionType     string                       `json:"editionType" bson:"editionType"`
 	ProductCode     string                       `json:"productCode" bson:"productCode"`
 	LicensingInfo   string                       `json:"licensingInfo" bson:"licensingInfo"`
 	Databases       []MicrosoftSQLServerDatabase `json:"databases" bson:"databases"`
@@ -210,6 +211,11 @@ var MicrosoftSQLServerInstanceBsonValidatorRules = bson.M{
 				"WEB",
 				"AZU",
 			},
+		},
+		"editionType": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 64,
 		},
 		"productCode": bson.M{
 			"bsonType":  "string",
