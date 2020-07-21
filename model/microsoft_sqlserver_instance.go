@@ -32,7 +32,7 @@ type MicrosoftSQLServerInstance struct {
 	Version         string                       `json:"version" bson:"version"`
 	Platform        string                       `json:"platform" bson:"platform"`
 	RecoveryModel   string                       `json:"recoveryModel" bson:"recoveryModel"`
-	CollationModel  string                       `json:"collationModel" bson:"collationModel"`
+	CollationName   string                       `json:"collationName" bson:"collationName"`
 	BlockSize       int                          `json:"blockSize" bson:"blockSize"`
 	SchedulersCount int                          `json:"schedulersCount" bson:"schedulersCount"`
 	AffinityMask    int                          `json:"affinityMask" bson:"affinityMask"`
