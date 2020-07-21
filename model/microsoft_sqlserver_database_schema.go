@@ -22,47 +22,58 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type OracleFeature struct {
-	Database  *OracleDatabaseFeature `json:"database,omitempty" bson:"database,omitempty"`
-	Exadata   *OracleExadataFeature  `json:"exadata,omitempty" bson:"exadata,omitempty"`
-	OtherInfo map[string]interface{} `json:"-" bson:"-"`
+type MicrosoftSQLServerDatabaseSchema struct {
+	AllocationType string                 `json:"allocationType" bson:"allocationType"`
+	UsedSpace      int                    `json:"usedSpace" bson:"usedSpace"`
+	AllocatedSpace int                    `json:"allocatedSpace" bson:"allocatedSpace"`
+	OtherInfo      map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v OracleFeature) MarshalJSON() ([]byte, error) {
+func (v MicrosoftSQLServerDatabaseSchema) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *OracleFeature) UnmarshalJSON(data []byte) error {
+func (v *MicrosoftSQLServerDatabaseSchema) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v OracleFeature) MarshalBSON() ([]byte, error) {
+func (v MicrosoftSQLServerDatabaseSchema) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *OracleFeature) UnmarshalBSON(data []byte) error {
+func (v *MicrosoftSQLServerDatabaseSchema) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// OracleFeatureBsonValidatorRules contains mongodb validation rules for OracleFeature
-var OracleFeatureBsonValidatorRules = bson.M{
+// MicrosoftSQLServerDatabaseSchemaBsonValidatorRules contains mongodb validation rules for MicrosoftSQLServerDatabaseSchema
+var MicrosoftSQLServerDatabaseSchemaBsonValidatorRules = bson.M{
 	"bsonType": "object",
+	"required": bson.A{
+		"allocationType",
+		"usedSpace",
+		"allocatedSpace",
+	},
 	"properties": bson.M{
-		"oracle": bson.M{
-			"anyOf": bson.A{
-				bson.M{"bsonType": "null"},
-				OracleDatabaseFeatureBsonValidatorRules,
+		"allocationType": bson.M{
+			"bsonType": "string",
+			"enum": bson.A{
+				"Clustered Index Data",
+				"Non Clustered Index Data",
+				"LOB data",
+				"Table Data",
 			},
 		},
-		"exadata": bson.M{
-			"anyOf": bson.A{
-				bson.M{"bsonType": "null"},
-				OracleExadataFeatureBsonValidatorRules,
-			},
+		"usedSpace": bson.M{
+			"bsonType": "double",
+			"minimum":  0,
+		},
+		"allocatedSpace": bson.M{
+			"bsonType": "double",
+			"minimum":  0,
 		},
 	},
 }

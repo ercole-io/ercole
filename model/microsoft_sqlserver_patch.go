@@ -22,47 +22,55 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type OracleFeature struct {
-	Database  *OracleDatabaseFeature `json:"database,omitempty" bson:"database,omitempty"`
-	Exadata   *OracleExadataFeature  `json:"exadata,omitempty" bson:"exadata,omitempty"`
-	OtherInfo map[string]interface{} `json:"-" bson:"-"`
+type MicrosoftSQLServerPatch struct {
+	DisplayName    string                 `json:"displayName" bson:"displayName"`
+	DisplayVersion string                 `json:"displayVersion" bson:"displayVersion"`
+	InstallDate    string                 `json:"installDate" bson:"installDate"`
+	OtherInfo      map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
-func (v OracleFeature) MarshalJSON() ([]byte, error) {
+func (v MicrosoftSQLServerPatch) MarshalJSON() ([]byte, error) {
 	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *OracleFeature) UnmarshalJSON(data []byte) error {
+func (v *MicrosoftSQLServerPatch) UnmarshalJSON(data []byte) error {
 	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // MarshalBSON return the BSON rappresentation of this
-func (v OracleFeature) MarshalBSON() ([]byte, error) {
+func (v MicrosoftSQLServerPatch) MarshalBSON() ([]byte, error) {
 	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
 }
 
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *OracleFeature) UnmarshalBSON(data []byte) error {
+func (v *MicrosoftSQLServerPatch) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// OracleFeatureBsonValidatorRules contains mongodb validation rules for OracleFeature
-var OracleFeatureBsonValidatorRules = bson.M{
+// MicrosoftSQLServerPatchBsonValidatorRules contains mongodb validation rules for MicrosoftSQLServerPatch
+var MicrosoftSQLServerPatchBsonValidatorRules = bson.M{
 	"bsonType": "object",
+	"required": bson.A{
+		"displayName",
+		"displayVersion",
+		"installDate",
+	},
 	"properties": bson.M{
-		"oracle": bson.M{
-			"anyOf": bson.A{
-				bson.M{"bsonType": "null"},
-				OracleDatabaseFeatureBsonValidatorRules,
-			},
+		"displayName": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 64,
 		},
-		"exadata": bson.M{
-			"anyOf": bson.A{
-				bson.M{"bsonType": "null"},
-				OracleExadataFeatureBsonValidatorRules,
-			},
+		"displayVersion": bson.M{
+			"bsonType":  "string",
+			"minLength": 1,
+			"maxLength": 64,
+		},
+		"installDate": bson.M{
+			"bsonType": "string",
+			"pattern":  "[0-9]{4}-[0-9]{2}-[0-9]{2}",
 		},
 	},
 }
