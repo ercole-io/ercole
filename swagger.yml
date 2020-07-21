@@ -40,7 +40,7 @@ tags:
   - name: service-user
     description: API used by the services
   - name: read
-    description: API that don't change the state of the informations
+    description: "API that don't change the state of the informations"
   - name: write
     description: API that change the state of the informations
 components:
@@ -89,8 +89,7 @@ components:
               value:
                 error: Invalid  status
                 errorDescription: invalid status
-                sourceFilename: >-
-                  /home/travis/go/src/github.com/ercole-io/ercole/api-service/controller/alerts_api.go
+                sourceFilename: /home/travis/go/src/github.com/ercole-io/ercole/api-service/controller/alerts_api.go
                 lineNumber: 65
   schemas:
     HostDataInfo:
@@ -116,8 +115,7 @@ components:
       properties:
         hostname:
           type: string
-          pattern: >-
-            ^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$
+          pattern: "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$"
         environment:
           type: string
         location:
@@ -903,12 +901,16 @@ components:
           properties:
             dbName:
               type: string
+              description: The name of the database
             hostname:
               type: string
+              description: The name of the host
         hostname:
           type: string
+          description: The name of the host
         description:
           type: string
+          description: 'The message alert receive from the host at that time '
         alertCategory:
           type: string
           enum:
@@ -962,8 +964,7 @@ components:
           type: string
         hostname:
           type: string
-          pattern: >-
-            ^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$
+          pattern: "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$"
         createdAt:
           type: string
         date:
@@ -1031,33 +1032,50 @@ components:
           nullable: true
     TechnologyStatus:
       type: object
+      properties:
+        product:
+          type: string
+          description: technology product code
+        hostsCount:
+          type: integer
+          description: number of hosts found supporting the current product
+        compliance:
+          type: number
+          description: |-
+            a metric ranging [0..1] calculated as follows:
+            if a ULA exists for a given product, its compliance := 1.
+
+            When calculating the total, this product's purchasedLicenses := usedLicenses
+            else if usedLicenses <= purchasedLicenses the product's compliance := 1.
+
+            When calculating the total, this product's purchasedLicenses := usedLicenses else this product's compliance := purchasedLicenses / usedLicenses.
+        unpaidDues:
+          type: number
+          description: |-
+            "unpaidDues" = difference between calculated cost of used and purchased licenses:
+            if usedLicensesCost <= purchasedLicensesCost, then unpaidDues := 0
+            else unpaidDues := usedLicensesCost - purchasedLicensesCost
       required:
         - product
         - hostsCount
         - compliance
         - unpaidDues
-      properties:
-        product:
-          type: string
-        hostsCount:
-          type: integer
-        compliance:
-          type: number
-        unpaidDues:
-          type: number
     AllTechnologyComplianceStatus:
       type: object
-      required:
-        - hostsCount
-        - compliance
-        - unpaidDues
       properties:
         hostsCount:
           type: integer
+          description: number of hosts
         compliance:
           type: number
+          description: sum(purchasedLicenses) / sum(usedLicenses) for each product
         unpaidDues:
           type: number
+          description: sum of unpaidDues
+      required:
+        - HostsCount
+        - Compliance
+        - UnpaidDues
     AggregatedCodeSeverityAlerts:
       type: object
       required:
@@ -1396,7 +1414,7 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: PONG!
+                example: 'PONG!'
                 readOnly: true
   '/queue/host-data-insertion/{id}':
     post:
@@ -1436,10 +1454,7 @@ paths:
         - fe-user
       security: []
       summary: Request access token
-      description: >-
-        Request a user access token given the credentials. Note that the
-        behaviour and interface may change if the service is configured to use
-        different authentication provider.
+      description: Request a user access token given the credentials. Note that the behaviour and interface may change if the service is configured to use different authentication provider.
       operationId: GetToken
       responses:
         '200':
@@ -1449,8 +1464,7 @@ paths:
               schema:
                 type: string
                 readOnly: true
-                example: >-
-                  eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsidXNlciJdLCJleHAiOjE1ODg2NjExMjMsImlhdCI6MTU4ODY2MDIyMywiaXNzIjoiZXJjb2xlIiwianRpIjoidXNlciIsIm5iZiI6MTU4ODY2MDIyMywic3ViIjoidXNlciJ9.QJhUuBR4Z8uPncXITUjRVHktZXLVax1wstMMd4x6qSDPmxGbYTfOINUawgNNSV9ho-C0rh3icks3Q3227fiyUEcdV0Tfa2O5t7lJX0A4MdTnd2sVv_xxlMju8lCBGnf82fvtSg3C0rQsWnmxgC1rBDW3lzru0ffIJG_JrV3mNxhigniBzm_C0Gq1AaL2cmZ0POCnYJReYcLY-9maKRhMsjcart8pqGZ-5jEjMNWxSc7Lh2snCZklFE0NrmtxvaWITSjm4JGWvTwZcWIfTNBiZRABr5OKARVPMsdgOZ--a4kjIsdXngtIX-C5iaISrgRAUv89XInNBvrquqXnq7p5vg
+                example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsidXNlciJdLCJleHAiOjE1ODg2NjExMjMsImlhdCI6MTU4ODY2MDIyMywiaXNzIjoiZXJjb2xlIiwianRpIjoidXNlciIsIm5iZiI6MTU4ODY2MDIyMywic3ViIjoidXNlciJ9.QJhUuBR4Z8uPncXITUjRVHktZXLVax1wstMMd4x6qSDPmxGbYTfOINUawgNNSV9ho-C0rh3icks3Q3227fiyUEcdV0Tfa2O5t7lJX0A4MdTnd2sVv_xxlMju8lCBGnf82fvtSg3C0rQsWnmxgC1rBDW3lzru0ffIJG_JrV3mNxhigniBzm_C0Gq1AaL2cmZ0POCnYJReYcLY-9maKRhMsjcart8pqGZ-5jEjMNWxSc7Lh2snCZklFE0NrmtxvaWITSjm4JGWvTwZcWIfTNBiZRABr5OKARVPMsdgOZ--a4kjIsdXngtIX-C5iaISrgRAUv89XInNBvrquqXnq7p5vg
                 description: JWT access token
         '401':
           $ref: '#/components/responses/error'
@@ -1465,9 +1479,7 @@ paths:
         - fe-user
       operationId: SearchHosts
       summary: Search a list of hosts
-      description: >-
-        Get a list of hosts filtered using various search terms and various
-        params. Can also generate a XLSX file
+      description: Get a list of hosts filtered using various search terms and various params. Can also generate a XLSX file
       parameters:
         - in: query
           name: mode
@@ -1509,9 +1521,7 @@ paths:
             type: string
         - in: query
           name: cluster
-          description: >-
-            filter by the name of virtualization cluster. use 'NULL' for
-            searching host that aren't part of a virtualization cluster
+          description: "filter by the name of virtualization cluster. use 'NULL' for searching host that aren't part of a virtualization cluster"
           allowEmptyValue: true
           schema:
             type: string
@@ -1535,33 +1545,25 @@ paths:
             type: string
         - in: query
           name: memory-total-lte
-          description: >-
-            filter the hosts with the Info.MemoryTotal less than
-            memory-total-lte value
+          description: filter the hosts with the Info.MemoryTotal less than memory-total-lte value
           allowEmptyValue: true
           schema:
             type: number
         - in: query
           name: memory-total-gte
-          description: >-
-            filter the hosts with the Info.MemoryTotal less than
-            memory-total-gte value
+          description: filter the hosts with the Info.MemoryTotal less than memory-total-gte value
           allowEmptyValue: true
           schema:
             type: number
         - in: query
           name: swap-total-lte
-          description: >-
-            filter the hosts with the Info.SwapTotal less than swap-total-lte
-            value
+          description: filter the hosts with the Info.SwapTotal less than swap-total-lte value
           allowEmptyValue: true
           schema:
             type: number
         - in: query
           name: swap-total-gte
-          description: >-
-            filter the hosts with the Info.SwapTotal less than swap-total-gte
-            value
+          description: filter the hosts with the Info.SwapTotal less than swap-total-gte value
           allowEmptyValue: true
           schema:
             type: number
@@ -1579,33 +1581,25 @@ paths:
             type: boolean
         - in: query
           name: cpu-cores-lte
-          description: >-
-            filter the hosts with the Info.CPUCores less than cpu-cores-lte
-            value
+          description: filter the hosts with the Info.CPUCores less than cpu-cores-lte value
           allowEmptyValue: true
           schema:
             type: number
         - in: query
           name: cpu-cores-gte
-          description: >-
-            filter the hosts with the Info.CPUCores less than cpu-cores-gte
-            value
+          description: filter the hosts with the Info.CPUCores less than cpu-cores-gte value
           allowEmptyValue: true
           schema:
             type: number
         - in: query
           name: cpu-threads-lte
-          description: >-
-            filter the hosts with the Info.CPUThreads less than cpu-threads-lte
-            value
+          description: filter the hosts with the Info.CPUThreads less than cpu-threads-lte value
           allowEmptyValue: true
           schema:
             type: number
         - in: query
           name: cpu-threads-gte
-          description: >-
-            filter the hosts with the Info.CPUThreads less than cpu-threads-gte
-            value
+          description: filter the hosts with the Info.CPUThreads less than cpu-threads-gte value
           allowEmptyValue: true
           schema:
             type: number
@@ -1751,7 +1745,7 @@ paths:
         '401':
           $ref: '#/components/responses/error'
         '404':
-          description: The host or patching function don"t exist
+          description: 'The host or patching function don"t exist'
           $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
@@ -1775,7 +1769,7 @@ paths:
         '401':
           $ref: '#/components/responses/error'
         '404':
-          description: The host don"t exist
+          description: 'The host don"t exist'
           $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
@@ -1980,9 +1974,7 @@ paths:
         - read
       operationId: SearchOracleDatabases
       summary: Search a list of databases
-      description: >-
-        Get a list of databases filtered using various search terms and various
-        params. Can also generate a XLSX file
+      description: Get a list of databases filtered using various search terms and various params. Can also generate a XLSX file
       parameters:
         - in: query
           name: full
@@ -2053,9 +2045,7 @@ paths:
         - read
       operationId: SearchOracleDatabaseAddms
       summary: Search a list of ADDMs
-      description: >-
-        Get a list of ADDMs filtered using various search terms and various
-        params. Can also generate a XLSX file
+      description: Get a list of ADDMs filtered using various search terms and various params. Can also generate a XLSX file
       parameters:
         - $ref: '#/components/parameters/search'
         - $ref: '#/components/parameters/sort-by'
@@ -2155,8 +2145,8 @@ paths:
           $ref: '#/components/responses/error'
   /alerts:
     get:
-      summary: search alerts using the filters in the request
-      description: search alerts using the filters in the request
+      summary: search alerts
+      description: This API fetches all alerts. The parameters in version 2.0 are not used since all filters are executed by the frontend.
       tags:
         - api-service
         - fe-user
@@ -2239,10 +2229,13 @@ paths:
                       $ref: '#/components/schemas/AggregatedCodeSeverityAlerts'
         '401':
           $ref: '#/components/responses/error'
+          description: Unauthorized
         '422':
           $ref: '#/components/responses/error'
+          description: Unprocessable Entity
         '500':
           $ref: '#/components/responses/error'
+          description: Internal server error
   '/alerts/{id}':
     parameters:
       - in: path
@@ -2395,9 +2388,7 @@ paths:
         - read
       operationId: SearchOracleDatabaseLicenseModifiers
       summary: Search a list of license modifiers
-      description: >-
-        Get a list of license modifiers using various search terms and various
-        params.
+      description: Get a list of license modifiers using various search terms and various params.
       parameters:
         - $ref: '#/components/parameters/search'
         - $ref: '#/components/parameters/sort-by'
@@ -3197,12 +3188,8 @@ paths:
         - fe-user
         - read
       operationId: GetOracleExadataStorageErrorCountStatusStats
-      summary: >-
-        Get the statistics about the ErrorCount status of the storage of the
-        exadata
-      description: >-
-        Get the statistics about the ErrorCount status of the storage of the 
-        exadata
+      summary: Get the statistics about the ErrorCount status of the storage of the exadata
+      description: Get the statistics about the ErrorCount status of the storage of the  exadata
       parameters:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
@@ -3668,27 +3655,50 @@ paths:
             application/json:
               schema:
                 type: object
-                required:
-                  - features
-                  - technologies
-                  - alerts
                 properties:
                   features:
                     $ref: '#/components/schemas/Features'
-                  alerts:
-                    $ref: '#/components/schemas/AggregatedCodeSeverityAlerts'
                   technologies:
                     type: object
+                    description: Supported technologies
                     required:
                       - technologies
                       - total
                     properties:
                       technologies:
-                        $ref: '#/components/schemas/TechnologyStatus'
+                        type: array
+                        description: All supported technologies that can be monitored by Ercole.
+                        items:
+                          $ref: '#/components/schemas/TechnologyStatus'
                       total:
                         $ref: '#/components/schemas/AllTechnologyComplianceStatus'
-        '401':
-          $ref: '#/components/responses/error'
+                required:
+                  - features
+                  - technologies
+              examples:
+                example-1:
+                  value:
+                    features:
+                      Oracle/Database: true
+                      Oracle/Exadata: true
+                    technologies:
+                      technologies:
+                        - product: Oracle/Exadata
+                          compliance: 1
+                          unpaidDues: 0
+                          hostsCount: 2
+                        - product: Oracle/Database
+                          compliance: 0
+                          unpaidDues: 0
+                          hostsCount: 6
+                      total:
+                        compliance: 0.07142857142857142
+                        hostsCount: 14
+                        unpaidDues: 0
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
         '422':
           $ref: '#/components/responses/error'
         '500':
@@ -3793,10 +3803,13 @@ paths:
           $ref: '#/components/schemas/TechnologyTypesChart'
         '401':
           $ref: '#/components/responses/error'
+          description: Token is invalid / it is not present
         '422':
           $ref: '#/components/responses/error'
+          description: Invalid parameters / null path/body
         '500':
           $ref: '#/components/responses/error'
+          description: Generic error
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []
