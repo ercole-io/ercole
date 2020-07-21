@@ -92,7 +92,6 @@ var MicrosoftSQLServerInstanceBsonValidatorRules = bson.M{
 		"maxDop",
 		"alloc",
 		"edition",
-		"productVersion",
 		"editionType",
 		"productCode",
 		"licensingInfo",
