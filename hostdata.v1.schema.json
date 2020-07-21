@@ -1490,6 +1490,11 @@
                                                                 "AZU"
                                                             ]
                                                         },
+                                                        "editionType": {
+                                                            "type": "string",
+                                                            "minLength": 1,
+                                                            "maxLength": 64
+                                                        },
                                                         "productCode": {
                                                             "type": "string",
                                                             "minLength": 1,
