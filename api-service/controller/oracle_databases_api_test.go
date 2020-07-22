@@ -1897,12 +1897,12 @@ func TestListLicenses_JSONPaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		ListLicenses(true, "Benefit", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		ListLicenses("full", "Benefit", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(resFromService, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.ListLicenses)
-	req, err := http.NewRequest("GET", "/licenses?full=true&sort-by=Benefit&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	req, err := http.NewRequest("GET", "/licenses?mode=full&sort-by=Benefit&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -1938,7 +1938,7 @@ func TestListLicenses_JSONUnpaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		ListLicenses(false, "", false, -1, -1, "", "", utils.MAX_TIME).
+		ListLicenses("summary", "", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
@@ -1965,7 +1965,7 @@ func TestListLicenses_JSONUnprocessableEntity1(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.ListLicenses)
-	req, err := http.NewRequest("GET", "/licenses?full=sadsas", nil)
+	req, err := http.NewRequest("GET", "/licenses?mode=sadsas", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -2069,7 +2069,7 @@ func TestListLicenses_JSONInternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		ListLicenses(false, "", false, -1, -1, "", "", utils.MAX_TIME).
+		ListLicenses("summary", "", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()

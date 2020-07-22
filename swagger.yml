@@ -3369,12 +3369,16 @@ paths:
     get:
       parameters:
         - in: query
-          name: full
+          name: mode
           description: output mode
           allowEmptyValue: true
+          example: full
           schema:
-            type: boolean
+            type: string
             readOnly: true
+            enum:
+              - full
+              - summary
         - $ref: '#/components/parameters/sort-by'
         - $ref: '#/components/parameters/sort-desc'
         - $ref: '#/components/parameters/page'
