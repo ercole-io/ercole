@@ -546,7 +546,7 @@ func (ctrl *APIController) SearchOracleDatabasesXLSX(w http.ResponseWriter, r *h
 
 // ListLicenses list licenses using the filters in the request
 func (ctrl *APIController) ListLicenses(w http.ResponseWriter, r *http.Request) {
-	var full bool
+	var mode string
 	var sortBy string
 	var sortDesc bool
 	var pageNumber int
@@ -556,9 +556,15 @@ func (ctrl *APIController) ListLicenses(w http.ResponseWriter, r *http.Request) 
 	var olderThan time.Time
 
 	var err utils.AdvancedErrorInterface
+
 	//parse the query params
-	if full, err = utils.Str2bool(r.URL.Query().Get("full"), false); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+
+	mode = r.URL.Query().Get("mode")
+	if mode == "" {
+		mode = "summary"
+	} else if mode != "full" && mode != "summary" {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity,
+			utils.NewAdvancedErrorPtr(errors.New("Invalid mode value"), http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 
@@ -586,7 +592,7 @@ func (ctrl *APIController) ListLicenses(w http.ResponseWriter, r *http.Request) 
 	}
 
 	//get the data
-	licenses, err := ctrl.Service.ListLicenses(full, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	licenses, err := ctrl.Service.ListLicenses(mode, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return

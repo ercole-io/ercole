@@ -44,8 +44,8 @@ func (as *APIService) SearchOracleDatabases(full bool, search string, sortBy str
 }
 
 // ListLicenses list licenses
-func (as *APIService) ListLicenses(full bool, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.ListLicenses(full, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+func (as *APIService) ListLicenses(mode string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.ListLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
 // GetLicense return the license specified in the name param

@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/amreo/mu"
@@ -25,7 +26,14 @@ import (
 )
 
 // ListLicenses list licenses
-func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) ListLicenses(mode string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	var isFull bool
+	if mode == "full" {
+		isFull = true
+	} else if mode != "summary" {
+		return nil, utils.NewAdvancedErrorPtr(errors.New("Wrong mode value"), "")
+	}
+
 	var out []interface{} = make([]interface{}, 0)
 	//Find the informations
 
@@ -71,7 +79,7 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 					},
 				}),
 				AddAssociatedClusterNameAndVirtualizationNode(olderThan),
-				mu.APGroup(mu.BsonOptionalExtension(full, bson.M{
+				mu.APGroup(mu.BsonOptionalExtension(isFull, bson.M{
 					"_id": mu.APOCond(
 						"$clusterName",
 						mu.APOConcat("cluster_§$#$§_", "$clusterName"),
@@ -92,13 +100,13 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 						"$license",
 					),
 				}),
-				mu.APGroup(mu.BsonOptionalExtension(full, bson.M{
+				mu.APGroup(mu.BsonOptionalExtension(isFull, bson.M{
 					"_id":   0,
 					"value": mu.APOSum("$license"),
 				}, bson.M{
 					"hosts": mu.APOPush("$hosts"),
 				})),
-				mu.APOptionalStage(full, mu.MAPipeline(
+				mu.APOptionalStage(isFull, mu.MAPipeline(
 					mu.APUnwind("$hosts"),
 					mu.APUnwind("$hosts"),
 					mu.APGroup(bson.M{
@@ -111,7 +119,7 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 			mu.APSet(bson.M{
 				"used": mu.APOArrayElemAt("$used", 0),
 			}),
-			mu.APOptionalStage(full, mu.APSet(bson.M{
+			mu.APOptionalStage(isFull, mu.APSet(bson.M{
 				"hosts": mu.APOIfNull("$used.hosts", bson.A{}),
 			})),
 			mu.APSet(bson.M{
