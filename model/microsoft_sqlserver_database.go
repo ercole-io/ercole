@@ -23,14 +23,23 @@ import (
 )
 
 type MicrosoftSQLServerDatabase struct {
-	DatabaseID    int                                    `json:"databaseID" bson:"databaseID"`
-	Name          string                                 `json:"name" bson:"name"`
-	CollationName string                                 `json:"collationName" bson:"collationName"`
-	Status        string                                 `json:"status" bson:"status"`
-	Backups       []MicrosoftSQLServerDatabaseBackup     `json:"backups" bson:"backups"`
-	Schemas       []MicrosoftSQLServerDatabaseSchema     `json:"schemas" bson:"schemas"`
-	Tablespaces   []MicrosoftSQLServerDatabaseTablespace `json:"tablespaces" bson:"tablespaces"`
-	OtherInfo     map[string]interface{}                 `json:"-" bson:"-"`
+	DatabaseID      int                                    `json:"databaseID" bson:"databaseID"`
+	Name            string                                 `json:"name" bson:"name"`
+	CollationName   string                                 `json:"collationName" bson:"collationName"`
+	Status          string                                 `json:"status" bson:"status"`
+	RecoveryModel   string                                 `json:"recoveryModel" bson:"recoveryModel"`
+	BlockSize       int                                    `json:"blockSize" bson:"blockSize"`
+	SchedulersCount int                                    `json:"schedulersCount" bson:"schedulersCount"`
+	AffinityMask    int                                    `json:"affinityMask" bson:"affinityMask"`
+	MinServerMemory int                                    `json:"minServerMemory" bson:"minServerMemory"`
+	MaxServerMemory int                                    `json:"maxServerMemory" bson:"maxServerMemory"`
+	CTP             int                                    `json:"ctp" bson:"ctp"`
+	MaxDop          int                                    `json:"maxDop" bson:"maxDop"`
+	Alloc           float64                                `json:"alloc" bson:"alloc"`
+	Backups         []MicrosoftSQLServerDatabaseBackup     `json:"backups" bson:"backups"`
+	Schemas         []MicrosoftSQLServerDatabaseSchema     `json:"schemas" bson:"schemas"`
+	Tablespaces     []MicrosoftSQLServerDatabaseTablespace `json:"tablespaces" bson:"tablespaces"`
+	OtherInfo       map[string]interface{}                 `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -61,6 +70,15 @@ var MicrosoftSQLServerDatabaseBsonValidatorRules = bson.M{
 		"name",
 		"collationName",
 		"status",
+		"recoveryModel",
+		"blockSize",
+		"schedulersCount",
+		"affinityMask",
+		"minServerMemory",
+		"maxServerMemory",
+		"ctp",
+		"maxDop",
+		"alloc",
 		"backups",
 		"schemas",
 		"tablespaces",
@@ -93,6 +111,46 @@ var MicrosoftSQLServerDatabaseBsonValidatorRules = bson.M{
 				"COPYING",
 				"OFFLINE_SECONDARY",
 			},
+		},
+		"recoveryModel": bson.M{
+			"bsonType": "string",
+			"enum": bson.A{
+				"FULL",
+				"BULK_LOGGED",
+				"SIMPLE",
+			},
+		},
+		"blockSize": bson.M{
+			"bsonType": "double",
+			"minimum":  1,
+		},
+		"schedulersCount": bson.M{
+			"bsonType": "double",
+			"minimum":  1,
+		},
+		"affinityMask": bson.M{
+			"bsonType": "double",
+			"minimum":  0,
+		},
+		"minServerMemory": bson.M{
+			"bsonType": "double",
+			"minimum":  1,
+		},
+		"maxServerMemory": bson.M{
+			"bsonType": "double",
+			"minimum":  1,
+		},
+		"ctp": bson.M{
+			"bsonType": "double",
+			"minimum":  1,
+		},
+		"maxDop": bson.M{
+			"bsonType": "double",
+			"minimum":  0,
+		},
+		"alloc": bson.M{
+			"bsonType": "double",
+			"minimum":  0,
 		},
 		"backups": bson.M{
 			"bsonType": "array",
