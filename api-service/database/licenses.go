@@ -36,6 +36,7 @@ func (md *MongoDatabase) ListLicenses(full bool, sortBy string, sortDesc bool, p
 				"ln": "$_id",
 			}, "used", mu.MAPipeline(
 				FilterByOldnessSteps(olderThan),
+				FilterByLocationAndEnvironmentSteps(location, environment),
 				mu.APProject(bson.M{
 					"hostname": 1,
 					"databases": mu.APOReduce(
