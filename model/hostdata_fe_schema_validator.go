@@ -211,7 +211,8 @@ var FrontendHostdataSchemaValidator string = `
                                         {
                                             "type": "object",
                                             "required": [
-                                                "databases"
+                                                "databases",
+                                                "unlistedRunningDatabases"
                                             ],
                                             "properties": {
                                                 "databases": {
@@ -871,6 +872,15 @@ var FrontendHostdataSchemaValidator string = `
                                                             }
                                                         }
                                                     }
+                                                },
+                                                "unlistedRunningDatabases": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "minLength": 1,
+                                                        "maxLength": 64
+                                                    },
+                                                    "uniqueItems": true
                                                 }
                                             }
                                         }
@@ -1378,16 +1388,7 @@ var FrontendHostdataSchemaValidator string = `
                                                         "stateDesc",
                                                         "version",
                                                         "platform",
-                                                        "recoveryModel",
                                                         "collationName",
-                                                        "blockSize",
-                                                        "schedulersCount",
-                                                        "affinityMask",
-                                                        "minServerMemory",
-                                                        "maxServerMemory",
-                                                        "ctp",
-                                                        "maxDop",
-                                                        "alloc",
                                                         "edition",
                                                         "editionType",
                                                         "productCode",
@@ -1451,52 +1452,10 @@ var FrontendHostdataSchemaValidator string = `
                                                             "minLength": 1,
                                                             "maxLength": 16
                                                         },
-                                                        "recoveryModel": {
-                                                            "type": "string",
-                                                            "enum": [
-                                                                "FULL",
-                                                                "BULK_LOGGED",
-                                                                "SIMPLE"
-                                                            ]
-                                                        },
                                                         "collationName": {
                                                             "type": "string",
                                                             "minLength": 1,
                                                             "maxLength": 32
-                                                        },
-                                                        "blockSize": {
-                                                            "type": "integer",
-                                                            "minimum": 1
-                                                        },
-                                                        "schedulersCount": {
-                                                            "type": "integer",
-                                                            "minimum": 1
-                                                        },
-                                                        "affinityMask": {
-                                                            "type": "integer",
-                                                            "minimum": 0
-                                                        },
-                                                        "minServerMemory": {
-                                                            "type": "integer",
-                                                            "minimum": 1,
-                                                            "$comment": "size in bytes"
-                                                        },
-                                                        "maxServerMemory": {
-                                                            "type": "integer",
-                                                            "minimum": 1,
-                                                            "$comment": "size in bytes"
-                                                        },
-                                                        "ctp": {
-                                                            "type": "integer",
-                                                            "minimum": 1
-                                                        },
-                                                        "maxDop": {
-                                                            "type": "integer",
-                                                            "minimum": 0
-                                                        },
-                                                        "alloc": {
-                                                            "type": "number",
-                                                            "minimum": 0
                                                         },
                                                         "edition": {
                                                             "type": "string",
@@ -1509,6 +1468,11 @@ var FrontendHostdataSchemaValidator string = `
                                                                 "WEB",
                                                                 "AZU"
                                                             ]
+                                                        },
+                                                        "editionType": {
+                                                            "type": "string",
+                                                            "minLength": 1,
+                                                            "maxLength": 64
                                                         },
                                                         "productCode": {
                                                             "type": "string",
@@ -1530,6 +1494,15 @@ var FrontendHostdataSchemaValidator string = `
                                                                     "name",
                                                                     "collationName",
                                                                     "status",
+                                                                    "recoveryModel",
+                                                                    "blockSize",
+                                                                    "schedulersCount",
+                                                                    "affinityMask",
+                                                                    "minServerMemory",
+                                                                    "maxServerMemory",
+                                                                    "ctp",
+                                                                    "maxDop",
+                                                                    "alloc",
                                                                     "backups",
                                                                     "schemas",
                                                                     "tablespaces"
@@ -1562,6 +1535,48 @@ var FrontendHostdataSchemaValidator string = `
                                                                             "COPYING",
                                                                             "OFFLINE_SECONDARY"
                                                                         ]
+                                                                    },
+                                                                    "recoveryModel": {
+                                                                        "type": "string",
+                                                                        "enum": [
+                                                                            "FULL",
+                                                                            "BULK_LOGGED",
+                                                                            "SIMPLE"
+                                                                        ]
+                                                                    },
+                                                                    "blockSize": {
+                                                                        "type": "integer",
+                                                                        "minimum": 1
+                                                                    },
+                                                                    "schedulersCount": {
+                                                                        "type": "integer",
+                                                                        "minimum": 1
+                                                                    },
+                                                                    "affinityMask": {
+                                                                        "type": "integer",
+                                                                        "minimum": 0
+                                                                    },
+                                                                    "minServerMemory": {
+                                                                        "type": "integer",
+                                                                        "minimum": 1,
+                                                                        "$comment": "size in bytes"
+                                                                    },
+                                                                    "maxServerMemory": {
+                                                                        "type": "integer",
+                                                                        "minimum": 1,
+                                                                        "$comment": "size in bytes"
+                                                                    },
+                                                                    "ctp": {
+                                                                        "type": "integer",
+                                                                        "minimum": 1
+                                                                    },
+                                                                    "maxDop": {
+                                                                        "type": "integer",
+                                                                        "minimum": 0
+                                                                    },
+                                                                    "alloc": {
+                                                                        "type": "number",
+                                                                        "minimum": 0
                                                                     },
                                                                     "backups": {
                                                                         "type": "array",

@@ -58,6 +58,7 @@
     "features": {
         "oracle": {
             "database": {
+                "unlistedRunningDatabases": [],
                 "databases": [
                     {
                         "instanceNumber": 1,
