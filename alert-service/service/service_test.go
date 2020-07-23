@@ -47,9 +47,17 @@ func TestProcessMsg_HostDataInsertion(t *testing.T) {
 	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).Return(emptyHostData, nil).Times(1)
 	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostDataBE{}, nil).Times(0)
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
-		assert.Equal(t, "The server 'superhost1' was added to ercole", alert.Description)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
-	}).Times(1)
+		assert.Equal(t, model.AlertCategoryEngine, alert.AlertCategory)
+		assert.Equal(t, model.AlertCodeUnlistedRunningDatabase, alert.AlertCode)
+	}).After(
+		db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
+			assert.Equal(t, "The server 'superhost1' was added to ercole", alert.Description)
+			assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
+			assert.Equal(t, model.AlertCategoryEngine, alert.AlertCategory)
+			assert.Nil(t, alert.AlertAffectedTechnology)
+		}),
+	)
 
 	msg := hub.Message{
 		Name: "hostdata.insertion",
@@ -137,12 +145,19 @@ func TestProcessHostDataInsertion_SuccessNewHost(t *testing.T) {
 	db.EXPECT().FindHostData(gomock.Any()).Times(0)
 	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).Return(emptyHostData, nil).Times(1)
 	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostDataBE{}, nil).Times(0)
+
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
-		assert.Equal(t, "The server 'superhost1' was added to ercole", alert.Description)
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
 		assert.Equal(t, model.AlertCategoryEngine, alert.AlertCategory)
-		assert.Nil(t, alert.AlertAffectedTechnology)
-	}).Times(1)
+		assert.Equal(t, model.AlertCodeUnlistedRunningDatabase, alert.AlertCode)
+	}).After(
+		db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
+			assert.Equal(t, "The server 'superhost1' was added to ercole", alert.Description)
+			assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
+			assert.Equal(t, model.AlertCategoryEngine, alert.AlertCategory)
+			assert.Nil(t, alert.AlertAffectedTechnology)
+		}),
+	)
 
 	as.ProcessHostDataInsertion(hub.Fields{
 		"id": utils.Str2oid("5dc3f534db7e81a98b726a52"),

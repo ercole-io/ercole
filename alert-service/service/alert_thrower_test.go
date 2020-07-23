@@ -256,3 +256,46 @@ func TestThrowNoDataAlert_DatabaseError(t *testing.T) {
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock).Times(1)
 	assert.Equal(t, aerrMock, as.ThrowNoDataAlert("myhost", 90))
 }
+
+func TestThrowUnlistedRunningDatabasesAlert_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := AlertService{
+		Database: db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Queue:    hub.New(),
+		Log:      utils.NewLogger("TEST"),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				LogAlertThrows: true},
+		},
+	}
+	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
+		assert.Equal(t, model.AlertCategoryEngine, alert.AlertCategory)
+		assert.Equal(t, model.TechnologyOracleDatabase, *alert.AlertAffectedTechnology)
+		assert.Equal(t, model.AlertCodeUnlistedRunningDatabase, alert.AlertCode)
+		assert.Equal(t, model.AlertSeverityWarning, alert.AlertSeverity)
+		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)
+		assert.Equal(t, "The database mydb is not listed in the oratab of the host myhost", alert.Description)
+		assert.Equal(t, map[string]interface{}{
+			"hostname": "myhost",
+			"dbname":   "mydb",
+		}, alert.OtherInfo)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
+		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.ID.Timestamp())
+	}).Times(1)
+	require.NoError(t, as.ThrowUnlistedRunningDatabasesAlert("mydb", "myhost"))
+}
+
+func TestThrowUnlistedRunningDatabasesAlert_DatabaseError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := AlertService{
+		Database: db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+	}
+	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, aerrMock).Times(1)
+	assert.Equal(t, aerrMock, as.ThrowUnlistedRunningDatabasesAlert("mydb", "myhost"))
+}

@@ -38,7 +38,8 @@ var emptyHostData model.HostDataBE = model.HostDataBE{
 	Features: model.Features{
 		Oracle: &model.OracleFeature{
 			Database: &model.OracleDatabaseFeature{
-				Databases: []model.OracleDatabase{},
+				UnlistedRunningDatabases: []string{},
+				Databases:                []model.OracleDatabase{},
 			},
 		},
 	},
@@ -55,7 +56,8 @@ var hostData1 model.HostDataBE = model.HostDataBE{
 	Features: model.Features{
 		Oracle: &model.OracleFeature{
 			Database: &model.OracleDatabaseFeature{
-				Databases: []model.OracleDatabase{},
+				UnlistedRunningDatabases: []string{"FOOBAR"},
+				Databases:                []model.OracleDatabase{},
 			},
 		},
 	},
@@ -72,7 +74,8 @@ var hostData2 model.HostDataBE = model.HostDataBE{
 	Features: model.Features{
 		Oracle: &model.OracleFeature{
 			Database: &model.OracleDatabaseFeature{
-				Databases: []model.OracleDatabase{},
+				UnlistedRunningDatabases: []string{},
+				Databases:                []model.OracleDatabase{},
 			},
 		},
 	},
@@ -89,6 +92,7 @@ var hostData3 model.HostDataBE = model.HostDataBE{
 	Features: model.Features{
 		Oracle: &model.OracleFeature{
 			Database: &model.OracleDatabaseFeature{
+				UnlistedRunningDatabases: []string{},
 				Databases: []model.OracleDatabase{
 					{
 						Name:     "acd",
@@ -111,6 +115,7 @@ var hostData4 model.HostDataBE = model.HostDataBE{
 	Features: model.Features{
 		Oracle: &model.OracleFeature{
 			Database: &model.OracleDatabaseFeature{
+				UnlistedRunningDatabases: []string{},
 				Databases: []model.OracleDatabase{
 					{
 						Name: "acd",
