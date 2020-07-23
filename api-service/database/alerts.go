@@ -26,8 +26,8 @@ import (
 )
 
 // SearchAlerts search alerts
-func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, severity string, status string, from time.Time, to time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var out []interface{} = make([]interface{}, 0)
+func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, severity string, status string, from time.Time, to time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+	var out []map[string]interface{} = make([]map[string]interface{}, 0)
 
 	//Find the matching alerts
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").Aggregate(
@@ -118,7 +118,7 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 		}
-		out = append(out, &item)
+		out = append(out, item)
 	}
 	return out, nil
 }
