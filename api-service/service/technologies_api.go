@@ -38,18 +38,6 @@ func (as *APIService) ListTechnologies(sortBy string, sortDesc bool, location st
 
 	finalList := make([]model.TechnologyStatus, 0)
 
-	//Oracle/Exadata
-	finalList = append(finalList, model.TechnologyStatus{
-		Product:    "Oracle/Exadata",
-		Used:       partialList["Oracle/Exadata"],
-		Count:      partialList["Oracle/Exadata"],
-		TotalCost:  0.0,
-		PaidCost:   0.0,
-		HostsCount: int(partialList["Oracle/Exadata"]),
-		Compliance: 1.0,
-		UnpaidDues: 0.0,
-	})
-
 	//Oracle/Databases
 	type License struct {
 		Count     float64 `json:"count"`
@@ -88,6 +76,42 @@ func (as *APIService) ListTechnologies(sortBy string, sortDesc bool, location st
 	if used == 0 {
 		finalList[len(finalList)-1].Compliance = 1
 	}
+
+	//MariaDBFoundation/MariaDB
+	finalList = append(finalList, model.TechnologyStatus{
+		Product:    model.TechnologyMariaDBFoundationMariaDB,
+		Used:       0,
+		Count:      0,
+		TotalCost:  0.0,
+		PaidCost:   0.0,
+		HostsCount: 0.0,
+		Compliance: 1.0,
+		UnpaidDues: 0.0,
+	})
+
+	//PostgreSQL/PostgreSQL
+	finalList = append(finalList, model.TechnologyStatus{
+		Product:    model.TechnologyPostgreSQLPostgreSQL,
+		Used:       0,
+		Count:      0,
+		TotalCost:  0.0,
+		PaidCost:   0.0,
+		HostsCount: 0.0,
+		Compliance: 1.0,
+		UnpaidDues: 0.0,
+	})
+
+	//Oracle/MySQL
+	finalList = append(finalList, model.TechnologyStatus{
+		Product:    model.TechnologyOracleMySQL,
+		Used:       0,
+		Count:      0,
+		TotalCost:  0.0,
+		PaidCost:   0.0,
+		HostsCount: 0.0,
+		Compliance: 1.0,
+		UnpaidDues: 0.0,
+	})
 
 	return finalList, nil
 }
