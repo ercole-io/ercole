@@ -57,6 +57,8 @@ const (
 	AlertCodeNewServer string = "NEW_SERVER"
 	// NoData contains string "NO_DATA"
 	AlertCodeNoData string = "NO_DATA"
+	// NoData contains string "UNLISTED_RUNNING_DATABASE"
+	AlertCodeUnlistedRunningDatabase string = "UNLISTED_RUNNING_DATABASE"
 )
 
 // Alert severity
@@ -115,6 +117,7 @@ var AlertBsonValidatorRules = bson.M{
 				AlertCodeNewLicense,
 				AlertCodeNewServer,
 				AlertCodeNoData,
+				AlertCodeUnlistedRunningDatabase,
 			},
 		},
 		"alertSeverity": bson.M{

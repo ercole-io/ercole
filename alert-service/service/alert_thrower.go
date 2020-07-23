@@ -161,3 +161,31 @@ func (as *AlertService) ThrowNoDataAlert(hostname string, freshnessThreshold int
 	//Schedule the email notification
 	return as.AlertInsertion(alr)
 }
+
+// ThrowUnlistedRunningDatabasesAlert create and insert in the database a new UNLISTED_RUNNING_DATABASE alert
+func (as *AlertService) ThrowUnlistedRunningDatabasesAlert(dbname string, hostname string) utils.AdvancedErrorInterface {
+	alr := model.Alert{
+		ID:                      primitive.NewObjectIDFromTimestamp(as.TimeNow()),
+		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+		AlertCategory:           model.AlertCategoryEngine,
+		AlertCode:               model.AlertCodeUnlistedRunningDatabase,
+		AlertSeverity:           model.AlertSeverityWarning,
+		AlertStatus:             model.AlertStatusNew,
+		Date:                    as.TimeNow(),
+		Description:             fmt.Sprintf("The database %s is not listed in the oratab of the host %s", dbname, hostname),
+		OtherInfo: map[string]interface{}{
+			"hostname": hostname,
+			"dbname":   dbname,
+		},
+	}
+	_, err := as.Database.InsertAlert(alr)
+	if err != nil {
+		return err
+	}
+	if as.Config.AlertService.LogAlertThrows {
+		as.Log.Warnf("Alert UNLISTED_RUNNING_DATABASE of %s/%s was thrown\n", hostname, dbname)
+	}
+
+	//Schedule the email notification
+	return as.AlertInsertion(alr)
+}
