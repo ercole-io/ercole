@@ -485,6 +485,7 @@ func (m *MongodbSuite) TestGetHost() {
 			"features": map[string]interface{}{
 				"oracle": map[string]interface{}{
 					"database": map[string]interface{}{
+						"unlistedRunningDatabases": []string{},
 						"databases": []interface{}{
 							map[string]interface{}{
 								"addms":      []interface{}{},
@@ -635,6 +636,7 @@ func (m *MongodbSuite) TestGetHost() {
 			"features": map[string]interface{}{
 				"oracle": map[string]interface{}{
 					"database": map[string]interface{}{
+						"unlistedRunningDatabases": []string{},
 						"databases": []interface{}{
 							map[string]interface{}{
 								"addms":             []interface{}{},

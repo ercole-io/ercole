@@ -25,6 +25,7 @@
   "features": {
     "oracle": {
       "database": {
+        "unlistedRunningDatabases": [],
         "databases": [
           {
             "memoryTarget": 0,
