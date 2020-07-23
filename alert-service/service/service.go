@@ -155,6 +155,13 @@ func (as *AlertService) ProcessHostDataInsertion(params hub.Fields) {
 		utils.LogErr(as.Log, err)
 		return
 	}
+
+	//Check for UNLISTED_RUNNING_DATABASE
+	if newData.Features.Oracle != nil && newData.Features.Oracle.Database != nil {
+		for _, dbname := range newData.Features.Oracle.Database.UnlistedRunningDatabases {
+			as.ThrowUnlistedRunningDatabasesAlert(dbname, newData.Hostname)
+		}
+	}
 }
 
 // ProcessAlertInsertion processes the alert insertion event

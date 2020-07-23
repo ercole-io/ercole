@@ -25,7 +25,10 @@
   "features": {
     "oracle": {
       "database": {
-        "unlistedRunningDatabases": [],
+        "unlistedRunningDatabases": [
+          "ERCSOL20",
+          "URC12"
+        ],
         "databases": [
           {
             "memoryTarget": 0,
