@@ -17,17 +17,32 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
+	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SearchAlerts search alerts using the filters in the request
 func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) {
+	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
+	switch choiche {
+	case "application/json":
+		ctrl.SearchAlertsJSON(w, r)
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		ctrl.SearchAlertsXLSX(w, r)
+	}
+}
+
+// SearchAlertsJSON search alerts using the filters in the request returning it in JSON format
+func (ctrl *APIController) SearchAlertsJSON(w http.ResponseWriter, r *http.Request) {
 	var mode string
 	var search string
 	var sortBy string
@@ -96,6 +111,82 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 		alerts := response[0]
 		utils.WriteJSONResponse(w, http.StatusOK, alerts)
 	}
+}
+
+// SearchAlertsXLSX search alerts using the filters in the request returning it in XLSX format
+func (ctrl *APIController) SearchAlertsXLSX(w http.ResponseWriter, r *http.Request) {
+	var search string
+	var sortBy string
+	var sortDesc bool
+	var pageNumber int
+	var pageSize int
+	var severity string
+	var status string
+	var from time.Time
+	var to time.Time
+
+	var aerr utils.AdvancedErrorInterface
+	//parse the query params
+	search = r.URL.Query().Get("search")
+	sortBy = r.URL.Query().Get("sort-by")
+	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
+	if pageNumber, aerr = utils.Str2int(r.URL.Query().Get("page"), -1); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+	if pageSize, aerr = utils.Str2int(r.URL.Query().Get("size"), -1); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+	severity = r.URL.Query().Get("severity")
+	if severity != "" && severity != model.AlertSeverityWarning && severity != model.AlertSeverityCritical && severity != model.AlertSeverityInfo {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid severity"), "Invalid  severity"))
+		return
+	}
+	status = r.URL.Query().Get("status")
+	if status != "" && status != model.AlertStatusNew && status != model.AlertStatusAck {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid status"), "Invalid  status"))
+		return
+	}
+	if from, aerr = utils.Str2time(r.URL.Query().Get("from"), utils.MIN_TIME); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+	if to, aerr = utils.Str2time(r.URL.Query().Get("to"), utils.MAX_TIME); aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+		return
+	}
+
+	//get the data
+	response, aerr := ctrl.Service.SearchAlerts("all", search, sortBy, sortDesc, pageNumber, pageSize, severity, status, from, to)
+	if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Open the sheet
+	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_alerts.xlsx")
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
+		return
+	}
+
+	//Add the data to the sheet
+	for i, val := range response {
+		sheets.SetCellValue("Alerts", fmt.Sprintf("A%d", i+2), val["alertCategory"])
+		sheets.SetCellValue("Alerts", fmt.Sprintf("B%d", i+2), val["date"].(primitive.DateTime).Time().UTC().String())
+		sheets.SetCellValue("Alerts", fmt.Sprintf("C%d", i+2), val["alertSeverity"])
+		sheets.SetCellValue("Alerts", fmt.Sprintf("D%d", i+2), val["hostname"])
+		sheets.SetCellValue("Alerts", fmt.Sprintf("E%d", i+2), val["alertCode"])
+		sheets.SetCellValue("Alerts", fmt.Sprintf("F%d", i+2), val["description"])
+	}
+
+	//Write it to the response
+	utils.WriteXLSXResponse(w, sheets)
 }
 
 // AckAlert ack the specified alert in the request

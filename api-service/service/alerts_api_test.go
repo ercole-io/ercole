@@ -33,15 +33,15 @@ func TestSearchAlerts_Success(t *testing.T) {
 		Database: db,
 	}
 
-	expectedRes := []interface{}{
-		map[string]interface{}{
+	expectedRes := []map[string]interface{}{
+		{
 			"AffectedHosts": 12,
 			"Code":          "NEW_SERVER",
 			"Count":         12,
 			"OldestAlert":   "2020-05-06T15:40:04.543+02:00",
 			"Severity":      "INFO",
 		},
-		map[string]interface{}{
+		{
 			"AffectedHosts": 12,
 			"Code":          "NEW_SERVER",
 			"Count":         12,

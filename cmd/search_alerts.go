@@ -19,7 +19,7 @@ func init() {
 	searchAlertsCmd := simpleAPIRequestCommand("search-alerts",
 		"Search alerts",
 		`search-alerts search the most matching alerts to the arguments`,
-		true, []apiOption{modeAlertOption, sortingOptions, alertStatusOptions, fromToWindowOptions}, false,
+		true, []apiOption{modeAlertOption, sortingOptions, alertStatusOptions, fromToWindowOptions}, true,
 		"/alerts",
 		"Failed to search alerts data: %v\n",
 		"Failed to search alerts data(Status: %d): %s\n",
