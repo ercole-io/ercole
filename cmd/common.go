@@ -178,7 +178,7 @@ var fromOption apiOption = apiOption{
 
 var fromToWindowOptions apiOption = apiOption{
 	addOption: func(cmd *cobra.Command) {
-		cmd.Flags().StringVarP(&from, "from", "f", "", "Filter alerts with a date >= from")
+		cmd.Flags().StringVarP(&from, "from", "F", "", "Filter alerts with a date >= from")
 		cmd.Flags().StringVarP(&to, "to", "t", "", "Filter alerts with a date <= to")
 	},
 	addParam: func(params url.Values) {
