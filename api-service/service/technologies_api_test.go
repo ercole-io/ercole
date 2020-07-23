@@ -34,16 +34,28 @@ func TestListTechnologies_Success(t *testing.T) {
 
 	expectedRes := []map[string]interface{}{
 		{
-			"compliance": 1.0,
-			"unpaidDues": 0,
-			"product":    "Oracle/Exadata",
-			"hostsCount": 2,
-		},
-		{
 			"compliance": 7.0 / 10,
 			"unpaidDues": 45,
 			"product":    "Oracle/Database",
 			"hostsCount": 8,
+		},
+		{
+			"compliance": 1.0,
+			"unpaidDues": 0,
+			"product":    "MariaDBFoundation/MariaDB",
+			"hostsCount": 0,
+		},
+		{
+			"compliance": 1.0,
+			"unpaidDues": 0,
+			"product":    "PostgreSQL/PostgreSQL",
+			"hostsCount": 0,
+		},
+		{
+			"compliance": 1.0,
+			"unpaidDues": 0,
+			"product":    "Oracle/MySQL",
+			"hostsCount": 0,
 		},
 	}
 
@@ -104,8 +116,10 @@ func TestListTechnologies_SuccessEmpty(t *testing.T) {
 	}
 
 	expectedRes := []map[string]interface{}{
-		{"compliance": 1, "hostsCount": 0, "product": "Oracle/Exadata", "unpaidDues": 0},
 		{"compliance": 1, "hostsCount": 0, "product": "Oracle/Database", "unpaidDues": 0},
+		{"compliance": 1.0, "unpaidDues": 0, "product": "MariaDBFoundation/MariaDB", "hostsCount": 0},
+		{"compliance": 1.0, "unpaidDues": 0, "product": "PostgreSQL/PostgreSQL", "hostsCount": 0},
+		{"compliance": 1.0, "unpaidDues": 0, "product": "Oracle/MySQL", "hostsCount": 0},
 	}
 
 	getTechnologiesUsageRes := map[string]float64{}

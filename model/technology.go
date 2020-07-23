@@ -17,18 +17,24 @@ package model
 
 // Technology names
 const (
-	TechnologyOracleDatabase         string = "Oracle/Database"
-	TechnologyOracleExadata          string = "Oracle/Exadata"
-	TechnologyMicrosoftSQLServer     string = "Microsoft/SQLServer"
-	TechnologyUnknownOperatingSystem string = "Unknown/Unknown"
+	TechnologyOracleDatabase           string = "Oracle/Database"
+	TechnologyOracleExadata            string = "Oracle/Exadata"
+	TechnologyMicrosoftSQLServer       string = "Microsoft/SQLServer"
+	TechnologyMariaDBFoundationMariaDB string = "MariaDBFoundation/MariaDB"
+	TechnologyPostgreSQLPostgreSQL     string = "PostgreSQL/PostgreSQL"
+	TechnologyOracleMySQL              string = "Oracle/MySQL"
+	TechnologyUnknownOperatingSystem   string = "Unknown/Unknown"
 )
 
 // Pointers to technology names
 var (
-	TechnologyOracleDatabasePtr         *string = str2CopyPtr(TechnologyOracleDatabase)
-	TechnologyOracleExadataPtr          *string = str2CopyPtr(TechnologyOracleExadata)
-	TechnologyMicrosoftSQLServerPrt     *string = str2CopyPtr(TechnologyMicrosoftSQLServer)
-	TechnologyUnknownOperatingSystemPrt *string = str2CopyPtr(TechnologyUnknownOperatingSystem)
+	TechnologyOracleDatabasePtr           *string = str2CopyPtr(TechnologyOracleDatabase)
+	TechnologyOracleExadataPtr            *string = str2CopyPtr(TechnologyOracleExadata)
+	TechnologyMicrosoftSQLServerPrt       *string = str2CopyPtr(TechnologyMicrosoftSQLServer)
+	TechnologyMariaDBFoundationMariaDBPrt *string = str2CopyPtr(TechnologyMariaDBFoundationMariaDB)
+	TechnologyPostgreSQLPostgreSQLPrt     *string = str2CopyPtr(TechnologyPostgreSQLPostgreSQL)
+	TechnologyOracleMySQLPrt              *string = str2CopyPtr(TechnologyOracleMySQL)
+	TechnologyUnknownOperatingSystemPrt   *string = str2CopyPtr(TechnologyUnknownOperatingSystem)
 )
 
 // TechnologyInfo contains the informations about a technology
