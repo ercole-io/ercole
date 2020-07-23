@@ -23,8 +23,9 @@ import (
 )
 
 type OracleDatabaseFeature struct {
-	Databases []OracleDatabase       `json:"databases" bson:"databases"`
-	OtherInfo map[string]interface{} `json:"-" bson:"-"`
+	Databases                []OracleDatabase       `json:"databases" bson:"databases"`
+	UnlistedRunningDatabases []string               `json:"unlistedRunningDatabases" bson:"unlistedRunningDatabases"`
+	OtherInfo                map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
@@ -50,10 +51,23 @@ func (v *OracleDatabaseFeature) UnmarshalBSON(data []byte) error {
 // OracleDatabaseFeatureBsonValidatorRules contains mongodb validation rules for OracleDatabaseFeature
 var OracleDatabaseFeatureBsonValidatorRules = bson.M{
 	"bsonType": "object",
+	"required": bson.A{
+		"databases",
+		"unlistedRunningDatabases",
+	},
 	"properties": bson.M{
 		"databases": bson.M{
 			"bsonType": "array",
 			"items":    OracleDatabaseBsonValidatorRules,
+		},
+		"unlistedRunningDatabases": bson.M{
+			"bsonType": "array",
+			"items": bson.M{
+				"bsonType":  "string",
+				"minLength": 1,
+				"maxLength": 64,
+			},
+			"uniqueItems": true,
 		},
 	},
 }
