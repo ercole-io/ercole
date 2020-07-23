@@ -191,7 +191,8 @@
                                         {
                                             "type": "object",
                                             "required": [
-                                                "databases"
+                                                "databases",
+                                                "unlistedRunningDatabases"
                                             ],
                                             "properties": {
                                                 "databases": {
@@ -851,6 +852,15 @@
                                                             }
                                                         }
                                                     }
+                                                },
+                                                "unlistedRunningDatabases": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "minLength": 1,
+                                                        "maxLength": 64
+                                                    },
+                                                    "uniqueItems": true
                                                 }
                                             }
                                         }
