@@ -66,7 +66,22 @@
     },
     {
         "Product": "Microsoft/WindowsServer2019",
-        "PrettyName": "Windows Server 2016",
+        "PrettyName": "Windows Server 2019",
         "Color": "#06abeb"
+    },
+    {
+        "Product": "MariaDBFoundation/MariaDB",
+        "PrettyName": "MariaDB",
+        "Color": "#043444"
+    },
+    {
+        "Product": "PostgreSQL/PostgreSQL",
+        "PrettyName": "PostgreSQL",
+        "Color": "#477fa6"
+    },
+    {
+        "Product": "Oracle/MySQL",
+        "PrettyName": "MySQL",
+        "Color": "#04648c"
     }
 ]

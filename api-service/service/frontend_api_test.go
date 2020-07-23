@@ -37,16 +37,28 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		"technologies": map[string]interface{}{
 			"technologies": []map[string]interface{}{
 				{
-					"compliance": 1.0,
-					"product":    model.TechnologyOracleExadata,
-					"hostsCount": 0.0,
-					"unpaidDues": 0,
-				},
-				{
 					"compliance": 7.0 / 10.0,
 					"product":    model.TechnologyOracleDatabase,
 					"hostsCount": 8,
 					"unpaidDues": 45,
+				},
+				{
+					"compliance": 1.0,
+					"unpaidDues": 0,
+					"product":    model.TechnologyMariaDBFoundationMariaDB,
+					"hostsCount": 0,
+				},
+				{
+					"compliance": 1.0,
+					"unpaidDues": 0,
+					"product":    model.TechnologyPostgreSQLPostgreSQL,
+					"hostsCount": 0,
+				},
+				{
+					"compliance": 1.0,
+					"unpaidDues": 0,
+					"product":    model.TechnologyOracleMySQL,
+					"hostsCount": 0,
 				},
 			},
 			"total": map[string]interface{}{

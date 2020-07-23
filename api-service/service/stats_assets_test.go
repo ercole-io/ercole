@@ -33,7 +33,7 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 	}
 
 	expectedRes := map[string]interface{}{
-		"compliance": 9.0 / 12,
+		"compliance": 7.0 / 10,
 		"unpaidDues": 45,
 		"hostsCount": 20,
 	}
