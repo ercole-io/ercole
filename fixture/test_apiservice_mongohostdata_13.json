@@ -17,6 +17,7 @@
     "features": {
         "oracle": {
             "database": {
+                "unlistedRunningDatabases": [],
                 "databases": [
                     {
                         "addms": [
