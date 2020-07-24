@@ -198,7 +198,7 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 							"lic",
 							"$$lic.name",
 						), ", "),
-						"productVersion": mu.APOArrayElemAt(mu.APOSplit("$database.version", "."), 0),
+						"productVersion": mu.APOArrayElemAt(mu.APOSplit("$database.version", " "), 0),
 						"productLicenseAllocated": mu.APOLet(
 							bson.M{
 								"edition": mu.APOArrayElemAt(mu.APOSplit("$database.version", " "), 1),

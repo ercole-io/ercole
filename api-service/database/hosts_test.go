@@ -289,7 +289,7 @@ func (m *MongodbSuite) TestSearchHosts() {
 				"processorSpeed":           "2.53GHz",
 				"processors":               2,
 				"productLicenseAllocated":  "EE",
-				"productVersion":           "12",
+				"productVersion":           "12.2.0.1.0",
 				"threadsPerCore":           2,
 				"virtualServerName":        "test-db",
 				"virtualizationTechnology": "VMware",
