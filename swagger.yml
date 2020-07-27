@@ -3379,6 +3379,7 @@ paths:
             enum:
               - full
               - summary
+              - list
         - $ref: '#/components/parameters/sort-by'
         - $ref: '#/components/parameters/sort-desc'
         - $ref: '#/components/parameters/page'
@@ -3414,7 +3415,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-      operationId: ListLicenses
+      operationId: SearchLicenses
       description: List licenses using the filters in the request
       summary: Search a list of licenses
       tags:
