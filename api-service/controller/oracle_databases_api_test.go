@@ -1855,7 +1855,7 @@ func TestSearchOracleDatabases_XLSXInternalServerError2(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestListLicenses_JSONPaged(t *testing.T) {
+func TestSearchLicenses_JSONPaged(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -1897,11 +1897,11 @@ func TestListLicenses_JSONPaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		ListLicenses("full", "Benefit", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		SearchLicenses("full", "Benefit", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(resFromService, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ListLicenses)
+	handler := http.HandlerFunc(ac.SearchLicenses)
 	req, err := http.NewRequest("GET", "/licenses?mode=full&sort-by=Benefit&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
@@ -1911,7 +1911,7 @@ func TestListLicenses_JSONPaged(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 
-func TestListLicenses_JSONUnpaged(t *testing.T) {
+func TestSearchLicenses_JSONUnpaged(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -1938,11 +1938,11 @@ func TestListLicenses_JSONUnpaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		ListLicenses("summary", "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchLicenses("summary", "", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ListLicenses)
+	handler := http.HandlerFunc(ac.SearchLicenses)
 	req, err := http.NewRequest("GET", "/licenses", nil)
 	require.NoError(t, err)
 
@@ -1952,7 +1952,7 @@ func TestListLicenses_JSONUnpaged(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 
-func TestListLicenses_JSONUnprocessableEntity1(t *testing.T) {
+func TestSearchLicenses_JSONUnprocessableEntity1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -1964,7 +1964,7 @@ func TestListLicenses_JSONUnprocessableEntity1(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ListLicenses)
+	handler := http.HandlerFunc(ac.SearchLicenses)
 	req, err := http.NewRequest("GET", "/licenses?mode=sadsas", nil)
 	require.NoError(t, err)
 
@@ -1973,7 +1973,7 @@ func TestListLicenses_JSONUnprocessableEntity1(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestListLicenses_JSONUnprocessableEntity2(t *testing.T) {
+func TestSearchLicenses_JSONUnprocessableEntity2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -1985,7 +1985,7 @@ func TestListLicenses_JSONUnprocessableEntity2(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ListLicenses)
+	handler := http.HandlerFunc(ac.SearchLicenses)
 	req, err := http.NewRequest("GET", "/licenses?sort-desc=sadsas", nil)
 	require.NoError(t, err)
 
@@ -1994,7 +1994,7 @@ func TestListLicenses_JSONUnprocessableEntity2(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestListLicenses_JSONUnprocessableEntity3(t *testing.T) {
+func TestSearchLicenses_JSONUnprocessableEntity3(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -2006,7 +2006,7 @@ func TestListLicenses_JSONUnprocessableEntity3(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ListLicenses)
+	handler := http.HandlerFunc(ac.SearchLicenses)
 	req, err := http.NewRequest("GET", "/licenses?page=sadsas", nil)
 	require.NoError(t, err)
 
@@ -2015,7 +2015,7 @@ func TestListLicenses_JSONUnprocessableEntity3(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestListLicenses_JSONUnprocessableEntity4(t *testing.T) {
+func TestSearchLicenses_JSONUnprocessableEntity4(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -2027,7 +2027,7 @@ func TestListLicenses_JSONUnprocessableEntity4(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ListLicenses)
+	handler := http.HandlerFunc(ac.SearchLicenses)
 	req, err := http.NewRequest("GET", "/licenses?size=sadsas", nil)
 	require.NoError(t, err)
 
@@ -2036,7 +2036,7 @@ func TestListLicenses_JSONUnprocessableEntity4(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestListLicenses_JSONUnprocessableEntity5(t *testing.T) {
+func TestSearchLicenses_JSONUnprocessableEntity5(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -2048,7 +2048,7 @@ func TestListLicenses_JSONUnprocessableEntity5(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ListLicenses)
+	handler := http.HandlerFunc(ac.SearchLicenses)
 	req, err := http.NewRequest("GET", "/licenses?older-than=sadsas", nil)
 	require.NoError(t, err)
 
@@ -2057,7 +2057,7 @@ func TestListLicenses_JSONUnprocessableEntity5(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestListLicenses_JSONInternalServerError(t *testing.T) {
+func TestSearchLicenses_JSONInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -2069,11 +2069,11 @@ func TestListLicenses_JSONInternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		ListLicenses("summary", "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchLicenses("summary", "", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ListLicenses)
+	handler := http.HandlerFunc(ac.SearchLicenses)
 	req, err := http.NewRequest("GET", "/licenses", nil)
 	require.NoError(t, err)
 

@@ -17,7 +17,6 @@ package database
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/ercole-io/ercole/model"
@@ -26,9 +25,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (m *MongodbSuite) TestListLicenses() {
+func (m *MongodbSuite) TestSearchLicenses() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_17.json"))
+
+	defer m.db.Client.Database(m.dbname).Collection("licenses").DeleteMany(context.TODO(), bson.M{})
 	m.InsertLicense(model.LicenseCount{Name: "Oracle ENT"})
 	m.InsertLicense(model.LicenseCount{Name: "Diagnostics Pack"})
 	m.InsertLicense(model.LicenseCount{Name: "Real Application Clusters"})
@@ -42,7 +43,7 @@ func (m *MongodbSuite) TestListLicenses() {
 		location := ""
 		environment := ""
 		olderThan := utils.MAX_TIME
-		out, err := m.db.ListLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 		m.Require().NoError(err)
 
 		var expectedOut interface{} = []interface{}{
@@ -63,7 +64,7 @@ func (m *MongodbSuite) TestListLicenses() {
 		location := ""
 		environment := ""
 		olderThan := utils.MAX_TIME
-		out, err := m.db.ListLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 		m.Require().NoError(err)
 
 		var expectedOut interface{} = []interface{}{
@@ -90,8 +91,10 @@ func (m *MongodbSuite) TestListLicenses() {
 		location := ""
 		environment := ""
 		olderThan := utils.MAX_TIME
-		_, err := m.db.ListLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 
+		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+
+		m.Require().Nil(out)
 		m.Require().Error(err)
 	})
 
@@ -104,7 +107,7 @@ func (m *MongodbSuite) TestListLicenses() {
 		location := ""
 		environment := ""
 		olderThan := utils.MAX_TIME
-		out, err := m.db.ListLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 		m.Require().NoError(err)
 
 		var expectedOut interface{} = []interface{}{
@@ -134,7 +137,7 @@ func (m *MongodbSuite) TestListLicenses() {
 		location := "Italy"
 		environment := ""
 		olderThan := utils.MAX_TIME
-		out, err := m.db.ListLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 
 		m.Require().NoError(err)
 		var expectedOut []interface{} = []interface{}{
@@ -142,7 +145,6 @@ func (m *MongodbSuite) TestListLicenses() {
 			map[string]interface{}{"_id": "Diagnostics Pack", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0},
 			map[string]interface{}{"_id": "Real Application Clusters", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0}}
 
-		fmt.Printf("%v\n", out)
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
@@ -155,7 +157,7 @@ func (m *MongodbSuite) TestListLicenses() {
 		location := ""
 		environment := "TEST"
 		olderThan := utils.MAX_TIME
-		out, err := m.db.ListLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 
 		m.Require().NoError(err)
 		var expectedOut []interface{} = []interface{}{
@@ -163,7 +165,6 @@ func (m *MongodbSuite) TestListLicenses() {
 			map[string]interface{}{"_id": "Diagnostics Pack", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0},
 			map[string]interface{}{"_id": "Real Application Clusters", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0}}
 
-		fmt.Printf("%v\n", out)
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
@@ -176,7 +177,7 @@ func (m *MongodbSuite) TestListLicenses() {
 		location := ""
 		environment := ""
 		olderThan := utils.MIN_TIME
-		out, err := m.db.ListLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 
 		m.Require().NoError(err)
 		var expectedOut []interface{} = []interface{}{
@@ -184,8 +185,154 @@ func (m *MongodbSuite) TestListLicenses() {
 			map[string]interface{}{"_id": "Diagnostics Pack", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0},
 			map[string]interface{}{"_id": "Real Application Clusters", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0}}
 
-		fmt.Printf("%v\n", out)
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+}
+
+func (m *MongodbSuite) TestListLicenses() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_17.json"))
+
+	defer m.db.Client.Database(m.dbname).Collection("licenses").DeleteMany(context.TODO(), bson.M{})
+	m.InsertLicense(model.LicenseCount{Name: "Oracle ENT"})
+	m.InsertLicense(model.LicenseCount{Name: "Diagnostics Pack"})
+	m.InsertLicense(model.LicenseCount{Name: "Real Application Clusters"})
+
+	m.T().Run("should_not_filter", func(t *testing.T) {
+		sortBy := ""
+		sortDesc := false
+		page := -1
+		pageSize := -1
+		location := ""
+		environment := ""
+		olderThan := utils.MAX_TIME
+		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		m.Require().NoError(err)
+
+		var expectedOut []interface{} = []interface{}{
+			//foobar3
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle EXE", "purchasedLicense": 0},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "purchasedLicense": 0.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle STD", "purchasedLicense": 0},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "WebLogic Server Management Pack Enterprise Edition", "purchasedLicense": 0},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Diagnostics Pack", "purchasedLicense": 0.5},
+			//foobar4
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle EXE", "purchasedLicense": 0},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle ENT", "purchasedLicense": 0.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle STD", "purchasedLicense": 0},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "WebLogic Server Management Pack Enterprise Edition", "purchasedLicense": 0},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Diagnostics Pack", "purchasedLicense": 0.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Real Application Clusters", "purchasedLicense": 1.5},
+		}
+
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
+	m.T().Run("should_sort", func(t *testing.T) {
+		sortBy := "licenseName"
+		sortDesc := false
+		page := -1
+		pageSize := -1
+		location := ""
+		environment := ""
+		olderThan := utils.MAX_TIME
+		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		m.Require().NoError(err)
+
+		var expectedOut interface{} = []interface{}{
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Diagnostics Pack", "purchasedLicense": 0.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Diagnostics Pack", "purchasedLicense": 0.5},
+
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "purchasedLicense": 0.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle ENT", "purchasedLicense": 0.5},
+
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle EXE", "purchasedLicense": 0},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle EXE", "purchasedLicense": 0},
+
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle STD", "purchasedLicense": 0},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle STD", "purchasedLicense": 0},
+
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Real Application Clusters", "purchasedLicense": 1.5},
+
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "WebLogic Server Management Pack Enterprise Edition", "purchasedLicense": 0},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "WebLogic Server Management Pack Enterprise Edition", "purchasedLicense": 0},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_do_pagination", func(t *testing.T) {
+		sortBy := ""
+		sortDesc := false
+		page := 0
+		pageSize := 2
+		location := ""
+		environment := ""
+		olderThan := utils.MAX_TIME
+		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		m.Require().NoError(err)
+
+		var expectedOut interface{} = []interface{}{
+			map[string]interface{}{
+				"content": []interface{}{
+					map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle EXE", "purchasedLicense": 0},
+					map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "purchasedLicense": 0.5},
+				},
+				"metadata": map[string]interface{}{
+					"empty":         false,
+					"first":         true,
+					"last":          false,
+					"number":        0,
+					"size":          2,
+					"totalElements": 11,
+					"totalPages":    5},
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
+		sortBy := ""
+		sortDesc := false
+		page := -1
+		pageSize := -1
+		location := "Italy"
+		environment := ""
+		olderThan := utils.MAX_TIME
+		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		m.Require().NoError(err)
+
+		var expectedOut interface{} = []interface{}{}
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
+		sortBy := ""
+		sortDesc := false
+		page := -1
+		pageSize := -1
+		location := ""
+		environment := "TEST"
+		olderThan := utils.MAX_TIME
+		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		m.Require().NoError(err)
+
+		var expectedOut interface{} = []interface{}{}
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
+		sortBy := ""
+		sortDesc := false
+		page := -1
+		pageSize := -1
+		location := ""
+		environment := ""
+		olderThan := utils.MIN_TIME
+		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		m.Require().NoError(err)
+
+		var expectedOut interface{} = []interface{}{}
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
 }
