@@ -1,0 +1,267 @@
+{
+    "hostname": "test-virt",
+    "environment": "PROD",
+    "location": "Italy",
+    "info": {
+        "hostname": "test-virt2",
+        "cpuModel": "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
+        "cpuCores": 1,
+        "cpuThreads": 2,
+        "kernel": "3.10.0-862.9.1.el7.x86_64",
+        "os": "Red Hat Enterprise Linux",
+        "memoryTotal": 3,
+        "swapTotal": 4,
+        "cpuFrequency": "2.50GHz",
+        "cpuSockets": 2,
+        "coresPerSocket": 1,
+        "threadsPerCore": 2,
+        "kernelVersion": "3.10.0-862.9.1.el7.x86_64",
+        "osVersion": "7.5",
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "VMWARE"
+    },
+    "agentVersion": "1.6.1",
+    "tags": [],
+    "schemaVersion": 1,
+    "clusterMembershipStatus": {
+        "oracleClusterware": false,
+        "veritasClusterServer": false,
+        "sunCluster": false,
+        "hacmp": false
+    },
+    "filesystems": [
+        {
+            "filesystem": "/dev/mapper/vg_os-lv_root",
+            "size": 8589934592,
+            "mountedOn": "/",
+            "availableSpace": 4939212390,
+            "usedSpace": 3758096384,
+            "type": "xfs"
+        }
+    ],
+    "features": {},
+    "clusters": [
+        {
+            "name": "Puzzait",
+            "type": "vmware",
+            "cpu": 140,
+            "sockets": 10,
+            "vms": [
+                {
+                    "name": "test-virt2",
+                    "hostname": "test-virt2",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402"
+                },
+                {
+                    "name": "test-db2",
+                    "hostname": "test-db2",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402"
+                }
+            ],
+            "fetchEndpoint": "???"
+        },
+        {
+            "name": "Puzzait2",
+            "type": "vmware",
+            "cpu": 140,
+            "sockets": 10,
+            "vms": [
+                {
+                    "name": "test-virt2",
+                    "hostname": "test-virt2",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-4232453"
+                },
+                {
+                    "name": "test-db2",
+                    "hostname": "test-db2",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-45674675"
+                }
+            ],
+            "fetchEndpoint": "???"
+        },
+        {
+            "name": "Puzzait3",
+            "type": "vmware",
+            "cpu": 140,
+            "sockets": 10,
+            "vms": [
+                {
+                    "name": "test-virt3",
+                    "hostname": "test-virt3",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-123431342"
+                },
+                {
+                    "name": "test-db3",
+                    "hostname": "test-db3",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-345234534"
+                }
+            ],
+            "fetchEndpoint": "???"
+        },
+        {
+            "name": "Puzzait4",
+            "type": "vmware",
+            "cpu": 140,
+            "sockets": 10,
+            "vms": [
+                {
+                    "name": "test-virt4",
+                    "hostname": "test-virt4",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-qwererterty"
+                },
+                {
+                    "name": "test-db4",
+                    "hostname": "test-db4",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-ertyeryte"
+                },
+                {
+                    "name": "test-db4",
+                    "hostname": "test-db4",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-ertyeryte"
+                },
+                {
+                    "name": "test-db4",
+                    "hostname": "test-db4",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-ertyeryte"
+                }
+            ],
+            "fetchEndpoint": "???"
+        },
+        {
+            "name": "Puzzait5",
+            "type": "vmware",
+            "cpu": 140,
+            "sockets": 10,
+            "vms": [
+                {
+                    "name": "test-virt5",
+                    "hostname": "test-virt5",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-tyuiuiytyui"
+                },
+                {
+                    "name": "test-db5",
+                    "hostname": "test-db5",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-tyuiuiytyui"
+                }
+            ],
+            "fetchEndpoint": "???"
+        },
+        {
+            "name": "Puzzait6",
+            "type": "vmware",
+            "cpu": 140,
+            "sockets": 10,
+            "vms": [
+                {
+                    "name": "test-virt6",
+                    "hostname": "test-virt6",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-tyuiiyu"
+                },
+                {
+                    "name": "test-db6",
+                    "hostname": "test-db6",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-yuiouiyo"
+                }
+            ],
+            "fetchEndpoint": "???"
+        },
+        {
+            "name": "Puzzait7",
+            "type": "vmware",
+            "cpu": 140,
+            "sockets": 10,
+            "vms": [
+                {
+                    "name": "test-virt7",
+                    "hostname": "test-virt7",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-uiopuiop"
+                },
+                {
+                    "name": "test-db7",
+                    "hostname": "test-db7",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-yzxcxcyz"
+                }
+            ],
+            "fetchEndpoint": "???"
+        },
+        {
+            "name": "Puzzait8",
+            "type": "vmware",
+            "cpu": 140,
+            "sockets": 10,
+            "vms": [
+                {
+                    "name": "test-virt8",
+                    "hostname": "test-virt8",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-xcvbvbc"
+                },
+                {
+                    "name": "test-db8",
+                    "hostname": "test-db8",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-bvnmbnm"
+                }
+            ],
+            "fetchEndpoint": "???"
+        },
+        {
+            "name": "Puzzait9",
+            "type": "vmware",
+            "cpu": 140,
+            "sockets": 10,
+            "vms": [
+                {
+                    "name": "test-virt9",
+                    "hostname": "test-virt9",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-qwweqwer"
+                },
+                {
+                    "name": "test-db9",
+                    "hostname": "test-db9",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-wertwertertw"
+                }
+            ],
+            "fetchEndpoint": "???"
+        },
+        {
+            "name": "Puzzait10",
+            "type": "vmware",
+            "cpu": 140,
+            "sockets": 10,
+            "vms": [
+                {
+                    "name": "test-virt10",
+                    "hostname": "test-virt10",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-uiytyuiutyi"
+                },
+                {
+                    "name": "test-db10",
+                    "hostname": "test-db10",
+                    "cappedCPU": false,
+                    "virtualizationNode": "s157-dfgsdfsg"
+                }
+            ],
+            "fetchEndpoint": "???"
+        }
+    ]
+}
