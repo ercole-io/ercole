@@ -25,6 +25,7 @@ import (
 type MicrosoftSQLServerFeature struct {
 	Instances []MicrosoftSQLServerInstance       `json:"instances" bson:"instances"`
 	Features  []MicrosoftSQLServerProductFeature `json:"features" bson:"features"`
+	Patches   []MicrosoftSQLServerPatch          `json:"patches" bson:"patches"`
 	OtherInfo map[string]interface{}             `json:"-" bson:"-"`
 }
 
@@ -53,6 +54,8 @@ var MicrosoftSQLServerFeatureBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
 		"instances",
+		"features",
+		"patches",
 	},
 	"properties": bson.M{
 		"instances": bson.M{
@@ -62,6 +65,10 @@ var MicrosoftSQLServerFeatureBsonValidatorRules = bson.M{
 		"features": bson.M{
 			"bsonType": "array",
 			"items":    MicrosoftSQLServerProductFeatureBsonValidatorRules,
+		},
+		"patches": bson.M{
+			"bsonType": "array",
+			"items":    MicrosoftSQLServerPatchBsonValidatorRules,
 		},
 	},
 }
