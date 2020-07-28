@@ -24,8 +24,6 @@ import (
 
 type MicrosoftSQLServerProductFeature struct {
 	Product    string                 `json:"product" bson:"product"`
-	Instance   string                 `json:"instance" bson:"instance"`
-	InstanceID string                 `json:"instanceID" bson:"instanceID"`
 	Feature    string                 `json:"feature" bson:"feature"`
 	Language   string                 `json:"language" bson:"language"`
 	Edition    string                 `json:"edition" bson:"edition"`
@@ -60,8 +58,6 @@ var MicrosoftSQLServerProductFeatureBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
 		"product",
-		"instance",
-		"instanceID",
 		"feature",
 		"language",
 		"edition",
@@ -71,16 +67,6 @@ var MicrosoftSQLServerProductFeatureBsonValidatorRules = bson.M{
 	},
 	"properties": bson.M{
 		"product": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-		},
-		"instance": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-		},
-		"instanceID": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 64,
