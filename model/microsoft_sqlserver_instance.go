@@ -37,7 +37,6 @@ type MicrosoftSQLServerInstance struct {
 	ProductCode   string                       `json:"productCode" bson:"productCode"`
 	LicensingInfo string                       `json:"licensingInfo" bson:"licensingInfo"`
 	Databases     []MicrosoftSQLServerDatabase `json:"databases" bson:"databases"`
-	Patches       []MicrosoftSQLServerPatch    `json:"patches" bson:"patches"`
 	OtherInfo     map[string]interface{}       `json:"-" bson:"-"`
 }
 
@@ -79,7 +78,6 @@ var MicrosoftSQLServerInstanceBsonValidatorRules = bson.M{
 		"productCode",
 		"licensingInfo",
 		"databases",
-		"patches",
 	},
 	"properties": bson.M{
 		"status": bson.M{
@@ -173,10 +171,6 @@ var MicrosoftSQLServerInstanceBsonValidatorRules = bson.M{
 		"databases": bson.M{
 			"bsonType": "array",
 			"items":    MicrosoftSQLServerDatabaseBsonValidatorRules,
-		},
-		"patches": bson.M{
-			"bsonType": "array",
-			"items":    MicrosoftSQLServerPatchBsonValidatorRules,
 		},
 	},
 }
