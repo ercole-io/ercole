@@ -72,18 +72,18 @@ var MicrosoftSQLServerDatabaseTablespaceBsonValidatorRules = bson.M{
 			"maxLength": 32,
 		},
 		"alloc": bson.M{
-			"bsonType": "double",
+			"bsonType": "number",
 			"minimum":  0,
 		},
 		"used": bson.M{
-			"bsonType": "double",
+			"bsonType": "number",
 			"minimum":  0,
 		},
 		"growth": bson.M{
 			"bsonType": "double",
 		},
 		"growthUnit": bson.M{
-			"bsonType": "double",
+			"bsonType": "string",
 			"enum": bson.A{
 				"%",
 				"MB",

@@ -1374,7 +1374,8 @@ var FrontendHostdataSchemaValidator string = `
                                             "type": "object",
                                             "required": [
                                                 "instances",
-                                                "features"
+                                                "features",
+                                                "patches"
                                             ],
                                             "properties": {
                                                 "instances": {
@@ -1393,8 +1394,7 @@ var FrontendHostdataSchemaValidator string = `
                                                         "editionType",
                                                         "productCode",
                                                         "licensingInfo",
-                                                        "databases",
-                                                        "patches"
+                                                        "databases"
                                                     ],
                                                     "properties": {
                                                         "status": {
@@ -1728,33 +1728,6 @@ var FrontendHostdataSchemaValidator string = `
                                                                     }
                                                                 }
                                                             }
-                                                        },
-                                                        "patches": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "type": "object",
-                                                                "required": [
-                                                                    "displayName",
-                                                                    "displayVersion",
-                                                                    "installDate"
-                                                                ],
-                                                                "properties": {
-                                                                    "displayName": {
-                                                                        "type": "string",
-                                                                        "minLength": 1,
-                                                                        "maxLength": 64
-                                                                    },
-                                                                    "displayVersion": {
-                                                                        "type": "string",
-                                                                        "minLength": 1,
-                                                                        "maxLength": 64
-                                                                    },
-                                                                    "installDate": {
-                                                                        "type": "string",
-                                                                        "format": "date"
-                                                                    }
-                                                                }
-                                                            }
                                                         }
                                                     }
                                                 },
@@ -1764,8 +1737,6 @@ var FrontendHostdataSchemaValidator string = `
                                                         "type": "object",
                                                         "required": [
                                                             "product",
-                                                            "instance",
-                                                            "instanceID",
                                                             "feature",
                                                             "language",
                                                             "edition",
@@ -1775,16 +1746,6 @@ var FrontendHostdataSchemaValidator string = `
                                                         ],
                                                         "properties": {
                                                             "product": {
-                                                                "type": "string",
-                                                                "minLength": 1,
-                                                                "maxLength": 64
-                                                            },
-                                                            "instance": {
-                                                                "type": "string",
-                                                                "minLength": 1,
-                                                                "maxLength": 64
-                                                            },
-                                                            "instanceID": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 64
@@ -1814,6 +1775,33 @@ var FrontendHostdataSchemaValidator string = `
                                                             },
                                                             "configured": {
                                                                 "type": "boolean"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "patches": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "displayName",
+                                                            "displayVersion",
+                                                            "installDate"
+                                                        ],
+                                                        "properties": {
+                                                            "displayName": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
+                                                            },
+                                                            "displayVersion": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
+                                                            },
+                                                            "installDate": {
+                                                                "type": "string",
+                                                                "format": "date"
                                                             }
                                                         }
                                                     }
