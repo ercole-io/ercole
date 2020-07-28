@@ -44,7 +44,7 @@ func (as *APIService) SearchOracleDatabases(full bool, search string, sortBy str
 	return as.Database.SearchOracleDatabases(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
-// SearchLicenses list licenses
+// SearchLicenses search licenses
 func (as *APIService) SearchLicenses(mode string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	if mode == "full" || mode == "summary" {
 		return as.Database.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)

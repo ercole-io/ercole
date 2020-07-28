@@ -544,7 +544,7 @@ func (ctrl *APIController) SearchOracleDatabasesXLSX(w http.ResponseWriter, r *h
 	utils.WriteXLSXResponse(w, sheets)
 }
 
-// SearchLicenses list licenses using the filters in the request
+// SearchLicenses search licenses using the filters in the request
 func (ctrl *APIController) SearchLicenses(w http.ResponseWriter, r *http.Request) {
 	var mode string
 	var sortBy string
