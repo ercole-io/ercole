@@ -1354,7 +1354,8 @@
                                             "type": "object",
                                             "required": [
                                                 "instances",
-                                                "features"
+                                                "features",
+                                                "patches"
                                             ],
                                             "properties": {
                                                 "instances": {
@@ -1373,8 +1374,7 @@
                                                         "editionType",
                                                         "productCode",
                                                         "licensingInfo",
-                                                        "databases",
-                                                        "patches"
+                                                        "databases"
                                                     ],
                                                     "properties": {
                                                         "status": {
@@ -1708,33 +1708,6 @@
                                                                     }
                                                                 }
                                                             }
-                                                        },
-                                                        "patches": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "type": "object",
-                                                                "required": [
-                                                                    "displayName",
-                                                                    "displayVersion",
-                                                                    "installDate"
-                                                                ],
-                                                                "properties": {
-                                                                    "displayName": {
-                                                                        "type": "string",
-                                                                        "minLength": 1,
-                                                                        "maxLength": 64
-                                                                    },
-                                                                    "displayVersion": {
-                                                                        "type": "string",
-                                                                        "minLength": 1,
-                                                                        "maxLength": 64
-                                                                    },
-                                                                    "installDate": {
-                                                                        "type": "string",
-                                                                        "format": "date"
-                                                                    }
-                                                                }
-                                                            }
                                                         }
                                                     }
                                                 },
@@ -1744,8 +1717,6 @@
                                                         "type": "object",
                                                         "required": [
                                                             "product",
-                                                            "instance",
-                                                            "instanceID",
                                                             "feature",
                                                             "language",
                                                             "edition",
@@ -1755,16 +1726,6 @@
                                                         ],
                                                         "properties": {
                                                             "product": {
-                                                                "type": "string",
-                                                                "minLength": 1,
-                                                                "maxLength": 64
-                                                            },
-                                                            "instance": {
-                                                                "type": "string",
-                                                                "minLength": 1,
-                                                                "maxLength": 64
-                                                            },
-                                                            "instanceID": {
                                                                 "type": "string",
                                                                 "minLength": 1,
                                                                 "maxLength": 64
@@ -1794,6 +1755,33 @@
                                                             },
                                                             "configured": {
                                                                 "type": "boolean"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "patches": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "displayName",
+                                                            "displayVersion",
+                                                            "installDate"
+                                                        ],
+                                                        "properties": {
+                                                            "displayName": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
+                                                            },
+                                                            "displayVersion": {
+                                                                "type": "string",
+                                                                "minLength": 1,
+                                                                "maxLength": 64
+                                                            },
+                                                            "installDate": {
+                                                                "type": "string",
+                                                                "format": "date"
                                                             }
                                                         }
                                                     }
