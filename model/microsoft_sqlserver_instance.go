@@ -108,8 +108,8 @@ var MicrosoftSQLServerInstanceBsonValidatorRules = bson.M{
 			"maxLength": 64,
 		},
 		"databaseID": bson.M{
-			"bsonType": "double",
-			"minimum":  1,
+			"bsonType": "number",
+			"minimum":  0,
 		},
 		"stateDesc": bson.M{
 			"bsonType": "string",
