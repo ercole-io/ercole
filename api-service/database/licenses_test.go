@@ -98,36 +98,6 @@ func (m *MongodbSuite) TestSearchLicenses() {
 		m.Require().Error(err)
 	})
 
-	m.T().Run("should_be_sorting", func(t *testing.T) {
-		mode := "summary"
-		sortBy := ""
-		sortDesc := false
-		page := 0
-		pageSize := 1
-		location := ""
-		environment := ""
-		olderThan := utils.MAX_TIME
-		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
-		m.Require().NoError(err)
-
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"content": []interface{}{
-					map[string]interface{}{"_id": "Oracle ENT", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 1},
-				},
-				"metadata": map[string]interface{}{
-					"empty":         false,
-					"first":         true,
-					"last":          false,
-					"number":        0,
-					"size":          1,
-					"totalElements": 3,
-					"totalPages":    3},
-			}}
-
-		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	})
-
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		mode := "summary"
 		sortBy := ""
@@ -184,6 +154,56 @@ func (m *MongodbSuite) TestSearchLicenses() {
 			map[string]interface{}{"_id": "Oracle ENT", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0},
 			map[string]interface{}{"_id": "Diagnostics Pack", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0},
 			map[string]interface{}{"_id": "Real Application Clusters", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0}}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_do_pagination", func(t *testing.T) {
+		mode := "summary"
+		sortBy := ""
+		sortDesc := false
+		page := 0
+		pageSize := 1
+		location := ""
+		environment := ""
+		olderThan := utils.MAX_TIME
+		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		m.Require().NoError(err)
+
+		var expectedOut interface{} = []interface{}{
+			map[string]interface{}{
+				"content": []interface{}{
+					map[string]interface{}{"_id": "Oracle ENT", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 1},
+				},
+				"metadata": map[string]interface{}{
+					"empty":         false,
+					"first":         true,
+					"last":          false,
+					"number":        0,
+					"size":          1,
+					"totalElements": 3,
+					"totalPages":    3},
+			}}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_sort", func(t *testing.T) {
+		mode := "summary"
+		sortBy := "used"
+		sortDesc := true
+		page := -1
+		pageSize := -1
+		location := ""
+		environment := ""
+		olderThan := utils.MAX_TIME
+		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []interface{}{
+			map[string]interface{}{"_id": "Real Application Clusters", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 2},
+			map[string]interface{}{"_id": "Oracle ENT", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 1},
+			map[string]interface{}{"_id": "Diagnostics Pack", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 1},
+		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
@@ -222,27 +242,48 @@ func (m *MongodbSuite) TestListLicenses() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
-	m.T().Run("should_sort", func(t *testing.T) {
-		sortBy := "licenseName"
+	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
+		sortBy := ""
 		sortDesc := false
 		page := -1
 		pageSize := -1
-		location := ""
+		location := "Italy"
 		environment := ""
 		olderThan := utils.MAX_TIME
 		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 		m.Require().NoError(err)
 
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
+		var expectedOut interface{} = []interface{}{}
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
 
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "usedLicenses": 0.5},
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle ENT", "usedLicenses": 0.5},
+	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
+		sortBy := ""
+		sortDesc := false
+		page := -1
+		pageSize := -1
+		location := ""
+		environment := "TEST"
+		olderThan := utils.MAX_TIME
+		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		m.Require().NoError(err)
 
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Real Application Clusters", "usedLicenses": 1.5},
-		}
+		var expectedOut interface{} = []interface{}{}
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
 
+	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
+		sortBy := ""
+		sortDesc := false
+		page := -1
+		pageSize := -1
+		location := ""
+		environment := ""
+		olderThan := utils.MIN_TIME
+		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		m.Require().NoError(err)
+
+		var expectedOut interface{} = []interface{}{}
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
@@ -277,47 +318,27 @@ func (m *MongodbSuite) TestListLicenses() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
-	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
-		sortBy := ""
-		sortDesc := false
-		page := -1
-		pageSize := -1
-		location := "Italy"
-		environment := ""
-		olderThan := utils.MAX_TIME
-		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
-		m.Require().NoError(err)
-
-		var expectedOut interface{} = []interface{}{}
-		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	})
-
-	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
-		sortBy := ""
-		sortDesc := false
-		page := -1
-		pageSize := -1
-		location := ""
-		environment := "TEST"
-		olderThan := utils.MAX_TIME
-		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
-		m.Require().NoError(err)
-
-		var expectedOut interface{} = []interface{}{}
-		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	})
-	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
-		sortBy := ""
+	m.T().Run("should_sort", func(t *testing.T) {
+		sortBy := "licenseName"
 		sortDesc := false
 		page := -1
 		pageSize := -1
 		location := ""
 		environment := ""
-		olderThan := utils.MIN_TIME
+		olderThan := utils.MAX_TIME
 		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 		m.Require().NoError(err)
 
-		var expectedOut interface{} = []interface{}{}
+		var expectedOut interface{} = []interface{}{
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
+
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "usedLicenses": 0.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle ENT", "usedLicenses": 0.5},
+
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Real Application Clusters", "usedLicenses": 1.5},
+		}
+
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 }
