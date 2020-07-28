@@ -35,15 +35,7 @@ func (m *MongodbSuite) TestSearchLicenses() {
 	m.InsertLicense(model.LicenseCount{Name: "Real Application Clusters"})
 
 	m.T().Run("should_not_filter", func(t *testing.T) {
-		mode := "summary"
-		sortBy := ""
-		sortDesc := false
-		page := -1
-		pageSize := -1
-		location := ""
-		environment := ""
-		olderThan := utils.MAX_TIME
-		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.SearchLicenses("summary", "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
 		var expectedOut interface{} = []interface{}{
@@ -56,15 +48,7 @@ func (m *MongodbSuite) TestSearchLicenses() {
 	})
 
 	m.T().Run("should_not_filter_full", func(t *testing.T) {
-		mode := "full"
-		sortBy := ""
-		sortDesc := false
-		page := -1
-		pageSize := -1
-		location := ""
-		environment := ""
-		olderThan := utils.MAX_TIME
-		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.SearchLicenses("full", "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
 		var expectedOut interface{} = []interface{}{
@@ -83,31 +67,14 @@ func (m *MongodbSuite) TestSearchLicenses() {
 	})
 
 	m.T().Run("should_raise_error_wrong_mode", func(t *testing.T) {
-		mode := "this_is_a_wrong_mode"
-		sortBy := ""
-		sortDesc := false
-		page := -1
-		pageSize := -1
-		location := ""
-		environment := ""
-		olderThan := utils.MAX_TIME
-
-		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.SearchLicenses("wrong_mode", "", false, -1, -1, "", "", utils.MAX_TIME)
 
 		m.Require().Nil(out)
 		m.Require().Error(err)
 	})
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
-		mode := "summary"
-		sortBy := ""
-		sortDesc := false
-		page := -1
-		pageSize := -1
-		location := "Italy"
-		environment := ""
-		olderThan := utils.MAX_TIME
-		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.SearchLicenses("summary", "", false, -1, -1, "Italy", "", utils.MAX_TIME)
 
 		m.Require().NoError(err)
 		var expectedOut []interface{} = []interface{}{
@@ -119,15 +86,7 @@ func (m *MongodbSuite) TestSearchLicenses() {
 	})
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
-		mode := "summary"
-		sortBy := ""
-		sortDesc := false
-		page := -1
-		pageSize := -1
-		location := ""
-		environment := "TEST"
-		olderThan := utils.MAX_TIME
-		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.SearchLicenses("summary", "", false, -1, -1, "", "TEST", utils.MAX_TIME)
 
 		m.Require().NoError(err)
 		var expectedOut []interface{} = []interface{}{
@@ -139,15 +98,7 @@ func (m *MongodbSuite) TestSearchLicenses() {
 	})
 
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
-		mode := "summary"
-		sortBy := ""
-		sortDesc := false
-		page := -1
-		pageSize := -1
-		location := ""
-		environment := ""
-		olderThan := utils.MIN_TIME
-		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.SearchLicenses("summary", "", false, -1, -1, "", "", utils.MIN_TIME)
 
 		m.Require().NoError(err)
 		var expectedOut []interface{} = []interface{}{
@@ -159,15 +110,7 @@ func (m *MongodbSuite) TestSearchLicenses() {
 	})
 
 	m.T().Run("should_do_pagination", func(t *testing.T) {
-		mode := "summary"
-		sortBy := ""
-		sortDesc := false
-		page := 0
-		pageSize := 1
-		location := ""
-		environment := ""
-		olderThan := utils.MAX_TIME
-		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.SearchLicenses("summary", "", false, 0, 1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
 		var expectedOut interface{} = []interface{}{
@@ -188,17 +131,10 @@ func (m *MongodbSuite) TestSearchLicenses() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
-	m.T().Run("should_sort", func(t *testing.T) {
-		mode := "summary"
-		sortBy := "used"
-		sortDesc := true
-		page := -1
-		pageSize := -1
-		location := ""
-		environment := ""
-		olderThan := utils.MAX_TIME
-		out, err := m.db.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+	m.T().Run("should_be_sorted", func(t *testing.T) {
+		out, err := m.db.SearchLicenses("summary", "used", true, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
+
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{"_id": "Real Application Clusters", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 2},
 			map[string]interface{}{"_id": "Oracle ENT", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 1},
@@ -213,20 +149,8 @@ func (m *MongodbSuite) TestListLicenses() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_17.json"))
 
-	defer m.db.Client.Database(m.dbname).Collection("licenses").DeleteMany(context.TODO(), bson.M{})
-	m.InsertLicense(model.LicenseCount{Name: "Oracle ENT"})
-	m.InsertLicense(model.LicenseCount{Name: "Diagnostics Pack"})
-	m.InsertLicense(model.LicenseCount{Name: "Real Application Clusters"})
-
 	m.T().Run("should_not_filter", func(t *testing.T) {
-		sortBy := ""
-		sortDesc := false
-		page := -1
-		pageSize := -1
-		location := ""
-		environment := ""
-		olderThan := utils.MAX_TIME
-		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.ListLicenses("", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
 		var expectedOut []interface{} = []interface{}{
@@ -243,14 +167,7 @@ func (m *MongodbSuite) TestListLicenses() {
 	})
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
-		sortBy := ""
-		sortDesc := false
-		page := -1
-		pageSize := -1
-		location := "Italy"
-		environment := ""
-		olderThan := utils.MAX_TIME
-		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.ListLicenses("", false, -1, -1, "Italy", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
 		var expectedOut interface{} = []interface{}{}
@@ -258,14 +175,7 @@ func (m *MongodbSuite) TestListLicenses() {
 	})
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
-		sortBy := ""
-		sortDesc := false
-		page := -1
-		pageSize := -1
-		location := ""
-		environment := "TEST"
-		olderThan := utils.MAX_TIME
-		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.ListLicenses("", false, -1, -1, "", "TEST", utils.MAX_TIME)
 		m.Require().NoError(err)
 
 		var expectedOut interface{} = []interface{}{}
@@ -273,14 +183,7 @@ func (m *MongodbSuite) TestListLicenses() {
 	})
 
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
-		sortBy := ""
-		sortDesc := false
-		page := -1
-		pageSize := -1
-		location := ""
-		environment := ""
-		olderThan := utils.MIN_TIME
-		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.ListLicenses("", false, -1, -1, "", "", utils.MIN_TIME)
 		m.Require().NoError(err)
 
 		var expectedOut interface{} = []interface{}{}
@@ -288,14 +191,7 @@ func (m *MongodbSuite) TestListLicenses() {
 	})
 
 	m.T().Run("should_do_pagination", func(t *testing.T) {
-		sortBy := ""
-		sortDesc := false
-		page := 0
-		pageSize := 2
-		location := ""
-		environment := ""
-		olderThan := utils.MAX_TIME
-		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+		out, err := m.db.ListLicenses("", false, 0, 2, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
 		var expectedOut interface{} = []interface{}{
@@ -318,25 +214,16 @@ func (m *MongodbSuite) TestListLicenses() {
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
-	m.T().Run("should_sort", func(t *testing.T) {
-		sortBy := "licenseName"
-		sortDesc := false
-		page := -1
-		pageSize := -1
-		location := ""
-		environment := ""
-		olderThan := utils.MAX_TIME
-		out, err := m.db.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+	m.T().Run("should_be_sorted", func(t *testing.T) {
+		out, err := m.db.ListLicenses("licenseName", true, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
 		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
-
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Real Application Clusters", "usedLicenses": 1.5},
 			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "usedLicenses": 0.5},
 			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle ENT", "usedLicenses": 0.5},
-
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Real Application Clusters", "usedLicenses": 1.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
