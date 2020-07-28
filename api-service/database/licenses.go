@@ -176,6 +176,7 @@ func (md *MongoDatabase) ListLicenses(sortBy string, sortDesc bool, page int, pa
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APUnwind("$features.oracle.database.databases"),
 			mu.APUnwind("$features.oracle.database.databases.licenses"),
+			mu.APMatch(bson.M{"features.oracle.database.databases.licenses.count": bson.M{"$gt": 0}}),
 			mu.APProject(
 				bson.M{
 					"_id":              0,
