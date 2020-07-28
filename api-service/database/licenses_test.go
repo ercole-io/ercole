@@ -211,12 +211,12 @@ func (m *MongodbSuite) TestListLicenses() {
 
 		var expectedOut []interface{} = []interface{}{
 			//foobar3
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "purchasedLicense": 0.5},
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Diagnostics Pack", "purchasedLicense": 0.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "usedLicenses": 0.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
 			//foobar4
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle ENT", "purchasedLicense": 0.5},
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Diagnostics Pack", "purchasedLicense": 0.5},
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Real Application Clusters", "purchasedLicense": 1.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle ENT", "usedLicenses": 0.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Real Application Clusters", "usedLicenses": 1.5},
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -234,13 +234,13 @@ func (m *MongodbSuite) TestListLicenses() {
 		m.Require().NoError(err)
 
 		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Diagnostics Pack", "purchasedLicense": 0.5},
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Diagnostics Pack", "purchasedLicense": 0.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
 
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "purchasedLicense": 0.5},
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle ENT", "purchasedLicense": 0.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "usedLicenses": 0.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle ENT", "usedLicenses": 0.5},
 
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Real Application Clusters", "purchasedLicense": 1.5},
+			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Real Application Clusters", "usedLicenses": 1.5},
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -260,8 +260,8 @@ func (m *MongodbSuite) TestListLicenses() {
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
 				"content": []interface{}{
-					map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "purchasedLicense": 0.5},
-					map[string]interface{}{"dbName": "foobar3", "hostname": "test-db3", "licenseName": "Diagnostics Pack", "purchasedLicense": 0.5},
+					map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "usedLicenses": 0.5},
+					map[string]interface{}{"dbName": "foobar3", "hostname": "test-db3", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
 				},
 				"metadata": map[string]interface{}{
 					"empty":         false,
