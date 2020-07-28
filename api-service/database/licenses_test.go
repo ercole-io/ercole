@@ -211,16 +211,10 @@ func (m *MongodbSuite) TestListLicenses() {
 
 		var expectedOut []interface{} = []interface{}{
 			//foobar3
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle EXE", "purchasedLicense": 0},
 			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "purchasedLicense": 0.5},
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle STD", "purchasedLicense": 0},
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "WebLogic Server Management Pack Enterprise Edition", "purchasedLicense": 0},
 			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Diagnostics Pack", "purchasedLicense": 0.5},
 			//foobar4
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle EXE", "purchasedLicense": 0},
 			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle ENT", "purchasedLicense": 0.5},
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle STD", "purchasedLicense": 0},
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "WebLogic Server Management Pack Enterprise Edition", "purchasedLicense": 0},
 			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Diagnostics Pack", "purchasedLicense": 0.5},
 			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Real Application Clusters", "purchasedLicense": 1.5},
 		}
@@ -246,16 +240,7 @@ func (m *MongodbSuite) TestListLicenses() {
 			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "purchasedLicense": 0.5},
 			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle ENT", "purchasedLicense": 0.5},
 
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle EXE", "purchasedLicense": 0},
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle EXE", "purchasedLicense": 0},
-
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle STD", "purchasedLicense": 0},
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle STD", "purchasedLicense": 0},
-
 			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Real Application Clusters", "purchasedLicense": 1.5},
-
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "WebLogic Server Management Pack Enterprise Edition", "purchasedLicense": 0},
-			map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "WebLogic Server Management Pack Enterprise Edition", "purchasedLicense": 0},
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
@@ -275,8 +260,8 @@ func (m *MongodbSuite) TestListLicenses() {
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
 				"content": []interface{}{
-					map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle EXE", "purchasedLicense": 0},
 					map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "purchasedLicense": 0.5},
+					map[string]interface{}{"dbName": "foobar3", "hostname": "test-db3", "licenseName": "Diagnostics Pack", "purchasedLicense": 0.5},
 				},
 				"metadata": map[string]interface{}{
 					"empty":         false,
@@ -284,8 +269,8 @@ func (m *MongodbSuite) TestListLicenses() {
 					"last":          false,
 					"number":        0,
 					"size":          2,
-					"totalElements": 11,
-					"totalPages":    5},
+					"totalElements": 5,
+					"totalPages":    2},
 			},
 		}
 
