@@ -65,27 +65,27 @@ func (v *MicrosoftSQLServerDatabase) UnmarshalBSON(data []byte) error {
 // MicrosoftSQLServerDatabaseBsonValidatorRules contains mongodb validation rules for MicrosoftSQLServerDatabase
 var MicrosoftSQLServerDatabaseBsonValidatorRules = bson.M{
 	"bsonType": "object",
-	"required": bson.A{
-		"databaseID",
-		"name",
-		"collationName",
-		"status",
-		"recoveryModel",
-		"blockSize",
-		"schedulersCount",
-		"affinityMask",
-		"minServerMemory",
-		"maxServerMemory",
-		"ctp",
-		"maxDop",
-		"alloc",
-		"backups",
-		"schemas",
-		"tablespaces",
-	},
+	// "required": bson.A{
+	// 	"databaseID",
+	// 	"name",
+	// 	"collationName",
+	// 	"status",
+	// 	"recoveryModel",
+	// 	"blockSize",
+	// 	"schedulersCount",
+	// 	"affinityMask",
+	// 	"minServerMemory",
+	// 	"maxServerMemory",
+	// 	"ctp",
+	// 	"maxDop",
+	// 	"alloc",
+	// 	"backups",
+	// 	"schemas",
+	// 	"tablespaces",
+	// },
 	"properties": bson.M{
 		"databaseID": bson.M{
-			"bsonType": "double",
+			"bsonType": "number",
 			"minimum":  1,
 		},
 		"name": bson.M{
@@ -121,31 +121,31 @@ var MicrosoftSQLServerDatabaseBsonValidatorRules = bson.M{
 			},
 		},
 		"blockSize": bson.M{
-			"bsonType": "double",
+			"bsonType": "number",
 			"minimum":  1,
 		},
 		"schedulersCount": bson.M{
-			"bsonType": "double",
+			"bsonType": "number",
 			"minimum":  1,
 		},
 		"affinityMask": bson.M{
-			"bsonType": "double",
+			"bsonType": "number",
 			"minimum":  0,
 		},
 		"minServerMemory": bson.M{
-			"bsonType": "double",
+			"bsonType": "number",
 			"minimum":  1,
 		},
 		"maxServerMemory": bson.M{
-			"bsonType": "double",
+			"bsonType": "number",
 			"minimum":  1,
 		},
 		"ctp": bson.M{
-			"bsonType": "double",
+			"bsonType": "number",
 			"minimum":  1,
 		},
 		"maxDop": bson.M{
-			"bsonType": "double",
+			"bsonType": "number",
 			"minimum":  0,
 		},
 		"alloc": bson.M{

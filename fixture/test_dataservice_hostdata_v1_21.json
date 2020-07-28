@@ -1,0 +1,350 @@
+{
+	"agentVersion": "latest",
+	"clusterMembershipStatus": {
+		"hacmp": false,
+		"oracleClusterware": false,
+		"sunCluster": false,
+		"veritasClusterServer": false
+	},
+	"clusters": null,
+	"environment": "TST",
+	"features": {
+		"microsoft": {
+			"sqlServer": {
+				"features": [{
+					"clustered": false,
+					"configured": false,
+					"edition": "Developer Edition",
+					"feature": "Servizi motore di database",
+					"language": "1033",
+					"product": "Microsoft SQL Server 2019",
+					"version": "15.0.2000.5"
+				}, {
+					"clustered": false,
+					"configured": false,
+					"edition": "Developer Edition",
+					"feature": "Servizi motore di database",
+					"language": "1040",
+					"product": "Microsoft SQL Server 2019",
+					"version": "15.0.2000.5"
+				}],
+				"instances": [{
+					"collationName": "Latin1_General_CI_AS",
+					"databaseID": 1,
+					"databases": [{
+						"affinityMask": 0,
+						"alloc": 0.007,
+						"backups": [],
+						"blockSize": 8192,
+						"collationName": "Latin1_General_CI_AS",
+						"ctp": 5,
+						"databaseID": 1,
+						"maxDop": 4,
+						"maxServerMemory": 2147483647,
+						"minServerMemory": 16,
+						"name": "master",
+						"recoveryModel": "SIMPLE",
+						"schedulersCount": 4,
+						"schemas": [{
+							"allocatedSpace": 2252341,
+							"allocationType": "Clustered Index Data",
+							"usedSpace": 1867513
+						}, {
+							"allocatedSpace": 66060,
+							"allocationType": "LOB data",
+							"usedSpace": 66060
+						}, {
+							"allocatedSpace": 1196425,
+							"allocationType": "Non Clustered Index Data",
+							"usedSpace": 1016070
+						}, {
+							"allocatedSpace": 49283,
+							"allocationType": "Table Data",
+							"usedSpace": 49283
+						}],
+						"status": "ONLINE",
+						"tablespaces": [{
+							"alloc": 5641338,
+							"fileType": "ROWS",
+							"filename": "master",
+							"growth": 10,
+							"growthUnit": "%",
+							"status": "ONLINE",
+							"used": 4068474
+						}, {
+							"alloc": 2097152,
+							"fileType": "LOG",
+							"filename": "mastlog",
+							"growth": 10,
+							"growthUnit": "%",
+							"status": "ONLINE",
+							"used": 901775
+						}]
+					}, {
+						"affinityMask": 0,
+						"alloc": 0.039,
+						"backups": [],
+						"blockSize": 8192,
+						"collationName": "Latin1_General_CI_AS",
+						"ctp": 5,
+						"databaseID": 2,
+						"maxDop": 4,
+						"maxServerMemory": 2147483647,
+						"minServerMemory": 16,
+						"name": "tempdb",
+						"recoveryModel": "SIMPLE",
+						"schedulersCount": 4,
+						"schemas": [{
+							"allocatedSpace": 1540358,
+							"allocationType": "Clustered Index Data",
+							"usedSpace": 1269825
+						}, {
+							"allocatedSpace": 32505,
+							"allocationType": "LOB data",
+							"usedSpace": 32505
+						}, {
+							"allocatedSpace": 1196425,
+							"allocationType": "Non Clustered Index Data",
+							"usedSpace": 900726
+						}, {
+							"allocatedSpace": 459276,
+							"allocationType": "Table Data",
+							"usedSpace": 114294
+						}],
+						"status": "ONLINE",
+						"tablespaces": [{
+							"alloc": 8388608,
+							"fileType": "ROWS",
+							"filename": "tempdev",
+							"growth": 64,
+							"growthUnit": "MB",
+							"status": "ONLINE",
+							"used": 3082813
+						}, {
+							"alloc": 8388608,
+							"fileType": "LOG",
+							"filename": "templog",
+							"growth": 64,
+							"growthUnit": "MB",
+							"status": "ONLINE",
+							"used": 786432
+						}, {
+							"alloc": 8388608,
+							"fileType": "ROWS",
+							"filename": "temp2",
+							"growth": 64,
+							"growthUnit": "MB",
+							"status": "ONLINE",
+							"used": 398458
+						}, {
+							"alloc": 8388608,
+							"fileType": "ROWS",
+							"filename": "temp3",
+							"growth": 64,
+							"growthUnit": "MB",
+							"status": "ONLINE",
+							"used": 398458
+						}, {
+							"alloc": 8388608,
+							"fileType": "ROWS",
+							"filename": "temp4",
+							"growth": 64,
+							"growthUnit": "MB",
+							"status": "ONLINE",
+							"used": 524288
+						}]
+					}, {
+						"affinityMask": 0,
+						"alloc": 0.016,
+						"backups": [],
+						"blockSize": 8192,
+						"collationName": "Latin1_General_CI_AS",
+						"ctp": 5,
+						"databaseID": 3,
+						"maxDop": 4,
+						"maxServerMemory": 2147483647,
+						"minServerMemory": 16,
+						"name": "model",
+						"recoveryModel": "FULL",
+						"schedulersCount": 4,
+						"schemas": [{
+							"allocatedSpace": 1319108,
+							"allocationType": "Clustered Index Data",
+							"usedSpace": 1188036
+						}, {
+							"allocatedSpace": 32505,
+							"allocationType": "LOB data",
+							"usedSpace": 32505
+						}, {
+							"allocatedSpace": 975175,
+							"allocationType": "Non Clustered Index Data",
+							"usedSpace": 794820
+						}, {
+							"allocatedSpace": 16777,
+							"allocationType": "Table Data",
+							"usedSpace": 16777
+						}],
+						"status": "ONLINE",
+						"tablespaces": [{
+							"alloc": 8388608,
+							"fileType": "ROWS",
+							"filename": "modeldev",
+							"growth": 64,
+							"growthUnit": "MB",
+							"status": "ONLINE",
+							"used": 2757754
+						}, {
+							"alloc": 8388608,
+							"fileType": "LOG",
+							"filename": "modellog",
+							"growth": 64,
+							"growthUnit": "MB",
+							"status": "ONLINE",
+							"used": 954204
+						}]
+					}, {
+						"affinityMask": 0,
+						"alloc": 0.021,
+						"backups": [],
+						"blockSize": 8192,
+						"collationName": "Latin1_General_CI_AS",
+						"ctp": 5,
+						"databaseID": 4,
+						"maxDop": 4,
+						"maxServerMemory": 2147483647,
+						"minServerMemory": 16,
+						"name": "msdb",
+						"recoveryModel": "SIMPLE",
+						"schedulersCount": 4,
+						"schemas": [{
+							"allocatedSpace": 6798966,
+							"allocationType": "Clustered Index Data",
+							"usedSpace": 6504316
+						}, {
+							"allocatedSpace": 4645191,
+							"allocationType": "LOB data",
+							"usedSpace": 4538236
+						}, {
+							"allocatedSpace": 2211446,
+							"allocationType": "Non Clustered Index Data",
+							"usedSpace": 1949302
+						}, {
+							"allocatedSpace": 66060,
+							"allocationType": "Table Data",
+							"usedSpace": 66060
+						}],
+						"status": "ONLINE",
+						"tablespaces": [{
+							"alloc": 17039360,
+							"fileType": "ROWS",
+							"filename": "MSDBData",
+							"growth": 10,
+							"growthUnit": "%",
+							"status": "ONLINE",
+							"used": 14417920
+						}, {
+							"alloc": 5305794,
+							"fileType": "LOG",
+							"filename": "MSDBLog",
+							"growth": 10,
+							"growthUnit": "%",
+							"status": "ONLINE",
+							"used": 1027604
+						}]
+					}, {
+						"affinityMask": 0,
+						"alloc": 0.016,
+						"backups": [],
+						"blockSize": 8192,
+						"collationName": "Latin1_General_CI_AS",
+						"ctp": 5,
+						"databaseID": 5,
+						"maxDop": 4,
+						"maxServerMemory": 2147483647,
+						"minServerMemory": 16,
+						"name": "pippo1",
+						"recoveryModel": "FULL",
+						"schedulersCount": 4,
+						"schemas": [{
+							"allocatedSpace": 1515192,
+							"allocationType": "Clustered Index Data",
+							"usedSpace": 1261436
+						}, {
+							"allocatedSpace": 98566,
+							"allocationType": "LOB data",
+							"usedSpace": 49283
+						}, {
+							"allocatedSpace": 1106247,
+							"allocationType": "Non Clustered Index Data",
+							"usedSpace": 827326
+						}, {
+							"allocatedSpace": 16777,
+							"allocationType": "Table Data",
+							"usedSpace": 16777
+						}],
+						"status": "ONLINE",
+						"tablespaces": [{
+							"alloc": 8388608,
+							"fileType": "ROWS",
+							"filename": "pippo1",
+							"growth": 64,
+							"growthUnit": "MB",
+							"status": "ONLINE",
+							"used": 3145728
+						}, {
+							"alloc": 8388608,
+							"fileType": "LOG",
+							"filename": "pippo1_log",
+							"growth": 64,
+							"growthUnit": "MB",
+							"status": "ONLINE",
+							"used": 933232
+						}]
+					}],
+					"displayName": "SQL Server (MSSQLERC2019)",
+					"edition": "DEV",
+					"editionType": "Developer Edition",
+					"licensingInfo": "SQL Server detected 4 sockets with 1 cores per socket and 1 logical processors per socket, 4 total logical processors; using 4 logical processors based on SQL Server licensing. This is an informational message; no user action is required.",
+					"name": "MSSQL$MSSQLERC2019",
+					"platform": "Windows",
+					"productCode": "{A60B3D8E-5311-4BF1-AF7A-D1AC15F9152E}",
+					"serverName": "ERCWIN2019MSSQL\\MSSQLERC2019",
+					"stateDesc": "ONLINE",
+					"status": "Running",
+					"version": "15.0.2000.5"
+				}],
+				"patches": []
+			}
+		}
+	},
+	"filesystems": [{
+		"availableSpace": 13210075136,
+		"filesystem": "\\\\?\\Volume{1c0f533b-0000-0000-0000-602200000000}\\",
+		"mountedOn": "C:",
+		"size": 31634485248,
+		"type": "NTFS",
+		"usedSpace": 18424410112
+	}],
+	"hostname": "ERCWIN2019MSSQL",
+	"info": {
+		"coresPerSocket": 2,
+		"cpuCores": 4,
+		"cpuFrequency": "1698  MHz",
+		"cpuModel": "Intel Core Processor (Broadwell)",
+		"cpuSockets": 4,
+		"cpuThreads": 4,
+		"hardwareAbstraction": "PH",
+		"hardwareAbstractionTechnology": "PH",
+		"hostname": "ERCWIN2019MSSQL",
+		"kernel": "NT",
+		"kernelVersion": "10.0.17763",
+		"memoryTotal": 4,
+		"os": "Microsoft Windows Server 2019 Standard Evaluation",
+		"osVersion": "Microsoft Windows Server 2019 Standard Evaluation",
+		"swapTotal": 5,
+		"threadsPerCore": 2
+	},
+	"location": "Germany",
+	"schemaVersion": 1,
+	"tags": []
+}
