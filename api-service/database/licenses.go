@@ -120,7 +120,8 @@ func (md *MongoDatabase) SearchLicenses(mode string, sortBy string, sortDesc boo
 							"hosts": mu.APOPush("$hosts"),
 						}),
 					)),
-				)),
+				),
+			),
 			mu.APSet(bson.M{
 				"used": mu.APOArrayElemAt("$used", 0),
 			}),
