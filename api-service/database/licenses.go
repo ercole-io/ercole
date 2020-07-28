@@ -33,7 +33,7 @@ func (md *MongoDatabase) SearchLicenses(mode string, sortBy string, sortDesc boo
 	} else if mode == "summary" {
 		isFull = false
 	} else {
-		return nil, utils.NewAdvancedErrorPtr(errors.New("Wrong mode value"), "")
+		return nil, utils.NewAdvancedErrorPtr(errors.New("Wrong mode value"), "PARAMCHECK")
 	}
 
 	//Find the informations
