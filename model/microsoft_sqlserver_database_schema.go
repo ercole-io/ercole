@@ -68,11 +68,11 @@ var MicrosoftSQLServerDatabaseSchemaBsonValidatorRules = bson.M{
 			},
 		},
 		"usedSpace": bson.M{
-			"bsonType": "double",
+			"bsonType": "number",
 			"minimum":  0,
 		},
 		"allocatedSpace": bson.M{
-			"bsonType": "double",
+			"bsonType": "number",
 			"minimum":  0,
 		},
 	},
