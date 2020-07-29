@@ -19,7 +19,8 @@ Ercole is the server component of the ercole project.
 %global debug_package %{nil}
 
 %pre
-    getent passwd ercole >/dev/null || useradd -s /bin/bash -c "Ercole user" ercole
+getent group ercole || groupadd -r ercole
+getent passwd ercole >/dev/null || useradd -r -g ercole -s /bin/bash -c "Ercole user" ercole
 
 %prep
 rm -rf %{_builddir}/%{name}-%{version}

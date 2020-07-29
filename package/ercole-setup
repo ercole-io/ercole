@@ -79,6 +79,10 @@ if [ -z $API_SERVICE_AUTH_PROVIDER_PRIVATE_KEY ] || [ -z $API_SERVICE_AUTH_PROVI
 	API_SERVICE_AUTH_PROVIDER_PUBLIC_KEY="/etc/ercole/ercole-auth.pub"
 	echo "APIService.AuthenticationProvider.PrivateKey = \"$API_SERVICE_AUTH_PROVIDER_PRIVATE_KEY\"" >> /etc/ercole/conf.d/20-ercolesetup.toml
 	echo "APIService.AuthenticationProvider.PublicKey = \"$API_SERVICE_AUTH_PROVIDER_PUBLIC_KEY\"" >> /etc/ercole/conf.d/20-ercolesetup.toml
+
+	# Fix permissions
+	chown root:ercole $API_SERVICE_AUTH_PROVIDER_PRIVATE_KEY $API_SERVICE_AUTH_PROVIDER_PUBLIC_KEY
+	chmod g+r $API_SERVICE_AUTH_PROVIDER_PRIVATE_KEY $API_SERVICE_AUTH_PROVIDER_PUBLIC_KEY
 fi
 
 echo "Generating SFTP repo service keys..."
@@ -92,6 +96,10 @@ if [ -z $REPO_SERVICE_SFTP_PRIVATE_KEY ]; then
 
 	REPO_SERVICE_SFTP_PRIVATE_KEY="/etc/ercole/ercole-repo-sftp.pem"
 	echo "RepoService.SFTP.PrivateKey = \"$REPO_SERVICE_SFTP_PRIVATE_KEY\"" >> /etc/ercole/conf.d/20-ercolesetup.toml
+
+	# Fix permissions
+	chown root:ercole $REPO_SERVICE_SFTP_PRIVATE_KEY 
+	chmod g+r $REPO_SERVICE_SFTP_PRIVATE_KEY 
 fi
 
 echo "Initializing /var/lib/ercole/distributed_files..."
