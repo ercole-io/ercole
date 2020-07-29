@@ -62,8 +62,11 @@ install -m 0644 distributed_files/shared/*.repo %{buildroot}/usr/share/ercole/ex
 /usr/bin/systemctl is-active --quiet %{name}-chartservice.service && /usr/bin/systemctl restart %{name}-chartservice.service
 /usr/bin/systemctl is-active --quiet %{name}-reposervice.service && /usr/bin/systemctl restart %{name}-reposervice.service
 /usr/bin/systemctl is-active --quiet %{name}-dataservice.service && /usr/bin/systemctl restart %{name}-dataservice.service
+echo "Running NOINTERACTIVE=1 /usr/bin/ercole-setup"
 NOINTERACTIVE=1 /usr/bin/ercole-setup
+echo "Running ercole completion bash"
 ercole completion bash > /usr/share/bash-completion/completions/ercole
+
 
 %preun
 /usr/bin/systemctl --no-reload disable %{name}.service >/dev/null 2>&1 || :
@@ -115,6 +118,7 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 /usr/share/ercole/examples/ercole-rhel5.repo
 /usr/share/ercole/examples/ercole-rhel6.repo
 /usr/share/ercole/examples/ercole-rhel7.repo
+/usr/share/ercole/examples/ercole-rhel8.repo
 /var/lib/ercole/distributed_files/ping.txt
 
 %changelog
