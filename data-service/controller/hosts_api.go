@@ -18,8 +18,10 @@ package controller
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
@@ -53,12 +55,16 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, "HOSTDATA_VALIDATION"))
 		return
 	} else if !result.Valid() {
-		ctrl.Log.Printf("The input hostdata is not valid:\n")
+		var errorMsg strings.Builder
+		errorMsg.WriteString("Invalid schema! The input hostdata is not valid!\n")
+
 		for _, desc := range result.Errors() {
-			ctrl.Log.Printf("- %s\n", desc)
+			errorMsg.WriteString(fmt.Sprintf("- %s\n", desc))
 		}
-		ctrl.Log.Println(utils.ToJSON(hostdata))
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Invalid schema. See the log"), "HOSTDATA_VALIDATION"))
+		errorMsg.WriteString(fmt.Sprintf("hostdata:\n%v\n", utils.ToJSON(hostdata)))
+
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity,
+			utils.NewAdvancedErrorPtr(errors.New(errorMsg.String()), "HOSTDATA_VALIDATION"))
 		return
 	}
 
