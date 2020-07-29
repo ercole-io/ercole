@@ -62,7 +62,7 @@ echo "Setting publisher password..."
 
 # Set the ALERT_SERVICE_PUBLISHER_PASSWORD if missing
 if [ -z $ALERT_SERVICE_PUBLISHER_PASSWORD ]; then
-	ALERT_SERVICE_PUBLISHER_PASSWORD=$(tr -cd '12345!@#$%qwertQWERTasdfgASDFGzxcvbZXCVB' < /dev/urandom | fold -w60 | head -n1)
+	ALERT_SERVICE_PUBLISHER_PASSWORD=$(openssl rand -base64 32)
 	echo "AlertService.PublisherPassword = \"$ALERT_SERVICE_PUBLISHER_PASSWORD\"" >> /etc/ercole/conf.d/20-ercolesetup.toml
 fi
 
