@@ -60,6 +60,18 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 					"product":    model.TechnologyOracleMySQL,
 					"hostsCount": 0,
 				},
+				{
+					"compliance": 1.0,
+					"unpaidDues": 0,
+					"product":    model.TechnologyOracleVM,
+					"hostsCount": 0,
+				},
+				{
+					"compliance": 1.0,
+					"unpaidDues": 0,
+					"product":    model.TechnologyVMWare,
+					"hostsCount": 0,
+				},
 			},
 			"total": map[string]interface{}{
 				"compliance": 7.0 / 10.0,
