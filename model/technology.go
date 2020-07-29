@@ -23,7 +23,7 @@ const (
 	TechnologyMariaDBFoundationMariaDB string = "MariaDBFoundation/MariaDB"
 	TechnologyPostgreSQLPostgreSQL     string = "PostgreSQL/PostgreSQL"
 	TechnologyOracleMySQL              string = "Oracle/MySQL"
-	TechnologyOracleOVM                string = "Oracle/OVM"
+	TechnologyOracleVM                 string = "Oracle/VM"
 	TechnologyVMWare                   string = "VMWare/VMWare"
 	TechnologyUnknownOperatingSystem   string = "Unknown/Unknown"
 )
@@ -36,7 +36,7 @@ var (
 	TechnologyMariaDBFoundationMariaDBPrt *string = str2CopyPtr(TechnologyMariaDBFoundationMariaDB)
 	TechnologyPostgreSQLPostgreSQLPrt     *string = str2CopyPtr(TechnologyPostgreSQLPostgreSQL)
 	TechnologyOracleMySQLPrt              *string = str2CopyPtr(TechnologyOracleMySQL)
-	TechnologyOracleOVMPrt                *string = str2CopyPtr(TechnologyOracleOVM)
+	TechnologyOracleVMPrt                 *string = str2CopyPtr(TechnologyOracleVM)
 	TechnologyVMWarePrt                   *string = str2CopyPtr(TechnologyVMWare)
 	TechnologyUnknownOperatingSystemPrt   *string = str2CopyPtr(TechnologyUnknownOperatingSystem)
 )
