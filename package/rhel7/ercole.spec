@@ -50,6 +50,7 @@ install -m 0644 distributed_files/ping.txt %{buildroot}/var/lib/ercole/distribut
 install -m 0644 distributed_files/shared/*.repo %{buildroot}/usr/share/ercole/examples/
 
 %post
+echo "Running systemctl commands"
 /usr/bin/systemctl daemon-reload >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-alertservice.service >/dev/null 2>&1 ||:
@@ -63,7 +64,7 @@ install -m 0644 distributed_files/shared/*.repo %{buildroot}/usr/share/ercole/ex
 /usr/bin/systemctl is-active --quiet %{name}-reposervice.service && /usr/bin/systemctl restart %{name}-reposervice.service
 /usr/bin/systemctl is-active --quiet %{name}-dataservice.service && /usr/bin/systemctl restart %{name}-dataservice.service
 echo "Running NOINTERACTIVE=1 /usr/bin/ercole-setup"
-NOINTERACTIVE=1 /usr/bin/ercole-setup
+/bin/sh -c "NOINTERACTIVE=1 /usr/bin/ercole-setup"
 echo "Running ercole completion bash"
 ercole completion bash > /usr/share/bash-completion/completions/ercole
 
