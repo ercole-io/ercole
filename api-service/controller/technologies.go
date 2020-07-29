@@ -47,7 +47,7 @@ func (ctrl *APIController) ListTechnologies(w http.ResponseWriter, r *http.Reque
 	}
 
 	//get the data
-	data, err := ctrl.Service.ListTechnologies(sortBy, sortDesc, location, environment, olderThan)
+	data, err := ctrl.Service.ListManagedTechnologies(sortBy, sortDesc, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return

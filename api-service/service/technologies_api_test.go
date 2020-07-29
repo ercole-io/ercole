@@ -24,7 +24,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestListTechnologies_Success(t *testing.T) {
+func TestListManagedTechnologies_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -60,13 +60,7 @@ func TestListTechnologies_Success(t *testing.T) {
 		{
 			"compliance": 1.0,
 			"unpaidDues": 0,
-			"product":    "Oracle/VM",
-			"hostsCount": 0,
-		},
-		{
-			"compliance": 1.0,
-			"unpaidDues": 0,
-			"product":    "VMWare/VMWare",
+			"product":    "Microsoft/SQLServer",
 			"hostsCount": 0,
 		},
 	}
@@ -111,7 +105,7 @@ func TestListTechnologies_Success(t *testing.T) {
 		SearchLicenses("summary", "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(listLicensesRes, nil)
 
-	res, err := as.ListTechnologies(
+	res, err := as.ListManagedTechnologies(
 		"Count", true,
 		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
 	)
@@ -119,7 +113,7 @@ func TestListTechnologies_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
 }
 
-func TestListTechnologies_SuccessEmpty(t *testing.T) {
+func TestListManagedTechnologies_SuccessEmpty(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -132,8 +126,7 @@ func TestListTechnologies_SuccessEmpty(t *testing.T) {
 		{"compliance": 1.0, "unpaidDues": 0, "product": "MariaDBFoundation/MariaDB", "hostsCount": 0},
 		{"compliance": 1.0, "unpaidDues": 0, "product": "PostgreSQL/PostgreSQL", "hostsCount": 0},
 		{"compliance": 1.0, "unpaidDues": 0, "product": "Oracle/MySQL", "hostsCount": 0},
-		{"compliance": 1.0, "unpaidDues": 0, "product": "Oracle/VM", "hostsCount": 0},
-		{"compliance": 1.0, "unpaidDues": 0, "product": "VMWare/VMWare", "hostsCount": 0},
+		{"compliance": 1.0, "unpaidDues": 0, "product": "Microsoft/SQLServer", "hostsCount": 0},
 	}
 
 	getTechnologiesUsageRes := map[string]float64{}
@@ -152,7 +145,7 @@ func TestListTechnologies_SuccessEmpty(t *testing.T) {
 		SearchLicenses("summary", "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(listLicensesRes, nil)
 
-	res, err := as.ListTechnologies(
+	res, err := as.ListManagedTechnologies(
 		"Count", true,
 		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
 	)
@@ -161,7 +154,7 @@ func TestListTechnologies_SuccessEmpty(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
 }
 
-func TestListTechnologies_FailInternalServerError1(t *testing.T) {
+func TestListManagedTechnologies_FailInternalServerError1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -173,7 +166,7 @@ func TestListTechnologies_FailInternalServerError1(t *testing.T) {
 		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(nil, aerrMock)
 
-	_, err := as.ListTechnologies(
+	_, err := as.ListManagedTechnologies(
 		"Count", true,
 		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
 	)
@@ -181,7 +174,7 @@ func TestListTechnologies_FailInternalServerError1(t *testing.T) {
 	require.Equal(t, aerrMock, err)
 }
 
-func TestListTechnologies_FailInternalServerError2(t *testing.T) {
+func TestListManagedTechnologies_FailInternalServerError2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -197,7 +190,7 @@ func TestListTechnologies_FailInternalServerError2(t *testing.T) {
 		SearchLicenses("summary", "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(nil, aerrMock)
 
-	_, err := as.ListTechnologies(
+	_, err := as.ListManagedTechnologies(
 		"Count", true,
 		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
 	)

@@ -32,7 +32,7 @@ func (as *APIService) GetInfoForFrontendDashboard(location string, environment s
 	if err != nil {
 		return nil, err
 	}
-	technologiesObject["technologies"], err = as.ListTechnologies("", false, location, environment, olderThan)
+	technologiesObject["technologies"], err = as.ListManagedTechnologies("", false, location, environment, olderThan)
 	if err != nil {
 		return nil, err
 	}
