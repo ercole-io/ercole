@@ -24,7 +24,7 @@ import (
 
 // GetTotalTechnologiesComplianceStats return the total compliance of all technologies
 func (as *APIService) GetTotalTechnologiesComplianceStats(location string, environment string, olderThan time.Time) (map[string]interface{}, utils.AdvancedErrorInterface) {
-	data, err := as.ListTechnologies("", false, location, environment, olderThan)
+	data, err := as.ListManagedTechnologies("", false, location, environment, olderThan)
 	if err != nil {
 		return nil, err
 	}
