@@ -57,6 +57,18 @@ func TestListTechnologies_Success(t *testing.T) {
 			"product":    "Oracle/MySQL",
 			"hostsCount": 0,
 		},
+		{
+			"compliance": 1.0,
+			"unpaidDues": 0,
+			"product":    "Oracle/VM",
+			"hostsCount": 0,
+		},
+		{
+			"compliance": 1.0,
+			"unpaidDues": 0,
+			"product":    "VMWare/VMWare",
+			"hostsCount": 0,
+		},
 	}
 
 	getTechnologiesUsageRes := map[string]float64{
@@ -120,6 +132,8 @@ func TestListTechnologies_SuccessEmpty(t *testing.T) {
 		{"compliance": 1.0, "unpaidDues": 0, "product": "MariaDBFoundation/MariaDB", "hostsCount": 0},
 		{"compliance": 1.0, "unpaidDues": 0, "product": "PostgreSQL/PostgreSQL", "hostsCount": 0},
 		{"compliance": 1.0, "unpaidDues": 0, "product": "Oracle/MySQL", "hostsCount": 0},
+		{"compliance": 1.0, "unpaidDues": 0, "product": "Oracle/VM", "hostsCount": 0},
+		{"compliance": 1.0, "unpaidDues": 0, "product": "VMWare/VMWare", "hostsCount": 0},
 	}
 
 	getTechnologiesUsageRes := map[string]float64{}

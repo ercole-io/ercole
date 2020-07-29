@@ -83,5 +83,15 @@
         "Product": "Oracle/MySQL",
         "PrettyName": "MySQL",
         "Color": "#04648c"
+    },
+    {
+        "Product": "Oracle/VM",
+        "PrettyName": "Oracle VM",
+        "Color": "#e54141"
+    },
+    {
+        "Product": "VMWare/VMWare",
+        "PrettyName": "VMWare",
+        "Color": "#696566"
     }
 ]
