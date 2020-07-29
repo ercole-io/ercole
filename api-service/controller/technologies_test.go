@@ -61,7 +61,7 @@ func TestListTechnologies_Success(t *testing.T) {
 	}
 
 	as.EXPECT().
-		ListTechnologies("Count", true, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		ListManagedTechnologies("Count", true, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
@@ -129,7 +129,7 @@ func TestListTechnologies_FailInternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		ListTechnologies("", false, "", "", utils.MAX_TIME).
+		ListManagedTechnologies("", false, "", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
