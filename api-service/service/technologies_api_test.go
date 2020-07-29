@@ -108,7 +108,7 @@ func TestListTechnologies_Success(t *testing.T) {
 		},
 	}
 	db.EXPECT().
-		ListLicenses(false, "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		SearchLicenses("summary", "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(listLicensesRes, nil)
 
 	res, err := as.ListTechnologies(
@@ -149,7 +149,7 @@ func TestListTechnologies_SuccessEmpty(t *testing.T) {
 		},
 	}
 	db.EXPECT().
-		ListLicenses(false, "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		SearchLicenses("summary", "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(listLicensesRes, nil)
 
 	res, err := as.ListTechnologies(
@@ -194,7 +194,7 @@ func TestListTechnologies_FailInternalServerError2(t *testing.T) {
 		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(getTechnologiesUsageRes, nil)
 	db.EXPECT().
-		ListLicenses(false, "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		SearchLicenses("summary", "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(nil, aerrMock)
 
 	_, err := as.ListTechnologies(
