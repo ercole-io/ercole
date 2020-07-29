@@ -63,13 +63,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 				{
 					"compliance": 1.0,
 					"unpaidDues": 0,
-					"product":    model.TechnologyOracleVM,
-					"hostsCount": 0,
-				},
-				{
-					"compliance": 1.0,
-					"unpaidDues": 0,
-					"product":    model.TechnologyVMWare,
+					"product":    model.TechnologyMicrosoftSQLServer,
 					"hostsCount": 0,
 				},
 			},
