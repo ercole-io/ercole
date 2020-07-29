@@ -113,5 +113,29 @@ func (as *APIService) ListTechnologies(sortBy string, sortDesc bool, location st
 		UnpaidDues: 0.0,
 	})
 
+	//Oracle/VM
+	finalList = append(finalList, model.TechnologyStatus{
+		Product:    model.TechnologyOracleVM,
+		Used:       0,
+		Count:      0,
+		TotalCost:  0.0,
+		PaidCost:   0.0,
+		HostsCount: 0.0,
+		Compliance: 1.0,
+		UnpaidDues: 0.0,
+	})
+
+	//VMWare
+	finalList = append(finalList, model.TechnologyStatus{
+		Product:    model.TechnologyVMWare,
+		Used:       0,
+		Count:      0,
+		TotalCost:  0.0,
+		PaidCost:   0.0,
+		HostsCount: 0.0,
+		Compliance: 1.0,
+		UnpaidDues: 0.0,
+	})
+
 	return finalList, nil
 }

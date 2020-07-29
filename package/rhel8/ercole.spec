@@ -29,7 +29,7 @@ ls
 
 %install
 cd %{_builddir}/%{name}-%{version}
-mkdir -p %{buildroot}/usr/bin/ %{buildroot}/usr/share/ercole/{examples,templates} %{buildroot}/usr/share/ercole/technologies/{Microsoft,Oracle,HP,IBM,RedHat,MariaDBFoundation,PostgreSQL,Unknown} %{buildroot}%{_unitdir} %{buildroot}%{_presetdir} %{buildroot}/var/lib/ercole/distributed_files
+mkdir -p %{buildroot}/usr/bin/ %{buildroot}/usr/share/ercole/{examples,templates} %{buildroot}/usr/share/ercole/technologies/{Microsoft,Oracle,HP,IBM,RedHat,MariaDBFoundation,PostgreSQL,Unknown,VMWare} %{buildroot}%{_unitdir} %{buildroot}%{_presetdir} %{buildroot}/var/lib/ercole/distributed_files
 install -m 0755 ercole %{buildroot}/usr/bin/ercole
 install -m 0755 package/ercole-setup %{buildroot}/usr/bin/ercole-setup
 install -m 0644 resources/initial_oracle_licenses_list.txt %{buildroot}/usr/share/ercole
@@ -43,6 +43,7 @@ install -m 0644 resources/technologies/IBM/* %{buildroot}/usr/share/ercole/techn
 install -m 0644 resources/technologies/RedHat/* %{buildroot}/usr/share/ercole/technologies/RedHat/
 install -m 0644 resources/technologies/MariaDBFoundation/* %{buildroot}/usr/share/ercole/technologies/MariaDBFoundation/
 install -m 0644 resources/technologies/PostgreSQL/* %{buildroot}/usr/share/ercole/technologies/PostgreSQL/
+install -m 0644 resources/technologies/VMWare/* %{buildroot}/usr/share/ercole/technologies/VMWare/
 install -m 0644 resources/technologies/Unknown/* %{buildroot}/usr/share/ercole/technologies/Unknown/
 install -m 0644 package/systemd/*.service %{buildroot}%{_unitdir}/
 install -m 0644 package/systemd/60-ercole.preset %{buildroot}%{_presetdir}/60-%{name}.preset
@@ -91,6 +92,7 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 /usr/share/ercole/technologies/Oracle/Database.png
 /usr/share/ercole/technologies/Oracle/Solaris.png
 /usr/share/ercole/technologies/Oracle/MySQL.png
+/usr/share/ercole/technologies/Oracle/VM.png
 /usr/share/ercole/technologies/Microsoft/SQLServer.png
 /usr/share/ercole/technologies/Microsoft/WindowsServer2008.png
 /usr/share/ercole/technologies/Microsoft/WindowsServer2012.png
@@ -106,6 +108,7 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 /usr/share/ercole/technologies/MariaDBFoundation/MariaDB.png
 /usr/share/ercole/technologies/PostgreSQL/PostgreSQL.png
 /usr/share/ercole/technologies/Unknown/Unknown.png
+/usr/share/ercole/technologies/VMWare/VMWare.png
 /usr/share/ercole/templates/template_addm.xlsx
 /usr/share/ercole/templates/template_clusters.xlsx
 /usr/share/ercole/templates/template_databases.xlsx
