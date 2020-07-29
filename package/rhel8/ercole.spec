@@ -19,6 +19,7 @@ Ercole is the server component of the ercole project.
 %global debug_package %{nil}
 
 %pre
+    echo "Creating ercole user..."
     getent passwd ercole >/dev/null || useradd -s /bin/bash -c "Ercole user" ercole
 
 %prep
@@ -51,6 +52,7 @@ install -m 0644 distributed_files/ping.txt %{buildroot}/var/lib/ercole/distribut
 install -m 0644 distributed_files/shared/*.repo %{buildroot}/usr/share/ercole/examples/
 
 %post
+echo "Running systemctl commands"
 /usr/bin/systemctl daemon-reload >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-alertservice.service >/dev/null 2>&1 ||:
