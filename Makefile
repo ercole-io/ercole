@@ -9,4 +9,11 @@ build:
 	go build -o ercole ./main.go
 
 test:
-	go generate ./... && go clean -testcache && go test ./...
+	go clean -testcache
+	go test ./...
+
+clean:
+	rm -rf ercole
+	find . -name "fake_*_test.go" -exec rm "{}" \;
+	go generate ./...
+	go clean -testcache

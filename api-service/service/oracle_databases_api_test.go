@@ -351,7 +351,7 @@ func TestSearchOracleDatabases_Fail(t *testing.T) {
 	assert.Equal(t, aerrMock, err)
 }
 
-func TestListLicenses_Success(t *testing.T) {
+func TestSearchLicenses_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -374,14 +374,14 @@ func TestListLicenses_Success(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().ListLicenses(
-		false, "Used",
+	db.EXPECT().SearchLicenses(
+		"summary", "Used",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	).Return(expectedRes, nil).Times(1)
 
-	res, err := as.ListLicenses(
-		false, "Used",
+	res, err := as.SearchLicenses(
+		"summary", "Used",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
@@ -390,7 +390,7 @@ func TestListLicenses_Success(t *testing.T) {
 	assert.Equal(t, expectedRes, res)
 }
 
-func TestListLicenses_Fail(t *testing.T) {
+func TestSearchLicenses_Fail(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -398,14 +398,14 @@ func TestListLicenses_Fail(t *testing.T) {
 		Database: db,
 	}
 
-	db.EXPECT().ListLicenses(
-		false, "Used",
+	db.EXPECT().SearchLicenses(
+		"summary", "Used",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	).Return(nil, aerrMock).Times(1)
 
-	res, err := as.ListLicenses(
-		false, "Used",
+	res, err := as.SearchLicenses(
+		"summary", "Used",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
