@@ -113,9 +113,9 @@ func (as *APIService) ListTechnologies(sortBy string, sortDesc bool, location st
 		UnpaidDues: 0.0,
 	})
 
-	//Oracle/OVM
+	//Oracle/VM
 	finalList = append(finalList, model.TechnologyStatus{
-		Product:    model.TechnologyOracleOVM,
+		Product:    model.TechnologyOracleVM,
 		Used:       0,
 		Count:      0,
 		TotalCost:  0.0,
