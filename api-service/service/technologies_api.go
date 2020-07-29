@@ -24,8 +24,8 @@ import (
 	"github.com/ercole-io/ercole/utils"
 )
 
-// ListTechnologies returns the list of Technologies with some stats
-func (as *APIService) ListTechnologies(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.TechnologyStatus, utils.AdvancedErrorInterface) {
+// ListManagedTechnologies returns the list of Technologies with some stats
+func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.TechnologyStatus, utils.AdvancedErrorInterface) {
 	partialList, err := as.Database.GetTechnologiesUsage(location, environment, olderThan)
 	if err != nil {
 		return nil, err
@@ -113,21 +113,9 @@ func (as *APIService) ListTechnologies(sortBy string, sortDesc bool, location st
 		UnpaidDues: 0.0,
 	})
 
-	//Oracle/VM
+	//Microsoft/SQLServer
 	finalList = append(finalList, model.TechnologyStatus{
-		Product:    model.TechnologyOracleVM,
-		Used:       0,
-		Count:      0,
-		TotalCost:  0.0,
-		PaidCost:   0.0,
-		HostsCount: 0.0,
-		Compliance: 1.0,
-		UnpaidDues: 0.0,
-	})
-
-	//VMWare
-	finalList = append(finalList, model.TechnologyStatus{
-		Product:    model.TechnologyVMWare,
+		Product:    model.TechnologyMicrosoftSQLServer,
 		Used:       0,
 		Count:      0,
 		TotalCost:  0.0,
