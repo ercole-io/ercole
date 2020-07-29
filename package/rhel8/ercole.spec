@@ -66,7 +66,7 @@ echo "Running systemctl commands"
 /usr/bin/systemctl is-active --quiet %{name}-reposervice.service && /usr/bin/systemctl restart %{name}-reposervice.service
 /usr/bin/systemctl is-active --quiet %{name}-dataservice.service && /usr/bin/systemctl restart %{name}-dataservice.service
 echo "Running NOINTERACTIVE=1 /usr/bin/ercole-setup"
-NOINTERACTIVE=1 /usr/bin/ercole-setup
+/bin/sh -c "NOINTERACTIVE=1 /usr/bin/ercole-setup"
 echo "Running ercole completion bash"
 ercole completion bash > /usr/share/bash-completion/completions/ercole
 
