@@ -61,7 +61,7 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 		for _, desc := range result.Errors() {
 			errorMsg.WriteString(fmt.Sprintf("- %s\n", desc))
 		}
-		errorMsg.WriteString(fmt.Sprintf("hostdata:\n%v\n", utils.ToJSON(hostdata)))
+		errorMsg.WriteString(fmt.Sprintf("hostdata:\n%v", string(raw)))
 
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity,
 			utils.NewAdvancedErrorPtr(errors.New(errorMsg.String()), "HOSTDATA_VALIDATION"))
