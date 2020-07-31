@@ -755,6 +755,6 @@ var repoCmd = &cobra.Command{
 //	- info
 func init() {
 	rootCmd.AddCommand(repoCmd)
-	repoCmd.Flags().StringVarP(&githubToken, "github-token", "g", "", "Github token used to perform requests")
-	repoCmd.Flags().BoolVar(&rebuildCache, "rebuild-cache", false, "Force the rebuild the cache")
+	repoCmd.PersistentFlags().StringVarP(&githubToken, "github-token", "g", "", "Github token used to perform requests")
+	repoCmd.PersistentFlags().BoolVar(&rebuildCache, "rebuild-cache", false, "Force the rebuild the cache")
 }
