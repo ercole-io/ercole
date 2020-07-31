@@ -238,6 +238,7 @@ type UpstreamRepository struct {
 	// Supported types are:
 	//		- github-release
 	//		- directory
+	//		- ercole-reposervice
 	Type string
 	// URL of the repository where to find files
 	URL string
@@ -273,9 +274,9 @@ type AuthenticationProviderConfig struct {
 	Username string
 	// Password is the password of the user if type == "basic"
 	Password string
-	// PrivateKey is the filename of the key if type == "basic"
+	// PrivateKey is the filename of the key
 	PrivateKey string
-	// PublicKey is the filename of the key if type == "basic"
+	// PublicKey is the filename of the key
 	PublicKey string
 	// TokenValidityTimeout contains the number of seconds in which the token is still valid
 	TokenValidityTimeout int
