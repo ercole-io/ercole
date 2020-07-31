@@ -1,5 +1,5 @@
 [ercole]
-name=ercole
+name=ercole-rhel8-noarch
 baseurl=http://fillme:11114/rhel/rhel8/noarch
 enabled=1
 gpgcheck=0
