@@ -106,17 +106,23 @@ echo "Initializing /var/lib/ercole/distributed_files..."
 
 # Initialize the /var/lib/ercole/distributed_files directory
 mkdir -p /var/lib/ercole/distributed_files/shared
-if [ ! -f /var/lib/ercole/distributed_files/shared/ercole-rhel8.repo ]; then
-	cat /usr/share/ercole/examples/ercole-rhel8.repo | sed "s/http:\/\/fillme:11114/$(echo $REPO_SERVICE_HTTP_REMOTE_ENDPOINT | sed -e 's/[\/&]/\\&/g')/" > /var/lib/ercole/distributed_files/shared/ercole-rhel8.repo 
+if [ ! -f /var/lib/ercole/distributed_files/shared/ercole-rhel8-x86_64.repo ]; then
+	cat /usr/share/ercole/examples/ercole-rhel8-x86_64.repo | sed "s/http:\/\/fillme:11114/$(echo $REPO_SERVICE_HTTP_REMOTE_ENDPOINT | sed -e 's/[\/&]/\\&/g')/" > /var/lib/ercole/distributed_files/shared/ercole-rhel8-x86_64.repo 
 fi
-if [ ! -f /var/lib/ercole/distributed_files/shared/ercole-rhel7.repo ]; then
-	cat /usr/share/ercole/examples/ercole-rhel7.repo | sed "s/http:\/\/fillme:11114/$(echo $REPO_SERVICE_HTTP_REMOTE_ENDPOINT | sed -e 's/[\/&]/\\&/g')/" > /var/lib/ercole/distributed_files/shared/ercole-rhel7.repo 
+if [ ! -f /var/lib/ercole/distributed_files/shared/ercole-rhel7-x86_64.repo ]; then
+	cat /usr/share/ercole/examples/ercole-rhel7-x86_64.repo | sed "s/http:\/\/fillme:11114/$(echo $REPO_SERVICE_HTTP_REMOTE_ENDPOINT | sed -e 's/[\/&]/\\&/g')/" > /var/lib/ercole/distributed_files/shared/ercole-rhel7-x86_64.repo 
 fi
-if [ ! -f /var/lib/ercole/distributed_files/shared/ercole-rhel6.repo ]; then
-	cat /usr/share/ercole/examples/ercole-rhel6.repo | sed  "s/http:\/\/fillme:11114/$(echo $REPO_SERVICE_HTTP_REMOTE_ENDPOINT | sed -e 's/[\/&]/\\&/g')/" > /var/lib/ercole/distributed_files/shared/ercole-rhel6.repo 
+if [ ! -f /var/lib/ercole/distributed_files/shared/ercole-rhel8-noarch.repo ]; then
+	cat /usr/share/ercole/examples/ercole-rhel8-noarch.repo | sed "s/http:\/\/fillme:11114/$(echo $REPO_SERVICE_HTTP_REMOTE_ENDPOINT | sed -e 's/[\/&]/\\&/g')/" > /var/lib/ercole/distributed_files/shared/ercole-rhel8-noarch.repo 
 fi
-if [ ! -f /var/lib/ercole/distributed_files/shared/ercole-rhel5.repo ]; then
-	cat /usr/share/ercole/examples/ercole-rhel5.repo | sed  "s/http:\/\/fillme:11114/$(echo $REPO_SERVICE_HTTP_REMOTE_ENDPOINT | sed -e 's/[\/&]/\\&/g')/" > /var/lib/ercole/distributed_files/shared/ercole-rhel5.repo 
+if [ ! -f /var/lib/ercole/distributed_files/shared/ercole-rhel7-noarch.repo ]; then
+	cat /usr/share/ercole/examples/ercole-rhel7-noarch.repo | sed "s/http:\/\/fillme:11114/$(echo $REPO_SERVICE_HTTP_REMOTE_ENDPOINT | sed -e 's/[\/&]/\\&/g')/" > /var/lib/ercole/distributed_files/shared/ercole-rhel7-noarch.repo 
+fi
+if [ ! -f /var/lib/ercole/distributed_files/shared/ercole-rhel6-x86_64.repo ]; then
+	cat /usr/share/ercole/examples/ercole-rhel6-x86_64.repo | sed  "s/http:\/\/fillme:11114/$(echo $REPO_SERVICE_HTTP_REMOTE_ENDPOINT | sed -e 's/[\/&]/\\&/g')/" > /var/lib/ercole/distributed_files/shared/ercole-rhel6-x86_64.repo 
+fi
+if [ ! -f /var/lib/ercole/distributed_files/shared/ercole-rhel5-x86_64.repo ]; then
+	cat /usr/share/ercole/examples/ercole-rhel5-x86_64.repo | sed  "s/http:\/\/fillme:11114/$(echo $REPO_SERVICE_HTTP_REMOTE_ENDPOINT | sed -e 's/[\/&]/\\&/g')/" > /var/lib/ercole/distributed_files/shared/ercole-rhel5-x86_64.repo 
 fi
 
 echo "Running ercoleweb-setup if not exist..."
