@@ -101,7 +101,7 @@ var OracleExadataComponentBsonValidatorRules = bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 253,
-			"pattern":   "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9-]*[a-zA-Z0-9]).)*([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$",
+			"pattern":   `^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$`,
 		},
 		"serverType": bson.M{
 			"bsonType": "string",
