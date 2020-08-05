@@ -52,7 +52,7 @@ func (m *MongodbSuite) TestInsertHostData() {
 		CreatedAt:           utils.P("2020-06-29T13:36:25.589708509+02:00"),
 		ServerVersion:       "latest",
 		ServerSchemaVersion: 1,
-		Hostname:            "rac1_x",
+		Hostname:            "rac1-x",
 		Location:            "Germany",
 		Environment:         "TST",
 		AgentVersion:        "1.6.5",
@@ -96,7 +96,7 @@ func (m *MongodbSuite) TestInsertHostData() {
 
 	list, err = m.db.FindOldCurrentHosts(utils.MAX_TIME)
 	require.NoError(m.T(), err)
-	assert.Equal(m.T(), []string{"rac1_x"}, list)
+	assert.Equal(m.T(), []string{"rac1-x"}, list)
 }
 
 func (m *MongodbSuite) TestFindOldCurrentHost() {
