@@ -25,8 +25,8 @@ import (
 func init() {
 	repoInstallCmd := &cobra.Command{
 		Use:   "install",
-		Short: "Install a artifact",
-		Long:  `Install a artifact`,
+		Short: "Install an artifact",
+		Long:  `Install an artifact`,
 		Run: func(cmd *cobra.Command, args []string) {
 			//Get the list of the repository
 			index := readOrUpdateIndex()
