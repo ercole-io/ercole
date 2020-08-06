@@ -92,7 +92,7 @@ var HostDataBEBsonValidatorRules = bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 253,
-			"pattern":   `^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$`,
+			"pattern":   `^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-_]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-_]*[A-Za-z0-9])$`,
 		},
 		"location": bson.M{
 			"bsonType":  "string",
