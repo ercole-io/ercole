@@ -58,9 +58,15 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 		var errorMsg strings.Builder
 		errorMsg.WriteString("Invalid schema! The input hostdata is not valid!\n")
 
-		for _, desc := range result.Errors() {
-			errorMsg.WriteString(fmt.Sprintf("- %s\n", desc))
+		for _, err := range result.Errors() {
+
+			value := fmt.Sprintf("%v", err.Value())
+			if len(value) > 80 {
+				value = value[:78] + ".."
+			}
+			errorMsg.WriteString(fmt.Sprintf("- %s. Value: [%v]\n", err, value))
 		}
+
 		errorMsg.WriteString(fmt.Sprintf("hostdata:\n%v", string(raw)))
 
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity,
