@@ -271,7 +271,7 @@ func readOrUpdateIndex() repo.Index {
 		} else if index[i].Name != index[j].Name {
 			return index[i].Name < index[j].Name
 		} else {
-			return utils.IsLessThan(index[i].Version, index[j].Version)
+			return utils.IsVersionLessThan(index[i].Version, index[j].Version)
 		}
 	})
 
