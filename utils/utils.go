@@ -31,6 +31,7 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/model"
+	"github.com/hashicorp/go-version"
 	"github.com/robertkrimen/otto"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -291,4 +292,17 @@ func ParsePublicKey(raw []byte) (interface{}, AdvancedErrorInterface) {
 		return nil, NewAdvancedErrorPtr(err, "PARSE_PUBLIC_KEY")
 	}
 	return publickey, nil
+}
+
+// IsLessThan return true if a is a version less than b
+func IsLessThan(a, b string) bool {
+	va, err := version.NewVersion(a)
+	if err != nil {
+		panic(err)
+	}
+	vb, err := version.NewVersion(b)
+	if err != nil {
+		panic(err)
+	}
+	return va.LessThan(vb)
 }
