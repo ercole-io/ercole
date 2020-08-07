@@ -62,16 +62,16 @@ type artifactInfo struct {
 }
 
 //Regex for filenames
-var AgentRHEL5Regex *regexp.Regexp = regexp.MustCompile("^ercole-agent-(?P<version>.*)-1.(?P<arch>x86_64).rpm$")
-var AgentRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
-var AgentVirtualizationRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-virtualization-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
-var AgentExadataRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-exadata-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
-var AgentWinRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-setup-(?P<version>.*).exe$")
-var AgentHpuxRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-hpux-(?P<version>.*).tar.gz")
-var AgentAixRegexRpm *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*)-1.(?P<dist>.*).(?P<arch>noarch).rpm$")
-var AgentAixRegexTarGz *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*).tar.gz$")
-var ErcoleRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
-var ErcoleWebRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-web-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>noarch).rpm$")
+var agentRHEL5Regex *regexp.Regexp = regexp.MustCompile("^ercole-agent-(?P<version>.*)-1.(?P<arch>x86_64).rpm$")
+var agentRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
+var agentVirtualizationRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-virtualization-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
+var agentExadataRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-exadata-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
+var agentWinRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-setup-(?P<version>.*).exe$")
+var agentHpuxRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-hpux-(?P<version>.*).tar.gz")
+var agentAixRegexRpm *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*)-1.(?P<dist>.*).(?P<arch>noarch).rpm$")
+var agentAixRegexTarGz *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*).tar.gz$")
+var ercoleRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
+var ercoleWebRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-web-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>noarch).rpm$")
 
 func cmpVersion(a, b string) bool {
 	va, err := version.NewVersion(a)
@@ -88,71 +88,71 @@ func cmpVersion(a, b string) bool {
 // setInfoFromFileName sets to fileInfo informations taken from filename
 func setInfoFromFileName(filename string, artifactInfo *artifactInfo) {
 	switch {
-	case AgentVirtualizationRHELRegex.MatchString(filename): //agent virtualization RHEL
-		data := utils.FindNamedMatches(AgentVirtualizationRHELRegex, filename)
+	case agentVirtualizationRHELRegex.MatchString(filename): //agent virtualization RHEL
+		data := utils.FindNamedMatches(agentVirtualizationRHELRegex, filename)
 		artifactInfo.Name = "ercole-agent-virtualization-rhel" + data["dist"]
 		artifactInfo.Version = data["version"]
 		artifactInfo.Arch = data["arch"]
 		artifactInfo.OperatingSystemFamily = "rhel"
 		artifactInfo.OperatingSystem = "rhel" + data["dist"]
-	case AgentExadataRHELRegex.MatchString(filename): //agent exadata RHEL
-		data := utils.FindNamedMatches(AgentExadataRHELRegex, filename)
+	case agentExadataRHELRegex.MatchString(filename): //agent exadata RHEL
+		data := utils.FindNamedMatches(agentExadataRHELRegex, filename)
 		artifactInfo.Name = "ercole-agent-exadata-rhel" + data["dist"]
 		artifactInfo.Version = data["version"]
 		artifactInfo.Arch = data["arch"]
 		artifactInfo.OperatingSystemFamily = "rhel"
 		artifactInfo.OperatingSystem = "rhel" + data["dist"]
-	case AgentRHEL5Regex.MatchString(filename): //agent RHEL5
-		data := utils.FindNamedMatches(AgentRHEL5Regex, filename)
+	case agentRHEL5Regex.MatchString(filename): //agent RHEL5
+		data := utils.FindNamedMatches(agentRHEL5Regex, filename)
 		artifactInfo.Name = "ercole-agent-rhel5"
 		artifactInfo.Version = data["version"]
 		artifactInfo.Arch = data["arch"]
 		artifactInfo.OperatingSystemFamily = "rhel"
 		artifactInfo.OperatingSystem = "rhel5"
-	case AgentRHELRegex.MatchString(filename): //agent RHEL
-		data := utils.FindNamedMatches(AgentRHELRegex, filename)
+	case agentRHELRegex.MatchString(filename): //agent RHEL
+		data := utils.FindNamedMatches(agentRHELRegex, filename)
 		artifactInfo.Name = "ercole-agent-rhel" + data["dist"]
 		artifactInfo.Version = data["version"]
 		artifactInfo.Arch = data["arch"]
 		artifactInfo.OperatingSystemFamily = "rhel"
 		artifactInfo.OperatingSystem = "rhel" + data["dist"]
-	case ErcoleRHELRegex.MatchString(filename): //ercole RHEL
-		data := utils.FindNamedMatches(ErcoleRHELRegex, filename)
+	case ercoleRHELRegex.MatchString(filename): //ercole RHEL
+		data := utils.FindNamedMatches(ercoleRHELRegex, filename)
 		artifactInfo.Name = "ercole-" + data["dist"]
 		artifactInfo.Version = data["version"]
 		artifactInfo.Arch = data["arch"]
 		artifactInfo.OperatingSystemFamily = "rhel"
 		artifactInfo.OperatingSystem = "rhel" + data["dist"]
-	case ErcoleWebRHELRegex.MatchString(filename): //ercole-web RHEL
-		data := utils.FindNamedMatches(ErcoleWebRHELRegex, filename)
+	case ercoleWebRHELRegex.MatchString(filename): //ercole-web RHEL
+		data := utils.FindNamedMatches(ercoleWebRHELRegex, filename)
 		artifactInfo.Name = "ercole-web" + data["dist"]
 		artifactInfo.Version = data["version"]
 		artifactInfo.Arch = data["arch"]
 		artifactInfo.OperatingSystemFamily = "rhel"
 		artifactInfo.OperatingSystem = "rhel" + data["dist"]
-	case AgentWinRegex.MatchString(filename): //agent WIN
-		data := utils.FindNamedMatches(AgentWinRegex, filename)
+	case agentWinRegex.MatchString(filename): //agent WIN
+		data := utils.FindNamedMatches(agentWinRegex, filename)
 		artifactInfo.Name = "ercole-agent-win"
 		artifactInfo.Version = data["version"]
 		artifactInfo.Arch = "x86_64"
 		artifactInfo.OperatingSystemFamily = "win"
 		artifactInfo.OperatingSystem = "win"
-	case AgentHpuxRegex.MatchString(filename): //agent HPUX
-		data := utils.FindNamedMatches(AgentHpuxRegex, filename)
+	case agentHpuxRegex.MatchString(filename): //agent HPUX
+		data := utils.FindNamedMatches(agentHpuxRegex, filename)
 		artifactInfo.Name = "ercole-agent-hpux"
 		artifactInfo.Version = data["version"]
 		artifactInfo.Arch = "noarch"
 		artifactInfo.OperatingSystemFamily = "hpux"
 		artifactInfo.OperatingSystem = "hpux"
-	case AgentAixRegexRpm.MatchString(filename): //agent AIX
-		data := utils.FindNamedMatches(AgentAixRegexRpm, filename)
+	case agentAixRegexRpm.MatchString(filename): //agent AIX
+		data := utils.FindNamedMatches(agentAixRegexRpm, filename)
 		artifactInfo.Name = "ercole-agent-aix"
 		artifactInfo.Version = data["version"]
 		artifactInfo.Arch = "noarch"
 		artifactInfo.OperatingSystemFamily = "aix"
 		artifactInfo.OperatingSystem = data["dist"]
-	case AgentAixRegexTarGz.MatchString(filename): //agent AIX
-		data := utils.FindNamedMatches(AgentAixRegexTarGz, filename)
+	case agentAixRegexTarGz.MatchString(filename): //agent AIX
+		data := utils.FindNamedMatches(agentAixRegexTarGz, filename)
 		artifactInfo.Name = "ercole-agent-aix-targz"
 		artifactInfo.Version = data["version"]
 		artifactInfo.Arch = "noarch"
@@ -276,13 +276,13 @@ func setInstaller(artifact *artifactInfo) {
 				panic(err)
 			}
 
-			//Settint it to installed
+			//Setting it to installed
 			ai.Installed = true
 		}
 	}
 }
 
-// setInstaller set the installer of the artifact
+// setUninstaller set the uninstaller of the artifact
 func setUninstaller(artifact *artifactInfo) {
 	switch {
 	case strings.HasSuffix(artifact.Filename, ".rpm"):
@@ -521,12 +521,10 @@ func (f *artifactInfo) getFullName() string {
 }
 
 // checkInstalled return true if file is detected in the distribution directory
-func (f *artifactInfo) checkInstalled() bool {
-	if _, err := os.Stat(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", f.Filename)); os.IsNotExist(err) {
-		return false
-	} else {
-		return true
-	}
+func (f *artifactInfo) isInstalled() bool {
+	_, err := os.Stat(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", f.Filename))
+
+	return !os.IsNotExist(err)
 }
 
 // scanRepositories scan all configured repositories and return a map of file names to info
@@ -677,7 +675,7 @@ func (idx *index) searchArtifactByRepositoryAndName(repo string, name string) *a
 	return foundArtifact
 }
 
-// getOrUpdateIndex return a index of available artifacts
+// readOrUpdateIndex return an index of available artifacts
 func readOrUpdateIndex() index {
 	// Get stat about index.json
 	var index index
@@ -729,9 +727,10 @@ func readOrUpdateIndex() index {
 			return cmpVersion(index[i].Version, index[j].Version)
 		}
 	})
+
 	// Set flag and handlers
 	for _, art := range index {
-		art.Installed = art.checkInstalled()
+		art.Installed = art.isInstalled()
 		setDownloader(art)
 		setInstaller(art)
 		setUninstaller(art)
