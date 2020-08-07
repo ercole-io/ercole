@@ -294,8 +294,8 @@ func ParsePublicKey(raw []byte) (interface{}, AdvancedErrorInterface) {
 	return publickey, nil
 }
 
-// IsLessThan return true if a is a version less than b
-func IsLessThan(a, b string) bool {
+// IsVersionLessThan return true if a is a version less than b
+func IsVersionLessThan(a, b string) bool {
 	va, err := version.NewVersion(a)
 	if err != nil {
 		panic(err)

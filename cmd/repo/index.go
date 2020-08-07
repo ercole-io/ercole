@@ -90,7 +90,7 @@ func (idx *Index) SearchArtifactByName(name string) *ArtifactInfo {
 			if foundArtifact == nil {
 				foundArtifact = f
 			} else if foundArtifact.Repository == f.Repository {
-				if utils.IsLessThan(foundArtifact.Version, f.Version) {
+				if utils.IsVersionLessThan(foundArtifact.Version, f.Version) {
 					foundArtifact = f
 				}
 			} else {
@@ -147,7 +147,7 @@ func (idx *Index) SearchArtifactByRepositoryAndName(repo string, name string) *A
 		if name == f.Name && repo == f.Repository {
 			if foundArtifact == nil {
 				foundArtifact = f
-			} else if utils.IsLessThan(foundArtifact.Version, f.Version) {
+			} else if utils.IsVersionLessThan(foundArtifact.Version, f.Version) {
 				foundArtifact = f
 			}
 		}
