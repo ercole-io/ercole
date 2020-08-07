@@ -32,12 +32,12 @@ func init() {
 			index := readOrUpdateIndex()
 
 			for _, arg := range args {
-				f := index.searchArtifactByArg(arg)
+				f := index.SearchArtifactByArg(arg)
 				if f == nil {
 					fmt.Fprintf(os.Stderr, "The argument %q wasn't undestood\n", arg)
 					os.Exit(1)
 				}
-				fmt.Println("Fullname:", f.getFullName())
+				fmt.Println("Fullname:", f.GetFullName())
 				fmt.Println("Repository:", f.Repository)
 				fmt.Println("Name:", f.Name)
 				fmt.Println("Version:", f.Version)
