@@ -16,6 +16,7 @@
 package cmd
 
 import (
+	"github.com/ercole-io/ercole/cmd/repo"
 	"github.com/spf13/cobra"
 )
 
@@ -28,11 +29,11 @@ func init() {
 			//Get the list of the repository
 			index := readOrUpdateIndex()
 
-			updateCandidates := make(map[*artifactInfo]bool)
+			updateCandidates := make(map[*repo.ArtifactInfo]bool)
 
 			//Search the artifact and install it for every artifact
 			for _, art := range index {
-				f := index.searchArtifactByRepositoryAndName(art.Repository, art.Name)
+				f := index.SearchArtifactByRepositoryAndName(art.Repository, art.Name)
 
 				if !f.Installed {
 					updateCandidates[f] = true
