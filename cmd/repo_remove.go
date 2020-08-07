@@ -33,7 +33,7 @@ func init() {
 
 			//Search the artifact and install it for every artifact
 			for _, arg := range args {
-				f := index.searchArtifactByArg(arg)
+				f := index.SearchArtifactByArg(arg)
 				if f == nil {
 					fmt.Fprintf(os.Stderr, "The argument %q wasn't undestood\n", arg)
 					os.Exit(1)

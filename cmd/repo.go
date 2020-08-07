@@ -22,18 +22,15 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"sort"
-	"strings"
 	"time"
 
-	"github.com/1set/gut/yos"
+	"github.com/ercole-io/ercole/cmd/repo"
 	"github.com/ercole-io/ercole/config"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/google/go-github/v28/github"
-	"github.com/hashicorp/go-version"
 	"github.com/spf13/cobra"
 )
 
@@ -41,317 +38,10 @@ import (
 var githubToken string
 var rebuildCache bool
 
-type index []*artifactInfo
-
-// artifactInfo contains info about all files in repository
-type artifactInfo struct {
-	Repository            string
-	Installed             bool `json:"-"`
-	Version               string
-	ReleaseDate           string
-	Filename              string
-	Name                  string
-	OperatingSystemFamily string
-	OperatingSystem       string
-	Arch                  string
-	UpstreamType          string
-	UpstreamInfo          map[string]interface{}
-	Install               func(ai *artifactInfo)              `json:"-"`
-	Uninstall             func(ai *artifactInfo)              `json:"-"`
-	Download              func(ai *artifactInfo, dest string) `json:"-"`
-}
-
-//Regex for filenames
-var agentRHEL5Regex *regexp.Regexp = regexp.MustCompile("^ercole-agent-(?P<version>.*)-1.(?P<arch>x86_64).rpm$")
-var agentRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
-var agentVirtualizationRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-virtualization-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
-var agentExadataRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-exadata-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
-var agentWinRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-setup-(?P<version>.*).exe$")
-var agentHpuxRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-hpux-(?P<version>.*).tar.gz")
-var agentAixRegexRpm *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*)-1.(?P<dist>.*).(?P<arch>noarch).rpm$")
-var agentAixRegexTarGz *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*).tar.gz$")
-var ercoleRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
-var ercoleWebRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-web-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>noarch).rpm$")
-
-func cmpVersion(a, b string) bool {
-	va, err := version.NewVersion(a)
-	if err != nil {
-		panic(err)
-	}
-	vb, err := version.NewVersion(b)
-	if err != nil {
-		panic(err)
-	}
-	return va.LessThan(vb)
-}
-
-// setInfoFromFileName sets to fileInfo informations taken from filename
-func setInfoFromFileName(filename string, artifactInfo *artifactInfo) {
-	switch {
-	case agentVirtualizationRHELRegex.MatchString(filename): //agent virtualization RHEL
-		data := utils.FindNamedMatches(agentVirtualizationRHELRegex, filename)
-		artifactInfo.Name = "ercole-agent-virtualization-rhel" + data["dist"]
-		artifactInfo.Version = data["version"]
-		artifactInfo.Arch = data["arch"]
-		artifactInfo.OperatingSystemFamily = "rhel"
-		artifactInfo.OperatingSystem = "rhel" + data["dist"]
-	case agentExadataRHELRegex.MatchString(filename): //agent exadata RHEL
-		data := utils.FindNamedMatches(agentExadataRHELRegex, filename)
-		artifactInfo.Name = "ercole-agent-exadata-rhel" + data["dist"]
-		artifactInfo.Version = data["version"]
-		artifactInfo.Arch = data["arch"]
-		artifactInfo.OperatingSystemFamily = "rhel"
-		artifactInfo.OperatingSystem = "rhel" + data["dist"]
-	case agentRHEL5Regex.MatchString(filename): //agent RHEL5
-		data := utils.FindNamedMatches(agentRHEL5Regex, filename)
-		artifactInfo.Name = "ercole-agent-rhel5"
-		artifactInfo.Version = data["version"]
-		artifactInfo.Arch = data["arch"]
-		artifactInfo.OperatingSystemFamily = "rhel"
-		artifactInfo.OperatingSystem = "rhel5"
-	case agentRHELRegex.MatchString(filename): //agent RHEL
-		data := utils.FindNamedMatches(agentRHELRegex, filename)
-		artifactInfo.Name = "ercole-agent-rhel" + data["dist"]
-		artifactInfo.Version = data["version"]
-		artifactInfo.Arch = data["arch"]
-		artifactInfo.OperatingSystemFamily = "rhel"
-		artifactInfo.OperatingSystem = "rhel" + data["dist"]
-	case ercoleRHELRegex.MatchString(filename): //ercole RHEL
-		data := utils.FindNamedMatches(ercoleRHELRegex, filename)
-		artifactInfo.Name = "ercole-" + data["dist"]
-		artifactInfo.Version = data["version"]
-		artifactInfo.Arch = data["arch"]
-		artifactInfo.OperatingSystemFamily = "rhel"
-		artifactInfo.OperatingSystem = "rhel" + data["dist"]
-	case ercoleWebRHELRegex.MatchString(filename): //ercole-web RHEL
-		data := utils.FindNamedMatches(ercoleWebRHELRegex, filename)
-		artifactInfo.Name = "ercole-web" + data["dist"]
-		artifactInfo.Version = data["version"]
-		artifactInfo.Arch = data["arch"]
-		artifactInfo.OperatingSystemFamily = "rhel"
-		artifactInfo.OperatingSystem = "rhel" + data["dist"]
-	case agentWinRegex.MatchString(filename): //agent WIN
-		data := utils.FindNamedMatches(agentWinRegex, filename)
-		artifactInfo.Name = "ercole-agent-win"
-		artifactInfo.Version = data["version"]
-		artifactInfo.Arch = "x86_64"
-		artifactInfo.OperatingSystemFamily = "win"
-		artifactInfo.OperatingSystem = "win"
-	case agentHpuxRegex.MatchString(filename): //agent HPUX
-		data := utils.FindNamedMatches(agentHpuxRegex, filename)
-		artifactInfo.Name = "ercole-agent-hpux"
-		artifactInfo.Version = data["version"]
-		artifactInfo.Arch = "noarch"
-		artifactInfo.OperatingSystemFamily = "hpux"
-		artifactInfo.OperatingSystem = "hpux"
-	case agentAixRegexRpm.MatchString(filename): //agent AIX
-		data := utils.FindNamedMatches(agentAixRegexRpm, filename)
-		artifactInfo.Name = "ercole-agent-aix"
-		artifactInfo.Version = data["version"]
-		artifactInfo.Arch = "noarch"
-		artifactInfo.OperatingSystemFamily = "aix"
-		artifactInfo.OperatingSystem = data["dist"]
-	case agentAixRegexTarGz.MatchString(filename): //agent AIX
-		data := utils.FindNamedMatches(agentAixRegexTarGz, filename)
-		artifactInfo.Name = "ercole-agent-aix-targz"
-		artifactInfo.Version = data["version"]
-		artifactInfo.Arch = "noarch"
-		artifactInfo.OperatingSystemFamily = "aix-tar-gz"
-		artifactInfo.OperatingSystem = "aix6.1"
-	default:
-		panic(fmt.Errorf("Filename %s is not supported. Please check that is correct", filename))
-	}
-}
-
-// setDownloader set the downloader of the artifact
-func setDownloader(artifact *artifactInfo) {
-	switch artifact.UpstreamType {
-	case "github-release":
-		artifact.Download = func(ai *artifactInfo, dest string) {
-			utils.DownloadFile(dest, ai.UpstreamInfo["DownloadUrl"].(string))
-		}
-	case "directory":
-		artifact.Download = func(ai *artifactInfo, dest string) {
-			if verbose {
-				fmt.Printf("Copying file from %s to %s\n", ai.UpstreamInfo["Filename"].(string), dest)
-			}
-			err := yos.CopyFile(ai.UpstreamInfo["Filename"].(string), dest)
-			if err != nil {
-				panic(err)
-			}
-			err = os.Chmod(dest, 0755)
-			if err != nil {
-				panic(err)
-			}
-		}
-	case "ercole-reposervice":
-		artifact.Download = func(ai *artifactInfo, dest string) {
-			utils.DownloadFile(dest, ai.UpstreamInfo["DownloadUrl"].(string))
-		}
-	default:
-		panic(artifact)
-	}
-}
-
-// setInstaller set the installer of the artifact
-func setInstaller(artifact *artifactInfo) {
-	switch {
-	case strings.HasSuffix(artifact.Filename, ".rpm"):
-		artifact.Install = func(ai *artifactInfo) {
-			//Create missing directories
-			if verbose {
-				fmt.Printf("Creating the directories (if missing) %s, %s\n",
-					filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch),
-					filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all"),
-				)
-			}
-			err := os.MkdirAll(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch), 0755)
-			if err != nil {
-				panic(err)
-			}
-			err = os.MkdirAll(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all"), 0755)
-			if err != nil {
-				panic(err)
-			}
-
-			//Download the file in the right location
-			if verbose {
-				fmt.Printf("Downloading the artifact %s to %s\n", ai.Filename, filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
-			}
-			ai.Download(ai, filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
-
-			//Create a link to all
-			if verbose {
-				fmt.Printf("Linking the artifact to %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
-			}
-			err = os.Link(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename), filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
-			if err != nil {
-				panic(err)
-			}
-
-			//Launch the createrepo command
-			if verbose {
-				fmt.Printf("Executing createrepo %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch))
-			}
-			cmd := exec.Command("createrepo", filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch))
-			if verbose {
-				cmd.Stdout = os.Stdout
-			}
-			cmd.Stderr = os.Stderr
-			cmd.Run()
-
-			//Settint it to installed
-			ai.Installed = true
-		}
-	default:
-		artifact.Install = func(ai *artifactInfo) {
-			//Create missing directories
-			if verbose {
-				fmt.Printf("Creating the directories (if missing) %s, %s\n",
-					filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch),
-					filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all"),
-				)
-			}
-			err := os.MkdirAll(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch), 0755)
-			if err != nil {
-				panic(err)
-			}
-			err = os.MkdirAll(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all"), 0755)
-			if err != nil {
-				panic(err)
-			}
-
-			//Download the file in the right location
-			if verbose {
-				fmt.Printf("Downloading the artifact %s to %s\n", ai.Filename, filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
-			}
-			ai.Download(ai, filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem, ai.Arch, ai.Filename))
-
-			//Create a link to all
-			if verbose {
-				fmt.Printf("Linking the artifact to %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
-			}
-			err = os.Link(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem, ai.Arch, ai.Filename), filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
-			if err != nil {
-				panic(err)
-			}
-
-			//Setting it to installed
-			ai.Installed = true
-		}
-	}
-}
-
-// setUninstaller set the uninstaller of the artifact
-func setUninstaller(artifact *artifactInfo) {
-	switch {
-	case strings.HasSuffix(artifact.Filename, ".rpm"):
-		artifact.Uninstall = func(ai *artifactInfo) {
-			//Removing the link to all
-			if verbose {
-				fmt.Printf("Removing Linking the artifact to %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
-			}
-			err := os.Remove(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
-			if err != nil {
-				panic(err)
-			}
-
-			//Removing the file
-			if verbose {
-				fmt.Printf("Removing the file %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
-			}
-			err = os.Remove(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
-			if err != nil {
-				panic(err)
-			}
-
-			//Launch the createrepo command
-			if verbose {
-				fmt.Printf("Executing createrepo %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch))
-			}
-			cmd := exec.Command("createrepo", filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch))
-			if verbose {
-				cmd.Stdout = os.Stdout
-			}
-			cmd.Stderr = os.Stderr
-			err = cmd.Run()
-			if err != nil {
-				panic(err)
-			}
-
-			//Set it to not installed
-			ai.Installed = false
-		}
-	default:
-		artifact.Uninstall = func(ai *artifactInfo) {
-			//Removing the link to all
-			if verbose {
-				fmt.Printf("Removing Linking the artifact to %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
-			}
-			err := os.Remove(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", ai.Filename))
-			if err != nil {
-				panic(err)
-			}
-
-			//Removing the file
-			if verbose {
-				fmt.Printf("Removing the file %s\n", filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
-			}
-			err = os.Remove(filepath.Join(ercoleConfig.RepoService.DistributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
-			if err != nil {
-				panic(err)
-			}
-
-			//Set it to not installed
-			ai.Installed = false
-		}
-	}
-}
-
 // scanGithubReleaseRepository scan a github releases repository and return detected files
-func scanGithubReleaseRepository(repo config.UpstreamRepository) (index, error) {
+func scanGithubReleaseRepository(upstreamRepo config.UpstreamRepository) (repo.Index, error) {
 	//Fetch the data
-	req, _ := http.NewRequest("GET", repo.URL, nil)
+	req, _ := http.NewRequest("GET", upstreamRepo.URL, nil)
 	if githubToken != "" {
 		req.Header.Add("Authorization", "token "+githubToken)
 	}
@@ -360,11 +50,11 @@ func scanGithubReleaseRepository(repo config.UpstreamRepository) (index, error) 
 		return nil, err
 	} else if resp.StatusCode != 200 {
 		bytes, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("Received %d from github for URL %s (body: %s)", resp.StatusCode, repo.URL, string(bytes))
+		return nil, fmt.Errorf("Received %d from github for URL %s (body: %s)", resp.StatusCode, upstreamRepo.URL, string(bytes))
 	}
 
 	if verbose {
-		fmt.Printf("Fetched data from %s\n", repo.URL)
+		fmt.Printf("Fetched data from %s\n", upstreamRepo.URL)
 	}
 
 	//Decode data
@@ -372,12 +62,12 @@ func scanGithubReleaseRepository(repo config.UpstreamRepository) (index, error) 
 	json.NewDecoder(resp.Body).Decode(&data)
 
 	//Add data to out
-	var out index
+	var out repo.Index
 	for _, release := range data {
 		for _, asset := range release.Assets {
-			artifactInfo := new(artifactInfo)
+			artifactInfo := new(repo.ArtifactInfo)
 
-			artifactInfo.Repository = repo.Name
+			artifactInfo.Repository = upstreamRepo.Name
 			artifactInfo.Filename = asset.GetName()
 			artifactInfo.Version = release.GetTagName()
 			artifactInfo.ReleaseDate = asset.GetUpdatedAt().Format("2006-01-02")
@@ -385,7 +75,7 @@ func scanGithubReleaseRepository(repo config.UpstreamRepository) (index, error) 
 			artifactInfo.UpstreamInfo = map[string]interface{}{
 				"DownloadUrl": asset.GetBrowserDownloadURL(),
 			}
-			setInfoFromFileName(artifactInfo.Filename, artifactInfo)
+			artifactInfo.SetInfoFromFileName(artifactInfo.Filename)
 			if artifactInfo.Version == "latest" {
 				continue
 			}
@@ -397,26 +87,26 @@ func scanGithubReleaseRepository(repo config.UpstreamRepository) (index, error) 
 }
 
 // scanDirectoryRepository scan the local directory and return detected files
-func scanDirectoryRepository(repo config.UpstreamRepository) (index, error) {
+func scanDirectoryRepository(upstreamRepo config.UpstreamRepository) (repo.Index, error) {
 	//Fetch the data
-	files, err := ioutil.ReadDir(repo.URL)
+	files, err := ioutil.ReadDir(upstreamRepo.URL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	//Add data to out
-	var out index
+	var out repo.Index
 	for _, file := range files {
-		artifactInfo := new(artifactInfo)
+		artifactInfo := new(repo.ArtifactInfo)
 
-		artifactInfo.Repository = repo.Name
+		artifactInfo.Repository = upstreamRepo.Name
 		artifactInfo.Filename = filepath.Base(file.Name())
 		artifactInfo.ReleaseDate = file.ModTime().Format("2006-01-02")
 		artifactInfo.UpstreamType = "directory"
 		artifactInfo.UpstreamInfo = map[string]interface{}{
-			"Filename": filepath.Join(repo.URL, file.Name()),
+			"Filename": filepath.Join(upstreamRepo.URL, file.Name()),
 		}
-		setInfoFromFileName(artifactInfo.Filename, artifactInfo)
+		artifactInfo.SetInfoFromFileName(artifactInfo.Filename)
 		if artifactInfo.Version == "latest" {
 			continue
 		}
@@ -427,20 +117,20 @@ func scanDirectoryRepository(repo config.UpstreamRepository) (index, error) {
 }
 
 // scanGithubReleaseRepository scan a github releases repository and return detected files
-func scanErcoleReposerviceRepository(repo config.UpstreamRepository) (index, error) {
+func scanErcoleReposerviceRepository(upstreamRepo config.UpstreamRepository) (repo.Index, error) {
 	//Fetch the data
-	req, _ := http.NewRequest("GET", repo.URL+"/all", nil)
+	req, _ := http.NewRequest("GET", upstreamRepo.URL+"/all", nil)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	} else if resp.StatusCode != 200 {
 		bytes, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("Received %d from ercole reposervice for URL %s (body: %s)", resp.StatusCode, repo.URL+"/all", string(bytes))
+		return nil, fmt.Errorf("Received %d from ercole reposervice for URL %s (body: %s)", resp.StatusCode, upstreamRepo.URL+"/all", string(bytes))
 	}
 
 	if verbose {
-		fmt.Printf("Fetched data from %s\n", repo.URL)
+		fmt.Printf("Fetched data from %s\n", upstreamRepo.URL)
 	}
 
 	//Extract the filenames
@@ -452,7 +142,7 @@ func scanErcoleReposerviceRepository(repo config.UpstreamRepository) (index, err
 	regex := regexp.MustCompile("<a href=\"([^\"]*)\">")
 
 	// //Add data to out
-	var out index
+	var out repo.Index
 	installedNames := make([]string, 0)
 
 	for _, fn := range regex.FindAllStringSubmatch(string(data), -1) {
@@ -460,17 +150,17 @@ func scanErcoleReposerviceRepository(repo config.UpstreamRepository) (index, err
 	}
 
 	//Fetch the data
-	req, _ = http.NewRequest("GET", repo.URL+"/index.json", nil)
+	req, _ = http.NewRequest("GET", upstreamRepo.URL+"/index.json", nil)
 	resp, err = http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	} else if resp.StatusCode != 200 {
 		bytes, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("Received %d from ercole reposervice for URL %s (body: %s)", resp.StatusCode, repo.URL+"/index.json", string(bytes))
+		return nil, fmt.Errorf("Received %d from ercole reposervice for URL %s (body: %s)", resp.StatusCode, upstreamRepo.URL+"/index.json", string(bytes))
 	}
 
 	if verbose {
-		fmt.Printf("Fetched data from %s\n", repo.URL)
+		fmt.Printf("Fetched data from %s\n", upstreamRepo.URL)
 	}
 
 	//Decode data
@@ -482,16 +172,16 @@ func scanErcoleReposerviceRepository(repo config.UpstreamRepository) (index, err
 			continue
 		}
 
-		artifactInfo := new(artifactInfo)
+		artifactInfo := new(repo.ArtifactInfo)
 
-		artifactInfo.Repository = repo.Name
+		artifactInfo.Repository = upstreamRepo.Name
 		artifactInfo.Filename = d["Filename"]
 		artifactInfo.ReleaseDate = d["ReleaseDate"]
 		artifactInfo.UpstreamType = "ercole-reposervice"
 		artifactInfo.UpstreamInfo = map[string]interface{}{
-			"DownloadUrl": repo.URL + "/all/" + d["Filename"],
+			"DownloadUrl": upstreamRepo.URL + "/all/" + d["Filename"],
 		}
-		setInfoFromFileName(artifactInfo.Filename, artifactInfo)
+		artifactInfo.SetInfoFromFileName(artifactInfo.Filename)
 		if artifactInfo.Version == "latest" {
 			continue
 		}
@@ -501,7 +191,7 @@ func scanErcoleReposerviceRepository(repo config.UpstreamRepository) (index, err
 }
 
 // scanRepository scan a single repository and return detected files
-func scanRepository(repo config.UpstreamRepository) (index, error) {
+func scanRepository(repo config.UpstreamRepository) (repo.Index, error) {
 	switch repo.Type {
 	case "github-release":
 		return scanGithubReleaseRepository(repo)
@@ -515,21 +205,9 @@ func scanRepository(repo config.UpstreamRepository) (index, error) {
 
 }
 
-// getFullName return the fullname of the file
-func (f *artifactInfo) getFullName() string {
-	return fmt.Sprintf("%s/%s@%s", f.Repository, f.Name, f.Version)
-}
-
-// checkInstalled return true if file is detected in the distribution directory
-func (f *artifactInfo) isInstalled() bool {
-	_, err := os.Stat(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "all", f.Filename))
-
-	return !os.IsNotExist(err)
-}
-
 // scanRepositories scan all configured repositories and return a map of file names to info
-func scanRepositories() index {
-	out := make(index, 0)
+func scanRepositories() repo.Index {
+	out := make(repo.Index, 0)
 
 	for _, repo := range ercoleConfig.RepoService.UpstreamRepositories {
 		//Get repository files
@@ -544,141 +222,10 @@ func scanRepositories() index {
 	return out
 }
 
-// parseNameOfFile parse a string and return the relative complete filename
-func (idx *index) searchArtifactByArg(arg string) *artifactInfo {
-	//valid formats
-	//	- <filename>
-	//	- <name>
-	//	- <name>@<version>
-	//	- <repository>/<name>@<version>
-	//	- <repository>/<name>
-	var regex *regexp.Regexp = regexp.MustCompile("^(?:(?P<repository>[a-z-0-9]+)/)?(?P<name>[a-z-.0-9]+)(?:@(?P<version>[a-z0-9.0-9]+))?$")
-	submatches := utils.FindNamedMatches(regex, arg)
-
-	var repository string = submatches["repository"]
-	var name string = submatches["name"]
-	var version string = submatches["version"]
-
-	var foundArtifact *artifactInfo
-
-	foundArtifact = idx.searchArtifactByFilename(arg)
-	if foundArtifact != nil {
-		return foundArtifact
-	}
-
-	switch {
-	case repository == "" && version == "": //	<name> case
-		foundArtifact = idx.searchArtifactByName(name)
-	case repository == "" && version != "": //	<name>@<version> case
-		foundArtifact = idx.searchArtifactByNameAndVersion(name, version)
-	case repository != "" && version != "": //	<repository>/<name>@<version> case
-		foundArtifact = idx.searchArtifactByFullname(repository, name, version)
-	case repository != "" && version == "": //	<repository>/<name> case
-		foundArtifact = idx.searchArtifactByRepositoryAndName(repository, name)
-	}
-
-	return foundArtifact
-}
-
-func (idx *index) searchArtifactByFilename(filename string) *artifactInfo {
-	var foundArtifact *artifactInfo
-
-	//Find the artifact
-	for _, f := range *idx {
-		//TODO: add support for missing format
-		if filename == f.Filename {
-			if foundArtifact == nil {
-				foundArtifact = f
-			} else {
-				panic(fmt.Errorf("Two artifact have the same filename: %v and %v", foundArtifact, f))
-			}
-
-		}
-	}
-
-	return foundArtifact
-}
-
-func (idx *index) searchArtifactByName(name string) *artifactInfo {
-	var foundArtifact *artifactInfo
-
-	//Find the artifact
-	for _, f := range *idx {
-		//TODO: add support for missing format
-		if name == f.Name {
-			if foundArtifact == nil {
-				foundArtifact = f
-			} else if foundArtifact.Repository == f.Repository {
-				if cmpVersion(foundArtifact.Version, f.Version) {
-					foundArtifact = f
-				}
-			} else {
-				panic(fmt.Errorf("Two artifact have the same name: %v and %v", foundArtifact, f))
-			}
-		}
-	}
-
-	return foundArtifact
-}
-
-func (idx *index) searchArtifactByNameAndVersion(name string, version string) *artifactInfo {
-	var foundArtifact *artifactInfo
-
-	//Find the artifact
-	for _, f := range *idx {
-		//TODO: add support for missing format
-		if name == f.Name && version == f.Version {
-			if foundArtifact == nil {
-				foundArtifact = f
-			} else {
-				panic(fmt.Errorf("Two artifact have the same name and version: %v and %v", foundArtifact, f))
-			}
-		}
-	}
-
-	return foundArtifact
-}
-
-func (idx *index) searchArtifactByFullname(repository, name string, version string) *artifactInfo {
-	var foundArtifact *artifactInfo
-
-	//Find the artifact
-	for _, f := range *idx {
-		//TODO: add support for missing format
-		if repository == f.Repository && name == f.Name && version == f.Version {
-			if foundArtifact == nil {
-				foundArtifact = f
-			} else {
-				panic(fmt.Errorf("Two artifact have the same fullname: %v and %v", foundArtifact, f))
-			}
-		}
-	}
-
-	return foundArtifact
-}
-
-func (idx *index) searchArtifactByRepositoryAndName(repo string, name string) *artifactInfo {
-	var foundArtifact *artifactInfo
-
-	//Find the artifact
-	for _, f := range *idx {
-		//TODO: add support for missing format
-		if name == f.Name && repo == f.Repository {
-			if foundArtifact == nil {
-				foundArtifact = f
-			} else if cmpVersion(foundArtifact.Version, f.Version) {
-				foundArtifact = f
-			}
-		}
-	}
-
-	return foundArtifact
-}
-
 // readOrUpdateIndex return an index of available artifacts
-func readOrUpdateIndex() index {
+func readOrUpdateIndex() repo.Index {
 	// Get stat about index.json
-	var index index
+	var index repo.Index
 
 	// Check file status
 	if verbose {
@@ -724,16 +271,16 @@ func readOrUpdateIndex() index {
 		} else if index[i].Name != index[j].Name {
 			return index[i].Name < index[j].Name
 		} else {
-			return cmpVersion(index[i].Version, index[j].Version)
+			return utils.IsLessThan(index[i].Version, index[j].Version)
 		}
 	})
 
 	// Set flag and handlers
 	for _, art := range index {
-		art.Installed = art.isInstalled()
-		setDownloader(art)
-		setInstaller(art)
-		setUninstaller(art)
+		art.Installed = art.IsInstalled(ercoleConfig.RepoService.DistributedFiles)
+		art.SetDownloader(verbose)
+		art.SetInstaller(verbose, ercoleConfig.RepoService.DistributedFiles)
+		art.SetUninstaller(verbose, ercoleConfig.RepoService.DistributedFiles)
 	}
 
 	return index
@@ -746,14 +293,9 @@ var repoCmd = &cobra.Command{
 	Long:  `Manage the internal repository. It requires to be run where the repository is installed`,
 }
 
-//Commands to be added
-//	- list
-//	- install
-//	- update
-//	- remove
-//	- info
 func init() {
 	rootCmd.AddCommand(repoCmd)
+
 	repoCmd.PersistentFlags().StringVarP(&githubToken, "github-token", "g", "", "Github token used to perform requests")
 	repoCmd.PersistentFlags().BoolVar(&rebuildCache, "rebuild-cache", false, "Force the rebuild the cache")
 }
