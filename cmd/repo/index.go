@@ -16,8 +16,12 @@
 package repo
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
 	"regexp"
+	"sort"
 
 	"github.com/ercole-io/ercole/utils"
 )
@@ -25,7 +29,6 @@ import (
 // Index is the index of all artifact in a repository
 type Index []*ArtifactInfo
 
-// parseNameOfFile parse a string and return the relative complete filename
 func (idx *Index) SearchArtifactByArg(arg string) *ArtifactInfo {
 	//valid formats
 	//	- <filename>
@@ -154,4 +157,44 @@ func (idx *Index) SearchArtifactByRepositoryAndName(repo string, name string) *A
 	}
 
 	return foundArtifact
+}
+
+// SortArtifactInfo sort artifact information inside index
+func (idx Index) SortArtifactInfo() {
+	sort.Slice(idx, func(i, j int) bool {
+		if idx[i].Repository != idx[j].Repository {
+			return idx[i].Repository < idx[j].Repository
+		} else if idx[i].Name != idx[j].Name {
+			return idx[i].Name < idx[j].Name
+		} else {
+			return utils.IsVersionLessThan(idx[i].Version, idx[j].Version)
+		}
+	})
+}
+
+// ReadIndexFromFile read index from the filesystem
+func ReadIndexFromFile(distributedFiles string) Index {
+
+	file, err := os.Open(filepath.Join(distributedFiles, "index.json"))
+	if err != nil {
+		panic(err)
+	}
+
+	var index Index
+	if err = json.NewDecoder(file).Decode(&index); err != nil {
+		panic(err)
+	}
+
+	return index
+}
+
+// SaveOnFile save index on the filesystem
+func (idx Index) SaveOnFile(distributedFiles string) {
+	file, err := os.Create(filepath.Join(distributedFiles, "index.json"))
+	if err != nil {
+		panic(err)
+	}
+	enc := json.NewEncoder(file)
+	enc.SetIndent("", "  ")
+	enc.Encode(idx)
 }
