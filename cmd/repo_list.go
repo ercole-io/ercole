@@ -49,9 +49,9 @@ func init() {
 				}
 
 				if showOnlyNameColumn {
-					fmt.Println(f.GetFullName())
+					fmt.Println(f.FullName())
 				} else {
-					fmt.Printf("%c\t%s\t%s\n", installed, f.ReleaseDate, f.GetFullName())
+					fmt.Printf("%c\t%s\t%s\n", installed, f.ReleaseDate, f.FullName())
 				}
 			}
 		},
