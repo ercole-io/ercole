@@ -57,9 +57,19 @@ var agentAixRegexTarGz *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?
 var ercoleRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
 var ercoleWebRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-web-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>noarch).rpm$")
 
-// GetFullName return the fullname of the file
-func (artifact *ArtifactInfo) GetFullName() string {
+// FullName return the fullname of the file
+func (artifact *ArtifactInfo) FullName() string {
 	return fmt.Sprintf("%s/%s@%s", artifact.Repository, artifact.Name, artifact.Version)
+}
+
+// DirectoryPath get the path of the directory containing the artifact file
+func (artifact *ArtifactInfo) DirectoryPath(distributedFiles string) string {
+	return filepath.Join(distributedFiles, artifact.OperatingSystemFamily, artifact.OperatingSystem, artifact.Arch)
+}
+
+//FilePath get the path of the artifact file
+func (artifact *ArtifactInfo) FilePath(distributedFiles string) string {
+	return filepath.Join(artifact.DirectoryPath(distributedFiles), artifact.Filename)
 }
 
 // IsInstalled return true if file is detected in the distribution directory
@@ -198,11 +208,11 @@ func (artifact *ArtifactInfo) SetInstaller(verbose bool, distributedFiles string
 			//Create missing directories
 			if verbose {
 				fmt.Printf("Creating the directories (if missing) %s, %s\n",
-					filepath.Join(distributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch),
+					ai.DirectoryPath(distributedFiles),
 					filepath.Join(distributedFiles, "all"),
 				)
 			}
-			err := os.MkdirAll(filepath.Join(distributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch), 0755)
+			err := os.MkdirAll(ai.DirectoryPath(distributedFiles), 0755)
 			if err != nil {
 				panic(err)
 			}
@@ -213,29 +223,31 @@ func (artifact *ArtifactInfo) SetInstaller(verbose bool, distributedFiles string
 
 			//Download the file in the right location
 			if verbose {
-				fmt.Printf("Downloading the artifact %s to %s\n", ai.Filename, filepath.Join(distributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
+				fmt.Printf("Downloading the artifact %s to %s\n", ai.Filename, ai.FilePath(distributedFiles))
 			}
-			ai.Download(ai, filepath.Join(distributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
+			ai.Download(ai, ai.FilePath(distributedFiles))
 
 			//Create a link to all
 			if verbose {
 				fmt.Printf("Linking the artifact to %s\n", filepath.Join(distributedFiles, "all", ai.Filename))
 			}
-			err = os.Link(filepath.Join(distributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename), filepath.Join(distributedFiles, "all", ai.Filename))
+			err = os.Link(ai.FilePath(distributedFiles), filepath.Join(distributedFiles, "all", ai.Filename))
 			if err != nil {
 				panic(err)
 			}
 
 			//Launch the createrepo command
 			if verbose {
-				fmt.Printf("Executing createrepo %s\n", filepath.Join(distributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch))
+				fmt.Printf("Executing createrepo %s\n", ai.DirectoryPath(distributedFiles))
 			}
-			cmd := exec.Command("createrepo", filepath.Join(distributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch))
+			cmd := exec.Command("createrepo", ai.DirectoryPath(distributedFiles))
 			if verbose {
 				cmd.Stdout = os.Stdout
 			}
 			cmd.Stderr = os.Stderr
-			cmd.Run()
+			if err := cmd.Run(); err != nil {
+				fmt.Printf("Error running createrepo: %s\n", err.Error())
+			}
 
 			//Settint it to installed
 			ai.Installed = true
@@ -245,11 +257,11 @@ func (artifact *ArtifactInfo) SetInstaller(verbose bool, distributedFiles string
 			//Create missing directories
 			if verbose {
 				fmt.Printf("Creating the directories (if missing) %s, %s\n",
-					filepath.Join(distributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch),
+					ai.DirectoryPath(distributedFiles),
 					filepath.Join(distributedFiles, "all"),
 				)
 			}
-			err := os.MkdirAll(filepath.Join(distributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch), 0755)
+			err := os.MkdirAll(ai.DirectoryPath(distributedFiles), 0755)
 			if err != nil {
 				panic(err)
 			}
@@ -260,7 +272,7 @@ func (artifact *ArtifactInfo) SetInstaller(verbose bool, distributedFiles string
 
 			//Download the file in the right location
 			if verbose {
-				fmt.Printf("Downloading the artifact %s to %s\n", ai.Filename, filepath.Join(distributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
+				fmt.Printf("Downloading the artifact %s to %s\n", ai.Filename, ai.FilePath(distributedFiles))
 			}
 			ai.Download(ai, filepath.Join(distributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem, ai.Arch, ai.Filename))
 
@@ -295,18 +307,18 @@ func (artifact *ArtifactInfo) SetUninstaller(verbose bool, distributedFiles stri
 
 			//Removing the file
 			if verbose {
-				fmt.Printf("Removing the file %s\n", filepath.Join(distributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
+				fmt.Printf("Removing the file %s\n", ai.FilePath(distributedFiles))
 			}
-			err = os.Remove(filepath.Join(distributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
+			err = os.Remove(ai.FilePath(distributedFiles))
 			if err != nil {
 				panic(err)
 			}
 
 			//Launch the createrepo command
 			if verbose {
-				fmt.Printf("Executing createrepo %s\n", filepath.Join(distributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch))
+				fmt.Printf("Executing createrepo %s\n", ai.DirectoryPath(distributedFiles))
 			}
-			cmd := exec.Command("createrepo", filepath.Join(distributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch))
+			cmd := exec.Command("createrepo", ai.DirectoryPath(distributedFiles))
 			if verbose {
 				cmd.Stdout = os.Stdout
 			}
@@ -332,9 +344,9 @@ func (artifact *ArtifactInfo) SetUninstaller(verbose bool, distributedFiles stri
 
 			//Removing the file
 			if verbose {
-				fmt.Printf("Removing the file %s\n", filepath.Join(distributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
+				fmt.Printf("Removing the file %s\n", ai.FilePath(distributedFiles))
 			}
-			err = os.Remove(filepath.Join(distributedFiles, ai.OperatingSystemFamily, ai.OperatingSystem, ai.Arch, ai.Filename))
+			err = os.Remove(ai.FilePath(distributedFiles))
 			if err != nil {
 				panic(err)
 			}
