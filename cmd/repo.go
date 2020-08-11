@@ -24,7 +24,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"sort"
 	"time"
 
 	"github.com/ercole-io/ercole/cmd/repo"
@@ -106,10 +105,13 @@ func scanDirectoryRepository(upstreamRepo config.UpstreamRepository) (repo.Index
 		artifactInfo.UpstreamInfo = map[string]interface{}{
 			"Filename": filepath.Join(upstreamRepo.URL, file.Name()),
 		}
+
 		artifactInfo.SetInfoFromFileName(artifactInfo.Filename)
+
 		if artifactInfo.Version == "latest" {
 			continue
 		}
+
 		out = append(out, artifactInfo)
 	}
 
@@ -205,7 +207,7 @@ func scanRepository(repo config.UpstreamRepository) (repo.Index, error) {
 
 }
 
-// scanRepositories scan all configured repositories and return a map of file names to info
+// scanRepositories scan all configured repositories and return an index
 func scanRepositories() repo.Index {
 	out := make(repo.Index, 0)
 
@@ -224,56 +226,34 @@ func scanRepositories() repo.Index {
 
 // readOrUpdateIndex return an index of available artifacts
 func readOrUpdateIndex() repo.Index {
-	// Get stat about index.json
 	var index repo.Index
 
-	// Check file status
 	if verbose {
 		fmt.Fprintln(os.Stderr, "Trying to read index.json...")
 	}
 	fi, err := os.Stat(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "index.json"))
 	if err != nil && !os.IsNotExist(err) {
 		panic(err)
+
 	} else if os.IsNotExist(err) || fi.ModTime().Add(time.Duration(8)*time.Hour).Before(time.Now()) || rebuildCache {
-		// Rebuild the index
 		if verbose {
 			fmt.Fprintln(os.Stderr, "Scanning the repositories...")
 		}
 		index = scanRepositories()
 
-		// Save the index
 		if verbose {
 			fmt.Fprintln(os.Stderr, "Writing the index...")
 		}
-		file, err := os.Create(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "index.json"))
-		if err != nil {
-			panic(err)
-		}
-		enc := json.NewEncoder(file)
-		enc.SetIndent("", "  ")
-		enc.Encode(index)
+		index.SaveOnFile(ercoleConfig.RepoService.DistributedFiles)
+
 	} else {
-		//Read the index
 		if verbose {
 			fmt.Fprintln(os.Stderr, "Read index.json...")
 		}
-		file, err := os.Open(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "index.json"))
-		if err != nil {
-			panic(err)
-		}
-		json.NewDecoder(file).Decode(&index)
+		index = repo.ReadIndexFromFile(ercoleConfig.RepoService.DistributedFiles)
 	}
 
-	//Sort the index
-	sort.Slice(index, func(i, j int) bool {
-		if index[i].Repository != index[j].Repository {
-			return index[i].Repository < index[j].Repository
-		} else if index[i].Name != index[j].Name {
-			return index[i].Name < index[j].Name
-		} else {
-			return utils.IsVersionLessThan(index[i].Version, index[j].Version)
-		}
-	})
+	index.SortArtifactInfo()
 
 	// Set flag and handlers
 	for _, art := range index {

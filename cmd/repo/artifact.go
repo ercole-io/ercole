@@ -79,6 +79,7 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) {
 		artifact.Arch = data["arch"]
 		artifact.OperatingSystemFamily = "rhel"
 		artifact.OperatingSystem = "rhel" + data["dist"]
+
 	case agentExadataRHELRegex.MatchString(filename): //agent exadata RHEL
 		data := utils.FindNamedMatches(agentExadataRHELRegex, filename)
 		artifact.Name = "ercole-agent-exadata-rhel" + data["dist"]
@@ -86,6 +87,7 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) {
 		artifact.Arch = data["arch"]
 		artifact.OperatingSystemFamily = "rhel"
 		artifact.OperatingSystem = "rhel" + data["dist"]
+
 	case agentRHEL5Regex.MatchString(filename): //agent RHEL5
 		data := utils.FindNamedMatches(agentRHEL5Regex, filename)
 		artifact.Name = "ercole-agent-rhel5"
@@ -93,6 +95,7 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) {
 		artifact.Arch = data["arch"]
 		artifact.OperatingSystemFamily = "rhel"
 		artifact.OperatingSystem = "rhel5"
+
 	case agentRHELRegex.MatchString(filename): //agent RHEL
 		data := utils.FindNamedMatches(agentRHELRegex, filename)
 		artifact.Name = "ercole-agent-rhel" + data["dist"]
@@ -100,6 +103,7 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) {
 		artifact.Arch = data["arch"]
 		artifact.OperatingSystemFamily = "rhel"
 		artifact.OperatingSystem = "rhel" + data["dist"]
+
 	case ercoleRHELRegex.MatchString(filename): //ercole RHEL
 		data := utils.FindNamedMatches(ercoleRHELRegex, filename)
 		artifact.Name = "ercole-" + data["dist"]
@@ -107,6 +111,7 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) {
 		artifact.Arch = data["arch"]
 		artifact.OperatingSystemFamily = "rhel"
 		artifact.OperatingSystem = "rhel" + data["dist"]
+
 	case ercoleWebRHELRegex.MatchString(filename): //ercole-web RHEL
 		data := utils.FindNamedMatches(ercoleWebRHELRegex, filename)
 		artifact.Name = "ercole-web" + data["dist"]
@@ -114,6 +119,7 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) {
 		artifact.Arch = data["arch"]
 		artifact.OperatingSystemFamily = "rhel"
 		artifact.OperatingSystem = "rhel" + data["dist"]
+
 	case agentWinRegex.MatchString(filename): //agent WIN
 		data := utils.FindNamedMatches(agentWinRegex, filename)
 		artifact.Name = "ercole-agent-win"
@@ -121,6 +127,7 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) {
 		artifact.Arch = "x86_64"
 		artifact.OperatingSystemFamily = "win"
 		artifact.OperatingSystem = "win"
+
 	case agentHpuxRegex.MatchString(filename): //agent HPUX
 		data := utils.FindNamedMatches(agentHpuxRegex, filename)
 		artifact.Name = "ercole-agent-hpux"
@@ -128,6 +135,7 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) {
 		artifact.Arch = "noarch"
 		artifact.OperatingSystemFamily = "hpux"
 		artifact.OperatingSystem = "hpux"
+
 	case agentAixRegexRpm.MatchString(filename): //agent AIX
 		data := utils.FindNamedMatches(agentAixRegexRpm, filename)
 		artifact.Name = "ercole-agent-aix"
@@ -135,6 +143,7 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) {
 		artifact.Arch = "noarch"
 		artifact.OperatingSystemFamily = "aix"
 		artifact.OperatingSystem = data["dist"]
+
 	case agentAixRegexTarGz.MatchString(filename): //agent AIX
 		data := utils.FindNamedMatches(agentAixRegexTarGz, filename)
 		artifact.Name = "ercole-agent-aix-targz"
@@ -142,6 +151,7 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) {
 		artifact.Arch = "noarch"
 		artifact.OperatingSystemFamily = "aix-tar-gz"
 		artifact.OperatingSystem = "aix6.1"
+
 	default:
 		panic(fmt.Errorf("Filename %s is not supported. Please check that is correct", filename))
 	}
@@ -154,6 +164,7 @@ func (artifact *ArtifactInfo) SetDownloader(verbose bool) {
 		artifact.Download = func(ai *ArtifactInfo, dest string) {
 			utils.DownloadFile(dest, ai.UpstreamInfo["DownloadUrl"].(string))
 		}
+
 	case "directory":
 		artifact.Download = func(ai *ArtifactInfo, dest string) {
 			if verbose {
@@ -168,10 +179,12 @@ func (artifact *ArtifactInfo) SetDownloader(verbose bool) {
 				panic(err)
 			}
 		}
+
 	case "ercole-reposervice":
 		artifact.Download = func(ai *ArtifactInfo, dest string) {
 			utils.DownloadFile(dest, ai.UpstreamInfo["DownloadUrl"].(string))
 		}
+
 	default:
 		panic(artifact)
 	}
