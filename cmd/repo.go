@@ -74,7 +74,9 @@ func scanGithubReleaseRepository(upstreamRepo config.UpstreamRepository) (repo.I
 			artifactInfo.UpstreamInfo = map[string]interface{}{
 				"DownloadUrl": asset.GetBrowserDownloadURL(),
 			}
-			artifactInfo.SetInfoFromFileName(artifactInfo.Filename)
+			if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
+				panic(err)
+			}
 			if artifactInfo.Version == "latest" {
 				continue
 			}
@@ -106,7 +108,9 @@ func scanDirectoryRepository(upstreamRepo config.UpstreamRepository) (repo.Index
 			"Filename": filepath.Join(upstreamRepo.URL, file.Name()),
 		}
 
-		artifactInfo.SetInfoFromFileName(artifactInfo.Filename)
+		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
+			panic(err)
+		}
 
 		if artifactInfo.Version == "latest" {
 			continue
@@ -183,7 +187,9 @@ func scanErcoleReposerviceRepository(upstreamRepo config.UpstreamRepository) (re
 		artifactInfo.UpstreamInfo = map[string]interface{}{
 			"DownloadUrl": upstreamRepo.URL + "/all/" + d["Filename"],
 		}
-		artifactInfo.SetInfoFromFileName(artifactInfo.Filename)
+		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
+			panic(err)
+		}
 		if artifactInfo.Version == "latest" {
 			continue
 		}
@@ -231,11 +237,11 @@ func readOrUpdateIndex() repo.Index {
 	if verbose {
 		fmt.Fprintln(os.Stderr, "Trying to read index.json...")
 	}
-	fi, err := os.Stat(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "index.json"))
+	indexFile, err := os.Stat(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "index.json"))
 	if err != nil && !os.IsNotExist(err) {
 		panic(err)
 
-	} else if os.IsNotExist(err) || fi.ModTime().Add(time.Duration(8)*time.Hour).Before(time.Now()) || rebuildCache {
+	} else if os.IsNotExist(err) || indexFile.ModTime().Add(time.Duration(8)*time.Hour).Before(time.Now()) || rebuildCache {
 		if verbose {
 			fmt.Fprintln(os.Stderr, "Scanning the repositories...")
 		}
@@ -253,8 +259,6 @@ func readOrUpdateIndex() repo.Index {
 		index = repo.ReadIndexFromFile(ercoleConfig.RepoService.DistributedFiles)
 	}
 
-	index.SortArtifactInfo()
-
 	// Set flag and handlers
 	for _, art := range index {
 		art.Installed = art.IsInstalled(ercoleConfig.RepoService.DistributedFiles)
@@ -263,7 +267,72 @@ func readOrUpdateIndex() repo.Index {
 		art.SetUninstaller(verbose, ercoleConfig.RepoService.DistributedFiles)
 	}
 
+	index = append(index, getArtifactsNotIndexed(index, ercoleConfig.RepoService.DistributedFiles)...)
+
+	index.SortArtifactInfo()
+
 	return index
+}
+
+// getArtifactsNotIndexed scan filesystem for installed artifacts not in index
+func getArtifactsNotIndexed(index repo.Index, distributedFiles string) repo.Index {
+	filesNotIndexed := getFilesNotIndexed(index, distributedFiles)
+
+	artifactsNotIndexed := make(repo.Index, 0)
+	for _, file := range filesNotIndexed {
+		artifactInfo := new(repo.ArtifactInfo)
+		artifactInfo.Filename = filepath.Base(file.Name())
+
+		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
+			continue
+		}
+
+		artifactInfo.Repository = "???"
+		artifactInfo.Installed = true
+		artifactInfo.ReleaseDate = file.ModTime().Format("2006-01-02")
+		artifactInfo.UpstreamType = "???"
+
+		artifactsNotIndexed = append(artifactsNotIndexed, artifactInfo)
+	}
+
+	return artifactsNotIndexed
+}
+
+func getFilesNotIndexed(index repo.Index, distributedFiles string) []os.FileInfo {
+	installedInIndex := make(map[string]bool)
+
+	for _, artifact := range index {
+		if artifact.Installed {
+			installedInIndex[artifact.FilePath(distributedFiles)] = true
+			installedInIndex[filepath.Join(distributedFiles, "all", artifact.Filename)] = true
+		}
+	}
+
+	filesNotIndexed := make([]os.FileInfo, 0)
+	err := filepath.Walk(distributedFiles,
+		func(filePath string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+
+			if installedInIndex[filePath] {
+				return nil
+			}
+
+			fileInfo, err := os.Stat(filePath)
+			if err != nil || fileInfo.IsDir() {
+				return nil
+			}
+
+			filesNotIndexed = append(filesNotIndexed, fileInfo)
+
+			return nil
+		})
+	if err != nil {
+		panic(err)
+	}
+
+	return filesNotIndexed
 }
 
 // repoCmd represents the repo command

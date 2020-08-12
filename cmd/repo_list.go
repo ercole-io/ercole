@@ -56,6 +56,7 @@ func init() {
 			}
 		},
 	}
+
 	repoListCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose")
 	repoListCmd.Flags().BoolVarP(&filterInstalled, "installed", "i", false, "Filter by installed artifacts")
 	repoListCmd.Flags().BoolVarP(&filterUninstalled, "uninstalled", "u", false, "Filter by uninstalled artifacts")
