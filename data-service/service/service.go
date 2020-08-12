@@ -63,13 +63,21 @@ func (hds *HostDataService) Init() {
 	//Start cron jobs
 	jobrunner.Start()
 
-	jobrunner.Schedule(hds.Config.DataService.CurrentHostCleaningJob.Crontab, &CurrentHostCleaningJob{hostDataService: hds, TimeNow: hds.TimeNow, Database: hds.Database, Config: hds.Config})
-	jobrunner.Schedule(hds.Config.DataService.ArchivedHostCleaningJob.Crontab, &ArchivedHostCleaningJob{hostDataService: hds, TimeNow: hds.TimeNow, Database: hds.Database, Config: hds.Config})
+	currentHostCleaningJob := &CurrentHostCleaningJob{hostDataService: hds, TimeNow: hds.TimeNow, Database: hds.Database, Config: hds.Config}
+	if err := jobrunner.Schedule(hds.Config.DataService.CurrentHostCleaningJob.Crontab, currentHostCleaningJob); err != nil {
+		hds.Log.Errorf("Something went wrong scheduling CurrentHostCleaningJob: %v", err)
+	}
+
+	archivedHostCleaningJob := &ArchivedHostCleaningJob{hostDataService: hds, TimeNow: hds.TimeNow, Database: hds.Database, Config: hds.Config}
+	if err := jobrunner.Schedule(hds.Config.DataService.ArchivedHostCleaningJob.Crontab, archivedHostCleaningJob); err != nil {
+		hds.Log.Errorf("Something went wrong scheduling ArchivedHostCleaningJob: %v", err)
+	}
+
 	if hds.Config.DataService.CurrentHostCleaningJob.RunAtStartup {
-		jobrunner.Now(&CurrentHostCleaningJob{hostDataService: hds, TimeNow: hds.TimeNow, Database: hds.Database, Config: hds.Config})
+		jobrunner.Now(currentHostCleaningJob)
 	}
 	if hds.Config.DataService.ArchivedHostCleaningJob.RunAtStartup {
-		jobrunner.Now(&ArchivedHostCleaningJob{hostDataService: hds, TimeNow: hds.TimeNow, Database: hds.Database, Config: hds.Config})
+		jobrunner.Now(archivedHostCleaningJob)
 	}
 }
 
