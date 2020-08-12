@@ -23,12 +23,16 @@ import (
 
 // SetupRoutesForHostDataController setup the routes of the router using the handler in the controller as http handler
 func SetupRoutesForHostDataController(router *mux.Router, ctrl HostDataControllerInterface) {
-	//Enable authentication using the ctrl
-	router.Use(ctrl.AuthenticateMiddleware())
-
-	//Add the routes
 	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Pong"))
 	})
+
+	router = router.NewRoute().Subrouter()
+	router.Use(ctrl.AuthenticateMiddleware())
+
+	setupProtectedRoutes(router, ctrl)
+}
+
+func setupProtectedRoutes(router *mux.Router, ctrl HostDataControllerInterface) {
 	router.HandleFunc("/hosts", ctrl.UpdateHostInfo).Methods("POST")
 }
