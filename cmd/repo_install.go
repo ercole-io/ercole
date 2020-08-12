@@ -31,6 +31,10 @@ func init() {
 			//Get the list of the repository
 			index := readOrUpdateIndex()
 
+			if len(args) == 0 {
+				fmt.Fprintf(os.Stderr, "Please specify an artifact\n")
+			}
+
 			//Search the artifact and install it for every artifact
 			for _, arg := range args {
 				f := index.SearchArtifactByArg(arg)

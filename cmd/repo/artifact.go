@@ -80,7 +80,7 @@ func (artifact *ArtifactInfo) IsInstalled(distributedFiles string) bool {
 }
 
 // SetInfoFromFileName sets to fileInfo informations taken from filename
-func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) {
+func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) error {
 	switch {
 	case agentVirtualizationRHELRegex.MatchString(filename): //agent virtualization RHEL
 		data := utils.FindNamedMatches(agentVirtualizationRHELRegex, filename)
@@ -163,8 +163,10 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) {
 		artifact.OperatingSystem = "aix6.1"
 
 	default:
-		panic(fmt.Errorf("Filename %s is not supported. Please check that is correct", filename))
+		return fmt.Errorf("Filename %s is not supported. Please check that is correct", filename)
 	}
+
+	return nil
 }
 
 // SetDownloader set the downloader of the artifact
