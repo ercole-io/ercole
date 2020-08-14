@@ -88,7 +88,13 @@ func (as *AlertService) Init(wg *sync.WaitGroup) {
 
 	jobrunner.Start()
 
-	freshnessJob := &FreshnessCheckJob{alertService: as, TimeNow: as.TimeNow, Database: as.Database, Log: as.Log}
+	freshnessJob := &FreshnessCheckJob{
+		TimeNow:      as.TimeNow,
+		Database:     as.Database,
+		Config:       as.Config,
+		alertService: as,
+		Log:          as.Log,
+	}
 
 	if err := jobrunner.Schedule(as.Config.AlertService.FreshnessCheckJob.Crontab, freshnessJob); err != nil {
 		as.Log.Errorf("Something went wrong scheduling FreshnessCheckJob: %v", err)
