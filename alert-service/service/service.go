@@ -86,12 +86,16 @@ func (as *AlertService) Init(wg *sync.WaitGroup) {
 		wg.Done()
 	}(sub)
 
-	//Start cron jobs
 	jobrunner.Start()
 
-	jobrunner.Schedule(as.Config.AlertService.FreshnessCheckJob.Crontab, &FreshnessCheckJob{alertService: as, TimeNow: as.TimeNow, Database: as.Database, Log: as.Log})
+	freshnessJob := &FreshnessCheckJob{alertService: as, TimeNow: as.TimeNow, Database: as.Database, Log: as.Log}
+
+	if err := jobrunner.Schedule(as.Config.AlertService.FreshnessCheckJob.Crontab, freshnessJob); err != nil {
+		as.Log.Errorf("Something went wrong scheduling FreshnessCheckJob: %v", err)
+	}
+
 	if as.Config.AlertService.FreshnessCheckJob.RunAtStartup {
-		jobrunner.Now(&FreshnessCheckJob{alertService: as, TimeNow: as.TimeNow, Database: as.Database, Log: as.Log})
+		jobrunner.Now(freshnessJob)
 	}
 }
 
@@ -106,7 +110,7 @@ func (as *AlertService) HostDataInsertion(id primitive.ObjectID) utils.AdvancedE
 	return nil
 }
 
-// AlertInsertion inserts a alert insertion in the queue
+// AlertInsertion inserts an alert insertion in the queue
 func (as *AlertService) AlertInsertion(alr model.Alert) utils.AdvancedErrorInterface {
 	as.Queue.Publish(hub.Message{
 		Name: model.TopicAlertInsertion,
