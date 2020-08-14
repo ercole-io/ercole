@@ -10,12 +10,12 @@ AgentUsername = "user"
 AgentPassword = "password"
 
   [DataService.CurrentHostCleaningJob]
-  Crontab = "*/1 * * * * *"
+  Crontab = "@daily"
   HourThreshold = 1
   RunAtStartup = false
 
   [DataService.ArchivedHostCleaningJob]
-  Crontab = "*/1 * * * * *"
+  Crontab = "@daily"
   HourThreshold = 10
   RunAtStartup = false
 
@@ -31,7 +31,7 @@ PublisherPassword = "r4nd0mS3cR3tp4ssW0rd"
 QueueBufferSize = 1024
 
   [AlertService.FreshnessCheckJob]
-  Crontab = "*/1 * * * * *"
+  Crontab = "@daily"
   DaysThreshold = 1
   RunAtStartup = false
 
@@ -139,7 +139,7 @@ LogHTTPRequest = true
   Name = "ercole-agent-virtualization"
   Type = "github-release"
   URL = "https://api.github.com/repos/ercole-io/ercole-agent-virtualization/releases"
-  
+
 [Mongodb]
 URI = "mongodb://localhost:27017/ercole"
 DBName = "ercole"
