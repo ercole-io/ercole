@@ -262,11 +262,13 @@ func readOrUpdateIndex() repo.Index {
 		index = repo.ReadIndexFromFile(ercoleConfig.RepoService.DistributedFiles)
 	}
 
-	index = append(index, getArtifactsNotIndexed(index, ercoleConfig.RepoService.DistributedFiles)...)
-
-	// Set flag and handlers
 	for _, art := range index {
 		art.Installed = art.IsInstalled(ercoleConfig.RepoService.DistributedFiles)
+	}
+
+	index = append(index, getArtifactsNotIndexed(index, ercoleConfig.RepoService.DistributedFiles)...)
+
+	for _, art := range index {
 		art.SetDownloader(verbose)
 		art.SetInstaller(verbose, ercoleConfig.RepoService.DistributedFiles)
 		art.SetUninstaller(verbose, ercoleConfig.RepoService.DistributedFiles)
