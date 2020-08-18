@@ -103,7 +103,7 @@ func scanDirectoryRepository(upstreamRepo config.UpstreamRepository) (repo.Index
 		artifactInfo.Repository = upstreamRepo.Name
 		artifactInfo.Filename = filepath.Base(file.Name())
 		artifactInfo.ReleaseDate = file.ModTime().Format("2006-01-02")
-		artifactInfo.UpstreamType = "directory"
+		artifactInfo.UpstreamType = repo.UpstreamTypeDirectory
 		artifactInfo.UpstreamInfo = map[string]interface{}{
 			"Filename": filepath.Join(upstreamRepo.URL, file.Name()),
 		}
@@ -199,18 +199,21 @@ func scanErcoleReposerviceRepository(upstreamRepo config.UpstreamRepository) (re
 }
 
 // scanRepository scan a single repository and return detected files
-func scanRepository(repo config.UpstreamRepository) (repo.Index, error) {
-	switch repo.Type {
-	case "github-release":
-		return scanGithubReleaseRepository(repo)
-	case "directory":
-		return scanDirectoryRepository(repo)
-	case "ercole-reposervice":
-		return scanErcoleReposerviceRepository(repo)
-	default:
-		return nil, fmt.Errorf("Unknown repository type %q of %q", repo.Type, repo.Name)
-	}
+func scanRepository(upstreamRepo config.UpstreamRepository) (repo.Index, error) {
+	switch upstreamRepo.Type {
 
+	case repo.UpstreamTypeGitHub:
+		return scanGithubReleaseRepository(upstreamRepo)
+
+	case repo.UpstreamTypeDirectory:
+		return scanDirectoryRepository(upstreamRepo)
+
+	case repo.UpstreamTypeErcoleRepo:
+		return scanErcoleReposerviceRepository(upstreamRepo)
+
+	default:
+		return nil, fmt.Errorf("Unknown repository type %q of %q", upstreamRepo.Type, upstreamRepo.Name)
+	}
 }
 
 // scanRepositories scan all configured repositories and return an index
@@ -259,6 +262,8 @@ func readOrUpdateIndex() repo.Index {
 		index = repo.ReadIndexFromFile(ercoleConfig.RepoService.DistributedFiles)
 	}
 
+	index = append(index, getArtifactsNotIndexed(index, ercoleConfig.RepoService.DistributedFiles)...)
+
 	// Set flag and handlers
 	for _, art := range index {
 		art.Installed = art.IsInstalled(ercoleConfig.RepoService.DistributedFiles)
@@ -266,8 +271,6 @@ func readOrUpdateIndex() repo.Index {
 		art.SetInstaller(verbose, ercoleConfig.RepoService.DistributedFiles)
 		art.SetUninstaller(verbose, ercoleConfig.RepoService.DistributedFiles)
 	}
-
-	index = append(index, getArtifactsNotIndexed(index, ercoleConfig.RepoService.DistributedFiles)...)
 
 	index.SortArtifactInfo()
 
@@ -279,18 +282,23 @@ func getArtifactsNotIndexed(index repo.Index, distributedFiles string) repo.Inde
 	filesNotIndexed := getFilesNotIndexed(index, distributedFiles)
 
 	artifactsNotIndexed := make(repo.Index, 0)
+
 	for _, file := range filesNotIndexed {
 		artifactInfo := new(repo.ArtifactInfo)
 		artifactInfo.Filename = filepath.Base(file.Name())
 
 		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
-			continue
+			artifactInfo.Name = artifactInfo.Filename
+			artifactInfo.Version = "unknown"
+			artifactInfo.Arch = "unknown"
+			artifactInfo.OperatingSystemFamily = "unknown"
+			artifactInfo.OperatingSystem = "unknown"
 		}
 
-		artifactInfo.Repository = "???"
+		artifactInfo.Repository = repo.UpstreamTypeLocal
 		artifactInfo.Installed = true
 		artifactInfo.ReleaseDate = file.ModTime().Format("2006-01-02")
-		artifactInfo.UpstreamType = "???"
+		artifactInfo.UpstreamType = repo.UpstreamTypeLocal
 
 		artifactsNotIndexed = append(artifactsNotIndexed, artifactInfo)
 	}
@@ -303,13 +311,12 @@ func getFilesNotIndexed(index repo.Index, distributedFiles string) []os.FileInfo
 
 	for _, artifact := range index {
 		if artifact.Installed {
-			installedInIndex[artifact.FilePath(distributedFiles)] = true
 			installedInIndex[filepath.Join(distributedFiles, "all", artifact.Filename)] = true
 		}
 	}
 
 	filesNotIndexed := make([]os.FileInfo, 0)
-	err := filepath.Walk(distributedFiles,
+	err := filepath.Walk(filepath.Join(distributedFiles, "all"),
 		func(filePath string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
