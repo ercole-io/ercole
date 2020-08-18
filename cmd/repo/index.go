@@ -29,6 +29,7 @@ import (
 // Index is the index of all artifact in a repository
 type Index []*ArtifactInfo
 
+// SearchArtifactByArg get *ArtifactInfo by string
 func (idx *Index) SearchArtifactByArg(arg string) *ArtifactInfo {
 	//valid formats
 	//	- <filename>
@@ -45,18 +46,18 @@ func (idx *Index) SearchArtifactByArg(arg string) *ArtifactInfo {
 
 	var foundArtifact *ArtifactInfo
 
-	foundArtifact = idx.SearchArtifactByFilename(arg)
+	foundArtifact = idx.searchArtifactByFilename(arg)
 	if foundArtifact != nil {
 		return foundArtifact
 	}
 
 	switch {
 	case repository == "" && version == "": //	<name> case
-		foundArtifact = idx.SearchArtifactByName(name)
+		foundArtifact = idx.searchArtifactByName(name)
 	case repository == "" && version != "": //	<name>@<version> case
-		foundArtifact = idx.SearchArtifactByNameAndVersion(name, version)
+		foundArtifact = idx.searchArtifactByNameAndVersion(name, version)
 	case repository != "" && version != "": //	<repository>/<name>@<version> case
-		foundArtifact = idx.SearchArtifactByFullname(repository, name, version)
+		foundArtifact = idx.searchArtifactByFullname(repository, name, version)
 	case repository != "" && version == "": //	<repository>/<name> case
 		foundArtifact = idx.SearchArtifactByRepositoryAndName(repository, name)
 	}
@@ -64,7 +65,7 @@ func (idx *Index) SearchArtifactByArg(arg string) *ArtifactInfo {
 	return foundArtifact
 }
 
-func (idx *Index) SearchArtifactByFilename(filename string) *ArtifactInfo {
+func (idx *Index) searchArtifactByFilename(filename string) *ArtifactInfo {
 	var foundArtifact *ArtifactInfo
 
 	//Find the artifact
@@ -83,7 +84,7 @@ func (idx *Index) SearchArtifactByFilename(filename string) *ArtifactInfo {
 	return foundArtifact
 }
 
-func (idx *Index) SearchArtifactByName(name string) *ArtifactInfo {
+func (idx *Index) searchArtifactByName(name string) *ArtifactInfo {
 	var foundArtifact *ArtifactInfo
 
 	//Find the artifact
@@ -105,7 +106,7 @@ func (idx *Index) SearchArtifactByName(name string) *ArtifactInfo {
 	return foundArtifact
 }
 
-func (idx *Index) SearchArtifactByNameAndVersion(name string, version string) *ArtifactInfo {
+func (idx *Index) searchArtifactByNameAndVersion(name string, version string) *ArtifactInfo {
 	var foundArtifact *ArtifactInfo
 
 	//Find the artifact
@@ -123,7 +124,7 @@ func (idx *Index) SearchArtifactByNameAndVersion(name string, version string) *A
 	return foundArtifact
 }
 
-func (idx *Index) SearchArtifactByFullname(repository, name string, version string) *ArtifactInfo {
+func (idx *Index) searchArtifactByFullname(repository, name string, version string) *ArtifactInfo {
 	var foundArtifact *ArtifactInfo
 
 	//Find the artifact
@@ -141,6 +142,7 @@ func (idx *Index) SearchArtifactByFullname(repository, name string, version stri
 	return foundArtifact
 }
 
+// SearchArtifactByRepositoryAndName get *ArtifactInfo by repo and name
 func (idx *Index) SearchArtifactByRepositoryAndName(repo string, name string) *ArtifactInfo {
 	var foundArtifact *ArtifactInfo
 
