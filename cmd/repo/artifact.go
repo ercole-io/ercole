@@ -46,16 +46,29 @@ type ArtifactInfo struct {
 }
 
 //Regex for filenames
-var agentRHEL5Regex *regexp.Regexp = regexp.MustCompile("^ercole-agent-(?P<version>.*)-1.(?P<arch>x86_64).rpm$")
-var agentRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
-var agentVirtualizationRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-virtualization-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
-var agentExadataRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-exadata-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
-var agentWinRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-setup-(?P<version>.*).exe$")
-var agentHpuxRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-hpux-(?P<version>.*).tar.gz")
-var agentAixRegexRpm *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*)-1.(?P<dist>.*).(?P<arch>noarch).rpm$")
-var agentAixRegexTarGz *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*).tar.gz$")
-var ercoleRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
-var ercoleWebRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-web-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>noarch).rpm$")
+var (
+	agentRHEL5Regex              *regexp.Regexp = regexp.MustCompile("^ercole-agent-(?P<version>.*)-1.(?P<arch>x86_64).rpm$")
+	agentRHELRegex               *regexp.Regexp = regexp.MustCompile("^ercole-agent-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
+	agentVirtualizationRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-virtualization-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
+	agentExadataRHELRegex        *regexp.Regexp = regexp.MustCompile("^ercole-agent-exadata-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
+	agentWinRegex                *regexp.Regexp = regexp.MustCompile("^ercole-agent-setup-(?P<version>.*).exe$")
+	agentHpuxRegex               *regexp.Regexp = regexp.MustCompile("^ercole-agent-hpux-(?P<version>.*).tar.gz")
+	agentAixRegexRpm             *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*)-1.(?P<dist>.*).(?P<arch>noarch).rpm$")
+	agentAixRegexTarGz           *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*).tar.gz$")
+	ercoleRHELRegex              *regexp.Regexp = regexp.MustCompile("^ercole-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
+	ercoleWebRHELRegex           *regexp.Regexp = regexp.MustCompile("^ercole-web-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>noarch).rpm$")
+)
+
+const (
+	// UpstreamTypeLocal repository upstream type
+	UpstreamTypeLocal = "local"
+	// UpstreamTypeDirectory repository upstream type
+	UpstreamTypeDirectory = "directory"
+	// UpstreamTypeGitHub repository upstream type
+	UpstreamTypeGitHub = "github-release"
+	// UpstreamTypeErcoleRepo repository upstream type
+	UpstreamTypeErcoleRepo = "ercole-reposervice"
+)
 
 // FullName return the fullname of the file
 func (artifact *ArtifactInfo) FullName() string {
@@ -172,12 +185,12 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) error {
 // SetDownloader set the downloader of the artifact
 func (artifact *ArtifactInfo) SetDownloader(verbose bool) {
 	switch artifact.UpstreamType {
-	case "github-release":
+	case UpstreamTypeGitHub:
 		artifact.Download = func(ai *ArtifactInfo, dest string) {
 			utils.DownloadFile(dest, ai.UpstreamInfo["DownloadUrl"].(string))
 		}
 
-	case "directory":
+	case UpstreamTypeDirectory:
 		artifact.Download = func(ai *ArtifactInfo, dest string) {
 			if verbose {
 				fmt.Printf("Copying file from %s to %s\n", ai.UpstreamInfo["Filename"].(string), dest)
@@ -192,10 +205,13 @@ func (artifact *ArtifactInfo) SetDownloader(verbose bool) {
 			}
 		}
 
-	case "ercole-reposervice":
+	case UpstreamTypeErcoleRepo:
 		artifact.Download = func(ai *ArtifactInfo, dest string) {
 			utils.DownloadFile(dest, ai.UpstreamInfo["DownloadUrl"].(string))
 		}
+
+	case UpstreamTypeLocal:
+		artifact.Download = func(ai *ArtifactInfo, dest string) {}
 
 	default:
 		panic(artifact)
@@ -298,62 +314,54 @@ func (artifact *ArtifactInfo) SetUninstaller(verbose bool, distributedFiles stri
 	switch {
 	case strings.HasSuffix(artifact.Filename, ".rpm"):
 		artifact.Uninstall = func(ai *ArtifactInfo) {
-			//Removing the link to all
 			if verbose {
-				fmt.Printf("Removing Linking the artifact to %s\n", filepath.Join(distributedFiles, "all", ai.Filename))
+				fmt.Printf("Removing the file %s\n", filepath.Join(distributedFiles, "all", ai.Filename))
 			}
-			err := os.Remove(filepath.Join(distributedFiles, "all", ai.Filename))
-			if err != nil {
+			if err := os.Remove(filepath.Join(distributedFiles, "all", ai.Filename)); err != nil {
 				panic(err)
 			}
 
-			//Removing the file
-			if verbose {
-				fmt.Printf("Removing the file %s\n", ai.FilePath(distributedFiles))
-			}
-			err = os.Remove(ai.FilePath(distributedFiles))
-			if err != nil {
-				panic(err)
+			if _, errStat := os.Stat(ai.FilePath(distributedFiles)); errStat == nil {
+				if verbose {
+					fmt.Printf("Removing the file %s\n", ai.FilePath(distributedFiles))
+				}
+				if err := os.Remove(ai.FilePath(distributedFiles)); err != nil {
+					panic(err)
+				}
+
+				if verbose {
+					fmt.Printf("Executing createrepo %s\n", ai.DirectoryPath(distributedFiles))
+				}
+				cmd := exec.Command("createrepo", ai.DirectoryPath(distributedFiles))
+				if verbose {
+					cmd.Stdout = os.Stdout
+				}
+				cmd.Stderr = os.Stderr
+				if err := cmd.Run(); err != nil {
+					panic(err)
+				}
 			}
 
-			//Launch the createrepo command
-			if verbose {
-				fmt.Printf("Executing createrepo %s\n", ai.DirectoryPath(distributedFiles))
-			}
-			cmd := exec.Command("createrepo", ai.DirectoryPath(distributedFiles))
-			if verbose {
-				cmd.Stdout = os.Stdout
-			}
-			cmd.Stderr = os.Stderr
-			err = cmd.Run()
-			if err != nil {
-				panic(err)
-			}
-
-			//Set it to not installed
 			ai.Installed = false
 		}
 	default:
 		artifact.Uninstall = func(ai *ArtifactInfo) {
-			//Removing the link to all
 			if verbose {
-				fmt.Printf("Removing Linking the artifact to %s\n", filepath.Join(distributedFiles, "all", ai.Filename))
+				fmt.Printf("Removing the file %s\n", filepath.Join(distributedFiles, "all", ai.Filename))
 			}
-			err := os.Remove(filepath.Join(distributedFiles, "all", ai.Filename))
-			if err != nil {
+			if err := os.Remove(filepath.Join(distributedFiles, "all", ai.Filename)); err != nil {
 				panic(err)
 			}
 
-			//Removing the file
-			if verbose {
-				fmt.Printf("Removing the file %s\n", ai.FilePath(distributedFiles))
-			}
-			err = os.Remove(ai.FilePath(distributedFiles))
-			if err != nil {
-				panic(err)
+			if _, errStat := os.Stat(ai.FilePath(distributedFiles)); errStat == nil {
+				if verbose {
+					fmt.Printf("Removing the file %s\n", ai.FilePath(distributedFiles))
+				}
+				if err := os.Remove(ai.FilePath(distributedFiles)); err != nil {
+					panic(err)
+				}
 			}
 
-			//Set it to not installed
 			ai.Installed = false
 		}
 	}
