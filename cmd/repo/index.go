@@ -59,7 +59,7 @@ func (idx *Index) SearchArtifactByArg(arg string) *ArtifactInfo {
 	case repository != "" && version != "": //	<repository>/<name>@<version> case
 		foundArtifact = idx.searchArtifactByFullname(repository, name, version)
 	case repository != "" && version == "": //	<repository>/<name> case
-		foundArtifact = idx.SearchArtifactByRepositoryAndName(repository, name)
+		foundArtifact = idx.SearchLatestArtifactByRepositoryAndName(repository, name)
 	}
 
 	return foundArtifact
@@ -142,8 +142,8 @@ func (idx *Index) searchArtifactByFullname(repository, name string, version stri
 	return foundArtifact
 }
 
-// SearchArtifactByRepositoryAndName get *ArtifactInfo by repo and name
-func (idx *Index) SearchArtifactByRepositoryAndName(repo string, name string) *ArtifactInfo {
+// SearchLatestArtifactByRepositoryAndName get latest version of a *ArtifactInfo by repo and name
+func (idx *Index) SearchLatestArtifactByRepositoryAndName(repo string, name string) *ArtifactInfo {
 	var foundArtifact *ArtifactInfo
 
 	//Find the artifact

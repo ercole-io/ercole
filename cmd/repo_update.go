@@ -34,7 +34,7 @@ func init() {
 
 			//Search the artifact and install it for every artifact
 			for _, art := range index {
-				f := index.SearchArtifactByRepositoryAndName(art.Repository, art.Name)
+				f := index.SearchLatestArtifactByRepositoryAndName(art.Repository, art.Name)
 
 				if !f.Installed {
 					updateCandidates[f] = true
@@ -43,7 +43,7 @@ func init() {
 
 			//Install all updateCandidates
 			for art := range updateCandidates {
-				art.Install(art)
+				art.Install(verbose, ercoleConfig.RepoService.DistributedFiles)
 			}
 		},
 	}
