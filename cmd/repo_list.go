@@ -49,13 +49,14 @@ func init() {
 				}
 
 				if showOnlyNameColumn {
-					fmt.Println(f.GetFullName())
+					fmt.Println(f.FullName())
 				} else {
-					fmt.Printf("%c\t%s\t%s\n", installed, f.ReleaseDate, f.GetFullName())
+					fmt.Printf("%c\t%s\t%s\n", installed, f.ReleaseDate, f.FullName())
 				}
 			}
 		},
 	}
+
 	repoListCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose")
 	repoListCmd.Flags().BoolVarP(&filterInstalled, "installed", "i", false, "Filter by installed artifacts")
 	repoListCmd.Flags().BoolVarP(&filterUninstalled, "uninstalled", "u", false, "Filter by uninstalled artifacts")

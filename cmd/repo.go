@@ -24,7 +24,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"sort"
+	"strings"
 	"time"
 
 	"github.com/ercole-io/ercole/cmd/repo"
@@ -75,7 +75,9 @@ func scanGithubReleaseRepository(upstreamRepo config.UpstreamRepository) (repo.I
 			artifactInfo.UpstreamInfo = map[string]interface{}{
 				"DownloadUrl": asset.GetBrowserDownloadURL(),
 			}
-			artifactInfo.SetInfoFromFileName(artifactInfo.Filename)
+			if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
+				panic(err)
+			}
 			if artifactInfo.Version == "latest" {
 				continue
 			}
@@ -102,14 +104,19 @@ func scanDirectoryRepository(upstreamRepo config.UpstreamRepository) (repo.Index
 		artifactInfo.Repository = upstreamRepo.Name
 		artifactInfo.Filename = filepath.Base(file.Name())
 		artifactInfo.ReleaseDate = file.ModTime().Format("2006-01-02")
-		artifactInfo.UpstreamType = "directory"
+		artifactInfo.UpstreamType = repo.UpstreamTypeDirectory
 		artifactInfo.UpstreamInfo = map[string]interface{}{
 			"Filename": filepath.Join(upstreamRepo.URL, file.Name()),
 		}
-		artifactInfo.SetInfoFromFileName(artifactInfo.Filename)
+
+		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
+			panic(err)
+		}
+
 		if artifactInfo.Version == "latest" {
 			continue
 		}
+
 		out = append(out, artifactInfo)
 	}
 
@@ -181,7 +188,9 @@ func scanErcoleReposerviceRepository(upstreamRepo config.UpstreamRepository) (re
 		artifactInfo.UpstreamInfo = map[string]interface{}{
 			"DownloadUrl": upstreamRepo.URL + "/all/" + d["Filename"],
 		}
-		artifactInfo.SetInfoFromFileName(artifactInfo.Filename)
+		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
+			panic(err)
+		}
 		if artifactInfo.Version == "latest" {
 			continue
 		}
@@ -191,21 +200,29 @@ func scanErcoleReposerviceRepository(upstreamRepo config.UpstreamRepository) (re
 }
 
 // scanRepository scan a single repository and return detected files
-func scanRepository(repo config.UpstreamRepository) (repo.Index, error) {
-	switch repo.Type {
-	case "github-release":
-		return scanGithubReleaseRepository(repo)
-	case "directory":
-		return scanDirectoryRepository(repo)
-	case "ercole-reposervice":
-		return scanErcoleReposerviceRepository(repo)
-	default:
-		return nil, fmt.Errorf("Unknown repository type %q of %q", repo.Type, repo.Name)
+func scanRepository(upstreamRepo config.UpstreamRepository) (repo.Index, error) {
+	if strings.TrimSpace(upstreamRepo.Name) == "local" {
+		return nil,
+			fmt.Errorf("\"local\" isn't a valid name for an upstream repository")
 	}
 
+	switch upstreamRepo.Type {
+
+	case repo.UpstreamTypeGitHub:
+		return scanGithubReleaseRepository(upstreamRepo)
+
+	case repo.UpstreamTypeDirectory:
+		return scanDirectoryRepository(upstreamRepo)
+
+	case repo.UpstreamTypeErcoleRepo:
+		return scanErcoleReposerviceRepository(upstreamRepo)
+
+	default:
+		return nil, fmt.Errorf("Unknown repository type %q of %q", upstreamRepo.Type, upstreamRepo.Name)
+	}
 }
 
-// scanRepositories scan all configured repositories and return a map of file names to info
+// scanRepositories scan all configured repositories and return an index
 func scanRepositories() repo.Index {
 	out := make(repo.Index, 0)
 
@@ -213,7 +230,8 @@ func scanRepositories() repo.Index {
 		//Get repository files
 		files, err := scanRepository(repo)
 		if err != nil {
-			panic(err)
+			fmt.Fprintf(os.Stderr, "I can't get files from: %+v\n%s\n", repo, err)
+			continue
 		}
 
 		out = append(out, files...)
@@ -224,66 +242,119 @@ func scanRepositories() repo.Index {
 
 // readOrUpdateIndex return an index of available artifacts
 func readOrUpdateIndex() repo.Index {
-	// Get stat about index.json
 	var index repo.Index
 
-	// Check file status
 	if verbose {
 		fmt.Fprintln(os.Stderr, "Trying to read index.json...")
 	}
-	fi, err := os.Stat(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "index.json"))
+	indexFile, err := os.Stat(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "index.json"))
 	if err != nil && !os.IsNotExist(err) {
 		panic(err)
-	} else if os.IsNotExist(err) || fi.ModTime().Add(time.Duration(8)*time.Hour).Before(time.Now()) || rebuildCache {
-		// Rebuild the index
+
+	} else if os.IsNotExist(err) || indexFile.ModTime().Add(time.Duration(8)*time.Hour).Before(time.Now()) || rebuildCache {
 		if verbose {
 			fmt.Fprintln(os.Stderr, "Scanning the repositories...")
 		}
 		index = scanRepositories()
 
-		// Save the index
 		if verbose {
 			fmt.Fprintln(os.Stderr, "Writing the index...")
 		}
-		file, err := os.Create(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "index.json"))
-		if err != nil {
-			panic(err)
-		}
-		enc := json.NewEncoder(file)
-		enc.SetIndent("", "  ")
-		enc.Encode(index)
+		index.SaveOnFile(ercoleConfig.RepoService.DistributedFiles)
+
 	} else {
-		//Read the index
 		if verbose {
 			fmt.Fprintln(os.Stderr, "Read index.json...")
 		}
-		file, err := os.Open(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "index.json"))
-		if err != nil {
-			panic(err)
-		}
-		json.NewDecoder(file).Decode(&index)
+		index = repo.ReadIndexFromFile(ercoleConfig.RepoService.DistributedFiles)
 	}
 
-	//Sort the index
-	sort.Slice(index, func(i, j int) bool {
-		if index[i].Repository != index[j].Repository {
-			return index[i].Repository < index[j].Repository
-		} else if index[i].Name != index[j].Name {
-			return index[i].Name < index[j].Name
-		} else {
-			return utils.IsVersionLessThan(index[i].Version, index[j].Version)
-		}
-	})
-
-	// Set flag and handlers
 	for _, art := range index {
 		art.Installed = art.IsInstalled(ercoleConfig.RepoService.DistributedFiles)
+	}
+
+	index = append(index, getArtifactsNotIndexed(index, ercoleConfig.RepoService.DistributedFiles)...)
+
+	for _, art := range index {
 		art.SetDownloader(verbose)
 		art.SetInstaller(verbose, ercoleConfig.RepoService.DistributedFiles)
 		art.SetUninstaller(verbose, ercoleConfig.RepoService.DistributedFiles)
 	}
 
+	index.SortArtifactInfo()
+
 	return index
+}
+
+// getArtifactsNotIndexed scan filesystem for installed artifacts not in index
+func getArtifactsNotIndexed(index repo.Index, distributedFiles string) repo.Index {
+	filesNotIndexed := getFilesNotIndexed(index, distributedFiles)
+
+	artifactsNotIndexed := make(repo.Index, 0)
+
+	for _, file := range filesNotIndexed {
+		artifactInfo := new(repo.ArtifactInfo)
+		artifactInfo.Filename = filepath.Base(file.Name())
+
+		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
+			fmt.Fprintf(os.Stderr, "Warning! File %v is not a supported filename\n", artifactInfo.Filename)
+
+			artifactInfo.Name = artifactInfo.Filename
+			artifactInfo.Version = "0.0.0"
+			artifactInfo.Arch = "unknown"
+			artifactInfo.OperatingSystemFamily = "unknown"
+			artifactInfo.OperatingSystem = "unknown"
+		}
+
+		artifactInfo.Repository = repo.UpstreamTypeLocal
+		artifactInfo.Installed = true
+		artifactInfo.ReleaseDate = file.ModTime().Format("2006-01-02")
+		artifactInfo.UpstreamType = repo.UpstreamTypeLocal
+
+		artifactsNotIndexed = append(artifactsNotIndexed, artifactInfo)
+	}
+
+	return artifactsNotIndexed
+}
+
+func getFilesNotIndexed(index repo.Index, distributedFiles string) []os.FileInfo {
+	installedInIndex := make(map[string]bool)
+
+	allDirectory := filepath.Join(distributedFiles, "all")
+
+	for _, artifact := range index {
+		if artifact.Installed {
+			installedInIndex[filepath.Join(allDirectory, artifact.Filename)] = true
+		}
+	}
+
+	matches, err := filepath.Glob(allDirectory + "/*")
+	if err != nil {
+		panic(err)
+	}
+
+	filesNotIndexed := make([]os.FileInfo, 0)
+
+	for _, filePath := range matches {
+		if installedInIndex[filePath] {
+			continue
+		}
+
+		fileInfo, err := os.Stat(filePath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Something went wrong reading file: %v\n", filePath)
+			continue
+		}
+
+		if fileInfo.IsDir() {
+			fmt.Fprintf(os.Stderr, "Warning! Directories in /all aren't supported, but I found: %v\n", filePath)
+			continue
+		}
+
+		filesNotIndexed = append(filesNotIndexed, fileInfo)
+	}
+
+	return filesNotIndexed
 }
 
 // repoCmd represents the repo command

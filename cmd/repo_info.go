@@ -37,7 +37,7 @@ func init() {
 					fmt.Fprintf(os.Stderr, "The argument %q wasn't undestood\n", arg)
 					os.Exit(1)
 				}
-				fmt.Println("Fullname:", f.GetFullName())
+				fmt.Println("Fullname:", f.FullName())
 				fmt.Println("Repository:", f.Repository)
 				fmt.Println("Name:", f.Name)
 				fmt.Println("Version:", f.Version)
