@@ -176,7 +176,7 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) error {
 		artifact.OperatingSystem = "aix6.1"
 
 	default:
-		return fmt.Errorf("Filename %s is not supported. Please check that is correct", filename)
+		return fmt.Errorf("Filename %s is not supported. Please check that it is correct", filename)
 	}
 
 	return nil

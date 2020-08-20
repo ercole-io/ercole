@@ -24,6 +24,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/ercole-io/ercole/cmd/repo"
@@ -200,6 +201,11 @@ func scanErcoleReposerviceRepository(upstreamRepo config.UpstreamRepository) (re
 
 // scanRepository scan a single repository and return detected files
 func scanRepository(upstreamRepo config.UpstreamRepository) (repo.Index, error) {
+	if strings.TrimSpace(upstreamRepo.Name) == "local" {
+		return nil,
+			fmt.Errorf("\"local\" isn't a valid name for an upstream repository")
+	}
+
 	switch upstreamRepo.Type {
 
 	case repo.UpstreamTypeGitHub:
@@ -224,7 +230,8 @@ func scanRepositories() repo.Index {
 		//Get repository files
 		files, err := scanRepository(repo)
 		if err != nil {
-			panic(err)
+			fmt.Fprintf(os.Stderr, "I can't get files from: %+v\n%s\n", repo, err)
+			continue
 		}
 
 		out = append(out, files...)
@@ -290,8 +297,10 @@ func getArtifactsNotIndexed(index repo.Index, distributedFiles string) repo.Inde
 		artifactInfo.Filename = filepath.Base(file.Name())
 
 		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
+			fmt.Fprintf(os.Stderr, "Warning! File %v is not a supported filename\n", artifactInfo.Filename)
+
 			artifactInfo.Name = artifactInfo.Filename
-			artifactInfo.Version = "unknown"
+			artifactInfo.Version = "0.0.0"
 			artifactInfo.Arch = "unknown"
 			artifactInfo.OperatingSystemFamily = "unknown"
 			artifactInfo.OperatingSystem = "unknown"
@@ -311,34 +320,38 @@ func getArtifactsNotIndexed(index repo.Index, distributedFiles string) repo.Inde
 func getFilesNotIndexed(index repo.Index, distributedFiles string) []os.FileInfo {
 	installedInIndex := make(map[string]bool)
 
+	allDirectory := filepath.Join(distributedFiles, "all")
+
 	for _, artifact := range index {
 		if artifact.Installed {
-			installedInIndex[filepath.Join(distributedFiles, "all", artifact.Filename)] = true
+			installedInIndex[filepath.Join(allDirectory, artifact.Filename)] = true
 		}
 	}
 
-	filesNotIndexed := make([]os.FileInfo, 0)
-	err := filepath.Walk(filepath.Join(distributedFiles, "all"),
-		func(filePath string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-
-			if installedInIndex[filePath] {
-				return nil
-			}
-
-			fileInfo, err := os.Stat(filePath)
-			if err != nil || fileInfo.IsDir() {
-				return nil
-			}
-
-			filesNotIndexed = append(filesNotIndexed, fileInfo)
-
-			return nil
-		})
+	matches, err := filepath.Glob(allDirectory + "/*")
 	if err != nil {
 		panic(err)
+	}
+
+	filesNotIndexed := make([]os.FileInfo, 0)
+
+	for _, filePath := range matches {
+		if installedInIndex[filePath] {
+			continue
+		}
+
+		fileInfo, err := os.Stat(filePath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Something went wrong reading file: %v\n", filePath)
+			continue
+		}
+
+		if fileInfo.IsDir() {
+			fmt.Fprintf(os.Stderr, "Warning! Directories in /all aren't supported, but I found: %v\n", filePath)
+			continue
+		}
+
+		filesNotIndexed = append(filesNotIndexed, fileInfo)
 	}
 
 	return filesNotIndexed
