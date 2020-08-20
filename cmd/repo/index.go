@@ -70,7 +70,6 @@ func (idx *Index) searchArtifactByFilename(filename string) *ArtifactInfo {
 
 	//Find the artifact
 	for _, f := range *idx {
-		//TODO: add support for missing format
 		if filename == f.Filename {
 			if foundArtifact == nil {
 				foundArtifact = f
@@ -89,7 +88,6 @@ func (idx *Index) searchArtifactByName(name string) *ArtifactInfo {
 
 	//Find the artifact
 	for _, f := range *idx {
-		//TODO: add support for missing format
 		if name == f.Name {
 			if foundArtifact == nil {
 				foundArtifact = f
@@ -111,7 +109,6 @@ func (idx *Index) searchArtifactByNameAndVersion(name string, version string) *A
 
 	//Find the artifact
 	for _, f := range *idx {
-		//TODO: add support for missing format
 		if name == f.Name && version == f.Version {
 			if foundArtifact == nil {
 				foundArtifact = f
@@ -129,7 +126,6 @@ func (idx *Index) searchArtifactByFullname(repository, name string, version stri
 
 	//Find the artifact
 	for _, f := range *idx {
-		//TODO: add support for missing format
 		if repository == f.Repository && name == f.Name && version == f.Version {
 			if foundArtifact == nil {
 				foundArtifact = f
@@ -148,7 +144,6 @@ func (idx *Index) SearchLatestArtifactByRepositoryAndName(repo string, name stri
 
 	//Find the artifact
 	for _, f := range *idx {
-		//TODO: add support for missing format
 		if name == f.Name && repo == f.Repository {
 			if foundArtifact == nil {
 				foundArtifact = f
