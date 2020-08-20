@@ -24,9 +24,10 @@ import (
 
 func init() {
 	repoRemoveCmd := &cobra.Command{
-		Use:   "remove",
-		Short: "Remove a artifact",
-		Long:  `Remove a artifact`,
+		Use:   "remove [artifact...]",
+		Short: "Remove an artifact",
+		Long:  `Remove an artifact`,
+		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			//Get the list of the repository
 			index := readOrUpdateIndex()
@@ -40,7 +41,7 @@ func init() {
 				}
 
 				if f.Installed {
-					f.Uninstall(f)
+					f.Uninstall(verbose, ercoleConfig.RepoService.DistributedFiles)
 				}
 			}
 		},
