@@ -24,9 +24,10 @@ import (
 
 func init() {
 	repoInfoCmd := &cobra.Command{
-		Use:   "info",
-		Short: "Get info about a artifact",
-		Long:  `Get info about a artifact`,
+		Use:   "info [artifact...]",
+		Short: "Get info about an artifact",
+		Long:  `Get info about an artifact`,
+		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			//Get the list of the repository
 			index := readOrUpdateIndex()

@@ -30,6 +30,7 @@ func init() {
 		Use:   "list",
 		Short: "List artifacts from repositories",
 		Long:  `List artifacts from repositories`,
+		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 			//Get the list of the repository
 			index := readOrUpdateIndex()
