@@ -40,9 +40,6 @@ type ArtifactInfo struct {
 	Arch                  string
 	UpstreamType          string
 	UpstreamInfo          map[string]interface{}
-	Install               func(ai *ArtifactInfo)              `json:"-"`
-	Uninstall             func(ai *ArtifactInfo)              `json:"-"`
-	Download              func(ai *ArtifactInfo, dest string) `json:"-"`
 }
 
 //Regex for filenames
@@ -182,187 +179,119 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) error {
 	return nil
 }
 
-// SetDownloader set the downloader of the artifact
-func (artifact *ArtifactInfo) SetDownloader(verbose bool) {
+// Download the artifact
+func (artifact *ArtifactInfo) Download(verbose bool, dest string) {
 	switch artifact.UpstreamType {
 	case UpstreamTypeGitHub:
-		artifact.Download = func(ai *ArtifactInfo, dest string) {
-			utils.DownloadFile(dest, ai.UpstreamInfo["DownloadUrl"].(string))
-		}
+		utils.DownloadFile(dest, artifact.UpstreamInfo["DownloadUrl"].(string))
 
 	case UpstreamTypeDirectory:
-		artifact.Download = func(ai *ArtifactInfo, dest string) {
-			if verbose {
-				fmt.Printf("Copying file from %s to %s\n", ai.UpstreamInfo["Filename"].(string), dest)
-			}
-			err := yos.CopyFile(ai.UpstreamInfo["Filename"].(string), dest)
-			if err != nil {
-				panic(err)
-			}
-			err = os.Chmod(dest, 0755)
-			if err != nil {
-				panic(err)
-			}
+		if verbose {
+			fmt.Printf("Copying file from %s to %s\n", artifact.UpstreamInfo["Filename"].(string), dest)
+		}
+		err := yos.CopyFile(artifact.UpstreamInfo["Filename"].(string), dest)
+		if err != nil {
+			panic(err)
+		}
+		err = os.Chmod(dest, 0755)
+		if err != nil {
+			panic(err)
 		}
 
 	case UpstreamTypeErcoleRepo:
-		artifact.Download = func(ai *ArtifactInfo, dest string) {
-			utils.DownloadFile(dest, ai.UpstreamInfo["DownloadUrl"].(string))
-		}
+		utils.DownloadFile(dest, artifact.UpstreamInfo["DownloadUrl"].(string))
 
 	case UpstreamTypeLocal:
-		artifact.Download = func(ai *ArtifactInfo, dest string) {}
+		fmt.Println("Nothing to do, artifact already installed")
 
 	default:
 		panic(artifact)
 	}
 }
 
-// SetInstaller set the installer of the artifact
-func (artifact *ArtifactInfo) SetInstaller(verbose bool, distributedFiles string) {
-	switch {
-	case strings.HasSuffix(artifact.Filename, ".rpm"):
-		artifact.Install = func(ai *ArtifactInfo) {
-			//Create missing directories
-			if verbose {
-				fmt.Printf("Creating the directories (if missing) %s, %s\n",
-					ai.DirectoryPath(distributedFiles),
-					filepath.Join(distributedFiles, "all"),
-				)
-			}
-			err := os.MkdirAll(ai.DirectoryPath(distributedFiles), 0755)
-			if err != nil {
-				panic(err)
-			}
-			err = os.MkdirAll(filepath.Join(distributedFiles, "all"), 0755)
-			if err != nil {
-				panic(err)
-			}
+// Install the artifact
+func (artifact *ArtifactInfo) Install(verbose bool, distributedFiles string) {
+	//Create missing directories
+	if verbose {
+		fmt.Printf("Creating the directories (if missing) %s, %s\n",
+			artifact.DirectoryPath(distributedFiles),
+			filepath.Join(distributedFiles, "all"),
+		)
+	}
+	err := os.MkdirAll(artifact.DirectoryPath(distributedFiles), 0755)
+	if err != nil {
+		panic(err)
+	}
+	err = os.MkdirAll(filepath.Join(distributedFiles, "all"), 0755)
+	if err != nil {
+		panic(err)
+	}
 
-			//Download the file in the right location
-			if verbose {
-				fmt.Printf("Downloading the artifact %s to %s\n", ai.Filename, ai.FilePath(distributedFiles))
-			}
-			ai.Download(ai, ai.FilePath(distributedFiles))
+	//Download the file in the right location
+	if verbose {
+		fmt.Printf("Downloading the artifact %s to %s\n", artifact.Filename, artifact.FilePath(distributedFiles))
+	}
+	artifact.Download(verbose, artifact.FilePath(distributedFiles))
 
-			//Create a link to all
-			if verbose {
-				fmt.Printf("Linking the artifact to %s\n", filepath.Join(distributedFiles, "all", ai.Filename))
-			}
-			err = os.Link(ai.FilePath(distributedFiles), filepath.Join(distributedFiles, "all", ai.Filename))
-			if err != nil {
-				panic(err)
-			}
+	//Create a link to all
+	if verbose {
+		fmt.Printf("Linking the artifact to %s\n", filepath.Join(distributedFiles, "all", artifact.Filename))
+	}
+	err = os.Link(artifact.FilePath(distributedFiles), filepath.Join(distributedFiles, "all", artifact.Filename))
+	if err != nil {
+		panic(err)
+	}
 
-			//Launch the createrepo command
+	if strings.HasSuffix(artifact.Filename, ".rpm") {
+		//Launch the createrepo command
+		if verbose {
+			fmt.Printf("Executing createrepo %s\n", artifact.DirectoryPath(distributedFiles))
+		}
+		cmd := exec.Command("createrepo", artifact.DirectoryPath(distributedFiles))
+		if verbose {
+			cmd.Stdout = os.Stdout
+		}
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			fmt.Printf("Error running createrepo: %s\n", err.Error())
+		}
+	}
+
+	artifact.Installed = true
+}
+
+// Uninstall the artifact
+func (artifact *ArtifactInfo) Uninstall(verbose bool, distributedFiles string) {
+	if verbose {
+		fmt.Printf("Removing the file %s\n", filepath.Join(distributedFiles, "all", artifact.Filename))
+	}
+	if err := os.Remove(filepath.Join(distributedFiles, "all", artifact.Filename)); err != nil {
+		panic(err)
+	}
+
+	if _, errStat := os.Stat(artifact.FilePath(distributedFiles)); errStat == nil {
+		if verbose {
+			fmt.Printf("Removing the file %s\n", artifact.FilePath(distributedFiles))
+		}
+		if err := os.Remove(artifact.FilePath(distributedFiles)); err != nil {
+			panic(err)
+		}
+
+		if strings.HasSuffix(artifact.Filename, ".rpm") {
+
 			if verbose {
-				fmt.Printf("Executing createrepo %s\n", ai.DirectoryPath(distributedFiles))
+				fmt.Printf("Executing createrepo %s\n", artifact.DirectoryPath(distributedFiles))
 			}
-			cmd := exec.Command("createrepo", ai.DirectoryPath(distributedFiles))
+			cmd := exec.Command("createrepo", artifact.DirectoryPath(distributedFiles))
 			if verbose {
 				cmd.Stdout = os.Stdout
 			}
 			cmd.Stderr = os.Stderr
 			if err := cmd.Run(); err != nil {
-				fmt.Printf("Error running createrepo: %s\n", err.Error())
+				panic(err)
 			}
-
-			//Settint it to installed
-			ai.Installed = true
 		}
-	default:
-		artifact.Install = func(ai *ArtifactInfo) {
-			//Create missing directories
-			if verbose {
-				fmt.Printf("Creating the directories (if missing) %s, %s\n",
-					ai.DirectoryPath(distributedFiles),
-					filepath.Join(distributedFiles, "all"),
-				)
-			}
-			err := os.MkdirAll(ai.DirectoryPath(distributedFiles), 0755)
-			if err != nil {
-				panic(err)
-			}
-			err = os.MkdirAll(filepath.Join(distributedFiles, "all"), 0755)
-			if err != nil {
-				panic(err)
-			}
 
-			//Download the file in the right location
-			if verbose {
-				fmt.Printf("Downloading the artifact %s to %s\n", ai.Filename, ai.FilePath(distributedFiles))
-			}
-			ai.Download(ai, filepath.Join(distributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem, ai.Arch, ai.Filename))
-
-			//Create a link to all
-			if verbose {
-				fmt.Printf("Linking the artifact to %s\n", filepath.Join(distributedFiles, "all", ai.Filename))
-			}
-			err = os.Link(filepath.Join(distributedFiles, ai.OperatingSystemFamily, "/", ai.OperatingSystem, ai.Arch, ai.Filename), filepath.Join(distributedFiles, "all", ai.Filename))
-			if err != nil {
-				panic(err)
-			}
-
-			//Setting it to installed
-			ai.Installed = true
-		}
-	}
-}
-
-// SetUninstaller set the uninstaller of the artifact
-func (artifact *ArtifactInfo) SetUninstaller(verbose bool, distributedFiles string) {
-	switch {
-	case strings.HasSuffix(artifact.Filename, ".rpm"):
-		artifact.Uninstall = func(ai *ArtifactInfo) {
-			if verbose {
-				fmt.Printf("Removing the file %s\n", filepath.Join(distributedFiles, "all", ai.Filename))
-			}
-			if err := os.Remove(filepath.Join(distributedFiles, "all", ai.Filename)); err != nil {
-				panic(err)
-			}
-
-			if _, errStat := os.Stat(ai.FilePath(distributedFiles)); errStat == nil {
-				if verbose {
-					fmt.Printf("Removing the file %s\n", ai.FilePath(distributedFiles))
-				}
-				if err := os.Remove(ai.FilePath(distributedFiles)); err != nil {
-					panic(err)
-				}
-
-				if verbose {
-					fmt.Printf("Executing createrepo %s\n", ai.DirectoryPath(distributedFiles))
-				}
-				cmd := exec.Command("createrepo", ai.DirectoryPath(distributedFiles))
-				if verbose {
-					cmd.Stdout = os.Stdout
-				}
-				cmd.Stderr = os.Stderr
-				if err := cmd.Run(); err != nil {
-					panic(err)
-				}
-			}
-
-			ai.Installed = false
-		}
-	default:
-		artifact.Uninstall = func(ai *ArtifactInfo) {
-			if verbose {
-				fmt.Printf("Removing the file %s\n", filepath.Join(distributedFiles, "all", ai.Filename))
-			}
-			if err := os.Remove(filepath.Join(distributedFiles, "all", ai.Filename)); err != nil {
-				panic(err)
-			}
-
-			if _, errStat := os.Stat(ai.FilePath(distributedFiles)); errStat == nil {
-				if verbose {
-					fmt.Printf("Removing the file %s\n", ai.FilePath(distributedFiles))
-				}
-				if err := os.Remove(ai.FilePath(distributedFiles)); err != nil {
-					panic(err)
-				}
-			}
-
-			ai.Installed = false
-		}
+		artifact.Installed = false
 	}
 }

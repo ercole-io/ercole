@@ -25,6 +25,7 @@ func init() {
 		Use:   "update",
 		Short: "Update all artifacts installed",
 		Long:  `Install the most recent version of all installed artifacts`,
+		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 			//Get the list of the repository
 			index := readOrUpdateIndex()
@@ -33,7 +34,7 @@ func init() {
 
 			//Search the artifact and install it for every artifact
 			for _, art := range index {
-				f := index.SearchArtifactByRepositoryAndName(art.Repository, art.Name)
+				f := index.SearchLatestArtifactByRepositoryAndName(art.Repository, art.Name)
 
 				if !f.Installed {
 					updateCandidates[f] = true
@@ -42,7 +43,7 @@ func init() {
 
 			//Install all updateCandidates
 			for art := range updateCandidates {
-				art.Install(art)
+				art.Install(verbose, ercoleConfig.RepoService.DistributedFiles)
 			}
 		},
 	}
