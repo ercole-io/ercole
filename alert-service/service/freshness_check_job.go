@@ -20,6 +20,7 @@ import (
 
 	"github.com/ercole-io/ercole/config"
 	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/alert-service/database"
 	"github.com/ercole-io/ercole/utils"
@@ -48,21 +49,29 @@ func (job *FreshnessCheckJob) Run() {
 		return
 	}
 
-	//Find the current hosts older than FreshnessCheck.DaysThreshold days
-	hosts, err := job.Database.FindOldCurrentHosts(job.TimeNow().AddDate(0, 0, -job.Config.AlertService.FreshnessCheckJob.DaysThreshold))
+	if err := job.Database.DeleteAllNoDataAlerts(); err != nil {
+		utils.LogErr(job.Log, err)
+		return
+	}
+
+	hosts, err := job.Database.FindOldCurrentHosts(
+		job.TimeNow().AddDate(0, 0, -job.Config.AlertService.FreshnessCheckJob.DaysThreshold))
 	if err != nil {
 		utils.LogErr(job.Log, err)
 		return
 	}
 
-	//For each host, throw a NO_DATA alert
+	//TODO remove mongo-driver dependency from here...
 	for _, host := range hosts {
-		//Throw a NO_DATA alert if the host doesn't already have a new NO_DATA alert
-		if exist, err := job.Database.ExistNoDataAlertByHost(host); err != nil {
-			utils.LogErr(job.Log, err)
-			return
-		} else if !exist {
-			err = job.alertService.ThrowNoDataAlert(host, job.Config.AlertService.FreshnessCheckJob.DaysThreshold)
+		if t, ok := host["createdAt"].(primitive.DateTime); !ok {
+			panic("Can't obtain createdAt value")
+		} else {
+
+			elapsed := job.TimeNow().Sub(t.Time())
+			elapsedDays := int(elapsed.Truncate(time.Hour*24).Hours() / 24)
+
+			hostname := host["hostname"].(string)
+			err := job.alertService.ThrowNoDataAlert(hostname, elapsedDays)
 			if err != nil {
 				utils.LogErr(job.Log, err)
 				return
