@@ -16,8 +16,8 @@
 package model
 
 const (
-	// TopicHostDataInsertion is the topic used when a hostdata is inserted in the db
+	// TopicHostDataInsertion is the topic used when an hostdata is inserted in the db
 	TopicHostDataInsertion string = "hostdata.insertion"
-	// TopicAlertInsertion is the topic used when a aler is inserted in the db
+	// TopicAlertInsertion is the topic used when an alert is inserted in the db
 	TopicAlertInsertion string = "alert.insertion"
 )
