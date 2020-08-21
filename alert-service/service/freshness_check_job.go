@@ -41,6 +41,13 @@ type FreshnessCheckJob struct {
 
 // Run throws NO_DATA alert for each hosts that haven't sent a hostdata withing the FreshnessCheck.DaysThreshold
 func (job *FreshnessCheckJob) Run() {
+	if job.Config.AlertService.FreshnessCheckJob.DaysThreshold <= 0 {
+		job.Log.Errorf("AlertService.FreshnessCheckJob.DaysThreshold must be higher than 0, but it's set to %v. Job failed.",
+			job.Config.AlertService.FreshnessCheckJob.DaysThreshold)
+
+		return
+	}
+
 	//Find the current hosts older than FreshnessCheck.DaysThreshold days
 	hosts, err := job.Database.FindOldCurrentHosts(job.TimeNow().AddDate(0, 0, -job.Config.AlertService.FreshnessCheckJob.DaysThreshold))
 	if err != nil {
