@@ -275,12 +275,6 @@ func readOrUpdateIndex() repo.Index {
 
 	index = append(index, getArtifactsNotIndexed(index, ercoleConfig.RepoService.DistributedFiles)...)
 
-	for _, art := range index {
-		art.SetDownloader(verbose)
-		art.SetInstaller(verbose, ercoleConfig.RepoService.DistributedFiles)
-		art.SetUninstaller(verbose, ercoleConfig.RepoService.DistributedFiles)
-	}
-
 	index.SortArtifactInfo()
 
 	return index
