@@ -199,3 +199,37 @@ func (m *MongodbSuite) TestExistNoDataAlert_SuccessExist() {
 
 	assert.True(m.T(), exist)
 }
+
+func (m *MongodbSuite) TestDeleteAllNoDataAlerts_Success() {
+	_, err := m.db.InsertAlert(alert1)
+	require.NoError(m.T(), err)
+
+	_, err = m.db.InsertAlert(alert3)
+	require.NoError(m.T(), err)
+	_, err = m.db.InsertAlert(alert4)
+	require.NoError(m.T(), err)
+
+	err = m.db.DeleteAllNoDataAlerts()
+	require.NoError(m.T(), err)
+
+	// Check that there are no more AlertCodeNoData alerts
+	val, erro := m.db.Client.Database(m.dbname).Collection("alerts").
+		Find(context.TODO(), bson.M{"alertCode": model.AlertCodeNoData})
+	require.NoError(m.T(), erro)
+
+	res := make([]model.Alert, 0)
+	erro = val.All(context.TODO(), &res)
+	require.NoError(m.T(), erro)
+	require.Equal(m.T(), 0, len(res))
+
+	// Check that there's still alert1
+	val, erro = m.db.Client.Database(m.dbname).Collection("alerts").
+		Find(context.TODO(), bson.M{})
+	require.NoError(m.T(), erro)
+
+	res = make([]model.Alert, 0)
+	erro = val.All(context.TODO(), &res)
+	require.NoError(m.T(), erro)
+	require.Equal(m.T(), 1, len(res))
+	require.Equal(m.T(), alert1, (res)[0])
+}
