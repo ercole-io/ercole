@@ -172,6 +172,8 @@ func (as *AlertService) ProcessHostDataInsertion(params hub.Fields) {
 			as.ThrowUnlistedRunningDatabasesAlert(dbname, newData.Hostname)
 		}
 	}
+
+	//TODO If there is a NO_DATA alert for this HostData, remove it
 }
 
 // ProcessAlertInsertion processes the alert insertion event
