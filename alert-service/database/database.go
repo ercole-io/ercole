@@ -45,6 +45,8 @@ type MongoDatabaseInterface interface {
 	FindOldCurrentHosts(t time.Time) ([]string, utils.AdvancedErrorInterface)
 	// ExistNoDataAlertByHost return true if the host has associated a new NO_DATA alert
 	ExistNoDataAlertByHost(hostname string) (bool, utils.AdvancedErrorInterface)
+	// DeleteAllNoDataAlerts delete all alerts with code model.AlertCodeNoData
+	DeleteAllNoDataAlerts() utils.AdvancedErrorInterface
 }
 
 // MongoDatabase is a implementation
@@ -189,4 +191,17 @@ func (md *MongoDatabase) ExistNoDataAlertByHost(hostname string) (bool, utils.Ad
 
 	//Return true if the count > 0
 	return val > 0, nil
+}
+
+// DeleteAllNoDataAlerts delete all alerts with code model.AlertCodeNoData
+func (md *MongoDatabase) DeleteAllNoDataAlerts() utils.AdvancedErrorInterface {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).
+		Collection("alerts").
+		DeleteMany(context.TODO(), bson.M{"alertCode": model.AlertCodeNoData})
+
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return nil
 }
