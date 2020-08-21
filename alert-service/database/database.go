@@ -42,7 +42,7 @@ type MongoDatabaseInterface interface {
 	// InsertAlert inserr the alert in the database
 	InsertAlert(alert model.Alert) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
 	// FindOldCurrentHost return the list of current hosts that haven't sent hostdata after time t
-	FindOldCurrentHosts(t time.Time) ([]string, utils.AdvancedErrorInterface)
+	FindOldCurrentHosts(t time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// ExistNoDataAlertByHost return true if the host has associated a new NO_DATA alert
 	ExistNoDataAlertByHost(hostname string) (bool, utils.AdvancedErrorInterface)
 	// DeleteAllNoDataAlerts delete all alerts with code model.AlertCodeNoData
@@ -152,23 +152,34 @@ func (md *MongoDatabase) InsertAlert(alert model.Alert) (*mongo.InsertOneResult,
 }
 
 // FindOldCurrentHosts return the list of current hosts that haven't sent hostdata after time t
-func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]string, utils.AdvancedErrorInterface) {
-	//Get the list of old current hosts
-	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
-		context.TODO(),
-		"hostname",
-		bson.M{
-			"archived":  false,
-			"createdAt": mu.QOLessThan(t),
-		})
+func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+	filter := bson.M{
+		"archived":  false,
+		"createdAt": mu.QOLessThan(t),
+	}
+
+	opts := options.Find()
+	opts.Projection = map[string]interface{}{
+		"hostname":  1,
+		"createdAt": 1,
+	}
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
+		Find(context.TODO(), filter, opts)
+
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	//Convert the slice of interface{} to []string
-	var hosts []string
-	for _, val := range values {
-		hosts = append(hosts, val.(string))
+	//Decode the documents
+	hosts := make([]map[string]interface{}, 0)
+
+	for cur.Next(context.TODO()) {
+		var host map[string]interface{}
+		if cur.Decode(&host) != nil {
+			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		}
+		hosts = append(hosts, host)
 	}
 
 	//Return it
