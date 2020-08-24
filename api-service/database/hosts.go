@@ -316,7 +316,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 					},
 					"history",
 					mu.MAPipeline(
-						mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$hostname", "$$hn"), mu.APOGreaterOrEqual("$$ca", "$sreatedAt")))),
+						mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$hostname", "$$hn"), mu.APOGreaterOrEqual("$$ca", "$createdAt")))),
 						mu.APProject(bson.M{
 							"createdAt": 1,
 							"features.oracle.database.databases.name":          1,
