@@ -617,6 +617,137 @@ func (m *MongodbSuite) TestGetHost() {
 		assert.JSONEq(t, utils.ToJSON(expectedResult), utils.ToJSON(out))
 	})
 
+	m.T().Run("should_detect_partial_history", func(t *testing.T) {
+		out, err := m.db.GetHost("newdb", utils.P("2020-05-21T11:31:00.061+02:00"), false)
+		require.NoError(t, err)
+
+		expectedResult := map[string]interface{}{
+			"agentVersion": "latest",
+			"alerts":       []interface{}{},
+			"archived":     true,
+			"cluster":      nil,
+			"clusterMembershipStatus": map[string]interface{}{
+				"hacmp":                false,
+				"oracleClusterware":    false,
+				"sunCluster":           false,
+				"veritasClusterServer": false,
+			},
+			"clusters":    nil,
+			"createdAt":   utils.P("2020-05-21T11:30:55.061+02:00").Local(),
+			"environment": "TST",
+			"features": map[string]interface{}{
+				"oracle": map[string]interface{}{
+					"database": map[string]interface{}{
+						"unlistedRunningDatabases": []string{},
+						"databases": []interface{}{
+							map[string]interface{}{
+								"addms":      []interface{}{},
+								"asm":        false,
+								"allocated":  129,
+								"archivelog": false,
+								"backups":    []interface{}{},
+								"blockSize":  8192,
+								"cpuCount":   2,
+								"changes": []interface{}{
+									map[string]interface{}{
+										"dailyCPUUsage": 0.7,
+										"segmentsSize":  3,
+										"updated":       utils.P("2020-05-21T11:30:55.061+02:00").Local(),
+										"datafileSize":  6,
+									},
+								},
+								"charset":           "AL32UTF8",
+								"dbTime":            184.81,
+								"dailyCPUUsage":     0.7,
+								"datafileSize":      6,
+								"dataguard":         false,
+								"elapsed":           12059.18,
+								"featureUsageStats": []interface{}{},
+								"instanceNumber":    1,
+								"instanceName":      "pippodb1",
+								"isCDB":             false,
+								"licenses":          []interface{}{},
+								"memoryTarget":      1.484,
+								"nCharset":          "AL16UTF16",
+								"name":              "pippodb",
+								"pdbs":              []interface{}{},
+								"pgaTarget":         0,
+								"psus":              []interface{}{},
+								"patches":           []interface{}{},
+								"platform":          "Linux x86 64-bit",
+								"sgaMaxSize":        1.484,
+								"sgaTarget":         0,
+								"schemas":           []interface{}{},
+								"segmentAdvisors":   []interface{}{},
+								"segmentsSize":      3,
+								"services":          []interface{}{},
+								"status":            "OPEN",
+								"tablespaces":       []interface{}{},
+								"uniqueName":        "pippodb",
+								"version":           "12.2.0.1.0 Enterprise Edition",
+								"work":              1,
+							},
+						},
+					},
+					"exadata": nil,
+				},
+			},
+			"filesystems": []interface{}{
+				map[string]interface{}{
+					"availableSpace": 5.798205849e+09,
+					"filesystem":     "/dev/mapper/cl_itl--csllab--112-root",
+					"mountedOn":      "/",
+					"size":           1.3958643712e+10,
+					"type":           "ext4",
+					"usedSpace":      7.19407022e+09,
+				},
+				map[string]interface{}{
+					"availableSpace": 3.3554432e+08,
+					"filesystem":     "/dev/sda1",
+					"mountedOn":      "/boot",
+					"size":           5.11705088e+08,
+					"type":           "ext4",
+					"usedSpace":      1.39460608e+08,
+				},
+			},
+			"history": []interface{}{
+				map[string]interface{}{
+					"createdAt":          utils.P("2020-05-21T11:30:55.061+02:00").Local(),
+					"totalDailyCPUUsage": 0.7,
+					"_id":                utils.Str2oid("5ec64a4f40c089c5aff44e99"),
+				},
+			},
+			"hostname": "newdb",
+			"info": map[string]interface{}{
+				"cpuCores":                      1,
+				"cpuFrequency":                  "2.53GHz",
+				"cpuModel":                      "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+				"cpuSockets":                    2,
+				"cpuThreads":                    2,
+				"coresPerSocket":                1,
+				"hardwareAbstraction":           "VIRT",
+				"hardwareAbstractionTechnology": "VMWARE",
+				"hostname":                      "newdb",
+				"kernel":                        "Linux",
+				"kernelVersion":                 "3.10.0-514.el7.x86_64",
+				"memoryTotal":                   3,
+				"os":                            "Red Hat Enterprise Linux",
+				"osVersion":                     "7.6",
+				"swapTotal":                     1,
+				"threadsPerCore":                2,
+			},
+			"location":            "Germany",
+			"schemaVersion":       1,
+			"serverSchemaVersion": 1,
+			"serverVersion":       "latest",
+			"tags":                []interface{}{},
+			"virtualizationNode":  nil,
+			"_id":                 utils.Str2oid("5ec64a4f40c089c5aff44e99"),
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedResult), utils.ToJSON(out))
+	})
+
 	m.T().Run("should_return_raw_result", func(t *testing.T) {
 		out, err := m.db.GetHost("newdb", utils.MAX_TIME, true)
 		require.NoError(t, err)
