@@ -54,6 +54,8 @@ var (
 	agentAixRegexTarGz           *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*).tar.gz$")
 	ercoleRHELRegex              *regexp.Regexp = regexp.MustCompile("^ercole-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
 	ercoleWebRHELRegex           *regexp.Regexp = regexp.MustCompile("^ercole-web-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>noarch).rpm$")
+	ercoleAgentPerlRpmRegex      *regexp.Regexp = regexp.MustCompile("^ercole-agent-perl-(?P<version>.*)-1.(?P<dist>[a-z0-9.]+).(?P<arch>noarch).rpm$")
+	ercoleAgentPerlTarGzRegex    *regexp.Regexp = regexp.MustCompile("^ercole-agent-perl-(?P<version>.*)-1.(?P<dist>[a-z0-9.]+).(?P<arch>noarch).tar.gz$")
 )
 
 const (
@@ -171,6 +173,38 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) error {
 		artifact.Arch = "noarch"
 		artifact.OperatingSystemFamily = "aix-tar-gz"
 		artifact.OperatingSystem = "aix6.1"
+
+	case ercoleAgentPerlRpmRegex.MatchString(filename): //agent perl rpm
+		data := utils.FindNamedMatches(ercoleAgentPerlRpmRegex, filename)
+		artifact.Name = "ercole-agent-" + data["dist"] + "-rpm"
+		artifact.Version = data["version"]
+		artifact.Arch = data["arch"]
+		switch data["dist"] {
+		case "aix6.1":
+			artifact.OperatingSystemFamily = "aix"
+			artifact.OperatingSystem = data["dist"]
+		default:
+			return fmt.Errorf("Unknown distribution %s", data["dist"])
+		}
+
+	case ercoleAgentPerlTarGzRegex.MatchString(filename): //agent perl tar gz
+		data := utils.FindNamedMatches(ercoleAgentPerlTarGzRegex, filename)
+		artifact.Name = "ercole-agent-" + data["dist"] + "-tar-gz"
+		artifact.Version = data["version"]
+		artifact.Arch = data["arch"]
+		switch data["dist"] {
+		case "aix6.1":
+			artifact.OperatingSystemFamily = "aix"
+			artifact.OperatingSystem = data["dist"]
+		case "hpux":
+			artifact.OperatingSystemFamily = "hpux"
+			artifact.OperatingSystem = data["dist"]
+		case "solaris11":
+			artifact.OperatingSystemFamily = "solaris"
+			artifact.OperatingSystem = data["dist"]
+		default:
+			return fmt.Errorf("Unknown distribution %s", data["dist"])
+		}
 
 	default:
 		return fmt.Errorf("Filename %s is not supported. Please check that it is correct", filename)

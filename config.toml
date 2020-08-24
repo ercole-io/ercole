@@ -120,34 +120,9 @@ DistributedFiles = "distributed_files/"
   DebugConnections = true
 
   [[RepoService.UpstreamRepositories]]
-  Name = "ercole-agent"
-  Type = "github-release"
-  URL = "https://api.github.com/repos/ercole-io/ercole-agent/releases"
-
-  [[RepoService.UpstreamRepositories]]
-  Name = "ercole-agent-rhel5"
-  Type = "github-release"
-  URL = "https://api.github.com/repos/ercole-io/ercole-agent-rhel5/releases"
-
-  [[RepoService.UpstreamRepositories]]
-  Name = "ercole-agent-aix"
-  Type = "github-release"
-  URL = "https://api.github.com/repos/ercole-io/ercole-agent-aix/releases"
-
-  [[RepoService.UpstreamRepositories]]
-  Name = "ercole-agent-hpux"
-  Type = "github-release"
-  URL = "https://api.github.com/repos/ercole-io/ercole-agent-hpux/releases"
-
-  [[RepoService.UpstreamRepositories]]
-  Name = "ercole-agent-exadata"
-  Type = "github-release"
-  URL = "https://api.github.com/repos/ercole-io/ercole-agent-exadata/releases"
-
-  [[RepoService.UpstreamRepositories]]
-  Name = "ercole-agent-virtualization"
-  Type = "github-release"
-  URL = "https://api.github.com/repos/ercole-io/ercole-agent-virtualization/releases"
+  Name = "ercole-io"
+  Type = "ercole-reposervice"
+  URL = "https://repository.ercole.io"
 
 [Mongodb]
 URI = "mongodb://localhost:27017/ercole"
