@@ -93,5 +93,10 @@
         "Product": "VMWare/VMWare",
         "PrettyName": "VMWare",
         "Color": "#696566"
+    },
+    {
+        "Product": "Oracle/Exadata",
+        "PrettyName": "Oracle Exadata",
+        "Color": "#b0b1b3"
     }
 ]
