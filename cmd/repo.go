@@ -29,7 +29,6 @@ import (
 
 	"github.com/ercole-io/ercole/cmd/repo"
 	"github.com/ercole-io/ercole/config"
-	"github.com/ercole-io/ercole/utils"
 	"github.com/google/go-github/v28/github"
 	"github.com/spf13/cobra"
 )
@@ -148,7 +147,7 @@ func scanErcoleReposerviceRepository(upstreamRepo config.UpstreamRepository) (re
 
 	regex := regexp.MustCompile("<a href=\"([^\"]*)\">")
 
-	// //Add data to out
+	//Add data to out
 	var out repo.Index
 	installedNames := make([]string, 0)
 
@@ -156,46 +155,29 @@ func scanErcoleReposerviceRepository(upstreamRepo config.UpstreamRepository) (re
 		installedNames = append(installedNames, fn[1])
 	}
 
-	//Fetch the data
-	req, _ = http.NewRequest("GET", upstreamRepo.URL+"/index.json", nil)
-	resp, err = http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	} else if resp.StatusCode != 200 {
-		bytes, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("Received %d from ercole reposervice for URL %s (body: %s)", resp.StatusCode, upstreamRepo.URL+"/index.json", string(bytes))
-	}
-
-	if verbose {
-		fmt.Printf("Fetched data from %s\n", upstreamRepo.URL)
-	}
-
-	//Decode data
-	var data2 []map[string]string
-	json.NewDecoder(resp.Body).Decode(&data2)
-
-	for _, d := range data2 {
-		if !utils.Contains(installedNames, d["Filename"]) {
-			continue
-		}
-
+	for _, file := range installedNames {
 		artifactInfo := new(repo.ArtifactInfo)
 
 		artifactInfo.Repository = upstreamRepo.Name
-		artifactInfo.Filename = d["Filename"]
-		artifactInfo.ReleaseDate = d["ReleaseDate"]
-		artifactInfo.UpstreamType = "ercole-reposervice"
+		artifactInfo.Filename = file
+		artifactInfo.ReleaseDate = "????-??-??"
+		artifactInfo.UpstreamType = repo.UpstreamTypeErcoleRepo
 		artifactInfo.UpstreamInfo = map[string]interface{}{
-			"DownloadUrl": upstreamRepo.URL + "/all/" + d["Filename"],
+			"DownloadUrl": upstreamRepo.URL + "/all/" + file,
 		}
+
 		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
 			panic(err)
 		}
+
 		if artifactInfo.Version == "latest" {
 			continue
 		}
+
 		out = append(out, artifactInfo)
 	}
+
+	//Fetch the data
 	return out, nil
 }
 
