@@ -70,6 +70,7 @@ func Migrate(log *logrus.Logger, client *mongo.Database, initialLicensesList []s
 	MigrateAlertsSchema(log, client)
 	MigratePatchingFunctionsSchema(log, client)
 	// MigrateCurrentDatabasesSchema(log, client)
+	MigrateOracleDatabaseAgreementsSchema(log, client)
 }
 
 // MigrateHostsSchema create or update the hosts schema
@@ -367,6 +368,31 @@ func MigratePatchingFunctionsSchema(log *logrus.Logger, client *mongo.Database) 
 			{"hostname", 1},
 		},
 	}); err != nil {
+		log.Panicln(err)
+	}
+}
+
+// MigrateOracleDatabaseAgreementsSchema create or update the agreements_oracle_database schema
+func MigrateOracleDatabaseAgreementsSchema(log *logrus.Logger, client *mongo.Database) {
+	//Create the collection
+	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
+		log.Panicln(err)
+	} else if !utils.Contains(cols, "agreements_oracle_database") {
+		if err := client.RunCommand(context.TODO(), bson.D{
+			{"create", "agreements_oracle_database"},
+		}).Err(); err != nil {
+			log.Panicln(err)
+		}
+	}
+
+	//Set the collection validator
+	if err := client.RunCommand(context.TODO(), bson.D{
+		{"collMod", "agreements_oracle_database"},
+		{"validator", bson.D{
+			{"$jsonSchema", model.OracleDatabaseAgreementBsonValidatorRules},
+		}},
+		{"validationAction", "error"},
+	}).Err(); err != nil {
 		log.Panicln(err)
 	}
 }
