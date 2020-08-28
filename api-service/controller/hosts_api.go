@@ -60,7 +60,7 @@ func (ctrl *APIController) SearchHostsJSON(w http.ResponseWriter, r *http.Reques
 	mode = r.URL.Query().Get("mode")
 	if mode == "" {
 		mode = "full"
-	} else if mode != "full" && mode != "summary" && mode != "lms" && mode != "mhd" {
+	} else if mode != "full" && mode != "summary" && mode != "lms" && mode != "mhd" && mode != "hostnames" {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Invalid mode value"), http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
@@ -103,12 +103,21 @@ func (ctrl *APIController) SearchHostsJSON(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	if pageNumber == -1 || pageSize == -1 {
+	if mode == "hostnames" {
+		hostnames := make([]string, len(hosts))
+		for i, h := range hosts {
+			hostnames[i] = h["hostname"].(string)
+		}
 		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, hosts)
+		utils.WriteJSONResponse(w, http.StatusOK, hostnames)
 	} else {
-		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, hosts[0])
+		if pageNumber == -1 || pageSize == -1 {
+			//Write the data
+			utils.WriteJSONResponse(w, http.StatusOK, hosts)
+		} else {
+			//Write the data
+			utils.WriteJSONResponse(w, http.StatusOK, hosts[0])
+		}
 	}
 }
 
