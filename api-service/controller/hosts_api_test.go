@@ -200,6 +200,46 @@ func TestSearchHosts_JSONUnpaged(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 
+func TestSearchHosts_JSONHostnames(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	returnedRes := []map[string]interface{}{
+		{
+			"hostname": "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
+		},
+		{
+			"hostname": "test-virt",
+		},
+	}
+
+	expectedRes := []string{
+		"fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
+		"test-virt",
+	}
+
+	as.EXPECT().
+		SearchHosts("hostnames", "", gomock.Any(), "", false, -1, -1, "", "", utils.MAX_TIME).
+		Return(returnedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.SearchHosts)
+	req, err := http.NewRequest("GET", "/hosts?mode=hostnames", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+}
+
 func TestSearchHosts_JSONUnprocessableEntity1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
