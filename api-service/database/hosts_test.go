@@ -302,6 +302,24 @@ func (m *MongodbSuite) TestSearchHosts() {
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
+
+	m.T().Run("hostnames_mode", func(t *testing.T) {
+		out, err := m.db.SearchHosts("hostnames", []string{""}, commonFilters, "hostname", false, -1, -1, "", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []map[string]interface{}{
+			{
+				"hostname": "test-db",
+			},
+			{
+				"hostname": "test-small",
+			},
+			{
+				"hostname": "test-virt",
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
 }
 
 func (m *MongodbSuite) TestGetHost() {

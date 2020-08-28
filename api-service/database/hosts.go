@@ -98,7 +98,14 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 				"$features.oracle.database.databases.uniqueName",
 				"$clusters.name",
 			}, keywords),
-			mu.APOptionalStage(mode != "mongo", mu.MAPipeline(
+			mu.APOptionalStage(mode == "hostnames", mu.MAPipeline(
+				mu.APProject(bson.M{
+					"_id":      0,
+					"hostname": 1,
+				}),
+				mu.APOptionalSortingStage(sortBy, sortDesc),
+			)),
+			mu.APOptionalStage(mode != "mongo" && mode != "hostnames", mu.MAPipeline(
 				mu.APOptionalStage(mode == "lms", mu.APMatch(
 					mu.QOExpr(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.oracle.database.databases", bson.A{})), 0))),
 				),
