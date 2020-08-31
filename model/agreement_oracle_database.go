@@ -15,26 +15,31 @@
 
 package model
 
-import "go.mongodb.org/mongo-driver/bson"
+import (
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 // OracleDatabaseAgreement holds informations about a sigle OracleDatabaseAgreement
 type OracleDatabaseAgreement struct {
-	ID              string   `json:"id" bson:"_id"`
-	PartID          string   `json:"partID" bson:"partID"`
-	ItemDescription string   `json:"itemDescription" bson:"itemDescription"`
-	Metrics         string   `json:"metrics" bson:"metrics"`
-	CSI             string   `json:"csi" bson:"csi"`
-	ReferenceNumber string   `json:"referenceNumber" bson:"referenceNumber"`
-	Unlimited       bool     `json:"unlimited" bson:"unlimited"`
-	Count           int      `json:"count" bson:"count"`
-	CatchAll        bool     `json:"catchAll" bson:"catchAll"`
-	Hosts           []string `json:"hosts" bson:"hosts"`
+	ID              primitive.ObjectID `json:"id" bson:"_id"`
+	AgreementID     string             `json:"agreementID" bson:"agreementID"`
+	PartID          string             `json:"partID" bson:"partID"`
+	ItemDescription string             `json:"itemDescription" bson:"itemDescription"`
+	Metrics         string             `json:"metrics" bson:"metrics"`
+	CSI             string             `json:"csi" bson:"csi"`
+	ReferenceNumber string             `json:"referenceNumber" bson:"referenceNumber"`
+	Unlimited       bool               `json:"unlimited" bson:"unlimited"`
+	Count           int                `json:"count" bson:"count"`
+	CatchAll        bool               `json:"catchAll" bson:"catchAll"`
+	Hosts           []string           `json:"hosts" bson:"hosts"`
 }
 
 // OracleDatabaseAgreementBsonValidatorRules contains mongodb validation rules for OracleDatabaseAgreement
 var OracleDatabaseAgreementBsonValidatorRules = bson.M{
 	"bsonType": "object",
 	"required": bson.A{
+		"agreementID",
 		"partID",
 		"itemDescription",
 		"metrics",
@@ -46,7 +51,7 @@ var OracleDatabaseAgreementBsonValidatorRules = bson.M{
 		"hosts",
 	},
 	"properties": bson.M{
-		"_id": bson.M{
+		"agreementID": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
 			"maxLength": 16,

@@ -98,6 +98,12 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 				"$features.oracle.database.databases.uniqueName",
 				"$clusters.name",
 			}, keywords),
+			AddAssociatedClusterNameAndVirtualizationNode(olderThan),
+			getClusterFilterStep(otherFilters.Cluster),
+			mu.APOptionalStage(otherFilters.VirtualizationNode != "", mu.APMatch(bson.M{
+				"virtualizationNode": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.VirtualizationNode), Options: "i"},
+			})),
+			mu.APOptionalStage(mode == "mongo" || mode == "hostnames", mu.APUnset("cluster", "virtualizationNode")),
 			mu.APOptionalStage(mode == "hostnames", mu.MAPipeline(
 				mu.APProject(bson.M{
 					"_id":      0,
@@ -108,13 +114,6 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 			mu.APOptionalStage(mode != "mongo" && mode != "hostnames", mu.MAPipeline(
 				mu.APOptionalStage(mode == "lms", mu.APMatch(
 					mu.QOExpr(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.oracle.database.databases", bson.A{})), 0))),
-				),
-				AddAssociatedClusterNameAndVirtualizationNode(olderThan),
-				mu.MAPipeline(
-					getClusterFilterStep(otherFilters.Cluster),
-					mu.APOptionalStage(otherFilters.VirtualizationNode != "", mu.APMatch(bson.M{
-						"virtualizationNode": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.VirtualizationNode), Options: "i"},
-					})),
 				),
 				mu.APOptionalStage(mode == "summary", mu.APProject(bson.M{
 					"hostname":                      true,

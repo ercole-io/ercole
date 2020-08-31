@@ -23,48 +23,46 @@ import (
 	"os"
 
 	"github.com/ercole-io/ercole/utils"
-
 	"github.com/spf13/cobra"
 )
 
-// fireHostDataCmd represents the fire-hostdata command
-var fireHostDataCmd = &cobra.Command{
-	Use:   "fire-hostdata",
-	Short: "Fire hostdata",
-	Long:  `Fire hostdata from the stdin or from the files in the args`,
-	Run: func(cmd *cobra.Command, args []string) {
-		//Load the data
-		if len(args) == 0 {
-			raw, _ := ioutil.ReadAll(os.Stdin)
-			fireHostdata("stdin", raw)
-		} else {
-			for _, arg := range args {
-				if raw, err := ioutil.ReadFile(arg); err != nil {
-					fmt.Fprintf(os.Stderr, "Failed to read the file %s: %v\n", arg, err)
-					os.Exit(1)
-				} else {
-					fireHostdata(arg, raw)
+func init() {
+	var cmd = &cobra.Command{
+		Use:   "add",
+		Short: "Add a Oracle/Database agreement",
+		Long:  `Add a Oracle/Database agreement from the stdin or from the files in the args`,
+		Run: func(cmd *cobra.Command, args []string) {
+			//Load the data
+			if len(args) == 0 {
+				raw, _ := ioutil.ReadAll(os.Stdin)
+				insertAgreement("stdin", raw)
+			} else {
+				for _, arg := range args {
+					if raw, err := ioutil.ReadFile(arg); err != nil {
+						fmt.Fprintf(os.Stderr, "Failed to read the file %s: %v\n", arg, err)
+						os.Exit(1)
+					} else {
+						insertAgreement(arg, raw)
+					}
 				}
 			}
-		}
-	},
+		},
+	}
+
+	agreementOracleDatabaseCmd.AddCommand(cmd)
+	cmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable the verbosity")
 }
 
-func init() {
-	rootCmd.AddCommand(fireHostDataCmd)
-	fireHostDataCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable the verbosity")
-}
-
-func fireHostdata(filename string, content []byte) {
+func insertAgreement(filename string, content []byte) {
 	resp, err := http.Post(
-		utils.NewAPIUrlNoParams(ercoleConfig.DataService.RemoteEndpoint,
-			ercoleConfig.DataService.AgentUsername,
-			ercoleConfig.DataService.AgentPassword,
-			"/hosts",
+		utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
+			ercoleConfig.APIService.AuthenticationProvider.Username,
+			ercoleConfig.APIService.AuthenticationProvider.Password,
+			"/agreements/oracle/database",
 		).String(),
 		"application/json", bytes.NewReader(content))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to send hostdata from %s: %v\n", filename, err)
+		fmt.Fprintf(os.Stderr, "Failed to send agreement from %s: %v\n", filename, err)
 		os.Exit(1)
 	} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		out, _ := ioutil.ReadAll(resp.Body)
@@ -76,5 +74,4 @@ func fireHostdata(filename string, content []byte) {
 			fmt.Printf("File: %s Status: %d\n", filename, resp.StatusCode)
 		}
 	}
-
 }
