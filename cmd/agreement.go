@@ -13,4 +13,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package service
+package cmd
+
+import (
+	"github.com/spf13/cobra"
+)
+
+// agreementCmd represents the agreement command
+var agreementCmd = &cobra.Command{
+	Use:   "agreement",
+	Short: "Perform an api request related to agreements",
+	Long:  `agreement perform an api request related to agreements`,
+}
+
+func init() {
+	apiCmd.AddCommand(agreementCmd)
+}
