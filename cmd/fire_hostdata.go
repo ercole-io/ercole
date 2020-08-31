@@ -33,8 +33,6 @@ var fireHostDataCmd = &cobra.Command{
 	Short: "Fire hostdata",
 	Long:  `Fire hostdata from the stdin or from the files in the args`,
 	Run: func(cmd *cobra.Command, args []string) {
-		dataToByFired := map[string][]byte{}
-
 		//Load the data
 		if len(args) == 0 {
 			raw, _ := ioutil.ReadAll(os.Stdin)
@@ -48,11 +46,6 @@ var fireHostDataCmd = &cobra.Command{
 					fireHostdata(arg, raw)
 				}
 			}
-		}
-
-		//Send the hostdatas
-		for file, data := range dataToByFired {
-			fireHostdata(file, data)
 		}
 	},
 }
