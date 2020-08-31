@@ -39,3 +39,7 @@ var AerrAlertNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrAlertNotFo
 // ErrClusterNotFound contains "Cluster not found" error
 var ErrClusterNotFound = errors.New("Cluster not found")
 var AerrClusterNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrClusterNotFound, "DB ERROR")
+
+// ErrOracleDatabaseAgreementInvalidPartID contains "Invalid PartID in request" error
+var ErrOracleDatabaseAgreementInvalidPartID = errors.New("Invalid PartID in request")
+var AerrOracleDatabaseAgreementInvalidPartID AdvancedErrorInterface = NewAdvancedErrorPtr(ErrOracleDatabaseAgreementInvalidPartID, "CLIENT ERROR")
