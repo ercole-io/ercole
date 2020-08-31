@@ -122,6 +122,8 @@ type APIControllerInterface interface {
 	// GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
 	GetOracleDatabaseAgreementPartsList(w http.ResponseWriter, r *http.Request)
 
+	// AddOracleDatabaseAgreements add some agreements
+	AddOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request)
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(w http.ResponseWriter, r *http.Request)
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license

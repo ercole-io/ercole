@@ -48,8 +48,8 @@
             "sockets": 10,
             "vms": [
                 {
-                    "name": "test-virt2",
-                    "hostname": "test-virt2",
+                    "name": "test-virt",
+                    "hostname": "test-virt",
                     "cappedCPU": false,
                     "virtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402"
                 },

@@ -1,0 +1,16 @@
+{
+	"agreementID": "5051863",
+	"partsID": [
+		"L10006",
+		"A90620"
+	],
+	"csi": "6871235",
+	"referenceNumber": "10032246681",
+	"unlimited": false,
+	"count": 30,
+	"catchAll": false,
+	"hosts": [
+		"test-db",
+		"ercsoldbx"
+	]
+}
