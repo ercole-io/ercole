@@ -19,6 +19,7 @@ package service
 import (
 	"time"
 
+	"github.com/ercole-io/ercole/api-service/apimodel"
 	"github.com/ercole-io/ercole/api-service/database"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
@@ -133,6 +134,8 @@ type APIServiceInterface interface {
 
 	// GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
 	GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabaseAgreementPart, utils.AdvancedErrorInterface)
+	// AddOracleDatabaseAgreements return the list of Oracle/Database agreement parts
+	AddOracleDatabaseAgreements(req apimodel.OracleDatabaseAgreementsAddRequest) (interface{}, utils.AdvancedErrorInterface)
 
 	// SetLicensesCount set the count of all licenses in newLicenses
 	// It assumes that newLicenses maps contain the string _id and the int Count
