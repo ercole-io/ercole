@@ -13,4 +13,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package service
+package cmd
+
+import (
+	"github.com/spf13/cobra"
+)
+
+// agreementOracleDatabaseCmd represents the database command
+var agreementOracleDatabaseCmd = &cobra.Command{
+	Use:   "database",
+	Short: "Perform an api request related to oracle database agreements",
+	Long:  `database perform an api request related to oracle database agreements`,
+}
+
+func init() {
+	agreementOracleCmd.AddCommand(agreementOracleDatabaseCmd)
+}
