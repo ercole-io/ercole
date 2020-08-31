@@ -17,9 +17,6 @@
 package service
 
 import (
-	"encoding/base64"
-	"encoding/json"
-	"io/ioutil"
 	"time"
 
 	"github.com/ercole-io/ercole/api-service/database"
@@ -134,6 +131,9 @@ type APIServiceInterface interface {
 	// SetLicenseUnlimitedStatus set the unlimited status of a certain license
 	SetLicenseUnlimitedStatus(name string, unlimitedStatus bool) utils.AdvancedErrorInterface
 
+	// GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
+	GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabaseAgreementPart, utils.AdvancedErrorInterface)
+
 	// SetLicensesCount set the count of all licenses in newLicenses
 	// It assumes that newLicenses maps contain the string _id and the int Count
 	SetLicensesCount(newLicenses []map[string]interface{}) utils.AdvancedErrorInterface
@@ -173,33 +173,12 @@ type APIService struct {
 	Log *logrus.Logger
 	// TechnologyInfos contains the list of technologies with their informations
 	TechnologyInfos []model.TechnologyInfo
+	// OracleDatabaseAgreementParts contains the list of Oracle/Database agreeement parts
+	OracleDatabaseAgreementParts []model.OracleDatabaseAgreementPart
 }
 
 // Init initializes the service and database
 func (as *APIService) Init() {
-	// read the list content
-	listContentRaw, err := ioutil.ReadFile(as.Config.ResourceFilePath + "/technologies/list.json")
-	if err != nil {
-		as.Log.Warnf("Unable to read %s: %v\n", as.Config.ResourceFilePath+"/technologies/list.json", err)
-		return
-	}
-
-	// unmarshal to TechnologyInfos
-	err = json.Unmarshal(listContentRaw, &as.TechnologyInfos)
-	if err != nil {
-		as.Log.Warnf("Unable to unmarshal %s: %v\n", as.Config.ResourceFilePath+"/technologies/list.json", err)
-		return
-	}
-
-	// Load every image and encode it to base64
-	for i, info := range as.TechnologyInfos {
-		// read image content
-		raw, err := ioutil.ReadFile(as.Config.ResourceFilePath + "/technologies/" + info.Product + ".png")
-		if err != nil {
-			as.Log.Warnf("Unable to read %s: %v\n", as.Config.ResourceFilePath+"/technologies/"+info.Product+".png", err)
-		} else {
-			// encode it!
-			as.TechnologyInfos[i].Logo = base64.StdEncoding.EncodeToString(raw)
-		}
-	}
+	as.LoadManagedTechnologiesList()
+	as.LoadOracleDatabaseAgreementPartsList()
 }
