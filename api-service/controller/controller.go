@@ -119,6 +119,8 @@ type APIControllerInterface interface {
 	GetErcoleFeatures(w http.ResponseWriter, r *http.Request)
 	// GetTechnologyList return the list of techonlogies
 	GetTechnologyList(w http.ResponseWriter, r *http.Request)
+	// GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
+	GetOracleDatabaseAgreementPartsList(w http.ResponseWriter, r *http.Request)
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(w http.ResponseWriter, r *http.Request)

@@ -17,7 +17,8 @@ package model
 
 // OracleDatabaseAgreementPart holds informations about a sigle OracleDatabaseAgreementPart
 type OracleDatabaseAgreementPart struct {
-	PartID          string `json:"partID" bson:"partID"`
-	ItemDescription string `json:"itemDescription" bson:"itemDescription"`
-	Metrics         string `json:"metrics" bson:"metrics"`
+	PartID          string   `json:"partID" bson:"partID"`
+	ItemDescription string   `json:"itemDescription" bson:"itemDescription"`
+	Metrics         string   `json:"metrics" bson:"metrics"`
+	Aliases         []string `json:"aliases" bson:"aliases"`
 }

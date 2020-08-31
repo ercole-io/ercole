@@ -13,4 +13,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package service
+package cmd
+
+func init() {
+	cmd := simpleSingleValueAPIRequestCommand("part-list",
+		"Get Oracle/Database agreement parts list",
+		`Get Oracle/Database agreement parts list`,
+		false, false, false, false,
+		"/settings/oracle/database/agreements-parts",
+		"Failed to get Oracle/Database info: %v\n",
+		"Failed to get Oracle/Database info(Status: %d): %s\n",
+	)
+
+	agreementOracleDatabaseCmd.AddCommand(cmd)
+}

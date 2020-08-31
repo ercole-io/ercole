@@ -1,0 +1,302 @@
+[
+  {
+    "partID": "L10001",
+    "itemDescription": "Oracle Database Enterprise Edition",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Oracle ENT" ]
+  },
+  {
+    "partID": "A90611",
+    "itemDescription": "Oracle Database Enterprise Edition",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Oracle ENT" ]
+  },
+  {
+    "partID": "L103405",
+    "itemDescription": "Oracle Database Standard Edition 2",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Oracle STD" ]
+  },
+  {
+    "partID": "L103399",
+    "itemDescription": "Oracle Database Standard Edition 2",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Oracle STD" ]
+  },
+  {
+    "partID": "L104101",
+    "itemDescription": "Oracle WebLogic Server Multitenant",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "WebLogic Server Management Pack Enterprise Edition" ]
+  },
+  {
+    "partID": "L104095",
+    "itemDescription": "Oracle WebLogic Server Multitenant",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "WebLogic Server Management Pack Enterprise Edition" ]
+  },
+  {
+    "partID": "L10013",
+    "itemDescription": "Oracle Tuning Pack",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Tuning Pack" ]
+  },
+  {
+    "partID": "A90650",
+    "itemDescription": "Oracle Tuning Pack",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Tuning Pack" ]
+  },
+  {
+    "partID": "L101634",
+    "itemDescription": "Oracle Secure Backup",
+    "metrics": "Stream Perpetual",
+    "aliases": [ "Secure Backup" ]
+  },
+  {
+    "partID": "L47240",
+    "itemDescription": "Oracle Real Application Testing",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Real Application Testing" ]
+  },
+  {
+    "partID": "L47247",
+    "itemDescription": "Oracle Real Application Testing",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Real Application Testing" ]
+  },
+  {
+    "partID": "L76084",
+    "itemDescription": "Oracle Real Application Clusters One Node",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Real Application Clusters One Node" ]
+  },
+  {
+    "partID": "L76094",
+    "itemDescription": "Oracle Real Application Clusters One Node",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Real Application Clusters One Node" ]
+  },
+  {
+    "partID": "L10005",
+    "itemDescription": "Oracle Real Application Clusters",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Real Application Clusters", "RAC or RAC One Node" ]
+  },
+  {
+    "partID": "A90619",
+    "itemDescription": "Oracle Real Application Clusters",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Real Application Clusters", "RAC or RAC One Node" ]
+  },
+  {
+    "partID": "L10006",
+    "itemDescription": "Oracle Partitioning",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Partitioning" ]
+  },
+  {
+    "partID": "A90620",
+    "itemDescription": "Oracle Partitioning",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Partitioning" ]
+  },
+  {
+    "partID": "L10007",
+    "itemDescription": "Oracle OLAP",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "OLAP" ]
+  },
+  {
+    "partID": "A90707",
+    "itemDescription": "Oracle OLAP",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "OLAP" ]
+  },
+  {
+    "partID": "L97999",
+    "itemDescription": "Oracle Multitenant",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Multitenant" ]
+  },
+  {
+    "partID": "L97993",
+    "itemDescription": "Oracle Multitenant",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Multitenant" ]
+  },
+  {
+    "partID": "L10011",
+    "itemDescription": "Oracle Label Security",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Label Security" ]
+  },
+  {
+    "partID": "A90623",
+    "itemDescription": "Oracle Label Security",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Label Security" ]
+  },
+  {
+    "partID": "L75967",
+    "itemDescription": "Oracle GoldenGate",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "GoldenGate" ]
+  },
+  {
+    "partID": "L75978",
+    "itemDescription": "Oracle GoldenGate",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "GoldenGate" ]
+  },
+  {
+    "partID": "L10012",
+    "itemDescription": "Oracle Diagnostics Pack",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Diagnostics Pack" ]
+  },
+  {
+    "partID": "A90649",
+    "itemDescription": "Oracle Diagnostics Pack",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Diagnostics Pack" ]
+  },
+  {
+    "partID": "L27166",
+    "itemDescription": "Oracle Database Vault",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Database Vault" ]
+  },
+  {
+    "partID": "L27158",
+    "itemDescription": "Oracle Database Vault",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Database Vault" ]
+  },
+  {
+    "partID": "L100393",
+    "itemDescription": "Oracle Database In-Memory",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Database In-Memory" ]
+  },
+  {
+    "partID": "L100387",
+    "itemDescription": "Oracle Database In-Memory",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Database In-Memory" ]
+  },
+  {
+    "partID": "L47837",
+    "itemDescription": "Oracle Database Gateway for APPC",
+    "metrics": "Computer Perpetual",
+    "aliases": [ "Database Gateway" ]
+  },
+  {
+    "partID": "L47845",
+    "itemDescription": "Oracle Database Gateway for DRDA",
+    "metrics": "Computer Perpetual",
+    "aliases": [ "Database Gateway" ]
+  },
+  {
+    "partID": "L46631",
+    "itemDescription": "Oracle Database Gateway for Informix",
+    "metrics": "Computer Perpetual",
+    "aliases": [ "Database Gateway" ]
+  },
+  {
+    "partID": "L46639",
+    "itemDescription": "Oracle Database Gateway for SQL server",
+    "metrics": "Computer Perpetual",
+    "aliases": [ "Database Gateway" ]
+  },
+  {
+    "partID": "L46647",
+    "itemDescription": "Oracle Database Gateway for Sybase",
+    "metrics": "Computer Perpetual",
+    "aliases": [ "Database Gateway" ]
+  },
+  {
+    "partID": "L46655",
+    "itemDescription": "Oracle Database Gateway for Teradata",
+    "metrics": "Computer Perpetual",
+    "aliases": [ "Database Gateway" ]
+  },
+  {
+    "partID": "L47869",
+    "itemDescription": "Oracle Database Gateway for WebSphere MQ",
+    "metrics": "Computer Perpetual",
+    "aliases": [ "Database Gateway" ]
+  },
+  {
+    "partID": "L100148",
+    "itemDescription": "Oracle Data Masking and Subsetting Pack",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Data Masking Pack" ]
+  },
+  {
+    "partID": "L100142",
+    "itemDescription": "Oracle Data Masking and Subsetting Pack",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Data Masking Pack" ]
+  },
+  {
+    "partID": "L71666",
+    "itemDescription": "Oracle Configuration Management Pack for Applications",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Configuration Management Pack for Oracle Database" ]
+  },
+  {
+    "partID": "L71656",
+    "itemDescription": "Oracle Configuration Management Pack for Applications",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Configuration Management Pack for Oracle Database" ]
+  },
+  {
+    "partID": "L10010",
+    "itemDescription": "Oracle Advanced Security",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Advanced Security" ]
+  },
+  {
+    "partID": "A90622",
+    "itemDescription": "Oracle Advanced Security",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Advanced Security" ]
+  },
+  {
+    "partID": "L47225",
+    "itemDescription": "Oracle Advanced Compression",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Advanced Compression" ]
+  },
+  {
+    "partID": "L47232",
+    "itemDescription": "Oracle Advanced Compression",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Advanced Compression" ]
+  },
+  {
+    "partID": "L97350",
+    "itemDescription": "Oracle Advanced Analytics for Oracle Financial Services Analytical Applications Infrastructure",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Advanced Analytics" ]
+  },
+  {
+    "partID": "L97358",
+    "itemDescription": "Oracle Advanced Analytics for Oracle Financial Services Analytical Applications Infrastructure",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Advanced Analytics" ]
+  },
+  {
+    "partID": "L47210",
+    "itemDescription": "Oracle Active Data Guard",
+    "metrics": "Named User Plus Perpetual",
+    "aliases": [ "Named User Plus Perpetual" ]
+  },
+  {
+    "partID": "L47217",
+    "itemDescription": "Oracle Active Data Guard",
+    "metrics": "Processor Perpetual",
+    "aliases": [ "Named User Plus Perpetual" ]
+  }
+]

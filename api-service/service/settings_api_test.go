@@ -26,6 +26,24 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestLoadManagedTechnologiesList_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+	}
+	as.LoadManagedTechnologiesList()
+
+	assert.Equal(t, "Oracle/Database", as.TechnologyInfos[0].Product)
+	assert.Equal(t, "Microsoft/SQLServer", as.TechnologyInfos[1].Product)
+	assert.Equal(t, "iVBORw0K", as.TechnologyInfos[0].Logo[:8])
+	assert.Equal(t, "iVBORw0K", as.TechnologyInfos[1].Logo[:8])
+}
+
 func TestGetDefaultDatabaseTags_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
