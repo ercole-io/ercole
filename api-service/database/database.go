@@ -116,6 +116,8 @@ type MongoDatabaseInterface interface {
 	// GetOracleExadataPatchStatusStats return a array containing the number of exadata per patch status
 	GetOracleExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 
+	// InsertOracleDatabaseAgreement insert a Oracle/Database agreement into the database
+	InsertOracleDatabaseAgreement(aggreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license
