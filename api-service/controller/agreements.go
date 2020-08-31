@@ -13,4 +13,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package service
+package controller
+
+import (
+	"net/http"
+
+	"github.com/ercole-io/ercole/utils"
+)
+
+// GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
+func (ctrl *APIController) GetOracleDatabaseAgreementPartsList(w http.ResponseWriter, r *http.Request) {
+	data, err := ctrl.Service.GetOracleDatabaseAgreementPartsList()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, data)
+}
