@@ -763,3 +763,75 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountLTE:     -1,
 	}))
 }
+
+func TestSortOracleDatabaseAgreementLicensingObjects(t *testing.T) {
+	list := []apimodel.OracleDatabaseLicensingObjects{
+		{
+			LicenseName: "Diagnostics Pack",
+			Name:        "Puzzait",
+			Type:        "cluster",
+			Count:       70,
+		},
+		{
+			LicenseName: "Real Application Clusters",
+			Name:        "test-db3",
+			Type:        "host",
+			Count:       1.5,
+		},
+		{
+			LicenseName: "Diagnostics Pack",
+			Name:        "test-db4",
+			Type:        "host",
+			Count:       0.5,
+		},
+		{
+			LicenseName: "Oracle ENT",
+			Name:        "test-db3",
+			Type:        "host",
+			Count:       0.5,
+		},
+		{
+			LicenseName: "Oracle ENT",
+			Name:        "Puzzait",
+			Type:        "cluster",
+			Count:       70,
+		},
+	}
+
+	expected := []apimodel.OracleDatabaseLicensingObjects{
+		{
+			LicenseName: "Oracle ENT",
+			Name:        "Puzzait",
+			Type:        "cluster",
+			Count:       70,
+		},
+		{
+			LicenseName: "Diagnostics Pack",
+			Name:        "Puzzait",
+			Type:        "cluster",
+			Count:       70,
+		},
+		{
+			LicenseName: "Real Application Clusters",
+			Name:        "test-db3",
+			Type:        "host",
+			Count:       1.5,
+		},
+		{
+			LicenseName: "Diagnostics Pack",
+			Name:        "test-db4",
+			Type:        "host",
+			Count:       0.5,
+		},
+		{
+			LicenseName: "Oracle ENT",
+			Name:        "test-db3",
+			Type:        "host",
+			Count:       0.5,
+		},
+	}
+
+	SortOracleDatabaseAgreementLicensingObjects(list)
+
+	assert.Equal(t, expected, list)
+}
