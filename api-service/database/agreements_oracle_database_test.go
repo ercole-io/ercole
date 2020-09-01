@@ -115,13 +115,13 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
 				{
 					Hostname:                  "foo",
-					CoveredLicensesCount:      -1,
-					TotalCoveredLicensesCount: -1,
+					CoveredLicensesCount:      0,
+					TotalCoveredLicensesCount: 0,
 				},
 				{
 					Hostname:                  "bar",
-					CoveredLicensesCount:      -1,
-					TotalCoveredLicensesCount: -1,
+					CoveredLicensesCount:      0,
+					TotalCoveredLicensesCount: 0,
 				},
 			},
 			ItemDescription: "fgfgd",
@@ -129,7 +129,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 			PartID:          "678867",
 			ReferenceNumber: "567768",
 			Unlimited:       true,
-			AvailableCount:  -1,
+			AvailableCount:  345,
 			LicensesCount:   345,
 			UsersCount:      0,
 		},
@@ -145,7 +145,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 			PartID:          "678867",
 			ReferenceNumber: "567768",
 			Unlimited:       true,
-			AvailableCount:  -1,
+			AvailableCount:  345,
 			LicensesCount:   345,
 			UsersCount:      0,
 		},
@@ -161,10 +161,53 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 			PartID:          "678867",
 			ReferenceNumber: "567768",
 			Unlimited:       true,
-			AvailableCount:  -1,
+			AvailableCount:  345,
 			LicensesCount:   0,
 			UsersCount:      345,
 		},
 	}, out)
 
+}
+
+func (m *MongodbSuite) TestListOracleDatabaseLicensingObjects() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_17.json"))
+
+	out, err := m.db.ListOracleDatabaseLicensingObjects()
+	m.Require().NoError(err)
+
+	assert.ElementsMatch(m.T(), []apimodel.OracleDatabaseLicensingObjects{
+		{
+			LicenseName: "Diagnostics Pack",
+			Name:        "Puzzait",
+			Type:        "cluster",
+			Count:       70,
+		},
+		{
+			LicenseName: "Real Application Clusters",
+			Name:        "test-db3",
+			Type:        "host",
+			Count:       1.5,
+		},
+		{
+			LicenseName: "Diagnostics Pack",
+			Name:        "test-db3",
+			Type:        "host",
+			Count:       0.5,
+		},
+		{
+			LicenseName: "Oracle ENT",
+			Name:        "test-db3",
+			Type:        "host",
+			Count:       0.5,
+		},
+		{
+			LicenseName: "Oracle ENT",
+			Name:        "Puzzait",
+			Type:        "cluster",
+			Count:       70,
+		},
+	}, out)
 }
