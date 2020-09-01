@@ -18,6 +18,7 @@ package service
 import (
 	"encoding/json"
 	"io/ioutil"
+	"sort"
 	"strings"
 
 	"github.com/ercole-io/ercole/api-service/apimodel"
@@ -129,6 +130,11 @@ func (as *APIService) AddOracleDatabaseAgreements(req apimodel.OracleDatabaseAgr
 
 // SearchOracleDatabaseAgreements search Oracle/Database agreements
 func (as *APIService) SearchOracleDatabaseAgreements(search string, filters apimodel.SearchOracleDatabaseAgreementsFilters) ([]apimodel.OracleDatabaseAgreementsFE, utils.AdvancedErrorInterface) {
+	// _, err := as.Database.ListOracleDatabaseLicensingObjects()
+	// if err != nil {
+	// 	return nil, err
+	// }
+
 	//Get the list of aggreements
 	aggs, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
@@ -164,4 +170,17 @@ func CheckOracleDatabaseAgreementMatchFilter(agg apimodel.OracleDatabaseAgreemen
 		(filters.UsersCountGTE == -1 || agg.UsersCount >= filters.UsersCountGTE) &&
 		(filters.AvailableCountLTE == -1 || agg.AvailableCount <= filters.AvailableCountLTE) &&
 		(filters.AvailableCountGTE == -1 || agg.AvailableCount >= filters.AvailableCountGTE)
+}
+
+// SortOracleDatabaseAgreementLicensingObjects sort the list of apimodel.OracleDatabaseLicensingObjects by count
+func SortOracleDatabaseAgreementLicensingObjects(obj []apimodel.OracleDatabaseLicensingObjects) {
+	sort.Slice(obj, func(i, j int) bool {
+		if obj[i].Count != obj[j].Count {
+			return obj[i].Count > obj[j].Count
+		} else if obj[i].Name != obj[j].Name {
+			return obj[i].Name > obj[j].Name
+		} else {
+			return obj[i].LicenseName > obj[j].LicenseName
+		}
+	})
 }
