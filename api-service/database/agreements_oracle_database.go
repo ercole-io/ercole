@@ -44,14 +44,108 @@ func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]apimodel.OracleDataba
 		context.TODO(),
 		mu.MAPipeline(
 			mu.APSet(bson.M{
-				"availableCount": -1,
+				"availableCount": "$count",
 				"licensesCount":  mu.APOCond(mu.APOOr(mu.APOEqual("$metrics", "Processor Perpetual"), mu.APOEqual("$metrics", "Computer Perpetual")), "$count", 0),
 				"usersCount":     mu.APOCond(mu.APOEqual("$metrics", "Named User Plus Perpetual"), "$count", 0),
 				"hosts": mu.APOMap("$hosts", "hn", bson.M{
 					"hostname":                  "$$hn",
-					"coveredLicensesCount":      -1,
-					"totalCoveredLicensesCount": -1,
+					"coveredLicensesCount":      0,
+					"totalCoveredLicensesCount": 0,
 				}),
+			}),
+		),
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Decode the documents
+	if err = cur.All(context.TODO(), &out); err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+	}
+	return out, nil
+}
+
+// ListOracleDatabaseLicensingObjects lists the hosts/clusters that need to be licensed by Oracle/Database agreements
+func (md *MongoDatabase) ListOracleDatabaseLicensingObjects() ([]apimodel.OracleDatabaseLicensingObjects, utils.AdvancedErrorInterface) {
+	var out []apimodel.OracleDatabaseLicensingObjects = make([]apimodel.OracleDatabaseLicensingObjects, 0)
+
+	//Find the matching alerts
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			mu.APMatch(bson.M{
+				"archived":                 false,
+				"features.oracle.database": mu.QONotEqual(nil),
+			}),
+			mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$features.oracle.database.databases"), 0))),
+			mu.APProject(bson.M{
+				"hostname": true,
+				"licenses": "$features.oracle.database.databases.licenses",
+			}),
+			mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "cluster", mu.MAPipeline(
+				mu.APMatch(bson.M{
+					"archived": false,
+				}),
+				mu.APUnwind("$clusters"),
+				mu.APReplaceWith("$clusters"),
+				mu.APUnwind("$vms"),
+				mu.APSet(bson.M{
+					"vms.clusterName": "$name",
+				}),
+				mu.APMatch(mu.QOExpr(mu.APOEqual("$vms.hostname", "$$hn"))),
+				mu.APLimit(1),
+			)),
+			mu.APSet(bson.M{
+				"cluster": mu.APOArrayElemAt("$cluster", 0),
+			}),
+			mu.APAddFields(bson.M{
+				"cluster":    "$cluster.name",
+				"clusterCpu": "$cluster.cpu",
+			}),
+			mu.APUnwind("$licenses"),
+			mu.APUnwind("$licenses"),
+			mu.APGroup(bson.M{
+				"_id": bson.M{
+					"hostname":    "$hostname",
+					"cluster":     "$cluster",
+					"clusterCpu":  "$clusterCpu",
+					"licenseName": "$licenses.name",
+				},
+				"count": mu.APOMaxAggr("$licenses.count"),
+			}),
+			mu.APMatch(bson.M{
+				"count": bson.M{
+					"$gt": 0,
+				},
+			}),
+			mu.APGroup(bson.M{
+				"_id": bson.M{
+					"licenseName": "$_id.licenseName",
+					"object": mu.APOCond(
+						"$_id.cluster",
+						bson.M{
+							"name": "$_id.cluster",
+							"type": "cluster",
+						},
+						bson.M{
+							"name": "$_id.hostname",
+							"type": "host",
+						},
+					),
+				},
+				"count": mu.APOMaxAggr(mu.APOCond(
+					"$_id.cluster",
+					mu.APODivide("$_id.clusterCpu", 2),
+					"$count",
+				)),
+			}),
+			mu.APProject(bson.M{
+				"_id":         0,
+				"name":        "$_id.object.name",
+				"type":        "$_id.object.type",
+				"licenseName": "$_id.licenseName",
+				"count":       1,
 			}),
 		),
 	)
