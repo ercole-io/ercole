@@ -18,6 +18,7 @@ package database
 import (
 	"context"
 
+	"github.com/ercole-io/ercole/api-service/apimodel"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/stretchr/testify/assert"
@@ -51,4 +52,119 @@ func (m *MongodbSuite) TestInsertOracleDatabaseAgreement_Success() {
 	val.Decode(&out)
 
 	assert.Equal(m.T(), agg, out)
+}
+
+func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
+	defer m.db.Client.Database(m.dbname).Collection("agreements_oracle_database").DeleteMany(context.TODO(), bson.M{})
+	agg1 := model.OracleDatabaseAgreement{
+		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
+		AgreementID:     "abcde",
+		CSI:             "435435",
+		CatchAll:        true,
+		Count:           345,
+		Hosts:           []string{"foo", "bar"},
+		ItemDescription: "fgfgd",
+		Metrics:         "Processor Perpetual",
+		PartID:          "678867",
+		ReferenceNumber: "567768",
+		Unlimited:       true,
+	}
+	agg2 := model.OracleDatabaseAgreement{
+		ID:              utils.Str2oid("5dcad8933b243f80e2ed8539"),
+		AgreementID:     "abcde",
+		CSI:             "435435",
+		CatchAll:        true,
+		Count:           345,
+		Hosts:           []string{},
+		ItemDescription: "fgfgd",
+		Metrics:         "Computer Perpetual",
+		PartID:          "678867",
+		ReferenceNumber: "567768",
+		Unlimited:       true,
+	}
+	agg3 := model.OracleDatabaseAgreement{
+		ID:              utils.Str2oid("5dcad8933b243f80e2ed853A"),
+		AgreementID:     "abcde",
+		CSI:             "435435",
+		CatchAll:        true,
+		Count:           345,
+		Hosts:           []string{},
+		ItemDescription: "fgfgd",
+		Metrics:         "Named User Plus Perpetual",
+		PartID:          "678867",
+		ReferenceNumber: "567768",
+		Unlimited:       true,
+	}
+	_, err := m.db.InsertOracleDatabaseAgreement(agg1)
+	require.NoError(m.T(), err)
+	_, err = m.db.InsertOracleDatabaseAgreement(agg2)
+	require.NoError(m.T(), err)
+	_, err = m.db.InsertOracleDatabaseAgreement(agg3)
+	require.NoError(m.T(), err)
+
+	out, err := m.db.ListOracleDatabaseAgreements()
+	m.Require().NoError(err)
+
+	assert.Equal(m.T(), []apimodel.OracleDatabaseAgreementsFE{
+		{
+			ID:          utils.Str2oid("5dcad8933b243f80e2ed8538"),
+			AgreementID: "abcde",
+			CSI:         "435435",
+			CatchAll:    true,
+			Count:       345,
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{
+					Hostname:                  "foo",
+					CoveredLicensesCount:      -1,
+					TotalCoveredLicensesCount: -1,
+				},
+				{
+					Hostname:                  "bar",
+					CoveredLicensesCount:      -1,
+					TotalCoveredLicensesCount: -1,
+				},
+			},
+			ItemDescription: "fgfgd",
+			Metrics:         "Processor Perpetual",
+			PartID:          "678867",
+			ReferenceNumber: "567768",
+			Unlimited:       true,
+			AvailableCount:  -1,
+			LicensesCount:   345,
+			UsersCount:      0,
+		},
+		{
+			ID:              utils.Str2oid("5dcad8933b243f80e2ed8539"),
+			AgreementID:     "abcde",
+			CSI:             "435435",
+			CatchAll:        true,
+			Count:           345,
+			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			ItemDescription: "fgfgd",
+			Metrics:         "Computer Perpetual",
+			PartID:          "678867",
+			ReferenceNumber: "567768",
+			Unlimited:       true,
+			AvailableCount:  -1,
+			LicensesCount:   345,
+			UsersCount:      0,
+		},
+		{
+			ID:              utils.Str2oid("5dcad8933b243f80e2ed853A"),
+			AgreementID:     "abcde",
+			CSI:             "435435",
+			CatchAll:        true,
+			Count:           345,
+			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			ItemDescription: "fgfgd",
+			Metrics:         "Named User Plus Perpetual",
+			PartID:          "678867",
+			ReferenceNumber: "567768",
+			Unlimited:       true,
+			AvailableCount:  -1,
+			LicensesCount:   0,
+			UsersCount:      345,
+		},
+	}, out)
+
 }

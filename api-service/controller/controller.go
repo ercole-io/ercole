@@ -55,6 +55,8 @@ type APIControllerInterface interface {
 	GetLicense(w http.ResponseWriter, r *http.Request)
 	// SearchOracleDatabaseLicenseModifiers search a license modifier using the filters in the request
 	SearchOracleDatabaseLicenseModifiers(w http.ResponseWriter, r *http.Request)
+	// SearchOracleDatabaseAgreements search Oracle/Database agreements data using the filters in the request
+	SearchOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request)
 
 	// GetPatchingFunction return all'informations about the patching function of the host requested in the hostnmae path variable
 	GetPatchingFunction(w http.ResponseWriter, r *http.Request)

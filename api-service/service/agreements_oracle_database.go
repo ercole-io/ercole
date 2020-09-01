@@ -18,6 +18,7 @@ package service
 import (
 	"encoding/json"
 	"io/ioutil"
+	"strings"
 
 	"github.com/ercole-io/ercole/api-service/apimodel"
 	"github.com/ercole-io/ercole/api-service/database"
@@ -124,4 +125,43 @@ func (as *APIService) AddOracleDatabaseAgreements(req apimodel.OracleDatabaseAgr
 	}
 
 	return res, nil
+}
+
+// SearchOracleDatabaseAgreements search Oracle/Database agreements
+func (as *APIService) SearchOracleDatabaseAgreements(search string, filters apimodel.SearchOracleDatabaseAgreementsFilters) ([]apimodel.OracleDatabaseAgreementsFE, utils.AdvancedErrorInterface) {
+	//Get the list of aggreements
+	aggs, err := as.Database.ListOracleDatabaseAgreements()
+	if err != nil {
+		return nil, err
+	}
+
+	//Filter them!
+	filteredAggs := make([]apimodel.OracleDatabaseAgreementsFE, 0)
+	for _, agg := range aggs {
+		if !CheckOracleDatabaseAgreementMatchFilter(agg, filters) {
+			continue
+		}
+
+		filteredAggs = append(filteredAggs, agg)
+	}
+
+	return filteredAggs, nil
+}
+
+// CheckOracleDatabaseAgreementMatchFilter check that agg match the filters
+func CheckOracleDatabaseAgreementMatchFilter(agg apimodel.OracleDatabaseAgreementsFE, filters apimodel.SearchOracleDatabaseAgreementsFilters) bool {
+	return strings.Contains(strings.ToLower(agg.AgreementID), strings.ToLower(filters.AgreementID)) &&
+		strings.Contains(strings.ToLower(agg.PartID), strings.ToLower(filters.PartID)) &&
+		strings.Contains(strings.ToLower(agg.ItemDescription), strings.ToLower(filters.ItemDescription)) &&
+		strings.Contains(strings.ToLower(agg.CSI), strings.ToLower(filters.CSI)) &&
+		(filters.Metrics == "" || strings.ToLower(agg.Metrics) == strings.ToLower(filters.Metrics)) &&
+		strings.Contains(strings.ToLower(agg.ReferenceNumber), strings.ToLower(filters.ReferenceNumber)) &&
+		(filters.Unlimited == "NULL" || agg.Unlimited == (filters.Unlimited == "true")) &&
+		(filters.CatchAll == "NULL" || agg.CatchAll == (filters.CatchAll == "true")) &&
+		(filters.LicensesCountLTE == -1 || agg.LicensesCount <= filters.LicensesCountLTE) &&
+		(filters.LicensesCountGTE == -1 || agg.LicensesCount >= filters.LicensesCountGTE) &&
+		(filters.UsersCountLTE == -1 || agg.UsersCount <= filters.UsersCountLTE) &&
+		(filters.UsersCountGTE == -1 || agg.UsersCount >= filters.UsersCountGTE) &&
+		(filters.AvailableCountLTE == -1 || agg.AvailableCount <= filters.AvailableCountLTE) &&
+		(filters.AvailableCountGTE == -1 || agg.AvailableCount >= filters.AvailableCountGTE)
 }
