@@ -440,3 +440,326 @@ func TestAddOracleDatabaseAgreements_Fail4(t *testing.T) {
 	_, err := as.AddOracleDatabaseAgreements(addRequest)
 	assert.Equal(t, aerrMock, err)
 }
+
+func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+	}
+
+	expectedRes := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:    "5051863",
+			AvailableCount: -1,
+			CatchAll:       false,
+			CSI:            "6871235",
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{
+					CoveredLicensesCount:      -1,
+					Hostname:                  "test-db",
+					TotalCoveredLicensesCount: -1,
+				},
+				{
+					CoveredLicensesCount:      -1,
+					Hostname:                  "ercsoldbx",
+					TotalCoveredLicensesCount: -1,
+				},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   30,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      0,
+		},
+	}
+
+	db.EXPECT().ListOracleDatabaseAgreements().Return(expectedRes, nil)
+
+	res, err := as.SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilters{
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     -1,
+	})
+	require.NoError(t, err)
+	assert.Equal(t, expectedRes, res)
+}
+
+func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+	}
+
+	listOracleDatabaseAgreementsRes := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:    "5051863",
+			AvailableCount: -1,
+			CatchAll:       false,
+			CSI:            "6871235",
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{
+					CoveredLicensesCount:      -1,
+					Hostname:                  "test-db",
+					TotalCoveredLicensesCount: -1,
+				},
+				{
+					CoveredLicensesCount:      -1,
+					Hostname:                  "ercsoldbx",
+					TotalCoveredLicensesCount: -1,
+				},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   30,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      0,
+		},
+	}
+
+	db.EXPECT().ListOracleDatabaseAgreements().Return(listOracleDatabaseAgreementsRes, nil)
+
+	res, err := as.SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilters{
+		AgreementID:       "asddfa",
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     -1,
+	})
+	require.NoError(t, err)
+	assert.Empty(t, res)
+}
+
+func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
+	agg1 := apimodel.OracleDatabaseAgreementsFE{
+		AgreementID:    "5051863",
+		AvailableCount: 7,
+		CatchAll:       true,
+		CSI:            "6871235",
+		Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			{
+				CoveredLicensesCount:      -1,
+				Hostname:                  "test-db",
+				TotalCoveredLicensesCount: -1,
+			},
+			{
+				CoveredLicensesCount:      -1,
+				Hostname:                  "ercsoldbx",
+				TotalCoveredLicensesCount: -1,
+			},
+		},
+		ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+		ItemDescription: "Oracle Partitioning",
+		LicensesCount:   30,
+		Metrics:         "Processor Perpetual",
+		PartID:          "A90620",
+		ReferenceNumber: "10032246681",
+		Unlimited:       false,
+		UsersCount:      5,
+	}
+
+	assert.True(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     -1,
+	}))
+
+	assert.True(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		AgreementID:       "5051",
+		PartID:            "A9062",
+		ItemDescription:   "Partitioning",
+		CSI:               "6871",
+		Metrics:           "Processor Perpetual",
+		ReferenceNumber:   "100322",
+		Unlimited:         "false",
+		CatchAll:          "true",
+		AvailableCountGTE: 6,
+		AvailableCountLTE: 8,
+		LicensesCountGTE:  25,
+		LicensesCountLTE:  35,
+		UsersCountGTE:     0,
+		UsersCountLTE:     10,
+	}))
+	assert.True(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: 7,
+		AvailableCountLTE: 7,
+		LicensesCountGTE:  30,
+		LicensesCountLTE:  30,
+		UsersCountGTE:     5,
+		UsersCountLTE:     5,
+	}))
+
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		AgreementID:       "fdgdfgsdsfg",
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     -1,
+	}))
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		PartID:            "fdgdfgsdsfg",
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     -1,
+	}))
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		ItemDescription:   "fdgdfgsdsfg",
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     -1,
+	}))
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		CSI:               "fdgdfgsdsfg",
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     -1,
+	}))
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		Metrics:           "fdgdfgsdsfg",
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     -1,
+	}))
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		ReferenceNumber:   "fdgdfgsdsfg",
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     -1,
+	}))
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		Unlimited:         "true",
+		CatchAll:          "NULL",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     -1,
+	}))
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		Unlimited:         "NULL",
+		CatchAll:          "false",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     -1,
+	}))
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  35,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     -1,
+	}))
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  25,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     -1,
+	}))
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     0,
+	}))
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     10,
+		UsersCountLTE:     -1,
+	}))
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: 3,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     -1,
+	}))
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: 8,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     -1,
+	}))
+}

@@ -67,7 +67,7 @@ func (ctrl *APIController) SearchHostsJSON(w http.ResponseWriter, r *http.Reques
 
 	search = r.URL.Query().Get("search")
 
-	searchHostsFilters, err = ctrl.GetSearchHostFilters(r)
+	searchHostsFilters, err = GetSearchHostFilters(r)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -135,7 +135,7 @@ func (ctrl *APIController) SearchHostsLMS(w http.ResponseWriter, r *http.Request
 	//parse the query params
 	search = r.URL.Query().Get("search")
 
-	searchHostsFilters, aerr = ctrl.GetSearchHostFilters(r)
+	searchHostsFilters, aerr = GetSearchHostFilters(r)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
 		return
@@ -212,7 +212,7 @@ func (ctrl *APIController) SearchHostsXLSX(w http.ResponseWriter, r *http.Reques
 	//parse the query params
 	search = r.URL.Query().Get("search")
 
-	searchHostsFilters, aerr = ctrl.GetSearchHostFilters(r)
+	searchHostsFilters, aerr = GetSearchHostFilters(r)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
 		return
@@ -277,7 +277,7 @@ func (ctrl *APIController) SearchHostsXLSX(w http.ResponseWriter, r *http.Reques
 }
 
 // GetSearchHostFilters return the host search filters in the request
-func (ctrl *APIController) GetSearchHostFilters(r *http.Request) (database.SearchHostsFilters, utils.AdvancedErrorInterface) {
+func GetSearchHostFilters(r *http.Request) (database.SearchHostsFilters, utils.AdvancedErrorInterface) {
 	var aerr utils.AdvancedErrorInterface
 
 	filters := database.SearchHostsFilters{}
