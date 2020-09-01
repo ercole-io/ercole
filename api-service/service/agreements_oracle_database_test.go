@@ -835,3 +835,54 @@ func TestSortOracleDatabaseAgreementLicensingObjects(t *testing.T) {
 
 	assert.Equal(t, expected, list)
 }
+
+func TestBuildOracleDatabaseLicensingObjectsMap(t *testing.T) {
+	list := []apimodel.OracleDatabaseLicensingObjects{
+		{
+			LicenseName: "Oracle ENT",
+			Name:        "Puzzait",
+			Type:        "cluster",
+			Count:       70,
+		},
+		{
+			LicenseName: "Diagnostics Pack",
+			Name:        "Puzzait",
+			Type:        "cluster",
+			Count:       70,
+		},
+		{
+			LicenseName: "Real Application Clusters",
+			Name:        "test-db3",
+			Type:        "host",
+			Count:       1.5,
+		},
+		{
+			LicenseName: "Diagnostics Pack",
+			Name:        "test-db4",
+			Type:        "host",
+			Count:       0.5,
+		},
+		{
+			LicenseName: "Oracle ENT",
+			Name:        "test-db3",
+			Type:        "host",
+			Count:       0.5,
+		},
+	}
+
+	expected := map[string]map[string]*apimodel.OracleDatabaseLicensingObjects{
+		"Oracle ENT": {
+			"Puzzait":  &list[0],
+			"test-db3": &list[4],
+		},
+		"Diagnostics Pack": {
+			"Puzzait":  &list[1],
+			"test-db4": &list[3],
+		},
+		"Real Application Clusters": {
+			"test-db3": &list[2],
+		},
+	}
+
+	assert.Equal(t, expected, BuildOracleDatabaseLicensingObjectsMap(list))
+}
