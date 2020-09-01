@@ -130,11 +130,6 @@ func (as *APIService) AddOracleDatabaseAgreements(req apimodel.OracleDatabaseAgr
 
 // SearchOracleDatabaseAgreements search Oracle/Database agreements
 func (as *APIService) SearchOracleDatabaseAgreements(search string, filters apimodel.SearchOracleDatabaseAgreementsFilters) ([]apimodel.OracleDatabaseAgreementsFE, utils.AdvancedErrorInterface) {
-	// _, err := as.Database.ListOracleDatabaseLicensingObjects()
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	//Get the list of aggreements
 	aggs, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
@@ -183,4 +178,18 @@ func SortOracleDatabaseAgreementLicensingObjects(obj []apimodel.OracleDatabaseLi
 			return obj[i].LicenseName > obj[j].LicenseName
 		}
 	})
+}
+
+// BuildOracleDatabaseLicensingObjectsMap return a map of license name to map of object name to pointer to  apimodel.OracleDatabaseLicensingObjects for fast object lookup
+func BuildOracleDatabaseLicensingObjectsMap(objs []apimodel.OracleDatabaseLicensingObjects) map[string]map[string]*apimodel.OracleDatabaseLicensingObjects {
+	res := make(map[string]map[string]*apimodel.OracleDatabaseLicensingObjects)
+
+	for i, obj := range objs {
+		if _, ok := res[obj.LicenseName]; !ok {
+			res[obj.LicenseName] = make(map[string]*apimodel.OracleDatabaseLicensingObjects)
+		}
+		res[obj.LicenseName][obj.Name] = &objs[i]
+	}
+
+	return res
 }
