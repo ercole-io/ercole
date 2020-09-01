@@ -71,3 +71,11 @@ type SearchOracleDatabaseAgreementsFilters struct {
 	AvailableCountLTE int
 	AvailableCountGTE int
 }
+
+// OracleDatabaseLicensingObjects contains the information about the objects that needed to be licensed by Oracle/Database agreements
+type OracleDatabaseLicensingObjects struct {
+	LicenseName string  `json:"licenseName" bson:"licenseName"`
+	Name        string  `json:"name" bson:"name"`
+	Type        string  `json:"type" bson:"type"` //host, cluster
+	Count       float64 `json:"count" bson:"count"`
+}
