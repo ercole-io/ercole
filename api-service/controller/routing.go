@@ -91,6 +91,7 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/licenses/{name}/cost-per-processor", ctrl.SetLicenseCostPerProcessor).Methods("PUT")
 	router.HandleFunc("/licenses/{name}/unlimited-status", ctrl.SetLicenseUnlimitedStatus).Methods("PUT")
 	router.HandleFunc("/agreements/oracle/database", ctrl.AddOracleDatabaseAgreements).Methods("POST")
+	router.HandleFunc("/agreements/oracle/database", ctrl.SearchOracleDatabaseAgreements).Methods("GET")
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")
 	router.HandleFunc("/alerts/{id}", ctrl.AckAlert).Methods("POST")
 
