@@ -20,6 +20,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/ercole-io/ercole/api-service/apimodel"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/sirupsen/logrus"
@@ -118,6 +119,9 @@ type MongoDatabaseInterface interface {
 
 	// InsertOracleDatabaseAgreement insert a Oracle/Database agreement into the database
 	InsertOracleDatabaseAgreement(aggreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
+	// ListOracleDatabaseAgreements lists the Oracle/Database agreements
+	ListOracleDatabaseAgreements() ([]apimodel.OracleDatabaseAgreementsFE, utils.AdvancedErrorInterface)
+
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license

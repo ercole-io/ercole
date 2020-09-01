@@ -15,6 +15,8 @@
 
 package apimodel
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 // OracleDatabaseAgreementsAddRequest contains the informations needed to add new agreements
 type OracleDatabaseAgreementsAddRequest struct {
 	AgreementID     string   `json:"agreementID" bson:"agreementID"`
@@ -25,4 +27,47 @@ type OracleDatabaseAgreementsAddRequest struct {
 	Count           int      `json:"count" bson:"count"`
 	CatchAll        bool     `json:"catchAll" bson:"catchAll"`
 	Hosts           []string `json:"hosts" bson:"hosts"`
+}
+
+// OracleDatabaseAgreementsFE contains the informations about a agreement
+type OracleDatabaseAgreementsFE struct {
+	ID              primitive.ObjectID                         `json:"id" bson:"_id"`
+	AgreementID     string                                     `json:"agreementID" bson:"agreementID"`
+	PartID          string                                     `json:"partID" bson:"partID"`
+	ItemDescription string                                     `json:"itemDescription" bson:"itemDescription"`
+	Metrics         string                                     `json:"metrics" bson:"metrics"`
+	CSI             string                                     `json:"csi" bson:"csi"`
+	ReferenceNumber string                                     `json:"referenceNumber" bson:"referenceNumber"`
+	Unlimited       bool                                       `json:"unlimited" bson:"unlimited"`
+	Count           int                                        `json:"-" bson:"count"`
+	LicensesCount   int                                        `json:"licensesCount" bson:"licensesCount"`
+	UsersCount      int                                        `json:"usersCount" bson:"usersCount"`
+	AvailableCount  int                                        `json:"availableCount" bson:"availableCount"`
+	CatchAll        bool                                       `json:"catchAll" bson:"catchAll"`
+	Hosts           []OracleDatabaseAgreementsAssociatedHostFE `json:"hosts" bson:"hosts"`
+}
+
+// OracleDatabaseAgreementsAssociatedHostFE contains the informations about a associated host in agreement
+type OracleDatabaseAgreementsAssociatedHostFE struct {
+	Hostname                  string `json:"hostname" bson:"hostname"`
+	CoveredLicensesCount      int    `json:"coveredLicensesCount" bson:"coveredLicensesCount"`
+	TotalCoveredLicensesCount int    `json:"totalCoveredLicensesCount" bson:"totalCoveredLicensesCount"`
+}
+
+// SearchOracleDatabaseAgreementsFilters contains the filters used to get the list of Oracle/Database agreements
+type SearchOracleDatabaseAgreementsFilters struct {
+	AgreementID       string
+	PartID            string
+	ItemDescription   string
+	CSI               string
+	Metrics           string
+	ReferenceNumber   string
+	Unlimited         string //"" -> Ignore, "true" -> true, "false" -> false
+	CatchAll          string //"" -> Ignore, "true" -> true, "false" -> false
+	LicensesCountLTE  int
+	LicensesCountGTE  int
+	UsersCountLTE     int
+	UsersCountGTE     int
+	AvailableCountLTE int
+	AvailableCountGTE int
 }
