@@ -136,6 +136,8 @@ type APIServiceInterface interface {
 	GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabaseAgreementPart, utils.AdvancedErrorInterface)
 	// AddOracleDatabaseAgreements return the list of Oracle/Database agreement parts
 	AddOracleDatabaseAgreements(req apimodel.OracleDatabaseAgreementsAddRequest) (interface{}, utils.AdvancedErrorInterface)
+	// SearchOracleDatabaseAgreements search Oracle/Database agreements
+	SearchOracleDatabaseAgreements(search string, filters apimodel.SearchOracleDatabaseAgreementsFilters) ([]apimodel.OracleDatabaseAgreementsFE, utils.AdvancedErrorInterface)
 
 	// SetLicensesCount set the count of all licenses in newLicenses
 	// It assumes that newLicenses maps contain the string _id and the int Count
