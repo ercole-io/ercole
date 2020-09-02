@@ -193,3 +193,14 @@ func BuildOracleDatabaseLicensingObjectsMap(objs []apimodel.OracleDatabaseLicens
 
 	return res
 }
+
+// BuildOracleDatabaseAgreementPartMap return a map of partID to OracleDatabaseAgreementPart
+func BuildOracleDatabaseAgreementPartMap(parts []model.OracleDatabaseAgreementPart) map[string]*model.OracleDatabaseAgreementPart {
+	res := make(map[string]*model.OracleDatabaseAgreementPart)
+
+	for i, part := range parts {
+		res[part.PartID] = &parts[i]
+	}
+
+	return res
+}
