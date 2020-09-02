@@ -764,6 +764,723 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 	}))
 }
 
+func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimitedCase(t *testing.T) {
+	as := APIService{
+		Config: config.Configuration{},
+		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+			{
+				PartID:          "A90620",
+				Aliases:         []string{"Partitioning"},
+				ItemDescription: "Oracle Partitioning",
+				Metrics:         "Processor Perpetual",
+			},
+		},
+	}
+
+	agreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:    "5051863",
+			AvailableCount: 7,
+			CatchAll:       false,
+			CSI:            "6871235",
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{
+					CoveredLicensesCount:      0,
+					Hostname:                  "test-db",
+					TotalCoveredLicensesCount: 0,
+				},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   0,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       true,
+			UsersCount:      0,
+			Count:           0,
+		},
+	}
+	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+		{
+			Name:          "test-db",
+			Count:         3,
+			LicenseName:   "Partitioning",
+			OriginalCount: 3,
+			Type:          "host",
+		},
+	}
+
+	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:    "5051863",
+			AvailableCount: 0,
+			CatchAll:       false,
+			CSI:            "6871235",
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{
+					CoveredLicensesCount:      3,
+					Hostname:                  "test-db",
+					TotalCoveredLicensesCount: 3,
+				},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   0,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       true,
+			UsersCount:      0,
+			Count:           0,
+		},
+	}
+
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+
+	assert.Equal(t, expectedAgreements, agreements)
+}
+
+func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcessorPerpetualCase(t *testing.T) {
+	as := APIService{
+		Config: config.Configuration{},
+		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+			{
+				PartID:          "A90620",
+				Aliases:         []string{"Partitioning"},
+				ItemDescription: "Oracle Partitioning",
+				Metrics:         "Processor Perpetual",
+			},
+		},
+	}
+
+	agreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:    "5051863",
+			AvailableCount: 7,
+			CatchAll:       false,
+			CSI:            "6871235",
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{
+					CoveredLicensesCount:      0,
+					Hostname:                  "test-db",
+					TotalCoveredLicensesCount: 0,
+				},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   5,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      0,
+			Count:           5,
+		},
+	}
+	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+		{
+			Name:          "test-db",
+			Count:         3,
+			LicenseName:   "Partitioning",
+			OriginalCount: 3,
+			Type:          "host",
+		},
+	}
+
+	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:    "5051863",
+			AvailableCount: 0,
+			CatchAll:       false,
+			CSI:            "6871235",
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{
+					CoveredLicensesCount:      3,
+					Hostname:                  "test-db",
+					TotalCoveredLicensesCount: 3,
+				},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   5,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      0,
+			Count:           2,
+		},
+	}
+
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+
+	assert.Equal(t, expectedAgreements, agreements)
+}
+
+func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUserPlusCase(t *testing.T) {
+	as := APIService{
+		Config: config.Configuration{},
+		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+			{
+				PartID:          "A90620",
+				Aliases:         []string{"Partitioning"},
+				ItemDescription: "Oracle Partitioning",
+				Metrics:         "Named User Plus Perpetual",
+			},
+		},
+	}
+
+	agreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:    "5051863",
+			AvailableCount: 7,
+			CatchAll:       false,
+			CSI:            "6871235",
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{
+					CoveredLicensesCount:      0,
+					Hostname:                  "test-db",
+					TotalCoveredLicensesCount: 0,
+				},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   0,
+			Metrics:         "Named User Plus Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      10,
+			Count:           10,
+		},
+	}
+	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+		{
+			Name:          "test-db",
+			Count:         128,
+			LicenseName:   "Partitioning",
+			OriginalCount: 128,
+			Type:          "host",
+		},
+	}
+
+	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:    "5051863",
+			AvailableCount: -3,
+			CatchAll:       false,
+			CSI:            "6871235",
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{
+					CoveredLicensesCount:      125,
+					Hostname:                  "test-db",
+					TotalCoveredLicensesCount: 125,
+				},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   0,
+			Metrics:         "Named User Plus Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      10,
+			Count:           5,
+		},
+	}
+
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+
+	assert.Equal(t, expectedAgreements, agreements)
+}
+
+func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedAgreement(t *testing.T) {
+	as := APIService{
+		Config: config.Configuration{},
+		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+			{
+				PartID:          "A90620",
+				Aliases:         []string{"Partitioning"},
+				ItemDescription: "Oracle Partitioning",
+				Metrics:         "Processor Perpetual",
+			},
+		},
+	}
+	agreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:    "5051863",
+			AvailableCount: 7,
+			CatchAll:       false,
+			CSI:            "6871235",
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{
+					CoveredLicensesCount:      0,
+					Hostname:                  "test-db",
+					TotalCoveredLicensesCount: 0,
+				},
+				{
+					CoveredLicensesCount:      0,
+					Hostname:                  "test-db2",
+					TotalCoveredLicensesCount: 0,
+				},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   5,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      0,
+			Count:           5,
+		},
+	}
+	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+		{
+			Name:          "test-db",
+			Count:         3,
+			LicenseName:   "Partitioning",
+			OriginalCount: 3,
+			Type:          "host",
+		},
+		{
+			Name:          "test-db2",
+			Count:         4,
+			LicenseName:   "Partitioning",
+			OriginalCount: 4,
+			Type:          "host",
+		},
+	}
+
+	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:    "5051863",
+			AvailableCount: -2,
+			CatchAll:       false,
+			CSI:            "6871235",
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{
+					CoveredLicensesCount:      4,
+					Hostname:                  "test-db2",
+					TotalCoveredLicensesCount: 4,
+				},
+				{
+					CoveredLicensesCount:      1,
+					Hostname:                  "test-db",
+					TotalCoveredLicensesCount: 1,
+				},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   5,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      0,
+			Count:           0,
+		},
+	}
+
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+
+	assert.Equal(t, expectedAgreements, agreements)
+}
+
+func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *testing.T) {
+	as := APIService{
+		Config: config.Configuration{},
+		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+			{
+				PartID:          "A90620",
+				Aliases:         []string{"Partitioning"},
+				ItemDescription: "Oracle Partitioning",
+				Metrics:         "Processor Perpetual",
+			},
+		},
+	}
+
+	agreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:    "5051863",
+			AvailableCount: 7,
+			CatchAll:       false,
+			CSI:            "6871235",
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{
+					CoveredLicensesCount:      0,
+					Hostname:                  "test-db",
+					TotalCoveredLicensesCount: 0,
+				},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   5,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      0,
+			Count:           5,
+		},
+		{
+			AgreementID:    "5051863",
+			AvailableCount: 7,
+			CatchAll:       false,
+			CSI:            "6871235",
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{
+					CoveredLicensesCount:      0,
+					Hostname:                  "test-db",
+					TotalCoveredLicensesCount: 0,
+				},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   10,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      0,
+			Count:           10,
+		},
+	}
+	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+		{
+			Name:          "test-db",
+			Count:         20,
+			LicenseName:   "Partitioning",
+			OriginalCount: 20,
+			Type:          "host",
+		},
+	}
+
+	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:    "5051863",
+			AvailableCount: -5,
+			CatchAll:       false,
+			CSI:            "6871235",
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{
+					CoveredLicensesCount:      10,
+					Hostname:                  "test-db",
+					TotalCoveredLicensesCount: 15,
+				},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   10,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      0,
+			Count:           0,
+		},
+		{
+			AgreementID:    "5051863",
+			AvailableCount: -5,
+			CatchAll:       false,
+			CSI:            "6871235",
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{
+					CoveredLicensesCount:      5,
+					Hostname:                  "test-db",
+					TotalCoveredLicensesCount: 15,
+				},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   5,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      0,
+			Count:           0,
+		},
+	}
+
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+
+	assert.Equal(t, expectedAgreements, agreements)
+}
+
+func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimitedCaseNoAssociatedHost(t *testing.T) {
+	as := APIService{
+		Config: config.Configuration{},
+		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+			{
+				PartID:          "A90620",
+				Aliases:         []string{"Partitioning"},
+				ItemDescription: "Oracle Partitioning",
+				Metrics:         "Processor Perpetual",
+			},
+		},
+	}
+
+	agreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:     "5051863",
+			AvailableCount:  7,
+			CatchAll:        true,
+			CSI:             "6871235",
+			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   0,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       true,
+			UsersCount:      0,
+			Count:           0,
+		},
+	}
+	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+		{
+			Name:          "test-db",
+			Count:         3,
+			LicenseName:   "Partitioning",
+			OriginalCount: 3,
+			Type:          "host",
+		},
+	}
+
+	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:     "5051863",
+			AvailableCount:  -0,
+			CatchAll:        true,
+			CSI:             "6871235",
+			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   0,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       true,
+			UsersCount:      0,
+			Count:           0,
+		},
+	}
+
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+
+	assert.Equal(t, expectedAgreements, agreements)
+}
+
+func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcessorPerpetualCaseNoAssociatedHost(t *testing.T) {
+	as := APIService{
+		Config: config.Configuration{},
+		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+			{
+				PartID:          "A90620",
+				Aliases:         []string{"Partitioning"},
+				ItemDescription: "Oracle Partitioning",
+				Metrics:         "Processor Perpetual",
+			},
+		},
+	}
+
+	agreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:     "5051863",
+			AvailableCount:  7,
+			CatchAll:        true,
+			CSI:             "6871235",
+			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   5,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      0,
+			Count:           5,
+		},
+	}
+	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+		{
+			Name:          "test-db",
+			Count:         3,
+			LicenseName:   "Partitioning",
+			OriginalCount: 3,
+			Type:          "host",
+		},
+	}
+
+	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:     "5051863",
+			AvailableCount:  0,
+			CatchAll:        true,
+			CSI:             "6871235",
+			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   5,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      0,
+			Count:           2,
+		},
+	}
+
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+
+	assert.Equal(t, expectedAgreements, agreements)
+}
+
+func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUserPlusCaseNoAssociatedHost(t *testing.T) {
+	as := APIService{
+		Config: config.Configuration{},
+		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+			{
+				PartID:          "A90620",
+				Aliases:         []string{"Partitioning"},
+				ItemDescription: "Oracle Partitioning",
+				Metrics:         "Named User Plus Perpetual",
+			},
+		},
+	}
+
+	agreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:     "5051863",
+			AvailableCount:  7,
+			CatchAll:        true,
+			CSI:             "6871235",
+			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   0,
+			Metrics:         "Named User Plus Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      10,
+			Count:           10,
+		},
+	}
+	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+		{
+			Name:          "test-db",
+			Count:         128,
+			LicenseName:   "Partitioning",
+			OriginalCount: 128,
+			Type:          "host",
+		},
+	}
+
+	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:     "5051863",
+			AvailableCount:  -3,
+			CatchAll:        true,
+			CSI:             "6871235",
+			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   0,
+			Metrics:         "Named User Plus Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      10,
+			Count:           5,
+		},
+	}
+
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+
+	assert.Equal(t, expectedAgreements, agreements)
+}
+
+func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_CompleCase1(t *testing.T) {
+	as := APIService{
+		Config: config.Configuration{},
+		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+			{
+				PartID:          "A90620",
+				Aliases:         []string{"Partitioning"},
+				ItemDescription: "Oracle Partitioning",
+				Metrics:         "Processor Perpetual",
+			},
+		},
+	}
+
+	agreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:    "5051863",
+			AvailableCount: 7,
+			CatchAll:       true,
+			CSI:            "6871235",
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{Hostname: "test-db"},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   10,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      0,
+			Count:           10,
+		},
+	}
+	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+		{
+			Name:          "test-db",
+			Count:         3,
+			LicenseName:   "Partitioning",
+			OriginalCount: 3,
+			Type:          "host",
+		},
+		{
+			Name:          "dbclust",
+			Count:         20,
+			LicenseName:   "Partitioning",
+			OriginalCount: 20,
+			Type:          "cluster",
+		},
+	}
+
+	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+		{
+			AgreementID:    "5051863",
+			AvailableCount: -13,
+			CatchAll:       true,
+			CSI:            "6871235",
+			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+				{Hostname: "test-db", CoveredLicensesCount: 3, TotalCoveredLicensesCount: 3},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   10,
+			Metrics:         "Processor Perpetual",
+			PartID:          "A90620",
+			ReferenceNumber: "10032246681",
+			Unlimited:       false,
+			UsersCount:      0,
+			Count:           0,
+		},
+	}
+
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+
+	assert.Equal(t, expectedAgreements, agreements)
+
+}
+
 func TestSortOracleDatabaseAgreementLicensingObjects(t *testing.T) {
 	list := []apimodel.OracleDatabaseLicensingObjects{
 		{
@@ -878,6 +1595,60 @@ func TestSortOracleDatabaseAgreements(t *testing.T) {
 	SortOracleDatabaseAgreements(list)
 
 	assert.Equal(t, expected, list)
+}
+
+func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
+	partsMap := map[string]*model.OracleDatabaseAgreementPart{
+		"L10005": {
+			PartID:          "L10005",
+			ItemDescription: "Oracle Real Application Clusters",
+			Metrics:         "Named User Plus Perpetual",
+			Aliases:         []string{"Real Application Clusters", "RAC or RAC One Node"},
+		},
+	}
+
+	licensingObjectsMap := map[string]map[string]*apimodel.OracleDatabaseLicensingObjects{
+		"Real Application Clusters": {
+			"test-db1": {
+				Count: 10,
+			},
+			"test-db2": {
+				Count: 30,
+			},
+		},
+		"RAC or RAC One Node": {
+			"test-db1": {
+				Count: 20,
+			},
+			"test-db3": {
+				Count: 15,
+			},
+			"test-db4": {
+				Count: 35,
+			},
+		},
+	}
+
+	agg := apimodel.OracleDatabaseAgreementsFE{
+		PartID: "L10005",
+		Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			{Hostname: "test-db2"},
+			{Hostname: "test-db1"},
+			{Hostname: "test-db4"},
+			{Hostname: "test-db3"},
+		},
+	}
+
+	expected := []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+		{Hostname: "test-db4"},
+		{Hostname: "test-db2"},
+		{Hostname: "test-db1"},
+		{Hostname: "test-db3"},
+	}
+
+	SortAssociatedHostsInOracleDatabaseAgreement(agg, licensingObjectsMap, partsMap)
+
+	assert.Equal(t, expected, agg.Hosts)
 }
 
 func TestBuildOracleDatabaseLicensingObjectsMap(t *testing.T) {
