@@ -141,11 +141,12 @@ func (md *MongoDatabase) ListOracleDatabaseLicensingObjects() ([]apimodel.Oracle
 				)),
 			}),
 			mu.APProject(bson.M{
-				"_id":         0,
-				"name":        "$_id.object.name",
-				"type":        "$_id.object.type",
-				"licenseName": "$_id.licenseName",
-				"count":       1,
+				"_id":           0,
+				"name":          "$_id.object.name",
+				"type":          "$_id.object.type",
+				"licenseName":   "$_id.licenseName",
+				"count":         1,
+				"originalCount": "$count",
 			}),
 		),
 	)

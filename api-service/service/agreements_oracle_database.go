@@ -137,6 +137,15 @@ func (as *APIService) SearchOracleDatabaseAgreements(search string, filters apim
 		return nil, err
 	}
 
+	//Get the list of licensingObjecst
+	objs, err := as.Database.ListOracleDatabaseLicensingObjects()
+	if err != nil {
+		return nil, err
+	}
+
+	//Compute the algorithm
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(aggs, objs)
+
 	//Filter them!
 	filteredAggs := make([]apimodel.OracleDatabaseAgreementsFE, 0)
 	for _, agg := range aggs {
@@ -160,7 +169,7 @@ func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(a
 
 	// Debug print
 	if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
-		as.Log.Debugf("Agreements: %#v\nLicensingObjects: %#v\n", aggs, licensingObjects)
+		as.Log.Debugf("Agreements = %s\nLicensingObjects = %s\n", utils.ToJSON(aggs), utils.ToJSON(licensingObjects))
 	}
 
 	// Build data structure for fast access to the informations
@@ -175,7 +184,7 @@ func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(a
 
 		// Debug print
 		if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
-			as.Log.Debugf("Distributing licenses of agreement #%d to host. Agreement: %#v:\n", i, agg)
+			as.Log.Debugf("Distributing licenses of agreement #%d to host. Agreement = %s\n", i, utils.ToJSON(agg))
 		}
 
 		//distribute licenses for each host
@@ -257,10 +266,10 @@ func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(a
 			continue
 		}
 
-		//Debug print
-		if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
-			as.Log.Debugf("Finding valid agreement for licensingObject #%d. Agreement: %#v:\n", i, obj)
-		}
+		// //Debug print
+		// if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
+		// 	as.Log.Debugf("Finding valid agreement for licensingObject #%d. obj = %s\n", i, utils.ToJSON(obj))
+		// }
 
 		//Find a agreement that can cover the object
 		for j := range aggs {
@@ -316,6 +325,11 @@ func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(a
 				}
 			}
 		}
+	}
+
+	// Debug print
+	if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
+		as.Log.Debugf("Associations finished. LicensingObjects: %#v\n", licensingObjects)
 	}
 
 	type coverStatus struct {

@@ -28,6 +28,7 @@ import (
 	"github.com/ercole-io/ercole/utils"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
 	migration "github.com/ercole-io/ercole/database-migration"
@@ -243,6 +244,10 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 // serveAPIService setup and start the api-service
 func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	log := utils.NewLogger("APIS")
+
+	if config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
+		log.Level = logrus.DebugLevel
+	}
 
 	//Setup the database
 	db := &apiservice_database.MongoDatabase{
