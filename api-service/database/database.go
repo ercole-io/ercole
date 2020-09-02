@@ -121,6 +121,8 @@ type MongoDatabaseInterface interface {
 	InsertOracleDatabaseAgreement(aggreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
 	// ListOracleDatabaseAgreements lists the Oracle/Database agreements
 	ListOracleDatabaseAgreements() ([]apimodel.OracleDatabaseAgreementsFE, utils.AdvancedErrorInterface)
+	// ListOracleDatabaseLicensingObjects lists the hosts/clusters that need to be licensed by Oracle/Database agreements
+	ListOracleDatabaseLicensingObjects() ([]apimodel.OracleDatabaseLicensingObjects, utils.AdvancedErrorInterface)
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
