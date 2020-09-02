@@ -40,19 +40,19 @@ type OracleDatabaseAgreementsFE struct {
 	CSI             string                                     `json:"csi" bson:"csi"`
 	ReferenceNumber string                                     `json:"referenceNumber" bson:"referenceNumber"`
 	Unlimited       bool                                       `json:"unlimited" bson:"unlimited"`
-	Count           int                                        `json:"-" bson:"count"`
-	LicensesCount   int                                        `json:"licensesCount" bson:"licensesCount"`
-	UsersCount      int                                        `json:"usersCount" bson:"usersCount"`
-	AvailableCount  int                                        `json:"availableCount" bson:"availableCount"`
+	Count           float64                                    `json:"-" bson:"count"`
+	LicensesCount   float64                                    `json:"licensesCount" bson:"licensesCount"`
+	UsersCount      float64                                    `json:"usersCount" bson:"usersCount"`
+	AvailableCount  float64                                    `json:"availableCount" bson:"availableCount"`
 	CatchAll        bool                                       `json:"catchAll" bson:"catchAll"`
 	Hosts           []OracleDatabaseAgreementsAssociatedHostFE `json:"hosts" bson:"hosts"`
 }
 
 // OracleDatabaseAgreementsAssociatedHostFE contains the informations about a associated host in agreement
 type OracleDatabaseAgreementsAssociatedHostFE struct {
-	Hostname                  string `json:"hostname" bson:"hostname"`
-	CoveredLicensesCount      int    `json:"coveredLicensesCount" bson:"coveredLicensesCount"`
-	TotalCoveredLicensesCount int    `json:"totalCoveredLicensesCount" bson:"totalCoveredLicensesCount"`
+	Hostname                  string  `json:"hostname" bson:"hostname"`
+	CoveredLicensesCount      float64 `json:"coveredLicensesCount" bson:"coveredLicensesCount"`
+	TotalCoveredLicensesCount float64 `json:"totalCoveredLicensesCount" bson:"totalCoveredLicensesCount"`
 }
 
 // SearchOracleDatabaseAgreementsFilters contains the filters used to get the list of Oracle/Database agreements
