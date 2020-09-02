@@ -116,6 +116,8 @@ type APIService struct {
 	ReadOnly bool
 	// EnableInsertingCustomPatchingFunction enable the API for inserting custom patching functions
 	EnableInsertingCustomPatchingFunction bool
+	// DebugOracleDatabaseAgreementsAssignmentAlgorithm enable the debugging of the Oracle/Database agreements assignment algorithm
+	DebugOracleDatabaseAgreementsAssignmentAlgorithm bool
 	// AuthenticationProvider contains info about how the users are authenticated
 	AuthenticationProvider AuthenticationProviderConfig
 	// OperatingSystemAggregationRules contains rules used to aggregate various operating systems
