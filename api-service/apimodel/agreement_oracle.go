@@ -36,6 +36,7 @@ type OracleDatabaseAgreementsFE struct {
 	PartID          string                                     `json:"partID" bson:"partID"`
 	ItemDescription string                                     `json:"itemDescription" bson:"itemDescription"`
 	Metrics         string                                     `json:"metrics" bson:"metrics"`
+	Aliases         []string                                   `json:"-" bson:"-"`
 	CSI             string                                     `json:"csi" bson:"csi"`
 	ReferenceNumber string                                     `json:"referenceNumber" bson:"referenceNumber"`
 	Unlimited       bool                                       `json:"unlimited" bson:"unlimited"`
