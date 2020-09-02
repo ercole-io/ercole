@@ -836,6 +836,50 @@ func TestSortOracleDatabaseAgreementLicensingObjects(t *testing.T) {
 	assert.Equal(t, expected, list)
 }
 
+func TestSortOracleDatabaseAgreements(t *testing.T) {
+	list := []apimodel.OracleDatabaseAgreementsFE{
+		{CatchAll: true, Unlimited: false, UsersCount: 10},
+		{CatchAll: true, Unlimited: false, LicensesCount: 10},
+		{CatchAll: true, Unlimited: true, UsersCount: 20},
+		{CatchAll: false, Unlimited: false, LicensesCount: 20},
+		{CatchAll: false, Unlimited: true, UsersCount: 10},
+		{CatchAll: false, Unlimited: true, LicensesCount: 20},
+		{CatchAll: false, Unlimited: false, LicensesCount: 10},
+		{CatchAll: true, Unlimited: true, LicensesCount: 10},
+		{CatchAll: false, Unlimited: true, UsersCount: 20},
+		{CatchAll: false, Unlimited: false, UsersCount: 10},
+		{CatchAll: true, Unlimited: true, UsersCount: 10},
+		{CatchAll: true, Unlimited: true, LicensesCount: 20},
+		{CatchAll: true, Unlimited: false, LicensesCount: 20},
+		{CatchAll: false, Unlimited: false, UsersCount: 20},
+		{CatchAll: false, Unlimited: true, LicensesCount: 10},
+		{CatchAll: true, Unlimited: false, UsersCount: 20},
+	}
+
+	expected := []apimodel.OracleDatabaseAgreementsFE{
+		{CatchAll: false, Unlimited: false, UsersCount: 20},
+		{CatchAll: false, Unlimited: false, UsersCount: 10},
+		{CatchAll: false, Unlimited: false, LicensesCount: 20},
+		{CatchAll: false, Unlimited: false, LicensesCount: 10},
+		{CatchAll: false, Unlimited: true, UsersCount: 20},
+		{CatchAll: false, Unlimited: true, UsersCount: 10},
+		{CatchAll: false, Unlimited: true, LicensesCount: 20},
+		{CatchAll: false, Unlimited: true, LicensesCount: 10},
+		{CatchAll: true, Unlimited: false, UsersCount: 20},
+		{CatchAll: true, Unlimited: false, UsersCount: 10},
+		{CatchAll: true, Unlimited: false, LicensesCount: 20},
+		{CatchAll: true, Unlimited: false, LicensesCount: 10},
+		{CatchAll: true, Unlimited: true, UsersCount: 20},
+		{CatchAll: true, Unlimited: true, UsersCount: 10},
+		{CatchAll: true, Unlimited: true, LicensesCount: 20},
+		{CatchAll: true, Unlimited: true, LicensesCount: 10},
+	}
+
+	SortOracleDatabaseAgreements(list)
+
+	assert.Equal(t, expected, list)
+}
+
 func TestBuildOracleDatabaseLicensingObjectsMap(t *testing.T) {
 	list := []apimodel.OracleDatabaseLicensingObjects{
 		{
