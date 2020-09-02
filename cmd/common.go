@@ -52,19 +52,20 @@ var outputFormat string
 var mode string
 var mode2 string
 var metric string
-var agreementID string
-var partID string
-var itemDescription string
-var csi string
-var referenceNumber string
-var unlimited string
-var catchAll string
-var licensesCountLTE int
-var licensesCountGTE int
-var usersCountLTE int
-var usersCountGTE int
-var availableCountLTE int
-var availableCountGTE int
+var searchOracleDatabaseAgreementAgreementID string
+var searchOracleDatabaseAgreementMetrics string
+var searchOracleDatabaseAgreementPartID string
+var searchOracleDatabaseAgreementItemDescription string
+var searchOracleDatabaseAgreementCSI string
+var searchOracleDatabaseAgreementReferenceNumber string
+var searchOracleDatabaseAgreementUnlimited string
+var searchOracleDatabaseAgreementCatchAll string
+var searchOracleDatabaseAgreementLicensesCountLTE int
+var searchOracleDatabaseAgreementLicensesCountGTE int
+var searchOracleDatabaseAgreementUsersCountLTE int
+var searchOracleDatabaseAgreementUsersCountGTE int
+var searchOracleDatabaseAgreementAvailableCountLTE int
+var searchOracleDatabaseAgreementAvailableCountGTE int
 
 type apiOption struct {
 	addOption func(cmd *cobra.Command)
@@ -250,35 +251,35 @@ var metricOption apiOption = apiOption{
 
 var searchOracleDatabaseAgreementsOption apiOption = apiOption{
 	addOption: func(cmd *cobra.Command) {
-		cmd.Flags().StringVar(&agreementID, "agreement-id", "", "")
-		cmd.Flags().StringVar(&partID, "part-id", "", "")
-		cmd.Flags().StringVar(&itemDescription, "item-description", "", "")
-		cmd.Flags().StringVar(&csi, "csi", "", "")
-		cmd.Flags().StringVar(&metric, "metric", "", "")
-		cmd.Flags().StringVar(&referenceNumber, "reference-number", "", "")
-		cmd.Flags().StringVar(&unlimited, "unlimited", "", "NULL,true,false")
-		cmd.Flags().StringVar(&catchAll, "catch-all", "", "NULL,true,false")
-		cmd.Flags().IntVar(&licensesCountLTE, "licenses-count-lte", -1, "")
-		cmd.Flags().IntVar(&licensesCountGTE, "licenses-count-gte", -1, "")
-		cmd.Flags().IntVar(&usersCountLTE, "users-count-lte", -1, "")
-		cmd.Flags().IntVar(&usersCountGTE, "users-count-gte", -1, "")
-		cmd.Flags().IntVar(&availableCountLTE, "available-count-lte", -1, "")
-		cmd.Flags().IntVar(&availableCountGTE, "available-count-gte", -1, "")
+		cmd.Flags().StringVar(&searchOracleDatabaseAgreementAgreementID, "agreement-id", "", "")
+		cmd.Flags().StringVar(&searchOracleDatabaseAgreementPartID, "part-id", "", "")
+		cmd.Flags().StringVar(&searchOracleDatabaseAgreementItemDescription, "item-description", "", "")
+		cmd.Flags().StringVar(&searchOracleDatabaseAgreementCSI, "csi", "", "")
+		cmd.Flags().StringVar(&searchOracleDatabaseAgreementMetrics, "metric", "", "")
+		cmd.Flags().StringVar(&searchOracleDatabaseAgreementReferenceNumber, "reference-number", "", "")
+		cmd.Flags().StringVar(&searchOracleDatabaseAgreementUnlimited, "unlimited", "", "NULL,true,false")
+		cmd.Flags().StringVar(&searchOracleDatabaseAgreementCatchAll, "catch-all", "", "NULL,true,false")
+		cmd.Flags().IntVar(&searchOracleDatabaseAgreementLicensesCountLTE, "licenses-count-lte", -1, "")
+		cmd.Flags().IntVar(&searchOracleDatabaseAgreementLicensesCountGTE, "licenses-count-gte", -1, "")
+		cmd.Flags().IntVar(&searchOracleDatabaseAgreementUsersCountLTE, "users-count-lte", -1, "")
+		cmd.Flags().IntVar(&searchOracleDatabaseAgreementUsersCountGTE, "users-count-gte", -1, "")
+		cmd.Flags().IntVar(&searchOracleDatabaseAgreementAvailableCountLTE, "available-count-lte", -1, "")
+		cmd.Flags().IntVar(&searchOracleDatabaseAgreementAvailableCountGTE, "available-count-gte", -1, "")
 	},
 	addParam: func(params url.Values) {
-		params.Set("agreement-id", agreementID)
-		params.Set("part-id", partID)
-		params.Set("item-description", itemDescription)
-		params.Set("csi", csi)
-		params.Set("metrics", metric)
-		params.Set("unlimited", unlimited)
-		params.Set("catch-all", catchAll)
-		params.Set("licenses-count-lte", fmt.Sprintf("%d", licensesCountLTE))
-		params.Set("licenses-count-gte", fmt.Sprintf("%d", licensesCountGTE))
-		params.Set("users-count-lte", fmt.Sprintf("%d", usersCountLTE))
-		params.Set("users-count-gte", fmt.Sprintf("%d", usersCountGTE))
-		params.Set("available-count-lte", fmt.Sprintf("%d", availableCountLTE))
-		params.Set("available-count-gte", fmt.Sprintf("%d", availableCountGTE))
+		params.Set("agreement-id", searchOracleDatabaseAgreementAgreementID)
+		params.Set("part-id", searchOracleDatabaseAgreementPartID)
+		params.Set("item-description", searchOracleDatabaseAgreementItemDescription)
+		params.Set("csi", searchOracleDatabaseAgreementCSI)
+		params.Set("metrics", searchOracleDatabaseAgreementMetrics)
+		params.Set("unlimited", searchOracleDatabaseAgreementUnlimited)
+		params.Set("catch-all", searchOracleDatabaseAgreementCatchAll)
+		params.Set("licenses-count-lte", fmt.Sprintf("%d", searchOracleDatabaseAgreementLicensesCountLTE))
+		params.Set("licenses-count-gte", fmt.Sprintf("%d", searchOracleDatabaseAgreementLicensesCountGTE))
+		params.Set("users-count-lte", fmt.Sprintf("%d", searchOracleDatabaseAgreementUsersCountLTE))
+		params.Set("users-count-gte", fmt.Sprintf("%d", searchOracleDatabaseAgreementUsersCountGTE))
+		params.Set("available-count-lte", fmt.Sprintf("%d", searchOracleDatabaseAgreementAvailableCountLTE))
+		params.Set("available-count-gte", fmt.Sprintf("%d", searchOracleDatabaseAgreementAvailableCountGTE))
 	},
 }
 
