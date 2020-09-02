@@ -180,6 +180,25 @@ func SortOracleDatabaseAgreementLicensingObjects(obj []apimodel.OracleDatabaseLi
 	})
 }
 
+// SortOracleDatabaseAgreements sort the list of apimodel.OracleDatabaseAgreementsFE for GreedilyAssignOracleDatabaseAgreementsToLicensingObjects algorithm
+func SortOracleDatabaseAgreements(obj []apimodel.OracleDatabaseAgreementsFE) {
+	sort.Slice(obj, func(i, j int) bool {
+		if !obj[i].CatchAll && obj[j].CatchAll {
+			return true
+		} else if obj[i].CatchAll && !obj[j].CatchAll {
+			return false
+		} else if !obj[i].Unlimited && obj[j].Unlimited {
+			return true
+		} else if obj[i].Unlimited && !obj[j].Unlimited {
+			return false
+		} else if obj[i].UsersCount != obj[j].UsersCount {
+			return obj[i].UsersCount > obj[j].UsersCount
+		} else {
+			return obj[i].LicensesCount > obj[j].LicensesCount
+		}
+	})
+}
+
 // BuildOracleDatabaseLicensingObjectsMap return a map of license name to map of object name to pointer to  apimodel.OracleDatabaseLicensingObjects for fast object lookup
 func BuildOracleDatabaseLicensingObjectsMap(objs []apimodel.OracleDatabaseLicensingObjects) map[string]map[string]*apimodel.OracleDatabaseLicensingObjects {
 	res := make(map[string]map[string]*apimodel.OracleDatabaseLicensingObjects)
