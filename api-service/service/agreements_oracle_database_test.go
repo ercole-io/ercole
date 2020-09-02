@@ -886,3 +886,27 @@ func TestBuildOracleDatabaseLicensingObjectsMap(t *testing.T) {
 
 	assert.Equal(t, expected, BuildOracleDatabaseLicensingObjectsMap(list))
 }
+
+func TestBuildOracleDatabaseAgreementPartMap(t *testing.T) {
+	list := []model.OracleDatabaseAgreementPart{
+		{
+			ItemDescription: "asdasdas",
+			Aliases:         []string{"dasasd"},
+			Metrics:         "sdsdfasasd",
+			PartID:          "L10006",
+		},
+		{
+			ItemDescription: "asdasdfdsfsdas",
+			Aliases:         []string{"dasasd"},
+			Metrics:         "sdasjkhasd",
+			PartID:          "A90620",
+		},
+	}
+
+	expected := map[string]*model.OracleDatabaseAgreementPart{
+		"L10006": &list[0],
+		"A90620": &list[1],
+	}
+
+	assert.Equal(t, expected, BuildOracleDatabaseAgreementPartMap(list))
+}
