@@ -36,11 +36,10 @@ type OracleDatabaseAgreementsFE struct {
 	PartID          string                                     `json:"partID" bson:"partID"`
 	ItemDescription string                                     `json:"itemDescription" bson:"itemDescription"`
 	Metrics         string                                     `json:"metrics" bson:"metrics"`
-	Aliases         []string                                   `json:"-" bson:"-"`
 	CSI             string                                     `json:"csi" bson:"csi"`
 	ReferenceNumber string                                     `json:"referenceNumber" bson:"referenceNumber"`
 	Unlimited       bool                                       `json:"unlimited" bson:"unlimited"`
-	Count           float64                                    `json:"-" bson:"count"`
+	Count           float64                                    `json:"count" bson:"count"`
 	LicensesCount   float64                                    `json:"licensesCount" bson:"licensesCount"`
 	UsersCount      float64                                    `json:"usersCount" bson:"usersCount"`
 	AvailableCount  float64                                    `json:"availableCount" bson:"availableCount"`
@@ -79,5 +78,5 @@ type OracleDatabaseLicensingObjects struct {
 	Name          string  `json:"name" bson:"name"`
 	Type          string  `json:"type" bson:"type"` //host, cluster
 	Count         float64 `json:"count" bson:"count"`
-	OriginalCount float64 `json:"-" bson:"-"`
+	OriginalCount float64 `json:"originalCount" bson:"originalCount"`
 }
