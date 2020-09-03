@@ -506,3 +506,25 @@ func (as *APIService) AddAssociatedHostToOracleDatabaseAgreement(id primitive.Ob
 	//save the host in the database
 	return as.Database.UpdateOracleDatabaseAgreement(agg)
 }
+
+// RemoveAssociatedHostToOracleDatabaseAgreement remove the host from the list of associated hosts of the agreement
+func (as *APIService) RemoveAssociatedHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) utils.AdvancedErrorInterface {
+	var err utils.AdvancedErrorInterface
+
+	//check the existence and get the agreement
+	var agg model.OracleDatabaseAgreement
+	if agg, err = as.Database.FindOracleDatabaseAgreement(id); err != nil {
+		return err
+	}
+
+	//check the host isn't already part of the list, and do nothing
+	for i, host := range agg.Hosts {
+		if host == hostname {
+			//Remove the host and update the agreement
+			agg.Hosts = append(agg.Hosts[:i], agg.Hosts[i+1:]...)
+			return as.Database.UpdateOracleDatabaseAgreement(agg)
+		}
+	}
+
+	return nil
+}

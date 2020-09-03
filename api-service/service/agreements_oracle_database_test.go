@@ -2034,3 +2034,91 @@ func TestAddAssociatedHostToOracleDatabaseAgreement_FailedInternalServerError3(t
 	err := as.AddAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost")
 	require.Equal(t, aerrMock, err)
 }
+
+func TestRemoveAssociatedHostToOracleDatabaseAgreement_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+	}
+
+	returnedAgg := model.OracleDatabaseAgreement{
+		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
+		AgreementID:     "abcde",
+		CSI:             "435435",
+		CatchAll:        true,
+		Count:           345,
+		Hosts:           []string{"foo", "bar", "foohost"},
+		ItemDescription: "fgfgd",
+		Metrics:         "Processor Perpetual",
+		PartID:          "678867",
+		ReferenceNumber: "567768",
+		Unlimited:       true,
+	}
+
+	updatedAgg := model.OracleDatabaseAgreement{
+		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
+		AgreementID:     "abcde",
+		CSI:             "435435",
+		CatchAll:        true,
+		Count:           345,
+		Hosts:           []string{"foo", "bar"},
+		ItemDescription: "fgfgd",
+		Metrics:         "Processor Perpetual",
+		PartID:          "678867",
+		ReferenceNumber: "567768",
+		Unlimited:       true,
+	}
+
+	db.EXPECT().FindOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(returnedAgg, nil)
+	db.EXPECT().UpdateOracleDatabaseAgreement(updatedAgg).Return(nil)
+
+	err := as.RemoveAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost")
+	require.NoError(t, err)
+}
+
+func TestRemoveAssociatedHostToOracleDatabaseAgreement_SuccessNoHost(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+	}
+
+	returnedAgg := model.OracleDatabaseAgreement{
+		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
+		AgreementID:     "abcde",
+		CSI:             "435435",
+		CatchAll:        true,
+		Count:           345,
+		Hosts:           []string{"foo", "bar"},
+		ItemDescription: "fgfgd",
+		Metrics:         "Processor Perpetual",
+		PartID:          "678867",
+		ReferenceNumber: "567768",
+		Unlimited:       true,
+	}
+
+	db.EXPECT().FindOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(returnedAgg, nil)
+
+	err := as.RemoveAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost")
+	require.NoError(t, err)
+}
+
+func TestRemoveAssociatedHostToOracleDatabaseAgreement_FailedInternalServerError1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+	}
+
+	db.EXPECT().FindOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(model.OracleDatabaseAgreement{}, aerrMock)
+
+	err := as.RemoveAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost")
+	require.Equal(t, aerrMock, err)
+}
