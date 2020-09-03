@@ -93,6 +93,7 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/agreements/oracle/database", ctrl.AddOracleDatabaseAgreements).Methods("POST")
 	router.HandleFunc("/agreements/oracle/database", ctrl.SearchOracleDatabaseAgreements).Methods("GET")
 	router.HandleFunc("/agreements/oracle/database/{id}/hosts", ctrl.AddAssociatedHostToOracleDatabaseAgreement).Methods("POST")
+	router.HandleFunc("/agreements/oracle/database/{id}/hosts/{hostname}", ctrl.RemoveAssociatedHostToOracleDatabaseAgreement).Methods("DELETE")
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")
 	router.HandleFunc("/alerts/{id}", ctrl.AckAlert).Methods("POST")
 
