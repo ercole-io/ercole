@@ -475,3 +475,34 @@ func BuildOracleDatabaseAgreementPartMap(parts []model.OracleDatabaseAgreementPa
 
 	return res
 }
+
+// AddAssociatedHostToOracleDatabaseAgreement a new host to the list of associated hosts of the agreement
+func (as *APIService) AddAssociatedHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) utils.AdvancedErrorInterface {
+	var err utils.AdvancedErrorInterface
+
+	//check the existence of the host
+	if exist, err := as.Database.ExistNotInClusterHost(hostname); err != nil {
+		return err
+	} else if !exist {
+		return utils.AerrNotInClusterHostNotFound
+	}
+
+	//check the existence and get the agreement
+	var agg model.OracleDatabaseAgreement
+	if agg, err = as.Database.FindOracleDatabaseAgreement(id); err != nil {
+		return err
+	}
+
+	//check the host isn't already part of the list, and do nothing
+	for _, host := range agg.Hosts {
+		if host == hostname {
+			return nil
+		}
+	}
+
+	//add the host to the list
+	agg.Hosts = append(agg.Hosts, hostname)
+
+	//save the host in the database
+	return as.Database.UpdateOracleDatabaseAgreement(agg)
+}

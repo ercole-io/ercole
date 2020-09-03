@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"testing"
 
 	"github.com/ercole-io/ercole/api-service/apimodel"
 	"github.com/ercole-io/ercole/model"
@@ -215,4 +216,35 @@ func (m *MongodbSuite) TestListOracleDatabaseLicensingObjects() {
 			OriginalCount: 70,
 		},
 	}, out)
+}
+
+func (m *MongodbSuite) TestFindOracleDatabaseAgreement() {
+	defer m.db.Client.Database(m.dbname).Collection("agreements_oracle_database").DeleteMany(context.TODO(), bson.M{})
+	agg1 := model.OracleDatabaseAgreement{
+		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
+		AgreementID:     "abcde",
+		CSI:             "435435",
+		CatchAll:        true,
+		Count:           345,
+		Hosts:           []string{"foo", "bar"},
+		ItemDescription: "fgfgd",
+		Metrics:         "Processor Perpetual",
+		PartID:          "678867",
+		ReferenceNumber: "567768",
+		Unlimited:       true,
+	}
+
+	_, err := m.db.InsertOracleDatabaseAgreement(agg1)
+	require.NoError(m.T(), err)
+
+	m.T().Run("id_exist", func(t *testing.T) {
+		out, err := m.db.FindOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
+		require.NoError(t, err)
+		assert.Equal(t, agg1, out)
+	})
+
+	m.T().Run("id_not_exist", func(t *testing.T) {
+		_, err := m.db.FindOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8539"))
+		require.Equal(t, utils.AerrOracleDatabaseAgreementNotFound, err)
+	})
 }

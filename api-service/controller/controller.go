@@ -126,6 +126,9 @@ type APIControllerInterface interface {
 
 	// AddOracleDatabaseAgreements add some agreements
 	AddOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request)
+	// AddAssociatedHostToOracleDatabaseAgreement add a asscociated host to a agreement
+	AddAssociatedHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
+
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(w http.ResponseWriter, r *http.Request)
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license
