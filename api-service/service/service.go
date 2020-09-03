@@ -138,8 +138,10 @@ type APIServiceInterface interface {
 	AddOracleDatabaseAgreements(req apimodel.OracleDatabaseAgreementsAddRequest) (interface{}, utils.AdvancedErrorInterface)
 	// SearchOracleDatabaseAgreements search Oracle/Database agreements
 	SearchOracleDatabaseAgreements(search string, filters apimodel.SearchOracleDatabaseAgreementsFilters) ([]apimodel.OracleDatabaseAgreementsFE, utils.AdvancedErrorInterface)
-	// AddAssociatedHostToOracleDatabaseAgreement a new host to the list of associated hosts of the agreement
+	// AddAssociatedHostToOracleDatabaseAgreement add a new host to the list of associated hosts of the agreement
 	AddAssociatedHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
+	// RemoveAssociatedHostToOracleDatabaseAgreement remove the host from the list of associated hosts of the agreement
+	RemoveAssociatedHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
 
 	// SetLicensesCount set the count of all licenses in newLicenses
 	// It assumes that newLicenses maps contain the string _id and the int Count
