@@ -509,3 +509,47 @@ func (md *MongoDatabase) ArchiveHost(hostname string) utils.AdvancedErrorInterfa
 		return nil
 	}
 }
+
+// ExistNotInClusterHost return true if the host specified by hostname exist and it is not in cluster, otherwise false
+func (md *MongoDatabase) ExistNotInClusterHost(hostname string) (bool, utils.AdvancedErrorInterface) {
+	//check that the host exist
+	var out []struct{} = make([]struct{}, 0)
+
+	//Find the matching alerts
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			mu.APMatch(bson.M{
+				"archived": false,
+				"hostname": hostname,
+			}),
+			mu.APProject(bson.M{
+				"hostname": true,
+			}),
+			mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "cluster", mu.MAPipeline(
+				mu.APMatch(bson.M{
+					"archived": false,
+				}),
+				mu.APUnwind("$clusters"),
+				mu.APReplaceWith("$clusters"),
+				mu.APUnwind("$vms"),
+				mu.APSet(bson.M{
+					"vms.clusterName": "$name",
+				}),
+				mu.APMatch(mu.QOExpr(mu.APOEqual("$vms.hostname", "$$hn"))),
+				mu.APLimit(1),
+			)),
+			mu.APMatch(mu.QOExpr(mu.APOEqual(mu.APOSize("$cluster"), 0))),
+		),
+	)
+	if err != nil {
+		return false, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Decode the documents
+	if err = cur.All(context.TODO(), &out); err != nil {
+		return false, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+	}
+
+	return len(out) > 0, nil
+}
