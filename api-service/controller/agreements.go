@@ -173,7 +173,35 @@ func (ctrl *APIController) AddAssociatedHostToOracleDatabaseAgreement(w http.Res
 	} else if aerr == utils.AerrNotInClusterHostNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
 		return
-	} else if aerr == utils.AerrOracleDatabaseAgreementNotFound {
+	} else if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Write the created id
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
+}
+
+// RemoveAssociatedHostToOracleDatabaseAgreement remove a asscociated host of a agreement
+func (ctrl *APIController) RemoveAssociatedHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	var err error
+	var aerr utils.AdvancedErrorInterface
+	var id primitive.ObjectID
+	var hostname string
+	//Get the id from the path variable
+	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		return
+	}
+	hostname = mux.Vars(r)["hostname"]
+
+	//Add it!
+	if aerr = ctrl.Service.RemoveAssociatedHostToOracleDatabaseAgreement(id, hostname); aerr == utils.AerrOracleDatabaseAgreementNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
 		return
 	} else if aerr != nil {
