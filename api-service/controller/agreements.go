@@ -22,6 +22,8 @@ import (
 
 	"github.com/ercole-io/ercole/api-service/apimodel"
 	"github.com/ercole-io/ercole/utils"
+	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/square/go-jose.v2/json"
 )
 
@@ -137,4 +139,48 @@ func GetSearchOracleDatabaseAgreementsFilters(r *http.Request) (apimodel.SearchO
 		return apimodel.SearchOracleDatabaseAgreementsFilters{}, aerr
 	}
 	return filters, nil
+}
+
+// AddAssociatedHostToOracleDatabaseAgreement add a asscociated host to a agreement
+func (ctrl *APIController) AddAssociatedHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	var err error
+	var aerr utils.AdvancedErrorInterface
+	var id primitive.ObjectID
+
+	//Get the id from the path variable
+	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		return
+	}
+
+	//Read all bytes for the request
+	raw, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
+		return
+	}
+	defer r.Body.Close()
+
+	//Add it!
+	if aerr = ctrl.Service.AddAssociatedHostToOracleDatabaseAgreement(id, string(raw)); aerr == utils.AerrOracleDatabaseAgreementNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
+		return
+	} else if aerr == utils.AerrNotInClusterHostNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
+		return
+	} else if aerr == utils.AerrOracleDatabaseAgreementNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
+		return
+	} else if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Write the created id
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }

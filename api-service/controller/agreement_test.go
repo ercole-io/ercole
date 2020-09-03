@@ -27,6 +27,7 @@ import (
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -417,4 +418,238 @@ func TestGetSearchOracleDatabaseAgreementsFilters_Fail8(t *testing.T) {
 	require.NoError(t, err)
 	_, err = GetSearchOracleDatabaseAgreementsFilters(r)
 	require.Error(t, err)
+}
+
+func TestAddAssociatedHostToOracleDatabaseAgreement_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().AddAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AddAssociatedHostToOracleDatabaseAgreement)
+	req, err := http.NewRequest("POST", "/", strings.NewReader("foohost"))
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "5f50a98611959b1baa17525e",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+}
+
+func TestAddAssociatedHostToOracleDatabaseAgreement_FailedReadOnly(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: true,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AddAssociatedHostToOracleDatabaseAgreement)
+	req, err := http.NewRequest("POST", "/", strings.NewReader("foohost"))
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "5f50a98611959b1baa17525e",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusForbidden, rr.Code)
+}
+
+func TestAddAssociatedHostToOracleDatabaseAgreement_FailedInvalidID(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AddAssociatedHostToOracleDatabaseAgreement)
+	req, err := http.NewRequest("POST", "/", strings.NewReader("foohost"))
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "saddsfadasf",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestAddAssociatedHostToOracleDatabaseAgreement_FailedBrokenBody(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AddAssociatedHostToOracleDatabaseAgreement)
+	req, err := http.NewRequest("POST", "/", &FailingReader{})
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "5f50a98611959b1baa17525e",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusBadRequest, rr.Code)
+}
+
+func TestAddAssociatedHostToOracleDatabaseAgreement_FailedAgreementNotFound(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().AddAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.AerrOracleDatabaseAgreementNotFound)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AddAssociatedHostToOracleDatabaseAgreement)
+	req, err := http.NewRequest("POST", "/", strings.NewReader("foohost"))
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "5f50a98611959b1baa17525e",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusNotFound, rr.Code)
+}
+
+func TestAddAssociatedHostToOracleDatabaseAgreement_FailedNotInClusterHostNotFound(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().AddAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.AerrNotInClusterHostNotFound)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AddAssociatedHostToOracleDatabaseAgreement)
+	req, err := http.NewRequest("POST", "/", strings.NewReader("foohost"))
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "5f50a98611959b1baa17525e",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusNotFound, rr.Code)
+}
+
+func TestAddAssociatedHostToOracleDatabaseAgreement_FailedAerrOracleDatabaseAgreementNotFound(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().AddAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.AerrOracleDatabaseAgreementNotFound)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AddAssociatedHostToOracleDatabaseAgreement)
+	req, err := http.NewRequest("POST", "/", strings.NewReader("foohost"))
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "5f50a98611959b1baa17525e",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusNotFound, rr.Code)
+}
+
+func TestAddAssociatedHostToOracleDatabaseAgreement_FailedInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().AddAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.AddAssociatedHostToOracleDatabaseAgreement)
+	req, err := http.NewRequest("POST", "/", strings.NewReader("foohost"))
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "5f50a98611959b1baa17525e",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
