@@ -123,6 +123,10 @@ type MongoDatabaseInterface interface {
 	ListOracleDatabaseAgreements() ([]apimodel.OracleDatabaseAgreementsFE, utils.AdvancedErrorInterface)
 	// ListOracleDatabaseLicensingObjects lists the hosts/clusters that need to be licensed by Oracle/Database agreements
 	ListOracleDatabaseLicensingObjects() ([]apimodel.OracleDatabaseLicensingObjects, utils.AdvancedErrorInterface)
+	// FindOracleDatabaseAgreement return the agreement specified by id
+	FindOracleDatabaseAgreement(id primitive.ObjectID) (model.OracleDatabaseAgreement, utils.AdvancedErrorInterface)
+	// UpdateOracleDatabaseAgreement update a Oracle/Database agreement in the database
+	UpdateOracleDatabaseAgreement(newAgreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface
 
 	// SetLicenseCount set the count of a certain license
 	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
@@ -150,6 +154,8 @@ type MongoDatabaseInterface interface {
 	ExistHostdata(hostname string) (bool, utils.AdvancedErrorInterface)
 	// GetTechnologiesUsage return a map that contains the number of usages for every features
 	GetTechnologiesUsage(location string, environment string, olderThan time.Time) (map[string]float64, utils.AdvancedErrorInterface)
+	// ExistNotInClusterHost return true if the host specified by hostname exist and it is not in cluster, otherwise false
+	ExistNotInClusterHost(hostname string) (bool, utils.AdvancedErrorInterface)
 }
 
 // MongoDatabase is a implementation

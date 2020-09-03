@@ -1036,3 +1036,26 @@ func (m *MongodbSuite) TestArchiveHost() {
 	m.Require().NoError(err)
 	m.Assert().False(val)
 }
+
+func (m *MongodbSuite) TestExistNotInClusterHost() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_17.json"))
+
+	m.T().Run("foobar_not_exist", func(t *testing.T) {
+		out, err := m.db.ExistNotInClusterHost("foobar")
+		require.NoError(t, err)
+		assert.False(t, out)
+	})
+	m.T().Run("test_db_in_cluster", func(t *testing.T) {
+		out, err := m.db.ExistNotInClusterHost("test-db")
+		require.NoError(t, err)
+		assert.False(t, out)
+	})
+	m.T().Run("test_db3_not_in_cluster", func(t *testing.T) {
+		out, err := m.db.ExistNotInClusterHost("test-db3")
+		require.NoError(t, err)
+		assert.True(t, out)
+	})
+}

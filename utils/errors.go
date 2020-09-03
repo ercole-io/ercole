@@ -43,3 +43,11 @@ var AerrClusterNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrClusterN
 // ErrOracleDatabaseAgreementInvalidPartID contains "Invalid PartID in request" error
 var ErrOracleDatabaseAgreementInvalidPartID = errors.New("Invalid PartID in request")
 var AerrOracleDatabaseAgreementInvalidPartID AdvancedErrorInterface = NewAdvancedErrorPtr(ErrOracleDatabaseAgreementInvalidPartID, "CLIENT ERROR")
+
+// ErrOracleDatabaseAgreementNotFound contains "Agreement not found" error
+var ErrOracleDatabaseAgreementNotFound = errors.New("Agreement not found")
+var AerrOracleDatabaseAgreementNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrOracleDatabaseAgreementNotFound, "DB ERROR")
+
+// ErrNotInClusterHostNotFound contains "Baremetal host not found" error
+var ErrNotInClusterHostNotFound = errors.New("Not in cluster host not found")
+var AerrNotInClusterHostNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrNotInClusterHostNotFound, "DB ERROR")
