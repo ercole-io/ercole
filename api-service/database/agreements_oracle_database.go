@@ -23,6 +23,7 @@ import (
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -159,4 +160,35 @@ func (md *MongoDatabase) ListOracleDatabaseLicensingObjects() ([]apimodel.Oracle
 		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 	}
 	return out, nil
+}
+
+// FindOracleDatabaseAgreement return the agreement specified by id
+func (md *MongoDatabase) FindOracleDatabaseAgreement(id primitive.ObjectID) (model.OracleDatabaseAgreement, utils.AdvancedErrorInterface) {
+	//Find the matching alerts
+	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("agreements_oracle_database").FindOne(context.TODO(), bson.M{
+		"_id": id,
+	})
+	if res.Err() == mongo.ErrNoDocuments {
+		return model.OracleDatabaseAgreement{}, utils.AerrOracleDatabaseAgreementNotFound
+	} else if res.Err() != nil {
+		return model.OracleDatabaseAgreement{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+	}
+
+	//Decode the documents
+	var out model.OracleDatabaseAgreement
+	if err := res.Decode(&out); err != nil {
+		return model.OracleDatabaseAgreement{}, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+	}
+	return out, nil
+}
+
+// UpdateOracleDatabaseAgreement update a Oracle/Database agreement in the database
+func (md *MongoDatabase) UpdateOracleDatabaseAgreement(agg model.OracleDatabaseAgreement) utils.AdvancedErrorInterface {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("agreements_oracle_database").ReplaceOne(context.TODO(), bson.M{
+		"_id": agg.ID,
+	}, agg)
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+	return nil
 }
