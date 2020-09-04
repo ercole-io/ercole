@@ -121,7 +121,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		},
 	}
 	db.EXPECT().
-		SearchLicenses("summary", "", false, -1, -1, "Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		SearchLicenses("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 		Return(listLicensesRes, nil).AnyTimes().MinTimes(1)
 
 	getTechnologiesUsageRes2 := map[string]float64{
@@ -196,7 +196,7 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 		},
 	}
 	db.EXPECT().
-		SearchLicenses("summary", "", false, -1, -1, "Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		SearchLicenses("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 		Return(listLicensesRes, nil).AnyTimes().MinTimes(1)
 
 	db.EXPECT().

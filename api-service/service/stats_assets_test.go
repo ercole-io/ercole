@@ -79,7 +79,7 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 		},
 	}
 	db.EXPECT().
-		SearchLicenses("summary", "", false, -1, -1, "Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		SearchLicenses("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(listLicensesRes, nil).AnyTimes().MinTimes(1)
 
 	res, err := as.GetTotalTechnologiesComplianceStats(

@@ -144,7 +144,7 @@ func (as *APIService) SearchOracleDatabaseAgreements(search string, filters apim
 	}
 
 	//Compute the algorithm
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(aggs, objs)
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(aggs, objs, nil)
 
 	//Filter them!
 	filteredAggs := make([]apimodel.OracleDatabaseAgreementsFE, 0)
@@ -160,7 +160,7 @@ func (as *APIService) SearchOracleDatabaseAgreements(search string, filters apim
 }
 
 // GreedilyAssignOracleDatabaseAgreementsToLicensingObjects assign in-place the agreements greedly to every licensingObjects by modifying them
-func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(aggs []apimodel.OracleDatabaseAgreementsFE, licensingObjects []apimodel.OracleDatabaseLicensingObjects) {
+func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(aggs []apimodel.OracleDatabaseAgreementsFE, licensingObjects []apimodel.OracleDatabaseLicensingObjects, lics []apimodel.OracleDatabaseLicenseInfo) {
 	//TODO: optimize this algorithm!
 
 	// Sort the arrays for optimizing the greedy take of the right object
@@ -379,6 +379,32 @@ func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(a
 			agg.AvailableCount = -uncoveredLicenseAssociatedHostSum
 		} else {
 			agg.AvailableCount = -uncoveredLicenseUnassociatedObjSum
+		}
+	}
+
+	if lics != nil {
+		//Build map for lics
+		licsMap := BuildOracleDatabaseLicenseInfoMap(lics)
+
+		// Set the count/unlimited
+		for _, agg := range aggs {
+			for _, alias := range partsMap[agg.PartID].Aliases {
+				licsMap[alias].Count += agg.LicensesCount + agg.UsersCount*25
+				licsMap[alias].Unlimited = licsMap[alias].Unlimited || agg.Unlimited
+			}
+		}
+
+		// Set the used and covered
+		for _, obj := range licensingObjects {
+			licsMap[obj.LicenseName].TotalCoveredLicenses += obj.OriginalCount - obj.Count
+			licsMap[obj.LicenseName].Used += obj.OriginalCount
+		}
+
+		// Set the cost
+		for i := range lics {
+			lic := &lics[i]
+			lic.PaidCost = lic.TotalCoveredLicenses * lic.CostPerProcessor
+			lic.TotalCost = lic.Used * lic.CostPerProcessor
 		}
 	}
 }
