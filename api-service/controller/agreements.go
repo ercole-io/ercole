@@ -212,3 +212,32 @@ func (ctrl *APIController) RemoveAssociatedHostToOracleDatabaseAgreement(w http.
 	//Write the created id
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
+
+// DeleteOracleDatabaseAgreement delete a agreement
+func (ctrl *APIController) DeleteOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	var err error
+	var aerr utils.AdvancedErrorInterface
+	var id primitive.ObjectID
+	//Get the id from the path variable
+	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		return
+	}
+
+	//Add it!
+	if aerr = ctrl.Service.DeleteOracleDatabaseAgreement(id); aerr == utils.AerrOracleDatabaseAgreementNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
+		return
+	} else if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	//Write the created id
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
+}
