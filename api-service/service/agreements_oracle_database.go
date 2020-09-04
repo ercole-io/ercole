@@ -359,7 +359,8 @@ func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(a
 		//calculate available
 		for _, alias := range partsMap[agg.PartID].Aliases {
 			uncoveredLicenseUnassociatedObjSum += allLicensesCoverStatus[alias].TotalCoverableLicenses - allLicensesCoverStatus[alias].Covered
-			for j, host := range agg.Hosts {
+			for j := range agg.Hosts {
+				host := &agg.Hosts[j]
 				// If no host require a license with licenseName == alias, skip
 				if _, ok := licensingObjectsMap[alias]; !ok {
 					continue
@@ -368,7 +369,8 @@ func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(a
 				if _, ok := licensingObjectsMap[alias][host.Hostname]; !ok {
 					continue
 				}
-				agg.Hosts[j].TotalCoveredLicensesCount = licensingObjectsMap[alias][host.Hostname].OriginalCount - licensingObjectsMap[alias][host.Hostname].Count
+				host.TotalCoveredLicensesCount = licensingObjectsMap[alias][host.Hostname].OriginalCount - licensingObjectsMap[alias][host.Hostname].Count
+				host.ConsumedLicensesCount = licensingObjectsMap[alias][host.Hostname].OriginalCount
 				uncoveredLicenseAssociatedHostSum += licensingObjectsMap[alias][host.Hostname].Count //non-covered part
 			}
 		}
