@@ -485,37 +485,3 @@ func TestGetLicense_Fail(t *testing.T) {
 	require.Nil(t, res)
 	assert.Equal(t, aerrMock, err)
 }
-
-func TestSetLicenseCount_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-	}
-
-	db.EXPECT().SetLicenseCount(
-		"Oracle ENT", 1,
-	).Return(nil).Times(1)
-
-	err := as.SetLicenseCount("Oracle ENT", 1)
-
-	require.NoError(t, err)
-}
-
-func TestSetLicenseCount_Fail(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-	}
-
-	db.EXPECT().SetLicenseCount(
-		"Oracle ENT", 1,
-	).Return(aerrMock).Times(1)
-
-	err := as.SetLicenseCount("Oracle ENT", 1)
-
-	require.Equal(t, aerrMock, err)
-}
