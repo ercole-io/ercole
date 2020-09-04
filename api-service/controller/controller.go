@@ -133,8 +133,6 @@ type APIControllerInterface interface {
 	// RemoveAssociatedHostToOracleDatabaseAgreement remove a asscociated host of a agreement
 	RemoveAssociatedHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
 
-	// SetLicenseCount set the count of a certain license
-	SetLicenseCount(w http.ResponseWriter, r *http.Request)
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license
 	SetLicenseCostPerProcessor(w http.ResponseWriter, r *http.Request)
 	// SetLicenseUnlimitedStatus set the unlimited status of a certain license
