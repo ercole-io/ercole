@@ -131,8 +131,6 @@ type MongoDatabaseInterface interface {
 	// UpdateOracleDatabaseAgreement update a Oracle/Database agreement in the database
 	UpdateOracleDatabaseAgreement(newAgreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface
 
-	// SetLicenseCount set the count of a certain license
-	SetLicenseCount(name string, count int) utils.AdvancedErrorInterface
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license
 	SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface
 	// SetLicenseUnlimitedStatus set the unlimited status of a certain license
