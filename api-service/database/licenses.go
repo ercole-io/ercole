@@ -354,23 +354,3 @@ func (md *MongoDatabase) SetLicenseCostPerProcessor(name string, count float64) 
 		return nil
 	}
 }
-
-// SetLicenseUnlimitedStatus set the unlimited status of a certain license
-func (md *MongoDatabase) SetLicenseUnlimitedStatus(name string, unlimitedStatus bool) utils.AdvancedErrorInterface {
-	//Find the informations
-	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses").UpdateOne(context.TODO(), bson.M{
-		"_id": name,
-	}, mu.UOSet(bson.M{
-		"unlimited": unlimitedStatus,
-	}))
-	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
-	}
-
-	//Check the existance of the result
-	if res.MatchedCount == 0 {
-		return utils.AerrLicenseNotFound
-	} else {
-		return nil
-	}
-}
