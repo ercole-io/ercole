@@ -126,6 +126,8 @@ type APIControllerInterface interface {
 
 	// AddOracleDatabaseAgreements add some agreements
 	AddOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request)
+	// DeleteOracleDatabaseAgreement delete a agreement
+	DeleteOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
 	// AddAssociatedHostToOracleDatabaseAgreement add a asscociated host to a agreement
 	AddAssociatedHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
 	// RemoveAssociatedHostToOracleDatabaseAgreement remove a asscociated host of a agreement
