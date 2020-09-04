@@ -291,12 +291,12 @@
     "partID": "L47210",
     "itemDescription": "Oracle Active Data Guard",
     "metrics": "Named User Plus Perpetual",
-    "aliases": [ "Named User Plus Perpetual" ]
+    "aliases": [ "Active Data Guard" ]
   },
   {
     "partID": "L47217",
     "itemDescription": "Oracle Active Data Guard",
     "metrics": "Processor Perpetual",
-    "aliases": [ "Named User Plus Perpetual" ]
+    "aliases": [ "Active Data Guard" ]
   }
 ]
