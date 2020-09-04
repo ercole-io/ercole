@@ -192,3 +192,18 @@ func (md *MongoDatabase) UpdateOracleDatabaseAgreement(agg model.OracleDatabaseA
 	}
 	return nil
 }
+
+// RemoveOracleDatabaseAgreement remove a Oracle/Database agreement from the database
+func (md *MongoDatabase) RemoveOracleDatabaseAgreement(id primitive.ObjectID) utils.AdvancedErrorInterface {
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("agreements_oracle_database").DeleteOne(context.TODO(), bson.M{
+		"_id": id,
+	})
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	if res.DeletedCount == 0 {
+		return utils.AerrOracleDatabaseAgreementNotFound
+	}
+	return nil
+}

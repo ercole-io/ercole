@@ -119,6 +119,9 @@ type MongoDatabaseInterface interface {
 
 	// InsertOracleDatabaseAgreement insert a Oracle/Database agreement into the database
 	InsertOracleDatabaseAgreement(aggreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
+	// RemoveOracleDatabaseAgreement remove a Oracle/Database agreement from the database
+	RemoveOracleDatabaseAgreement(id primitive.ObjectID) utils.AdvancedErrorInterface
+
 	// ListOracleDatabaseAgreements lists the Oracle/Database agreements
 	ListOracleDatabaseAgreements() ([]apimodel.OracleDatabaseAgreementsFE, utils.AdvancedErrorInterface)
 	// ListOracleDatabaseLicensingObjects lists the hosts/clusters that need to be licensed by Oracle/Database agreements
