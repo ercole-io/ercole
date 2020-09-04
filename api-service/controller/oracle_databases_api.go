@@ -606,6 +606,55 @@ func (ctrl *APIController) SearchLicenses(w http.ResponseWriter, r *http.Request
 	}
 }
 
+// SearchOracleDatabaseConsumedLicenses search licenses consumed by the hosts using the filters in the request
+func (ctrl *APIController) SearchOracleDatabaseConsumedLicenses(w http.ResponseWriter, r *http.Request) {
+	var sortBy string
+	var sortDesc bool
+	var pageNumber int
+	var pageSize int
+	var location string
+	var environment string
+	var olderThan time.Time
+
+	var err utils.AdvancedErrorInterface
+
+	//parse the query params
+	sortBy = r.URL.Query().Get("sort-by")
+	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	location = r.URL.Query().Get("location")
+	environment = r.URL.Query().Get("environment")
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	//get the data
+	licenses, err := ctrl.Service.SearchOracleDatabaseConsumedLicenses(sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if pageNumber == -1 || pageSize == -1 {
+		//Write the data
+		utils.WriteJSONResponse(w, http.StatusOK, licenses)
+	} else {
+		//Write the data
+		utils.WriteJSONResponse(w, http.StatusOK, licenses[0])
+	}
+}
+
 // GetLicense return a certain license asked in the request
 func (ctrl *APIController) GetLicense(w http.ResponseWriter, r *http.Request) {
 	var err utils.AdvancedErrorInterface
