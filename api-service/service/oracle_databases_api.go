@@ -65,8 +65,3 @@ func (as *APIService) GetLicense(name string, olderThan time.Time) (interface{},
 func (as *APIService) SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface {
 	return as.Database.SetLicenseCostPerProcessor(name, costPerProcessor)
 }
-
-// SetLicenseUnlimitedStatus set the unlimited status of a certain license
-func (as *APIService) SetLicenseUnlimitedStatus(name string, unlimitedStatus bool) utils.AdvancedErrorInterface {
-	return as.Database.SetLicenseUnlimitedStatus(name, unlimitedStatus)
-}

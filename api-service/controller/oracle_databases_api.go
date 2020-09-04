@@ -667,39 +667,3 @@ func (ctrl *APIController) SetLicenseCostPerProcessor(w http.ResponseWriter, r *
 	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
-
-// SetLicenseUnlimitedStatus set the unlimited status of a certain license
-func (ctrl *APIController) SetLicenseUnlimitedStatus(w http.ResponseWriter, r *http.Request) {
-	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
-		return
-	}
-
-	//get the data
-	name := mux.Vars(r)["name"]
-
-	raw, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, "BAD_REQUEST"))
-		return
-	}
-
-	newUnlimitedStatus, err := strconv.ParseBool(string(raw))
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, "BAD_REQUEST"))
-		return
-	}
-
-	//set the value
-	aerr := ctrl.Service.SetLicenseUnlimitedStatus(name, newUnlimitedStatus)
-	if aerr == utils.AerrLicenseNotFound {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
-		return
-	} else if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
-		return
-	}
-
-	//Write the data
-	utils.WriteJSONResponse(w, http.StatusOK, nil)
-}
