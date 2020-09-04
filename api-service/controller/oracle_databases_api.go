@@ -16,7 +16,6 @@
 package controller
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -733,50 +732,6 @@ func (ctrl *APIController) SetLicenseUnlimitedStatus(w http.ResponseWriter, r *h
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
 		return
 	} else if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
-		return
-	}
-
-	//Write the data
-	utils.WriteJSONResponse(w, http.StatusOK, nil)
-}
-
-// SetLicensesCount set the count of licenses
-func (ctrl *APIController) SetLicensesCount(w http.ResponseWriter, r *http.Request) {
-	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
-		return
-	}
-
-	//get the data
-	var newLicensesCount []map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&newLicensesCount); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
-		return
-	}
-
-	//Check and fix the data
-	for _, lic := range newLicensesCount {
-		if val, ok := lic["_id"]; !ok {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("_id property is missing"), http.StatusText(http.StatusUnprocessableEntity)))
-			return
-		} else if _, ok := val.(string); !ok {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("_id property is not a string"), http.StatusText(http.StatusUnprocessableEntity)))
-			return
-		} else if val, ok := lic["Count"]; !ok {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Count property is missing"), http.StatusText(http.StatusUnprocessableEntity)))
-			return
-		} else if val, ok := val.(float64); !ok {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Count property is not a float64"), http.StatusText(http.StatusUnprocessableEntity)))
-			return
-		} else {
-			lic["Count"] = int(val)
-		}
-	}
-
-	//set the value
-	aerr := ctrl.Service.SetLicensesCount(newLicensesCount)
-	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
 	}
