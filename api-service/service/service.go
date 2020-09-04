@@ -127,8 +127,6 @@ type APIServiceInterface interface {
 	GetTechnologyList() ([]model.TechnologyInfo, utils.AdvancedErrorInterface)
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license
 	SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface
-	// SetLicenseUnlimitedStatus set the unlimited status of a certain license
-	SetLicenseUnlimitedStatus(name string, unlimitedStatus bool) utils.AdvancedErrorInterface
 
 	// GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
 	GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabaseAgreementPart, utils.AdvancedErrorInterface)
