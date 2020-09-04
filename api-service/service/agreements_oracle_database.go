@@ -530,3 +530,8 @@ func (as *APIService) RemoveAssociatedHostToOracleDatabaseAgreement(id primitive
 
 	return nil
 }
+
+// DeleteOracleDatabaseAgreement remove a Oracle/Database agreement
+func (as *APIService) DeleteOracleDatabaseAgreement(id primitive.ObjectID) utils.AdvancedErrorInterface {
+	return as.Database.RemoveOracleDatabaseAgreement(id)
+}

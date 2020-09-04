@@ -2130,3 +2130,31 @@ func TestRemoveAssociatedHostToOracleDatabaseAgreement_FailedInternalServerError
 	err := as.RemoveAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost")
 	require.Equal(t, aerrMock, err)
 }
+
+func TestDeleteOracleDatabaseAgreement_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+	}
+
+	db.EXPECT().RemoveOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(nil)
+	err := as.DeleteOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"))
+	require.NoError(t, err)
+}
+
+func TestDeleteOracleDatabaseAgreement_FailedInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+	}
+
+	db.EXPECT().RemoveOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(aerrMock)
+	err := as.DeleteOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"))
+	require.Equal(t, aerrMock, err)
+}

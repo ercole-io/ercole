@@ -673,7 +673,7 @@ func TestRemoveAssociatedHostToOracleDatabaseAgreement_Success(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.RemoveAssociatedHostToOracleDatabaseAgreement)
-	req, err := http.NewRequest("REMOVE", "/", strings.NewReader("foohost"))
+	req, err := http.NewRequest("DELETE", "/", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"id":       "5f50a98611959b1baa17525e",
 		"hostname": "foohost",
@@ -702,7 +702,7 @@ func TestRemoveAssociatedHostToOracleDatabaseAgreement_FailedReadOnly(t *testing
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.RemoveAssociatedHostToOracleDatabaseAgreement)
-	req, err := http.NewRequest("REMOVE", "/", strings.NewReader("foohost"))
+	req, err := http.NewRequest("DELETE", "/", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"id":       "5f50a98611959b1baa17525e",
 		"hostname": "foohost",
@@ -731,7 +731,7 @@ func TestRemoveAssociatedHostToOracleDatabaseAgreement_FailedInvalidID(t *testin
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.RemoveAssociatedHostToOracleDatabaseAgreement)
-	req, err := http.NewRequest("REMOVE", "/", strings.NewReader("foohost"))
+	req, err := http.NewRequest("DELETE", "/", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"id":       "sdsdfaasdf",
 		"hostname": "foohost",
@@ -762,7 +762,7 @@ func TestRemoveAssociatedHostToOracleDatabaseAgreement_FailedAgreementNotFound(t
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.RemoveAssociatedHostToOracleDatabaseAgreement)
-	req, err := http.NewRequest("REMOVE", "/", strings.NewReader("foohost"))
+	req, err := http.NewRequest("DELETE", "/", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"id":       "5f50a98611959b1baa17525e",
 		"hostname": "foohost",
@@ -793,10 +793,156 @@ func TestRemoveAssociatedHostToOracleDatabaseAgreement_FailedInternalServerError
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.RemoveAssociatedHostToOracleDatabaseAgreement)
-	req, err := http.NewRequest("REMOVE", "/", strings.NewReader("foohost"))
+	req, err := http.NewRequest("DELETE", "/", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"id":       "5f50a98611959b1baa17525e",
 		"hostname": "foohost",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestDeleteOracleDatabaseAgreement_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().DeleteOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.DeleteOracleDatabaseAgreement)
+	req, err := http.NewRequest("DELETE", "/", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "5f50a98611959b1baa17525e",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+}
+
+func TestDeleteOracleDatabaseAgreement_FailedReadOnly(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: true,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.DeleteOracleDatabaseAgreement)
+	req, err := http.NewRequest("DELETE", "/", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "5f50a98611959b1baa17525e",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusForbidden, rr.Code)
+}
+
+func TestDeleteOracleDatabaseAgreement_FailedInvalidID(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.DeleteOracleDatabaseAgreement)
+	req, err := http.NewRequest("DELETE", "/", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "sdasdasdf",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestDeleteOracleDatabaseAgreement_FailedAgreementNotFound(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().DeleteOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(utils.AerrOracleDatabaseAgreementNotFound)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.DeleteOracleDatabaseAgreement)
+	req, err := http.NewRequest("DELETE", "/", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "5f50a98611959b1baa17525e",
+	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusNotFound, rr.Code)
+}
+
+func TestDeleteOracleDatabaseAgreement_FailedInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			APIService: config.APIService{
+				ReadOnly: false,
+			},
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().DeleteOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.DeleteOracleDatabaseAgreement)
+	req, err := http.NewRequest("DELETE", "/", nil)
+	req = mux.SetURLVars(req, map[string]string{
+		"id": "5f50a98611959b1baa17525e",
 	})
 	require.NoError(t, err)
 
