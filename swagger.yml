@@ -3422,32 +3422,6 @@ paths:
         - api-service
         - fe-user
         - read
-    put:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: object
-                required:
-                  - _id
-                  - count
-                properties:
-                  _id:
-                    type: string
-                  count:
-                    type: integer
-      responses:
-        '200':
-          description: OK
-      operationId: SetLicensesCount
-      description: Set the count of licenses
-      summary: Set the count of licenses
-      tags:
-        - api-service
-        - fe-user
-        - read
   '/licenses/{name}':
     get:
       operationId: GetLicense
