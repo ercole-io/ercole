@@ -57,6 +57,9 @@ type APIServiceInterface interface {
 	SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchLicenses search licenses
 	SearchLicenses(mode string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	// SearchOracleDatabaseConsumedLicenses return the list of consumed licenses
+	SearchOracleDatabaseConsumedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+
 	// GetLicense return the license specified in the name param
 	GetLicense(name string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
 	// ListLocations list locations
