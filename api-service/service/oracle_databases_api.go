@@ -61,11 +61,6 @@ func (as *APIService) GetLicense(name string, olderThan time.Time) (interface{},
 	return as.Database.GetLicense(name, olderThan)
 }
 
-// SetLicenseCount set the count of a certain license
-func (as *APIService) SetLicenseCount(name string, count int) utils.AdvancedErrorInterface {
-	return as.Database.SetLicenseCount(name, count)
-}
-
 // SetLicenseCostPerProcessor set the cost per processor of a certain license
 func (as *APIService) SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface {
 	return as.Database.SetLicenseCostPerProcessor(name, costPerProcessor)
