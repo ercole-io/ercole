@@ -17,7 +17,6 @@
 package service
 
 import (
-	"errors"
 	"strings"
 	"time"
 
@@ -46,14 +45,12 @@ func (as *APIService) SearchOracleDatabases(full bool, search string, sortBy str
 
 // SearchLicenses search licenses
 func (as *APIService) SearchLicenses(mode string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	if mode == "full" || mode == "summary" {
-		return as.Database.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
-	} else if mode == "list" {
-		return as.Database.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
-	}
+	return as.Database.SearchLicenses(mode, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+}
 
-	return nil, utils.NewAdvancedErrorPtr(errors.New("Wrong mode value"), "")
-
+// SearchOracleDatabaseConsumedLicenses return the list of consumed licenses
+func (as *APIService) SearchOracleDatabaseConsumedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+	return as.Database.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
 // GetLicense return the license specified in the name param
