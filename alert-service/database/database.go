@@ -42,7 +42,7 @@ type MongoDatabaseInterface interface {
 	// InsertAlert inserr the alert in the database
 	InsertAlert(alert model.Alert) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
 	// FindOldCurrentHost return the list of current hosts that haven't sent hostdata after time t
-	FindOldCurrentHosts(t time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
+	FindOldCurrentHosts(t time.Time) ([]model.HostDataBE, utils.AdvancedErrorInterface)
 	// ExistNoDataAlertByHost return true if the host has associated a new NO_DATA alert
 	ExistNoDataAlertByHost(hostname string) (bool, utils.AdvancedErrorInterface)
 	// DeleteAllNoDataAlerts delete all alerts with code model.AlertCodeNoData
@@ -142,7 +142,7 @@ func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time
 	return out, nil
 }
 
-// InsertAlert inser the alert in the database
+// InsertAlert insert the alert in the database
 func (md *MongoDatabase) InsertAlert(alert model.Alert) (*mongo.InsertOneResult, utils.AdvancedErrorInterface) {
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").InsertOne(context.TODO(), alert)
 	if err != nil {
@@ -152,30 +152,25 @@ func (md *MongoDatabase) InsertAlert(alert model.Alert) (*mongo.InsertOneResult,
 }
 
 // FindOldCurrentHosts return the list of current hosts that haven't sent hostdata after time t
-func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]model.HostDataBE, utils.AdvancedErrorInterface) {
 	filter := bson.M{
 		"archived":  false,
 		"createdAt": mu.QOLessThan(t),
 	}
 
-	opts := options.Find()
-	opts.Projection = map[string]interface{}{
-		"hostname":  1,
-		"createdAt": 1,
-	}
-
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
-		Find(context.TODO(), filter, opts)
+		Find(context.TODO(), filter)
 
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
 	//Decode the documents
-	hosts := make([]map[string]interface{}, 0)
+	hosts := make([]model.HostDataBE, 0)
 
 	for cur.Next(context.TODO()) {
-		var host map[string]interface{}
+		var host model.HostDataBE
+
 		if cur.Decode(&host) != nil {
 			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 		}
