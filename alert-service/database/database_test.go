@@ -19,6 +19,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"sort"
 	"testing"
 
 	"github.com/ercole-io/ercole/config"
@@ -164,8 +165,10 @@ func (m *MongodbSuite) TestFindOldCurrentHosts() {
 		require.NoError(t, err)
 
 		assert.Len(t, hosts, 1)
-		expectedHosts := append(make([]string, 0), "itl-csllab-112.sorint.localpippo")
-		assert.ElementsMatch(t, expectedHosts, hosts)
+
+		assert.Equal(m.T(), "itl-csllab-112.sorint.localpippo", hosts[0].Hostname)
+		assert.False(m.T(), hosts[0].Archived)
+		assert.Equal(m.T(), utils.P("2019-11-19T16:38:58Z"), hosts[0].CreatedAt)
 	})
 
 	m.T().Run("Should find two", func(t *testing.T) {
@@ -173,8 +176,18 @@ func (m *MongodbSuite) TestFindOldCurrentHosts() {
 		require.NoError(t, err)
 
 		assert.Len(t, hosts, 2)
-		expectedHosts := append(make([]string, 0), "itl-csllab-112.sorint.localpippo", "itl-csllab-223.sorint.localpippo")
-		assert.ElementsMatch(t, expectedHosts, hosts)
+
+		sort.Slice(hosts, func(i, j int) bool {
+			return hosts[i].ID.String() < hosts[j].ID.String()
+		})
+
+		assert.Equal(m.T(), "itl-csllab-112.sorint.localpippo", hosts[0].Hostname)
+		assert.False(m.T(), hosts[0].Archived)
+		assert.Equal(m.T(), utils.P("2019-11-19T16:38:58Z"), hosts[0].CreatedAt)
+
+		assert.Equal(m.T(), "itl-csllab-223.sorint.localpippo", hosts[1].Hostname)
+		assert.False(m.T(), hosts[1].Archived)
+		assert.Equal(m.T(), utils.P("2020-01-13T15:38:58Z"), hosts[1].CreatedAt)
 	})
 }
 
@@ -198,4 +211,82 @@ func (m *MongodbSuite) TestExistNoDataAlert_SuccessExist() {
 	require.NoError(m.T(), err)
 
 	assert.True(m.T(), exist)
+}
+
+func (m *MongodbSuite) TestDeleteNoDataAlertByHost_Success() {
+	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
+
+	_, err := m.db.InsertAlert(alert1)
+	require.NoError(m.T(), err)
+
+	_, err = m.db.InsertAlert(alert3)
+	require.NoError(m.T(), err)
+
+	m.T().Run("There is still alert3", func(t *testing.T) {
+		alert1Hostname := alert1.OtherInfo["hostname"].(string)
+		err = m.db.DeleteNoDataAlertByHost(alert1Hostname)
+		require.NoError(m.T(), err)
+
+		val, err2 := m.db.Client.Database(m.dbname).Collection("alerts").
+			Find(context.TODO(), bson.M{"alertCode": model.AlertCodeNoData})
+		require.NoError(m.T(), err2)
+
+		alerts := make([]model.Alert, 0)
+		err3 := val.All(context.TODO(), &alerts)
+		require.NoError(m.T(), err3)
+
+		require.Equal(m.T(), 1, len(alerts))
+		require.Equal(m.T(), alerts[0], alert3)
+	})
+
+	m.T().Run("There are no more alerts", func(t *testing.T) {
+		alert3Hostname := alert3.OtherInfo["hostname"].(string)
+		err = m.db.DeleteNoDataAlertByHost(alert3Hostname)
+
+		require.NoError(m.T(), err)
+		val, err2 := m.db.Client.Database(m.dbname).Collection("alerts").
+			Find(context.TODO(), bson.M{"alertCode": model.AlertCodeNoData})
+		require.NoError(m.T(), err2)
+
+		alerts := make([]model.Alert, 0)
+		err3 := val.All(context.TODO(), &alerts)
+		require.NoError(m.T(), err3)
+		require.Equal(m.T(), 0, len(alerts))
+	})
+}
+
+func (m *MongodbSuite) TestDeleteAllNoDataAlerts_Success() {
+	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
+
+	_, err := m.db.InsertAlert(alert1)
+	require.NoError(m.T(), err)
+
+	_, err = m.db.InsertAlert(alert3)
+	require.NoError(m.T(), err)
+	_, err = m.db.InsertAlert(alert4)
+	require.NoError(m.T(), err)
+
+	err = m.db.DeleteAllNoDataAlerts()
+	require.NoError(m.T(), err)
+
+	// Check that there are no more AlertCodeNoData alerts
+	val, erro := m.db.Client.Database(m.dbname).Collection("alerts").
+		Find(context.TODO(), bson.M{"alertCode": model.AlertCodeNoData})
+	require.NoError(m.T(), erro)
+
+	res := make([]model.Alert, 0)
+	erro = val.All(context.TODO(), &res)
+	require.NoError(m.T(), erro)
+	require.Equal(m.T(), 0, len(res))
+
+	// Check that there's still alert1
+	val, erro = m.db.Client.Database(m.dbname).Collection("alerts").
+		Find(context.TODO(), bson.M{})
+	require.NoError(m.T(), erro)
+
+	res = make([]model.Alert, 0)
+	erro = val.All(context.TODO(), &res)
+	require.NoError(m.T(), erro)
+	require.Equal(m.T(), 1, len(res))
+	require.Equal(m.T(), alert1, (res)[0])
 }
