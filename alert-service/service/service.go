@@ -173,7 +173,9 @@ func (as *AlertService) ProcessHostDataInsertion(params hub.Fields) {
 		}
 	}
 
-	//TODO If there is a NO_DATA alert for this HostData, remove it
+	if err := as.Database.DeleteNoDataAlertByHost(newData.Hostname); err != nil {
+		as.Log.Error(err)
+	}
 }
 
 // ProcessAlertInsertion processes the alert insertion event
