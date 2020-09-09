@@ -58,6 +58,7 @@ func TestProcessMsg_HostDataInsertion(t *testing.T) {
 			assert.Nil(t, alert.AlertAffectedTechnology)
 		}),
 	)
+	db.EXPECT().DeleteNoDataAlertByHost("superhost1")
 
 	msg := hub.Message{
 		Name: "hostdata.insertion",
