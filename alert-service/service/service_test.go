@@ -58,6 +58,7 @@ func TestProcessMsg_HostDataInsertion(t *testing.T) {
 			assert.Nil(t, alert.AlertAffectedTechnology)
 		}),
 	)
+	db.EXPECT().DeleteNoDataAlertByHost("superhost1")
 
 	msg := hub.Message{
 		Name: "hostdata.insertion",
@@ -134,6 +135,7 @@ func TestProcessHostDataInsertion_SuccessNewHost(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
+
 	as := AlertService{
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
@@ -141,10 +143,10 @@ func TestProcessHostDataInsertion_SuccessNewHost(t *testing.T) {
 		Queue:    hub.New(),
 	}
 
-	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(hostData1, nil).Times(1)
-	db.EXPECT().FindHostData(gomock.Any()).Times(0)
-	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).Return(emptyHostData, nil).Times(1)
-	db.EXPECT().FindMostRecentHostDataOlderThan(gomock.Any(), gomock.Any()).Return(model.HostDataBE{}, nil).Times(0)
+	db.EXPECT().FindHostData(utils.Str2oid("5dc3f534db7e81a98b726a52")).
+		Return(hostData1, nil).Times(1)
+	db.EXPECT().FindMostRecentHostDataOlderThan("superhost1", utils.P("2019-11-05T14:02:03Z")).
+		Return(emptyHostData, nil).Times(1)
 
 	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {
 		assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), alert.Date)
@@ -158,6 +160,8 @@ func TestProcessHostDataInsertion_SuccessNewHost(t *testing.T) {
 			assert.Nil(t, alert.AlertAffectedTechnology)
 		}),
 	)
+
+	db.EXPECT().DeleteNoDataAlertByHost(hostData1.Hostname)
 
 	as.ProcessHostDataInsertion(hub.Fields{
 		"id": utils.Str2oid("5dc3f534db7e81a98b726a52"),

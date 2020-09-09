@@ -145,7 +145,7 @@ func (as *AlertService) ThrowNoDataAlert(hostname string, freshnessThreshold int
 		AlertSeverity:           model.AlertSeverityCritical,
 		AlertStatus:             model.AlertStatusNew,
 		Date:                    as.TimeNow(),
-		Description:             fmt.Sprintf("No data received from the host %s in the last %d days", hostname, freshnessThreshold),
+		Description:             fmt.Sprintf("No data received from the host %s in the last %d day(s)", hostname, freshnessThreshold),
 		OtherInfo: map[string]interface{}{
 			"hostname": hostname,
 		},

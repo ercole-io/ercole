@@ -41,25 +41,34 @@ type FreshnessCheckJob struct {
 
 // Run throws NO_DATA alert for each hosts that haven't sent a hostdata withing the FreshnessCheck.DaysThreshold
 func (job *FreshnessCheckJob) Run() {
-	//Find the current hosts older than FreshnessCheck.DaysThreshold days
-	hosts, err := job.Database.FindOldCurrentHosts(job.TimeNow().AddDate(0, 0, -job.Config.AlertService.FreshnessCheckJob.DaysThreshold))
+	if job.Config.AlertService.FreshnessCheckJob.DaysThreshold <= 0 {
+		job.Log.Errorf("AlertService.FreshnessCheckJob.DaysThreshold must be higher than 0, but it's set to %v. Job failed.",
+			job.Config.AlertService.FreshnessCheckJob.DaysThreshold)
+
+		return
+	}
+
+	if err := job.Database.DeleteAllNoDataAlerts(); err != nil {
+		utils.LogErr(job.Log, err)
+		return
+	}
+
+	hosts, err := job.Database.FindOldCurrentHosts(
+		job.TimeNow().AddDate(0, 0, -job.Config.AlertService.FreshnessCheckJob.DaysThreshold))
+
 	if err != nil {
 		utils.LogErr(job.Log, err)
 		return
 	}
 
-	//For each host, throw a NO_DATA alert
 	for _, host := range hosts {
-		//Throw a NO_DATA alert if the host doesn't already have a new NO_DATA alert
-		if exist, err := job.Database.ExistNoDataAlertByHost(host); err != nil {
+		elapsed := job.TimeNow().Sub(host.CreatedAt)
+		elapsedDays := int(elapsed.Truncate(time.Hour*24).Hours() / 24)
+
+		err := job.alertService.ThrowNoDataAlert(host.Hostname, elapsedDays)
+		if err != nil {
 			utils.LogErr(job.Log, err)
-			return
-		} else if !exist {
-			err = job.alertService.ThrowNoDataAlert(host, job.Config.AlertService.FreshnessCheckJob.DaysThreshold)
-			if err != nil {
-				utils.LogErr(job.Log, err)
-				return
-			}
+			continue
 		}
 	}
 }

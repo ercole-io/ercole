@@ -47,3 +47,31 @@ var alert2 model.Alert = model.Alert{
 	},
 	ID: utils.Str2oid("5dd4113f0085a6fac03c4fed"),
 }
+
+var alert3 model.Alert = model.Alert{
+	AlertCode:               model.AlertCodeNoData,
+	AlertSeverity:           model.AlertSeverityCritical,
+	AlertAffectedTechnology: nil,
+	AlertCategory:           model.AlertCategoryEngine,
+	AlertStatus:             model.AlertStatusNew,
+	Date:                    utils.P("2019-11-05T18:02:03Z"),
+	Description:             "test desc pippo",
+	OtherInfo: map[string]interface{}{
+		"hostname": "pippo-host",
+	},
+	ID: utils.Str2oid("5dd40bfb12f54dfda7b1c292"),
+}
+
+var alert4 model.Alert = model.Alert{
+	AlertCode:               model.AlertCodeNoData,
+	AlertSeverity:           model.AlertSeverityCritical,
+	AlertAffectedTechnology: nil,
+	AlertCategory:           model.AlertCategoryEngine,
+	AlertStatus:             model.AlertStatusNew,
+	Date:                    utils.P("2019-12-25T18:02:03Z"),
+	Description:             "test desc pluto",
+	OtherInfo: map[string]interface{}{
+		"hostname": "pluto-host",
+	},
+	ID: utils.Str2oid("5dd40bfb12f54dfda7b1c293"),
+}
