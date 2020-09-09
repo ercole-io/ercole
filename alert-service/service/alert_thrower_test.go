@@ -235,7 +235,7 @@ func TestThrowNoDataAlert_Success(t *testing.T) {
 		assert.Equal(t, model.AlertCodeNoData, alert.AlertCode)
 		assert.Equal(t, model.AlertSeverityCritical, alert.AlertSeverity)
 		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)
-		assert.Equal(t, "No data received from the host myhost in the last 90 days", alert.Description)
+		assert.Equal(t, "No data received from the host myhost in the last 90 day(s)", alert.Description)
 		assert.Equal(t, map[string]interface{}{
 			"hostname": "myhost",
 		}, alert.OtherInfo)
