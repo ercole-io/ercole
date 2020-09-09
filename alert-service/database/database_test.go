@@ -19,6 +19,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"sort"
 	"testing"
 
 	"github.com/ercole-io/ercole/config"
@@ -164,8 +165,10 @@ func (m *MongodbSuite) TestFindOldCurrentHosts() {
 		require.NoError(t, err)
 
 		assert.Len(t, hosts, 1)
-		expectedHosts := append(make([]string, 0), "itl-csllab-112.sorint.localpippo")
-		assert.ElementsMatch(t, expectedHosts, hosts)
+
+		assert.Equal(m.T(), "itl-csllab-112.sorint.localpippo", hosts[0].Hostname)
+		assert.False(m.T(), hosts[0].Archived)
+		assert.Equal(m.T(), utils.P("2019-11-19T16:38:58Z"), hosts[0].CreatedAt)
 	})
 
 	m.T().Run("Should find two", func(t *testing.T) {
@@ -173,8 +176,18 @@ func (m *MongodbSuite) TestFindOldCurrentHosts() {
 		require.NoError(t, err)
 
 		assert.Len(t, hosts, 2)
-		expectedHosts := append(make([]string, 0), "itl-csllab-112.sorint.localpippo", "itl-csllab-223.sorint.localpippo")
-		assert.ElementsMatch(t, expectedHosts, hosts)
+
+		sort.Slice(hosts, func(i, j int) bool {
+			return hosts[i].ID.String() < hosts[j].ID.String()
+		})
+
+		assert.Equal(m.T(), "itl-csllab-112.sorint.localpippo", hosts[0].Hostname)
+		assert.False(m.T(), hosts[0].Archived)
+		assert.Equal(m.T(), utils.P("2019-11-19T16:38:58Z"), hosts[0].CreatedAt)
+
+		assert.Equal(m.T(), "itl-csllab-223.sorint.localpippo", hosts[1].Hostname)
+		assert.False(m.T(), hosts[1].Archived)
+		assert.Equal(m.T(), utils.P("2020-01-13T15:38:58Z"), hosts[1].CreatedAt)
 	})
 }
 
