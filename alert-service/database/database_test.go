@@ -213,7 +213,51 @@ func (m *MongodbSuite) TestExistNoDataAlert_SuccessExist() {
 	assert.True(m.T(), exist)
 }
 
+func (m *MongodbSuite) TestDeleteNoDataAlertByHost_Success() {
+	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
+
+	_, err := m.db.InsertAlert(alert1)
+	require.NoError(m.T(), err)
+
+	_, err = m.db.InsertAlert(alert3)
+	require.NoError(m.T(), err)
+
+	m.T().Run("There is still alert3", func(t *testing.T) {
+		alert1Hostname := alert1.OtherInfo["hostname"].(string)
+		err = m.db.DeleteNoDataAlertByHost(alert1Hostname)
+		require.NoError(m.T(), err)
+
+		val, err2 := m.db.Client.Database(m.dbname).Collection("alerts").
+			Find(context.TODO(), bson.M{"alertCode": model.AlertCodeNoData})
+		require.NoError(m.T(), err2)
+
+		alerts := make([]model.Alert, 0)
+		err3 := val.All(context.TODO(), &alerts)
+		require.NoError(m.T(), err3)
+
+		require.Equal(m.T(), 1, len(alerts))
+		require.Equal(m.T(), alerts[0], alert3)
+	})
+
+	m.T().Run("There are no more alerts", func(t *testing.T) {
+		alert3Hostname := alert3.OtherInfo["hostname"].(string)
+		err = m.db.DeleteNoDataAlertByHost(alert3Hostname)
+
+		require.NoError(m.T(), err)
+		val, err2 := m.db.Client.Database(m.dbname).Collection("alerts").
+			Find(context.TODO(), bson.M{"alertCode": model.AlertCodeNoData})
+		require.NoError(m.T(), err2)
+
+		alerts := make([]model.Alert, 0)
+		err3 := val.All(context.TODO(), &alerts)
+		require.NoError(m.T(), err3)
+		require.Equal(m.T(), 0, len(alerts))
+	})
+}
+
 func (m *MongodbSuite) TestDeleteAllNoDataAlerts_Success() {
+	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
+
 	_, err := m.db.InsertAlert(alert1)
 	require.NoError(m.T(), err)
 
