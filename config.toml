@@ -13,12 +13,12 @@ AgentPassword = "password"
 
   [DataService.CurrentHostCleaningJob]
   Crontab = "@daily"
-  HourThreshold = 1
+  HourThreshold = 8760
   RunAtStartup = false
 
   [DataService.ArchivedHostCleaningJob]
   Crontab = "@daily"
-  HourThreshold = 10
+  HourThreshold = 8760
   RunAtStartup = false
 
 [AlertService]
