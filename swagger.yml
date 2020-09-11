@@ -743,8 +743,22 @@ components:
           type: string
           nullable: true
         features:
-          type: string
-          nullable: true
+          type: object
+          properties:
+            oracle:
+              type: object
+              properties:
+                databases:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      '':
+                        type: string
+                unlistedRunningDatabases:
+                  type: array
+                  items:
+                    type: string
         racNodeNames:
           type: string
           nullable: true
