@@ -16,6 +16,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -25,7 +26,6 @@ import (
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/golang/gddo/httputil"
-	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -189,23 +189,23 @@ func (ctrl *APIController) SearchAlertsXLSX(w http.ResponseWriter, r *http.Reque
 	utils.WriteXLSXResponse(w, sheets)
 }
 
-// AckAlert ack the specified alert in the request
-func (ctrl *APIController) AckAlert(w http.ResponseWriter, r *http.Request) {
+// AckAlerts ack the specified alert in the request
+func (ctrl *APIController) AckAlerts(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 
-	var id primitive.ObjectID
-	var err error
-	//Get the id from the path variable
-	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+	var ids []primitive.ObjectID
+
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&ids); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
+			utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
 		return
 	}
 
-	//set the value
-	aerr := ctrl.Service.AckAlert(id)
+	aerr := ctrl.Service.AckAlerts(ids)
 	if aerr == utils.AerrAlertNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
 	} else if aerr != nil {
@@ -213,6 +213,5 @@ func (ctrl *APIController) AckAlert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
