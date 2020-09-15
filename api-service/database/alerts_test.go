@@ -23,6 +23,7 @@ import (
 	"github.com/ercole-io/ercole/utils"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (m *MongodbSuite) TestSearchAlerts() {
@@ -438,7 +439,7 @@ func (m *MongodbSuite) TestSearchAlerts() {
 	})
 }
 
-func (m *MongodbSuite) TestUpdateAlertStatus() {
+func (m *MongodbSuite) TestUpdateAlertsStatus() {
 	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
 	alert := model.Alert{
 		ID:                      utils.Str2oid("5ea6a65bb2e36eb58da2f67c"),
@@ -460,13 +461,15 @@ func (m *MongodbSuite) TestUpdateAlertStatus() {
 	m.InsertAlert(alert)
 
 	m.T().Run("should_return_not_found", func(t *testing.T) {
-		err := m.db.UpdateAlertStatus(utils.Str2oid("5ea6a65bb2e36eb58daaaaaa"), model.AlertStatusAck)
+		ids := []primitive.ObjectID{utils.Str2oid("5ea6a65bb2e36eb58daaaaaa")}
+		err := m.db.UpdateAlertsStatus(ids, model.AlertStatusAck)
 
 		assert.Equal(t, utils.AerrAlertNotFound, err)
 	})
 
 	m.T().Run("should_success", func(t *testing.T) {
-		err := m.db.UpdateAlertStatus(utils.Str2oid("5ea6a65bb2e36eb58da2f67c"), model.AlertStatusAck)
+		ids := []primitive.ObjectID{utils.Str2oid("5ea6a65bb2e36eb58da2f67c")}
+		err := m.db.UpdateAlertsStatus(ids, model.AlertStatusAck)
 		assert.NoError(t, err)
 
 		val := m.db.Client.Database(m.dbname).Collection("alerts").FindOne(context.TODO(), bson.M{"_id": utils.Str2oid("5ea6a65bb2e36eb58da2f67c")})
