@@ -150,8 +150,8 @@ type APIControllerInterface interface {
 	SetOracleDatabaseLicenseModifier(w http.ResponseWriter, r *http.Request)
 	// DeleteOracleDatabaseLicenseModifier delete the license modifier of specified license/db/host in the request
 	DeleteOracleDatabaseLicenseModifier(w http.ResponseWriter, r *http.Request)
-	// AckAlert ack the specified alert in the request
-	AckAlert(w http.ResponseWriter, r *http.Request)
+	// AckAlerts ack the specified alert in the request
+	AckAlerts(w http.ResponseWriter, r *http.Request)
 	// ArchiveHost archive the specified host in the request
 	ArchiveHost(w http.ResponseWriter, r *http.Request)
 
