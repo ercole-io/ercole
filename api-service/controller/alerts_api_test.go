@@ -16,6 +16,7 @@
 package controller
 
 import (
+	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -25,9 +26,9 @@ import (
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
-	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestSearchAlerts_JSONSuccessPaged(t *testing.T) {
@@ -673,7 +674,7 @@ func TestSearchAlerts_XLSXInternalServerError2(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestAckAlert_Success(t *testing.T) {
+func TestAckAlerts_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -688,22 +689,20 @@ func TestAckAlert_Success(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AckAlert(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(nil)
+	as.EXPECT().AckAlerts([]primitive.ObjectID{utils.Str2oid("5dc3f534db7e81a98b726a52")}).Return(nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AckAlert)
-	req, err := http.NewRequest("DELETE", "/alerts/5dc3f534db7e81a98b726a52", nil)
+	handler := http.HandlerFunc(ac.AckAlerts)
+	body := []string{"5dc3f534db7e81a98b726a52"}
+	req, err := http.NewRequest("POST", "/alerts/acks", bytes.NewReader([]byte(utils.ToJSON(body))))
 	require.NoError(t, err)
-	req = mux.SetURLVars(req, map[string]string{
-		"id": "5dc3f534db7e81a98b726a52",
-	})
 
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
 }
 
-func TestAckAlert_FailForbidden(t *testing.T) {
+func TestAckAlerts_FailForbidden(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -719,19 +718,17 @@ func TestAckAlert_FailForbidden(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AckAlert)
-	req, err := http.NewRequest("DELETE", "/alerts/5dc3f534db7e81a98b726a52", nil)
+	handler := http.HandlerFunc(ac.AckAlerts)
+	body := []string{"5dc3f534db7e81a98b726a52"}
+	req, err := http.NewRequest("POST", "/alerts/acks", bytes.NewReader([]byte(utils.ToJSON(body))))
 	require.NoError(t, err)
-	req = mux.SetURLVars(req, map[string]string{
-		"id": "5dc3f534db7e81a98b726a52",
-	})
 
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusForbidden, rr.Code)
 }
 
-func TestAckAlert_FailUnprocessableEntity(t *testing.T) {
+func TestAckAlerts_FailBadRequest(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -747,19 +744,17 @@ func TestAckAlert_FailUnprocessableEntity(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AckAlert)
-	req, err := http.NewRequest("DELETE", "/alerts/asdasd", nil)
+	handler := http.HandlerFunc(ac.AckAlerts)
+	body := []string{"asdasd"}
+	req, err := http.NewRequest("POST", "/alerts/acks", bytes.NewReader([]byte(utils.ToJSON(body))))
 	require.NoError(t, err)
-	req = mux.SetURLVars(req, map[string]string{
-		"id": "asdasdasd",
-	})
 
 	handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+	require.Equal(t, http.StatusBadRequest, rr.Code)
 }
 
-func TestAckAlert_FailNotFound(t *testing.T) {
+func TestAckAlerts_FailNotFound(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -774,22 +769,21 @@ func TestAckAlert_FailNotFound(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AckAlert(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(utils.AerrAlertNotFound)
+	as.EXPECT().AckAlerts([]primitive.ObjectID{utils.Str2oid("5dc3f534db7e81a98b726a52")}).
+		Return(utils.AerrAlertNotFound)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AckAlert)
-	req, err := http.NewRequest("DELETE", "/alerts/5dc3f534db7e81a98b726a52", nil)
+	handler := http.HandlerFunc(ac.AckAlerts)
+	body := []string{"5dc3f534db7e81a98b726a52"}
+	req, err := http.NewRequest("POST", "/alerts/acks", bytes.NewReader([]byte(utils.ToJSON(body))))
 	require.NoError(t, err)
-	req = mux.SetURLVars(req, map[string]string{
-		"id": "5dc3f534db7e81a98b726a52",
-	})
 
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusNotFound, rr.Code)
 }
 
-func TestAckAlert_FailInternalServerError(t *testing.T) {
+func TestAckAlerts_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -804,15 +798,14 @@ func TestAckAlert_FailInternalServerError(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AckAlert(utils.Str2oid("5dc3f534db7e81a98b726a52")).Return(aerrMock)
+	as.EXPECT().AckAlerts([]primitive.ObjectID{utils.Str2oid("5dc3f534db7e81a98b726a52")}).
+		Return(aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AckAlert)
-	req, err := http.NewRequest("DELETE", "/alerts/5dc3f534db7e81a98b726a52", nil)
+	handler := http.HandlerFunc(ac.AckAlerts)
+	body := []string{"5dc3f534db7e81a98b726a52"}
+	req, err := http.NewRequest("POST", "/alerts/acks", bytes.NewReader([]byte(utils.ToJSON(body))))
 	require.NoError(t, err)
-	req = mux.SetURLVars(req, map[string]string{
-		"id": "5dc3f534db7e81a98b726a52",
-	})
 
 	handler.ServeHTTP(rr, req)
 

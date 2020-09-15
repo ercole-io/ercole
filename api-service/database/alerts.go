@@ -123,22 +123,29 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 	return out, nil
 }
 
-// UpdateAlertStatus change the status of the specified alert
-func (md *MongoDatabase) UpdateAlertStatus(id primitive.ObjectID, newStatus string) utils.AdvancedErrorInterface {
-	//Find the informations
-	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").UpdateOne(context.TODO(), bson.M{
-		"_id": id,
-	}, mu.UOSet(bson.M{
-		"alertStatus": newStatus,
-	}))
-	if err != nil {
+// UpdateAlertsStatus change the status of the specified alerts
+func (md *MongoDatabase) UpdateAlertsStatus(ids []primitive.ObjectID, newStatus string) utils.AdvancedErrorInterface {
+	bsonIds := bson.A{}
+	for _, id := range ids {
+		bsonIds = append(bsonIds, bson.M{"_id": id})
+	}
+	filter := bson.M{"$or": bsonIds}
+
+	count, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").
+		CountDocuments(context.TODO(), filter)
+	if count != int64(len(ids)) {
+		return utils.AerrAlertNotFound
+	}
+
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").
+		UpdateMany(context.TODO(),
+			filter,
+			mu.UOSet(bson.M{
+				"alertStatus": newStatus,
+			}))
+	if err != nil || res.MatchedCount != int64(len(ids)) {
 		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	//Check the existance of the result
-	if res.MatchedCount == 0 {
-		return utils.AerrAlertNotFound
-	} else {
-		return nil
-	}
+	return nil
 }
