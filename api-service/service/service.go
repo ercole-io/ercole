@@ -158,8 +158,8 @@ type APIServiceInterface interface {
 	SetOracleDatabaseLicenseModifier(hostname string, dbname string, licenseName string, newValue int) utils.AdvancedErrorInterface
 	// DeleteOracleDatabaseLicenseModifier delete the modifier of a certain license
 	DeleteOracleDatabaseLicenseModifier(hostname string, dbname string, licenseName string) utils.AdvancedErrorInterface
-	// AckAlert ack the specified alert
-	AckAlert(id primitive.ObjectID) utils.AdvancedErrorInterface
+	// AckAlerts ack the specified alerts
+	AckAlerts(ids []primitive.ObjectID) utils.AdvancedErrorInterface
 	// ArchiveHost archive the specified host
 	ArchiveHost(hostname string) utils.AdvancedErrorInterface
 
