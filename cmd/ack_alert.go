@@ -28,28 +28,30 @@ import (
 
 func init() {
 	ackAlertCmd := &cobra.Command{
-		Use:   "ack-alert",
-		Short: "Ack a alert",
-		Long:  `Ack a alert`,
+		Use:   "ack-alert [id...]",
+		Short: "Ack an alert",
+		Long:  `Ack an alert`,
+		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			for i := 0; i < len(args); i++ {
-				req, _ := http.NewRequest("DELETE", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
+			req, _ := http.NewRequest("POST",
+				utils.NewAPIUrlNoParams(
+					ercoleConfig.APIService.RemoteEndpoint,
 					ercoleConfig.APIService.AuthenticationProvider.Username,
 					ercoleConfig.APIService.AuthenticationProvider.Password,
-					"/alerts/"+args[i],
-				).String(), bytes.NewReader([]byte{}))
+					"/alerts/ack",
+				).String(),
+				bytes.NewReader([]byte(utils.ToJSON(args))),
+			)
 
-				//Make the http request
-				resp, err := http.DefaultClient.Do(req)
-				if err != nil {
-					fmt.Fprintf(os.Stderr, "Failed to ack the alert %q: %v\n", args[i], err)
-					os.Exit(1)
-				} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
-					out, _ := ioutil.ReadAll(resp.Body)
-					defer resp.Body.Close()
-					fmt.Fprintf(os.Stderr, "Alert: %q Status: %d Cause: %s\n", args[i], resp.StatusCode, string(out))
-					os.Exit(1)
-				}
+			resp, err := http.DefaultClient.Do(req)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Failed to acknowledge alerts %q: %v\n", args, err)
+				os.Exit(1)
+			} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
+				out, _ := ioutil.ReadAll(resp.Body)
+				defer resp.Body.Close()
+				fmt.Fprintf(os.Stderr, "Alerts: %q Status: %d Cause: %s\n", args, resp.StatusCode, string(out))
+				os.Exit(1)
 			}
 		},
 	}
