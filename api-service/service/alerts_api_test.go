@@ -23,6 +23,7 @@ import (
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestSearchAlerts_Success(t *testing.T) {
@@ -100,7 +101,7 @@ func TestSearchAlerts_Fail(t *testing.T) {
 	assert.Nil(t, res)
 }
 
-func TestAckAlert_Success(t *testing.T) {
+func TestAckAlerts_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -108,13 +109,14 @@ func TestAckAlert_Success(t *testing.T) {
 		Database: db,
 	}
 
-	db.EXPECT().UpdateAlertStatus(utils.Str2oid("5e8c234b24f648a08585bd44"), model.AlertStatusAck).Return(nil).Times(1)
+	db.EXPECT().UpdateAlertsStatus([]primitive.ObjectID{utils.Str2oid("5e8c234b24f648a08585bd44")}, model.AlertStatusAck).
+		Return(nil).Times(1)
 
-	err := as.AckAlert(utils.Str2oid("5e8c234b24f648a08585bd44"))
+	err := as.AckAlerts([]primitive.ObjectID{utils.Str2oid("5e8c234b24f648a08585bd44")})
 	require.NoError(t, err)
 }
 
-func TestAckAlert_Fail(t *testing.T) {
+func TestAckAlerts_Fail(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -122,8 +124,9 @@ func TestAckAlert_Fail(t *testing.T) {
 		Database: db,
 	}
 
-	db.EXPECT().UpdateAlertStatus(utils.Str2oid("5e8c234b24f648a08585bd44"), model.AlertStatusAck).Return(aerrMock).Times(1)
+	db.EXPECT().UpdateAlertsStatus([]primitive.ObjectID{utils.Str2oid("5e8c234b24f648a08585bd44")}, model.AlertStatusAck).
+		Return(aerrMock).Times(1)
 
-	err := as.AckAlert(utils.Str2oid("5e8c234b24f648a08585bd44"))
+	err := as.AckAlerts([]primitive.ObjectID{utils.Str2oid("5e8c234b24f648a08585bd44")})
 	require.Equal(t, aerrMock, err)
 }
