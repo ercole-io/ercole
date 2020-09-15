@@ -138,8 +138,8 @@ type MongoDatabaseInterface interface {
 	SavePatchingFunction(pf model.PatchingFunction) utils.AdvancedErrorInterface
 	// ReplaceHostData adds a new hostdata to the database
 	ReplaceHostData(hostData model.HostDataBE) utils.AdvancedErrorInterface
-	// UpdateAlertStatus change the status of the specified alert
-	UpdateAlertStatus(id primitive.ObjectID, newStatus string) utils.AdvancedErrorInterface
+	// UpdateAlertsStatus change the status of the specified alerts
+	UpdateAlertsStatus(id []primitive.ObjectID, newStatus string) utils.AdvancedErrorInterface
 	// ArchiveHost archive the specified host
 	ArchiveHost(hostname string) utils.AdvancedErrorInterface
 	// DeletePatchingFunction delete the patching function
