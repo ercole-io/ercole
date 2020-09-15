@@ -30,7 +30,7 @@ func (as *APIService) SearchAlerts(mode string, search string, sortBy string, so
 	return as.Database.SearchAlerts(mode, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, severity, status, from, to)
 }
 
-// AckAlert ack the specified alert
-func (as *APIService) AckAlert(id primitive.ObjectID) utils.AdvancedErrorInterface {
-	return as.Database.UpdateAlertStatus(id, model.AlertStatusAck)
+// AckAlerts ack the specified alerts
+func (as *APIService) AckAlerts(ids []primitive.ObjectID) utils.AdvancedErrorInterface {
+	return as.Database.UpdateAlertsStatus(ids, model.AlertStatusAck)
 }
