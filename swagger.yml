@@ -40,7 +40,7 @@ tags:
   - name: service-user
     description: API used by the services
   - name: read
-    description: "API that don't change the state of the informations"
+    description: API that don't change the state of the informations
   - name: write
     description: API that change the state of the informations
 components:
@@ -115,7 +115,7 @@ components:
       properties:
         hostname:
           type: string
-          pattern: "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$"
+          pattern: '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$'
         environment:
           type: string
         location:
@@ -978,7 +978,7 @@ components:
           type: string
         hostname:
           type: string
-          pattern: "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$"
+          pattern: '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$'
         createdAt:
           type: string
         date:
@@ -1428,7 +1428,7 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: 'PONG!'
+                example: PONG!
                 readOnly: true
   '/queue/host-data-insertion/{id}':
     post:
@@ -1535,7 +1535,7 @@ paths:
             type: string
         - in: query
           name: cluster
-          description: "filter by the name of virtualization cluster. use 'NULL' for searching host that aren't part of a virtualization cluster"
+          description: filter by the name of virtualization cluster. use 'NULL' for searching host that aren't part of a virtualization cluster
           allowEmptyValue: true
           schema:
             type: string
@@ -1759,7 +1759,7 @@ paths:
         '401':
           $ref: '#/components/responses/error'
         '404':
-          description: 'The host or patching function don"t exist'
+          description: The host or patching function don"t exist
           $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
@@ -1783,7 +1783,7 @@ paths:
         '401':
           $ref: '#/components/responses/error'
         '404':
-          description: 'The host don"t exist'
+          description: The host don"t exist
           $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
@@ -2250,21 +2250,15 @@ paths:
         '500':
           $ref: '#/components/responses/error'
           description: Internal server error
-  '/alerts/{id}':
-    parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-        required: true
-        description: alert id
+  /alerts/ack:
+    parameters: []
     post:
-      summary: Update status of specified alert to ACK
-      description: Update status of specified alert to ACK
+      summary: Acknowledge alerts
+      description: Update status of specified alerts to set alert status to acknowledged
       tags:
         - api-service
         - fe-user
-      operationId: AckAlert
+      operationId: AckAlerts
       responses:
         '200':
           description: OK
@@ -2276,6 +2270,19 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+            examples:
+              example-1:
+                value:
+                  - 5f2acc476b16f5bea302ba0b
+                  - 5f2acc476b16f5bea302ba0c
+        description: an array of notifications id
   /hosts/clusters:
     get:
       summary: Search a list of clusters
