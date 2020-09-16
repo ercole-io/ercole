@@ -43,7 +43,7 @@ type OracleDatabase struct {
 	SGAMaxSize        float64                           `json:"sgaMaxSize" bson:"sgaMaxSize"`
 	SegmentsSize      float64                           `json:"segmentsSize" bson:"segmentsSize"`
 	DatafileSize      float64                           `json:"datafileSize" bson:"datafileSize"`
-	Allocated         float64                           `json:"allocated" bson:"allocated"`
+	Allocable         float64                           `json:"allocable" bson:"allocable"`
 	Elapsed           *float64                          `json:"elapsed" bson:"elapsed"`
 	DBTime            *float64                          `json:"dbTime" bson:"dbTime"`
 	DailyCPUUsage     *float64                          `json:"dailyCPUUsage" bson:"dailyCPUUsage"`
