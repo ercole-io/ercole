@@ -39,7 +39,7 @@
                             }
                         ],
                         "asm": false,
-                        "allocated": {
+                        "allocable": {
                             "$numberDouble": "129.0"
                         },
                         "archivelog": true,
