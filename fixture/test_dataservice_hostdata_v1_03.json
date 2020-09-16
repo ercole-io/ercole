@@ -126,7 +126,7 @@
                         "memoryTarget": 1.484,
                         "sgaMaxSize": 1.484,
                         "segmentsSize": 3.0,
-                        "allocated": 129.0,
+                        "allocable": 129.0,
                         "elapsed": 12059.18,
                         "dbTime": 184.81,
                         "dailyCPUUsage": 1.3,

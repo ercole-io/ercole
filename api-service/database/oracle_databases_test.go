@@ -261,7 +261,7 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 					},
 				},
 				"asm":        false,
-				"allocated":  129,
+				"allocable":  129,
 				"archivelog": false,
 				"backups": []interface{}{
 					map[string]interface{}{
@@ -437,7 +437,7 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 					},
 				},
 				"asm":        false,
-				"allocated":  129,
+				"allocable":  129,
 				"archivelog": true,
 				"backups": []interface{}{
 					map[string]interface{}{

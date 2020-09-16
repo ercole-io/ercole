@@ -328,7 +328,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 							"features.oracle.database.databases.name":          1,
 							"features.oracle.database.databases.datafileSize":  1,
 							"features.oracle.database.databases.segmentsSize":  1,
-							"features.oracle.database.databases.allocated":     1,
+							"features.oracle.database.databases.allocable":     1,
 							"features.oracle.database.databases.dailyCPUUsage": 1,
 							"totalDailyCPUUsage":                               mu.APOSumReducer("$features.oracle.database.databases", mu.APOConvertToDoubleOrZero("$$this.dailyCPUUsage")),
 						}),
