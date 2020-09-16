@@ -113,7 +113,7 @@
               }
             ],
             "blockSize": 8192,
-            "allocated": 129,
+            "allocable": 129,
             "services": [],
             "tablespaces": [
               {

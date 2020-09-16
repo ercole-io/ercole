@@ -219,7 +219,7 @@
                                                             "sgaMaxSize",
                                                             "segmentsSize",
                                                             "datafileSize",
-                                                            "allocated",
+                                                            "allocable",
                                                             "elapsed",
                                                             "dbTime",
                                                             "dailyCPUUsage",
@@ -317,7 +317,7 @@
                                                             "datafileSize": {
                                                                 "type": "number"
                                                             },
-                                                            "allocated": {
+                                                            "allocable": {
                                                                 "type": "number"
                                                             },
                                                             "elapsed": {
@@ -1343,13 +1343,17 @@
                 },
                 "microsoft": {
                     "anyOf": [
-                        { "type": "null"},
+                        {
+                            "type": "null"
+                        },
                         {
                             "type": "object",
                             "properties": {
                                 "sqlServer": {
                                     "anyOf": [
-                                        { "type": "object" },
+                                        {
+                                            "type": "object"
+                                        },
                                         {
                                             "type": "object",
                                             "required": [
