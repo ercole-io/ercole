@@ -3400,7 +3400,6 @@ paths:
             enum:
               - full
               - summary
-              - list
         - $ref: '#/components/parameters/sort-by'
         - $ref: '#/components/parameters/sort-desc'
         - $ref: '#/components/parameters/page'
