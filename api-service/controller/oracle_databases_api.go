@@ -561,7 +561,7 @@ func (ctrl *APIController) SearchLicenses(w http.ResponseWriter, r *http.Request
 	mode = r.URL.Query().Get("mode")
 	if mode == "" {
 		mode = "summary"
-	} else if mode != "full" && mode != "summary" && mode != "list" {
+	} else if mode != "full" && mode != "summary" {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity,
 			utils.NewAdvancedErrorPtr(errors.New("Invalid mode value"), http.StatusText(http.StatusUnprocessableEntity)))
 		return
