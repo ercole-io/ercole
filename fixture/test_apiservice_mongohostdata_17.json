@@ -38,7 +38,7 @@
                             }
                         ],
                         "asm": false,
-                        "allocated": {
+                        "allocable": {
                             "$numberDouble": "129.0"
                         },
                         "archivelog": true,
@@ -322,7 +322,7 @@
                             }
                         ],
                         "asm": false,
-                        "allocated": {
+                        "allocable": {
                             "$numberDouble": "129.0"
                         },
                         "archivelog": false,
