@@ -107,7 +107,7 @@ var OracleDatabaseBsonValidatorRules = bson.M{
 		"sgaMaxSize",
 		"segmentsSize",
 		"datafileSize",
-		"allocated",
+		"allocable",
 		"elapsed",
 		"dbTime",
 		"dailyCPUUsage",
@@ -205,7 +205,7 @@ var OracleDatabaseBsonValidatorRules = bson.M{
 		"datafileSize": bson.M{
 			"bsonType": "number",
 		},
-		"allocated": bson.M{
+		"allocable": bson.M{
 			"bsonType": "number",
 		},
 		"elapsed": bson.M{
