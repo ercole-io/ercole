@@ -391,7 +391,7 @@ components:
         Used:
           type: string
           nullable: true
-        Allocated:
+        Allocable:
           type: string
           nullable: true
         Elapsed:
