@@ -239,7 +239,7 @@ var FrontendHostdataSchemaValidator string = `
                                                             "sgaMaxSize",
                                                             "segmentsSize",
                                                             "datafileSize",
-                                                            "allocated",
+                                                            "allocable",
                                                             "elapsed",
                                                             "dbTime",
                                                             "dailyCPUUsage",
@@ -337,7 +337,7 @@ var FrontendHostdataSchemaValidator string = `
                                                             "datafileSize": {
                                                                 "type": "number"
                                                             },
-                                                            "allocated": {
+                                                            "allocable": {
                                                                 "type": "number"
                                                             },
                                                             "elapsed": {
