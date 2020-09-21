@@ -3886,6 +3886,42 @@ paths:
           description: ''
       description: Retun oracle database agreements by query parameters filters
     parameters: []
+    post:
+      summary: Add Oracle database agreements
+      operationId: post-agreements-oracle-database
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                agreementID:
+                  type: string
+                partsID:
+                  type: array
+                  items:
+                    type: string
+                referenceNumber:
+                  type: string
+                unlimited:
+                  type: boolean
+                count:
+                  type:
+                    - string
+                    - integer
+                hosts:
+                  type: array
+                  items:
+                    type: string
+                catchAll:
+                  type: boolean
+            examples:
+              example-1:
+                value: {}
+      description: Add Oracle database agreements
   '/agreements/oracle/database/{id}':
     parameters:
       - schema:
@@ -3893,14 +3929,20 @@ paths:
         name: id
         in: path
         required: true
-    get:
-      summary: Remove Oracle database agreements
-      tags: []
+    delete:
+      summary: Delete Oracle database agreements
+      operationId: delete-agreements-oracle-database-id
       responses:
         '200':
           description: OK
-      operationId: get-agreements-oracle-database-id
       description: Remove Oracle database agreements by ID
+      parameters: []
+  /settings/oracle/database/agreements-partsthat:
+    get:
+      summary: Return agreements-partsthat
+      tags: []
+      responses: {}
+      operationId: get-settings-oracle-database-agreements-partsthat
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []
