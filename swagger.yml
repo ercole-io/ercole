@@ -64,7 +64,7 @@ components:
       description: access using the access token
   responses:
     error:
-      description: Contains some informations about a error
+      description: Contains some informations about an error
       content:
         application/json:
           schema:
@@ -3743,6 +3743,220 @@ paths:
         '500':
           $ref: '#/components/responses/error'
           description: Generic error
+  /agreements/oracle/database:
+    get:
+      summary: Search Oracle database agreements
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    agreementID:
+                      type: string
+                    partID:
+                      type: string
+                    itemDescription:
+                      type: string
+                    metrics:
+                      type: string
+                    csi:
+                      type: string
+                    referenceNumber:
+                      type: string
+                    unlimited:
+                      type: boolean
+                      description: Indicates that the agreement has unlimited part or no
+                    licensesCount:
+                      type: integer
+                      description: |
+                        It's the number of the licenses
+                    usersCount:
+                      type: integer
+                      description: |
+                        It's the number of the users
+                    availableCount:
+                      type: number
+                      description: |
+                        It's the number of available licenses. Mock this field by putting -1
+                      format: number
+                    catchAll:
+                      type: boolean
+                      description: |
+                        Indicate that the aggreement also provides the licenses to non-associated hosts
+                    hosts:
+                      type: array
+                      description: |
+                        Contains the list of (manually) associated hosts
+                      items:
+                        type: object
+                        properties:
+                          hostname:
+                            type: string
+                          coveredLicensesCount:
+                            type: number
+                            description: |
+                              Contains the number of used licenses borrowed from this agreement. Mock this field by putting -1
+                          totalCoveredLicensesCount:
+                            type: string
+                            description: |
+                              Contains the number of used licenses borrowed from all agreements. Mock this field by putting -1
+      operationId: get-agreements-oracle-database
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: agreement-id
+          description: |
+            contains
+        - schema:
+            type: string
+          in: query
+          name: part-id
+          description: |
+            contains
+        - schema:
+            type: string
+          in: query
+          name: item-description
+          description: |
+            contains
+        - schema:
+            type: string
+          in: query
+          name: csi
+          description: |
+            contains
+        - schema:
+            type: string
+          in: query
+          name: metrics
+          description: equal to
+        - schema:
+            type: string
+          in: query
+          name: reference-number
+          description: ''
+        - schema:
+            type: string
+          in: query
+          name: unlimited
+          description: ''
+        - schema:
+            type: string
+          in: query
+          name: catch-all
+          description: ''
+        - schema:
+            type: number
+          in: query
+          name: licenses-count-lte
+          description: ''
+        - schema:
+            type: number
+          in: query
+          name: licenses-count-gte
+          description: ''
+        - schema:
+            type: number
+          in: query
+          name: users-count-lte
+          description: ''
+        - schema:
+            type: number
+          in: query
+          name: users-count-gte
+          description: ''
+        - schema:
+            type: number
+          in: query
+          name: available-count-lte
+          description: ''
+        - schema:
+            type: number
+          in: query
+          name: available-count-gte
+          description: ''
+      description: Retun oracle database agreements by query parameters filters
+    parameters: []
+    post:
+      summary: Add Oracle database agreements
+      operationId: post-agreements-oracle-database
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                agreementID:
+                  type: string
+                partsID:
+                  type: array
+                  items:
+                    type: string
+                referenceNumber:
+                  type: string
+                unlimited:
+                  type: boolean
+                count:
+                  type:
+                    - string
+                    - integer
+                hosts:
+                  type: array
+                  items:
+                    type: string
+                catchAll:
+                  type: boolean
+            examples:
+              example-1:
+                value: {}
+      description: Add Oracle database agreements
+  '/agreements/oracle/database/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    delete:
+      summary: Delete Oracle database agreements
+      operationId: delete-agreements-oracle-database-id
+      responses:
+        '200':
+          description: OK
+      description: Remove Oracle database agreements by ID
+      parameters: []
+  /settings/oracle/database/agreements-partsthat:
+    get:
+      summary: Return agreements-partsthat
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  partID:
+                    type: string
+                  itemDescription:
+                    type: string
+                  metrics:
+                    type: string
+      operationId: get-settings-oracle-database-agreements-partsthat
+      description: ''
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []
