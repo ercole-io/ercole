@@ -3941,8 +3941,22 @@ paths:
     get:
       summary: Return agreements-partsthat
       tags: []
-      responses: {}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  partID:
+                    type: string
+                  itemDescription:
+                    type: string
+                  metrics:
+                    type: string
       operationId: get-settings-oracle-database-agreements-partsthat
+      description: ''
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []
