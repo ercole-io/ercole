@@ -3886,6 +3886,21 @@ paths:
           description: ''
       description: Retun oracle database agreements by query parameters filters
     parameters: []
+  '/agreements/oracle/database/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Remove Oracle database agreements
+      tags: []
+      responses:
+        '200':
+          description: OK
+      operationId: get-agreements-oracle-database-id
+      description: Remove Oracle database agreements by ID
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []
