@@ -3746,7 +3746,8 @@ paths:
   /agreements/oracle/database:
     get:
       summary: Search Oracle database agreements
-      tags: []
+      tags: 
+        - api-service
       responses:
         '200':
           description: OK
@@ -3940,7 +3941,8 @@ paths:
   /settings/oracle/database/agreements-partsthat:
     get:
       summary: Return agreements-partsthat
-      tags: []
+      tags: 
+        - api-service
       responses:
         '200':
           description: OK
