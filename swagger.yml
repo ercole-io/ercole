@@ -3931,9 +3931,9 @@ paths:
       parameters: []
       tags:
         - api-service
-  /settings/oracle/database/agreements-partsthat:
+  /settings/oracle/database/agreements-parts:
     get:
-      summary: Return agreements-partsthat
+      summary: Return agreements-parts
       tags:
         - api-service
       responses:
@@ -3950,7 +3950,7 @@ paths:
                     type: string
                   metrics:
                     type: string
-      operationId: get-settings-oracle-database-agreements-partsthat
+      operationId: get-settings-oracle-database-agreements-parts
       description: ''
 security:
   - basicAuthApiService: []
