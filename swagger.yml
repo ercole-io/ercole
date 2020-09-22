@@ -1087,9 +1087,9 @@ components:
           type: number
           description: sum of unpaidDues
       required:
-        - HostsCount
-        - Compliance
-        - UnpaidDues
+        - hostsCount
+        - compliance
+        - unpaidDues
     AggregatedCodeSeverityAlerts:
       type: object
       required:
@@ -1728,7 +1728,6 @@ paths:
           $ref: '#/components/responses/error'
         '404':
           description: The host is not found
-          $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
         '500':
@@ -1760,7 +1759,6 @@ paths:
           $ref: '#/components/responses/error'
         '404':
           description: The host or patching function don"t exist
-          $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
         '500':
@@ -1784,7 +1782,6 @@ paths:
           $ref: '#/components/responses/error'
         '404':
           description: The host don"t exist
-          $ref: '#/components/responses/error'
         '422':
           $ref: '#/components/responses/error'
         '500':
@@ -2242,13 +2239,10 @@ paths:
                     items:
                       $ref: '#/components/schemas/AggregatedCodeSeverityAlerts'
         '401':
-          $ref: '#/components/responses/error'
           description: Unauthorized
         '422':
-          $ref: '#/components/responses/error'
           description: Unprocessable Entity
         '500':
-          $ref: '#/components/responses/error'
           description: Internal server error
   /alerts/ack:
     parameters: []
@@ -3735,18 +3729,15 @@ paths:
         '200':
           $ref: '#/components/schemas/TechnologyTypesChart'
         '401':
-          $ref: '#/components/responses/error'
           description: Token is invalid / it is not present
         '422':
-          $ref: '#/components/responses/error'
           description: Invalid parameters / null path/body
         '500':
-          $ref: '#/components/responses/error'
           description: Generic error
   /agreements/oracle/database:
     get:
       summary: Search Oracle database agreements
-      tags: 
+      tags:
         - api-service
       responses:
         '200':
@@ -3888,6 +3879,7 @@ paths:
       description: Retun oracle database agreements by query parameters filters
     parameters: []
     post:
+      tags: api-service
       summary: Add Oracle database agreements
       operationId: post-agreements-oracle-database
       responses:
@@ -3910,9 +3902,7 @@ paths:
                 unlimited:
                   type: boolean
                 count:
-                  type:
-                    - string
-                    - integer
+                  type: integer
                 hosts:
                   type: array
                   items:
@@ -3938,10 +3928,12 @@ paths:
           description: OK
       description: Remove Oracle database agreements by ID
       parameters: []
+      tags:
+        - api-service
   /settings/oracle/database/agreements-partsthat:
     get:
       summary: Return agreements-partsthat
-      tags: 
+      tags:
         - api-service
       responses:
         '200':
