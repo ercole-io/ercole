@@ -3879,7 +3879,8 @@ paths:
       description: Retun oracle database agreements by query parameters filters
     parameters: []
     post:
-      tags: [api-service]
+      tags: 
+        - api-service
       summary: Add Oracle database agreements
       operationId: post-agreements-oracle-database
       responses:
