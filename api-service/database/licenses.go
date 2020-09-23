@@ -17,25 +17,16 @@ package database
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"github.com/amreo/mu"
+	"github.com/ercole-io/ercole/api-service/apimodel"
 	"github.com/ercole-io/ercole/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 // SearchLicenses search licenses
-func (md *MongoDatabase) SearchLicenses(mode string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	var isFull bool
-	if mode == "full" {
-		isFull = true
-	} else if mode == "summary" {
-		isFull = false
-	} else {
-		return nil, utils.NewAdvancedErrorPtr(errors.New("Wrong mode value"), "PARAMCHECK")
-	}
-
+func (md *MongoDatabase) SearchLicenses(location string, environment string, olderThan time.Time) ([]apimodel.OracleDatabaseLicenseInfo, utils.AdvancedErrorInterface) {
 	//Find the informations
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses").Aggregate(
 		context.TODO(),
@@ -44,110 +35,35 @@ func (md *MongoDatabase) SearchLicenses(mode string, sortBy string, sortDesc boo
 				bson.M{
 					"ln": "$_id",
 				},
-				"used",
+				"hosts",
 				mu.MAPipeline(
-					FilterByOldnessSteps(olderThan),
 					FilterByLocationAndEnvironmentSteps(location, environment),
-					mu.APProject(bson.M{
-						"hostname": 1,
-						"databases": mu.APOReduce(
-							mu.APOFilter(
-								mu.APOMap("$features.oracle.database.databases",
-									"db",
-									bson.M{
-										"name": "$$db.name",
-										"count": mu.APOLet(
-											bson.M{
-												"val": mu.APOArrayElemAt(mu.APOFilter("$$db.licenses", "lic", mu.APOEqual("$$lic.name", "$$ln")), 0),
-											},
-											"$$val.count",
-										),
-									}),
-								"db",
-								mu.APOGreater("$$db.count", 0),
-							),
-							bson.M{"count": 0, "dbs": bson.A{}},
-							bson.M{
-								"count": mu.APOMax("$$value.count", "$$this.count"),
-								"dbs": bson.M{
-									"$concatArrays": bson.A{
-										"$$value.dbs",
-										bson.A{"$$this.name"},
-									},
-								},
-							},
-						),
-					}),
+					FilterByOldnessSteps(olderThan),
 					mu.APMatch(bson.M{
-						"databases.count": bson.M{
-							"$gt": 0,
-						},
+						"features.oracle.database": mu.QONotEqual(nil),
 					}),
-					AddAssociatedClusterNameAndVirtualizationNode(olderThan),
-					mu.APGroup(mu.BsonOptionalExtension(isFull, bson.M{
-						"_id": mu.APOCond(
-							"$clusterName",
-							mu.APOConcat("cluster_§$#$§_", "$clusterName"),
-							mu.APOConcat("hostname_§$#$§_", "$hostname"),
-						),
-						"license":    mu.APOMaxAggr("$databases.count"),
-						"clusterCpu": mu.APOMaxAggr("$clusterCpu"),
-					}, bson.M{
-						"hosts": mu.APOPush(bson.M{
-							"hostname":  "$hostname",
-							"databases": "$databases.dbs",
-						}),
-					})),
-					mu.APSet(bson.M{
-						"license": mu.APOCond(
-							"$clusterCpu",
-							mu.APODivide("$clusterCpu", 2),
-							"$license",
+					mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$features.oracle.database.databases"), 0))),
+					mu.APProject(bson.M{
+						"_id":      0,
+						"hostname": 1,
+						"dbNames": mu.APOMap(
+							mu.APOFilter(
+								mu.APOMap("$features.oracle.database.databases", "db",
+									bson.M{
+										"name":     "$$db.name",
+										"licenses": mu.APOFilter("$$db.licenses", "lic", mu.APOEqual("$$lic.name", "$$ln")),
+									},
+								),
+								"db",
+								mu.APOGreater(mu.APOSize("$$db.licenses"), 0),
+							),
+							"db",
+							"$$db.name",
 						),
 					}),
-					mu.APGroup(mu.BsonOptionalExtension(isFull, bson.M{
-						"_id":   0,
-						"value": mu.APOSum("$license"),
-					}, bson.M{
-						"hosts": mu.APOPush("$hosts"),
-					})),
-					mu.APOptionalStage(isFull, mu.MAPipeline(
-						mu.APUnwind("$hosts"),
-						mu.APUnwind("$hosts"),
-						mu.APGroup(bson.M{
-							"_id":   0,
-							"value": mu.APOMaxAggr("$value"),
-							"hosts": mu.APOPush("$hosts"),
-						}),
-					)),
+					mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$dbNames"), 0))),
 				),
 			),
-			mu.APSet(bson.M{
-				"used": mu.APOArrayElemAt("$used", 0),
-			}),
-			mu.APOptionalStage(isFull, mu.APSet(bson.M{
-				"hosts": mu.APOIfNull("$used.hosts", bson.A{}),
-			})),
-			mu.APSet(bson.M{
-				"used": mu.APOIfNull(mu.APOCeil("$used.value"), 0),
-			}),
-			mu.APSet(bson.M{
-				"compliance": mu.APOGreaterOrEqual(
-					mu.APOCond("$unlimited", "$used", "$count"),
-					"$used",
-				),
-				"totalCost": bson.M{
-					"$multiply": bson.A{"$used", "$costPerProcessor"},
-				},
-				"paidCost": bson.M{
-					"$multiply": bson.A{
-						mu.APOCond("$unlimited", "$used", "$count"),
-						"$costPerProcessor",
-					},
-				},
-			}),
-			mu.APOptionalSortingStage(sortBy, sortDesc),
-			mu.APOptionalPagingStage(page, pageSize),
 		),
 	)
 	if err != nil {
@@ -155,14 +71,11 @@ func (md *MongoDatabase) SearchLicenses(mode string, sortBy string, sortDesc boo
 	}
 
 	//Decode the documents
-	var out []interface{} = make([]interface{}, 0)
+	var out []apimodel.OracleDatabaseLicenseInfo = make([]apimodel.OracleDatabaseLicenseInfo, 0)
 
-	for cur.Next(context.TODO()) {
-		var item map[string]interface{}
-		if cur.Decode(&item) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
-		}
-		out = append(out, &item)
+	//Decode the documents
+	if err = cur.All(context.TODO(), &out); err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 	}
 	return out, nil
 }
