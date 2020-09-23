@@ -3782,7 +3782,7 @@ paths:
                     catchAll:
                       type: boolean
                       description: |
-                        Indicate that the aggreement also provides the licenses to non-associated hosts
+                        Indicate that the agreement also provides the licenses to non-associated hosts
                     hosts:
                       type: array
                       description: |
