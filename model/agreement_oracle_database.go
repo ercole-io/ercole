@@ -64,7 +64,7 @@ var OracleDatabaseAgreementBsonValidatorRules = bson.M{
 		"itemDescription": bson.M{
 			"bsonType":  "string",
 			"minLength": 1,
-			"maxLength": 32,
+			"maxLength": 64,
 		},
 		"metrics": bson.M{
 			"bsonType":  "string",
