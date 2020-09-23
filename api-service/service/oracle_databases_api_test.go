@@ -375,14 +375,10 @@ func TestSearchLicenses_Success(t *testing.T) {
 	}
 
 	db.EXPECT().SearchLicenses(
-		"summary", "Used",
-		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	).Return(expectedRes, nil).Times(1)
 
 	res, err := as.SearchLicenses(
-		"summary", "Used",
-		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
 
@@ -399,14 +395,10 @@ func TestSearchLicenses_Fail(t *testing.T) {
 	}
 
 	db.EXPECT().SearchLicenses(
-		"summary", "Used",
-		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	).Return(nil, aerrMock).Times(1)
 
 	res, err := as.SearchLicenses(
-		"summary", "Used",
-		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
 
