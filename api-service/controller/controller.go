@@ -128,11 +128,11 @@ type APIControllerInterface interface {
 
 	// AddOracleDatabaseAgreements add some agreements
 	AddOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request)
-	// DeleteOracleDatabaseAgreement delete a agreement
+	// DeleteOracleDatabaseAgreement delete an agreement
 	DeleteOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
-	// AddAssociatedHostToOracleDatabaseAgreement add a asscociated host to a agreement
+	// AddAssociatedHostToOracleDatabaseAgreement add a associated host to an agreement
 	AddAssociatedHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
-	// RemoveAssociatedHostToOracleDatabaseAgreement remove a asscociated host of a agreement
+	// RemoveAssociatedHostToOracleDatabaseAgreement remove a associated host of an agreement
 	RemoveAssociatedHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
 
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license

@@ -29,7 +29,7 @@ type OracleDatabaseAgreementsAddRequest struct {
 	Hosts           []string `json:"hosts" bson:"hosts"`
 }
 
-// OracleDatabaseAgreementsFE contains the informations about a agreement
+// OracleDatabaseAgreementsFE contains the informations about an agreement
 type OracleDatabaseAgreementsFE struct {
 	ID              primitive.ObjectID                         `json:"id" bson:"_id"`
 	AgreementID     string                                     `json:"agreementID" bson:"agreementID"`

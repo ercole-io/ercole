@@ -981,7 +981,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1059,7 +1059,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1137,7 +1137,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1232,7 +1232,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedAgreemen
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1355,7 +1355,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1420,7 +1420,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1485,7 +1485,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1550,7 +1550,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1626,7 +1626,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_CompleCase1(t 
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects)
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 

@@ -131,29 +131,26 @@ func (as *APIService) AddOracleDatabaseAgreements(req apimodel.OracleDatabaseAgr
 
 // SearchOracleDatabaseAgreements search Oracle/Database agreements
 func (as *APIService) SearchOracleDatabaseAgreements(search string, filters apimodel.SearchOracleDatabaseAgreementsFilters) ([]apimodel.OracleDatabaseAgreementsFE, utils.AdvancedErrorInterface) {
-	//Get the list of aggreements
 	aggs, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
 		return nil, err
 	}
 
-	//Get the list of licensingObjecst
 	objs, err := as.Database.ListOracleDatabaseLicensingObjects()
 	if err != nil {
 		return nil, err
 	}
 
-	//Compute the algorithm
 	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(aggs, objs, nil)
 
 	//Filter them!
 	filteredAggs := make([]apimodel.OracleDatabaseAgreementsFE, 0)
 	for _, agg := range aggs {
-		if !CheckOracleDatabaseAgreementMatchFilter(agg, filters) {
-			continue
+
+		if CheckOracleDatabaseAgreementMatchFilter(agg, filters) {
+			filteredAggs = append(filteredAggs, agg)
 		}
 
-		filteredAggs = append(filteredAggs, agg)
 	}
 
 	return filteredAggs, nil
@@ -271,7 +268,7 @@ func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(a
 		// 	as.Log.Debugf("Finding valid agreement for licensingObject #%d. obj = %s\n", i, utils.ToJSON(obj))
 		// }
 
-		//Find a agreement that can cover the object
+		//Find an agreement that can cover the object
 		for j := range aggs {
 			agg := &aggs[j]
 
