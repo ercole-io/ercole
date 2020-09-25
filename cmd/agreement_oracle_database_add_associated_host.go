@@ -29,8 +29,8 @@ import (
 func init() {
 	cmd := &cobra.Command{
 		Use:   "add-host",
-		Short: "Add a host to the list of associated hosts of a agreement",
-		Long:  `Add a host to the list of associated hosts of a agreement`,
+		Short: "Add a host to the list of associated hosts of an agreement",
+		Long:  `Add a host to the list of associated hosts of an agreement`,
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			//Argument length check

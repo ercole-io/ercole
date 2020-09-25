@@ -24,6 +24,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// TODO
 // func (m *MongodbSuite) TestSearchLicenses() {
 // 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 // 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_17.json"))

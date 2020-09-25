@@ -52,7 +52,6 @@ func (as *APIService) SearchLicenses(location string, environment string, olderT
 		return nil, err
 	}
 
-	//Get the list of licensingObjecst
 	objs, err := as.Database.ListOracleDatabaseLicensingObjects()
 	if err != nil {
 		return nil, err
@@ -64,7 +63,6 @@ func (as *APIService) SearchLicenses(location string, environment string, olderT
 		return nil, err
 	}
 
-	//Compute the algorithm
 	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(aggs, objs, lics)
 
 	return lics, nil

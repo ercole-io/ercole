@@ -40,7 +40,6 @@ func (md *MongoDatabase) InsertOracleDatabaseAgreement(aggreement model.OracleDa
 func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]apimodel.OracleDatabaseAgreementsFE, utils.AdvancedErrorInterface) {
 	var out []apimodel.OracleDatabaseAgreementsFE = make([]apimodel.OracleDatabaseAgreementsFE, 0)
 
-	//Find the matching alerts
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("agreements_oracle_database").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -60,7 +59,6 @@ func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]apimodel.OracleDataba
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	//Decode the documents
 	if err = cur.All(context.TODO(), &out); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 	}
@@ -71,91 +69,90 @@ func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]apimodel.OracleDataba
 func (md *MongoDatabase) ListOracleDatabaseLicensingObjects() ([]apimodel.OracleDatabaseLicensingObjects, utils.AdvancedErrorInterface) {
 	var out []apimodel.OracleDatabaseLicensingObjects = make([]apimodel.OracleDatabaseLicensingObjects, 0)
 
-	//Find the matching alerts
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
-		context.TODO(),
-		mu.MAPipeline(
-			mu.APMatch(bson.M{
-				"archived":                 false,
-				"features.oracle.database": mu.QONotEqual(nil),
-			}),
-			mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$features.oracle.database.databases"), 0))),
-			mu.APProject(bson.M{
-				"hostname": true,
-				"licenses": "$features.oracle.database.databases.licenses",
-			}),
-			mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "cluster", mu.MAPipeline(
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
+		Aggregate(
+			context.TODO(),
+			mu.MAPipeline(
 				mu.APMatch(bson.M{
-					"archived": false,
+					"archived":                 false,
+					"features.oracle.database": mu.QONotEqual(nil),
 				}),
-				mu.APUnwind("$clusters"),
-				mu.APReplaceWith("$clusters"),
-				mu.APUnwind("$vms"),
-				mu.APSet(bson.M{
-					"vms.clusterName": "$name",
+				mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$features.oracle.database.databases"), 0))),
+				mu.APProject(bson.M{
+					"hostname": true,
+					"licenses": "$features.oracle.database.databases.licenses",
 				}),
-				mu.APMatch(mu.QOExpr(mu.APOEqual("$vms.hostname", "$$hn"))),
-				mu.APLimit(1),
-			)),
-			mu.APSet(bson.M{
-				"cluster": mu.APOArrayElemAt("$cluster", 0),
-			}),
-			mu.APAddFields(bson.M{
-				"cluster":    "$cluster.name",
-				"clusterCpu": "$cluster.cpu",
-			}),
-			mu.APUnwind("$licenses"),
-			mu.APUnwind("$licenses"),
-			mu.APGroup(bson.M{
-				"_id": bson.M{
-					"hostname":    "$hostname",
-					"cluster":     "$cluster",
-					"clusterCpu":  "$clusterCpu",
-					"licenseName": "$licenses.name",
-				},
-				"count": mu.APOMaxAggr("$licenses.count"),
-			}),
-			mu.APMatch(bson.M{
-				"count": bson.M{
-					"$gt": 0,
-				},
-			}),
-			mu.APGroup(bson.M{
-				"_id": bson.M{
-					"licenseName": "$_id.licenseName",
-					"object": mu.APOCond(
-						"$_id.cluster",
-						bson.M{
-							"name": "$_id.cluster",
-							"type": "cluster",
-						},
-						bson.M{
-							"name": "$_id.hostname",
-							"type": "host",
-						},
-					),
-				},
-				"count": mu.APOMaxAggr(mu.APOCond(
-					"$_id.cluster",
-					mu.APODivide("$_id.clusterCpu", 2),
-					"$count",
+				mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "cluster", mu.MAPipeline(
+					mu.APMatch(bson.M{
+						"archived": false,
+					}),
+					mu.APUnwind("$clusters"),
+					mu.APReplaceWith("$clusters"),
+					mu.APUnwind("$vms"),
+					mu.APSet(bson.M{
+						"vms.clusterName": "$name",
+					}),
+					mu.APMatch(mu.QOExpr(mu.APOEqual("$vms.hostname", "$$hn"))),
+					mu.APLimit(1),
 				)),
-			}),
-			mu.APProject(bson.M{
-				"_id":           0,
-				"name":          "$_id.object.name",
-				"type":          "$_id.object.type",
-				"licenseName":   "$_id.licenseName",
-				"count":         1,
-				"originalCount": "$count",
-			}),
-		),
-	)
+				mu.APSet(bson.M{
+					"cluster": mu.APOArrayElemAt("$cluster", 0),
+				}),
+				mu.APAddFields(bson.M{
+					"cluster":    "$cluster.name",
+					"clusterCpu": "$cluster.cpu",
+				}),
+				mu.APUnwind("$licenses"),
+				mu.APUnwind("$licenses"),
+				mu.APGroup(bson.M{
+					"_id": bson.M{
+						"hostname":    "$hostname",
+						"cluster":     "$cluster",
+						"clusterCpu":  "$clusterCpu",
+						"licenseName": "$licenses.name",
+					},
+					"count": mu.APOMaxAggr("$licenses.count"),
+				}),
+				mu.APMatch(bson.M{
+					"count": bson.M{
+						"$gt": 0,
+					},
+				}),
+				mu.APGroup(bson.M{
+					"_id": bson.M{
+						"licenseName": "$_id.licenseName",
+						"object": mu.APOCond(
+							"$_id.cluster",
+							bson.M{
+								"name": "$_id.cluster",
+								"type": "cluster",
+							},
+							bson.M{
+								"name": "$_id.hostname",
+								"type": "host",
+							},
+						),
+					},
+					"count": mu.APOMaxAggr(mu.APOCond(
+						"$_id.cluster",
+						mu.APODivide("$_id.clusterCpu", 2),
+						"$count",
+					)),
+				}),
+				mu.APProject(bson.M{
+					"_id":           0,
+					"name":          "$_id.object.name",
+					"type":          "$_id.object.type",
+					"licenseName":   "$_id.licenseName",
+					"count":         1,
+					"originalCount": "$count",
+				}),
+			),
+		)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	//Decode the documents
 	if err = cur.All(context.TODO(), &out); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 	}
@@ -164,7 +161,6 @@ func (md *MongoDatabase) ListOracleDatabaseLicensingObjects() ([]apimodel.Oracle
 
 // FindOracleDatabaseAgreement return the agreement specified by id
 func (md *MongoDatabase) FindOracleDatabaseAgreement(id primitive.ObjectID) (model.OracleDatabaseAgreement, utils.AdvancedErrorInterface) {
-	//Find the matching alerts
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("agreements_oracle_database").FindOne(context.TODO(), bson.M{
 		"_id": id,
 	})
@@ -174,7 +170,6 @@ func (md *MongoDatabase) FindOracleDatabaseAgreement(id primitive.ObjectID) (mod
 		return model.OracleDatabaseAgreement{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
 	}
 
-	//Decode the documents
 	var out model.OracleDatabaseAgreement
 	if err := res.Decode(&out); err != nil {
 		return model.OracleDatabaseAgreement{}, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
