@@ -3797,10 +3797,49 @@ paths:
                             description: |
                               Contains the number of used licenses borrowed from this agreement. Mock this field by putting -1
                           totalCoveredLicensesCount:
-                            type: string
+                            type: number
                             description: |
                               Contains the number of used licenses borrowed from all agreements. Mock this field by putting -1
-      operationId: get-agreements-oracle-database
+              examples:
+                example-1:
+                  value:
+                    - id: 5f6a118067d1127af38db239
+                      agreementID: '111'
+                      partID: L10001
+                      itemDescription: Oracle Database Enterprise Edition
+                      metrics: Named User Plus Perpetual
+                      csi: ''
+                      referenceNumber: '444'
+                      unlimited: false
+                      count: 42
+                      licensesCount: 0
+                      usersCount: 42
+                      availableCount: -2
+                      catchAll: false
+                      hosts:
+                        - hostname: ercsoldbx
+                          coveredLicensesCount: 0
+                          totalCoveredLicensesCount: 0
+                          consumedLicensesCount: 2
+                    - id: 5f6a118267d1127af38db23a
+                      agreementID: '222'
+                      partID: L10001
+                      itemDescription: Oracle Database Enterprise Edition
+                      metrics: Named User Plus Perpetual
+                      csi: ''
+                      referenceNumber: '444'
+                      unlimited: false
+                      count: 42
+                      licensesCount: 0
+                      usersCount: 42
+                      availableCount: -2
+                      catchAll: false
+                      hosts:
+                        - hostname: ercsoldbx
+                          coveredLicensesCount: 0
+                          totalCoveredLicensesCount: 0
+                          consumedLicensesCount: 2
+      operationId: SearchOracleDatabaseAgreements
       parameters:
         - schema:
             type: string
@@ -3879,10 +3918,10 @@ paths:
       description: Retun oracle database agreements by query parameters filters
     parameters: []
     post:
-      tags: 
+      tags:
         - api-service
       summary: Add Oracle database agreements
-      operationId: post-agreements-oracle-database
+      operationId: AddOracleDatabaseAgreement
       responses:
         '200':
           description: OK
@@ -3914,8 +3953,69 @@ paths:
                   type: boolean
             examples:
               example-1:
-                value: {}
-      description: Add Oracle database agreements
+                value:
+                  agreementID: '111'
+                  csi: pippo
+                  partsID:
+                    - L10001
+                  referenceNumber: '444'
+                  unlimited: false
+                  count: 42
+                  hosts:
+                    - ercsoldbx
+                  catchAll: false
+      description: Add Oracle database agreement
+    put:
+      summary: ''
+      operationId: UpdateOracleDatabaseAgreement
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                agreementID:
+                  type: string
+                csi:
+                  type: string
+                partsID:
+                  type: array
+                  items:
+                    type: string
+                referenceNumber:
+                  type: string
+                unlimited:
+                  type: boolean
+                count:
+                  type: integer
+                hosts:
+                  type: array
+                  items:
+                    type: string
+                catchAll:
+                  type: boolean
+                id:
+                  type: string
+            examples:
+              example-1:
+                value:
+                  id: 5f6a118067d1127af38db239
+                  agreementID: '111'
+                  csi: pippo
+                  partsID:
+                    - L10001
+                  referenceNumber: '444'
+                  unlimited: false
+                  count: 42
+                  hosts:
+                    - ercsoldbx
+                  catchAll: false
+      description: Update Oracle database agreement
+      tags:
+        - api-service
   '/agreements/oracle/database/{id}':
     parameters:
       - schema:
@@ -3925,7 +4025,7 @@ paths:
         required: true
     delete:
       summary: Delete Oracle database agreements
-      operationId: delete-agreements-oracle-database-id
+      operationId: DeleteOracleDatabaseAgreement
       responses:
         '200':
           description: OK
@@ -3952,8 +4052,8 @@ paths:
                     type: string
                   metrics:
                     type: string
-      operationId: get-settings-oracle-database-agreements-parts
-      description: ''
+      operationId: GetOracleDatabaseAgreementPartsList
+      description: Get Oracle database agreement parts list
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []
