@@ -21,6 +21,7 @@ import (
 	"net/http"
 
 	"github.com/ercole-io/ercole/api-service/apimodel"
+	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -48,7 +49,6 @@ func (ctrl *APIController) AddOracleDatabaseAgreements(w http.ResponseWriter, r 
 	var aerr utils.AdvancedErrorInterface
 	var req apimodel.OracleDatabaseAgreementsAddRequest
 
-	//Read all bytes for the request
 	raw, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
@@ -56,21 +56,47 @@ func (ctrl *APIController) AddOracleDatabaseAgreements(w http.ResponseWriter, r 
 	}
 	defer r.Body.Close()
 
-	//Unmarshal it to req
 	if err := json.Unmarshal(raw, &req); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 
-	//Add it!
 	var ids interface{}
 	if ids, aerr = ctrl.Service.AddOracleDatabaseAgreements(req); aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
 	}
 
-	//Write the created id
 	utils.WriteJSONResponse(w, http.StatusOK, ids)
+}
+
+// UpdateOracleDatabaseAgreement edit an agreement
+func (ctrl *APIController) UpdateOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden,
+			utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	var agreement model.OracleDatabaseAgreement
+
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&agreement); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
+			utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
+		return
+	}
+
+	err := ctrl.Service.UpdateOracleDatabaseAgreement(agreement)
+	if err == utils.AerrOracleDatabaseAgreementNotFound ||
+		err == utils.ErrOracleDatabaseAgreementInvalidPartID {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
 // SearchOracleDatabaseAgreements search Oracle/Database agreements data using the filters in the request
@@ -165,13 +191,11 @@ func (ctrl *APIController) AddAssociatedHostToOracleDatabaseAgreement(w http.Res
 	var aerr utils.AdvancedErrorInterface
 	var id primitive.ObjectID
 
-	//Get the id from the path variable
 	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 
-	//Read all bytes for the request
 	raw, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
@@ -179,7 +203,6 @@ func (ctrl *APIController) AddAssociatedHostToOracleDatabaseAgreement(w http.Res
 	}
 	defer r.Body.Close()
 
-	//Add it!
 	if aerr = ctrl.Service.AddAssociatedHostToOracleDatabaseAgreement(id, string(raw)); aerr == utils.AerrOracleDatabaseAgreementNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
 		return
@@ -191,7 +214,6 @@ func (ctrl *APIController) AddAssociatedHostToOracleDatabaseAgreement(w http.Res
 		return
 	}
 
-	//Write the created id
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
@@ -206,14 +228,13 @@ func (ctrl *APIController) RemoveAssociatedHostToOracleDatabaseAgreement(w http.
 	var aerr utils.AdvancedErrorInterface
 	var id primitive.ObjectID
 	var hostname string
-	//Get the id from the path variable
+
 	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 	hostname = mux.Vars(r)["hostname"]
 
-	//Add it!
 	if aerr = ctrl.Service.RemoveAssociatedHostToOracleDatabaseAgreement(id, hostname); aerr == utils.AerrOracleDatabaseAgreementNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
 		return
@@ -222,7 +243,6 @@ func (ctrl *APIController) RemoveAssociatedHostToOracleDatabaseAgreement(w http.
 		return
 	}
 
-	//Write the created id
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
@@ -236,13 +256,12 @@ func (ctrl *APIController) DeleteOracleDatabaseAgreement(w http.ResponseWriter, 
 	var err error
 	var aerr utils.AdvancedErrorInterface
 	var id primitive.ObjectID
-	//Get the id from the path variable
+
 	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 
-	//Add it!
 	if aerr = ctrl.Service.DeleteOracleDatabaseAgreement(id); aerr == utils.AerrOracleDatabaseAgreementNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
 		return
@@ -251,6 +270,5 @@ func (ctrl *APIController) DeleteOracleDatabaseAgreement(w http.ResponseWriter, 
 		return
 	}
 
-	//Write the created id
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
