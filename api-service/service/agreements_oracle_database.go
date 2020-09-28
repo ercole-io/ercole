@@ -53,23 +53,69 @@ func (as *APIService) GetOracleDatabaseAgreementPartsList() ([]model.OracleDatab
 
 // AddOracleDatabaseAgreements return the list of Oracle/Database agreement parts
 func (as *APIService) AddOracleDatabaseAgreements(req apimodel.OracleDatabaseAgreementsAddRequest) (interface{}, utils.AdvancedErrorInterface) {
-	//Check and resolve every part id
-	var parts []*model.OracleDatabaseAgreementPart = make([]*model.OracleDatabaseAgreementPart, len(req.PartsID))
-	for i, pid := range req.PartsID {
-		found := false
-		for j, vpid := range as.OracleDatabaseAgreementParts {
-			if pid == vpid.PartID {
-				found = true
-				parts[i] = &as.OracleDatabaseAgreementParts[j]
-				break
-			}
+
+	var parts []*model.OracleDatabaseAgreementPart
+	var err utils.AdvancedErrorInterface
+	if parts, err = resolvePartIds(req.PartsID, as.OracleDatabaseAgreementParts); err != nil {
+		return nil, err
+	}
+
+	if err := checkHosts(as, req.Hosts); err != nil {
+		return nil, err
+	}
+
+	agreements := make([]model.OracleDatabaseAgreement, len(req.PartsID))
+	for i, part := range parts {
+		agreements[i].AgreementID = req.AgreementID
+		agreements[i].CSI = req.CSI
+		agreements[i].CatchAll = req.CatchAll
+		agreements[i].Count = req.Count
+		agreements[i].Hosts = req.Hosts
+		agreements[i].ID = primitive.NewObjectIDFromTimestamp(as.TimeNow())
+		agreements[i].ReferenceNumber = req.ReferenceNumber
+		agreements[i].Unlimited = req.Unlimited
+
+		agreements[i].PartID = part.PartID
+		agreements[i].ItemDescription = part.ItemDescription
+		agreements[i].Metrics = part.Metrics
+	}
+
+	res := make([]interface{}, len(agreements))
+	for i, agg := range agreements {
+		var aerr utils.AdvancedErrorInterface
+		if res[i], aerr = as.Database.InsertOracleDatabaseAgreement(agg); aerr != nil {
+			return nil, aerr
 		}
-		if !found {
+	}
+
+	return res, nil
+}
+
+func resolvePartIds(partsID []string, agreementParts []model.OracleDatabaseAgreementPart) ([]*model.OracleDatabaseAgreementPart, utils.AdvancedErrorInterface) {
+	var parts []*model.OracleDatabaseAgreementPart = make([]*model.OracleDatabaseAgreementPart, len(partsID))
+
+	for i, pID := range partsID {
+		var err utils.AdvancedErrorInterface
+
+		if parts[i], err = isValidPartID(pID, agreementParts); err != nil {
 			return nil, utils.AerrOracleDatabaseAgreementInvalidPartID
 		}
 	}
 
-	//Get the list of hosts not in cluster
+	return parts, nil
+}
+
+func isValidPartID(partID string, agreementParts []model.OracleDatabaseAgreementPart) (*model.OracleDatabaseAgreementPart, utils.AdvancedErrorInterface) {
+	for i, part := range agreementParts {
+		if partID == part.PartID {
+			return &agreementParts[i], nil
+		}
+	}
+
+	return nil, utils.AerrOracleDatabaseAgreementInvalidPartID
+}
+
+func checkHosts(as *APIService, hosts []string) utils.AdvancedErrorInterface {
 	notInClusterHosts, aerr := as.SearchHosts("hostnames", "", database.SearchHostsFilters{
 		GTECPUCores:    -1,
 		LTECPUCores:    -1,
@@ -81,52 +127,45 @@ func (as *APIService) AddOracleDatabaseAgreements(req apimodel.OracleDatabaseAgr
 		LTESwapTotal:   -1,
 	}, "", false, -1, -1, "", "", utils.MAX_TIME)
 	if aerr != nil {
-		return nil, aerr
+		return aerr
 	}
+
 	notInClusterHostnames := make([]string, len(notInClusterHosts))
 	for i, h := range notInClusterHosts {
 		notInClusterHostnames[i] = h["hostname"].(string)
 	}
 
-	//Check every host in req.Hosts
-	for _, host := range req.Hosts {
-		found := false
-		for _, vhost := range notInClusterHostnames {
-			if host == vhost {
-				found = true
-				break
+hosts_loop:
+	for _, host := range hosts {
+		for _, notInClusterHostname := range notInClusterHostnames {
+			if host == notInClusterHostname {
+				continue hosts_loop
 			}
 		}
-		if !found {
-			return nil, utils.AerrHostNotFound
-		}
+
+		return utils.AerrHostNotFound
 	}
 
-	//expode req in multple agreement
-	aggs := make([]model.OracleDatabaseAgreement, len(req.PartsID))
-	for i, part := range parts {
-		aggs[i].AgreementID = req.AgreementID
-		aggs[i].CSI = req.CSI
-		aggs[i].CatchAll = req.CatchAll
-		aggs[i].Count = req.Count
-		aggs[i].Hosts = req.Hosts
-		aggs[i].ID = primitive.NewObjectIDFromTimestamp(as.TimeNow())
-		aggs[i].ItemDescription = part.ItemDescription
-		aggs[i].Metrics = part.Metrics
-		aggs[i].PartID = part.PartID
-		aggs[i].ReferenceNumber = req.ReferenceNumber
-		aggs[i].Unlimited = req.Unlimited
+	return nil
+}
+
+// UpdateOracleDatabaseAgreement update an Oracle Database Agreement
+func (as *APIService) UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface {
+	if _, err := as.Database.FindOracleDatabaseAgreement(agreement.ID); err != nil {
+		return err
 	}
 
-	//insert it to the database
-	res := make([]interface{}, len(aggs))
-	for i, agg := range aggs {
-		if res[i], aerr = as.Database.InsertOracleDatabaseAgreement(agg); aerr != nil {
-			return nil, aerr
-		}
+	var part *model.OracleDatabaseAgreementPart
+	var err utils.AdvancedErrorInterface
+	if part, err = isValidPartID(agreement.PartID, as.OracleDatabaseAgreementParts); err != nil {
+		return err
 	}
 
-	return res, nil
+	agreement.PartID = part.PartID
+	agreement.ItemDescription = part.ItemDescription
+	agreement.Metrics = part.Metrics
+
+	return as.Database.UpdateOracleDatabaseAgreement(agreement)
 }
 
 // SearchOracleDatabaseAgreements search Oracle/Database agreements
@@ -536,17 +575,15 @@ func (as *APIService) AddAssociatedHostToOracleDatabaseAgreement(id primitive.Ob
 func (as *APIService) RemoveAssociatedHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) utils.AdvancedErrorInterface {
 	var err utils.AdvancedErrorInterface
 
-	//check the existence and get the agreement
 	var agg model.OracleDatabaseAgreement
 	if agg, err = as.Database.FindOracleDatabaseAgreement(id); err != nil {
 		return err
 	}
 
-	//check the host isn't already part of the list, and do nothing
 	for i, host := range agg.Hosts {
 		if host == hostname {
-			//Remove the host and update the agreement
 			agg.Hosts = append(agg.Hosts[:i], agg.Hosts[i+1:]...)
+
 			return as.Database.UpdateOracleDatabaseAgreement(agg)
 		}
 	}
