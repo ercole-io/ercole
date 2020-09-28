@@ -29,6 +29,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+//TODO add tests for UpdateOracleDatabaseAgreement
+
 func TestLoadOracleDatabaseAgreementPartsList_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
