@@ -17,7 +17,7 @@ package cmd
 
 func init() {
 	cmd := simpleAPIRequestCommand("search",
-		"Search a agreement",
+		"Search an agreement",
 		`search search the most matching agreements to the arguments`,
 		true, []apiOption{searchOracleDatabaseAgreementsOption}, false,
 		"/agreements/oracle/database",
