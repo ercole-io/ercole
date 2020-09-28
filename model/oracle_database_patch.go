@@ -22,7 +22,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// OracleDatabasePatch holds information about a Oracle database patch
+// OracleDatabasePatch holds information about an Oracle database patch
 type OracleDatabasePatch struct {
 	Version     string                 `json:"version" bson:"version"`
 	PatchID     int                    `json:"patchID" bson:"patchID"`

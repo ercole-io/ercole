@@ -22,7 +22,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// OracleDatabaseLicense holds information about a Oracle database license
+// OracleDatabaseLicense holds information about an Oracle database license
 type OracleDatabaseLicense struct {
 	Name      string                 `json:"name" bson:"name"`
 	Count     float64                `json:"count" bson:"count"`

@@ -22,7 +22,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// OracleDatabase holds information about a oracle database.
+// OracleDatabase holds information about an Oracle database.
 type OracleDatabase struct {
 	InstanceNumber    int                               `json:"instanceNumber" bson:"instanceNumber"`
 	InstanceName      string                            `json:"instanceName" bson:"instanceName"`
