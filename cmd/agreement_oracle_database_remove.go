@@ -28,8 +28,8 @@ import (
 func init() {
 	cmd := &cobra.Command{
 		Use:   "remove",
-		Short: "Remove a oracle database agreement",
-		Long:  `Remove a oracle database agreement`,
+		Short: "Remove an Oracle database agreement",
+		Long:  `Remove an Oracle database agreement`,
 		Run: func(cmd *cobra.Command, args []string) {
 			//Argument length check
 			for i := 0; i < len(args); i++ {
