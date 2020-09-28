@@ -551,7 +551,6 @@ func (ctrl *APIController) SearchLicenses(w http.ResponseWriter, r *http.Request
 
 	var err utils.AdvancedErrorInterface
 
-	//parse the query params
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
@@ -559,7 +558,6 @@ func (ctrl *APIController) SearchLicenses(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	//get the data
 	licenses, err := ctrl.Service.SearchLicenses(location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
