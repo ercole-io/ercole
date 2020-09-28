@@ -133,8 +133,10 @@ type APIServiceInterface interface {
 
 	// GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
 	GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabaseAgreementPart, utils.AdvancedErrorInterface)
-	// AddOracleDatabaseAgreements return the list of Oracle/Database agreement parts
+	// AddOracleDatabaseAgreements add an Oracle Database Agreement
 	AddOracleDatabaseAgreements(req apimodel.OracleDatabaseAgreementsAddRequest) (interface{}, utils.AdvancedErrorInterface)
+	// UpdateOracleDatabaseAgreement update an Oracle Database Agreement
+	UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface
 	// DeleteOracleDatabaseAgreement remove an Oracle/Database agreement
 	DeleteOracleDatabaseAgreement(id primitive.ObjectID) utils.AdvancedErrorInterface
 
