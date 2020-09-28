@@ -44,7 +44,7 @@ Port = 11113
 LogHTTPRequest = true
 ReadOnly = false
 EnableInsertingCustomPatchingFunction = true
-DebugOracleDatabaseAgreementsAssignmentAlgorithm = true
+DebugOracleDatabaseAgreementsAssignmentAlgorithm = false
 DefaultDatabaseTags = [
   "coolest",
   "very important",

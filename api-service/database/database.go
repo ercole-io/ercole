@@ -117,9 +117,11 @@ type MongoDatabaseInterface interface {
 	// GetOracleExadataPatchStatusStats return a array containing the number of exadata per patch status
 	GetOracleExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 
-	// InsertOracleDatabaseAgreement insert a Oracle/Database agreement into the database
+	// InsertOracleDatabaseAgreement insert an Oracle/Database agreement into the database
 	InsertOracleDatabaseAgreement(aggreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
-	// RemoveOracleDatabaseAgreement remove a Oracle/Database agreement from the database
+	// UpdateOracleDatabaseAgreement update an Oracle/Database agreement in the database
+	UpdateOracleDatabaseAgreement(newAgreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface
+	// RemoveOracleDatabaseAgreement remove an Oracle/Database agreement from the database
 	RemoveOracleDatabaseAgreement(id primitive.ObjectID) utils.AdvancedErrorInterface
 
 	// ListOracleDatabaseAgreements lists the Oracle/Database agreements
@@ -128,8 +130,6 @@ type MongoDatabaseInterface interface {
 	ListOracleDatabaseLicensingObjects() ([]apimodel.OracleDatabaseLicensingObjects, utils.AdvancedErrorInterface)
 	// FindOracleDatabaseAgreement return the agreement specified by id
 	FindOracleDatabaseAgreement(id primitive.ObjectID) (model.OracleDatabaseAgreement, utils.AdvancedErrorInterface)
-	// UpdateOracleDatabaseAgreement update a Oracle/Database agreement in the database
-	UpdateOracleDatabaseAgreement(newAgreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface
 
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license
 	SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface

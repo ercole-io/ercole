@@ -29,6 +29,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+//TODO add tests for UpdateOracleDatabaseAgreement
+
 func TestLoadOracleDatabaseAgreementPartsList_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -53,7 +55,7 @@ func TestLoadOracleDatabaseAgreementPartsList_Success(t *testing.T) {
 		assert.Contains(t,
 			[]string{"Processor Perpetual", "Named User Plus Perpetual", "Stream Perpetual", "Computer Perpetual"},
 			part.Metrics,
-			"There is a Oracle/Database agreement part with unknown metric #", i, part,
+			"There is an Oracle/Database agreement part with unknown metric #", i, part,
 		)
 	}
 }
