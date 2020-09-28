@@ -24,8 +24,8 @@ import (
 func init() {
 	var cmd = &cobra.Command{
 		Use:   "print-add-template",
-		Short: "Print a Oracle/Database agreement",
-		Long:  `Print a Oracle/Database agreement to stdout`,
+		Short: "Print an Oracle/Database agreement",
+		Long:  `Print an Oracle/Database agreement to stdout`,
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println(`{
 	"agreementID": "5051863",

@@ -22,7 +22,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// OracleDatabasePluggableDatabase holds information about a oracle pluggable database.
+// OracleDatabasePluggableDatabase holds information about an Oracle pluggable database.
 type OracleDatabasePluggableDatabase struct {
 	Name        string                     `json:"name" bson:"name"`
 	Status      string                     `json:"status" bson:"status"`

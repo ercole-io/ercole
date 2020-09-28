@@ -27,7 +27,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// InsertOracleDatabaseAgreement insert a Oracle/Database agreement into the database
+// InsertOracleDatabaseAgreement insert an Oracle/Database agreement into the database
 func (md *MongoDatabase) InsertOracleDatabaseAgreement(aggreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, utils.AdvancedErrorInterface) {
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("agreements_oracle_database").InsertOne(context.TODO(), aggreement)
 	if err != nil {
@@ -177,18 +177,21 @@ func (md *MongoDatabase) FindOracleDatabaseAgreement(id primitive.ObjectID) (mod
 	return out, nil
 }
 
-// UpdateOracleDatabaseAgreement update a Oracle/Database agreement in the database
-func (md *MongoDatabase) UpdateOracleDatabaseAgreement(agg model.OracleDatabaseAgreement) utils.AdvancedErrorInterface {
-	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("agreements_oracle_database").ReplaceOne(context.TODO(), bson.M{
-		"_id": agg.ID,
-	}, agg)
-	if err != nil {
+// UpdateOracleDatabaseAgreement update an Oracle/Database agreement in the database
+func (md *MongoDatabase) UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface {
+	result, err := md.Client.Database(md.Config.Mongodb.DBName).
+		Collection("agreements_oracle_database").
+		ReplaceOne(context.TODO(), bson.M{
+			"_id": agreement.ID,
+		}, agreement)
+	if err != nil || result.MatchedCount != 1 {
 		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
+
 	return nil
 }
 
-// RemoveOracleDatabaseAgreement remove a Oracle/Database agreement from the database
+// RemoveOracleDatabaseAgreement remove an Oracle/Database agreement from the database
 func (md *MongoDatabase) RemoveOracleDatabaseAgreement(id primitive.ObjectID) utils.AdvancedErrorInterface {
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("agreements_oracle_database").DeleteOne(context.TODO(), bson.M{
 		"_id": id,
