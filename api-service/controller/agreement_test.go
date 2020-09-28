@@ -229,6 +229,8 @@ func TestAddOracleDatabaseAgreements_InternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
+//TODO TestSetOracleDatabaseAgreement
+
 func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
