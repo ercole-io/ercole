@@ -22,7 +22,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// OracleDatabaseService holds information about a Oracle database service
+// OracleDatabaseService holds information about an Oracle database service
 type OracleDatabaseService struct {
 	Name      string                 `json:"name" bson:"name"`
 	OtherInfo map[string]interface{} `json:"-" bson:"-"`
