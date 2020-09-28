@@ -23,7 +23,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// OracleDatabaseFeatureUsageStat holds information about a oracle database feature usage stat.
+// OracleDatabaseFeatureUsageStat holds information about an Oracle database feature usage stat.
 type OracleDatabaseFeatureUsageStat struct {
 	Product          string                 `json:"product" bson:"product"`
 	Feature          string                 `json:"feature" bson:"feature"`

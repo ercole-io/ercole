@@ -29,8 +29,8 @@ import (
 func init() {
 	var cmd = &cobra.Command{
 		Use:   "add",
-		Short: "Add a Oracle/Database agreement",
-		Long:  `Add a Oracle/Database agreement from the stdin or from the files in the args`,
+		Short: "Add an Oracle/Database agreement",
+		Long:  `Add an Oracle/Database agreement from the stdin or from the files in the args`,
 		Run: func(cmd *cobra.Command, args []string) {
 			//Load the data
 			if len(args) == 0 {
