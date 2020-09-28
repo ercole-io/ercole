@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/ercole-io/ercole/api-service/apimodel"
 	"github.com/ercole-io/ercole/config"
 	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
@@ -1853,62 +1854,6 @@ func TestSearchOracleDatabases_XLSXInternalServerError2(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestSearchLicenses_JSONPaged(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	expectedRes := map[string]interface{}{
-		"content": []interface{}{
-			map[string]interface{}{
-				"Compliance": false,
-				"Count":      0,
-				"Used":       5,
-				"_id":        "Oracle ENT",
-			},
-			map[string]interface{}{
-				"Compliance": true,
-				"Count":      0,
-				"Used":       0,
-				"_id":        "Oracle STD",
-			},
-		},
-		"Metadata": map[string]interface{}{
-			"Empty":         false,
-			"First":         true,
-			"Last":          true,
-			"Number":        0,
-			"Size":          20,
-			"TotalElements": 25,
-			"TotalPages":    1,
-		},
-	}
-
-	resFromService := []interface{}{
-		expectedRes,
-	}
-
-	as.EXPECT().
-		SearchLicenses("full", "Benefit", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(resFromService, nil)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchLicenses)
-	req, err := http.NewRequest("GET", "/licenses?mode=full&sort-by=Benefit&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
-}
-
 func TestSearchLicenses_JSONUnpaged(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -1920,23 +1865,17 @@ func TestSearchLicenses_JSONUnpaged(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []interface{}{
-		map[string]interface{}{
-			"Compliance": false,
-			"Count":      0,
-			"Used":       5,
-			"_id":        "Oracle ENT",
+	expectedRes := []apimodel.OracleDatabaseLicenseInfo{
+		{
+			ID: "foo",
 		},
-		map[string]interface{}{
-			"Compliance": true,
-			"Count":      0,
-			"Used":       0,
-			"_id":        "Oracle STD",
+		{
+			ID: "bar",
 		},
 	}
 
 	as.EXPECT().
-		SearchLicenses("summary", "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchLicenses("", "", utils.MAX_TIME).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
@@ -1951,90 +1890,6 @@ func TestSearchLicenses_JSONUnpaged(t *testing.T) {
 }
 
 func TestSearchLicenses_JSONUnprocessableEntity1(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchLicenses)
-	req, err := http.NewRequest("GET", "/licenses?mode=sadsas", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-}
-
-func TestSearchLicenses_JSONUnprocessableEntity2(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchLicenses)
-	req, err := http.NewRequest("GET", "/licenses?sort-desc=sadsas", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-}
-
-func TestSearchLicenses_JSONUnprocessableEntity3(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchLicenses)
-	req, err := http.NewRequest("GET", "/licenses?page=sadsas", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-}
-
-func TestSearchLicenses_JSONUnprocessableEntity4(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchLicenses)
-	req, err := http.NewRequest("GET", "/licenses?size=sadsas", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-}
-
-func TestSearchLicenses_JSONUnprocessableEntity5(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -2067,7 +1922,7 @@ func TestSearchLicenses_JSONInternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchLicenses("summary", "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchLicenses("", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()

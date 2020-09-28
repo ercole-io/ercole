@@ -545,65 +545,26 @@ func (ctrl *APIController) SearchOracleDatabasesXLSX(w http.ResponseWriter, r *h
 
 // SearchLicenses search licenses using the filters in the request
 func (ctrl *APIController) SearchLicenses(w http.ResponseWriter, r *http.Request) {
-	var mode string
-	var sortBy string
-	var sortDesc bool
-	var pageNumber int
-	var pageSize int
 	var location string
 	var environment string
 	var olderThan time.Time
 
 	var err utils.AdvancedErrorInterface
 
-	//parse the query params
-
-	mode = r.URL.Query().Get("mode")
-	if mode == "" {
-		mode = "summary"
-	} else if mode != "full" && mode != "summary" {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity,
-			utils.NewAdvancedErrorPtr(errors.New("Invalid mode value"), http.StatusText(http.StatusUnprocessableEntity)))
-		return
-	}
-
-	sortBy = r.URL.Query().Get("sort-by")
-	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
-
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	//get the data
-	licenses, err := ctrl.Service.SearchLicenses(mode, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	licenses, err := ctrl.Service.SearchLicenses(location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	if pageNumber == -1 || pageSize == -1 {
-		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, licenses)
-	} else {
-		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, licenses[0])
-	}
+	utils.WriteJSONResponse(w, http.StatusOK, licenses)
 }
 
 // SearchOracleDatabaseConsumedLicenses search licenses consumed by the hosts using the filters in the request

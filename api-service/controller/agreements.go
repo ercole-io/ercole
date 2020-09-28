@@ -80,14 +80,12 @@ func (ctrl *APIController) SearchOracleDatabaseAgreements(w http.ResponseWriter,
 
 	search = r.URL.Query().Get("search")
 
-	//Get the filters
 	searchOracleDatabaseAgreementsFilters, err := GetSearchOracleDatabaseAgreementsFilters(r)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	//get the data
 	response, err := ctrl.Service.SearchOracleDatabaseAgreements(search, searchOracleDatabaseAgreementsFilters)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -98,50 +96,65 @@ func (ctrl *APIController) SearchOracleDatabaseAgreements(w http.ResponseWriter,
 }
 
 // GetSearchOracleDatabaseAgreementsFilters return the Oracle/Database agreement search filters in the request
-func GetSearchOracleDatabaseAgreementsFilters(r *http.Request) (apimodel.SearchOracleDatabaseAgreementsFilters, utils.AdvancedErrorInterface) {
+func GetSearchOracleDatabaseAgreementsFilters(r *http.Request) (apimodel.SearchOracleDatabaseAgreementsFilters,
+	utils.AdvancedErrorInterface) {
+	urlValues := r.URL.Query()
+
 	var aerr utils.AdvancedErrorInterface
 
 	filters := apimodel.SearchOracleDatabaseAgreementsFilters{}
-	filters.AgreementID = r.URL.Query().Get("agreement-id")
-	filters.PartID = r.URL.Query().Get("part-id")
-	filters.ItemDescription = r.URL.Query().Get("item-description")
-	filters.CSI = r.URL.Query().Get("csi")
-	filters.Metrics = r.URL.Query().Get("metrics")
-	filters.ReferenceNumber = r.URL.Query().Get("reference-number")
-	filters.Unlimited = r.URL.Query().Get("unlimited")
+
+	filters.AgreementID = urlValues.Get("agreement-id")
+	filters.PartID = urlValues.Get("part-id")
+	filters.ItemDescription = urlValues.Get("item-description")
+	filters.CSI = urlValues.Get("csi")
+	filters.Metrics = urlValues.Get("metrics")
+	filters.ReferenceNumber = urlValues.Get("reference-number")
+
+	filters.Unlimited = urlValues.Get("unlimited")
 	if filters.Unlimited == "" {
 		filters.Unlimited = "NULL"
 	} else if filters.Unlimited != "true" && filters.Unlimited != "false" && filters.Unlimited != "NULL" {
-		return apimodel.SearchOracleDatabaseAgreementsFilters{}, utils.NewAdvancedErrorPtr(errors.New("Invalid value for unlimited"), http.StatusText(http.StatusUnprocessableEntity))
+		return apimodel.SearchOracleDatabaseAgreementsFilters{},
+			utils.NewAdvancedErrorPtr(errors.New("Invalid value for unlimited"), http.StatusText(http.StatusUnprocessableEntity))
 	}
-	filters.CatchAll = r.URL.Query().Get("catch-all")
+
+	filters.CatchAll = urlValues.Get("catch-all")
 	if filters.CatchAll == "" {
 		filters.CatchAll = "NULL"
 	} else if filters.CatchAll != "true" && filters.CatchAll != "false" && filters.CatchAll != "NULL" {
-		return apimodel.SearchOracleDatabaseAgreementsFilters{}, utils.NewAdvancedErrorPtr(errors.New("Invalid value for catch-all"), http.StatusText(http.StatusUnprocessableEntity))
+		return apimodel.SearchOracleDatabaseAgreementsFilters{},
+			utils.NewAdvancedErrorPtr(errors.New("Invalid value for catch-all"), http.StatusText(http.StatusUnprocessableEntity))
 	}
-	if filters.LicensesCountLTE, aerr = utils.Str2int(r.URL.Query().Get("licenses-count-lte"), -1); aerr != nil {
+
+	if filters.LicensesCountLTE, aerr = utils.Str2int(urlValues.Get("licenses-count-lte"), -1); aerr != nil {
 		return apimodel.SearchOracleDatabaseAgreementsFilters{}, aerr
 	}
-	if filters.LicensesCountGTE, aerr = utils.Str2int(r.URL.Query().Get("licenses-count-gte"), -1); aerr != nil {
+
+	if filters.LicensesCountGTE, aerr = utils.Str2int(urlValues.Get("licenses-count-gte"), -1); aerr != nil {
 		return apimodel.SearchOracleDatabaseAgreementsFilters{}, aerr
 	}
-	if filters.UsersCountLTE, aerr = utils.Str2int(r.URL.Query().Get("users-count-lte"), -1); aerr != nil {
+
+	if filters.UsersCountLTE, aerr = utils.Str2int(urlValues.Get("users-count-lte"), -1); aerr != nil {
 		return apimodel.SearchOracleDatabaseAgreementsFilters{}, aerr
 	}
-	if filters.UsersCountGTE, aerr = utils.Str2int(r.URL.Query().Get("users-count-gte"), -1); aerr != nil {
+
+	if filters.UsersCountGTE, aerr = utils.Str2int(urlValues.Get("users-count-gte"), -1); aerr != nil {
 		return apimodel.SearchOracleDatabaseAgreementsFilters{}, aerr
 	}
-	if filters.AvailableCountLTE, aerr = utils.Str2int(r.URL.Query().Get("available-count-lte"), -1); aerr != nil {
+
+	if filters.AvailableCountLTE, aerr = utils.Str2int(urlValues.Get("available-count-lte"), -1); aerr != nil {
 		return apimodel.SearchOracleDatabaseAgreementsFilters{}, aerr
 	}
-	if filters.AvailableCountGTE, aerr = utils.Str2int(r.URL.Query().Get("available-count-gte"), -1); aerr != nil {
+
+	if filters.AvailableCountGTE, aerr = utils.Str2int(urlValues.Get("available-count-gte"), -1); aerr != nil {
 		return apimodel.SearchOracleDatabaseAgreementsFilters{}, aerr
 	}
+
 	return filters, nil
 }
 
-// AddAssociatedHostToOracleDatabaseAgreement add a asscociated host to a agreement
+// AddAssociatedHostToOracleDatabaseAgreement add a associated host to an agreement
 func (ctrl *APIController) AddAssociatedHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
@@ -182,7 +195,7 @@ func (ctrl *APIController) AddAssociatedHostToOracleDatabaseAgreement(w http.Res
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
-// RemoveAssociatedHostToOracleDatabaseAgreement remove a asscociated host of a agreement
+// RemoveAssociatedHostToOracleDatabaseAgreement remove a associated host of an agreement
 func (ctrl *APIController) RemoveAssociatedHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
@@ -213,7 +226,7 @@ func (ctrl *APIController) RemoveAssociatedHostToOracleDatabaseAgreement(w http.
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
-// DeleteOracleDatabaseAgreement delete a agreement
+// DeleteOracleDatabaseAgreement delete an agreement
 func (ctrl *APIController) DeleteOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))

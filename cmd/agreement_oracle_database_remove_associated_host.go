@@ -28,8 +28,8 @@ import (
 func init() {
 	cmd := &cobra.Command{
 		Use:   "remove-host",
-		Short: "Remove a host from the list of associated hosts of a agreement",
-		Long:  `Remove a host from the list of associated hosts of a agreement`,
+		Short: "Remove a host from the list of associated hosts of an agreement",
+		Long:  `Remove a host from the list of associated hosts of an agreement`,
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			//Argument length check
