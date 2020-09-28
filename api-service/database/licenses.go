@@ -26,8 +26,9 @@ import (
 )
 
 // SearchLicenses search licenses
-func (md *MongoDatabase) SearchLicenses(location string, environment string, olderThan time.Time) ([]apimodel.OracleDatabaseLicenseInfo, utils.AdvancedErrorInterface) {
-	//Find the informations
+func (md *MongoDatabase) SearchLicenses(location string, environment string, olderThan time.Time) (
+	[]apimodel.OracleDatabaseLicenseInfo, utils.AdvancedErrorInterface) {
+
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -70,10 +71,8 @@ func (md *MongoDatabase) SearchLicenses(location string, environment string, old
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	//Decode the documents
 	var out []apimodel.OracleDatabaseLicenseInfo = make([]apimodel.OracleDatabaseLicenseInfo, 0)
 
-	//Decode the documents
 	if err = cur.All(context.TODO(), &out); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 	}
