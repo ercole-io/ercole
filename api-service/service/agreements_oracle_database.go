@@ -131,36 +131,33 @@ func (as *APIService) AddOracleDatabaseAgreements(req apimodel.OracleDatabaseAgr
 
 // SearchOracleDatabaseAgreements search Oracle/Database agreements
 func (as *APIService) SearchOracleDatabaseAgreements(search string, filters apimodel.SearchOracleDatabaseAgreementsFilters) ([]apimodel.OracleDatabaseAgreementsFE, utils.AdvancedErrorInterface) {
-	//Get the list of aggreements
 	aggs, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
 		return nil, err
 	}
 
-	//Get the list of licensingObjecst
 	objs, err := as.Database.ListOracleDatabaseLicensingObjects()
 	if err != nil {
 		return nil, err
 	}
 
-	//Compute the algorithm
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(aggs, objs)
+	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(aggs, objs, nil)
 
 	//Filter them!
 	filteredAggs := make([]apimodel.OracleDatabaseAgreementsFE, 0)
 	for _, agg := range aggs {
-		if !CheckOracleDatabaseAgreementMatchFilter(agg, filters) {
-			continue
+
+		if CheckOracleDatabaseAgreementMatchFilter(agg, filters) {
+			filteredAggs = append(filteredAggs, agg)
 		}
 
-		filteredAggs = append(filteredAggs, agg)
 	}
 
 	return filteredAggs, nil
 }
 
 // GreedilyAssignOracleDatabaseAgreementsToLicensingObjects assign in-place the agreements greedly to every licensingObjects by modifying them
-func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(aggs []apimodel.OracleDatabaseAgreementsFE, licensingObjects []apimodel.OracleDatabaseLicensingObjects) {
+func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(aggs []apimodel.OracleDatabaseAgreementsFE, licensingObjects []apimodel.OracleDatabaseLicensingObjects, lics []apimodel.OracleDatabaseLicenseInfo) {
 	//TODO: optimize this algorithm!
 
 	// Sort the arrays for optimizing the greedy take of the right object
@@ -271,7 +268,7 @@ func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(a
 		// 	as.Log.Debugf("Finding valid agreement for licensingObject #%d. obj = %s\n", i, utils.ToJSON(obj))
 		// }
 
-		//Find a agreement that can cover the object
+		//Find an agreement that can cover the object
 		for j := range aggs {
 			agg := &aggs[j]
 
@@ -379,6 +376,32 @@ func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(a
 			agg.AvailableCount = -uncoveredLicenseAssociatedHostSum
 		} else {
 			agg.AvailableCount = -uncoveredLicenseUnassociatedObjSum
+		}
+	}
+
+	if lics != nil {
+		//Build map for lics
+		licsMap := BuildOracleDatabaseLicenseInfoMap(lics)
+
+		// Set the count/unlimited
+		for _, agg := range aggs {
+			for _, alias := range partsMap[agg.PartID].Aliases {
+				licsMap[alias].Count += agg.LicensesCount + agg.UsersCount*25
+				licsMap[alias].Unlimited = licsMap[alias].Unlimited || agg.Unlimited
+			}
+		}
+
+		// Set the used and covered
+		for _, obj := range licensingObjects {
+			licsMap[obj.LicenseName].TotalCoveredLicenses += obj.OriginalCount - obj.Count
+			licsMap[obj.LicenseName].Used += obj.OriginalCount
+		}
+
+		// Set the cost
+		for i := range lics {
+			lic := &lics[i]
+			lic.PaidCost = lic.TotalCoveredLicenses * lic.CostPerProcessor
+			lic.TotalCost = lic.Used * lic.CostPerProcessor
 		}
 	}
 }

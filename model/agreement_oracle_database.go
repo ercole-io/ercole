@@ -31,7 +31,7 @@ type OracleDatabaseAgreement struct {
 	ReferenceNumber string             `json:"referenceNumber" bson:"referenceNumber"`
 	Unlimited       bool               `json:"unlimited" bson:"unlimited"`
 	Count           int                `json:"count" bson:"count"`
-	CatchAll        bool               `json:"catchAll" bson:"catchAll"`
+	CatchAll        bool               `json:"catchAll" bson:"catchAll"` //TODO Rename in IsBasket ?
 	Hosts           []string           `json:"hosts" bson:"hosts"`
 }
 

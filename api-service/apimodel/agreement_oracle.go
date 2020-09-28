@@ -29,7 +29,7 @@ type OracleDatabaseAgreementsAddRequest struct {
 	Hosts           []string `json:"hosts" bson:"hosts"`
 }
 
-// OracleDatabaseAgreementsFE contains the informations about a agreement
+// OracleDatabaseAgreementsFE contains the informations about an agreement
 type OracleDatabaseAgreementsFE struct {
 	ID              primitive.ObjectID                         `json:"id" bson:"_id"`
 	AgreementID     string                                     `json:"agreementID" bson:"agreementID"`
@@ -80,4 +80,24 @@ type OracleDatabaseLicensingObjects struct {
 	Type          string  `json:"type" bson:"type"` //host, cluster
 	Count         float64 `json:"count" bson:"count"`
 	OriginalCount float64 `json:"originalCount" bson:"originalCount"`
+}
+
+// OracleDatabaseLicenseInfo contains the infromation about the licenses
+type OracleDatabaseLicenseInfo struct {
+	ID                   string                          `json:"id" bson:"_id"`
+	Compliance           bool                            `json:"compliance" bson:"compliance"`
+	CostPerProcessor     float64                         `json:"costPerProcessor" bson:"costPerProcessor"`
+	TotalCost            float64                         `json:"totalCost" bson:"totalCost"`
+	PaidCost             float64                         `json:"paidCost" bson:"paidCost"`
+	Unlimited            bool                            `json:"unlimited" bson:"unlimited"`
+	Count                float64                         `json:"count" bson:"count"`
+	TotalCoveredLicenses float64                         `json:"totalCoveredLicenses" bson:"totalCoveredLicenses"`
+	Used                 float64                         `json:"used" bson:"used"`
+	Hosts                []OracleDatabaseLicenseInfoHost `json:"hosts" bson:"hosts"`
+}
+
+// OracleDatabaseLicenseInfoHost contains the information about the licensed host and the databases used by the host
+type OracleDatabaseLicenseInfoHost struct {
+	Hostname string   `json:"hostname" bson:"hostname"`
+	DBNames  []string `json:"dbNames" bson:"dbNames"`
 }

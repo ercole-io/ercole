@@ -31,7 +31,7 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 		return nil, err
 	}
 
-	oracleLicenseListRaw, err := as.Database.SearchLicenses("summary", "", false, -1, -1, location, environment, olderThan)
+	oracleLicenseListRaw, err := as.Database.SearchLicenses(location, environment, olderThan)
 	if err != nil {
 		return nil, err
 	}
