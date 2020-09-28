@@ -178,13 +178,16 @@ func (md *MongoDatabase) FindOracleDatabaseAgreement(id primitive.ObjectID) (mod
 }
 
 // UpdateOracleDatabaseAgreement update an Oracle/Database agreement in the database
-func (md *MongoDatabase) UpdateOracleDatabaseAgreement(agg model.OracleDatabaseAgreement) utils.AdvancedErrorInterface {
-	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("agreements_oracle_database").ReplaceOne(context.TODO(), bson.M{
-		"_id": agg.ID,
-	}, agg)
-	if err != nil {
+func (md *MongoDatabase) UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface {
+	result, err := md.Client.Database(md.Config.Mongodb.DBName).
+		Collection("agreements_oracle_database").
+		ReplaceOne(context.TODO(), bson.M{
+			"_id": agreement.ID,
+		}, agreement)
+	if err != nil || result.MatchedCount != 1 {
 		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
+
 	return nil
 }
 
