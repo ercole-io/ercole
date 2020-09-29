@@ -3966,7 +3966,7 @@ paths:
                   catchAll: false
       description: Add Oracle database agreement
     put:
-      summary: ''
+      summary: Update Oracle Database Agreement
       operationId: UpdateOracleDatabaseAgreement
       responses:
         '200':
@@ -3981,9 +3981,7 @@ paths:
                   type: string
                 csi:
                   type: string
-                partsID:
-                  type: array
-                  items:
+                partID:
                     type: string
                 referenceNumber:
                   type: string
@@ -4005,8 +4003,7 @@ paths:
                   id: 5f6a118067d1127af38db239
                   agreementID: '111'
                   csi: pippo
-                  partsID:
-                    - L10001
+                  partID: L10001
                   referenceNumber: '444'
                   unlimited: false
                   count: 42
