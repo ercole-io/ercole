@@ -31,12 +31,19 @@ import (
 
 // SearchHosts search hosts data using the filters in the request
 func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
-	responseFormat := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ercole.mongohostdata+json"}, "application/json")
+	requestContentType := httputil.NegotiateContentType(r,
+		[]string{
+			"application/json",
+			"application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			"application/vnd.ercole.mongohostdata+json",
+		},
+		"application/json")
 
-	switch responseFormat {
+	switch requestContentType {
 	case "application/json":
 		ctrl.SearchHostsJSON(w, r)
-	case "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+	case "application/vnd.oracle.lms+application/vnd.ms-excel.sheet.macroEnabled.12":
 		ctrl.SearchHostsLMS(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchHostsXLSX(w, r)
