@@ -324,7 +324,7 @@ func simpleAPIRequestCommand(
 				case "xlsx":
 					outputFormat = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 				case "lms":
-					outputFormat = "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+					outputFormat = "application/vnd.oracle.lms+vnd.ms-excel.sheet.macroEnabled.12"
 				case "mongohostdata", "mhd":
 					outputFormat = "application/vnd.ercole.mongohostdata+json"
 				}
