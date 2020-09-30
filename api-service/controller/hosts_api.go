@@ -34,7 +34,7 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 	requestContentType := httputil.NegotiateContentType(r,
 		[]string{
 			"application/json",
-			"application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			"application/vnd.oracle.lms+vnd.ms-excel.sheet.macroEnabled.12",
 			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 			"application/vnd.ercole.mongohostdata+json",
 		},
@@ -43,7 +43,7 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 	switch requestContentType {
 	case "application/json":
 		ctrl.SearchHostsJSON(w, r)
-	case "application/vnd.oracle.lms+application/vnd.ms-excel.sheet.macroEnabled.12":
+	case "application/vnd.oracle.lms+vnd.ms-excel.sheet.macroEnabled.12":
 		ctrl.SearchHostsLMS(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.SearchHostsXLSX(w, r)
