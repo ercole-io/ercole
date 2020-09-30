@@ -195,7 +195,7 @@ func (ctrl *APIController) SearchHostsLMS(w http.ResponseWriter, r *http.Request
 	}
 
 	//Write it to the response
-	utils.WriteXLSXResponse(w, sheets)
+	utils.WriteXLSMResponse(w, sheets)
 }
 
 // SearchHostsXLSX search hosts data using the filters in the request returning it in XLSX
