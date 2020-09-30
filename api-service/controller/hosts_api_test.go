@@ -438,7 +438,7 @@ func TestSearchHosts_LMSSuccess(t *testing.T) {
 	handler := http.HandlerFunc(ac.SearchHosts)
 	req, err := http.NewRequest("GET", "/hosts?search=foobar&sort-by=Processors&sort-desc=true&location=Italy&environment=TST&&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
-	req.Header.Add("Accept", "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	req.Header.Add("Accept", "application/vnd.oracle.lms+vnd.ms-excel.sheet.macroEnabled.12")
 
 	handler.ServeHTTP(rr, req)
 
@@ -504,7 +504,7 @@ func TestSearchHosts_LMSUnprocessableEntity1(t *testing.T) {
 	handler := http.HandlerFunc(ac.SearchHosts)
 	req, err := http.NewRequest("GET", "/hosts?sort-desc=sdfsdf", nil)
 	require.NoError(t, err)
-	req.Header.Add("Accept", "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	req.Header.Add("Accept", "application/vnd.oracle.lms+vnd.ms-excel.sheet.macroEnabled.12")
 
 	handler.ServeHTTP(rr, req)
 
@@ -528,7 +528,7 @@ func TestSearchHosts_LMSUnprocessableEntity2(t *testing.T) {
 	handler := http.HandlerFunc(ac.SearchHosts)
 	req, err := http.NewRequest("GET", "/hosts?older-than=sdfsdf", nil)
 	require.NoError(t, err)
-	req.Header.Add("Accept", "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	req.Header.Add("Accept", "application/vnd.oracle.lms+vnd.ms-excel.sheet.macroEnabled.12")
 
 	handler.ServeHTTP(rr, req)
 
@@ -556,7 +556,7 @@ func TestSearchHosts_LMSSuccessInternalServerError1(t *testing.T) {
 	handler := http.HandlerFunc(ac.SearchHosts)
 	req, err := http.NewRequest("GET", "/hosts?search=foobar&sort-by=Processors&sort-desc=true&location=Italy&environment=TST&&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
-	req.Header.Add("Accept", "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	req.Header.Add("Accept", "application/vnd.oracle.lms+vnd.ms-excel.sheet.macroEnabled.12")
 
 	handler.ServeHTTP(rr, req)
 
@@ -588,7 +588,7 @@ func TestSearchHosts_LMSSuccessInternalServerError2(t *testing.T) {
 	handler := http.HandlerFunc(ac.SearchHosts)
 	req, err := http.NewRequest("GET", "/hosts", nil)
 	require.NoError(t, err)
-	req.Header.Add("Accept", "application/vnd.oracle.lms+vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	req.Header.Add("Accept", "application/vnd.oracle.lms+vnd.ms-excel.sheet.macroEnabled.12")
 
 	handler.ServeHTTP(rr, req)
 
