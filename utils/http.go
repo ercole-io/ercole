@@ -38,22 +38,20 @@ type ErrorResponseFE struct {
 
 // WriteAndLogError write the error to the w with the statusCode as statusCode and log the error to the stdout
 func WriteAndLogError(log *logrus.Logger, w http.ResponseWriter, statusCode int, err AdvancedErrorInterface) {
-	//Build the response
 	resp := ErrorResponseFE{
 		Error:            err.ErrorClass(),
 		ErrorDescription: err.Error(),
 		LineNumber:       err.LineNumber(),
 		SourceFilename:   err.SourceFilename(),
 	}
-	//Log the error
+
 	LogErr(log, err)
-	//Write the response
+
 	WriteJSONResponse(w, statusCode, resp)
 }
 
 // WriteJSONResponse write the statuscode and the response to w
 func WriteJSONResponse(w http.ResponseWriter, statusCode int, resp interface{}) {
-	//Write the response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(resp)
@@ -66,16 +64,22 @@ func WriteExtJSONResponse(log *logrus.Logger, w http.ResponseWriter, statusCode 
 		WriteAndLogError(log, w, http.StatusInternalServerError, NewAdvancedErrorPtr(err, "MARSHAL_EXT_JSON"))
 	}
 
-	//Write the response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	w.Write(raw)
 }
 
-// WriteXLSXResponse write the statuscode and the response to w
+// WriteXLSXResponse for .xlsx fils
 func WriteXLSXResponse(w http.ResponseWriter, resp *excelize.File) {
-	//Write the response
 	w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	w.WriteHeader(http.StatusOK)
+
+	resp.Write(w)
+}
+
+// WriteXLSMResponse for .xlsm files
+func WriteXLSMResponse(w http.ResponseWriter, resp *excelize.File) {
+	w.Header().Set("Content-Type", "application/vnd.ms-excel.sheet.macroEnabled.12")
 	w.WriteHeader(http.StatusOK)
 
 	resp.Write(w)
