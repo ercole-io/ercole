@@ -1865,7 +1865,7 @@ func TestSearchLicenses_JSONUnpaged(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []apimodel.OracleDatabaseLicenseInfo{
+	expectedRes := []apimodel.OracleDatabaseLicenseUsageInfo{
 		{
 			ID: "foo",
 		},

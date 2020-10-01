@@ -106,14 +106,14 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 	out, err := m.db.ListOracleDatabaseAgreements()
 	m.Require().NoError(err)
 
-	assert.Equal(m.T(), []apimodel.OracleDatabaseAgreementsFE{
+	assert.Equal(m.T(), []apimodel.OracleDatabaseAgreementFE{
 		{
 			ID:          utils.Str2oid("5dcad8933b243f80e2ed8538"),
 			AgreementID: "abcde",
 			CSI:         "435435",
 			CatchAll:    true,
 			Count:       345,
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					Hostname:                  "foo",
 					CoveredLicensesCount:      0,
@@ -140,7 +140,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 			CSI:             "435435",
 			CatchAll:        true,
 			Count:           345,
-			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
 			ItemDescription: "fgfgd",
 			Metrics:         "Computer Perpetual",
 			PartID:          "678867",
@@ -156,7 +156,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 			CSI:             "435435",
 			CatchAll:        true,
 			Count:           345,
-			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
 			ItemDescription: "fgfgd",
 			Metrics:         "Named User Plus Perpetual",
 			PartID:          "678867",
@@ -176,10 +176,10 @@ func (m *MongodbSuite) TestListOracleDatabaseLicensingObjects() {
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_17.json"))
 
-	out, err := m.db.ListOracleDatabaseLicensingObjects()
+	out, err := m.db.ListHostUsingOracleDatabaseLicenses()
 	m.Require().NoError(err)
 
-	assert.ElementsMatch(m.T(), []apimodel.OracleDatabaseLicensingObjects{
+	assert.ElementsMatch(m.T(), []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			LicenseName:   "Diagnostics Pack",
 			Name:          "Puzzait",
