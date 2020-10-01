@@ -460,13 +460,13 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 		},
 	}
 
-	returnedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+	returnedAgreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: 7,
 			CatchAll:       false,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -484,7 +484,7 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 			Count:           0,
 		},
 	}
-	returnedLicensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+	returnedLicensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			Count:         3,
@@ -494,13 +494,13 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: 0,
 			CatchAll:       false,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      3,
 					Hostname:                  "test-db",
@@ -521,9 +521,9 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 	}
 
 	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
-	db.EXPECT().ListOracleDatabaseLicensingObjects().Return(returnedLicensingObjects, nil)
+	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedLicensingObjects, nil)
 
-	res, err := as.SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilters{
+	res, err := as.SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -554,13 +554,13 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 		},
 	}
 
-	returnedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+	returnedAgreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: 7,
 			CatchAll:       false,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -578,7 +578,7 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 			Count:           0,
 		},
 	}
-	returnedLicensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+	returnedLicensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			Count:         3,
@@ -589,9 +589,9 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 	}
 
 	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
-	db.EXPECT().ListOracleDatabaseLicensingObjects().Return(returnedLicensingObjects, nil)
+	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedLicensingObjects, nil)
 
-	res, err := as.SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilters{
+	res, err := as.SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilter{
 		AgreementID:       "asddfa",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -625,7 +625,7 @@ func TestSearchOracleDatabaseAgreements_Failed1(t *testing.T) {
 
 	db.EXPECT().ListOracleDatabaseAgreements().Return(nil, aerrMock)
 
-	_, err := as.SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilters{
+	_, err := as.SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -655,13 +655,13 @@ func TestSearchOracleDatabaseAgreements_Failed2(t *testing.T) {
 		},
 	}
 
-	returnedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+	returnedAgreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: 7,
 			CatchAll:       false,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -681,9 +681,9 @@ func TestSearchOracleDatabaseAgreements_Failed2(t *testing.T) {
 	}
 
 	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
-	db.EXPECT().ListOracleDatabaseLicensingObjects().Return(nil, aerrMock)
+	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(nil, aerrMock)
 
-	_, err := as.SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilters{
+	_, err := as.SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -697,12 +697,12 @@ func TestSearchOracleDatabaseAgreements_Failed2(t *testing.T) {
 }
 
 func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
-	agg1 := apimodel.OracleDatabaseAgreementsFE{
+	agg1 := apimodel.OracleDatabaseAgreementFE{
 		AgreementID:    "5051863",
 		AvailableCount: 7,
 		CatchAll:       true,
 		CSI:            "6871235",
-		Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+		Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 			{
 				CoveredLicensesCount:      -1,
 				Hostname:                  "test-db",
@@ -724,7 +724,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCount:      5,
 	}
 
-	assert.True(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.True(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -735,7 +735,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountLTE:     -1,
 	}))
 
-	assert.True(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.True(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		AgreementID:       "5051",
 		PartID:            "A9062",
 		ItemDescription:   "Partitioning",
@@ -751,7 +751,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     0,
 		UsersCountLTE:     10,
 	}))
-	assert.True(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.True(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: 7,
@@ -762,7 +762,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountLTE:     5,
 	}))
 
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		AgreementID:       "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -773,7 +773,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		PartID:            "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -784,7 +784,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		ItemDescription:   "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -795,7 +795,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		CSI:               "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -806,7 +806,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Metrics:           "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -817,7 +817,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		ReferenceNumber:   "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -828,7 +828,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "true",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -838,7 +838,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "false",
 		AvailableCountGTE: -1,
@@ -848,7 +848,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -858,7 +858,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -868,7 +868,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -878,7 +878,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     0,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -888,7 +888,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     10,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -898,7 +898,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: 8,
@@ -923,13 +923,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 		},
 	}
 
-	agreements := []apimodel.OracleDatabaseAgreementsFE{
+	agreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: 7,
 			CatchAll:       false,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -947,7 +947,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 			Count:           0,
 		},
 	}
-	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			Count:         3,
@@ -957,13 +957,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: 0,
 			CatchAll:       false,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      3,
 					Hostname:                  "test-db",
@@ -1001,13 +1001,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 		},
 	}
 
-	agreements := []apimodel.OracleDatabaseAgreementsFE{
+	agreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: 7,
 			CatchAll:       false,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -1025,7 +1025,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 			Count:           5,
 		},
 	}
-	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			Count:         3,
@@ -1035,13 +1035,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: 0,
 			CatchAll:       false,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      3,
 					Hostname:                  "test-db",
@@ -1079,13 +1079,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 		},
 	}
 
-	agreements := []apimodel.OracleDatabaseAgreementsFE{
+	agreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: 7,
 			CatchAll:       false,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -1103,7 +1103,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 			Count:           10,
 		},
 	}
-	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			Count:         128,
@@ -1113,13 +1113,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: -3,
 			CatchAll:       false,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      125,
 					Hostname:                  "test-db",
@@ -1156,13 +1156,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedAgreemen
 			},
 		},
 	}
-	agreements := []apimodel.OracleDatabaseAgreementsFE{
+	agreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: 7,
 			CatchAll:       false,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -1185,7 +1185,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedAgreemen
 			Count:           5,
 		},
 	}
-	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			Count:         3,
@@ -1202,13 +1202,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedAgreemen
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: -2,
 			CatchAll:       false,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      4,
 					Hostname:                  "test-db2",
@@ -1252,13 +1252,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *
 		},
 	}
 
-	agreements := []apimodel.OracleDatabaseAgreementsFE{
+	agreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: 7,
 			CatchAll:       false,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -1280,7 +1280,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *
 			AvailableCount: 7,
 			CatchAll:       false,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -1298,7 +1298,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *
 			Count:           10,
 		},
 	}
-	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			Count:         20,
@@ -1308,13 +1308,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: -5,
 			CatchAll:       false,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      10,
 					Hostname:                  "test-db",
@@ -1337,7 +1337,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *
 			AvailableCount: -5,
 			CatchAll:       false,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      5,
 					Hostname:                  "test-db",
@@ -1375,13 +1375,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 		},
 	}
 
-	agreements := []apimodel.OracleDatabaseAgreementsFE{
+	agreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:     "5051863",
 			AvailableCount:  7,
 			CatchAll:        true,
 			CSI:             "6871235",
-			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   0,
@@ -1393,7 +1393,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 			Count:           0,
 		},
 	}
-	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			Count:         3,
@@ -1403,13 +1403,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:     "5051863",
 			AvailableCount:  -0,
 			CatchAll:        true,
 			CSI:             "6871235",
-			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   0,
@@ -1440,13 +1440,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 		},
 	}
 
-	agreements := []apimodel.OracleDatabaseAgreementsFE{
+	agreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:     "5051863",
 			AvailableCount:  7,
 			CatchAll:        true,
 			CSI:             "6871235",
-			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   5,
@@ -1458,7 +1458,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 			Count:           5,
 		},
 	}
-	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			Count:         3,
@@ -1468,13 +1468,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:     "5051863",
 			AvailableCount:  0,
 			CatchAll:        true,
 			CSI:             "6871235",
-			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   5,
@@ -1505,13 +1505,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 		},
 	}
 
-	agreements := []apimodel.OracleDatabaseAgreementsFE{
+	agreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:     "5051863",
 			AvailableCount:  7,
 			CatchAll:        true,
 			CSI:             "6871235",
-			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   0,
@@ -1523,7 +1523,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 			Count:           10,
 		},
 	}
-	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			Count:         128,
@@ -1533,13 +1533,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:     "5051863",
 			AvailableCount:  -3,
 			CatchAll:        true,
 			CSI:             "6871235",
-			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   0,
@@ -1570,13 +1570,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_CompleCase1(t 
 		},
 	}
 
-	agreements := []apimodel.OracleDatabaseAgreementsFE{
+	agreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: 7,
 			CatchAll:       true,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{Hostname: "test-db"},
 			},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
@@ -1590,7 +1590,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_CompleCase1(t 
 			Count:           10,
 		},
 	}
-	licensingObjects := []apimodel.OracleDatabaseLicensingObjects{
+	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			Count:         3,
@@ -1607,13 +1607,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_CompleCase1(t 
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementsFE{
+	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: -13,
 			CatchAll:       true,
 			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{Hostname: "test-db", CoveredLicensesCount: 3, TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 3},
 			},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
@@ -1635,7 +1635,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_CompleCase1(t 
 }
 
 func TestSortOracleDatabaseAgreementLicensingObjects(t *testing.T) {
-	list := []apimodel.OracleDatabaseLicensingObjects{
+	list := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			LicenseName: "Diagnostics Pack",
 			Name:        "Puzzait",
@@ -1668,7 +1668,7 @@ func TestSortOracleDatabaseAgreementLicensingObjects(t *testing.T) {
 		},
 	}
 
-	expected := []apimodel.OracleDatabaseLicensingObjects{
+	expected := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			LicenseName: "Oracle ENT",
 			Name:        "Puzzait",
@@ -1707,7 +1707,7 @@ func TestSortOracleDatabaseAgreementLicensingObjects(t *testing.T) {
 }
 
 func TestSortOracleDatabaseAgreements(t *testing.T) {
-	list := []apimodel.OracleDatabaseAgreementsFE{
+	list := []apimodel.OracleDatabaseAgreementFE{
 		{CatchAll: true, Unlimited: false, UsersCount: 10},
 		{CatchAll: true, Unlimited: false, LicensesCount: 10},
 		{CatchAll: true, Unlimited: true, UsersCount: 20},
@@ -1726,7 +1726,7 @@ func TestSortOracleDatabaseAgreements(t *testing.T) {
 		{CatchAll: true, Unlimited: false, UsersCount: 20},
 	}
 
-	expected := []apimodel.OracleDatabaseAgreementsFE{
+	expected := []apimodel.OracleDatabaseAgreementFE{
 		{CatchAll: false, Unlimited: false, UsersCount: 20},
 		{CatchAll: false, Unlimited: false, UsersCount: 10},
 		{CatchAll: false, Unlimited: false, LicensesCount: 20},
@@ -1760,7 +1760,7 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 		},
 	}
 
-	licensingObjectsMap := map[string]map[string]*apimodel.OracleDatabaseLicensingObjects{
+	licensingObjectsMap := map[string]map[string]*apimodel.HostUsingOracleDatabaseLicenses{
 		"Real Application Clusters": {
 			"test-db1": {
 				Count: 10,
@@ -1782,9 +1782,9 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 		},
 	}
 
-	agg := apimodel.OracleDatabaseAgreementsFE{
+	agg := apimodel.OracleDatabaseAgreementFE{
 		PartID: "L10005",
-		Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+		Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 			{Hostname: "test-db2"},
 			{Hostname: "test-db1"},
 			{Hostname: "test-db4"},
@@ -1792,7 +1792,7 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 		},
 	}
 
-	expected := []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+	expected := []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 		{Hostname: "test-db4"},
 		{Hostname: "test-db2"},
 		{Hostname: "test-db1"},
@@ -1805,7 +1805,7 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 }
 
 func TestBuildOracleDatabaseLicensingObjectsMap(t *testing.T) {
-	list := []apimodel.OracleDatabaseLicensingObjects{
+	list := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			LicenseName: "Oracle ENT",
 			Name:        "Puzzait",
@@ -1838,7 +1838,7 @@ func TestBuildOracleDatabaseLicensingObjectsMap(t *testing.T) {
 		},
 	}
 
-	expected := map[string]map[string]*apimodel.OracleDatabaseLicensingObjects{
+	expected := map[string]map[string]*apimodel.HostUsingOracleDatabaseLicenses{
 		"Oracle ENT": {
 			"Puzzait":  &list[0],
 			"test-db3": &list[4],

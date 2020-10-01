@@ -29,34 +29,34 @@ type OracleDatabaseAgreementsAddRequest struct {
 	Hosts           []string `json:"hosts" bson:"hosts"`
 }
 
-// OracleDatabaseAgreementsFE contains the informations about an agreement
-type OracleDatabaseAgreementsFE struct {
-	ID              primitive.ObjectID                         `json:"id" bson:"_id"`
-	AgreementID     string                                     `json:"agreementID" bson:"agreementID"`
-	PartID          string                                     `json:"partID" bson:"partID"`
-	ItemDescription string                                     `json:"itemDescription" bson:"itemDescription"`
-	Metrics         string                                     `json:"metrics" bson:"metrics"`
-	CSI             string                                     `json:"csi" bson:"csi"`
-	ReferenceNumber string                                     `json:"referenceNumber" bson:"referenceNumber"`
-	Unlimited       bool                                       `json:"unlimited" bson:"unlimited"`
-	Count           float64                                    `json:"count" bson:"count"`
-	LicensesCount   float64                                    `json:"licensesCount" bson:"licensesCount"`
-	UsersCount      float64                                    `json:"usersCount" bson:"usersCount"`
-	AvailableCount  float64                                    `json:"availableCount" bson:"availableCount"`
-	CatchAll        bool                                       `json:"catchAll" bson:"catchAll"`
-	Hosts           []OracleDatabaseAgreementsAssociatedHostFE `json:"hosts" bson:"hosts"`
+// OracleDatabaseAgreementFE contains the informations about an agreement
+type OracleDatabaseAgreementFE struct {
+	ID              primitive.ObjectID                        `json:"id" bson:"_id"`
+	AgreementID     string                                    `json:"agreementID" bson:"agreementID"`
+	PartID          string                                    `json:"partID" bson:"partID"`
+	ItemDescription string                                    `json:"itemDescription" bson:"itemDescription"`
+	Metrics         string                                    `json:"metrics" bson:"metrics"`
+	CSI             string                                    `json:"csi" bson:"csi"`
+	ReferenceNumber string                                    `json:"referenceNumber" bson:"referenceNumber"`
+	Unlimited       bool                                      `json:"unlimited" bson:"unlimited"`
+	Count           float64                                   `json:"count" bson:"count"`
+	LicensesCount   float64                                   `json:"licensesCount" bson:"licensesCount"`
+	UsersCount      float64                                   `json:"usersCount" bson:"usersCount"`
+	AvailableCount  float64                                   `json:"availableCount" bson:"availableCount"`
+	CatchAll        bool                                      `json:"catchAll" bson:"catchAll"`
+	Hosts           []OracleDatabaseAgreementAssociatedHostFE `json:"hosts" bson:"hosts"`
 }
 
-// OracleDatabaseAgreementsAssociatedHostFE contains the informations about a associated host in agreement
-type OracleDatabaseAgreementsAssociatedHostFE struct {
+// OracleDatabaseAgreementAssociatedHostFE contains the informations about a associated host in agreement
+type OracleDatabaseAgreementAssociatedHostFE struct {
 	Hostname                  string  `json:"hostname" bson:"hostname"`
 	CoveredLicensesCount      float64 `json:"coveredLicensesCount" bson:"coveredLicensesCount"`
 	TotalCoveredLicensesCount float64 `json:"totalCoveredLicensesCount" bson:"totalCoveredLicensesCount"`
 	ConsumedLicensesCount     float64 `json:"consumedLicensesCount" bson:"consumedLicensesCount"`
 }
 
-// SearchOracleDatabaseAgreementsFilters contains the filters used to get the list of Oracle/Database agreements
-type SearchOracleDatabaseAgreementsFilters struct {
+// SearchOracleDatabaseAgreementsFilter contains the filter used to get the list of Oracle/Database agreements
+type SearchOracleDatabaseAgreementsFilter struct {
 	AgreementID       string
 	PartID            string
 	ItemDescription   string
@@ -73,17 +73,18 @@ type SearchOracleDatabaseAgreementsFilters struct {
 	AvailableCountGTE int
 }
 
-// OracleDatabaseLicensingObjects contains the information about the objects that needed to be licensed by Oracle/Database agreements
-type OracleDatabaseLicensingObjects struct {
-	LicenseName   string  `json:"licenseName" bson:"licenseName"`
-	Name          string  `json:"name" bson:"name"`
-	Type          string  `json:"type" bson:"type"` //host, cluster
+// HostUsingOracleDatabaseLicenses contains the information about the objects that use licenses by Oracle/Database
+type HostUsingOracleDatabaseLicenses struct {
+	LicenseName string `json:"licenseName" bson:"licenseName"`
+	Name        string `json:"name" bson:"name"`
+	//Type describe if it's an host or a cluster
+	Type          string  `json:"type" bson:"type"`
 	Count         float64 `json:"count" bson:"count"`
 	OriginalCount float64 `json:"originalCount" bson:"originalCount"`
 }
 
-// OracleDatabaseLicenseInfo contains the infromation about the licenses
-type OracleDatabaseLicenseInfo struct {
+// OracleDatabaseLicenseUsageInfo contains the information about usage of a license
+type OracleDatabaseLicenseUsageInfo struct {
 	ID                   string                          `json:"id" bson:"_id"`
 	Compliance           bool                            `json:"compliance" bson:"compliance"`
 	CostPerProcessor     float64                         `json:"costPerProcessor" bson:"costPerProcessor"`

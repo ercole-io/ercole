@@ -242,14 +242,14 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []apimodel.OracleDatabaseAgreementsFE{
+	expectedRes := []apimodel.OracleDatabaseAgreementFE{
 		{
 			ItemDescription: "foobar",
 		},
 	}
 
 	as.EXPECT().
-		SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilters{
+		SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilter{
 			Unlimited:         "true",
 			CatchAll:          "NULL",
 			AvailableCountGTE: -1,
@@ -305,7 +305,7 @@ func TestSearchOracleDatabaseAgreements_FailedInternalServerError(t *testing.T) 
 	}
 
 	as.EXPECT().
-		SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilters{
+		SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilter{
 			Unlimited:         "NULL",
 			CatchAll:          "NULL",
 			AvailableCountGTE: -1,
@@ -329,9 +329,9 @@ func TestSearchOracleDatabaseAgreements_FailedInternalServerError(t *testing.T) 
 
 func TestGetSearchOracleDatabaseAgreementsFilters_SuccessEmpty(t *testing.T) {
 	r, _ := http.NewRequest("GET", "/", nil)
-	filters, err := GetSearchOracleDatabaseAgreementsFilters(r)
+	filters, err := ParseSearchOracleDatabaseAgreementsFilters(r)
 	require.NoError(t, err)
-	assert.Equal(t, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.Equal(t, apimodel.SearchOracleDatabaseAgreementsFilter{
 		CatchAll:          "NULL",
 		Unlimited:         "NULL",
 		AvailableCountGTE: -1,
@@ -346,9 +346,9 @@ func TestGetSearchOracleDatabaseAgreementsFilters_SuccessEmpty(t *testing.T) {
 func TestGetSearchOracleDatabaseAgreementsFilters_SuccessFull(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?agreement-id=foo&part-id=bar&item-description=boz&csi=pippo&metrics=pluto&reference-number=foobar&unlimited=false&catch-all=true&licenses-count-lte=10&licenses-count-gte=20&users-count-lte=5&users-count-gte=15&available-count-lte=3&available-count-gte=13", nil)
 	require.NoError(t, err)
-	filters, err := GetSearchOracleDatabaseAgreementsFilters(r)
+	filters, err := ParseSearchOracleDatabaseAgreementsFilters(r)
 	require.NoError(t, err)
-	assert.Equal(t, apimodel.SearchOracleDatabaseAgreementsFilters{
+	assert.Equal(t, apimodel.SearchOracleDatabaseAgreementsFilter{
 		AgreementID:       "foo",
 		PartID:            "bar",
 		ItemDescription:   "boz",
@@ -369,56 +369,56 @@ func TestGetSearchOracleDatabaseAgreementsFilters_SuccessFull(t *testing.T) {
 func TestGetSearchOracleDatabaseAgreementsFilters_Fail1(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?unlimited=asdfasdf", nil)
 	require.NoError(t, err)
-	_, err = GetSearchOracleDatabaseAgreementsFilters(r)
+	_, err = ParseSearchOracleDatabaseAgreementsFilters(r)
 	require.Error(t, err)
 }
 
 func TestGetSearchOracleDatabaseAgreementsFilters_Fail2(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?catch-all=asdfasdf", nil)
 	require.NoError(t, err)
-	_, err = GetSearchOracleDatabaseAgreementsFilters(r)
+	_, err = ParseSearchOracleDatabaseAgreementsFilters(r)
 	require.Error(t, err)
 }
 
 func TestGetSearchOracleDatabaseAgreementsFilters_Fail3(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?licenses-count-lte=asdfasdf", nil)
 	require.NoError(t, err)
-	_, err = GetSearchOracleDatabaseAgreementsFilters(r)
+	_, err = ParseSearchOracleDatabaseAgreementsFilters(r)
 	require.Error(t, err)
 }
 
 func TestGetSearchOracleDatabaseAgreementsFilters_Fail4(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?licenses-count-gte=asdfasdf", nil)
 	require.NoError(t, err)
-	_, err = GetSearchOracleDatabaseAgreementsFilters(r)
+	_, err = ParseSearchOracleDatabaseAgreementsFilters(r)
 	require.Error(t, err)
 }
 
 func TestGetSearchOracleDatabaseAgreementsFilters_Fail5(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?users-count-lte=asdfasdf", nil)
 	require.NoError(t, err)
-	_, err = GetSearchOracleDatabaseAgreementsFilters(r)
+	_, err = ParseSearchOracleDatabaseAgreementsFilters(r)
 	require.Error(t, err)
 }
 
 func TestGetSearchOracleDatabaseAgreementsFilters_Fail6(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?users-count-gte=asdfasdf", nil)
 	require.NoError(t, err)
-	_, err = GetSearchOracleDatabaseAgreementsFilters(r)
+	_, err = ParseSearchOracleDatabaseAgreementsFilters(r)
 	require.Error(t, err)
 }
 
 func TestGetSearchOracleDatabaseAgreementsFilters_Fail7(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?available-count-lte=asdfasdf", nil)
 	require.NoError(t, err)
-	_, err = GetSearchOracleDatabaseAgreementsFilters(r)
+	_, err = ParseSearchOracleDatabaseAgreementsFilters(r)
 	require.Error(t, err)
 }
 
 func TestGetSearchOracleDatabaseAgreementsFilters_Fail8(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?available-count-gte=asdfasdf", nil)
 	require.NoError(t, err)
-	_, err = GetSearchOracleDatabaseAgreementsFilters(r)
+	_, err = ParseSearchOracleDatabaseAgreementsFilters(r)
 	require.Error(t, err)
 }
 

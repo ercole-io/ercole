@@ -37,8 +37,8 @@ func (md *MongoDatabase) InsertOracleDatabaseAgreement(aggreement model.OracleDa
 }
 
 // ListOracleDatabaseAgreements lists the Oracle/Database agreements
-func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]apimodel.OracleDatabaseAgreementsFE, utils.AdvancedErrorInterface) {
-	var out []apimodel.OracleDatabaseAgreementsFE = make([]apimodel.OracleDatabaseAgreementsFE, 0)
+func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]apimodel.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface) {
+	var out []apimodel.OracleDatabaseAgreementFE = make([]apimodel.OracleDatabaseAgreementFE, 0)
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("agreements_oracle_database").Aggregate(
 		context.TODO(),
@@ -65,9 +65,9 @@ func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]apimodel.OracleDataba
 	return out, nil
 }
 
-// ListOracleDatabaseLicensingObjects lists the hosts/clusters that need to be licensed by Oracle/Database agreements
-func (md *MongoDatabase) ListOracleDatabaseLicensingObjects() ([]apimodel.OracleDatabaseLicensingObjects, utils.AdvancedErrorInterface) {
-	var out []apimodel.OracleDatabaseLicensingObjects = make([]apimodel.OracleDatabaseLicensingObjects, 0)
+// ListHostUsingOracleDatabaseLicenses lists the hosts/clusters that need to be licensed by Oracle/Database agreements
+func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]apimodel.HostUsingOracleDatabaseLicenses, utils.AdvancedErrorInterface) {
+	var out []apimodel.HostUsingOracleDatabaseLicenses = make([]apimodel.HostUsingOracleDatabaseLicenses, 0)
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
 		Aggregate(
