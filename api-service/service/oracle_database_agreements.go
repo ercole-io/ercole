@@ -169,21 +169,20 @@ func (as *APIService) UpdateOracleDatabaseAgreement(agreement model.OracleDataba
 }
 
 // SearchOracleDatabaseAgreements search Oracle/Database agreements
-func (as *APIService) SearchOracleDatabaseAgreements(search string, filters apimodel.SearchOracleDatabaseAgreementsFilters) ([]apimodel.OracleDatabaseAgreementsFE, utils.AdvancedErrorInterface) {
+func (as *APIService) SearchOracleDatabaseAgreements(search string, filters apimodel.SearchOracleDatabaseAgreementsFilter) ([]apimodel.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface) {
 	aggs, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
 		return nil, err
 	}
 
-	objs, err := as.Database.ListOracleDatabaseLicensingObjects()
+	objs, err := as.Database.ListHostUsingOracleDatabaseLicenses()
 	if err != nil {
 		return nil, err
 	}
 
 	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(aggs, objs, nil)
 
-	//Filter them!
-	filteredAggs := make([]apimodel.OracleDatabaseAgreementsFE, 0)
+	filteredAggs := make([]apimodel.OracleDatabaseAgreementFE, 0)
 	for _, agg := range aggs {
 
 		if CheckOracleDatabaseAgreementMatchFilter(agg, filters) {
@@ -196,7 +195,7 @@ func (as *APIService) SearchOracleDatabaseAgreements(search string, filters apim
 }
 
 // GreedilyAssignOracleDatabaseAgreementsToLicensingObjects assign in-place the agreements greedly to every licensingObjects by modifying them
-func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(aggs []apimodel.OracleDatabaseAgreementsFE, licensingObjects []apimodel.OracleDatabaseLicensingObjects, lics []apimodel.OracleDatabaseLicenseInfo) {
+func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(aggs []apimodel.OracleDatabaseAgreementFE, licensingObjects []apimodel.HostUsingOracleDatabaseLicenses, lics []apimodel.OracleDatabaseLicenseUsageInfo) {
 	//TODO: optimize this algorithm!
 
 	// Sort the arrays for optimizing the greedy take of the right object
@@ -446,7 +445,7 @@ func (as *APIService) GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(a
 }
 
 // CheckOracleDatabaseAgreementMatchFilter check that agg match the filters
-func CheckOracleDatabaseAgreementMatchFilter(agg apimodel.OracleDatabaseAgreementsFE, filters apimodel.SearchOracleDatabaseAgreementsFilters) bool {
+func CheckOracleDatabaseAgreementMatchFilter(agg apimodel.OracleDatabaseAgreementFE, filters apimodel.SearchOracleDatabaseAgreementsFilter) bool {
 	return strings.Contains(strings.ToLower(agg.AgreementID), strings.ToLower(filters.AgreementID)) &&
 		strings.Contains(strings.ToLower(agg.PartID), strings.ToLower(filters.PartID)) &&
 		strings.Contains(strings.ToLower(agg.ItemDescription), strings.ToLower(filters.ItemDescription)) &&
@@ -463,8 +462,8 @@ func CheckOracleDatabaseAgreementMatchFilter(agg apimodel.OracleDatabaseAgreemen
 		(filters.AvailableCountGTE == -1 || agg.AvailableCount >= float64(filters.AvailableCountGTE))
 }
 
-// SortOracleDatabaseAgreementLicensingObjects sort the list of apimodel.OracleDatabaseLicensingObjects by count
-func SortOracleDatabaseAgreementLicensingObjects(obj []apimodel.OracleDatabaseLicensingObjects) {
+// SortOracleDatabaseAgreementLicensingObjects sort the list of apimodel.HostUsingOracleDatabaseLicenses by count
+func SortOracleDatabaseAgreementLicensingObjects(obj []apimodel.HostUsingOracleDatabaseLicenses) {
 	sort.Slice(obj, func(i, j int) bool {
 		if obj[i].Count != obj[j].Count {
 			return obj[i].Count > obj[j].Count
@@ -477,7 +476,7 @@ func SortOracleDatabaseAgreementLicensingObjects(obj []apimodel.OracleDatabaseLi
 }
 
 // SortOracleDatabaseAgreements sort the list of apimodel.OracleDatabaseAgreementsFE for GreedilyAssignOracleDatabaseAgreementsToLicensingObjects algorithm
-func SortOracleDatabaseAgreements(obj []apimodel.OracleDatabaseAgreementsFE) {
+func SortOracleDatabaseAgreements(obj []apimodel.OracleDatabaseAgreementFE) {
 	sort.Slice(obj, func(i, j int) bool {
 		if !obj[i].CatchAll && obj[j].CatchAll {
 			return true
@@ -496,7 +495,7 @@ func SortOracleDatabaseAgreements(obj []apimodel.OracleDatabaseAgreementsFE) {
 }
 
 // SortAssociatedHostsInOracleDatabaseAgreement sort the associated hosts by license count. It  that parts may have multiple aliases
-func SortAssociatedHostsInOracleDatabaseAgreement(agg apimodel.OracleDatabaseAgreementsFE, licensingObjectsMap map[string]map[string]*apimodel.OracleDatabaseLicensingObjects, partsMap map[string]*model.OracleDatabaseAgreementPart) {
+func SortAssociatedHostsInOracleDatabaseAgreement(agg apimodel.OracleDatabaseAgreementFE, licensingObjectsMap map[string]map[string]*apimodel.HostUsingOracleDatabaseLicenses, partsMap map[string]*model.OracleDatabaseAgreementPart) {
 	sort.Slice(agg.Hosts, func(i, j int) bool {
 		var maxLicensingObjectICount float64 = 0
 		var maxLicensingObjectJCount float64 = 0
@@ -514,14 +513,14 @@ func SortAssociatedHostsInOracleDatabaseAgreement(agg apimodel.OracleDatabaseAgr
 	})
 }
 
-// BuildOracleDatabaseLicensingObjectsMap return a map of license name to map of object name to pointer to  apimodel.OracleDatabaseLicensingObjects for fast object lookup
-// BuildOracleDatabaseLicensingObjectsMap assume that doesn't exist a cluster and a host with the same name
-func BuildOracleDatabaseLicensingObjectsMap(objs []apimodel.OracleDatabaseLicensingObjects) map[string]map[string]*apimodel.OracleDatabaseLicensingObjects {
-	res := make(map[string]map[string]*apimodel.OracleDatabaseLicensingObjects)
+// BuildOracleDatabaseLicensingObjectsMap return a map of license name to map of object name to pointer to  apimodel.HostUsingOracleDatabaseLicenses for fast object lookup
+// Assume that doesn't exist a cluster and a host with the same name
+func BuildOracleDatabaseLicensingObjectsMap(objs []apimodel.HostUsingOracleDatabaseLicenses) map[string]map[string]*apimodel.HostUsingOracleDatabaseLicenses {
+	res := make(map[string]map[string]*apimodel.HostUsingOracleDatabaseLicenses)
 
 	for i, obj := range objs {
 		if _, ok := res[obj.LicenseName]; !ok {
-			res[obj.LicenseName] = make(map[string]*apimodel.OracleDatabaseLicensingObjects)
+			res[obj.LicenseName] = make(map[string]*apimodel.HostUsingOracleDatabaseLicenses)
 		}
 		res[obj.LicenseName][obj.Name] = &objs[i]
 	}

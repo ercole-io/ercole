@@ -45,14 +45,13 @@ func (as *APIService) SearchOracleDatabases(full bool, search string, sortBy str
 }
 
 // SearchLicenses search licenses
-func (as *APIService) SearchLicenses(location string, environment string, olderThan time.Time) ([]apimodel.OracleDatabaseLicenseInfo, utils.AdvancedErrorInterface) {
-	//Get the list of aggreements
+func (as *APIService) SearchLicenses(location string, environment string, olderThan time.Time) ([]apimodel.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface) {
 	aggs, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
 		return nil, err
 	}
 
-	objs, err := as.Database.ListOracleDatabaseLicensingObjects()
+	objs, err := as.Database.ListHostUsingOracleDatabaseLicenses()
 	if err != nil {
 		return nil, err
 	}
@@ -68,9 +67,9 @@ func (as *APIService) SearchLicenses(location string, environment string, olderT
 	return lics, nil
 }
 
-// BuildOracleDatabaseLicenseInfoMap return a map of licenseName to OracleDatabaseLicenseInfo
-func BuildOracleDatabaseLicenseInfoMap(lics []apimodel.OracleDatabaseLicenseInfo) map[string]*apimodel.OracleDatabaseLicenseInfo {
-	res := make(map[string]*apimodel.OracleDatabaseLicenseInfo)
+// BuildOracleDatabaseLicenseInfoMap return a map of licenseName to OracleDatabaseLicenseUsageInfo
+func BuildOracleDatabaseLicenseInfoMap(lics []apimodel.OracleDatabaseLicenseUsageInfo) map[string]*apimodel.OracleDatabaseLicenseUsageInfo {
+	res := make(map[string]*apimodel.OracleDatabaseLicenseUsageInfo)
 
 	for i, lic := range lics {
 		res[lic.ID] = &lics[i]

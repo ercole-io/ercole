@@ -27,7 +27,7 @@ import (
 
 // SearchLicenses search licenses
 func (md *MongoDatabase) SearchLicenses(location string, environment string, olderThan time.Time) (
-	[]apimodel.OracleDatabaseLicenseInfo, utils.AdvancedErrorInterface) {
+	[]apimodel.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface) {
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses").Aggregate(
 		context.TODO(),
@@ -71,7 +71,7 @@ func (md *MongoDatabase) SearchLicenses(location string, environment string, old
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	var out []apimodel.OracleDatabaseLicenseInfo = make([]apimodel.OracleDatabaseLicenseInfo, 0)
+	var out []apimodel.OracleDatabaseLicenseUsageInfo = make([]apimodel.OracleDatabaseLicenseUsageInfo, 0)
 
 	if err = cur.All(context.TODO(), &out); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
@@ -262,7 +262,7 @@ func (md *MongoDatabase) SetLicenseCostPerProcessor(name string, count float64) 
 	//Check the existance of the result
 	if res.MatchedCount == 0 {
 		return utils.AerrLicenseNotFound
-	} else {
-		return nil
 	}
+
+	return nil
 }
