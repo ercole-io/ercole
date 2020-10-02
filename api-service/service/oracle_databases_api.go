@@ -46,12 +46,12 @@ func (as *APIService) SearchOracleDatabases(full bool, search string, sortBy str
 
 // SearchLicenses search licenses
 func (as *APIService) SearchLicenses(location string, environment string, olderThan time.Time) ([]apimodel.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface) {
-	aggs, err := as.Database.ListOracleDatabaseAgreements()
+	agrs, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
 		return nil, err
 	}
 
-	objs, err := as.Database.ListHostUsingOracleDatabaseLicenses()
+	hosts, err := as.Database.ListHostUsingOracleDatabaseLicenses()
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (as *APIService) SearchLicenses(location string, environment string, olderT
 		return nil, err
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(aggs, objs, lics)
+	as.AssignOracleDatabaseAgreementsToHosts(agrs, hosts, lics)
 
 	return lics, nil
 }
