@@ -28,7 +28,7 @@ import (
 )
 
 func (m *MongodbSuite) TestInsertOracleDatabaseAgreement_Success() {
-	agg := model.OracleDatabaseAgreement{
+	agr := model.OracleDatabaseAgreement{
 		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
 		AgreementID:     "abcde",
 		CSI:             "435435",
@@ -41,18 +41,18 @@ func (m *MongodbSuite) TestInsertOracleDatabaseAgreement_Success() {
 		ReferenceNumber: "567768",
 		Unlimited:       true,
 	}
-	_, err := m.db.InsertOracleDatabaseAgreement(agg)
+	_, err := m.db.InsertOracleDatabaseAgreement(agr)
 	require.NoError(m.T(), err)
 	defer m.db.Client.Database(m.dbname).Collection("agreements_oracle_database").DeleteMany(context.TODO(), bson.M{})
 	val := m.db.Client.Database(m.dbname).Collection("agreements_oracle_database").FindOne(context.TODO(), bson.M{
-		"_id": agg.ID,
+		"_id": agr.ID,
 	})
 	require.NoError(m.T(), val.Err())
 
 	var out model.OracleDatabaseAgreement
 	val.Decode(&out)
 
-	assert.Equal(m.T(), agg, out)
+	assert.Equal(m.T(), agr, out)
 }
 
 func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
