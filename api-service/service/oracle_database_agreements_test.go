@@ -141,35 +141,35 @@ func TestAddOracleDatabaseAgreements_Success(t *testing.T) {
 		{"hostname": "ercsoldbx"},
 	}, nil)
 
-	db.EXPECT().InsertOracleDatabaseAgreement(gomock.Any()).Do(func(agg model.OracleDatabaseAgreement) {
-		assert.Equal(t, "5051863", agg.AgreementID)
-		assert.Equal(t, "6871235", agg.CSI)
-		assert.True(t, agg.CatchAll)
-		assert.Equal(t, 30, agg.Count)
-		assert.Equal(t, agg.Hosts, []string{
+	db.EXPECT().InsertOracleDatabaseAgreement(gomock.Any()).Do(func(agr model.OracleDatabaseAgreement) {
+		assert.Equal(t, "5051863", agr.AgreementID)
+		assert.Equal(t, "6871235", agr.CSI)
+		assert.True(t, agr.CatchAll)
+		assert.Equal(t, 30, agr.Count)
+		assert.Equal(t, agr.Hosts, []string{
 			"test-db",
 			"ercsoldbx",
 		})
-		assert.Equal(t, "asdasdfdsfsdas", agg.ItemDescription)
-		assert.Equal(t, "sdasjkhasd", agg.Metrics)
-		assert.Equal(t, "A90620", agg.PartID)
-		assert.Equal(t, "10032246681", agg.ReferenceNumber)
-		assert.True(t, agg.Unlimited)
+		assert.Equal(t, "asdasdfdsfsdas", agr.ItemDescription)
+		assert.Equal(t, "sdasjkhasd", agr.Metrics)
+		assert.Equal(t, "A90620", agr.PartID)
+		assert.Equal(t, "10032246681", agr.ReferenceNumber)
+		assert.True(t, agr.Unlimited)
 	}).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5f4d0a4c9015f713a9c66107")}, nil).After(
-		db.EXPECT().InsertOracleDatabaseAgreement(gomock.Any()).Do(func(agg model.OracleDatabaseAgreement) {
-			assert.Equal(t, "5051863", agg.AgreementID)
-			assert.Equal(t, "6871235", agg.CSI)
-			assert.True(t, agg.CatchAll)
-			assert.Equal(t, 30, agg.Count)
-			assert.Equal(t, agg.Hosts, []string{
+		db.EXPECT().InsertOracleDatabaseAgreement(gomock.Any()).Do(func(agr model.OracleDatabaseAgreement) {
+			assert.Equal(t, "5051863", agr.AgreementID)
+			assert.Equal(t, "6871235", agr.CSI)
+			assert.True(t, agr.CatchAll)
+			assert.Equal(t, 30, agr.Count)
+			assert.Equal(t, agr.Hosts, []string{
 				"test-db",
 				"ercsoldbx",
 			})
-			assert.Equal(t, "asdasdas", agg.ItemDescription)
-			assert.Equal(t, "sdsdfasasd", agg.Metrics)
-			assert.Equal(t, "L10006", agg.PartID)
-			assert.Equal(t, "10032246681", agg.ReferenceNumber)
-			assert.True(t, agg.Unlimited)
+			assert.Equal(t, "asdasdas", agr.ItemDescription)
+			assert.Equal(t, "sdsdfasasd", agr.Metrics)
+			assert.Equal(t, "L10006", agr.PartID)
+			assert.Equal(t, "10032246681", agr.ReferenceNumber)
+			assert.True(t, agr.Unlimited)
 		}).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5f4d0a2b27fe53da8a4aec45")}, nil),
 	)
 	res, err := as.AddOracleDatabaseAgreements(addRequest)
@@ -424,20 +424,20 @@ func TestAddOracleDatabaseAgreements_Fail4(t *testing.T) {
 		{"hostname": "ercsoldbx"},
 	}, nil)
 
-	db.EXPECT().InsertOracleDatabaseAgreement(gomock.Any()).Do(func(agg model.OracleDatabaseAgreement) {
-		assert.Equal(t, "5051863", agg.AgreementID)
-		assert.Equal(t, "6871235", agg.CSI)
-		assert.True(t, agg.CatchAll)
-		assert.Equal(t, 30, agg.Count)
-		assert.Equal(t, agg.Hosts, []string{
+	db.EXPECT().InsertOracleDatabaseAgreement(gomock.Any()).Do(func(agr model.OracleDatabaseAgreement) {
+		assert.Equal(t, "5051863", agr.AgreementID)
+		assert.Equal(t, "6871235", agr.CSI)
+		assert.True(t, agr.CatchAll)
+		assert.Equal(t, 30, agr.Count)
+		assert.Equal(t, agr.Hosts, []string{
 			"test-db",
 			"ercsoldbx",
 		})
-		assert.Equal(t, "asdasdas", agg.ItemDescription)
-		assert.Equal(t, "sdsdfasasd", agg.Metrics)
-		assert.Equal(t, "L10006", agg.PartID)
-		assert.Equal(t, "10032246681", agg.ReferenceNumber)
-		assert.True(t, agg.Unlimited)
+		assert.Equal(t, "asdasdas", agr.ItemDescription)
+		assert.Equal(t, "sdsdfasasd", agr.Metrics)
+		assert.Equal(t, "L10006", agr.PartID)
+		assert.Equal(t, "10032246681", agr.ReferenceNumber)
+		assert.True(t, agr.Unlimited)
 	}).Return(nil, aerrMock)
 	_, err := as.AddOracleDatabaseAgreements(addRequest)
 	assert.Equal(t, aerrMock, err)
@@ -983,7 +983,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1061,7 +1061,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1139,7 +1139,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1234,7 +1234,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedAgreemen
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1357,7 +1357,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1422,7 +1422,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1487,7 +1487,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1552,7 +1552,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1628,7 +1628,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_CompleCase1(t 
 		},
 	}
 
-	as.GreedilyAssignOracleDatabaseAgreementsToLicensingObjects(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
 
 	assert.Equal(t, expectedAgreements, agreements)
 
@@ -1782,7 +1782,7 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 		},
 	}
 
-	agg := apimodel.OracleDatabaseAgreementFE{
+	agr := apimodel.OracleDatabaseAgreementFE{
 		PartID: "L10005",
 		Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 			{Hostname: "test-db2"},
@@ -1799,9 +1799,9 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 		{Hostname: "test-db3"},
 	}
 
-	SortAssociatedHostsInOracleDatabaseAgreement(agg, licensingObjectsMap, partsMap)
+	SortAssociatedHostsInOracleDatabaseAgreement(agr, licensingObjectsMap, partsMap)
 
-	assert.Equal(t, expected, agg.Hosts)
+	assert.Equal(t, expected, agr.Hosts)
 }
 
 func TestBuildOracleDatabaseLicensingObjectsMap(t *testing.T) {
@@ -1933,7 +1933,7 @@ func TestAddAssociatedHostToOracleDatabaseAgreement_SuccessHostIsAlreadyAssociat
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 	}
 
-	agg := model.OracleDatabaseAgreement{
+	agr := model.OracleDatabaseAgreement{
 		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
 		AgreementID:     "abcde",
 		CSI:             "435435",
@@ -1948,7 +1948,7 @@ func TestAddAssociatedHostToOracleDatabaseAgreement_SuccessHostIsAlreadyAssociat
 	}
 
 	db.EXPECT().ExistNotInClusterHost("foohost").Return(true, nil)
-	db.EXPECT().FindOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(agg, nil)
+	db.EXPECT().FindOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(agr, nil)
 
 	err := as.AddAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost")
 	require.NoError(t, err)

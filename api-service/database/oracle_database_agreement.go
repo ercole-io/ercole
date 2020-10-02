@@ -67,8 +67,6 @@ func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]apimodel.OracleDataba
 
 // ListHostUsingOracleDatabaseLicenses lists the hosts/clusters that need to be licensed by Oracle/Database agreements
 func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]apimodel.HostUsingOracleDatabaseLicenses, utils.AdvancedErrorInterface) {
-	var out []apimodel.HostUsingOracleDatabaseLicenses = make([]apimodel.HostUsingOracleDatabaseLicenses, 0)
-
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
 		Aggregate(
 			context.TODO(),
@@ -153,9 +151,12 @@ func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]apimodel.HostU
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	if err = cur.All(context.TODO(), &out); err != nil {
+	var out []apimodel.HostUsingOracleDatabaseLicenses = make([]apimodel.HostUsingOracleDatabaseLicenses, 0)
+
+	if err := cur.All(context.TODO(), &out); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 	}
+
 	return out, nil
 }
 
