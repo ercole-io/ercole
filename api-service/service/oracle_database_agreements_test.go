@@ -487,7 +487,7 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 	returnedLicensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
-			Count:         3,
+			LicenseCount:  3,
 			LicenseName:   "Partitioning",
 			OriginalCount: 3,
 			Type:          "host",
@@ -581,7 +581,7 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 	returnedLicensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
-			Count:         3,
+			LicenseCount:  3,
 			LicenseName:   "Partitioning",
 			OriginalCount: 3,
 			Type:          "host",
@@ -950,7 +950,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
-			Count:         3,
+			LicenseCount:  3,
 			LicenseName:   "Partitioning",
 			OriginalCount: 3,
 			Type:          "host",
@@ -983,7 +983,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 		},
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1028,7 +1028,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
-			Count:         3,
+			LicenseCount:  3,
 			LicenseName:   "Partitioning",
 			OriginalCount: 3,
 			Type:          "host",
@@ -1061,7 +1061,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 		},
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1106,7 +1106,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
-			Count:         128,
+			LicenseCount:  128,
 			LicenseName:   "Partitioning",
 			OriginalCount: 128,
 			Type:          "host",
@@ -1139,7 +1139,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 		},
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1188,14 +1188,14 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedAgreemen
 	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
-			Count:         3,
+			LicenseCount:  3,
 			LicenseName:   "Partitioning",
 			OriginalCount: 3,
 			Type:          "host",
 		},
 		{
 			Name:          "test-db2",
-			Count:         4,
+			LicenseCount:  4,
 			LicenseName:   "Partitioning",
 			OriginalCount: 4,
 			Type:          "host",
@@ -1234,7 +1234,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedAgreemen
 		},
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1301,7 +1301,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *
 	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
-			Count:         20,
+			LicenseCount:  20,
 			LicenseName:   "Partitioning",
 			OriginalCount: 20,
 			Type:          "host",
@@ -1357,7 +1357,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *
 		},
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1396,7 +1396,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
-			Count:         3,
+			LicenseCount:  3,
 			LicenseName:   "Partitioning",
 			OriginalCount: 3,
 			Type:          "host",
@@ -1422,7 +1422,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 		},
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1461,7 +1461,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
-			Count:         3,
+			LicenseCount:  3,
 			LicenseName:   "Partitioning",
 			OriginalCount: 3,
 			Type:          "host",
@@ -1487,7 +1487,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 		},
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1526,7 +1526,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
-			Count:         128,
+			LicenseCount:  128,
 			LicenseName:   "Partitioning",
 			OriginalCount: 128,
 			Type:          "host",
@@ -1552,7 +1552,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 		},
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
@@ -1593,14 +1593,14 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_CompleCase1(t 
 	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
-			Count:         3,
+			LicenseCount:  3,
 			LicenseName:   "Partitioning",
 			OriginalCount: 3,
 			Type:          "host",
 		},
 		{
 			Name:          "dbclust",
-			Count:         20,
+			LicenseCount:  20,
 			LicenseName:   "Partitioning",
 			OriginalCount: 20,
 			Type:          "cluster",
@@ -1628,7 +1628,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_CompleCase1(t 
 		},
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects, nil)
+	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
 
 	assert.Equal(t, expectedAgreements, agreements)
 
@@ -1637,71 +1637,71 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_CompleCase1(t 
 func TestSortOracleDatabaseAgreementLicensingObjects(t *testing.T) {
 	list := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
-			LicenseName: "Diagnostics Pack",
-			Name:        "Puzzait",
-			Type:        "cluster",
-			Count:       70,
+			LicenseName:  "Diagnostics Pack",
+			Name:         "Puzzait",
+			Type:         "cluster",
+			LicenseCount: 70,
 		},
 		{
-			LicenseName: "Real Application Clusters",
-			Name:        "test-db3",
-			Type:        "host",
-			Count:       1.5,
+			LicenseName:  "Real Application Clusters",
+			Name:         "test-db3",
+			Type:         "host",
+			LicenseCount: 1.5,
 		},
 		{
-			LicenseName: "Diagnostics Pack",
-			Name:        "test-db4",
-			Type:        "host",
-			Count:       0.5,
+			LicenseName:  "Diagnostics Pack",
+			Name:         "test-db4",
+			Type:         "host",
+			LicenseCount: 0.5,
 		},
 		{
-			LicenseName: "Oracle ENT",
-			Name:        "test-db3",
-			Type:        "host",
-			Count:       0.5,
+			LicenseName:  "Oracle ENT",
+			Name:         "test-db3",
+			Type:         "host",
+			LicenseCount: 0.5,
 		},
 		{
-			LicenseName: "Oracle ENT",
-			Name:        "Puzzait",
-			Type:        "cluster",
-			Count:       70,
+			LicenseName:  "Oracle ENT",
+			Name:         "Puzzait",
+			Type:         "cluster",
+			LicenseCount: 70,
 		},
 	}
 
 	expected := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
-			LicenseName: "Oracle ENT",
-			Name:        "Puzzait",
-			Type:        "cluster",
-			Count:       70,
+			LicenseName:  "Oracle ENT",
+			Name:         "Puzzait",
+			Type:         "cluster",
+			LicenseCount: 70,
 		},
 		{
-			LicenseName: "Diagnostics Pack",
-			Name:        "Puzzait",
-			Type:        "cluster",
-			Count:       70,
+			LicenseName:  "Diagnostics Pack",
+			Name:         "Puzzait",
+			Type:         "cluster",
+			LicenseCount: 70,
 		},
 		{
-			LicenseName: "Real Application Clusters",
-			Name:        "test-db3",
-			Type:        "host",
-			Count:       1.5,
+			LicenseName:  "Real Application Clusters",
+			Name:         "test-db3",
+			Type:         "host",
+			LicenseCount: 1.5,
 		},
 		{
-			LicenseName: "Diagnostics Pack",
-			Name:        "test-db4",
-			Type:        "host",
-			Count:       0.5,
+			LicenseName:  "Diagnostics Pack",
+			Name:         "test-db4",
+			Type:         "host",
+			LicenseCount: 0.5,
 		},
 		{
-			LicenseName: "Oracle ENT",
-			Name:        "test-db3",
-			Type:        "host",
-			Count:       0.5,
+			LicenseName:  "Oracle ENT",
+			Name:         "test-db3",
+			Type:         "host",
+			LicenseCount: 0.5,
 		},
 	}
 
-	SortOracleDatabaseAgreementLicensingObjects(list)
+	sortHostsUsingLicenses(list)
 
 	assert.Equal(t, expected, list)
 }
@@ -1745,7 +1745,7 @@ func TestSortOracleDatabaseAgreements(t *testing.T) {
 		{CatchAll: true, Unlimited: true, LicensesCount: 10},
 	}
 
-	SortOracleDatabaseAgreements(list)
+	sortOracleDatabaseAgreements(list)
 
 	assert.Equal(t, expected, list)
 }
@@ -1763,21 +1763,21 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 	licensingObjectsMap := map[string]map[string]*apimodel.HostUsingOracleDatabaseLicenses{
 		"Real Application Clusters": {
 			"test-db1": {
-				Count: 10,
+				LicenseCount: 10,
 			},
 			"test-db2": {
-				Count: 30,
+				LicenseCount: 30,
 			},
 		},
 		"RAC or RAC One Node": {
 			"test-db1": {
-				Count: 20,
+				LicenseCount: 20,
 			},
 			"test-db3": {
-				Count: 15,
+				LicenseCount: 15,
 			},
 			"test-db4": {
-				Count: 35,
+				LicenseCount: 35,
 			},
 		},
 	}
@@ -1799,7 +1799,7 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 		{Hostname: "test-db3"},
 	}
 
-	SortAssociatedHostsInOracleDatabaseAgreement(agr, licensingObjectsMap, partsMap)
+	sortAssociatedHostsInOracleDatabaseAgreement(agr, licensingObjectsMap, partsMap)
 
 	assert.Equal(t, expected, agr.Hosts)
 }
@@ -1807,34 +1807,34 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 func TestBuildOracleDatabaseLicensingObjectsMap(t *testing.T) {
 	list := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
-			LicenseName: "Oracle ENT",
-			Name:        "Puzzait",
-			Type:        "cluster",
-			Count:       70,
+			LicenseName:  "Oracle ENT",
+			Name:         "Puzzait",
+			Type:         "cluster",
+			LicenseCount: 70,
 		},
 		{
-			LicenseName: "Diagnostics Pack",
-			Name:        "Puzzait",
-			Type:        "cluster",
-			Count:       70,
+			LicenseName:  "Diagnostics Pack",
+			Name:         "Puzzait",
+			Type:         "cluster",
+			LicenseCount: 70,
 		},
 		{
-			LicenseName: "Real Application Clusters",
-			Name:        "test-db3",
-			Type:        "host",
-			Count:       1.5,
+			LicenseName:  "Real Application Clusters",
+			Name:         "test-db3",
+			Type:         "host",
+			LicenseCount: 1.5,
 		},
 		{
-			LicenseName: "Diagnostics Pack",
-			Name:        "test-db4",
-			Type:        "host",
-			Count:       0.5,
+			LicenseName:  "Diagnostics Pack",
+			Name:         "test-db4",
+			Type:         "host",
+			LicenseCount: 0.5,
 		},
 		{
-			LicenseName: "Oracle ENT",
-			Name:        "test-db3",
-			Type:        "host",
-			Count:       0.5,
+			LicenseName:  "Oracle ENT",
+			Name:         "test-db3",
+			Type:         "host",
+			LicenseCount: 0.5,
 		},
 	}
 
@@ -1852,7 +1852,7 @@ func TestBuildOracleDatabaseLicensingObjectsMap(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, expected, BuildOracleDatabaseLicensingObjectsMap(list))
+	assert.Equal(t, expected, buildOracleDatabaseLicensingObjectsMap(list))
 }
 
 func TestBuildOracleDatabaseAgreementPartMap(t *testing.T) {
@@ -1876,7 +1876,7 @@ func TestBuildOracleDatabaseAgreementPartMap(t *testing.T) {
 		"A90620": &list[1],
 	}
 
-	assert.Equal(t, expected, BuildOracleDatabaseAgreementPartMap(list))
+	assert.Equal(t, expected, buildOracleDatabaseAgreementPartMap(list))
 }
 
 func TestAddAssociatedHostToOracleDatabaseAgreement_Success(t *testing.T) {

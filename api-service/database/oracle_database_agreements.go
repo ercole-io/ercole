@@ -74,12 +74,13 @@ func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]apimodel.HostU
 				mu.APMatch(bson.M{
 					"archived":                 false,
 					"features.oracle.database": mu.QONotEqual(nil),
+					"$expr":                    mu.APOGreater(mu.APOSize("$features.oracle.database.databases"), 0),
 				}),
-				mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$features.oracle.database.databases"), 0))),
 				mu.APProject(bson.M{
 					"hostname": true,
 					"licenses": "$features.oracle.database.databases.licenses",
 				}),
+
 				mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "cluster", mu.MAPipeline(
 					mu.APMatch(bson.M{
 						"archived": false,
@@ -109,10 +110,10 @@ func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]apimodel.HostU
 						"clusterCpu":  "$clusterCpu",
 						"licenseName": "$licenses.name",
 					},
-					"count": mu.APOMaxAggr("$licenses.count"),
+					"licenseCount": mu.APOMaxAggr("$licenses.count"),
 				}),
 				mu.APMatch(bson.M{
-					"count": bson.M{
+					"licenseCount": bson.M{
 						"$gt": 0,
 					},
 				}),
@@ -131,10 +132,10 @@ func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]apimodel.HostU
 							},
 						),
 					},
-					"count": mu.APOMaxAggr(mu.APOCond(
+					"licenseCount": mu.APOMaxAggr(mu.APOCond(
 						"$_id.cluster",
 						mu.APODivide("$_id.clusterCpu", 2),
-						"$count",
+						"$licenseCount",
 					)),
 				}),
 				mu.APProject(bson.M{
@@ -142,8 +143,8 @@ func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]apimodel.HostU
 					"name":          "$_id.object.name",
 					"type":          "$_id.object.type",
 					"licenseName":   "$_id.licenseName",
-					"count":         1,
-					"originalCount": "$count",
+					"licenseCount":  1,
+					"originalCount": "$licenseCount",
 				}),
 			),
 		)
