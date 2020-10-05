@@ -1,0 +1,5 @@
+[RepoService]
+  [[RepoService.UpstreamRepositories]]
+  Name = "example"
+  Type = "directory"
+  URL = "/tmp/ercole-1"
