@@ -62,13 +62,46 @@ func (as *APIService) SearchLicenses(location string, environment string, olderT
 		return nil, err
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agrs, hosts, lics)
+	as.AssignOracleDatabaseAgreementsToHosts(agrs, hosts)
+
+	setLicensesCosts(as, agrs, hosts, lics)
 
 	return lics, nil
 }
 
-// BuildOracleDatabaseLicenseInfoMap return a map of licenseName to OracleDatabaseLicenseUsageInfo
-func BuildOracleDatabaseLicenseInfoMap(lics []apimodel.OracleDatabaseLicenseUsageInfo) map[string]*apimodel.OracleDatabaseLicenseUsageInfo {
+func setLicensesCosts(as *APIService,
+	agrs []apimodel.OracleDatabaseAgreementFE,
+	hosts []apimodel.HostUsingOracleDatabaseLicenses,
+	lics []apimodel.OracleDatabaseLicenseUsageInfo) {
+
+	partsMap := buildOracleDatabaseAgreementPartMap(as.OracleDatabaseAgreementParts)
+
+	licsMap := buildOracleDatabaseLicenseInfoMap(lics)
+
+	// Set the count/unlimited
+	for _, agr := range agrs {
+		for _, alias := range partsMap[agr.PartID].Aliases {
+			licsMap[alias].Count += agr.LicensesCount + agr.UsersCount*25
+			licsMap[alias].Unlimited = licsMap[alias].Unlimited || agr.Unlimited
+		}
+	}
+
+	// Set the used and covered
+	for _, host := range hosts {
+		licsMap[host.LicenseName].TotalCoveredLicenses += host.OriginalCount - host.LicenseCount
+		licsMap[host.LicenseName].Used += host.OriginalCount
+	}
+
+	// Set the cost
+	for i := range lics {
+		lic := &lics[i]
+		lic.PaidCost = lic.TotalCoveredLicenses * lic.CostPerProcessor
+		lic.TotalCost = lic.Used * lic.CostPerProcessor
+	}
+}
+
+// buildOracleDatabaseLicenseInfoMap return a map of licenseName to OracleDatabaseLicenseUsageInfo
+func buildOracleDatabaseLicenseInfoMap(lics []apimodel.OracleDatabaseLicenseUsageInfo) map[string]*apimodel.OracleDatabaseLicenseUsageInfo {
 	res := make(map[string]*apimodel.OracleDatabaseLicenseUsageInfo)
 
 	for i, lic := range lics {

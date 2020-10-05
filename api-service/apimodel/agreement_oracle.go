@@ -79,7 +79,7 @@ type HostUsingOracleDatabaseLicenses struct {
 	Name        string `json:"name" bson:"name"`
 	//Type describe if it's an host or a cluster
 	Type          string  `json:"type" bson:"type"`
-	Count         float64 `json:"count" bson:"count"`
+	LicenseCount  float64 `json:"licenseCount" bson:"licenseCount"`
 	OriginalCount float64 `json:"originalCount" bson:"originalCount"`
 }
 
