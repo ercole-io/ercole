@@ -75,7 +75,7 @@ func TestSearchAlerts_JSONSuccessPaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchAlerts("aggregated-code-severity", "foo", "CreatedAt", true, 10, 2, model.AlertSeverityCritical, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
+		SearchAlerts("aggregated-code-severity", "foo", "CreatedAt", true, 10, 2, "", "", model.AlertSeverityCritical, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
 		Return(resFromService, nil)
 
 	rr := httptest.NewRecorder()
@@ -118,7 +118,7 @@ func TestSearchAlerts_JSONSuccessUnpaged(t *testing.T) {
 	}
 	as.EXPECT().
 		SearchAlerts("aggregated-code-severity",
-			"foo", "CreatedAt", true, -1, -1, model.AlertSeverityCritical, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
+			"foo", "CreatedAt", true, -1, -1, "", "", model.AlertSeverityCritical, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
@@ -312,7 +312,7 @@ func TestSearchAlerts_JSONFailInternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchAlerts("all", "", "", false, -1, -1, "", "", utils.MIN_TIME, utils.MAX_TIME).
+		SearchAlerts("all", "", "", false, -1, -1, "", "", "", "", utils.MIN_TIME, utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
@@ -374,7 +374,7 @@ func TestSearchAlerts_XLSXSuccess(t *testing.T) {
 	}
 	as.EXPECT().
 		SearchAlerts("all",
-			"foo", "CreatedAt", true, -1, -1, model.AlertSeverityCritical, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
+			"foo", "CreatedAt", true, -1, -1, "", "", model.AlertSeverityCritical, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
 		Return(res, nil)
 
 	rr := httptest.NewRecorder()
@@ -595,7 +595,7 @@ func TestSearchAlerts_XLSXInternalServerError(t *testing.T) {
 
 	as.EXPECT().
 		SearchAlerts("all",
-			"foo", "CreatedAt", true, -1, -1, model.AlertSeverityCritical, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
+			"foo", "CreatedAt", true, -1, -1, "", "", model.AlertSeverityCritical, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
@@ -659,7 +659,7 @@ func TestSearchAlerts_XLSXInternalServerError2(t *testing.T) {
 	}
 	as.EXPECT().
 		SearchAlerts("all",
-			"foo", "CreatedAt", true, -1, -1, model.AlertSeverityCritical, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
+			"foo", "CreatedAt", true, -1, -1, "", "", model.AlertSeverityCritical, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
 		Return(res, nil)
 
 	rr := httptest.NewRecorder()

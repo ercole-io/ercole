@@ -47,18 +47,23 @@ const (
 
 // Alert codes
 const (
-	// NewDatabase contains string "NEW_DATABASE"
-	AlertCodeNewDatabase string = "NEW_DATABASE"
-	// NewOption contains string "NEW_OPTION"
-	AlertCodeNewOption string = "NEW_OPTION"
-	// NewLicense contains string "NEW_LICENSE"
-	AlertCodeNewLicense string = "NEW_LICENSE"
+	// ENGINE
 	// NewServer contains string "NEW_SERVER"
 	AlertCodeNewServer string = "NEW_SERVER"
+	// UnlistedRunningDatabase contains string "UNLISTED_RUNNING_DATABASE"
+	AlertCodeUnlistedRunningDatabase string = "UNLISTED_RUNNING_DATABASE"
+
+	// AGENT
 	// NoData contains string "NO_DATA"
 	AlertCodeNoData string = "NO_DATA"
-	// NoData contains string "UNLISTED_RUNNING_DATABASE"
-	AlertCodeUnlistedRunningDatabase string = "UNLISTED_RUNNING_DATABASE"
+
+	// LICENSE
+	// NewDatabase contains string "NEW_DATABASE"
+	AlertCodeNewDatabase string = "NEW_DATABASE"
+	// NewLicense contains string "NEW_LICENSE"
+	AlertCodeNewLicense string = "NEW_LICENSE"
+	// NewOption contains string "NEW_OPTION"
+	AlertCodeNewOption string = "NEW_OPTION"
 )
 
 // Alert severity

@@ -31,31 +31,21 @@ import (
 
 // SearchAlerts search alerts using the filters in the request
 func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) {
-	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
-
-	switch choiche {
-	case "application/json":
-		ctrl.SearchAlertsJSON(w, r)
-	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-		ctrl.SearchAlertsXLSX(w, r)
-	}
-}
-
-// SearchAlertsJSON search alerts using the filters in the request returning it in JSON format
-func (ctrl *APIController) SearchAlertsJSON(w http.ResponseWriter, r *http.Request) {
 	var mode string
 	var search string
 	var sortBy string
 	var sortDesc bool
 	var pageNumber int
 	var pageSize int
+	var location string
+	var environment string
 	var severity string
 	var status string
 	var from time.Time
 	var to time.Time
 
 	var err utils.AdvancedErrorInterface
-	//parse the query params
+
 	mode = r.URL.Query().Get("mode")
 	if mode == "" {
 		mode = "all"
@@ -63,8 +53,11 @@ func (ctrl *APIController) SearchAlertsJSON(w http.ResponseWriter, r *http.Reque
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Invalid mode value"), http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
+
 	search = r.URL.Query().Get("search")
+
 	sortBy = r.URL.Query().Get("sort-by")
+
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -74,37 +67,66 @@ func (ctrl *APIController) SearchAlertsJSON(w http.ResponseWriter, r *http.Reque
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
+	location = r.URL.Query().Get("location")
+
+	environment = r.URL.Query().Get("environment")
+
 	severity = r.URL.Query().Get("severity")
 	if severity != "" && severity != model.AlertSeverityWarning && severity != model.AlertSeverityCritical && severity != model.AlertSeverityInfo {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid severity"), "Invalid  severity"))
 		return
 	}
+
 	status = r.URL.Query().Get("status")
 	if status != "" && status != model.AlertStatusNew && status != model.AlertStatusAck {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid status"), "Invalid  status"))
 		return
 	}
+
 	if from, err = utils.Str2time(r.URL.Query().Get("from"), utils.MIN_TIME); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	if to, err = utils.Str2time(r.URL.Query().Get("to"), utils.MAX_TIME); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	//get the data
-	response, err := ctrl.Service.SearchAlerts(mode, search, sortBy, sortDesc, pageNumber, pageSize, severity, status, from, to)
+	contentType := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
+	switch contentType {
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		if mode != "all" {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
+				utils.NewAdvancedErrorPtr(fmt.Errorf("only mode 'all' is acceptable for xlsx"), http.StatusText(http.StatusBadRequest)))
+			return
+		}
+
+		ctrl.searchAlertsXLSX(w, r, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
+
+	default:
+		ctrl.searchAlertsJSON(w, r, mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
+	}
+}
+
+// searchAlertsJSON search alerts using the filters in the request returning it in JSON format
+func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Request,
+	mode string, search string, sortBy string, sortDesc bool, pageNumber int, pageSize int,
+	location, environment, severity string, status string, from time.Time, to time.Time) {
+
+	response, err := ctrl.Service.SearchAlerts(mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	//Write the data
 	if pageNumber == -1 || pageSize == -1 {
 		utils.WriteJSONResponse(w, http.StatusOK, response)
 	} else {
@@ -113,69 +135,24 @@ func (ctrl *APIController) SearchAlertsJSON(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-// SearchAlertsXLSX search alerts using the filters in the request returning it in XLSX format
-func (ctrl *APIController) SearchAlertsXLSX(w http.ResponseWriter, r *http.Request) {
-	var search string
-	var sortBy string
-	var sortDesc bool
-	var pageNumber int
-	var pageSize int
-	var severity string
-	var status string
-	var from time.Time
-	var to time.Time
+// searchAlertsXLSX search alerts using the filters in the request returning it in XLSX format
+func (ctrl *APIController) searchAlertsXLSX(w http.ResponseWriter, r *http.Request,
+	search string, sortBy string, sortDesc bool, pageNumber int, pageSize int,
+	location, environment, severity string, status string, from time.Time, to time.Time) {
 
-	var aerr utils.AdvancedErrorInterface
-	//parse the query params
-	search = r.URL.Query().Get("search")
-	sortBy = r.URL.Query().Get("sort-by")
-	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
-		return
-	}
-
-	if pageNumber, aerr = utils.Str2int(r.URL.Query().Get("page"), -1); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
-		return
-	}
-	if pageSize, aerr = utils.Str2int(r.URL.Query().Get("size"), -1); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
-		return
-	}
-	severity = r.URL.Query().Get("severity")
-	if severity != "" && severity != model.AlertSeverityWarning && severity != model.AlertSeverityCritical && severity != model.AlertSeverityInfo {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid severity"), "Invalid  severity"))
-		return
-	}
-	status = r.URL.Query().Get("status")
-	if status != "" && status != model.AlertStatusNew && status != model.AlertStatusAck {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid status"), "Invalid  status"))
-		return
-	}
-	if from, aerr = utils.Str2time(r.URL.Query().Get("from"), utils.MIN_TIME); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
-		return
-	}
-	if to, aerr = utils.Str2time(r.URL.Query().Get("to"), utils.MAX_TIME); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
-		return
-	}
-
-	//get the data
-	response, aerr := ctrl.Service.SearchAlerts("all", search, sortBy, sortDesc, pageNumber, pageSize, severity, status, from, to)
+	response, aerr := ctrl.Service.SearchAlerts("all", search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
 	}
 
-	//Open the sheet
+	//TODO Move in service
 	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_alerts.xlsx")
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
 		return
 	}
 
-	//Add the data to the sheet
 	for i, val := range response {
 		sheets.SetCellValue("Alerts", fmt.Sprintf("A%d", i+2), val["alertCategory"])
 		sheets.SetCellValue("Alerts", fmt.Sprintf("B%d", i+2), val["date"].(primitive.DateTime).Time().UTC().String())
@@ -185,7 +162,6 @@ func (ctrl *APIController) SearchAlertsXLSX(w http.ResponseWriter, r *http.Reque
 		sheets.SetCellValue("Alerts", fmt.Sprintf("F%d", i+2), val["description"])
 	}
 
-	//Write it to the response
 	utils.WriteXLSXResponse(w, sheets)
 }
 

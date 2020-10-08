@@ -28,7 +28,7 @@ import (
 )
 
 func (m *MongodbSuite) TestInsertOracleDatabaseAgreement_Success() {
-	agg := model.OracleDatabaseAgreement{
+	agr := model.OracleDatabaseAgreement{
 		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
 		AgreementID:     "abcde",
 		CSI:             "435435",
@@ -41,18 +41,18 @@ func (m *MongodbSuite) TestInsertOracleDatabaseAgreement_Success() {
 		ReferenceNumber: "567768",
 		Unlimited:       true,
 	}
-	_, err := m.db.InsertOracleDatabaseAgreement(agg)
+	_, err := m.db.InsertOracleDatabaseAgreement(agr)
 	require.NoError(m.T(), err)
 	defer m.db.Client.Database(m.dbname).Collection("agreements_oracle_database").DeleteMany(context.TODO(), bson.M{})
 	val := m.db.Client.Database(m.dbname).Collection("agreements_oracle_database").FindOne(context.TODO(), bson.M{
-		"_id": agg.ID,
+		"_id": agr.ID,
 	})
 	require.NoError(m.T(), val.Err())
 
 	var out model.OracleDatabaseAgreement
 	val.Decode(&out)
 
-	assert.Equal(m.T(), agg, out)
+	assert.Equal(m.T(), agr, out)
 }
 
 func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
@@ -106,14 +106,14 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 	out, err := m.db.ListOracleDatabaseAgreements()
 	m.Require().NoError(err)
 
-	assert.Equal(m.T(), []apimodel.OracleDatabaseAgreementsFE{
+	assert.Equal(m.T(), []apimodel.OracleDatabaseAgreementFE{
 		{
 			ID:          utils.Str2oid("5dcad8933b243f80e2ed8538"),
 			AgreementID: "abcde",
 			CSI:         "435435",
 			CatchAll:    true,
 			Count:       345,
-			Hosts: []apimodel.OracleDatabaseAgreementsAssociatedHostFE{
+			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					Hostname:                  "foo",
 					CoveredLicensesCount:      0,
@@ -140,7 +140,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 			CSI:             "435435",
 			CatchAll:        true,
 			Count:           345,
-			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
 			ItemDescription: "fgfgd",
 			Metrics:         "Computer Perpetual",
 			PartID:          "678867",
@@ -156,7 +156,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 			CSI:             "435435",
 			CatchAll:        true,
 			Count:           345,
-			Hosts:           []apimodel.OracleDatabaseAgreementsAssociatedHostFE{},
+			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
 			ItemDescription: "fgfgd",
 			Metrics:         "Named User Plus Perpetual",
 			PartID:          "678867",
@@ -176,43 +176,43 @@ func (m *MongodbSuite) TestListOracleDatabaseLicensingObjects() {
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_17.json"))
 
-	out, err := m.db.ListOracleDatabaseLicensingObjects()
+	out, err := m.db.ListHostUsingOracleDatabaseLicenses()
 	m.Require().NoError(err)
 
-	assert.ElementsMatch(m.T(), []apimodel.OracleDatabaseLicensingObjects{
+	assert.ElementsMatch(m.T(), []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			LicenseName:   "Diagnostics Pack",
 			Name:          "Puzzait",
 			Type:          "cluster",
-			Count:         70,
+			LicenseCount:  70,
 			OriginalCount: 70,
 		},
 		{
 			LicenseName:   "Real Application Clusters",
 			Name:          "test-db3",
 			Type:          "host",
-			Count:         1.5,
+			LicenseCount:  1.5,
 			OriginalCount: 1.5,
 		},
 		{
 			LicenseName:   "Diagnostics Pack",
 			Name:          "test-db3",
 			Type:          "host",
-			Count:         0.5,
+			LicenseCount:  0.5,
 			OriginalCount: 0.5,
 		},
 		{
 			LicenseName:   "Oracle ENT",
 			Name:          "test-db3",
 			Type:          "host",
-			Count:         0.5,
+			LicenseCount:  0.5,
 			OriginalCount: 0.5,
 		},
 		{
 			LicenseName:   "Oracle ENT",
 			Name:          "Puzzait",
 			Type:          "cluster",
-			Count:         70,
+			LicenseCount:  70,
 			OriginalCount: 70,
 		},
 	}, out)
