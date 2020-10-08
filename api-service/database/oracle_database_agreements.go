@@ -37,8 +37,8 @@ func (md *MongoDatabase) InsertOracleDatabaseAgreement(aggreement model.OracleDa
 }
 
 // ListOracleDatabaseAgreements lists the Oracle/Database agreements
-func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]apimodel.OracleDatabaseAgreementsFE, utils.AdvancedErrorInterface) {
-	var out []apimodel.OracleDatabaseAgreementsFE = make([]apimodel.OracleDatabaseAgreementsFE, 0)
+func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]apimodel.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface) {
+	var out []apimodel.OracleDatabaseAgreementFE = make([]apimodel.OracleDatabaseAgreementFE, 0)
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("agreements_oracle_database").Aggregate(
 		context.TODO(),
@@ -65,10 +65,8 @@ func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]apimodel.OracleDataba
 	return out, nil
 }
 
-// ListOracleDatabaseLicensingObjects lists the hosts/clusters that need to be licensed by Oracle/Database agreements
-func (md *MongoDatabase) ListOracleDatabaseLicensingObjects() ([]apimodel.OracleDatabaseLicensingObjects, utils.AdvancedErrorInterface) {
-	var out []apimodel.OracleDatabaseLicensingObjects = make([]apimodel.OracleDatabaseLicensingObjects, 0)
-
+// ListHostUsingOracleDatabaseLicenses lists the hosts/clusters that need to be licensed by Oracle/Database agreements
+func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]apimodel.HostUsingOracleDatabaseLicenses, utils.AdvancedErrorInterface) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
 		Aggregate(
 			context.TODO(),
@@ -76,12 +74,13 @@ func (md *MongoDatabase) ListOracleDatabaseLicensingObjects() ([]apimodel.Oracle
 				mu.APMatch(bson.M{
 					"archived":                 false,
 					"features.oracle.database": mu.QONotEqual(nil),
+					"$expr":                    mu.APOGreater(mu.APOSize("$features.oracle.database.databases"), 0),
 				}),
-				mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$features.oracle.database.databases"), 0))),
 				mu.APProject(bson.M{
 					"hostname": true,
 					"licenses": "$features.oracle.database.databases.licenses",
 				}),
+
 				mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "cluster", mu.MAPipeline(
 					mu.APMatch(bson.M{
 						"archived": false,
@@ -111,10 +110,10 @@ func (md *MongoDatabase) ListOracleDatabaseLicensingObjects() ([]apimodel.Oracle
 						"clusterCpu":  "$clusterCpu",
 						"licenseName": "$licenses.name",
 					},
-					"count": mu.APOMaxAggr("$licenses.count"),
+					"licenseCount": mu.APOMaxAggr("$licenses.count"),
 				}),
 				mu.APMatch(bson.M{
-					"count": bson.M{
+					"licenseCount": bson.M{
 						"$gt": 0,
 					},
 				}),
@@ -133,10 +132,10 @@ func (md *MongoDatabase) ListOracleDatabaseLicensingObjects() ([]apimodel.Oracle
 							},
 						),
 					},
-					"count": mu.APOMaxAggr(mu.APOCond(
+					"licenseCount": mu.APOMaxAggr(mu.APOCond(
 						"$_id.cluster",
 						mu.APODivide("$_id.clusterCpu", 2),
-						"$count",
+						"$licenseCount",
 					)),
 				}),
 				mu.APProject(bson.M{
@@ -144,8 +143,8 @@ func (md *MongoDatabase) ListOracleDatabaseLicensingObjects() ([]apimodel.Oracle
 					"name":          "$_id.object.name",
 					"type":          "$_id.object.type",
 					"licenseName":   "$_id.licenseName",
-					"count":         1,
-					"originalCount": "$count",
+					"licenseCount":  1,
+					"originalCount": "$licenseCount",
 				}),
 			),
 		)
@@ -153,9 +152,12 @@ func (md *MongoDatabase) ListOracleDatabaseLicensingObjects() ([]apimodel.Oracle
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	if err = cur.All(context.TODO(), &out); err != nil {
+	var out []apimodel.HostUsingOracleDatabaseLicenses = make([]apimodel.HostUsingOracleDatabaseLicenses, 0)
+
+	if err := cur.All(context.TODO(), &out); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 	}
+
 	return out, nil
 }
 

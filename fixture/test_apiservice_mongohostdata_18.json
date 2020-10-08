@@ -1,0 +1,93 @@
+{
+    "agentVersion": "latest",
+    "archived": false,
+    "clusterMembershipStatus": {
+        "hacmp": false,
+        "oracleClusterware": false,
+        "sunCluster": false,
+        "veritasClusterServer": false
+    },
+    "clusters": null,
+    "createdAt": {
+        "$date": {
+            "$numberLong": "1586933218471"
+        }
+    },
+    "environment": "TST",
+    "features": {},
+    "filesystems": [
+        {
+            "availableSpace": {
+                "$numberLong": "5798205849"
+            },
+            "filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+            "mountedOn": "/",
+            "size": {
+                "$numberLong": "13958643712"
+            },
+            "type": "ext4",
+            "usedSpace": {
+                "$numberLong": "7194070220"
+            }
+        },
+        {
+            "availableSpace": {
+                "$numberLong": "335544320"
+            },
+            "filesystem": "/dev/sda1",
+            "mountedOn": "/boot",
+            "size": {
+                "$numberLong": "511705088"
+            },
+            "type": "ext4",
+            "usedSpace": {
+                "$numberLong": "139460608"
+            }
+        }
+    ],
+    "hostname": "rac1_x",
+    "info": {
+        "cpuCores": {
+            "$numberInt": "1"
+        },
+        "cpuFrequency": "2.53GHz",
+        "cpuModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+        "cpuSockets": {
+            "$numberInt": "2"
+        },
+        "cpuThreads": {
+            "$numberInt": "2"
+        },
+        "coresPerSocket": {
+            "$numberInt": "1"
+        },
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "VMWARE",
+        "hostname": "rac1_x",
+        "kernel": "Linux",
+        "kernelVersion": "3.10.0-514.el7.x86_64",
+        "memoryTotal": {
+            "$numberDouble": "3.0"
+        },
+        "os": "Red Hat Enterprise Linux",
+        "osVersion": "7.6",
+        "swapTotal": {
+            "$numberDouble": "1.0"
+        },
+        "threadsPerCore": {
+            "$numberInt": "2"
+        }
+    },
+    "location": "Irland",
+    "schemaVersion": {
+        "$numberDouble": "1.0"
+    },
+    "serverSchemaVersion": {
+        "$numberInt": "1"
+    },
+    "serverVersion": "latest",
+    "tags": [],
+    "_id": {
+        "$oid": "5f7ed36af74b229abc090c2f"
+    }
+}

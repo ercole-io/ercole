@@ -2179,6 +2179,8 @@ paths:
         - $ref: '#/components/parameters/sort-desc'
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
         - in: query
           schema:
             type: string

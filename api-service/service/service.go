@@ -40,7 +40,7 @@ type APIServiceInterface interface {
 	// ListManagedTechnologies returns the list of technologies with some stats
 	ListManagedTechnologies(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.TechnologyStatus, utils.AdvancedErrorInterface)
 	// SearchAlerts search alerts
-	SearchAlerts(mode string, search string, sortBy string, sortDesc bool, page int, pageSize int, severity string, status string, from time.Time, to time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
+	SearchAlerts(mode string, search string, sortBy string, sortDesc bool, page, pageSize int, location, environment, severity, status string, from, to time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// SearchClusters search clusters
 	SearchClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// GetCluster return the cluster specified in the clusterName param
@@ -56,7 +56,7 @@ type APIServiceInterface interface {
 	// SearchOracleExadata search exadata
 	SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchLicenses search licenses
-	SearchLicenses(location string, environment string, olderThan time.Time) ([]apimodel.OracleDatabaseLicenseInfo, utils.AdvancedErrorInterface)
+	SearchLicenses(location string, environment string, olderThan time.Time) ([]apimodel.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface)
 	// SearchOracleDatabaseConsumedLicenses return the list of consumed licenses
 	SearchOracleDatabaseConsumedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 
@@ -141,7 +141,7 @@ type APIServiceInterface interface {
 	DeleteOracleDatabaseAgreement(id primitive.ObjectID) utils.AdvancedErrorInterface
 
 	// SearchOracleDatabaseAgreements search Oracle/Database agreements
-	SearchOracleDatabaseAgreements(search string, filters apimodel.SearchOracleDatabaseAgreementsFilters) ([]apimodel.OracleDatabaseAgreementsFE, utils.AdvancedErrorInterface)
+	SearchOracleDatabaseAgreements(search string, filters apimodel.SearchOracleDatabaseAgreementsFilter) ([]apimodel.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface)
 	// AddAssociatedHostToOracleDatabaseAgreement add a new host to the list of associated hosts of the agreement
 	AddAssociatedHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
 	// RemoveAssociatedHostToOracleDatabaseAgreement remove the host from the list of associated hosts of the agreement
