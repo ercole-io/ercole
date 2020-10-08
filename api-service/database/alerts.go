@@ -26,10 +26,10 @@ import (
 )
 
 // SearchAlerts search alerts
-func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, severity string, status string, from time.Time, to time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
-	var out []map[string]interface{} = make([]map[string]interface{}, 0)
+func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy string, sortDesc bool,
+	page, pageSize int, location, environment, severity, status string, from, to time.Time,
+) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
 
-	//Find the matching alerts
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -56,6 +56,47 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 			mu.APSet(bson.M{
 				"hostname": "$otherInfo.hostname",
 			}),
+
+			mu.APOptionalStage(len(location) > 0 || len(environment) > 0,
+				mu.APLookupPipeline(
+					"hosts",
+					bson.M{"hn": "$otherInfo.hostname"},
+					"host",
+					mu.MAPipeline(
+						mu.APMatch(bson.M{
+							"$expr":    bson.M{"$eq": bson.A{"$hostname", "$$hn"}},
+							"archived": false,
+						}),
+						mu.APProject(bson.M{
+							"_id":         0,
+							"location":    1,
+							"environment": 1,
+						}),
+					),
+				),
+			),
+			mu.APOptionalStage(len(location) > 0 || len(environment) > 0,
+				bson.M{
+					"$unwind": bson.M{"path": "$host", "preserveNullAndEmptyArrays": true},
+				},
+			),
+			mu.APOptionalStage(len(location) > 0,
+				mu.APMatch(bson.M{
+					"$or": bson.A{
+						bson.M{"host.location": location},
+						bson.M{"host": bson.M{"$exists": false}},
+					},
+				}),
+			),
+			mu.APOptionalStage(len(environment) > 0,
+				mu.APMatch(bson.M{
+					"$or": bson.A{
+						bson.M{"host.environment": environment},
+						bson.M{"host": bson.M{"$exists": false}},
+					},
+				})),
+			mu.APUnset("host"),
+
 			mu.APOptionalStage(mode == "aggregated-code-severity", mu.MAPipeline(
 				mu.APGroup(bson.M{
 					"_id": bson.M{
@@ -81,6 +122,7 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 					"oldestAlert":   true,
 				}),
 			)),
+
 			mu.APOptionalStage(mode == "aggregated-category-severity", mu.MAPipeline(
 				mu.APGroup(bson.M{
 					"_id": bson.M{
@@ -104,6 +146,7 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 					"oldestAlert":   true,
 				}),
 			)),
+
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),
 		),
@@ -112,14 +155,18 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	//Decode the documents
+	var out []map[string]interface{} = make([]map[string]interface{}, 0)
+
 	for cur.Next(context.TODO()) {
 		var item map[string]interface{}
+
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 		}
+
 		out = append(out, item)
 	}
+
 	return out, nil
 }
 
