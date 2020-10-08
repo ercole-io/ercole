@@ -37,6 +37,8 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 	var sortDesc bool
 	var pageNumber int
 	var pageSize int
+	var location string
+	var environment string
 	var severity string
 	var status string
 	var from time.Time
@@ -71,6 +73,10 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	location = r.URL.Query().Get("location")
+
+	environment = r.URL.Query().Get("environment")
+
 	severity = r.URL.Query().Get("severity")
 	if severity != "" && severity != model.AlertSeverityWarning && severity != model.AlertSeverityCritical && severity != model.AlertSeverityInfo {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid severity"), "Invalid  severity"))
@@ -103,19 +109,19 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 
-		ctrl.searchAlertsXLSX(w, r, search, sortBy, sortDesc, pageNumber, pageSize, severity, status, from, to)
+		ctrl.searchAlertsXLSX(w, r, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
 
 	default:
-		ctrl.searchAlertsJSON(w, r, mode, search, sortBy, sortDesc, pageNumber, pageSize, severity, status, from, to)
+		ctrl.searchAlertsJSON(w, r, mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
 	}
 }
 
 // searchAlertsJSON search alerts using the filters in the request returning it in JSON format
 func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Request,
 	mode string, search string, sortBy string, sortDesc bool, pageNumber int, pageSize int,
-	severity string, status string, from time.Time, to time.Time) {
+	location, environment, severity string, status string, from time.Time, to time.Time) {
 
-	response, err := ctrl.Service.SearchAlerts(mode, search, sortBy, sortDesc, pageNumber, pageSize, severity, status, from, to)
+	response, err := ctrl.Service.SearchAlerts(mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -132,9 +138,9 @@ func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Reque
 // searchAlertsXLSX search alerts using the filters in the request returning it in XLSX format
 func (ctrl *APIController) searchAlertsXLSX(w http.ResponseWriter, r *http.Request,
 	search string, sortBy string, sortDesc bool, pageNumber int, pageSize int,
-	severity string, status string, from time.Time, to time.Time) {
+	location, environment, severity string, status string, from time.Time, to time.Time) {
 
-	response, aerr := ctrl.Service.SearchAlerts("all", search, sortBy, sortDesc, pageNumber, pageSize, severity, status, from, to)
+	response, aerr := ctrl.Service.SearchAlerts("all", search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
