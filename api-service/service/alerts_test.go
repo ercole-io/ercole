@@ -54,7 +54,7 @@ func TestSearchAlerts_Success(t *testing.T) {
 	db.EXPECT().SearchAlerts(
 		"aggregated-code-severity",
 		[]string{"foo", "bar", "foobarx"}, "AlertCode", true,
-		1, 1, model.AlertSeverityCritical, model.AlertStatusNew,
+		1, 1, "", "", model.AlertSeverityCritical, model.AlertStatusNew,
 		utils.P("2019-11-05T14:02:03Z"), utils.P("2020-04-07T14:02:03Z"),
 	).Return(
 		expectedRes,
@@ -64,7 +64,7 @@ func TestSearchAlerts_Success(t *testing.T) {
 	res, err := as.SearchAlerts(
 		"aggregated-code-severity",
 		"foo bar foobarx", "AlertCode", true,
-		1, 1, model.AlertSeverityCritical, model.AlertStatusNew,
+		1, 1, "", "", model.AlertSeverityCritical, model.AlertStatusNew,
 		utils.P("2019-11-05T14:02:03Z"), utils.P("2020-04-07T14:02:03Z"),
 	)
 
@@ -83,7 +83,7 @@ func TestSearchAlerts_Fail(t *testing.T) {
 	db.EXPECT().SearchAlerts(
 		"aggregated-code-severity",
 		[]string{"foo", "bar", "foobarx"}, "AlertCode", true,
-		1, 1, model.AlertSeverityCritical, model.AlertStatusNew,
+		1, 1, "", "", model.AlertSeverityCritical, model.AlertStatusNew,
 		utils.P("2019-11-05T14:02:03Z"), utils.P("2019-12-05T14:02:03Z"),
 	).Return(
 		nil,
@@ -93,7 +93,7 @@ func TestSearchAlerts_Fail(t *testing.T) {
 	res, err := as.SearchAlerts(
 		"aggregated-code-severity",
 		"foo bar foobarx", "AlertCode", true,
-		1, 1, model.AlertSeverityCritical, model.AlertStatusNew,
+		1, 1, "", "", model.AlertSeverityCritical, model.AlertStatusNew,
 		utils.P("2019-11-05T14:02:03Z"), utils.P("2019-12-05T14:02:03Z"),
 	)
 
