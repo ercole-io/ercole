@@ -92,7 +92,7 @@ func (db *MongodbSuite) RunTestQuery(testName string, query bson.A, check func(o
 	})
 }
 
-// InsertAlert inser the alert in the database
+// InsertAlert insert the alert in the database
 func (db *MongodbSuite) InsertAlert(alert model.Alert) {
 	_, err := db.db.Client.Database(db.db.Config.Mongodb.DBName).Collection("alerts").InsertOne(context.TODO(), alert)
 	db.Require().NoError(err)

@@ -506,9 +506,9 @@ func (md *MongoDatabase) ArchiveHost(hostname string) utils.AdvancedErrorInterfa
 		"archived": true,
 	})); err != nil {
 		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
-	} else {
-		return nil
 	}
+
+	return nil
 }
 
 // ExistNotInClusterHost return true if the host specified by hostname exist and it is not in cluster, otherwise false
