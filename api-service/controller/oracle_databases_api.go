@@ -579,7 +579,6 @@ func (ctrl *APIController) SearchOracleDatabaseConsumedLicenses(w http.ResponseW
 
 	var err utils.AdvancedErrorInterface
 
-	//parse the query params
 	sortBy = r.URL.Query().Get("sort-by")
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
@@ -600,7 +599,6 @@ func (ctrl *APIController) SearchOracleDatabaseConsumedLicenses(w http.ResponseW
 		return
 	}
 
-	//get the data
 	licenses, err := ctrl.Service.SearchOracleDatabaseConsumedLicenses(sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -608,10 +606,8 @@ func (ctrl *APIController) SearchOracleDatabaseConsumedLicenses(w http.ResponseW
 	}
 
 	if pageNumber == -1 || pageSize == -1 {
-		//Write the data
 		utils.WriteJSONResponse(w, http.StatusOK, licenses)
 	} else {
-		//Write the data
 		utils.WriteJSONResponse(w, http.StatusOK, licenses[0])
 	}
 }
