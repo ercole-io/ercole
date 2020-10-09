@@ -3112,6 +3112,112 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
+  /hosts/technologies/oracle/databases/consumed-licenses:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: SearchOracleDatabaseConsumedLicenses
+      summary: Get consumed licenses
+      description: Get the licenses consumed by the hosts
+      parameters:
+        - $ref: '#/components/parameters/sort-by'
+        - $ref: '#/components/parameters/sort-desc'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: array
+                    items:
+                      type: object
+                      properties:
+                        dbName:
+                          type: string
+                        hostname:
+                          type: string
+                        licenseName:
+                          type: string
+                        usedLicenses:
+                          type: integer
+                  - type: object
+                    properties:
+                      content:
+                        type: array
+                        items: {}
+                      metadata:
+                        type: object
+                        properties:
+                          empty:
+                            type: boolean
+                          first:
+                            type: boolean
+                          last:
+                            type: boolean
+                          number:
+                            type: integer
+                          size:
+                            type: integer
+                          totalElements:
+                            type: integer
+                          totalPage:
+                            type: integer
+              examples:
+                Without pagination:
+                  value:
+                    - dbName: ERCSOL19
+                      hostname: ercsoldbx
+                      licenseName: Oracle ENT
+                      usedLicenses: 2
+                    - dbName: ERCSOL19
+                      hostname: ercsoldbx
+                      licenseName: Tuning Pack
+                      usedLicenses: 8
+                With pagination:
+                  value:
+                    content:
+                      - dbName: allstate-9a6a2a820a3f61aeb345a834abf40fba
+                        hostname: publicitate-36d06ca83eafa454423d2097f4965517
+                        licenseName: Oracle ENT
+                        usedLicenses: 4
+                      - dbName: allstate-9a6a2a820a3f61aeb345a834abf40fba
+                        hostname: publicitate-36d06ca83eafa454423d2097f4965517
+                        licenseName: Diagnostics Pack
+                        usedLicenses: 4
+                      - dbName: 4wcqjn-ecf040bdfab7695ab332aef7401f185c
+                        hostname: publicitate-36d06ca83eafa454423d2097f4965517
+                        licenseName: Oracle ENT
+                        usedLicenses: 4
+                      - dbName: 4wcqjn-ecf040bdfab7695ab332aef7401f185c
+                        hostname: publicitate-36d06ca83eafa454423d2097f4965517
+                        licenseName: Diagnostics Pack
+                        usedLicenses: 4
+                      - dbName: ERCOLE
+                        hostname: test-db
+                        licenseName: Oracle ENT
+                        usedLicenses: 0.5
+                    metadata:
+                      empty: false
+                      first: false
+                      last: false
+                      number: 2
+                      size: 5
+                      totalElements: 20
+                      totalPages: 4
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
   /hosts/technologies/oracle/exadata/total-memory-size:
     get:
       tags:
@@ -3984,7 +4090,7 @@ paths:
                 csi:
                   type: string
                 partID:
-                    type: string
+                  type: string
                 referenceNumber:
                   type: string
                 unlimited:
