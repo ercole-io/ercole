@@ -22,8 +22,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ercole-io/ercole/api-service/apimodel"
 	"github.com/ercole-io/ercole/api-service/database"
+	"github.com/ercole-io/ercole/api-service/dto"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -52,7 +52,7 @@ func (as *APIService) GetOracleDatabaseAgreementPartsList() ([]model.OracleDatab
 }
 
 // AddOracleDatabaseAgreements return the list of Oracle/Database agreement parts
-func (as *APIService) AddOracleDatabaseAgreements(req apimodel.OracleDatabaseAgreementsAddRequest) (interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) AddOracleDatabaseAgreements(req dto.OracleDatabaseAgreementsAddRequest) (interface{}, utils.AdvancedErrorInterface) {
 
 	var parts []*model.OracleDatabaseAgreementPart
 	var err utils.AdvancedErrorInterface
@@ -169,7 +169,7 @@ func (as *APIService) UpdateOracleDatabaseAgreement(agreement model.OracleDataba
 }
 
 // SearchOracleDatabaseAgreements search Oracle/Database agreements
-func (as *APIService) SearchOracleDatabaseAgreements(search string, filters apimodel.SearchOracleDatabaseAgreementsFilter) ([]apimodel.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface) {
+func (as *APIService) SearchOracleDatabaseAgreements(search string, filters dto.SearchOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface) {
 	agrs, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
 		return nil, err
@@ -182,7 +182,7 @@ func (as *APIService) SearchOracleDatabaseAgreements(search string, filters apim
 
 	as.AssignOracleDatabaseAgreementsToHosts(agrs, hosts)
 
-	filteredAgrs := make([]apimodel.OracleDatabaseAgreementFE, 0)
+	filteredAgrs := make([]dto.OracleDatabaseAgreementFE, 0)
 	for _, agr := range agrs {
 
 		if checkOracleDatabaseAgreementMatchFilter(agr, filters) {
@@ -195,7 +195,7 @@ func (as *APIService) SearchOracleDatabaseAgreements(search string, filters apim
 }
 
 // checkOracleDatabaseAgreementMatchFilter check that agr match the filters
-func checkOracleDatabaseAgreementMatchFilter(agr apimodel.OracleDatabaseAgreementFE, filters apimodel.SearchOracleDatabaseAgreementsFilter) bool {
+func checkOracleDatabaseAgreementMatchFilter(agr dto.OracleDatabaseAgreementFE, filters dto.SearchOracleDatabaseAgreementsFilter) bool {
 	return strings.Contains(strings.ToLower(agr.AgreementID), strings.ToLower(filters.AgreementID)) &&
 		strings.Contains(strings.ToLower(agr.PartID), strings.ToLower(filters.PartID)) &&
 		strings.Contains(strings.ToLower(agr.ItemDescription), strings.ToLower(filters.ItemDescription)) &&
@@ -214,8 +214,8 @@ func checkOracleDatabaseAgreementMatchFilter(agr apimodel.OracleDatabaseAgreemen
 
 // AssignOracleDatabaseAgreementsToHosts assign in-place agreements to every hosts
 func (as *APIService) AssignOracleDatabaseAgreementsToHosts(
-	agrs []apimodel.OracleDatabaseAgreementFE,
-	hosts []apimodel.HostUsingOracleDatabaseLicenses) {
+	agrs []dto.OracleDatabaseAgreementFE,
+	hosts []dto.HostUsingOracleDatabaseLicenses) {
 
 	sortOracleDatabaseAgreements(agrs)
 	sortHostsUsingLicenses(hosts)
@@ -247,9 +247,9 @@ func (as *APIService) AssignOracleDatabaseAgreementsToHosts(
 	calculateTotalCoveredLicensesAndAvailable(agrs, hostsMap, partsMap, allLicensesCoverStatus)
 }
 
-// sortOracleDatabaseAgreements sort the list of apimodel.OracleDatabaseAgreementsFE
+// sortOracleDatabaseAgreements sort the list of dto.OracleDatabaseAgreementsFE
 // by CatchAll (falses first), Unlimited (falses first), decreasing UsersCount, decreasing LicensesCount
-func sortOracleDatabaseAgreements(obj []apimodel.OracleDatabaseAgreementFE) {
+func sortOracleDatabaseAgreements(obj []dto.OracleDatabaseAgreementFE) {
 	sort.Slice(obj, func(i, j int) bool {
 
 		if obj[i].CatchAll != obj[j].CatchAll {
@@ -269,7 +269,7 @@ func sortOracleDatabaseAgreements(obj []apimodel.OracleDatabaseAgreementFE) {
 
 // sortHostsUsingLicenses sort the list of hosts by decreasing license count,
 // alphabetical name, alphabetical license name
-func sortHostsUsingLicenses(obj []apimodel.HostUsingOracleDatabaseLicenses) {
+func sortHostsUsingLicenses(obj []dto.HostUsingOracleDatabaseLicenses) {
 	sort.Slice(obj, func(i, j int) bool {
 		if obj[i].LicenseCount != obj[j].LicenseCount {
 			return obj[i].LicenseCount > obj[j].LicenseCount
@@ -283,14 +283,14 @@ func sortHostsUsingLicenses(obj []apimodel.HostUsingOracleDatabaseLicenses) {
 	})
 }
 
-// buildHostUsingLicensesMap return a map of license name to map of object name to pointer to  apimodel.HostUsingOracleDatabaseLicenses for fast object lookup
+// buildHostUsingLicensesMap return a map of license name to map of object name to pointer to  dto.HostUsingOracleDatabaseLicenses for fast object lookup
 // Assume that doesn't exist a cluster and a host with the same name
-func buildHostUsingLicensesMap(hosts []apimodel.HostUsingOracleDatabaseLicenses) map[string]map[string]*apimodel.HostUsingOracleDatabaseLicenses {
-	res := make(map[string]map[string]*apimodel.HostUsingOracleDatabaseLicenses)
+func buildHostUsingLicensesMap(hosts []dto.HostUsingOracleDatabaseLicenses) map[string]map[string]*dto.HostUsingOracleDatabaseLicenses {
+	res := make(map[string]map[string]*dto.HostUsingOracleDatabaseLicenses)
 
 	for i, host := range hosts {
 		if _, ok := res[host.LicenseName]; !ok {
-			res[host.LicenseName] = make(map[string]*apimodel.HostUsingOracleDatabaseLicenses)
+			res[host.LicenseName] = make(map[string]*dto.HostUsingOracleDatabaseLicenses)
 		}
 		res[host.LicenseName][host.Name] = &hosts[i]
 	}
@@ -312,8 +312,8 @@ func buildAgreementPartMap(parts []model.OracleDatabaseAgreementPart) map[string
 // Assign licenses in each agreement to associated hosts
 func assignLicensesInAgreementsToAssociatedHost(
 	as *APIService,
-	agrs []apimodel.OracleDatabaseAgreementFE,
-	hostsMap map[string]map[string]*apimodel.HostUsingOracleDatabaseLicenses,
+	agrs []dto.OracleDatabaseAgreementFE,
+	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses,
 	partsMap map[string]*model.OracleDatabaseAgreementPart) {
 
 	for i := range agrs {
@@ -339,7 +339,7 @@ func assignLicensesInAgreementsToAssociatedHost(
 					continue
 				}
 
-				var hostUsingLicenses *apimodel.HostUsingOracleDatabaseLicenses
+				var hostUsingLicenses *dto.HostUsingOracleDatabaseLicenses
 				var ok bool
 				if hostUsingLicenses, ok = hostsMap[alias][hostInAgr.Hostname]; !ok {
 					// host doesn't use this license
@@ -393,8 +393,8 @@ func assignLicensesInAgreementsToAssociatedHost(
 
 // sortHostsInAgreementByLicenseCount sort the associated hosts by license count
 // considering that parts may have multiple aliases
-func sortHostsInAgreementByLicenseCount(agr *apimodel.OracleDatabaseAgreementFE,
-	hostsMap map[string]map[string]*apimodel.HostUsingOracleDatabaseLicenses,
+func sortHostsInAgreementByLicenseCount(agr *dto.OracleDatabaseAgreementFE,
+	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses,
 	partsMap map[string]*model.OracleDatabaseAgreementPart) {
 
 	sort.Slice(agr.Hosts, func(i, j int) bool {
@@ -420,8 +420,8 @@ func sortHostsInAgreementByLicenseCount(agr *apimodel.OracleDatabaseAgreementFE,
 // Distribute remaining licenses in catch-all agreement to the hosts
 func distributeLicensesInCatchAllAgrs(
 	as *APIService,
-	agrs []apimodel.OracleDatabaseAgreementFE,
-	hosts []apimodel.HostUsingOracleDatabaseLicenses,
+	agrs []dto.OracleDatabaseAgreementFE,
+	hosts []dto.HostUsingOracleDatabaseLicenses,
 	partsMap map[string]*model.OracleDatabaseAgreementPart) {
 
 	for i := range hosts {
@@ -503,7 +503,7 @@ type coverStatus struct {
 }
 
 // Calculate total number of covered/uncovered for each host
-func calculateCoverStatus(hosts []apimodel.HostUsingOracleDatabaseLicenses) map[string]coverStatus {
+func calculateCoverStatus(hosts []dto.HostUsingOracleDatabaseLicenses) map[string]coverStatus {
 	allLicensesCoverStatus := make(map[string]coverStatus)
 
 	for _, host := range hosts {
@@ -518,8 +518,8 @@ func calculateCoverStatus(hosts []apimodel.HostUsingOracleDatabaseLicenses) map[
 
 // Calculate TotalCoveredLicenses and available
 func calculateTotalCoveredLicensesAndAvailable(
-	agrs []apimodel.OracleDatabaseAgreementFE,
-	hostsMap map[string]map[string]*apimodel.HostUsingOracleDatabaseLicenses,
+	agrs []dto.OracleDatabaseAgreementFE,
+	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses,
 	partsMap map[string]*model.OracleDatabaseAgreementPart,
 	allLicensesCoverStatus map[string]coverStatus) {
 

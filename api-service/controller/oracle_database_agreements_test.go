@@ -22,7 +22,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ercole-io/ercole/api-service/apimodel"
+	"github.com/ercole-io/ercole/api-service/dto"
 	"github.com/ercole-io/ercole/config"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
@@ -104,7 +104,7 @@ func TestAddOracleDatabaseAgreements_Success(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	payload := apimodel.OracleDatabaseAgreementsAddRequest{
+	payload := dto.OracleDatabaseAgreementsAddRequest{
 		AgreementID: "foobar",
 		Count:       20,
 	}
@@ -212,7 +212,7 @@ func TestAddOracleDatabaseAgreements_InternalServerError(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	payload := apimodel.OracleDatabaseAgreementsAddRequest{
+	payload := dto.OracleDatabaseAgreementsAddRequest{
 		AgreementID: "foobar",
 		Count:       20,
 	}
@@ -242,14 +242,14 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []apimodel.OracleDatabaseAgreementFE{
+	expectedRes := []dto.OracleDatabaseAgreementFE{
 		{
 			ItemDescription: "foobar",
 		},
 	}
 
 	as.EXPECT().
-		SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilter{
+		SearchOracleDatabaseAgreements("", dto.SearchOracleDatabaseAgreementsFilter{
 			Unlimited:         "true",
 			CatchAll:          "NULL",
 			AvailableCountGTE: -1,
@@ -305,7 +305,7 @@ func TestSearchOracleDatabaseAgreements_FailedInternalServerError(t *testing.T) 
 	}
 
 	as.EXPECT().
-		SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilter{
+		SearchOracleDatabaseAgreements("", dto.SearchOracleDatabaseAgreementsFilter{
 			Unlimited:         "NULL",
 			CatchAll:          "NULL",
 			AvailableCountGTE: -1,
@@ -331,7 +331,7 @@ func TestGetSearchOracleDatabaseAgreementsFilters_SuccessEmpty(t *testing.T) {
 	r, _ := http.NewRequest("GET", "/", nil)
 	filters, err := ParseSearchOracleDatabaseAgreementsFilters(r)
 	require.NoError(t, err)
-	assert.Equal(t, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.Equal(t, dto.SearchOracleDatabaseAgreementsFilter{
 		CatchAll:          "NULL",
 		Unlimited:         "NULL",
 		AvailableCountGTE: -1,
@@ -348,7 +348,7 @@ func TestGetSearchOracleDatabaseAgreementsFilters_SuccessFull(t *testing.T) {
 	require.NoError(t, err)
 	filters, err := ParseSearchOracleDatabaseAgreementsFilters(r)
 	require.NoError(t, err)
-	assert.Equal(t, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.Equal(t, dto.SearchOracleDatabaseAgreementsFilter{
 		AgreementID:       "foo",
 		PartID:            "bar",
 		ItemDescription:   "boz",
