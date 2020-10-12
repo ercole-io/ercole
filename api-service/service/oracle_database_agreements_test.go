@@ -724,7 +724,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCount:      5,
 	}
 
-	assert.True(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.True(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -735,7 +735,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountLTE:     -1,
 	}))
 
-	assert.True(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.True(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		AgreementID:       "5051",
 		PartID:            "A9062",
 		ItemDescription:   "Partitioning",
@@ -751,7 +751,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     0,
 		UsersCountLTE:     10,
 	}))
-	assert.True(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.True(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: 7,
@@ -762,7 +762,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountLTE:     5,
 	}))
 
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		AgreementID:       "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -773,7 +773,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		PartID:            "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -784,7 +784,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		ItemDescription:   "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -795,7 +795,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		CSI:               "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -806,7 +806,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Metrics:           "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -817,7 +817,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		ReferenceNumber:   "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -828,7 +828,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "true",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -838,7 +838,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "false",
 		AvailableCountGTE: -1,
@@ -848,7 +848,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -858,7 +858,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -868,7 +868,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -878,7 +878,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     0,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -888,7 +888,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     10,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -898,7 +898,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: 8,
@@ -1799,12 +1799,12 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 		{Hostname: "test-db3"},
 	}
 
-	sortAssociatedHostsInOracleDatabaseAgreement(agr, licensingObjectsMap, partsMap)
+	sortHostsInAgreementByLicenseCount(&agr, licensingObjectsMap, partsMap)
 
 	assert.Equal(t, expected, agr.Hosts)
 }
 
-func TestBuildOracleDatabaseLicensingObjectsMap(t *testing.T) {
+func TestBuildHostUsingLicensesMap(t *testing.T) {
 	list := []apimodel.HostUsingOracleDatabaseLicenses{
 		{
 			LicenseName:  "Oracle ENT",
@@ -1852,10 +1852,10 @@ func TestBuildOracleDatabaseLicensingObjectsMap(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, expected, buildOracleDatabaseLicensingObjectsMap(list))
+	assert.Equal(t, expected, buildHostUsingLicensesMap(list))
 }
 
-func TestBuildOracleDatabaseAgreementPartMap(t *testing.T) {
+func TestBuildAgreementPartMap(t *testing.T) {
 	list := []model.OracleDatabaseAgreementPart{
 		{
 			ItemDescription: "asdasdas",
@@ -1876,7 +1876,7 @@ func TestBuildOracleDatabaseAgreementPartMap(t *testing.T) {
 		"A90620": &list[1],
 	}
 
-	assert.Equal(t, expected, buildOracleDatabaseAgreementPartMap(list))
+	assert.Equal(t, expected, buildAgreementPartMap(list))
 }
 
 func TestAddAssociatedHostToOracleDatabaseAgreement_Success(t *testing.T) {

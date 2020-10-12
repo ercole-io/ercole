@@ -74,7 +74,7 @@ func setLicensesCosts(as *APIService,
 	hosts []apimodel.HostUsingOracleDatabaseLicenses,
 	lics []apimodel.OracleDatabaseLicenseUsageInfo) {
 
-	partsMap := buildOracleDatabaseAgreementPartMap(as.OracleDatabaseAgreementParts)
+	partsMap := buildAgreementPartMap(as.OracleDatabaseAgreementParts)
 
 	licsMap := buildOracleDatabaseLicenseInfoMap(lics)
 
@@ -112,7 +112,9 @@ func buildOracleDatabaseLicenseInfoMap(lics []apimodel.OracleDatabaseLicenseUsag
 }
 
 // SearchOracleDatabaseConsumedLicenses return the list of consumed licenses
-func (as *APIService) SearchOracleDatabaseConsumedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) SearchOracleDatabaseConsumedLicenses(sortBy string, sortDesc bool, page int, pageSize int,
+	location string, environment string, olderThan time.Time,
+) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
