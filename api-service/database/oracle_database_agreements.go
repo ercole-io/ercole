@@ -19,7 +19,8 @@ import (
 	"context"
 
 	"github.com/amreo/mu"
-	"github.com/ercole-io/ercole/api-service/apimodel"
+
+	"github.com/ercole-io/ercole/api-service/dto"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"go.mongodb.org/mongo-driver/bson"
@@ -37,8 +38,8 @@ func (md *MongoDatabase) InsertOracleDatabaseAgreement(aggreement model.OracleDa
 }
 
 // ListOracleDatabaseAgreements lists the Oracle/Database agreements
-func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]apimodel.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface) {
-	var out []apimodel.OracleDatabaseAgreementFE = make([]apimodel.OracleDatabaseAgreementFE, 0)
+func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface) {
+	var out []dto.OracleDatabaseAgreementFE = make([]dto.OracleDatabaseAgreementFE, 0)
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("agreements_oracle_database").Aggregate(
 		context.TODO(),
@@ -66,7 +67,7 @@ func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]apimodel.OracleDataba
 }
 
 // ListHostUsingOracleDatabaseLicenses lists the hosts/clusters that need to be licensed by Oracle/Database agreements
-func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]apimodel.HostUsingOracleDatabaseLicenses, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingOracleDatabaseLicenses, utils.AdvancedErrorInterface) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
 		Aggregate(
 			context.TODO(),
@@ -152,7 +153,7 @@ func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]apimodel.HostU
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	var out []apimodel.HostUsingOracleDatabaseLicenses = make([]apimodel.HostUsingOracleDatabaseLicenses, 0)
+	var out []dto.HostUsingOracleDatabaseLicenses = make([]dto.HostUsingOracleDatabaseLicenses, 0)
 
 	if err := cur.All(context.TODO(), &out); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")

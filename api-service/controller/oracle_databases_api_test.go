@@ -21,7 +21,8 @@ import (
 	"testing"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
-	"github.com/ercole-io/ercole/api-service/apimodel"
+
+	"github.com/ercole-io/ercole/api-service/dto"
 	"github.com/ercole-io/ercole/config"
 	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
@@ -1865,7 +1866,7 @@ func TestSearchLicenses_JSONUnpaged(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []apimodel.OracleDatabaseLicenseUsageInfo{
+	expectedRes := []dto.OracleDatabaseLicenseUsageInfo{
 		{
 			ID: "foo",
 		},

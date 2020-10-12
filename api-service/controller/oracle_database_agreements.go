@@ -20,7 +20,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/ercole-io/ercole/api-service/apimodel"
+	"github.com/ercole-io/ercole/api-service/dto"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/gorilla/mux"
@@ -47,7 +47,7 @@ func (ctrl *APIController) AddOracleDatabaseAgreements(w http.ResponseWriter, r 
 	}
 
 	var aerr utils.AdvancedErrorInterface
-	var req apimodel.OracleDatabaseAgreementsAddRequest
+	var req dto.OracleDatabaseAgreementsAddRequest
 
 	raw, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -122,13 +122,13 @@ func (ctrl *APIController) SearchOracleDatabaseAgreements(w http.ResponseWriter,
 }
 
 // ParseSearchOracleDatabaseAgreementsFilters return the Oracle/Database agreement search filters in the request
-func ParseSearchOracleDatabaseAgreementsFilters(r *http.Request) (apimodel.SearchOracleDatabaseAgreementsFilter,
+func ParseSearchOracleDatabaseAgreementsFilters(r *http.Request) (dto.SearchOracleDatabaseAgreementsFilter,
 	utils.AdvancedErrorInterface) {
 	urlValues := r.URL.Query()
 
 	var aerr utils.AdvancedErrorInterface
 
-	filters := apimodel.SearchOracleDatabaseAgreementsFilter{}
+	filters := dto.SearchOracleDatabaseAgreementsFilter{}
 
 	filters.AgreementID = urlValues.Get("agreement-id")
 	filters.PartID = urlValues.Get("part-id")
@@ -141,7 +141,7 @@ func ParseSearchOracleDatabaseAgreementsFilters(r *http.Request) (apimodel.Searc
 	if filters.Unlimited == "" {
 		filters.Unlimited = "NULL"
 	} else if filters.Unlimited != "true" && filters.Unlimited != "false" && filters.Unlimited != "NULL" {
-		return apimodel.SearchOracleDatabaseAgreementsFilter{},
+		return dto.SearchOracleDatabaseAgreementsFilter{},
 			utils.NewAdvancedErrorPtr(errors.New("Invalid value for unlimited"), http.StatusText(http.StatusUnprocessableEntity))
 	}
 
@@ -149,32 +149,32 @@ func ParseSearchOracleDatabaseAgreementsFilters(r *http.Request) (apimodel.Searc
 	if filters.CatchAll == "" {
 		filters.CatchAll = "NULL"
 	} else if filters.CatchAll != "true" && filters.CatchAll != "false" && filters.CatchAll != "NULL" {
-		return apimodel.SearchOracleDatabaseAgreementsFilter{},
+		return dto.SearchOracleDatabaseAgreementsFilter{},
 			utils.NewAdvancedErrorPtr(errors.New("Invalid value for catch-all"), http.StatusText(http.StatusUnprocessableEntity))
 	}
 
 	if filters.LicensesCountLTE, aerr = utils.Str2int(urlValues.Get("licenses-count-lte"), -1); aerr != nil {
-		return apimodel.SearchOracleDatabaseAgreementsFilter{}, aerr
+		return dto.SearchOracleDatabaseAgreementsFilter{}, aerr
 	}
 
 	if filters.LicensesCountGTE, aerr = utils.Str2int(urlValues.Get("licenses-count-gte"), -1); aerr != nil {
-		return apimodel.SearchOracleDatabaseAgreementsFilter{}, aerr
+		return dto.SearchOracleDatabaseAgreementsFilter{}, aerr
 	}
 
 	if filters.UsersCountLTE, aerr = utils.Str2int(urlValues.Get("users-count-lte"), -1); aerr != nil {
-		return apimodel.SearchOracleDatabaseAgreementsFilter{}, aerr
+		return dto.SearchOracleDatabaseAgreementsFilter{}, aerr
 	}
 
 	if filters.UsersCountGTE, aerr = utils.Str2int(urlValues.Get("users-count-gte"), -1); aerr != nil {
-		return apimodel.SearchOracleDatabaseAgreementsFilter{}, aerr
+		return dto.SearchOracleDatabaseAgreementsFilter{}, aerr
 	}
 
 	if filters.AvailableCountLTE, aerr = utils.Str2int(urlValues.Get("available-count-lte"), -1); aerr != nil {
-		return apimodel.SearchOracleDatabaseAgreementsFilter{}, aerr
+		return dto.SearchOracleDatabaseAgreementsFilter{}, aerr
 	}
 
 	if filters.AvailableCountGTE, aerr = utils.Str2int(urlValues.Get("available-count-gte"), -1); aerr != nil {
-		return apimodel.SearchOracleDatabaseAgreementsFilter{}, aerr
+		return dto.SearchOracleDatabaseAgreementsFilter{}, aerr
 	}
 
 	return filters, nil
