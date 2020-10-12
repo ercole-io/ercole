@@ -19,8 +19,8 @@ package service
 import (
 	"time"
 
-	"github.com/ercole-io/ercole/api-service/apimodel"
 	"github.com/ercole-io/ercole/api-service/database"
+	"github.com/ercole-io/ercole/api-service/dto"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/sirupsen/logrus"
@@ -56,7 +56,7 @@ type APIServiceInterface interface {
 	// SearchOracleExadata search exadata
 	SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchLicenses search licenses
-	SearchLicenses(location string, environment string, olderThan time.Time) ([]apimodel.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface)
+	SearchLicenses(location string, environment string, olderThan time.Time) ([]dto.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface)
 	// SearchOracleDatabaseConsumedLicenses return the list of consumed licenses
 	SearchOracleDatabaseConsumedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 
@@ -134,14 +134,14 @@ type APIServiceInterface interface {
 	// GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
 	GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabaseAgreementPart, utils.AdvancedErrorInterface)
 	// AddOracleDatabaseAgreements add an Oracle Database Agreement
-	AddOracleDatabaseAgreements(req apimodel.OracleDatabaseAgreementsAddRequest) (interface{}, utils.AdvancedErrorInterface)
+	AddOracleDatabaseAgreements(req dto.OracleDatabaseAgreementsAddRequest) (interface{}, utils.AdvancedErrorInterface)
 	// UpdateOracleDatabaseAgreement update an Oracle Database Agreement
 	UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface
 	// DeleteOracleDatabaseAgreement remove an Oracle/Database agreement
 	DeleteOracleDatabaseAgreement(id primitive.ObjectID) utils.AdvancedErrorInterface
 
 	// SearchOracleDatabaseAgreements search Oracle/Database agreements
-	SearchOracleDatabaseAgreements(search string, filters apimodel.SearchOracleDatabaseAgreementsFilter) ([]apimodel.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface)
+	SearchOracleDatabaseAgreements(search string, filters dto.SearchOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface)
 	// AddAssociatedHostToOracleDatabaseAgreement add a new host to the list of associated hosts of the agreement
 	AddAssociatedHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
 	// RemoveAssociatedHostToOracleDatabaseAgreement remove the host from the list of associated hosts of the agreement

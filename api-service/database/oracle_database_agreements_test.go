@@ -19,7 +19,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/ercole-io/ercole/api-service/apimodel"
+	"github.com/ercole-io/ercole/api-service/dto"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/stretchr/testify/assert"
@@ -106,14 +106,14 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 	out, err := m.db.ListOracleDatabaseAgreements()
 	m.Require().NoError(err)
 
-	assert.Equal(m.T(), []apimodel.OracleDatabaseAgreementFE{
+	assert.Equal(m.T(), []dto.OracleDatabaseAgreementFE{
 		{
 			ID:          utils.Str2oid("5dcad8933b243f80e2ed8538"),
 			AgreementID: "abcde",
 			CSI:         "435435",
 			CatchAll:    true,
 			Count:       345,
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					Hostname:                  "foo",
 					CoveredLicensesCount:      0,
@@ -140,7 +140,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 			CSI:             "435435",
 			CatchAll:        true,
 			Count:           345,
-			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
+			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
 			ItemDescription: "fgfgd",
 			Metrics:         "Computer Perpetual",
 			PartID:          "678867",
@@ -156,7 +156,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 			CSI:             "435435",
 			CatchAll:        true,
 			Count:           345,
-			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
+			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
 			ItemDescription: "fgfgd",
 			Metrics:         "Named User Plus Perpetual",
 			PartID:          "678867",
@@ -179,7 +179,7 @@ func (m *MongodbSuite) TestListOracleDatabaseLicensingObjects() {
 	out, err := m.db.ListHostUsingOracleDatabaseLicenses()
 	m.Require().NoError(err)
 
-	assert.ElementsMatch(m.T(), []apimodel.HostUsingOracleDatabaseLicenses{
+	assert.ElementsMatch(m.T(), []dto.HostUsingOracleDatabaseLicenses{
 		{
 			LicenseName:   "Diagnostics Pack",
 			Name:          "Puzzait",
