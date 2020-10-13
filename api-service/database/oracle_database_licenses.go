@@ -80,8 +80,10 @@ func (md *MongoDatabase) SearchLicenses(location string, environment string, old
 	return out, nil
 }
 
-// ListLicenses list licenses
-func (md *MongoDatabase) ListLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+// SearchOracleDatabaseUsedLicenses search used licenses
+func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int,
+	location string, environment string, olderThan time.Time,
+) (*dto.OracleDatabaseUsedLicenseSearchResponse, utils.AdvancedErrorInterface) {
 	cursor, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -100,7 +102,7 @@ func (md *MongoDatabase) ListLicenses(sortBy string, sortDesc bool, page int, pa
 				},
 			),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
-			mu.APOptionalPagingStage(page, pageSize),
+			PagingMetadataStage(page, pageSize),
 		),
 	)
 
@@ -108,16 +110,13 @@ func (md *MongoDatabase) ListLicenses(sortBy string, sortDesc bool, page int, pa
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	var out []interface{} = make([]interface{}, 0)
+	var response dto.OracleDatabaseUsedLicenseSearchResponse
 
-	for cursor.Next(context.TODO()) {
-		var item map[string]interface{}
-		if cursor.Decode(&item) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
-		}
-		out = append(out, &item)
+	cursor.Next(context.TODO())
+	if err := cursor.Decode(&response); err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 	}
-	return out, nil
+	return &response, nil
 }
 
 // GetLicense get a certain license

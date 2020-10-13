@@ -3118,7 +3118,7 @@ paths:
         - api-service
         - fe-user
         - read
-      operationId: SearchOracleDatabaseConsumedLicenses
+      operationId: SearchOracleDatabaseUsedLicenses
       summary: Get consumed licenses
       description: Get the licenses consumed by the hosts
       parameters:
