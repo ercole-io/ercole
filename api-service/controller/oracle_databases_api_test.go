@@ -1936,7 +1936,7 @@ func TestSearchLicenses_JSONInternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestSearchOracleDatabaseConsumedLicenses_JSONPaged(t *testing.T) {
+func TestSearchOracleDatabaseUsedLicenses_JSONPaged(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -1978,11 +1978,11 @@ func TestSearchOracleDatabaseConsumedLicenses_JSONPaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchOracleDatabaseConsumedLicenses("Benefit", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		SearchOracleDatabaseUsedLicenses("Benefit", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(resFromService, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabaseConsumedLicenses)
+	handler := http.HandlerFunc(ac.SearchOracleDatabaseUsedLicenses)
 	req, err := http.NewRequest("GET", "/licenses?sort-by=Benefit&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
@@ -1992,7 +1992,7 @@ func TestSearchOracleDatabaseConsumedLicenses_JSONPaged(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 
-func TestSearchOracleDatabaseConsumedLicenses_JSONUnpaged(t *testing.T) {
+func TestSearchOracleDatabaseUsedLicenses_JSONUnpaged(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -2019,11 +2019,11 @@ func TestSearchOracleDatabaseConsumedLicenses_JSONUnpaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchOracleDatabaseConsumedLicenses("", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchOracleDatabaseUsedLicenses("", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabaseConsumedLicenses)
+	handler := http.HandlerFunc(ac.SearchOracleDatabaseUsedLicenses)
 	req, err := http.NewRequest("GET", "/licenses", nil)
 	require.NoError(t, err)
 
@@ -2033,7 +2033,7 @@ func TestSearchOracleDatabaseConsumedLicenses_JSONUnpaged(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 
-func TestSearchOracleDatabaseConsumedLicenses_JSONUnprocessableEntity1(t *testing.T) {
+func TestSearchOracleDatabaseUsedLicenses_JSONUnprocessableEntity1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -2045,7 +2045,7 @@ func TestSearchOracleDatabaseConsumedLicenses_JSONUnprocessableEntity1(t *testin
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabaseConsumedLicenses)
+	handler := http.HandlerFunc(ac.SearchOracleDatabaseUsedLicenses)
 	req, err := http.NewRequest("GET", "/licenses?sort-desc=sadsas", nil)
 	require.NoError(t, err)
 
@@ -2054,7 +2054,7 @@ func TestSearchOracleDatabaseConsumedLicenses_JSONUnprocessableEntity1(t *testin
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchOracleDatabaseConsumedLicenses_JSONUnprocessableEntity2(t *testing.T) {
+func TestSearchOracleDatabaseUsedLicenses_JSONUnprocessableEntity2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -2066,7 +2066,7 @@ func TestSearchOracleDatabaseConsumedLicenses_JSONUnprocessableEntity2(t *testin
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabaseConsumedLicenses)
+	handler := http.HandlerFunc(ac.SearchOracleDatabaseUsedLicenses)
 	req, err := http.NewRequest("GET", "/licenses?page=sadsas", nil)
 	require.NoError(t, err)
 
@@ -2075,7 +2075,7 @@ func TestSearchOracleDatabaseConsumedLicenses_JSONUnprocessableEntity2(t *testin
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchOracleDatabaseConsumedLicenses_JSONUnprocessableEntity3(t *testing.T) {
+func TestSearchOracleDatabaseUsedLicenses_JSONUnprocessableEntity3(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -2087,7 +2087,7 @@ func TestSearchOracleDatabaseConsumedLicenses_JSONUnprocessableEntity3(t *testin
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabaseConsumedLicenses)
+	handler := http.HandlerFunc(ac.SearchOracleDatabaseUsedLicenses)
 	req, err := http.NewRequest("GET", "/licenses?size=sadsas", nil)
 	require.NoError(t, err)
 
@@ -2096,7 +2096,7 @@ func TestSearchOracleDatabaseConsumedLicenses_JSONUnprocessableEntity3(t *testin
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchOracleDatabaseConsumedLicenses_JSONUnprocessableEntity4(t *testing.T) {
+func TestSearchOracleDatabaseUsedLicenses_JSONUnprocessableEntity4(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -2108,7 +2108,7 @@ func TestSearchOracleDatabaseConsumedLicenses_JSONUnprocessableEntity4(t *testin
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabaseConsumedLicenses)
+	handler := http.HandlerFunc(ac.SearchOracleDatabaseUsedLicenses)
 	req, err := http.NewRequest("GET", "/licenses?older-than=sadsas", nil)
 	require.NoError(t, err)
 
@@ -2117,7 +2117,7 @@ func TestSearchOracleDatabaseConsumedLicenses_JSONUnprocessableEntity4(t *testin
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchOracleDatabaseConsumedLicenses_JSONInternalServerError(t *testing.T) {
+func TestSearchOracleDatabaseUsedLicenses_JSONInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -2129,11 +2129,11 @@ func TestSearchOracleDatabaseConsumedLicenses_JSONInternalServerError(t *testing
 	}
 
 	as.EXPECT().
-		SearchOracleDatabaseConsumedLicenses("", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchOracleDatabaseUsedLicenses("", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabaseConsumedLicenses)
+	handler := http.HandlerFunc(ac.SearchOracleDatabaseUsedLicenses)
 	req, err := http.NewRequest("GET", "/licenses", nil)
 	require.NoError(t, err)
 
