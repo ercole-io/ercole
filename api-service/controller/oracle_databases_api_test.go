@@ -1947,90 +1947,58 @@ func TestSearchOracleDatabaseUsedLicenses_JSONPaged(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := map[string]interface{}{
-		"content": []interface{}{
-			map[string]interface{}{
-				"Compliance": false,
-				"Count":      0,
-				"Used":       5,
-				"_id":        "Oracle ENT",
+	resFromService := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseName:  "Oracle ENT",
+				DbName:       "erclin5dbx",
+				Hostname:     "pippo",
+				UsedLicenses: 3,
 			},
-			map[string]interface{}{
-				"Compliance": true,
-				"Count":      0,
-				"Used":       0,
-				"_id":        "Oracle STD",
+			{
+				LicenseName:  "Oracle STD",
+				DbName:       "erclin6dbx",
+				Hostname:     "pluto",
+				UsedLicenses: 42,
 			},
 		},
-		"Metadata": map[string]interface{}{
-			"Empty":         false,
-			"First":         true,
-			"Last":          true,
-			"Number":        0,
-			"Size":          20,
-			"TotalElements": 25,
-			"TotalPages":    1,
+		Metadata: dto.PagingMetadata{
+			Empty: false, First: true, Last: true, Number: 0, Size: 2, TotalElements: 2, TotalPages: 1,
 		},
 	}
 
-	resFromService := []interface{}{
-		expectedRes,
-	}
+	t.Run("JSON paged", func(t *testing.T) {
+		as.EXPECT().
+			SearchOracleDatabaseUsedLicenses("Benefit", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+			Return(&resFromService, nil)
 
-	as.EXPECT().
-		SearchOracleDatabaseUsedLicenses("Benefit", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(resFromService, nil)
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ac.SearchOracleDatabaseUsedLicenses)
+		req, err := http.NewRequest("GET", "/licenses?sort-by=Benefit&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+		require.NoError(t, err)
 
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabaseUsedLicenses)
-	req, err := http.NewRequest("GET", "/licenses?sort-by=Benefit&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
-	require.NoError(t, err)
+		handler.ServeHTTP(rr, req)
 
-	handler.ServeHTTP(rr, req)
+		require.Equal(t, http.StatusOK, rr.Code)
+		assert.JSONEq(t, utils.ToJSON(resFromService), rr.Body.String())
+	})
 
-	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
-}
+	t.Run("JSON unpaged", func(t *testing.T) {
 
-func TestSearchOracleDatabaseUsedLicenses_JSONUnpaged(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
+		as.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&resFromService, nil)
 
-	expectedRes := []interface{}{
-		map[string]interface{}{
-			"Compliance": false,
-			"Count":      0,
-			"Used":       5,
-			"_id":        "Oracle ENT",
-		},
-		map[string]interface{}{
-			"Compliance": true,
-			"Count":      0,
-			"Used":       0,
-			"_id":        "Oracle STD",
-		},
-	}
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ac.SearchOracleDatabaseUsedLicenses)
+		req, err := http.NewRequest("GET", "/licenses", nil)
+		require.NoError(t, err)
 
-	as.EXPECT().
-		SearchOracleDatabaseUsedLicenses("", false, -1, -1, "", "", utils.MAX_TIME).
-		Return(expectedRes, nil)
+		handler.ServeHTTP(rr, req)
 
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabaseUsedLicenses)
-	req, err := http.NewRequest("GET", "/licenses", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+		require.Equal(t, http.StatusOK, rr.Code)
+		assert.JSONEq(t, utils.ToJSON(resFromService.Content), rr.Body.String())
+	})
 }
 
 func TestSearchOracleDatabaseUsedLicenses_JSONUnprocessableEntity1(t *testing.T) {
