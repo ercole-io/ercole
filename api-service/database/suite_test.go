@@ -61,7 +61,7 @@ func (db *MongodbSuite) SetupSuite() {
 
 	//Migrations
 	cl := migration.ConnectToMongodb(db.log, db.db.Config.Mongodb)
-	migration.Migrate(db.log, cl.Database(db.db.Config.Mongodb.DBName), []string{})
+	migration.Migrate(db.log, cl.Database(db.db.Config.Mongodb.DBName))
 	cl.Disconnect(context.TODO())
 
 	db.db.ConnectToMongodb()
@@ -95,11 +95,5 @@ func (db *MongodbSuite) RunTestQuery(testName string, query bson.A, check func(o
 // InsertAlert insert the alert in the database
 func (db *MongodbSuite) InsertAlert(alert model.Alert) {
 	_, err := db.db.Client.Database(db.db.Config.Mongodb.DBName).Collection("alerts").InsertOne(context.TODO(), alert)
-	db.Require().NoError(err)
-}
-
-// InsertLicense insert the license in the database
-func (db *MongodbSuite) InsertLicense(lic model.LicenseCount) {
-	_, err := db.db.Client.Database(db.db.Config.Mongodb.DBName).Collection("licenses").InsertOne(context.TODO(), lic)
 	db.Require().NoError(err)
 }
