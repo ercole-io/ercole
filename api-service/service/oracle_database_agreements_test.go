@@ -910,7 +910,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 	}))
 }
 
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimitedCase(t *testing.T) {
+func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCase(t *testing.T) {
 	as := APIService{
 		Config: config.Configuration{},
 		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
@@ -988,7 +988,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 	assert.Equal(t, expectedAgreements, agreements)
 }
 
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcessorPerpetualCase(t *testing.T) {
+func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *testing.T) {
 	as := APIService{
 		Config: config.Configuration{},
 		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
@@ -1066,7 +1066,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 	assert.Equal(t, expectedAgreements, agreements)
 }
 
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUserPlusCase(t *testing.T) {
+func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testing.T) {
 	as := APIService{
 		Config: config.Configuration{},
 		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
@@ -1144,7 +1144,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 	assert.Equal(t, expectedAgreements, agreements)
 }
 
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedAgreement(t *testing.T) {
+func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 	as := APIService{
 		Config: config.Configuration{},
 		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
@@ -1239,7 +1239,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedAgreemen
 	assert.Equal(t, expectedAgreements, agreements)
 }
 
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *testing.T) {
+func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 	as := APIService{
 		Config: config.Configuration{},
 		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
@@ -1362,7 +1362,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *
 	assert.Equal(t, expectedAgreements, agreements)
 }
 
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimitedCaseNoAssociatedHost(t *testing.T) {
+func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCaseNoAssociatedHost(t *testing.T) {
 	as := APIService{
 		Config: config.Configuration{},
 		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
@@ -1427,7 +1427,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 	assert.Equal(t, expectedAgreements, agreements)
 }
 
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcessorPerpetualCaseNoAssociatedHost(t *testing.T) {
+func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAssociatedHost(t *testing.T) {
 	as := APIService{
 		Config: config.Configuration{},
 		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
@@ -1492,7 +1492,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 	assert.Equal(t, expectedAgreements, agreements)
 }
 
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUserPlusCaseNoAssociatedHost(t *testing.T) {
+func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociatedHost(t *testing.T) {
 	as := APIService{
 		Config: config.Configuration{},
 		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
@@ -1557,7 +1557,7 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 	assert.Equal(t, expectedAgreements, agreements)
 }
 
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_CompleCase1(t *testing.T) {
+func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 	as := APIService{
 		Config: config.Configuration{},
 		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
