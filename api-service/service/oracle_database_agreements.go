@@ -330,13 +330,13 @@ func assignLicensesInAgreementsToAssociatedHost(
 					hostInAgr.CoveredLicensesCount = hostUsingLicenses.LicenseCount
 					hostUsingLicenses.LicenseCount = 0
 
-				case agr.Metrics == "Processor Perpetual" || agr.Metrics == "Computer Perpetual":
+				case agr.Metrics == model.AgreementPartMetricProcessorPerpetual || agr.Metrics == "Computer Perpetual":
 					coverableLicenses := math.Min(agr.Count, hostUsingLicenses.LicenseCount)
 					hostUsingLicenses.LicenseCount -= coverableLicenses
 					hostInAgr.CoveredLicensesCount += coverableLicenses
 					agr.Count -= coverableLicenses
 
-				case agr.Metrics == "Named User Plus Perpetual":
+				case agr.Metrics == model.AgreementPartMetricNamedUserPlusPerpetual:
 					coverableLicenses := math.Floor(math.Min(agr.Count*25, hostUsingLicenses.LicenseCount) / 25)
 					hostUsingLicenses.LicenseCount -= coverableLicenses * 25
 					hostInAgr.CoveredLicensesCount += coverableLicenses * 25
@@ -445,7 +445,7 @@ func distributeLicensesInCatchAllAgrs(
 
 					obj.LicenseCount = 0
 				} else {
-					if agr.Metrics == "Processor Perpetual" || agr.Metrics == "Computer Perpetual" {
+					if agr.Metrics == model.AgreementPartMetricProcessorPerpetual || agr.Metrics == "Computer Perpetual" {
 						coverableLicenses := math.Min(agr.Count, obj.LicenseCount)
 						obj.LicenseCount -= coverableLicenses
 						agr.Count -= coverableLicenses
@@ -453,7 +453,7 @@ func distributeLicensesInCatchAllAgrs(
 						if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
 							as.Log.Debugf("Distributing (Processor Perpetual/Computer Perpetual) %f licenses to obj %s. aggCount=%f objCount=%f licenseName=%s\n", coverableLicenses, obj.Name, agr.Count, obj.LicenseCount, alias)
 						}
-					} else if agr.Metrics == "Named User Plus Perpetual" {
+					} else if agr.Metrics == model.AgreementPartMetricNamedUserPlusPerpetual {
 						coverableLicenses := math.Floor(math.Min(agr.Count*25, obj.LicenseCount) / 25)
 						obj.LicenseCount -= coverableLicenses * 25
 						agr.Count -= coverableLicenses

@@ -20,5 +20,14 @@ type OracleDatabaseAgreementPart struct {
 	PartID          string   `json:"partID" bson:"partID"`
 	ItemDescription string   `json:"itemDescription" bson:"itemDescription"`
 	Metrics         string   `json:"metrics" bson:"metrics"`
+	Cost            float64  `json:"cost" bson:"cost"`
 	Aliases         []string `json:"aliases" bson:"aliases"`
 }
+
+// OracleDatabaseAgreementPart known metrics
+const (
+	AgreementPartMetricProcessorPerpetual     = "Processor Perpetual"
+	AgreementPartMetricNamedUserPlusPerpetual = "Named User Plus Perpetual"
+	AgreementPartMetricStreamPerpetual        = "Stream Perpetual"
+	AgreementPartMetricComputerPerpetual      = "Computer Perpetual"
+)
