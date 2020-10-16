@@ -396,6 +396,68 @@ func TestAddOracleDatabaseAgreements_Fail4(t *testing.T) {
 	assert.Equal(t, aerrMock, err)
 }
 
+func TestUpdateOracleDatabaseAgreement(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+
+	part := model.OracleDatabaseAgreementPart{
+		PartID:          "A90620",
+		Aliases:         []string{"Partitioning"},
+		ItemDescription: "Oracle Partitioning",
+		Metrics:         model.AgreementPartMetricProcessorPerpetual,
+	}
+
+	as := APIService{
+		Database:                     db,
+		Config:                       config.Configuration{},
+		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{part},
+	}
+
+	agreement := model.OracleDatabaseAgreement{
+		ID:              utils.Str2oid("pippo"),
+		AgreementID:     "",
+		PartID:          "A90620",
+		ItemDescription: "",
+		Metrics:         "",
+		CSI:             "",
+		ReferenceNumber: "",
+		Unlimited:       false,
+		Count:           0,
+		CatchAll:        false,
+		Hosts:           []string{},
+	}
+
+	t.Run("Update successfully", func(t *testing.T) {
+		db.EXPECT().FindOracleDatabaseAgreement(agreement.ID).Return(model.OracleDatabaseAgreement{}, nil)
+
+		agreement.PartID = part.PartID
+		agreement.ItemDescription = part.ItemDescription
+		agreement.Metrics = part.Metrics
+		db.EXPECT().UpdateOracleDatabaseAgreement(agreement).Return(nil)
+
+		err := as.UpdateOracleDatabaseAgreement(agreement)
+		require.NoError(t, err)
+	})
+
+	t.Run("Fail update because not found", func(t *testing.T) {
+		db.EXPECT().FindOracleDatabaseAgreement(agreement.ID).
+			Return(model.OracleDatabaseAgreement{}, utils.AerrOracleDatabaseAgreementNotFound)
+
+		err := as.UpdateOracleDatabaseAgreement(agreement)
+		assert.EqualError(t, err, utils.AerrOracleDatabaseAgreementNotFound.Error())
+	})
+
+	t.Run("Fail update because not valid partID", func(t *testing.T) {
+		db.EXPECT().FindOracleDatabaseAgreement(agreement.ID).Return(model.OracleDatabaseAgreement{}, nil)
+
+		agreement.PartID = "This is a wrong PartID"
+		err := as.UpdateOracleDatabaseAgreement(agreement)
+		assert.EqualError(t, err, utils.AerrOracleDatabaseAgreementInvalidPartID.Error())
+	})
+}
+
 func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
