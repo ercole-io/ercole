@@ -1,0 +1,29 @@
+[
+  {
+    "partID": "A11111",
+    "itemDescription": "Database Enterprise Edition",
+    "metrics": "Named User Plus Perpetual",
+    "cost": 42,
+    "aliases": [
+      "Db ENT"
+    ]
+  },
+  {
+    "partID": "B22222",
+    "itemDescription": "Database Standard Edition",
+    "metrics": "Processor Perpetual",
+    "cost": 43,
+    "aliases": [
+      "Db STD"
+    ]
+  },
+  {
+    "partID": "C33333",
+    "itemDescription": "Tuning",
+    "metrics": "Stream Perpetual",
+    "cost": 44,
+    "aliases": [
+      "Tuning"
+    ]
+  }
+]
