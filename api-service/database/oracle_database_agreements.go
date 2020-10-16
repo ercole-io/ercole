@@ -46,8 +46,8 @@ func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgr
 		mu.MAPipeline(
 			mu.APSet(bson.M{
 				"availableCount": "$count",
-				"licensesCount":  mu.APOCond(mu.APOOr(mu.APOEqual("$metrics", "Processor Perpetual"), mu.APOEqual("$metrics", "Computer Perpetual")), "$count", 0),
-				"usersCount":     mu.APOCond(mu.APOEqual("$metrics", "Named User Plus Perpetual"), "$count", 0),
+				"licensesCount":  mu.APOCond(mu.APOOr(mu.APOEqual("$metrics", model.AgreementPartMetricProcessorPerpetual), mu.APOEqual("$metrics", "Computer Perpetual")), "$count", 0),
+				"usersCount":     mu.APOCond(mu.APOEqual("$metrics", model.AgreementPartMetricNamedUserPlusPerpetual), "$count", 0),
 				"hosts": mu.APOMap("$hosts", "hn", bson.M{
 					"hostname":                  "$$hn",
 					"coveredLicensesCount":      0,
