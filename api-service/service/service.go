@@ -190,5 +190,5 @@ type APIService struct {
 // Init initializes the service and database
 func (as *APIService) Init() {
 	as.LoadManagedTechnologiesList()
-	as.LoadOracleDatabaseAgreementPartsList()
+	as.LoadOracleDatabaseAgreementParts()
 }

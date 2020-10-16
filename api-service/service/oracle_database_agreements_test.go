@@ -31,53 +31,6 @@ import (
 
 //TODO add tests for UpdateOracleDatabaseAgreement
 
-func TestLoadOracleDatabaseAgreementPartsList_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		Config: config.Configuration{
-			ResourceFilePath: "../../resources",
-		},
-	}
-	as.LoadOracleDatabaseAgreementPartsList()
-
-	assert.Equal(t, "L10001", as.OracleDatabaseAgreementParts[0].PartID)
-	assert.Equal(t, "Oracle Database Enterprise Edition", as.OracleDatabaseAgreementParts[0].ItemDescription)
-	assert.Equal(t, "Named User Plus Perpetual", as.OracleDatabaseAgreementParts[0].Metrics)
-	assert.Equal(t, []string{"Oracle ENT"}, as.OracleDatabaseAgreementParts[0].Aliases)
-	assert.Equal(t, "L103405", as.OracleDatabaseAgreementParts[2].PartID)
-	assert.Equal(t, []string{"Oracle STD"}, as.OracleDatabaseAgreementParts[2].Aliases)
-
-	//Known list of metrics check!
-	for i, part := range as.OracleDatabaseAgreementParts {
-		assert.Contains(t,
-			[]string{"Processor Perpetual", "Named User Plus Perpetual", "Stream Perpetual", "Computer Perpetual"},
-			part.Metrics,
-			"There is an Oracle/Database agreement part with unknown metric #", i, part,
-		)
-	}
-}
-
-func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		Config:   config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
-			{},
-		},
-	}
-	res, err := as.GetOracleDatabaseAgreementPartsList()
-	require.NoError(t, err)
-	assert.Equal(t, []model.OracleDatabaseAgreementPart{
-		{},
-	}, res)
-}
-
 func TestAddOracleDatabaseAgreements_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()

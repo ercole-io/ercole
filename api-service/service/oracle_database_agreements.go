@@ -16,12 +16,7 @@
 package service
 
 import (
-	"encoding/json"
-	"errors"
-	"io/ioutil"
 	"math"
-	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 
@@ -31,36 +26,6 @@ import (
 	"github.com/ercole-io/ercole/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
-
-// LoadOracleDatabaseAgreementPartsList loads the list of Oracle/Database agreement parts and store it to as.OracleDatabaseAgreementParts.
-func (as *APIService) LoadOracleDatabaseAgreementPartsList() {
-	fileName := "oracle_database_agreement_parts_list.json"
-	path := filepath.Join(as.Config.ResourceFilePath, fileName)
-
-	bytes, err := ioutil.ReadFile(path)
-	if errors.Is(err, os.ErrNotExist) {
-		as.Log.Warnf("No %s file exists in resources (%s), no agreement parts set\n",
-			fileName, as.Config.ResourceFilePath)
-		as.OracleDatabaseAgreementParts = make([]model.OracleDatabaseAgreementPart, 0)
-
-		return
-	} else if err != nil {
-		as.Log.Errorf("Unable to read %s: %v\n", path, err)
-
-		return
-	}
-
-	err = json.Unmarshal(bytes, &as.OracleDatabaseAgreementParts)
-	if err != nil {
-		as.Log.Errorf("Unable to unmarshal %s: %v\n", path, err)
-		return
-	}
-}
-
-// GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
-func (as *APIService) GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabaseAgreementPart, utils.AdvancedErrorInterface) {
-	return as.OracleDatabaseAgreementParts, nil
-}
 
 // AddOracleDatabaseAgreements return the list of Oracle/Database agreement parts
 func (as *APIService) AddOracleDatabaseAgreements(req dto.OracleDatabaseAgreementsAddRequest) (interface{}, utils.AdvancedErrorInterface) {
@@ -166,9 +131,8 @@ func (as *APIService) UpdateOracleDatabaseAgreement(agreement model.OracleDataba
 		return err
 	}
 
-	var part *model.OracleDatabaseAgreementPart
-	var err utils.AdvancedErrorInterface
-	if part, err = isValidPartID(agreement.PartID, as.OracleDatabaseAgreementParts); err != nil {
+	part, err := isValidPartID(agreement.PartID, as.OracleDatabaseAgreementParts)
+	if err != nil {
 		return err
 	}
 
