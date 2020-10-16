@@ -16,7 +16,6 @@
 package service
 
 import (
-	"log"
 	"testing"
 
 	"github.com/ercole-io/ercole/config"
@@ -40,11 +39,10 @@ func TestLoadOracleDatabaseAgreementParts_Success(t *testing.T) {
 	}
 	as.LoadOracleDatabaseAgreementParts()
 
-	log.Printf("%#v", as.OracleDatabaseAgreementParts)
 	expected := []model.OracleDatabaseAgreementPart{
-		{PartID: "A11111", ItemDescription: "Database Enterprise Edition", Metrics: "Named User Plus Perpetual", Cost: 42, Aliases: []string{"Db ENT"}},
-		{PartID: "B22222", ItemDescription: "Database Standard Edition", Metrics: "Processor Perpetual", Cost: 43, Aliases: []string{"Db STD"}},
-		{PartID: "C33333", ItemDescription: "Tuning", Metrics: "Stream Perpetual", Cost: 44, Aliases: []string{"Tuning"}},
+		{PartID: "A11111", ItemDescription: "Database Enterprise Edition", Metrics: model.AgreementPartMetricNamedUserPlusPerpetual, Cost: 42, Aliases: []string{"Db ENT"}},
+		{PartID: "B22222", ItemDescription: "Database Standard Edition", Metrics: model.AgreementPartMetricProcessorPerpetual, Cost: 43, Aliases: []string{"Db STD"}},
+		{PartID: "C33333", ItemDescription: "Tuning", Metrics: model.AgreementPartMetricStreamPerpetual, Cost: 44, Aliases: []string{"Tuning"}},
 	}
 
 	assert.ElementsMatch(t, expected, as.OracleDatabaseAgreementParts)
