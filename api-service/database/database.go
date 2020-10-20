@@ -118,7 +118,7 @@ type MongoDatabaseInterface interface {
 	GetOracleExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 
 	// InsertOracleDatabaseAgreement insert an Oracle/Database agreement into the database
-	InsertOracleDatabaseAgreement(aggreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
+	InsertOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
 	// UpdateOracleDatabaseAgreement update an Oracle/Database agreement in the database
 	UpdateOracleDatabaseAgreement(newAgreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface
 	// RemoveOracleDatabaseAgreement remove an Oracle/Database agreement from the database
