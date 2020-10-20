@@ -28,34 +28,106 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// oracleDbAgreementsColl collection
+const oracleDbAgreementsColl = "agreements_oracle_database"
+
 // InsertOracleDatabaseAgreement insert an Oracle/Database agreement into the database
-func (md *MongoDatabase) InsertOracleDatabaseAgreement(aggreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, utils.AdvancedErrorInterface) {
-	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("agreements_oracle_database").InsertOne(context.TODO(), aggreement)
+func (md *MongoDatabase) InsertOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, utils.AdvancedErrorInterface) {
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsColl).
+		InsertOne(context.TODO(), agreement)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
+
 	return res, nil
+}
+
+// FindOracleDatabaseAgreement return the agreement specified by id
+func (md *MongoDatabase) FindOracleDatabaseAgreement(id primitive.ObjectID) (model.OracleDatabaseAgreement, utils.AdvancedErrorInterface) {
+	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsColl).
+		FindOne(context.TODO(), bson.M{
+			"_id": id,
+		})
+	if res.Err() == mongo.ErrNoDocuments {
+		return model.OracleDatabaseAgreement{}, utils.AerrOracleDatabaseAgreementNotFound
+	} else if res.Err() != nil {
+		return model.OracleDatabaseAgreement{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+	}
+
+	var out model.OracleDatabaseAgreement
+	if err := res.Decode(&out); err != nil {
+		return model.OracleDatabaseAgreement{}, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+	}
+	return out, nil
+}
+
+// UpdateOracleDatabaseAgreement update an Oracle/Database agreement in the database
+func (md *MongoDatabase) UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface {
+	result, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsColl).
+		ReplaceOne(context.TODO(), bson.M{
+			"_id": agreement.ID,
+		}, agreement)
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+	if result.MatchedCount != 1 {
+		return utils.AerrOracleDatabaseAgreementNotFound
+	}
+
+	return nil
+}
+
+// RemoveOracleDatabaseAgreement remove an Oracle/Database agreement from the database
+func (md *MongoDatabase) RemoveOracleDatabaseAgreement(id primitive.ObjectID) utils.AdvancedErrorInterface {
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsColl).
+		DeleteOne(context.TODO(), bson.M{
+			"_id": id,
+		})
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	if res.DeletedCount == 0 {
+		return utils.AerrOracleDatabaseAgreementNotFound
+	}
+	return nil
 }
 
 // ListOracleDatabaseAgreements lists the Oracle/Database agreements
 func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface) {
 	var out []dto.OracleDatabaseAgreementFE = make([]dto.OracleDatabaseAgreementFE, 0)
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("agreements_oracle_database").Aggregate(
-		context.TODO(),
-		mu.MAPipeline(
-			mu.APSet(bson.M{
-				"availableCount": "$count",
-				"licensesCount":  mu.APOCond(mu.APOOr(mu.APOEqual("$metrics", model.AgreementPartMetricProcessorPerpetual), mu.APOEqual("$metrics", "Computer Perpetual")), "$count", 0),
-				"usersCount":     mu.APOCond(mu.APOEqual("$metrics", model.AgreementPartMetricNamedUserPlusPerpetual), "$count", 0),
-				"hosts": mu.APOMap("$hosts", "hn", bson.M{
-					"hostname":                  "$$hn",
-					"coveredLicensesCount":      0,
-					"totalCoveredLicensesCount": 0,
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsColl).
+		Aggregate(
+			context.TODO(),
+			mu.MAPipeline(
+				mu.APUnwind("$parts"),
+				mu.APSet(bson.M{
+					"partID":          "$parts.partID",
+					"itemDescription": "$parts.itemDescription",
+					"metric":          "$parts.metric",
+
+					"unlimited": "$parts.unlimited",
+					"count":     "$parts.count",
+					"catchAll":  "$parts.catchAll",
+
+					"hosts": mu.APOMap("$parts.hosts", "hn", bson.M{
+						"hostname": "$$hn",
+					}),
+
+					"availableCount": "$parts.count",
+					//TODO And other licenses types?
+					"licensesCount": mu.APOCond(
+						mu.APOOr(
+							mu.APOEqual("$parts.metric", model.AgreementPartMetricProcessorPerpetual),
+							mu.APOEqual("$parts.metric", model.AgreementPartMetricComputerPerpetual)),
+						"$parts.count",
+						0),
+					"usersCount": mu.APOCond(
+						mu.APOEqual("$parts.metric", model.AgreementPartMetricNamedUserPlusPerpetual), "$parts.count", 0),
 				}),
-			}),
-		),
-	)
+			),
+		)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
@@ -160,51 +232,4 @@ func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingO
 	}
 
 	return out, nil
-}
-
-// FindOracleDatabaseAgreement return the agreement specified by id
-func (md *MongoDatabase) FindOracleDatabaseAgreement(id primitive.ObjectID) (model.OracleDatabaseAgreement, utils.AdvancedErrorInterface) {
-	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("agreements_oracle_database").FindOne(context.TODO(), bson.M{
-		"_id": id,
-	})
-	if res.Err() == mongo.ErrNoDocuments {
-		return model.OracleDatabaseAgreement{}, utils.AerrOracleDatabaseAgreementNotFound
-	} else if res.Err() != nil {
-		return model.OracleDatabaseAgreement{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
-	}
-
-	var out model.OracleDatabaseAgreement
-	if err := res.Decode(&out); err != nil {
-		return model.OracleDatabaseAgreement{}, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
-	}
-	return out, nil
-}
-
-// UpdateOracleDatabaseAgreement update an Oracle/Database agreement in the database
-func (md *MongoDatabase) UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface {
-	result, err := md.Client.Database(md.Config.Mongodb.DBName).
-		Collection("agreements_oracle_database").
-		ReplaceOne(context.TODO(), bson.M{
-			"_id": agreement.ID,
-		}, agreement)
-	if err != nil || result.MatchedCount != 1 {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
-	}
-
-	return nil
-}
-
-// RemoveOracleDatabaseAgreement remove an Oracle/Database agreement from the database
-func (md *MongoDatabase) RemoveOracleDatabaseAgreement(id primitive.ObjectID) utils.AdvancedErrorInterface {
-	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("agreements_oracle_database").DeleteOne(context.TODO(), bson.M{
-		"_id": id,
-	})
-	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
-	}
-
-	if res.DeletedCount == 0 {
-		return utils.AerrOracleDatabaseAgreementNotFound
-	}
-	return nil
 }

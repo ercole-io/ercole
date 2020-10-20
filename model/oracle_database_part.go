@@ -15,11 +15,11 @@
 
 package model
 
-// OracleDatabaseAgreementPart holds informations about a sigle OracleDatabaseAgreementPart
-type OracleDatabaseAgreementPart struct {
+// OracleDatabasePart holds informations about a sigle OracleDatabasePart
+type OracleDatabasePart struct {
 	PartID          string   `json:"partID" bson:"partID"`
 	ItemDescription string   `json:"itemDescription" bson:"itemDescription"`
-	Metrics         string   `json:"metrics" bson:"metrics"`
+	Metric          string   `json:"metric" bson:"metric"`
 	Cost            float64  `json:"cost" bson:"cost"`
 	Aliases         []string `json:"aliases" bson:"aliases"`
 }

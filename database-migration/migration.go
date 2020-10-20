@@ -319,15 +319,4 @@ func MigrateOracleDatabaseAgreementsSchema(log *logrus.Logger, client *mongo.Dat
 			log.Panicln(err)
 		}
 	}
-
-	//Set the collection validator
-	if err := client.RunCommand(context.TODO(), bson.D{
-		{"collMod", "agreements_oracle_database"},
-		{"validator", bson.D{
-			{"$jsonSchema", model.OracleDatabaseAgreementBsonValidatorRules},
-		}},
-		{"validationAction", "error"},
-	}).Err(); err != nil {
-		log.Panicln(err)
-	}
 }

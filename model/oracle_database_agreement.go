@@ -16,7 +16,6 @@
 package model
 
 import (
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -24,82 +23,16 @@ import (
 type OracleDatabaseAgreement struct {
 	ID              primitive.ObjectID `json:"id" bson:"_id"`
 	AgreementID     string             `json:"agreementID" bson:"agreementID"`
-	PartID          string             `json:"partID" bson:"partID"`
-	ItemDescription string             `json:"itemDescription" bson:"itemDescription"`
-	Metrics         string             `json:"metrics" bson:"metrics"`
 	CSI             string             `json:"csi" bson:"csi"`
 	ReferenceNumber string             `json:"referenceNumber" bson:"referenceNumber"`
-	Unlimited       bool               `json:"unlimited" bson:"unlimited"`
-	Count           int                `json:"count" bson:"count"`
-	CatchAll        bool               `json:"catchAll" bson:"catchAll"` //TODO Rename in IsBasket ?
-	Hosts           []string           `json:"hosts" bson:"hosts"`
+	Parts           []AssociatedPart   `json:"parts" bson:"parts"`
 }
 
-// OracleDatabaseAgreementBsonValidatorRules contains mongodb validation rules for OracleDatabaseAgreement
-var OracleDatabaseAgreementBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"agreementID",
-		"partID",
-		"itemDescription",
-		"metrics",
-		"csi",
-		"referenceNumber",
-		"unlimited",
-		"count",
-		"catchAll",
-		"hosts",
-	},
-	"properties": bson.M{
-		"agreementID": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 16,
-		},
-		"partID": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 16,
-		},
-		"itemDescription": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-		},
-		"metrics": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 32,
-		},
-		"csi": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 16,
-		},
-		"referenceNumber": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 16,
-		},
-		"unlimited": bson.M{
-			"bsonType": "bool",
-		},
-		"count": bson.M{
-			"bsonType": "int",
-			"minimum":  0,
-		},
-		"catchAll": bson.M{
-			"bsonType": "bool",
-		},
-		"hosts": bson.M{
-			"bsonType":    "array",
-			"uniqueItems": true,
-			"items": bson.M{
-				"bsonType":  "string",
-				"minLength": 1,
-				"maxLength": 253,
-				"pattern":   `^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-_]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-_]*[A-Za-z0-9])$`,
-			},
-		},
-	},
+// AssociatedPart describe a Part associated to an Agreement
+type AssociatedPart struct {
+	OracleDatabasePart `bson:",inline"`
+	Unlimited          bool     `json:"unlimited" bson:"unlimited"`
+	Count              int      `json:"count" bson:"count"`
+	CatchAll           bool     `json:"catchAll" bson:"catchAll"` //TODO Rename in IsBasket ?
+	Hosts              []string `json:"hosts" bson:"hosts"`
 }
