@@ -27,80 +27,158 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+var partSample = model.OracleDatabasePart{
+	PartID:          "678867",
+	ItemDescription: "Db STD",
+	Cost:            42,
+	Metric:          model.AgreementPartMetricProcessorPerpetual,
+	Aliases:         []string{},
+}
+
+var agreementSample = model.OracleDatabaseAgreement{
+	ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
+	AgreementID:     "abcde",
+	CSI:             "435435",
+	ReferenceNumber: "567768",
+	Parts: []model.AssociatedPart{
+		{
+			OracleDatabasePart: partSample,
+			Unlimited:          true,
+			Count:              345,
+			CatchAll:           true,
+			Hosts:              []string{"foo", "bar"},
+		},
+	},
+}
+
 func (m *MongodbSuite) TestInsertOracleDatabaseAgreement_Success() {
-	agr := model.OracleDatabaseAgreement{
-		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-		AgreementID:     "abcde",
-		CSI:             "435435",
-		CatchAll:        true,
-		Count:           345,
-		Hosts:           []string{"foo", "bar"},
-		ItemDescription: "fgfgd",
-		Metrics:         "dfdfgdfg",
-		PartID:          "678867",
-		ReferenceNumber: "567768",
-		Unlimited:       true,
-	}
-	_, err := m.db.InsertOracleDatabaseAgreement(agr)
+
+	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
 	require.NoError(m.T(), err)
-	defer m.db.Client.Database(m.dbname).Collection("agreements_oracle_database").DeleteMany(context.TODO(), bson.M{})
-	val := m.db.Client.Database(m.dbname).Collection("agreements_oracle_database").FindOne(context.TODO(), bson.M{
-		"_id": agr.ID,
+	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsColl).DeleteMany(context.TODO(), bson.M{})
+	val := m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsColl).FindOne(context.TODO(), bson.M{
+		"_id": agreementSample.ID,
 	})
 	require.NoError(m.T(), val.Err())
 
 	var out model.OracleDatabaseAgreement
 	val.Decode(&out)
 
-	assert.Equal(m.T(), agr, out)
+	assert.Equal(m.T(), agreementSample, out)
 }
 
-func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
-	defer m.db.Client.Database(m.dbname).Collection("agreements_oracle_database").DeleteMany(context.TODO(), bson.M{})
-	agg1 := model.OracleDatabaseAgreement{
+func (m *MongodbSuite) TestInsertOracleDatabaseAgreement_DuplicateError() {
+	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsColl).DeleteMany(context.TODO(), bson.M{})
+
+	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
+	require.NoError(m.T(), err)
+
+	_, err = m.db.InsertOracleDatabaseAgreement(agreementSample)
+	require.Error(m.T(), err, "Should not accept two agreements with same ID")
+}
+
+func (m *MongodbSuite) TestFindOracleDatabaseAgreement() {
+	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsColl).DeleteMany(context.TODO(), bson.M{})
+
+	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
+	require.NoError(m.T(), err)
+
+	m.T().Run("id_exist", func(t *testing.T) {
+		out, err := m.db.FindOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
+		require.NoError(t, err)
+		assert.Equal(t, agreementSample, out)
+	})
+
+	m.T().Run("id_not_exist", func(t *testing.T) {
+		_, err := m.db.FindOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8539"))
+		require.Equal(t, utils.AerrOracleDatabaseAgreementNotFound, err)
+	})
+}
+
+func (m *MongodbSuite) TestUpdateOracleDatabaseAgreement() {
+	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsColl).DeleteMany(context.TODO(), bson.M{})
+
+	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
+	require.NoError(m.T(), err)
+
+	m.T().Run("id_exist", func(t *testing.T) {
+		agreementSampleUpdated := model.OracleDatabaseAgreement{
+			ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
+			AgreementID:     "abcde",
+			CSI:             "000001",
+			ReferenceNumber: "000002",
+			Parts: []model.AssociatedPart{
+				{
+					OracleDatabasePart: partSample,
+					Unlimited:          true,
+					Count:              345,
+					CatchAll:           true,
+					Hosts:              []string{"foo", "bar"},
+				},
+			},
+		}
+
+		err := m.db.UpdateOracleDatabaseAgreement(agreementSampleUpdated)
+		require.NoError(t, err)
+
+		val := m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsColl).FindOne(context.TODO(), bson.M{
+			"_id": agreementSampleUpdated.ID,
+		})
+		require.NoError(m.T(), val.Err())
+
+		var out model.OracleDatabaseAgreement
+		val.Decode(&out)
+
+		assert.Equal(m.T(), agreementSampleUpdated, out)
+	})
+
+	m.T().Run("id_not_exist", func(t *testing.T) {
+		agreementSampleUpdated := model.OracleDatabaseAgreement{
+			ID: utils.Str2oid("doesn't exist"),
+		}
+		err := m.db.UpdateOracleDatabaseAgreement(agreementSampleUpdated)
+
+		require.Equal(t, utils.AerrOracleDatabaseAgreementNotFound, err)
+	})
+}
+
+func (m *MongodbSuite) TestRemoveOracleDatabaseAgreement() {
+	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsColl).DeleteMany(context.TODO(), bson.M{})
+
+	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
+	require.NoError(m.T(), err)
+
+	out, err := m.db.FindOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
+	require.NoError(m.T(), err)
+	assert.Equal(m.T(), agreementSample, out)
+
+	err = m.db.RemoveOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
+	require.NoError(m.T(), err)
+
+	_, err = m.db.FindOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
+	require.Equal(m.T(), utils.AerrOracleDatabaseAgreementNotFound, err)
+
+	err = m.db.RemoveOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
+	require.Equal(m.T(), utils.AerrOracleDatabaseAgreementNotFound, err)
+}
+
+func (m *MongodbSuite) TestListOracleDatabaseAgreements_OnePart() {
+	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsColl).DeleteMany(context.TODO(), bson.M{})
+	agreementSample := model.OracleDatabaseAgreement{
 		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
 		AgreementID:     "abcde",
 		CSI:             "435435",
-		CatchAll:        true,
-		Count:           345,
-		Hosts:           []string{"foo", "bar"},
-		ItemDescription: "fgfgd",
-		Metrics:         model.AgreementPartMetricProcessorPerpetual,
-		PartID:          "678867",
 		ReferenceNumber: "567768",
-		Unlimited:       true,
+		Parts: []model.AssociatedPart{
+			{
+				OracleDatabasePart: partSample,
+				CatchAll:           true,
+				Count:              345,
+				Hosts:              []string{"foo", "bar"},
+				Unlimited:          true,
+			}},
 	}
-	agg2 := model.OracleDatabaseAgreement{
-		ID:              utils.Str2oid("5dcad8933b243f80e2ed8539"),
-		AgreementID:     "abcde",
-		CSI:             "435435",
-		CatchAll:        true,
-		Count:           345,
-		Hosts:           []string{},
-		ItemDescription: "fgfgd",
-		Metrics:         "Computer Perpetual",
-		PartID:          "678867",
-		ReferenceNumber: "567768",
-		Unlimited:       true,
-	}
-	agg3 := model.OracleDatabaseAgreement{
-		ID:              utils.Str2oid("5dcad8933b243f80e2ed853A"),
-		AgreementID:     "abcde",
-		CSI:             "435435",
-		CatchAll:        true,
-		Count:           345,
-		Hosts:           []string{},
-		ItemDescription: "fgfgd",
-		Metrics:         model.AgreementPartMetricNamedUserPlusPerpetual,
-		PartID:          "678867",
-		ReferenceNumber: "567768",
-		Unlimited:       true,
-	}
-	_, err := m.db.InsertOracleDatabaseAgreement(agg1)
-	require.NoError(m.T(), err)
-	_, err = m.db.InsertOracleDatabaseAgreement(agg2)
-	require.NoError(m.T(), err)
-	_, err = m.db.InsertOracleDatabaseAgreement(agg3)
+	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
 	require.NoError(m.T(), err)
 
 	out, err := m.db.ListOracleDatabaseAgreements()
@@ -108,69 +186,155 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 
 	assert.Equal(m.T(), []dto.OracleDatabaseAgreementFE{
 		{
-			ID:          utils.Str2oid("5dcad8933b243f80e2ed8538"),
-			AgreementID: "abcde",
-			CSI:         "435435",
-			CatchAll:    true,
-			Count:       345,
+			ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
+			AgreementID:     "abcde",
+			CSI:             "435435",
+			ReferenceNumber: "567768",
+
+			PartID:          "678867",
+			ItemDescription: "Db STD",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+
+			Unlimited: true,
+			Count:     345,
+			CatchAll:  true,
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
-					Hostname:                  "foo",
-					CoveredLicensesCount:      0,
-					TotalCoveredLicensesCount: 0,
+					Hostname: "foo",
 				},
 				{
-					Hostname:                  "bar",
-					CoveredLicensesCount:      0,
-					TotalCoveredLicensesCount: 0,
+					Hostname: "bar",
 				},
 			},
-			ItemDescription: "fgfgd",
-			Metrics:         model.AgreementPartMetricProcessorPerpetual,
-			PartID:          "678867",
+
+			AvailableCount: 345,
+			LicensesCount:  345,
+			UsersCount:     0,
+		},
+	}, out)
+}
+
+func (m *MongodbSuite) TestListOracleDatabaseAgreements_MultipleParts() {
+	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsColl).DeleteMany(context.TODO(), bson.M{})
+	agreementSample := model.OracleDatabaseAgreement{
+		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
+		AgreementID:     "abcde",
+		CSI:             "435435",
+		ReferenceNumber: "567768",
+		Parts: []model.AssociatedPart{
+			{
+				OracleDatabasePart: partSample,
+				CatchAll:           true,
+				Count:              345,
+				Hosts:              []string{"foo", "bar"},
+				Unlimited:          true,
+			}},
+	}
+	agg2 := model.OracleDatabaseAgreement{
+		ID:              utils.Str2oid("5dcad8933b243f80e2ed8539"),
+		AgreementID:     "abcde",
+		CSI:             "435435",
+		ReferenceNumber: "567768",
+		Parts: []model.AssociatedPart{
+			{
+				OracleDatabasePart: partSample,
+				CatchAll:           true,
+				Count:              345,
+				Hosts:              []string{},
+				Unlimited:          true,
+			},
+			{
+				OracleDatabasePart: model.OracleDatabasePart{
+					PartID:          "partProva",
+					ItemDescription: "partDescr",
+					Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
+					Cost:            24,
+					Aliases:         []string{"Prova", "Aliases"},
+				},
+				CatchAll:  true,
+				Count:     345,
+				Hosts:     []string{},
+				Unlimited: true,
+			},
+		},
+	}
+	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
+	require.NoError(m.T(), err)
+	_, err = m.db.InsertOracleDatabaseAgreement(agg2)
+	require.NoError(m.T(), err)
+
+	out, err := m.db.ListOracleDatabaseAgreements()
+	m.Require().NoError(err)
+
+	assert.Equal(m.T(), []dto.OracleDatabaseAgreementFE{
+		{
+			ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
+			AgreementID:     "abcde",
+			CSI:             "435435",
 			ReferenceNumber: "567768",
-			Unlimited:       true,
-			AvailableCount:  345,
-			LicensesCount:   345,
-			UsersCount:      0,
+
+			PartID:          "678867",
+			ItemDescription: "Db STD",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+
+			Unlimited: true,
+			Count:     345,
+			CatchAll:  true,
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+				{
+					Hostname: "foo",
+				},
+				{
+					Hostname: "bar",
+				},
+			},
+
+			AvailableCount: 345,
+			LicensesCount:  345,
+			UsersCount:     0,
 		},
 		{
 			ID:              utils.Str2oid("5dcad8933b243f80e2ed8539"),
 			AgreementID:     "abcde",
 			CSI:             "435435",
-			CatchAll:        true,
-			Count:           345,
-			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
-			ItemDescription: "fgfgd",
-			Metrics:         "Computer Perpetual",
-			PartID:          "678867",
 			ReferenceNumber: "567768",
-			Unlimited:       true,
-			AvailableCount:  345,
-			LicensesCount:   345,
-			UsersCount:      0,
+
+			PartID:          "678867",
+			ItemDescription: "Db STD",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+
+			Unlimited: true,
+			Count:     345,
+			CatchAll:  true,
+			Hosts:     []dto.OracleDatabaseAgreementAssociatedHostFE{},
+
+			AvailableCount: 345,
+			LicensesCount:  345,
+			UsersCount:     0,
 		},
 		{
-			ID:              utils.Str2oid("5dcad8933b243f80e2ed853A"),
+			ID:              utils.Str2oid("5dcad8933b243f80e2ed8539"),
 			AgreementID:     "abcde",
 			CSI:             "435435",
-			CatchAll:        true,
-			Count:           345,
-			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
-			ItemDescription: "fgfgd",
-			Metrics:         model.AgreementPartMetricNamedUserPlusPerpetual,
-			PartID:          "678867",
 			ReferenceNumber: "567768",
-			Unlimited:       true,
-			AvailableCount:  345,
-			LicensesCount:   0,
-			UsersCount:      345,
+
+			PartID:          "partProva",
+			ItemDescription: "partDescr",
+			Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
+
+			Unlimited: true,
+			Count:     345,
+			CatchAll:  true,
+			Hosts:     []dto.OracleDatabaseAgreementAssociatedHostFE{},
+
+			AvailableCount: 345,
+			LicensesCount:  0,
+			UsersCount:     345,
 		},
 	}, out)
-
 }
 
-func (m *MongodbSuite) TestListOracleDatabaseLicensingObjects() {
+func (m *MongodbSuite) TestListHostUsingOracleDatabaseLicenses() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
@@ -216,68 +380,4 @@ func (m *MongodbSuite) TestListOracleDatabaseLicensingObjects() {
 			OriginalCount: 70,
 		},
 	}, out)
-}
-
-func (m *MongodbSuite) TestFindOracleDatabaseAgreement() {
-	defer m.db.Client.Database(m.dbname).Collection("agreements_oracle_database").DeleteMany(context.TODO(), bson.M{})
-	agg1 := model.OracleDatabaseAgreement{
-		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-		AgreementID:     "abcde",
-		CSI:             "435435",
-		CatchAll:        true,
-		Count:           345,
-		Hosts:           []string{"foo", "bar"},
-		ItemDescription: "fgfgd",
-		Metrics:         model.AgreementPartMetricProcessorPerpetual,
-		PartID:          "678867",
-		ReferenceNumber: "567768",
-		Unlimited:       true,
-	}
-
-	_, err := m.db.InsertOracleDatabaseAgreement(agg1)
-	require.NoError(m.T(), err)
-
-	m.T().Run("id_exist", func(t *testing.T) {
-		out, err := m.db.FindOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
-		require.NoError(t, err)
-		assert.Equal(t, agg1, out)
-	})
-
-	m.T().Run("id_not_exist", func(t *testing.T) {
-		_, err := m.db.FindOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8539"))
-		require.Equal(t, utils.AerrOracleDatabaseAgreementNotFound, err)
-	})
-}
-
-func (m *MongodbSuite) TestRemoveOracleDatabaseAgreement() {
-	defer m.db.Client.Database(m.dbname).Collection("agreements_oracle_database").DeleteMany(context.TODO(), bson.M{})
-	agg1 := model.OracleDatabaseAgreement{
-		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-		AgreementID:     "abcde",
-		CSI:             "435435",
-		CatchAll:        true,
-		Count:           345,
-		Hosts:           []string{"foo", "bar"},
-		ItemDescription: "fgfgd",
-		Metrics:         model.AgreementPartMetricProcessorPerpetual,
-		PartID:          "678867",
-		ReferenceNumber: "567768",
-		Unlimited:       true,
-	}
-
-	_, err := m.db.InsertOracleDatabaseAgreement(agg1)
-	require.NoError(m.T(), err)
-
-	out, err := m.db.FindOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
-	require.NoError(m.T(), err)
-	assert.Equal(m.T(), agg1, out)
-
-	err = m.db.RemoveOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
-	require.NoError(m.T(), err)
-
-	_, err = m.db.FindOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
-	require.Equal(m.T(), utils.AerrOracleDatabaseAgreementNotFound, err)
-
-	err = m.db.RemoveOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
-	require.Equal(m.T(), utils.AerrOracleDatabaseAgreementNotFound, err)
 }
