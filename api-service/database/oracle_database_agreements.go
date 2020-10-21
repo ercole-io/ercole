@@ -102,14 +102,16 @@ func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgr
 			context.TODO(),
 			mu.MAPipeline(
 				mu.APUnwind("$parts"),
+				mu.APUnset("_id"),
 				mu.APSet(bson.M{
 					"partID":          "$parts.partID",
 					"itemDescription": "$parts.itemDescription",
 					"metric":          "$parts.metric",
 
-					"unlimited": "$parts.unlimited",
-					"count":     "$parts.count",
-					"catchAll":  "$parts.catchAll",
+					"referenceNumber": "$parts.referenceNumber",
+					"unlimited":       "$parts.unlimited",
+					"count":           "$parts.count",
+					"catchAll":        "$parts.catchAll",
 
 					"hosts": mu.APOMap("$parts.hosts", "hn", bson.M{
 						"hostname": "$$hn",

@@ -28,21 +28,21 @@ import (
 )
 
 var partSample = model.OracleDatabasePart{
-	PartID:          "678867",
-	ItemDescription: "Db STD",
+	PartID:          "ID00001",
+	ItemDescription: "ItemDesc 1",
 	Cost:            42,
 	Metric:          model.AgreementPartMetricProcessorPerpetual,
 	Aliases:         []string{},
 }
 
 var agreementSample = model.OracleDatabaseAgreement{
-	ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-	AgreementID:     "abcde",
-	CSI:             "435435",
-	ReferenceNumber: "567768",
+	ID:          utils.Str2oid("5dcad8933b243f80e2ed8538"),
+	AgreementID: "abcde",
+	CSI:         "csi001",
 	Parts: []model.AssociatedPart{
 		{
 			OracleDatabasePart: partSample,
+			ReferenceNumber:    "R00001",
 			Unlimited:          true,
 			Count:              345,
 			CatchAll:           true,
@@ -103,13 +103,13 @@ func (m *MongodbSuite) TestUpdateOracleDatabaseAgreement() {
 
 	m.T().Run("id_exist", func(t *testing.T) {
 		agreementSampleUpdated := model.OracleDatabaseAgreement{
-			ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-			AgreementID:     "abcde",
-			CSI:             "000001",
-			ReferenceNumber: "000002",
+			ID:          utils.Str2oid("5dcad8933b243f80e2ed8538"),
+			AgreementID: "abcde",
+			CSI:         "000001",
 			Parts: []model.AssociatedPart{
 				{
 					OracleDatabasePart: partSample,
+					ReferenceNumber:    "000002",
 					Unlimited:          true,
 					Count:              345,
 					CatchAll:           true,
@@ -165,13 +165,13 @@ func (m *MongodbSuite) TestRemoveOracleDatabaseAgreement() {
 func (m *MongodbSuite) TestListOracleDatabaseAgreements_OnePart() {
 	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsColl).DeleteMany(context.TODO(), bson.M{})
 	agreementSample := model.OracleDatabaseAgreement{
-		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-		AgreementID:     "abcde",
-		CSI:             "435435",
-		ReferenceNumber: "567768",
+		ID:          utils.Str2oid("5dcad8933b243f80e2ed8538"),
+		AgreementID: "abcde",
+		CSI:         "csi001",
 		Parts: []model.AssociatedPart{
 			{
 				OracleDatabasePart: partSample,
+				ReferenceNumber:    "R00001",
 				CatchAll:           true,
 				Count:              345,
 				Hosts:              []string{"foo", "bar"},
@@ -186,18 +186,17 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_OnePart() {
 
 	assert.Equal(m.T(), []dto.OracleDatabaseAgreementFE{
 		{
-			ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-			AgreementID:     "abcde",
-			CSI:             "435435",
-			ReferenceNumber: "567768",
+			AgreementID: "abcde",
+			CSI:         "csi001",
 
-			PartID:          "678867",
-			ItemDescription: "Db STD",
+			PartID:          "ID00001",
+			ItemDescription: "ItemDesc 1",
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
 
-			Unlimited: true,
-			Count:     345,
-			CatchAll:  true,
+			ReferenceNumber: "R00001",
+			Unlimited:       true,
+			Count:           345,
+			CatchAll:        true,
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					Hostname: "foo",
@@ -216,51 +215,54 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_OnePart() {
 
 func (m *MongodbSuite) TestListOracleDatabaseAgreements_MultipleParts() {
 	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsColl).DeleteMany(context.TODO(), bson.M{})
+
 	agreementSample := model.OracleDatabaseAgreement{
-		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-		AgreementID:     "abcde",
-		CSI:             "435435",
-		ReferenceNumber: "567768",
+		ID:          utils.Str2oid("5dcad8933b243f80e2ed8538"),
+		AgreementID: "agr001",
+		CSI:         "csi001",
 		Parts: []model.AssociatedPart{
 			{
 				OracleDatabasePart: partSample,
+				ReferenceNumber:    "R00001",
 				CatchAll:           true,
 				Count:              345,
 				Hosts:              []string{"foo", "bar"},
 				Unlimited:          true,
 			}},
 	}
-	agg2 := model.OracleDatabaseAgreement{
-		ID:              utils.Str2oid("5dcad8933b243f80e2ed8539"),
-		AgreementID:     "abcde",
-		CSI:             "435435",
-		ReferenceNumber: "567768",
+	agreementSample2 := model.OracleDatabaseAgreement{
+		ID:          utils.Str2oid("5dcad8933b243f80e2ed8539"),
+		AgreementID: "agr002",
+		CSI:         "csi002",
 		Parts: []model.AssociatedPart{
 			{
 				OracleDatabasePart: partSample,
+				ReferenceNumber:    "R00002",
 				CatchAll:           true,
-				Count:              345,
-				Hosts:              []string{},
-				Unlimited:          true,
+				Count:              111,
+				Hosts:              []string{"pippo", "clarabella"},
+				Unlimited:          false,
 			},
 			{
 				OracleDatabasePart: model.OracleDatabasePart{
-					PartID:          "partProva",
-					ItemDescription: "partDescr",
+					PartID:          "partID2",
+					ItemDescription: "partDescr2",
 					Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
 					Cost:            24,
 					Aliases:         []string{"Prova", "Aliases"},
 				},
-				CatchAll:  true,
-				Count:     345,
-				Hosts:     []string{},
-				Unlimited: true,
+				ReferenceNumber: "R00003",
+				CatchAll:        false,
+				Count:           222,
+				Hosts:           []string{"topolino", "minni"},
+				Unlimited:       true,
 			},
 		},
 	}
+
 	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
 	require.NoError(m.T(), err)
-	_, err = m.db.InsertOracleDatabaseAgreement(agg2)
+	_, err = m.db.InsertOracleDatabaseAgreement(agreementSample2)
 	require.NoError(m.T(), err)
 
 	out, err := m.db.ListOracleDatabaseAgreements()
@@ -268,70 +270,88 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_MultipleParts() {
 
 	assert.Equal(m.T(), []dto.OracleDatabaseAgreementFE{
 		{
-			ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-			AgreementID:     "abcde",
-			CSI:             "435435",
-			ReferenceNumber: "567768",
-
-			PartID:          "678867",
-			ItemDescription: "Db STD",
-			Metric:          model.AgreementPartMetricProcessorPerpetual,
-
-			Unlimited: true,
-			Count:     345,
-			CatchAll:  true,
+			AgreementID:     "agr001",
+			CSI:             "csi001",
+			PartID:          "ID00001",
+			ItemDescription: "ItemDesc 1",
+			Metric:          "Processor Perpetual",
+			ReferenceNumber: "R00001",
+			Unlimited:       true,
+			Count:           345,
+			CatchAll:        true,
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
-					Hostname: "foo",
-				},
+					Hostname:                  "foo",
+					CoveredLicensesCount:      0,
+					TotalCoveredLicensesCount: 0,
+					ConsumedLicensesCount:     0},
 				{
-					Hostname: "bar",
+					Hostname:                  "bar",
+					CoveredLicensesCount:      0,
+					TotalCoveredLicensesCount: 0,
+					ConsumedLicensesCount:     0,
 				},
 			},
-
 			AvailableCount: 345,
 			LicensesCount:  345,
+			UsersCount:     0},
+		{
+			AgreementID:     "agr002",
+			CSI:             "csi002",
+			PartID:          "ID00001",
+			ItemDescription: "ItemDesc 1",
+			Metric:          "Processor Perpetual",
+			ReferenceNumber: "R00002",
+			Unlimited:       false,
+			Count:           111,
+			CatchAll:        true,
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+				{
+
+					Hostname:                  "pippo",
+					CoveredLicensesCount:      0,
+					TotalCoveredLicensesCount: 0,
+					ConsumedLicensesCount:     0,
+				},
+				{
+					Hostname:                  "clarabella",
+					CoveredLicensesCount:      0,
+					TotalCoveredLicensesCount: 0,
+					ConsumedLicensesCount:     0,
+				}},
+			AvailableCount: 111,
+			LicensesCount:  111,
 			UsersCount:     0,
 		},
 		{
-			ID:              utils.Str2oid("5dcad8933b243f80e2ed8539"),
-			AgreementID:     "abcde",
-			CSI:             "435435",
-			ReferenceNumber: "567768",
-
-			PartID:          "678867",
-			ItemDescription: "Db STD",
-			Metric:          model.AgreementPartMetricProcessorPerpetual,
-
-			Unlimited: true,
-			Count:     345,
-			CatchAll:  true,
-			Hosts:     []dto.OracleDatabaseAgreementAssociatedHostFE{},
-
-			AvailableCount: 345,
-			LicensesCount:  345,
-			UsersCount:     0,
-		},
-		{
-			ID:              utils.Str2oid("5dcad8933b243f80e2ed8539"),
-			AgreementID:     "abcde",
-			CSI:             "435435",
-			ReferenceNumber: "567768",
-
-			PartID:          "partProva",
-			ItemDescription: "partDescr",
-			Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
-
-			Unlimited: true,
-			Count:     345,
-			CatchAll:  true,
-			Hosts:     []dto.OracleDatabaseAgreementAssociatedHostFE{},
-
-			AvailableCount: 345,
+			AgreementID:     "agr002",
+			CSI:             "csi002",
+			PartID:          "partID2",
+			ItemDescription: "partDescr2",
+			Metric:          "Named User Plus Perpetual",
+			ReferenceNumber: "R00003",
+			Unlimited:       true,
+			Count:           222,
+			CatchAll:        false,
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+				{
+					Hostname:                  "topolino",
+					CoveredLicensesCount:      0,
+					TotalCoveredLicensesCount: 0,
+					ConsumedLicensesCount:     0,
+				},
+				{
+					Hostname:                  "minni",
+					CoveredLicensesCount:      0,
+					TotalCoveredLicensesCount: 0,
+					ConsumedLicensesCount:     0,
+				},
+			},
+			AvailableCount: 222,
 			LicensesCount:  0,
-			UsersCount:     345,
-		},
-	}, out)
+			UsersCount:     222}},
+
+		out)
 }
 
 func (m *MongodbSuite) TestListHostUsingOracleDatabaseLicenses() {
