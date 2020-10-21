@@ -21,16 +21,16 @@ import (
 
 // OracleDatabaseAgreement holds informations about a sigle OracleDatabaseAgreement
 type OracleDatabaseAgreement struct {
-	ID              primitive.ObjectID `json:"id" bson:"_id"`
-	AgreementID     string             `json:"agreementID" bson:"agreementID"`
-	CSI             string             `json:"csi" bson:"csi"`
-	ReferenceNumber string             `json:"referenceNumber" bson:"referenceNumber"`
-	Parts           []AssociatedPart   `json:"parts" bson:"parts"`
+	ID          primitive.ObjectID `json:"id" bson:"_id"`
+	AgreementID string             `json:"agreementID" bson:"agreementID"`
+	CSI         string             `json:"csi" bson:"csi"`
+	Parts       []AssociatedPart   `json:"parts" bson:"parts"`
 }
 
 // AssociatedPart describe a Part associated to an Agreement
 type AssociatedPart struct {
 	OracleDatabasePart `bson:",inline"`
+	ReferenceNumber    string   `json:"referenceNumber" bson:"referenceNumber"`
 	Unlimited          bool     `json:"unlimited" bson:"unlimited"`
 	Count              int      `json:"count" bson:"count"`
 	CatchAll           bool     `json:"catchAll" bson:"catchAll"` //TODO Rename in IsBasket ?
