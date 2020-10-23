@@ -309,14 +309,36 @@ func MigratePatchingFunctionsSchema(log *logrus.Logger, client *mongo.Database) 
 
 // MigrateOracleDatabaseAgreementsSchema create or update the agreements_oracle_database schema
 func MigrateOracleDatabaseAgreementsSchema(log *logrus.Logger, client *mongo.Database) {
-	//Create the collection
+	collection := "agreements_oracle_database"
+
 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
 		log.Panicln(err)
-	} else if !utils.Contains(cols, "agreements_oracle_database") {
+	} else if !utils.Contains(cols, collection) {
 		if err := client.RunCommand(context.TODO(), bson.D{
-			{"create", "agreements_oracle_database"},
+			{"create", collection},
 		}).Err(); err != nil {
 			log.Panicln(err)
 		}
+	}
+
+	if _, err := client.Collection(collection).
+		Indexes().
+		CreateMany(context.TODO(),
+			[]mongo.IndexModel{
+				{
+
+					Keys: bson.D{
+						{"agreementID", 1},
+					},
+					Options: options.Index().SetUnique(true),
+				},
+				{
+					Keys: bson.D{
+						{"parts._id", 1},
+					},
+					Options: options.Index().SetUnique(true),
+				}},
+		); err != nil {
+		log.Panicln(err)
 	}
 }
