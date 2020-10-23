@@ -61,6 +61,25 @@ func (md *MongoDatabase) GetOracleDatabaseAgreement(agreementID string) (*model.
 	return &out, nil
 }
 
+// GetOracleDatabaseAgreementByAssociatedPart return the agreement specified by an associated part id
+func (md *MongoDatabase) GetOracleDatabaseAgreementByAssociatedPart(associatedPartID primitive.ObjectID) (*model.OracleDatabaseAgreement, utils.AdvancedErrorInterface) {
+	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsColl).
+		FindOne(context.TODO(), bson.M{
+			"parts._id": associatedPartID,
+		})
+	if res.Err() == mongo.ErrNoDocuments {
+		return nil, utils.AerrOracleDatabaseAgreementNotFound
+	} else if res.Err() != nil {
+		return nil, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+	}
+
+	var out model.OracleDatabaseAgreement
+	if err := res.Decode(&out); err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+	}
+	return &out, nil
+}
+
 // UpdateOracleDatabaseAgreement update an Oracle/Database agreement in the database
 func (md *MongoDatabase) UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface {
 	result, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsColl).
