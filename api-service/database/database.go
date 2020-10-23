@@ -119,8 +119,12 @@ type MongoDatabaseInterface interface {
 
 	// InsertOracleDatabaseAgreement insert an Oracle/Database agreement into the database
 	InsertOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
+	// GetOracleDatabaseAgreement return the agreement specified by id
+	GetOracleDatabaseAgreement(agreementID string) (*model.OracleDatabaseAgreement, utils.AdvancedErrorInterface)
+	// GetOracleDatabaseAgreementByAssociatedPart return the agreement specified by an associated part id
+	GetOracleDatabaseAgreementByAssociatedPart(associatedPartID primitive.ObjectID) (*model.OracleDatabaseAgreement, utils.AdvancedErrorInterface)
 	// UpdateOracleDatabaseAgreement update an Oracle/Database agreement in the database
-	UpdateOracleDatabaseAgreement(newAgreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface
+	UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface
 	// RemoveOracleDatabaseAgreement remove an Oracle/Database agreement from the database
 	RemoveOracleDatabaseAgreement(id primitive.ObjectID) utils.AdvancedErrorInterface
 
@@ -128,8 +132,6 @@ type MongoDatabaseInterface interface {
 	ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface)
 	// ListHostUsingOracleDatabaseLicenses lists the hosts/clusters that need to be licensed by Oracle/Database agreements
 	ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingOracleDatabaseLicenses, utils.AdvancedErrorInterface)
-	// GetOracleDatabaseAgreement return the agreement specified by id
-	GetOracleDatabaseAgreement(id primitive.ObjectID) (model.OracleDatabaseAgreement, utils.AdvancedErrorInterface)
 
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license
 	SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface
