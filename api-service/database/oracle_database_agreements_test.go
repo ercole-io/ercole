@@ -41,6 +41,7 @@ var agreementSample = model.OracleDatabaseAgreement{
 	CSI:         "csi001",
 	Parts: []model.AssociatedPart{
 		{
+			ID:                 utils.Str2oid("5dcad8933b243f80e2ed8551"),
 			OracleDatabasePart: partSample,
 			ReferenceNumber:    "R00001",
 			Unlimited:          true,
@@ -91,6 +92,25 @@ func (m *MongodbSuite) TestGetOracleDatabaseAgreement() {
 
 	m.T().Run("id_not_exist", func(t *testing.T) {
 		out, err := m.db.GetOracleDatabaseAgreement("this id doesn't exists")
+		require.Nil(t, out)
+		require.Equal(t, utils.AerrOracleDatabaseAgreementNotFound, err)
+	})
+}
+
+func (m *MongodbSuite) TestGetOracleDatabaseAgreementByAssociatedPart() {
+	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsColl).DeleteMany(context.TODO(), bson.M{})
+
+	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
+	require.NoError(m.T(), err)
+
+	m.T().Run("id_exist", func(t *testing.T) {
+		out, err := m.db.GetOracleDatabaseAgreementByAssociatedPart(agreementSample.Parts[0].ID)
+		require.NoError(t, err)
+		assert.Equal(t, agreementSample, *out)
+	})
+
+	m.T().Run("id_not_exist", func(t *testing.T) {
+		out, err := m.db.GetOracleDatabaseAgreementByAssociatedPart(utils.Str2oid("5dcad8933b243f80e2ed0000"))
 		require.Nil(t, out)
 		require.Equal(t, utils.AerrOracleDatabaseAgreementNotFound, err)
 	})
@@ -223,6 +243,8 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_MultipleParts() {
 		CSI:         "csi001",
 		Parts: []model.AssociatedPart{
 			{
+
+				ID:                 utils.Str2oid("5dcad8933b243f80e2ed8543"),
 				OracleDatabasePart: partSample,
 				ReferenceNumber:    "R00001",
 				CatchAll:           true,
@@ -237,6 +259,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_MultipleParts() {
 		CSI:         "csi002",
 		Parts: []model.AssociatedPart{
 			{
+				ID:                 utils.Str2oid("5dcad8933b243f80e2ed8540"),
 				OracleDatabasePart: partSample,
 				ReferenceNumber:    "R00002",
 				CatchAll:           true,
@@ -245,6 +268,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_MultipleParts() {
 				Unlimited:          false,
 			},
 			{
+				ID: utils.Str2oid("5dcad8933b243f80e2ed8541"),
 				OracleDatabasePart: model.OracleDatabasePart{
 					PartID:          "partID2",
 					ItemDescription: "partDescr2",
