@@ -37,7 +37,7 @@ var partSample = model.OracleDatabasePart{
 
 var agreementSample = model.OracleDatabaseAgreement{
 	ID:          utils.Str2oid("5dcad8933b243f80e2ed8538"),
-	AgreementID: "abcde",
+	AgreementID: "AID001",
 	CSI:         "csi001",
 	Parts: []model.AssociatedPart{
 		{
@@ -77,20 +77,21 @@ func (m *MongodbSuite) TestInsertOracleDatabaseAgreement_DuplicateError() {
 	require.Error(m.T(), err, "Should not accept two agreements with same ID")
 }
 
-func (m *MongodbSuite) TestFindOracleDatabaseAgreement() {
+func (m *MongodbSuite) TestGetOracleDatabaseAgreement() {
 	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsColl).DeleteMany(context.TODO(), bson.M{})
 
 	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
 	require.NoError(m.T(), err)
 
 	m.T().Run("id_exist", func(t *testing.T) {
-		out, err := m.db.FindOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
+		out, err := m.db.GetOracleDatabaseAgreement(agreementSample.AgreementID)
 		require.NoError(t, err)
-		assert.Equal(t, agreementSample, out)
+		assert.Equal(t, agreementSample, *out)
 	})
 
 	m.T().Run("id_not_exist", func(t *testing.T) {
-		_, err := m.db.FindOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8539"))
+		out, err := m.db.GetOracleDatabaseAgreement("this id doesn't exists")
+		require.Nil(t, out)
 		require.Equal(t, utils.AerrOracleDatabaseAgreementNotFound, err)
 	})
 }
@@ -104,7 +105,7 @@ func (m *MongodbSuite) TestUpdateOracleDatabaseAgreement() {
 	m.T().Run("id_exist", func(t *testing.T) {
 		agreementSampleUpdated := model.OracleDatabaseAgreement{
 			ID:          utils.Str2oid("5dcad8933b243f80e2ed8538"),
-			AgreementID: "abcde",
+			AgreementID: "AID001",
 			CSI:         "000001",
 			Parts: []model.AssociatedPart{
 				{
@@ -148,14 +149,14 @@ func (m *MongodbSuite) TestRemoveOracleDatabaseAgreement() {
 	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
 	require.NoError(m.T(), err)
 
-	out, err := m.db.FindOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
+	out, err := m.db.GetOracleDatabaseAgreement(agreementSample.AgreementID)
 	require.NoError(m.T(), err)
-	assert.Equal(m.T(), agreementSample, out)
+	assert.Equal(m.T(), agreementSample, *out)
 
 	err = m.db.RemoveOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
 	require.NoError(m.T(), err)
 
-	_, err = m.db.FindOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
+	_, err = m.db.GetOracleDatabaseAgreement(agreementSample.AgreementID)
 	require.Equal(m.T(), utils.AerrOracleDatabaseAgreementNotFound, err)
 
 	err = m.db.RemoveOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
@@ -166,7 +167,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_OnePart() {
 	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsColl).DeleteMany(context.TODO(), bson.M{})
 	agreementSample := model.OracleDatabaseAgreement{
 		ID:          utils.Str2oid("5dcad8933b243f80e2ed8538"),
-		AgreementID: "abcde",
+		AgreementID: "AID001",
 		CSI:         "csi001",
 		Parts: []model.AssociatedPart{
 			{
@@ -186,7 +187,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_OnePart() {
 
 	assert.Equal(m.T(), []dto.OracleDatabaseAgreementFE{
 		{
-			AgreementID: "abcde",
+			AgreementID: "AID001",
 			CSI:         "csi001",
 
 			PartID:          "ID00001",

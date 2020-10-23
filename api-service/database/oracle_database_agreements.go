@@ -42,23 +42,23 @@ func (md *MongoDatabase) InsertOracleDatabaseAgreement(agreement model.OracleDat
 	return res, nil
 }
 
-// FindOracleDatabaseAgreement return the agreement specified by id
-func (md *MongoDatabase) FindOracleDatabaseAgreement(id primitive.ObjectID) (model.OracleDatabaseAgreement, utils.AdvancedErrorInterface) {
+// GetOracleDatabaseAgreement return the agreement specified by id
+func (md *MongoDatabase) GetOracleDatabaseAgreement(agreementID string) (*model.OracleDatabaseAgreement, utils.AdvancedErrorInterface) {
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsColl).
 		FindOne(context.TODO(), bson.M{
-			"_id": id,
+			"agreementID": agreementID,
 		})
 	if res.Err() == mongo.ErrNoDocuments {
-		return model.OracleDatabaseAgreement{}, utils.AerrOracleDatabaseAgreementNotFound
+		return nil, utils.AerrOracleDatabaseAgreementNotFound
 	} else if res.Err() != nil {
-		return model.OracleDatabaseAgreement{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+		return nil, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
 	}
 
 	var out model.OracleDatabaseAgreement
 	if err := res.Decode(&out); err != nil {
-		return model.OracleDatabaseAgreement{}, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 	}
-	return out, nil
+	return &out, nil
 }
 
 // UpdateOracleDatabaseAgreement update an Oracle/Database agreement in the database
