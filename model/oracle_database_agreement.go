@@ -29,6 +29,7 @@ type OracleDatabaseAgreement struct {
 
 // AssociatedPart describe a Part associated to an Agreement
 type AssociatedPart struct {
+	ID                 primitive.ObjectID `json:"id" bson:"_id"`
 	OracleDatabasePart `bson:",inline"`
 	ReferenceNumber    string   `json:"referenceNumber" bson:"referenceNumber"`
 	Unlimited          bool     `json:"unlimited" bson:"unlimited"`
