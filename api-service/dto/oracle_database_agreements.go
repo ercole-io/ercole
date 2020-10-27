@@ -15,36 +15,45 @@
 
 package dto
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+//TODO Should I remove some of these?
 
-// OracleDatabaseAgreementsAddRequest contains the informations needed to add new agreements
-type OracleDatabaseAgreementsAddRequest struct {
-	AgreementID     string   `json:"agreementID" bson:"agreementID"`
-	PartsID         []string `json:"partsID" bson:"partsID"`
-	CSI             string   `json:"csi" bson:"csi"`
-	ReferenceNumber string   `json:"referenceNumber" bson:"referenceNumber"`
-	Unlimited       bool     `json:"unlimited" bson:"unlimited"`
-	Count           int      `json:"count" bson:"count"`
-	CatchAll        bool     `json:"catchAll" bson:"catchAll"`
-	Hosts           []string `json:"hosts" bson:"hosts"`
+// AssociatedPartInOracleDbAgreementRequest contains the informations needed to add or update an AssociatedPart
+// in an OracleDatabaseAgreement
+type AssociatedPartInOracleDbAgreementRequest struct {
+	ID              string   `json:"id"`
+	AgreementID     string   `json:"agreementID"`
+	PartID          string   `json:"partID"`
+	CSI             string   `json:"csi"`
+	ReferenceNumber string   `json:"referenceNumber"`
+	Unlimited       bool     `json:"unlimited"`
+	Count           int      `json:"count"`
+	CatchAll        bool     `json:"catchAll"`
+	Hosts           []string `json:"hosts"`
 }
 
-// OracleDatabaseAgreementFE contains the informations about an agreement
+// OracleDatabaseAgreementFE contains the informations about
 type OracleDatabaseAgreementFE struct {
-	ID              primitive.ObjectID                        `json:"id" bson:"_id"`
-	AgreementID     string                                    `json:"agreementID" bson:"agreementID"`
-	PartID          string                                    `json:"partID" bson:"partID"`
-	ItemDescription string                                    `json:"itemDescription" bson:"itemDescription"`
-	Metrics         string                                    `json:"metrics" bson:"metrics"`
-	CSI             string                                    `json:"csi" bson:"csi"`
+	AgreementID string `json:"agreementID" bson:"agreementID"`
+	CSI         string `json:"csi" bson:"csi"`
+
+	// Part
+	PartID          string `json:"partID" bson:"partID"`
+	ItemDescription string `json:"itemDescription" bson:"itemDescription"`
+	Metric          string `json:"metric" bson:"metric"`
+
+	// Associated Part
+	ID              string                                    `json:"id" bson:"_id"`
 	ReferenceNumber string                                    `json:"referenceNumber" bson:"referenceNumber"`
 	Unlimited       bool                                      `json:"unlimited" bson:"unlimited"`
 	Count           float64                                   `json:"count" bson:"count"`
-	LicensesCount   float64                                   `json:"licensesCount" bson:"licensesCount"`
-	UsersCount      float64                                   `json:"usersCount" bson:"usersCount"`
-	AvailableCount  float64                                   `json:"availableCount" bson:"availableCount"`
 	CatchAll        bool                                      `json:"catchAll" bson:"catchAll"`
 	Hosts           []OracleDatabaseAgreementAssociatedHostFE `json:"hosts" bson:"hosts"`
+
+	AvailableCount float64 `json:"availableCount" bson:"availableCount"`
+	// availableCount and metric is model.AgreementPartMetricProcessorPerpetual
+	LicensesCount float64 `json:"licensesCount" bson:"licensesCount"`
+	// availableCount and metric is model.AgreementPartMetricNamedUserPlusPerpetual
+	UsersCount float64 `json:"usersCount" bson:"usersCount"`
 }
 
 // OracleDatabaseAgreementAssociatedHostFE contains the informations about a associated host in agreement
