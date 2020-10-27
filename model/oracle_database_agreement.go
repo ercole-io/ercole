@@ -37,3 +37,15 @@ type AssociatedPart struct {
 	CatchAll           bool     `json:"catchAll" bson:"catchAll"` //TODO Rename in IsBasket ?
 	Hosts              []string `json:"hosts" bson:"hosts"`
 }
+
+// AssociatedPartByID getter
+func (agreement *OracleDatabaseAgreement) AssociatedPartByID(associatedPartID primitive.ObjectID,
+) (associatedPart *AssociatedPart) {
+	for i := range agreement.Parts {
+		if agreement.Parts[i].ID == associatedPartID {
+			return &agreement.Parts[i]
+		}
+	}
+
+	return
+}

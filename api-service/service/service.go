@@ -131,22 +131,18 @@ type APIServiceInterface interface {
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license
 	SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface
 
-	// GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
-	GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabaseAgreementPart, utils.AdvancedErrorInterface)
-	// AddOracleDatabaseAgreements add an Oracle Database Agreement
-	AddOracleDatabaseAgreements(req dto.OracleDatabaseAgreementsAddRequest) (interface{}, utils.AdvancedErrorInterface)
-	// UpdateOracleDatabaseAgreement update an Oracle Database Agreement
-	UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface
-	// DeleteOracleDatabaseAgreement remove an Oracle/Database agreement
-	DeleteOracleDatabaseAgreement(id primitive.ObjectID) utils.AdvancedErrorInterface
+	// AGREEMENTS
+	AddAssociatedPartToOracleDbAgreement(request dto.AssociatedPartInOracleDbAgreementRequest) (interface{}, utils.AdvancedErrorInterface)
+	UpdateAssociatedPartOfOracleDbAgreement(request dto.AssociatedPartInOracleDbAgreementRequest) utils.AdvancedErrorInterface
+	SearchAssociatedPartsInOracleDatabaseAgreements(search string, filters dto.SearchOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface)
+	DeleteAssociatedPartFromOracleDatabaseAgreement(associatedPartID primitive.ObjectID) utils.AdvancedErrorInterface
+	AddHostToAssociatedPart(associatedPartID primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
+	RemoveHostFromAssociatedPart(associatedPartID primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
 
-	// SearchOracleDatabaseAgreements search Oracle/Database agreements
-	SearchOracleDatabaseAgreements(search string, filters dto.SearchOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface)
-	// AddAssociatedHostToOracleDatabaseAgreement add a new host to the list of associated hosts of the agreement
-	AddAssociatedHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
-	// RemoveAssociatedHostToOracleDatabaseAgreement remove the host from the list of associated hosts of the agreement
-	RemoveAssociatedHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
+	// PARTS
+	GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabasePart, utils.AdvancedErrorInterface)
 
+	// PATCHING FUNCTIONS
 	// SetPatchingFunction set the patching function of a host
 	SetPatchingFunction(hostname string, pf model.PatchingFunction) (interface{}, utils.AdvancedErrorInterface)
 	// DeletePatchingFunction delete the patching function of a host
@@ -184,7 +180,7 @@ type APIService struct {
 	// TechnologyInfos contains the list of technologies with their informations
 	TechnologyInfos []model.TechnologyInfo
 	// OracleDatabaseAgreementParts contains the list of Oracle/Database agreeement parts
-	OracleDatabaseAgreementParts []model.OracleDatabaseAgreementPart
+	OracleDatabaseAgreementParts []model.OracleDatabasePart
 }
 
 // Init initializes the service and database

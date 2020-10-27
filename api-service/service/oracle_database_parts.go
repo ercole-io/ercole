@@ -35,7 +35,7 @@ func (as *APIService) LoadOracleDatabaseAgreementParts() {
 	if errors.Is(err, os.ErrNotExist) {
 		as.Log.Warnf("No %s file exists in resources (%s), no agreement parts set\n",
 			filename, as.Config.ResourceFilePath)
-		as.OracleDatabaseAgreementParts = make([]model.OracleDatabaseAgreementPart, 0)
+		as.OracleDatabaseAgreementParts = make([]model.OracleDatabasePart, 0)
 
 		return
 	} else if err != nil {
@@ -52,6 +52,17 @@ func (as *APIService) LoadOracleDatabaseAgreementParts() {
 }
 
 // GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
-func (as *APIService) GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabaseAgreementPart, utils.AdvancedErrorInterface) {
+func (as *APIService) GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabasePart, utils.AdvancedErrorInterface) {
 	return as.OracleDatabaseAgreementParts, nil
+}
+
+// GetOraclePart return a Part by ID
+func (as *APIService) GetOraclePart(partID string) (*model.OracleDatabasePart, utils.AdvancedErrorInterface) {
+	for _, part := range as.OracleDatabaseAgreementParts {
+		if partID == part.PartID {
+			return &part, nil
+		}
+	}
+
+	return nil, utils.AerrOracleDatabaseAgreementInvalidPartID
 }

@@ -27,68 +27,64 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// AddOracleDatabaseAgreements return the list of Oracle/Database agreement parts
-func (as *APIService) AddOracleDatabaseAgreements(req dto.OracleDatabaseAgreementsAddRequest) (interface{}, utils.AdvancedErrorInterface) {
-
-	var parts []*model.OracleDatabaseAgreementPart
-	var err utils.AdvancedErrorInterface
-	if parts, err = resolvePartIds(req.PartsID, as.OracleDatabaseAgreementParts); err != nil {
-		return nil, err
+// AddAssociatedPartToOracleDbAgreement add associated part to OracleDatabaseAgreement or create a new one
+func (as *APIService) AddAssociatedPartToOracleDbAgreement(request dto.AssociatedPartInOracleDbAgreementRequest,
+) (primitive.ObjectID, utils.AdvancedErrorInterface) {
+	if err := checkHosts(as, request.Hosts); err != nil {
+		return primitive.NilObjectID, err
 	}
 
-	if err := checkHosts(as, req.Hosts); err != nil {
-		return nil, err
+	agreement, err := as.Database.GetOracleDatabaseAgreement(request.AgreementID)
+	if err == utils.AerrOracleDatabaseAgreementNotFound {
+		agreement = &model.OracleDatabaseAgreement{
+			AgreementID: request.AgreementID,
+			CSI:         request.CSI,
+			Parts:       make([]model.AssociatedPart, 0),
+		}
+
+	} else if err != nil {
+		return primitive.NilObjectID, err
 	}
 
-	agreements := make([]model.OracleDatabaseAgreement, len(req.PartsID))
-	for i, part := range parts {
-		agreements[i].AgreementID = req.AgreementID
-		agreements[i].CSI = req.CSI
-		agreements[i].CatchAll = req.CatchAll
-		agreements[i].Count = req.Count
-		agreements[i].Hosts = req.Hosts
-		agreements[i].ID = primitive.NewObjectIDFromTimestamp(as.TimeNow())
-		agreements[i].ReferenceNumber = req.ReferenceNumber
-		agreements[i].Unlimited = req.Unlimited
-
-		agreements[i].PartID = part.PartID
-		agreements[i].ItemDescription = part.ItemDescription
-		agreements[i].Metrics = part.Metrics
+	if err := addAssociatedPart(as, agreement, request); err != nil {
+		return primitive.NilObjectID, err
 	}
 
-	res := make([]interface{}, len(agreements))
-	for i, agr := range agreements {
-		var aerr utils.AdvancedErrorInterface
-		if res[i], aerr = as.Database.InsertOracleDatabaseAgreement(agr); aerr != nil {
-			return nil, aerr
+	if agreement.ID == primitive.NilObjectID {
+		res, err := as.Database.InsertOracleDatabaseAgreement(*agreement)
+		if err != nil {
+			return primitive.NilObjectID, err
+		}
+
+		agreement.ID = res.InsertedID.(primitive.ObjectID)
+	} else {
+		err := as.Database.UpdateOracleDatabaseAgreement(*agreement)
+		if err != nil {
+			return primitive.NilObjectID, err
 		}
 	}
 
-	return res, nil
+	return agreement.ID, nil
 }
 
-func resolvePartIds(partsID []string, agreementParts []model.OracleDatabaseAgreementPart) ([]*model.OracleDatabaseAgreementPart, utils.AdvancedErrorInterface) {
-	var parts []*model.OracleDatabaseAgreementPart = make([]*model.OracleDatabaseAgreementPart, len(partsID))
-
-	for i, pID := range partsID {
-		var err utils.AdvancedErrorInterface
-
-		if parts[i], err = isValidPartID(pID, agreementParts); err != nil {
-			return nil, utils.AerrOracleDatabaseAgreementInvalidPartID
-		}
+func addAssociatedPart(as *APIService, agreement *model.OracleDatabaseAgreement,
+	req dto.AssociatedPartInOracleDbAgreementRequest) utils.AdvancedErrorInterface {
+	part, err := as.GetOraclePart(req.PartID)
+	if err != nil {
+		return err
 	}
 
-	return parts, nil
-}
-
-func isValidPartID(partID string, agreementParts []model.OracleDatabaseAgreementPart) (*model.OracleDatabaseAgreementPart, utils.AdvancedErrorInterface) {
-	for i, part := range agreementParts {
-		if partID == part.PartID {
-			return &agreementParts[i], nil
-		}
+	associatedPart := model.AssociatedPart{
+		OracleDatabasePart: *part,
+		ReferenceNumber:    req.ReferenceNumber,
+		Unlimited:          req.Unlimited,
+		Count:              req.Count,
+		CatchAll:           req.CatchAll,
+		Hosts:              req.Hosts,
 	}
+	agreement.Parts = append(agreement.Parts, associatedPart)
 
-	return nil, utils.AerrOracleDatabaseAgreementInvalidPartID
+	return nil
 }
 
 func checkHosts(as *APIService, hosts []string) utils.AdvancedErrorInterface {
@@ -125,37 +121,75 @@ hosts_loop:
 	return nil
 }
 
-// UpdateOracleDatabaseAgreement update an Oracle Database Agreement
-func (as *APIService) UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface {
-	if _, err := as.Database.FindOracleDatabaseAgreement(agreement.ID); err != nil {
+// UpdateAssociatedPartOfOracleDbAgreement update associated part in OracleDatabaseAgreement
+func (as *APIService) UpdateAssociatedPartOfOracleDbAgreement(request dto.AssociatedPartInOracleDbAgreementRequest,
+) utils.AdvancedErrorInterface {
+	if err := checkHosts(as, request.Hosts); err != nil {
 		return err
 	}
 
-	part, err := isValidPartID(agreement.PartID, as.OracleDatabaseAgreementParts)
+	associatedPartID := utils.Str2oid(request.ID)
+	agreement, err := as.Database.GetOracleDatabaseAgreementByAssociatedPart(associatedPartID)
 	if err != nil {
 		return err
 	}
 
-	agreement.PartID = part.PartID
-	agreement.ItemDescription = part.ItemDescription
-	agreement.Metrics = part.Metrics
+	err = updateAssociatedPart(as, agreement, request)
+	if err != nil {
+		return err
+	}
 
-	return as.Database.UpdateOracleDatabaseAgreement(agreement)
+	return as.Database.UpdateOracleDatabaseAgreement(*agreement)
 }
 
-// SearchOracleDatabaseAgreements search Oracle/Database agreements
-func (as *APIService) SearchOracleDatabaseAgreements(search string, filters dto.SearchOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface) {
+func updateAssociatedPart(as *APIService, agreement *model.OracleDatabaseAgreement,
+	req dto.AssociatedPartInOracleDbAgreementRequest) utils.AdvancedErrorInterface {
+
+	var associatedPart *model.AssociatedPart
+	reqID := utils.Str2oid(req.ID)
+
+	for i := range agreement.Parts {
+		if agreement.Parts[i].ID == reqID {
+			associatedPart = &agreement.Parts[i]
+			break
+		}
+	}
+
+	if associatedPart == nil {
+		return utils.AerrOracleDatabaseAssociatedPartNotFound
+	}
+
+	part, err := as.GetOraclePart(req.PartID)
+	if err != nil {
+		return err
+	}
+	associatedPart.OracleDatabasePart = *part
+	associatedPart.ReferenceNumber = req.ReferenceNumber
+	associatedPart.Unlimited = req.Unlimited
+	associatedPart.Count = req.Count
+	associatedPart.CatchAll = req.CatchAll
+	associatedPart.Hosts = req.Hosts
+
+	return nil
+}
+
+// SearchAssociatedPartsInOracleDatabaseAgreements search Oracle/Database agreements
+func (as *APIService) SearchAssociatedPartsInOracleDatabaseAgreements(
+	search string,
+	filters dto.SearchOracleDatabaseAgreementsFilter,
+) ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface) {
 	agrs, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
 		return nil, err
 	}
+	// TODO Insert Agr Part info
 
 	hosts, err := as.Database.ListHostUsingOracleDatabaseLicenses()
 	if err != nil {
 		return nil, err
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agrs, hosts)
+	as.assignOracleDatabaseAgreementsToHosts(agrs, hosts)
 
 	filteredAgrs := make([]dto.OracleDatabaseAgreementFE, 0)
 	for _, agr := range agrs {
@@ -175,7 +209,7 @@ func checkOracleDatabaseAgreementMatchFilter(agr dto.OracleDatabaseAgreementFE, 
 		strings.Contains(strings.ToLower(agr.PartID), strings.ToLower(filters.PartID)) &&
 		strings.Contains(strings.ToLower(agr.ItemDescription), strings.ToLower(filters.ItemDescription)) &&
 		strings.Contains(strings.ToLower(agr.CSI), strings.ToLower(filters.CSI)) &&
-		(filters.Metrics == "" || strings.ToLower(agr.Metrics) == strings.ToLower(filters.Metrics)) &&
+		(filters.Metrics == "" || strings.ToLower(agr.Metric) == strings.ToLower(filters.Metrics)) &&
 		strings.Contains(strings.ToLower(agr.ReferenceNumber), strings.ToLower(filters.ReferenceNumber)) &&
 		(filters.Unlimited == "NULL" || agr.Unlimited == (filters.Unlimited == "true")) &&
 		(filters.CatchAll == "NULL" || agr.CatchAll == (filters.CatchAll == "true")) &&
@@ -187,8 +221,8 @@ func checkOracleDatabaseAgreementMatchFilter(agr dto.OracleDatabaseAgreementFE, 
 		(filters.AvailableCountGTE == -1 || agr.AvailableCount >= float64(filters.AvailableCountGTE))
 }
 
-// AssignOracleDatabaseAgreementsToHosts assign in-place agreements to every hosts
-func (as *APIService) AssignOracleDatabaseAgreementsToHosts(
+// assignOracleDatabaseAgreementsToHosts assign in-place agreements to every hosts
+func (as *APIService) assignOracleDatabaseAgreementsToHosts(
 	agrs []dto.OracleDatabaseAgreementFE,
 	hosts []dto.HostUsingOracleDatabaseLicenses) {
 
@@ -274,8 +308,8 @@ func buildHostUsingLicensesMap(hosts []dto.HostUsingOracleDatabaseLicenses) map[
 }
 
 // buildAgreementPartMap return a map of partID to OracleDatabaseAgreementPart
-func buildAgreementPartMap(parts []model.OracleDatabaseAgreementPart) map[string]*model.OracleDatabaseAgreementPart {
-	partsMap := make(map[string]*model.OracleDatabaseAgreementPart)
+func buildAgreementPartMap(parts []model.OracleDatabasePart) map[string]*model.OracleDatabasePart {
+	partsMap := make(map[string]*model.OracleDatabasePart)
 
 	for i, part := range parts {
 		partsMap[part.PartID] = &parts[i]
@@ -289,7 +323,7 @@ func assignLicensesInAgreementsToAssociatedHost(
 	as *APIService,
 	agrs []dto.OracleDatabaseAgreementFE,
 	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses,
-	partsMap map[string]*model.OracleDatabaseAgreementPart) {
+	partsMap map[string]*model.OracleDatabasePart) {
 
 	for i := range agrs {
 		agr := &agrs[i]
@@ -330,20 +364,20 @@ func assignLicensesInAgreementsToAssociatedHost(
 					hostInAgr.CoveredLicensesCount = hostUsingLicenses.LicenseCount
 					hostUsingLicenses.LicenseCount = 0
 
-				case agr.Metrics == model.AgreementPartMetricProcessorPerpetual || agr.Metrics == "Computer Perpetual":
+				case agr.Metric == model.AgreementPartMetricProcessorPerpetual || agr.Metric == "Computer Perpetual":
 					coverableLicenses := math.Min(agr.Count, hostUsingLicenses.LicenseCount)
 					hostUsingLicenses.LicenseCount -= coverableLicenses
 					hostInAgr.CoveredLicensesCount += coverableLicenses
 					agr.Count -= coverableLicenses
 
-				case agr.Metrics == model.AgreementPartMetricNamedUserPlusPerpetual:
+				case agr.Metric == model.AgreementPartMetricNamedUserPlusPerpetual:
 					coverableLicenses := math.Floor(math.Min(agr.Count*25, hostUsingLicenses.LicenseCount) / 25)
 					hostUsingLicenses.LicenseCount -= coverableLicenses * 25
 					hostInAgr.CoveredLicensesCount += coverableLicenses * 25
 					agr.Count -= coverableLicenses
 
 				default:
-					as.Log.Errorf("Distributing licenses. Unknown metric type: [%s]", agr.Metrics)
+					as.Log.Errorf("Distributing licenses. Unknown metric type: [%s]", agr.Metric)
 				}
 
 				if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
@@ -351,7 +385,7 @@ func assignLicensesInAgreementsToAssociatedHost(
 					hostInAgr.CoveredLicensesCount=%f hostUsingLicenses.LicenseCount=%f licenseName=%s\n`,
 						hostUsingLicenses.LicenseCount,
 						hostInAgr.Hostname,
-						agr.Metrics,
+						agr.Metric,
 						agr.Count,
 						hostInAgr.CoveredLicensesCount,
 						hostUsingLicenses.LicenseCount,
@@ -370,7 +404,7 @@ func assignLicensesInAgreementsToAssociatedHost(
 // considering that parts may have multiple aliases
 func sortHostsInAgreementByLicenseCount(agr *dto.OracleDatabaseAgreementFE,
 	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses,
-	partsMap map[string]*model.OracleDatabaseAgreementPart) {
+	partsMap map[string]*model.OracleDatabasePart) {
 
 	sort.Slice(agr.Hosts, func(i, j int) bool {
 		var iMaxLicenseCount float64 = 0
@@ -397,7 +431,7 @@ func distributeLicensesInCatchAllAgrs(
 	as *APIService,
 	agrs []dto.OracleDatabaseAgreementFE,
 	hosts []dto.HostUsingOracleDatabaseLicenses,
-	partsMap map[string]*model.OracleDatabaseAgreementPart) {
+	partsMap map[string]*model.OracleDatabasePart) {
 
 	for i := range hosts {
 		obj := &hosts[i]
@@ -445,7 +479,7 @@ func distributeLicensesInCatchAllAgrs(
 
 					obj.LicenseCount = 0
 				} else {
-					if agr.Metrics == model.AgreementPartMetricProcessorPerpetual || agr.Metrics == "Computer Perpetual" {
+					if agr.Metric == model.AgreementPartMetricProcessorPerpetual || agr.Metric == "Computer Perpetual" {
 						coverableLicenses := math.Min(agr.Count, obj.LicenseCount)
 						obj.LicenseCount -= coverableLicenses
 						agr.Count -= coverableLicenses
@@ -453,7 +487,7 @@ func distributeLicensesInCatchAllAgrs(
 						if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
 							as.Log.Debugf("Distributing (Processor Perpetual/Computer Perpetual) %f licenses to obj %s. aggCount=%f objCount=%f licenseName=%s\n", coverableLicenses, obj.Name, agr.Count, obj.LicenseCount, alias)
 						}
-					} else if agr.Metrics == model.AgreementPartMetricNamedUserPlusPerpetual {
+					} else if agr.Metric == model.AgreementPartMetricNamedUserPlusPerpetual {
 						coverableLicenses := math.Floor(math.Min(agr.Count*25, obj.LicenseCount) / 25)
 						obj.LicenseCount -= coverableLicenses * 25
 						agr.Count -= coverableLicenses
@@ -495,7 +529,7 @@ func calculateCoverStatus(hosts []dto.HostUsingOracleDatabaseLicenses) map[strin
 func calculateTotalCoveredLicensesAndAvailable(
 	agrs []dto.OracleDatabaseAgreementFE,
 	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses,
-	partsMap map[string]*model.OracleDatabaseAgreementPart,
+	partsMap map[string]*model.OracleDatabasePart,
 	allLicensesCoverStatus map[string]coverStatus) {
 
 	for i := range agrs {
@@ -530,58 +564,72 @@ func calculateTotalCoveredLicensesAndAvailable(
 	}
 }
 
-// AddAssociatedHostToOracleDatabaseAgreement a new host to the list of associated hosts of the agreement
-func (as *APIService) AddAssociatedHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) utils.AdvancedErrorInterface {
-	var err utils.AdvancedErrorInterface
-
-	//check the existence of the host
-	if exist, err := as.Database.ExistNotInClusterHost(hostname); err != nil {
-		return err
-	} else if !exist {
-		return utils.AerrNotInClusterHostNotFound
-	}
-
-	//check the existence and get the agreement
-	var agr model.OracleDatabaseAgreement
-	if agr, err = as.Database.FindOracleDatabaseAgreement(id); err != nil {
+// DeleteAssociatedPartFromOracleDatabaseAgreement remove an Oracle/Database agreement
+func (as *APIService) DeleteAssociatedPartFromOracleDatabaseAgreement(associatedPartID primitive.ObjectID,
+) utils.AdvancedErrorInterface {
+	agreement, err := as.Database.GetOracleDatabaseAgreementByAssociatedPart(associatedPartID)
+	if err != nil {
 		return err
 	}
 
-	//check the host isn't already part of the list, and do nothing
-	for _, host := range agr.Hosts {
+	if len(agreement.Parts) <= 1 {
+		return as.Database.RemoveOracleDatabaseAgreement(agreement.ID)
+	}
+
+	for i := range agreement.Parts {
+		if agreement.Parts[i].ID == associatedPartID {
+			agreement.Parts = append(agreement.Parts[:i], agreement.Parts[i+1])
+			break
+		}
+	}
+
+	return as.Database.UpdateOracleDatabaseAgreement(*agreement)
+}
+
+// AddHostToAssociatedPart a new host to the list of associated hosts of the agreement
+func (as *APIService) AddHostToAssociatedPart(associatedPartID primitive.ObjectID, hostname string,
+) utils.AdvancedErrorInterface {
+
+	agreement, err := as.Database.GetOracleDatabaseAgreementByAssociatedPart(associatedPartID)
+	if err != nil {
+		return err
+	}
+
+	associatedPart := agreement.AssociatedPartByID(associatedPartID)
+
+	for _, host := range associatedPart.Hosts {
 		if host == hostname {
 			return nil
 		}
 	}
 
-	//add the host to the list
-	agr.Hosts = append(agr.Hosts, hostname)
-
-	//save the host in the database
-	return as.Database.UpdateOracleDatabaseAgreement(agr)
-}
-
-// RemoveAssociatedHostToOracleDatabaseAgreement remove the host from the list of associated hosts of the agreement
-func (as *APIService) RemoveAssociatedHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) utils.AdvancedErrorInterface {
-	var err utils.AdvancedErrorInterface
-
-	var agr model.OracleDatabaseAgreement
-	if agr, err = as.Database.FindOracleDatabaseAgreement(id); err != nil {
+	if err := checkHosts(as, []string{hostname}); err != nil {
 		return err
 	}
 
-	for i, host := range agr.Hosts {
-		if host == hostname {
-			agr.Hosts = append(agr.Hosts[:i], agr.Hosts[i+1:]...)
+	associatedPart.Hosts = append(associatedPart.Hosts, hostname)
 
-			return as.Database.UpdateOracleDatabaseAgreement(agr)
+	return as.Database.UpdateOracleDatabaseAgreement(*agreement)
+}
+
+// RemoveHostFromAssociatedPart remove the host from the list of associated hosts of the agreement
+func (as *APIService) RemoveHostFromAssociatedPart(associatedPartID primitive.ObjectID, hostname string,
+) utils.AdvancedErrorInterface {
+
+	agreement, err := as.Database.GetOracleDatabaseAgreementByAssociatedPart(associatedPartID)
+	if err != nil {
+		return err
+	}
+
+	associatedPart := agreement.AssociatedPartByID(associatedPartID)
+
+	for i, host := range associatedPart.Hosts {
+		if host == hostname {
+			associatedPart.Hosts = append(associatedPart.Hosts[:i], associatedPart.Hosts[i+1:]...)
+
+			return as.Database.UpdateOracleDatabaseAgreement(*agreement)
 		}
 	}
 
 	return nil
-}
-
-// DeleteOracleDatabaseAgreement remove an Oracle/Database agreement
-func (as *APIService) DeleteOracleDatabaseAgreement(id primitive.ObjectID) utils.AdvancedErrorInterface {
-	return as.Database.RemoveOracleDatabaseAgreement(id)
 }

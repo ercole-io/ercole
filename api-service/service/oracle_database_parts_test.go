@@ -39,10 +39,10 @@ func TestLoadOracleDatabaseAgreementParts_Success(t *testing.T) {
 	}
 	as.LoadOracleDatabaseAgreementParts()
 
-	expected := []model.OracleDatabaseAgreementPart{
-		{PartID: "A11111", ItemDescription: "Database Enterprise Edition", Metrics: model.AgreementPartMetricNamedUserPlusPerpetual, Cost: 42, Aliases: []string{"Db ENT"}},
-		{PartID: "B22222", ItemDescription: "Database Standard Edition", Metrics: model.AgreementPartMetricProcessorPerpetual, Cost: 43, Aliases: []string{"Db STD"}},
-		{PartID: "C33333", ItemDescription: "Tuning", Metrics: model.AgreementPartMetricStreamPerpetual, Cost: 44, Aliases: []string{"Tuning"}},
+	expected := []model.OracleDatabasePart{
+		{PartID: "A11111", ItemDescription: "Database Enterprise Edition", Metric: model.AgreementPartMetricNamedUserPlusPerpetual, Cost: 42, Aliases: []string{"Db ENT"}},
+		{PartID: "B22222", ItemDescription: "Database Standard Edition", Metric: model.AgreementPartMetricProcessorPerpetual, Cost: 43, Aliases: []string{"Db STD"}},
+		{PartID: "C33333", ItemDescription: "Tuning", Metric: model.AgreementPartMetricStreamPerpetual, Cost: 44, Aliases: []string{"Tuning"}},
 	}
 
 	assert.ElementsMatch(t, expected, as.OracleDatabaseAgreementParts)
@@ -55,11 +55,11 @@ func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
 	as := APIService{
 		Database: db,
 		Config:   config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
 			{
 				PartID:          "Pippo",
 				ItemDescription: "Pluto",
-				Metrics:         "Topolino",
+				Metric:          "Topolino",
 				Cost:            12,
 				Aliases:         []string{"Minny"},
 			},
@@ -67,11 +67,11 @@ func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
 	}
 	res, err := as.GetOracleDatabaseAgreementPartsList()
 	require.NoError(t, err)
-	assert.Equal(t, []model.OracleDatabaseAgreementPart{
+	assert.Equal(t, []model.OracleDatabasePart{
 		{
 			PartID:          "Pippo",
 			ItemDescription: "Pluto",
-			Metrics:         "Topolino",
+			Metric:          "Topolino",
 			Cost:            12,
 			Aliases:         []string{"Minny"},
 		},
