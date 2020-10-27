@@ -51,6 +51,7 @@ func (as *APIService) SearchLicenses(location string, environment string, olderT
 	if err != nil {
 		return nil, err
 	}
+	// TODO Insert agr parts info
 
 	hosts, err := as.Database.ListHostUsingOracleDatabaseLicenses()
 	if err != nil {
@@ -63,7 +64,7 @@ func (as *APIService) SearchLicenses(location string, environment string, olderT
 		return nil, err
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agrs, hosts)
+	as.assignOracleDatabaseAgreementsToHosts(agrs, hosts)
 
 	setLicensesCosts(as, agrs, hosts, lics)
 
