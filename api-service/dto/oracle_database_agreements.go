@@ -15,6 +15,8 @@
 
 package dto
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 //TODO Should I remove some of these?
 
 // AssociatedPartInOracleDbAgreementRequest contains the informations needed to add or update an AssociatedPart
@@ -42,7 +44,7 @@ type OracleDatabaseAgreementFE struct {
 	Metric          string `json:"metric" bson:"metric"`
 
 	// Associated Part
-	ID              string                                    `json:"id" bson:"_id"`
+	ID              primitive.ObjectID                        `json:"id" bson:"_id"`
 	ReferenceNumber string                                    `json:"referenceNumber" bson:"referenceNumber"`
 	Unlimited       bool                                      `json:"unlimited" bson:"unlimited"`
 	Count           float64                                   `json:"count" bson:"count"`
@@ -70,7 +72,7 @@ type SearchOracleDatabaseAgreementsFilter struct {
 	PartID            string
 	ItemDescription   string
 	CSI               string
-	Metrics           string
+	Metric            string
 	ReferenceNumber   string
 	Unlimited         string //"" -> Ignore, "true" -> true, "false" -> false
 	CatchAll          string //"" -> Ignore, "true" -> true, "false" -> false
