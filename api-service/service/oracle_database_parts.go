@@ -18,7 +18,6 @@ package service
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -31,7 +30,7 @@ func (as *APIService) LoadOracleDatabaseAgreementParts() {
 	filename := "oracle_database_agreement_parts.json"
 	path := filepath.Join(as.Config.ResourceFilePath, filename)
 
-	bytes, err := ioutil.ReadFile(path)
+	reader, err := os.Open(path)
 	if errors.Is(err, os.ErrNotExist) {
 		as.Log.Warnf("No %s file exists in resources (%s), no agreement parts set\n",
 			filename, as.Config.ResourceFilePath)
@@ -44,9 +43,11 @@ func (as *APIService) LoadOracleDatabaseAgreementParts() {
 		return
 	}
 
-	err = json.Unmarshal(bytes, &as.OracleDatabaseAgreementParts)
+	decoder := json.NewDecoder(reader)
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&as.OracleDatabaseAgreementParts)
 	if err != nil {
-		as.Log.Errorf("Unable to unmarshal %s: %v\n", path, err)
+		as.Log.Errorf("Unable to decode %s: %v\n", path, err)
 		return
 	}
 }
