@@ -356,7 +356,7 @@ func TestUpdateAssociatedPartOfOracleDbAgreement_InternalServerError(t *testing.
 	})
 	t.Run("Agreement not found", func(t *testing.T) {
 		as.EXPECT().UpdateAssociatedPartOfOracleDbAgreement(request).
-			Return(utils.ErrOracleDatabaseAgreementInvalidPartID)
+			Return(utils.AerrOracleDatabaseAgreementNotFound)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.UpdateAssociatedPartOfOracleDbAgreement)
@@ -365,10 +365,11 @@ func TestUpdateAssociatedPartOfOracleDbAgreement_InternalServerError(t *testing.
 
 		handler.ServeHTTP(rr, req)
 
-		require.Equal(t, http.StatusInternalServerError, rr.Code)
+		require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 	})
 	t.Run("Invalid PartID", func(t *testing.T) {
-		as.EXPECT().UpdateAssociatedPartOfOracleDbAgreement(request).Return(aerrMock)
+		as.EXPECT().UpdateAssociatedPartOfOracleDbAgreement(request).
+			Return(utils.AerrOracleDatabaseAgreementInvalidPartID)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.UpdateAssociatedPartOfOracleDbAgreement)
@@ -377,7 +378,7 @@ func TestUpdateAssociatedPartOfOracleDbAgreement_InternalServerError(t *testing.
 
 		handler.ServeHTTP(rr, req)
 
-		require.Equal(t, http.StatusInternalServerError, rr.Code)
+		require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 	})
 }
 func TestSearchAssociatedPartsInOracleDatabaseAgreements_Success(t *testing.T) {

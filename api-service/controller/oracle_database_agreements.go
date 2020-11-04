@@ -90,7 +90,7 @@ func (ctrl *APIController) UpdateAssociatedPartOfOracleDbAgreement(w http.Respon
 
 	err := ctrl.Service.UpdateAssociatedPartOfOracleDbAgreement(req)
 	if err == utils.AerrOracleDatabaseAgreementNotFound ||
-		err == utils.ErrOracleDatabaseAgreementInvalidPartID {
+		err == utils.AerrOracleDatabaseAgreementInvalidPartID {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 	} else if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
