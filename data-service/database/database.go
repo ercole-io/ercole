@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Database contains methods used to perform CRUD operations to the MongoDB database
+// Package database contains methods used to perform CRUD operations to the MongoDB database
 package database
 
 import (

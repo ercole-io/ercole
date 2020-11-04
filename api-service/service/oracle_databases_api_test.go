@@ -408,7 +408,7 @@ func TestSearchOracleDatabases_Fail(t *testing.T) {
 //}
 
 //TODO
-//func TestSearchOracleDatabaseConsumedLicenses_Success(t *testing.T) {
+//func TestSearchOracleDatabaseUsedLicenses_Success(t *testing.T) {
 //	mockCtrl := gomock.NewController(t)
 //	defer mockCtrl.Finish()
 //	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -431,13 +431,13 @@ func TestSearchOracleDatabases_Fail(t *testing.T) {
 //		},
 //	}
 
-//	db.EXPECT().ListLicenses(
+//	db.EXPECT().SearchOracleDatabaseUsedLicenses(
 //		"Used",
 //		true, 1, 1,
 //		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 //	).Return(expectedRes, nil).Times(1)
 
-//	res, err := as.SearchOracleDatabaseConsumedLicenses(
+//	res, err := as.SearchOracleDatabaseUsedLicenses(
 //		"Used",
 //		true, 1, 1,
 //		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
@@ -448,7 +448,7 @@ func TestSearchOracleDatabases_Fail(t *testing.T) {
 //}
 
 //TODO
-//func TestSearchOracleDatabaseConsumedLicenses_Fail(t *testing.T) {
+//func TestSearchOracleDatabaseUsedLicenses_Fail(t *testing.T) {
 //	mockCtrl := gomock.NewController(t)
 //	defer mockCtrl.Finish()
 //	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -456,13 +456,13 @@ func TestSearchOracleDatabases_Fail(t *testing.T) {
 //		Database: db,
 //	}
 
-//	db.EXPECT().ListLicenses(
+//	db.EXPECT().SearchOracleDatabaseUsedLicenses(
 //		"Used",
 //		true, 1, 1,
 //		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 //	).Return(nil, aerrMock).Times(1)
 
-//	res, err := as.SearchOracleDatabaseConsumedLicenses(
+//	res, err := as.SearchOracleDatabaseUsedLicenses(
 //		"Used",
 //		true, 1, 1,
 //		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),

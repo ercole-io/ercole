@@ -567,8 +567,8 @@ func (ctrl *APIController) SearchLicenses(w http.ResponseWriter, r *http.Request
 	utils.WriteJSONResponse(w, http.StatusOK, licenses)
 }
 
-// SearchOracleDatabaseConsumedLicenses search licenses consumed by the hosts using the filters in the request
-func (ctrl *APIController) SearchOracleDatabaseConsumedLicenses(w http.ResponseWriter, r *http.Request) {
+// SearchOracleDatabaseUsedLicenses search licenses consumed by the hosts using the filters in the request
+func (ctrl *APIController) SearchOracleDatabaseUsedLicenses(w http.ResponseWriter, r *http.Request) {
 	var sortBy string
 	var sortDesc bool
 	var pageNumber int
@@ -599,16 +599,16 @@ func (ctrl *APIController) SearchOracleDatabaseConsumedLicenses(w http.ResponseW
 		return
 	}
 
-	licenses, err := ctrl.Service.SearchOracleDatabaseConsumedLicenses(sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	response, err := ctrl.Service.SearchOracleDatabaseUsedLicenses(sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
 	if pageNumber == -1 || pageSize == -1 {
-		utils.WriteJSONResponse(w, http.StatusOK, licenses)
+		utils.WriteJSONResponse(w, http.StatusOK, response.Content)
 	} else {
-		utils.WriteJSONResponse(w, http.StatusOK, licenses[0])
+		utils.WriteJSONResponse(w, http.StatusOK, response)
 	}
 }
 

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"reflect"
 	"runtime"
@@ -92,4 +93,15 @@ func AssertFuncAreTheSame(t *testing.T, funcExpected interface{}, funcActual int
 	funcExpectedAddress := runtime.FuncForPC(reflect.ValueOf(funcExpected).Pointer()).Name()
 	funcActualAddress := runtime.FuncForPC(reflect.ValueOf(funcActual).Pointer()).Name()
 	assert.Equal(t, funcExpectedAddress, funcActualAddress)
+}
+
+// NewObjectIDForTests is a function to replace NewObjectID in tests that return ids increasing
+func NewObjectIDForTests() func() primitive.ObjectID {
+	i := 0
+	return func() primitive.ObjectID {
+		i++
+		objID := fmt.Sprintf("%024d", i)
+
+		return Str2oid(objID)
+	}
 }

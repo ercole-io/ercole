@@ -20,7 +20,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/ercole-io/ercole/api-service/apimodel"
+	"github.com/ercole-io/ercole/api-service/dto"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/sirupsen/logrus"
@@ -56,9 +56,9 @@ type MongoDatabaseInterface interface {
 	// SearchOracleExadata search exadata
 	SearchOracleExadata(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchLicenses search licenses
-	SearchLicenses(location string, environment string, olderThan time.Time) ([]apimodel.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface)
-	// ListLicenses list licenses
-	ListLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	SearchLicenses(location string, environment string, olderThan time.Time) ([]dto.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface)
+	// SearchOracleDatabaseUsedLicenses search consumed licenses
+	SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseUsedLicenseSearchResponse, utils.AdvancedErrorInterface)
 	// GetLicense get a certain license
 	GetLicense(name string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
 	// SearchOracleDatabaseLicenseModifiers search license modifiers
@@ -118,18 +118,20 @@ type MongoDatabaseInterface interface {
 	GetOracleExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 
 	// InsertOracleDatabaseAgreement insert an Oracle/Database agreement into the database
-	InsertOracleDatabaseAgreement(aggreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
+	InsertOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
+	// GetOracleDatabaseAgreement return the agreement specified by id
+	GetOracleDatabaseAgreement(agreementID string) (*model.OracleDatabaseAgreement, utils.AdvancedErrorInterface)
+	// GetOracleDatabaseAgreementByAssociatedPart return the agreement specified by an associated part id
+	GetOracleDatabaseAgreementByAssociatedPart(associatedPartID primitive.ObjectID) (*model.OracleDatabaseAgreement, utils.AdvancedErrorInterface)
 	// UpdateOracleDatabaseAgreement update an Oracle/Database agreement in the database
-	UpdateOracleDatabaseAgreement(newAgreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface
+	UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface
 	// RemoveOracleDatabaseAgreement remove an Oracle/Database agreement from the database
 	RemoveOracleDatabaseAgreement(id primitive.ObjectID) utils.AdvancedErrorInterface
 
 	// ListOracleDatabaseAgreements lists the Oracle/Database agreements
-	ListOracleDatabaseAgreements() ([]apimodel.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface)
+	ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface)
 	// ListHostUsingOracleDatabaseLicenses lists the hosts/clusters that need to be licensed by Oracle/Database agreements
-	ListHostUsingOracleDatabaseLicenses() ([]apimodel.HostUsingOracleDatabaseLicenses, utils.AdvancedErrorInterface)
-	// FindOracleDatabaseAgreement return the agreement specified by id
-	FindOracleDatabaseAgreement(id primitive.ObjectID) (model.OracleDatabaseAgreement, utils.AdvancedErrorInterface)
+	ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingOracleDatabaseLicenses, utils.AdvancedErrorInterface)
 
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license
 	SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface

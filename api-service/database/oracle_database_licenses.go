@@ -20,14 +20,15 @@ import (
 	"time"
 
 	"github.com/amreo/mu"
-	"github.com/ercole-io/ercole/api-service/apimodel"
+
+	"github.com/ercole-io/ercole/api-service/dto"
 	"github.com/ercole-io/ercole/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 // SearchLicenses search licenses
 func (md *MongoDatabase) SearchLicenses(location string, environment string, olderThan time.Time) (
-	[]apimodel.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface) {
+	[]dto.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface) {
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses").Aggregate(
 		context.TODO(),
@@ -71,7 +72,7 @@ func (md *MongoDatabase) SearchLicenses(location string, environment string, old
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	var out []apimodel.OracleDatabaseLicenseUsageInfo = make([]apimodel.OracleDatabaseLicenseUsageInfo, 0)
+	var out []dto.OracleDatabaseLicenseUsageInfo = make([]dto.OracleDatabaseLicenseUsageInfo, 0)
 
 	if err = cur.All(context.TODO(), &out); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
@@ -79,9 +80,10 @@ func (md *MongoDatabase) SearchLicenses(location string, environment string, old
 	return out, nil
 }
 
-// ListLicenses list licenses
-func (md *MongoDatabase) ListLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	//Find the informations
+// SearchOracleDatabaseUsedLicenses search used licenses
+func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int,
+	location string, environment string, olderThan time.Time,
+) (*dto.OracleDatabaseUsedLicenseSearchResponse, utils.AdvancedErrorInterface) {
 	cursor, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -100,7 +102,7 @@ func (md *MongoDatabase) ListLicenses(sortBy string, sortDesc bool, page int, pa
 				},
 			),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
-			mu.APOptionalPagingStage(page, pageSize),
+			PagingMetadataStage(page, pageSize),
 		),
 	)
 
@@ -108,17 +110,13 @@ func (md *MongoDatabase) ListLicenses(sortBy string, sortDesc bool, page int, pa
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	//Decode the documents
-	var out []interface{} = make([]interface{}, 0)
+	var response dto.OracleDatabaseUsedLicenseSearchResponse
 
-	for cursor.Next(context.TODO()) {
-		var item map[string]interface{}
-		if cursor.Decode(&item) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
-		}
-		out = append(out, &item)
+	cursor.Next(context.TODO())
+	if err := cursor.Decode(&response); err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 	}
-	return out, nil
+	return &response, nil
 }
 
 // GetLicense get a certain license

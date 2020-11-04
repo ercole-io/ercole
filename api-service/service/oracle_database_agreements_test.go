@@ -18,20 +18,42 @@ package service
 import (
 	"testing"
 
-	"github.com/ercole-io/ercole/api-service/apimodel"
 	"github.com/ercole-io/ercole/api-service/database"
+	"github.com/ercole-io/ercole/api-service/dto"
 	"github.com/ercole-io/ercole/config"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 //TODO add tests for UpdateOracleDatabaseAgreement
 
-func TestLoadOracleDatabaseAgreementPartsList_Success(t *testing.T) {
+var partsSample = []model.OracleDatabasePart{
+	{
+		PartID:          "PID001",
+		ItemDescription: "itemDesc1",
+		Aliases:         []string{"alias1"},
+		Metric:          "metric1",
+	},
+	{
+		PartID:          "PID002",
+		ItemDescription: "itemDesc2",
+		Aliases:         []string{"alias1"},
+		Metric:          "metric2",
+	},
+	{
+		ItemDescription: "asdsdfsdas",
+		Aliases:         []string{"alias1"},
+		Metric:          "metric3",
+		PartID:          "A90650",
+	},
+}
+
+func TestAddOracleDatabaseAgreements_Success_InsertNew(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -40,83 +62,15 @@ func TestLoadOracleDatabaseAgreementPartsList_Success(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
+		OracleDatabaseAgreementParts: partsSample,
+		TimeNow:                      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID:                  utils.NewObjectIDForTests(),
 	}
-	as.LoadOracleDatabaseAgreementPartsList()
-
-	assert.Equal(t, "L10001", as.OracleDatabaseAgreementParts[0].PartID)
-	assert.Equal(t, "Oracle Database Enterprise Edition", as.OracleDatabaseAgreementParts[0].ItemDescription)
-	assert.Equal(t, "Named User Plus Perpetual", as.OracleDatabaseAgreementParts[0].Metrics)
-	assert.Equal(t, []string{"Oracle ENT"}, as.OracleDatabaseAgreementParts[0].Aliases)
-	assert.Equal(t, "L103405", as.OracleDatabaseAgreementParts[2].PartID)
-	assert.Equal(t, []string{"Oracle STD"}, as.OracleDatabaseAgreementParts[2].Aliases)
-
-	//Known list of metrics check!
-	for i, part := range as.OracleDatabaseAgreementParts {
-		assert.Contains(t,
-			[]string{"Processor Perpetual", "Named User Plus Perpetual", "Stream Perpetual", "Computer Perpetual"},
-			part.Metrics,
-			"There is an Oracle/Database agreement part with unknown metric #", i, part,
-		)
-	}
-}
-
-func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		Config:   config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
-			{},
-		},
-	}
-	res, err := as.GetOracleDatabaseAgreementPartsList()
-	require.NoError(t, err)
-	assert.Equal(t, []model.OracleDatabaseAgreementPart{
-		{},
-	}, res)
-}
-
-func TestAddOracleDatabaseAgreements_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		Config: config.Configuration{
-			ResourceFilePath: "../../resources",
-		},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
-			{
-				ItemDescription: "asdasdas",
-				Aliases:         []string{"dasasd"},
-				Metrics:         "sdsdfasasd",
-				PartID:          "L10006",
-			},
-			{
-				ItemDescription: "asdasdfdsfsdas",
-				Aliases:         []string{"dasasd"},
-				Metrics:         "sdasjkhasd",
-				PartID:          "A90620",
-			},
-			{
-				ItemDescription: "asdsdfsdas",
-				Aliases:         []string{"dasasd"},
-				Metrics:         "sdas2435asd",
-				PartID:          "A90650",
-			},
-		},
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-	}
-	addRequest := apimodel.OracleDatabaseAgreementsAddRequest{
-		AgreementID: "5051863",
-		PartsID: []string{
-			"L10006",
-			"A90620",
-		},
-		CSI:             "6871235",
-		ReferenceNumber: "10032246681",
+	addRequest := dto.AssociatedPartInOracleDbAgreementRequest{
+		AgreementID:     "AID001",
+		PartID:          "PID001",
+		CSI:             "CSI001",
+		ReferenceNumber: "RF0001",
 		Unlimited:       true,
 		Count:           30,
 		CatchAll:        true,
@@ -126,61 +80,53 @@ func TestAddOracleDatabaseAgreements_Success(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
-		GTECPUCores:    -1,
-		LTECPUCores:    -1,
-		LTECPUThreads:  -1,
-		LTEMemoryTotal: -1,
-		GTECPUThreads:  -1,
-		GTESwapTotal:   -1,
-		GTEMemoryTotal: -1,
-		LTESwapTotal:   -1,
-	}, "", false, -1, -1, "", "", utils.MAX_TIME).Return([]map[string]interface{}{
-		{"hostname": "test-db"},
-		{"hostname": "foobar"},
-		{"hostname": "ercsoldbx"},
-	}, nil)
+	gomock.InOrder(
+		db.EXPECT().SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
+			GTECPUCores:    -1,
+			LTECPUCores:    -1,
+			LTECPUThreads:  -1,
+			LTEMemoryTotal: -1,
+			GTECPUThreads:  -1,
+			GTESwapTotal:   -1,
+			GTEMemoryTotal: -1,
+			LTESwapTotal:   -1,
+		}, "", false, -1, -1, "", "", utils.MAX_TIME).Return([]map[string]interface{}{
+			{"hostname": "test-db"},
+			{"hostname": "foobar"},
+			{"hostname": "ercsoldbx"},
+		}, nil),
+		db.EXPECT().GetOracleDatabaseAgreement(addRequest.AgreementID).Return(nil, utils.AerrOracleDatabaseAgreementNotFound),
+		db.EXPECT().InsertOracleDatabaseAgreement(gomock.Any()).Do(func(actual model.OracleDatabaseAgreement) {
+			actual.ID = primitive.NilObjectID
 
-	db.EXPECT().InsertOracleDatabaseAgreement(gomock.Any()).Do(func(agr model.OracleDatabaseAgreement) {
-		assert.Equal(t, "5051863", agr.AgreementID)
-		assert.Equal(t, "6871235", agr.CSI)
-		assert.True(t, agr.CatchAll)
-		assert.Equal(t, 30, agr.Count)
-		assert.Equal(t, agr.Hosts, []string{
-			"test-db",
-			"ercsoldbx",
-		})
-		assert.Equal(t, "asdasdfdsfsdas", agr.ItemDescription)
-		assert.Equal(t, "sdasjkhasd", agr.Metrics)
-		assert.Equal(t, "A90620", agr.PartID)
-		assert.Equal(t, "10032246681", agr.ReferenceNumber)
-		assert.True(t, agr.Unlimited)
-	}).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5f4d0a4c9015f713a9c66107")}, nil).After(
-		db.EXPECT().InsertOracleDatabaseAgreement(gomock.Any()).Do(func(agr model.OracleDatabaseAgreement) {
-			assert.Equal(t, "5051863", agr.AgreementID)
-			assert.Equal(t, "6871235", agr.CSI)
-			assert.True(t, agr.CatchAll)
-			assert.Equal(t, 30, agr.Count)
-			assert.Equal(t, agr.Hosts, []string{
-				"test-db",
-				"ercsoldbx",
-			})
-			assert.Equal(t, "asdasdas", agr.ItemDescription)
-			assert.Equal(t, "sdsdfasasd", agr.Metrics)
-			assert.Equal(t, "L10006", agr.PartID)
-			assert.Equal(t, "10032246681", agr.ReferenceNumber)
-			assert.True(t, agr.Unlimited)
+			expected := model.OracleDatabaseAgreement{
+				AgreementID: "AID001",
+				CSI:         "CSI001",
+				Parts: []model.AssociatedPart{
+					{
+						ID:                 utils.Str2oid("000000000000000000000001"),
+						OracleDatabasePart: partsSample[0],
+						ReferenceNumber:    "RF0001",
+						Unlimited:          true,
+						Count:              30,
+						CatchAll:           true,
+						Hosts:              []string{"test-db", "ercsoldbx"},
+					},
+				},
+			}
+
+			assert.Equal(t, expected, actual)
 		}).Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5f4d0a2b27fe53da8a4aec45")}, nil),
 	)
-	res, err := as.AddOracleDatabaseAgreements(addRequest)
+
+	res, err := as.AddAssociatedPartToOracleDbAgreement(addRequest)
 	require.NoError(t, err)
-	assert.JSONEq(t, utils.ToJSON([]mongo.InsertOneResult{
-		{InsertedID: utils.Str2oid("5f4d0a2b27fe53da8a4aec45")},
-		{InsertedID: utils.Str2oid("5f4d0a4c9015f713a9c66107")},
-	}), utils.ToJSON(res))
+	assert.Equal(t,
+		"5f4d0a2b27fe53da8a4aec45",
+		res)
 }
 
-func TestAddOracleDatabaseAgreements_Fail1(t *testing.T) {
+func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -189,36 +135,111 @@ func TestAddOracleDatabaseAgreements_Fail1(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
-			{
-				ItemDescription: "asdasdas",
-				Aliases:         []string{"dasasd"},
-				Metrics:         "sdsdfasasd",
-				PartID:          "L10006",
-			},
-			{
-				ItemDescription: "asdasdfdsfsdas",
-				Aliases:         []string{"dasasd"},
-				Metrics:         "sdasjkhasd",
-				PartID:          "A90620",
-			},
-			{
-				ItemDescription: "asdsdfsdas",
-				Aliases:         []string{"dasasd"},
-				Metrics:         "sdas2435asd",
-				PartID:          "A90650",
-			},
-		},
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		OracleDatabaseAgreementParts: partsSample,
+		TimeNow:                      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID:                  utils.NewObjectIDForTests(),
 	}
-	addRequest := apimodel.OracleDatabaseAgreementsAddRequest{
-		AgreementID: "5051863",
-		PartsID: []string{
-			"L10006",
-			"A90620dsf",
+	addRequest := dto.AssociatedPartInOracleDbAgreementRequest{
+		AgreementID:     "AID001",
+		PartID:          "PID002",
+		CSI:             "CSI001",
+		ReferenceNumber: "RF0002",
+		Unlimited:       false,
+		Count:           33,
+		CatchAll:        true,
+		Hosts:           []string{"pippo", "pluto"},
+	}
+
+	alreadyExistsAgreement := model.OracleDatabaseAgreement{
+		ID:          utils.Str2oid("5f4d0a2b27fe53da8a4aec45"),
+		AgreementID: "AID001",
+		CSI:         "CSI001",
+		Parts: []model.AssociatedPart{
+			{
+				ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+				OracleDatabasePart: partsSample[0],
+				ReferenceNumber:    "RF0001",
+				Unlimited:          true,
+				Count:              30,
+				CatchAll:           false,
+				Hosts:              []string{"test-db", "ercsoldbx"},
+			},
 		},
-		CSI:             "6871235",
-		ReferenceNumber: "10032246681",
+	}
+
+	gomock.InOrder(
+		db.EXPECT().SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
+			GTECPUCores:    -1,
+			LTECPUCores:    -1,
+			LTECPUThreads:  -1,
+			LTEMemoryTotal: -1,
+			GTECPUThreads:  -1,
+			GTESwapTotal:   -1,
+			GTEMemoryTotal: -1,
+			LTESwapTotal:   -1,
+		}, "", false, -1, -1, "", "", utils.MAX_TIME).Return([]map[string]interface{}{
+			{"hostname": "pippo"},
+			{"hostname": "pluto"},
+		}, nil),
+		db.EXPECT().GetOracleDatabaseAgreement(addRequest.AgreementID).Return(&alreadyExistsAgreement, nil),
+		db.EXPECT().UpdateOracleDatabaseAgreement(gomock.Any()).Do(func(actual model.OracleDatabaseAgreement) {
+			expected := model.OracleDatabaseAgreement{
+				ID:          utils.Str2oid("5f4d0a2b27fe53da8a4aec45"),
+				AgreementID: "AID001",
+				CSI:         "CSI001",
+				Parts: []model.AssociatedPart{
+					{
+						ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+						OracleDatabasePart: partsSample[0],
+						ReferenceNumber:    "RF0001",
+						Unlimited:          true,
+						Count:              30,
+						CatchAll:           false,
+						Hosts:              []string{"test-db", "ercsoldbx"},
+					},
+					{
+						ID:                 utils.Str2oid("000000000000000000000001"),
+						OracleDatabasePart: partsSample[1],
+						ReferenceNumber:    "RF0002",
+						Unlimited:          false,
+						Count:              33,
+						CatchAll:           true,
+						Hosts:              []string{"pippo", "pluto"},
+					},
+				},
+			}
+
+			assert.Equal(t, expected, actual)
+		}).Return(nil),
+	)
+
+	res, err := as.AddAssociatedPartToOracleDbAgreement(addRequest)
+	require.NoError(t, err)
+	assert.Equal(t,
+		"5f4d0a2b27fe53da8a4aec45",
+		res)
+}
+
+func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+
+	as := APIService{
+		Database: db,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		OracleDatabaseAgreementParts: partsSample,
+		TimeNow:                      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID:                  utils.NewObjectIDForTests(),
+	}
+
+	addRequest := dto.AssociatedPartInOracleDbAgreementRequest{
+		AgreementID:     "AID001",
+		PartID:          "PID001",
+		CSI:             "CSI001",
+		ReferenceNumber: "RF0001",
 		Unlimited:       true,
 		Count:           30,
 		CatchAll:        true,
@@ -228,219 +249,210 @@ func TestAddOracleDatabaseAgreements_Fail1(t *testing.T) {
 		},
 	}
 
-	_, err := as.AddOracleDatabaseAgreements(addRequest)
-	require.Equal(t, err, utils.AerrOracleDatabaseAgreementInvalidPartID)
+	t.Run("Fail: can't find host", func(t *testing.T) {
+
+		gomock.InOrder(
+			db.EXPECT().SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
+				GTECPUCores:    -1,
+				LTECPUCores:    -1,
+				LTECPUThreads:  -1,
+				LTEMemoryTotal: -1,
+				GTECPUThreads:  -1,
+				GTESwapTotal:   -1,
+				GTEMemoryTotal: -1,
+				LTESwapTotal:   -1,
+			}, "", false, -1, -1, "", "", utils.MAX_TIME).Return([]map[string]interface{}{
+				{"hostname": "paperino"},
+				{"hostname": "pippo"},
+				{"hostname": "pluto"},
+			}, nil),
+		)
+
+		res, err := as.AddAssociatedPartToOracleDbAgreement(addRequest)
+		require.EqualError(t, err, utils.AerrHostNotFound.Error())
+
+		assert.Equal(t, "", res)
+
+	})
+
+	t.Run("Fail: can't find part", func(t *testing.T) {
+
+		addRequestWrongPart := dto.AssociatedPartInOracleDbAgreementRequest{
+			AgreementID:     "AID001",
+			PartID:          "xxxxxx",
+			CSI:             "CSI001",
+			ReferenceNumber: "RF0001",
+			Unlimited:       true,
+			Count:           30,
+			CatchAll:        true,
+			Hosts: []string{
+				"test-db",
+				"ercsoldbx",
+			},
+		}
+		gomock.InOrder(
+			db.EXPECT().SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
+				GTECPUCores:    -1,
+				LTECPUCores:    -1,
+				LTECPUThreads:  -1,
+				LTEMemoryTotal: -1,
+				GTECPUThreads:  -1,
+				GTESwapTotal:   -1,
+				GTEMemoryTotal: -1,
+				LTESwapTotal:   -1,
+			}, "", false, -1, -1, "", "", utils.MAX_TIME).Return([]map[string]interface{}{
+				{"hostname": "test-db"},
+				{"hostname": "ercsoldbx"},
+			}, nil),
+			db.EXPECT().GetOracleDatabaseAgreement(addRequest.AgreementID).Return(nil, utils.AerrOracleDatabaseAgreementNotFound),
+		)
+
+		res, err := as.AddAssociatedPartToOracleDbAgreement(addRequestWrongPart)
+
+		require.EqualError(t, err, utils.AerrOracleDatabaseAgreementInvalidPartID.Error())
+
+		assert.Equal(t, "", res)
+
+	})
 }
 
-func TestAddOracleDatabaseAgreements_Fail2(t *testing.T) {
+func TestUpdateAssociatedPartOfOracleDbAgreement(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
+
 	db := NewMockMongoDatabaseInterface(mockCtrl)
+
 	as := APIService{
 		Database: db,
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
-			{
-				ItemDescription: "asdasdas",
-				Aliases:         []string{"dasasd"},
-				Metrics:         "sdsdfasasd",
-				PartID:          "L10006",
-			},
-			{
-				ItemDescription: "asdasdfdsfsdas",
-				Aliases:         []string{"dasasd"},
-				Metrics:         "sdasjkhasd",
-				PartID:          "A90620",
-			},
-			{
-				ItemDescription: "asdsdfsdas",
-				Aliases:         []string{"dasasd"},
-				Metrics:         "sdas2435asd",
-				PartID:          "A90650",
-			},
-		},
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		OracleDatabaseAgreementParts: partsSample,
+		TimeNow:                      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID:                  utils.NewObjectIDForTests(),
 	}
-	addRequest := apimodel.OracleDatabaseAgreementsAddRequest{
-		AgreementID: "5051863",
-		PartsID: []string{
-			"L10006",
-			"A90620",
+
+	agreement := model.OracleDatabaseAgreement{
+		AgreementID: "AID001",
+		CSI:         "CSI001",
+		Parts: []model.AssociatedPart{
+			{
+				ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+				OracleDatabasePart: partsSample[0],
+				ReferenceNumber:    "RF0001",
+				Unlimited:          true,
+				Count:              30,
+				CatchAll:           true,
+				Hosts:              []string{"test-db", "ercsoldbx"},
+			},
 		},
-		CSI:             "6871235",
-		ReferenceNumber: "10032246681",
+	}
+
+	req := dto.AssociatedPartInOracleDbAgreementRequest{
+		ID:              "aaaaaaaaaaaaaaaaaaaaaaaa",
+		AgreementID:     "AID999",
+		PartID:          "PID002",
+		CSI:             "CSI999",
+		ReferenceNumber: "REFREF",
 		Unlimited:       true,
-		Count:           30,
-		CatchAll:        true,
-		Hosts: []string{
-			"test-db",
-			"ercsoldbx",
-		},
+		Count:           42,
+		CatchAll:        false,
+		Hosts:           []string{"foobar"},
 	}
 
-	db.EXPECT().SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
-		GTECPUCores:    -1,
-		LTECPUCores:    -1,
-		LTECPUThreads:  -1,
-		LTEMemoryTotal: -1,
-		GTECPUThreads:  -1,
-		GTESwapTotal:   -1,
-		GTEMemoryTotal: -1,
-		LTESwapTotal:   -1,
-	}, "", false, -1, -1, "", "", utils.MAX_TIME).Return(nil, aerrMock)
+	t.Run("Update successfully", func(t *testing.T) {
+		agrForGet := agreement
 
-	_, err := as.AddOracleDatabaseAgreements(addRequest)
-	assert.Equal(t, aerrMock, err)
-}
+		agrForUpdate := agreement
+		agrForUpdate.AgreementID = req.AgreementID
+		agrForUpdate.CSI = req.CSI
 
-func TestAddOracleDatabaseAgreements_Fail3(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		Config: config.Configuration{
-			ResourceFilePath: "../../resources",
-		},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
-			{
-				ItemDescription: "asdasdas",
-				Aliases:         []string{"dasasd"},
-				Metrics:         "sdsdfasasd",
-				PartID:          "L10006",
-			},
-			{
-				ItemDescription: "asdasdfdsfsdas",
-				Aliases:         []string{"dasasd"},
-				Metrics:         "sdasjkhasd",
-				PartID:          "A90620",
-			},
-			{
-				ItemDescription: "asdsdfsdas",
-				Aliases:         []string{"dasasd"},
-				Metrics:         "sdas2435asd",
-				PartID:          "A90650",
-			},
-		},
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-	}
-	addRequest := apimodel.OracleDatabaseAgreementsAddRequest{
-		AgreementID: "5051863",
-		PartsID: []string{
-			"L10006",
-			"A90620",
-		},
-		CSI:             "6871235",
-		ReferenceNumber: "10032246681",
-		Unlimited:       true,
-		Count:           30,
-		CatchAll:        true,
-		Hosts: []string{
-			"test-db",
-			"ercsoldbx",
-		},
-	}
+		agrPart := &agrForUpdate.Parts[0]
+		agrPart.ReferenceNumber = req.AgreementID
+		agrPart.Unlimited = req.Unlimited
+		agrPart.Count = req.Count
+		agrPart.CatchAll = req.CatchAll
+		agrPart.Hosts = req.Hosts
 
-	db.EXPECT().SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
-		GTECPUCores:    -1,
-		LTECPUCores:    -1,
-		LTECPUThreads:  -1,
-		LTEMemoryTotal: -1,
-		GTECPUThreads:  -1,
-		GTESwapTotal:   -1,
-		GTEMemoryTotal: -1,
-		LTESwapTotal:   -1,
-	}, "", false, -1, -1, "", "", utils.MAX_TIME).Return([]map[string]interface{}{
-		{"hostname": "test-db"},
-		{"hostname": "foobar"},
-	}, nil)
+		gomock.InOrder(
+			db.EXPECT().SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
+				GTECPUCores:    -1,
+				LTECPUCores:    -1,
+				LTECPUThreads:  -1,
+				LTEMemoryTotal: -1,
+				GTECPUThreads:  -1,
+				GTESwapTotal:   -1,
+				GTEMemoryTotal: -1,
+				LTESwapTotal:   -1,
+			}, "", false, -1, -1, "", "", utils.MAX_TIME).Return([]map[string]interface{}{
+				{"hostname": "test-db"},
+				{"hostname": "foobar"},
+				{"hostname": "ercsoldbx"},
+			}, nil),
+			db.EXPECT().GetOracleDatabaseAgreementByAssociatedPart(utils.Str2oid(req.ID)).
+				Return(&agrForGet, nil),
+			db.EXPECT().UpdateOracleDatabaseAgreement(agreement).Return(nil),
+		)
 
-	_, err := as.AddOracleDatabaseAgreements(addRequest)
-	assert.Equal(t, utils.AerrHostNotFound, err)
-}
+		err := as.UpdateAssociatedPartOfOracleDbAgreement(req)
+		require.NoError(t, err)
+	})
 
-func TestAddOracleDatabaseAgreements_Fail4(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		Config: config.Configuration{
-			ResourceFilePath: "../../resources",
-		},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
-			{
-				ItemDescription: "asdasdas",
-				Aliases:         []string{"dasasd"},
-				Metrics:         "sdsdfasasd",
-				PartID:          "L10006",
-			},
-			{
-				ItemDescription: "asdasdfdsfsdas",
-				Aliases:         []string{"dasasd"},
-				Metrics:         "sdasjkhasd",
-				PartID:          "A90620",
-			},
-			{
-				ItemDescription: "asdsdfsdas",
-				Aliases:         []string{"dasasd"},
-				Metrics:         "sdas2435asd",
-				PartID:          "A90650",
-			},
-		},
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-	}
-	addRequest := apimodel.OracleDatabaseAgreementsAddRequest{
-		AgreementID: "5051863",
-		PartsID: []string{
-			"L10006",
-			"A90620",
-		},
-		CSI:             "6871235",
-		ReferenceNumber: "10032246681",
-		Unlimited:       true,
-		Count:           30,
-		CatchAll:        true,
-		Hosts: []string{
-			"test-db",
-			"ercsoldbx",
-		},
-	}
+	t.Run("Fail: agreement not found", func(t *testing.T) {
+		gomock.InOrder(
+			db.EXPECT().SearchHosts("hostnames", []string{""},
+				database.SearchHostsFilters{
+					GTECPUCores:    -1,
+					LTECPUCores:    -1,
+					LTECPUThreads:  -1,
+					LTEMemoryTotal: -1,
+					GTECPUThreads:  -1,
+					GTESwapTotal:   -1,
+					GTEMemoryTotal: -1,
+					LTESwapTotal:   -1,
+				}, "", false, -1, -1, "", "", utils.MAX_TIME).
+				Return([]map[string]interface{}{
+					{"hostname": "test-db"},
+					{"hostname": "foobar"},
+					{"hostname": "ercsoldbx"},
+				}, nil),
+			db.EXPECT().GetOracleDatabaseAgreementByAssociatedPart(utils.Str2oid(req.ID)).
+				Return(nil, utils.AerrOracleDatabaseAgreementNotFound),
+		)
 
-	db.EXPECT().SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
-		GTECPUCores:    -1,
-		LTECPUCores:    -1,
-		LTECPUThreads:  -1,
-		LTEMemoryTotal: -1,
-		GTECPUThreads:  -1,
-		GTESwapTotal:   -1,
-		GTEMemoryTotal: -1,
-		LTESwapTotal:   -1,
-	}, "", false, -1, -1, "", "", utils.MAX_TIME).Return([]map[string]interface{}{
-		{"hostname": "test-db"},
-		{"hostname": "foobar"},
-		{"hostname": "ercsoldbx"},
-	}, nil)
+		err := as.UpdateAssociatedPartOfOracleDbAgreement(req)
+		assert.EqualError(t, err, utils.AerrOracleDatabaseAgreementNotFound.Error())
+	})
 
-	db.EXPECT().InsertOracleDatabaseAgreement(gomock.Any()).Do(func(agr model.OracleDatabaseAgreement) {
-		assert.Equal(t, "5051863", agr.AgreementID)
-		assert.Equal(t, "6871235", agr.CSI)
-		assert.True(t, agr.CatchAll)
-		assert.Equal(t, 30, agr.Count)
-		assert.Equal(t, agr.Hosts, []string{
-			"test-db",
-			"ercsoldbx",
-		})
-		assert.Equal(t, "asdasdas", agr.ItemDescription)
-		assert.Equal(t, "sdsdfasasd", agr.Metrics)
-		assert.Equal(t, "L10006", agr.PartID)
-		assert.Equal(t, "10032246681", agr.ReferenceNumber)
-		assert.True(t, agr.Unlimited)
-	}).Return(nil, aerrMock)
-	_, err := as.AddOracleDatabaseAgreements(addRequest)
-	assert.Equal(t, aerrMock, err)
+	t.Run("Fail: partID not valid", func(t *testing.T) {
+		agrForGet := agreement
+
+		gomock.InOrder(
+			db.EXPECT().SearchHosts("hostnames", []string{""},
+				database.SearchHostsFilters{
+					GTECPUCores:    -1,
+					LTECPUCores:    -1,
+					LTECPUThreads:  -1,
+					LTEMemoryTotal: -1,
+					GTECPUThreads:  -1,
+					GTESwapTotal:   -1,
+					GTEMemoryTotal: -1,
+					LTESwapTotal:   -1,
+				}, "", false, -1, -1, "", "", utils.MAX_TIME).
+				Return([]map[string]interface{}{
+					{"hostname": "test-db"},
+					{"hostname": "foobar"},
+					{"hostname": "ercsoldbx"},
+				}, nil),
+			db.EXPECT().GetOracleDatabaseAgreementByAssociatedPart(utils.Str2oid(req.ID)).
+				Return(&agrForGet, nil),
+		)
+
+		req.PartID = "this is a wrong partID"
+
+		err := as.UpdateAssociatedPartOfOracleDbAgreement(req)
+		assert.EqualError(t, err, utils.AerrOracleDatabaseAgreementInvalidPartID.Error())
+	})
 }
 
 func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
@@ -450,23 +462,25 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 	as := APIService{
 		Database: db,
 		Config:   config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
 			{
-				PartID:          "A90620",
+				PartID:          "PID002",
 				Aliases:         []string{"Partitioning"},
 				ItemDescription: "Oracle Partitioning",
-				Metrics:         "Processor Perpetual",
+				Metric:          model.AgreementPartMetricProcessorPerpetual,
+				// TODO Cost: ,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	returnedAgreements := []apimodel.OracleDatabaseAgreementFE{
+	returnedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
-			AgreementID:    "5051863",
-			AvailableCount: 7,
+			AgreementID:    "AID001",
+			AvailableCount: 0,
 			CatchAll:       false,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -476,15 +490,15 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   0,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			UsersCount:      0,
 			Count:           0,
 		},
 	}
-	returnedLicensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
+	returnedHosts := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			LicenseCount:  3,
@@ -494,13 +508,13 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
+	expectedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
-			AgreementID:    "5051863",
+			AgreementID:    "AID001",
 			AvailableCount: 0,
 			CatchAll:       false,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      3,
 					Hostname:                  "test-db",
@@ -511,9 +525,9 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   0,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			UsersCount:      0,
 			Count:           0,
@@ -521,9 +535,9 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 	}
 
 	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
-	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedLicensingObjects, nil)
+	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedHosts, nil)
 
-	res, err := as.SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilter{
+	res, err := as.SearchAssociatedPartsInOracleDatabaseAgreements(dto.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -544,23 +558,24 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 	as := APIService{
 		Database: db,
 		Config:   config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
 			{
-				PartID:          "A90620",
+				PartID:          "PID002",
 				Aliases:         []string{"Partitioning"},
 				ItemDescription: "Oracle Partitioning",
-				Metrics:         "Processor Perpetual",
+				Metric:          model.AgreementPartMetricProcessorPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	returnedAgreements := []apimodel.OracleDatabaseAgreementFE{
+	returnedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
-			AgreementID:    "5051863",
+			AgreementID:    "AID001",
 			AvailableCount: 7,
 			CatchAll:       false,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -570,15 +585,15 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   0,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			UsersCount:      0,
 			Count:           0,
 		},
 	}
-	returnedLicensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
+	returnedHosts := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			LicenseCount:  3,
@@ -589,9 +604,9 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 	}
 
 	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
-	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedLicensingObjects, nil)
+	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedHosts, nil)
 
-	res, err := as.SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilter{
+	res, err := as.SearchAssociatedPartsInOracleDatabaseAgreements(dto.SearchOracleDatabaseAgreementsFilter{
 		AgreementID:       "asddfa",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -602,30 +617,12 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	})
-	require.NoError(t, err)
-	assert.Empty(t, res)
-}
 
-func TestSearchOracleDatabaseAgreements_Failed1(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		Config:   config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
-			{
-				PartID:          "A90620",
-				Aliases:         []string{"Partitioning"},
-				ItemDescription: "Oracle Partitioning",
-				Metrics:         "Processor Perpetual",
-			},
-		},
-	}
+	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
+	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedHosts, nil)
 
-	db.EXPECT().ListOracleDatabaseAgreements().Return(nil, aerrMock)
-
-	_, err := as.SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilter{
+	res, err = as.SearchAssociatedPartsInOracleDatabaseAgreements(dto.SearchOracleDatabaseAgreementsFilter{
+		AgreementID:       "asddfa",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -635,7 +632,24 @@ func TestSearchOracleDatabaseAgreements_Failed1(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	})
-	require.Equal(t, aerrMock, err)
+
+	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
+	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedHosts, nil)
+
+	res, err = as.SearchAssociatedPartsInOracleDatabaseAgreements(dto.SearchOracleDatabaseAgreementsFilter{
+		AgreementID:       "asddfa",
+		Unlimited:         "NULL",
+		CatchAll:          "NULL",
+		AvailableCountGTE: -1,
+		AvailableCountLTE: -1,
+		LicensesCountGTE:  -1,
+		LicensesCountLTE:  -1,
+		UsersCountGTE:     -1,
+		UsersCountLTE:     -1,
+	})
+
+	require.NoError(t, err)
+	assert.Empty(t, res)
 }
 
 func TestSearchOracleDatabaseAgreements_Failed2(t *testing.T) {
@@ -645,23 +659,24 @@ func TestSearchOracleDatabaseAgreements_Failed2(t *testing.T) {
 	as := APIService{
 		Database: db,
 		Config:   config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
 			{
-				PartID:          "A90620",
+				PartID:          "PID002",
 				Aliases:         []string{"Partitioning"},
 				ItemDescription: "Oracle Partitioning",
-				Metrics:         "Processor Perpetual",
+				Metric:          model.AgreementPartMetricProcessorPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	returnedAgreements := []apimodel.OracleDatabaseAgreementFE{
+	returnedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
-			AgreementID:    "5051863",
+			AgreementID:    "AID001",
 			AvailableCount: 7,
 			CatchAll:       false,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -671,9 +686,9 @@ func TestSearchOracleDatabaseAgreements_Failed2(t *testing.T) {
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   0,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			UsersCount:      0,
 			Count:           0,
@@ -683,7 +698,7 @@ func TestSearchOracleDatabaseAgreements_Failed2(t *testing.T) {
 	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
 	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(nil, aerrMock)
 
-	_, err := as.SearchOracleDatabaseAgreements("", apimodel.SearchOracleDatabaseAgreementsFilter{
+	_, err := as.SearchAssociatedPartsInOracleDatabaseAgreements(dto.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -697,12 +712,12 @@ func TestSearchOracleDatabaseAgreements_Failed2(t *testing.T) {
 }
 
 func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
-	agg1 := apimodel.OracleDatabaseAgreementFE{
+	agg1 := dto.OracleDatabaseAgreementFE{
 		AgreementID:    "5051863",
 		AvailableCount: 7,
 		CatchAll:       true,
 		CSI:            "6871235",
-		Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+		Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 			{
 				CoveredLicensesCount:      -1,
 				Hostname:                  "test-db",
@@ -717,14 +732,14 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 		ItemDescription: "Oracle Partitioning",
 		LicensesCount:   30,
-		Metrics:         "Processor Perpetual",
+		Metric:          model.AgreementPartMetricProcessorPerpetual,
 		PartID:          "A90620",
 		ReferenceNumber: "10032246681",
 		Unlimited:       false,
 		UsersCount:      5,
 	}
 
-	assert.True(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.True(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -735,12 +750,12 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountLTE:     -1,
 	}))
 
-	assert.True(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.True(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
 		AgreementID:       "5051",
 		PartID:            "A9062",
 		ItemDescription:   "Partitioning",
 		CSI:               "6871",
-		Metrics:           "Processor Perpetual",
+		Metric:            model.AgreementPartMetricProcessorPerpetual,
 		ReferenceNumber:   "100322",
 		Unlimited:         "false",
 		CatchAll:          "true",
@@ -751,7 +766,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     0,
 		UsersCountLTE:     10,
 	}))
-	assert.True(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.True(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: 7,
@@ -762,7 +777,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountLTE:     5,
 	}))
 
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
 		AgreementID:       "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -773,7 +788,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
 		PartID:            "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -784,7 +799,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
 		ItemDescription:   "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -795,7 +810,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
 		CSI:               "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -806,8 +821,8 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
-		Metrics:           "fdgdfgsdsfg",
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
+		Metric:            "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -817,7 +832,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
 		ReferenceNumber:   "fdgdfgsdsfg",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -828,7 +843,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "true",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -838,7 +853,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "false",
 		AvailableCountGTE: -1,
@@ -848,7 +863,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -858,7 +873,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -868,7 +883,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -878,7 +893,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     0,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -888,7 +903,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     10,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -898,7 +913,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		UsersCountGTE:     -1,
 		UsersCountLTE:     -1,
 	}))
-	assert.False(t, CheckOracleDatabaseAgreementMatchFilter(agg1, apimodel.SearchOracleDatabaseAgreementsFilter{
+	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: 8,
@@ -910,44 +925,45 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 	}))
 }
 
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimitedCase(t *testing.T) {
+func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCase(t *testing.T) {
 	as := APIService{
 		Config: config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
 			{
-				PartID:          "A90620",
+				PartID:          "PID002",
 				Aliases:         []string{"Partitioning"},
 				ItemDescription: "Oracle Partitioning",
-				Metrics:         "Processor Perpetual",
+				Metric:          model.AgreementPartMetricProcessorPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	agreements := []apimodel.OracleDatabaseAgreementFE{
+	agreements := []dto.OracleDatabaseAgreementFE{
 		{
-			AgreementID:    "5051863",
+			AgreementID:    "AID001",
 			AvailableCount: 7,
 			CatchAll:       false,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
-					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
+					CoveredLicensesCount:      0,
 					TotalCoveredLicensesCount: 0,
 				},
 			},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   0,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			UsersCount:      0,
 			Count:           0,
 		},
 	}
-	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
+	hosts := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			LicenseCount:  3,
@@ -957,13 +973,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
+	expectedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
-			AgreementID:    "5051863",
+			AgreementID:    "AID001",
 			AvailableCount: 0,
 			CatchAll:       false,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      3,
 					Hostname:                  "test-db",
@@ -974,40 +990,41 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimite
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   0,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			UsersCount:      0,
 			Count:           0,
 		},
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
+	as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
 
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcessorPerpetualCase(t *testing.T) {
+func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *testing.T) {
 	as := APIService{
 		Config: config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
 			{
-				PartID:          "A90620",
+				PartID:          "PID002",
 				Aliases:         []string{"Partitioning"},
 				ItemDescription: "Oracle Partitioning",
-				Metrics:         "Processor Perpetual",
+				Metric:          model.AgreementPartMetricProcessorPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	agreements := []apimodel.OracleDatabaseAgreementFE{
+	agreements := []dto.OracleDatabaseAgreementFE{
 		{
-			AgreementID:    "5051863",
-			AvailableCount: 7,
+			AgreementID:    "AID001",
+			AvailableCount: 5,
 			CatchAll:       false,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -1017,15 +1034,15 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   5,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
 			Count:           5,
 		},
 	}
-	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
+	hosts := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			LicenseCount:  3,
@@ -1035,13 +1052,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
+	expectedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
-			AgreementID:    "5051863",
-			AvailableCount: 0,
+			AgreementID:    "AID001",
+			AvailableCount: 2,
 			CatchAll:       false,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      3,
 					Hostname:                  "test-db",
@@ -1052,40 +1069,41 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcesso
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   5,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           2,
+			Count:           5,
 		},
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
+	as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
 
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUserPlusCase(t *testing.T) {
+func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testing.T) {
 	as := APIService{
 		Config: config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
 			{
-				PartID:          "A90620",
+				PartID:          "PID002",
 				Aliases:         []string{"Partitioning"},
 				ItemDescription: "Oracle Partitioning",
-				Metrics:         "Named User Plus Perpetual",
+				Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	agreements := []apimodel.OracleDatabaseAgreementFE{
+	agreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
-			AvailableCount: 7,
+			AvailableCount: 250,
 			CatchAll:       false,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -1095,74 +1113,75 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUse
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   0,
-			Metrics:         "Named User Plus Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       false,
-			UsersCount:      10,
-			Count:           10,
+			UsersCount:      250,
+			Count:           250,
 		},
 	}
-	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
+	hosts := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
-			LicenseCount:  128,
+			LicenseCount:  5,
 			LicenseName:   "Partitioning",
-			OriginalCount: 128,
+			OriginalCount: 5,
 			Type:          "host",
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
+	expectedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
-			AvailableCount: -3,
+			AvailableCount: 125,
 			CatchAll:       false,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      125,
 					Hostname:                  "test-db",
 					TotalCoveredLicensesCount: 125,
-					ConsumedLicensesCount:     128,
+					ConsumedLicensesCount:     125,
 				},
 			},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   0,
-			Metrics:         "Named User Plus Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       false,
-			UsersCount:      10,
-			Count:           5,
+			UsersCount:      250,
+			Count:           250,
 		},
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
+	as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
 
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedAgreement(t *testing.T) {
+func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 	as := APIService{
 		Config: config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
 			{
-				PartID:          "A90620",
+				PartID:          "PID002",
 				Aliases:         []string{"Partitioning"},
 				ItemDescription: "Oracle Partitioning",
-				Metrics:         "Processor Perpetual",
+				Metric:          model.AgreementPartMetricProcessorPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
-	agreements := []apimodel.OracleDatabaseAgreementFE{
+	agreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
-			AvailableCount: 7,
+			AvailableCount: 5,
 			CatchAll:       false,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -1177,15 +1196,15 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedAgreemen
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   5,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
 			Count:           5,
 		},
 	}
-	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
+	hosts := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			LicenseCount:  3,
@@ -1202,13 +1221,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedAgreemen
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
+	expectedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: -2,
 			CatchAll:       false,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      4,
 					Hostname:                  "test-db2",
@@ -1225,40 +1244,41 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedAgreemen
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   5,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           0,
+			Count:           5,
 		},
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
+	as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
 
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *testing.T) {
+func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 	as := APIService{
 		Config: config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
 			{
-				PartID:          "A90620",
+				PartID:          "PID002",
 				Aliases:         []string{"Partitioning"},
 				ItemDescription: "Oracle Partitioning",
-				Metrics:         "Processor Perpetual",
+				Metric:          model.AgreementPartMetricProcessorPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	agreements := []apimodel.OracleDatabaseAgreementFE{
+	agreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
-			AvailableCount: 7,
+			AvailableCount: 5,
 			CatchAll:       false,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -1268,19 +1288,19 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   5,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
 			Count:           5,
 		},
 		{
 			AgreementID:    "5051863",
-			AvailableCount: 7,
+			AvailableCount: 10,
 			CatchAll:       false,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      0,
 					Hostname:                  "test-db",
@@ -1290,15 +1310,15 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   10,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
 			Count:           10,
 		},
 	}
-	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
+	hosts := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			LicenseCount:  20,
@@ -1308,13 +1328,13 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
+	expectedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: -5,
 			CatchAll:       false,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      10,
 					Hostname:                  "test-db",
@@ -1325,19 +1345,19 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   10,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           0,
+			Count:           10,
 		},
 		{
 			AgreementID:    "5051863",
 			AvailableCount: -5,
 			CatchAll:       false,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
 					CoveredLicensesCount:      5,
 					Hostname:                  "test-db",
@@ -1348,249 +1368,253 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SharedHost(t *
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   5,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
-			Unlimited:       false,
-			UsersCount:      0,
-			Count:           0,
-		},
-	}
-
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
-
-	assert.Equal(t, expectedAgreements, agreements)
-}
-
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleUnlimitedCaseNoAssociatedHost(t *testing.T) {
-	as := APIService{
-		Config: config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
-			{
-				PartID:          "A90620",
-				Aliases:         []string{"Partitioning"},
-				ItemDescription: "Oracle Partitioning",
-				Metrics:         "Processor Perpetual",
-			},
-		},
-	}
-
-	agreements := []apimodel.OracleDatabaseAgreementFE{
-		{
-			AgreementID:     "5051863",
-			AvailableCount:  7,
-			CatchAll:        true,
-			CSI:             "6871235",
-			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
-			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			ItemDescription: "Oracle Partitioning",
-			LicensesCount:   0,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
-			Unlimited:       true,
-			UsersCount:      0,
-			Count:           0,
-		},
-	}
-	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
-		{
-			Name:          "test-db",
-			LicenseCount:  3,
-			LicenseName:   "Partitioning",
-			OriginalCount: 3,
-			Type:          "host",
-		},
-	}
-
-	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
-		{
-			AgreementID:     "5051863",
-			AvailableCount:  -0,
-			CatchAll:        true,
-			CSI:             "6871235",
-			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
-			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			ItemDescription: "Oracle Partitioning",
-			LicensesCount:   0,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
-			Unlimited:       true,
-			UsersCount:      0,
-			Count:           0,
-		},
-	}
-
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
-
-	assert.Equal(t, expectedAgreements, agreements)
-}
-
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleProcessorPerpetualCaseNoAssociatedHost(t *testing.T) {
-	as := APIService{
-		Config: config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
-			{
-				PartID:          "A90620",
-				Aliases:         []string{"Partitioning"},
-				ItemDescription: "Oracle Partitioning",
-				Metrics:         "Processor Perpetual",
-			},
-		},
-	}
-
-	agreements := []apimodel.OracleDatabaseAgreementFE{
-		{
-			AgreementID:     "5051863",
-			AvailableCount:  7,
-			CatchAll:        true,
-			CSI:             "6871235",
-			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
-			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			ItemDescription: "Oracle Partitioning",
-			LicensesCount:   5,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
 			Count:           5,
 		},
 	}
-	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
-		{
-			Name:          "test-db",
-			LicenseCount:  3,
-			LicenseName:   "Partitioning",
-			OriginalCount: 3,
-			Type:          "host",
+
+	as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+
+	assert.Equal(t, expectedAgreements, agreements)
+}
+
+func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCaseNoAssociatedHost(t *testing.T) {
+	as := APIService{
+		Config: config.Configuration{},
+		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
+			{
+				PartID:          "PID002",
+				Aliases:         []string{"Partitioning"},
+				ItemDescription: "Oracle Partitioning",
+				Metric:          model.AgreementPartMetricProcessorPerpetual,
+			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
+	agreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:     "5051863",
 			AvailableCount:  0,
 			CatchAll:        true,
-			CSI:             "6871235",
-			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
-			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			ItemDescription: "Oracle Partitioning",
-			LicensesCount:   5,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
-			Unlimited:       false,
-			UsersCount:      0,
-			Count:           2,
-		},
-	}
-
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
-
-	assert.Equal(t, expectedAgreements, agreements)
-}
-
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_SimpleNamedUserPlusCaseNoAssociatedHost(t *testing.T) {
-	as := APIService{
-		Config: config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
-			{
-				PartID:          "A90620",
-				Aliases:         []string{"Partitioning"},
-				ItemDescription: "Oracle Partitioning",
-				Metrics:         "Named User Plus Perpetual",
-			},
-		},
-	}
-
-	agreements := []apimodel.OracleDatabaseAgreementFE{
-		{
-			AgreementID:     "5051863",
-			AvailableCount:  7,
-			CatchAll:        true,
-			CSI:             "6871235",
-			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
+			CSI:             "CSI001",
+			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   0,
-			Metrics:         "Named User Plus Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
-			Unlimited:       false,
-			UsersCount:      10,
-			Count:           10,
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
+			Unlimited:       true,
+			UsersCount:      0,
+			Count:           0,
 		},
 	}
-	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
+	hosts := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
-			LicenseCount:  128,
+			LicenseCount:  3,
 			LicenseName:   "Partitioning",
-			OriginalCount: 128,
+			OriginalCount: 3,
 			Type:          "host",
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
+	expectedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:     "5051863",
-			AvailableCount:  -3,
+			AvailableCount:  0,
 			CatchAll:        true,
-			CSI:             "6871235",
-			Hosts:           []apimodel.OracleDatabaseAgreementAssociatedHostFE{},
+			CSI:             "CSI001",
+			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   0,
-			Metrics:         "Named User Plus Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
-			Unlimited:       false,
-			UsersCount:      10,
-			Count:           5,
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
+			Unlimited:       true,
+			UsersCount:      0,
+			Count:           0,
 		},
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
+	as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
 
 	assert.Equal(t, expectedAgreements, agreements)
 }
 
-func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_CompleCase1(t *testing.T) {
+func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAssociatedHost(t *testing.T) {
 	as := APIService{
 		Config: config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabaseAgreementPart{
+		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
 			{
-				PartID:          "A90620",
+				PartID:          "PID002",
 				Aliases:         []string{"Partitioning"},
 				ItemDescription: "Oracle Partitioning",
-				Metrics:         "Processor Perpetual",
+				Metric:          model.AgreementPartMetricProcessorPerpetual,
 			},
+		},
+		NewObjectID: utils.NewObjectIDForTests(),
+	}
+
+	agreements := []dto.OracleDatabaseAgreementFE{
+		{
+			AgreementID:     "5051863",
+			AvailableCount:  5,
+			CatchAll:        true,
+			CSI:             "CSI001",
+			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   5,
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
+			Unlimited:       false,
+			UsersCount:      0,
+			Count:           5,
+		},
+	}
+	hosts := []dto.HostUsingOracleDatabaseLicenses{
+		{
+			Name:          "test-db",
+			LicenseCount:  3,
+			LicenseName:   "Partitioning",
+			OriginalCount: 3,
+			Type:          "host",
 		},
 	}
 
-	agreements := []apimodel.OracleDatabaseAgreementFE{
+	expectedAgreements := []dto.OracleDatabaseAgreementFE{
+		{
+			AgreementID:     "5051863",
+			AvailableCount:  2,
+			CatchAll:        true,
+			CSI:             "CSI001",
+			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   5,
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
+			Unlimited:       false,
+			UsersCount:      0,
+			Count:           5,
+		},
+	}
+
+	as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+
+	assert.Equal(t, expectedAgreements, agreements)
+}
+
+func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociatedHost(t *testing.T) {
+	as := APIService{
+		Config: config.Configuration{},
+		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
+			{
+				PartID:          "PID002",
+				Aliases:         []string{"Partitioning"},
+				ItemDescription: "Oracle Partitioning",
+				Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
+			},
+		},
+		NewObjectID: utils.NewObjectIDForTests(),
+	}
+
+	agreements := []dto.OracleDatabaseAgreementFE{
+		{
+			AgreementID:     "5051863",
+			AvailableCount:  200,
+			CatchAll:        true,
+			CSI:             "CSI001",
+			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   0,
+			Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
+			Unlimited:       false,
+			UsersCount:      200,
+			Count:           200,
+		},
+	}
+	hosts := []dto.HostUsingOracleDatabaseLicenses{
+		{
+			Name:          "test-db",
+			LicenseCount:  5,
+			LicenseName:   "Partitioning",
+			OriginalCount: 5,
+			Type:          "host",
+		},
+	}
+
+	expectedAgreements := []dto.OracleDatabaseAgreementFE{
+		{
+			AgreementID:     "5051863",
+			AvailableCount:  75,
+			CatchAll:        true,
+			CSI:             "CSI001",
+			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			LicensesCount:   0,
+			Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
+			Unlimited:       false,
+			UsersCount:      200,
+			Count:           200,
+		},
+	}
+
+	as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+
+	assert.Equal(t, expectedAgreements, agreements)
+}
+
+func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
+	as := APIService{
+		Config: config.Configuration{},
+		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
+			{
+				PartID:          "PID002",
+				Aliases:         []string{"Partitioning"},
+				ItemDescription: "Oracle Partitioning",
+				Metric:          model.AgreementPartMetricProcessorPerpetual,
+			},
+		},
+		NewObjectID: utils.NewObjectIDForTests(),
+	}
+
+	agreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
-			AvailableCount: 7,
+			AvailableCount: 10,
 			CatchAll:       true,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{Hostname: "test-db"},
 			},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   10,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
 			Count:           10,
 		},
 	}
-	licensingObjects := []apimodel.HostUsingOracleDatabaseLicenses{
+	hosts := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			LicenseCount:  3,
@@ -1607,35 +1631,39 @@ func TestGreedilyAssignOracleDatabaseAgreementsToLicensingObjects_CompleCase1(t 
 		},
 	}
 
-	expectedAgreements := []apimodel.OracleDatabaseAgreementFE{
+	expectedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
 			AvailableCount: -13,
 			CatchAll:       true,
-			CSI:            "6871235",
-			Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
-				{Hostname: "test-db", CoveredLicensesCount: 3, TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 3},
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+				{
+					Hostname:                  "test-db",
+					CoveredLicensesCount:      3,
+					TotalCoveredLicensesCount: 3,
+					ConsumedLicensesCount:     3,
+				},
 			},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			LicensesCount:   10,
-			Metrics:         "Processor Perpetual",
-			PartID:          "A90620",
-			ReferenceNumber: "10032246681",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           0,
+			Count:           10,
 		},
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agreements, licensingObjects)
+	as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
 
 	assert.Equal(t, expectedAgreements, agreements)
-
 }
 
-func TestSortOracleDatabaseAgreementLicensingObjects(t *testing.T) {
-	list := []apimodel.HostUsingOracleDatabaseLicenses{
+func TestSortHostsUsingLicenses(t *testing.T) {
+	list := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			LicenseName:  "Diagnostics Pack",
 			Name:         "Puzzait",
@@ -1668,7 +1696,7 @@ func TestSortOracleDatabaseAgreementLicensingObjects(t *testing.T) {
 		},
 	}
 
-	expected := []apimodel.HostUsingOracleDatabaseLicenses{
+	expected := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			LicenseName:  "Oracle ENT",
 			Name:         "Puzzait",
@@ -1707,7 +1735,7 @@ func TestSortOracleDatabaseAgreementLicensingObjects(t *testing.T) {
 }
 
 func TestSortOracleDatabaseAgreements(t *testing.T) {
-	list := []apimodel.OracleDatabaseAgreementFE{
+	list := []dto.OracleDatabaseAgreementFE{
 		{CatchAll: true, Unlimited: false, UsersCount: 10},
 		{CatchAll: true, Unlimited: false, LicensesCount: 10},
 		{CatchAll: true, Unlimited: true, UsersCount: 20},
@@ -1726,7 +1754,7 @@ func TestSortOracleDatabaseAgreements(t *testing.T) {
 		{CatchAll: true, Unlimited: false, UsersCount: 20},
 	}
 
-	expected := []apimodel.OracleDatabaseAgreementFE{
+	expected := []dto.OracleDatabaseAgreementFE{
 		{CatchAll: false, Unlimited: false, UsersCount: 20},
 		{CatchAll: false, Unlimited: false, UsersCount: 10},
 		{CatchAll: false, Unlimited: false, LicensesCount: 20},
@@ -1751,16 +1779,16 @@ func TestSortOracleDatabaseAgreements(t *testing.T) {
 }
 
 func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
-	partsMap := map[string]*model.OracleDatabaseAgreementPart{
+	partsMap := map[string]*model.OracleDatabasePart{
 		"L10005": {
 			PartID:          "L10005",
 			ItemDescription: "Oracle Real Application Clusters",
-			Metrics:         "Named User Plus Perpetual",
+			Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
 			Aliases:         []string{"Real Application Clusters", "RAC or RAC One Node"},
 		},
 	}
 
-	licensingObjectsMap := map[string]map[string]*apimodel.HostUsingOracleDatabaseLicenses{
+	hostsMap := map[string]map[string]*dto.HostUsingOracleDatabaseLicenses{
 		"Real Application Clusters": {
 			"test-db1": {
 				LicenseCount: 10,
@@ -1782,9 +1810,9 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 		},
 	}
 
-	agr := apimodel.OracleDatabaseAgreementFE{
+	agr := dto.OracleDatabaseAgreementFE{
 		PartID: "L10005",
-		Hosts: []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+		Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 			{Hostname: "test-db2"},
 			{Hostname: "test-db1"},
 			{Hostname: "test-db4"},
@@ -1792,20 +1820,20 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 		},
 	}
 
-	expected := []apimodel.OracleDatabaseAgreementAssociatedHostFE{
+	expected := []dto.OracleDatabaseAgreementAssociatedHostFE{
 		{Hostname: "test-db4"},
 		{Hostname: "test-db2"},
 		{Hostname: "test-db1"},
 		{Hostname: "test-db3"},
 	}
 
-	sortAssociatedHostsInOracleDatabaseAgreement(agr, licensingObjectsMap, partsMap)
+	sortHostsInAgreementByLicenseCount(&agr, hostsMap, partsMap)
 
 	assert.Equal(t, expected, agr.Hosts)
 }
 
-func TestBuildOracleDatabaseLicensingObjectsMap(t *testing.T) {
-	list := []apimodel.HostUsingOracleDatabaseLicenses{
+func TestBuildHostUsingLicensesMap(t *testing.T) {
+	list := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			LicenseName:  "Oracle ENT",
 			Name:         "Puzzait",
@@ -1838,7 +1866,7 @@ func TestBuildOracleDatabaseLicensingObjectsMap(t *testing.T) {
 		},
 	}
 
-	expected := map[string]map[string]*apimodel.HostUsingOracleDatabaseLicenses{
+	expected := map[string]map[string]*dto.HostUsingOracleDatabaseLicenses{
 		"Oracle ENT": {
 			"Puzzait":  &list[0],
 			"test-db3": &list[4],
@@ -1852,311 +1880,437 @@ func TestBuildOracleDatabaseLicensingObjectsMap(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, expected, buildOracleDatabaseLicensingObjectsMap(list))
+	assert.Equal(t, expected, buildHostUsingLicensesMap(list))
 }
 
-func TestBuildOracleDatabaseAgreementPartMap(t *testing.T) {
-	list := []model.OracleDatabaseAgreementPart{
+func TestBuildAgreementPartMap(t *testing.T) {
+	list := []model.OracleDatabasePart{
 		{
-			ItemDescription: "asdasdas",
-			Aliases:         []string{"dasasd"},
-			Metrics:         "sdsdfasasd",
-			PartID:          "L10006",
+			ItemDescription: "itemDesc1",
+			Aliases:         []string{"alias1"},
+			Metric:          "metric1",
+			PartID:          "PID001",
 		},
 		{
-			ItemDescription: "asdasdfdsfsdas",
-			Aliases:         []string{"dasasd"},
-			Metrics:         "sdasjkhasd",
-			PartID:          "A90620",
+			ItemDescription: "itemDesc2",
+			Aliases:         []string{"alias1"},
+			Metric:          "metric2",
+			PartID:          "PID002",
 		},
 	}
 
-	expected := map[string]*model.OracleDatabaseAgreementPart{
-		"L10006": &list[0],
-		"A90620": &list[1],
+	expected := map[string]*model.OracleDatabasePart{
+		"PID001": &list[0],
+		"PID002": &list[1],
 	}
 
-	assert.Equal(t, expected, buildOracleDatabaseAgreementPartMap(list))
+	assert.Equal(t, expected, buildAgreementPartMap(list))
 }
 
-func TestAddAssociatedHostToOracleDatabaseAgreement_Success(t *testing.T) {
+func TestDeleteAssociatedPartFromOracleDatabaseAgreement(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
+
 	as := APIService{
 		Database: db,
-		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		OracleDatabaseAgreementParts: partsSample,
+		TimeNow:                      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID:                  utils.NewObjectIDForTests(),
 	}
 
-	returnedAgg := model.OracleDatabaseAgreement{
-		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-		AgreementID:     "abcde",
-		CSI:             "435435",
-		CatchAll:        true,
-		Count:           345,
-		Hosts:           []string{"foo", "bar"},
-		ItemDescription: "fgfgd",
-		Metrics:         "Processor Perpetual",
-		PartID:          "678867",
-		ReferenceNumber: "567768",
-		Unlimited:       true,
-	}
+	associatedPartID := utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")
 
-	updatedAgg := model.OracleDatabaseAgreement{
-		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-		AgreementID:     "abcde",
-		CSI:             "435435",
-		CatchAll:        true,
-		Count:           345,
-		Hosts:           []string{"foo", "bar", "foohost"},
-		ItemDescription: "fgfgd",
-		Metrics:         "Processor Perpetual",
-		PartID:          "678867",
-		ReferenceNumber: "567768",
-		Unlimited:       true,
-	}
+	t.Run("Fail: can't find associated part", func(t *testing.T) {
+		gomock.InOrder(
+			db.EXPECT().GetOracleDatabaseAgreementByAssociatedPart(associatedPartID).
+				Return(nil, utils.AerrOracleDatabaseAssociatedPartNotFound),
+		)
 
-	db.EXPECT().ExistNotInClusterHost("foohost").Return(true, nil)
-	db.EXPECT().FindOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(returnedAgg, nil)
-	db.EXPECT().UpdateOracleDatabaseAgreement(updatedAgg).Return(nil)
+		err := as.DeleteAssociatedPartFromOracleDatabaseAgreement(associatedPartID)
+		require.EqualError(t, err, utils.AerrOracleDatabaseAssociatedPartNotFound.Error())
+	})
 
-	err := as.AddAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost")
-	require.NoError(t, err)
+	t.Run("Success with only one associated part", func(t *testing.T) {
+		agreement := model.OracleDatabaseAgreement{
+			AgreementID: "AID001",
+			CSI:         "CSI001",
+			Parts: []model.AssociatedPart{
+				{
+					ID:                 associatedPartID,
+					OracleDatabasePart: partsSample[0],
+					ReferenceNumber:    "RF0001",
+					Unlimited:          true,
+					Count:              30,
+					CatchAll:           true,
+					Hosts:              []string{"test-db", "ercsoldbx"},
+				},
+			},
+		}
+
+		gomock.InOrder(
+			db.EXPECT().GetOracleDatabaseAgreementByAssociatedPart(associatedPartID).
+				Return(&agreement, nil),
+			db.EXPECT().RemoveOracleDatabaseAgreement(agreement.ID).
+				Return(nil),
+		)
+
+		err := as.DeleteAssociatedPartFromOracleDatabaseAgreement(associatedPartID)
+		assert.Nil(t, err)
+	})
+
+	t.Run("Success with multiple associated parts", func(t *testing.T) {
+		agreement := model.OracleDatabaseAgreement{
+			AgreementID: "AID001",
+			CSI:         "CSI001",
+			Parts: []model.AssociatedPart{
+				{
+					ID:                 associatedPartID,
+					OracleDatabasePart: partsSample[0],
+					ReferenceNumber:    "RF0001",
+					Unlimited:          true,
+					Count:              30,
+					CatchAll:           true,
+					Hosts:              []string{"test-db", "ercsoldbx"},
+				},
+				{
+					ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+					OracleDatabasePart: partsSample[1],
+					ReferenceNumber:    "RF0002",
+					Unlimited:          false,
+					Count:              42,
+					CatchAll:           true,
+					Hosts:              []string{"test-db", "ercsoldbx"},
+				},
+			},
+		}
+
+		agreementResult := model.OracleDatabaseAgreement{
+			AgreementID: "AID001",
+			CSI:         "CSI001",
+			Parts: []model.AssociatedPart{
+				{
+					ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+					OracleDatabasePart: partsSample[1],
+					ReferenceNumber:    "RF0002",
+					Unlimited:          false,
+					Count:              42,
+					CatchAll:           true,
+					Hosts:              []string{"test-db", "ercsoldbx"},
+				},
+			},
+		}
+		gomock.InOrder(
+			db.EXPECT().GetOracleDatabaseAgreementByAssociatedPart(associatedPartID).
+				Return(&agreement, nil),
+			db.EXPECT().UpdateOracleDatabaseAgreement(agreementResult).
+				Return(nil),
+		)
+
+		err := as.DeleteAssociatedPartFromOracleDatabaseAgreement(associatedPartID)
+		assert.Nil(t, err)
+	})
 }
 
-func TestAddAssociatedHostToOracleDatabaseAgreement_SuccessHostIsAlreadyAssociated(t *testing.T) {
+func TestAddHostToAssociatedPart(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
+
 	as := APIService{
 		Database: db,
-		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		OracleDatabaseAgreementParts: partsSample,
+		TimeNow:                      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID:                  utils.NewObjectIDForTests(),
 	}
 
-	agr := model.OracleDatabaseAgreement{
-		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-		AgreementID:     "abcde",
-		CSI:             "435435",
-		CatchAll:        true,
-		Count:           345,
-		Hosts:           []string{"foo", "bar", "foohost"},
-		ItemDescription: "fgfgd",
-		Metrics:         "Processor Perpetual",
-		PartID:          "678867",
-		ReferenceNumber: "567768",
-		Unlimited:       true,
-	}
+	anotherAssociatedPartID := utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb")
+	t.Run("Fail: can't find associated part", func(t *testing.T) {
 
-	db.EXPECT().ExistNotInClusterHost("foohost").Return(true, nil)
-	db.EXPECT().FindOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(agr, nil)
+		gomock.InOrder(
+			db.EXPECT().GetOracleDatabaseAgreementByAssociatedPart(anotherAssociatedPartID).
+				Return(nil, utils.AerrOracleDatabaseAssociatedPartNotFound),
+		)
 
-	err := as.AddAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost")
-	require.NoError(t, err)
+		err := as.AddHostToAssociatedPart(anotherAssociatedPartID, "pippo")
+		require.EqualError(t, err, utils.AerrOracleDatabaseAssociatedPartNotFound.Error())
+	})
+
+	associatedPartID := utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")
+
+	t.Run("Success with only one associated part", func(t *testing.T) {
+		agreement := model.OracleDatabaseAgreement{
+			AgreementID: "AID001",
+			CSI:         "CSI001",
+			Parts: []model.AssociatedPart{
+				{
+					ID:                 associatedPartID,
+					OracleDatabasePart: partsSample[0],
+					ReferenceNumber:    "RF0001",
+					Unlimited:          true,
+					Count:              30,
+					CatchAll:           true,
+					Hosts:              []string{"test-db", "ercsoldbx"},
+				},
+			},
+		}
+
+		agreementPostAdd := model.OracleDatabaseAgreement{
+			AgreementID: "AID001",
+			CSI:         "CSI001",
+			Parts: []model.AssociatedPart{
+				{
+					ID:                 associatedPartID,
+					OracleDatabasePart: partsSample[0],
+					ReferenceNumber:    "RF0001",
+					Unlimited:          true,
+					Count:              30,
+					CatchAll:           true,
+					Hosts:              []string{"test-db", "ercsoldbx", "foobar"},
+				},
+			},
+		}
+
+		gomock.InOrder(
+			db.EXPECT().GetOracleDatabaseAgreementByAssociatedPart(associatedPartID).
+				Return(&agreement, nil),
+			db.EXPECT().SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
+				GTECPUCores:    -1,
+				LTECPUCores:    -1,
+				LTECPUThreads:  -1,
+				LTEMemoryTotal: -1,
+				GTECPUThreads:  -1,
+				GTESwapTotal:   -1,
+				GTEMemoryTotal: -1,
+				LTESwapTotal:   -1,
+			}, "", false, -1, -1, "", "", utils.MAX_TIME).Return([]map[string]interface{}{
+				{"hostname": "test-db"},
+				{"hostname": "foobar"},
+				{"hostname": "ercsoldbx"},
+			}, nil),
+			db.EXPECT().UpdateOracleDatabaseAgreement(agreementPostAdd).
+				Return(nil),
+		)
+
+		err := as.AddHostToAssociatedPart(associatedPartID, "foobar")
+		assert.Nil(t, err)
+	})
+
+	t.Run("Success with multiple associated parts", func(t *testing.T) {
+
+		agreement := model.OracleDatabaseAgreement{
+			AgreementID: "AID001",
+			CSI:         "CSI001",
+			Parts: []model.AssociatedPart{
+				{
+					ID:                 associatedPartID,
+					OracleDatabasePart: partsSample[0],
+					ReferenceNumber:    "RF0001",
+					Unlimited:          true,
+					Count:              30,
+					CatchAll:           true,
+					Hosts:              []string{"test-db", "ercsoldbx"},
+				},
+				{
+					ID:                 anotherAssociatedPartID,
+					OracleDatabasePart: partsSample[1],
+					ReferenceNumber:    "RF0002",
+					Unlimited:          false,
+					Count:              42,
+					CatchAll:           false,
+					Hosts:              []string{"test-db", "ercsoldbx"},
+				},
+			},
+		}
+
+		agreementPostAdd := model.OracleDatabaseAgreement{
+			AgreementID: "AID001",
+			CSI:         "CSI001",
+			Parts: []model.AssociatedPart{
+				{
+					ID:                 associatedPartID,
+					OracleDatabasePart: partsSample[0],
+					ReferenceNumber:    "RF0001",
+					Unlimited:          true,
+					Count:              30,
+					CatchAll:           true,
+					Hosts:              []string{"test-db", "ercsoldbx"},
+				},
+				{
+					ID:                 anotherAssociatedPartID,
+					OracleDatabasePart: partsSample[1],
+					ReferenceNumber:    "RF0002",
+					Unlimited:          false,
+					Count:              42,
+					CatchAll:           false,
+					Hosts:              []string{"test-db", "ercsoldbx", "foobar"},
+				},
+			},
+		}
+
+		gomock.InOrder(
+			db.EXPECT().GetOracleDatabaseAgreementByAssociatedPart(anotherAssociatedPartID).
+				Return(&agreement, nil),
+			db.EXPECT().SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
+				GTECPUCores:    -1,
+				LTECPUCores:    -1,
+				LTECPUThreads:  -1,
+				LTEMemoryTotal: -1,
+				GTECPUThreads:  -1,
+				GTESwapTotal:   -1,
+				GTEMemoryTotal: -1,
+				LTESwapTotal:   -1,
+			}, "", false, -1, -1, "", "", utils.MAX_TIME).Return([]map[string]interface{}{
+				{"hostname": "test-db"},
+				{"hostname": "foobar"},
+				{"hostname": "ercsoldbx"},
+			}, nil),
+			db.EXPECT().UpdateOracleDatabaseAgreement(agreementPostAdd).
+				Return(nil),
+		)
+
+		err := as.AddHostToAssociatedPart(anotherAssociatedPartID, "foobar")
+		assert.Nil(t, err)
+	})
 }
-
-func TestAddAssociatedHostToOracleDatabaseAgreement_FailedHostNotExist(t *testing.T) {
+func TestRemoveHostFromAssociatedPart(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
+
 	as := APIService{
 		Database: db,
-		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		OracleDatabaseAgreementParts: partsSample,
+		TimeNow:                      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID:                  utils.NewObjectIDForTests(),
 	}
 
-	db.EXPECT().ExistNotInClusterHost("foohost").Return(false, nil)
+	anotherAssociatedPartID := utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb")
+	t.Run("Fail: can't find associated part", func(t *testing.T) {
 
-	err := as.AddAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost")
-	require.Equal(t, utils.AerrNotInClusterHostNotFound, err)
-}
+		gomock.InOrder(
+			db.EXPECT().GetOracleDatabaseAgreementByAssociatedPart(anotherAssociatedPartID).
+				Return(nil, utils.AerrOracleDatabaseAssociatedPartNotFound),
+		)
 
-func TestAddAssociatedHostToOracleDatabaseAgreement_FailedInternalServerError1(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-	}
+		err := as.RemoveHostFromAssociatedPart(anotherAssociatedPartID, "pippo")
+		require.EqualError(t, err, utils.AerrOracleDatabaseAssociatedPartNotFound.Error())
+	})
 
-	db.EXPECT().ExistNotInClusterHost("foohost").Return(false, aerrMock)
+	associatedPartID := utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")
 
-	err := as.AddAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost")
-	require.Equal(t, aerrMock, err)
-}
+	t.Run("Success with only one associated part", func(t *testing.T) {
+		agreement := model.OracleDatabaseAgreement{
+			AgreementID: "AID001",
+			CSI:         "CSI001",
+			Parts: []model.AssociatedPart{
+				{
+					ID:                 associatedPartID,
+					OracleDatabasePart: partsSample[0],
+					ReferenceNumber:    "RF0001",
+					Unlimited:          true,
+					Count:              30,
+					CatchAll:           true,
+					Hosts:              []string{"test-db", "ercsoldbx"},
+				},
+			},
+		}
 
-func TestAddAssociatedHostToOracleDatabaseAgreement_FailedInternalServerError2(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-	}
+		agreementPostAdd := model.OracleDatabaseAgreement{
+			AgreementID: "AID001",
+			CSI:         "CSI001",
+			Parts: []model.AssociatedPart{
+				{
+					ID:                 associatedPartID,
+					OracleDatabasePart: partsSample[0],
+					ReferenceNumber:    "RF0001",
+					Unlimited:          true,
+					Count:              30,
+					CatchAll:           true,
+					Hosts:              []string{"test-db"},
+				},
+			},
+		}
 
-	db.EXPECT().ExistNotInClusterHost("foohost").Return(true, nil)
-	db.EXPECT().FindOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(model.OracleDatabaseAgreement{}, aerrMock)
+		gomock.InOrder(
+			db.EXPECT().GetOracleDatabaseAgreementByAssociatedPart(associatedPartID).
+				Return(&agreement, nil),
+			db.EXPECT().UpdateOracleDatabaseAgreement(agreementPostAdd).
+				Return(nil),
+		)
 
-	err := as.AddAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost")
-	require.Equal(t, aerrMock, err)
-}
+		err := as.RemoveHostFromAssociatedPart(associatedPartID, "ercsoldbx")
+		assert.Nil(t, err)
+	})
 
-func TestAddAssociatedHostToOracleDatabaseAgreement_FailedInternalServerError3(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-	}
+	t.Run("Success with multiple associated parts", func(t *testing.T) {
+		agreement := model.OracleDatabaseAgreement{
+			AgreementID: "AID001",
+			CSI:         "CSI001",
+			Parts: []model.AssociatedPart{
+				{
+					ID:                 associatedPartID,
+					OracleDatabasePart: partsSample[0],
+					ReferenceNumber:    "RF0001",
+					Unlimited:          true,
+					Count:              30,
+					CatchAll:           true,
+					Hosts:              []string{"test-db", "ercsoldbx"},
+				},
+				{
+					ID:                 anotherAssociatedPartID,
+					OracleDatabasePart: partsSample[1],
+					ReferenceNumber:    "RF0002",
+					Unlimited:          false,
+					Count:              42,
+					CatchAll:           false,
+					Hosts:              []string{"test-db", "ercsoldbx"},
+				},
+			},
+		}
 
-	returnedAgg := model.OracleDatabaseAgreement{
-		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-		AgreementID:     "abcde",
-		CSI:             "435435",
-		CatchAll:        true,
-		Count:           345,
-		Hosts:           []string{"foo", "bar"},
-		ItemDescription: "fgfgd",
-		Metrics:         "Processor Perpetual",
-		PartID:          "678867",
-		ReferenceNumber: "567768",
-		Unlimited:       true,
-	}
+		agreementPostAdd := model.OracleDatabaseAgreement{
+			AgreementID: "AID001",
+			CSI:         "CSI001",
+			Parts: []model.AssociatedPart{
+				{
+					ID:                 associatedPartID,
+					OracleDatabasePart: partsSample[0],
+					ReferenceNumber:    "RF0001",
+					Unlimited:          true,
+					Count:              30,
+					CatchAll:           true,
+					Hosts:              []string{"test-db", "ercsoldbx"},
+				},
+				{
+					ID:                 anotherAssociatedPartID,
+					OracleDatabasePart: partsSample[1],
+					ReferenceNumber:    "RF0002",
+					Unlimited:          false,
+					Count:              42,
+					CatchAll:           false,
+					Hosts:              []string{"test-db"},
+				},
+			},
+		}
 
-	updatedAgg := model.OracleDatabaseAgreement{
-		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-		AgreementID:     "abcde",
-		CSI:             "435435",
-		CatchAll:        true,
-		Count:           345,
-		Hosts:           []string{"foo", "bar", "foohost"},
-		ItemDescription: "fgfgd",
-		Metrics:         "Processor Perpetual",
-		PartID:          "678867",
-		ReferenceNumber: "567768",
-		Unlimited:       true,
-	}
+		gomock.InOrder(
+			db.EXPECT().GetOracleDatabaseAgreementByAssociatedPart(anotherAssociatedPartID).
+				Return(&agreement, nil),
+			db.EXPECT().UpdateOracleDatabaseAgreement(agreementPostAdd).
+				Return(nil),
+		)
 
-	db.EXPECT().ExistNotInClusterHost("foohost").Return(true, nil)
-	db.EXPECT().FindOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(returnedAgg, nil)
-	db.EXPECT().UpdateOracleDatabaseAgreement(updatedAgg).Return(aerrMock)
-
-	err := as.AddAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost")
-	require.Equal(t, aerrMock, err)
-}
-
-func TestRemoveAssociatedHostToOracleDatabaseAgreement_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-	}
-
-	returnedAgg := model.OracleDatabaseAgreement{
-		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-		AgreementID:     "abcde",
-		CSI:             "435435",
-		CatchAll:        true,
-		Count:           345,
-		Hosts:           []string{"foo", "bar", "foohost"},
-		ItemDescription: "fgfgd",
-		Metrics:         "Processor Perpetual",
-		PartID:          "678867",
-		ReferenceNumber: "567768",
-		Unlimited:       true,
-	}
-
-	updatedAgg := model.OracleDatabaseAgreement{
-		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-		AgreementID:     "abcde",
-		CSI:             "435435",
-		CatchAll:        true,
-		Count:           345,
-		Hosts:           []string{"foo", "bar"},
-		ItemDescription: "fgfgd",
-		Metrics:         "Processor Perpetual",
-		PartID:          "678867",
-		ReferenceNumber: "567768",
-		Unlimited:       true,
-	}
-
-	db.EXPECT().FindOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(returnedAgg, nil)
-	db.EXPECT().UpdateOracleDatabaseAgreement(updatedAgg).Return(nil)
-
-	err := as.RemoveAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost")
-	require.NoError(t, err)
-}
-
-func TestRemoveAssociatedHostToOracleDatabaseAgreement_SuccessNoHost(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-	}
-
-	returnedAgg := model.OracleDatabaseAgreement{
-		ID:              utils.Str2oid("5dcad8933b243f80e2ed8538"),
-		AgreementID:     "abcde",
-		CSI:             "435435",
-		CatchAll:        true,
-		Count:           345,
-		Hosts:           []string{"foo", "bar"},
-		ItemDescription: "fgfgd",
-		Metrics:         "Processor Perpetual",
-		PartID:          "678867",
-		ReferenceNumber: "567768",
-		Unlimited:       true,
-	}
-
-	db.EXPECT().FindOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(returnedAgg, nil)
-
-	err := as.RemoveAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost")
-	require.NoError(t, err)
-}
-
-func TestRemoveAssociatedHostToOracleDatabaseAgreement_FailedInternalServerError1(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-	}
-
-	db.EXPECT().FindOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(model.OracleDatabaseAgreement{}, aerrMock)
-
-	err := as.RemoveAssociatedHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost")
-	require.Equal(t, aerrMock, err)
-}
-
-func TestDeleteOracleDatabaseAgreement_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-	}
-
-	db.EXPECT().RemoveOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(nil)
-	err := as.DeleteOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"))
-	require.NoError(t, err)
-}
-
-func TestDeleteOracleDatabaseAgreement_FailedInternalServerError(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-	}
-
-	db.EXPECT().RemoveOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(aerrMock)
-	err := as.DeleteOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"))
-	require.Equal(t, aerrMock, err)
+		err := as.RemoveHostFromAssociatedPart(anotherAssociatedPartID, "ercsoldbx")
+		assert.Nil(t, err)
+	})
 }
