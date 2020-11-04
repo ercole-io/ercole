@@ -123,6 +123,7 @@ func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgr
 				mu.APUnwind("$parts"),
 				mu.APUnset("_id"),
 				mu.APSet(bson.M{
+					"_id":             "$parts._id",
 					"partID":          "$parts.partID",
 					"itemDescription": "$parts.itemDescription",
 					"metric":          "$parts.metric",
