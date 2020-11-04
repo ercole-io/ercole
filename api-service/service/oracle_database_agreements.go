@@ -603,12 +603,14 @@ func calculateTotalCoveredLicensesAndAvailableCount(
 		}
 
 		if uncoveredLicenses > 0 {
-			if agreement.AvailableCount > 0 {
+			if (agreement.AvailableCount > 0 && agreement.Metric != model.AgreementPartMetricNamedUserPlusPerpetual) ||
+				(agreement.AvailableCount > 25 && agreement.Metric == model.AgreementPartMetricNamedUserPlusPerpetual) {
+
 				as.Log.Errorf("Agreement has still some available licenses but hosts are uncovered. Agreement: [%v]",
 					agreement)
 			}
 
-			agreement.AvailableCount = -uncoveredLicenses
+			agreement.AvailableCount -= uncoveredLicenses
 		}
 	}
 }
