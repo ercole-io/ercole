@@ -16,16 +16,16 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 
 	"github.com/ercole-io/ercole/api-service/dto"
-	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"gopkg.in/square/go-jose.v2/json"
 )
 
 // GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
@@ -39,55 +39,56 @@ func (ctrl *APIController) GetOracleDatabaseAgreementPartsList(w http.ResponseWr
 	utils.WriteJSONResponse(w, http.StatusOK, data)
 }
 
-// AddOracleDatabaseAgreements add some agreements
-func (ctrl *APIController) AddOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request) {
+// AddAssociatedPartToOracleDbAgreement add associated part to an existing agreement else it will create it
+func (ctrl *APIController) AddAssociatedPartToOracleDbAgreement(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 
-	var aerr utils.AdvancedErrorInterface
-	var req dto.OracleDatabaseAgreementsAddRequest
-
-	raw, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
-		return
-	}
-	defer r.Body.Close()
-
-	if err := json.Unmarshal(raw, &req); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
-		return
-	}
-
-	var ids interface{}
-	if ids, aerr = ctrl.Service.AddOracleDatabaseAgreements(req); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
-		return
-	}
-
-	utils.WriteJSONResponse(w, http.StatusOK, ids)
-}
-
-// UpdateOracleDatabaseAgreement edit an agreement
-func (ctrl *APIController) UpdateOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
-	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden,
-			utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
-		return
-	}
-
-	var agreement model.OracleDatabaseAgreement
+	var req dto.AssociatedPartInOracleDbAgreementRequest
 
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&agreement); err != nil {
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&req); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
 			utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
 		return
 	}
 
-	err := ctrl.Service.UpdateOracleDatabaseAgreement(agreement)
+	if req.ID != "" {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
+			utils.NewAdvancedErrorPtr(errors.New("ID must be empty to add a new AssociatedPart"), http.StatusText(http.StatusBadRequest)))
+		return
+	}
+
+	id, aerr := ctrl.Service.AddAssociatedPartToOracleDbAgreement(req)
+	if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, id)
+}
+
+// UpdateAssociatedPartOfOracleDbAgreement edit an agreement
+func (ctrl *APIController) UpdateAssociatedPartOfOracleDbAgreement(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	var req dto.AssociatedPartInOracleDbAgreementRequest
+
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&req); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
+			utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
+		return
+	}
+
+	err := ctrl.Service.UpdateAssociatedPartOfOracleDbAgreement(req)
 	if err == utils.AerrOracleDatabaseAgreementNotFound ||
 		err == utils.ErrOracleDatabaseAgreementInvalidPartID {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
@@ -99,20 +100,17 @@ func (ctrl *APIController) UpdateOracleDatabaseAgreement(w http.ResponseWriter, 
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
-// SearchOracleDatabaseAgreements search Oracle/Database agreements data using the filters in the request
-func (ctrl *APIController) SearchOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request) {
+// SearchAssociatedPartsInOracleDatabaseAgreements search Oracle/Database agreements
+func (ctrl *APIController) SearchAssociatedPartsInOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request) {
 	var err utils.AdvancedErrorInterface
-	var search string
 
-	search = r.URL.Query().Get("search")
-
-	searchOracleDatabaseAgreementsFilters, err := ParseSearchOracleDatabaseAgreementsFilters(r)
+	searchOracleDatabaseAgreementsFilters, err := parseSearchOracleDatabaseAgreementsFilters(r.URL.Query())
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	response, err := ctrl.Service.SearchOracleDatabaseAgreements(search, searchOracleDatabaseAgreementsFilters)
+	response, err := ctrl.Service.SearchAssociatedPartsInOracleDatabaseAgreements(searchOracleDatabaseAgreementsFilters)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -121,10 +119,9 @@ func (ctrl *APIController) SearchOracleDatabaseAgreements(w http.ResponseWriter,
 	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
 
-// ParseSearchOracleDatabaseAgreementsFilters return the Oracle/Database agreement search filters in the request
-func ParseSearchOracleDatabaseAgreementsFilters(r *http.Request) (dto.SearchOracleDatabaseAgreementsFilter,
+// parseSearchOracleDatabaseAgreementsFilters return the Oracle/Database agreement search filters in the request
+func parseSearchOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.SearchOracleDatabaseAgreementsFilter,
 	utils.AdvancedErrorInterface) {
-	urlValues := r.URL.Query()
 
 	var aerr utils.AdvancedErrorInterface
 
@@ -134,7 +131,7 @@ func ParseSearchOracleDatabaseAgreementsFilters(r *http.Request) (dto.SearchOrac
 	filters.PartID = urlValues.Get("part-id")
 	filters.ItemDescription = urlValues.Get("item-description")
 	filters.CSI = urlValues.Get("csi")
-	filters.Metrics = urlValues.Get("metrics")
+	filters.Metric = urlValues.Get("metrics")
 	filters.ReferenceNumber = urlValues.Get("reference-number")
 
 	filters.Unlimited = urlValues.Get("unlimited")
@@ -180,8 +177,8 @@ func ParseSearchOracleDatabaseAgreementsFilters(r *http.Request) (dto.SearchOrac
 	return filters, nil
 }
 
-// AddAssociatedHostToOracleDatabaseAgreement add a associated host to an agreement
-func (ctrl *APIController) AddAssociatedHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
+// AddHostToAssociatedPart add an host from AssociatedPart
+func (ctrl *APIController) AddHostToAssociatedPart(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
@@ -192,7 +189,8 @@ func (ctrl *APIController) AddAssociatedHostToOracleDatabaseAgreement(w http.Res
 	var id primitive.ObjectID
 
 	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity,
+			utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 
@@ -203,10 +201,8 @@ func (ctrl *APIController) AddAssociatedHostToOracleDatabaseAgreement(w http.Res
 	}
 	defer r.Body.Close()
 
-	if aerr = ctrl.Service.AddAssociatedHostToOracleDatabaseAgreement(id, string(raw)); aerr == utils.AerrOracleDatabaseAgreementNotFound {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
-		return
-	} else if aerr == utils.AerrNotInClusterHostNotFound {
+	if aerr = ctrl.Service.AddHostToAssociatedPart(id, string(raw)); aerr == utils.AerrOracleDatabaseAgreementNotFound ||
+		aerr == utils.AerrNotInClusterHostNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
 		return
 	} else if aerr != nil {
@@ -217,8 +213,8 @@ func (ctrl *APIController) AddAssociatedHostToOracleDatabaseAgreement(w http.Res
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
-// RemoveAssociatedHostToOracleDatabaseAgreement remove a associated host of an agreement
-func (ctrl *APIController) RemoveAssociatedHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
+// RemoveHostFromAssociatedPart remove an host from AssociatedPart
+func (ctrl *APIController) RemoveHostFromAssociatedPart(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
@@ -235,7 +231,7 @@ func (ctrl *APIController) RemoveAssociatedHostToOracleDatabaseAgreement(w http.
 	}
 	hostname = mux.Vars(r)["hostname"]
 
-	if aerr = ctrl.Service.RemoveAssociatedHostToOracleDatabaseAgreement(id, hostname); aerr == utils.AerrOracleDatabaseAgreementNotFound {
+	if aerr = ctrl.Service.RemoveHostFromAssociatedPart(id, hostname); aerr == utils.AerrOracleDatabaseAgreementNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
 		return
 	} else if aerr != nil {
@@ -246,8 +242,8 @@ func (ctrl *APIController) RemoveAssociatedHostToOracleDatabaseAgreement(w http.
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
-// DeleteOracleDatabaseAgreement delete an agreement
-func (ctrl *APIController) DeleteOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
+// DeleteAssociatedPartFromOracleDatabaseAgreement delete AssociatedPart from an OracleDatabaseAgreement
+func (ctrl *APIController) DeleteAssociatedPartFromOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
@@ -262,7 +258,7 @@ func (ctrl *APIController) DeleteOracleDatabaseAgreement(w http.ResponseWriter, 
 		return
 	}
 
-	if aerr = ctrl.Service.DeleteOracleDatabaseAgreement(id); aerr == utils.AerrOracleDatabaseAgreementNotFound {
+	if aerr = ctrl.Service.DeleteAssociatedPartFromOracleDatabaseAgreement(id); aerr == utils.AerrOracleDatabaseAgreementNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
 		return
 	} else if aerr != nil {
