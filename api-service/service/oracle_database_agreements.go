@@ -27,11 +27,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+//TODO Instead of use 25 everywhere for NamedUserPlus licenses, use const
+
+// TODO When insert or update unlimited agr, set count == 0
+
 // AddAssociatedPartToOracleDbAgreement add associated part to OracleDatabaseAgreement or create a new one
 func (as *APIService) AddAssociatedPartToOracleDbAgreement(request dto.AssociatedPartInOracleDbAgreementRequest,
-) (primitive.ObjectID, utils.AdvancedErrorInterface) {
+) (string, utils.AdvancedErrorInterface) {
 	if err := checkHosts(as, request.Hosts); err != nil {
-		return primitive.NilObjectID, err
+		return "", err
 	}
 
 	agreement, err := as.Database.GetOracleDatabaseAgreement(request.AgreementID)
@@ -43,28 +47,30 @@ func (as *APIService) AddAssociatedPartToOracleDbAgreement(request dto.Associate
 		}
 
 	} else if err != nil {
-		return primitive.NilObjectID, err
+		return "", err
 	}
 
 	if err := addAssociatedPart(as, agreement, request); err != nil {
-		return primitive.NilObjectID, err
+		return "", err
 	}
 
 	if agreement.ID == primitive.NilObjectID {
+		agreement.ID = as.NewObjectID()
+
 		res, err := as.Database.InsertOracleDatabaseAgreement(*agreement)
 		if err != nil {
-			return primitive.NilObjectID, err
+			return "", err
 		}
 
 		agreement.ID = res.InsertedID.(primitive.ObjectID)
 	} else {
 		err := as.Database.UpdateOracleDatabaseAgreement(*agreement)
 		if err != nil {
-			return primitive.NilObjectID, err
+			return "", err
 		}
 	}
 
-	return agreement.ID, nil
+	return agreement.ID.Hex(), nil
 }
 
 func addAssociatedPart(as *APIService, agreement *model.OracleDatabaseAgreement,
@@ -75,6 +81,7 @@ func addAssociatedPart(as *APIService, agreement *model.OracleDatabaseAgreement,
 	}
 
 	associatedPart := model.AssociatedPart{
+		ID:                 as.NewObjectID(),
 		OracleDatabasePart: *part,
 		ReferenceNumber:    req.ReferenceNumber,
 		Unlimited:          req.Unlimited,
@@ -173,17 +180,32 @@ func updateAssociatedPart(as *APIService, agreement *model.OracleDatabaseAgreeme
 	return nil
 }
 
-// SearchAssociatedPartsInOracleDatabaseAgreements search Oracle/Database agreements
-func (as *APIService) SearchAssociatedPartsInOracleDatabaseAgreements(
-	search string,
-	filters dto.SearchOracleDatabaseAgreementsFilter,
+// SearchAssociatedPartsInOracleDatabaseAgreements search OracleDatabase associated parts agreements
+func (as *APIService) SearchAssociatedPartsInOracleDatabaseAgreements(filters dto.SearchOracleDatabaseAgreementsFilter,
 ) ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface) {
 	agreements, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
 		return nil, err
 	}
-	// TODO Insert Agr Part info
-	// TODO Check thet parts exists, if not warn?
+
+	parts := buildAgreementPartMap(as.OracleDatabaseAgreementParts)
+	for i := range agreements {
+		agr := &agreements[i]
+
+		if part, ok := parts[agr.PartID]; ok {
+			agr.ItemDescription = part.ItemDescription
+			agr.Metric = part.Metric
+
+			switch agr.Metric {
+			case model.AgreementPartMetricProcessorPerpetual:
+				agr.LicensesCount = agr.Count
+			case model.AgreementPartMetricNamedUserPlusPerpetual:
+				agr.UsersCount = agr.Count
+			}
+		} else {
+			as.Log.Errorf("Unknown PartID: [%s] in agreement: [%#v]", agr.PartID, agr)
+		}
+	}
 
 	hosts, err := as.Database.ListHostUsingOracleDatabaseLicenses()
 	if err != nil {
@@ -204,24 +226,6 @@ func (as *APIService) SearchAssociatedPartsInOracleDatabaseAgreements(
 	return filteredAgrs, nil
 }
 
-// checkOracleDatabaseAgreementMatchFilter check that agr match the filters
-func checkOracleDatabaseAgreementMatchFilter(agr dto.OracleDatabaseAgreementFE, filters dto.SearchOracleDatabaseAgreementsFilter) bool {
-	return strings.Contains(strings.ToLower(agr.AgreementID), strings.ToLower(filters.AgreementID)) &&
-		strings.Contains(strings.ToLower(agr.PartID), strings.ToLower(filters.PartID)) &&
-		strings.Contains(strings.ToLower(agr.ItemDescription), strings.ToLower(filters.ItemDescription)) &&
-		strings.Contains(strings.ToLower(agr.CSI), strings.ToLower(filters.CSI)) &&
-		(filters.Metric == "" || strings.ToLower(agr.Metric) == strings.ToLower(filters.Metric)) &&
-		strings.Contains(strings.ToLower(agr.ReferenceNumber), strings.ToLower(filters.ReferenceNumber)) &&
-		(filters.Unlimited == "NULL" || agr.Unlimited == (filters.Unlimited == "true")) &&
-		(filters.CatchAll == "NULL" || agr.CatchAll == (filters.CatchAll == "true")) &&
-		(filters.LicensesCountLTE == -1 || agr.LicensesCount <= float64(filters.LicensesCountLTE)) &&
-		(filters.LicensesCountGTE == -1 || agr.LicensesCount >= float64(filters.LicensesCountGTE)) &&
-		(filters.UsersCountLTE == -1 || agr.UsersCount <= float64(filters.UsersCountLTE)) &&
-		(filters.UsersCountGTE == -1 || agr.UsersCount >= float64(filters.UsersCountGTE)) &&
-		(filters.AvailableCountLTE == -1 || agr.AvailableCount <= float64(filters.AvailableCountLTE)) &&
-		(filters.AvailableCountGTE == -1 || agr.AvailableCount >= float64(filters.AvailableCountGTE))
-}
-
 // assignOracleDatabaseAgreementsToHosts assign available licenses in each agreements to hosts using licenses
 func (as *APIService) assignOracleDatabaseAgreementsToHosts(
 	agrs []dto.OracleDatabaseAgreementFE,
@@ -237,7 +241,7 @@ func (as *APIService) assignOracleDatabaseAgreementsToHosts(
 	hostsMap := buildHostUsingLicensesMap(hosts)
 	partsMap := buildAgreementPartMap(as.OracleDatabaseAgreementParts)
 
-	assignLicensesInAgreementsToAssociatedHost(as, agrs, hostsMap, partsMap)
+	assignAgreementsLicensesToItsAssociatedHosts(as, agrs, hostsMap, partsMap)
 
 	// sort again and rebuild map because the references are updated during the sort
 	sortHostsUsingLicenses(hosts)
@@ -247,14 +251,9 @@ func (as *APIService) assignOracleDatabaseAgreementsToHosts(
 		as.Log.Debugf("Resorted LicensingObjects: %#v\n", hosts)
 	}
 
-	distributeLicensesInCatchAllAgrs(as, agrs, hosts, partsMap)
+	assignLicensesFromCatchAllAgreements(as, agrs, hosts, partsMap)
 
-	allLicensesCoverStatus := calculateCoverStatusByLicenseName(hosts)
-	if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
-		as.Log.Debugf("Cover status: %#v\n", allLicensesCoverStatus)
-	}
-
-	calculateTotalCoveredLicensesAndAvailable(agrs, hostsMap, partsMap, allLicensesCoverStatus)
+	calculateTotalCoveredLicensesAndAvailableCount(as, agrs, hosts, hostsMap, partsMap)
 }
 
 // sortOracleDatabaseAgreements sort the list of dto.OracleDatabaseAgreementsFE
@@ -293,9 +292,12 @@ func sortHostsUsingLicenses(obj []dto.HostUsingOracleDatabaseLicenses) {
 	})
 }
 
-// buildHostUsingLicensesMap return a map of license name to map of object name to pointer to  dto.HostUsingOracleDatabaseLicenses for fast object lookup
+// buildHostUsingLicensesMap return a map of license name to map of object name to pointer to
+// dto.HostUsingOracleDatabaseLicenses for fast object lookup
 // Assume that doesn't exist a cluster and a host with the same name
-func buildHostUsingLicensesMap(hosts []dto.HostUsingOracleDatabaseLicenses) map[string]map[string]*dto.HostUsingOracleDatabaseLicenses {
+func buildHostUsingLicensesMap(hosts []dto.HostUsingOracleDatabaseLicenses,
+) map[string]map[string]*dto.HostUsingOracleDatabaseLicenses {
+
 	res := make(map[string]map[string]*dto.HostUsingOracleDatabaseLicenses)
 
 	for i, host := range hosts {
@@ -321,7 +323,7 @@ func buildAgreementPartMap(parts []model.OracleDatabasePart) map[string]*model.O
 
 // Assign available licenses in each agreement to each host associated in each agreement
 // if this host is using that kind of license.
-func assignLicensesInAgreementsToAssociatedHost(
+func assignAgreementsLicensesToItsAssociatedHosts(
 	as *APIService,
 	agreements []dto.OracleDatabaseAgreementFE,
 	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses,
@@ -335,13 +337,12 @@ func assignLicensesInAgreementsToAssociatedHost(
 			as.Log.Debugf("Distributing licenses of agreement #%d to host. Agreement = %s\n", i, utils.ToJSON(agreement))
 		}
 
-		//distribute licenses for each host
 		for j := range agreement.Hosts {
-			hostInAgr := &agreement.Hosts[j]
+			associatedHost := &agreement.Hosts[j]
 
 			for _, alias := range partsMap[agreement.PartID].Aliases {
 
-				if agreement.Count <= 0 && !agreement.Unlimited {
+				if agreement.AvailableCount <= 0 && !agreement.Unlimited {
 					break
 				}
 
@@ -352,7 +353,7 @@ func assignLicensesInAgreementsToAssociatedHost(
 
 				var hostUsingLicenses *dto.HostUsingOracleDatabaseLicenses
 				var ok bool
-				if hostUsingLicenses, ok = hostsMap[alias][hostInAgr.Hostname]; !ok {
+				if hostUsingLicenses, ok = hostsMap[alias][associatedHost.Hostname]; !ok {
 					// host doesn't use this license
 					continue
 				}
@@ -361,48 +362,25 @@ func assignLicensesInAgreementsToAssociatedHost(
 					continue
 				}
 
-				switch {
-				case agreement.Unlimited:
-					hostInAgr.CoveredLicensesCount = hostUsingLicenses.LicenseCount
-					hostUsingLicenses.LicenseCount = 0
-
-				case agreement.Metric == model.AgreementPartMetricProcessorPerpetual ||
-					agreement.Metric == model.AgreementPartMetricComputerPerpetual:
-
-					coverableLicenses := math.Min(agreement.Count, hostUsingLicenses.LicenseCount)
-					hostUsingLicenses.LicenseCount -= coverableLicenses
-					hostInAgr.CoveredLicensesCount += coverableLicenses
-					agreement.Count -= coverableLicenses
-
-				case agreement.Metric == model.AgreementPartMetricNamedUserPlusPerpetual:
-					coverableLicenses := math.Floor(math.Min(agreement.Count*25, hostUsingLicenses.LicenseCount) / 25)
-					hostUsingLicenses.LicenseCount -= coverableLicenses * 25
-					hostInAgr.CoveredLicensesCount += coverableLicenses * 25
-					agreement.Count -= coverableLicenses
-
-				default:
-					as.Log.Errorf("Distributing licenses. Unknown metric type: [%s]", agreement.Metric)
-				}
+				doAssignAgreementLicensesToAssociatedHost(as, agreement, hostUsingLicenses, associatedHost)
 
 				if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
-					as.Log.Debugf(`Distributing %f licenses to host %s. agr.Metrics=%s agr.Count=%f \
+					as.Log.Debugf(`Distributing %f licenses to host %s. agr.Metrics=%s agr.AvailableCount=%f \
 					hostInAgr.CoveredLicensesCount=%f hostUsingLicenses.LicenseCount=%f licenseName=%s\n`,
 						hostUsingLicenses.LicenseCount,
-						hostInAgr.Hostname,
+						associatedHost.Hostname,
 						agreement.Metric,
-						agreement.Count,
-						hostInAgr.CoveredLicensesCount,
+						agreement.AvailableCount,
+						associatedHost.CoveredLicensesCount,
 						hostUsingLicenses.LicenseCount,
 						alias)
 				}
 			}
 
-			if agreement.Count <= 0 && !agreement.Unlimited {
+			if agreement.AvailableCount <= 0 && !agreement.Unlimited {
 				break
 			}
 		}
-
-		//TODO should I move distributeLicensesInCatchAllAgrs here?
 	}
 }
 
@@ -432,8 +410,52 @@ func sortHostsInAgreementByLicenseCount(agr *dto.OracleDatabaseAgreementFE,
 	})
 }
 
+// Use all the licenses available in agreement to cover host and associatedHost if provided
+func doAssignAgreementLicensesToAssociatedHost(
+	as *APIService,
+	agreement *dto.OracleDatabaseAgreementFE,
+	host *dto.HostUsingOracleDatabaseLicenses,
+	associatedHost *dto.OracleDatabaseAgreementAssociatedHostFE) {
+
+	switch {
+	case agreement.Metric == model.AgreementPartMetricProcessorPerpetual ||
+		agreement.Metric == model.AgreementPartMetricComputerPerpetual:
+
+		var coverableLicenses float64
+		if agreement.Unlimited {
+			coverableLicenses = host.LicenseCount
+			agreement.AvailableCount = 0
+		} else {
+			coverableLicenses = math.Min(agreement.AvailableCount, host.LicenseCount)
+			agreement.AvailableCount -= coverableLicenses
+		}
+
+		associatedHost.CoveredLicensesCount += coverableLicenses
+
+		host.LicenseCount -= coverableLicenses
+
+	case agreement.Metric == model.AgreementPartMetricNamedUserPlusPerpetual:
+
+		var coverableLicenses float64
+		if agreement.Unlimited {
+			coverableLicenses = host.LicenseCount
+			agreement.AvailableCount = 0
+		} else {
+			coverableLicenses = math.Floor(math.Min(agreement.AvailableCount, host.LicenseCount*25) / 25)
+			agreement.AvailableCount -= coverableLicenses * 25
+		}
+
+		associatedHost.CoveredLicensesCount += coverableLicenses * 25
+
+		host.LicenseCount -= coverableLicenses
+
+	default:
+		as.Log.Errorf("Distributing licenses. Unknown metric type: [%s]", agreement.Metric)
+	}
+}
+
 // If an agreement is catchAll (or basket..) distributes its licenses to every hosts that use that kind of license
-func distributeLicensesInCatchAllAgrs(
+func assignLicensesFromCatchAllAgreements(
 	as *APIService,
 	agrs []dto.OracleDatabaseAgreementFE,
 	hosts []dto.HostUsingOracleDatabaseLicenses,
@@ -446,11 +468,6 @@ func distributeLicensesInCatchAllAgrs(
 			continue
 		}
 
-		// //Debug print
-		// if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
-		// 	as.Log.Debugf("Finding valid agreement for licensingObject #%d. obj = %s\n", i, utils.ToJSON(obj))
-		// }
-
 		for j := range agrs {
 			agr := &agrs[j]
 
@@ -458,12 +475,12 @@ func distributeLicensesInCatchAllAgrs(
 				continue
 			}
 
-			if agr.Count <= 0 && !agr.Unlimited {
+			if agr.AvailableCount <= 0 && !agr.Unlimited {
 				continue
 			}
 
 			for _, alias := range partsMap[agr.PartID].Aliases {
-				if agr.Count <= 0 && !agr.Unlimited {
+				if agr.AvailableCount <= 0 && !agr.Unlimited {
 					break
 				}
 
@@ -471,21 +488,7 @@ func distributeLicensesInCatchAllAgrs(
 					continue
 				}
 
-				switch {
-
-				case agr.Unlimited:
-					host.LicenseCount = 0
-
-				case agr.Metric == model.AgreementPartMetricProcessorPerpetual || agr.Metric == model.AgreementPartMetricComputerPerpetual:
-					coverableLicenses := math.Min(agr.Count, host.LicenseCount)
-					host.LicenseCount -= coverableLicenses
-					agr.Count -= coverableLicenses
-
-				case agr.Metric == model.AgreementPartMetricNamedUserPlusPerpetual:
-					coverableLicenses := math.Floor(math.Min(agr.Count*25, host.LicenseCount) / 25)
-					host.LicenseCount -= coverableLicenses * 25
-					agr.Count -= coverableLicenses
-				}
+				doAssignLicenseFromCatchAllAgreement(as, agr, host)
 
 				if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
 					as.Log.Debugf("Distributing with metric [%s] [ULA? %t] %f licenses to obj %s. aggCount=%f objCount=0 licenseName=%s\n",
@@ -505,67 +508,149 @@ func distributeLicensesInCatchAllAgrs(
 	}
 }
 
-type coverStatus struct {
-	Covered                float64 //==purchased
-	TotalCoverableLicenses float64 //==consumed
-}
+// Use all the licenses available in agreement to cover host and associatedHost if provided
+func doAssignLicenseFromCatchAllAgreement(
+	as *APIService,
+	agreement *dto.OracleDatabaseAgreementFE,
+	hostUsingLicenses *dto.HostUsingOracleDatabaseLicenses) {
 
-// Calculate total number of covered/uncovered for each host
-func calculateCoverStatusByLicenseName(hosts []dto.HostUsingOracleDatabaseLicenses) map[string]coverStatus {
-	allLicensesCoverStatus := make(map[string]coverStatus)
+	switch {
+	case agreement.Metric == model.AgreementPartMetricProcessorPerpetual ||
+		agreement.Metric == model.AgreementPartMetricComputerPerpetual:
 
-	for _, host := range hosts {
-		allLicensesCoverStatus[host.LicenseName] = coverStatus{
-			TotalCoverableLicenses: allLicensesCoverStatus[host.LicenseName].TotalCoverableLicenses + host.OriginalCount,
-			Covered:                allLicensesCoverStatus[host.LicenseName].Covered + (host.OriginalCount - host.LicenseCount),
+		var coverableLicenses float64
+		if agreement.Unlimited {
+			coverableLicenses = hostUsingLicenses.LicenseCount
+			agreement.AvailableCount = 0
+		} else {
+			coverableLicenses = math.Min(agreement.AvailableCount, hostUsingLicenses.LicenseCount)
+			agreement.AvailableCount -= coverableLicenses
 		}
-	}
 
-	return allLicensesCoverStatus
+		hostUsingLicenses.LicenseCount -= coverableLicenses
+
+	case agreement.Metric == model.AgreementPartMetricNamedUserPlusPerpetual:
+
+		var coverableLicenses float64
+		if agreement.Unlimited {
+			coverableLicenses = hostUsingLicenses.LicenseCount
+			agreement.AvailableCount = 0
+		} else {
+			coverableLicenses = math.Floor(math.Min(agreement.AvailableCount, hostUsingLicenses.LicenseCount*25) / 25)
+			agreement.AvailableCount -= coverableLicenses * 25
+		}
+
+		hostUsingLicenses.LicenseCount -= coverableLicenses
+
+	default:
+		as.Log.Errorf("Distributing licenses. Unknown metric type: [%s]", agreement.Metric)
+	}
 }
 
-// Calculate TotalCoveredLicenses and available
-func calculateTotalCoveredLicensesAndAvailable(
+func calculateTotalCoveredLicensesAndAvailableCount(
+	as *APIService,
 	agrs []dto.OracleDatabaseAgreementFE,
+	hosts []dto.HostUsingOracleDatabaseLicenses,
 	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses,
-	partsMap map[string]*model.OracleDatabasePart,
-	allLicensesCoverStatus map[string]coverStatus) {
+	partsMap map[string]*model.OracleDatabasePart) {
+
+	licensesCoverStatusByName := calculateCoverStatusByLicenseName(hosts)
 
 	for i := range agrs {
-		agr := &agrs[i]
-		uncoveredLicenseAssociatedHostSum := 0.0
-		uncoveredLicenseUnassociatedObjSum := 0.0
+		agreement := &agrs[i]
 
-		//calculate available
-		for _, alias := range partsMap[agr.PartID].Aliases {
-			uncoveredLicenseUnassociatedObjSum += allLicensesCoverStatus[alias].TotalCoverableLicenses - allLicensesCoverStatus[alias].Covered
+		uncoveredLicensesByAssociatedHosts := 0.0
+		uncoveredLicensesByAllHosts := 0.0
 
-			for j := range agr.Hosts {
-				host := &agr.Hosts[j]
-				// If no host require a license with licenseName == alias, skip
+		for _, alias := range partsMap[agreement.PartID].Aliases {
+
+			for j := range agreement.Hosts {
+				associatedHost := &agreement.Hosts[j]
 				if _, ok := hostsMap[alias]; !ok {
 					continue
 				}
 
-				// If the host don't use the license, skip
-				if _, ok := hostsMap[alias][host.Hostname]; !ok {
+				host, ok := hostsMap[alias][associatedHost.Hostname]
+				if !ok {
 					continue
 				}
-				host.TotalCoveredLicensesCount = hostsMap[alias][host.Hostname].OriginalCount - hostsMap[alias][host.Hostname].LicenseCount
-				host.ConsumedLicensesCount = hostsMap[alias][host.Hostname].OriginalCount
-				uncoveredLicenseAssociatedHostSum += hostsMap[alias][host.Hostname].LicenseCount //non-covered part
+
+				switch {
+				case agreement.Metric == model.AgreementPartMetricProcessorPerpetual ||
+					agreement.Metric == model.AgreementPartMetricComputerPerpetual:
+					associatedHost.TotalCoveredLicensesCount = host.OriginalCount - host.LicenseCount
+					associatedHost.ConsumedLicensesCount = host.OriginalCount
+					uncoveredLicensesByAssociatedHosts += host.LicenseCount
+
+				case agreement.Metric == model.AgreementPartMetricNamedUserPlusPerpetual:
+					associatedHost.TotalCoveredLicensesCount = (host.OriginalCount - host.LicenseCount) * 25
+					associatedHost.ConsumedLicensesCount = host.OriginalCount * 25
+					uncoveredLicensesByAssociatedHosts += host.LicenseCount * 25
+
+				default:
+					as.Log.Errorf("Unknown metric type: [%s]", agreement.Metric)
+				}
 			}
+
+			uncoveredLicensesByAllHosts += licensesCoverStatusByName[alias].Consumed - licensesCoverStatusByName[alias].Covered
 		}
 
-		if !agr.CatchAll {
-			agr.AvailableCount = -uncoveredLicenseAssociatedHostSum
+		var uncoveredLicenses float64
+		if agreement.CatchAll {
+			uncoveredLicenses = uncoveredLicensesByAllHosts
 		} else {
-			agr.AvailableCount = -uncoveredLicenseUnassociatedObjSum
+			uncoveredLicenses = uncoveredLicensesByAssociatedHosts
+		}
+
+		if uncoveredLicenses > 0 {
+			if agreement.AvailableCount > 0 {
+				as.Log.Errorf("Agreement has still some available licenses but hosts are uncovered. Agreement: [%v]",
+					agreement)
+			}
+
+			agreement.AvailableCount = -uncoveredLicenses
 		}
 	}
 }
 
-// DeleteAssociatedPartFromOracleDatabaseAgreement remove an Oracle/Database agreement
+type coverStatus struct {
+	Covered  float64 //==purchased
+	Consumed float64 //==consumed
+}
+
+// Calculate total number of covered/uncovered for each host
+func calculateCoverStatusByLicenseName(hosts []dto.HostUsingOracleDatabaseLicenses) map[string]coverStatus {
+	licensesStatus := make(map[string]coverStatus)
+
+	for _, host := range hosts {
+		licensesStatus[host.LicenseName] = coverStatus{
+			Consumed: licensesStatus[host.LicenseName].Consumed + host.OriginalCount,
+			Covered:  licensesStatus[host.LicenseName].Covered + (host.OriginalCount - host.LicenseCount),
+		}
+	}
+
+	return licensesStatus
+}
+
+// checkOracleDatabaseAgreementMatchFilter check that agr match the filters
+func checkOracleDatabaseAgreementMatchFilter(agr dto.OracleDatabaseAgreementFE, filters dto.SearchOracleDatabaseAgreementsFilter) bool {
+	return strings.Contains(strings.ToLower(agr.AgreementID), strings.ToLower(filters.AgreementID)) &&
+		strings.Contains(strings.ToLower(agr.PartID), strings.ToLower(filters.PartID)) &&
+		strings.Contains(strings.ToLower(agr.ItemDescription), strings.ToLower(filters.ItemDescription)) &&
+		strings.Contains(strings.ToLower(agr.CSI), strings.ToLower(filters.CSI)) &&
+		(filters.Metric == "" || strings.ToLower(agr.Metric) == strings.ToLower(filters.Metric)) &&
+		strings.Contains(strings.ToLower(agr.ReferenceNumber), strings.ToLower(filters.ReferenceNumber)) &&
+		(filters.Unlimited == "NULL" || agr.Unlimited == (filters.Unlimited == "true")) &&
+		(filters.CatchAll == "NULL" || agr.CatchAll == (filters.CatchAll == "true")) &&
+		(filters.LicensesCountLTE == -1 || agr.LicensesCount <= float64(filters.LicensesCountLTE)) &&
+		(filters.LicensesCountGTE == -1 || agr.LicensesCount >= float64(filters.LicensesCountGTE)) &&
+		(filters.UsersCountLTE == -1 || agr.UsersCount <= float64(filters.UsersCountLTE)) &&
+		(filters.UsersCountGTE == -1 || agr.UsersCount >= float64(filters.UsersCountGTE)) &&
+		(filters.AvailableCountLTE == -1 || agr.AvailableCount <= float64(filters.AvailableCountLTE)) &&
+		(filters.AvailableCountGTE == -1 || agr.AvailableCount >= float64(filters.AvailableCountGTE))
+}
+
+// DeleteAssociatedPartFromOracleDatabaseAgreement delete associated part from OracleDatabaseAgreement
 func (as *APIService) DeleteAssociatedPartFromOracleDatabaseAgreement(associatedPartID primitive.ObjectID,
 ) utils.AdvancedErrorInterface {
 	agreement, err := as.Database.GetOracleDatabaseAgreementByAssociatedPart(associatedPartID)
@@ -587,7 +672,7 @@ func (as *APIService) DeleteAssociatedPartFromOracleDatabaseAgreement(associated
 	return as.Database.UpdateOracleDatabaseAgreement(*agreement)
 }
 
-// AddHostToAssociatedPart a new host to the list of associated hosts of the agreement
+// AddHostToAssociatedPart add an host to AssociatedPart
 func (as *APIService) AddHostToAssociatedPart(associatedPartID primitive.ObjectID, hostname string,
 ) utils.AdvancedErrorInterface {
 
@@ -613,7 +698,7 @@ func (as *APIService) AddHostToAssociatedPart(associatedPartID primitive.ObjectI
 	return as.Database.UpdateOracleDatabaseAgreement(*agreement)
 }
 
-// RemoveHostFromAssociatedPart remove the host from the list of associated hosts of the agreement
+// RemoveHostFromAssociatedPart remove host from AssociatedPart
 func (as *APIService) RemoveHostFromAssociatedPart(associatedPartID primitive.ObjectID, hostname string,
 ) utils.AdvancedErrorInterface {
 

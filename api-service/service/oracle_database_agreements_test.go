@@ -64,6 +64,7 @@ func TestAddOracleDatabaseAgreements_Success_InsertNew(t *testing.T) {
 		},
 		OracleDatabaseAgreementParts: partsSample,
 		TimeNow:                      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID:                  utils.NewObjectIDForTests(),
 	}
 	addRequest := dto.AssociatedPartInOracleDbAgreementRequest{
 		AgreementID:     "AID001",
@@ -103,6 +104,7 @@ func TestAddOracleDatabaseAgreements_Success_InsertNew(t *testing.T) {
 				CSI:         "CSI001",
 				Parts: []model.AssociatedPart{
 					{
+						ID:                 utils.Str2oid("000000000000000000000001"),
 						OracleDatabasePart: partsSample[0],
 						ReferenceNumber:    "RF0001",
 						Unlimited:          true,
@@ -120,7 +122,7 @@ func TestAddOracleDatabaseAgreements_Success_InsertNew(t *testing.T) {
 	res, err := as.AddAssociatedPartToOracleDbAgreement(addRequest)
 	require.NoError(t, err)
 	assert.Equal(t,
-		utils.Str2oid("5f4d0a2b27fe53da8a4aec45"),
+		"5f4d0a2b27fe53da8a4aec45",
 		res)
 }
 
@@ -135,6 +137,7 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 		},
 		OracleDatabaseAgreementParts: partsSample,
 		TimeNow:                      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID:                  utils.NewObjectIDForTests(),
 	}
 	addRequest := dto.AssociatedPartInOracleDbAgreementRequest{
 		AgreementID:     "AID001",
@@ -153,6 +156,7 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 		CSI:         "CSI001",
 		Parts: []model.AssociatedPart{
 			{
+				ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 				OracleDatabasePart: partsSample[0],
 				ReferenceNumber:    "RF0001",
 				Unlimited:          true,
@@ -185,6 +189,7 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 				CSI:         "CSI001",
 				Parts: []model.AssociatedPart{
 					{
+						ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 						OracleDatabasePart: partsSample[0],
 						ReferenceNumber:    "RF0001",
 						Unlimited:          true,
@@ -193,6 +198,7 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 						Hosts:              []string{"test-db", "ercsoldbx"},
 					},
 					{
+						ID:                 utils.Str2oid("000000000000000000000001"),
 						OracleDatabasePart: partsSample[1],
 						ReferenceNumber:    "RF0002",
 						Unlimited:          false,
@@ -210,7 +216,7 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 	res, err := as.AddAssociatedPartToOracleDbAgreement(addRequest)
 	require.NoError(t, err)
 	assert.Equal(t,
-		utils.Str2oid("5f4d0a2b27fe53da8a4aec45"),
+		"5f4d0a2b27fe53da8a4aec45",
 		res)
 }
 
@@ -226,6 +232,7 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 		},
 		OracleDatabaseAgreementParts: partsSample,
 		TimeNow:                      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID:                  utils.NewObjectIDForTests(),
 	}
 
 	addRequest := dto.AssociatedPartInOracleDbAgreementRequest{
@@ -264,7 +271,7 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 		res, err := as.AddAssociatedPartToOracleDbAgreement(addRequest)
 		require.EqualError(t, err, utils.AerrHostNotFound.Error())
 
-		assert.Equal(t, primitive.NilObjectID, res)
+		assert.Equal(t, "", res)
 
 	})
 
@@ -304,7 +311,7 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 
 		require.EqualError(t, err, utils.AerrOracleDatabaseAgreementInvalidPartID.Error())
 
-		assert.Equal(t, primitive.NilObjectID, res)
+		assert.Equal(t, "", res)
 
 	})
 }
@@ -322,6 +329,7 @@ func TestUpdateAssociatedPartOfOracleDbAgreement(t *testing.T) {
 		},
 		OracleDatabaseAgreementParts: partsSample,
 		TimeNow:                      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID:                  utils.NewObjectIDForTests(),
 	}
 
 	agreement := model.OracleDatabaseAgreement{
@@ -463,12 +471,13 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 				// TODO Cost: ,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
 	returnedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "AID001",
-			AvailableCount: 7,
+			AvailableCount: 0,
 			CatchAll:       false,
 			CSI:            "CSI001",
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
@@ -489,7 +498,7 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 			Count:           0,
 		},
 	}
-	returnedLicensingObjects := []dto.HostUsingOracleDatabaseLicenses{
+	returnedHosts := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			LicenseCount:  3,
@@ -526,9 +535,9 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 	}
 
 	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
-	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedLicensingObjects, nil)
+	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedHosts, nil)
 
-	res, err := as.SearchAssociatedPartsInOracleDatabaseAgreements("", dto.SearchOracleDatabaseAgreementsFilter{
+	res, err := as.SearchAssociatedPartsInOracleDatabaseAgreements(dto.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -557,6 +566,7 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 				Metric:          model.AgreementPartMetricProcessorPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
 	returnedAgreements := []dto.OracleDatabaseAgreementFE{
@@ -583,7 +593,7 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 			Count:           0,
 		},
 	}
-	returnedLicensingObjects := []dto.HostUsingOracleDatabaseLicenses{
+	returnedHosts := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
 			LicenseCount:  3,
@@ -594,9 +604,9 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 	}
 
 	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
-	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedLicensingObjects, nil)
+	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedHosts, nil)
 
-	res, err := as.SearchAssociatedPartsInOracleDatabaseAgreements("", dto.SearchOracleDatabaseAgreementsFilter{
+	res, err := as.SearchAssociatedPartsInOracleDatabaseAgreements(dto.SearchOracleDatabaseAgreementsFilter{
 		AgreementID:       "asddfa",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -609,9 +619,9 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 	})
 
 	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
-	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedLicensingObjects, nil)
+	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedHosts, nil)
 
-	res, err = as.SearchAssociatedPartsInOracleDatabaseAgreements("", dto.SearchOracleDatabaseAgreementsFilter{
+	res, err = as.SearchAssociatedPartsInOracleDatabaseAgreements(dto.SearchOracleDatabaseAgreementsFilter{
 		AgreementID:       "asddfa",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -624,9 +634,9 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 	})
 
 	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
-	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedLicensingObjects, nil)
+	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedHosts, nil)
 
-	res, err = as.SearchAssociatedPartsInOracleDatabaseAgreements("", dto.SearchOracleDatabaseAgreementsFilter{
+	res, err = as.SearchAssociatedPartsInOracleDatabaseAgreements(dto.SearchOracleDatabaseAgreementsFilter{
 		AgreementID:       "asddfa",
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
@@ -657,6 +667,7 @@ func TestSearchOracleDatabaseAgreements_Failed2(t *testing.T) {
 				Metric:          model.AgreementPartMetricProcessorPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
 	returnedAgreements := []dto.OracleDatabaseAgreementFE{
@@ -687,7 +698,7 @@ func TestSearchOracleDatabaseAgreements_Failed2(t *testing.T) {
 	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
 	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(nil, aerrMock)
 
-	_, err := as.SearchAssociatedPartsInOracleDatabaseAgreements("", dto.SearchOracleDatabaseAgreementsFilter{
+	_, err := as.SearchAssociatedPartsInOracleDatabaseAgreements(dto.SearchOracleDatabaseAgreementsFilter{
 		Unlimited:         "NULL",
 		CatchAll:          "NULL",
 		AvailableCountGTE: -1,
@@ -925,6 +936,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCase(t *testing.T)
 				Metric:          model.AgreementPartMetricProcessorPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
 	agreements := []dto.OracleDatabaseAgreementFE{
@@ -1003,12 +1015,13 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *t
 				Metric:          model.AgreementPartMetricProcessorPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
 	agreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "AID001",
-			AvailableCount: 7,
+			AvailableCount: 5,
 			CatchAll:       false,
 			CSI:            "CSI001",
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
@@ -1042,7 +1055,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *t
 	expectedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "AID001",
-			AvailableCount: 0,
+			AvailableCount: 2,
 			CatchAll:       false,
 			CSI:            "CSI001",
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
@@ -1061,7 +1074,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *t
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           2,
+			Count:           5,
 		},
 	}
 
@@ -1081,12 +1094,13 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 				Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
 	agreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
-			AvailableCount: 7,
+			AvailableCount: 250,
 			CatchAll:       false,
 			CSI:            "CSI001",
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
@@ -1103,16 +1117,16 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 			PartID:          "PID002",
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
-			UsersCount:      10,
-			Count:           10,
+			UsersCount:      250,
+			Count:           250,
 		},
 	}
 	hosts := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
-			LicenseCount:  128,
+			LicenseCount:  5,
 			LicenseName:   "Partitioning",
-			OriginalCount: 128,
+			OriginalCount: 5,
 			Type:          "host",
 		},
 	}
@@ -1120,7 +1134,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 	expectedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
-			AvailableCount: -3,
+			AvailableCount: 125,
 			CatchAll:       false,
 			CSI:            "CSI001",
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
@@ -1128,7 +1142,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 					CoveredLicensesCount:      125,
 					Hostname:                  "test-db",
 					TotalCoveredLicensesCount: 125,
-					ConsumedLicensesCount:     128,
+					ConsumedLicensesCount:     125,
 				},
 			},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
@@ -1138,8 +1152,8 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 			PartID:          "PID002",
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
-			UsersCount:      10,
-			Count:           5,
+			UsersCount:      250,
+			Count:           250,
 		},
 	}
 
@@ -1159,11 +1173,12 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 				Metric:          model.AgreementPartMetricProcessorPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 	agreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
-			AvailableCount: 7,
+			AvailableCount: 5,
 			CatchAll:       false,
 			CSI:            "CSI001",
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
@@ -1234,7 +1249,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           0,
+			Count:           5,
 		},
 	}
 
@@ -1254,12 +1269,13 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 				Metric:          model.AgreementPartMetricProcessorPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
 	agreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
-			AvailableCount: 7,
+			AvailableCount: 5,
 			CatchAll:       false,
 			CSI:            "CSI001",
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
@@ -1281,7 +1297,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 		},
 		{
 			AgreementID:    "5051863",
-			AvailableCount: 7,
+			AvailableCount: 10,
 			CatchAll:       false,
 			CSI:            "CSI001",
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
@@ -1334,7 +1350,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           0,
+			Count:           10,
 		},
 		{
 			AgreementID:    "5051863",
@@ -1357,7 +1373,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           0,
+			Count:           5,
 		},
 	}
 
@@ -1377,12 +1393,13 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCaseNoAssociatedHo
 				Metric:          model.AgreementPartMetricProcessorPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
 	agreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:     "5051863",
-			AvailableCount:  7,
+			AvailableCount:  0,
 			CatchAll:        true,
 			CSI:             "CSI001",
 			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
@@ -1410,7 +1427,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCaseNoAssociatedHo
 	expectedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:     "5051863",
-			AvailableCount:  -0,
+			AvailableCount:  0,
 			CatchAll:        true,
 			CSI:             "CSI001",
 			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
@@ -1442,12 +1459,13 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAss
 				Metric:          model.AgreementPartMetricProcessorPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
 	agreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:     "5051863",
-			AvailableCount:  7,
+			AvailableCount:  5,
 			CatchAll:        true,
 			CSI:             "CSI001",
 			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
@@ -1475,7 +1493,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAss
 	expectedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:     "5051863",
-			AvailableCount:  0,
+			AvailableCount:  2,
 			CatchAll:        true,
 			CSI:             "CSI001",
 			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
@@ -1487,7 +1505,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAss
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           2,
+			Count:           5,
 		},
 	}
 
@@ -1507,12 +1525,13 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 				Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
 	agreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:     "5051863",
-			AvailableCount:  7,
+			AvailableCount:  200,
 			CatchAll:        true,
 			CSI:             "CSI001",
 			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
@@ -1523,16 +1542,16 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 			PartID:          "PID002",
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
-			UsersCount:      10,
-			Count:           10,
+			UsersCount:      200,
+			Count:           200,
 		},
 	}
 	hosts := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			Name:          "test-db",
-			LicenseCount:  128,
+			LicenseCount:  5,
 			LicenseName:   "Partitioning",
-			OriginalCount: 128,
+			OriginalCount: 5,
 			Type:          "host",
 		},
 	}
@@ -1540,7 +1559,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 	expectedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:     "5051863",
-			AvailableCount:  -3,
+			AvailableCount:  75,
 			CatchAll:        true,
 			CSI:             "CSI001",
 			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
@@ -1551,8 +1570,8 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 			PartID:          "PID002",
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
-			UsersCount:      10,
-			Count:           5,
+			UsersCount:      200,
+			Count:           200,
 		},
 	}
 
@@ -1572,12 +1591,13 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 				Metric:          model.AgreementPartMetricProcessorPerpetual,
 			},
 		},
+		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
 	agreements := []dto.OracleDatabaseAgreementFE{
 		{
 			AgreementID:    "5051863",
-			AvailableCount: 7,
+			AvailableCount: 10,
 			CatchAll:       true,
 			CSI:            "CSI001",
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
@@ -1618,7 +1638,12 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 			CatchAll:       true,
 			CSI:            "CSI001",
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
-				{Hostname: "test-db", CoveredLicensesCount: 3, TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 3},
+				{
+					Hostname:                  "test-db",
+					CoveredLicensesCount:      3,
+					TotalCoveredLicensesCount: 3,
+					ConsumedLicensesCount:     3,
+				},
 			},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
@@ -1628,14 +1653,13 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           0,
+			Count:           10,
 		},
 	}
 
 	as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
 
 	assert.Equal(t, expectedAgreements, agreements)
-
 }
 
 func TestSortHostsUsingLicenses(t *testing.T) {
@@ -1895,6 +1919,7 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement(t *testing.T) {
 		},
 		OracleDatabaseAgreementParts: partsSample,
 		TimeNow:                      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID:                  utils.NewObjectIDForTests(),
 	}
 
 	associatedPartID := utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")
@@ -2002,6 +2027,7 @@ func TestAddHostToAssociatedPart(t *testing.T) {
 		},
 		OracleDatabaseAgreementParts: partsSample,
 		TimeNow:                      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID:                  utils.NewObjectIDForTests(),
 	}
 
 	anotherAssociatedPartID := utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb")
@@ -2165,6 +2191,7 @@ func TestRemoveHostFromAssociatedPart(t *testing.T) {
 		},
 		OracleDatabaseAgreementParts: partsSample,
 		TimeNow:                      utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID:                  utils.NewObjectIDForTests(),
 	}
 
 	anotherAssociatedPartID := utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb")
