@@ -15,7 +15,9 @@
 
 package dto
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 //TODO Should I remove some of these?
 
@@ -33,10 +35,11 @@ type AssociatedPartInOracleDbAgreementRequest struct {
 	Hosts           []string `json:"hosts"`
 }
 
-// OracleDatabaseAgreementFE contains the informations about
+// OracleDatabaseAgreementFE contains the informations about an AssociatedPart in an Agreement for the frontend
 type OracleDatabaseAgreementFE struct {
-	AgreementID string `json:"agreementID" bson:"agreementID"`
-	CSI         string `json:"csi" bson:"csi"`
+	ID          primitive.ObjectID `json:"id" bson:"_id"` // ID of agreement - part couple
+	AgreementID string             `json:"agreementID" bson:"agreementID"`
+	CSI         string             `json:"csi" bson:"csi"`
 
 	// Part
 	PartID          string `json:"partID" bson:"partID"`
@@ -44,26 +47,35 @@ type OracleDatabaseAgreementFE struct {
 	Metric          string `json:"metric" bson:"metric"`
 
 	// Associated Part
-	ID              primitive.ObjectID                        `json:"id" bson:"_id"`
-	ReferenceNumber string                                    `json:"referenceNumber" bson:"referenceNumber"`
-	Unlimited       bool                                      `json:"unlimited" bson:"unlimited"`
-	Count           float64                                   `json:"count" bson:"count"`
-	CatchAll        bool                                      `json:"catchAll" bson:"catchAll"`
-	Hosts           []OracleDatabaseAgreementAssociatedHostFE `json:"hosts" bson:"hosts"`
 
+	ReferenceNumber string `json:"referenceNumber" bson:"referenceNumber"`
+	Unlimited       bool   `json:"unlimited" bson:"unlimited"` // Or "ULA"
+	// Number of licenses or users set by user.
+	// If agreement is Named User, Count number express users, not licenses
+	Count float64 `json:"count" bson:"count"`
+
+	CatchAll bool                                      `json:"catchAll" bson:"catchAll"`
+	Hosts    []OracleDatabaseAgreementAssociatedHostFE `json:"hosts" bson:"hosts"`
+
+	// Value of licenses/users yet available to be assigned to hosts
 	AvailableCount float64 `json:"availableCount" bson:"availableCount"`
-	// availableCount and metric is model.AgreementPartMetricProcessorPerpetual
+	// Number of licenses
 	LicensesCount float64 `json:"licensesCount" bson:"licensesCount"`
-	// availableCount and metric is model.AgreementPartMetricNamedUserPlusPerpetual
+	// Number of users
 	UsersCount float64 `json:"usersCount" bson:"usersCount"`
 }
 
-// OracleDatabaseAgreementAssociatedHostFE contains the informations about a associated host in agreement
+// OracleDatabaseAgreementAssociatedHostFE contains the informations about an associated host in agreement
+// If agreement is Named User, counts are in users
 type OracleDatabaseAgreementAssociatedHostFE struct {
-	Hostname                  string  `json:"hostname" bson:"hostname"`
-	CoveredLicensesCount      float64 `json:"coveredLicensesCount" bson:"coveredLicensesCount"`
+	Hostname string `json:"hostname" bson:"hostname"`
+	// Licenses which have been covered by agreement associated
+	CoveredLicensesCount float64 `json:"coveredLicensesCount" bson:"coveredLicensesCount"`
+
+	// Licenses covered by all agreements
 	TotalCoveredLicensesCount float64 `json:"totalCoveredLicensesCount" bson:"totalCoveredLicensesCount"`
-	ConsumedLicensesCount     float64 `json:"consumedLicensesCount" bson:"consumedLicensesCount"`
+	// Licenses consumed (used) by this hostname, data from agents
+	ConsumedLicensesCount float64 `json:"consumedLicensesCount" bson:"consumedLicensesCount"`
 }
 
 // SearchOracleDatabaseAgreementsFilter contains the filter used to get the list of Oracle/Database agreements
@@ -84,13 +96,16 @@ type SearchOracleDatabaseAgreementsFilter struct {
 	AvailableCountGTE int
 }
 
-// HostUsingOracleDatabaseLicenses contains the information about the objects that use licenses by Oracle/Database
+// HostUsingOracleDatabaseLicenses contains the information about the hosts that use licenses by Oracle/Database
 type HostUsingOracleDatabaseLicenses struct {
 	LicenseName string `json:"licenseName" bson:"licenseName"`
-	Name        string `json:"name" bson:"name"`
+	//TODO Add partID and use it instead of LicenseName
+	Name string `json:"name" bson:"name"`
 	//Type describe if it's an host or a cluster
-	Type          string  `json:"type" bson:"type"`
-	LicenseCount  float64 `json:"licenseCount" bson:"licenseCount"`
+	Type string `json:"type" bson:"type"`
+	// TODO Licenses to be covered by agreement... Uncovered licenses???
+	LicenseCount float64 `json:"licenseCount" bson:"licenseCount"`
+	//TODO original value of licenseCount, but not to be edited?!? Equals to ConsumedLicensesCount
 	OriginalCount float64 `json:"originalCount" bson:"originalCount"`
 }
 
