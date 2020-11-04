@@ -129,6 +129,7 @@ func (m *MongodbSuite) TestUpdateOracleDatabaseAgreement() {
 			CSI:         "000001",
 			Parts: []model.AssociatedPart{
 				{
+					ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 					OracleDatabasePart: partSample,
 					ReferenceNumber:    "000002",
 					Unlimited:          true,
@@ -191,6 +192,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_OnePart() {
 		CSI:         "csi001",
 		Parts: []model.AssociatedPart{
 			{
+				ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 				OracleDatabasePart: partSample,
 				ReferenceNumber:    "R00001",
 				CatchAll:           true,
@@ -207,6 +209,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_OnePart() {
 
 	assert.Equal(m.T(), []dto.OracleDatabaseAgreementFE{
 		{
+			ID:          utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 			AgreementID: "AID001",
 			CSI:         "csi001",
 
@@ -244,7 +247,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_MultipleParts() {
 		Parts: []model.AssociatedPart{
 			{
 
-				ID:                 utils.Str2oid("5dcad8933b243f80e2ed8543"),
+				ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 				OracleDatabasePart: partSample,
 				ReferenceNumber:    "R00001",
 				CatchAll:           true,
@@ -259,7 +262,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_MultipleParts() {
 		CSI:         "csi002",
 		Parts: []model.AssociatedPart{
 			{
-				ID:                 utils.Str2oid("5dcad8933b243f80e2ed8540"),
+				ID:                 utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
 				OracleDatabasePart: partSample,
 				ReferenceNumber:    "R00002",
 				CatchAll:           true,
@@ -268,7 +271,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_MultipleParts() {
 				Unlimited:          false,
 			},
 			{
-				ID: utils.Str2oid("5dcad8933b243f80e2ed8541"),
+				ID: utils.Str2oid("cccccccccccccccccccccccc"),
 				OracleDatabasePart: model.OracleDatabasePart{
 					PartID:          "partID2",
 					ItemDescription: "partDescr2",
@@ -295,6 +298,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_MultipleParts() {
 
 	assert.Equal(m.T(), []dto.OracleDatabaseAgreementFE{
 		{
+			ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 			AgreementID:     "agr001",
 			CSI:             "csi001",
 			PartID:          "ID00001",
@@ -321,6 +325,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_MultipleParts() {
 			LicensesCount:  345,
 			UsersCount:     0},
 		{
+			ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
 			AgreementID:     "agr002",
 			CSI:             "csi002",
 			PartID:          "ID00001",
@@ -349,6 +354,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_MultipleParts() {
 			UsersCount:     0,
 		},
 		{
+			ID:              utils.Str2oid("cccccccccccccccccccccccc"),
 			AgreementID:     "agr002",
 			CSI:             "csi002",
 			PartID:          "partID2",
