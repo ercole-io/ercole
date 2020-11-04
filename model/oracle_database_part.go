@@ -15,7 +15,7 @@
 
 package model
 
-// OracleDatabasePart holds informations about a sigle OracleDatabasePart
+// OracleDatabasePart holds informations about a single OracleDatabasePart
 type OracleDatabasePart struct {
 	PartID          string   `json:"partID" bson:"partID"`
 	ItemDescription string   `json:"itemDescription" bson:"itemDescription"`
