@@ -51,14 +51,14 @@ type APIControllerInterface interface {
 	SearchOracleExadata(w http.ResponseWriter, r *http.Request)
 	// SearchLicenses search licenses using the filters in the request
 	SearchLicenses(w http.ResponseWriter, r *http.Request)
-	// SearchOracleDatabaseConsumedLicenses search licenses consumed by the hosts using the filters in the request
-	SearchOracleDatabaseConsumedLicenses(w http.ResponseWriter, r *http.Request)
+	// SearchOracleDatabaseUsedLicenses search licenses consumed by the hosts using the filters in the request
+	SearchOracleDatabaseUsedLicenses(w http.ResponseWriter, r *http.Request)
 	// GetLicense return a certain license asked in the request
 	GetLicense(w http.ResponseWriter, r *http.Request)
 	// SearchOracleDatabaseLicenseModifiers search a license modifier using the filters in the request
 	SearchOracleDatabaseLicenseModifiers(w http.ResponseWriter, r *http.Request)
-	// SearchOracleDatabaseAgreements search Oracle/Database agreements data using the filters in the request
-	SearchOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request)
+	// SearchOracleDatabaseAgreements search OracleDatabase agreements data using the filters in the request
+	SearchAssociatedPartsInOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request)
 
 	// GetPatchingFunction return all'informations about the patching function of the host requested in the hostnmae path variable
 	GetPatchingFunction(w http.ResponseWriter, r *http.Request)
@@ -126,16 +126,16 @@ type APIControllerInterface interface {
 	// GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
 	GetOracleDatabaseAgreementPartsList(w http.ResponseWriter, r *http.Request)
 
-	// AddOracleDatabaseAgreements add some agreements
-	AddOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request)
-	// UpdateOracleDatabaseAgreement edit an agreement
-	UpdateOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
-	// DeleteOracleDatabaseAgreement delete an agreement
-	DeleteOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
-	// AddAssociatedHostToOracleDatabaseAgreement add a associated host to an agreement
-	AddAssociatedHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
-	// RemoveAssociatedHostToOracleDatabaseAgreement remove a associated host of an agreement
-	RemoveAssociatedHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
+	// Add associated part to an existing/new agreement
+	AddAssociatedPartToOracleDbAgreement(w http.ResponseWriter, r *http.Request)
+	// Edit an agreement
+	UpdateAssociatedPartOfOracleDbAgreement(w http.ResponseWriter, r *http.Request)
+	// delete AssociatedPart from an OracleDatabaseAgreement
+	DeleteAssociatedPartFromOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
+	// Add an host from AssociatedPart
+	AddHostToAssociatedPart(w http.ResponseWriter, r *http.Request)
+	// Remove an host from AssociatedPart
+	RemoveHostFromAssociatedPart(w http.ResponseWriter, r *http.Request)
 
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license
 	SetLicenseCostPerProcessor(w http.ResponseWriter, r *http.Request)

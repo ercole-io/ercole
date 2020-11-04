@@ -20,7 +20,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ercole-io/ercole/api-service/apimodel"
+	"github.com/ercole-io/ercole/api-service/dto"
 	"github.com/ercole-io/ercole/utils"
 )
 
@@ -45,11 +45,13 @@ func (as *APIService) SearchOracleDatabases(full bool, search string, sortBy str
 }
 
 // SearchLicenses search licenses
-func (as *APIService) SearchLicenses(location string, environment string, olderThan time.Time) ([]apimodel.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface) {
+func (as *APIService) SearchLicenses(location string, environment string, olderThan time.Time,
+) ([]dto.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface) {
 	agrs, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
 		return nil, err
 	}
+	// TODO Insert agr parts info
 
 	hosts, err := as.Database.ListHostUsingOracleDatabaseLicenses()
 	if err != nil {
@@ -62,7 +64,7 @@ func (as *APIService) SearchLicenses(location string, environment string, olderT
 		return nil, err
 	}
 
-	as.AssignOracleDatabaseAgreementsToHosts(agrs, hosts)
+	as.assignOracleDatabaseAgreementsToHosts(agrs, hosts)
 
 	setLicensesCosts(as, agrs, hosts, lics)
 
@@ -70,11 +72,11 @@ func (as *APIService) SearchLicenses(location string, environment string, olderT
 }
 
 func setLicensesCosts(as *APIService,
-	agrs []apimodel.OracleDatabaseAgreementFE,
-	hosts []apimodel.HostUsingOracleDatabaseLicenses,
-	lics []apimodel.OracleDatabaseLicenseUsageInfo) {
+	agrs []dto.OracleDatabaseAgreementFE,
+	hosts []dto.HostUsingOracleDatabaseLicenses,
+	lics []dto.OracleDatabaseLicenseUsageInfo) {
 
-	partsMap := buildOracleDatabaseAgreementPartMap(as.OracleDatabaseAgreementParts)
+	partsMap := buildAgreementPartMap(as.OracleDatabaseAgreementParts)
 
 	licsMap := buildOracleDatabaseLicenseInfoMap(lics)
 
@@ -101,8 +103,8 @@ func setLicensesCosts(as *APIService,
 }
 
 // buildOracleDatabaseLicenseInfoMap return a map of licenseName to OracleDatabaseLicenseUsageInfo
-func buildOracleDatabaseLicenseInfoMap(lics []apimodel.OracleDatabaseLicenseUsageInfo) map[string]*apimodel.OracleDatabaseLicenseUsageInfo {
-	res := make(map[string]*apimodel.OracleDatabaseLicenseUsageInfo)
+func buildOracleDatabaseLicenseInfoMap(lics []dto.OracleDatabaseLicenseUsageInfo) map[string]*dto.OracleDatabaseLicenseUsageInfo {
+	res := make(map[string]*dto.OracleDatabaseLicenseUsageInfo)
 
 	for i, lic := range lics {
 		res[lic.ID] = &lics[i]
@@ -111,9 +113,11 @@ func buildOracleDatabaseLicenseInfoMap(lics []apimodel.OracleDatabaseLicenseUsag
 	return res
 }
 
-// SearchOracleDatabaseConsumedLicenses return the list of consumed licenses
-func (as *APIService) SearchOracleDatabaseConsumedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.ListLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+// SearchOracleDatabaseUsedLicenses return the list of used licenses
+func (as *APIService) SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int,
+	location string, environment string, olderThan time.Time,
+) (*dto.OracleDatabaseUsedLicenseSearchResponse, utils.AdvancedErrorInterface) {
+	return as.Database.SearchOracleDatabaseUsedLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
 // GetLicense return the license specified in the name param

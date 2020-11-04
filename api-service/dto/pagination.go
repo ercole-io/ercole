@@ -13,31 +13,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package cmd
+package dto
 
-import (
-	"context"
-
-	"github.com/spf13/cobra"
-
-	migration "github.com/ercole-io/ercole/database-migration"
-	"github.com/ercole-io/ercole/utils"
-)
-
-// migrateCmd represents the migrate command
-var migrateCmd = &cobra.Command{
-	Use:   "migrate",
-	Short: "Migrate the database",
-	Long:  `Migrate the database`,
-	Run: func(cmd *cobra.Command, args []string) {
-		log := utils.NewLogger("SERV")
-
-		cl := migration.ConnectToMongodb(log, ercoleConfig.Mongodb)
-		migration.Migrate(log, cl.Database(ercoleConfig.Mongodb.DBName))
-		cl.Disconnect(context.TODO())
-	},
-}
-
-func init() {
-	rootCmd.AddCommand(migrateCmd)
+// PagingMetadata contains metadata for pagination listings
+type PagingMetadata struct {
+	Empty         bool `json:"empty"`
+	First         bool `json:"first"`
+	Last          bool `json:"last"`
+	Number        int  `json:"number"`
+	Size          int  `json:"size"`
+	TotalElements int  `json:"totalElements"`
+	TotalPages    int  `json:"totalPages"`
 }
