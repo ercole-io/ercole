@@ -54,7 +54,7 @@ func ConnectToMongodb(log *logrus.Logger, conf config.Mongodb) *mongo.Client {
 }
 
 // Migrate migrate the client database
-func Migrate(log *logrus.Logger, client *mongo.Database, initialLicensesList []string) {
+func Migrate(log *logrus.Logger, client *mongo.Database) {
 	//NB: ALL OPERATIONS SHOULD BE IDEMPOTENT
 	//THE RESULT OF
 	//	Migrate(&db)
@@ -66,7 +66,6 @@ func Migrate(log *logrus.Logger, client *mongo.Database, initialLicensesList []s
 
 	MigrateHostsSchema(log, client)
 	// MigrateClustersSchema(log, client)
-	MigrateLicensesSchema(log, client, initialLicensesList)
 	MigrateAlertsSchema(log, client)
 	MigratePatchingFunctionsSchema(log, client)
 	// MigrateCurrentDatabasesSchema(log, client)
@@ -196,33 +195,6 @@ func MigrateHostsSchema(log *logrus.Logger, client *mongo.Database) {
 // 	}
 // }
 
-// MigrateLicensesSchema create or update the licenses schema
-func MigrateLicensesSchema(log *logrus.Logger, client *mongo.Database, initialLicensesList []string) {
-	//Create the collection
-	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
-		log.Panicln(err)
-	} else if !utils.Contains(cols, "licenses") {
-		if err := client.RunCommand(context.TODO(), bson.D{
-			{"create", "licenses"},
-		}).Err(); err != nil {
-			log.Panicln(err)
-		}
-	}
-
-	//Set the collection validator
-	if err := client.RunCommand(context.TODO(), bson.D{
-		{"collMod", "licenses"},
-		{"validator", bson.D{
-			{"$jsonSchema", model.LicenseCountBsonValidatorRules},
-		}},
-	}).Err(); err != nil {
-		log.Panicln(err)
-	}
-
-	//Initializes the collection from the lists of licenses
-	InitLicenses(log, client, initialLicensesList)
-}
-
 // MigrateAlertsSchema create or update the alerts schema
 func MigrateAlertsSchema(log *logrus.Logger, client *mongo.Database) {
 	//Create the collection
@@ -243,15 +215,6 @@ func MigrateAlertsSchema(log *logrus.Logger, client *mongo.Database) {
 			{"$jsonSchema", model.AlertBsonValidatorRules},
 		}},
 	}).Err(); err != nil {
-		log.Panicln(err)
-	}
-
-	//index creations
-	if _, err := client.Collection("licenses").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
-		Keys: bson.D{
-			{"hostname", 1},
-		},
-	}); err != nil {
 		log.Panicln(err)
 	}
 }
@@ -310,34 +273,6 @@ func UpdateDataSchemas(log *logrus.Logger, client *mongo.Database) {
 
 }
 
-// InitLicenses initialize the licenses collection
-func InitLicenses(log *logrus.Logger, client *mongo.Database, list []string) {
-	for _, l := range list {
-		//Check the existance of a license with the same name
-		val, err := client.Collection("licenses").CountDocuments(context.TODO(), bson.D{
-			{"_id", l},
-		}, &options.CountOptions{
-			Limit: utils.Intptr(1),
-		})
-		if err != nil {
-			log.Fatalf("Unable to find a license in the licenses collection: %v\n", err)
-		}
-
-		//If not exist, insert the new license
-		if val == 0 {
-			_, err := client.Collection("licenses").InsertOne(context.TODO(), model.LicenseCount{
-				Name:             l,
-				Count:            0,
-				CostPerProcessor: 0,
-				Unlimited:        false,
-			})
-			if err != nil {
-				log.Fatalf("Unable to insert a license in the licenses collection: %v\n", err)
-			}
-		}
-	}
-}
-
 // MigratePatchingFunctionsSchema create or update the patching_functions schema
 func MigratePatchingFunctionsSchema(log *logrus.Logger, client *mongo.Database) {
 	//Create the collection
@@ -374,25 +309,36 @@ func MigratePatchingFunctionsSchema(log *logrus.Logger, client *mongo.Database) 
 
 // MigrateOracleDatabaseAgreementsSchema create or update the agreements_oracle_database schema
 func MigrateOracleDatabaseAgreementsSchema(log *logrus.Logger, client *mongo.Database) {
-	//Create the collection
+	collection := "agreements_oracle_database"
+
 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
 		log.Panicln(err)
-	} else if !utils.Contains(cols, "agreements_oracle_database") {
+	} else if !utils.Contains(cols, collection) {
 		if err := client.RunCommand(context.TODO(), bson.D{
-			{"create", "agreements_oracle_database"},
+			{"create", collection},
 		}).Err(); err != nil {
 			log.Panicln(err)
 		}
 	}
 
-	//Set the collection validator
-	if err := client.RunCommand(context.TODO(), bson.D{
-		{"collMod", "agreements_oracle_database"},
-		{"validator", bson.D{
-			{"$jsonSchema", model.OracleDatabaseAgreementBsonValidatorRules},
-		}},
-		{"validationAction", "error"},
-	}).Err(); err != nil {
+	if _, err := client.Collection(collection).
+		Indexes().
+		CreateMany(context.TODO(),
+			[]mongo.IndexModel{
+				{
+
+					Keys: bson.D{
+						{"agreementID", 1},
+					},
+					Options: options.Index().SetUnique(true),
+				},
+				{
+					Keys: bson.D{
+						{"parts._id", 1},
+					},
+					Options: options.Index().SetUnique(true),
+				}},
+		); err != nil {
 		log.Panicln(err)
 	}
 }

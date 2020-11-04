@@ -62,7 +62,7 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/technologies/oracle/databases/total-datafile-size", ctrl.GetTotalOracleDatabaseDatafileSizeStats).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/total-segment-size", ctrl.GetTotalOracleDatabaseSegmentSizeStats).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/license-compliance", ctrl.GetOracleDatabaseLicenseComplianceStatusStats).Methods("GET")
-	router.HandleFunc("/hosts/technologies/oracle/databases/consumed-licenses", ctrl.SearchOracleDatabaseConsumedLicenses).Methods("GET")
+	router.HandleFunc("/hosts/technologies/oracle/databases/consumed-licenses", ctrl.SearchOracleDatabaseUsedLicenses).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases", ctrl.SearchOracleDatabases).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/addms", ctrl.SearchOracleDatabaseAddms).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/segment-advisors", ctrl.SearchOracleDatabaseSegmentAdvisors).Methods("GET")
@@ -93,12 +93,12 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/licenses/{name}/cost-per-processor", ctrl.SetLicenseCostPerProcessor).Methods("PUT")
 
 	// AGREEMENTS
-	router.HandleFunc("/agreements/oracle/database", ctrl.AddOracleDatabaseAgreements).Methods("POST")
-	router.HandleFunc("/agreements/oracle/database", ctrl.UpdateOracleDatabaseAgreement).Methods("PUT")
-	router.HandleFunc("/agreements/oracle/database", ctrl.SearchOracleDatabaseAgreements).Methods("GET")
-	router.HandleFunc("/agreements/oracle/database/{id}", ctrl.DeleteOracleDatabaseAgreement).Methods("DELETE")
-	router.HandleFunc("/agreements/oracle/database/{id}/hosts", ctrl.AddAssociatedHostToOracleDatabaseAgreement).Methods("POST")
-	router.HandleFunc("/agreements/oracle/database/{id}/hosts/{hostname}", ctrl.RemoveAssociatedHostToOracleDatabaseAgreement).Methods("DELETE")
+	router.HandleFunc("/agreements/oracle/database", ctrl.AddAssociatedPartToOracleDbAgreement).Methods("POST")
+	router.HandleFunc("/agreements/oracle/database", ctrl.UpdateAssociatedPartOfOracleDbAgreement).Methods("PUT")
+	router.HandleFunc("/agreements/oracle/database", ctrl.SearchAssociatedPartsInOracleDatabaseAgreements).Methods("GET")
+	router.HandleFunc("/agreements/oracle/database/{id}", ctrl.DeleteAssociatedPartFromOracleDatabaseAgreement).Methods("DELETE")
+	router.HandleFunc("/agreements/oracle/database/{id}/hosts", ctrl.AddHostToAssociatedPart).Methods("POST")
+	router.HandleFunc("/agreements/oracle/database/{id}/hosts/{hostname}", ctrl.RemoveHostFromAssociatedPart).Methods("DELETE")
 
 	// ALERTS
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")

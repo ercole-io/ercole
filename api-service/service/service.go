@@ -19,8 +19,8 @@ package service
 import (
 	"time"
 
-	"github.com/ercole-io/ercole/api-service/apimodel"
 	"github.com/ercole-io/ercole/api-service/database"
+	"github.com/ercole-io/ercole/api-service/dto"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/sirupsen/logrus"
@@ -56,9 +56,9 @@ type APIServiceInterface interface {
 	// SearchOracleExadata search exadata
 	SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchLicenses search licenses
-	SearchLicenses(location string, environment string, olderThan time.Time) ([]apimodel.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface)
-	// SearchOracleDatabaseConsumedLicenses return the list of consumed licenses
-	SearchOracleDatabaseConsumedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
+	SearchLicenses(location string, environment string, olderThan time.Time) ([]dto.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface)
+	// SearchOracleDatabaseUsedLicenses return the list of consumed licenses
+	SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseUsedLicenseSearchResponse, utils.AdvancedErrorInterface)
 
 	// GetLicense return the license specified in the name param
 	GetLicense(name string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
@@ -131,22 +131,25 @@ type APIServiceInterface interface {
 	// SetLicenseCostPerProcessor set the cost per processor of a certain license
 	SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface
 
-	// GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
-	GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabaseAgreementPart, utils.AdvancedErrorInterface)
-	// AddOracleDatabaseAgreements add an Oracle Database Agreement
-	AddOracleDatabaseAgreements(req apimodel.OracleDatabaseAgreementsAddRequest) (interface{}, utils.AdvancedErrorInterface)
-	// UpdateOracleDatabaseAgreement update an Oracle Database Agreement
-	UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) utils.AdvancedErrorInterface
-	// DeleteOracleDatabaseAgreement remove an Oracle/Database agreement
-	DeleteOracleDatabaseAgreement(id primitive.ObjectID) utils.AdvancedErrorInterface
+	// ORACLE DATABASE AGREEMENTS
 
-	// SearchOracleDatabaseAgreements search Oracle/Database agreements
-	SearchOracleDatabaseAgreements(search string, filters apimodel.SearchOracleDatabaseAgreementsFilter) ([]apimodel.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface)
-	// AddAssociatedHostToOracleDatabaseAgreement add a new host to the list of associated hosts of the agreement
-	AddAssociatedHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
-	// RemoveAssociatedHostToOracleDatabaseAgreement remove the host from the list of associated hosts of the agreement
-	RemoveAssociatedHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
+	// Add associated part to OracleDatabaseAgreement or create a new one
+	AddAssociatedPartToOracleDbAgreement(request dto.AssociatedPartInOracleDbAgreementRequest) (string, utils.AdvancedErrorInterface)
+	// Update associated part in OracleDatabaseAgreement
+	UpdateAssociatedPartOfOracleDbAgreement(request dto.AssociatedPartInOracleDbAgreementRequest) utils.AdvancedErrorInterface
+	// Search OracleDatabase associated parts agreements
+	SearchAssociatedPartsInOracleDatabaseAgreements(filters dto.SearchOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface)
+	// Delete associated part from OracleDatabaseAgreement
+	DeleteAssociatedPartFromOracleDatabaseAgreement(associatedPartID primitive.ObjectID) utils.AdvancedErrorInterface
+	// Add an host to AssociatedPart
+	AddHostToAssociatedPart(associatedPartID primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
+	// Remove host from AssociatedPart
+	RemoveHostFromAssociatedPart(associatedPartID primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
 
+	// PARTS
+	GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabasePart, utils.AdvancedErrorInterface)
+
+	// PATCHING FUNCTIONS
 	// SetPatchingFunction set the patching function of a host
 	SetPatchingFunction(hostname string, pf model.PatchingFunction) (interface{}, utils.AdvancedErrorInterface)
 	// DeletePatchingFunction delete the patching function of a host
@@ -184,11 +187,17 @@ type APIService struct {
 	// TechnologyInfos contains the list of technologies with their informations
 	TechnologyInfos []model.TechnologyInfo
 	// OracleDatabaseAgreementParts contains the list of Oracle/Database agreeement parts
-	OracleDatabaseAgreementParts []model.OracleDatabaseAgreementPart
+	OracleDatabaseAgreementParts []model.OracleDatabasePart
+	// NewObjectID return a new ObjectID
+	NewObjectID func() primitive.ObjectID
 }
 
 // Init initializes the service and database
 func (as *APIService) Init() {
 	as.LoadManagedTechnologiesList()
-	as.LoadOracleDatabaseAgreementPartsList()
+	as.LoadOracleDatabaseAgreementParts()
+
+	as.NewObjectID = func() primitive.ObjectID {
+		return primitive.NewObjectIDFromTimestamp(as.TimeNow())
+	}
 }

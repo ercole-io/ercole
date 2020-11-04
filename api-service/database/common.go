@@ -16,6 +16,7 @@
 package database
 
 import (
+	"math"
 	"time"
 
 	"github.com/amreo/mu"
@@ -89,4 +90,13 @@ func AddAssociatedClusterNameAndVirtualizationNode(olderThan time.Time) bson.A {
 		}),
 		mu.APUnset("vm"),
 	)
+}
+
+// PagingMetadataStage insert PagingStage
+func PagingMetadataStage(page int, size int) interface{} {
+	if page >= 0 && size > 0 {
+		return mu.APOptionalPagingStage(page, size)
+	}
+
+	return mu.APOptionalPagingStage(0, math.MaxInt64)
 }
