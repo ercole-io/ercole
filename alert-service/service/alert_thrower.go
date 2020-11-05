@@ -155,7 +155,7 @@ func (as *AlertService) ThrowNoDataAlert(hostname string, freshnessThreshold int
 		return err
 	}
 	if as.Config.AlertService.LogAlertThrows {
-		as.Log.Warnf("Alert NO_DATA of %s was thrown\n", hostname)
+		as.Log.Infof("Alert NO_DATA of %s was thrown\n", hostname)
 	}
 
 	//Schedule the email notification
