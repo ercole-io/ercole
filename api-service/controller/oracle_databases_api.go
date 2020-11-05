@@ -543,30 +543,6 @@ func (ctrl *APIController) SearchOracleDatabasesXLSX(w http.ResponseWriter, r *h
 	utils.WriteXLSXResponse(w, sheets)
 }
 
-// SearchLicenses search licenses using the filters in the request
-func (ctrl *APIController) SearchLicenses(w http.ResponseWriter, r *http.Request) {
-	var location string
-	var environment string
-	var olderThan time.Time
-
-	var err utils.AdvancedErrorInterface
-
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	licenses, err := ctrl.Service.SearchLicenses(location, environment, olderThan)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	utils.WriteJSONResponse(w, http.StatusOK, licenses)
-}
-
 // SearchOracleDatabaseUsedLicenses search licenses consumed by the hosts using the filters in the request
 func (ctrl *APIController) SearchOracleDatabaseUsedLicenses(w http.ResponseWriter, r *http.Request) {
 	var sortBy string
