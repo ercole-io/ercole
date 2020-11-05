@@ -175,6 +175,7 @@ func (ctrl *APIController) AckAlerts(w http.ResponseWriter, r *http.Request) {
 	var ids []primitive.ObjectID
 
 	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&ids); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
 			utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
