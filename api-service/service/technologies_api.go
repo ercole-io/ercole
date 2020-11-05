@@ -17,7 +17,6 @@
 package service
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/ercole-io/ercole/model"
@@ -31,10 +30,11 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 		return nil, err
 	}
 
-	oracleLicenseListRaw, err := as.Database.SearchLicenses(location, environment, olderThan)
-	if err != nil {
-		return nil, err
-	}
+	// FIXME Readd correct values
+	//oracleLicenseListRaw, err := as.Database.SearchLicenses(location, environment, olderThan)
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	finalList := make([]model.TechnologyStatus, 0)
 
@@ -47,7 +47,7 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 		Unlimited bool    `json:"unlimited"`
 	}
 	oracleLicenseList := make([]License, 0)
-	json.Unmarshal([]byte(utils.ToJSON(oracleLicenseListRaw)), &oracleLicenseList)
+	//json.Unmarshal([]byte(utils.ToJSON(oracleLicenseListRaw)), &oracleLicenseList)
 	used := float64(0.0)
 	holded := float64(0.0)
 	totalCost := float64(0.0)

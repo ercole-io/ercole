@@ -26,60 +26,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// SearchLicenses search licenses
-func (md *MongoDatabase) SearchLicenses(location string, environment string, olderThan time.Time) (
-	[]dto.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface) {
-
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses").Aggregate(
-		context.TODO(),
-		mu.MAPipeline(
-			mu.APLookupPipeline("hosts",
-				bson.M{
-					"ln": "$_id",
-				},
-				"hosts",
-				mu.MAPipeline(
-					FilterByLocationAndEnvironmentSteps(location, environment),
-					FilterByOldnessSteps(olderThan),
-					mu.APMatch(bson.M{
-						"features.oracle.database": mu.QONotEqual(nil),
-					}),
-					mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$features.oracle.database.databases"), 0))),
-					mu.APProject(bson.M{
-						"_id":      0,
-						"hostname": 1,
-						"dbNames": mu.APOMap(
-							mu.APOFilter(
-								mu.APOMap("$features.oracle.database.databases", "db",
-									bson.M{
-										"name":     "$$db.name",
-										"licenses": mu.APOFilter("$$db.licenses", "lic", mu.APOEqual("$$lic.name", "$$ln")),
-									},
-								),
-								"db",
-								mu.APOGreater(mu.APOSize("$$db.licenses"), 0),
-							),
-							"db",
-							"$$db.name",
-						),
-					}),
-					mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$dbNames"), 0))),
-				),
-			),
-		),
-	)
-	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
-	}
-
-	var out []dto.OracleDatabaseLicenseUsageInfo = make([]dto.OracleDatabaseLicenseUsageInfo, 0)
-
-	if err = cur.All(context.TODO(), &out); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
-	}
-	return out, nil
-}
-
 // SearchOracleDatabaseUsedLicenses search used licenses
 func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int,
 	location string, environment string, olderThan time.Time,
