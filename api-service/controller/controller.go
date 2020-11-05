@@ -49,8 +49,6 @@ type APIControllerInterface interface {
 	SearchAlerts(w http.ResponseWriter, r *http.Request)
 	// SearchOracleExadata search exadata data using the filters in the request
 	SearchOracleExadata(w http.ResponseWriter, r *http.Request)
-	// SearchLicenses search licenses using the filters in the request
-	SearchLicenses(w http.ResponseWriter, r *http.Request)
 	// SearchOracleDatabaseUsedLicenses search licenses consumed by the hosts using the filters in the request
 	SearchOracleDatabaseUsedLicenses(w http.ResponseWriter, r *http.Request)
 	// GetLicense return a certain license asked in the request
