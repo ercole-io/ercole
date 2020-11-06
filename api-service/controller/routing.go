@@ -61,7 +61,6 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/technologies/oracle/databases/total-memory-size", ctrl.GetTotalOracleDatabaseMemorySizeStats).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/total-datafile-size", ctrl.GetTotalOracleDatabaseDatafileSizeStats).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/total-segment-size", ctrl.GetTotalOracleDatabaseSegmentSizeStats).Methods("GET")
-	router.HandleFunc("/hosts/technologies/oracle/databases/license-compliance", ctrl.GetOracleDatabaseLicenseComplianceStatusStats).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/consumed-licenses", ctrl.SearchOracleDatabaseUsedLicenses).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases", ctrl.SearchOracleDatabases).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/addms", ctrl.SearchOracleDatabaseAddms).Methods("GET")
@@ -86,11 +85,6 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/tags/{tagname}", ctrl.DeleteTagOfOracleDatabase).Methods("DELETE")
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseName}", ctrl.SetOracleDatabaseLicenseModifier).Methods("PUT")
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/license-modifiers/{licenseName}", ctrl.DeleteOracleDatabaseLicenseModifier).Methods("DELETE")
-
-	// LICENSES
-	router.HandleFunc("/licenses", ctrl.SearchLicenses).Methods("GET")
-	router.HandleFunc("/licenses/{name}", ctrl.GetLicense).Methods("GET")
-	router.HandleFunc("/licenses/{name}/cost-per-processor", ctrl.SetLicenseCostPerProcessor).Methods("PUT")
 
 	// AGREEMENTS
 	router.HandleFunc("/agreements/oracle/database", ctrl.AddAssociatedPartToOracleDbAgreement).Methods("POST")

@@ -49,12 +49,8 @@ type APIControllerInterface interface {
 	SearchAlerts(w http.ResponseWriter, r *http.Request)
 	// SearchOracleExadata search exadata data using the filters in the request
 	SearchOracleExadata(w http.ResponseWriter, r *http.Request)
-	// SearchLicenses search licenses using the filters in the request
-	SearchLicenses(w http.ResponseWriter, r *http.Request)
 	// SearchOracleDatabaseUsedLicenses search licenses consumed by the hosts using the filters in the request
 	SearchOracleDatabaseUsedLicenses(w http.ResponseWriter, r *http.Request)
-	// GetLicense return a certain license asked in the request
-	GetLicense(w http.ResponseWriter, r *http.Request)
 	// SearchOracleDatabaseLicenseModifiers search a license modifier using the filters in the request
 	SearchOracleDatabaseLicenseModifiers(w http.ResponseWriter, r *http.Request)
 	// SearchOracleDatabaseAgreements search OracleDatabase agreements data using the filters in the request
@@ -104,8 +100,6 @@ type APIControllerInterface interface {
 	GetTotalOracleDatabaseDatafileSizeStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalOracleDatabaseSegmentSizeStats return the total size of segments of databases using the filters in the request
 	GetTotalOracleDatabaseSegmentSizeStats(w http.ResponseWriter, r *http.Request)
-	// GetOracleDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases using the filters in the request
-	GetOracleDatabaseLicenseComplianceStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata using the filters in the request
 	GetTotalOracleExadataMemorySizeStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalOracleExadataCPUStats return the total cpu of exadata using the filters in the request
@@ -136,9 +130,6 @@ type APIControllerInterface interface {
 	AddHostToAssociatedPart(w http.ResponseWriter, r *http.Request)
 	// Remove an host from AssociatedPart
 	RemoveHostFromAssociatedPart(w http.ResponseWriter, r *http.Request)
-
-	// SetLicenseCostPerProcessor set the cost per processor of a certain license
-	SetLicenseCostPerProcessor(w http.ResponseWriter, r *http.Request)
 
 	// SetPatchingFunction set the patching function of a host specified in the hostname path variable to the content of the request body
 	SetPatchingFunction(w http.ResponseWriter, r *http.Request)

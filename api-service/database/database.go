@@ -55,12 +55,8 @@ type MongoDatabaseInterface interface {
 	SearchOracleDatabases(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// SearchOracleExadata search exadata
 	SearchOracleExadata(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
-	// SearchLicenses search licenses
-	SearchLicenses(location string, environment string, olderThan time.Time) ([]dto.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface)
 	// SearchOracleDatabaseUsedLicenses search consumed licenses
 	SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseUsedLicenseSearchResponse, utils.AdvancedErrorInterface)
-	// GetLicense get a certain license
-	GetLicense(name string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
 	// SearchOracleDatabaseLicenseModifiers search license modifiers
 	SearchOracleDatabaseLicenseModifiers(keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 
@@ -94,8 +90,6 @@ type MongoDatabaseInterface interface {
 	GetOracleDatabaseDataguardStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetOracleDatabaseRACStatusStats return a array containing the number of databases per RAC status
 	GetOracleDatabaseRACStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
-	// GetOracleDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
-	GetOracleDatabaseLicenseComplianceStatusStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
 	// GetOracleDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
 	GetOracleDatabaseArchivelogStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetTotalOracleDatabaseWorkStats return the total work of databases
@@ -132,9 +126,6 @@ type MongoDatabaseInterface interface {
 	ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface)
 	// ListHostUsingOracleDatabaseLicenses lists the hosts/clusters that need to be licensed by Oracle/Database agreements
 	ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingOracleDatabaseLicenses, utils.AdvancedErrorInterface)
-
-	// SetLicenseCostPerProcessor set the cost per processor of a certain license
-	SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface
 
 	// SavePatchingFunction saves the patching function
 	SavePatchingFunction(pf model.PatchingFunction) utils.AdvancedErrorInterface

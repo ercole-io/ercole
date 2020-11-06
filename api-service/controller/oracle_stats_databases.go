@@ -379,33 +379,6 @@ func (ctrl *APIController) GetTotalOracleDatabaseSegmentSizeStats(w http.Respons
 	utils.WriteJSONResponse(w, http.StatusOK, stats)
 }
 
-// GetOracleDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases using the filters in the request
-func (ctrl *APIController) GetOracleDatabaseLicenseComplianceStatusStats(w http.ResponseWriter, r *http.Request) {
-	var olderThan time.Time
-	var location string
-	var environment string
-	var err utils.AdvancedErrorInterface
-
-	//parse the query params
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	//get the data
-	stats, err := ctrl.Service.GetOracleDatabaseLicenseComplianceStatusStats(location, environment, olderThan)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	//Write the data
-	utils.WriteJSONResponse(w, http.StatusOK, stats)
-}
-
 // GetTopUnusedOracleDatabaseInstanceResourceStats return top unused instance resource by databases work using the filters in the request
 func (ctrl *APIController) GetTopUnusedOracleDatabaseInstanceResourceStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
