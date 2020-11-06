@@ -51,8 +51,6 @@ type APIControllerInterface interface {
 	SearchOracleExadata(w http.ResponseWriter, r *http.Request)
 	// SearchOracleDatabaseUsedLicenses search licenses consumed by the hosts using the filters in the request
 	SearchOracleDatabaseUsedLicenses(w http.ResponseWriter, r *http.Request)
-	// GetLicense return a certain license asked in the request
-	GetLicense(w http.ResponseWriter, r *http.Request)
 	// SearchOracleDatabaseLicenseModifiers search a license modifier using the filters in the request
 	SearchOracleDatabaseLicenseModifiers(w http.ResponseWriter, r *http.Request)
 	// SearchOracleDatabaseAgreements search OracleDatabase agreements data using the filters in the request
