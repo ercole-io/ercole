@@ -67,6 +67,7 @@ type OracleDatabaseAgreementFE struct {
 
 // OracleDatabaseAgreementAssociatedHostFE contains the informations about an associated host in agreement
 // If agreement is Named User, counts are in users
+// TODO Rename: remove Count at the end of each name
 type OracleDatabaseAgreementAssociatedHostFE struct {
 	Hostname string `json:"hostname" bson:"hostname"`
 	// Licenses which have been covered by agreement associated
@@ -103,9 +104,9 @@ type HostUsingOracleDatabaseLicenses struct {
 	Name string `json:"name" bson:"name"`
 	//Type describe if it's an host or a cluster
 	Type string `json:"type" bson:"type"`
-	// TODO Licenses to be covered by agreement... Uncovered licenses???
+	// TODO Rename in UncoveredLicenses // Licenses to be covered by agreement
 	LicenseCount float64 `json:"licenseCount" bson:"licenseCount"`
-	//TODO original value of licenseCount, but not to be edited?!? Equals to ConsumedLicensesCount
+	//TODO Rename in ConsumedLicensesCount // Original value of licenseCount (UncoveredLicenses), DO NOT EDIT!
 	OriginalCount float64 `json:"originalCount" bson:"originalCount"`
 }
 
