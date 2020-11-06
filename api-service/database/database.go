@@ -129,9 +129,6 @@ type MongoDatabaseInterface interface {
 	// ListHostUsingOracleDatabaseLicenses lists the hosts/clusters that need to be licensed by Oracle/Database agreements
 	ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingOracleDatabaseLicenses, utils.AdvancedErrorInterface)
 
-	// SetLicenseCostPerProcessor set the cost per processor of a certain license
-	SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface
-
 	// SavePatchingFunction saves the patching function
 	SavePatchingFunction(pf model.PatchingFunction) utils.AdvancedErrorInterface
 	// ReplaceHostData adds a new hostdata to the database
