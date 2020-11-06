@@ -31,7 +31,7 @@ func (ctrl *APIController) ListTechnologies(w http.ResponseWriter, r *http.Reque
 	var olderThan time.Time
 
 	var err utils.AdvancedErrorInterface
-	//parse the query params
+
 	sortBy = r.URL.Query().Get("sort-by")
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
@@ -46,13 +46,11 @@ func (ctrl *APIController) ListTechnologies(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	//get the data
 	data, err := ctrl.Service.ListManagedTechnologies(sortBy, sortDesc, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, data)
 }

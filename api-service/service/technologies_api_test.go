@@ -15,175 +15,199 @@
 
 package service
 
-//TODO
-//func TestListManagedTechnologies_Success(t *testing.T) {
-//	mockCtrl := gomock.NewController(t)
-//	defer mockCtrl.Finish()
-//	db := NewMockMongoDatabaseInterface(mockCtrl)
-//	as := APIService{
-//		Database: db,
-//	}
+import (
+	"testing"
 
-//	expectedRes := []map[string]interface{}{
-//		{
-//			"compliance": 7.0 / 10,
-//			"unpaidDues": 45,
-//			"product":    "Oracle/Database",
-//			"hostsCount": 8,
-//		},
-//		{
-//			"compliance": 1.0,
-//			"unpaidDues": 0,
-//			"product":    "MariaDBFoundation/MariaDB",
-//			"hostsCount": 0,
-//		},
-//		{
-//			"compliance": 1.0,
-//			"unpaidDues": 0,
-//			"product":    "PostgreSQL/PostgreSQL",
-//			"hostsCount": 0,
-//		},
-//		{
-//			"compliance": 1.0,
-//			"unpaidDues": 0,
-//			"product":    "Oracle/MySQL",
-//			"hostsCount": 0,
-//		},
-//		{
-//			"compliance": 1.0,
-//			"unpaidDues": 0,
-//			"product":    "Microsoft/SQLServer",
-//			"hostsCount": 0,
-//		},
-//	}
+	"github.com/ercole-io/ercole/api-service/dto"
+	"github.com/ercole-io/ercole/model"
+	"github.com/ercole-io/ercole/utils"
+	gomock "github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
+)
 
-//	getTechnologiesUsageRes := map[string]float64{
-//		"Oracle/Database": 8,
-//		"Oracle/Exadata":             2,
-//	}
-//	db.EXPECT().
-//		GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
-//		Return(getTechnologiesUsageRes, nil)
-//	listLicensesRes := []interface{}{
-//		map[string]interface{}{
-//			"compliance":       false,
-//			"count":            4,
-//			"used":             4,
-//			"_id":              "Partitioning",
-//			"totalCost":        40,
-//			"paidCost":         40,
-//			"costPerProcessor": 10,
-//		},
-//		map[string]interface{}{
-//			"compliance":       false,
-//			"count":            3,
-//			"used":             6,
-//			"_id":              "Diagnostics Pack",
-//			"totalCost":        90,
-//			"paidCost":         45,
-//			"costPerProcessor": 15,
-//		},
-//		map[string]interface{}{
-//			"compliance":       true,
-//			"count":            5,
-//			"used":             0,
-//			"_id":              "Advanced Analytics",
-//			"totalCost":        0,
-//			"paidCost":         5,
-//			"costPerProcessor": 1,
-//		},
-//	}
-//	db.EXPECT().
-//		SearchLicenses("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
-//		Return(listLicensesRes, nil)
+var sampleParts = []model.OracleDatabasePart{
+	{
+		PartID:          "PID001",
+		ItemDescription: "itemDesc1",
+		Aliases:         []string{"alias1"},
+		Metric:          model.AgreementPartMetricProcessorPerpetual,
+	},
+	{
+		PartID:          "PID002",
+		ItemDescription: "itemDesc2",
+		Aliases:         []string{"alias2"},
+		Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
+	},
+	{
+		PartID:          "PID003",
+		ItemDescription: "itemDesc3",
+		Aliases:         []string{"alias3"},
+		Metric:          model.AgreementPartMetricComputerPerpetual,
+	},
+}
 
-//	res, err := as.ListManagedTechnologies(
-//		"Count", true,
-//		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
-//	)
-//	require.NoError(t, err)
-//	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
-//}
+var sampleListOracleDatabaseAgreements []dto.OracleDatabaseAgreementFE = []dto.OracleDatabaseAgreementFE{
+	{
+		ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+		AgreementID:     "",
+		CSI:             "",
+		PartID:          "PID001",
+		ItemDescription: "",
+		Metric:          "",
+		ReferenceNumber: "",
+		Unlimited:       false,
+		Count:           50,
+		CatchAll:        false,
+		Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+			{Hostname: "pippo"},
+			{Hostname: "pluto"},
+		},
+		AvailableCount: 50,
+		LicensesCount:  0,
+		UsersCount:     0,
+	},
+	{
+		ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
+		AgreementID:     "",
+		CSI:             "",
+		PartID:          "PID002",
+		ItemDescription: "",
+		Metric:          "",
+		ReferenceNumber: "",
+		Unlimited:       false,
+		Count:           75,
+		CatchAll:        false,
+		Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+			{Hostname: "topolino"},
+			{Hostname: "minnie"},
+		},
+		AvailableCount: 75,
+		LicensesCount:  0,
+		UsersCount:     0,
+	},
+}
 
-//TODO
-//func TestListManagedTechnologies_SuccessEmpty(t *testing.T) {
-//	mockCtrl := gomock.NewController(t)
-//	defer mockCtrl.Finish()
-//	db := NewMockMongoDatabaseInterface(mockCtrl)
-//	as := APIService{
-//		Database: db,
-//	}
+var sampleHostUsingOracleDbLicenses []dto.HostUsingOracleDatabaseLicenses = []dto.HostUsingOracleDatabaseLicenses{
+	{LicenseName: "alias1", Name: "test1", Type: "host", LicenseCount: 3, OriginalCount: 3},
+	{LicenseName: "alias1", Name: "pluto", Type: "host", LicenseCount: 1.5, OriginalCount: 1.5},
+	{LicenseName: "alias1", Name: "pippo", Type: "host", LicenseCount: 5.5, OriginalCount: 5.5},
 
-//	expectedRes := []map[string]interface{}{
-//		{"compliance": 1, "hostsCount": 0, "product": "Oracle/Database", "unpaidDues": 0},
-//		{"compliance": 1.0, "unpaidDues": 0, "product": "MariaDBFoundation/MariaDB", "hostsCount": 0},
-//		{"compliance": 1.0, "unpaidDues": 0, "product": "PostgreSQL/PostgreSQL", "hostsCount": 0},
-//		{"compliance": 1.0, "unpaidDues": 0, "product": "Oracle/MySQL", "hostsCount": 0},
-//		{"compliance": 1.0, "unpaidDues": 0, "product": "Microsoft/SQLServer", "hostsCount": 0},
-//	}
+	{LicenseName: "alias2", Name: "topolino", Type: "cluster", LicenseCount: 7, OriginalCount: 7},
+	{LicenseName: "alias2", Name: "minnie", Type: "host", LicenseCount: 4, OriginalCount: 4},
+	{LicenseName: "alias2", Name: "minnie", Type: "host", LicenseCount: 8, OriginalCount: 8},
 
-//	getTechnologiesUsageRes := map[string]float64{}
-//	db.EXPECT().
-//		GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
-//		Return(getTechnologiesUsageRes, nil)
-//	listLicensesRes := []interface{}{
-//		map[string]interface{}{
-//			"compliance": false,
-//			"count":      10,
-//			"used":       0,
-//			"_id":        "Partitioning",
-//		},
-//	}
-//	db.EXPECT().
-//		SearchLicenses("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
-//		Return(listLicensesRes, nil)
+	{LicenseName: "alias3", Name: "minnie", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
+	{LicenseName: "alias3", Name: "pippo", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
+	{LicenseName: "alias3", Name: "test2", Type: "host", LicenseCount: 4, OriginalCount: 4},
+	{LicenseName: "alias3", Name: "test3", Type: "cluster", LicenseCount: 6, OriginalCount: 6},
+}
 
-//	res, err := as.ListManagedTechnologies(
-//		"Count", true,
-//		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
-//	)
+func TestListManagedTechnologies_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database:                     db,
+		Log:                          utils.NewLogger("TEST"),
+		OracleDatabaseAgreementParts: sampleParts,
+	}
 
-//	require.NoError(t, err)
-//	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
-//}
+	t.Run("", func(t *testing.T) {
+		gomock.InOrder(
+			db.EXPECT().
+				GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+				Return(map[string]float64{
+					model.TechnologyOracleDatabase: 42,
+					model.TechnologyOracleExadata:  43,
+				}, nil),
+			db.EXPECT().
+				ListOracleDatabaseAgreements().
+				Return(sampleListOracleDatabaseAgreements, nil),
+			db.EXPECT().
+				ListHostUsingOracleDatabaseLicenses().
+				Return(sampleHostUsingOracleDbLicenses, nil),
+		)
 
-//func TestListManagedTechnologies_FailInternalServerError1(t *testing.T) {
-//	mockCtrl := gomock.NewController(t)
-//	defer mockCtrl.Finish()
-//	db := NewMockMongoDatabaseInterface(mockCtrl)
-//	as := APIService{
-//		Database: db,
-//	}
-//
-//	db.EXPECT().
-//		GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
-//		Return(nil, aerrMock)
-//
-//	_, err := as.ListManagedTechnologies(
-//		"Count", true,
-//		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
-//	)
-//
-//	require.Equal(t, aerrMock, err)
-//}
-//
-//func TestListManagedTechnologies_FailInternalServerError2(t *testing.T) {
-//	mockCtrl := gomock.NewController(t)
-//	defer mockCtrl.Finish()
-//	db := NewMockMongoDatabaseInterface(mockCtrl)
-//	as := APIService{
-//		Database: db,
-//	}
-//
-//	getTechnologiesUsageRes := map[string]float64{}
-//	db.EXPECT().
-//		GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
-//		Return(getTechnologiesUsageRes, nil)
-//
-//	_, err := as.ListManagedTechnologies(
-//		"Count", true,
-//		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
-//	)
-//
-//	require.Equal(t, aerrMock, err)
-//}
+		actual, err := as.ListManagedTechnologies(
+			"Count", true,
+			"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
+		)
+
+		expected := []model.TechnologyStatus{
+			{Product: "Oracle/Database", ConsumedByHosts: 40, CoveredByAgreements: 10, TotalCost: 0, PaidCost: 0, Compliance: 0.25, UnpaidDues: 0, HostsCount: 42},
+			{Product: "Microsoft/SQLServer", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 0},
+			{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 0},
+			{Product: "PostgreSQL/PostgreSQL", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 0},
+			{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 0},
+		}
+
+		require.NoError(t, err)
+		require.Equal(t, expected, actual)
+	})
+}
+
+func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
+
+	t.Run("Fail GetHostsCountUsingTechnologies", func(t *testing.T) {
+		db.EXPECT().
+			GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+			Return(nil, aerrMock)
+
+		_, err := as.ListManagedTechnologies(
+			"Count", true,
+			"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
+		)
+
+		require.Equal(t, aerrMock, err)
+	})
+
+	t.Run("Fail ListOracleDatabaseAgreements", func(t *testing.T) {
+		gomock.InOrder(
+			db.EXPECT().
+				GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+				Return(map[string]float64{
+					model.TechnologyMariaDBFoundationMariaDB: 42,
+					model.TechnologyMicrosoftSQLServer:       43,
+				}, nil),
+			db.EXPECT().
+				ListOracleDatabaseAgreements().
+				Return(nil, aerrMock),
+		)
+
+		_, err := as.ListManagedTechnologies(
+			"Count", true,
+			"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
+		)
+
+		require.Equal(t, aerrMock, err)
+	})
+	t.Run("Fail ListHostUsingOracleDatabaseLicenses", func(t *testing.T) {
+		gomock.InOrder(
+			db.EXPECT().
+				GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+				Return(map[string]float64{
+					model.TechnologyMariaDBFoundationMariaDB: 42,
+					model.TechnologyMicrosoftSQLServer:       43,
+				}, nil),
+			db.EXPECT().
+				ListOracleDatabaseAgreements().
+				Return(sampleListOracleDatabaseAgreements, nil),
+			db.EXPECT().
+				ListHostUsingOracleDatabaseLicenses().
+				Return(nil, aerrMock),
+		)
+
+		_, err := as.ListManagedTechnologies(
+			"Count", true,
+			"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
+		)
+
+		require.Equal(t, aerrMock, err)
+	})
+}

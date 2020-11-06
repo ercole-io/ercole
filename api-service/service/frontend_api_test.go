@@ -15,15 +15,8 @@
 
 package service
 
-import (
-	"testing"
+//TODO Reenable tests
 
-	"github.com/ercole-io/ercole/utils"
-	gomock "github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/require"
-)
-
-//TODO
 //func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 //	mockCtrl := gomock.NewController(t)
 //	defer mockCtrl.Finish()
@@ -138,24 +131,23 @@ import (
 //	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
 //}
 
-func TestGetInfoForFrontendDashboard_Fail1(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-	}
+//func TestGetInfoForFrontendDashboard_Fail1(t *testing.T) {
+//	mockCtrl := gomock.NewController(t)
+//	defer mockCtrl.Finish()
+//	db := NewMockMongoDatabaseInterface(mockCtrl)
+//	as := APIService{
+//		Database: db,
+//	}
+//
+//	db.EXPECT().
+//		GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+//		Return(nil, aerrMock).AnyTimes().MinTimes(1)
+//
+//	_, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
+//
+//	require.Equal(t, aerrMock, err)
+//}
 
-	db.EXPECT().
-		GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
-		Return(nil, aerrMock).AnyTimes().MinTimes(1)
-
-	_, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
-
-	require.Equal(t, aerrMock, err)
-}
-
-//TODO
 //func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 //	mockCtrl := gomock.NewController(t)
 //	defer mockCtrl.Finish()
