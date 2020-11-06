@@ -40,8 +40,8 @@ func (as *APIService) GetTotalTechnologiesComplianceStats(location string, envir
 	totalPaidCost := float64(0.0)
 
 	for _, ass := range data {
-		totalUsed += ass.Used
-		totalCount += ass.Count
+		totalUsed += ass.ConsumedByHosts
+		totalCount += ass.CoveredByAgreements
 		totalTotalCost += ass.TotalCost
 		totalPaidCost += ass.PaidCost
 	}
