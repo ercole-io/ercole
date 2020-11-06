@@ -41,22 +41,22 @@ func TestListTechnologies_Success(t *testing.T) {
 
 	expectedRes := []model.TechnologyStatus{
 		{
-			Compliance: 0.0,
-			TotalCost:  100,
-			PaidCost:   20,
-			Count:      0,
-			Product:    model.TechnologyOracleDatabase,
-			Used:       8,
-			HostsCount: 10,
+			Compliance:          0.0,
+			TotalCost:           100,
+			PaidCost:            20,
+			CoveredByAgreements: 0,
+			Product:             model.TechnologyOracleDatabase,
+			ConsumedByHosts:     8,
+			HostsCount:          10,
 		},
 		{
-			Compliance: 1.0,
-			TotalCost:  15,
-			PaidCost:   3,
-			Count:      2,
-			Product:    model.TechnologyOracleExadata,
-			Used:       2,
-			HostsCount: 1,
+			Compliance:          1.0,
+			TotalCost:           15,
+			PaidCost:            3,
+			CoveredByAgreements: 2,
+			Product:             model.TechnologyOracleExadata,
+			ConsumedByHosts:     2,
+			HostsCount:          1,
 		},
 	}
 
