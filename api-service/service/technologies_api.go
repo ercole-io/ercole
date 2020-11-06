@@ -25,7 +25,7 @@ import (
 
 // ListManagedTechnologies returns the list of Technologies with some stats
 func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.TechnologyStatus, utils.AdvancedErrorInterface) {
-	partialList, err := as.Database.GetTechnologiesUsage(location, environment, olderThan)
+	partialList, err := as.Database.GetHostsCountUsingTechnologies(location, environment, olderThan)
 	if err != nil {
 		return nil, err
 	}
@@ -64,12 +64,12 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 		}
 	}
 	finalList = append(finalList, model.TechnologyStatus{
-		Product:    "Oracle/Database",
+		Product:    model.TechnologyOracleDatabase,
 		Used:       used,
 		Count:      holded,
 		TotalCost:  totalCost,
 		PaidCost:   paidCost,
-		HostsCount: int(partialList["Oracle/Database_hostsCount"]),
+		HostsCount: int(partialList[model.TechnologyOracleDatabase]),
 		Compliance: holded / used,
 		UnpaidDues: totalCost - paidCost,
 	})

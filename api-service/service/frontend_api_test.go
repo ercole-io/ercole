@@ -79,12 +79,12 @@ import (
 //	}
 
 //	getTechnologiesUsageRes := map[string]float64{
-//		"Oracle/Database_hostsCount": 8,
+//		"Oracle/Database": 8,
 //		"Oracle/Exadata":             0,
 //	}
 
 //	db.EXPECT().
-//		GetTechnologiesUsage("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+//		GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 //		Return(getTechnologiesUsageRes, nil).AnyTimes().MinTimes(1)
 
 //	db.EXPECT().
@@ -125,11 +125,11 @@ import (
 //		Return(listLicensesRes, nil).AnyTimes().MinTimes(1)
 
 //	getTechnologiesUsageRes2 := map[string]float64{
-//		"Oracle/Database_hostsCount": 8,
+//		"Oracle/Database": 8,
 //		"Oracle/Exadata":             2,
 //	}
 //	db.EXPECT().
-//		GetTechnologiesUsage("", "", utils.MAX_TIME).
+//		GetHostsCountUsingTechnologies("", "", utils.MAX_TIME).
 //		Return(getTechnologiesUsageRes2, nil)
 
 //	res, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
@@ -147,7 +147,7 @@ func TestGetInfoForFrontendDashboard_Fail1(t *testing.T) {
 	}
 
 	db.EXPECT().
-		GetTechnologiesUsage("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 		Return(nil, aerrMock).AnyTimes().MinTimes(1)
 
 	_, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
@@ -170,7 +170,7 @@ func TestGetInfoForFrontendDashboard_Fail1(t *testing.T) {
 //	}
 
 //	db.EXPECT().
-//		GetTechnologiesUsage("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+//		GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 //		Return(getTechnologiesUsageRes, nil).AnyTimes().MinTimes(1)
 //	db.EXPECT().
 //		GetHostsCountStats("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
@@ -201,7 +201,7 @@ func TestGetInfoForFrontendDashboard_Fail1(t *testing.T) {
 //		Return(listLicensesRes, nil).AnyTimes().MinTimes(1)
 
 //	db.EXPECT().
-//		GetTechnologiesUsage("", "", utils.MAX_TIME).
+//		GetHostsCountUsingTechnologies("", "", utils.MAX_TIME).
 //		Return(nil, aerrMock)
 
 //	_, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
