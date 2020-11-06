@@ -51,11 +51,6 @@ func (as *APIService) SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc b
 	return as.Database.SearchOracleDatabaseUsedLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
-// GetLicense return the license specified in the name param
-func (as *APIService) GetLicense(name string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetLicense(name, olderThan)
-}
-
 // SetLicenseCostPerProcessor set the cost per processor of a certain license
 func (as *APIService) SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface {
 	return as.Database.SetLicenseCostPerProcessor(name, costPerProcessor)

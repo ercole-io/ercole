@@ -57,8 +57,6 @@ type MongoDatabaseInterface interface {
 	SearchOracleExadata(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchOracleDatabaseUsedLicenses search consumed licenses
 	SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseUsedLicenseSearchResponse, utils.AdvancedErrorInterface)
-	// GetLicense get a certain license
-	GetLicense(name string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
 	// SearchOracleDatabaseLicenseModifiers search license modifiers
 	SearchOracleDatabaseLicenseModifiers(keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 

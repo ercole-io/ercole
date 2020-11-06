@@ -3488,37 +3488,6 @@ paths:
         - api-service
         - fe-user
         - read
-  '/licenses/{name}':
-    get:
-      operationId: GetLicense
-      description: Return a certain license asked in the request
-      summary: Return a certain license asked in the request
-      tags:
-        - api-service
-        - fe-user
-        - read
-      parameters:
-        - in: path
-          name: name
-          description: name of the license
-          required: true
-          schema:
-            type: string
-        - $ref: '#/components/parameters/older-than'
-      responses:
-        '200':
-          description: OK
-          headers: {}
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LicenseCount'
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
   '/licenses/{name}/cost-per-processor':
     put:
       operationId: SetLicenseCostPerProcessor

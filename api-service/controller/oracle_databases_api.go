@@ -588,32 +588,6 @@ func (ctrl *APIController) SearchOracleDatabaseUsedLicenses(w http.ResponseWrite
 	}
 }
 
-// GetLicense return a certain license asked in the request
-func (ctrl *APIController) GetLicense(w http.ResponseWriter, r *http.Request) {
-	var err utils.AdvancedErrorInterface
-	var olderThan time.Time
-
-	//parse the query params
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-	name := mux.Vars(r)["name"]
-
-	//get the data
-	lic, err := ctrl.Service.GetLicense(name, olderThan)
-	if err == utils.AerrLicenseNotFound {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
-		return
-	} else if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	//Write the data
-	utils.WriteJSONResponse(w, http.StatusOK, lic)
-}
-
 // SetLicenseCostPerProcessor set the cost per processor of a certain license
 func (ctrl *APIController) SetLicenseCostPerProcessor(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
