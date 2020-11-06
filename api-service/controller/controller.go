@@ -80,8 +80,6 @@ type APIControllerInterface interface {
 	GetOracleDatabaseVersionStats(w http.ResponseWriter, r *http.Request)
 	// GetTopReclaimableOracleDatabaseStats return top databases by reclaimable segment advisors using the filters in the request
 	GetTopReclaimableOracleDatabaseStats(w http.ResponseWriter, r *http.Request)
-	// GetTotalTechnologiesComplianceStats return the total compliance of all technologies using the filters in the request
-	GetTotalTechnologiesComplianceStats(w http.ResponseWriter, r *http.Request)
 	// GetOracleDatabasePatchStatusStats return all statistics about the patch status of the databases using the filters in the request
 	GetOracleDatabasePatchStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetTopWorkloadOracleDatabaseStats return top databases by workload advisors using the filters in the request
