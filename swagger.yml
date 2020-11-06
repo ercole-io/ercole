@@ -2612,32 +2612,6 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /hosts/technologies/compliance:
-    get:
-      tags:
-        - api-service
-        - fe-user
-        - read
-      operationId: GetTotalTechnologiesCompliance
-      summary: Get the total compliance status of all Technologies
-      description: Get the total compliance status of all Technologies
-      parameters:
-        - $ref: '#/components/parameters/location'
-        - $ref: '#/components/parameters/environment'
-        - $ref: '#/components/parameters/older-than'
-      responses:
-        '200':
-          description: statistics
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AllTechnologyComplianceStatus'
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
   /hosts/technologies/oracle/databases/environments:
     get:
       tags:
