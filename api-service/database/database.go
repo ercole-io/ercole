@@ -144,8 +144,8 @@ type MongoDatabaseInterface interface {
 	FindHostData(hostname string) (model.HostDataBE, utils.AdvancedErrorInterface)
 	// ExistHostdata return true if the host specified by hostname exist, otherwise false
 	ExistHostdata(hostname string) (bool, utils.AdvancedErrorInterface)
-	// GetTechnologiesUsage return a map that contains the number of usages for every features
-	GetTechnologiesUsage(location string, environment string, olderThan time.Time) (map[string]float64, utils.AdvancedErrorInterface)
+	// GetHostsCountUsingTechnologies return a map that contains the number of usages for every features
+	GetHostsCountUsingTechnologies(location string, environment string, olderThan time.Time) (map[string]float64, utils.AdvancedErrorInterface)
 	// ExistNotInClusterHost return true if the host specified by hostname exist and it is not in cluster, otherwise false
 	ExistNotInClusterHost(hostname string) (bool, utils.AdvancedErrorInterface)
 }
