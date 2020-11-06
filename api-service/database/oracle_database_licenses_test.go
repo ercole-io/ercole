@@ -25,127 +25,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// TODO
-// func (m *MongodbSuite) TestSearchLicenses() {
-// 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
-// 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_17.json"))
-
-// 	defer m.db.Client.Database(m.dbname).Collection("licenses").DeleteMany(context.TODO(), bson.M{})
-// 	m.InsertLicense(model.LicenseCount{Name: "Oracle ENT"})
-// 	m.InsertLicense(model.LicenseCount{Name: "Diagnostics Pack"})
-// 	m.InsertLicense(model.LicenseCount{Name: "Real Application Clusters"})
-
-// 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
-// 		out, err := m.db.SearchLicenses("Italy", "", utils.MAX_TIME)
-
-// 		m.Require().NoError(err)
-// 		var expectedOut []interface{} = []interface{}{
-// 			map[string]interface{}{"_id": "Oracle ENT", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0},
-// 			map[string]interface{}{"_id": "Diagnostics Pack", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0},
-// 			map[string]interface{}{"_id": "Real Application Clusters", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0}}
-
-// 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-// 	})
-
-// 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
-// 		out, err := m.db.SearchLicenses("TEST", utils.MAX_TIME)
-
-// 		m.Require().NoError(err)
-// 		var expectedOut []interface{} = []interface{}{
-// 			map[string]interface{}{"_id": "Oracle ENT", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0},
-// 			map[string]interface{}{"_id": "Diagnostics Pack", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0},
-// 			map[string]interface{}{"_id": "Real Application Clusters", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0}}
-
-// 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-// 	})
-
-// 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
-// 		out, err := m.db.SearchLicenses("", "", utils.MIN_TIME)
-
-// 		m.Require().NoError(err)
-// 		var expectedOut []interface{} = []interface{}{
-// 			map[string]interface{}{"_id": "Oracle ENT", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0},
-// 			map[string]interface{}{"_id": "Diagnostics Pack", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0},
-// 			map[string]interface{}{"_id": "Real Application Clusters", "compliance": true, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 0}}
-
-// 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-// 	})
-
-// 	m.T().Run("should_do_pagination", func(t *testing.T) {
-// 		out, err := m.db.SearchLicenses("", "", utils.MAX_TIME)
-// 		m.Require().NoError(err)
-
-// 		var expectedOut interface{} = []interface{}{
-// 			map[string]interface{}{
-// 				"content": []interface{}{
-// 					map[string]interface{}{"_id": "Oracle ENT", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 1},
-// 				},
-// 				"metadata": map[string]interface{}{
-// 					"empty":         false,
-// 					"first":         true,
-// 					"last":          false,
-// 					"number":        0,
-// 					"size":          1,
-// 					"totalElements": 3,
-// 					"totalPages":    3},
-// 			}}
-
-// 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-// 	})
-
-// 	m.T().Run("should_be_sorted", func(t *testing.T) {
-// 		out, err := m.db.SearchLicenses("summary", "used", true, -1, -1, "", "", utils.MAX_TIME)
-// 		m.Require().NoError(err)
-
-// 		var expectedOut interface{} = []interface{}{
-// 			map[string]interface{}{"_id": "Real Application Clusters", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 2},
-// 			map[string]interface{}{"_id": "Oracle ENT", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 1},
-// 			map[string]interface{}{"_id": "Diagnostics Pack", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 1},
-// 		}
-
-// 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-// 	})
-
-// 	m.T().Run("should_not_filter", func(t *testing.T) {
-// 		out, err := m.db.SearchLicenses("summary", "", false, -1, -1, "", "", utils.MAX_TIME)
-// 		m.Require().NoError(err)
-
-// 		var expectedOut interface{} = []interface{}{
-// 			map[string]interface{}{"_id": "Oracle ENT", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 1},
-// 			map[string]interface{}{"_id": "Diagnostics Pack", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 1},
-// 			map[string]interface{}{"_id": "Real Application Clusters", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 2},
-// 		}
-
-// 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-// 	})
-
-// 	m.T().Run("should_not_filter_full", func(t *testing.T) {
-// 		out, err := m.db.SearchLicenses("full", "", false, -1, -1, "", "", utils.MAX_TIME)
-// 		m.Require().NoError(err)
-
-// 		var expectedOut interface{} = []interface{}{
-// 			map[string]interface{}{"_id": "Oracle ENT", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 1,
-// 				"hosts": []interface{}{map[string]interface{}{"databases": []interface{}{"foobar3", "foobar4"}, "hostname": "test-db3"}},
-// 			},
-// 			map[string]interface{}{"_id": "Diagnostics Pack", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 1,
-// 				"hosts": []interface{}{map[string]interface{}{"databases": []interface{}{"foobar3", "foobar4"}, "hostname": "test-db3"}},
-// 			},
-// 			map[string]interface{}{"_id": "Real Application Clusters", "compliance": false, "costPerProcessor": 0, "count": 0, "paidCost": 0, "totalCost": 0, "unlimited": false, "used": 2,
-// 				"hosts": []interface{}{map[string]interface{}{"databases": []interface{}{"foobar4"}, "hostname": "test-db3"}},
-// 			},
-// 		}
-
-// 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-// 	})
-
-// 	m.T().Run("should_raise_error_wrong_mode", func(t *testing.T) {
-// 		out, err := m.db.SearchLicenses("wrong_mode", "", false, -1, -1, "", "", utils.MAX_TIME)
-
-// 		m.Require().Nil(out)
-// 		m.Require().Error(err)
-// 	})
-// }
-
 func (m *MongodbSuite) TestSearchOracleDatabaseUsedLicenses() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_17.json"))
@@ -207,6 +86,7 @@ func (m *MongodbSuite) TestSearchOracleDatabaseUsedLicenses() {
 		assert.JSONEq(t, utils.ToJSON(expected), utils.ToJSON(out))
 	})
 
+	//TODO
 	//m.T().Run("should_be_sorted", func(t *testing.T) {
 	//	out, err := m.db.SearchOracleDatabaseUsedLicenses("licenseName", true, -1, -1, "", "", utils.MAX_TIME)
 	//	m.Require().NoError(err)

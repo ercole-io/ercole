@@ -58,8 +58,6 @@ type APIServiceInterface interface {
 	// SearchOracleDatabaseUsedLicenses return the list of consumed licenses
 	SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseUsedLicenseSearchResponse, utils.AdvancedErrorInterface)
 
-	// GetLicense return the license specified in the name param
-	GetLicense(name string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
 	// ListLocations list locations
 	ListLocations(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface)
 	// ListEnvironments list environments
