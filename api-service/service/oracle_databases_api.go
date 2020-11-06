@@ -50,8 +50,3 @@ func (as *APIService) SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc b
 ) (*dto.OracleDatabaseUsedLicenseSearchResponse, utils.AdvancedErrorInterface) {
 	return as.Database.SearchOracleDatabaseUsedLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
-
-// SetLicenseCostPerProcessor set the cost per processor of a certain license
-func (as *APIService) SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface {
-	return as.Database.SetLicenseCostPerProcessor(name, costPerProcessor)
-}
