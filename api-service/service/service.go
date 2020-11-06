@@ -106,8 +106,6 @@ type APIServiceInterface interface {
 	GetTotalOracleDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
 	// GetTotalOracleDatabaseSegmentSizeStats return the total size of segments of databases
 	GetTotalOracleDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
-	// GetOracleDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
-	GetOracleDatabaseLicenseComplianceStatusStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
 	// GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata
 	GetTotalOracleExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
 	// GetTotalOracleExadataCPUStats return the total cpu of exadata
