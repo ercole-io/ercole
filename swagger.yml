@@ -3488,39 +3488,6 @@ paths:
         - api-service
         - fe-user
         - read
-  '/licenses/{name}/cost-per-processor':
-    put:
-      operationId: SetLicenseCostPerProcessor
-      description: Set the cost per processor of a certain license
-      summary: Set the cost per processors
-      tags:
-        - api-service
-        - fe-user
-        - read
-      parameters:
-        - in: path
-          name: name
-          description: name of the license
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          text/plain:
-            schema:
-              type: number
-              description: new cost per processor value
-      responses:
-        '200':
-          description: OK
-        '401':
-          $ref: '#/components/responses/error'
-        '404':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
   /settings/default-database-tag-choiches:
     get:
       operationId: GetDefaultDatabaseTags

@@ -87,9 +87,6 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseName}", ctrl.SetOracleDatabaseLicenseModifier).Methods("PUT")
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/license-modifiers/{licenseName}", ctrl.DeleteOracleDatabaseLicenseModifier).Methods("DELETE")
 
-	// LICENSES
-	router.HandleFunc("/licenses/{name}/cost-per-processor", ctrl.SetLicenseCostPerProcessor).Methods("PUT")
-
 	// AGREEMENTS
 	router.HandleFunc("/agreements/oracle/database", ctrl.AddAssociatedPartToOracleDbAgreement).Methods("POST")
 	router.HandleFunc("/agreements/oracle/database", ctrl.UpdateAssociatedPartOfOracleDbAgreement).Methods("PUT")

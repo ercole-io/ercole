@@ -64,23 +64,3 @@ func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(sortBy string, sortDes
 	}
 	return &response, nil
 }
-
-// SetLicenseCostPerProcessor set the cost per processor of a certain license
-func (md *MongoDatabase) SetLicenseCostPerProcessor(name string, count float64) utils.AdvancedErrorInterface {
-	//Find the informations
-	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses").UpdateOne(context.TODO(), bson.M{
-		"_id": name,
-	}, mu.UOSet(bson.M{
-		"costPerProcessor": count,
-	}))
-	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
-	}
-
-	//Check the existance of the result
-	if res.MatchedCount == 0 {
-		return utils.AerrLicenseNotFound
-	}
-
-	return nil
-}
