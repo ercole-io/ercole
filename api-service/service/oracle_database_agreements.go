@@ -188,25 +188,6 @@ func (as *APIService) SearchAssociatedPartsInOracleDatabaseAgreements(filters dt
 		return nil, err
 	}
 
-	parts := buildAgreementPartMap(as.OracleDatabaseAgreementParts)
-	for i := range agreements {
-		agr := &agreements[i]
-
-		if part, ok := parts[agr.PartID]; ok {
-			agr.ItemDescription = part.ItemDescription
-			agr.Metric = part.Metric
-
-			switch agr.Metric {
-			case model.AgreementPartMetricProcessorPerpetual:
-				agr.LicensesCount = agr.Count
-			case model.AgreementPartMetricNamedUserPlusPerpetual:
-				agr.UsersCount = agr.Count
-			}
-		} else {
-			as.Log.Errorf("Unknown PartID: [%s] in agreement: [%#v]", agr.PartID, agr)
-		}
-	}
-
 	hosts, err := as.Database.ListHostUsingOracleDatabaseLicenses()
 	if err != nil {
 		return nil, err
@@ -240,6 +221,8 @@ func (as *APIService) assignOracleDatabaseAgreementsToHosts(
 
 	hostsMap := buildHostUsingLicensesMap(hosts)
 	partsMap := buildAgreementPartMap(as.OracleDatabaseAgreementParts)
+
+	fillAgreementsInfo(as, agrs, partsMap)
 
 	assignAgreementsLicensesToItsAssociatedHosts(as, agrs, hostsMap, partsMap)
 
@@ -319,6 +302,27 @@ func buildAgreementPartMap(parts []model.OracleDatabasePart) map[string]*model.O
 	}
 
 	return partsMap
+}
+
+func fillAgreementsInfo(as *APIService, agrs []dto.OracleDatabaseAgreementFE, partsMap map[string]*model.OracleDatabasePart) {
+
+	for i := range agrs {
+		agr := &agrs[i]
+
+		if part, ok := partsMap[agr.PartID]; ok {
+			agr.ItemDescription = part.ItemDescription
+			agr.Metric = part.Metric
+
+			switch agr.Metric {
+			case model.AgreementPartMetricProcessorPerpetual:
+				agr.LicensesCount = agr.Count
+			case model.AgreementPartMetricNamedUserPlusPerpetual:
+				agr.UsersCount = agr.Count
+			}
+		} else {
+			as.Log.Errorf("Unknown PartID: [%s] in agreement: [%#v]", agr.PartID, agr)
+		}
+	}
 }
 
 // Assign available licenses in each agreement to each host associated in each agreement
