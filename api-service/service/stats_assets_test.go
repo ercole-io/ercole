@@ -43,7 +43,7 @@ import (
 //	}
 
 //	db.EXPECT().
-//		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+//		GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 //		Return(getTechnologiesUsageRes, nil)
 //	db.EXPECT().
 //		GetHostsCountStats("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
@@ -99,7 +99,7 @@ func TestGetTotalTechnologiesComplianceStats_FailInternalServerError(t *testing.
 	}
 
 	db.EXPECT().
-		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(nil, aerrMock)
 
 	_, err := as.GetTotalTechnologiesComplianceStats(

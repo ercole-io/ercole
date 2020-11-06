@@ -58,11 +58,11 @@ package service
 //	}
 
 //	getTechnologiesUsageRes := map[string]float64{
-//		"Oracle/Database_hostsCount": 8,
+//		"Oracle/Database": 8,
 //		"Oracle/Exadata":             2,
 //	}
 //	db.EXPECT().
-//		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+//		GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 //		Return(getTechnologiesUsageRes, nil)
 //	listLicensesRes := []interface{}{
 //		map[string]interface{}{
@@ -124,7 +124,7 @@ package service
 
 //	getTechnologiesUsageRes := map[string]float64{}
 //	db.EXPECT().
-//		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+//		GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 //		Return(getTechnologiesUsageRes, nil)
 //	listLicensesRes := []interface{}{
 //		map[string]interface{}{
@@ -156,7 +156,7 @@ package service
 //	}
 //
 //	db.EXPECT().
-//		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+//		GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 //		Return(nil, aerrMock)
 //
 //	_, err := as.ListManagedTechnologies(
@@ -177,7 +177,7 @@ package service
 //
 //	getTechnologiesUsageRes := map[string]float64{}
 //	db.EXPECT().
-//		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+//		GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 //		Return(getTechnologiesUsageRes, nil)
 //
 //	_, err := as.ListManagedTechnologies(

@@ -78,12 +78,12 @@ func TestGetErcoleFeatures_Success(t *testing.T) {
 	}
 
 	getTechnologiesUsageRes := map[string]float64{
-		"Oracle/Database_hostsCount": 8,
-		"Oracle/Exadata":             0,
+		"Oracle/Database": 8,
+		"Oracle/Exadata":  0,
 	}
 
 	db.EXPECT().
-		GetTechnologiesUsage("", "", utils.MAX_TIME).
+		GetHostsCountUsingTechnologies("", "", utils.MAX_TIME).
 		Return(getTechnologiesUsageRes, nil)
 
 	res, err := as.GetErcoleFeatures()
@@ -101,7 +101,7 @@ func TestGetErcoleFeatures_FailInternalServerError(t *testing.T) {
 	}
 
 	db.EXPECT().
-		GetTechnologiesUsage("", "", utils.MAX_TIME).
+		GetHostsCountUsingTechnologies("", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	_, err := as.GetErcoleFeatures()
