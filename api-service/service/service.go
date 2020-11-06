@@ -55,13 +55,9 @@ type APIServiceInterface interface {
 	SearchOracleDatabases(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// SearchOracleExadata search exadata
 	SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
-	// SearchLicenses search licenses
-	SearchLicenses(location string, environment string, olderThan time.Time) ([]dto.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface)
 	// SearchOracleDatabaseUsedLicenses return the list of consumed licenses
 	SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseUsedLicenseSearchResponse, utils.AdvancedErrorInterface)
 
-	// GetLicense return the license specified in the name param
-	GetLicense(name string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
 	// ListLocations list locations
 	ListLocations(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface)
 	// ListEnvironments list environments
@@ -110,8 +106,6 @@ type APIServiceInterface interface {
 	GetTotalOracleDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
 	// GetTotalOracleDatabaseSegmentSizeStats return the total size of segments of databases
 	GetTotalOracleDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
-	// GetOracleDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
-	GetOracleDatabaseLicenseComplianceStatusStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
 	// GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata
 	GetTotalOracleExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface)
 	// GetTotalOracleExadataCPUStats return the total cpu of exadata
@@ -128,8 +122,6 @@ type APIServiceInterface interface {
 	GetErcoleFeatures() (map[string]bool, utils.AdvancedErrorInterface)
 	// GetErcoleFeatures return the list of technologies
 	GetTechnologyList() ([]model.TechnologyInfo, utils.AdvancedErrorInterface)
-	// SetLicenseCostPerProcessor set the cost per processor of a certain license
-	SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface
 
 	// ORACLE DATABASE AGREEMENTS
 

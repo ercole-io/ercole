@@ -44,88 +44,9 @@ func (as *APIService) SearchOracleDatabases(full bool, search string, sortBy str
 	return as.Database.SearchOracleDatabases(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
-// SearchLicenses search licenses
-func (as *APIService) SearchLicenses(location string, environment string, olderThan time.Time,
-) ([]dto.OracleDatabaseLicenseUsageInfo, utils.AdvancedErrorInterface) {
-	agrs, err := as.Database.ListOracleDatabaseAgreements()
-	if err != nil {
-		return nil, err
-	}
-	// TODO Insert agr parts info
-
-	hosts, err := as.Database.ListHostUsingOracleDatabaseLicenses()
-	if err != nil {
-		return nil, err
-	}
-
-	//Get the list of licenses with host usage
-	lics, err := as.Database.SearchLicenses(location, environment, olderThan)
-	if err != nil {
-		return nil, err
-	}
-
-	as.assignOracleDatabaseAgreementsToHosts(agrs, hosts)
-
-	setLicensesCosts(as, agrs, hosts, lics)
-
-	return lics, nil
-}
-
-func setLicensesCosts(as *APIService,
-	agrs []dto.OracleDatabaseAgreementFE,
-	hosts []dto.HostUsingOracleDatabaseLicenses,
-	lics []dto.OracleDatabaseLicenseUsageInfo) {
-
-	partsMap := buildAgreementPartMap(as.OracleDatabaseAgreementParts)
-
-	licsMap := buildOracleDatabaseLicenseInfoMap(lics)
-
-	// Set the count/unlimited
-	for _, agr := range agrs {
-		for _, alias := range partsMap[agr.PartID].Aliases {
-			licsMap[alias].Count += agr.LicensesCount + agr.UsersCount*25
-			licsMap[alias].Unlimited = licsMap[alias].Unlimited || agr.Unlimited
-		}
-	}
-
-	// Set the used and covered
-	for _, host := range hosts {
-		licsMap[host.LicenseName].TotalCoveredLicenses += host.OriginalCount - host.LicenseCount
-		licsMap[host.LicenseName].Used += host.OriginalCount
-	}
-
-	// Set the cost
-	for i := range lics {
-		lic := &lics[i]
-		lic.PaidCost = lic.TotalCoveredLicenses * lic.CostPerProcessor
-		lic.TotalCost = lic.Used * lic.CostPerProcessor
-	}
-}
-
-// buildOracleDatabaseLicenseInfoMap return a map of licenseName to OracleDatabaseLicenseUsageInfo
-func buildOracleDatabaseLicenseInfoMap(lics []dto.OracleDatabaseLicenseUsageInfo) map[string]*dto.OracleDatabaseLicenseUsageInfo {
-	res := make(map[string]*dto.OracleDatabaseLicenseUsageInfo)
-
-	for i, lic := range lics {
-		res[lic.ID] = &lics[i]
-	}
-
-	return res
-}
-
 // SearchOracleDatabaseUsedLicenses return the list of used licenses
 func (as *APIService) SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int,
 	location string, environment string, olderThan time.Time,
 ) (*dto.OracleDatabaseUsedLicenseSearchResponse, utils.AdvancedErrorInterface) {
 	return as.Database.SearchOracleDatabaseUsedLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
-}
-
-// GetLicense return the license specified in the name param
-func (as *APIService) GetLicense(name string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetLicense(name, olderThan)
-}
-
-// SetLicenseCostPerProcessor set the cost per processor of a certain license
-func (as *APIService) SetLicenseCostPerProcessor(name string, costPerProcessor float64) utils.AdvancedErrorInterface {
-	return as.Database.SetLicenseCostPerProcessor(name, costPerProcessor)
 }

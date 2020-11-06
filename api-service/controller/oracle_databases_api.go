@@ -18,15 +18,12 @@ package controller
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/golang/gddo/httputil"
-	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -543,30 +540,6 @@ func (ctrl *APIController) SearchOracleDatabasesXLSX(w http.ResponseWriter, r *h
 	utils.WriteXLSXResponse(w, sheets)
 }
 
-// SearchLicenses search licenses using the filters in the request
-func (ctrl *APIController) SearchLicenses(w http.ResponseWriter, r *http.Request) {
-	var location string
-	var environment string
-	var olderThan time.Time
-
-	var err utils.AdvancedErrorInterface
-
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	licenses, err := ctrl.Service.SearchLicenses(location, environment, olderThan)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	utils.WriteJSONResponse(w, http.StatusOK, licenses)
-}
-
 // SearchOracleDatabaseUsedLicenses search licenses consumed by the hosts using the filters in the request
 func (ctrl *APIController) SearchOracleDatabaseUsedLicenses(w http.ResponseWriter, r *http.Request) {
 	var sortBy string
@@ -610,66 +583,4 @@ func (ctrl *APIController) SearchOracleDatabaseUsedLicenses(w http.ResponseWrite
 	} else {
 		utils.WriteJSONResponse(w, http.StatusOK, response)
 	}
-}
-
-// GetLicense return a certain license asked in the request
-func (ctrl *APIController) GetLicense(w http.ResponseWriter, r *http.Request) {
-	var err utils.AdvancedErrorInterface
-	var olderThan time.Time
-
-	//parse the query params
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-	name := mux.Vars(r)["name"]
-
-	//get the data
-	lic, err := ctrl.Service.GetLicense(name, olderThan)
-	if err == utils.AerrLicenseNotFound {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
-		return
-	} else if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	//Write the data
-	utils.WriteJSONResponse(w, http.StatusOK, lic)
-}
-
-// SetLicenseCostPerProcessor set the cost per processor of a certain license
-func (ctrl *APIController) SetLicenseCostPerProcessor(w http.ResponseWriter, r *http.Request) {
-	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
-		return
-	}
-
-	//get the data
-	name := mux.Vars(r)["name"]
-
-	raw, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, "BAD_REQUEST"))
-		return
-	}
-
-	costPerProcessor, err := strconv.ParseFloat(string(raw), 32)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, "BAD_REQUEST"))
-		return
-	}
-
-	//set the value
-	aerr := ctrl.Service.SetLicenseCostPerProcessor(name, costPerProcessor)
-	if aerr == utils.AerrLicenseNotFound {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
-		return
-	} else if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
-		return
-	}
-
-	//Write the data
-	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
