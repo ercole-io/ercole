@@ -3075,43 +3075,6 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /hosts/technologies/oracle/databases/license-compliance:
-    get:
-      tags:
-        - api-service
-        - fe-user
-        - read
-      operationId: GetOracleDatabaseLicenseComplianceStatusStats
-      summary: Get the status of the license compliance of the databases
-      description: Get the status of the license compliance of the databases
-      parameters:
-        - $ref: '#/components/parameters/location'
-        - $ref: '#/components/parameters/environment'
-        - $ref: '#/components/parameters/older-than'
-      responses:
-        '200':
-          description: statistics
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - count
-                  - used
-                  - compliant
-                properties:
-                  count:
-                    type: number
-                  used:
-                    type: number
-                  compliant:
-                    type: boolean
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
   /hosts/technologies/oracle/databases/consumed-licenses:
     get:
       tags:
@@ -3551,7 +3514,7 @@ paths:
                   $ref: '#/components/schemas/TechnologyInfo'
   /frontend/dashboard:
     get:
-      operationId: GetFrontendDashboardData
+      operationId: GetInfoForFrontendDashboard
       description: Return the information required by ercole-web dashboard page
       summary: Return the information required by ercole-web dashboard page
       tags:

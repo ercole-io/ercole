@@ -90,8 +90,6 @@ type MongoDatabaseInterface interface {
 	GetOracleDatabaseDataguardStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetOracleDatabaseRACStatusStats return a array containing the number of databases per RAC status
 	GetOracleDatabaseRACStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
-	// GetOracleDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
-	GetOracleDatabaseLicenseComplianceStatusStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
 	// GetOracleDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
 	GetOracleDatabaseArchivelogStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// GetTotalOracleDatabaseWorkStats return the total work of databases

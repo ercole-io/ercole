@@ -100,8 +100,6 @@ type APIControllerInterface interface {
 	GetTotalOracleDatabaseDatafileSizeStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalOracleDatabaseSegmentSizeStats return the total size of segments of databases using the filters in the request
 	GetTotalOracleDatabaseSegmentSizeStats(w http.ResponseWriter, r *http.Request)
-	// GetOracleDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases using the filters in the request
-	GetOracleDatabaseLicenseComplianceStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata using the filters in the request
 	GetTotalOracleExadataMemorySizeStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalOracleExadataCPUStats return the total cpu of exadata using the filters in the request

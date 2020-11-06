@@ -87,11 +87,6 @@ func (as *APIService) GetTotalOracleDatabaseSegmentSizeStats(location string, en
 	return as.Database.GetTotalOracleDatabaseSegmentSizeStats(location, environment, olderThan)
 }
 
-// GetOracleDatabaseLicenseComplianceStatusStats return the status of the compliance of licenses of databases
-func (as *APIService) GetOracleDatabaseLicenseComplianceStatusStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.GetOracleDatabaseLicenseComplianceStatusStats(location, environment, olderThan)
-}
-
 // GetTopUnusedOracleDatabaseInstanceResourceStats return a array containing top unused instance resource by workload
 func (as *APIService) GetTopUnusedOracleDatabaseInstanceResourceStats(location string, environment string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.GetTopUnusedOracleDatabaseInstanceResourceStats(location, environment, limit, olderThan)
