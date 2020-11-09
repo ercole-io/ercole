@@ -24,7 +24,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (m *MongodbSuite) TestGetTechnologiesUsage() {
+func (m *MongodbSuite) TestGetHostsCountUsingTechnologies() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
@@ -32,32 +32,32 @@ func (m *MongodbSuite) TestGetTechnologiesUsage() {
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
-		out, err := m.db.GetTechnologiesUsage("Foobarland", "", utils.MAX_TIME)
+		out, err := m.db.GetHostsCountUsingTechnologies("Foobarland", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = map[string]interface{}{}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
-		out, err := m.db.GetTechnologiesUsage("", "FOOBAR", utils.MAX_TIME)
+		out, err := m.db.GetHostsCountUsingTechnologies("", "FOOBAR", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = map[string]interface{}{}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
-		out, err := m.db.GetTechnologiesUsage("", "", utils.MIN_TIME)
+		out, err := m.db.GetHostsCountUsingTechnologies("", "", utils.MIN_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = map[string]interface{}{}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 	m.T().Run("should_return_correct_res", func(t *testing.T) {
-		out, err := m.db.GetTechnologiesUsage("", "", utils.MAX_TIME)
+		out, err := m.db.GetHostsCountUsingTechnologies("", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = map[string]interface{}{
-			"Oracle/Exadata":             1,
-			"Oracle/Database_hostsCount": 2,
+			"Oracle/Exadata":  1,
+			"Oracle/Database": 2,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))

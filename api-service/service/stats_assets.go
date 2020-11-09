@@ -24,7 +24,7 @@ import (
 
 // GetTotalTechnologiesComplianceStats return the total compliance of all technologies
 func (as *APIService) GetTotalTechnologiesComplianceStats(location string, environment string, olderThan time.Time) (map[string]interface{}, utils.AdvancedErrorInterface) {
-	data, err := as.ListManagedTechnologies("", false, location, environment, olderThan)
+	technologies, err := as.ListManagedTechnologies("", false, location, environment, olderThan)
 	if err != nil {
 		return nil, err
 	}
@@ -34,25 +34,29 @@ func (as *APIService) GetTotalTechnologiesComplianceStats(location string, envir
 		return nil, err
 	}
 
-	totalUsed := float64(0.0)
-	totalCount := float64(0.0)
+	totalConsumed := float64(0.0)
+	totalCovered := float64(0.0)
+
 	totalTotalCost := float64(0.0)
 	totalPaidCost := float64(0.0)
 
-	for _, ass := range data {
-		totalUsed += ass.Used
-		totalCount += ass.Count
-		totalTotalCost += ass.TotalCost
-		totalPaidCost += ass.PaidCost
+	for _, technology := range technologies {
+		totalConsumed += technology.ConsumedByHosts
+		totalCovered += technology.CoveredByAgreements
+
+		totalTotalCost += technology.TotalCost
+		totalPaidCost += technology.PaidCost
 	}
-	if totalUsed == 0 {
-		totalUsed = 1
-		totalCount = 1
+
+	compliance := 1.0
+	if totalConsumed > 0 {
+		compliance = totalCovered / totalConsumed
 	}
 
 	return map[string]interface{}{
-		"unpaidDues": totalTotalCost - totalPaidCost,
-		"compliance": totalCount / totalUsed,
 		"hostsCount": hostsCount,
+		"compliance": compliance,
+
+		"unpaidDues": totalTotalCost - totalPaidCost,
 	}, nil
 }
