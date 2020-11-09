@@ -20,12 +20,13 @@ import (
 	"time"
 
 	"github.com/amreo/mu"
+	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// GetTechnologiesUsage return a map that contains the number of usages for every features
-func (md *MongoDatabase) GetTechnologiesUsage(location string, environment string, olderThan time.Time) (map[string]float64, utils.AdvancedErrorInterface) {
+// GetHostsCountUsingTechnologies return a map that contains the number of usages for every features
+func (md *MongoDatabase) GetHostsCountUsingTechnologies(location string, environment string, olderThan time.Time) (map[string]float64, utils.AdvancedErrorInterface) {
 	var out map[string]float64 = make(map[string]float64)
 
 	//Find the matching hostdata
@@ -36,10 +37,10 @@ func (md *MongoDatabase) GetTechnologiesUsage(location string, environment strin
 			FilterByOldnessSteps(olderThan),
 			mu.APGroup(bson.M{
 				"_id": 1,
-				"Oracle/Database_hostsCount": mu.APOSum(
+				model.TechnologyOracleDatabase: mu.APOSum(
 					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.oracle.database.databases", bson.A{})), 0), 1, 0),
 				),
-				"Oracle/Exadata": mu.APOSum(
+				model.TechnologyOracleExadata: mu.APOSum(
 					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.oracle.exadata.components", bson.A{})), 0), 1, 0),
 				),
 			}),
@@ -50,13 +51,11 @@ func (md *MongoDatabase) GetTechnologiesUsage(location string, environment strin
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	//Next the cursor. If there is no document return a empty document
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
 		return out, nil
 	}
 
-	//Decode the document
 	if err := cur.Decode(&out); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}

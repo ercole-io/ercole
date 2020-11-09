@@ -25,105 +25,70 @@ import (
 
 // ListManagedTechnologies returns the list of Technologies with some stats
 func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.TechnologyStatus, utils.AdvancedErrorInterface) {
-	partialList, err := as.Database.GetTechnologiesUsage(location, environment, olderThan)
+	hostsCountByTechnology, err := as.Database.GetHostsCountUsingTechnologies(location, environment, olderThan)
 	if err != nil {
 		return nil, err
 	}
 
-	// FIXME Readd correct values
-	//oracleLicenseListRaw, err := as.Database.SearchLicenses(location, environment, olderThan)
-	//if err != nil {
-	//	return nil, err
-	//}
+	statuses := make([]model.TechnologyStatus, 0)
 
-	finalList := make([]model.TechnologyStatus, 0)
+	oracleStatus, err := createOracleTechnologyStatus(as, hostsCountByTechnology[model.TechnologyOracleDatabase])
+	if err != nil {
+		return nil, err
+	}
+	statuses = append(statuses, *oracleStatus)
 
-	//Oracle/Databases
-	type License struct {
-		Count     float64 `json:"count"`
-		Used      float64 `json:"used"`
-		PaidCost  float64 `json:"paidCost"`
-		TotalCost float64 `json:"totalCost"`
-		Unlimited bool    `json:"unlimited"`
-	}
-	oracleLicenseList := make([]License, 0)
-	//json.Unmarshal([]byte(utils.ToJSON(oracleLicenseListRaw)), &oracleLicenseList)
-	used := float64(0.0)
-	holded := float64(0.0)
-	totalCost := float64(0.0)
-	paidCost := float64(0.0)
-	for _, lic := range oracleLicenseList {
-		used += lic.Used
-		totalCost += lic.TotalCost
-		if lic.Count > lic.Used || lic.Unlimited {
-			holded += lic.Used
-			paidCost += lic.TotalCost
-		} else {
-			holded += lic.Count
-			paidCost += lic.PaidCost
-		}
-	}
-	finalList = append(finalList, model.TechnologyStatus{
-		Product:    "Oracle/Database",
-		Used:       used,
-		Count:      holded,
-		TotalCost:  totalCost,
-		PaidCost:   paidCost,
-		HostsCount: int(partialList["Oracle/Database_hostsCount"]),
-		Compliance: holded / used,
-		UnpaidDues: totalCost - paidCost,
-	})
-	if used == 0 {
-		finalList[len(finalList)-1].Compliance = 1
+	for _, technology := range []string{
+		model.TechnologyMariaDBFoundationMariaDB,
+		model.TechnologyPostgreSQLPostgreSQL,
+		model.TechnologyOracleMySQL,
+		model.TechnologyMicrosoftSQLServer,
+	} {
+
+		statuses = append(statuses, model.TechnologyStatus{
+			Product:             technology,
+			ConsumedByHosts:     0,
+			CoveredByAgreements: 0,
+			TotalCost:           0.0,
+			PaidCost:            0.0,
+			HostsCount:          0.0,
+			Compliance:          1.0,
+			UnpaidDues:          0.0,
+		})
 	}
 
-	//MariaDBFoundation/MariaDB
-	finalList = append(finalList, model.TechnologyStatus{
-		Product:    model.TechnologyMariaDBFoundationMariaDB,
-		Used:       0,
-		Count:      0,
-		TotalCost:  0.0,
-		PaidCost:   0.0,
-		HostsCount: 0.0,
-		Compliance: 1.0,
-		UnpaidDues: 0.0,
-	})
+	return statuses, nil
+}
 
-	//PostgreSQL/PostgreSQL
-	finalList = append(finalList, model.TechnologyStatus{
-		Product:    model.TechnologyPostgreSQLPostgreSQL,
-		Used:       0,
-		Count:      0,
-		TotalCost:  0.0,
-		PaidCost:   0.0,
-		HostsCount: 0.0,
-		Compliance: 1.0,
-		UnpaidDues: 0.0,
-	})
+func createOracleTechnologyStatus(as *APIService, oracleHosts float64) (*model.TechnologyStatus, utils.AdvancedErrorInterface) {
 
-	//Oracle/MySQL
-	finalList = append(finalList, model.TechnologyStatus{
-		Product:    model.TechnologyOracleMySQL,
-		Used:       0,
-		Count:      0,
-		TotalCost:  0.0,
-		PaidCost:   0.0,
-		HostsCount: 0.0,
-		Compliance: 1.0,
-		UnpaidDues: 0.0,
-	})
+	agreements, err := as.Database.ListOracleDatabaseAgreements()
+	if err != nil {
+		return nil, err
+	}
 
-	//Microsoft/SQLServer
-	finalList = append(finalList, model.TechnologyStatus{
-		Product:    model.TechnologyMicrosoftSQLServer,
-		Used:       0,
-		Count:      0,
-		TotalCost:  0.0,
-		PaidCost:   0.0,
-		HostsCount: 0.0,
-		Compliance: 1.0,
-		UnpaidDues: 0.0,
-	})
+	hosts, err := as.Database.ListHostUsingOracleDatabaseLicenses()
+	if err != nil {
+		return nil, err
+	}
 
-	return finalList, nil
+	as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+
+	status := model.TechnologyStatus{
+		Product:    model.TechnologyOracleDatabase,
+		HostsCount: int(oracleHosts),
+	}
+
+	for _, host := range hosts {
+		status.ConsumedByHosts += host.OriginalCount
+		status.CoveredByAgreements += (host.OriginalCount - host.LicenseCount)
+	}
+
+	if status.ConsumedByHosts == 0 {
+		status.Compliance = 1
+	}
+
+	status.Compliance = status.CoveredByAgreements / status.ConsumedByHosts
+
+	return &status, nil
 }

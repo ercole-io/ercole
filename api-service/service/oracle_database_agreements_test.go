@@ -42,14 +42,14 @@ var partsSample = []model.OracleDatabasePart{
 	{
 		PartID:          "PID002",
 		ItemDescription: "itemDesc2",
-		Aliases:         []string{"alias1"},
+		Aliases:         []string{"alias2"},
 		Metric:          "metric2",
 	},
 	{
-		ItemDescription: "asdsdfsdas",
-		Aliases:         []string{"alias1"},
+		PartID:          "PID003",
+		ItemDescription: "itemDesc3",
+		Aliases:         []string{"alias3"},
 		Metric:          "metric3",
-		PartID:          "A90650",
 	},
 }
 
