@@ -15,89 +15,109 @@
 
 package service
 
-//TODO
-//func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
-//	mockCtrl := gomock.NewController(t)
-//	defer mockCtrl.Finish()
-//	db := NewMockMongoDatabaseInterface(mockCtrl)
-//	as := APIService{
-//		Database: db,
-//	}
+import (
+	"testing"
 
-//	expectedRes := map[string]interface{}{
-//		"compliance": 7.0 / 10,
-//		"unpaidDues": 45,
-//		"hostsCount": 20,
-//	}
+	dto "github.com/ercole-io/ercole/api-service/dto"
+	"github.com/ercole-io/ercole/model"
+	"github.com/ercole-io/ercole/utils"
+	gomock "github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
 
-//	getTechnologiesUsageRes := map[string]float64{
-//		"Oracle/Exadata": 2,
-//	}
+func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
+			{
+				PartID:          "PID002",
+				Aliases:         []string{"Partitioning"},
+				ItemDescription: "Oracle Partitioning",
+				Metric:          model.AgreementPartMetricProcessorPerpetual,
+			},
+		},
+	}
 
-//	db.EXPECT().
-//		GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
-//		Return(getTechnologiesUsageRes, nil)
-//	db.EXPECT().
-//		GetHostsCountStats("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
-//		Return(20, nil).AnyTimes().MinTimes(1)
+	getTechnologiesUsageRes := map[string]float64{
+		"Oracle/Exadata": 2,
+	}
+	db.EXPECT().
+		GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		Return(getTechnologiesUsageRes, nil)
+	db.EXPECT().
+		GetHostsCountStats("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		Return(20, nil).AnyTimes().MinTimes(1)
 
-//	listLicensesRes := []interface{}{
-//		map[string]interface{}{
-//			"compliance":       false,
-//			"count":            4,
-//			"used":             4,
-//			"_id":              "Partitioning",
-//			"totalCost":        40,
-//			"paidCost":         40,
-//			"costPerProcessor": 10,
-//		},
-//		map[string]interface{}{
-//			"compliance":       false,
-//			"count":            3,
-//			"used":             6,
-//			"_id":              "Diagnostics Pack",
-//			"totalCost":        90,
-//			"paidCost":         45,
-//			"costPerProcessor": 15,
-//		},
-//		map[string]interface{}{
-//			"compliance":       true,
-//			"count":            5,
-//			"used":             0,
-//			"_id":              "Advanced Analytics",
-//			"totalCost":        0,
-//			"paidCost":         5,
-//			"costPerProcessor": 1,
-//		},
-//	}
-//	db.EXPECT().
-//		SearchLicenses("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
-//		Return(listLicensesRes, nil).AnyTimes().MinTimes(1)
+	returnedAgreements := []dto.OracleDatabaseAgreementFE{
+		{
+			AgreementID: "AID001",
+			CatchAll:    false,
+			CSI:         "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+				{
+					CoveredLicensesCount:      0,
+					Hostname:                  "test-db",
+					TotalCoveredLicensesCount: 0,
+				},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
+			Unlimited:       false,
+			LicensesCount:   55,
+			UsersCount:      0,
+			Count:           55,
+			AvailableCount:  55,
+		},
+	}
+	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
 
-//	res, err := as.GetTotalTechnologiesComplianceStats(
-//		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
-//	)
+	returnedHosts := []dto.HostUsingOracleDatabaseLicenses{
+		{
+			Name:          "test-db",
+			LicenseCount:  100,
+			LicenseName:   "Partitioning",
+			OriginalCount: 100,
+			Type:          "host",
+		},
+	}
+	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedHosts, nil)
 
-//	require.NoError(t, err)
-//	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
-//}
+	res, err := as.GetTotalTechnologiesComplianceStats(
+		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
+	)
 
-//func TestGetTotalTechnologiesComplianceStats_FailInternalServerError(t *testing.T) {
-//	mockCtrl := gomock.NewController(t)
-//	defer mockCtrl.Finish()
-//	db := NewMockMongoDatabaseInterface(mockCtrl)
-//	as := APIService{
-//		Database: db,
-//	}
-//
-//	db.EXPECT().
-//		GetTechnologiesUsage("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
-//		Return(nil, aerrMock)
-//
-//	_, err := as.GetTotalTechnologiesComplianceStats(
-//		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
-//	)
-//
-//	require.Equal(t, aerrMock, err)
-//}
-//
+	require.NoError(t, err)
+
+	expectedRes := map[string]interface{}{
+		"compliance": 0.55,
+		"unpaidDues": 0,
+		"hostsCount": 20,
+	}
+	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
+}
+
+func TestGetTotalTechnologiesComplianceStats_FailInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
+
+	db.EXPECT().
+		GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+		Return(nil, aerrMock)
+
+	_, err := as.GetTotalTechnologiesComplianceStats(
+		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
+	)
+
+	require.Equal(t, aerrMock, err)
+}
