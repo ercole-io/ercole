@@ -146,6 +146,83 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 	})
 }
 
+func TestListManagedTechnologies_Success2(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database:                     db,
+		Log:                          utils.NewLogger("TEST"),
+		OracleDatabaseAgreementParts: sampleParts,
+	}
+
+	returnedAgreements := []dto.OracleDatabaseAgreementFE{
+		{
+			AgreementID:    "AID001",
+			AvailableCount: 0,
+			CatchAll:       false,
+			CSI:            "CSI001",
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+				{
+					CoveredLicensesCount:      0,
+					Hostname:                  "test-db",
+					TotalCoveredLicensesCount: 0,
+				},
+			},
+			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			ItemDescription: "Oracle Partitioning",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			PartID:          "PID002",
+			ReferenceNumber: "RF0001",
+			Unlimited:       false,
+			LicensesCount:   55,
+			UsersCount:      0,
+			Count:           55,
+		},
+	}
+	returnedHosts := []dto.HostUsingOracleDatabaseLicenses{
+		{
+			Name:          "test-db",
+			LicenseCount:  100,
+			LicenseName:   "Partitioning",
+			OriginalCount: 100,
+			Type:          "host",
+		},
+	}
+	t.Run("", func(t *testing.T) {
+		gomock.InOrder(
+			db.EXPECT().
+				GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
+				Return(map[string]float64{
+					model.TechnologyOracleDatabase: 42,
+					model.TechnologyOracleExadata:  43,
+				}, nil),
+			db.EXPECT().
+				ListOracleDatabaseAgreements().
+				Return(returnedAgreements, nil),
+			db.EXPECT().
+				ListHostUsingOracleDatabaseLicenses().
+				Return(returnedHosts, nil),
+		)
+
+		actual, err := as.ListManagedTechnologies(
+			"Count", true,
+			"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
+		)
+
+		expected := []model.TechnologyStatus{
+			{Product: "Oracle/Database", ConsumedByHosts: 100, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 42},
+			{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 0},
+			{Product: "PostgreSQL/PostgreSQL", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 0},
+			{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 0},
+			{Product: "Microsoft/SQLServer", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 0},
+		}
+
+		require.NoError(t, err)
+		require.Equal(t, expected, actual)
+	})
+}
+
 func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
