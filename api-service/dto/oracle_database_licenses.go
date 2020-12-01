@@ -38,4 +38,5 @@ type OracleDatabaseLicenseUsage struct {
 	Consumed   float64 `json:"consumed"`
 	Covered    float64 `json:"covered"`
 	Compliance float64 `json:"compliance"`
+	Unlimited  bool    `json:"unlimited"`
 }
