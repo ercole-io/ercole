@@ -28,3 +28,14 @@ type OracleDatabaseUsedLicense struct {
 	Hostname     string  `json:"hostname" bson:"hostname"`
 	UsedLicenses float64 `json:"usedLicenses" bson:"usedLicenses"`
 }
+
+// OracleDatabaseLicenseUsage contains the information about usage of a license
+type OracleDatabaseLicenseUsage struct {
+	PartID          string `json:"partID" bson:"partID"`
+	ItemDescription string `json:"itemDescription" bson:"itemDescription"`
+	Metric          string `json:"metric" bson:"metric"`
+
+	Consumed   float64 `json:"consumed"`
+	Covered    float64 `json:"covered"`
+	Compliance float64 `json:"compliance"`
+}

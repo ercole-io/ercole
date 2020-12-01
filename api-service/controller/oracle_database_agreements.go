@@ -28,17 +28,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
-func (ctrl *APIController) GetOracleDatabaseAgreementPartsList(w http.ResponseWriter, r *http.Request) {
-	data, err := ctrl.Service.GetOracleDatabaseAgreementPartsList()
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	utils.WriteJSONResponse(w, http.StatusOK, data)
-}
-
 // AddAssociatedPartToOracleDbAgreement add associated part to an existing agreement else it will create it
 func (ctrl *APIController) AddAssociatedPartToOracleDbAgreement(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
