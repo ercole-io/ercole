@@ -186,8 +186,8 @@ type APIService struct {
 
 // Init initializes the service and database
 func (as *APIService) Init() {
-	as.LoadManagedTechnologiesList()
-	as.LoadOracleDatabaseAgreementParts()
+	as.loadManagedTechnologiesList()
+	as.loadOracleDatabaseAgreementParts()
 
 	as.NewObjectID = func() primitive.ObjectID {
 		return primitive.NewObjectIDFromTimestamp(as.TimeNow())
