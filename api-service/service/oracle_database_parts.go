@@ -25,8 +25,8 @@ import (
 	"github.com/ercole-io/ercole/utils"
 )
 
-// LoadOracleDatabaseAgreementParts loads the list of Oracle/Database agreement parts and store it to as.OracleDatabaseAgreementParts.
-func (as *APIService) LoadOracleDatabaseAgreementParts() {
+// loadOracleDatabaseAgreementParts loads the list of Oracle/Database agreement parts and store it to as.OracleDatabaseAgreementParts.
+func (as *APIService) loadOracleDatabaseAgreementParts() {
 	filename := "oracle_database_agreement_parts.json"
 	path := filepath.Join(as.Config.ResourceFilePath, filename)
 

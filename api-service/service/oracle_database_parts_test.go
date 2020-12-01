@@ -37,7 +37,7 @@ func TestLoadOracleDatabaseAgreementParts_Success(t *testing.T) {
 			ResourceFilePath: "../../resources",
 		},
 	}
-	as.LoadOracleDatabaseAgreementParts()
+	as.loadOracleDatabaseAgreementParts()
 
 	expected := []model.OracleDatabasePart{
 		{PartID: "A11111", ItemDescription: "Database Enterprise Edition", Metric: model.AgreementPartMetricNamedUserPlusPerpetual, Cost: 42, Aliases: []string{"Db ENT"}},
