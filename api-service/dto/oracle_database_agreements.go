@@ -111,6 +111,7 @@ type HostUsingOracleDatabaseLicenses struct {
 }
 
 // OracleDatabaseLicenseUsageInfo contains the information about usage of a license
+// TODO Remove?
 type OracleDatabaseLicenseUsageInfo struct {
 	ID                   string                          `json:"id" bson:"_id"`
 	Compliance           bool                            `json:"compliance" bson:"compliance"`
