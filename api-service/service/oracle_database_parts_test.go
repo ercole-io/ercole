@@ -79,67 +79,82 @@ func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
 	}, res)
 }
 
-var sampleAgreementsForGetLicensesCompliance []dto.OracleDatabaseAgreementFE = []dto.OracleDatabaseAgreementFE{
-	{
-		ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-		AgreementID:     "",
-		CSI:             "",
-		PartID:          "PID001",
-		ItemDescription: "",
-		Metric:          "",
-		ReferenceNumber: "",
-		Unlimited:       false,
-		Count:           50,
-		CatchAll:        false,
-		Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
-			{Hostname: "pippo"},
-			{Hostname: "pluto"},
-		},
-		AvailableCount: 50,
-		LicensesCount:  0,
-		UsersCount:     0,
-	},
-	{
-		ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
-		AgreementID:     "",
-		CSI:             "",
-		PartID:          "PID002",
-		ItemDescription: "",
-		Metric:          "",
-		ReferenceNumber: "",
-		Unlimited:       false,
-		Count:           75,
-		CatchAll:        false,
-		Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
-			{Hostname: "topolino"},
-			{Hostname: "minnie"},
-		},
-		AvailableCount: 75,
-		LicensesCount:  0,
-		UsersCount:     0,
-	},
-	{
-		ID:              utils.Str2oid("cccccccccccccccccccccccc"),
-		AgreementID:     "",
-		CSI:             "",
-		PartID:          "PID003",
-		ItemDescription: "",
-		Metric:          "",
-		ReferenceNumber: "",
-		Unlimited:       true,
-		Count:           75,
-		CatchAll:        false,
-		Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
-			{Hostname: "topolino"},
-			{Hostname: "minnie"},
-		},
-		AvailableCount: 75,
-		LicensesCount:  0,
-		UsersCount:     0,
-	},
-}
-
 func TestGetLicensesCompliance(t *testing.T) {
+	var sampleAgreements []dto.OracleDatabaseAgreementFE = []dto.OracleDatabaseAgreementFE{
+		{
+			ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+			AgreementID:     "",
+			CSI:             "",
+			PartID:          "PID001",
+			ItemDescription: "",
+			Metric:          "",
+			ReferenceNumber: "",
+			Unlimited:       false,
+			Count:           50,
+			CatchAll:        false,
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+				{Hostname: "pippo"},
+				{Hostname: "pluto"},
+			},
+			AvailableCount: 50,
+			LicensesCount:  0,
+			UsersCount:     0,
+		},
+		{
+			ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
+			AgreementID:     "",
+			CSI:             "",
+			PartID:          "PID002",
+			ItemDescription: "",
+			Metric:          "",
+			ReferenceNumber: "",
+			Unlimited:       false,
+			Count:           75,
+			CatchAll:        false,
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+				{Hostname: "topolino"},
+				{Hostname: "minnie"},
+			},
+			AvailableCount: 75,
+			LicensesCount:  0,
+			UsersCount:     0,
+		},
+		{
+			ID:              utils.Str2oid("cccccccccccccccccccccccc"),
+			AgreementID:     "",
+			CSI:             "",
+			PartID:          "PID003",
+			ItemDescription: "",
+			Metric:          "",
+			ReferenceNumber: "",
+			Unlimited:       true,
+			Count:           75,
+			CatchAll:        false,
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+				{Hostname: "topolino"},
+				{Hostname: "minnie"},
+			},
+			AvailableCount: 75,
+			LicensesCount:  0,
+			UsersCount:     0,
+		},
+	}
+
+	var sampleHosts []dto.HostUsingOracleDatabaseLicenses = []dto.HostUsingOracleDatabaseLicenses{
+		{LicenseName: "alias1", Name: "test1", Type: "host", LicenseCount: 3, OriginalCount: 3},
+		{LicenseName: "alias1", Name: "pluto", Type: "host", LicenseCount: 1.5, OriginalCount: 1.5},
+		{LicenseName: "alias1", Name: "pippo", Type: "host", LicenseCount: 5.5, OriginalCount: 5.5},
+
+		{LicenseName: "alias2", Name: "topolino", Type: "cluster", LicenseCount: 7, OriginalCount: 7},
+		{LicenseName: "alias2", Name: "minnie", Type: "host", LicenseCount: 4, OriginalCount: 4},
+		{LicenseName: "alias2", Name: "minnie", Type: "host", LicenseCount: 8, OriginalCount: 8},
+
+		{LicenseName: "alias3", Name: "minnie", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
+		{LicenseName: "alias3", Name: "pippo", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
+		{LicenseName: "alias3", Name: "test2", Type: "host", LicenseCount: 4, OriginalCount: 4},
+		{LicenseName: "alias3", Name: "test3", Type: "cluster", LicenseCount: 6, OriginalCount: 6},
+	}
+
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -152,10 +167,10 @@ func TestGetLicensesCompliance(t *testing.T) {
 	gomock.InOrder(
 		db.EXPECT().
 			ListOracleDatabaseAgreements().
-			Return(sampleAgreementsForGetLicensesCompliance, nil),
+			Return(sampleAgreements, nil),
 		db.EXPECT().
 			ListHostUsingOracleDatabaseLicenses().
-			Return(sampleHostUsingOracleDbLicenses, nil),
+			Return(sampleHosts, nil),
 	)
 
 	actual, err := as.GetOracleDatabaseLicensesCompliance()
@@ -167,5 +182,6 @@ func TestGetLicensesCompliance(t *testing.T) {
 		{PartID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 275, Covered: 75, Compliance: compliance, Unlimited: false},
 		{PartID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Consumed: 0.5, Covered: 0.5, Compliance: 1, Unlimited: true},
 	}
+
 	require.Equal(t, expected, actual)
 }
