@@ -21,6 +21,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/ercole-io/ercole/api-service/dto"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 )
@@ -66,4 +67,46 @@ func (as *APIService) GetOraclePart(partID string) (*model.OracleDatabasePart, u
 	}
 
 	return nil, utils.AerrOracleDatabaseAgreementInvalidPartID
+}
+
+func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabaseLicenseUsage, utils.AdvancedErrorInterface) {
+	agreements, err := as.Database.ListOracleDatabaseAgreements()
+	if err != nil {
+		return nil, err
+	}
+
+	hosts, err := as.Database.ListHostUsingOracleDatabaseLicenses()
+	if err != nil {
+		return nil, err
+	}
+
+	as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+
+	licenses := make(map[string]*dto.OracleDatabaseLicenseUsage)
+
+	for _, agreement := range agreements {
+		license, ok := licenses[agreement.PartID]
+		if !ok {
+			license = &dto.OracleDatabaseLicenseUsage{
+				PartID:          agreement.PartID,
+				ItemDescription: agreement.ItemDescription,
+				Metric:          agreement.Metric,
+			}
+
+			licenses[agreement.PartID] = license
+		}
+
+		for _, host := range agreement.Hosts {
+			license.Consumed += host.ConsumedLicensesCount
+			license.Covered += host.CoveredLicensesCount
+		}
+	}
+
+	result := make([]dto.OracleDatabaseLicenseUsage, 0, len(licenses))
+	for _, license := range licenses {
+		license.Compliance = license.Covered / license.Consumed
+		result = append(result, *license)
+	}
+
+	return result, nil
 }

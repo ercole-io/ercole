@@ -139,7 +139,9 @@ type APIServiceInterface interface {
 	RemoveHostFromAssociatedPart(associatedPartID primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
 
 	// PARTS
+
 	GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabasePart, utils.AdvancedErrorInterface)
+	GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabaseLicenseUsage, utils.AdvancedErrorInterface)
 
 	// PATCHING FUNCTIONS
 	// SetPatchingFunction set the patching function of a host
