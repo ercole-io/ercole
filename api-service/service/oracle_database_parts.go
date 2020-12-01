@@ -96,6 +96,10 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabas
 			licenses[agreement.PartID] = license
 		}
 
+		if agreement.Unlimited {
+			license.Unlimited = true
+		}
+
 		for _, host := range agreement.Hosts {
 			license.Consumed += host.ConsumedLicensesCount
 			license.Covered += host.CoveredLicensesCount
