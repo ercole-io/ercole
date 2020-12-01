@@ -3155,6 +3155,71 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
+  /hosts/technologies/oracle/databases/licenses-compliance:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetOracleDatabaseLicensesCompliance
+      summary: Get list of licenses with usage and compliance
+      description: Get list of licenses with usage and compliance
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ''
+                minItems: 1
+                uniqueItems: true
+                items:
+                  type: object
+                  required:
+                    - partID
+                    - itemDescription
+                    - metric
+                    - consumed
+                    - covered
+                    - compliance
+                  properties:
+                    partID:
+                      type: string
+                      minLength: 1
+                    itemDescription:
+                      type: string
+                      minLength: 1
+                    metric:
+                      type: string
+                      minLength: 1
+                    consumed:
+                      type: number
+                    covered:
+                      type: number
+                    compliance:
+                      type: number
+              examples:
+                Example:
+                  value:
+                    - partID: PID001
+                      itemDescription: Oracle Database Enterprise Edition
+                      metric: Processor Perpetual
+                      consumed: 3
+                      covered: 3
+                      compliance: 1
+                    - partID: PID002
+                      itemDescription: Oracle Database Enterprise Edition
+                      metric: Processor Perpetual
+                      consumed: 10
+                      covered: 5
+                      compliance: 0.5
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
   /hosts/technologies/oracle/exadata/total-memory-size:
     get:
       tags:

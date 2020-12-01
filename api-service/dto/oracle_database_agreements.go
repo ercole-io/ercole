@@ -31,7 +31,7 @@ type AssociatedPartInOracleDbAgreementRequest struct {
 	ReferenceNumber string   `json:"referenceNumber"`
 	Unlimited       bool     `json:"unlimited"`
 	Count           int      `json:"count"`
-	CatchAll        bool     `json:"catchAll"`
+	CatchAll        bool     `json:"catchAll"` //TODO rename basket
 	Hosts           []string `json:"hosts"`
 }
 
@@ -54,7 +54,7 @@ type OracleDatabaseAgreementFE struct {
 	// If agreement is Named User, Count number express users, not licenses
 	Count float64 `json:"count" bson:"count"`
 
-	CatchAll bool                                      `json:"catchAll" bson:"catchAll"`
+	CatchAll bool                                      `json:"catchAll" bson:"catchAll"` //TODO Rename in basket
 	Hosts    []OracleDatabaseAgreementAssociatedHostFE `json:"hosts" bson:"hosts"`
 
 	// Value of licenses/users yet available to be assigned to hosts
@@ -88,7 +88,7 @@ type SearchOracleDatabaseAgreementsFilter struct {
 	Metric            string
 	ReferenceNumber   string
 	Unlimited         string //"" -> Ignore, "true" -> true, "false" -> false
-	CatchAll          string //"" -> Ignore, "true" -> true, "false" -> false
+	CatchAll          string //"" -> Ignore, "true" -> true, "false" -> false //TODO Rename in Basket
 	LicensesCountLTE  int
 	LicensesCountGTE  int
 	UsersCountLTE     int
@@ -108,25 +108,4 @@ type HostUsingOracleDatabaseLicenses struct {
 	LicenseCount float64 `json:"licenseCount" bson:"licenseCount"`
 	//TODO Rename in ConsumedLicensesCount // Original value of licenseCount (UncoveredLicenses), DO NOT EDIT!
 	OriginalCount float64 `json:"originalCount" bson:"originalCount"`
-}
-
-// OracleDatabaseLicenseUsageInfo contains the information about usage of a license
-// TODO Remove?
-type OracleDatabaseLicenseUsageInfo struct {
-	ID                   string                          `json:"id" bson:"_id"`
-	Compliance           bool                            `json:"compliance" bson:"compliance"`
-	CostPerProcessor     float64                         `json:"costPerProcessor" bson:"costPerProcessor"`
-	TotalCost            float64                         `json:"totalCost" bson:"totalCost"`
-	PaidCost             float64                         `json:"paidCost" bson:"paidCost"`
-	Unlimited            bool                            `json:"unlimited" bson:"unlimited"`
-	Count                float64                         `json:"count" bson:"count"`
-	TotalCoveredLicenses float64                         `json:"totalCoveredLicenses" bson:"totalCoveredLicenses"`
-	Used                 float64                         `json:"used" bson:"used"`
-	Hosts                []OracleDatabaseLicenseInfoHost `json:"hosts" bson:"hosts"`
-}
-
-// OracleDatabaseLicenseInfoHost contains the information about the licensed host and the databases used by the host
-type OracleDatabaseLicenseInfoHost struct {
-	Hostname string   `json:"hostname" bson:"hostname"`
-	DBNames  []string `json:"dbNames" bson:"dbNames"`
 }

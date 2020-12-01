@@ -18,6 +18,7 @@ package service
 import (
 	"testing"
 
+	dto "github.com/ercole-io/ercole/api-service/dto"
 	"github.com/ercole-io/ercole/config"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
@@ -76,4 +77,34 @@ func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
 			Aliases:         []string{"Minny"},
 		},
 	}, res)
+}
+
+func TestGetLicensesCompliance(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database:                     db,
+		Log:                          utils.NewLogger("TEST"),
+		OracleDatabaseAgreementParts: sampleParts,
+	}
+
+	gomock.InOrder(
+		db.EXPECT().
+			ListOracleDatabaseAgreements().
+			Return(sampleListOracleDatabaseAgreements, nil),
+		db.EXPECT().
+			ListHostUsingOracleDatabaseLicenses().
+			Return(sampleHostUsingOracleDbLicenses, nil),
+	)
+
+	actual, err := as.GetOracleDatabaseLicensesCompliance()
+	require.NoError(t, err)
+
+	compliance := 75.0 / 275.0
+	expected := []dto.OracleDatabaseLicenseUsage{
+		{PartID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 7, Covered: 7, Compliance: 1},
+		{PartID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 275, Covered: 75, Compliance: compliance},
+	}
+	require.Equal(t, expected, actual)
 }
