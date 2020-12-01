@@ -79,6 +79,66 @@ func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
 	}, res)
 }
 
+var sampleAgreementsForGetLicensesCompliance []dto.OracleDatabaseAgreementFE = []dto.OracleDatabaseAgreementFE{
+	{
+		ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+		AgreementID:     "",
+		CSI:             "",
+		PartID:          "PID001",
+		ItemDescription: "",
+		Metric:          "",
+		ReferenceNumber: "",
+		Unlimited:       false,
+		Count:           50,
+		CatchAll:        false,
+		Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+			{Hostname: "pippo"},
+			{Hostname: "pluto"},
+		},
+		AvailableCount: 50,
+		LicensesCount:  0,
+		UsersCount:     0,
+	},
+	{
+		ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
+		AgreementID:     "",
+		CSI:             "",
+		PartID:          "PID002",
+		ItemDescription: "",
+		Metric:          "",
+		ReferenceNumber: "",
+		Unlimited:       false,
+		Count:           75,
+		CatchAll:        false,
+		Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+			{Hostname: "topolino"},
+			{Hostname: "minnie"},
+		},
+		AvailableCount: 75,
+		LicensesCount:  0,
+		UsersCount:     0,
+	},
+	{
+		ID:              utils.Str2oid("cccccccccccccccccccccccc"),
+		AgreementID:     "",
+		CSI:             "",
+		PartID:          "PID003",
+		ItemDescription: "",
+		Metric:          "",
+		ReferenceNumber: "",
+		Unlimited:       true,
+		Count:           75,
+		CatchAll:        false,
+		Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+			{Hostname: "topolino"},
+			{Hostname: "minnie"},
+		},
+		AvailableCount: 75,
+		LicensesCount:  0,
+		UsersCount:     0,
+	},
+}
+
 func TestGetLicensesCompliance(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -92,7 +152,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 	gomock.InOrder(
 		db.EXPECT().
 			ListOracleDatabaseAgreements().
-			Return(sampleListOracleDatabaseAgreements, nil),
+			Return(sampleAgreementsForGetLicensesCompliance, nil),
 		db.EXPECT().
 			ListHostUsingOracleDatabaseLicenses().
 			Return(sampleHostUsingOracleDbLicenses, nil),
@@ -103,8 +163,9 @@ func TestGetLicensesCompliance(t *testing.T) {
 
 	compliance := 75.0 / 275.0
 	expected := []dto.OracleDatabaseLicenseUsage{
-		{PartID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 7, Covered: 7, Compliance: 1},
-		{PartID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 275, Covered: 75, Compliance: compliance},
+		{PartID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 7, Covered: 7, Compliance: 1, Unlimited: false},
+		{PartID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 275, Covered: 75, Compliance: compliance, Unlimited: false},
+		{PartID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Consumed: 0.5, Covered: 0.5, Compliance: 1, Unlimited: true},
 	}
 	require.Equal(t, expected, actual)
 }

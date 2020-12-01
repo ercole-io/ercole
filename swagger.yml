@@ -3183,6 +3183,7 @@ paths:
                     - consumed
                     - covered
                     - compliance
+                    - unlimited
                   properties:
                     partID:
                       type: string
@@ -3199,6 +3200,8 @@ paths:
                       type: number
                     compliance:
                       type: number
+                    unlimited:
+                      type: boolean
               examples:
                 Example:
                   value:
@@ -3208,12 +3211,14 @@ paths:
                       consumed: 3
                       covered: 3
                       compliance: 1
+                      unlimited: false
                     - partID: PID002
                       itemDescription: Oracle Database Enterprise Edition
                       metric: Processor Perpetual
                       consumed: 10
                       covered: 5
                       compliance: 0.5
+                      unlimited: false
         '401':
           $ref: '#/components/responses/error'
         '422':
