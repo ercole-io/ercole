@@ -21,6 +21,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/ercole-io/ercole/model"
@@ -46,6 +47,7 @@ func TestHostdatas(t *testing.T) {
 			require.NoError(t, err)
 
 			//Validate the data
+			//TODO Refactor this in model.FrontendHostdataSchemaValidator
 			documentLoader := gojsonschema.NewBytesLoader(raw)
 			schemaLoader := gojsonschema.NewStringLoader(model.FrontendHostdataSchemaValidator)
 
@@ -59,7 +61,18 @@ func TestHostdatas(t *testing.T) {
 				for _, desc := range result.Errors() {
 					fmt.Printf("- %s\n", desc)
 				}
-				fmt.Printf("hostdata: %s\n", string(raw))
+
+				var errorMsg strings.Builder
+				for _, err := range result.Errors() {
+
+					value := fmt.Sprintf("%v", err.Value())
+					if len(value) > 80 {
+						value = value[:78] + ".."
+					}
+					errorMsg.WriteString(fmt.Sprintf("- %s. Value: [%v]\n", err, value))
+				}
+
+				fmt.Println(errorMsg.String())
 			}
 		})
 	}
