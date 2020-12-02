@@ -52,7 +52,7 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 			TotalCost:           0.0,
 			PaidCost:            0.0,
 			HostsCount:          0.0,
-			Compliance:          1.0,
+			Compliance:          0.0,
 			UnpaidDues:          0.0,
 		})
 	}
