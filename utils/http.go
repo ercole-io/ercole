@@ -52,7 +52,7 @@ func WriteAndLogError(log *logrus.Logger, w http.ResponseWriter, statusCode int,
 
 // WriteJSONResponse write the statuscode and the response to w
 func WriteJSONResponse(w http.ResponseWriter, statusCode int, resp interface{}) {
-	err := json.NewEncoder(w).Encode(resp)
+	jsonResp, err := json.Marshal(resp)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		logrus.Errorf("Error while encoding response: %#v", resp)
@@ -61,6 +61,12 @@ func WriteJSONResponse(w http.ResponseWriter, statusCode int, resp interface{}) 
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
+
+	_, err = w.Write(jsonResp)
+	if err != nil {
+		logrus.Errorf("Error while writing response: %#v", string(jsonResp))
+		return
+	}
 }
 
 // WriteExtJSONResponse write the statuscode and the response to w
