@@ -170,6 +170,8 @@
               }
             ],
             "status": "OPEN",
+            "dbID": 2,
+            "role": "PRIMARY",
             "charset": "AL32UTF8",
             "licenses": [
               {

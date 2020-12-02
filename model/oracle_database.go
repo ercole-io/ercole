@@ -29,6 +29,8 @@ type OracleDatabase struct {
 	Name              string                            `json:"name" bson:"name"`
 	UniqueName        string                            `json:"uniqueName" bson:"uniqueName"`
 	Status            string                            `json:"status" bson:"status"`
+	DbID              string                            `json:"dbID" bson:"dbID"`
+	Role              string                            `json:"role" bson:"role"`
 	IsCDB             bool                              `json:"isCDB" bson:"isCDB"`
 	Version           string                            `json:"version" bson:"version"`
 	Platform          string                            `json:"platform" bson:"platform"`
@@ -93,6 +95,8 @@ var OracleDatabaseBsonValidatorRules = bson.M{
 		"name",
 		"uniqueName",
 		"status",
+		"dbID",
+		"role",
 		"isCDB",
 		"version",
 		"platform",
@@ -151,6 +155,17 @@ var OracleDatabaseBsonValidatorRules = bson.M{
 			"enum": bson.A{
 				"OPEN",
 				"MOUNTED",
+			},
+		},
+		"dbID": bson.M{
+			"bsonType": "int",
+		},
+		"role": bson.M{
+			"bsonType": "string",
+			"enum": bson.A{
+				"LOGICAL STANDBY",
+				"PHYSICAL STANDBY",
+				"PRIMARY",
 			},
 		},
 		"isCDB": bson.M{
