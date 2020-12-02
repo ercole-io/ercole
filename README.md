@@ -1,5 +1,5 @@
 # Ercole
-[![Build Status](https://travis-ci.org/ercole-io/ercole.png)](https://travis-ci.org/ercole-io/ercole) 
+[![Build Status](https://travis-ci.com/ercole-io/ercole.png)](https://travis-ci.com/ercole-io/ercole)
 [![Join the chat at https://gitter.im/ercole-server/community](https://badges.gitter.im/ercole-server/community.svg)](https://gitter.im/ercole-server/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![codecov](https://codecov.io/gh/amreo/ercole-services/branch/master/graph/badge.svg)](https://codecov.io/gh/ercole-io/ercole)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ercole-io/ercole)](https://goreportcard.com/report/github.com/ercole-io/ercole)
