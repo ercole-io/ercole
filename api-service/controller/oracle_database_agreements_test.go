@@ -229,7 +229,7 @@ func TestUpdateOracleDatabaseAgreement_Success(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	assert.Equal(t, "null\n", rr.Body.String())
+	assert.Equal(t, "null", rr.Body.String())
 }
 
 func TestUpdateAssociatedPartOfOracleDbAgreement_FailToDecode(t *testing.T) {
