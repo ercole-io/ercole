@@ -88,7 +88,7 @@ func createOracleTechnologyStatus(as *APIService, oracleHosts float64) (*model.T
 		status.Compliance = 1
 	}
 
-	status.Compliance = status.CoveredByAgreements / status.ConsumedByHosts
+	status.Compliance = status.CoveredByAgreements / status.ConsumedByHosts //TODO if ConsumedByHosts is 0, it will be NaN !
 
 	return &status, nil
 }
