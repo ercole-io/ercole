@@ -9,8 +9,8 @@ import (
 	"github.com/ercole-io/ercole/utils"
 )
 
-// LoadManagedTechnologiesList loads the list of the managed techlogies from file and store it to as.TechnologyInfos.
-func (as *APIService) LoadManagedTechnologiesList() {
+// loadManagedTechnologiesList loads the list of the managed techlogies from file and store it to as.TechnologyInfos.
+func (as *APIService) loadManagedTechnologiesList() {
 	// read the list content
 	listContentRaw, err := ioutil.ReadFile(as.Config.ResourceFilePath + "/technologies/list.json")
 	if err != nil {

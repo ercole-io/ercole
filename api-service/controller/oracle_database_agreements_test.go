@@ -25,70 +25,12 @@ import (
 
 	"github.com/ercole-io/ercole/api-service/dto"
 	"github.com/ercole-io/ercole/config"
-	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	expectedRes := []model.OracleDatabasePart{
-		{
-			ItemDescription: "foobar",
-		},
-	}
-
-	as.EXPECT().
-		GetOracleDatabaseAgreementPartsList().
-		Return(expectedRes, nil)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetOracleDatabaseAgreementPartsList)
-	req, err := http.NewRequest("GET", "/", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
-}
-
-func TestGetOracleDatabaseAgreementPartsList_InternalServerError(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	as.EXPECT().
-		GetOracleDatabaseAgreementPartsList().
-		Return(nil, aerrMock)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetOracleDatabaseAgreementPartsList)
-	req, err := http.NewRequest("GET", "/", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
-}
 
 func TestAddAssociatedPartToOracleDbAgreement_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)

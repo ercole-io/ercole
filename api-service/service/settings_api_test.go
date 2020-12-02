@@ -36,7 +36,7 @@ func TestLoadManagedTechnologiesList_Success(t *testing.T) {
 			ResourceFilePath: "../../resources",
 		},
 	}
-	as.LoadManagedTechnologiesList()
+	as.loadManagedTechnologiesList()
 
 	assert.Equal(t, "Oracle/Database", as.TechnologyInfos[0].Product)
 	assert.Equal(t, "Microsoft/SQLServer", as.TechnologyInfos[1].Product)
