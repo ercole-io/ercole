@@ -15,7 +15,7 @@
 
 package model
 
-//TODO
+//TODO with go1.16 use go:embed https://github.com/golang/go/issues/41191
 
 var FrontendHostdataSchemaValidator string = `
 {
@@ -225,6 +225,8 @@ var FrontendHostdataSchemaValidator string = `
                                                             "name",
                                                             "uniqueName",
                                                             "status",
+                                                            "dbID",
+                                                            "role",
                                                             "isCDB",
                                                             "version",
                                                             "platform",
@@ -283,6 +285,18 @@ var FrontendHostdataSchemaValidator string = `
                                                                 "enum": [
                                                                     "OPEN",
                                                                     "MOUNTED"
+                                                                ]
+                                                            },
+                                                            "dbID": {
+                                                                "type": "integer",
+                                                                "minimum": 1
+                                                            },
+                                                            "role": {
+                                                                "type": "string",
+                                                                "enum": [
+				                                                    "LOGICAL STANDBY",
+				                                                    "PHYSICAL STANDBY",
+				                                                    "PRIMARY"
                                                                 ]
                                                             },
                                                             "isCDB": {

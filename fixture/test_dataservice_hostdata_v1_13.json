@@ -66,6 +66,8 @@
                         "name": "pokemons",
                         "uniqueName": "pokemons",
                         "status": "OPEN",
+                        "dbID": 1,
+                        "role": "PRIMARY",
                         "version": "12.2.0.1.0 Enterprise Edition",
                         "platform": "Linux x86 64-bit",
                         "archivelog": true,
