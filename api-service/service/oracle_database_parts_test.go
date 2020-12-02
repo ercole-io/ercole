@@ -16,6 +16,7 @@
 package service
 
 import (
+	"sort"
 	"testing"
 
 	dto "github.com/ercole-io/ercole/api-service/dto"
@@ -182,6 +183,10 @@ func TestGetLicensesCompliance(t *testing.T) {
 		{PartID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 275, Covered: 75, Compliance: compliance, Unlimited: false},
 		{PartID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Consumed: 0.5, Covered: 0.5, Compliance: 1, Unlimited: true},
 	}
+
+	sort.Slice(actual, func(i, j int) bool {
+		return actual[i].PartID < actual[j].PartID
+	})
 
 	require.Equal(t, expected, actual)
 }
