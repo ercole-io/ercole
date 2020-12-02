@@ -205,6 +205,8 @@
                                                             "name",
                                                             "uniqueName",
                                                             "status",
+                                                            "dbID",
+                                                            "role",
                                                             "isCDB",
                                                             "version",
                                                             "platform",
@@ -263,6 +265,18 @@
                                                                 "enum": [
                                                                     "OPEN",
                                                                     "MOUNTED"
+                                                                ]
+                                                            },
+                                                            "dbID": {
+                                                                "type": "integer",
+                                                                "minimum": 1
+                                                            },
+                                                            "role": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "LOGICAL STANDBY",
+                                                                    "PHYSICAL STANDBY",
+                                                                    "PRIMARY"
                                                                 ]
                                                             },
                                                             "isCDB": {
