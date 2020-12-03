@@ -29,7 +29,7 @@ type OracleDatabase struct {
 	Name              string                            `json:"name" bson:"name"`
 	UniqueName        string                            `json:"uniqueName" bson:"uniqueName"`
 	Status            string                            `json:"status" bson:"status"`
-	DbID              string                            `json:"dbID" bson:"dbID"`
+	DbID              uint                              `json:"dbID" bson:"dbID"`
 	Role              string                            `json:"role" bson:"role"`
 	IsCDB             bool                              `json:"isCDB" bson:"isCDB"`
 	Version           string                            `json:"version" bson:"version"`
