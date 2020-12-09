@@ -17,6 +17,7 @@ package model
 
 import (
 	"reflect"
+	"strings"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
 	"go.mongodb.org/mongo-driver/bson"
@@ -64,6 +65,60 @@ type OracleDatabase struct {
 	PDBs              []OracleDatabasePluggableDatabase `json:"pdbs" bson:"pdbs"`
 	Services          []OracleDatabaseService           `json:"services" bson:"services"`
 	OtherInfo         map[string]interface{}            `json:"-" bson:"-"`
+}
+
+var (
+	OracleDatabaseStatusOpen    = "OPEN"
+	OracleDatabaseStatusMounted = "MOUNTED"
+)
+
+var (
+	OracleDatabaseRolePrimary         = "PRIMARY"
+	OracleDatabaseRoleLogicalStandby  = "LOGICAL STANDBY"
+	OracleDatabaseRolePhysicalStandby = "PHYSICAL STANDBY"
+)
+
+var (
+	OracleDatabaseEditionEnterprise = "ENT"
+	OracleDatabaseEditionExtreme    = "EXE"
+	OracleDatabaseEditionStandard   = "STD"
+)
+
+func (v OracleDatabase) Edition() (dbEdition string) {
+	if strings.Contains(strings.ToUpper(v.Version), "ENTERPRISE") {
+		dbEdition = OracleDatabaseEditionEnterprise
+	} else if strings.Contains(strings.ToUpper(v.Version), "EXTREME") {
+		dbEdition = OracleDatabaseEditionExtreme
+	} else {
+		dbEdition = OracleDatabaseEditionStandard
+	}
+
+	return
+}
+
+func (v OracleDatabase) CoreFactor(host Host) float64 {
+	dbEdition := v.Edition()
+	coreFactor := float64(-1)
+
+	if host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyOvm ||
+		host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyVmware ||
+		host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyVmother {
+
+		if dbEdition == OracleDatabaseEditionExtreme || dbEdition == OracleDatabaseEditionEnterprise {
+			coreFactor = float64(host.CPUCores) * 0.25
+		} else if dbEdition == OracleDatabaseEditionStandard {
+			coreFactor = 0
+		}
+
+	} else if host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyPhysical {
+		if dbEdition == OracleDatabaseEditionExtreme || dbEdition == OracleDatabaseEditionEnterprise {
+			coreFactor = float64(host.CPUCores) * 0.25
+		} else if dbEdition == OracleDatabaseEditionStandard {
+			coreFactor = float64(host.CPUSockets)
+		}
+	}
+
+	return coreFactor
 }
 
 // MarshalJSON return the JSON rappresentation of this
