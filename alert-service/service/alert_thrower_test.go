@@ -30,6 +30,9 @@ import (
 
 //ThrowNewDatabaseAlert tests
 
+func TestThrowNewAlert(t *testing.T) {
+	// TODO add test
+}
 func TestThrowNewDatabaseAlert_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
