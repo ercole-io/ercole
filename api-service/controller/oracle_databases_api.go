@@ -466,10 +466,8 @@ func (ctrl *APIController) SearchOracleDatabasesJSON(w http.ResponseWriter, r *h
 	}
 
 	if pageNumber == -1 || pageSize == -1 {
-		//Write the data
 		utils.WriteJSONResponse(w, http.StatusOK, databases)
 	} else {
-		//Write the data
 		utils.WriteJSONResponse(w, http.StatusOK, databases[0])
 	}
 }
