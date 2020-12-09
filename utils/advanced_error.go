@@ -16,6 +16,7 @@
 package utils
 
 import (
+	"errors"
 	"runtime"
 
 	"github.com/sirupsen/logrus"
@@ -85,6 +86,12 @@ func NewAdvancedErrorPtr(err error, class string) *AdvancedError {
 }
 
 // LogErr log the error to the stdout
-func LogErr(log *logrus.Logger, err AdvancedErrorInterface) {
-	log.Errorf("%s:%d %s: '%s'\n", err.SourceFilename(), err.LineNumber(), err.ErrorClass(), err.Error())
+func LogErr(log *logrus.Logger, err error) {
+	var aerr *AdvancedError
+	if errors.As(err, &aerr) {
+		log.Errorf("%s:%d %s: '%s'\n", aerr.SourceFilename(), aerr.LineNumber(), aerr.ErrorClass(), err.Error())
+		return
+	}
+
+	log.Errorf("%s\n", err.Error())
 }

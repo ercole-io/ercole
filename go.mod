@@ -11,7 +11,7 @@ require (
 	github.com/bamzi/jobrunner v0.0.0-20190810144113-852b7ca4d475
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
 	github.com/golang/gddo v0.0.0-20200219175727-df439dd5819e
-	github.com/golang/mock v1.4.3
+	github.com/golang/mock v1.4.4
 	github.com/google/go-cmp v0.4.0 // indirect
 	github.com/google/go-github/v28 v28.1.1
 	github.com/goraz/onion v0.1.3
@@ -39,6 +39,7 @@ require (
 	gopkg.in/robfig/cron.v3 v3.0.0-00010101000000-000000000000 // indirect
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 	gopkg.in/square/go-jose.v2 v2.4.1
+	rsc.io/quote/v3 v3.1.0 // indirect
 )
 
 replace github.com/Sirupsen/logrus => github.com/sirupsen/logrus v1.5.0

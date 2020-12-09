@@ -31,6 +31,7 @@ import (
 
 // AlertQueueControllerInterface is a interface that wrap methods used to inserting events in the queue
 type AlertQueueControllerInterface interface {
+	ThrowNewAlert(w http.ResponseWriter, r *http.Request)
 	// HostDataInsertion insert the event HostDataInsertion with the id in the queue
 	HostDataInsertion(w http.ResponseWriter, r *http.Request)
 	// AuthenticateMiddleware return the middleware used to authenticate users

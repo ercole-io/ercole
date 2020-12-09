@@ -69,6 +69,7 @@ func (md *MongoDatabase) Init() {
 }
 
 // ArchiveHost archives tho host with hostname as hostname
+// TODO return value, not mongo struct
 func (md *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, utils.AdvancedErrorInterface) {
 	if res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.M{
 		"hostname": hostname,
@@ -83,6 +84,7 @@ func (md *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, util
 }
 
 // InsertHostData adds a new hostdata to the database
+// TODO return value, not mongo struct
 func (md *MongoDatabase) InsertHostData(hostData model.HostDataBE) (*mongo.InsertOneResult, utils.AdvancedErrorInterface) {
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").InsertOne(context.TODO(), hostData)
 	if err != nil {
