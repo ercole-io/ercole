@@ -24,6 +24,19 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// ThrowNewAlert create and insert in the database a new NEW_DATABASE alert
+func (as *AlertService) ThrowNewAlert(alert model.Alert) utils.AdvancedErrorInterface {
+	alert.ID = primitive.NewObjectIDFromTimestamp(as.TimeNow())
+	alert.AlertStatus = model.AlertStatusNew
+
+	_, err := as.Database.InsertAlert(alert)
+	if err != nil {
+		return err
+	}
+
+	return as.AlertInsertion(alert)
+}
+
 // ThrowNewDatabaseAlert create and insert in the database a new NEW_DATABASE alert
 func (as *AlertService) ThrowNewDatabaseAlert(dbname string, hostname string) utils.AdvancedErrorInterface {
 	alr := model.Alert{
