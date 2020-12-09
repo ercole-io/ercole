@@ -41,6 +41,7 @@ type AlertServiceInterface interface {
 	HostDataInsertion(id primitive.ObjectID) utils.AdvancedErrorInterface
 	// ProcessMsg processes the message msg
 	ProcessMsg(msg hub.Message)
+	ThrowNewAlert(alert model.Alert) utils.AdvancedErrorInterface
 	// ThrowNewDatabaseAlert create and insert in the database a new NEW_DATABASE alert
 	ThrowNewDatabaseAlert(dbname string, hostname string) utils.AdvancedErrorInterface
 	// ThrowNewServerAlert create and insert in the database a new NEW_SERVER alert

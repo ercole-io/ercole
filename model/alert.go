@@ -18,7 +18,6 @@ package model
 import (
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -35,46 +34,51 @@ type Alert struct {
 	OtherInfo               map[string]interface{} `json:"otherInfo" bson:"otherInfo"`
 }
 
-// Alert codes
 const (
-	// AlertCategoryEngine contains string "ENGINE"
-	AlertCategoryEngine string = "ENGINE"
-	// AlertCategoryAgent contains string "AGENT"
-	AlertCategoryAgent string = "AGENT"
-	// AlertCategoryLicense contains string "LICENSE"
+	AlertCategoryEngine  string = "ENGINE"
+	AlertCategoryAgent   string = "AGENT"
 	AlertCategoryLicense string = "LICENSE"
 )
 
-// Alert codes
+func getAlertCategories() []string {
+	return []string{AlertCategoryEngine, AlertCategoryAgent, AlertCategoryLicense}
+}
+
 const (
 	// ENGINE
-	// NewServer contains string "NEW_SERVER"
-	AlertCodeNewServer string = "NEW_SERVER"
-	// UnlistedRunningDatabase contains string "UNLISTED_RUNNING_DATABASE"
+
+	AlertCodeNewServer               string = "NEW_SERVER"
 	AlertCodeUnlistedRunningDatabase string = "UNLISTED_RUNNING_DATABASE"
+	AlertCodeMissingPrimaryDatabase  string = "MISSING_PRIMARY_DATABASE"
 
 	// AGENT
-	// NoData contains string "NO_DATA"
+
 	AlertCodeNoData string = "NO_DATA"
 
 	// LICENSE
-	// NewDatabase contains string "NEW_DATABASE"
+
 	AlertCodeNewDatabase string = "NEW_DATABASE"
-	// NewLicense contains string "NEW_LICENSE"
-	AlertCodeNewLicense string = "NEW_LICENSE"
-	// NewOption contains string "NEW_OPTION"
-	AlertCodeNewOption string = "NEW_OPTION"
+	AlertCodeNewLicense  string = "NEW_LICENSE"
+	AlertCodeNewOption   string = "NEW_OPTION"
 )
 
-// Alert severity
+func getAlertCodes() []string {
+	return []string{
+		AlertCodeNewServer, AlertCodeUnlistedRunningDatabase, AlertCodeMissingPrimaryDatabase,
+		AlertCodeNoData,
+		AlertCodeNewDatabase, AlertCodeNewLicense, AlertCodeNewOption,
+	}
+}
+
 const (
-	// AlertSeverityWarning contains string "WARNING"
-	AlertSeverityWarning string = "WARNING"
-	// AlertSeverityCritical contains string "CRITICAL"
+	AlertSeverityInfo     string = "INFO"
+	AlertSeverityWarning  string = "WARNING"
 	AlertSeverityCritical string = "CRITICAL"
-	// AlertSeverityInfo contains string "INFO"
-	AlertSeverityInfo string = "INFO"
 )
+
+func getAlertSeverities() []string {
+	return []string{AlertSeverityInfo, AlertSeverityWarning, AlertSeverityCritical}
+}
 
 // Alert status
 const (
@@ -84,70 +88,27 @@ const (
 	AlertStatusAck string = "ACK"
 )
 
-// AlertBsonValidatorRules contains mongodb validation rules for alert
-var AlertBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"_id",
-		"alertCategory",
-		"alertAffectedTechnology",
-		"alertCode",
-		"alertSeverity",
-		"alertStatus",
-		"description",
-		"date",
-	},
-	"properties": bson.M{
-		"alertCategory": bson.M{
-			"bsonType": "string",
-			"enum": bson.A{
-				AlertCategoryEngine,
-				AlertCategoryAgent,
-				AlertCategoryLicense,
-			},
-		},
-		"alertAffectedTechnology": bson.M{
-			"bsonType": bson.A{"null", "string"},
-			"enum": bson.A{
-				nil,
-				TechnologyOracleDatabase,
-				TechnologyOracleExadata,
-			},
-		},
-		"alertCode": bson.M{
-			"bsonType": "string",
-			"enum": bson.A{
-				AlertCodeNewDatabase,
-				AlertCodeNewOption,
-				AlertCodeNewLicense,
-				AlertCodeNewServer,
-				AlertCodeNoData,
-				AlertCodeUnlistedRunningDatabase,
-			},
-		},
-		"alertSeverity": bson.M{
-			"bsonType": "string",
-			"enum": bson.A{
-				AlertSeverityWarning,
-				AlertSeverityCritical,
-				AlertSeverityInfo,
-			},
-		},
-		"alertStatus": bson.M{
-			"bsonType": "string",
-			"enum": bson.A{
-				AlertStatusNew,
-				AlertStatusAck,
-			},
-		},
-		"description": bson.M{
-			"bsonType": "string",
-		},
-		"date": bson.M{
-			"bsonType": "date",
-		},
-		"OtherInfo": bson.M{
-			"bsonType": "object",
-		},
-	},
+func getAlertStatuses() []string {
+	return []string{AlertStatusNew, AlertStatusAck}
+}
+
+func (alert Alert) IsValid() bool {
+	fields := make(map[string][]string)
+	fields[alert.AlertCategory] = getAlertCategories()
+	fields[alert.AlertCode] = getAlertCodes()
+	fields[alert.AlertSeverity] = getAlertSeverities()
+	fields[alert.AlertStatus] = getAlertStatuses()
+
+fields:
+	for thisValue, allValidValues := range fields {
+		for _, validValue := range allValidValues {
+			if thisValue == validValue {
+				continue fields
+			}
+		}
+
+		return false
+	}
+
+	return true
 }
