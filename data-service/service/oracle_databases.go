@@ -1,7 +1,9 @@
 package service
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -37,7 +39,38 @@ func (hds *HostDataService) addLicensesToSecondaryDbs(hostInfo model.Host, secon
 	}
 
 	if primaryDb == nil {
-		//TODO throw new alert: category enginge, create a new code: "Missing primary database on standby database {dbname}"
+		alert := model.Alert{
+			AlertCategory:           model.AlertCategoryEngine,
+			AlertAffectedTechnology: nil,
+			AlertCode:               model.AlertCodeMissingPrimaryDatabase,
+			AlertSeverity:           model.AlertSeverityWarning,
+			AlertStatus:             model.AlertStatusNew,
+			Description:             fmt.Sprintf("Missing primary database on standby database: %s", secondaryDb.Name),
+			Date:                    hds.TimeNow(),
+			OtherInfo: map[string]interface{}{
+				"hostname": hostInfo.Hostname,
+				"dbname":   secondaryDb.Name,
+			},
+		}
+
+		url := utils.NewAPIUrlNoParams(
+			hds.Config.AlertService.RemoteEndpoint,
+			hds.Config.AlertService.PublisherUsername,
+			hds.Config.AlertService.PublisherPassword,
+			"/alerts")
+
+		alertBytes, err := json.Marshal(alert)
+		if err != nil {
+			utils.LogErr(hds.Log, utils.NewAdvancedErrorPtr(err, "Can't marshal alert"))
+			return
+		}
+
+		resp, err := http.Post(url.String(), "application/json", bytes.NewReader(alertBytes))
+		if err != nil || resp.StatusCode < 200 || resp.StatusCode > 299 {
+			utils.LogErr(hds.Log, utils.NewAdvancedErrorPtr(err, "Can't throw new alert"))
+			return
+		}
+
 		return
 	}
 
