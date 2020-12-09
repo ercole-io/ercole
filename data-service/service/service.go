@@ -82,6 +82,7 @@ func (hds *HostDataService) Init() {
 }
 
 // UpdateHostInfo saves the hostdata
+// TODO move in its hosts.go file
 func (hds *HostDataService) UpdateHostInfo(hostdata model.HostDataBE) (interface{}, utils.AdvancedErrorInterface) {
 	var aerr utils.AdvancedErrorInterface
 
@@ -91,7 +92,6 @@ func (hds *HostDataService) UpdateHostInfo(hostdata model.HostDataBE) (interface
 	hostdata.ServerSchemaVersion = model.SchemaVersion
 	hostdata.ID = primitive.NewObjectIDFromTimestamp(hds.TimeNow())
 
-	//Patch the data
 	if hds.Config.DataService.EnablePatching {
 		hostdata, aerr = hds.PatchHostData(hostdata)
 		if aerr != nil {
@@ -99,13 +99,15 @@ func (hds *HostDataService) UpdateHostInfo(hostdata model.HostDataBE) (interface
 		}
 	}
 
-	//Archive the host
+	if hostdata.Features.Oracle != nil {
+		hds.oracleDatabasesChecks(hostdata.Info, hostdata.Features.Oracle)
+	}
+
 	_, aerr = hds.Database.ArchiveHost(hostdata.Hostname)
 	if aerr != nil {
 		return nil, aerr
 	}
 
-	//Insert the host
 	if hds.Config.DataService.LogInsertingHostdata {
 		hds.Log.Info(utils.ToJSON(hostdata))
 	}
@@ -114,16 +116,15 @@ func (hds *HostDataService) UpdateHostInfo(hostdata model.HostDataBE) (interface
 		return nil, aerr
 	}
 
-	//Enqueue the insertion
-	if resp, err := http.Post(
-		utils.NewAPIUrlNoParams(
-			hds.Config.AlertService.RemoteEndpoint,
-			hds.Config.AlertService.PublisherUsername,
-			hds.Config.AlertService.PublisherPassword,
-			"/queue/host-data-insertion/"+res.InsertedID.(primitive.ObjectID).Hex(),
-		).String(), "application/json", bytes.NewReader([]byte{})); err != nil {
+	alertHostDataInsertionURL := utils.NewAPIUrlNoParams(
+		hds.Config.AlertService.RemoteEndpoint,
+		hds.Config.AlertService.PublisherUsername,
+		hds.Config.AlertService.PublisherPassword,
+		"/queue/host-data-insertion/"+res.InsertedID.(primitive.ObjectID).Hex()).String()
 
+	if resp, err := http.Post(alertHostDataInsertionURL, "application/json", bytes.NewReader([]byte{})); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "EVENT ENQUEUE")
+
 	} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return nil, utils.NewAdvancedErrorPtr(utils.ErrEventEnqueue, "EVENT ENQUEUE")
 	}

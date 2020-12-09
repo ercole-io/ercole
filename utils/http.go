@@ -96,3 +96,8 @@ func WriteXLSMResponse(w http.ResponseWriter, resp *excelize.File) {
 
 	resp.Write(w)
 }
+
+// WriteNoContentResponse 204
+func WriteNoContentResponse(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusNoContent)
+}

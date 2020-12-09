@@ -34,5 +34,6 @@ func SetupRoutesForAlertQueueController(router *mux.Router, ctrl AlertQueueContr
 }
 
 func setupProtectedRoutes(router *mux.Router, ctrl AlertQueueControllerInterface) {
+	router.HandleFunc("/alerts", ctrl.ThrowNewAlert).Methods("POST")
 	router.HandleFunc("/queue/host-data-insertion/{id}", ctrl.HostDataInsertion).Methods("POST")
 }

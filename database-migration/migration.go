@@ -207,16 +207,6 @@ func MigrateAlertsSchema(log *logrus.Logger, client *mongo.Database) {
 			log.Panicln(err)
 		}
 	}
-
-	//Set the collection validator
-	if err := client.RunCommand(context.TODO(), bson.D{
-		{"collMod", "alerts"},
-		{"validator", bson.D{
-			{"$jsonSchema", model.AlertBsonValidatorRules},
-		}},
-	}).Err(); err != nil {
-		log.Panicln(err)
-	}
 }
 
 // // MigrateCurrentDatabasesSchema create or update the databases schema
