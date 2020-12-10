@@ -20,8 +20,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/ercole-io/ercole/chart-service/chartmodel"
 	"github.com/ercole-io/ercole/chart-service/database"
+	"github.com/ercole-io/ercole/chart-service/dto"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 	"github.com/sirupsen/logrus"
@@ -35,13 +35,13 @@ type ChartServiceInterface interface {
 	Init()
 
 	// GetChangeChart return the chart data related to changes to databases
-	GetChangeChart(from time.Time, location string, environment string, olderThan time.Time) (chartmodel.ChangeChart, utils.AdvancedErrorInterface)
+	GetChangeChart(from time.Time, location string, environment string, olderThan time.Time) (dto.ChangeChart, utils.AdvancedErrorInterface)
 	// GetOracleDatabaseChart return a chart associated to teh
-	GetOracleDatabaseChart(metric string, location string, environment string, olderThan time.Time) (chartmodel.Chart, utils.AdvancedErrorInterface)
+	GetOracleDatabaseChart(metric string, location string, environment string, olderThan time.Time) (dto.Chart, utils.AdvancedErrorInterface)
 	// GetTechnologiesMetrics return metrics of all technologies
 	GetTechnologiesMetrics() (map[string]model.TechnologySupportedMetrics, utils.AdvancedErrorInterface)
 	// GetTechnologyTypes return the types of techonlogies
-	GetTechnologyTypesChart(location string, environment string, olderThan time.Time) (chartmodel.TechnologyTypesChart, utils.AdvancedErrorInterface)
+	GetTechnologyTypesChart(location string, environment string, olderThan time.Time) (dto.TechnologyTypesChart, utils.AdvancedErrorInterface)
 }
 
 // ChartService is the concrete implementation of APIServiceInterface.
