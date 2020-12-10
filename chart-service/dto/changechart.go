@@ -13,17 +13,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Package chartmodel is a package that provides struct that contains charts
-package chartmodel
+// Package dto is a package that provides struct that contains charts
+package dto
 
-type TechnologyTypesChart struct {
-	Databases        []TechnologyTypeChartBubble `json:"databases"`
-	Middlewares      []TechnologyTypeChartBubble `json:"middlewares"`
-	OperatingSystems []TechnologyTypeChartBubble `json:"operatingSystems"`
-	Legend           ChartLegend                 `json:"legend"`
+type ChangeChart struct {
+	Data   []ChangeChartBubble `json:"data"`
+	Legend ChartLegend         `json:"legend"`
 }
 
-type TechnologyTypeChartBubble struct {
-	Name string  `json:"name" bson:"name"`
-	Size float64 `json:"size" bson:"size"`
+type ChangeChartBubble struct {
+	Name   string  `json:"name" bson:"name"`
+	Size   float64 `json:"size" bson:"size"`
+	Change float64 `json:"change" bson:"change"`
 }

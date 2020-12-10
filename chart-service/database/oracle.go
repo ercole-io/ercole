@@ -21,14 +21,14 @@ import (
 	"time"
 
 	"github.com/amreo/mu"
-	"github.com/ercole-io/ercole/chart-service/chartmodel"
+	"github.com/ercole-io/ercole/chart-service/dto"
 	"github.com/ercole-io/ercole/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 // GetOracleDatabaseChartByVersion return the chart data about oracle database version
-func (md *MongoDatabase) GetOracleDatabaseChartByVersion(location string, environment string, olderThan time.Time) ([]chartmodel.ChartBubble, utils.AdvancedErrorInterface) {
-	var out []chartmodel.ChartBubble = make([]chartmodel.ChartBubble, 0)
+func (md *MongoDatabase) GetOracleDatabaseChartByVersion(location string, environment string, olderThan time.Time) ([]dto.ChartBubble, utils.AdvancedErrorInterface) {
+	var out []dto.ChartBubble = make([]dto.ChartBubble, 0)
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
@@ -49,7 +49,7 @@ func (md *MongoDatabase) GetOracleDatabaseChartByVersion(location string, enviro
 
 	//Decode the documents
 	for cur.Next(context.TODO()) {
-		var item chartmodel.ChartBubble
+		var item dto.ChartBubble
 		if err := cur.Decode(&item); err != nil {
 			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 		}
@@ -59,8 +59,8 @@ func (md *MongoDatabase) GetOracleDatabaseChartByVersion(location string, enviro
 }
 
 // GetOracleDatabaseChartByWork return the chart data about the work of all database
-func (md *MongoDatabase) GetOracleDatabaseChartByWork(location string, environment string, olderThan time.Time) ([]chartmodel.ChartBubble, utils.AdvancedErrorInterface) {
-	var out []chartmodel.ChartBubble = make([]chartmodel.ChartBubble, 0)
+func (md *MongoDatabase) GetOracleDatabaseChartByWork(location string, environment string, olderThan time.Time) ([]dto.ChartBubble, utils.AdvancedErrorInterface) {
+	var out []dto.ChartBubble = make([]dto.ChartBubble, 0)
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
@@ -84,7 +84,7 @@ func (md *MongoDatabase) GetOracleDatabaseChartByWork(location string, environme
 
 	//Decode the documents
 	for cur.Next(context.TODO()) {
-		var item chartmodel.ChartBubble
+		var item dto.ChartBubble
 		if err := cur.Decode(&item); err != nil {
 			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
 		}

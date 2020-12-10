@@ -19,30 +19,30 @@ package service
 import (
 	"time"
 
-	"github.com/ercole-io/ercole/chart-service/chartmodel"
+	"github.com/ercole-io/ercole/chart-service/dto"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 )
 
 // GetChangeChart return the chart data related to changes to databases
-func (as *ChartService) GetChangeChart(from time.Time, location string, environment string, olderThan time.Time) (chartmodel.ChangeChart, utils.AdvancedErrorInterface) {
+func (as *ChartService) GetChangeChart(from time.Time, location string, environment string, olderThan time.Time) (dto.ChangeChart, utils.AdvancedErrorInterface) {
 	// get the old counts
 	oldCounts, err := as.Database.GetTechnologyCount(location, environment, from)
 	if err != nil {
-		return chartmodel.ChangeChart{}, err
+		return dto.ChangeChart{}, err
 	}
 
 	// get the new counts
 	newCounts, err := as.Database.GetTechnologyCount(location, environment, olderThan)
 	if err != nil {
-		return chartmodel.ChangeChart{}, err
+		return dto.ChangeChart{}, err
 	}
 
 	// build the bubbles
-	bubbles := make([]chartmodel.ChangeChartBubble, 0)
+	bubbles := make([]dto.ChangeChartBubble, 0)
 	for t, v := range newCounts {
 		if v > 0 {
-			bubbles = append(bubbles, chartmodel.ChangeChartBubble{
+			bubbles = append(bubbles, dto.ChangeChartBubble{
 				Name:   t,
 				Size:   v,
 				Change: v/oldCounts[t] - 1,
@@ -53,7 +53,7 @@ func (as *ChartService) GetChangeChart(from time.Time, location string, environm
 		}
 	}
 
-	return chartmodel.ChangeChart{
+	return dto.ChangeChart{
 		Data: bubbles,
 		Legend: map[string]string{
 			"size": "Number of occurrences",
@@ -62,25 +62,25 @@ func (as *ChartService) GetChangeChart(from time.Time, location string, environm
 }
 
 // GetTechnologyTypesChart return the types of techonlogies
-func (as *ChartService) GetTechnologyTypesChart(location string, environment string, olderThan time.Time) (chartmodel.TechnologyTypesChart, utils.AdvancedErrorInterface) {
+func (as *ChartService) GetTechnologyTypesChart(location string, environment string, olderThan time.Time) (dto.TechnologyTypesChart, utils.AdvancedErrorInterface) {
 	// get the counts
 	counts, err := as.Database.GetTechnologyCount(location, environment, olderThan)
 	if err != nil {
-		return chartmodel.TechnologyTypesChart{}, err
+		return dto.TechnologyTypesChart{}, err
 	}
 
-	out := chartmodel.TechnologyTypesChart{
+	out := dto.TechnologyTypesChart{
 		Legend: map[string]string{
 			"size": "Number of occurrences",
 		},
-		OperatingSystems: make([]chartmodel.TechnologyTypeChartBubble, 0),
-		Databases:        make([]chartmodel.TechnologyTypeChartBubble, 0),
-		Middlewares:      make([]chartmodel.TechnologyTypeChartBubble, 0),
+		OperatingSystems: make([]dto.TechnologyTypeChartBubble, 0),
+		Databases:        make([]dto.TechnologyTypeChartBubble, 0),
+		Middlewares:      make([]dto.TechnologyTypeChartBubble, 0),
 	}
 
 	//databases
 	if counts[model.TechnologyOracleDatabase] > 0 {
-		out.Databases = append(out.Databases, chartmodel.TechnologyTypeChartBubble{
+		out.Databases = append(out.Databases, dto.TechnologyTypeChartBubble{
 			Name: model.TechnologyOracleDatabase,
 			Size: counts[model.TechnologyOracleDatabase],
 		})
@@ -89,14 +89,14 @@ func (as *ChartService) GetTechnologyTypesChart(location string, environment str
 	//operating system
 	for _, v := range as.Config.APIService.OperatingSystemAggregationRules {
 		if counts[v.Product] > 0 {
-			out.OperatingSystems = append(out.OperatingSystems, chartmodel.TechnologyTypeChartBubble{
+			out.OperatingSystems = append(out.OperatingSystems, dto.TechnologyTypeChartBubble{
 				Name: v.Product,
 				Size: counts[v.Product],
 			})
 		}
 	}
 	if counts[model.TechnologyUnknownOperatingSystem] > 0 {
-		out.OperatingSystems = append(out.OperatingSystems, chartmodel.TechnologyTypeChartBubble{
+		out.OperatingSystems = append(out.OperatingSystems, dto.TechnologyTypeChartBubble{
 			Name: model.TechnologyUnknownOperatingSystem,
 			Size: counts[model.TechnologyUnknownOperatingSystem],
 		})

@@ -20,26 +20,26 @@ import (
 	"errors"
 	"time"
 
-	"github.com/ercole-io/ercole/chart-service/chartmodel"
+	"github.com/ercole-io/ercole/chart-service/dto"
 	"github.com/ercole-io/ercole/utils"
 )
 
 // GetOracleDatabaseChart return a chart associated to teh
-func (as *ChartService) GetOracleDatabaseChart(metric string, location string, environment string, olderThan time.Time) (chartmodel.Chart, utils.AdvancedErrorInterface) {
+func (as *ChartService) GetOracleDatabaseChart(metric string, location string, environment string, olderThan time.Time) (dto.Chart, utils.AdvancedErrorInterface) {
 	switch metric {
 	case "version":
 		data, err := as.Database.GetOracleDatabaseChartByVersion(location, environment, olderThan)
 		if err != nil {
-			return chartmodel.Chart{}, err
+			return dto.Chart{}, err
 		}
 
 		// colorize the data
 		for i := range data {
-			data[i].Color = chartmodel.RandomColorize(*as.Random)
+			data[i].Color = dto.RandomColorize(*as.Random)
 		}
 
 		// return the data
-		return chartmodel.Chart{
+		return dto.Chart{
 			Data: data,
 			Legend: map[string]string{
 				"size": "Number of occurrences",
@@ -48,22 +48,22 @@ func (as *ChartService) GetOracleDatabaseChart(metric string, location string, e
 	case "work":
 		data, err := as.Database.GetOracleDatabaseChartByWork(location, environment, olderThan)
 		if err != nil {
-			return chartmodel.Chart{}, err
+			return dto.Chart{}, err
 		}
 
 		// colorize the data
 		for i := range data {
-			data[i].Color = chartmodel.RandomColorize(*as.Random)
+			data[i].Color = dto.RandomColorize(*as.Random)
 		}
 
 		// return the data
-		return chartmodel.Chart{
+		return dto.Chart{
 			Data: data,
 			Legend: map[string]string{
 				"size": "Value of work",
 			},
 		}, nil
 	default:
-		return chartmodel.Chart{}, utils.NewAdvancedErrorPtr(errors.New("Unsupported metric"), "UNSUPPORTED_METRIC")
+		return dto.Chart{}, utils.NewAdvancedErrorPtr(errors.New("Unsupported metric"), "UNSUPPORTED_METRIC")
 	}
 }
