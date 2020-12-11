@@ -36,8 +36,11 @@ type ChartServiceInterface interface {
 
 	// GetChangeChart return the chart data related to changes to databases
 	GetChangeChart(from time.Time, location string, environment string, olderThan time.Time) (dto.ChangeChart, utils.AdvancedErrorInterface)
+
 	// GetOracleDatabaseChart return a chart associated to teh
 	GetOracleDatabaseChart(metric string, location string, environment string, olderThan time.Time) (dto.Chart, utils.AdvancedErrorInterface)
+	GetOracleDbLicenseHistory() ([]dto.OracleDatabaseLicenseHistory, error)
+
 	// GetTechnologiesMetrics return metrics of all technologies
 	GetTechnologiesMetrics() (map[string]model.TechnologySupportedMetrics, utils.AdvancedErrorInterface)
 	// GetTechnologyTypes return the types of techonlogies
