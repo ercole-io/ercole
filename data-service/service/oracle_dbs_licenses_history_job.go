@@ -49,8 +49,12 @@ func (job *OracleDbsLicensesHistory) Run() {
 		"/hosts/technologies/oracle/databases/licenses-compliance").String()
 
 	resp, err := http.Get(licensesCompliance)
-	if err != nil || resp.StatusCode < 200 || resp.StatusCode > 299 {
-		err = fmt.Errorf("Error while retrieving licenses compliance: [%w], statusCode: [%d]", err, resp.StatusCode)
+	if err != nil || resp == nil {
+		err = fmt.Errorf("Error while retrieving licenses compliance: [%w], response: [%v]", err, resp)
+		utils.LogErr(job.Log, utils.NewAdvancedErrorPtr(err, ""))
+		return
+	} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		err = fmt.Errorf("Error while retrieving licenses compliance: response status code: response: [%+v]", resp)
 		utils.LogErr(job.Log, utils.NewAdvancedErrorPtr(err, ""))
 		return
 	}
@@ -63,6 +67,9 @@ func (job *OracleDbsLicensesHistory) Run() {
 		return
 	}
 
-	fmt.Printf("%#v", licenses)
-
+	err = job.Database.HistoricizeOracleDbsLicenses(licenses)
+	if err != nil {
+		utils.LogErr(job.Log, utils.NewAdvancedErrorPtr(err, "Can't historicize Oracle database licenses"))
+		return
+	}
 }
