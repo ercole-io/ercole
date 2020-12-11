@@ -22,7 +22,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/ercole-io/ercole/chart-service/chartmodel"
+	"github.com/ercole-io/ercole/chart-service/dto"
 	"github.com/ercole-io/ercole/config"
 	"github.com/ercole-io/ercole/utils"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -38,9 +38,10 @@ type MongoDatabaseInterface interface {
 	GetTechnologyCount(location string, environment string, olderThan time.Time) (map[string]float64, utils.AdvancedErrorInterface)
 
 	// GetOracleDatabaseChartByVersion return the chart data about oracle database version
-	GetOracleDatabaseChartByVersion(location string, environment string, olderThan time.Time) ([]chartmodel.ChartBubble, utils.AdvancedErrorInterface)
+	GetOracleDatabaseChartByVersion(location string, environment string, olderThan time.Time) ([]dto.ChartBubble, utils.AdvancedErrorInterface)
 	// GetOracleDatabaseChartByWork return the chart data about the work of all database
-	GetOracleDatabaseChartByWork(location string, environment string, olderThan time.Time) ([]chartmodel.ChartBubble, utils.AdvancedErrorInterface)
+	GetOracleDatabaseChartByWork(location string, environment string, olderThan time.Time) ([]dto.ChartBubble, utils.AdvancedErrorInterface)
+	GetOracleDbLicenseHistory() ([]dto.OracleDatabaseLicenseHistory, error)
 }
 
 // MongoDatabase is a implementation

@@ -17,6 +17,7 @@ package utils
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -37,12 +38,23 @@ type ErrorResponseFE struct {
 }
 
 // WriteAndLogError write the error to the w with the statusCode as statusCode and log the error to the stdout
-func WriteAndLogError(log *logrus.Logger, w http.ResponseWriter, statusCode int, err AdvancedErrorInterface) {
-	resp := ErrorResponseFE{
-		Error:            err.ErrorClass(),
-		ErrorDescription: err.Error(),
-		LineNumber:       err.LineNumber(),
-		SourceFilename:   err.SourceFilename(),
+func WriteAndLogError(log *logrus.Logger, w http.ResponseWriter, statusCode int, err error) {
+	var resp ErrorResponseFE
+	var aerr *AdvancedError
+	if errors.As(err, &aerr) {
+		resp = ErrorResponseFE{
+			Error:            aerr.ErrorClass(),
+			ErrorDescription: aerr.Error(),
+			LineNumber:       aerr.LineNumber(),
+			SourceFilename:   aerr.SourceFilename(),
+		}
+	} else {
+		resp = ErrorResponseFE{
+			Error:            "",
+			ErrorDescription: err.Error(),
+			SourceFilename:   "",
+			LineNumber:       0,
+		}
 	}
 
 	LogErr(log, err)

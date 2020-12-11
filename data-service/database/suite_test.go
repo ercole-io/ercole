@@ -25,6 +25,7 @@ import (
 	"github.com/ercole-io/ercole/config"
 	migration "github.com/ercole-io/ercole/database-migration"
 	"github.com/ercole-io/ercole/model"
+	"github.com/ercole-io/ercole/utils"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 
@@ -52,6 +53,7 @@ func (db *MongodbSuite) SetupSuite() {
 				DBName: fmt.Sprintf("ercole_test_%d", rand.Int()),
 			},
 		},
+		TimeNow: func() time.Time { return utils.P("2020-12-05T14:02:03Z") },
 	}
 	if !ok {
 		db.db.Config.Mongodb.URI = "mongodb://127.0.0.1:27017"

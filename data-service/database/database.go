@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/amreo/mu"
+	"github.com/ercole-io/ercole/api-service/dto"
 	"github.com/ercole-io/ercole/config"
 	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
@@ -47,6 +48,7 @@ type MongoDatabaseInterface interface {
 	DeleteHostData(id primitive.ObjectID) utils.AdvancedErrorInterface
 	// FindPatchingFunction find the the patching function associated to the hostname in the database
 	FindPatchingFunction(hostname string) (model.PatchingFunction, utils.AdvancedErrorInterface)
+	HistoricizeOracleDbsLicenses(licenses []dto.OracleDatabaseLicenseUsage) error
 }
 
 // MongoDatabase is a implementation
