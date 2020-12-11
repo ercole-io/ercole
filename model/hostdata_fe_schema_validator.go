@@ -294,9 +294,10 @@ var FrontendHostdataSchemaValidator string = `
                                                             "role": {
                                                                 "type": "string",
                                                                 "enum": [
+				                                                    "PRIMARY",
 				                                                    "LOGICAL STANDBY",
 				                                                    "PHYSICAL STANDBY",
-				                                                    "PRIMARY"
+				                                                    "SNAPSHOT STANDBY"
                                                                 ]
                                                             },
                                                             "isCDB": {
