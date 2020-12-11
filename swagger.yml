@@ -20,8 +20,14 @@ servers:
     url: 'https://dev.ercole.io/alert'
   - description: Repo service on dev.ercole.io
     url: 'https://dev.ercole.io/repo'
-  - description: localhost address
+  - description: Data service
     url: 'http://localhost:11111'
+  - url: 'http://localhost:11112'
+    description: Alert service
+  - url: 'http://localhost:11113'
+    description: Api service
+  - url: 'http://localhost:11116'
+    description: Chart service
 tags:
   - name: data-service
     description: API served by data-service
@@ -4046,6 +4052,55 @@ paths:
                     type: string
       operationId: GetOracleDatabaseAgreementPartsList
       description: Get Oracle database agreement parts list
+  /technologies/oracle/license-history:
+    get:
+      summary: GetOracleDbLicenseHistory
+      tags:
+        - chart-service
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ''
+                minItems: 1
+                uniqueItems: true
+                items:
+                  type: object
+                  properties:
+                    partID:
+                      type: string
+                      minLength: 1
+                    itemDescription:
+                      type: string
+                    metric:
+                      type: string
+                    history:
+                      type: array
+                      uniqueItems: false
+                      items:
+                        type: object
+                        properties:
+                          date:
+                            type: string
+                            minLength: 1
+                          consumed:
+                            type: number
+                          covered:
+                            type: number
+                        required:
+                          - date
+                          - consumed
+                          - covered
+                  required:
+                    - partID
+                    - itemDescription
+                    - metric
+                    - history
+      operationId: get-technologies-oracle-license-history
+      description: Get historical values of Oracle Databases Licenses
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []
