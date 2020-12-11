@@ -76,6 +76,7 @@ var (
 	OracleDatabaseRolePrimary         = "PRIMARY"
 	OracleDatabaseRoleLogicalStandby  = "LOGICAL STANDBY"
 	OracleDatabaseRolePhysicalStandby = "PHYSICAL STANDBY"
+	OracleDatabaseRoleSnapshotStandby = "SNAPSHOT STANDBY"
 )
 
 var (
@@ -105,14 +106,14 @@ func (v OracleDatabase) CoreFactor(host Host) float64 {
 		host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyVmother {
 
 		if dbEdition == OracleDatabaseEditionExtreme || dbEdition == OracleDatabaseEditionEnterprise {
-			coreFactor = float64(host.CPUCores) * 0.25
+			coreFactor = 0.5
 		} else if dbEdition == OracleDatabaseEditionStandard {
 			coreFactor = 0
 		}
 
 	} else if host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyPhysical {
 		if dbEdition == OracleDatabaseEditionExtreme || dbEdition == OracleDatabaseEditionEnterprise {
-			coreFactor = float64(host.CPUCores) * 0.25
+			coreFactor = 0.5
 		} else if dbEdition == OracleDatabaseEditionStandard {
 			coreFactor = float64(host.CPUSockets)
 		}
@@ -218,9 +219,10 @@ var OracleDatabaseBsonValidatorRules = bson.M{
 		"role": bson.M{
 			"bsonType": "string",
 			"enum": bson.A{
+				"PRIMARY",
 				"LOGICAL STANDBY",
 				"PHYSICAL STANDBY",
-				"PRIMARY",
+				"SNAPSHOT STANDBY",
 			},
 		},
 		"isCDB": bson.M{
