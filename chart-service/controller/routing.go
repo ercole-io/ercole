@@ -25,13 +25,12 @@ import (
 // SetupRoutesForChartController setup the routes of the router using the handler in the controller as http handler
 func SetupRoutesForChartController(router *mux.Router, ctrl ChartControllerInterface, auth auth.AuthenticationProvider) {
 
-	//Add the routes
 	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Pong"))
+		_, _ = w.Write([]byte("Pong"))
 	})
 
 	router.HandleFunc("/user/login", auth.GetToken).Methods("POST")
-	//Enable authentication using the ctrl
+
 	router = router.NewRoute().Subrouter()
 	router.Use(auth.AuthenticateMiddleware)
 	setupProtectedRoutes(router, ctrl)
@@ -39,7 +38,10 @@ func SetupRoutesForChartController(router *mux.Router, ctrl ChartControllerInter
 
 func setupProtectedRoutes(router *mux.Router, ctrl ChartControllerInterface) {
 	router.HandleFunc("/settings/technologies-metrics", ctrl.GetTechnologiesMetrics).Methods("GET")
+
 	router.HandleFunc("/technologies/oracle/database", ctrl.GetOracleDatabaseChart).Methods("GET")
+	router.HandleFunc("/technologies/oracle/license-history", ctrl.GetOracleDbLicenseHistory).Methods("GET")
+
 	router.HandleFunc("/technologies/changes", ctrl.GetChangeChart).Methods("GET")
 	router.HandleFunc("/technologies/types", ctrl.GetTechnologyTypes).Methods("GET")
 }

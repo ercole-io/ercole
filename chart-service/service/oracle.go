@@ -17,29 +17,33 @@
 package service
 
 import (
+	"encoding/json"
 	"errors"
+	"net/http"
+	"sort"
 	"time"
 
-	"github.com/ercole-io/ercole/chart-service/chartmodel"
+	"github.com/ercole-io/ercole/chart-service/dto"
+	"github.com/ercole-io/ercole/model"
 	"github.com/ercole-io/ercole/utils"
 )
 
 // GetOracleDatabaseChart return a chart associated to teh
-func (as *ChartService) GetOracleDatabaseChart(metric string, location string, environment string, olderThan time.Time) (chartmodel.Chart, utils.AdvancedErrorInterface) {
+func (as *ChartService) GetOracleDatabaseChart(metric string, location string, environment string, olderThan time.Time) (dto.Chart, utils.AdvancedErrorInterface) {
 	switch metric {
 	case "version":
 		data, err := as.Database.GetOracleDatabaseChartByVersion(location, environment, olderThan)
 		if err != nil {
-			return chartmodel.Chart{}, err
+			return dto.Chart{}, err
 		}
 
 		// colorize the data
 		for i := range data {
-			data[i].Color = chartmodel.RandomColorize(*as.Random)
+			data[i].Color = dto.RandomColorize(*as.Random)
 		}
 
 		// return the data
-		return chartmodel.Chart{
+		return dto.Chart{
 			Data: data,
 			Legend: map[string]string{
 				"size": "Number of occurrences",
@@ -48,22 +52,96 @@ func (as *ChartService) GetOracleDatabaseChart(metric string, location string, e
 	case "work":
 		data, err := as.Database.GetOracleDatabaseChartByWork(location, environment, olderThan)
 		if err != nil {
-			return chartmodel.Chart{}, err
+			return dto.Chart{}, err
 		}
 
 		// colorize the data
 		for i := range data {
-			data[i].Color = chartmodel.RandomColorize(*as.Random)
+			data[i].Color = dto.RandomColorize(*as.Random)
 		}
 
 		// return the data
-		return chartmodel.Chart{
+		return dto.Chart{
 			Data: data,
 			Legend: map[string]string{
 				"size": "Value of work",
 			},
 		}, nil
 	default:
-		return chartmodel.Chart{}, utils.NewAdvancedErrorPtr(errors.New("Unsupported metric"), "UNSUPPORTED_METRIC")
+		return dto.Chart{}, utils.NewAdvancedErrorPtr(errors.New("Unsupported metric"), "UNSUPPORTED_METRIC")
 	}
+}
+
+func (as *ChartService) GetOracleDbLicenseHistory() ([]dto.OracleDatabaseLicenseHistory, error) {
+	licenses, err := as.Database.GetOracleDbLicenseHistory()
+	if err != nil {
+		return nil, err
+	}
+
+	parts, err := as.getOracleDatabaseAgreementsPartsList()
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range licenses {
+		license := &licenses[i]
+		part := parts[license.PartID]
+		license.ItemDescription = part.ItemDescription
+		license.Metric = part.Metric
+
+		license.History = keepOnlyLastEntryOfEachDay(license.History)
+	}
+
+	return licenses, nil
+}
+
+func (as *ChartService) getOracleDatabaseAgreementsPartsList() (map[string]model.OracleDatabasePart, error) {
+	url := utils.NewAPIUrlNoParams(
+		as.Config.APIService.RemoteEndpoint,
+		as.Config.APIService.AuthenticationProvider.Username,
+		as.Config.APIService.AuthenticationProvider.Password,
+		"/settings/oracle/database/agreements-parts").String()
+
+	resp, err := http.Get(url)
+	if err != nil || resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return nil, utils.NewAdvancedErrorPtr(err, "Can't retrieve from databases")
+	}
+
+	decoder := json.NewDecoder(resp.Body)
+	decoder.DisallowUnknownFields()
+	var partsList []model.OracleDatabasePart
+	if err := decoder.Decode(&partsList); err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "Can't decode response body")
+	}
+
+	parts := make(map[string]model.OracleDatabasePart)
+	for _, part := range partsList {
+		parts[part.PartID] = part
+	}
+
+	return parts, nil
+}
+
+func keepOnlyLastEntryOfEachDay(history []dto.OracleDbHistoricValue) []dto.OracleDbHistoricValue {
+	sort.Slice(history, func(i, j int) bool {
+		return history[i].Date.After(history[j].Date)
+	})
+
+	currentDay := utils.MAX_TIME
+	newHistory := make([]dto.OracleDbHistoricValue, 0, len(history))
+
+	for i := range history {
+		entry := &history[i]
+		entryDate := entry.Date
+		entryDay := time.Date(entryDate.Year(), entryDate.Month(), entryDate.Day(), 0, 0, 0, 0, time.UTC)
+
+		if entryDay.Before(currentDay) {
+			currentDay = entryDay
+
+			entry.Date = entryDay
+			newHistory = append(newHistory, *entry)
+		}
+	}
+
+	return newHistory
 }
