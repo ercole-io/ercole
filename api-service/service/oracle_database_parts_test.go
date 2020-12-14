@@ -139,6 +139,22 @@ func TestGetLicensesCompliance(t *testing.T) {
 			LicensesCount:  0,
 			UsersCount:     0,
 		},
+		{
+			ID:              utils.Str2oid("dddddddddddddddddddddddd"),
+			AgreementID:     "",
+			CSI:             "",
+			PartID:          "PID004",
+			ItemDescription: "",
+			Metric:          "",
+			ReferenceNumber: "",
+			Unlimited:       false,
+			Count:           50,
+			CatchAll:        false,
+			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			AvailableCount:  50,
+			LicensesCount:   0,
+			UsersCount:      0,
+		},
 	}
 
 	var sampleHosts []dto.HostUsingOracleDatabaseLicenses = []dto.HostUsingOracleDatabaseLicenses{
@@ -154,8 +170,42 @@ func TestGetLicensesCompliance(t *testing.T) {
 		{LicenseName: "alias3", Name: "pippo", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
 		{LicenseName: "alias3", Name: "test2", Type: "host", LicenseCount: 4, OriginalCount: 4},
 		{LicenseName: "alias3", Name: "test3", Type: "cluster", LicenseCount: 6, OriginalCount: 6},
+
+		{LicenseName: "alias5", Name: "test5", Type: "host", LicenseCount: 12, OriginalCount: 12},
 	}
 
+	var sampleParts = []model.OracleDatabasePart{
+		{
+			PartID:          "PID001",
+			ItemDescription: "itemDesc1",
+			Aliases:         []string{"alias1"},
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+		},
+		{
+			PartID:          "PID002",
+			ItemDescription: "itemDesc2",
+			Aliases:         []string{"alias2"},
+			Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
+		},
+		{
+			PartID:          "PID003",
+			ItemDescription: "itemDesc3",
+			Aliases:         []string{"alias3"},
+			Metric:          model.AgreementPartMetricComputerPerpetual,
+		},
+		{
+			PartID:          "PID004",
+			ItemDescription: "itemDesc4",
+			Aliases:         []string{"alias4"},
+			Metric:          model.AgreementPartMetricComputerPerpetual,
+		},
+		{
+			PartID:          "PID005",
+			ItemDescription: "itemDesc5",
+			Aliases:         []string{"alias5"},
+			Metric:          model.AgreementPartMetricComputerPerpetual,
+		},
+	}
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -177,11 +227,12 @@ func TestGetLicensesCompliance(t *testing.T) {
 	actual, err := as.GetOracleDatabaseLicensesCompliance()
 	require.NoError(t, err)
 
-	compliance := 75.0 / 275.0
 	expected := []dto.OracleDatabaseLicenseUsage{
-		{PartID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 7, Covered: 7, Compliance: 1, Unlimited: false},
-		{PartID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 275, Covered: 75, Compliance: compliance, Unlimited: false},
-		{PartID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Consumed: 0.5, Covered: 0.5, Compliance: 1, Unlimited: true},
+		{PartID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 10, Covered: 7, Compliance: 0.7, Unlimited: false},
+		{PartID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 19, Covered: 75, Compliance: 75.0 / 19.0, Unlimited: false},
+		{PartID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Consumed: 11, Covered: 0.5, Compliance: 0.5 / 11.0, Unlimited: true},
+		{PartID: "PID004", ItemDescription: "itemDesc4", Metric: "Computer Perpetual", Consumed: 0.0, Covered: 0.0, Compliance: 1, Unlimited: false},
+		{PartID: "PID005", ItemDescription: "itemDesc5", Metric: "Computer Perpetual", Consumed: 12, Covered: 0.0, Compliance: 0, Unlimited: false},
 	}
 
 	sort.Slice(actual, func(i, j int) bool {
