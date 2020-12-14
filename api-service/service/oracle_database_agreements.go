@@ -212,6 +212,22 @@ func (as *APIService) assignOracleDatabaseAgreementsToHosts(
 	agrs []dto.OracleDatabaseAgreementFE,
 	hosts []dto.HostUsingOracleDatabaseLicenses) {
 
+hosts:
+	for i := range hosts {
+		host := &hosts[i]
+
+		for _, part := range as.OracleDatabaseAgreementParts {
+			for _, alias := range part.Aliases {
+				if host.LicenseName == alias {
+					host.PartID = part.PartID
+					continue hosts
+				}
+			}
+		}
+
+		as.Log.Errorf("Can't find OracleDatabaseAgreementPart for host: %#v\n", host)
+	}
+
 	sortOracleDatabaseAgreements(agrs)
 	sortHostsUsingLicenses(hosts)
 

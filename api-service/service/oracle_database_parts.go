@@ -58,6 +58,16 @@ func (as *APIService) GetOracleDatabaseAgreementPartsList() ([]model.OracleDatab
 	return as.OracleDatabaseAgreementParts, nil
 }
 
+// GetOracleDatabaseAgreementPartsList return Oracle/Database agreement parts mapped by their PartID
+func (as *APIService) GetOracleDatabaseAgreementPartsMap() (parts map[string]model.OracleDatabasePart, err utils.AdvancedErrorInterface) {
+	parts = make(map[string]model.OracleDatabasePart)
+	for _, part := range as.OracleDatabaseAgreementParts {
+		parts[part.PartID] = part
+	}
+
+	return
+}
+
 // GetOraclePart return a Part by ID
 func (as *APIService) GetOraclePart(partID string) (*model.OracleDatabasePart, utils.AdvancedErrorInterface) {
 	for _, part := range as.OracleDatabaseAgreementParts {
@@ -84,16 +94,27 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabas
 
 	licenses := make(map[string]*dto.OracleDatabaseLicenseUsage)
 
+	for _, host := range hosts {
+		license, ok := licenses[host.PartID]
+		if !ok {
+			license = &dto.OracleDatabaseLicenseUsage{
+				PartID: host.PartID,
+			}
+
+			licenses[license.PartID] = license
+		}
+
+		license.Consumed += host.OriginalCount
+	}
+
 	for _, agreement := range agreements {
 		license, ok := licenses[agreement.PartID]
 		if !ok {
 			license = &dto.OracleDatabaseLicenseUsage{
-				PartID:          agreement.PartID,
-				ItemDescription: agreement.ItemDescription,
-				Metric:          agreement.Metric,
+				PartID: agreement.PartID,
 			}
 
-			licenses[agreement.PartID] = license
+			licenses[license.PartID] = license
 		}
 
 		if agreement.Unlimited {
@@ -101,9 +122,13 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabas
 		}
 
 		for _, host := range agreement.Hosts {
-			license.Consumed += host.ConsumedLicensesCount
 			license.Covered += host.CoveredLicensesCount
 		}
+	}
+
+	parts, err := as.GetOracleDatabaseAgreementPartsMap()
+	if err != nil {
+		return nil, err
 	}
 
 	result := make([]dto.OracleDatabaseLicenseUsage, 0, len(licenses))
@@ -113,6 +138,9 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabas
 		} else {
 			license.Compliance = license.Covered / license.Consumed
 		}
+
+		license.ItemDescription = parts[license.PartID].ItemDescription
+		license.Metric = parts[license.PartID].Metric
 
 		result = append(result, *license)
 	}
