@@ -19,7 +19,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // GetOracleDatabaseEnvironmentStats return all statistics about the environments of the databases using the filters in the request

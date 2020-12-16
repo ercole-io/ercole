@@ -19,7 +19,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // GetHostsCountStats return the number of the hosts using the filters in the request

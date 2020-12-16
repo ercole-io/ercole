@@ -19,7 +19,7 @@ package service
 import (
 	"time"
 
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // GetTotalTechnologiesComplianceStats return the total compliance of all technologies

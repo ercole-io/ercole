@@ -19,7 +19,7 @@ package service
 import (
 	"sync"
 
-	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/v2/config"
 )
 
 // RepoService is a concrete implementation of RepoServiceInterface

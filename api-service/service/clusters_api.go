@@ -20,7 +20,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // SearchClusters search clusters

@@ -18,9 +18,9 @@ package service
 import (
 	"testing"
 
-	database "github.com/ercole-io/ercole/api-service/database"
-	"github.com/ercole-io/ercole/model"
-	"github.com/ercole-io/ercole/utils"
+	database "github.com/ercole-io/ercole/v2/api-service/database"
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
