@@ -1,4 +1,4 @@
-module github.com/ercole-io/ercole
+module github.com/ercole-io/ercole/v2
 
 go 1.13
 
@@ -39,7 +39,6 @@ require (
 	gopkg.in/robfig/cron.v3 v3.0.0-00010101000000-000000000000 // indirect
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 	gopkg.in/square/go-jose.v2 v2.4.1
-	rsc.io/quote/v3 v3.1.0 // indirect
 )
 
 replace github.com/Sirupsen/logrus => github.com/sirupsen/logrus v1.5.0

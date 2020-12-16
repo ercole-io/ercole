@@ -19,7 +19,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 //go:generate mockgen -source ../database/database.go -destination=fake_database_test.go -package=service

@@ -19,7 +19,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata using the filters in the request

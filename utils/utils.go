@@ -30,7 +30,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ercole-io/ercole/model"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/hashicorp/go-version"
 	"github.com/robertkrimen/otto"
 	"go.mongodb.org/mongo-driver/bson"

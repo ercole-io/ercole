@@ -22,10 +22,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ercole-io/ercole/config"
-	migration "github.com/ercole-io/ercole/database-migration"
-	"github.com/ercole-io/ercole/model"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/config"
+	migration "github.com/ercole-io/ercole/v2/database-migration"
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 
