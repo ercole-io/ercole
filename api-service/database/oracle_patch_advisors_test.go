@@ -20,7 +20,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 )

@@ -23,7 +23,7 @@ import (
 	"regexp"
 	"sort"
 
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // Index is the index of all artifact in a repository

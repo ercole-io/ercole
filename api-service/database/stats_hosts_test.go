@@ -19,8 +19,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/ercole-io/ercole/config"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 )

@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/ercole-io/ercole/model"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // loadManagedTechnologiesList loads the list of the managed techlogies from file and store it to as.TechnologyInfos.

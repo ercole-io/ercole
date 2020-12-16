@@ -21,8 +21,8 @@ import (
 	"time"
 
 	"github.com/amreo/mu"
-	"github.com/ercole-io/ercole/chart-service/dto"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/chart-service/dto"
+	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 

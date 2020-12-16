@@ -21,8 +21,8 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/ercole-io/ercole/model"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 func (ctrl *AlertQueueController) ThrowNewAlert(w http.ResponseWriter, r *http.Request) {

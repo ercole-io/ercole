@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
 )

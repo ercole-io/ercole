@@ -19,7 +19,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page

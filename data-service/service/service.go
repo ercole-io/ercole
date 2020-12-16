@@ -22,14 +22,14 @@ import (
 	"time"
 
 	"github.com/bamzi/jobrunner"
-	"github.com/ercole-io/ercole/data-service/database"
+	"github.com/ercole-io/ercole/v2/data-service/database"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 
-	"github.com/ercole-io/ercole/config"
-	"github.com/ercole-io/ercole/model"
+	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/model"
 )
 
 // HostDataServiceInterface is a interface that wrap methods used to manipulate and save data

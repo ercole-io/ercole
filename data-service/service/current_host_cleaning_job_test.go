@@ -18,8 +18,8 @@ package service
 import (
 	"testing"
 
-	"github.com/ercole-io/ercole/config"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
 )
 

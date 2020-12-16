@@ -22,13 +22,13 @@ import (
 	"time"
 
 	"github.com/bamzi/jobrunner"
-	"github.com/ercole-io/ercole/alert-service/database"
-	"github.com/ercole-io/ercole/model"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/alert-service/database"
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/v2/config"
 
 	"github.com/leandro-lugaresi/hub"
 )

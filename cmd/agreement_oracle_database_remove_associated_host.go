@@ -21,7 +21,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/spf13/cobra"
 )
 
