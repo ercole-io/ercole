@@ -86,14 +86,7 @@ func (hds *HostDataService) Init() {
 		hostDataService: hds,
 		Log:             hds.Log,
 	}
-	if err := jobrunner.Schedule("@daily", oracleDbsLicensesHistory); err != nil {
-		hds.Log.Errorf("Something went wrong scheduling OracleDbsLicensesHistory: %v", err)
-	}
-
-	go func() {
-		time.Sleep(time.Second * 3)
-		jobrunner.Now(oracleDbsLicensesHistory)
-	}()
+	jobrunner.Every(5*time.Minute, oracleDbsLicensesHistory)
 }
 
 // UpdateHostInfo saves the hostdata
