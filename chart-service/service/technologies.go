@@ -19,9 +19,9 @@ package service
 import (
 	"time"
 
-	"github.com/ercole-io/ercole/chart-service/dto"
-	"github.com/ercole-io/ercole/model"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/chart-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // GetChangeChart return the chart data related to changes to databases

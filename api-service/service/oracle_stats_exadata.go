@@ -19,7 +19,7 @@ package service
 import (
 	"time"
 
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata

@@ -19,7 +19,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // GetChangeChart return the chart data related to changes

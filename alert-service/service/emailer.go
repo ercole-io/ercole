@@ -15,7 +15,7 @@
 
 package service
 
-import "github.com/ercole-io/ercole/utils"
+import "github.com/ercole-io/ercole/v2/utils"
 
 // Emailer contains the interface of a email senders
 type Emailer interface {
