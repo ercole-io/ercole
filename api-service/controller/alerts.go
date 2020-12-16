@@ -23,8 +23,8 @@ import (
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
-	"github.com/ercole-io/ercole/model"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/gddo/httputil"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"github.com/amreo/mu"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

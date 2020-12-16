@@ -27,8 +27,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ercole-io/ercole/cmd/repo"
-	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/v2/cmd/repo"
+	"github.com/ercole-io/ercole/v2/config"
 	"github.com/google/go-github/v28/github"
 	"github.com/spf13/cobra"
 )

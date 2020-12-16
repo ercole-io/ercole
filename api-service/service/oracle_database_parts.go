@@ -21,9 +21,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ercole-io/ercole/api-service/dto"
-	"github.com/ercole-io/ercole/model"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // loadOracleDatabaseAgreementParts loads the list of Oracle/Database agreement parts and store it to as.OracleDatabaseAgreementParts.

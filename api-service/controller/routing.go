@@ -18,7 +18,7 @@ package controller
 import (
 	"net/http"
 
-	"github.com/ercole-io/ercole/api-service/auth"
+	"github.com/ercole-io/ercole/v2/api-service/auth"
 	"github.com/gorilla/mux"
 )
 

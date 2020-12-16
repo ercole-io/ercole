@@ -16,7 +16,7 @@
 package cmd
 
 import (
-	"github.com/ercole-io/ercole/cmd/repo"
+	"github.com/ercole-io/ercole/v2/cmd/repo"
 	"github.com/spf13/cobra"
 )
 

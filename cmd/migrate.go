@@ -20,8 +20,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	migration "github.com/ercole-io/ercole/database-migration"
-	"github.com/ercole-io/ercole/utils"
+	migration "github.com/ercole-io/ercole/v2/database-migration"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // migrateCmd represents the migrate command

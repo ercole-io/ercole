@@ -22,9 +22,9 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/ercole-io/ercole/chart-service/dto"
-	"github.com/ercole-io/ercole/config"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/chart-service/dto"
+	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

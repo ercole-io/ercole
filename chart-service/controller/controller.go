@@ -19,11 +19,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ercole-io/ercole/api-service/auth"
-	"github.com/ercole-io/ercole/chart-service/service"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/api-service/auth"
+	"github.com/ercole-io/ercole/v2/chart-service/service"
+	"github.com/ercole-io/ercole/v2/utils"
 
-	"github.com/ercole-io/ercole/config"
+	"github.com/ercole-io/ercole/v2/config"
 	"github.com/sirupsen/logrus"
 )
 

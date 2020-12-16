@@ -20,9 +20,9 @@ import (
 
 	"github.com/amreo/mu"
 
-	"github.com/ercole-io/ercole/api-service/dto"
-	"github.com/ercole-io/ercole/model"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"

@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/ercole-io/ercole/model"
+	"github.com/ercole-io/ercole/v2/model"
 
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 //go:generate mockgen -source ../database/database.go -destination=fake_database_test.go -package=service
