@@ -139,7 +139,7 @@ func (ctrl *APIController) SearchHostsLMS(w http.ResponseWriter, r *http.Request
 	var searchHostsFilters database.SearchHostsFilters
 
 	var aerr utils.AdvancedErrorInterface
-	//parse the query params
+
 	search = r.URL.Query().Get("search")
 
 	searchHostsFilters, aerr = GetSearchHostFilters(r)
@@ -162,46 +162,41 @@ func (ctrl *APIController) SearchHostsLMS(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	//get the data
 	hosts, aerr := ctrl.Service.SearchHosts("lms", search, searchHostsFilters, sortBy, sortDesc, -1, -1, location, environment, olderThan)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
 	}
 
-	//Open the sheet
 	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_lms.xlsm")
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
 		return
 	}
 
-	i := 1
-	//Add the data to the sheet
-	for _, val := range hosts {
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("B%d", i+3), val["physicalServerName"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("C%d", i+3), val["virtualServerName"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("D%d", i+3), val["virtualizationTechnology"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("E%d", i+3), val["dbInstanceName"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("F%d", i+3), val["pluggableDatabaseName"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("G%d", i+3), val["environment"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("H%d", i+3), val["options"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("I%d", i+3), val["usedManagementPacks"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("N%d", i+3), val["productVersion"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("O%d", i+3), val["productLicenseAllocated"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("P%d", i+3), val["licenseMetricAllocated"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("Q%d", i+3), val["usingLicenseCount"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AC%d", i+3), val["processorModel"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AD%d", i+3), val["processors"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AE%d", i+3), val["coresPerProcessor"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AF%d", i+3), val["physicalCores"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AG%d", i+3), val["threadsPerCore"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AH%d", i+3), val["processorSpeed"])
-		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AJ%d", i+3), val["operatingSystem"])
-		i++
+	for i, val := range hosts {
+		i += 5 // offset for headers and example row
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("B%d", i), val["physicalServerName"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("C%d", i), val["virtualServerName"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("D%d", i), val["virtualizationTechnology"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("E%d", i), val["dbInstanceName"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("F%d", i), val["pluggableDatabaseName"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("G%d", i), val["environment"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("H%d", i), val["options"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("I%d", i), val["usedManagementPacks"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("N%d", i), val["productVersion"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("O%d", i), val["productLicenseAllocated"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("P%d", i), val["licenseMetricAllocated"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("Q%d", i), val["usingLicenseCount"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AC%d", i), val["processorModel"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AD%d", i), val["processors"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AE%d", i), val["coresPerProcessor"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AF%d", i), val["physicalCores"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AG%d", i), val["threadsPerCore"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AH%d", i), val["processorSpeed"])
+		sheets.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AJ%d", i), val["operatingSystem"])
 	}
 
-	//Write it to the response
 	utils.WriteXLSMResponse(w, sheets)
 }
 
