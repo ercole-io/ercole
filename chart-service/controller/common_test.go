@@ -18,7 +18,7 @@ package controller
 import (
 	"errors"
 
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 //go:generate mockgen -source ../service/service.go -destination=fake_service_test.go -package=controller

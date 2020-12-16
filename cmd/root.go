@@ -20,8 +20,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ercole-io/ercole/config"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/spf13/cobra"
 )
 

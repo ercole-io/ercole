@@ -19,7 +19,7 @@ package service
 import (
 	"time"
 
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // GetOracleDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status

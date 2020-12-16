@@ -20,8 +20,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ercole-io/ercole/model"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // GetOracleDatabaseChart return the list of techonlogies

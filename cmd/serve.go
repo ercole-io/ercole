@@ -22,33 +22,33 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ercole-io/ercole/config"
-	"github.com/ercole-io/ercole/utils"
+	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
-	migration "github.com/ercole-io/ercole/database-migration"
+	migration "github.com/ercole-io/ercole/v2/database-migration"
 
-	dataservice_controller "github.com/ercole-io/ercole/data-service/controller"
-	dataservice_database "github.com/ercole-io/ercole/data-service/database"
-	dataservice_service "github.com/ercole-io/ercole/data-service/service"
+	dataservice_controller "github.com/ercole-io/ercole/v2/data-service/controller"
+	dataservice_database "github.com/ercole-io/ercole/v2/data-service/database"
+	dataservice_service "github.com/ercole-io/ercole/v2/data-service/service"
 
-	alertservice_controller "github.com/ercole-io/ercole/alert-service/controller"
-	alertservice_database "github.com/ercole-io/ercole/alert-service/database"
-	alertservice_service "github.com/ercole-io/ercole/alert-service/service"
+	alertservice_controller "github.com/ercole-io/ercole/v2/alert-service/controller"
+	alertservice_database "github.com/ercole-io/ercole/v2/alert-service/database"
+	alertservice_service "github.com/ercole-io/ercole/v2/alert-service/service"
 
-	apiservice_auth "github.com/ercole-io/ercole/api-service/auth"
-	apiservice_controller "github.com/ercole-io/ercole/api-service/controller"
-	apiservice_database "github.com/ercole-io/ercole/api-service/database"
-	apiservice_service "github.com/ercole-io/ercole/api-service/service"
+	apiservice_auth "github.com/ercole-io/ercole/v2/api-service/auth"
+	apiservice_controller "github.com/ercole-io/ercole/v2/api-service/controller"
+	apiservice_database "github.com/ercole-io/ercole/v2/api-service/database"
+	apiservice_service "github.com/ercole-io/ercole/v2/api-service/service"
 
-	chartservice_controller "github.com/ercole-io/ercole/chart-service/controller"
-	chartservice_database "github.com/ercole-io/ercole/chart-service/database"
-	chartservice_service "github.com/ercole-io/ercole/chart-service/service"
+	chartservice_controller "github.com/ercole-io/ercole/v2/chart-service/controller"
+	chartservice_database "github.com/ercole-io/ercole/v2/chart-service/database"
+	chartservice_service "github.com/ercole-io/ercole/v2/chart-service/service"
 
-	reposervice_service "github.com/ercole-io/ercole/repo-service/service"
+	reposervice_service "github.com/ercole-io/ercole/v2/repo-service/service"
 )
 
 var enableDataService bool
