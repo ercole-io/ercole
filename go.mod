@@ -1,6 +1,6 @@
 module github.com/ercole-io/ercole/v2
 
-go 1.13
+go 1.15
 
 require (
 	github.com/1set/gut v0.0.0-20200225162230-3995492b8589
