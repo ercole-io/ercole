@@ -40,8 +40,9 @@ install:
 
 script:
   - go generate -v ./...
+  - go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+
   - go build -ldflags "-X github.com/ercole-io/ercole/cmd.serverVersion=${VERSION}" -o ercole
-  - go test ./...
   - "./ercole version"
   - docker exec -it package_builder /bin/sh -c "mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}"
   - docker exec -it package_builder /bin/sh -c "ln -s ${WORKSPACE} ~/rpmbuild/SOURCES/ercole-${VERSION}"
@@ -51,7 +52,6 @@ script:
   - docker exec -it package_builder /bin/sh -c "file ~/rpmbuild/RPMS/x86_64/ercole-*.rpm"
   - docker exec -it package_builder /bin/sh -c "cp ~/rpmbuild/RPMS/x86_64/ercole-*.rpm
     ${WORKSPACE}/dist"
-  - go test -race -coverprofile=coverage.txt -covermode=atomic ./...
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
@@ -78,3 +78,4 @@ deploy:
     script: bash deploy.sh
     on:
       all_branches: true
+
