@@ -33,7 +33,7 @@ func TestUpdateHostInfo_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockHostDataServiceInterface(mockCtrl)
-	ac := HostDataController{
+	ac := DataController{
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
@@ -45,10 +45,10 @@ func TestUpdateHostInfo_Success(t *testing.T) {
 
 	expectedHostDataBE := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
-	as.EXPECT().UpdateHostInfo(expectedHostDataBE).Return(utils.Str2oid("5e9ff545e4c53a19c79eadfd"), nil)
+	as.EXPECT().InsertHostData(expectedHostDataBE).Return(utils.Str2oid("5e9ff545e4c53a19c79eadfd"), nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.UpdateHostInfo)
+	handler := http.HandlerFunc(ac.InsertHostData)
 	req, err := http.NewRequest("PUT", "/", bytes.NewReader(raw))
 	require.NoError(t, err)
 
@@ -61,7 +61,7 @@ func TestUpdateHostInfo_FailBadRequest(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockHostDataServiceInterface(mockCtrl)
-	ac := HostDataController{
+	ac := DataController{
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
@@ -69,8 +69,8 @@ func TestUpdateHostInfo_FailBadRequest(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.UpdateHostInfo)
-	req, err := http.NewRequest("PUT", "/", &FailingReader{})
+	handler := http.HandlerFunc(ac.InsertHostData)
+	req, err := http.NewRequest("PUT", "/", &failingReader{})
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -82,7 +82,7 @@ func TestUpdateHostInfo_UnprocessableEntity1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockHostDataServiceInterface(mockCtrl)
-	ac := HostDataController{
+	ac := DataController{
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
@@ -90,7 +90,7 @@ func TestUpdateHostInfo_UnprocessableEntity1(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.UpdateHostInfo)
+	handler := http.HandlerFunc(ac.InsertHostData)
 	req, err := http.NewRequest("PUT", "/", strings.NewReader("{asasdsad"))
 	require.NoError(t, err)
 
@@ -103,7 +103,7 @@ func TestUpdateHostInfo_UnprocessableEntity2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockHostDataServiceInterface(mockCtrl)
-	ac := HostDataController{
+	ac := DataController{
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
@@ -111,7 +111,7 @@ func TestUpdateHostInfo_UnprocessableEntity2(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.UpdateHostInfo)
+	handler := http.HandlerFunc(ac.InsertHostData)
 	req, err := http.NewRequest("PUT", "/", strings.NewReader("{}"))
 	require.NoError(t, err)
 
@@ -124,7 +124,7 @@ func TestUpdateHostInfo_InternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockHostDataServiceInterface(mockCtrl)
-	ac := HostDataController{
+	ac := DataController{
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
@@ -136,68 +136,14 @@ func TestUpdateHostInfo_InternalServerError(t *testing.T) {
 
 	expectedHostDataBE := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
-	as.EXPECT().UpdateHostInfo(expectedHostDataBE).Return(nil, aerrMock)
+	as.EXPECT().InsertHostData(expectedHostDataBE).Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.UpdateHostInfo)
+	handler := http.HandlerFunc(ac.InsertHostData)
 	req, err := http.NewRequest("PUT", "/", bytes.NewReader(raw))
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
-}
-
-func TestAuthenticateMiddleware_Success(t *testing.T) {
-	var err error
-
-	ac := HostDataController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Config: config.Configuration{
-			DataService: config.DataService{
-				AgentUsername: "agent",
-				AgentPassword: "p4ssW0rd",
-			},
-		},
-		Log: utils.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := ac.AuthenticateMiddleware()(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(222)
-	}))
-	req, err := http.NewRequest("GET", "/", nil)
-	require.NoError(t, err)
-	req.Header.Add("Authorization", "Basic YWdlbnQ6cDRzc1cwcmQ=")
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, 222, rr.Code)
-}
-
-func TestAuthenticateMiddleware_Unauthorized(t *testing.T) {
-	var err error
-
-	ac := HostDataController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Config: config.Configuration{
-			DataService: config.DataService{
-				AgentUsername: "agent",
-				AgentPassword: "p4ssW0rd",
-			},
-		},
-		Log: utils.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := ac.AuthenticateMiddleware()(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(222)
-	}))
-	req, err := http.NewRequest("GET", "/", nil)
-	require.NoError(t, err)
-	req.Header.Add("Authorization", "Basic YWdlbnQ6VDBwb0wxbm8=")
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusUnauthorized, rr.Code)
 }

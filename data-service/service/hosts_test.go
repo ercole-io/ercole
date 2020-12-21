@@ -34,7 +34,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUpdateHostInfo_Success(t *testing.T) {
+func TestInsertHostData_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -52,8 +52,8 @@ func TestUpdateHostInfo_Success(t *testing.T) {
 				LogInsertingHostdata: true,
 			},
 		},
-		Version: "1.6.6",
-		Log:     utils.NewLogger("TEST"),
+		ServerVersion: "1.6.6",
+		Log:           utils.NewLogger("TEST"),
 	}
 	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
@@ -81,12 +81,12 @@ func TestUpdateHostInfo_Success(t *testing.T) {
 		}, nil
 	})
 
-	res, err := hds.UpdateHostInfo(hd)
+	res, err := hds.InsertHostData(hd)
 	require.NoError(t, err)
 	assert.Equal(t, utils.Str2oid("5dd3a8db184dbf295f0376f2"), res)
 }
 
-func TestUpdateHostInfo_DatabaseError1(t *testing.T) {
+func TestInsertHostData_DatabaseError1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -100,18 +100,18 @@ func TestUpdateHostInfo_DatabaseError1(t *testing.T) {
 				RemoteEndpoint:    "http://ercole.example.org",
 			},
 		},
-		Version: "1.6.6",
+		ServerVersion: "1.6.6",
 	}
 	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 	db.EXPECT().ArchiveHost("rac1_x").Return(nil, aerrMock).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
 	db.EXPECT().FindPatchingFunction(gomock.Any()).Return(model.PatchingFunction{}, nil).Times(0)
 
-	_, err := hds.UpdateHostInfo(hd)
+	_, err := hds.InsertHostData(hd)
 	require.Equal(t, aerrMock, err)
 }
 
-func TestUpdateHostInfo_DatabaseError2(t *testing.T) {
+func TestInsertHostData_DatabaseError2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -125,7 +125,7 @@ func TestUpdateHostInfo_DatabaseError2(t *testing.T) {
 				RemoteEndpoint:    "http://ercole.example.org",
 			},
 		},
-		Version: "1.6.6",
+		ServerVersion: "1.6.6",
 	}
 	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
@@ -144,11 +144,11 @@ func TestUpdateHostInfo_DatabaseError2(t *testing.T) {
 	}).Times(1)
 	db.EXPECT().InsertHostData(gomock.Any()).Times(0)
 
-	_, err := hds.UpdateHostInfo(hd)
+	_, err := hds.InsertHostData(hd)
 	require.Equal(t, aerrMock, err)
 }
 
-func TestUpdateHostInfo_DatabaseError3(t *testing.T) {
+func TestInsertHostData_DatabaseError3(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -166,17 +166,17 @@ func TestUpdateHostInfo_DatabaseError3(t *testing.T) {
 				LogInsertingHostdata: true,
 			},
 		},
-		Version: "1.6.6",
+		ServerVersion: "1.6.6",
 	}
 	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
 	db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{}, aerrMock)
 
-	_, err := hds.UpdateHostInfo(hd)
+	_, err := hds.InsertHostData(hd)
 	require.Equal(t, aerrMock, err)
 }
 
-func TestUpdateHostInfo_HttpError(t *testing.T) {
+func TestInsertHostData_HttpError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -190,7 +190,7 @@ func TestUpdateHostInfo_HttpError(t *testing.T) {
 				RemoteEndpoint:    "http://ercole.example.org",
 			},
 		},
-		Version: "1.6.6",
+		ServerVersion: "1.6.6",
 	}
 	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
@@ -213,13 +213,13 @@ func TestUpdateHostInfo_HttpError(t *testing.T) {
 		return nil, errMock
 	})
 
-	_, err := hds.UpdateHostInfo(hd)
+	_, err := hds.InsertHostData(hd)
 	require.Equal(t, "EVENT ENQUEUE", err.ErrorClass())
 	require.Contains(t, err.Error(), "http://publ1sh3r:***@ercole.example.org/queue/host-data-insertion/5dd3a8db184dbf295f0376f2")
 	require.Contains(t, err.Error(), "MockError")
 }
 
-func TestUpdateHostInfo_HttpError2(t *testing.T) {
+func TestInsertHostData_HttpError2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -233,7 +233,7 @@ func TestUpdateHostInfo_HttpError2(t *testing.T) {
 				RemoteEndpoint:    "http://ercole.example.org",
 			},
 		},
-		Version: "1.6.6",
+		ServerVersion: "1.6.6",
 	}
 	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
@@ -260,7 +260,7 @@ func TestUpdateHostInfo_HttpError2(t *testing.T) {
 		}, nil
 	})
 
-	_, err := hds.UpdateHostInfo(hd)
+	_, err := hds.InsertHostData(hd)
 	require.Equal(t, "EVENT ENQUEUE", err.ErrorClass())
 	require.EqualError(t, err, "Failed to enqueue event")
 }
