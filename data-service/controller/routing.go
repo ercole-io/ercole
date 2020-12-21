@@ -18,21 +18,28 @@ package controller
 import (
 	"net/http"
 
+	"github.com/goji/httpauth"
 	"github.com/gorilla/mux"
 )
 
 // SetupRoutesForHostDataController setup the routes of the router using the handler in the controller as http handler
-func SetupRoutesForHostDataController(router *mux.Router, ctrl HostDataControllerInterface) {
+func SetupRoutesForHostDataController(router *mux.Router, ctrl DataControllerInterface) {
 	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Pong"))
+		_, _ = w.Write([]byte("Pong"))
 	})
 
-	router = router.NewRoute().Subrouter()
-	router.Use(ctrl.AuthenticateMiddleware())
+	router.StrictSlash(true)
+	router.Use(ctrl.AuthenticateMiddleware)
 
 	setupProtectedRoutes(router, ctrl)
 }
 
-func setupProtectedRoutes(router *mux.Router, ctrl HostDataControllerInterface) {
-	router.HandleFunc("/hosts", ctrl.UpdateHostInfo).Methods("POST")
+func setupProtectedRoutes(router *mux.Router, ctrl DataControllerInterface) {
+	router.HandleFunc("/hosts", ctrl.InsertHostData).Methods("POST")
+}
+
+// AuthenticateMiddleware return the middleware used to authenticate (request) users
+func (ctrl *DataController) AuthenticateMiddleware(h http.Handler) http.Handler {
+	basicAuthHandler := httpauth.SimpleBasicAuth(ctrl.Config.DataService.AgentUsername, ctrl.Config.DataService.AgentPassword)
+	return basicAuthHandler(h)
 }

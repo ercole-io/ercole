@@ -26,22 +26,14 @@ import (
 	"github.com/ercole-io/ercole/v2/config"
 )
 
-// HostDataControllerInterface is a interface that wrap methods used to handle the request for HostData endpoints
-type HostDataControllerInterface interface {
-	// UpdateHostInfo update the informations about a host using the HostData in the request
-	UpdateHostInfo(w http.ResponseWriter, r *http.Request)
-	// AuthenticateMiddleware return the middleware used to authenticate users
-	AuthenticateMiddleware() func(http.Handler) http.Handler
+type DataControllerInterface interface {
+	InsertHostData(w http.ResponseWriter, r *http.Request)
+	AuthenticateMiddleware(h http.Handler) http.Handler
 }
 
-// HostDataController is the struct used to handle the requests from agents and contains the concrete implementation of HostDataControllerInterface
-type HostDataController struct {
-	// Config contains the dataservice global configuration
-	Config config.Configuration
-	// Service contains the underlying service used to perform various logical and store operations
+type DataController struct {
+	Config  config.Configuration
 	Service service.HostDataServiceInterface
-	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
-	// Log contains logger formatted
-	Log *logrus.Logger
+	Log     *logrus.Logger
 }

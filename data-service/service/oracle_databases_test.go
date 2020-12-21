@@ -20,7 +20,7 @@ import (
 )
 
 func TestAddLicensesToSecondaryDbs(t *testing.T) {
-	// TOD0
+	//TODO Add test
 	//	mockCtrl := gomock.NewController(t)
 	//	defer mockCtrl.Finish()
 	//	mongoDb := NewMockMongoDatabaseInterface(mockCtrl)
