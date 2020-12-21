@@ -17,14 +17,11 @@
 package service
 
 import (
-	"bytes"
-	"net/http"
 	"time"
 
 	"github.com/bamzi/jobrunner"
 	"github.com/ercole-io/ercole/v2/data-service/database"
 	"github.com/sirupsen/logrus"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/utils"
 
@@ -32,30 +29,18 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 )
 
-// HostDataServiceInterface is a interface that wrap methods used to manipulate and save data
 type HostDataServiceInterface interface {
-	// Init initialize the service
 	Init()
 
-	// UpdateHostInfo update the host informations using the provided hostdata
-	UpdateHostInfo(hostdata model.HostDataBE) (interface{}, utils.AdvancedErrorInterface)
-
-	// ArchiveHost archive the host
-	// ArchiveHost(hostname string) utils.AdvancedError
+	InsertHostData(hostdata model.HostDataBE) (interface{}, utils.AdvancedErrorInterface)
 }
 
-// HostDataService is the concrete implementation of HostDataServiceInterface. It saves data to a MongoDB database
 type HostDataService struct {
-	// Config contains the dataservice global configuration
-	Config config.Configuration
-	// Version of the saved data
-	Version string
-	// Database contains the database layer
-	Database database.MongoDatabaseInterface
-	// TimeNow contains a function that return the current time
-	TimeNow func() time.Time
-	// Log contains logger formatted
-	Log *logrus.Logger
+	Config        config.Configuration
+	ServerVersion string
+	Database      database.MongoDatabaseInterface
+	TimeNow       func() time.Time
+	Log           *logrus.Logger
 }
 
 func (hds *HostDataService) Init() {
@@ -87,75 +72,4 @@ func (hds *HostDataService) Init() {
 		Log:             hds.Log,
 	}
 	jobrunner.Every(5*time.Minute, oracleDbsLicensesHistory)
-}
-
-// UpdateHostInfo saves the hostdata
-// TODO move in its hosts.go file
-func (hds *HostDataService) UpdateHostInfo(hostdata model.HostDataBE) (interface{}, utils.AdvancedErrorInterface) {
-	var aerr utils.AdvancedErrorInterface
-
-	hostdata.ServerVersion = hds.Version
-	hostdata.Archived = false
-	hostdata.CreatedAt = hds.TimeNow()
-	hostdata.ServerSchemaVersion = model.SchemaVersion
-	hostdata.ID = primitive.NewObjectIDFromTimestamp(hds.TimeNow())
-
-	if hds.Config.DataService.EnablePatching {
-		hostdata, aerr = hds.PatchHostData(hostdata)
-		if aerr != nil {
-			return nil, aerr
-		}
-	}
-
-	if hostdata.Features.Oracle != nil {
-		hds.oracleDatabasesChecks(hostdata.Info, hostdata.Features.Oracle)
-	}
-
-	_, aerr = hds.Database.ArchiveHost(hostdata.Hostname)
-	if aerr != nil {
-		return nil, aerr
-	}
-
-	if hds.Config.DataService.LogInsertingHostdata {
-		hds.Log.Info(utils.ToJSON(hostdata))
-	}
-	res, aerr := hds.Database.InsertHostData(hostdata)
-	if aerr != nil {
-		return nil, aerr
-	}
-
-	alertHostDataInsertionURL := utils.NewAPIUrlNoParams(
-		hds.Config.AlertService.RemoteEndpoint,
-		hds.Config.AlertService.PublisherUsername,
-		hds.Config.AlertService.PublisherPassword,
-		"/queue/host-data-insertion/"+res.InsertedID.(primitive.ObjectID).Hex()).String()
-
-	if resp, err := http.Post(alertHostDataInsertionURL, "application/json", bytes.NewReader([]byte{})); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "EVENT ENQUEUE")
-
-	} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return nil, utils.NewAdvancedErrorPtr(utils.ErrEventEnqueue, "EVENT ENQUEUE")
-	}
-
-	return res.InsertedID, nil
-}
-
-// PatchHostData patch the hostdata using the pf stored in the db
-func (hds *HostDataService) PatchHostData(hostdata model.HostDataBE) (model.HostDataBE, utils.AdvancedErrorInterface) {
-	//Find the patch
-	patch, err := hds.Database.FindPatchingFunction(hostdata.Hostname)
-	if err != nil {
-		return model.HostDataBE{}, err
-	}
-
-	//If patch is valid, apply the path the data
-	if patch.Hostname == hostdata.Hostname && patch.Code != "" {
-		if hds.Config.DataService.LogDataPatching {
-			hds.Log.Printf("Patching %s hostdata with the patch %s\n", patch.Hostname, patch.ID)
-		}
-
-		return utils.PatchHostdata(patch, hostdata)
-	}
-
-	return hostdata, nil
 }

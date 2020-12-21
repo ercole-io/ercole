@@ -41,21 +41,20 @@ type CurrentHostCleaningJob struct {
 
 // Run archive every hostdata that is older than a amount
 func (job *CurrentHostCleaningJob) Run() {
-	//Find the current hosts older than CurrentHostCleaningJob.HourThreshold days
-	hosts, err := job.Database.FindOldCurrentHosts(job.TimeNow().Add(time.Duration(-job.Config.DataService.CurrentHostCleaningJob.HourThreshold) * time.Hour))
+	timeLimit := job.TimeNow().Add(time.Duration(-job.Config.DataService.CurrentHostCleaningJob.HourThreshold) * time.Hour)
+	hosts, err := job.Database.FindOldCurrentHosts(timeLimit)
 	if err != nil {
 		utils.LogErr(job.Log, err)
 		return
 	}
 
-	//For each host, archive the host
 	for _, host := range hosts {
-		//Archive the host
 		_, err := job.Database.ArchiveHost(host)
 		if err != nil {
 			utils.LogErr(job.Log, err)
 			return
 		}
-		job.Log.Infof("%s has been moved because it have passed more than %d hours from last update", host, job.Config.DataService.CurrentHostCleaningJob.HourThreshold)
+		job.Log.Infof("%s has been moved because it have passed more than %d hours from last update", host,
+			job.Config.DataService.CurrentHostCleaningJob.HourThreshold)
 	}
 }
