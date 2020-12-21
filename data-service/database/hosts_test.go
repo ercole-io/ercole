@@ -188,28 +188,3 @@ func (m *MongodbSuite) TestDeleteHostData() {
 	require.NoError(m.T(), err)
 	require.Equal(m.T(), []primitive.ObjectID{}, list)
 }
-
-func (m *MongodbSuite) TestFindPatchingFunction() {
-	defer m.db.Client.Database(m.dbname).Collection("patching_functions").DeleteMany(context.TODO(), bson.M{})
-	id := utils.Str2oid("5ef9e436b48eac8a91f81dc5")
-	pf1 := model.PatchingFunction{
-		ID:        &id,
-		Code:      "dfssdfsdf",
-		CreatedAt: utils.P("2020-05-20T09:53:34+00:00").UTC(),
-		Hostname:  "foobar",
-		Vars:      map[string]interface{}{"bar": int32(10)},
-	}
-	m.InsertPatchingFunction(pf1)
-
-	m.T().Run("should_find_pf", func(t *testing.T) {
-		pf, err := m.db.FindPatchingFunction("foobar")
-		require.NoError(m.T(), err)
-		assert.Equal(m.T(), pf1, pf)
-	})
-
-	m.T().Run("should_not_find_pf", func(t *testing.T) {
-		pf, err := m.db.FindPatchingFunction("foobar2")
-		require.NoError(m.T(), err)
-		assert.Equal(m.T(), model.PatchingFunction{}, pf)
-	})
-}
