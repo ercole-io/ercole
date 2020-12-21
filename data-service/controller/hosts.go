@@ -26,21 +26,14 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 
-	"github.com/goji/httpauth"
 	"github.com/xeipuuv/gojsonschema"
 )
 
-// AuthenticateMiddleware return the middleware used to authenticate (request) users
-func (ctrl *HostDataController) AuthenticateMiddleware() func(http.Handler) http.Handler {
-	return httpauth.SimpleBasicAuth(ctrl.Config.DataService.AgentUsername, ctrl.Config.DataService.AgentPassword)
-}
-
-// UpdateHostInfo update the informations about a host using the HostData in the request
-func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Request) {
+// InsertHostData update the informations about a host using the HostData in the request
+func (ctrl *DataController) InsertHostData(w http.ResponseWriter, r *http.Request) {
 	var hostdata model.HostDataBE
 	var aerr utils.AdvancedErrorInterface
 
-	//Read all bytes for the request
 	raw, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
@@ -48,7 +41,6 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 	}
 	defer r.Body.Close()
 
-	//Validate the data
 	documentLoader := gojsonschema.NewBytesLoader(raw)
 	schemaLoader := gojsonschema.NewStringLoader(model.FrontendHostdataSchemaValidator)
 	if result, err := gojsonschema.Validate(schemaLoader, documentLoader); err != nil {
@@ -74,16 +66,17 @@ func (ctrl *HostDataController) UpdateHostInfo(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	//Unmarshal raw to hostdata. The err checking is not needed
-	_ = json.Unmarshal(raw, &hostdata)
+	err = json.Unmarshal(raw, &hostdata)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
 
-	//Save the HostData
-	id, aerr := ctrl.Service.UpdateHostInfo(hostdata)
+	id, aerr := ctrl.Service.InsertHostData(hostdata)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
 	}
 
-	//Write the created id
 	utils.WriteJSONResponse(w, http.StatusOK, id)
 }
