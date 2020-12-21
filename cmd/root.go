@@ -26,7 +26,7 @@ import (
 )
 
 var ercoleConfig config.Configuration
-var serverVersion string = "lastest"
+var serverVersion string = "latest"
 var extraConfigFile string
 
 // serveCmd represents the root command
