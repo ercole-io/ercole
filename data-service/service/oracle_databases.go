@@ -12,6 +12,10 @@ import (
 )
 
 func (hds *HostDataService) oracleDatabasesChecks(hostInfo model.Host, oracleFeature *model.OracleFeature) {
+	if oracleFeature.Database == nil || oracleFeature.Database.Databases == nil {
+		return
+	}
+
 	for i := range oracleFeature.Database.Databases {
 		db := &oracleFeature.Database.Databases[i]
 
