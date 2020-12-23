@@ -81,7 +81,7 @@ deploy:
       all_branches: true
       tags: true
   - provider: script
-    script: bash deploy.sh
+    script: bash deploy.sh $DIST
     on:
       all_branches: true
 
