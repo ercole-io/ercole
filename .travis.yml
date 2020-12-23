@@ -29,6 +29,9 @@ before_install:
   - echo ${TRAVIS_TAG}
   - echo ${VERSION}
   - echo ${SERVER_VERSION}
+
+  - echo 'DOCKER_OPTS="$DOCKER_OPTS --registry-mirror=https://mirror.gcr.io"'
+  - sudo service docker restart
   - docker pull ${PACKAGE_BUILD_IMAGE}
   - docker pull mongo:latest
 
