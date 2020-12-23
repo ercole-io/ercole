@@ -1012,14 +1012,6 @@ components:
         - _id
     ExadataSummary:
       type: object
-      required:
-        - hostname
-        - location
-        - environment
-        - createdAt
-        - dbServers
-        - storageServers
-        - ibSwitches
       properties:
         hostname:
           type: string
@@ -1030,11 +1022,25 @@ components:
         createdAt:
           type: string
         dbServers:
-          $ref: '#/components/schemas/ExadataDev'
+          type: array
+          items:
+            $ref: '#/components/schemas/ExadataDev'
         storageServers:
-          $ref: '#/components/schemas/ExadataDev'
+          type: array
+          items:
+            $ref: '#/components/schemas/ExadataDev'
         ibSwitches:
-          $ref: '#/components/schemas/ExadataDev'
+          type: array
+          items:
+            $ref: '#/components/schemas/ExadataDev'
+      required:
+        - hostname
+        - location
+        - environment
+        - createdAt
+        - dbServers
+        - storageServers
+        - ibSwitches
     Features:
       type: object
       properties:
@@ -2390,6 +2396,232 @@ paths:
                     required:
                       - content
                       - metadata
+              examples:
+                Body response with full=true:
+                  value:
+                    - _id: 5fe2007e2bef85dd518f8763
+                      createdAt: '2020-12-22T15:19:42.479+01:00'
+                      dbServers:
+                        - cellsrvServiceStatus: null
+                          fanStatus: normal
+                          hostname: zombie-0d1347d47a10b673a4df7aeeecc24a8a
+                          memory: 376
+                          model: X7-2
+                          msServiceStatus: running
+                          powerStatus: normal
+                          rsServiceStatus: running
+                          runningCPUCount: 48
+                          runningFanCount: 16
+                          runningPowerSupply: 2
+                          status: online
+                          swVersion: 19.2.4.0.0.190709
+                          tempActual: 24
+                          tempStatus: normal
+                          totalCPUCount: 48
+                          totalFanCount: 16
+                          totalPowerSupply: 2
+                        - cellsrvServiceStatus: null
+                          fanStatus: normal
+                          hostname: kantoor-43a6cdc54bb211eb127bca5c6651950c
+                          memory: 376
+                          model: X7-2
+                          msServiceStatus: running
+                          powerStatus: normal
+                          rsServiceStatus: running
+                          runningCPUCount: 48
+                          runningFanCount: 16
+                          runningPowerSupply: 2
+                          status: online
+                          swVersion: 19.2.4.0.0.190709
+                          tempActual: 24
+                          tempStatus: normal
+                          totalCPUCount: 48
+                          totalFanCount: 16
+                          totalPowerSupply: 2
+                      environment: PROD
+                      hostname: test-exadata
+                      ibSwitches:
+                        - hostname: off-df8b95a01746a464e69203c840a6a46a
+                          model: SUN_DCS_36p
+                          swVersion: 2.2.13-2.190326
+                        - hostname: aspen-8d1d1b210625b1f1024b686135f889a1
+                          model: SUN_DCS_36p
+                          swVersion: 2.2.13-2.190326
+                      location: Italy
+                      storageServers:
+                        - cellDisks:
+                            - errCount: 0
+                              name: fanshop-5bde7badf2c9deceea5f615c3840c0b9
+                              status: normal
+                              usedPerc: 32
+                            - errCount: 0
+                              name: globe-b31fa3756675a5c8ac052437ff7e439b
+                              status: normal
+                              usedPerc: 54
+                            - errCount: 3
+                              name: srvc28-3807c977788c598cfa31fe21c0d3d5be
+                              status: normal
+                              usedPerc: 90
+                          cellsrvServiceStatus: running
+                          fanStatus: normal
+                          flashcacheMode: WriteBack
+                          hostname: s75-c2449b0e89e5a0b38401636eaa07abd5
+                          memory: 188
+                          model: X7-2L_High_Capacity
+                          msServiceStatus: running
+                          powerStatus: normal
+                          rsServiceStatus: running
+                          runningCPUCount: 20
+                          runningFanCount: 8
+                          runningPowerSupply: 2
+                          status: online
+                          swVersion: 19.2.4.0.0.190709
+                          tempActual: 23
+                          tempStatus: normal
+                          totalCPUCount: 40
+                          totalFanCount: 8
+                          totalPowerSupply: 2
+                        - cellDisks:
+                            - errCount: 0
+                              name: server52-390b5dac8c3b68e3471c657ef97a7ae6
+                              status: normal
+                              usedPerc: 32
+                            - errCount: 1
+                              name: srvc07-5b888ab40dbd25e106309fd482f859a0
+                              status: normal
+                              usedPerc: 54
+                          cellsrvServiceStatus: running
+                          fanStatus: normal
+                          flashcacheMode: WriteBack
+                          hostname: itl-b22fa37cad1326aba990cdec7facace2
+                          memory: 188
+                          model: X7-2L_High_Capacity
+                          msServiceStatus: running
+                          powerStatus: normal
+                          rsServiceStatus: running
+                          runningCPUCount: 20
+                          runningFanCount: 8
+                          runningPowerSupply: 2
+                          status: online
+                          swVersion: 19.2.4.0.0.190709
+                          tempActual: 24
+                          tempStatus: normal
+                          totalCPUCount: 40
+                          totalFanCount: 8
+                          totalPowerSupply: 2
+                Body response with full=false:
+                  value:
+                    - _id: 5fe2007e2bef85dd518f8763
+                      createdAt: '2020-12-22T15:19:42.479+01:00'
+                      dbServers:
+                        - hostname: zombie-0d1347d47a10b673a4df7aeeecc24a8a
+                          memory: 376
+                          model: X7-2
+                          runningCPUCount: 48
+                          runningPowerSupply: 2
+                          swVersion: 19.2.4.0.0.190709
+                          tempActual: 24
+                          totalCPUCount: 48
+                          totalPowerSupply: 2
+                        - hostname: kantoor-43a6cdc54bb211eb127bca5c6651950c
+                          memory: 376
+                          model: X7-2
+                          runningCPUCount: 48
+                          runningPowerSupply: 2
+                          swVersion: 19.2.4.0.0.190709
+                          tempActual: 24
+                          totalCPUCount: 48
+                          totalPowerSupply: 2
+                      environment: PROD
+                      hostname: test-exadata
+                      ibSwitches:
+                        - hostname: off-df8b95a01746a464e69203c840a6a46a
+                          model: SUN_DCS_36p
+                          swVersion: 2.2.13-2.190326
+                        - hostname: aspen-8d1d1b210625b1f1024b686135f889a1
+                          model: SUN_DCS_36p
+                          swVersion: 2.2.13-2.190326
+                      location: Italy
+                      storageServers:
+                        - hostname: s75-c2449b0e89e5a0b38401636eaa07abd5
+                          memory: 188
+                          model: X7-2L_High_Capacity
+                          runningCPUCount: 20
+                          runningPowerSupply: 2
+                          swVersion: 19.2.4.0.0.190709
+                          tempActual: 23
+                          totalCPUCount: 40
+                          totalPowerSupply: 2
+                        - hostname: itl-b22fa37cad1326aba990cdec7facace2
+                          memory: 188
+                          model: X7-2L_High_Capacity
+                          runningCPUCount: 20
+                          runningPowerSupply: 2
+                          swVersion: 19.2.4.0.0.190709
+                          tempActual: 24
+                          totalCPUCount: 40
+                          totalPowerSupply: 2
+                Body response with paging:
+                  value:
+                    content:
+                      - _id: 5fe2007e2bef85dd518f8763
+                        createdAt: '2020-12-22T15:19:42.479+01:00'
+                        dbServers:
+                          - hostname: zombie-0d1347d47a10b673a4df7aeeecc24a8a
+                            memory: 376
+                            model: X7-2
+                            runningCPUCount: 48
+                            runningPowerSupply: 2
+                            swVersion: 19.2.4.0.0.190709
+                            tempActual: 24
+                            totalCPUCount: 48
+                            totalPowerSupply: 2
+                          - hostname: kantoor-43a6cdc54bb211eb127bca5c6651950c
+                            memory: 376
+                            model: X7-2
+                            runningCPUCount: 48
+                            runningPowerSupply: 2
+                            swVersion: 19.2.4.0.0.190709
+                            tempActual: 24
+                            totalCPUCount: 48
+                            totalPowerSupply: 2
+                        environment: PROD
+                        hostname: test-exadata
+                        ibSwitches:
+                          - hostname: off-df8b95a01746a464e69203c840a6a46a
+                            model: SUN_DCS_36p
+                            swVersion: 2.2.13-2.190326
+                          - hostname: aspen-8d1d1b210625b1f1024b686135f889a1
+                            model: SUN_DCS_36p
+                            swVersion: 2.2.13-2.190326
+                        location: Italy
+                        storageServers:
+                          - hostname: s75-c2449b0e89e5a0b38401636eaa07abd5
+                            memory: 188
+                            model: X7-2L_High_Capacity
+                            runningCPUCount: 20
+                            runningPowerSupply: 2
+                            swVersion: 19.2.4.0.0.190709
+                            tempActual: 23
+                            totalCPUCount: 40
+                            totalPowerSupply: 2
+                          - hostname: itl-b22fa37cad1326aba990cdec7facace2
+                            memory: 188
+                            model: X7-2L_High_Capacity
+                            runningCPUCount: 20
+                            runningPowerSupply: 2
+                            swVersion: 19.2.4.0.0.190709
+                            tempActual: 24
+                            totalCPUCount: 40
+                            totalPowerSupply: 2
+                    metadata:
+                      empty: false
+                      first: true
+                      last: true
+                      number: 0
+                      size: 1
+                      totalElements: 1
+                      totalPages: 0
       operationId: SearchOracleExadata
       description: |-
         Search exadata data using the filters in the request.
@@ -2403,6 +2635,11 @@ paths:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
         - $ref: '#/components/parameters/older-than'
+        - schema:
+            type: boolean
+          in: query
+          name: full
+          description: Whether or not to return all fields
   /hosts/technologies/oracle/databases/license-modifiers:
     get:
       tags:
