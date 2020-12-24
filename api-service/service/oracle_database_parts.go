@@ -16,61 +16,44 @@
 package service
 
 import (
-	"encoding/json"
-	"errors"
-	"os"
-	"path/filepath"
-
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-// loadOracleDatabaseAgreementParts loads the list of Oracle/Database agreement parts and store it to as.OracleDatabaseAgreementParts.
-func (as *APIService) loadOracleDatabaseAgreementParts() {
-	filename := "oracle_database_agreement_parts.json"
-	path := filepath.Join(as.Config.ResourceFilePath, filename)
-
-	reader, err := os.Open(path)
-	if errors.Is(err, os.ErrNotExist) {
-		as.Log.Warnf("No %s file exists in resources (%s), no agreement parts set\n",
-			filename, as.Config.ResourceFilePath)
-		as.OracleDatabaseAgreementParts = make([]model.OracleDatabasePart, 0)
-
-		return
-	} else if err != nil {
-		as.Log.Errorf("Unable to read %s: %v\n", path, err)
-
-		return
-	}
-
-	decoder := json.NewDecoder(reader)
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&as.OracleDatabaseAgreementParts)
-	if err != nil {
-		as.Log.Errorf("Unable to decode %s: %v\n", path, err)
-		return
-	}
-}
-
 // GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
 func (as *APIService) GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabasePart, utils.AdvancedErrorInterface) {
-	return as.OracleDatabaseAgreementParts, nil
+	parts, err := as.Database.GetOracleDatabaseParts()
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return parts, nil
 }
 
 // GetOracleDatabaseAgreementPartsList return Oracle/Database agreement parts mapped by their PartID
-func (as *APIService) GetOracleDatabaseAgreementPartsMap() (parts map[string]model.OracleDatabasePart, err utils.AdvancedErrorInterface) {
-	parts = make(map[string]model.OracleDatabasePart)
-	for _, part := range as.OracleDatabaseAgreementParts {
-		parts[part.PartID] = part
+func (as *APIService) GetOracleDatabaseAgreementPartsMap() (map[string]model.OracleDatabasePart, utils.AdvancedErrorInterface) {
+	parts, err := as.Database.GetOracleDatabaseParts() // Should call GetOracleDatabaseAgreementPartsList ?
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return
+	partsMap := make(map[string]model.OracleDatabasePart)
+	for _, part := range parts {
+		partsMap[part.PartID] = part
+	}
+
+	return partsMap, nil
 }
 
 // GetOraclePart return a Part by ID
 func (as *APIService) GetOraclePart(partID string) (*model.OracleDatabasePart, utils.AdvancedErrorInterface) {
-	for _, part := range as.OracleDatabaseAgreementParts {
+	parts, err := as.Database.GetOracleDatabaseParts()
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	for _, part := range parts {
 		if partID == part.PartID {
 			return &part, nil
 		}
@@ -90,7 +73,10 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabas
 		return nil, err
 	}
 
-	as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+	err2 := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+	if err2 != nil {
+		return nil, utils.NewAdvancedErrorPtr(err2, "DB ERROR")
+	}
 
 	licenses := make(map[string]*dto.OracleDatabaseLicenseUsage)
 

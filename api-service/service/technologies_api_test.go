@@ -107,9 +107,8 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := APIService{
-		Database:                     db,
-		Log:                          utils.NewLogger("TEST"),
-		OracleDatabaseAgreementParts: sampleParts,
+		Database: db,
+		Log:      utils.NewLogger("TEST"),
 	}
 
 	gomock.InOrder(
@@ -125,6 +124,8 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 		db.EXPECT().
 			ListHostUsingOracleDatabaseLicenses().
 			Return(sampleHostUsingOracleDbLicenses, nil),
+		db.EXPECT().GetOracleDatabaseParts().
+			Return(sampleParts, nil),
 	)
 
 	actual, err := as.ListManagedTechnologies(
@@ -149,9 +150,8 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := APIService{
-		Database:                     db,
-		Log:                          utils.NewLogger("TEST"),
-		OracleDatabaseAgreementParts: sampleParts,
+		Database: db,
+		Log:      utils.NewLogger("TEST"),
 	}
 
 	returnedAgreements := []dto.OracleDatabaseAgreementFE{
@@ -201,6 +201,8 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 		db.EXPECT().
 			ListHostUsingOracleDatabaseLicenses().
 			Return(returnedHosts, nil),
+		db.EXPECT().GetOracleDatabaseParts().
+			Return(sampleParts, nil),
 	)
 
 	actual, err := as.ListManagedTechnologies(

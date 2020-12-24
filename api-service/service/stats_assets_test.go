@@ -32,18 +32,18 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := APIService{
 		Database: db,
-		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
-			{
-				PartID:          "PID002",
-				Aliases:         []string{"Partitioning"},
-				ItemDescription: "Oracle Partitioning",
-				Metric:          model.AgreementPartMetricProcessorPerpetual,
-			},
-		},
 	}
 
 	getTechnologiesUsageRes := map[string]float64{
 		"Oracle/Exadata": 2,
+	}
+	parts := []model.OracleDatabasePart{
+		{
+			PartID:          "PID002",
+			Aliases:         []string{"Partitioning"},
+			ItemDescription: "Oracle Partitioning",
+			Metric:          model.AgreementPartMetricProcessorPerpetual,
+		},
 	}
 	db.EXPECT().
 		GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
@@ -51,6 +51,9 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 	db.EXPECT().
 		GetHostsCountStats("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(20, nil).AnyTimes().MinTimes(1)
+	db.EXPECT().
+		GetOracleDatabaseParts().
+		Return(parts, nil)
 
 	returnedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
