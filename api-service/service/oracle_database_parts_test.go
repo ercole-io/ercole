@@ -28,28 +28,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestLoadOracleDatabaseAgreementParts_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		Log:      utils.NewLogger("TEST"),
-		Config: config.Configuration{
-			ResourceFilePath: "../../resources",
-		},
-	}
-	as.loadOracleDatabaseAgreementParts()
-
-	expected := []model.OracleDatabasePart{
-		{PartID: "A11111", ItemDescription: "Database Enterprise Edition", Metric: model.AgreementPartMetricNamedUserPlusPerpetual, Cost: 42, Aliases: []string{"Db ENT"}},
-		{PartID: "B22222", ItemDescription: "Database Standard Edition", Metric: model.AgreementPartMetricProcessorPerpetual, Cost: 43, Aliases: []string{"Db STD"}},
-		{PartID: "C33333", ItemDescription: "Tuning", Metric: model.AgreementPartMetricStreamPerpetual, Cost: 44, Aliases: []string{"Tuning"}},
-	}
-
-	assert.ElementsMatch(t, expected, as.OracleDatabaseAgreementParts)
-}
-
 func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -57,16 +35,19 @@ func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
 	as := APIService{
 		Database: db,
 		Config:   config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
-			{
-				PartID:          "Pippo",
-				ItemDescription: "Pluto",
-				Metric:          "Topolino",
-				Cost:            12,
-				Aliases:         []string{"Minny"},
-			},
+	}
+
+	expected := []model.OracleDatabasePart{
+		{
+			PartID:          "Pippo",
+			ItemDescription: "Pluto",
+			Metric:          "Topolino",
+			Cost:            12,
+			Aliases:         []string{"Minny"},
 		},
 	}
+	db.EXPECT().GetOracleDatabaseParts().Return(expected, nil)
+
 	res, err := as.GetOracleDatabaseAgreementPartsList()
 	require.NoError(t, err)
 	assert.Equal(t, []model.OracleDatabasePart{
@@ -174,7 +155,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 		{LicenseName: "alias5", Name: "test5", Type: "host", LicenseCount: 12, OriginalCount: 12},
 	}
 
-	var sampleParts = []model.OracleDatabasePart{
+	var expectedParts = []model.OracleDatabasePart{
 		{
 			PartID:          "PID001",
 			ItemDescription: "itemDesc1",
@@ -210,9 +191,8 @@ func TestGetLicensesCompliance(t *testing.T) {
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := APIService{
-		Database:                     db,
-		Log:                          utils.NewLogger("TEST"),
-		OracleDatabaseAgreementParts: sampleParts,
+		Database: db,
+		Log:      utils.NewLogger("TEST"),
 	}
 
 	gomock.InOrder(
@@ -222,6 +202,10 @@ func TestGetLicensesCompliance(t *testing.T) {
 		db.EXPECT().
 			ListHostUsingOracleDatabaseLicenses().
 			Return(sampleHosts, nil),
+		db.EXPECT().
+			GetOracleDatabaseParts().
+			Times(2).
+			Return(expectedParts, nil),
 	)
 
 	actual, err := as.GetOracleDatabaseLicensesCompliance()
