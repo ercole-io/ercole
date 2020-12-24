@@ -180,8 +180,6 @@ type APIService struct {
 	Log *logrus.Logger
 	// TechnologyInfos contains the list of technologies with their informations
 	TechnologyInfos []model.TechnologyInfo
-	// OracleDatabaseAgreementParts contains the list of Oracle/Database agreeement parts
-	OracleDatabaseAgreementParts []model.OracleDatabasePart
 	// NewObjectID return a new ObjectID
 	NewObjectID func() primitive.ObjectID
 }
@@ -189,7 +187,6 @@ type APIService struct {
 // Init initializes the service and database
 func (as *APIService) Init() {
 	as.loadManagedTechnologiesList()
-	as.loadOracleDatabaseAgreementParts()
 
 	as.NewObjectID = func() primitive.ObjectID {
 		return primitive.NewObjectIDFromTimestamp(as.TimeNow())

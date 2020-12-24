@@ -111,6 +111,7 @@ type MongoDatabaseInterface interface {
 	// GetOracleExadataPatchStatusStats return a array containing the number of exadata per patch status
 	GetOracleExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 
+	GetOracleDatabaseParts() ([]model.OracleDatabasePart, error)
 	// InsertOracleDatabaseAgreement insert an Oracle/Database agreement into the database
 	InsertOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
 	// GetOracleDatabaseAgreement return the agreement specified by id
