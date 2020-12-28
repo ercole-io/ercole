@@ -75,19 +75,19 @@ func (as *APIService) AddAssociatedPartToOracleDbAgreement(request dto.Associate
 
 func addAssociatedPart(as *APIService, agreement *model.OracleDatabaseAgreement,
 	req dto.AssociatedPartInOracleDbAgreementRequest) utils.AdvancedErrorInterface {
-	part, err := as.GetOraclePart(req.PartID)
+	part, err := as.GetOracleDatabaseLicenseType(req.PartID)
 	if err != nil {
 		return err
 	}
 
 	associatedPart := model.AssociatedPart{
-		ID:                 as.NewObjectID(),
-		OracleDatabasePart: *part,
-		ReferenceNumber:    req.ReferenceNumber,
-		Unlimited:          req.Unlimited,
-		Count:              req.Count,
-		CatchAll:           req.CatchAll,
-		Hosts:              req.Hosts,
+		ID:                        as.NewObjectID(),
+		OracleDatabaseLicenseType: *part,
+		ReferenceNumber:           req.ReferenceNumber,
+		Unlimited:                 req.Unlimited,
+		Count:                     req.Count,
+		CatchAll:                  req.CatchAll,
+		Hosts:                     req.Hosts,
 	}
 	agreement.Parts = append(agreement.Parts, associatedPart)
 
@@ -166,11 +166,11 @@ func updateAssociatedPart(as *APIService, agreement *model.OracleDatabaseAgreeme
 		return utils.AerrOracleDatabaseAssociatedPartNotFound
 	}
 
-	part, err := as.GetOraclePart(req.PartID)
+	part, err := as.GetOracleDatabaseLicenseType(req.PartID)
 	if err != nil {
 		return err
 	}
-	associatedPart.OracleDatabasePart = *part
+	associatedPart.OracleDatabaseLicenseType = *part
 	associatedPart.ReferenceNumber = req.ReferenceNumber
 	associatedPart.Unlimited = req.Unlimited
 	associatedPart.Count = req.Count
@@ -215,7 +215,7 @@ func (as *APIService) assignOracleDatabaseAgreementsToHosts(
 	agrs []dto.OracleDatabaseAgreementFE,
 	hosts []dto.HostUsingOracleDatabaseLicenses) error {
 
-	parts, err := as.Database.GetOracleDatabaseParts()
+	licenseTypes, err := as.Database.GetOracleDatabaseLicenseTypes()
 	if err != nil {
 		return err
 	}
@@ -224,7 +224,7 @@ hosts:
 	for i := range hosts {
 		host := &hosts[i]
 
-		for _, part := range parts {
+		for _, part := range licenseTypes {
 			for _, alias := range part.Aliases {
 				if host.LicenseName == alias {
 					host.PartID = part.PartID
@@ -244,11 +244,11 @@ hosts:
 	}
 
 	hostsMap := buildHostUsingLicensesMap(hosts)
-	partsMap := buildAgreementPartMap(parts) //TODO  use GetOracleDatabaseAgreementPartsMap ?
+	licenseTypesMap := buildLicenseTypesMap(licenseTypes)
 
-	fillAgreementsInfo(as, agrs, partsMap)
+	fillAgreementsInfo(as, agrs, licenseTypesMap)
 
-	assignAgreementsLicensesToItsAssociatedHosts(as, agrs, hostsMap, partsMap)
+	assignAgreementsLicensesToItsAssociatedHosts(as, agrs, hostsMap, licenseTypesMap)
 
 	// sort again and rebuild map because the references are updated during the sort
 	sortHostsUsingLicenses(hosts)
@@ -258,9 +258,9 @@ hosts:
 		as.Log.Debugf("Resorted LicensingObjects: %#v\n", hosts)
 	}
 
-	assignLicensesFromCatchAllAgreements(as, agrs, hosts, partsMap)
+	assignLicensesFromCatchAllAgreements(as, agrs, hosts, licenseTypesMap)
 
-	calculateTotalCoveredLicensesAndAvailableCount(as, agrs, hosts, hostsMap, partsMap)
+	calculateTotalCoveredLicensesAndAvailableCount(as, agrs, hosts, hostsMap, licenseTypesMap)
 
 	return nil
 }
@@ -319,25 +319,26 @@ func buildHostUsingLicensesMap(hosts []dto.HostUsingOracleDatabaseLicenses,
 	return res
 }
 
-// buildAgreementPartMap return a map of partID to OracleDatabaseAgreementPart
-func buildAgreementPartMap(parts []model.OracleDatabasePart) map[string]*model.OracleDatabasePart {
-	partsMap := make(map[string]*model.OracleDatabasePart)
+// buildLicenseTypesMap return a map of partID to OracleDatabaseAgreementPart
+//TODO  use GetOracleDatabaseAgreementPartsMap ?
+func buildLicenseTypesMap(licenseTypes []model.OracleDatabaseLicenseType) map[string]*model.OracleDatabaseLicenseType {
+	ltMap := make(map[string]*model.OracleDatabaseLicenseType)
 
-	for i, part := range parts {
-		partsMap[part.PartID] = &parts[i]
+	for i, licenseType := range licenseTypes {
+		ltMap[licenseType.PartID] = &licenseTypes[i]
 	}
 
-	return partsMap
+	return ltMap
 }
 
-func fillAgreementsInfo(as *APIService, agrs []dto.OracleDatabaseAgreementFE, partsMap map[string]*model.OracleDatabasePart) {
+func fillAgreementsInfo(as *APIService, agrs []dto.OracleDatabaseAgreementFE, licenseTypes map[string]*model.OracleDatabaseLicenseType) {
 
 	for i := range agrs {
 		agr := &agrs[i]
 
-		if part, ok := partsMap[agr.PartID]; ok {
-			agr.ItemDescription = part.ItemDescription
-			agr.Metric = part.Metric
+		if licenseType, ok := licenseTypes[agr.PartID]; ok {
+			agr.ItemDescription = licenseType.ItemDescription
+			agr.Metric = licenseType.Metric
 
 			switch agr.Metric {
 			case model.AgreementPartMetricProcessorPerpetual:
@@ -357,11 +358,11 @@ func assignAgreementsLicensesToItsAssociatedHosts(
 	as *APIService,
 	agreements []dto.OracleDatabaseAgreementFE,
 	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses,
-	partsMap map[string]*model.OracleDatabasePart) {
+	licenseTypes map[string]*model.OracleDatabaseLicenseType) {
 
 	for i := range agreements {
 		agreement := &agreements[i]
-		sortHostsInAgreementByLicenseCount(agreement, hostsMap, partsMap)
+		sortHostsInAgreementByLicenseCount(agreement, hostsMap, licenseTypes)
 
 		if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
 			as.Log.Debugf("Distributing licenses of agreement #%d to host. Agreement = %s\n", i, utils.ToJSON(agreement))
@@ -370,7 +371,7 @@ func assignAgreementsLicensesToItsAssociatedHosts(
 		for j := range agreement.Hosts {
 			associatedHost := &agreement.Hosts[j]
 
-			for _, alias := range partsMap[agreement.PartID].Aliases {
+			for _, alias := range licenseTypes[agreement.PartID].Aliases {
 
 				if agreement.AvailableCount <= 0 && !agreement.Unlimited {
 					break
@@ -415,16 +416,16 @@ func assignAgreementsLicensesToItsAssociatedHosts(
 }
 
 // sortHostsInAgreementByLicenseCount sort the associated hosts by license count
-// considering that parts may have multiple aliases
+// considering that license types may have multiple aliases
 func sortHostsInAgreementByLicenseCount(agr *dto.OracleDatabaseAgreementFE,
 	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses,
-	partsMap map[string]*model.OracleDatabasePart) {
+	licenseTypes map[string]*model.OracleDatabaseLicenseType) {
 
 	sort.Slice(agr.Hosts, func(i, j int) bool {
 		var iMaxLicenseCount float64 = 0
 		var jMaxLicenseCount float64 = 0
 
-		for _, alias := range partsMap[agr.PartID].Aliases {
+		for _, alias := range licenseTypes[agr.PartID].Aliases {
 			if mapHostnamesLicenses, ok := hostsMap[alias]; ok {
 
 				if hostUsingLicenses, ok := mapHostnamesLicenses[agr.Hosts[i].Hostname]; ok {
@@ -489,7 +490,7 @@ func assignLicensesFromCatchAllAgreements(
 	as *APIService,
 	agrs []dto.OracleDatabaseAgreementFE,
 	hosts []dto.HostUsingOracleDatabaseLicenses,
-	partsMap map[string]*model.OracleDatabasePart) {
+	licenseTypes map[string]*model.OracleDatabaseLicenseType) {
 
 	for i := range hosts {
 		host := &hosts[i]
@@ -509,7 +510,7 @@ func assignLicensesFromCatchAllAgreements(
 				continue
 			}
 
-			for _, alias := range partsMap[agr.PartID].Aliases {
+			for _, alias := range licenseTypes[agr.PartID].Aliases {
 				if agr.AvailableCount <= 0 && !agr.Unlimited {
 					break
 				}
@@ -582,7 +583,7 @@ func calculateTotalCoveredLicensesAndAvailableCount(
 	agrs []dto.OracleDatabaseAgreementFE,
 	hosts []dto.HostUsingOracleDatabaseLicenses,
 	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses,
-	partsMap map[string]*model.OracleDatabasePart) {
+	licenseTypes map[string]*model.OracleDatabaseLicenseType) {
 
 	licensesCoverStatusByName := calculateCoverStatusByLicenseName(hosts)
 
@@ -592,7 +593,7 @@ func calculateTotalCoveredLicensesAndAvailableCount(
 		uncoveredLicensesByAssociatedHosts := 0.0
 		uncoveredLicensesByAllHosts := 0.0
 
-		for _, alias := range partsMap[agreement.PartID].Aliases {
+		for _, alias := range licenseTypes[agreement.PartID].Aliases {
 
 			for j := range agreement.Hosts {
 				associatedHost := &agreement.Hosts[j]

@@ -24,27 +24,27 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (m *MongodbSuite) TestGetOracleDatabaseParts() {
+func (m *MongodbSuite) TestGetOracleDatabaseLicenseTypes() {
 	defer m.db.Client.Database(m.dbname).Collection("oracle_database_license_types").DeleteMany(context.TODO(), bson.M{})
 
 	m.T().Run("success with empty table", func(t *testing.T) {
-		actual, err := m.db.GetOracleDatabaseParts()
+		actual, err := m.db.GetOracleDatabaseLicenseTypes()
 		m.Require().NoError(err)
 
-		expected := make([]model.OracleDatabasePart, 0)
+		expected := make([]model.OracleDatabaseLicenseType, 0)
 		assert.ElementsMatch(m.T(), expected, actual)
 	})
 
 	m.T().Run("success with some values", func(t *testing.T) {
 		expected := []interface{}{
-			model.OracleDatabasePart{
+			model.OracleDatabaseLicenseType{
 				PartID:          "PID001",
 				ItemDescription: "desc001",
 				Metric:          model.AgreementPartMetricProcessorPerpetual,
 				Cost:            42,
 				Aliases:         []string{"pippo"},
 			},
-			model.OracleDatabasePart{
+			model.OracleDatabaseLicenseType{
 				PartID:          "PID002",
 				ItemDescription: "desc002",
 				Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
@@ -59,7 +59,7 @@ func (m *MongodbSuite) TestGetOracleDatabaseParts() {
 			InsertMany(ctx, expected)
 		m.Require().NoError(err)
 
-		actual, err := m.db.GetOracleDatabaseParts()
+		actual, err := m.db.GetOracleDatabaseLicenseTypes()
 		m.Require().NoError(err)
 
 		assert.ElementsMatch(m.T(), expected, actual)

@@ -25,7 +25,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var sampleParts = []model.OracleDatabasePart{
+var sampleLicenseTypes = []model.OracleDatabaseLicenseType{
 	{
 		PartID:          "PID001",
 		ItemDescription: "itemDesc1",
@@ -124,8 +124,8 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 		db.EXPECT().
 			ListHostUsingOracleDatabaseLicenses().
 			Return(sampleHostUsingOracleDbLicenses, nil),
-		db.EXPECT().GetOracleDatabaseParts().
-			Return(sampleParts, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(sampleLicenseTypes, nil),
 	)
 
 	actual, err := as.ListManagedTechnologies(
@@ -201,8 +201,8 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 		db.EXPECT().
 			ListHostUsingOracleDatabaseLicenses().
 			Return(returnedHosts, nil),
-		db.EXPECT().GetOracleDatabaseParts().
-			Return(sampleParts, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(sampleLicenseTypes, nil),
 	)
 
 	actual, err := as.ListManagedTechnologies(

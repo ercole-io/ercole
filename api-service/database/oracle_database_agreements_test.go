@@ -27,7 +27,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-var partSample = model.OracleDatabasePart{
+var licenseTypesSample = model.OracleDatabaseLicenseType{
 	PartID:          "ID00001",
 	ItemDescription: "ItemDesc 1",
 	Cost:            42,
@@ -41,13 +41,13 @@ var agreementSample = model.OracleDatabaseAgreement{
 	CSI:         "csi001",
 	Parts: []model.AssociatedPart{
 		{
-			ID:                 utils.Str2oid("5dcad8933b243f80e2ed8551"),
-			OracleDatabasePart: partSample,
-			ReferenceNumber:    "R00001",
-			Unlimited:          true,
-			Count:              345,
-			CatchAll:           true,
-			Hosts:              []string{"foo", "bar"},
+			ID:                        utils.Str2oid("5dcad8933b243f80e2ed8551"),
+			OracleDatabaseLicenseType: licenseTypesSample,
+			ReferenceNumber:           "R00001",
+			Unlimited:                 true,
+			Count:                     345,
+			CatchAll:                  true,
+			Hosts:                     []string{"foo", "bar"},
 		},
 	},
 }
@@ -129,13 +129,13 @@ func (m *MongodbSuite) TestUpdateOracleDatabaseAgreement() {
 			CSI:         "000001",
 			Parts: []model.AssociatedPart{
 				{
-					ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-					OracleDatabasePart: partSample,
-					ReferenceNumber:    "000002",
-					Unlimited:          true,
-					Count:              345,
-					CatchAll:           true,
-					Hosts:              []string{"foo", "bar"},
+					ID:                        utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+					OracleDatabaseLicenseType: licenseTypesSample,
+					ReferenceNumber:           "000002",
+					Unlimited:                 true,
+					Count:                     345,
+					CatchAll:                  true,
+					Hosts:                     []string{"foo", "bar"},
 				},
 			},
 		}
@@ -192,13 +192,13 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_OnePart() {
 		CSI:         "csi001",
 		Parts: []model.AssociatedPart{
 			{
-				ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-				OracleDatabasePart: partSample,
-				ReferenceNumber:    "R00001",
-				CatchAll:           true,
-				Count:              345,
-				Hosts:              []string{"foo", "bar"},
-				Unlimited:          true,
+				ID:                        utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+				OracleDatabaseLicenseType: licenseTypesSample,
+				ReferenceNumber:           "R00001",
+				CatchAll:                  true,
+				Count:                     345,
+				Hosts:                     []string{"foo", "bar"},
+				Unlimited:                 true,
 			}},
 	}
 	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
@@ -247,13 +247,13 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_MultipleParts() {
 		Parts: []model.AssociatedPart{
 			{
 
-				ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-				OracleDatabasePart: partSample,
-				ReferenceNumber:    "R00001",
-				CatchAll:           true,
-				Count:              345,
-				Hosts:              []string{"foo", "bar"},
-				Unlimited:          true,
+				ID:                        utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+				OracleDatabaseLicenseType: licenseTypesSample,
+				ReferenceNumber:           "R00001",
+				CatchAll:                  true,
+				Count:                     345,
+				Hosts:                     []string{"foo", "bar"},
+				Unlimited:                 true,
 			}},
 	}
 	agreementSample2 := model.OracleDatabaseAgreement{
@@ -262,17 +262,17 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements_MultipleParts() {
 		CSI:         "csi002",
 		Parts: []model.AssociatedPart{
 			{
-				ID:                 utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
-				OracleDatabasePart: partSample,
-				ReferenceNumber:    "R00002",
-				CatchAll:           true,
-				Count:              111,
-				Hosts:              []string{"pippo", "clarabella"},
-				Unlimited:          false,
+				ID:                        utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
+				OracleDatabaseLicenseType: licenseTypesSample,
+				ReferenceNumber:           "R00002",
+				CatchAll:                  true,
+				Count:                     111,
+				Hosts:                     []string{"pippo", "clarabella"},
+				Unlimited:                 false,
 			},
 			{
 				ID: utils.Str2oid("cccccccccccccccccccccccc"),
-				OracleDatabasePart: model.OracleDatabasePart{
+				OracleDatabaseLicenseType: model.OracleDatabaseLicenseType{
 					PartID:          "partID2",
 					ItemDescription: "partDescr2",
 					Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,

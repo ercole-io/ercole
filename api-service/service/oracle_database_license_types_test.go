@@ -28,7 +28,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
+func TestGetOracleDatabaseLicenseTypes_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -37,7 +37,7 @@ func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
 		Config:   config.Configuration{},
 	}
 
-	expected := []model.OracleDatabasePart{
+	expected := []model.OracleDatabaseLicenseType{
 		{
 			PartID:          "Pippo",
 			ItemDescription: "Pluto",
@@ -46,11 +46,11 @@ func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
 			Aliases:         []string{"Minny"},
 		},
 	}
-	db.EXPECT().GetOracleDatabaseParts().Return(expected, nil)
+	db.EXPECT().GetOracleDatabaseLicenseTypes().Return(expected, nil)
 
-	res, err := as.GetOracleDatabaseAgreementPartsList()
+	res, err := as.GetOracleDatabaseLicenseTypes()
 	require.NoError(t, err)
-	assert.Equal(t, []model.OracleDatabasePart{
+	assert.Equal(t, []model.OracleDatabaseLicenseType{
 		{
 			PartID:          "Pippo",
 			ItemDescription: "Pluto",
@@ -155,7 +155,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 		{LicenseName: "alias5", Name: "test5", Type: "host", LicenseCount: 12, OriginalCount: 12},
 	}
 
-	var expectedParts = []model.OracleDatabasePart{
+	var expectedLicenseTypes = []model.OracleDatabaseLicenseType{
 		{
 			PartID:          "PID001",
 			ItemDescription: "itemDesc1",
@@ -203,9 +203,9 @@ func TestGetLicensesCompliance(t *testing.T) {
 			ListHostUsingOracleDatabaseLicenses().
 			Return(sampleHosts, nil),
 		db.EXPECT().
-			GetOracleDatabaseParts().
+			GetOracleDatabaseLicenseTypes().
 			Times(2).
-			Return(expectedParts, nil),
+			Return(expectedLicenseTypes, nil),
 	)
 
 	actual, err := as.GetOracleDatabaseLicensesCompliance()
