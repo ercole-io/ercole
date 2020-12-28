@@ -4268,9 +4268,9 @@ paths:
       parameters: []
       tags:
         - api-service
-  /settings/oracle/database/agreements-parts:
+  /settings/oracle/database/license-types:
     get:
-      summary: Return agreements-parts
+      summary: Return license-types
       tags:
         - api-service
       responses:

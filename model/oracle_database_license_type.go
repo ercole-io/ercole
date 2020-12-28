@@ -15,8 +15,8 @@
 
 package model
 
-// OracleDatabasePart holds informations about a single OracleDatabasePart
-type OracleDatabasePart struct {
+// OracleDatabaseLicenseType holds informations about a single OracleDatabaseLicenseType
+type OracleDatabaseLicenseType struct {
 	PartID          string   `json:"partID" bson:"partID"`
 	ItemDescription string   `json:"itemDescription" bson:"itemDescription"`
 	Metric          string   `json:"metric" bson:"metric"`

@@ -78,16 +78,16 @@ func (as *ChartService) GetOracleDbLicenseHistory() ([]dto.OracleDatabaseLicense
 		return nil, err
 	}
 
-	parts, err := as.getOracleDatabaseAgreementsPartsList()
+	types, err := as.getOracleDatabaseLicenseTypes()
 	if err != nil {
 		return nil, err
 	}
 
 	for i := range licenses {
 		license := &licenses[i]
-		part := parts[license.PartID]
-		license.ItemDescription = part.ItemDescription
-		license.Metric = part.Metric
+		licenseType := types[license.PartID]
+		license.ItemDescription = licenseType.ItemDescription
+		license.Metric = licenseType.Metric
 
 		license.History = keepOnlyLastEntryOfEachDay(license.History)
 	}
@@ -95,13 +95,12 @@ func (as *ChartService) GetOracleDbLicenseHistory() ([]dto.OracleDatabaseLicense
 	return licenses, nil
 }
 
-func (as *ChartService) getOracleDatabaseAgreementsPartsList() (map[string]model.OracleDatabasePart, error) {
+func (as *ChartService) getOracleDatabaseLicenseTypes() (map[string]model.OracleDatabaseLicenseType, error) {
 	url := utils.NewAPIUrlNoParams(
 		as.Config.APIService.RemoteEndpoint,
 		as.Config.APIService.AuthenticationProvider.Username,
 		as.Config.APIService.AuthenticationProvider.Password,
-		"/settings/oracle/database/agreements-parts").String()
-
+		"/settings/oracle/database/license-types").String()
 	resp, err := http.Get(url)
 	if err != nil || resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return nil, utils.NewAdvancedErrorPtr(err, "Can't retrieve from databases")
@@ -109,17 +108,17 @@ func (as *ChartService) getOracleDatabaseAgreementsPartsList() (map[string]model
 
 	decoder := json.NewDecoder(resp.Body)
 	decoder.DisallowUnknownFields()
-	var partsList []model.OracleDatabasePart
-	if err := decoder.Decode(&partsList); err != nil {
+	var licenseTypes []model.OracleDatabaseLicenseType
+	if err := decoder.Decode(&licenseTypes); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "Can't decode response body")
 	}
 
-	parts := make(map[string]model.OracleDatabasePart)
-	for _, part := range partsList {
-		parts[part.PartID] = part
+	licenseTypesMap := make(map[string]model.OracleDatabaseLicenseType)
+	for _, licenseType := range licenseTypes {
+		licenseTypesMap[licenseType.PartID] = licenseType
 	}
 
-	return parts, nil
+	return licenseTypesMap, nil
 }
 
 func keepOnlyLastEntryOfEachDay(history []dto.OracleDbHistoricValue) []dto.OracleDbHistoricValue {

@@ -21,9 +21,9 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-// GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
-func (as *APIService) GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabasePart, utils.AdvancedErrorInterface) {
-	parts, err := as.Database.GetOracleDatabaseParts()
+// GetOracleDatabaseLicenseTypes return the list of OracleDatabaseLicenseType
+func (as *APIService) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, utils.AdvancedErrorInterface) {
+	parts, err := as.Database.GetOracleDatabaseLicenseTypes()
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
@@ -31,14 +31,14 @@ func (as *APIService) GetOracleDatabaseAgreementPartsList() ([]model.OracleDatab
 	return parts, nil
 }
 
-// GetOracleDatabaseAgreementPartsList return Oracle/Database agreement parts mapped by their PartID
-func (as *APIService) GetOracleDatabaseAgreementPartsMap() (map[string]model.OracleDatabasePart, utils.AdvancedErrorInterface) {
-	parts, err := as.Database.GetOracleDatabaseParts() // Should call GetOracleDatabaseAgreementPartsList ?
+// GetOracleDatabaseLicenseTypesAsMap return the list of OracleDatabaseLicenseType as map by ID
+func (as *APIService) GetOracleDatabaseLicenseTypesAsMap() (map[string]model.OracleDatabaseLicenseType, utils.AdvancedErrorInterface) {
+	parts, err := as.GetOracleDatabaseLicenseTypes()
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, err
 	}
 
-	partsMap := make(map[string]model.OracleDatabasePart)
+	partsMap := make(map[string]model.OracleDatabaseLicenseType)
 	for _, part := range parts {
 		partsMap[part.PartID] = part
 	}
@@ -46,15 +46,15 @@ func (as *APIService) GetOracleDatabaseAgreementPartsMap() (map[string]model.Ora
 	return partsMap, nil
 }
 
-// GetOraclePart return a Part by ID
-func (as *APIService) GetOraclePart(partID string) (*model.OracleDatabasePart, utils.AdvancedErrorInterface) {
-	parts, err := as.Database.GetOracleDatabaseParts()
+// GetOracleDatabaseLicenseType return a LicenseType by ID
+func (as *APIService) GetOracleDatabaseLicenseType(id string) (*model.OracleDatabaseLicenseType, utils.AdvancedErrorInterface) {
+	parts, err := as.Database.GetOracleDatabaseLicenseTypes()
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
 	for _, part := range parts {
-		if partID == part.PartID {
+		if id == part.PartID {
 			return &part, nil
 		}
 	}
@@ -112,7 +112,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabas
 		}
 	}
 
-	parts, err := as.GetOracleDatabaseAgreementPartsMap()
+	parts, err := as.GetOracleDatabaseLicenseTypesAsMap()
 	if err != nil {
 		return nil, err
 	}

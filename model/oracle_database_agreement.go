@@ -29,13 +29,13 @@ type OracleDatabaseAgreement struct {
 
 // AssociatedPart describe a Part associated to an Agreement
 type AssociatedPart struct {
-	ID                 primitive.ObjectID `json:"id" bson:"_id"`
-	OracleDatabasePart `bson:",inline"`
-	ReferenceNumber    string   `json:"referenceNumber" bson:"referenceNumber"`
-	Unlimited          bool     `json:"unlimited" bson:"unlimited"`
-	Count              int      `json:"count" bson:"count"`
-	CatchAll           bool     `json:"catchAll" bson:"catchAll"` //TODO Rename in IsBasket ?
-	Hosts              []string `json:"hosts" bson:"hosts"`
+	ID                        primitive.ObjectID `json:"id" bson:"_id"`
+	OracleDatabaseLicenseType `bson:",inline"`
+	ReferenceNumber           string   `json:"referenceNumber" bson:"referenceNumber"`
+	Unlimited                 bool     `json:"unlimited" bson:"unlimited"`
+	Count                     int      `json:"count" bson:"count"`
+	CatchAll                  bool     `json:"catchAll" bson:"catchAll"` //TODO Rename in IsBasket ?
+	Hosts                     []string `json:"hosts" bson:"hosts"`
 }
 
 // AssociatedPartByID getter

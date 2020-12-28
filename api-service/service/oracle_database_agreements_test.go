@@ -32,7 +32,7 @@ import (
 
 //TODO add tests for UpdateOracleDatabaseAgreement
 
-var partsSample = []model.OracleDatabasePart{
+var licenseTypesSample = []model.OracleDatabaseLicenseType{
 	{
 		PartID:          "PID001",
 		ItemDescription: "itemDesc1",
@@ -95,7 +95,7 @@ func TestAddOracleDatabaseAgreements_Success_InsertNew(t *testing.T) {
 			{"hostname": "ercsoldbx"},
 		}, nil),
 		db.EXPECT().GetOracleDatabaseAgreement(addRequest.AgreementID).Return(nil, utils.AerrOracleDatabaseAgreementNotFound),
-		db.EXPECT().GetOracleDatabaseParts().Return(partsSample, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().Return(licenseTypesSample, nil),
 		db.EXPECT().InsertOracleDatabaseAgreement(gomock.Any()).
 			Do(func(actual model.OracleDatabaseAgreement) {
 				actual.ID = primitive.NilObjectID
@@ -105,13 +105,13 @@ func TestAddOracleDatabaseAgreements_Success_InsertNew(t *testing.T) {
 					CSI:         "CSI001",
 					Parts: []model.AssociatedPart{
 						{
-							ID:                 utils.Str2oid("000000000000000000000001"),
-							OracleDatabasePart: partsSample[0],
-							ReferenceNumber:    "RF0001",
-							Unlimited:          true,
-							Count:              30,
-							CatchAll:           true,
-							Hosts:              []string{"test-db", "ercsoldbx"},
+							ID:                        utils.Str2oid("000000000000000000000001"),
+							OracleDatabaseLicenseType: licenseTypesSample[0],
+							ReferenceNumber:           "RF0001",
+							Unlimited:                 true,
+							Count:                     30,
+							CatchAll:                  true,
+							Hosts:                     []string{"test-db", "ercsoldbx"},
 						},
 					},
 				}
@@ -157,13 +157,13 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 		CSI:         "CSI001",
 		Parts: []model.AssociatedPart{
 			{
-				ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-				OracleDatabasePart: partsSample[0],
-				ReferenceNumber:    "RF0001",
-				Unlimited:          true,
-				Count:              30,
-				CatchAll:           false,
-				Hosts:              []string{"test-db", "ercsoldbx"},
+				ID:                        utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+				OracleDatabaseLicenseType: licenseTypesSample[0],
+				ReferenceNumber:           "RF0001",
+				Unlimited:                 true,
+				Count:                     30,
+				CatchAll:                  false,
+				Hosts:                     []string{"test-db", "ercsoldbx"},
 			},
 		},
 	}
@@ -187,8 +187,8 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 			}, nil),
 		db.EXPECT().GetOracleDatabaseAgreement(addRequest.AgreementID).
 			Return(&alreadyExistsAgreement, nil),
-		db.EXPECT().GetOracleDatabaseParts().
-			Return(partsSample, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypesSample, nil),
 		db.EXPECT().UpdateOracleDatabaseAgreement(gomock.Any()).Do(func(actual model.OracleDatabaseAgreement) {
 			expected := model.OracleDatabaseAgreement{
 				ID:          utils.Str2oid("5f4d0a2b27fe53da8a4aec45"),
@@ -196,22 +196,22 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 				CSI:         "CSI001",
 				Parts: []model.AssociatedPart{
 					{
-						ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-						OracleDatabasePart: partsSample[0],
-						ReferenceNumber:    "RF0001",
-						Unlimited:          true,
-						Count:              30,
-						CatchAll:           false,
-						Hosts:              []string{"test-db", "ercsoldbx"},
+						ID:                        utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+						OracleDatabaseLicenseType: licenseTypesSample[0],
+						ReferenceNumber:           "RF0001",
+						Unlimited:                 true,
+						Count:                     30,
+						CatchAll:                  false,
+						Hosts:                     []string{"test-db", "ercsoldbx"},
 					},
 					{
-						ID:                 utils.Str2oid("000000000000000000000001"),
-						OracleDatabasePart: partsSample[1],
-						ReferenceNumber:    "RF0002",
-						Unlimited:          false,
-						Count:              33,
-						CatchAll:           true,
-						Hosts:              []string{"pippo", "pluto"},
+						ID:                        utils.Str2oid("000000000000000000000001"),
+						OracleDatabaseLicenseType: licenseTypesSample[1],
+						ReferenceNumber:           "RF0002",
+						Unlimited:                 false,
+						Count:                     33,
+						CatchAll:                  true,
+						Hosts:                     []string{"pippo", "pluto"},
 					},
 				},
 			}
@@ -316,8 +316,8 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 				}, nil),
 			db.EXPECT().GetOracleDatabaseAgreement(addRequest.AgreementID).
 				Return(nil, utils.AerrOracleDatabaseAgreementNotFound),
-			db.EXPECT().GetOracleDatabaseParts().
-				Return(partsSample, nil),
+			db.EXPECT().GetOracleDatabaseLicenseTypes().
+				Return(licenseTypesSample, nil),
 		)
 
 		res, err := as.AddAssociatedPartToOracleDbAgreement(addRequestWrongPart)
@@ -349,13 +349,13 @@ func TestUpdateAssociatedPartOfOracleDbAgreement(t *testing.T) {
 		CSI:         "CSI001",
 		Parts: []model.AssociatedPart{
 			{
-				ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-				OracleDatabasePart: partsSample[0],
-				ReferenceNumber:    "RF0001",
-				Unlimited:          true,
-				Count:              30,
-				CatchAll:           true,
-				Hosts:              []string{"test-db", "ercsoldbx"},
+				ID:                        utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+				OracleDatabaseLicenseType: licenseTypesSample[0],
+				ReferenceNumber:           "RF0001",
+				Unlimited:                 true,
+				Count:                     30,
+				CatchAll:                  true,
+				Hosts:                     []string{"test-db", "ercsoldbx"},
 			},
 		},
 	}
@@ -403,8 +403,8 @@ func TestUpdateAssociatedPartOfOracleDbAgreement(t *testing.T) {
 			}, nil),
 			db.EXPECT().GetOracleDatabaseAgreementByAssociatedPart(utils.Str2oid(req.ID)).
 				Return(&agrForGet, nil),
-			db.EXPECT().GetOracleDatabaseParts().
-				Return(partsSample, nil),
+			db.EXPECT().GetOracleDatabaseLicenseTypes().
+				Return(licenseTypesSample, nil),
 			db.EXPECT().UpdateOracleDatabaseAgreement(agreement).Return(nil),
 		)
 
@@ -432,8 +432,8 @@ func TestUpdateAssociatedPartOfOracleDbAgreement(t *testing.T) {
 				}, nil),
 			db.EXPECT().GetOracleDatabaseAgreementByAssociatedPart(utils.Str2oid(req.ID)).
 				Return(nil, utils.AerrOracleDatabaseAgreementNotFound),
-			db.EXPECT().GetOracleDatabaseParts().
-				Return(partsSample, nil),
+			db.EXPECT().GetOracleDatabaseLicenseTypes().
+				Return(licenseTypesSample, nil),
 		)
 
 		err := as.UpdateAssociatedPartOfOracleDbAgreement(req)
@@ -481,7 +481,7 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	parts := []model.OracleDatabasePart{
+	parts := []model.OracleDatabaseLicenseType{
 		{
 			PartID:          "PID002",
 			Aliases:         []string{"Partitioning"},
@@ -555,7 +555,7 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 			Return(returnedAgreements, nil),
 		db.EXPECT().ListHostUsingOracleDatabaseLicenses().
 			Return(returnedHosts, nil),
-		db.EXPECT().GetOracleDatabaseParts().
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(parts, nil),
 	)
 
@@ -583,7 +583,7 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	parts := []model.OracleDatabasePart{
+	parts := []model.OracleDatabaseLicenseType{
 		{
 			PartID:          "PID002",
 			Aliases:         []string{"Partitioning"},
@@ -631,7 +631,7 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 			Return(returnedAgreements, nil),
 		db.EXPECT().ListHostUsingOracleDatabaseLicenses().
 			Return(returnedHosts, nil),
-		db.EXPECT().GetOracleDatabaseParts().
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(parts, nil),
 	)
 
@@ -654,7 +654,7 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 			Return(returnedAgreements, nil),
 		db.EXPECT().ListHostUsingOracleDatabaseLicenses().
 			Return(returnedHosts, nil),
-		db.EXPECT().GetOracleDatabaseParts().
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(parts, nil),
 	)
 
@@ -677,7 +677,7 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 			Return(returnedAgreements, nil),
 		db.EXPECT().ListHostUsingOracleDatabaseLicenses().
 			Return(returnedHosts, nil),
-		db.EXPECT().GetOracleDatabaseParts().
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(parts, nil),
 	)
 
@@ -976,7 +976,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCase(t *testing.T)
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	parts := []model.OracleDatabasePart{
+	parts := []model.OracleDatabaseLicenseType{
 		{
 			PartID:          "PID002",
 			Aliases:         []string{"Partitioning"},
@@ -984,7 +984,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCase(t *testing.T)
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
 		},
 	}
-	db.EXPECT().GetOracleDatabaseParts().
+	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
 	agreements := []dto.OracleDatabaseAgreementFE{
@@ -1063,7 +1063,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *t
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	parts := []model.OracleDatabasePart{
+	parts := []model.OracleDatabaseLicenseType{
 		{
 			PartID:          "PID002",
 			Aliases:         []string{"Partitioning"},
@@ -1071,7 +1071,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *t
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
 		},
 	}
-	db.EXPECT().GetOracleDatabaseParts().
+	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
 	agreements := []dto.OracleDatabaseAgreementFE{
@@ -1150,7 +1150,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	parts := []model.OracleDatabasePart{
+	parts := []model.OracleDatabaseLicenseType{
 		{
 			PartID:          "PID002",
 			Aliases:         []string{"Partitioning"},
@@ -1158,7 +1158,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 			Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
 		},
 	}
-	db.EXPECT().GetOracleDatabaseParts().
+	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
 	agreements := []dto.OracleDatabaseAgreementFE{
@@ -1237,7 +1237,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	parts := []model.OracleDatabasePart{
+	parts := []model.OracleDatabaseLicenseType{
 		{
 			PartID:          "PID002",
 			Aliases:         []string{"Partitioning"},
@@ -1245,7 +1245,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
 		},
 	}
-	db.EXPECT().GetOracleDatabaseParts().
+	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
 	agreements := []dto.OracleDatabaseAgreementFE{
@@ -1342,7 +1342,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	parts := []model.OracleDatabasePart{
+	parts := []model.OracleDatabaseLicenseType{
 		{
 			PartID:          "PID002",
 			Aliases:         []string{"Partitioning"},
@@ -1350,7 +1350,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
 		},
 	}
-	db.EXPECT().GetOracleDatabaseParts().
+	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
 	agreements := []dto.OracleDatabaseAgreementFE{
@@ -1474,7 +1474,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCaseNoAssociatedHo
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	parts := []model.OracleDatabasePart{
+	parts := []model.OracleDatabaseLicenseType{
 		{
 			PartID:          "PID002",
 			Aliases:         []string{"Partitioning"},
@@ -1482,7 +1482,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCaseNoAssociatedHo
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
 		},
 	}
-	db.EXPECT().GetOracleDatabaseParts().
+	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
 	agreements := []dto.OracleDatabaseAgreementFE{
@@ -1548,7 +1548,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAss
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	parts := []model.OracleDatabasePart{
+	parts := []model.OracleDatabaseLicenseType{
 		{
 			PartID:          "PID002",
 			Aliases:         []string{"Partitioning"},
@@ -1556,7 +1556,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAss
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
 		},
 	}
-	db.EXPECT().GetOracleDatabaseParts().
+	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
 	agreements := []dto.OracleDatabaseAgreementFE{
@@ -1622,7 +1622,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	parts := []model.OracleDatabasePart{
+	parts := []model.OracleDatabaseLicenseType{
 		{
 			PartID:          "PID002",
 			Aliases:         []string{"Partitioning"},
@@ -1630,7 +1630,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 			Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
 		},
 	}
-	db.EXPECT().GetOracleDatabaseParts().
+	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
 	agreements := []dto.OracleDatabaseAgreementFE{
@@ -1696,7 +1696,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	parts := []model.OracleDatabasePart{
+	parts := []model.OracleDatabaseLicenseType{
 		{
 			PartID:          "PID002",
 			Aliases:         []string{"Partitioning"},
@@ -1704,7 +1704,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
 		},
 	}
-	db.EXPECT().GetOracleDatabaseParts().
+	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
 	agreements := []dto.OracleDatabaseAgreementFE{
@@ -1893,7 +1893,7 @@ func TestSortOracleDatabaseAgreements(t *testing.T) {
 }
 
 func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
-	partsMap := map[string]*model.OracleDatabasePart{
+	partsMap := map[string]*model.OracleDatabaseLicenseType{
 		"L10005": {
 			PartID:          "L10005",
 			ItemDescription: "Oracle Real Application Clusters",
@@ -1998,7 +1998,7 @@ func TestBuildHostUsingLicensesMap(t *testing.T) {
 }
 
 func TestBuildAgreementPartMap(t *testing.T) {
-	list := []model.OracleDatabasePart{
+	list := []model.OracleDatabaseLicenseType{
 		{
 			ItemDescription: "itemDesc1",
 			Aliases:         []string{"alias1"},
@@ -2013,12 +2013,12 @@ func TestBuildAgreementPartMap(t *testing.T) {
 		},
 	}
 
-	expected := map[string]*model.OracleDatabasePart{
+	expected := map[string]*model.OracleDatabaseLicenseType{
 		"PID001": &list[0],
 		"PID002": &list[1],
 	}
 
-	assert.Equal(t, expected, buildAgreementPartMap(list))
+	assert.Equal(t, expected, buildLicenseTypesMap(list))
 }
 
 func TestDeleteAssociatedPartFromOracleDatabaseAgreement(t *testing.T) {
@@ -2053,13 +2053,13 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement(t *testing.T) {
 			CSI:         "CSI001",
 			Parts: []model.AssociatedPart{
 				{
-					ID:                 associatedPartID,
-					OracleDatabasePart: partsSample[0],
-					ReferenceNumber:    "RF0001",
-					Unlimited:          true,
-					Count:              30,
-					CatchAll:           true,
-					Hosts:              []string{"test-db", "ercsoldbx"},
+					ID:                        associatedPartID,
+					OracleDatabaseLicenseType: licenseTypesSample[0],
+					ReferenceNumber:           "RF0001",
+					Unlimited:                 true,
+					Count:                     30,
+					CatchAll:                  true,
+					Hosts:                     []string{"test-db", "ercsoldbx"},
 				},
 			},
 		}
@@ -2081,22 +2081,22 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement(t *testing.T) {
 			CSI:         "CSI001",
 			Parts: []model.AssociatedPart{
 				{
-					ID:                 associatedPartID,
-					OracleDatabasePart: partsSample[0],
-					ReferenceNumber:    "RF0001",
-					Unlimited:          true,
-					Count:              30,
-					CatchAll:           true,
-					Hosts:              []string{"test-db", "ercsoldbx"},
+					ID:                        associatedPartID,
+					OracleDatabaseLicenseType: licenseTypesSample[0],
+					ReferenceNumber:           "RF0001",
+					Unlimited:                 true,
+					Count:                     30,
+					CatchAll:                  true,
+					Hosts:                     []string{"test-db", "ercsoldbx"},
 				},
 				{
-					ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-					OracleDatabasePart: partsSample[1],
-					ReferenceNumber:    "RF0002",
-					Unlimited:          false,
-					Count:              42,
-					CatchAll:           true,
-					Hosts:              []string{"test-db", "ercsoldbx"},
+					ID:                        utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+					OracleDatabaseLicenseType: licenseTypesSample[1],
+					ReferenceNumber:           "RF0002",
+					Unlimited:                 false,
+					Count:                     42,
+					CatchAll:                  true,
+					Hosts:                     []string{"test-db", "ercsoldbx"},
 				},
 			},
 		}
@@ -2106,13 +2106,13 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement(t *testing.T) {
 			CSI:         "CSI001",
 			Parts: []model.AssociatedPart{
 				{
-					ID:                 utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-					OracleDatabasePart: partsSample[1],
-					ReferenceNumber:    "RF0002",
-					Unlimited:          false,
-					Count:              42,
-					CatchAll:           true,
-					Hosts:              []string{"test-db", "ercsoldbx"},
+					ID:                        utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+					OracleDatabaseLicenseType: licenseTypesSample[1],
+					ReferenceNumber:           "RF0002",
+					Unlimited:                 false,
+					Count:                     42,
+					CatchAll:                  true,
+					Hosts:                     []string{"test-db", "ercsoldbx"},
 				},
 			},
 		}
@@ -2162,13 +2162,13 @@ func TestAddHostToAssociatedPart(t *testing.T) {
 			CSI:         "CSI001",
 			Parts: []model.AssociatedPart{
 				{
-					ID:                 associatedPartID,
-					OracleDatabasePart: partsSample[0],
-					ReferenceNumber:    "RF0001",
-					Unlimited:          true,
-					Count:              30,
-					CatchAll:           true,
-					Hosts:              []string{"test-db", "ercsoldbx"},
+					ID:                        associatedPartID,
+					OracleDatabaseLicenseType: licenseTypesSample[0],
+					ReferenceNumber:           "RF0001",
+					Unlimited:                 true,
+					Count:                     30,
+					CatchAll:                  true,
+					Hosts:                     []string{"test-db", "ercsoldbx"},
 				},
 			},
 		}
@@ -2178,13 +2178,13 @@ func TestAddHostToAssociatedPart(t *testing.T) {
 			CSI:         "CSI001",
 			Parts: []model.AssociatedPart{
 				{
-					ID:                 associatedPartID,
-					OracleDatabasePart: partsSample[0],
-					ReferenceNumber:    "RF0001",
-					Unlimited:          true,
-					Count:              30,
-					CatchAll:           true,
-					Hosts:              []string{"test-db", "ercsoldbx", "foobar"},
+					ID:                        associatedPartID,
+					OracleDatabaseLicenseType: licenseTypesSample[0],
+					ReferenceNumber:           "RF0001",
+					Unlimited:                 true,
+					Count:                     30,
+					CatchAll:                  true,
+					Hosts:                     []string{"test-db", "ercsoldbx", "foobar"},
 				},
 			},
 		}
@@ -2221,22 +2221,22 @@ func TestAddHostToAssociatedPart(t *testing.T) {
 			CSI:         "CSI001",
 			Parts: []model.AssociatedPart{
 				{
-					ID:                 associatedPartID,
-					OracleDatabasePart: partsSample[0],
-					ReferenceNumber:    "RF0001",
-					Unlimited:          true,
-					Count:              30,
-					CatchAll:           true,
-					Hosts:              []string{"test-db", "ercsoldbx"},
+					ID:                        associatedPartID,
+					OracleDatabaseLicenseType: licenseTypesSample[0],
+					ReferenceNumber:           "RF0001",
+					Unlimited:                 true,
+					Count:                     30,
+					CatchAll:                  true,
+					Hosts:                     []string{"test-db", "ercsoldbx"},
 				},
 				{
-					ID:                 anotherAssociatedPartID,
-					OracleDatabasePart: partsSample[1],
-					ReferenceNumber:    "RF0002",
-					Unlimited:          false,
-					Count:              42,
-					CatchAll:           false,
-					Hosts:              []string{"test-db", "ercsoldbx"},
+					ID:                        anotherAssociatedPartID,
+					OracleDatabaseLicenseType: licenseTypesSample[1],
+					ReferenceNumber:           "RF0002",
+					Unlimited:                 false,
+					Count:                     42,
+					CatchAll:                  false,
+					Hosts:                     []string{"test-db", "ercsoldbx"},
 				},
 			},
 		}
@@ -2246,22 +2246,22 @@ func TestAddHostToAssociatedPart(t *testing.T) {
 			CSI:         "CSI001",
 			Parts: []model.AssociatedPart{
 				{
-					ID:                 associatedPartID,
-					OracleDatabasePart: partsSample[0],
-					ReferenceNumber:    "RF0001",
-					Unlimited:          true,
-					Count:              30,
-					CatchAll:           true,
-					Hosts:              []string{"test-db", "ercsoldbx"},
+					ID:                        associatedPartID,
+					OracleDatabaseLicenseType: licenseTypesSample[0],
+					ReferenceNumber:           "RF0001",
+					Unlimited:                 true,
+					Count:                     30,
+					CatchAll:                  true,
+					Hosts:                     []string{"test-db", "ercsoldbx"},
 				},
 				{
-					ID:                 anotherAssociatedPartID,
-					OracleDatabasePart: partsSample[1],
-					ReferenceNumber:    "RF0002",
-					Unlimited:          false,
-					Count:              42,
-					CatchAll:           false,
-					Hosts:              []string{"test-db", "ercsoldbx", "foobar"},
+					ID:                        anotherAssociatedPartID,
+					OracleDatabaseLicenseType: licenseTypesSample[1],
+					ReferenceNumber:           "RF0002",
+					Unlimited:                 false,
+					Count:                     42,
+					CatchAll:                  false,
+					Hosts:                     []string{"test-db", "ercsoldbx", "foobar"},
 				},
 			},
 		}
@@ -2325,13 +2325,13 @@ func TestRemoveHostFromAssociatedPart(t *testing.T) {
 			CSI:         "CSI001",
 			Parts: []model.AssociatedPart{
 				{
-					ID:                 associatedPartID,
-					OracleDatabasePart: partsSample[0],
-					ReferenceNumber:    "RF0001",
-					Unlimited:          true,
-					Count:              30,
-					CatchAll:           true,
-					Hosts:              []string{"test-db", "ercsoldbx"},
+					ID:                        associatedPartID,
+					OracleDatabaseLicenseType: licenseTypesSample[0],
+					ReferenceNumber:           "RF0001",
+					Unlimited:                 true,
+					Count:                     30,
+					CatchAll:                  true,
+					Hosts:                     []string{"test-db", "ercsoldbx"},
 				},
 			},
 		}
@@ -2341,13 +2341,13 @@ func TestRemoveHostFromAssociatedPart(t *testing.T) {
 			CSI:         "CSI001",
 			Parts: []model.AssociatedPart{
 				{
-					ID:                 associatedPartID,
-					OracleDatabasePart: partsSample[0],
-					ReferenceNumber:    "RF0001",
-					Unlimited:          true,
-					Count:              30,
-					CatchAll:           true,
-					Hosts:              []string{"test-db"},
+					ID:                        associatedPartID,
+					OracleDatabaseLicenseType: licenseTypesSample[0],
+					ReferenceNumber:           "RF0001",
+					Unlimited:                 true,
+					Count:                     30,
+					CatchAll:                  true,
+					Hosts:                     []string{"test-db"},
 				},
 			},
 		}
@@ -2369,22 +2369,22 @@ func TestRemoveHostFromAssociatedPart(t *testing.T) {
 			CSI:         "CSI001",
 			Parts: []model.AssociatedPart{
 				{
-					ID:                 associatedPartID,
-					OracleDatabasePart: partsSample[0],
-					ReferenceNumber:    "RF0001",
-					Unlimited:          true,
-					Count:              30,
-					CatchAll:           true,
-					Hosts:              []string{"test-db", "ercsoldbx"},
+					ID:                        associatedPartID,
+					OracleDatabaseLicenseType: licenseTypesSample[0],
+					ReferenceNumber:           "RF0001",
+					Unlimited:                 true,
+					Count:                     30,
+					CatchAll:                  true,
+					Hosts:                     []string{"test-db", "ercsoldbx"},
 				},
 				{
-					ID:                 anotherAssociatedPartID,
-					OracleDatabasePart: partsSample[1],
-					ReferenceNumber:    "RF0002",
-					Unlimited:          false,
-					Count:              42,
-					CatchAll:           false,
-					Hosts:              []string{"test-db", "ercsoldbx"},
+					ID:                        anotherAssociatedPartID,
+					OracleDatabaseLicenseType: licenseTypesSample[1],
+					ReferenceNumber:           "RF0002",
+					Unlimited:                 false,
+					Count:                     42,
+					CatchAll:                  false,
+					Hosts:                     []string{"test-db", "ercsoldbx"},
 				},
 			},
 		}
@@ -2394,22 +2394,22 @@ func TestRemoveHostFromAssociatedPart(t *testing.T) {
 			CSI:         "CSI001",
 			Parts: []model.AssociatedPart{
 				{
-					ID:                 associatedPartID,
-					OracleDatabasePart: partsSample[0],
-					ReferenceNumber:    "RF0001",
-					Unlimited:          true,
-					Count:              30,
-					CatchAll:           true,
-					Hosts:              []string{"test-db", "ercsoldbx"},
+					ID:                        associatedPartID,
+					OracleDatabaseLicenseType: licenseTypesSample[0],
+					ReferenceNumber:           "RF0001",
+					Unlimited:                 true,
+					Count:                     30,
+					CatchAll:                  true,
+					Hosts:                     []string{"test-db", "ercsoldbx"},
 				},
 				{
-					ID:                 anotherAssociatedPartID,
-					OracleDatabasePart: partsSample[1],
-					ReferenceNumber:    "RF0002",
-					Unlimited:          false,
-					Count:              42,
-					CatchAll:           false,
-					Hosts:              []string{"test-db"},
+					ID:                        anotherAssociatedPartID,
+					OracleDatabaseLicenseType: licenseTypesSample[1],
+					ReferenceNumber:           "RF0002",
+					Unlimited:                 false,
+					Count:                     42,
+					CatchAll:                  false,
+					Hosts:                     []string{"test-db"},
 				},
 			},
 		}

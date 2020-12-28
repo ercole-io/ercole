@@ -24,7 +24,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (md *MongoDatabase) GetOracleDatabaseParts() ([]model.OracleDatabasePart, error) {
+func (md *MongoDatabase) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error) {
 	ctx := context.TODO()
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).
 		Collection("oracle_database_license_types").
@@ -33,20 +33,20 @@ func (md *MongoDatabase) GetOracleDatabaseParts() ([]model.OracleDatabasePart, e
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	parts := make([]model.OracleDatabasePart, 0)
+	licenseTypes := make([]model.OracleDatabaseLicenseType, 0)
 	defer cur.Close(ctx)
 	for cur.Next(ctx) {
-		var part model.OracleDatabasePart
-		err := cur.Decode(&part)
+		var licenseType model.OracleDatabaseLicenseType
+		err := cur.Decode(&licenseType)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		parts = append(parts, part)
+		licenseTypes = append(licenseTypes, licenseType)
 	}
 	if err := cur.Err(); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return parts, nil
+	return licenseTypes, nil
 }
