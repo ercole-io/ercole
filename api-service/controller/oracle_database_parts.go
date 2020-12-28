@@ -23,9 +23,9 @@ import (
 
 //TODO Rename parts in licenses
 
-// GetOracleDatabaseAgreementPartsList return the list of Oracle/Database agreement parts
-func (ctrl *APIController) GetOracleDatabaseAgreementPartsList(w http.ResponseWriter, r *http.Request) {
-	data, err := ctrl.Service.GetOracleDatabaseAgreementPartsList()
+// GetOracleDatabaseLicenseTypes return the list of OracleDatabaseLicenseTypes
+func (ctrl *APIController) GetOracleDatabaseLicenseTypes(w http.ResponseWriter, r *http.Request) {
+	data, err := ctrl.Service.GetOracleDatabaseLicenseTypes()
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return

@@ -140,7 +140,7 @@ type APIServiceInterface interface {
 
 	// PARTS
 
-	GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabasePart, utils.AdvancedErrorInterface)
+	GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, utils.AdvancedErrorInterface)
 	GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabaseLicenseUsage, utils.AdvancedErrorInterface)
 
 	// PATCHING FUNCTIONS

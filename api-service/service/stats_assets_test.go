@@ -37,7 +37,7 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 	getTechnologiesUsageRes := map[string]float64{
 		"Oracle/Exadata": 2,
 	}
-	parts := []model.OracleDatabasePart{
+	licenseTypes := []model.OracleDatabaseLicenseType{
 		{
 			PartID:          "PID002",
 			Aliases:         []string{"Partitioning"},
@@ -52,8 +52,8 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 		GetHostsCountStats("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(20, nil).AnyTimes().MinTimes(1)
 	db.EXPECT().
-		GetOracleDatabaseParts().
-		Return(parts, nil)
+		GetOracleDatabaseLicenseTypes().
+		Return(licenseTypes, nil)
 
 	returnedAgreements := []dto.OracleDatabaseAgreementFE{
 		{

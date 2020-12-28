@@ -109,7 +109,7 @@ func setupSettingsRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/default-database-tag-choiches", ctrl.GetDefaultDatabaseTags).Methods("GET")
 	router.HandleFunc("/features", ctrl.GetErcoleFeatures).Methods("GET")
 	router.HandleFunc("/technologies", ctrl.GetTechnologyList).Methods("GET")
-	router.HandleFunc("/oracle/database/agreements-parts", ctrl.GetOracleDatabaseAgreementPartsList).Methods("GET")
+	router.HandleFunc("/oracle/database/license-types", ctrl.GetOracleDatabaseLicenseTypes).Methods("GET")
 }
 
 func setupFrontendAPIRoutes(router *mux.Router, ctrl APIControllerInterface) {
