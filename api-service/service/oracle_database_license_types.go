@@ -40,7 +40,7 @@ func (as *APIService) GetOracleDatabaseLicenseTypesAsMap() (map[string]model.Ora
 
 	partsMap := make(map[string]model.OracleDatabaseLicenseType)
 	for _, part := range parts {
-		partsMap[part.PartID] = part
+		partsMap[part.ID] = part
 	}
 
 	return partsMap, nil
@@ -54,7 +54,7 @@ func (as *APIService) GetOracleDatabaseLicenseType(id string) (*model.OracleData
 	}
 
 	for _, part := range parts {
-		if id == part.PartID {
+		if id == part.ID {
 			return &part, nil
 		}
 	}

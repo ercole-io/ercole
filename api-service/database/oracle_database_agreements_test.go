@@ -28,7 +28,7 @@ import (
 )
 
 var licenseTypeSample = model.OracleDatabaseLicenseType{
-	PartID:          "ID00001",
+	ID:              "ID00001",
 	ItemDescription: "ItemDesc 1",
 	Cost:            42,
 	Metric:          model.AgreementPartMetricProcessorPerpetual,
@@ -42,7 +42,7 @@ var agreementSample = model.OracleDatabaseAgreement{
 	LicenseTypes: []model.AssociatedLicenseType{
 		{
 			ID:              utils.Str2oid("5dcad8933b243f80e2ed8551"),
-			LicenseTypeID:   licenseTypeSample.PartID,
+			LicenseTypeID:   licenseTypeSample.ID,
 			ReferenceNumber: "R00001",
 			Unlimited:       true,
 			Count:           345,
@@ -130,7 +130,7 @@ func (m *MongodbSuite) TestUpdateOracleDatabaseAgreement() {
 			LicenseTypes: []model.AssociatedLicenseType{
 				{
 					ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-					LicenseTypeID:   licenseTypeSample.PartID,
+					LicenseTypeID:   licenseTypeSample.ID,
 					ReferenceNumber: "000002",
 					Unlimited:       true,
 					Count:           345,
@@ -188,14 +188,14 @@ func (m *MongodbSuite) TestRemoveOracleDatabaseAgreement() {
 func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 	defer m.db.Client.Database(m.dbname).Collection("oracle_database_license_types").DeleteMany(context.TODO(), bson.M{})
 	licenseTypeSample1 := model.OracleDatabaseLicenseType{
-		PartID:          "ID00001",
+		ID:              "ID00001",
 		ItemDescription: "ItemDesc 1",
 		Cost:            42,
 		Metric:          model.AgreementPartMetricProcessorPerpetual,
 		Aliases:         []string{},
 	}
 	licenseTypeSample2 := model.OracleDatabaseLicenseType{
-		PartID:          "ID00002",
+		ID:              "ID00002",
 		ItemDescription: "ItemDesc 2",
 		Cost:            24,
 		Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
@@ -213,7 +213,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 			{
 
 				ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-				LicenseTypeID:   licenseTypeSample1.PartID,
+				LicenseTypeID:   licenseTypeSample1.ID,
 				ReferenceNumber: "R00001",
 				CatchAll:        true,
 				Count:           345,
@@ -228,7 +228,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 		LicenseTypes: []model.AssociatedLicenseType{
 			{
 				ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
-				LicenseTypeID:   licenseTypeSample1.PartID,
+				LicenseTypeID:   licenseTypeSample1.ID,
 				ReferenceNumber: "R00002",
 				CatchAll:        true,
 				Count:           111,
@@ -237,7 +237,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 			},
 			{
 				ID:              utils.Str2oid("cccccccccccccccccccccccc"),
-				LicenseTypeID:   licenseTypeSample2.PartID,
+				LicenseTypeID:   licenseTypeSample2.ID,
 				ReferenceNumber: "R00003",
 				CatchAll:        false,
 				Count:           222,
