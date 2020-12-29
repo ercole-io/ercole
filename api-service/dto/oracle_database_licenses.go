@@ -23,10 +23,10 @@ type OracleDatabaseUsedLicenseSearchResponse struct {
 
 // OracleDatabaseUsedLicense dto
 type OracleDatabaseUsedLicense struct {
-	LicenseName  string  `json:"licenseName" bson:"licenseName"`
-	DbName       string  `json:"dbName" bson:"dbName"`
-	Hostname     string  `json:"hostname" bson:"hostname"`
-	UsedLicenses float64 `json:"usedLicenses" bson:"usedLicenses"`
+	LicenseTypeID string  `json:"licenseTypeID" bson:"licenseTypeID"`
+	DbName        string  `json:"dbName" bson:"dbName"`
+	Hostname      string  `json:"hostname" bson:"hostname"`
+	UsedLicenses  float64 `json:"usedLicenses" bson:"usedLicenses"`
 }
 
 // OracleDatabaseLicenseUsage contains the information about usage of a license

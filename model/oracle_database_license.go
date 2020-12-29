@@ -24,9 +24,10 @@ import (
 
 // OracleDatabaseLicense holds information about an Oracle database license
 type OracleDatabaseLicense struct {
-	Name      string                 `json:"name" bson:"name"`
-	Count     float64                `json:"count" bson:"count"`
-	OtherInfo map[string]interface{} `json:"-" bson:"-"`
+	LicenseTypeID string                 `json:"licenseTypeID" bson:"licenseTypeID"`
+	Name          string                 `json:"name" bson:"name"`
+	Count         float64                `json:"count" bson:"count"`
+	OtherInfo     map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
