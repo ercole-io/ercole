@@ -31,7 +31,7 @@ type OracleDatabaseUsedLicense struct {
 
 // OracleDatabaseLicenseUsage contains the information about usage of a license
 type OracleDatabaseLicenseUsage struct {
-	PartID          string `json:"partID" bson:"partID"`
+	LicenseTypeID   string `json:"licenseTypeID" bson:"licenseTypeID"`
 	ItemDescription string `json:"itemDescription" bson:"itemDescription"`
 	Metric          string `json:"metric" bson:"metric"`
 
