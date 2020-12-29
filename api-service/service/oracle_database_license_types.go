@@ -84,10 +84,10 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabas
 		license, ok := licenses[host.LicenseTypeID]
 		if !ok {
 			license = &dto.OracleDatabaseLicenseUsage{
-				PartID: host.LicenseTypeID,
+				LicenseTypeID: host.LicenseTypeID,
 			}
 
-			licenses[license.PartID] = license
+			licenses[license.LicenseTypeID] = license
 		}
 
 		license.Consumed += host.OriginalCount
@@ -97,10 +97,10 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabas
 		license, ok := licenses[agreement.LicenseTypeID]
 		if !ok {
 			license = &dto.OracleDatabaseLicenseUsage{
-				PartID: agreement.LicenseTypeID,
+				LicenseTypeID: agreement.LicenseTypeID,
 			}
 
-			licenses[license.PartID] = license
+			licenses[license.LicenseTypeID] = license
 		}
 
 		if agreement.Unlimited {
@@ -125,8 +125,8 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabas
 			license.Compliance = license.Covered / license.Consumed
 		}
 
-		license.ItemDescription = parts[license.PartID].ItemDescription
-		license.Metric = parts[license.PartID].Metric
+		license.ItemDescription = parts[license.LicenseTypeID].ItemDescription
+		license.Metric = parts[license.LicenseTypeID].Metric
 
 		result = append(result, *license)
 	}

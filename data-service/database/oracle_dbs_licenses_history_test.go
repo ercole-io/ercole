@@ -37,7 +37,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 	m.T().Run("First insert, success", func(t *testing.T) {
 		licenses := []dto.OracleDatabaseLicenseUsage{
 			{
-				PartID:          "L47247",
+				LicenseTypeID:   "L47247",
 				ItemDescription: "Oracle Real Application Testing",
 				Metric:          "Processor Perpetual",
 				Consumed:        0,
@@ -46,7 +46,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 				Unlimited:       false,
 			},
 			{
-				PartID:          "A90611",
+				LicenseTypeID:   "A90611",
 				ItemDescription: "Oracle Database Enterprise Edition",
 				Metric:          "Processor Perpetual",
 				Consumed:        2.5,
@@ -55,7 +55,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 				Unlimited:       false,
 			},
 			{
-				PartID:          "A90620",
+				LicenseTypeID:   "A90620",
 				ItemDescription: "Oracle Partitioning",
 				Metric:          "Processor Perpetual",
 				Consumed:        3,
@@ -104,7 +104,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 
 		licenses := []dto.OracleDatabaseLicenseUsage{
 			{
-				PartID:          "L47247",
+				LicenseTypeID:   "L47247",
 				ItemDescription: "Oracle Real Application Testing",
 				Metric:          "Processor Perpetual",
 				Consumed:        0.5,
@@ -113,7 +113,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 				Unlimited:       false,
 			},
 			{
-				PartID:          "A90611",
+				LicenseTypeID:   "A90611",
 				ItemDescription: "Oracle Database Enterprise Edition",
 				Metric:          "Processor Perpetual",
 				Consumed:        4.5,
@@ -122,7 +122,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 				Unlimited:       false,
 			},
 			{
-				PartID:          "PID001",
+				LicenseTypeID:   "PID001",
 				ItemDescription: "Another one",
 				Metric:          "",
 				Consumed:        3,

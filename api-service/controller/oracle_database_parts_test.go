@@ -99,8 +99,8 @@ func TestGetOracleDatabaseLicensesCompliance_Success(t *testing.T) {
 
 	compliance := 75.0 / 275.0
 	expectedRes := []dto.OracleDatabaseLicenseUsage{
-		{PartID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 7, Covered: 7, Compliance: 1},
-		{PartID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 275, Covered: 75, Compliance: compliance},
+		{LicenseTypeID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 7, Covered: 7, Compliance: 1},
+		{LicenseTypeID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 275, Covered: 75, Compliance: compliance},
 	}
 	as.EXPECT().
 		GetOracleDatabaseLicensesCompliance().
