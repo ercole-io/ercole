@@ -165,7 +165,8 @@
                                 "count": {
                                     "$numberDouble": "0.5"
                                 },
-                                "name": "Oracle ENT"
+                                "name": "Oracle ENT",
+                                "licenseTypeID": "A90611"
                             },
                             {
                                 "count": {
@@ -183,7 +184,8 @@
                                 "count": {
                                     "$numberDouble": "0.5"
                                 },
-                                "name": "Diagnostics Pack"
+                                "name": "Diagnostics Pack",
+                                "licenseTypeID": "A90649"
                             }
                         ],
                         "memoryTarget": {
