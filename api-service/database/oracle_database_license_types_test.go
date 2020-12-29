@@ -40,14 +40,14 @@ func (m *MongodbSuite) TestGetOracleDatabaseLicenseTypes() {
 			model.OracleDatabaseLicenseType{
 				ID:              "PID001",
 				ItemDescription: "desc001",
-				Metric:          model.AgreementPartMetricProcessorPerpetual,
+				Metric:          model.LicenseTypeMetricProcessorPerpetual,
 				Cost:            42,
 				Aliases:         []string{"pippo"},
 			},
 			model.OracleDatabaseLicenseType{
 				ID:              "PID002",
 				ItemDescription: "desc002",
-				Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
+				Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
 				Cost:            7,
 				Aliases:         []string{"qui", "quo", "qua"},
 			},

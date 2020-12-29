@@ -160,31 +160,31 @@ func TestGetLicensesCompliance(t *testing.T) {
 			ID:              "PID001",
 			ItemDescription: "itemDesc1",
 			Aliases:         []string{"alias1"},
-			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
 		},
 		{
 			ID:              "PID002",
 			ItemDescription: "itemDesc2",
 			Aliases:         []string{"alias2"},
-			Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
 		},
 		{
 			ID:              "PID003",
 			ItemDescription: "itemDesc3",
 			Aliases:         []string{"alias3"},
-			Metric:          model.AgreementPartMetricComputerPerpetual,
+			Metric:          model.LicenseTypeMetricComputerPerpetual,
 		},
 		{
 			ID:              "PID004",
 			ItemDescription: "itemDesc4",
 			Aliases:         []string{"alias4"},
-			Metric:          model.AgreementPartMetricComputerPerpetual,
+			Metric:          model.LicenseTypeMetricComputerPerpetual,
 		},
 		{
 			ID:              "PID005",
 			ItemDescription: "itemDesc5",
 			Aliases:         []string{"alias5"},
-			Metric:          model.AgreementPartMetricComputerPerpetual,
+			Metric:          model.LicenseTypeMetricComputerPerpetual,
 		},
 	}
 	mockCtrl := gomock.NewController(t)
