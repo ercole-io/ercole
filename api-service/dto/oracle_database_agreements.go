@@ -21,12 +21,12 @@ import (
 
 //TODO Should I remove some of these?
 
-// AssociatedPartInOracleDbAgreementRequest contains the informations needed to add or update an AssociatedPart
-// in an OracleDatabaseAgreement
-type AssociatedPartInOracleDbAgreementRequest struct {
+// AssociatedLicenseTypeInOracleDbAgreementRequest contains the informations needed to add or update an
+// AssociatedLicenseType in an OracleDatabaseAgreement
+type AssociatedLicenseTypeInOracleDbAgreementRequest struct {
 	ID              string   `json:"id"`
 	AgreementID     string   `json:"agreementID"`
-	PartID          string   `json:"partID"`
+	LicenseTypeID   string   `json:"licenseTypeID"`
 	CSI             string   `json:"csi"`
 	ReferenceNumber string   `json:"referenceNumber"`
 	Unlimited       bool     `json:"unlimited"`
@@ -35,18 +35,19 @@ type AssociatedPartInOracleDbAgreementRequest struct {
 	Hosts           []string `json:"hosts"`
 }
 
-// OracleDatabaseAgreementFE contains the informations about an AssociatedPart in an Agreement for the frontend
+// OracleDatabaseAgreementFE contains the informations about an AssociatedLicenseType in an Agreement for the frontend
 type OracleDatabaseAgreementFE struct {
-	ID          primitive.ObjectID `json:"id" bson:"_id"` // ID of agreement - part couple
+	ID          primitive.ObjectID `json:"id" bson:"_id"` // ID of agreement - licenseType couple
 	AgreementID string             `json:"agreementID" bson:"agreementID"`
 	CSI         string             `json:"csi" bson:"csi"`
 
-	// Part
-	PartID          string `json:"partID" bson:"partID"`
+	// LicenseType
+
+	LicenseTypeID   string `json:"licenseTypeID" bson:"licenseTypeID"`
 	ItemDescription string `json:"itemDescription" bson:"itemDescription"`
 	Metric          string `json:"metric" bson:"metric"`
 
-	// Associated Part
+	// Associated LicenseType
 
 	ReferenceNumber string `json:"referenceNumber" bson:"referenceNumber"`
 	Unlimited       bool   `json:"unlimited" bson:"unlimited"` // Or "ULA"
@@ -82,7 +83,7 @@ type OracleDatabaseAgreementAssociatedHostFE struct {
 // SearchOracleDatabaseAgreementsFilter contains the filter used to get the list of Oracle/Database agreements
 type SearchOracleDatabaseAgreementsFilter struct {
 	AgreementID       string
-	PartID            string
+	LicenseTypeID     string
 	ItemDescription   string
 	CSI               string
 	Metric            string
@@ -100,9 +101,9 @@ type SearchOracleDatabaseAgreementsFilter struct {
 // HostUsingOracleDatabaseLicenses contains the information about the hosts that use licenses by Oracle/Database
 type HostUsingOracleDatabaseLicenses struct {
 	LicenseName string `json:"licenseName" bson:"licenseName"`
-	//TODO Use PartID instead of LicenseName in algorithms
-	PartID string `json:"partID" bson:"partID"`
-	Name   string `json:"name" bson:"name"`
+	//TODO Use LicenseTypeID instead of LicenseName in algorithms
+	LicenseTypeID string `json:"licenseTypeID" bson:"licenseTypeID"`
+	Name          string `json:"name" bson:"name"`
 	//Type describe if it's an host or a cluster
 	Type string `json:"type" bson:"type"`
 	// TODO Rename in UncoveredLicenses // Licenses to be covered by agreement

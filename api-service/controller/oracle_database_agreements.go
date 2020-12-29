@@ -28,14 +28,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// AddAssociatedPartToOracleDbAgreement add associated part to an existing agreement else it will create it
-func (ctrl *APIController) AddAssociatedPartToOracleDbAgreement(w http.ResponseWriter, r *http.Request) {
+// AddAssociatedLicenseTypeToOracleDbAgreement add associated part to an existing agreement else it will create it
+func (ctrl *APIController) AddAssociatedLicenseTypeToOracleDbAgreement(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 
-	var req dto.AssociatedPartInOracleDbAgreementRequest
+	var req dto.AssociatedLicenseTypeInOracleDbAgreementRequest
 
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
@@ -47,11 +47,11 @@ func (ctrl *APIController) AddAssociatedPartToOracleDbAgreement(w http.ResponseW
 
 	if req.ID != "" {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
-			utils.NewAdvancedErrorPtr(errors.New("ID must be empty to add a new AssociatedPart"), http.StatusText(http.StatusBadRequest)))
+			utils.NewAdvancedErrorPtr(errors.New("ID must be empty to add a new AssociatedLicenseType"), http.StatusText(http.StatusBadRequest)))
 		return
 	}
 
-	id, aerr := ctrl.Service.AddAssociatedPartToOracleDbAgreement(req)
+	id, aerr := ctrl.Service.AddAssociatedLicenseTypeToOracleDbAgreement(req)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
@@ -60,14 +60,14 @@ func (ctrl *APIController) AddAssociatedPartToOracleDbAgreement(w http.ResponseW
 	utils.WriteJSONResponse(w, http.StatusOK, id)
 }
 
-// UpdateAssociatedPartOfOracleDbAgreement edit an agreement
-func (ctrl *APIController) UpdateAssociatedPartOfOracleDbAgreement(w http.ResponseWriter, r *http.Request) {
+// UpdateAssociatedLicenseTypeOfOracleDbAgreement edit an agreement
+func (ctrl *APIController) UpdateAssociatedLicenseTypeOfOracleDbAgreement(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 
-	var req dto.AssociatedPartInOracleDbAgreementRequest
+	var req dto.AssociatedLicenseTypeInOracleDbAgreementRequest
 
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
@@ -77,7 +77,7 @@ func (ctrl *APIController) UpdateAssociatedPartOfOracleDbAgreement(w http.Respon
 		return
 	}
 
-	err := ctrl.Service.UpdateAssociatedPartOfOracleDbAgreement(req)
+	err := ctrl.Service.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
 	if err == utils.AerrOracleDatabaseAgreementNotFound ||
 		err == utils.AerrOracleDatabaseAgreementInvalidPartID {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
@@ -89,8 +89,8 @@ func (ctrl *APIController) UpdateAssociatedPartOfOracleDbAgreement(w http.Respon
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
-// SearchAssociatedPartsInOracleDatabaseAgreements search Oracle/Database agreements
-func (ctrl *APIController) SearchAssociatedPartsInOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request) {
+// SearchAssociatedLicenseTypesInOracleDatabaseAgreements search Oracle/Database agreements
+func (ctrl *APIController) SearchAssociatedLicenseTypesInOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request) {
 	var err utils.AdvancedErrorInterface
 
 	searchOracleDatabaseAgreementsFilters, err := parseSearchOracleDatabaseAgreementsFilters(r.URL.Query())
@@ -99,7 +99,7 @@ func (ctrl *APIController) SearchAssociatedPartsInOracleDatabaseAgreements(w htt
 		return
 	}
 
-	response, err := ctrl.Service.SearchAssociatedPartsInOracleDatabaseAgreements(searchOracleDatabaseAgreementsFilters)
+	response, err := ctrl.Service.SearchAssociatedLicenseTypesInOracleDatabaseAgreements(searchOracleDatabaseAgreementsFilters)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -117,7 +117,7 @@ func parseSearchOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.Searc
 	filters := dto.SearchOracleDatabaseAgreementsFilter{}
 
 	filters.AgreementID = urlValues.Get("agreement-id")
-	filters.PartID = urlValues.Get("part-id")
+	filters.LicenseTypeID = urlValues.Get("license-type-id")
 	filters.ItemDescription = urlValues.Get("item-description")
 	filters.CSI = urlValues.Get("csi")
 	filters.Metric = urlValues.Get("metrics")
@@ -166,8 +166,8 @@ func parseSearchOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.Searc
 	return filters, nil
 }
 
-// AddHostToAssociatedPart add an host from AssociatedPart
-func (ctrl *APIController) AddHostToAssociatedPart(w http.ResponseWriter, r *http.Request) {
+// AddHostToAssociatedLicenseType add an host from AssociatedLicenseType
+func (ctrl *APIController) AddHostToAssociatedLicenseType(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
@@ -190,7 +190,7 @@ func (ctrl *APIController) AddHostToAssociatedPart(w http.ResponseWriter, r *htt
 	}
 	defer r.Body.Close()
 
-	if aerr = ctrl.Service.AddHostToAssociatedPart(id, string(raw)); aerr == utils.AerrOracleDatabaseAgreementNotFound ||
+	if aerr = ctrl.Service.AddHostToAssociatedLicenseType(id, string(raw)); aerr == utils.AerrOracleDatabaseAgreementNotFound ||
 		aerr == utils.AerrNotInClusterHostNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
 		return
@@ -202,8 +202,8 @@ func (ctrl *APIController) AddHostToAssociatedPart(w http.ResponseWriter, r *htt
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
-// RemoveHostFromAssociatedPart remove an host from AssociatedPart
-func (ctrl *APIController) RemoveHostFromAssociatedPart(w http.ResponseWriter, r *http.Request) {
+// RemoveHostFromAssociatedLicenseType remove an host from AssociatedLicenseType
+func (ctrl *APIController) RemoveHostFromAssociatedLicenseType(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
@@ -220,7 +220,7 @@ func (ctrl *APIController) RemoveHostFromAssociatedPart(w http.ResponseWriter, r
 	}
 	hostname = mux.Vars(r)["hostname"]
 
-	if aerr = ctrl.Service.RemoveHostFromAssociatedPart(id, hostname); aerr == utils.AerrOracleDatabaseAgreementNotFound {
+	if aerr = ctrl.Service.RemoveHostFromAssociatedLicenseType(id, hostname); aerr == utils.AerrOracleDatabaseAgreementNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
 		return
 	} else if aerr != nil {
@@ -231,8 +231,8 @@ func (ctrl *APIController) RemoveHostFromAssociatedPart(w http.ResponseWriter, r
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
-// DeleteAssociatedPartFromOracleDatabaseAgreement delete AssociatedPart from an OracleDatabaseAgreement
-func (ctrl *APIController) DeleteAssociatedPartFromOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
+// DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement delete AssociatedLicenseType from an OracleDatabaseAgreement
+func (ctrl *APIController) DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
@@ -247,7 +247,7 @@ func (ctrl *APIController) DeleteAssociatedPartFromOracleDatabaseAgreement(w htt
 		return
 	}
 
-	if aerr = ctrl.Service.DeleteAssociatedPartFromOracleDatabaseAgreement(id); aerr == utils.AerrOracleDatabaseAgreementNotFound {
+	if aerr = ctrl.Service.DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(id); aerr == utils.AerrOracleDatabaseAgreementNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
 		return
 	} else if aerr != nil {
