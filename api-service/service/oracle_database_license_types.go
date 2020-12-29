@@ -81,10 +81,10 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabas
 	licenses := make(map[string]*dto.OracleDatabaseLicenseUsage)
 
 	for _, host := range hosts {
-		license, ok := licenses[host.PartID]
+		license, ok := licenses[host.LicenseTypeID]
 		if !ok {
 			license = &dto.OracleDatabaseLicenseUsage{
-				PartID: host.PartID,
+				PartID: host.LicenseTypeID,
 			}
 
 			licenses[license.PartID] = license
@@ -94,10 +94,10 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabas
 	}
 
 	for _, agreement := range agreements {
-		license, ok := licenses[agreement.PartID]
+		license, ok := licenses[agreement.LicenseTypeID]
 		if !ok {
 			license = &dto.OracleDatabaseLicenseUsage{
-				PartID: agreement.PartID,
+				PartID: agreement.LicenseTypeID,
 			}
 
 			licenses[license.PartID] = license

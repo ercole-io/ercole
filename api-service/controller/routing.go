@@ -90,12 +90,12 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/license-modifiers/{licenseName}", ctrl.DeleteOracleDatabaseLicenseModifier).Methods("DELETE")
 
 	// AGREEMENTS
-	router.HandleFunc("/agreements/oracle/database", ctrl.AddAssociatedPartToOracleDbAgreement).Methods("POST")
-	router.HandleFunc("/agreements/oracle/database", ctrl.UpdateAssociatedPartOfOracleDbAgreement).Methods("PUT")
-	router.HandleFunc("/agreements/oracle/database", ctrl.SearchAssociatedPartsInOracleDatabaseAgreements).Methods("GET")
-	router.HandleFunc("/agreements/oracle/database/{id}", ctrl.DeleteAssociatedPartFromOracleDatabaseAgreement).Methods("DELETE")
-	router.HandleFunc("/agreements/oracle/database/{id}/hosts", ctrl.AddHostToAssociatedPart).Methods("POST")
-	router.HandleFunc("/agreements/oracle/database/{id}/hosts/{hostname}", ctrl.RemoveHostFromAssociatedPart).Methods("DELETE")
+	router.HandleFunc("/agreements/oracle/database", ctrl.AddAssociatedLicenseTypeToOracleDbAgreement).Methods("POST")
+	router.HandleFunc("/agreements/oracle/database", ctrl.UpdateAssociatedLicenseTypeOfOracleDbAgreement).Methods("PUT")
+	router.HandleFunc("/agreements/oracle/database", ctrl.SearchAssociatedLicenseTypesInOracleDatabaseAgreements).Methods("GET")
+	router.HandleFunc("/agreements/oracle/database/{id}", ctrl.DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement).Methods("DELETE")
+	router.HandleFunc("/agreements/oracle/database/{id}/hosts", ctrl.AddHostToAssociatedLicenseType).Methods("POST")
+	router.HandleFunc("/agreements/oracle/database/{id}/hosts/{hostname}", ctrl.RemoveHostFromAssociatedLicenseType).Methods("DELETE")
 
 	// ALERTS
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")
