@@ -91,9 +91,9 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 		}
 
 		expected := []map[string]interface{}{
-			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": dateDay1}}, "partID": "L47247"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": dateDay1}}, "partID": "A90611"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": dateDay1}}, "partID": "A90620"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": dateDay1}}, "licenseTypeID": "L47247"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": dateDay1}}, "licenseTypeID": "A90611"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": dateDay1}}, "licenseTypeID": "A90620"},
 		}
 		assert.Equal(m.T(), expected, actual)
 
@@ -160,10 +160,10 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 		dateDay2 := utils.PDT("2020-12-06T15:02:03Z")
 
 		expected := []map[string]interface{}{
-			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": dateDay1}, map[string]interface{}{"consumed": 0.5, "covered": 5.0, "date": dateDay2}}, "partID": "L47247"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": dateDay1}, map[string]interface{}{"consumed": 4.5, "covered": 2.5, "date": dateDay2}}, "partID": "A90611"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": dateDay1}}, "partID": "A90620"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": dateDay2}}, "partID": "PID001"}}
+			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": dateDay1}, map[string]interface{}{"consumed": 0.5, "covered": 5.0, "date": dateDay2}}, "licenseTypeID": "L47247"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": dateDay1}, map[string]interface{}{"consumed": 4.5, "covered": 2.5, "date": dateDay2}}, "licenseTypeID": "A90611"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": dateDay1}}, "licenseTypeID": "A90620"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": dateDay2}}, "licenseTypeID": "PID001"}}
 		fmt.Printf("%#v", actual)
 		assert.Equal(m.T(), expected, actual)
 	})

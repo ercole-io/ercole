@@ -85,7 +85,7 @@ func (as *ChartService) GetOracleDbLicenseHistory() ([]dto.OracleDatabaseLicense
 
 	for i := range licenses {
 		license := &licenses[i]
-		licenseType := types[license.PartID]
+		licenseType := types[license.LicenseTypeID]
 		license.ItemDescription = licenseType.ItemDescription
 		license.Metric = licenseType.Metric
 
