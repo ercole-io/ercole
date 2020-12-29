@@ -324,7 +324,7 @@ func MigrateOracleDatabaseAgreementsSchema(log *logrus.Logger, client *mongo.Dat
 				},
 				{
 					Keys: bson.D{
-						{"parts._id", 1},
+						{"licenseTypes._id", 1},
 					},
 					Options: options.Index().SetUnique(true),
 				}},

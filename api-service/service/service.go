@@ -126,17 +126,17 @@ type APIServiceInterface interface {
 	// ORACLE DATABASE AGREEMENTS
 
 	// Add associated part to OracleDatabaseAgreement or create a new one
-	AddAssociatedPartToOracleDbAgreement(request dto.AssociatedPartInOracleDbAgreementRequest) (string, utils.AdvancedErrorInterface)
+	AddAssociatedLicenseTypeToOracleDbAgreement(request dto.AssociatedLicenseTypeInOracleDbAgreementRequest) (string, utils.AdvancedErrorInterface)
 	// Update associated part in OracleDatabaseAgreement
-	UpdateAssociatedPartOfOracleDbAgreement(request dto.AssociatedPartInOracleDbAgreementRequest) utils.AdvancedErrorInterface
+	UpdateAssociatedLicenseTypeOfOracleDbAgreement(request dto.AssociatedLicenseTypeInOracleDbAgreementRequest) utils.AdvancedErrorInterface
 	// Search OracleDatabase associated parts agreements
-	SearchAssociatedPartsInOracleDatabaseAgreements(filters dto.SearchOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface)
+	SearchAssociatedLicenseTypesInOracleDatabaseAgreements(filters dto.SearchOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface)
 	// Delete associated part from OracleDatabaseAgreement
-	DeleteAssociatedPartFromOracleDatabaseAgreement(associatedPartID primitive.ObjectID) utils.AdvancedErrorInterface
-	// Add an host to AssociatedPart
-	AddHostToAssociatedPart(associatedPartID primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
-	// Remove host from AssociatedPart
-	RemoveHostFromAssociatedPart(associatedPartID primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
+	DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(associateLicenseTypeID primitive.ObjectID) utils.AdvancedErrorInterface
+	// Add an host to AssociatedLicenseType
+	AddHostToAssociatedLicenseType(associateLicenseTypeID primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
+	// Remove host from AssociatedLicenseType
+	RemoveHostFromAssociatedLicenseType(associateLicenseTypeID primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
 
 	// PARTS
 

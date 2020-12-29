@@ -70,7 +70,7 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
-			PartID:          "PID002",
+			LicenseTypeID:   "PID002",
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			LicensesCount:   55,

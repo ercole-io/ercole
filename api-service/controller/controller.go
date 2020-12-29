@@ -54,7 +54,7 @@ type APIControllerInterface interface {
 	// SearchOracleDatabaseLicenseModifiers search a license modifier using the filters in the request
 	SearchOracleDatabaseLicenseModifiers(w http.ResponseWriter, r *http.Request)
 	// SearchOracleDatabaseAgreements search OracleDatabase agreements data using the filters in the request
-	SearchAssociatedPartsInOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request)
+	SearchAssociatedLicenseTypesInOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request)
 
 	// GetPatchingFunction return all'informations about the patching function of the host requested in the hostnmae path variable
 	GetPatchingFunction(w http.ResponseWriter, r *http.Request)
@@ -121,15 +121,15 @@ type APIControllerInterface interface {
 	GetOracleDatabaseLicenseTypes(w http.ResponseWriter, r *http.Request)
 
 	// Add associated part to an existing/new agreement
-	AddAssociatedPartToOracleDbAgreement(w http.ResponseWriter, r *http.Request)
+	AddAssociatedLicenseTypeToOracleDbAgreement(w http.ResponseWriter, r *http.Request)
 	// Edit an agreement
-	UpdateAssociatedPartOfOracleDbAgreement(w http.ResponseWriter, r *http.Request)
-	// delete AssociatedPart from an OracleDatabaseAgreement
-	DeleteAssociatedPartFromOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
-	// Add an host from AssociatedPart
-	AddHostToAssociatedPart(w http.ResponseWriter, r *http.Request)
-	// Remove an host from AssociatedPart
-	RemoveHostFromAssociatedPart(w http.ResponseWriter, r *http.Request)
+	UpdateAssociatedLicenseTypeOfOracleDbAgreement(w http.ResponseWriter, r *http.Request)
+	// delete AssociatedLicenseType from an OracleDatabaseAgreement
+	DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
+	// Add an host from AssociatedLicenseType
+	AddHostToAssociatedLicenseType(w http.ResponseWriter, r *http.Request)
+	// Remove an host from AssociatedLicenseType
+	RemoveHostFromAssociatedLicenseType(w http.ResponseWriter, r *http.Request)
 
 	// SetPatchingFunction set the patching function of a host specified in the hostname path variable to the content of the request body
 	SetPatchingFunction(w http.ResponseWriter, r *http.Request)
