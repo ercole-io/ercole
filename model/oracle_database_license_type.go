@@ -26,8 +26,8 @@ type OracleDatabaseLicenseType struct {
 
 // OracleDatabaseAgreementPart known metrics
 const (
-	AgreementPartMetricProcessorPerpetual     = "Processor Perpetual"
-	AgreementPartMetricNamedUserPlusPerpetual = "Named User Plus Perpetual"
-	AgreementPartMetricStreamPerpetual        = "Stream Perpetual"
-	AgreementPartMetricComputerPerpetual      = "Computer Perpetual"
+	LicenseTypeMetricProcessorPerpetual     = "Processor Perpetual"
+	LicenseTypeMetricNamedUserPlusPerpetual = "Named User Plus Perpetual"
+	LicenseTypePartMetricStreamPerpetual    = "Stream Perpetual"
+	LicenseTypeMetricComputerPerpetual      = "Computer Perpetual"
 )

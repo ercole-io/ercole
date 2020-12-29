@@ -142,12 +142,12 @@ func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgr
 					//TODO And other licenses types?
 					"licensesCount": mu.APOCond(
 						mu.APOOr(
-							mu.APOEqual("$licenseType.metric", model.AgreementPartMetricProcessorPerpetual),
-							mu.APOEqual("$licenseType.metric", model.AgreementPartMetricComputerPerpetual)),
+							mu.APOEqual("$licenseType.metric", model.LicenseTypeMetricProcessorPerpetual),
+							mu.APOEqual("$licenseType.metric", model.LicenseTypeMetricComputerPerpetual)),
 						"$licenseTypes.count",
 						0),
 					"usersCount": mu.APOCond(
-						mu.APOEqual("$licenseType.metric", model.AgreementPartMetricNamedUserPlusPerpetual), "$licenseTypes.count", 0),
+						mu.APOEqual("$licenseType.metric", model.LicenseTypeMetricNamedUserPlusPerpetual), "$licenseTypes.count", 0),
 				}),
 				mu.APUnset("licenseType"),
 				mu.APUnset("licenseTypes"),
