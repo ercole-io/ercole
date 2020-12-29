@@ -120,7 +120,7 @@ func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgr
 			context.TODO(),
 			mu.MAPipeline(
 				mu.APUnwind("$licenseTypes"),
-				mu.APLookupSimple("oracle_database_license_types", "licenseTypes.licenseTypeID", "partID", "licenseType"),
+				mu.APLookupSimple("oracle_database_license_types", "licenseTypes.licenseTypeID", "_id", "licenseType"),
 				mu.APUnwind("$licenseType"),
 				mu.APSet(bson.M{
 					"_id": "$licenseTypes._id",
