@@ -40,11 +40,11 @@ func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(sortBy string, sortDes
 			mu.APMatch(bson.M{"features.oracle.database.databases.licenses.count": bson.M{"$gt": 0}}),
 			mu.APProject(
 				bson.M{
-					"_id":          0,
-					"hostname":     1,
-					"dbName":       "$features.oracle.database.databases.name",
-					"licenseName":  "$features.oracle.database.databases.licenses.name",
-					"usedLicenses": "$features.oracle.database.databases.licenses.count",
+					"_id":           0,
+					"hostname":      1,
+					"dbName":        "$features.oracle.database.databases.name",
+					"licenseTypeID": "$features.oracle.database.databases.licenses.licenseTypeID",
+					"usedLicenses":  "$features.oracle.database.databases.licenses.count",
 				},
 			),
 			mu.APOptionalSortingStage(sortBy, sortDesc),

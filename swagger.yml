@@ -3344,7 +3344,7 @@ paths:
                           type: string
                         hostname:
                           type: string
-                        licenseName:
+                        licenseTypeID:
                           type: string
                         usedLicenses:
                           type: integer
@@ -3375,34 +3375,34 @@ paths:
                   value:
                     - dbName: ERCSOL19
                       hostname: ercsoldbx
-                      licenseName: Oracle ENT
+                      licenseTypeID: A90611
                       usedLicenses: 2
                     - dbName: ERCSOL19
                       hostname: ercsoldbx
-                      licenseName: Tuning Pack
+                      licenseTypeID: A90650
                       usedLicenses: 8
                 With pagination:
                   value:
                     content:
                       - dbName: allstate-9a6a2a820a3f61aeb345a834abf40fba
                         hostname: publicitate-36d06ca83eafa454423d2097f4965517
-                        licenseName: Oracle ENT
+                        licenseTypeID: A90611
                         usedLicenses: 4
                       - dbName: allstate-9a6a2a820a3f61aeb345a834abf40fba
                         hostname: publicitate-36d06ca83eafa454423d2097f4965517
-                        licenseName: Diagnostics Pack
+                        licenseTypeID: A90649
                         usedLicenses: 4
                       - dbName: 4wcqjn-ecf040bdfab7695ab332aef7401f185c
                         hostname: publicitate-36d06ca83eafa454423d2097f4965517
-                        licenseName: Oracle ENT
+                        licenseTypeID: A90611
                         usedLicenses: 4
                       - dbName: 4wcqjn-ecf040bdfab7695ab332aef7401f185c
                         hostname: publicitate-36d06ca83eafa454423d2097f4965517
-                        licenseName: Diagnostics Pack
+                        licenseTypeID: A90649
                         usedLicenses: 4
                       - dbName: ERCOLE
                         hostname: test-db
-                        licenseName: Oracle ENT
+                        licenseTypeID: A90611
                         usedLicenses: 0.5
                     metadata:
                       empty: false
