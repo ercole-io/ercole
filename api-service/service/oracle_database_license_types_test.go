@@ -39,7 +39,7 @@ func TestGetOracleDatabaseLicenseTypes_Success(t *testing.T) {
 
 	expected := []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "Pippo",
+			ID:              "Pippo",
 			ItemDescription: "Pluto",
 			Metric:          "Topolino",
 			Cost:            12,
@@ -52,7 +52,7 @@ func TestGetOracleDatabaseLicenseTypes_Success(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "Pippo",
+			ID:              "Pippo",
 			ItemDescription: "Pluto",
 			Metric:          "Topolino",
 			Cost:            12,
@@ -157,31 +157,31 @@ func TestGetLicensesCompliance(t *testing.T) {
 
 	var expectedLicenseTypes = []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "PID001",
+			ID:              "PID001",
 			ItemDescription: "itemDesc1",
 			Aliases:         []string{"alias1"},
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
 		},
 		{
-			PartID:          "PID002",
+			ID:              "PID002",
 			ItemDescription: "itemDesc2",
 			Aliases:         []string{"alias2"},
 			Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
 		},
 		{
-			PartID:          "PID003",
+			ID:              "PID003",
 			ItemDescription: "itemDesc3",
 			Aliases:         []string{"alias3"},
 			Metric:          model.AgreementPartMetricComputerPerpetual,
 		},
 		{
-			PartID:          "PID004",
+			ID:              "PID004",
 			ItemDescription: "itemDesc4",
 			Aliases:         []string{"alias4"},
 			Metric:          model.AgreementPartMetricComputerPerpetual,
 		},
 		{
-			PartID:          "PID005",
+			ID:              "PID005",
 			ItemDescription: "itemDesc5",
 			Aliases:         []string{"alias5"},
 			Metric:          model.AgreementPartMetricComputerPerpetual,

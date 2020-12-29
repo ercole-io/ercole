@@ -39,7 +39,7 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 	}
 	licenseTypes := []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "PID002",
+			ID:              "PID002",
 			Aliases:         []string{"Partitioning"},
 			ItemDescription: "Oracle Partitioning",
 			Metric:          model.AgreementPartMetricProcessorPerpetual,

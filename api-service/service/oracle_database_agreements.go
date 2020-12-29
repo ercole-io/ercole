@@ -82,7 +82,7 @@ func addAssociatedLicenseType(as *APIService, agreement *model.OracleDatabaseAgr
 
 	associatedLicenseType := model.AssociatedLicenseType{
 		ID:              as.NewObjectID(),
-		LicenseTypeID:   part.PartID,
+		LicenseTypeID:   part.ID,
 		ReferenceNumber: req.ReferenceNumber,
 		Unlimited:       req.Unlimited,
 		Count:           req.Count,
@@ -162,7 +162,7 @@ func updateAssociatedPart(as *APIService, agreement *model.OracleDatabaseAgreeme
 	if err != nil {
 		return err
 	}
-	associatedLicenseType.LicenseTypeID = licenseType.PartID
+	associatedLicenseType.LicenseTypeID = licenseType.ID
 	associatedLicenseType.ReferenceNumber = req.ReferenceNumber
 	associatedLicenseType.Unlimited = req.Unlimited
 	associatedLicenseType.Count = req.Count
@@ -219,7 +219,7 @@ hosts:
 		for _, licenseType := range licenseTypes {
 			for _, alias := range licenseType.Aliases {
 				if host.LicenseName == alias {
-					host.LicenseTypeID = licenseType.PartID
+					host.LicenseTypeID = licenseType.ID
 					continue hosts
 				}
 			}
@@ -311,13 +311,12 @@ func buildHostUsingLicensesMap(hosts []dto.HostUsingOracleDatabaseLicenses,
 	return res
 }
 
-// buildLicenseTypesMap return a map of partID to OracleDatabaseAgreementPart
 //TODO  use GetOracleDatabaseAgreementPartsMap ?
 func buildLicenseTypesMap(licenseTypes []model.OracleDatabaseLicenseType) map[string]*model.OracleDatabaseLicenseType {
 	ltMap := make(map[string]*model.OracleDatabaseLicenseType)
 
 	for i, licenseType := range licenseTypes {
-		ltMap[licenseType.PartID] = &licenseTypes[i]
+		ltMap[licenseType.ID] = &licenseTypes[i]
 	}
 
 	return ltMap

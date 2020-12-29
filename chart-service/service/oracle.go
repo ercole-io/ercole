@@ -115,7 +115,7 @@ func (as *ChartService) getOracleDatabaseLicenseTypes() (map[string]model.Oracle
 
 	licenseTypesMap := make(map[string]model.OracleDatabaseLicenseType)
 	for _, licenseType := range licenseTypes {
-		licenseTypesMap[licenseType.PartID] = licenseType
+		licenseTypesMap[licenseType.ID] = licenseType
 	}
 
 	return licenseTypesMap, nil

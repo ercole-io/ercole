@@ -27,19 +27,19 @@ import (
 
 var sampleLicenseTypes = []model.OracleDatabaseLicenseType{
 	{
-		PartID:          "PID001",
+		ID:              "PID001",
 		ItemDescription: "itemDesc1",
 		Aliases:         []string{"alias1"},
 		Metric:          model.AgreementPartMetricProcessorPerpetual,
 	},
 	{
-		PartID:          "PID002",
+		ID:              "PID002",
 		ItemDescription: "itemDesc2",
 		Aliases:         []string{"alias2"},
 		Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
 	},
 	{
-		PartID:          "PID003",
+		ID:              "PID003",
 		ItemDescription: "itemDesc3",
 		Aliases:         []string{"alias3"},
 		Metric:          model.AgreementPartMetricComputerPerpetual,

@@ -38,14 +38,14 @@ func (m *MongodbSuite) TestGetOracleDatabaseLicenseTypes() {
 	m.T().Run("success with some values", func(t *testing.T) {
 		expected := []interface{}{
 			model.OracleDatabaseLicenseType{
-				PartID:          "PID001",
+				ID:              "PID001",
 				ItemDescription: "desc001",
 				Metric:          model.AgreementPartMetricProcessorPerpetual,
 				Cost:            42,
 				Aliases:         []string{"pippo"},
 			},
 			model.OracleDatabaseLicenseType{
-				PartID:          "PID002",
+				ID:              "PID002",
 				ItemDescription: "desc002",
 				Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
 				Cost:            7,

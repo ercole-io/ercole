@@ -17,7 +17,7 @@ package model
 
 // OracleDatabaseLicenseType holds informations about a single OracleDatabaseLicenseType
 type OracleDatabaseLicenseType struct {
-	PartID          string   `json:"partID" bson:"partID"`
+	ID              string   `json:"id" bson:"_id"`
 	ItemDescription string   `json:"itemDescription" bson:"itemDescription"`
 	Metric          string   `json:"metric" bson:"metric"`
 	Cost            float64  `json:"cost" bson:"cost"`

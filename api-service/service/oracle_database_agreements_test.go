@@ -32,19 +32,19 @@ import (
 
 var licenseTypesSample = []model.OracleDatabaseLicenseType{
 	{
-		PartID:          "PID001",
+		ID:              "PID001",
 		ItemDescription: "itemDesc1",
 		Aliases:         []string{"alias1"},
 		Metric:          "metric1",
 	},
 	{
-		PartID:          "PID002",
+		ID:              "PID002",
 		ItemDescription: "itemDesc2",
 		Aliases:         []string{"alias2"},
 		Metric:          "metric2",
 	},
 	{
-		PartID:          "PID003",
+		ID:              "PID003",
 		ItemDescription: "itemDesc3",
 		Aliases:         []string{"alias3"},
 		Metric:          "metric3",
@@ -104,7 +104,7 @@ func TestAddOracleDatabaseAgreements_Success_InsertNew(t *testing.T) {
 					LicenseTypes: []model.AssociatedLicenseType{
 						{
 							ID:              utils.Str2oid("000000000000000000000001"),
-							LicenseTypeID:   licenseTypesSample[0].PartID,
+							LicenseTypeID:   licenseTypesSample[0].ID,
 							ReferenceNumber: "RF0001",
 							Unlimited:       true,
 							Count:           30,
@@ -156,7 +156,7 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 		LicenseTypes: []model.AssociatedLicenseType{
 			{
 				ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-				LicenseTypeID:   licenseTypesSample[0].PartID,
+				LicenseTypeID:   licenseTypesSample[0].ID,
 				ReferenceNumber: "RF0001",
 				Unlimited:       true,
 				Count:           30,
@@ -195,7 +195,7 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 				LicenseTypes: []model.AssociatedLicenseType{
 					{
 						ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-						LicenseTypeID:   licenseTypesSample[0].PartID,
+						LicenseTypeID:   licenseTypesSample[0].ID,
 						ReferenceNumber: "RF0001",
 						Unlimited:       true,
 						Count:           30,
@@ -204,7 +204,7 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 					},
 					{
 						ID:              utils.Str2oid("000000000000000000000001"),
-						LicenseTypeID:   licenseTypesSample[1].PartID,
+						LicenseTypeID:   licenseTypesSample[1].ID,
 						ReferenceNumber: "RF0002",
 						Unlimited:       false,
 						Count:           33,
@@ -348,7 +348,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement(t *testing.T) {
 		LicenseTypes: []model.AssociatedLicenseType{
 			{
 				ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-				LicenseTypeID:   licenseTypesSample[0].PartID,
+				LicenseTypeID:   licenseTypesSample[0].ID,
 				ReferenceNumber: "RF0001",
 				Unlimited:       true,
 				Count:           30,
@@ -438,7 +438,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement(t *testing.T) {
 		assert.EqualError(t, err, utils.AerrOracleDatabaseAgreementNotFound.Error())
 	})
 
-	t.Run("Fail: partID not valid", func(t *testing.T) {
+	t.Run("Fail: licenseTypeID not valid", func(t *testing.T) {
 		agrForGet := agreement
 
 		gomock.InOrder(
@@ -462,7 +462,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement(t *testing.T) {
 				Return(&agrForGet, nil),
 		)
 
-		req.LicenseTypeID = "this is a wrong partID"
+		req.LicenseTypeID = "this is a wrong licenseTypeID"
 
 		err := as.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
 		assert.EqualError(t, err, utils.AerrOracleDatabaseAgreementInvalidPartID.Error())
@@ -481,7 +481,7 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 
 	parts := []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "PID002",
+			ID:              "PID002",
 			Aliases:         []string{"Partitioning"},
 			ItemDescription: "Oracle Partitioning",
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
@@ -583,7 +583,7 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 
 	parts := []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "PID002",
+			ID:              "PID002",
 			Aliases:         []string{"Partitioning"},
 			ItemDescription: "Oracle Partitioning",
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
@@ -976,7 +976,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCase(t *testing.T)
 
 	parts := []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "PID002",
+			ID:              "PID002",
 			Aliases:         []string{"Partitioning"},
 			ItemDescription: "Oracle Partitioning",
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
@@ -1063,7 +1063,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *t
 
 	parts := []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "PID002",
+			ID:              "PID002",
 			Aliases:         []string{"Partitioning"},
 			ItemDescription: "Oracle Partitioning",
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
@@ -1150,7 +1150,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 
 	parts := []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "PID002",
+			ID:              "PID002",
 			Aliases:         []string{"Partitioning"},
 			ItemDescription: "Oracle Partitioning",
 			Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
@@ -1237,7 +1237,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 
 	parts := []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "PID002",
+			ID:              "PID002",
 			Aliases:         []string{"Partitioning"},
 			ItemDescription: "Oracle Partitioning",
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
@@ -1342,7 +1342,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 
 	parts := []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "PID002",
+			ID:              "PID002",
 			Aliases:         []string{"Partitioning"},
 			ItemDescription: "Oracle Partitioning",
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
@@ -1474,7 +1474,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCaseNoAssociatedHo
 
 	parts := []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "PID002",
+			ID:              "PID002",
 			Aliases:         []string{"Partitioning"},
 			ItemDescription: "Oracle Partitioning",
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
@@ -1548,7 +1548,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAss
 
 	parts := []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "PID002",
+			ID:              "PID002",
 			Aliases:         []string{"Partitioning"},
 			ItemDescription: "Oracle Partitioning",
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
@@ -1622,7 +1622,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 
 	parts := []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "PID002",
+			ID:              "PID002",
 			Aliases:         []string{"Partitioning"},
 			ItemDescription: "Oracle Partitioning",
 			Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
@@ -1696,7 +1696,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 
 	parts := []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "PID002",
+			ID:              "PID002",
 			Aliases:         []string{"Partitioning"},
 			ItemDescription: "Oracle Partitioning",
 			Metric:          model.AgreementPartMetricProcessorPerpetual,
@@ -1893,7 +1893,7 @@ func TestSortOracleDatabaseAgreements(t *testing.T) {
 func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 	partsMap := map[string]*model.OracleDatabaseLicenseType{
 		"L10005": {
-			PartID:          "L10005",
+			ID:              "L10005",
 			ItemDescription: "Oracle Real Application Clusters",
 			Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
 			Aliases:         []string{"Real Application Clusters", "RAC or RAC One Node"},
@@ -2001,13 +2001,13 @@ func TestBuildAgreementPartMap(t *testing.T) {
 			ItemDescription: "itemDesc1",
 			Aliases:         []string{"alias1"},
 			Metric:          "metric1",
-			PartID:          "PID001",
+			ID:              "PID001",
 		},
 		{
 			ItemDescription: "itemDesc2",
 			Aliases:         []string{"alias1"},
 			Metric:          "metric2",
-			PartID:          "PID002",
+			ID:              "PID002",
 		},
 	}
 
@@ -2052,7 +2052,7 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement(t *testing.T) {
 			LicenseTypes: []model.AssociatedLicenseType{
 				{
 					ID:              associateLicenseTypeID,
-					LicenseTypeID:   licenseTypesSample[0].PartID,
+					LicenseTypeID:   licenseTypesSample[0].ID,
 					ReferenceNumber: "RF0001",
 					Unlimited:       true,
 					Count:           30,
@@ -2080,7 +2080,7 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement(t *testing.T) {
 			LicenseTypes: []model.AssociatedLicenseType{
 				{
 					ID:              associateLicenseTypeID,
-					LicenseTypeID:   licenseTypesSample[0].PartID,
+					LicenseTypeID:   licenseTypesSample[0].ID,
 					ReferenceNumber: "RF0001",
 					Unlimited:       true,
 					Count:           30,
@@ -2089,7 +2089,7 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement(t *testing.T) {
 				},
 				{
 					ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-					LicenseTypeID:   licenseTypesSample[1].PartID,
+					LicenseTypeID:   licenseTypesSample[1].ID,
 					ReferenceNumber: "RF0002",
 					Unlimited:       false,
 					Count:           42,
@@ -2105,7 +2105,7 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement(t *testing.T) {
 			LicenseTypes: []model.AssociatedLicenseType{
 				{
 					ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-					LicenseTypeID:   licenseTypesSample[1].PartID,
+					LicenseTypeID:   licenseTypesSample[1].ID,
 					ReferenceNumber: "RF0002",
 					Unlimited:       false,
 					Count:           42,
@@ -2161,7 +2161,7 @@ func TestAddHostToAssociatedPart(t *testing.T) {
 			LicenseTypes: []model.AssociatedLicenseType{
 				{
 					ID:              associateLicenseTypeID,
-					LicenseTypeID:   licenseTypesSample[0].PartID,
+					LicenseTypeID:   licenseTypesSample[0].ID,
 					ReferenceNumber: "RF0001",
 					Unlimited:       true,
 					Count:           30,
@@ -2177,7 +2177,7 @@ func TestAddHostToAssociatedPart(t *testing.T) {
 			LicenseTypes: []model.AssociatedLicenseType{
 				{
 					ID:              associateLicenseTypeID,
-					LicenseTypeID:   licenseTypesSample[0].PartID,
+					LicenseTypeID:   licenseTypesSample[0].ID,
 					ReferenceNumber: "RF0001",
 					Unlimited:       true,
 					Count:           30,
@@ -2220,7 +2220,7 @@ func TestAddHostToAssociatedPart(t *testing.T) {
 			LicenseTypes: []model.AssociatedLicenseType{
 				{
 					ID:              associateLicenseTypeID,
-					LicenseTypeID:   licenseTypesSample[0].PartID,
+					LicenseTypeID:   licenseTypesSample[0].ID,
 					ReferenceNumber: "RF0001",
 					Unlimited:       true,
 					Count:           30,
@@ -2229,7 +2229,7 @@ func TestAddHostToAssociatedPart(t *testing.T) {
 				},
 				{
 					ID:              anotherAssociatedPartID,
-					LicenseTypeID:   licenseTypesSample[1].PartID,
+					LicenseTypeID:   licenseTypesSample[1].ID,
 					ReferenceNumber: "RF0002",
 					Unlimited:       false,
 					Count:           42,
@@ -2245,7 +2245,7 @@ func TestAddHostToAssociatedPart(t *testing.T) {
 			LicenseTypes: []model.AssociatedLicenseType{
 				{
 					ID:              associateLicenseTypeID,
-					LicenseTypeID:   licenseTypesSample[0].PartID,
+					LicenseTypeID:   licenseTypesSample[0].ID,
 					ReferenceNumber: "RF0001",
 					Unlimited:       true,
 					Count:           30,
@@ -2254,7 +2254,7 @@ func TestAddHostToAssociatedPart(t *testing.T) {
 				},
 				{
 					ID:              anotherAssociatedPartID,
-					LicenseTypeID:   licenseTypesSample[1].PartID,
+					LicenseTypeID:   licenseTypesSample[1].ID,
 					ReferenceNumber: "RF0002",
 					Unlimited:       false,
 					Count:           42,
@@ -2324,7 +2324,7 @@ func TestRemoveHostFromAssociatedPart(t *testing.T) {
 			LicenseTypes: []model.AssociatedLicenseType{
 				{
 					ID:              associateLicenseTypeID,
-					LicenseTypeID:   licenseTypesSample[0].PartID,
+					LicenseTypeID:   licenseTypesSample[0].ID,
 					ReferenceNumber: "RF0001",
 					Unlimited:       true,
 					Count:           30,
@@ -2340,7 +2340,7 @@ func TestRemoveHostFromAssociatedPart(t *testing.T) {
 			LicenseTypes: []model.AssociatedLicenseType{
 				{
 					ID:              associateLicenseTypeID,
-					LicenseTypeID:   licenseTypesSample[0].PartID,
+					LicenseTypeID:   licenseTypesSample[0].ID,
 					ReferenceNumber: "RF0001",
 					Unlimited:       true,
 					Count:           30,
@@ -2368,7 +2368,7 @@ func TestRemoveHostFromAssociatedPart(t *testing.T) {
 			LicenseTypes: []model.AssociatedLicenseType{
 				{
 					ID:              associateLicenseTypeID,
-					LicenseTypeID:   licenseTypesSample[0].PartID,
+					LicenseTypeID:   licenseTypesSample[0].ID,
 					ReferenceNumber: "RF0001",
 					Unlimited:       true,
 					Count:           30,
@@ -2377,7 +2377,7 @@ func TestRemoveHostFromAssociatedPart(t *testing.T) {
 				},
 				{
 					ID:              anotherAssociatedPartID,
-					LicenseTypeID:   licenseTypesSample[1].PartID,
+					LicenseTypeID:   licenseTypesSample[1].ID,
 					ReferenceNumber: "RF0002",
 					Unlimited:       false,
 					Count:           42,
@@ -2393,7 +2393,7 @@ func TestRemoveHostFromAssociatedPart(t *testing.T) {
 			LicenseTypes: []model.AssociatedLicenseType{
 				{
 					ID:              associateLicenseTypeID,
-					LicenseTypeID:   licenseTypesSample[0].PartID,
+					LicenseTypeID:   licenseTypesSample[0].ID,
 					ReferenceNumber: "RF0001",
 					Unlimited:       true,
 					Count:           30,
@@ -2402,7 +2402,7 @@ func TestRemoveHostFromAssociatedPart(t *testing.T) {
 				},
 				{
 					ID:              anotherAssociatedPartID,
-					LicenseTypeID:   licenseTypesSample[1].PartID,
+					LicenseTypeID:   licenseTypesSample[1].ID,
 					ReferenceNumber: "RF0002",
 					Unlimited:       false,
 					Count:           42,
