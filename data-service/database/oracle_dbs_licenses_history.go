@@ -32,7 +32,7 @@ func (md *MongoDatabase) HistoricizeOracleDbsLicenses(licenses []dto.OracleDatab
 	updateOptions.SetUpsert(true)
 
 	for _, license := range licenses {
-		filter := bson.D{{"partID", license.PartID}}
+		filter := bson.D{{"partID", license.LicenseTypeID}}
 		update := bson.D{
 			{"$push", bson.D{{
 				"history", bson.D{{"date", now}, {"consumed", license.Consumed}, {"covered", license.Covered}},
