@@ -30,19 +30,19 @@ var sampleLicenseTypes = []model.OracleDatabaseLicenseType{
 		ID:              "PID001",
 		ItemDescription: "itemDesc1",
 		Aliases:         []string{"alias1"},
-		Metric:          model.AgreementPartMetricProcessorPerpetual,
+		Metric:          model.LicenseTypeMetricProcessorPerpetual,
 	},
 	{
 		ID:              "PID002",
 		ItemDescription: "itemDesc2",
 		Aliases:         []string{"alias2"},
-		Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
+		Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
 	},
 	{
 		ID:              "PID003",
 		ItemDescription: "itemDesc3",
 		Aliases:         []string{"alias3"},
-		Metric:          model.AgreementPartMetricComputerPerpetual,
+		Metric:          model.LicenseTypeMetricComputerPerpetual,
 	},
 }
 
@@ -169,7 +169,7 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 			},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
-			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
 			LicenseTypeID:   "PID002",
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,

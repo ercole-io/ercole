@@ -42,7 +42,7 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 			ID:              "PID002",
 			Aliases:         []string{"Partitioning"},
 			ItemDescription: "Oracle Partitioning",
-			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
 		},
 	}
 	db.EXPECT().
@@ -69,7 +69,7 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 			},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
-			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
 			LicenseTypeID:   "PID002",
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,

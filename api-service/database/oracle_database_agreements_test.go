@@ -31,7 +31,7 @@ var licenseTypeSample = model.OracleDatabaseLicenseType{
 	ID:              "ID00001",
 	ItemDescription: "ItemDesc 1",
 	Cost:            42,
-	Metric:          model.AgreementPartMetricProcessorPerpetual,
+	Metric:          model.LicenseTypeMetricProcessorPerpetual,
 	Aliases:         []string{},
 }
 
@@ -191,14 +191,14 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 		ID:              "ID00001",
 		ItemDescription: "ItemDesc 1",
 		Cost:            42,
-		Metric:          model.AgreementPartMetricProcessorPerpetual,
+		Metric:          model.LicenseTypeMetricProcessorPerpetual,
 		Aliases:         []string{},
 	}
 	licenseTypeSample2 := model.OracleDatabaseLicenseType{
 		ID:              "ID00002",
 		ItemDescription: "ItemDesc 2",
 		Cost:            24,
-		Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
+		Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
 		Aliases:         []string{},
 	}
 	_, err2 := m.db.Client.Database(m.dbname).Collection("oracle_database_license_types").
@@ -263,7 +263,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 
 				LicenseTypeID:   "ID00001",
 				ItemDescription: "ItemDesc 1",
-				Metric:          model.AgreementPartMetricProcessorPerpetual,
+				Metric:          model.LicenseTypeMetricProcessorPerpetual,
 
 				ReferenceNumber: "R00001",
 				Unlimited:       true,

@@ -332,9 +332,9 @@ func fillAgreementsInfo(as *APIService, agrs []dto.OracleDatabaseAgreementFE, li
 			agr.Metric = licenseType.Metric
 
 			switch agr.Metric {
-			case model.AgreementPartMetricProcessorPerpetual:
+			case model.LicenseTypeMetricProcessorPerpetual:
 				agr.LicensesCount = agr.Count
-			case model.AgreementPartMetricNamedUserPlusPerpetual:
+			case model.LicenseTypeMetricNamedUserPlusPerpetual:
 				agr.UsersCount = agr.Count
 			}
 		} else {
@@ -440,8 +440,8 @@ func doAssignAgreementLicensesToAssociatedHost(
 	associatedHost *dto.OracleDatabaseAgreementAssociatedHostFE) {
 
 	switch {
-	case agreement.Metric == model.AgreementPartMetricProcessorPerpetual ||
-		agreement.Metric == model.AgreementPartMetricComputerPerpetual:
+	case agreement.Metric == model.LicenseTypeMetricProcessorPerpetual ||
+		agreement.Metric == model.LicenseTypeMetricComputerPerpetual:
 
 		var coverableLicenses float64
 		if agreement.Unlimited {
@@ -456,7 +456,7 @@ func doAssignAgreementLicensesToAssociatedHost(
 
 		host.LicenseCount -= coverableLicenses
 
-	case agreement.Metric == model.AgreementPartMetricNamedUserPlusPerpetual:
+	case agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual:
 
 		var coverableLicenses float64
 		if agreement.Unlimited {
@@ -537,8 +537,8 @@ func doAssignLicenseFromCatchAllAgreement(
 	hostUsingLicenses *dto.HostUsingOracleDatabaseLicenses) {
 
 	switch {
-	case agreement.Metric == model.AgreementPartMetricProcessorPerpetual ||
-		agreement.Metric == model.AgreementPartMetricComputerPerpetual:
+	case agreement.Metric == model.LicenseTypeMetricProcessorPerpetual ||
+		agreement.Metric == model.LicenseTypeMetricComputerPerpetual:
 
 		var coverableLicenses float64
 		if agreement.Unlimited {
@@ -551,7 +551,7 @@ func doAssignLicenseFromCatchAllAgreement(
 
 		hostUsingLicenses.LicenseCount -= coverableLicenses
 
-	case agreement.Metric == model.AgreementPartMetricNamedUserPlusPerpetual:
+	case agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual:
 
 		var coverableLicenses float64
 		if agreement.Unlimited {
@@ -598,13 +598,13 @@ func calculateTotalCoveredLicensesAndAvailableCount(
 				}
 
 				switch {
-				case agreement.Metric == model.AgreementPartMetricProcessorPerpetual ||
-					agreement.Metric == model.AgreementPartMetricComputerPerpetual:
+				case agreement.Metric == model.LicenseTypeMetricProcessorPerpetual ||
+					agreement.Metric == model.LicenseTypeMetricComputerPerpetual:
 					associatedHost.TotalCoveredLicensesCount = host.OriginalCount - host.LicenseCount
 					associatedHost.ConsumedLicensesCount = host.OriginalCount
 					uncoveredLicensesByAssociatedHosts += host.LicenseCount
 
-				case agreement.Metric == model.AgreementPartMetricNamedUserPlusPerpetual:
+				case agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual:
 					associatedHost.TotalCoveredLicensesCount = (host.OriginalCount - host.LicenseCount) * 25
 					associatedHost.ConsumedLicensesCount = host.OriginalCount * 25
 					uncoveredLicensesByAssociatedHosts += host.LicenseCount * 25
@@ -625,8 +625,8 @@ func calculateTotalCoveredLicensesAndAvailableCount(
 		}
 
 		if uncoveredLicenses > 0 {
-			if (agreement.AvailableCount > 0 && agreement.Metric != model.AgreementPartMetricNamedUserPlusPerpetual) ||
-				(agreement.AvailableCount > 25 && agreement.Metric == model.AgreementPartMetricNamedUserPlusPerpetual) {
+			if (agreement.AvailableCount > 0 && agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual) ||
+				(agreement.AvailableCount > 25 && agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual) {
 
 				as.Log.Errorf("Agreement has still some available licenses but hosts are uncovered. Agreement: [%v]",
 					agreement)
