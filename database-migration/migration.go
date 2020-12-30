@@ -70,6 +70,7 @@ func Migrate(log *logrus.Logger, client *mongo.Database) {
 	MigratePatchingFunctionsSchema(log, client)
 	// MigrateCurrentDatabasesSchema(log, client)
 	MigrateOracleDatabaseAgreementsSchema(log, client)
+	MigrateOracleDatabaseLicenseTypes(log, client)
 }
 
 // MigrateHostsSchema create or update the hosts schema
@@ -330,5 +331,20 @@ func MigrateOracleDatabaseAgreementsSchema(log *logrus.Logger, client *mongo.Dat
 				}},
 		); err != nil {
 		log.Panicln(err)
+	}
+}
+
+// MigrateOracleDatabaseAgreementsSchema create or update the agreements_oracle_database schema
+func MigrateOracleDatabaseLicenseTypes(log *logrus.Logger, client *mongo.Database) {
+	collection := "oracle_database_license_types"
+
+	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
+		log.Panicln(err)
+	} else if !utils.Contains(cols, collection) {
+		if err := client.RunCommand(context.TODO(), bson.D{
+			{"create", collection},
+		}).Err(); err != nil {
+			log.Panicln(err)
+		}
 	}
 }
