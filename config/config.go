@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	"github.com/OpenPeeDeeP/xdg"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/goraz/onion"
 	"github.com/goraz/onion/layers/directorylayer"
@@ -74,6 +75,11 @@ type DataService struct {
 	CurrentHostCleaningJob CurrentHostCleaningJob
 	// ArchivedCleaningJob contains the parameters of the archived host cleaning
 	ArchivedHostCleaningJob ArchivedHostCleaningJob
+	// LicenseTypeMetricsDefault default priority order of metric of licenseType when importing HostData
+	LicenseTypeMetricsDefault []string
+	// LicenseTypeMetricsByEnvironment custom priority order of metric of licenseType when importing HostData
+	// per environment
+	LicenseTypeMetricsByEnvironment map[string][]string
 }
 
 // AlertService contains configuration about the alert service
@@ -327,7 +333,7 @@ func ReadConfig(log *logrus.Logger, extraConfigFile string) (configuration Confi
 		log.Fatal("something went wrong while reading your configuration files")
 	}
 
-	patchConfiguration(&configuration)
+	checkConfiguration(log, &configuration)
 
 	return configuration
 }
@@ -349,8 +355,7 @@ func addFileLayers(log *logrus.Logger, layers []onion.Layer, configFiles ...stri
 	return layers
 }
 
-// PatchConfiguration change the value of the fields for meeting some requirements(?)
-func patchConfiguration(config *Configuration) {
+func checkConfiguration(log *logrus.Logger, config *Configuration) {
 	cwd, _ := os.Readlink("/proc/self/exe")
 	cwd = filepath.Dir(cwd)
 
@@ -372,5 +377,26 @@ func patchConfiguration(config *Configuration) {
 		}
 	} else if !filepath.IsAbs(config.ResourceFilePath) {
 		config.ResourceFilePath = cwd + filepath.Join("/", config.ResourceFilePath)
+	}
+
+	checkOracleDatabaseLicenseTypeMetrics(log, config)
+}
+
+func checkOracleDatabaseLicenseTypeMetrics(log *logrus.Logger, config *Configuration) {
+	metrics := make([]string, 0)
+	metrics = append(metrics, config.DataService.LicenseTypeMetricsDefault...)
+	for _, sl := range config.DataService.LicenseTypeMetricsByEnvironment {
+		metrics = append(metrics, sl...)
+	}
+metrics:
+	for _, m := range metrics {
+		for _, vm := range model.GetAllLicenseTypeMetrics() {
+			if m == vm {
+				continue metrics
+			}
+		}
+
+		log.Fatalf("Check configuration: Invalid LicenseTypeMetric: %q\nValid values are: %q",
+			m, model.GetAllLicenseTypeMetrics())
 	}
 }
