@@ -31,3 +31,12 @@ const (
 	LicenseTypePartMetricStreamPerpetual    = "Stream Perpetual"
 	LicenseTypeMetricComputerPerpetual      = "Computer Perpetual"
 )
+
+func GetAllLicenseTypeMetrics() []string {
+	return []string{
+		LicenseTypeMetricProcessorPerpetual,
+		LicenseTypeMetricNamedUserPlusPerpetual,
+		LicenseTypePartMetricStreamPerpetual,
+		LicenseTypeMetricComputerPerpetual,
+	}
+}
