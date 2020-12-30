@@ -8,16 +8,17 @@ import (
 	"net/url"
 	"sort"
 
+	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-func (hds *HostDataService) oracleDatabasesChecks(hostInfo model.Host, oracleFeature *model.OracleFeature) {
+func (hds *HostDataService) oracleDatabasesChecks(environment string, hostInfo model.Host, oracleFeature *model.OracleFeature) {
 	if oracleFeature.Database == nil || oracleFeature.Database.Databases == nil {
 		return
 	}
 
-	licenseTypes, err := hds.getOracleDatabaseLicenseTypes()
+	licenseTypes, err := hds.getOracleDatabaseLicenseTypes(environment)
 	if err != nil {
 		utils.LogErr(hds.Log, utils.NewAdvancedErrorPtr(err, "INSERT_HOSTDATA_ORACLE_DATABASE"))
 		licenseTypes = make([]model.OracleDatabaseLicenseType, 0)
@@ -151,7 +152,8 @@ func removeFromDBs(s []model.OracleDatabase, i int) []model.OracleDatabase {
 	return s[:len(s)-1]
 }
 
-func (hds *HostDataService) getOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error) {
+func (hds *HostDataService) getOracleDatabaseLicenseTypes(environment string,
+) ([]model.OracleDatabaseLicenseType, error) {
 	url := utils.NewAPIUrlNoParams(
 		hds.Config.APIService.RemoteEndpoint,
 		hds.Config.APIService.AuthenticationProvider.Username,
@@ -171,32 +173,28 @@ func (hds *HostDataService) getOracleDatabaseLicenseTypes() ([]model.OracleDatab
 		return nil, utils.NewAdvancedErrorPtr(err, "Can't decode licenseTypes")
 	}
 
-	sort.Slice(licenseTypes, licenseTypesSorter(licenseTypes))
+	sort.Slice(licenseTypes, licenseTypesSorter(hds.Config.DataService, environment, licenseTypes))
 
 	return licenseTypes, nil
 }
 
-func licenseTypesSorter(licenseTypes []model.OracleDatabaseLicenseType) func(int, int) bool {
+func licenseTypesSorter(config config.DataService, environment string, licenseTypes []model.OracleDatabaseLicenseType,
+) func(int, int) bool {
+	orderOfPriority, ok := config.LicenseTypeMetricsByEnvironment[environment]
+	if !ok {
+		orderOfPriority = config.LicenseTypeMetricsDefault
+	}
+
+	priorityMap := make(map[string]int, len(orderOfPriority))
+	for i, p := range orderOfPriority {
+		priorityMap[p] = len(orderOfPriority) - i
+	}
+
 	return func(i, j int) bool {
 		x := &licenseTypes[i]
 		y := &licenseTypes[j]
 
-		return getPriorityByMetric(x.Metric) >= getPriorityByMetric(y.Metric)
-	}
-}
-
-func getPriorityByMetric(metric string) int {
-	switch metric {
-	case model.LicenseTypeMetricProcessorPerpetual:
-		return 4
-	case model.LicenseTypeMetricNamedUserPlusPerpetual:
-		return 3
-	case model.LicenseTypePartMetricStreamPerpetual:
-		return 2
-	case model.LicenseTypeMetricComputerPerpetual:
-		return 1
-	default:
-		return 0
+		return priorityMap[x.Metric] >= priorityMap[y.Metric]
 	}
 }
 
