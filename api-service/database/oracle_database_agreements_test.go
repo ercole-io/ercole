@@ -392,44 +392,46 @@ func (m *MongodbSuite) TestListHostUsingOracleDatabaseLicenses() {
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_17.json"))
 
-	out, err := m.db.ListHostUsingOracleDatabaseLicenses()
+	actual, err := m.db.ListHostUsingOracleDatabaseLicenses()
 	m.Require().NoError(err)
 
-	assert.ElementsMatch(m.T(), []dto.HostUsingOracleDatabaseLicenses{
+	expected := []dto.HostUsingOracleDatabaseLicenses{
 		{
-			LicenseName:   "Diagnostics Pack",
+			LicenseTypeID: "A90649",
 			Name:          "Puzzait",
 			Type:          "cluster",
 			LicenseCount:  70,
 			OriginalCount: 70,
 		},
 		{
-			LicenseName:   "Real Application Clusters",
+			LicenseTypeID: "A90619",
 			Name:          "test-db3",
 			Type:          "host",
 			LicenseCount:  1.5,
 			OriginalCount: 1.5,
 		},
 		{
-			LicenseName:   "Diagnostics Pack",
+			LicenseTypeID: "A90649",
 			Name:          "test-db3",
 			Type:          "host",
 			LicenseCount:  0.5,
 			OriginalCount: 0.5,
 		},
 		{
-			LicenseName:   "Oracle ENT",
+			LicenseTypeID: "A90611",
 			Name:          "test-db3",
 			Type:          "host",
 			LicenseCount:  0.5,
 			OriginalCount: 0.5,
 		},
 		{
-			LicenseName:   "Oracle ENT",
+			LicenseTypeID: "A90611",
 			Name:          "Puzzait",
 			Type:          "cluster",
 			LicenseCount:  70,
 			OriginalCount: 70,
 		},
-	}, out)
+	}
+
+	assert.ElementsMatch(m.T(), expected, actual)
 }

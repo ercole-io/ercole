@@ -100,8 +100,6 @@ type SearchOracleDatabaseAgreementsFilter struct {
 
 // HostUsingOracleDatabaseLicenses contains the information about the hosts that use licenses by Oracle/Database
 type HostUsingOracleDatabaseLicenses struct {
-	LicenseName string `json:"licenseName" bson:"licenseName"`
-	//TODO Use LicenseTypeID instead of LicenseName in algorithms
 	LicenseTypeID string `json:"licenseTypeID" bson:"licenseTypeID"`
 	Name          string `json:"name" bson:"name"`
 	//Type describe if it's an host or a cluster
