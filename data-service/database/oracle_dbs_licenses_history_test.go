@@ -31,13 +31,13 @@ import (
 )
 
 func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
-	defer m.db.Client.Database(m.dbname).Collection("licenses_history_oracle_database").DeleteMany(context.TODO(), bson.M{})
+	defer m.db.Client.Database(m.dbname).Collection("oracle_database_licenses_history").DeleteMany(context.TODO(), bson.M{})
 
 	dateDay1 := utils.PDT("2020-12-05T14:02:03Z")
 	m.T().Run("First insert, success", func(t *testing.T) {
 		licenses := []dto.OracleDatabaseLicenseUsage{
 			{
-				PartID:          "L47247",
+				LicenseTypeID:   "L47247",
 				ItemDescription: "Oracle Real Application Testing",
 				Metric:          "Processor Perpetual",
 				Consumed:        0,
@@ -46,7 +46,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 				Unlimited:       false,
 			},
 			{
-				PartID:          "A90611",
+				LicenseTypeID:   "A90611",
 				ItemDescription: "Oracle Database Enterprise Edition",
 				Metric:          "Processor Perpetual",
 				Consumed:        2.5,
@@ -55,7 +55,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 				Unlimited:       false,
 			},
 			{
-				PartID:          "A90620",
+				LicenseTypeID:   "A90620",
 				ItemDescription: "Oracle Partitioning",
 				Metric:          "Processor Perpetual",
 				Consumed:        3,
@@ -68,7 +68,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 		require.NoError(m.T(), err)
 
 		cur, err := m.db.Client.Database(m.db.Config.Mongodb.DBName).
-			Collection("licenses_history_oracle_database").
+			Collection("oracle_database_licenses_history").
 			Find(context.TODO(), bson.D{})
 		require.NoError(m.T(), err)
 
@@ -91,9 +91,9 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 		}
 
 		expected := []map[string]interface{}{
-			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": dateDay1}}, "partID": "L47247"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": dateDay1}}, "partID": "A90611"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": dateDay1}}, "partID": "A90620"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": dateDay1}}, "licenseTypeID": "L47247"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": dateDay1}}, "licenseTypeID": "A90611"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": dateDay1}}, "licenseTypeID": "A90620"},
 		}
 		assert.Equal(m.T(), expected, actual)
 
@@ -104,7 +104,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 
 		licenses := []dto.OracleDatabaseLicenseUsage{
 			{
-				PartID:          "L47247",
+				LicenseTypeID:   "L47247",
 				ItemDescription: "Oracle Real Application Testing",
 				Metric:          "Processor Perpetual",
 				Consumed:        0.5,
@@ -113,7 +113,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 				Unlimited:       false,
 			},
 			{
-				PartID:          "A90611",
+				LicenseTypeID:   "A90611",
 				ItemDescription: "Oracle Database Enterprise Edition",
 				Metric:          "Processor Perpetual",
 				Consumed:        4.5,
@@ -122,7 +122,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 				Unlimited:       false,
 			},
 			{
-				PartID:          "PID001",
+				LicenseTypeID:   "PID001",
 				ItemDescription: "Another one",
 				Metric:          "",
 				Consumed:        3,
@@ -135,7 +135,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 		require.NoError(m.T(), err)
 
 		cur, err := m.db.Client.Database(m.db.Config.Mongodb.DBName).
-			Collection("licenses_history_oracle_database").
+			Collection("oracle_database_licenses_history").
 			Find(context.TODO(), bson.D{})
 		require.NoError(m.T(), err)
 
@@ -160,10 +160,10 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 		dateDay2 := utils.PDT("2020-12-06T15:02:03Z")
 
 		expected := []map[string]interface{}{
-			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": dateDay1}, map[string]interface{}{"consumed": 0.5, "covered": 5.0, "date": dateDay2}}, "partID": "L47247"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": dateDay1}, map[string]interface{}{"consumed": 4.5, "covered": 2.5, "date": dateDay2}}, "partID": "A90611"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": dateDay1}}, "partID": "A90620"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": dateDay2}}, "partID": "PID001"}}
+			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": dateDay1}, map[string]interface{}{"consumed": 0.5, "covered": 5.0, "date": dateDay2}}, "licenseTypeID": "L47247"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": dateDay1}, map[string]interface{}{"consumed": 4.5, "covered": 2.5, "date": dateDay2}}, "licenseTypeID": "A90611"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": dateDay1}}, "licenseTypeID": "A90620"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": dateDay2}}, "licenseTypeID": "PID001"}}
 		fmt.Printf("%#v", actual)
 		assert.Equal(m.T(), expected, actual)
 	})

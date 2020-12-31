@@ -158,33 +158,31 @@
                         "licenses": [
                             {
                                 "count": {
+                                    "$numberDouble": "0.5"
+                                },
+                                "name": "Oracle ENT",
+                                "licenseTypeID": "A90611"
+                            },
+                            {
+                                "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Oracle EXE"
+                                "name": "Oracle STD",
+                                "licenseTypeID": "L103399"
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "WebLogic Server Management Pack Enterprise Edition",
+                                "licenseTypeID": "L104095"
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.5"
                                 },
-                                "name": "Oracle ENT"
-                            },
-                            {
-                                "count": {
-                                    "$numberDouble": "0.0"
-                                },
-                                "name": "Oracle STD"
-                            },
-                            {
-                                "count": {
-                                    "$numberDouble": "0.0"
-                                },
-                                "name": "WebLogic Server Management Pack Enterprise Edition"
-                            },
-                            {
-                                "count": {
-                                    "$numberDouble": "0.5"
-                                },
-                                "name": "Diagnostics Pack"
+                                "name": "Diagnostics Pack",
+                                "licenseTypeID": "A90649"
                             }
                         ],
                         "memoryTarget": {

@@ -21,29 +21,28 @@ import (
 
 // OracleDatabaseAgreement holds informations about a sigle OracleDatabaseAgreement
 type OracleDatabaseAgreement struct {
-	ID          primitive.ObjectID `json:"id" bson:"_id"`
-	AgreementID string             `json:"agreementID" bson:"agreementID"`
-	CSI         string             `json:"csi" bson:"csi"`
-	Parts       []AssociatedPart   `json:"parts" bson:"parts"`
+	ID           primitive.ObjectID      `json:"id" bson:"_id"`
+	AgreementID  string                  `json:"agreementID" bson:"agreementID"`
+	CSI          string                  `json:"csi" bson:"csi"`
+	LicenseTypes []AssociatedLicenseType `json:"licenseTypes" bson:"licenseTypes"`
 }
 
-// AssociatedPart describe a Part associated to an Agreement
-type AssociatedPart struct {
-	ID                 primitive.ObjectID `json:"id" bson:"_id"`
-	OracleDatabasePart `bson:",inline"`
-	ReferenceNumber    string   `json:"referenceNumber" bson:"referenceNumber"`
-	Unlimited          bool     `json:"unlimited" bson:"unlimited"`
-	Count              int      `json:"count" bson:"count"`
-	CatchAll           bool     `json:"catchAll" bson:"catchAll"` //TODO Rename in IsBasket ?
-	Hosts              []string `json:"hosts" bson:"hosts"`
+// AssociatedLicenseType describe an association of a LicenseType to an Agreement
+type AssociatedLicenseType struct {
+	ID              primitive.ObjectID `json:"id" bson:"_id"`
+	LicenseTypeID   string             `json:"licenseTypeID" bson:"licenseTypeID"`
+	ReferenceNumber string             `json:"referenceNumber" bson:"referenceNumber"`
+	Unlimited       bool               `json:"unlimited" bson:"unlimited"`
+	Count           int                `json:"count" bson:"count"`
+	CatchAll        bool               `json:"catchAll" bson:"catchAll"` //TODO Rename in IsBasket ?
+	Hosts           []string           `json:"hosts" bson:"hosts"`
 }
 
-// AssociatedPartByID getter
-func (agreement *OracleDatabaseAgreement) AssociatedPartByID(associatedPartID primitive.ObjectID,
-) (associatedPart *AssociatedPart) {
-	for i := range agreement.Parts {
-		if agreement.Parts[i].ID == associatedPartID {
-			return &agreement.Parts[i]
+func (agreement *OracleDatabaseAgreement) AssociatedLicenseTypeByID(associatedLicenseTypeID primitive.ObjectID,
+) (associatedLicenseType *AssociatedLicenseType) {
+	for i := range agreement.LicenseTypes {
+		if agreement.LicenseTypes[i].ID == associatedLicenseTypeID {
+			return &agreement.LicenseTypes[i]
 		}
 	}
 

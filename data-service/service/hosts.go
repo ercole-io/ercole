@@ -43,7 +43,7 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) (interface
 	}
 
 	if hostdata.Features.Oracle != nil {
-		hds.oracleDatabasesChecks(hostdata.Info, hostdata.Features.Oracle)
+		hds.oracleDatabasesChecks(hostdata.Environment, hostdata.Info, hostdata.Features.Oracle)
 	}
 
 	_, aerr = hds.Database.ArchiveHost(hostdata.Hostname)
