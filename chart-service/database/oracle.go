@@ -95,7 +95,7 @@ func (md *MongoDatabase) GetOracleDatabaseChartByWork(location string, environme
 
 func (md *MongoDatabase) GetOracleDbLicenseHistory() ([]dto.OracleDatabaseLicenseHistory, error) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).
-		Collection("licenses_history_oracle_database").
+		Collection("oracle_database_licenses_history").
 		Find(context.TODO(), bson.D{})
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")

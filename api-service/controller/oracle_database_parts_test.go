@@ -29,7 +29,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
+func TestGetOracleDatabaseLicenseTypes_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -40,18 +40,18 @@ func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []model.OracleDatabasePart{
+	expectedRes := []model.OracleDatabaseLicenseType{
 		{
 			ItemDescription: "foobar",
 		},
 	}
 
 	as.EXPECT().
-		GetOracleDatabaseAgreementPartsList().
+		GetOracleDatabaseLicenseTypes().
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetOracleDatabaseAgreementPartsList)
+	handler := http.HandlerFunc(ac.GetOracleDatabaseLicenseTypes)
 	req, err := http.NewRequest("GET", "/", nil)
 	require.NoError(t, err)
 
@@ -61,7 +61,7 @@ func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 
-func TestGetOracleDatabaseAgreementPartsList_InternalServerError(t *testing.T) {
+func TestGetOracleDatabaseLicenseTypes_InternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -73,11 +73,11 @@ func TestGetOracleDatabaseAgreementPartsList_InternalServerError(t *testing.T) {
 	}
 
 	as.EXPECT().
-		GetOracleDatabaseAgreementPartsList().
+		GetOracleDatabaseLicenseTypes().
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetOracleDatabaseAgreementPartsList)
+	handler := http.HandlerFunc(ac.GetOracleDatabaseLicenseTypes)
 	req, err := http.NewRequest("GET", "/", nil)
 	require.NoError(t, err)
 
@@ -99,8 +99,8 @@ func TestGetOracleDatabaseLicensesCompliance_Success(t *testing.T) {
 
 	compliance := 75.0 / 275.0
 	expectedRes := []dto.OracleDatabaseLicenseUsage{
-		{PartID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 7, Covered: 7, Compliance: 1},
-		{PartID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 275, Covered: 75, Compliance: compliance},
+		{LicenseTypeID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 7, Covered: 7, Compliance: 1},
+		{LicenseTypeID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 275, Covered: 75, Compliance: compliance},
 	}
 	as.EXPECT().
 		GetOracleDatabaseLicensesCompliance().

@@ -1868,16 +1868,16 @@ func TestSearchOracleDatabaseUsedLicenses_JSONPaged(t *testing.T) {
 	resFromService := dto.OracleDatabaseUsedLicenseSearchResponse{
 		Content: []dto.OracleDatabaseUsedLicense{
 			{
-				LicenseName:  "Oracle ENT",
-				DbName:       "erclin5dbx",
-				Hostname:     "pippo",
-				UsedLicenses: 3,
+				LicenseTypeID: "LID001",
+				DbName:        "erclin5dbx",
+				Hostname:      "pippo",
+				UsedLicenses:  3,
 			},
 			{
-				LicenseName:  "Oracle STD",
-				DbName:       "erclin6dbx",
-				Hostname:     "pluto",
-				UsedLicenses: 42,
+				LicenseTypeID: "LID002",
+				DbName:        "erclin6dbx",
+				Hostname:      "pluto",
+				UsedLicenses:  42,
 			},
 		},
 		Metadata: dto.PagingMetadata{

@@ -32,18 +32,18 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := APIService{
 		Database: db,
-		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
-			{
-				PartID:          "PID002",
-				Aliases:         []string{"Partitioning"},
-				ItemDescription: "Oracle Partitioning",
-				Metric:          model.AgreementPartMetricProcessorPerpetual,
-			},
-		},
 	}
 
 	getTechnologiesUsageRes := map[string]float64{
 		"Oracle/Exadata": 2,
+	}
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "PID002",
+			Aliases:         []string{"Partitioning"},
+			ItemDescription: "Oracle Partitioning",
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+		},
 	}
 	db.EXPECT().
 		GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
@@ -51,6 +51,9 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 	db.EXPECT().
 		GetHostsCountStats("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 		Return(20, nil).AnyTimes().MinTimes(1)
+	db.EXPECT().
+		GetOracleDatabaseLicenseTypes().
+		Return(licenseTypes, nil)
 
 	returnedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
@@ -66,8 +69,8 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 			},
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
 			ItemDescription: "Oracle Partitioning",
-			Metric:          model.AgreementPartMetricProcessorPerpetual,
-			PartID:          "PID002",
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+			LicenseTypeID:   "PID002",
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			LicensesCount:   55,
@@ -82,7 +85,7 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 		{
 			Name:          "test-db",
 			LicenseCount:  100,
-			LicenseName:   "Partitioning",
+			LicenseTypeID: "PID002",
 			OriginalCount: 100,
 			Type:          "host",
 		},

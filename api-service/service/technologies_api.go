@@ -72,7 +72,10 @@ func createOracleTechnologyStatus(as *APIService, oracleHosts float64) (*model.T
 		return nil, err
 	}
 
-	as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+	err2 := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+	if err2 != nil {
+		return nil, utils.NewAdvancedErrorPtr(err2, "DB ERROR")
+	}
 
 	status := model.TechnologyStatus{
 		Product:    model.TechnologyOracleDatabase,

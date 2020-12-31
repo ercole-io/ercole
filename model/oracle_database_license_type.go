@@ -15,9 +15,9 @@
 
 package model
 
-// OracleDatabasePart holds informations about a single OracleDatabasePart
-type OracleDatabasePart struct {
-	PartID          string   `json:"partID" bson:"partID"`
+// OracleDatabaseLicenseType holds informations about a single OracleDatabaseLicenseType
+type OracleDatabaseLicenseType struct {
+	ID              string   `json:"id" bson:"_id"`
 	ItemDescription string   `json:"itemDescription" bson:"itemDescription"`
 	Metric          string   `json:"metric" bson:"metric"`
 	Cost            float64  `json:"cost" bson:"cost"`
@@ -26,8 +26,17 @@ type OracleDatabasePart struct {
 
 // OracleDatabaseAgreementPart known metrics
 const (
-	AgreementPartMetricProcessorPerpetual     = "Processor Perpetual"
-	AgreementPartMetricNamedUserPlusPerpetual = "Named User Plus Perpetual"
-	AgreementPartMetricStreamPerpetual        = "Stream Perpetual"
-	AgreementPartMetricComputerPerpetual      = "Computer Perpetual"
+	LicenseTypeMetricProcessorPerpetual     = "Processor Perpetual"
+	LicenseTypeMetricNamedUserPlusPerpetual = "Named User Plus Perpetual"
+	LicenseTypePartMetricStreamPerpetual    = "Stream Perpetual"
+	LicenseTypeMetricComputerPerpetual      = "Computer Perpetual"
 )
+
+func GetAllLicenseTypeMetrics() []string {
+	return []string{
+		LicenseTypeMetricProcessorPerpetual,
+		LicenseTypeMetricNamedUserPlusPerpetual,
+		LicenseTypePartMetricStreamPerpetual,
+		LicenseTypeMetricComputerPerpetual,
+	}
+}
