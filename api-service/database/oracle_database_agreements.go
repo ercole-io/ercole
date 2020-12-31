@@ -28,7 +28,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-const oracleDbAgreementsCollection = "agreements_oracle_database"
+const oracleDbAgreementsCollection = "oracle_database_agreements"
 
 // InsertOracleDatabaseAgreement insert an Oracle/Database agreement into the database
 func (md *MongoDatabase) InsertOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, utils.AdvancedErrorInterface) {
