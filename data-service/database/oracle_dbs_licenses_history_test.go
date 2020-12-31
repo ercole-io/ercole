@@ -31,7 +31,7 @@ import (
 )
 
 func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
-	defer m.db.Client.Database(m.dbname).Collection("licenses_history_oracle_database").DeleteMany(context.TODO(), bson.M{})
+	defer m.db.Client.Database(m.dbname).Collection("oracle_database_licenses_history").DeleteMany(context.TODO(), bson.M{})
 
 	dateDay1 := utils.PDT("2020-12-05T14:02:03Z")
 	m.T().Run("First insert, success", func(t *testing.T) {
@@ -68,7 +68,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 		require.NoError(m.T(), err)
 
 		cur, err := m.db.Client.Database(m.db.Config.Mongodb.DBName).
-			Collection("licenses_history_oracle_database").
+			Collection("oracle_database_licenses_history").
 			Find(context.TODO(), bson.D{})
 		require.NoError(m.T(), err)
 
@@ -135,7 +135,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 		require.NoError(m.T(), err)
 
 		cur, err := m.db.Client.Database(m.db.Config.Mongodb.DBName).
-			Collection("licenses_history_oracle_database").
+			Collection("oracle_database_licenses_history").
 			Find(context.TODO(), bson.D{})
 		require.NoError(m.T(), err)
 
