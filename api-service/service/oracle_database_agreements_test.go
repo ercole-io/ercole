@@ -516,7 +516,7 @@ func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
 		{
 			Name:          "test-db",
 			LicenseCount:  3,
-			LicenseName:   "Partitioning",
+			LicenseTypeID: "PID002",
 			OriginalCount: 3,
 			Type:          "host",
 		},
@@ -618,7 +618,7 @@ func TestSearchOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 		{
 			Name:          "test-db",
 			LicenseCount:  3,
-			LicenseName:   "Partitioning",
+			LicenseTypeID: "ID Partioning",
 			OriginalCount: 3,
 			Type:          "host",
 		},
@@ -1013,7 +1013,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCase(t *testing.T)
 		{
 			Name:          "test-db",
 			LicenseCount:  3,
-			LicenseName:   "Partitioning",
+			LicenseTypeID: "PID002",
 			OriginalCount: 3,
 			Type:          "host",
 		},
@@ -1100,7 +1100,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *t
 		{
 			Name:          "test-db",
 			LicenseCount:  3,
-			LicenseName:   "Partitioning",
+			LicenseTypeID: "PID002",
 			OriginalCount: 3,
 			Type:          "host",
 		},
@@ -1187,7 +1187,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 		{
 			Name:          "test-db",
 			LicenseCount:  5,
-			LicenseName:   "Partitioning",
+			LicenseTypeID: "PID002",
 			OriginalCount: 5,
 			Type:          "host",
 		},
@@ -1279,14 +1279,14 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 		{
 			Name:          "test-db",
 			LicenseCount:  3,
-			LicenseName:   "Partitioning",
+			LicenseTypeID: "PID002",
 			OriginalCount: 3,
 			Type:          "host",
 		},
 		{
 			Name:          "test-db2",
 			LicenseCount:  4,
-			LicenseName:   "Partitioning",
+			LicenseTypeID: "PID002",
 			OriginalCount: 4,
 			Type:          "host",
 		},
@@ -1401,7 +1401,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 		{
 			Name:          "test-db",
 			LicenseCount:  20,
-			LicenseName:   "Partitioning",
+			LicenseTypeID: "PID002",
 			OriginalCount: 20,
 			Type:          "host",
 		},
@@ -1505,7 +1505,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCaseNoAssociatedHo
 		{
 			Name:          "test-db",
 			LicenseCount:  3,
-			LicenseName:   "Partitioning",
+			LicenseTypeID: "ID Partioning",
 			OriginalCount: 3,
 			Type:          "host",
 		},
@@ -1579,7 +1579,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAss
 		{
 			Name:          "test-db",
 			LicenseCount:  3,
-			LicenseName:   "Partitioning",
+			LicenseTypeID: "PID002",
 			OriginalCount: 3,
 			Type:          "host",
 		},
@@ -1653,7 +1653,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 		{
 			Name:          "test-db",
 			LicenseCount:  5,
-			LicenseName:   "Partitioning",
+			LicenseTypeID: "PID002",
 			OriginalCount: 5,
 			Type:          "host",
 		},
@@ -1729,14 +1729,14 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 		{
 			Name:          "test-db",
 			LicenseCount:  3,
-			LicenseName:   "Partitioning",
+			LicenseTypeID: "PID002",
 			OriginalCount: 3,
 			Type:          "host",
 		},
 		{
 			Name:          "dbclust",
 			LicenseCount:  20,
-			LicenseName:   "Partitioning",
+			LicenseTypeID: "PID002",
 			OriginalCount: 20,
 			Type:          "cluster",
 		},
@@ -1777,71 +1777,71 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 func TestSortHostsUsingLicenses(t *testing.T) {
 	list := []dto.HostUsingOracleDatabaseLicenses{
 		{
-			LicenseName:  "Diagnostics Pack",
-			Name:         "Puzzait",
-			Type:         "cluster",
-			LicenseCount: 70,
+			LicenseTypeID: "Diagnostics Pack",
+			Name:          "Puzzait",
+			Type:          "cluster",
+			LicenseCount:  70,
 		},
 		{
-			LicenseName:  "Real Application Clusters",
-			Name:         "test-db3",
-			Type:         "host",
-			LicenseCount: 1.5,
+			LicenseTypeID: "Real Application Clusters",
+			Name:          "test-db3",
+			Type:          "host",
+			LicenseCount:  1.5,
 		},
 		{
-			LicenseName:  "Diagnostics Pack",
-			Name:         "test-db4",
-			Type:         "host",
-			LicenseCount: 0.5,
+			LicenseTypeID: "Diagnostics Pack",
+			Name:          "test-db4",
+			Type:          "host",
+			LicenseCount:  0.5,
 		},
 		{
-			LicenseName:  "Oracle ENT",
-			Name:         "test-db3",
-			Type:         "host",
-			LicenseCount: 0.5,
+			LicenseTypeID: "Oracle ENT",
+			Name:          "test-db3",
+			Type:          "host",
+			LicenseCount:  0.5,
 		},
 		{
-			LicenseName:  "Oracle ENT",
-			Name:         "Puzzait",
-			Type:         "cluster",
-			LicenseCount: 70,
+			LicenseTypeID: "Oracle ENT",
+			Name:          "Puzzait",
+			Type:          "cluster",
+			LicenseCount:  70,
 		},
 	}
 
 	expected := []dto.HostUsingOracleDatabaseLicenses{
 		{
-			LicenseName:  "Oracle ENT",
-			Name:         "Puzzait",
-			Type:         "cluster",
-			LicenseCount: 70,
+			LicenseTypeID: "Oracle ENT",
+			Name:          "Puzzait",
+			Type:          "cluster",
+			LicenseCount:  70,
 		},
 		{
-			LicenseName:  "Diagnostics Pack",
-			Name:         "Puzzait",
-			Type:         "cluster",
-			LicenseCount: 70,
+			LicenseTypeID: "Diagnostics Pack",
+			Name:          "Puzzait",
+			Type:          "cluster",
+			LicenseCount:  70,
 		},
 		{
-			LicenseName:  "Real Application Clusters",
-			Name:         "test-db3",
-			Type:         "host",
-			LicenseCount: 1.5,
+			LicenseTypeID: "Real Application Clusters",
+			Name:          "test-db3",
+			Type:          "host",
+			LicenseCount:  1.5,
 		},
 		{
-			LicenseName:  "Diagnostics Pack",
-			Name:         "test-db4",
-			Type:         "host",
-			LicenseCount: 0.5,
+			LicenseTypeID: "Diagnostics Pack",
+			Name:          "test-db4",
+			Type:          "host",
+			LicenseCount:  0.5,
 		},
 		{
-			LicenseName:  "Oracle ENT",
-			Name:         "test-db3",
-			Type:         "host",
-			LicenseCount: 0.5,
+			LicenseTypeID: "Oracle ENT",
+			Name:          "test-db3",
+			Type:          "host",
+			LicenseCount:  0.5,
 		},
 	}
 
-	sortHostsUsingLicenses(list)
+	sortHostsByLicenses(list)
 
 	assert.Equal(t, expected, list)
 }
@@ -1901,17 +1901,12 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 	}
 
 	hostsMap := map[string]map[string]*dto.HostUsingOracleDatabaseLicenses{
-		"Real Application Clusters": {
+		"L10005": {
 			"test-db1": {
-				LicenseCount: 10,
+				LicenseCount: 30,
 			},
 			"test-db2": {
 				LicenseCount: 30,
-			},
-		},
-		"RAC or RAC One Node": {
-			"test-db1": {
-				LicenseCount: 20,
 			},
 			"test-db3": {
 				LicenseCount: 15,
@@ -1947,47 +1942,47 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 func TestBuildHostUsingLicensesMap(t *testing.T) {
 	list := []dto.HostUsingOracleDatabaseLicenses{
 		{
-			LicenseName:  "Oracle ENT",
-			Name:         "Puzzait",
-			Type:         "cluster",
-			LicenseCount: 70,
+			LicenseTypeID: "LTID01",
+			Name:          "Puzzait",
+			Type:          "cluster",
+			LicenseCount:  70,
 		},
 		{
-			LicenseName:  "Diagnostics Pack",
-			Name:         "Puzzait",
-			Type:         "cluster",
-			LicenseCount: 70,
+			LicenseTypeID: "LTID02",
+			Name:          "Puzzait",
+			Type:          "cluster",
+			LicenseCount:  70,
 		},
 		{
-			LicenseName:  "Real Application Clusters",
-			Name:         "test-db3",
-			Type:         "host",
-			LicenseCount: 1.5,
+			LicenseTypeID: "LTID03",
+			Name:          "test-db3",
+			Type:          "host",
+			LicenseCount:  1.5,
 		},
 		{
-			LicenseName:  "Diagnostics Pack",
-			Name:         "test-db4",
-			Type:         "host",
-			LicenseCount: 0.5,
+			LicenseTypeID: "LTID02",
+			Name:          "test-db4",
+			Type:          "host",
+			LicenseCount:  0.5,
 		},
 		{
-			LicenseName:  "Oracle ENT",
-			Name:         "test-db3",
-			Type:         "host",
-			LicenseCount: 0.5,
+			LicenseTypeID: "LTID01",
+			Name:          "test-db3",
+			Type:          "host",
+			LicenseCount:  0.5,
 		},
 	}
 
 	expected := map[string]map[string]*dto.HostUsingOracleDatabaseLicenses{
-		"Oracle ENT": {
+		"LTID01": {
 			"Puzzait":  &list[0],
 			"test-db3": &list[4],
 		},
-		"Diagnostics Pack": {
+		"LTID02": {
 			"Puzzait":  &list[1],
 			"test-db4": &list[3],
 		},
-		"Real Application Clusters": {
+		"LTID03": {
 			"test-db3": &list[2],
 		},
 	}

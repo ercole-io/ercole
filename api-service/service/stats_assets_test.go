@@ -85,7 +85,7 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 		{
 			Name:          "test-db",
 			LicenseCount:  100,
-			LicenseName:   "Partitioning",
+			LicenseTypeID: "PID002",
 			OriginalCount: 100,
 			Type:          "host",
 		},
