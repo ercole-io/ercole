@@ -25,84 +25,84 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var sampleLicenseTypes = []model.OracleDatabaseLicenseType{
-	{
-		ID:              "PID001",
-		ItemDescription: "itemDesc1",
-		Aliases:         []string{"alias1"},
-		Metric:          model.LicenseTypeMetricProcessorPerpetual,
-	},
-	{
-		ID:              "PID002",
-		ItemDescription: "itemDesc2",
-		Aliases:         []string{"alias2"},
-		Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
-	},
-	{
-		ID:              "PID003",
-		ItemDescription: "itemDesc3",
-		Aliases:         []string{"alias3"},
-		Metric:          model.LicenseTypeMetricComputerPerpetual,
-	},
-}
-
-var sampleListOracleDatabaseAgreements []dto.OracleDatabaseAgreementFE = []dto.OracleDatabaseAgreementFE{
-	{
-		ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-		AgreementID:     "",
-		CSI:             "",
-		LicenseTypeID:   "PID001",
-		ItemDescription: "",
-		Metric:          "",
-		ReferenceNumber: "",
-		Unlimited:       false,
-		Count:           50,
-		CatchAll:        false,
-		Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
-			{Hostname: "pippo"},
-			{Hostname: "pluto"},
-		},
-		AvailableCount: 50,
-		LicensesCount:  0,
-		UsersCount:     0,
-	},
-	{
-		ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
-		AgreementID:     "",
-		CSI:             "",
-		LicenseTypeID:   "PID002",
-		ItemDescription: "",
-		Metric:          "",
-		ReferenceNumber: "",
-		Unlimited:       false,
-		Count:           75,
-		CatchAll:        false,
-		Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
-			{Hostname: "topolino"},
-			{Hostname: "minnie"},
-		},
-		AvailableCount: 75,
-		LicensesCount:  0,
-		UsersCount:     0,
-	},
-}
-
-var sampleHostUsingOracleDbLicenses []dto.HostUsingOracleDatabaseLicenses = []dto.HostUsingOracleDatabaseLicenses{
-	{LicenseName: "alias1", Name: "test1", Type: "host", LicenseCount: 3, OriginalCount: 3},
-	{LicenseName: "alias1", Name: "pluto", Type: "host", LicenseCount: 1.5, OriginalCount: 1.5},
-	{LicenseName: "alias1", Name: "pippo", Type: "host", LicenseCount: 5.5, OriginalCount: 5.5},
-
-	{LicenseName: "alias2", Name: "topolino", Type: "cluster", LicenseCount: 7, OriginalCount: 7},
-	{LicenseName: "alias2", Name: "minnie", Type: "host", LicenseCount: 4, OriginalCount: 4},
-	{LicenseName: "alias2", Name: "minnie", Type: "host", LicenseCount: 8, OriginalCount: 8},
-
-	{LicenseName: "alias3", Name: "minnie", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
-	{LicenseName: "alias3", Name: "pippo", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
-	{LicenseName: "alias3", Name: "test2", Type: "host", LicenseCount: 4, OriginalCount: 4},
-	{LicenseName: "alias3", Name: "test3", Type: "cluster", LicenseCount: 6, OriginalCount: 6},
-}
-
 func TestListManagedTechnologies_Success(t *testing.T) {
+	var sampleLicenseTypes = []model.OracleDatabaseLicenseType{
+		{
+			ID:              "PID001",
+			ItemDescription: "itemDesc1",
+			Aliases:         []string{"alias1"},
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+		},
+		{
+			ID:              "PID002",
+			ItemDescription: "itemDesc2",
+			Aliases:         []string{"alias2"},
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+		},
+		{
+			ID:              "PID003",
+			ItemDescription: "itemDesc3",
+			Aliases:         []string{"alias3"},
+			Metric:          model.LicenseTypeMetricComputerPerpetual,
+		},
+	}
+
+	var sampleListOracleDatabaseAgreements []dto.OracleDatabaseAgreementFE = []dto.OracleDatabaseAgreementFE{
+		{
+			ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+			AgreementID:     "",
+			CSI:             "",
+			LicenseTypeID:   "PID001",
+			ItemDescription: "",
+			Metric:          "",
+			ReferenceNumber: "",
+			Unlimited:       false,
+			Count:           50,
+			CatchAll:        false,
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+				{Hostname: "pippo"},
+				{Hostname: "pluto"},
+			},
+			AvailableCount: 50,
+			LicensesCount:  0,
+			UsersCount:     0,
+		},
+		{
+			ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
+			AgreementID:     "",
+			CSI:             "",
+			LicenseTypeID:   "PID002",
+			ItemDescription: "",
+			Metric:          "",
+			ReferenceNumber: "",
+			Unlimited:       false,
+			Count:           75,
+			CatchAll:        false,
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+				{Hostname: "topolino"},
+				{Hostname: "minnie"},
+			},
+			AvailableCount: 75,
+			LicensesCount:  0,
+			UsersCount:     0,
+		},
+	}
+
+	var sampleHostUsingOracleDbLicenses []dto.HostUsingOracleDatabaseLicenses = []dto.HostUsingOracleDatabaseLicenses{
+		{LicenseTypeID: "PID001", Name: "test1", Type: "host", LicenseCount: 3, OriginalCount: 3},
+		{LicenseTypeID: "PID001", Name: "pluto", Type: "host", LicenseCount: 1.5, OriginalCount: 1.5},
+		{LicenseTypeID: "PID001", Name: "pippo", Type: "host", LicenseCount: 5.5, OriginalCount: 5.5},
+
+		{LicenseTypeID: "PID002", Name: "topolino", Type: "cluster", LicenseCount: 7, OriginalCount: 7},
+		{LicenseTypeID: "PID002", Name: "minnie", Type: "host", LicenseCount: 4, OriginalCount: 4},
+		{LicenseTypeID: "PID002", Name: "minnie", Type: "host", LicenseCount: 8, OriginalCount: 8},
+
+		{LicenseTypeID: "PID003", Name: "minnie", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
+		{LicenseTypeID: "PID003", Name: "pippo", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
+		{LicenseTypeID: "PID003", Name: "test2", Type: "host", LicenseCount: 4, OriginalCount: 4},
+		{LicenseTypeID: "PID003", Name: "test3", Type: "cluster", LicenseCount: 6, OriginalCount: 6},
+	}
+
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -182,12 +182,32 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 		{
 			Name:          "test-db",
 			LicenseCount:  100,
-			LicenseName:   "Partitioning",
+			LicenseTypeID: "PID002",
 			OriginalCount: 100,
 			Type:          "host",
 		},
 	}
 
+	var sampleLicenseTypes = []model.OracleDatabaseLicenseType{
+		{
+			ID:              "PID001",
+			ItemDescription: "itemDesc1",
+			Aliases:         []string{"alias1"},
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+		},
+		{
+			ID:              "PID002",
+			ItemDescription: "itemDesc2",
+			Aliases:         []string{"alias2"},
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+		},
+		{
+			ID:              "PID003",
+			ItemDescription: "itemDesc3",
+			Aliases:         []string{"alias3"},
+			Metric:          model.LicenseTypeMetricComputerPerpetual,
+		},
+	}
 	gomock.InOrder(
 		db.EXPECT().
 			GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
@@ -264,6 +284,47 @@ func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
 		require.Equal(t, aerrMock, err)
 	})
 	t.Run("Fail ListHostUsingOracleDatabaseLicenses", func(t *testing.T) {
+		var sampleListOracleDatabaseAgreements []dto.OracleDatabaseAgreementFE = []dto.OracleDatabaseAgreementFE{
+			{
+				ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+				AgreementID:     "",
+				CSI:             "",
+				LicenseTypeID:   "PID001",
+				ItemDescription: "",
+				Metric:          "",
+				ReferenceNumber: "",
+				Unlimited:       false,
+				Count:           50,
+				CatchAll:        false,
+				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+					{Hostname: "pippo"},
+					{Hostname: "pluto"},
+				},
+				AvailableCount: 50,
+				LicensesCount:  0,
+				UsersCount:     0,
+			},
+			{
+				ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
+				AgreementID:     "",
+				CSI:             "",
+				LicenseTypeID:   "PID002",
+				ItemDescription: "",
+				Metric:          "",
+				ReferenceNumber: "",
+				Unlimited:       false,
+				Count:           75,
+				CatchAll:        false,
+				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+					{Hostname: "topolino"},
+					{Hostname: "minnie"},
+				},
+				AvailableCount: 75,
+				LicensesCount:  0,
+				UsersCount:     0,
+			},
+		}
+
 		gomock.InOrder(
 			db.EXPECT().
 				GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).

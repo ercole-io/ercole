@@ -139,20 +139,20 @@ func TestGetLicensesCompliance(t *testing.T) {
 	}
 
 	var sampleHosts []dto.HostUsingOracleDatabaseLicenses = []dto.HostUsingOracleDatabaseLicenses{
-		{LicenseName: "alias1", Name: "test1", Type: "host", LicenseCount: 3, OriginalCount: 3},
-		{LicenseName: "alias1", Name: "pluto", Type: "host", LicenseCount: 1.5, OriginalCount: 1.5},
-		{LicenseName: "alias1", Name: "pippo", Type: "host", LicenseCount: 5.5, OriginalCount: 5.5},
+		{LicenseTypeID: "PID001", Name: "test1", Type: "host", LicenseCount: 3, OriginalCount: 3},
+		{LicenseTypeID: "PID001", Name: "pluto", Type: "host", LicenseCount: 1.5, OriginalCount: 1.5},
+		{LicenseTypeID: "PID001", Name: "pippo", Type: "host", LicenseCount: 5.5, OriginalCount: 5.5},
 
-		{LicenseName: "alias2", Name: "topolino", Type: "cluster", LicenseCount: 7, OriginalCount: 7},
-		{LicenseName: "alias2", Name: "minnie", Type: "host", LicenseCount: 4, OriginalCount: 4},
-		{LicenseName: "alias2", Name: "minnie", Type: "host", LicenseCount: 8, OriginalCount: 8},
+		{LicenseTypeID: "PID002", Name: "topolino", Type: "cluster", LicenseCount: 7, OriginalCount: 7},
+		{LicenseTypeID: "PID002", Name: "minnie", Type: "host", LicenseCount: 4, OriginalCount: 4},
+		{LicenseTypeID: "PID002", Name: "minnie", Type: "host", LicenseCount: 8, OriginalCount: 8},
 
-		{LicenseName: "alias3", Name: "minnie", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
-		{LicenseName: "alias3", Name: "pippo", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
-		{LicenseName: "alias3", Name: "test2", Type: "host", LicenseCount: 4, OriginalCount: 4},
-		{LicenseName: "alias3", Name: "test3", Type: "cluster", LicenseCount: 6, OriginalCount: 6},
+		{LicenseTypeID: "PID003", Name: "minnie", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
+		{LicenseTypeID: "PID003", Name: "pippo", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
+		{LicenseTypeID: "PID003", Name: "test2", Type: "host", LicenseCount: 4, OriginalCount: 4},
+		{LicenseTypeID: "PID003", Name: "test3", Type: "cluster", LicenseCount: 6, OriginalCount: 6},
 
-		{LicenseName: "alias5", Name: "test5", Type: "host", LicenseCount: 12, OriginalCount: 12},
+		{LicenseTypeID: "PID005", Name: "test5", Type: "host", LicenseCount: 12, OriginalCount: 12},
 	}
 
 	var expectedLicenseTypes = []model.OracleDatabaseLicenseType{

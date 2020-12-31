@@ -204,10 +204,10 @@ func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingO
 				mu.APUnwind("$licenses"),
 				mu.APGroup(bson.M{
 					"_id": bson.M{
-						"hostname":    "$hostname",
-						"cluster":     "$cluster",
-						"clusterCpu":  "$clusterCpu",
-						"licenseName": "$licenses.name",
+						"hostname":      "$hostname",
+						"cluster":       "$cluster",
+						"clusterCpu":    "$clusterCpu",
+						"licenseTypeID": "$licenses.licenseTypeID",
 					},
 					"licenseCount": mu.APOMaxAggr("$licenses.count"),
 				}),
@@ -218,7 +218,7 @@ func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingO
 				}),
 				mu.APGroup(bson.M{
 					"_id": bson.M{
-						"licenseName": "$_id.licenseName",
+						"licenseTypeID": "$_id.licenseTypeID",
 						"object": mu.APOCond(
 							"$_id.cluster",
 							bson.M{
@@ -241,7 +241,7 @@ func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingO
 					"_id":           0,
 					"name":          "$_id.object.name",
 					"type":          "$_id.object.type",
-					"licenseName":   "$_id.licenseName",
+					"licenseTypeID": "$_id.licenseTypeID",
 					"licenseCount":  1,
 					"originalCount": "$licenseCount",
 				}),
