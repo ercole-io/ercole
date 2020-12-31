@@ -38,7 +38,7 @@ func (md *MongoDatabase) HistoricizeOracleDbsLicenses(licenses []dto.OracleDatab
 				"history", bson.D{{"date", now}, {"consumed", license.Consumed}, {"covered", license.Covered}},
 			}}}}
 
-		_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("licenses_history_oracle_database").
+		_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("oracle_database_licenses_history").
 			UpdateMany(context.TODO(),
 				filter,
 				update,
