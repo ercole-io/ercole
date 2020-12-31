@@ -28,50 +28,31 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestLoadOracleDatabaseAgreementParts_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-		Log:      utils.NewLogger("TEST"),
-		Config: config.Configuration{
-			ResourceFilePath: "../../resources",
-		},
-	}
-	as.loadOracleDatabaseAgreementParts()
-
-	expected := []model.OracleDatabasePart{
-		{PartID: "A11111", ItemDescription: "Database Enterprise Edition", Metric: model.AgreementPartMetricNamedUserPlusPerpetual, Cost: 42, Aliases: []string{"Db ENT"}},
-		{PartID: "B22222", ItemDescription: "Database Standard Edition", Metric: model.AgreementPartMetricProcessorPerpetual, Cost: 43, Aliases: []string{"Db STD"}},
-		{PartID: "C33333", ItemDescription: "Tuning", Metric: model.AgreementPartMetricStreamPerpetual, Cost: 44, Aliases: []string{"Tuning"}},
-	}
-
-	assert.ElementsMatch(t, expected, as.OracleDatabaseAgreementParts)
-}
-
-func TestGetOracleDatabaseAgreementPartsList_Success(t *testing.T) {
+func TestGetOracleDatabaseLicenseTypes_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := APIService{
 		Database: db,
 		Config:   config.Configuration{},
-		OracleDatabaseAgreementParts: []model.OracleDatabasePart{
-			{
-				PartID:          "Pippo",
-				ItemDescription: "Pluto",
-				Metric:          "Topolino",
-				Cost:            12,
-				Aliases:         []string{"Minny"},
-			},
+	}
+
+	expected := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "Pippo",
+			ItemDescription: "Pluto",
+			Metric:          "Topolino",
+			Cost:            12,
+			Aliases:         []string{"Minny"},
 		},
 	}
-	res, err := as.GetOracleDatabaseAgreementPartsList()
+	db.EXPECT().GetOracleDatabaseLicenseTypes().Return(expected, nil)
+
+	res, err := as.GetOracleDatabaseLicenseTypes()
 	require.NoError(t, err)
-	assert.Equal(t, []model.OracleDatabasePart{
+	assert.Equal(t, []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "Pippo",
+			ID:              "Pippo",
 			ItemDescription: "Pluto",
 			Metric:          "Topolino",
 			Cost:            12,
@@ -86,7 +67,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 			ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 			AgreementID:     "",
 			CSI:             "",
-			PartID:          "PID001",
+			LicenseTypeID:   "PID001",
 			ItemDescription: "",
 			Metric:          "",
 			ReferenceNumber: "",
@@ -105,7 +86,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 			ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
 			AgreementID:     "",
 			CSI:             "",
-			PartID:          "PID002",
+			LicenseTypeID:   "PID002",
 			ItemDescription: "",
 			Metric:          "",
 			ReferenceNumber: "",
@@ -124,7 +105,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 			ID:              utils.Str2oid("cccccccccccccccccccccccc"),
 			AgreementID:     "",
 			CSI:             "",
-			PartID:          "PID003",
+			LicenseTypeID:   "PID003",
 			ItemDescription: "",
 			Metric:          "",
 			ReferenceNumber: "",
@@ -143,7 +124,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 			ID:              utils.Str2oid("dddddddddddddddddddddddd"),
 			AgreementID:     "",
 			CSI:             "",
-			PartID:          "PID004",
+			LicenseTypeID:   "PID004",
 			ItemDescription: "",
 			Metric:          "",
 			ReferenceNumber: "",
@@ -158,61 +139,60 @@ func TestGetLicensesCompliance(t *testing.T) {
 	}
 
 	var sampleHosts []dto.HostUsingOracleDatabaseLicenses = []dto.HostUsingOracleDatabaseLicenses{
-		{LicenseName: "alias1", Name: "test1", Type: "host", LicenseCount: 3, OriginalCount: 3},
-		{LicenseName: "alias1", Name: "pluto", Type: "host", LicenseCount: 1.5, OriginalCount: 1.5},
-		{LicenseName: "alias1", Name: "pippo", Type: "host", LicenseCount: 5.5, OriginalCount: 5.5},
+		{LicenseTypeID: "PID001", Name: "test1", Type: "host", LicenseCount: 3, OriginalCount: 3},
+		{LicenseTypeID: "PID001", Name: "pluto", Type: "host", LicenseCount: 1.5, OriginalCount: 1.5},
+		{LicenseTypeID: "PID001", Name: "pippo", Type: "host", LicenseCount: 5.5, OriginalCount: 5.5},
 
-		{LicenseName: "alias2", Name: "topolino", Type: "cluster", LicenseCount: 7, OriginalCount: 7},
-		{LicenseName: "alias2", Name: "minnie", Type: "host", LicenseCount: 4, OriginalCount: 4},
-		{LicenseName: "alias2", Name: "minnie", Type: "host", LicenseCount: 8, OriginalCount: 8},
+		{LicenseTypeID: "PID002", Name: "topolino", Type: "cluster", LicenseCount: 7, OriginalCount: 7},
+		{LicenseTypeID: "PID002", Name: "minnie", Type: "host", LicenseCount: 4, OriginalCount: 4},
+		{LicenseTypeID: "PID002", Name: "minnie", Type: "host", LicenseCount: 8, OriginalCount: 8},
 
-		{LicenseName: "alias3", Name: "minnie", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
-		{LicenseName: "alias3", Name: "pippo", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
-		{LicenseName: "alias3", Name: "test2", Type: "host", LicenseCount: 4, OriginalCount: 4},
-		{LicenseName: "alias3", Name: "test3", Type: "cluster", LicenseCount: 6, OriginalCount: 6},
+		{LicenseTypeID: "PID003", Name: "minnie", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
+		{LicenseTypeID: "PID003", Name: "pippo", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
+		{LicenseTypeID: "PID003", Name: "test2", Type: "host", LicenseCount: 4, OriginalCount: 4},
+		{LicenseTypeID: "PID003", Name: "test3", Type: "cluster", LicenseCount: 6, OriginalCount: 6},
 
-		{LicenseName: "alias5", Name: "test5", Type: "host", LicenseCount: 12, OriginalCount: 12},
+		{LicenseTypeID: "PID005", Name: "test5", Type: "host", LicenseCount: 12, OriginalCount: 12},
 	}
 
-	var sampleParts = []model.OracleDatabasePart{
+	var expectedLicenseTypes = []model.OracleDatabaseLicenseType{
 		{
-			PartID:          "PID001",
+			ID:              "PID001",
 			ItemDescription: "itemDesc1",
 			Aliases:         []string{"alias1"},
-			Metric:          model.AgreementPartMetricProcessorPerpetual,
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
 		},
 		{
-			PartID:          "PID002",
+			ID:              "PID002",
 			ItemDescription: "itemDesc2",
 			Aliases:         []string{"alias2"},
-			Metric:          model.AgreementPartMetricNamedUserPlusPerpetual,
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
 		},
 		{
-			PartID:          "PID003",
+			ID:              "PID003",
 			ItemDescription: "itemDesc3",
 			Aliases:         []string{"alias3"},
-			Metric:          model.AgreementPartMetricComputerPerpetual,
+			Metric:          model.LicenseTypeMetricComputerPerpetual,
 		},
 		{
-			PartID:          "PID004",
+			ID:              "PID004",
 			ItemDescription: "itemDesc4",
 			Aliases:         []string{"alias4"},
-			Metric:          model.AgreementPartMetricComputerPerpetual,
+			Metric:          model.LicenseTypeMetricComputerPerpetual,
 		},
 		{
-			PartID:          "PID005",
+			ID:              "PID005",
 			ItemDescription: "itemDesc5",
 			Aliases:         []string{"alias5"},
-			Metric:          model.AgreementPartMetricComputerPerpetual,
+			Metric:          model.LicenseTypeMetricComputerPerpetual,
 		},
 	}
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := APIService{
-		Database:                     db,
-		Log:                          utils.NewLogger("TEST"),
-		OracleDatabaseAgreementParts: sampleParts,
+		Database: db,
+		Log:      utils.NewLogger("TEST"),
 	}
 
 	gomock.InOrder(
@@ -222,21 +202,25 @@ func TestGetLicensesCompliance(t *testing.T) {
 		db.EXPECT().
 			ListHostUsingOracleDatabaseLicenses().
 			Return(sampleHosts, nil),
+		db.EXPECT().
+			GetOracleDatabaseLicenseTypes().
+			Times(2).
+			Return(expectedLicenseTypes, nil),
 	)
 
 	actual, err := as.GetOracleDatabaseLicensesCompliance()
 	require.NoError(t, err)
 
 	expected := []dto.OracleDatabaseLicenseUsage{
-		{PartID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 10, Covered: 7, Compliance: 0.7, Unlimited: false},
-		{PartID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 19, Covered: 75, Compliance: 75.0 / 19.0, Unlimited: false},
-		{PartID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Consumed: 11, Covered: 0.5, Compliance: 0.5 / 11.0, Unlimited: true},
-		{PartID: "PID004", ItemDescription: "itemDesc4", Metric: "Computer Perpetual", Consumed: 0.0, Covered: 0.0, Compliance: 1, Unlimited: false},
-		{PartID: "PID005", ItemDescription: "itemDesc5", Metric: "Computer Perpetual", Consumed: 12, Covered: 0.0, Compliance: 0, Unlimited: false},
+		{LicenseTypeID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 10, Covered: 7, Compliance: 0.7, Unlimited: false},
+		{LicenseTypeID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 19, Covered: 75, Compliance: 75.0 / 19.0, Unlimited: false},
+		{LicenseTypeID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Consumed: 11, Covered: 0.5, Compliance: 0.5 / 11.0, Unlimited: true},
+		{LicenseTypeID: "PID004", ItemDescription: "itemDesc4", Metric: "Computer Perpetual", Consumed: 0.0, Covered: 0.0, Compliance: 1, Unlimited: false},
+		{LicenseTypeID: "PID005", ItemDescription: "itemDesc5", Metric: "Computer Perpetual", Consumed: 12, Covered: 0.0, Compliance: 0, Unlimited: false},
 	}
 
 	sort.Slice(actual, func(i, j int) bool {
-		return actual[i].PartID < actual[j].PartID
+		return actual[i].LicenseTypeID < actual[j].LicenseTypeID
 	})
 
 	require.Equal(t, expected, actual)

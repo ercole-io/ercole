@@ -6,14 +6,22 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"sort"
 
+	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-func (hds *HostDataService) oracleDatabasesChecks(hostInfo model.Host, oracleFeature *model.OracleFeature) {
+func (hds *HostDataService) oracleDatabasesChecks(environment string, hostInfo model.Host, oracleFeature *model.OracleFeature) {
 	if oracleFeature.Database == nil || oracleFeature.Database.Databases == nil {
 		return
+	}
+
+	licenseTypes, err := hds.getOracleDatabaseLicenseTypes(environment)
+	if err != nil {
+		utils.LogErr(hds.Log, utils.NewAdvancedErrorPtr(err, "INSERT_HOSTDATA_ORACLE_DATABASE"))
+		licenseTypes = make([]model.OracleDatabaseLicenseType, 0)
 	}
 
 	for i := range oracleFeature.Database.Databases {
@@ -23,14 +31,15 @@ func (hds *HostDataService) oracleDatabasesChecks(hostInfo model.Host, oracleFea
 			db.Role != model.OracleDatabaseRolePrimary {
 			hds.addLicensesToSecondaryDbs(hostInfo, db)
 		}
-	}
 
+		setLicenseTypeIDs(licenseTypes, db)
+	}
 }
 
 func (hds *HostDataService) addLicensesToSecondaryDbs(hostInfo model.Host, secondaryDb *model.OracleDatabase) {
 	dbs, err := hds.getPrimaryOpenOracleDatabases()
 	if err != nil {
-		utils.LogErr(hds.Log, utils.NewAdvancedErrorPtr(err, ""))
+		utils.LogErr(hds.Log, utils.NewAdvancedErrorPtr(err, "INSERT_HOSTDATA_ORACLE_DATABASE"))
 		return
 	}
 
@@ -95,8 +104,9 @@ primaryDbLicensesCycle:
 
 			secondaryDb.Licenses = append(secondaryDb.Licenses,
 				model.OracleDatabaseLicense{
-					Name:  primaryDbLicense.Name,
-					Count: float64(hostInfo.CPUCores) * coreFactor,
+					LicenseTypeID: primaryDbLicense.LicenseTypeID,
+					Name:          primaryDbLicense.Name,
+					Count:         float64(hostInfo.CPUCores) * coreFactor,
 				})
 		}
 	}
@@ -140,4 +150,66 @@ func (hds *HostDataService) getPrimaryOpenOracleDatabases() (dbs []model.OracleD
 func removeFromDBs(s []model.OracleDatabase, i int) []model.OracleDatabase {
 	s[i] = s[len(s)-1]
 	return s[:len(s)-1]
+}
+
+func (hds *HostDataService) getOracleDatabaseLicenseTypes(environment string,
+) ([]model.OracleDatabaseLicenseType, error) {
+	url := utils.NewAPIUrlNoParams(
+		hds.Config.APIService.RemoteEndpoint,
+		hds.Config.APIService.AuthenticationProvider.Username,
+		hds.Config.APIService.AuthenticationProvider.Password,
+		"settings/oracle/database/license-types").String()
+
+	resp, err := http.Get(url)
+	if err != nil || resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return nil, utils.NewAdvancedErrorPtr(err, "Can't retrieve licenseTypes")
+	}
+
+	licenseTypes := make([]model.OracleDatabaseLicenseType, 0)
+
+	decoder := json.NewDecoder(resp.Body)
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&licenseTypes); err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "Can't decode licenseTypes")
+	}
+
+	sort.Slice(licenseTypes, licenseTypesSorter(hds.Config.DataService, environment, licenseTypes))
+
+	return licenseTypes, nil
+}
+
+func licenseTypesSorter(config config.DataService, environment string, licenseTypes []model.OracleDatabaseLicenseType,
+) func(int, int) bool {
+	orderOfPriority, ok := config.LicenseTypeMetricsByEnvironment[environment]
+	if !ok {
+		orderOfPriority = config.LicenseTypeMetricsDefault
+	}
+
+	priorityMap := make(map[string]int, len(orderOfPriority))
+	for i, p := range orderOfPriority {
+		priorityMap[p] = len(orderOfPriority) - i
+	}
+
+	return func(i, j int) bool {
+		x := &licenseTypes[i]
+		y := &licenseTypes[j]
+
+		return priorityMap[x.Metric] >= priorityMap[y.Metric]
+	}
+}
+
+func setLicenseTypeIDs(licenseTypes []model.OracleDatabaseLicenseType, database *model.OracleDatabase) {
+licenses:
+	for i := range database.Licenses {
+		license := &database.Licenses[i]
+
+		for _, licenseType := range licenseTypes {
+			for _, alias := range licenseType.Aliases {
+				if alias == license.Name {
+					license.LicenseTypeID = licenseType.ID
+					continue licenses
+				}
+			}
+		}
+	}
 }

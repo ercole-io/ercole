@@ -70,6 +70,7 @@ func Migrate(log *logrus.Logger, client *mongo.Database) {
 	MigratePatchingFunctionsSchema(log, client)
 	// MigrateCurrentDatabasesSchema(log, client)
 	MigrateOracleDatabaseAgreementsSchema(log, client)
+	MigrateOracleDatabaseLicenseTypes(log, client)
 }
 
 // MigrateHostsSchema create or update the hosts schema
@@ -297,9 +298,9 @@ func MigratePatchingFunctionsSchema(log *logrus.Logger, client *mongo.Database) 
 	}
 }
 
-// MigrateOracleDatabaseAgreementsSchema create or update the agreements_oracle_database schema
+// MigrateOracleDatabaseAgreementsSchema create or update the oracle_database_agreements schema
 func MigrateOracleDatabaseAgreementsSchema(log *logrus.Logger, client *mongo.Database) {
-	collection := "agreements_oracle_database"
+	collection := "oracle_database_agreements"
 
 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
 		log.Panicln(err)
@@ -324,11 +325,26 @@ func MigrateOracleDatabaseAgreementsSchema(log *logrus.Logger, client *mongo.Dat
 				},
 				{
 					Keys: bson.D{
-						{"parts._id", 1},
+						{"licenseTypes._id", 1},
 					},
 					Options: options.Index().SetUnique(true),
 				}},
 		); err != nil {
 		log.Panicln(err)
+	}
+}
+
+// MigrateOracleDatabaseAgreementsSchema create or update the oracle_database_agreements schema
+func MigrateOracleDatabaseLicenseTypes(log *logrus.Logger, client *mongo.Database) {
+	collection := "oracle_database_license_types"
+
+	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
+		log.Panicln(err)
+	} else if !utils.Contains(cols, collection) {
+		if err := client.RunCommand(context.TODO(), bson.D{
+			{"create", collection},
+		}).Err(); err != nil {
+			log.Panicln(err)
+		}
 	}
 }

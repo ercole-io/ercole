@@ -126,21 +126,21 @@ type APIServiceInterface interface {
 	// ORACLE DATABASE AGREEMENTS
 
 	// Add associated part to OracleDatabaseAgreement or create a new one
-	AddAssociatedPartToOracleDbAgreement(request dto.AssociatedPartInOracleDbAgreementRequest) (string, utils.AdvancedErrorInterface)
+	AddAssociatedLicenseTypeToOracleDbAgreement(request dto.AssociatedLicenseTypeInOracleDbAgreementRequest) (string, utils.AdvancedErrorInterface)
 	// Update associated part in OracleDatabaseAgreement
-	UpdateAssociatedPartOfOracleDbAgreement(request dto.AssociatedPartInOracleDbAgreementRequest) utils.AdvancedErrorInterface
+	UpdateAssociatedLicenseTypeOfOracleDbAgreement(request dto.AssociatedLicenseTypeInOracleDbAgreementRequest) utils.AdvancedErrorInterface
 	// Search OracleDatabase associated parts agreements
-	SearchAssociatedPartsInOracleDatabaseAgreements(filters dto.SearchOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface)
+	SearchAssociatedLicenseTypesInOracleDatabaseAgreements(filters dto.SearchOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface)
 	// Delete associated part from OracleDatabaseAgreement
-	DeleteAssociatedPartFromOracleDatabaseAgreement(associatedPartID primitive.ObjectID) utils.AdvancedErrorInterface
-	// Add an host to AssociatedPart
-	AddHostToAssociatedPart(associatedPartID primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
-	// Remove host from AssociatedPart
-	RemoveHostFromAssociatedPart(associatedPartID primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
+	DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(associateLicenseTypeID primitive.ObjectID) utils.AdvancedErrorInterface
+	// Add an host to AssociatedLicenseType
+	AddHostToAssociatedLicenseType(associateLicenseTypeID primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
+	// Remove host from AssociatedLicenseType
+	RemoveHostFromAssociatedLicenseType(associateLicenseTypeID primitive.ObjectID, hostname string) utils.AdvancedErrorInterface
 
 	// PARTS
 
-	GetOracleDatabaseAgreementPartsList() ([]model.OracleDatabasePart, utils.AdvancedErrorInterface)
+	GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, utils.AdvancedErrorInterface)
 	GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabaseLicenseUsage, utils.AdvancedErrorInterface)
 
 	// PATCHING FUNCTIONS
@@ -180,8 +180,6 @@ type APIService struct {
 	Log *logrus.Logger
 	// TechnologyInfos contains the list of technologies with their informations
 	TechnologyInfos []model.TechnologyInfo
-	// OracleDatabaseAgreementParts contains the list of Oracle/Database agreeement parts
-	OracleDatabaseAgreementParts []model.OracleDatabasePart
 	// NewObjectID return a new ObjectID
 	NewObjectID func() primitive.ObjectID
 }
@@ -189,7 +187,6 @@ type APIService struct {
 // Init initializes the service and database
 func (as *APIService) Init() {
 	as.loadManagedTechnologiesList()
-	as.loadOracleDatabaseAgreementParts()
 
 	as.NewObjectID = func() primitive.ObjectID {
 		return primitive.NewObjectIDFromTimestamp(as.TimeNow())
