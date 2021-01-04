@@ -112,6 +112,22 @@ func (m *MongodbSuite) TestGetTotalOracleExadataCPUStats() {
 func (m *MongodbSuite) TestGetAverageOracleExadataStorageUsageStats() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
+	m.T().Run("should_return_zero_when_collection_is_empty", func(t *testing.T) {
+		out, err := m.db.GetAverageOracleExadataStorageUsageStats("", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		assert.Equal(t, float64(0.0), out)
+	})
+
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
+
+	m.T().Run("should_return_zero_when_no_exadata_is_present", func(t *testing.T) {
+		out, err := m.db.GetAverageOracleExadataStorageUsageStats("", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		assert.Equal(t, float64(0.0), out)
+	})
+
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_10.json"))
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
