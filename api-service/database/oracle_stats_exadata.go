@@ -140,8 +140,12 @@ func (md *MongoDatabase) GetAverageOracleExadataStorageUsageStats(location strin
 				"sum":   mu.APOSum("$value.sum"),
 			}),
 			mu.APProject(bson.M{
-				"_id":   0,
-				"value": mu.APODivide("$sum", "$count"),
+				"_id": 0,
+				"value": mu.APOCond(
+					bson.D{{"$eq", bson.A{0, "$count"}}},
+					0,
+					mu.APODivide("$sum", "$count"),
+				),
 			}),
 		),
 	)
