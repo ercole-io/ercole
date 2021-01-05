@@ -475,53 +475,7 @@ func TestSearchHosts_LMSSuccess(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []map[string]interface{}{
-		{
-			"coresPerProcessor":        1,
-			"dbInstanceName":           "ERCOLE",
-			"environment":              "TST",
-			"licenseMetricAllocated":   "processor",
-			"operatingSystem":          "Red Hat Enterprise Linux",
-			"options":                  "Diagnostics Pack",
-			"physicalCores":            2,
-			"physicalServerName":       "",
-			"pluggableDatabaseName":    "",
-			"processorModel":           "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-			"processorSpeed":           "2.53GHz",
-			"processors":               2,
-			"productLicenseAllocated":  "EE",
-			"productVersion":           "12",
-			"threadsPerCore":           2,
-			"usedManagementPacks":      "Diagnostics Pack",
-			"usingLicenseCount":        0.5,
-			"virtualServerName":        "itl-csllab-112.sorint.localpippo",
-			"virtualizationTechnology": "VMware",
-			"_id":                      utils.Str2oid("5efc38ab79f92e4cbf283b03"),
-		},
-		{
-			"coresPerProcessor":        4,
-			"dbInstanceName":           "rudeboy-fb3160a04ffea22b55555bbb58137f77",
-			"environment":              "SVIL",
-			"licenseMetricAllocated":   "processor",
-			"operatingSystem":          "Red Hat Enterprise Linux",
-			"options":                  "",
-			"physicalCores":            8,
-			"physicalServerName":       "publicitate-36d06ca83eafa454423d2097f4965517",
-			"pluggableDatabaseName":    "",
-			"processorModel":           "Intel(R) Xeon(R) CPU           X5570  @ 2.93GHz",
-			"processorSpeed":           "2.93GHz",
-			"processors":               2,
-			"productLicenseAllocated":  "EE",
-			"productVersion":           "11",
-			"threadsPerCore":           2,
-			"usedManagementPacks":      "",
-			"usingLicenseCount":        4,
-			"virtualServerName":        "",
-			"virtualizationTechnology": "",
-			"_id":                      utils.Str2oid("5efc38ab79f92e4cbf283b04"),
-		},
-	}
-
+	expected := excelize.NewFile()
 	filters := dto.SearchHostsFilters{
 		Search:         []string{"foobar"},
 		SortBy:         "Processors",
@@ -542,11 +496,11 @@ func TestSearchHosts_LMSSuccess(t *testing.T) {
 		GTECPUThreads:  -1,
 	}
 	as.EXPECT().
-		SearchHosts("lms", gomock.Any()).
-		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+		SearchHostsAsLMS(gomock.Any()).
+		DoAndReturn(func(actual dto.SearchHostsFilters) (*excelize.File, utils.AdvancedErrorInterface) {
 			assert.EqualValues(t, filters, actual)
 
-			return expectedRes, nil
+			return expected, nil
 		})
 
 	rr := httptest.NewRecorder()
@@ -558,48 +512,8 @@ func TestSearchHosts_LMSSuccess(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	sp, err := excelize.OpenReader(rr.Body)
+	_, err = excelize.OpenReader(rr.Body)
 	require.NoError(t, err)
-
-	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "B5"))
-	assert.Equal(t, "itl-csllab-112.sorint.localpippo", sp.GetCellValue("Database_&_EBS_DB_Tier", "C5"))
-	assert.Equal(t, "VMware", sp.GetCellValue("Database_&_EBS_DB_Tier", "D5"))
-	assert.Equal(t, "ERCOLE", sp.GetCellValue("Database_&_EBS_DB_Tier", "E5"))
-	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "F5"))
-	assert.Equal(t, "TST", sp.GetCellValue("Database_&_EBS_DB_Tier", "G5"))
-	assert.Equal(t, "Diagnostics Pack", sp.GetCellValue("Database_&_EBS_DB_Tier", "H5"))
-	assert.Equal(t, "Diagnostics Pack", sp.GetCellValue("Database_&_EBS_DB_Tier", "I5"))
-	assert.Equal(t, "12", sp.GetCellValue("Database_&_EBS_DB_Tier", "N5"))
-	assert.Equal(t, "EE", sp.GetCellValue("Database_&_EBS_DB_Tier", "O5"))
-	assert.Equal(t, "processor", sp.GetCellValue("Database_&_EBS_DB_Tier", "P5"))
-	assert.Equal(t, "0.5", sp.GetCellValue("Database_&_EBS_DB_Tier", "Q5"))
-	assert.Equal(t, "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AC5"))
-	assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AD5"))
-	assert.Equal(t, "1", sp.GetCellValue("Database_&_EBS_DB_Tier", "AE5"))
-	assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AF5"))
-	assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AG5"))
-	assert.Equal(t, "2.53GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AH5"))
-	assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue("Database_&_EBS_DB_Tier", "AJ5"))
-
-	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sp.GetCellValue("Database_&_EBS_DB_Tier", "B6"))
-	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "C6"))
-	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "D6"))
-	assert.Equal(t, "rudeboy-fb3160a04ffea22b55555bbb58137f77", sp.GetCellValue("Database_&_EBS_DB_Tier", "E6"))
-	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "F6"))
-	assert.Equal(t, "SVIL", sp.GetCellValue("Database_&_EBS_DB_Tier", "G6"))
-	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "H6"))
-	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "I6"))
-	assert.Equal(t, "11", sp.GetCellValue("Database_&_EBS_DB_Tier", "N6"))
-	assert.Equal(t, "EE", sp.GetCellValue("Database_&_EBS_DB_Tier", "O6"))
-	assert.Equal(t, "processor", sp.GetCellValue("Database_&_EBS_DB_Tier", "P6"))
-	assert.Equal(t, "4", sp.GetCellValue("Database_&_EBS_DB_Tier", "Q6"))
-	assert.Equal(t, "Intel(R) Xeon(R) CPU           X5570  @ 2.93GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AC6"))
-	assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AD6"))
-	assert.Equal(t, "4", sp.GetCellValue("Database_&_EBS_DB_Tier", "AE6"))
-	assert.Equal(t, "8", sp.GetCellValue("Database_&_EBS_DB_Tier", "AF6"))
-	assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AG6"))
-	assert.Equal(t, "2.93GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AH6"))
-	assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue("Database_&_EBS_DB_Tier", "AJ6"))
 }
 
 func TestSearchHosts_LMSUnprocessableEntity1(t *testing.T) {
@@ -683,8 +597,8 @@ func TestSearchHosts_LMSSuccessInternalServerError1(t *testing.T) {
 		GTECPUThreads:  -1,
 	}
 	as.EXPECT().
-		SearchHosts("lms", gomock.Any()).
-		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+		SearchHostsAsLMS(gomock.Any()).
+		DoAndReturn(func(actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
 			assert.EqualValues(t, filters, actual)
 
 			return nil, aerrMock
@@ -693,61 +607,6 @@ func TestSearchHosts_LMSSuccessInternalServerError1(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchHosts)
 	req, err := http.NewRequest("GET", "/hosts?search=foobar&sort-by=Processors&sort-desc=true&location=Italy&environment=TST&&older-than=2020-06-10T11%3A54%3A59Z", nil)
-	require.NoError(t, err)
-	req.Header.Add("Accept", "application/vnd.oracle.lms+vnd.ms-excel.sheet.macroEnabled.12")
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
-}
-
-func TestSearchHosts_LMSSuccessInternalServerError2(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	expectedRes := []map[string]interface{}{
-		{
-			"OK": true,
-		},
-	}
-
-	filters := dto.SearchHostsFilters{
-		Search:         []string{""},
-		SortBy:         "",
-		SortDesc:       false,
-		Location:       "",
-		Environment:    "",
-		OlderThan:      utils.MAX_TIME,
-		PageNumber:     -1,
-		PageSize:       -1,
-		Cluster:        new(string),
-		LTEMemoryTotal: -1,
-		GTEMemoryTotal: -1,
-		LTESwapTotal:   -1,
-		GTESwapTotal:   -1,
-		LTECPUCores:    -1,
-		GTECPUCores:    -1,
-		LTECPUThreads:  -1,
-		GTECPUThreads:  -1,
-	}
-	as.EXPECT().
-		SearchHosts("lms", gomock.Any()).
-		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
-			assert.EqualValues(t, filters, actual)
-
-			return expectedRes, nil
-		})
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchHosts)
-	req, err := http.NewRequest("GET", "/hosts", nil)
 	require.NoError(t, err)
 	req.Header.Add("Accept", "application/vnd.oracle.lms+vnd.ms-excel.sheet.macroEnabled.12")
 
