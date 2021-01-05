@@ -19,6 +19,7 @@ package service
 import (
 	"time"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/database"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
@@ -35,6 +36,8 @@ type APIServiceInterface interface {
 	Init()
 	// SearchHosts search hosts
 	SearchHosts(mode string, filters dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface)
+	// SearchHostsAsLMS return LMS template file with the hosts filtered
+	SearchHostsAsLMS(filters dto.SearchHostsFilters) (*excelize.File, utils.AdvancedErrorInterface)
 	// GetHost return the host specified in the hostname param
 	GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, utils.AdvancedErrorInterface)
 	// ListManagedTechnologies returns the list of technologies with some stats

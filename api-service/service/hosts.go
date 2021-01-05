@@ -17,15 +17,54 @@
 package service
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-// SearchHosts search hosts
 func (as *APIService) SearchHosts(mode string, filters dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
 	return as.Database.SearchHosts(mode, filters)
+}
+
+func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsFilters) (*excelize.File, utils.AdvancedErrorInterface) {
+	hosts, aerr := as.Database.SearchHosts("lms", filters)
+	if aerr != nil {
+		return nil, aerr
+	}
+
+	lms, err := excelize.OpenFile(as.Config.ResourceFilePath + "/templates/template_lms.xlsm")
+	if err != nil {
+		aerr := utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE")
+		return nil, aerr
+	}
+
+	for i, val := range hosts {
+		i += 5 // offset for headers and example row
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("B%d", i), val["physicalServerName"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("C%d", i), val["virtualServerName"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("D%d", i), val["virtualizationTechnology"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("E%d", i), val["dbInstanceName"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("F%d", i), val["pluggableDatabaseName"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("G%d", i), val["environment"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("H%d", i), val["options"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("I%d", i), val["usedManagementPacks"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("N%d", i), val["productVersion"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("O%d", i), val["productLicenseAllocated"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("P%d", i), val["licenseMetricAllocated"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("Q%d", i), val["usingLicenseCount"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AC%d", i), val["processorModel"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AD%d", i), val["processors"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AE%d", i), val["coresPerProcessor"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AF%d", i), val["physicalCores"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AG%d", i), val["threadsPerCore"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AH%d", i), val["processorSpeed"])
+		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AJ%d", i), val["operatingSystem"])
+	}
+
+	return lms, nil
 }
 
 // GetHost return the host specified in the hostname param
