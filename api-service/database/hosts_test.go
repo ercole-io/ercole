@@ -19,6 +19,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/stretchr/testify/assert"
@@ -32,13 +33,30 @@ func (m *MongodbSuite) TestSearchHosts() {
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
 
-	commonFilters := SearchHostsFilters{
-		Cluster:           new(string),
+	commonFilters := dto.SearchHostsFilters{
+		Search:                        []string{},
+		SortBy:                        "",
+		SortDesc:                      false,
+		Location:                      "",
+		Environment:                   "",
+		OlderThan:                     utils.MAX_TIME,
+		PageNumber:                    -1,
+		PageSize:                      -1,
+		Hostname:                      "",
+		Database:                      "",
+		Technology:                    "",
+		HardwareAbstractionTechnology: "",
+		Cluster:                       new(string),
+		VirtualizationNode:            "",
+		OperatingSystem:               "",
+		Kernel:                        "",
+
 		LTEMemoryTotal:    -1,
 		GTEMemoryTotal:    -1,
 		LTESwapTotal:      -1,
 		GTESwapTotal:      -1,
 		IsMemberOfCluster: nil,
+		CPUModel:          "",
 		LTECPUCores:       -1,
 		GTECPUCores:       -1,
 		LTECPUThreads:     -1,
@@ -48,7 +66,9 @@ func (m *MongodbSuite) TestSearchHosts() {
 	//TODO: add search hosts filter tests!
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
-		out, err := m.db.SearchHosts("summary", []string{""}, commonFilters, "", false, -1, -1, "", "FOOBAR", utils.MAX_TIME)
+		thisFilter := commonFilters
+		thisFilter.Environment = "FOOBAR"
+		out, err := m.db.SearchHosts("summary", thisFilter)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
@@ -56,7 +76,10 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
-		out, err := m.db.SearchHosts("summary", []string{""}, commonFilters, "", false, -1, -1, "France", "", utils.MAX_TIME)
+		thisFilter := commonFilters
+		thisFilter.Location = "France"
+
+		out, err := m.db.SearchHosts("summary", thisFilter)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
@@ -64,7 +87,10 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
-		out, err := m.db.SearchHosts("summary", []string{""}, commonFilters, "", false, -1, -1, "", "", utils.MIN_TIME)
+		thisFilter := commonFilters
+		thisFilter.OlderThan = utils.MIN_TIME
+
+		out, err := m.db.SearchHosts("summary", thisFilter)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{}
 
@@ -72,7 +98,13 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("should_be_paging", func(t *testing.T) {
-		out, err := m.db.SearchHosts("summary", []string{""}, commonFilters, "_id", true, 0, 1, "", "", utils.MAX_TIME)
+		thisFilter := commonFilters
+		thisFilter.SortBy = "_id"
+		thisFilter.SortDesc = true
+		thisFilter.PageNumber = 0
+		thisFilter.PageSize = 1
+
+		out, err := m.db.SearchHosts("summary", thisFilter)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []interface{}{
 			map[string]interface{}{
@@ -118,7 +150,11 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("should_be_sorting", func(t *testing.T) {
-		out, err := m.db.SearchHosts("summary", []string{""}, commonFilters, "createdAt", true, -1, -1, "", "", utils.MAX_TIME)
+		thisFilter := commonFilters
+		thisFilter.SortBy = "createdAt"
+		thisFilter.SortDesc = true
+
+		out, err := m.db.SearchHosts("summary", thisFilter)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
@@ -199,7 +235,10 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("should_search1", func(t *testing.T) {
-		out, err := m.db.SearchHosts("summary", []string{"foobar"}, commonFilters, "", false, -1, -1, "", "", utils.MAX_TIME)
+
+		thisFilter := commonFilters
+		thisFilter.Search = []string{"foobar"}
+		out, err := m.db.SearchHosts("summary", thisFilter)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{}
 
@@ -207,7 +246,10 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("should_search2", func(t *testing.T) {
-		out, err := m.db.SearchHosts("summary", []string{"test-db", "ERCOLE"}, commonFilters, "", false, -1, -1, "", "", utils.MAX_TIME)
+		thisFilter := commonFilters
+		thisFilter.Search = []string{"test-db", "ERCOLE"}
+		out, err := m.db.SearchHosts("summary", thisFilter)
+
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
@@ -240,7 +282,10 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("should_search3", func(t *testing.T) {
-		out, err := m.db.SearchHosts("summary", []string{"Puzzait"}, commonFilters, "", false, -1, -1, "", "", utils.MAX_TIME)
+		thisFilter := commonFilters
+		thisFilter.Search = []string{"Puzzait"}
+
+		out, err := m.db.SearchHosts("summary", thisFilter)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
@@ -273,7 +318,7 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("lms_mode", func(t *testing.T) {
-		out, err := m.db.SearchHosts("lms", []string{""}, commonFilters, "", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchHosts("lms", commonFilters)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
@@ -304,7 +349,7 @@ func (m *MongodbSuite) TestSearchHosts() {
 	})
 
 	m.T().Run("hostnames_mode", func(t *testing.T) {
-		out, err := m.db.SearchHosts("hostnames", []string{""}, commonFilters, "hostname", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchHosts("hostnames", commonFilters)
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{

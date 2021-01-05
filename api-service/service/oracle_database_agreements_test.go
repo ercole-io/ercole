@@ -18,7 +18,6 @@ package service
 import (
 	"testing"
 
-	"github.com/ercole-io/ercole/v2/api-service/database"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
@@ -78,16 +77,21 @@ func TestAddOracleDatabaseAgreements_Success_InsertNew(t *testing.T) {
 	}
 
 	gomock.InOrder(
-		db.EXPECT().SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
-			GTECPUCores:    -1,
-			LTECPUCores:    -1,
-			LTECPUThreads:  -1,
-			LTEMemoryTotal: -1,
-			GTECPUThreads:  -1,
-			GTESwapTotal:   -1,
-			GTEMemoryTotal: -1,
-			LTESwapTotal:   -1,
-		}, "", false, -1, -1, "", "", utils.MAX_TIME).Return([]map[string]interface{}{
+		db.EXPECT().SearchHosts("hostnames",
+			dto.SearchHostsFilters{
+				Search:         []string{""},
+				OlderThan:      utils.MAX_TIME,
+				PageNumber:     -1,
+				PageSize:       -1,
+				LTEMemoryTotal: -1,
+				GTEMemoryTotal: -1,
+				LTESwapTotal:   -1,
+				GTESwapTotal:   -1,
+				LTECPUCores:    -1,
+				GTECPUCores:    -1,
+				LTECPUThreads:  -1,
+				GTECPUThreads:  -1,
+			}).Return([]map[string]interface{}{
 			{"hostname": "test-db"},
 			{"hostname": "foobar"},
 			{"hostname": "ercsoldbx"},
@@ -167,18 +171,21 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 	}
 
 	gomock.InOrder(
-		db.EXPECT().
-			SearchHosts("hostnames", []string{""},
-				database.SearchHostsFilters{
-					GTECPUCores:    -1,
-					LTECPUCores:    -1,
-					LTECPUThreads:  -1,
-					LTEMemoryTotal: -1,
-					GTECPUThreads:  -1,
-					GTESwapTotal:   -1,
-					GTEMemoryTotal: -1,
-					LTESwapTotal:   -1,
-				}, "", false, -1, -1, "", "", utils.MAX_TIME).
+		db.EXPECT().SearchHosts("hostnames",
+			dto.SearchHostsFilters{
+				Search:         []string{""},
+				OlderThan:      utils.MAX_TIME,
+				PageNumber:     -1,
+				PageSize:       -1,
+				LTEMemoryTotal: -1,
+				GTEMemoryTotal: -1,
+				LTESwapTotal:   -1,
+				GTESwapTotal:   -1,
+				LTECPUCores:    -1,
+				GTECPUCores:    -1,
+				LTECPUThreads:  -1,
+				GTECPUThreads:  -1,
+			}).
 			Return([]map[string]interface{}{
 				{"hostname": "pippo"},
 				{"hostname": "pluto"},
@@ -256,17 +263,21 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 	t.Run("Fail: can't find host", func(t *testing.T) {
 
 		gomock.InOrder(
-			db.EXPECT().
-				SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
-					GTECPUCores:    -1,
-					LTECPUCores:    -1,
-					LTECPUThreads:  -1,
+			db.EXPECT().SearchHosts("hostnames",
+				dto.SearchHostsFilters{
+					Search:         []string{""},
+					OlderThan:      utils.MAX_TIME,
+					PageNumber:     -1,
+					PageSize:       -1,
 					LTEMemoryTotal: -1,
-					GTECPUThreads:  -1,
-					GTESwapTotal:   -1,
 					GTEMemoryTotal: -1,
 					LTESwapTotal:   -1,
-				}, "", false, -1, -1, "", "", utils.MAX_TIME).
+					GTESwapTotal:   -1,
+					LTECPUCores:    -1,
+					GTECPUCores:    -1,
+					LTECPUThreads:  -1,
+					GTECPUThreads:  -1,
+				}).
 				Return([]map[string]interface{}{
 					{"hostname": "paperino"},
 					{"hostname": "pippo"},
@@ -297,17 +308,21 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 			},
 		}
 		gomock.InOrder(
-			db.EXPECT().
-				SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
-					GTECPUCores:    -1,
-					LTECPUCores:    -1,
-					LTECPUThreads:  -1,
+			db.EXPECT().SearchHosts("hostnames",
+				dto.SearchHostsFilters{
+					Search:         []string{""},
+					OlderThan:      utils.MAX_TIME,
+					PageNumber:     -1,
+					PageSize:       -1,
 					LTEMemoryTotal: -1,
-					GTECPUThreads:  -1,
-					GTESwapTotal:   -1,
 					GTEMemoryTotal: -1,
 					LTESwapTotal:   -1,
-				}, "", false, -1, -1, "", "", utils.MAX_TIME).
+					GTESwapTotal:   -1,
+					LTECPUCores:    -1,
+					GTECPUCores:    -1,
+					LTECPUThreads:  -1,
+					GTECPUThreads:  -1,
+				}).
 				Return([]map[string]interface{}{
 					{"hostname": "test-db"},
 					{"hostname": "ercsoldbx"},
@@ -385,20 +400,26 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement(t *testing.T) {
 		agrPart.Hosts = req.Hosts
 
 		gomock.InOrder(
-			db.EXPECT().SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
-				GTECPUCores:    -1,
-				LTECPUCores:    -1,
-				LTECPUThreads:  -1,
-				LTEMemoryTotal: -1,
-				GTECPUThreads:  -1,
-				GTESwapTotal:   -1,
-				GTEMemoryTotal: -1,
-				LTESwapTotal:   -1,
-			}, "", false, -1, -1, "", "", utils.MAX_TIME).Return([]map[string]interface{}{
-				{"hostname": "test-db"},
-				{"hostname": "foobar"},
-				{"hostname": "ercsoldbx"},
-			}, nil),
+			db.EXPECT().SearchHosts("hostnames",
+				dto.SearchHostsFilters{
+					Search:         []string{""},
+					OlderThan:      utils.MAX_TIME,
+					PageNumber:     -1,
+					PageSize:       -1,
+					LTEMemoryTotal: -1,
+					GTEMemoryTotal: -1,
+					LTESwapTotal:   -1,
+					GTESwapTotal:   -1,
+					LTECPUCores:    -1,
+					GTECPUCores:    -1,
+					LTECPUThreads:  -1,
+					GTECPUThreads:  -1,
+				}).
+				Return([]map[string]interface{}{
+					{"hostname": "test-db"},
+					{"hostname": "foobar"},
+					{"hostname": "ercsoldbx"},
+				}, nil),
 			db.EXPECT().GetOracleDatabaseAgreementByAssociatedLicenseType(utils.Str2oid(req.ID)).
 				Return(&agrForGet, nil),
 			db.EXPECT().GetOracleDatabaseLicenseTypes().
@@ -412,17 +433,21 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement(t *testing.T) {
 
 	t.Run("Fail: agreement not found", func(t *testing.T) {
 		gomock.InOrder(
-			db.EXPECT().SearchHosts("hostnames", []string{""},
-				database.SearchHostsFilters{
-					GTECPUCores:    -1,
-					LTECPUCores:    -1,
-					LTECPUThreads:  -1,
+			db.EXPECT().SearchHosts("hostnames",
+				dto.SearchHostsFilters{
+					Search:         []string{""},
+					OlderThan:      utils.MAX_TIME,
+					PageNumber:     -1,
+					PageSize:       -1,
 					LTEMemoryTotal: -1,
-					GTECPUThreads:  -1,
-					GTESwapTotal:   -1,
 					GTEMemoryTotal: -1,
 					LTESwapTotal:   -1,
-				}, "", false, -1, -1, "", "", utils.MAX_TIME).
+					GTESwapTotal:   -1,
+					LTECPUCores:    -1,
+					GTECPUCores:    -1,
+					LTECPUThreads:  -1,
+					GTECPUThreads:  -1,
+				}).
 				Return([]map[string]interface{}{
 					{"hostname": "test-db"},
 					{"hostname": "foobar"},
@@ -442,17 +467,21 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement(t *testing.T) {
 		agrForGet := agreement
 
 		gomock.InOrder(
-			db.EXPECT().SearchHosts("hostnames", []string{""},
-				database.SearchHostsFilters{
-					GTECPUCores:    -1,
-					LTECPUCores:    -1,
-					LTECPUThreads:  -1,
+			db.EXPECT().SearchHosts("hostnames",
+				dto.SearchHostsFilters{
+					Search:         []string{""},
+					OlderThan:      utils.MAX_TIME,
+					PageNumber:     -1,
+					PageSize:       -1,
 					LTEMemoryTotal: -1,
-					GTECPUThreads:  -1,
-					GTESwapTotal:   -1,
 					GTEMemoryTotal: -1,
 					LTESwapTotal:   -1,
-				}, "", false, -1, -1, "", "", utils.MAX_TIME).
+					GTESwapTotal:   -1,
+					LTECPUCores:    -1,
+					GTECPUCores:    -1,
+					LTECPUThreads:  -1,
+					GTECPUThreads:  -1,
+				}).
 				Return([]map[string]interface{}{
 					{"hostname": "test-db"},
 					{"hostname": "foobar"},
@@ -2185,20 +2214,26 @@ func TestAddHostToAssociatedPart(t *testing.T) {
 		gomock.InOrder(
 			db.EXPECT().GetOracleDatabaseAgreementByAssociatedLicenseType(associateLicenseTypeID).
 				Return(&agreement, nil),
-			db.EXPECT().SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
-				GTECPUCores:    -1,
-				LTECPUCores:    -1,
-				LTECPUThreads:  -1,
-				LTEMemoryTotal: -1,
-				GTECPUThreads:  -1,
-				GTESwapTotal:   -1,
-				GTEMemoryTotal: -1,
-				LTESwapTotal:   -1,
-			}, "", false, -1, -1, "", "", utils.MAX_TIME).Return([]map[string]interface{}{
-				{"hostname": "test-db"},
-				{"hostname": "foobar"},
-				{"hostname": "ercsoldbx"},
-			}, nil),
+			db.EXPECT().SearchHosts("hostnames",
+				dto.SearchHostsFilters{
+					Search:         []string{""},
+					OlderThan:      utils.MAX_TIME,
+					PageNumber:     -1,
+					PageSize:       -1,
+					LTEMemoryTotal: -1,
+					GTEMemoryTotal: -1,
+					LTESwapTotal:   -1,
+					GTESwapTotal:   -1,
+					LTECPUCores:    -1,
+					GTECPUCores:    -1,
+					LTECPUThreads:  -1,
+					GTECPUThreads:  -1,
+				}).
+				Return([]map[string]interface{}{
+					{"hostname": "test-db"},
+					{"hostname": "foobar"},
+					{"hostname": "ercsoldbx"},
+				}, nil),
 			db.EXPECT().UpdateOracleDatabaseAgreement(agreementPostAdd).
 				Return(nil),
 		)
@@ -2262,20 +2297,26 @@ func TestAddHostToAssociatedPart(t *testing.T) {
 		gomock.InOrder(
 			db.EXPECT().GetOracleDatabaseAgreementByAssociatedLicenseType(anotherAssociatedPartID).
 				Return(&agreement, nil),
-			db.EXPECT().SearchHosts("hostnames", []string{""}, database.SearchHostsFilters{
-				GTECPUCores:    -1,
-				LTECPUCores:    -1,
-				LTECPUThreads:  -1,
-				LTEMemoryTotal: -1,
-				GTECPUThreads:  -1,
-				GTESwapTotal:   -1,
-				GTEMemoryTotal: -1,
-				LTESwapTotal:   -1,
-			}, "", false, -1, -1, "", "", utils.MAX_TIME).Return([]map[string]interface{}{
-				{"hostname": "test-db"},
-				{"hostname": "foobar"},
-				{"hostname": "ercsoldbx"},
-			}, nil),
+			db.EXPECT().SearchHosts("hostnames",
+				dto.SearchHostsFilters{
+					Search:         []string{""},
+					OlderThan:      utils.MAX_TIME,
+					PageNumber:     -1,
+					PageSize:       -1,
+					LTEMemoryTotal: -1,
+					GTEMemoryTotal: -1,
+					LTESwapTotal:   -1,
+					GTESwapTotal:   -1,
+					LTECPUCores:    -1,
+					GTECPUCores:    -1,
+					LTECPUThreads:  -1,
+					GTECPUThreads:  -1,
+				}).
+				Return([]map[string]interface{}{
+					{"hostname": "test-db"},
+					{"hostname": "foobar"},
+					{"hostname": "ercsoldbx"},
+				}, nil),
 			db.EXPECT().UpdateOracleDatabaseAgreement(agreementPostAdd).
 				Return(nil),
 		)
