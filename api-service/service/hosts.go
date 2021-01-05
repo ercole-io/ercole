@@ -18,6 +18,7 @@ package service
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -32,6 +33,12 @@ func (as *APIService) SearchHosts(mode string, filters dto.SearchHostsFilters) (
 func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsFilters) (*excelize.File, utils.AdvancedErrorInterface) {
 	hosts, aerr := as.Database.SearchHosts("lms", filters)
 	if aerr != nil {
+		return nil, aerr
+	}
+
+	csiByHostname, err := as.getCSIsByHostname()
+	if err != nil {
+		aerr := utils.NewAdvancedErrorPtr(err, "")
 		return nil, aerr
 	}
 
@@ -55,6 +62,12 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsFilters) (*exceliz
 		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("O%d", i), val["productLicenseAllocated"])
 		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("P%d", i), val["licenseMetricAllocated"])
 		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("Q%d", i), val["usingLicenseCount"])
+
+		hostname := val["physicalServerName"].(string)
+		if csi, ok := csiByHostname[hostname]; ok {
+			lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("R%d", i), strings.Join(csi, ", "))
+		}
+
 		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AC%d", i), val["processorModel"])
 		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AD%d", i), val["processors"])
 		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AE%d", i), val["coresPerProcessor"])
@@ -65,6 +78,27 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsFilters) (*exceliz
 	}
 
 	return lms, nil
+}
+
+func (as *APIService) getCSIsByHostname() (res map[string][]string, err error) {
+	agreements, aerr := as.Database.ListOracleDatabaseAgreements()
+	if aerr != nil {
+		return nil, aerr
+	}
+
+	res = make(map[string][]string)
+
+	for i, a := range agreements {
+		for _, h := range a.Hosts {
+			this := &agreements[i].CSI
+
+			if this != nil && len(*this) > 0 {
+				res[h.Hostname] = append(res[h.Hostname], *this)
+			}
+		}
+	}
+
+	return res, nil
 }
 
 // GetHost return the host specified in the hostname param
