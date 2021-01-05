@@ -19,10 +19,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
-	"github.com/ercole-io/ercole/v2/api-service/database"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
@@ -31,6 +32,12 @@ import (
 
 // SearchHosts search hosts data using the filters in the request
 func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
+	filters, err := getSearchHostFilters(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	requestContentType := httputil.NegotiateContentType(r,
 		[]string{
 			"application/json",
@@ -42,29 +49,17 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 
 	switch requestContentType {
 	case "application/json":
-		ctrl.SearchHostsJSON(w, r)
+		ctrl.searchHostsJSON(w, r, filters)
 	case "application/vnd.oracle.lms+vnd.ms-excel.sheet.macroEnabled.12":
-		ctrl.SearchHostsLMS(w, r)
+		ctrl.searchHostsLMS(w, r, filters)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-		ctrl.SearchHostsXLSX(w, r)
+		ctrl.searchHostsXLSX(w, r, filters)
 	}
 }
 
-// SearchHostsJSON search hosts data using the filters in the request returning it in JSON
-func (ctrl *APIController) SearchHostsJSON(w http.ResponseWriter, r *http.Request) {
-	var mode string
-	var search string
-	var sortBy string
-	var sortDesc bool
-	var pageNumber int
-	var pageSize int
-	var location string
-	var environment string
-	var olderThan time.Time
-	var searchHostsFilters database.SearchHostsFilters
-	var err utils.AdvancedErrorInterface
-	//parse the query params
-	mode = r.URL.Query().Get("mode")
+// searchHostsJSON search hosts data using the filters in the request returning it in JSON
+func (ctrl *APIController) searchHostsJSON(w http.ResponseWriter, r *http.Request, filters *dto.SearchHostsFilters) {
+	mode := r.URL.Query().Get("mode")
 	if mode == "" {
 		mode = "full"
 	} else if mode != "full" && mode != "summary" && mode != "lms" && mode != "mhd" && mode != "hostnames" {
@@ -72,39 +67,7 @@ func (ctrl *APIController) SearchHostsJSON(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	search = r.URL.Query().Get("search")
-
-	searchHostsFilters, err = GetSearchHostFilters(r)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	sortBy = r.URL.Query().Get("sort-by")
-	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	//get the data
-	hosts, err := ctrl.Service.SearchHosts(mode, search, searchHostsFilters, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	hosts, err := ctrl.Service.SearchHosts(mode, *filters)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -115,54 +78,20 @@ func (ctrl *APIController) SearchHostsJSON(w http.ResponseWriter, r *http.Reques
 		for i, h := range hosts {
 			hostnames[i] = h["hostname"].(string)
 		}
-		//Write the data
 		utils.WriteJSONResponse(w, http.StatusOK, hostnames)
 	} else {
-		if pageNumber == -1 || pageSize == -1 {
-			//Write the data
+		if filters.PageNumber == -1 || filters.PageSize == -1 {
 			utils.WriteJSONResponse(w, http.StatusOK, hosts)
 		} else {
-			//Write the data
 			utils.WriteJSONResponse(w, http.StatusOK, hosts[0])
 		}
 	}
 }
 
-// SearchHostsLMS search hosts data using the filters in the request returning it in LMS+XLSX
-func (ctrl *APIController) SearchHostsLMS(w http.ResponseWriter, r *http.Request) {
-	var search string
-	var sortBy string
-	var sortDesc bool
-	var location string
-	var environment string
-	var olderThan time.Time
-	var searchHostsFilters database.SearchHostsFilters
-
-	var aerr utils.AdvancedErrorInterface
-
-	search = r.URL.Query().Get("search")
-
-	searchHostsFilters, aerr = GetSearchHostFilters(r)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
-		return
-	}
-
-	sortBy = r.URL.Query().Get("sort-by")
-	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
-		return
-	}
-
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-
-	if olderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
-		return
-	}
-
-	hosts, aerr := ctrl.Service.SearchHosts("lms", search, searchHostsFilters, sortBy, sortDesc, -1, -1, location, environment, olderThan)
+// searchHostsLMS search hosts data using the filters in the request returning it in LMS+XLSX
+func (ctrl *APIController) searchHostsLMS(w http.ResponseWriter, r *http.Request, filters *dto.SearchHostsFilters) {
+	filters.PageNumber, filters.PageSize = -1, -1
+	hosts, aerr := ctrl.Service.SearchHosts("lms", *filters)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
@@ -200,55 +129,21 @@ func (ctrl *APIController) SearchHostsLMS(w http.ResponseWriter, r *http.Request
 	utils.WriteXLSMResponse(w, sheets)
 }
 
-// SearchHostsXLSX search hosts data using the filters in the request returning it in XLSX
-func (ctrl *APIController) SearchHostsXLSX(w http.ResponseWriter, r *http.Request) {
-	var search string
-	var sortBy string
-	var sortDesc bool
-	var location string
-	var environment string
-	var olderThan time.Time
-	var searchHostsFilters database.SearchHostsFilters
-
-	var aerr utils.AdvancedErrorInterface
-	//parse the query params
-	search = r.URL.Query().Get("search")
-
-	searchHostsFilters, aerr = GetSearchHostFilters(r)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
-		return
-	}
-
-	sortBy = r.URL.Query().Get("sort-by")
-	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
-		return
-	}
-
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-
-	if olderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
-		return
-	}
-
-	//get the data
-	hosts, aerr := ctrl.Service.SearchHosts("summary", search, searchHostsFilters, sortBy, sortDesc, -1, -1, location, environment, olderThan)
+// searchHostsXLSX search hosts data using the filters in the request returning it in XLSX
+func (ctrl *APIController) searchHostsXLSX(w http.ResponseWriter, r *http.Request, filters *dto.SearchHostsFilters) {
+	filters.PageNumber, filters.PageSize = -1, -1
+	hosts, aerr := ctrl.Service.SearchHosts("summary", *filters)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
 		return
 	}
 
-	//Open the sheet
 	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_hosts.xlsx")
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
 		return
 	}
 
-	//Add the data to the sheet
 	for i, val := range hosts {
 		sheets.SetCellValue("Hosts", fmt.Sprintf("A%d", i+2), val["hostname"])
 		sheets.SetCellValue("Hosts", fmt.Sprintf("B%d", i+2), val["environment"])
@@ -258,7 +153,6 @@ func (ctrl *APIController) SearchHostsXLSX(w http.ResponseWriter, r *http.Reques
 		}
 		sheets.SetCellValue("Hosts", fmt.Sprintf("F%d", i+2), val["agentVersion"])
 		sheets.SetCellValue("Hosts", fmt.Sprintf("G%d", i+2), val["createdAt"].(primitive.DateTime).Time().UTC().String())
-		// sheets.SetCellValue("Hosts", fmt.Sprintf("H%d", i+2), val["Databases"])
 		sheets.SetCellValue("Hosts", fmt.Sprintf("I%d", i+2), val["os"])
 		sheets.SetCellValue("Hosts", fmt.Sprintf("J%d", i+2), val["kernel"])
 		sheets.SetCellValue("Hosts", fmt.Sprintf("K%d", i+2), val["oracleClusterware"])
@@ -274,63 +168,84 @@ func (ctrl *APIController) SearchHostsXLSX(w http.ResponseWriter, r *http.Reques
 		sheets.SetCellValue("Hosts", fmt.Sprintf("U%d", i+2), val["cpuModel"])
 	}
 
-	//Write it to the response
 	utils.WriteXLSXResponse(w, sheets)
 }
 
-// GetSearchHostFilters return the host search filters in the request
-func GetSearchHostFilters(r *http.Request) (database.SearchHostsFilters, utils.AdvancedErrorInterface) {
+func getSearchHostFilters(r *http.Request) (*dto.SearchHostsFilters, utils.AdvancedErrorInterface) {
+	f := dto.SearchHostsFilters{}
 	var aerr utils.AdvancedErrorInterface
 
-	filters := database.SearchHostsFilters{}
+	f.Search = strings.Split(r.URL.Query().Get("search"), " ")
 
-	filters.Hostname = r.URL.Query().Get("hostname")
-	filters.Database = r.URL.Query().Get("database")
-	filters.Technology = r.URL.Query().Get("technology")
-	filters.HardwareAbstractionTechnology = r.URL.Query().Get("hardware-abstraction-technology")
+	f.SortBy = r.URL.Query().Get("sort-by")
+
+	if f.SortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
+		return nil, aerr
+	}
+
+	f.Location = r.URL.Query().Get("location")
+	f.Environment = r.URL.Query().Get("environment")
+
+	if f.OlderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
+		return nil, aerr
+	}
+
+	if f.PageNumber, aerr = utils.Str2int(r.URL.Query().Get("page"), -1); aerr != nil {
+		return nil, aerr
+	}
+
+	if f.PageSize, aerr = utils.Str2int(r.URL.Query().Get("size"), -1); aerr != nil {
+		return nil, aerr
+	}
+
+	f.Hostname = r.URL.Query().Get("hostname")
+	f.Database = r.URL.Query().Get("database")
+	f.Technology = r.URL.Query().Get("technology")
+	f.HardwareAbstractionTechnology = r.URL.Query().Get("hardware-abstraction-technology")
 	if r.URL.Query().Get("cluster") == "NULL" {
-		filters.Cluster = nil
+		f.Cluster = nil
 	} else {
-		filters.Cluster = new(string)
-		*filters.Cluster = r.URL.Query().Get("cluster")
+		f.Cluster = new(string)
+		*f.Cluster = r.URL.Query().Get("cluster")
 	}
-	filters.VirtualizationNode = r.URL.Query().Get("virtualization-node")
-	filters.OperatingSystem = r.URL.Query().Get("operating-system")
-	filters.Kernel = r.URL.Query().Get("kernel")
-	if filters.LTEMemoryTotal, aerr = utils.Str2float64(r.URL.Query().Get("memory-total-lte"), -1); aerr != nil {
-		return database.SearchHostsFilters{}, aerr
+	f.VirtualizationNode = r.URL.Query().Get("virtualization-node")
+	f.OperatingSystem = r.URL.Query().Get("operating-system")
+	f.Kernel = r.URL.Query().Get("kernel")
+	if f.LTEMemoryTotal, aerr = utils.Str2float64(r.URL.Query().Get("memory-total-lte"), -1); aerr != nil {
+		return nil, aerr
 	}
-	if filters.GTEMemoryTotal, aerr = utils.Str2float64(r.URL.Query().Get("memory-total-gte"), -1); aerr != nil {
-		return database.SearchHostsFilters{}, aerr
+	if f.GTEMemoryTotal, aerr = utils.Str2float64(r.URL.Query().Get("memory-total-gte"), -1); aerr != nil {
+		return nil, aerr
 	}
-	if filters.LTESwapTotal, aerr = utils.Str2float64(r.URL.Query().Get("swap-total-lte"), -1); aerr != nil {
-		return database.SearchHostsFilters{}, aerr
+	if f.LTESwapTotal, aerr = utils.Str2float64(r.URL.Query().Get("swap-total-lte"), -1); aerr != nil {
+		return nil, aerr
 	}
-	if filters.GTESwapTotal, aerr = utils.Str2float64(r.URL.Query().Get("swap-total-gte"), -1); aerr != nil {
-		return database.SearchHostsFilters{}, aerr
+	if f.GTESwapTotal, aerr = utils.Str2float64(r.URL.Query().Get("swap-total-gte"), -1); aerr != nil {
+		return nil, aerr
 	}
 	if r.URL.Query().Get("is-member-of-cluster") == "" {
-		filters.IsMemberOfCluster = nil
+		f.IsMemberOfCluster = nil
 	} else {
-		filters.IsMemberOfCluster = new(bool)
-		if *filters.IsMemberOfCluster, aerr = utils.Str2bool(r.URL.Query().Get("is-member-of-cluster"), false); aerr != nil {
-			return database.SearchHostsFilters{}, aerr
+		f.IsMemberOfCluster = new(bool)
+		if *f.IsMemberOfCluster, aerr = utils.Str2bool(r.URL.Query().Get("is-member-of-cluster"), false); aerr != nil {
+			return nil, aerr
 		}
 	}
-	filters.CPUModel = r.URL.Query().Get("cpu-model")
-	if filters.LTECPUCores, aerr = utils.Str2int(r.URL.Query().Get("cpu-cores-lte"), -1); aerr != nil {
-		return database.SearchHostsFilters{}, aerr
+	f.CPUModel = r.URL.Query().Get("cpu-model")
+	if f.LTECPUCores, aerr = utils.Str2int(r.URL.Query().Get("cpu-cores-lte"), -1); aerr != nil {
+		return nil, aerr
 	}
-	if filters.GTECPUCores, aerr = utils.Str2int(r.URL.Query().Get("cpu-cores-gte"), -1); aerr != nil {
-		return database.SearchHostsFilters{}, aerr
+	if f.GTECPUCores, aerr = utils.Str2int(r.URL.Query().Get("cpu-cores-gte"), -1); aerr != nil {
+		return nil, aerr
 	}
-	if filters.LTECPUThreads, aerr = utils.Str2int(r.URL.Query().Get("cpu-threads-lte"), -1); aerr != nil {
-		return database.SearchHostsFilters{}, aerr
+	if f.LTECPUThreads, aerr = utils.Str2int(r.URL.Query().Get("cpu-threads-lte"), -1); aerr != nil {
+		return nil, aerr
 	}
-	if filters.GTECPUThreads, aerr = utils.Str2int(r.URL.Query().Get("cpu-threads-gte"), -1); aerr != nil {
-		return database.SearchHostsFilters{}, aerr
+	if f.GTECPUThreads, aerr = utils.Str2int(r.URL.Query().Get("cpu-threads-gte"), -1); aerr != nil {
+		return nil, aerr
 	}
-	return filters, nil
+
+	return &f, nil
 }
 
 // GetHost return all'informations about the host requested in the id path variable
@@ -357,7 +272,6 @@ func (ctrl *APIController) GetHostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//get the data
 	host, err := ctrl.Service.GetHost(hostname, olderThan, false)
 	if err == utils.AerrHostNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
@@ -367,7 +281,6 @@ func (ctrl *APIController) GetHostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, host)
 }
 
@@ -383,7 +296,6 @@ func (ctrl *APIController) GetHostMongoJSON(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	//get the data
 	host, aerr := ctrl.Service.GetHost(hostname, olderThan, true)
 	if aerr == utils.AerrHostNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
@@ -393,7 +305,6 @@ func (ctrl *APIController) GetHostMongoJSON(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	//Write the response
 	utils.WriteExtJSONResponse(ctrl.Log, w, http.StatusOK, host)
 }
 
@@ -404,7 +315,6 @@ func (ctrl *APIController) ListLocations(w http.ResponseWriter, r *http.Request)
 	var olderThan time.Time
 
 	var err utils.AdvancedErrorInterface
-	//parse the query params
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
@@ -413,14 +323,12 @@ func (ctrl *APIController) ListLocations(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	//get the data
 	locations, err := ctrl.Service.ListLocations(location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, locations)
 }
 
@@ -431,7 +339,6 @@ func (ctrl *APIController) ListEnvironments(w http.ResponseWriter, r *http.Reque
 	var olderThan time.Time
 
 	var err utils.AdvancedErrorInterface
-	//parse the query params
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
@@ -440,14 +347,12 @@ func (ctrl *APIController) ListEnvironments(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	//get the data
 	environments, err := ctrl.Service.ListEnvironments(location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, environments)
 }
 
@@ -458,10 +363,8 @@ func (ctrl *APIController) ArchiveHost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Get the id from the path variable
 	hostname := mux.Vars(r)["hostname"]
 
-	//set the value
 	aerr := ctrl.Service.ArchiveHost(hostname)
 	if aerr == utils.AerrHostNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
@@ -470,6 +373,5 @@ func (ctrl *APIController) ArchiveHost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }

@@ -18,7 +18,7 @@ package service
 import (
 	"testing"
 
-	database "github.com/ercole-io/ercole/v2/api-service/database"
+	dto "github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
@@ -86,15 +86,31 @@ func TestSearchHosts_Success(t *testing.T) {
 	}
 
 	db.EXPECT().SearchHosts(
-		"summary", []string{"foo", "bar", "foobarx"}, database.SearchHostsFilters{}, "Memory",
-		true, 1, 1,
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		"summary",
+		dto.SearchHostsFilters{
+			Search:      []string{"foo", "bar", "foobarx"},
+			SortBy:      "Memory",
+			SortDesc:    true,
+			Location:    "Italy",
+			Environment: "PROD",
+			OlderThan:   utils.P("2019-12-05T14:02:03Z"),
+			PageNumber:  1,
+			PageSize:    1,
+		},
 	).Return(expectedRes, nil).Times(1)
 
 	res, err := as.SearchHosts(
-		"summary", "foo bar foobarx", database.SearchHostsFilters{}, "Memory",
-		true, 1, 1,
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		"summary",
+		dto.SearchHostsFilters{
+			Search:      []string{"foo", "bar", "foobarx"},
+			SortBy:      "Memory",
+			SortDesc:    true,
+			Location:    "Italy",
+			Environment: "PROD",
+			OlderThan:   utils.P("2019-12-05T14:02:03Z"),
+			PageNumber:  1,
+			PageSize:    1,
+		},
 	)
 	require.NoError(t, err)
 	assert.Equal(t, expectedRes, res)
@@ -109,15 +125,31 @@ func TestSearchHosts_Fail(t *testing.T) {
 	}
 
 	db.EXPECT().SearchHosts(
-		"summary", []string{"foo", "bar", "foobarx"}, database.SearchHostsFilters{}, "Memory",
-		true, 1, 1,
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		"summary",
+		dto.SearchHostsFilters{
+			Search:      []string{"foo", "bar", "foobarx"},
+			SortBy:      "Memory",
+			SortDesc:    true,
+			Location:    "Italy",
+			Environment: "PROD",
+			OlderThan:   utils.P("2019-12-05T14:02:03Z"),
+			PageNumber:  1,
+			PageSize:    1,
+		},
 	).Return(nil, aerrMock).Times(1)
 
 	res, err := as.SearchHosts(
-		"summary", "foo bar foobarx", database.SearchHostsFilters{}, "Memory",
-		true, 1, 1,
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		"summary",
+		dto.SearchHostsFilters{
+			Search:      []string{"foo", "bar", "foobarx"},
+			SortBy:      "Memory",
+			SortDesc:    true,
+			Location:    "Italy",
+			Environment: "PROD",
+			OlderThan:   utils.P("2019-12-05T14:02:03Z"),
+			PageNumber:  1,
+			PageSize:    1,
+		},
 	)
 	assert.Nil(t, res)
 	assert.Equal(t, aerrMock, err)

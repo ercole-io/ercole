@@ -22,6 +22,7 @@ import (
 	"testing"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
@@ -108,9 +109,32 @@ func TestSearchHosts_JSONPaged(t *testing.T) {
 		expectedRes,
 	}
 
+	filters := dto.SearchHostsFilters{
+		Search:         []string{"foobar"},
+		SortBy:         "Hostname",
+		SortDesc:       true,
+		Location:       "Italy",
+		Environment:    "TST",
+		OlderThan:      utils.P("2020-06-10T11:54:59Z"),
+		PageNumber:     2,
+		PageSize:       3,
+		Cluster:        new(string),
+		LTEMemoryTotal: -1,
+		GTEMemoryTotal: -1,
+		LTESwapTotal:   -1,
+		GTESwapTotal:   -1,
+		LTECPUCores:    -1,
+		GTECPUCores:    -1,
+		LTECPUThreads:  -1,
+		GTECPUThreads:  -1,
+	}
 	as.EXPECT().
-		SearchHosts("summary", "foobar", gomock.Any(), "Hostname", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(resFromService, nil)
+		SearchHosts("summary", gomock.Any()).
+		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+			assert.EqualValues(t, filters, actual)
+
+			return resFromService, nil
+		})
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchHosts)
@@ -185,9 +209,32 @@ func TestSearchHosts_JSONUnpaged(t *testing.T) {
 		},
 	}
 
+	filters := dto.SearchHostsFilters{
+		Search:         []string{""},
+		SortBy:         "",
+		SortDesc:       false,
+		Location:       "",
+		Environment:    "",
+		OlderThan:      utils.MAX_TIME,
+		PageNumber:     -1,
+		PageSize:       -1,
+		Cluster:        new(string),
+		LTEMemoryTotal: -1,
+		GTEMemoryTotal: -1,
+		LTESwapTotal:   -1,
+		GTESwapTotal:   -1,
+		LTECPUCores:    -1,
+		GTECPUCores:    -1,
+		LTECPUThreads:  -1,
+		GTECPUThreads:  -1,
+	}
 	as.EXPECT().
-		SearchHosts("full", "", gomock.Any(), "", false, -1, -1, "", "", utils.MAX_TIME).
-		Return(expectedRes, nil)
+		SearchHosts("full", gomock.Any()).
+		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+			assert.EqualValues(t, filters, actual)
+
+			return expectedRes, nil
+		})
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchHosts)
@@ -225,9 +272,32 @@ func TestSearchHosts_JSONHostnames(t *testing.T) {
 		"test-virt",
 	}
 
+	filters := dto.SearchHostsFilters{
+		Search:         []string{""},
+		SortBy:         "",
+		SortDesc:       false,
+		Location:       "",
+		Environment:    "",
+		OlderThan:      utils.MAX_TIME,
+		PageNumber:     -1,
+		PageSize:       -1,
+		Cluster:        new(string),
+		LTEMemoryTotal: -1,
+		GTEMemoryTotal: -1,
+		LTESwapTotal:   -1,
+		GTESwapTotal:   -1,
+		LTECPUCores:    -1,
+		GTECPUCores:    -1,
+		LTECPUThreads:  -1,
+		GTECPUThreads:  -1,
+	}
 	as.EXPECT().
-		SearchHosts("hostnames", "", gomock.Any(), "", false, -1, -1, "", "", utils.MAX_TIME).
-		Return(returnedRes, nil)
+		SearchHosts("hostnames", gomock.Any()).
+		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+			assert.EqualValues(t, filters, actual)
+
+			return returnedRes, nil
+		})
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchHosts)
@@ -356,10 +426,32 @@ func TestSearchHosts_JSONInternalServerError(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
+	filters := dto.SearchHostsFilters{
+		Search:         []string{""},
+		SortBy:         "",
+		SortDesc:       false,
+		Location:       "",
+		Environment:    "",
+		OlderThan:      utils.MAX_TIME,
+		PageNumber:     -1,
+		PageSize:       -1,
+		Cluster:        new(string),
+		LTEMemoryTotal: -1,
+		GTEMemoryTotal: -1,
+		LTESwapTotal:   -1,
+		GTESwapTotal:   -1,
+		LTECPUCores:    -1,
+		GTECPUCores:    -1,
+		LTECPUThreads:  -1,
+		GTECPUThreads:  -1,
+	}
 	as.EXPECT().
-		SearchHosts("full", "", gomock.Any(), "", false, -1, -1, "", "", utils.MAX_TIME).
-		Return(nil, aerrMock)
+		SearchHosts("full", gomock.Any()).
+		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+			assert.EqualValues(t, filters, actual)
 
+			return nil, aerrMock
+		})
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchHosts)
 	req, err := http.NewRequest("GET", "/hosts", nil)
@@ -430,9 +522,32 @@ func TestSearchHosts_LMSSuccess(t *testing.T) {
 		},
 	}
 
+	filters := dto.SearchHostsFilters{
+		Search:         []string{"foobar"},
+		SortBy:         "Processors",
+		SortDesc:       true,
+		Location:       "Italy",
+		Environment:    "TST",
+		OlderThan:      utils.P("2020-06-10T11:54:59Z"),
+		PageNumber:     -1,
+		PageSize:       -1,
+		Cluster:        new(string),
+		LTEMemoryTotal: -1,
+		GTEMemoryTotal: -1,
+		LTESwapTotal:   -1,
+		GTESwapTotal:   -1,
+		LTECPUCores:    -1,
+		GTECPUCores:    -1,
+		LTECPUThreads:  -1,
+		GTECPUThreads:  -1,
+	}
 	as.EXPECT().
-		SearchHosts("lms", "foobar", gomock.Any(), "Processors", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(expectedRes, nil)
+		SearchHosts("lms", gomock.Any()).
+		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+			assert.EqualValues(t, filters, actual)
+
+			return expectedRes, nil
+		})
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchHosts)
@@ -548,9 +663,32 @@ func TestSearchHosts_LMSSuccessInternalServerError1(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
+	filters := dto.SearchHostsFilters{
+		Search:         []string{"foobar"},
+		SortBy:         "Processors",
+		SortDesc:       true,
+		Location:       "Italy",
+		Environment:    "TST",
+		OlderThan:      utils.P("2020-06-10T11:54:59Z"),
+		PageNumber:     -1,
+		PageSize:       -1,
+		Cluster:        new(string),
+		LTEMemoryTotal: -1,
+		GTEMemoryTotal: -1,
+		LTESwapTotal:   -1,
+		GTESwapTotal:   -1,
+		LTECPUCores:    -1,
+		GTECPUCores:    -1,
+		LTECPUThreads:  -1,
+		GTECPUThreads:  -1,
+	}
 	as.EXPECT().
-		SearchHosts("lms", "foobar", gomock.Any(), "Processors", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(nil, aerrMock)
+		SearchHosts("lms", gomock.Any()).
+		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+			assert.EqualValues(t, filters, actual)
+
+			return nil, aerrMock
+		})
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchHosts)
@@ -580,9 +718,32 @@ func TestSearchHosts_LMSSuccessInternalServerError2(t *testing.T) {
 		},
 	}
 
+	filters := dto.SearchHostsFilters{
+		Search:         []string{""},
+		SortBy:         "",
+		SortDesc:       false,
+		Location:       "",
+		Environment:    "",
+		OlderThan:      utils.MAX_TIME,
+		PageNumber:     -1,
+		PageSize:       -1,
+		Cluster:        new(string),
+		LTEMemoryTotal: -1,
+		GTEMemoryTotal: -1,
+		LTESwapTotal:   -1,
+		GTESwapTotal:   -1,
+		LTECPUCores:    -1,
+		GTECPUCores:    -1,
+		LTECPUThreads:  -1,
+		GTECPUThreads:  -1,
+	}
 	as.EXPECT().
-		SearchHosts("lms", "", gomock.Any(), "", false, -1, -1, "", "", utils.MAX_TIME).
-		Return(expectedRes, nil)
+		SearchHosts("lms", gomock.Any()).
+		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+			assert.EqualValues(t, filters, actual)
+
+			return expectedRes, nil
+		})
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchHosts)
@@ -659,9 +820,32 @@ func TestSearchHosts_XLSXSuccess(t *testing.T) {
 		},
 	}
 
+	filters := dto.SearchHostsFilters{
+		Search:         []string{"foobar"},
+		SortBy:         "Processors",
+		SortDesc:       true,
+		Location:       "Italy",
+		Environment:    "TST",
+		OlderThan:      utils.P("2020-06-10T11:54:59Z"),
+		PageNumber:     -1,
+		PageSize:       -1,
+		Cluster:        new(string),
+		LTEMemoryTotal: -1,
+		GTEMemoryTotal: -1,
+		LTESwapTotal:   -1,
+		GTESwapTotal:   -1,
+		LTECPUCores:    -1,
+		GTECPUCores:    -1,
+		LTECPUThreads:  -1,
+		GTECPUThreads:  -1,
+	}
 	as.EXPECT().
-		SearchHosts("summary", "foobar", gomock.Any(), "Processors", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(expectedRes, nil)
+		SearchHosts("summary", gomock.Any()).
+		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+			assert.EqualValues(t, filters, actual)
+
+			return expectedRes, nil
+		})
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchHosts)
@@ -780,8 +964,27 @@ func TestSearchHosts_XLSXInternalServerError1(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
+	filters := dto.SearchHostsFilters{
+		Search:         []string{""},
+		SortBy:         "",
+		SortDesc:       false,
+		Location:       "",
+		Environment:    "",
+		OlderThan:      utils.MAX_TIME,
+		PageNumber:     -1,
+		PageSize:       -1,
+		Cluster:        new(string),
+		LTEMemoryTotal: -1,
+		GTEMemoryTotal: -1,
+		LTESwapTotal:   -1,
+		GTESwapTotal:   -1,
+		LTECPUCores:    -1,
+		GTECPUCores:    -1,
+		LTECPUThreads:  -1,
+		GTECPUThreads:  -1,
+	}
 	as.EXPECT().
-		SearchHosts("summary", "", gomock.Any(), "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchHosts("summary", filters).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
@@ -812,9 +1015,32 @@ func TestSearchHosts_XLSXInternalServerError2(t *testing.T) {
 		},
 	}
 
+	filters := dto.SearchHostsFilters{
+		Search:         []string{""},
+		SortBy:         "",
+		SortDesc:       false,
+		Location:       "",
+		Environment:    "",
+		OlderThan:      utils.MAX_TIME,
+		PageNumber:     -1,
+		PageSize:       -1,
+		Cluster:        new(string),
+		LTEMemoryTotal: -1,
+		GTEMemoryTotal: -1,
+		LTESwapTotal:   -1,
+		GTESwapTotal:   -1,
+		LTECPUCores:    -1,
+		GTECPUCores:    -1,
+		LTECPUThreads:  -1,
+		GTECPUThreads:  -1,
+	}
 	as.EXPECT().
-		SearchHosts("summary", "", gomock.Any(), "", false, -1, -1, "", "", utils.MAX_TIME).
-		Return(expectedRes, nil)
+		SearchHosts("summary", gomock.Any()).
+		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+			assert.EqualValues(t, filters, actual)
+
+			return expectedRes, nil
+		})
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchHosts)
