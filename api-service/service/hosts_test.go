@@ -156,7 +156,7 @@ func TestSearchHosts_Fail(t *testing.T) {
 	assert.Equal(t, aerrMock, err)
 }
 
-func TestGetLMS(t *testing.T) {
+func TestSearchHostsAsLMS(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -178,7 +178,7 @@ func TestGetLMS(t *testing.T) {
 			"operatingSystem":          "Red Hat Enterprise Linux",
 			"options":                  "Diagnostics Pack",
 			"physicalCores":            2,
-			"physicalServerName":       "",
+			"physicalServerName":       "erclin7dbx",
 			"pluggableDatabaseName":    "",
 			"processorModel":           "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
 			"processorSpeed":           "2.53GHz",
@@ -235,56 +235,164 @@ func TestGetLMS(t *testing.T) {
 		LTECPUThreads:  -1,
 		GTECPUThreads:  -1,
 	}
-	db.EXPECT().
-		SearchHosts("lms", gomock.Any()).
-		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
-			assert.EqualValues(t, filters, actual)
 
-			return hosts, nil
-		})
+	t.Run("with no agreements", func(t *testing.T) {
+		gomock.InOrder(
+			db.EXPECT().
+				SearchHosts("lms", gomock.Any()).
+				DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+					assert.EqualValues(t, filters, actual)
 
-	sp, err := as.SearchHostsAsLMS(filters)
-	assert.NoError(t, err)
+					return hosts, nil
+				}),
+			db.EXPECT().
+				ListOracleDatabaseAgreements().
+				Return([]dto.OracleDatabaseAgreementFE{}, nil),
+		)
 
-	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "B5"))
-	assert.Equal(t, "itl-csllab-112.sorint.localpippo", sp.GetCellValue("Database_&_EBS_DB_Tier", "C5"))
-	assert.Equal(t, "VMware", sp.GetCellValue("Database_&_EBS_DB_Tier", "D5"))
-	assert.Equal(t, "ERCOLE", sp.GetCellValue("Database_&_EBS_DB_Tier", "E5"))
-	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "F5"))
-	assert.Equal(t, "TST", sp.GetCellValue("Database_&_EBS_DB_Tier", "G5"))
-	assert.Equal(t, "Diagnostics Pack", sp.GetCellValue("Database_&_EBS_DB_Tier", "H5"))
-	assert.Equal(t, "Diagnostics Pack", sp.GetCellValue("Database_&_EBS_DB_Tier", "I5"))
-	assert.Equal(t, "12", sp.GetCellValue("Database_&_EBS_DB_Tier", "N5"))
-	assert.Equal(t, "EE", sp.GetCellValue("Database_&_EBS_DB_Tier", "O5"))
-	assert.Equal(t, "processor", sp.GetCellValue("Database_&_EBS_DB_Tier", "P5"))
-	assert.Equal(t, "0.5", sp.GetCellValue("Database_&_EBS_DB_Tier", "Q5"))
-	assert.Equal(t, "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AC5"))
-	assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AD5"))
-	assert.Equal(t, "1", sp.GetCellValue("Database_&_EBS_DB_Tier", "AE5"))
-	assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AF5"))
-	assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AG5"))
-	assert.Equal(t, "2.53GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AH5"))
-	assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue("Database_&_EBS_DB_Tier", "AJ5"))
+		sp, err := as.SearchHostsAsLMS(filters)
+		assert.NoError(t, err)
 
-	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sp.GetCellValue("Database_&_EBS_DB_Tier", "B6"))
-	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "C6"))
-	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "D6"))
-	assert.Equal(t, "rudeboy-fb3160a04ffea22b55555bbb58137f77", sp.GetCellValue("Database_&_EBS_DB_Tier", "E6"))
-	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "F6"))
-	assert.Equal(t, "SVIL", sp.GetCellValue("Database_&_EBS_DB_Tier", "G6"))
-	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "H6"))
-	assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "I6"))
-	assert.Equal(t, "11", sp.GetCellValue("Database_&_EBS_DB_Tier", "N6"))
-	assert.Equal(t, "EE", sp.GetCellValue("Database_&_EBS_DB_Tier", "O6"))
-	assert.Equal(t, "processor", sp.GetCellValue("Database_&_EBS_DB_Tier", "P6"))
-	assert.Equal(t, "4", sp.GetCellValue("Database_&_EBS_DB_Tier", "Q6"))
-	assert.Equal(t, "Intel(R) Xeon(R) CPU           X5570  @ 2.93GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AC6"))
-	assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AD6"))
-	assert.Equal(t, "4", sp.GetCellValue("Database_&_EBS_DB_Tier", "AE6"))
-	assert.Equal(t, "8", sp.GetCellValue("Database_&_EBS_DB_Tier", "AF6"))
-	assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AG6"))
-	assert.Equal(t, "2.93GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AH6"))
-	assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue("Database_&_EBS_DB_Tier", "AJ6"))
+		assert.Equal(t, "erclin7dbx", sp.GetCellValue("Database_&_EBS_DB_Tier", "B5"))
+		assert.Equal(t, "itl-csllab-112.sorint.localpippo", sp.GetCellValue("Database_&_EBS_DB_Tier", "C5"))
+		assert.Equal(t, "VMware", sp.GetCellValue("Database_&_EBS_DB_Tier", "D5"))
+		assert.Equal(t, "ERCOLE", sp.GetCellValue("Database_&_EBS_DB_Tier", "E5"))
+		assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "F5"))
+		assert.Equal(t, "TST", sp.GetCellValue("Database_&_EBS_DB_Tier", "G5"))
+		assert.Equal(t, "Diagnostics Pack", sp.GetCellValue("Database_&_EBS_DB_Tier", "H5"))
+		assert.Equal(t, "Diagnostics Pack", sp.GetCellValue("Database_&_EBS_DB_Tier", "I5"))
+		assert.Equal(t, "12", sp.GetCellValue("Database_&_EBS_DB_Tier", "N5"))
+		assert.Equal(t, "EE", sp.GetCellValue("Database_&_EBS_DB_Tier", "O5"))
+		assert.Equal(t, "processor", sp.GetCellValue("Database_&_EBS_DB_Tier", "P5"))
+		assert.Equal(t, "0.5", sp.GetCellValue("Database_&_EBS_DB_Tier", "Q5"))
+		assert.Equal(t, "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AC5"))
+		assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AD5"))
+		assert.Equal(t, "1", sp.GetCellValue("Database_&_EBS_DB_Tier", "AE5"))
+		assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AF5"))
+		assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AG5"))
+		assert.Equal(t, "2.53GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AH5"))
+		assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue("Database_&_EBS_DB_Tier", "AJ5"))
+
+		assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sp.GetCellValue("Database_&_EBS_DB_Tier", "B6"))
+		assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "C6"))
+		assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "D6"))
+		assert.Equal(t, "rudeboy-fb3160a04ffea22b55555bbb58137f77", sp.GetCellValue("Database_&_EBS_DB_Tier", "E6"))
+		assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "F6"))
+		assert.Equal(t, "SVIL", sp.GetCellValue("Database_&_EBS_DB_Tier", "G6"))
+		assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "H6"))
+		assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "I6"))
+		assert.Equal(t, "11", sp.GetCellValue("Database_&_EBS_DB_Tier", "N6"))
+		assert.Equal(t, "EE", sp.GetCellValue("Database_&_EBS_DB_Tier", "O6"))
+		assert.Equal(t, "processor", sp.GetCellValue("Database_&_EBS_DB_Tier", "P6"))
+		assert.Equal(t, "4", sp.GetCellValue("Database_&_EBS_DB_Tier", "Q6"))
+		assert.Equal(t, "Intel(R) Xeon(R) CPU           X5570  @ 2.93GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AC6"))
+		assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AD6"))
+		assert.Equal(t, "4", sp.GetCellValue("Database_&_EBS_DB_Tier", "AE6"))
+		assert.Equal(t, "8", sp.GetCellValue("Database_&_EBS_DB_Tier", "AF6"))
+		assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AG6"))
+		assert.Equal(t, "2.93GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AH6"))
+		assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue("Database_&_EBS_DB_Tier", "AJ6"))
+	})
+
+	t.Run("with agreements", func(t *testing.T) {
+		agreements := []dto.OracleDatabaseAgreementFE{
+			{
+				ID:              utils.Str2oid("aaaaaaaaaaaa"),
+				AgreementID:     "",
+				CSI:             "csi001",
+				LicenseTypeID:   "",
+				ItemDescription: "",
+				Metric:          "",
+				ReferenceNumber: "",
+				Unlimited:       false,
+				Count:           0,
+				CatchAll:        false,
+				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+					{Hostname: "publicitate-36d06ca83eafa454423d2097f4965517"},
+				},
+				AvailableCount: 0,
+				LicensesCount:  0,
+				UsersCount:     0,
+			},
+			{
+				ID:              utils.Str2oid("aaaaaaaaaaaa"),
+				AgreementID:     "",
+				CSI:             "csi002",
+				LicenseTypeID:   "",
+				ItemDescription: "",
+				Metric:          "",
+				ReferenceNumber: "",
+				Unlimited:       false,
+				Count:           0,
+				CatchAll:        false,
+				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+					{Hostname: "publicitate-36d06ca83eafa454423d2097f4965517"},
+				},
+				AvailableCount: 0,
+				LicensesCount:  0,
+				UsersCount:     0,
+			},
+		}
+
+		gomock.InOrder(
+			db.EXPECT().
+				SearchHosts("lms", gomock.Any()).
+				DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+					assert.EqualValues(t, filters, actual)
+
+					return hosts, nil
+				}),
+			db.EXPECT().
+				ListOracleDatabaseAgreements().
+				Return(agreements, nil),
+		)
+
+		sp, err := as.SearchHostsAsLMS(filters)
+		assert.NoError(t, err)
+
+		sheet := "Database_&_EBS_DB_Tier"
+		assert.Equal(t, "erclin7dbx", sp.GetCellValue(sheet, "B5"))
+		assert.Equal(t, "itl-csllab-112.sorint.localpippo", sp.GetCellValue(sheet, "C5"))
+		assert.Equal(t, "VMware", sp.GetCellValue(sheet, "D5"))
+		assert.Equal(t, "ERCOLE", sp.GetCellValue(sheet, "E5"))
+		assert.Equal(t, "", sp.GetCellValue(sheet, "F5"))
+		assert.Equal(t, "TST", sp.GetCellValue(sheet, "G5"))
+		assert.Equal(t, "Diagnostics Pack", sp.GetCellValue(sheet, "H5"))
+		assert.Equal(t, "Diagnostics Pack", sp.GetCellValue(sheet, "I5"))
+		assert.Equal(t, "12", sp.GetCellValue(sheet, "N5"))
+		assert.Equal(t, "EE", sp.GetCellValue(sheet, "O5"))
+		assert.Equal(t, "processor", sp.GetCellValue(sheet, "P5"))
+		assert.Equal(t, "0.5", sp.GetCellValue(sheet, "Q5"))
+		assert.Equal(t, "", sp.GetCellValue(sheet, "R5"))
+		assert.Equal(t, "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz", sp.GetCellValue(sheet, "AC5"))
+		assert.Equal(t, "2", sp.GetCellValue(sheet, "AD5"))
+		assert.Equal(t, "1", sp.GetCellValue(sheet, "AE5"))
+		assert.Equal(t, "2", sp.GetCellValue(sheet, "AF5"))
+		assert.Equal(t, "2", sp.GetCellValue(sheet, "AG5"))
+		assert.Equal(t, "2.53GHz", sp.GetCellValue(sheet, "AH5"))
+		assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue(sheet, "AJ5"))
+
+		assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sp.GetCellValue(sheet, "B6"))
+		assert.Equal(t, "", sp.GetCellValue(sheet, "C6"))
+		assert.Equal(t, "", sp.GetCellValue(sheet, "D6"))
+		assert.Equal(t, "rudeboy-fb3160a04ffea22b55555bbb58137f77", sp.GetCellValue(sheet, "E6"))
+		assert.Equal(t, "", sp.GetCellValue(sheet, "F6"))
+		assert.Equal(t, "SVIL", sp.GetCellValue(sheet, "G6"))
+		assert.Equal(t, "", sp.GetCellValue(sheet, "H6"))
+		assert.Equal(t, "", sp.GetCellValue(sheet, "I6"))
+		assert.Equal(t, "11", sp.GetCellValue(sheet, "N6"))
+		assert.Equal(t, "EE", sp.GetCellValue(sheet, "O6"))
+		assert.Equal(t, "processor", sp.GetCellValue(sheet, "P6"))
+		assert.Equal(t, "4", sp.GetCellValue(sheet, "Q6"))
+		assert.Equal(t, "csi001, csi002", sp.GetCellValue(sheet, "R6"))
+		assert.Equal(t, "Intel(R) Xeon(R) CPU           X5570  @ 2.93GHz", sp.GetCellValue(sheet, "AC6"))
+		assert.Equal(t, "2", sp.GetCellValue(sheet, "AD6"))
+		assert.Equal(t, "4", sp.GetCellValue(sheet, "AE6"))
+		assert.Equal(t, "8", sp.GetCellValue(sheet, "AF6"))
+		assert.Equal(t, "2", sp.GetCellValue(sheet, "AG6"))
+		assert.Equal(t, "2.93GHz", sp.GetCellValue(sheet, "AH6"))
+		assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue(sheet, "AJ6"))
+	})
 }
 
 func TestGetHost_Success(t *testing.T) {
