@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/amreo/mu"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
@@ -30,65 +31,63 @@ import (
 )
 
 // SearchHosts search hosts
-func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilters SearchHostsFilters, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
-	var out []map[string]interface{} = make([]map[string]interface{}, 0)
+func (md *MongoDatabase) SearchHosts(mode string, filters dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
 
-	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
-			FilterByLocationAndEnvironmentSteps(location, environment),
-			FilterByOldnessSteps(olderThan),
+			FilterByLocationAndEnvironmentSteps(filters.Location, filters.Environment),
+			FilterByOldnessSteps(filters.OlderThan),
 			mu.MAPipeline(
-				mu.APOptionalStage(otherFilters.Hostname != "", mu.APMatch(bson.M{
-					"hostname": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.Hostname), Options: "i"},
+				mu.APOptionalStage(filters.Hostname != "", mu.APMatch(bson.M{
+					"hostname": primitive.Regex{Pattern: regexp.QuoteMeta(filters.Hostname), Options: "i"},
 				})),
-				mu.APOptionalStage(otherFilters.Database != "", mu.APMatch(bson.M{
-					"features.oracle.database.databases.Name": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.Database), Options: "i"},
+				mu.APOptionalStage(filters.Database != "", mu.APMatch(bson.M{
+					"features.oracle.database.databases.Name": primitive.Regex{Pattern: regexp.QuoteMeta(filters.Database), Options: "i"},
 				})),
-				mu.APOptionalStage(otherFilters.HardwareAbstractionTechnology != "", mu.APMatch(bson.M{
-					"info.hardwareAbstractionTechnology": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.HardwareAbstractionTechnology), Options: "i"},
+				mu.APOptionalStage(filters.HardwareAbstractionTechnology != "", mu.APMatch(bson.M{
+					"info.hardwareAbstractionTechnology": primitive.Regex{Pattern: regexp.QuoteMeta(filters.HardwareAbstractionTechnology), Options: "i"},
 				})),
-				mu.APOptionalStage(otherFilters.OperatingSystem != "", mu.APMatch(bson.M{
-					"info.os": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.OperatingSystem), Options: "i"},
+				mu.APOptionalStage(filters.OperatingSystem != "", mu.APMatch(bson.M{
+					"info.os": primitive.Regex{Pattern: regexp.QuoteMeta(filters.OperatingSystem), Options: "i"},
 				})),
-				mu.APOptionalStage(otherFilters.Kernel != "", mu.APMatch(bson.M{
-					"info.kernel": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.Kernel), Options: "i"},
+				mu.APOptionalStage(filters.Kernel != "", mu.APMatch(bson.M{
+					"info.kernel": primitive.Regex{Pattern: regexp.QuoteMeta(filters.Kernel), Options: "i"},
 				})),
-				mu.APOptionalStage(otherFilters.LTEMemoryTotal != -1, mu.APMatch(bson.M{
-					"info.memoryTotal": mu.QOLessThanOrEqual(otherFilters.LTEMemoryTotal),
+				mu.APOptionalStage(filters.LTEMemoryTotal != -1, mu.APMatch(bson.M{
+					"info.memoryTotal": mu.QOLessThanOrEqual(filters.LTEMemoryTotal),
 				})),
-				mu.APOptionalStage(otherFilters.GTEMemoryTotal != -1, mu.APMatch(bson.M{
+				mu.APOptionalStage(filters.GTEMemoryTotal != -1, mu.APMatch(bson.M{
 					"info.memoryTotal": bson.M{
-						"$gte": otherFilters.GTEMemoryTotal,
+						"$gte": filters.GTEMemoryTotal,
 					},
 				})),
-				mu.APOptionalStage(otherFilters.LTESwapTotal != -1, mu.APMatch(bson.M{
-					"info.swapTotal": mu.QOLessThanOrEqual(otherFilters.LTESwapTotal),
+				mu.APOptionalStage(filters.LTESwapTotal != -1, mu.APMatch(bson.M{
+					"info.swapTotal": mu.QOLessThanOrEqual(filters.LTESwapTotal),
 				})),
-				mu.APOptionalStage(otherFilters.GTESwapTotal != -1, mu.APMatch(bson.M{
+				mu.APOptionalStage(filters.GTESwapTotal != -1, mu.APMatch(bson.M{
 					"info.swapTotal": bson.M{
-						"$gte": otherFilters.GTESwapTotal,
+						"$gte": filters.GTESwapTotal,
 					},
 				})),
-				getIsMemberOfClusterFilterStep(otherFilters.IsMemberOfCluster),
-				mu.APOptionalStage(otherFilters.CPUModel != "", mu.APMatch(bson.M{
-					"info.cpuModel": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.CPUModel), Options: "i"},
+				getIsMemberOfClusterFilterStep(filters.IsMemberOfCluster),
+				mu.APOptionalStage(filters.CPUModel != "", mu.APMatch(bson.M{
+					"info.cpuModel": primitive.Regex{Pattern: regexp.QuoteMeta(filters.CPUModel), Options: "i"},
 				})),
-				mu.APOptionalStage(otherFilters.LTECPUCores != -1, mu.APMatch(bson.M{
-					"info.cpuCores": mu.QOLessThanOrEqual(otherFilters.LTECPUCores),
+				mu.APOptionalStage(filters.LTECPUCores != -1, mu.APMatch(bson.M{
+					"info.cpuCores": mu.QOLessThanOrEqual(filters.LTECPUCores),
 				})),
-				mu.APOptionalStage(otherFilters.GTECPUCores != -1, mu.APMatch(bson.M{
+				mu.APOptionalStage(filters.GTECPUCores != -1, mu.APMatch(bson.M{
 					"info.cpuCores": bson.M{
-						"$gte": otherFilters.GTECPUCores,
+						"$gte": filters.GTECPUCores,
 					},
 				})),
-				mu.APOptionalStage(otherFilters.LTECPUThreads != -1, mu.APMatch(bson.M{
-					"info.cpuThreads": mu.QOLessThanOrEqual(otherFilters.LTECPUThreads),
+				mu.APOptionalStage(filters.LTECPUThreads != -1, mu.APMatch(bson.M{
+					"info.cpuThreads": mu.QOLessThanOrEqual(filters.LTECPUThreads),
 				})),
-				mu.APOptionalStage(otherFilters.GTECPUThreads != -1, mu.APMatch(bson.M{
+				mu.APOptionalStage(filters.GTECPUThreads != -1, mu.APMatch(bson.M{
 					"info.cpuThreads": bson.M{
-						"$gte": otherFilters.GTECPUThreads,
+						"$gte": filters.GTECPUThreads,
 					},
 				})),
 			),
@@ -97,11 +96,11 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 				"$features.oracle.database.databases.name",
 				"$features.oracle.database.databases.uniqueName",
 				"$clusters.name",
-			}, keywords),
-			AddAssociatedClusterNameAndVirtualizationNode(olderThan),
-			getClusterFilterStep(otherFilters.Cluster),
-			mu.APOptionalStage(otherFilters.VirtualizationNode != "", mu.APMatch(bson.M{
-				"virtualizationNode": primitive.Regex{Pattern: regexp.QuoteMeta(otherFilters.VirtualizationNode), Options: "i"},
+			}, filters.Search),
+			AddAssociatedClusterNameAndVirtualizationNode(filters.OlderThan),
+			getClusterFilterStep(filters.Cluster),
+			mu.APOptionalStage(filters.VirtualizationNode != "", mu.APMatch(bson.M{
+				"virtualizationNode": primitive.Regex{Pattern: regexp.QuoteMeta(filters.VirtualizationNode), Options: "i"},
 			})),
 			mu.APOptionalStage(mode == "mongo" || mode == "hostnames", mu.APUnset("cluster", "virtualizationNode")),
 			mu.APOptionalStage(mode == "hostnames", mu.MAPipeline(
@@ -109,7 +108,7 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 					"_id":      0,
 					"hostname": 1,
 				}),
-				mu.APOptionalSortingStage(sortBy, sortDesc),
+				mu.APOptionalSortingStage(filters.SortBy, filters.SortDesc),
 			)),
 			mu.APOptionalStage(mode != "mongo" && mode != "hostnames", mu.MAPipeline(
 				mu.APOptionalStage(mode == "lms", mu.APMatch(
@@ -254,8 +253,8 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 						}),
 					}),
 				)),
-				mu.APOptionalSortingStage(sortBy, sortDesc),
-				mu.APOptionalPagingStage(page, pageSize),
+				mu.APOptionalSortingStage(filters.SortBy, filters.SortDesc),
+				mu.APOptionalPagingStage(filters.PageNumber, filters.PageSize),
 			)),
 		),
 	)
@@ -263,7 +262,8 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	//Decode the documents
+	var out []map[string]interface{} = make([]map[string]interface{}, 0)
+
 	for cur.Next(context.TODO()) {
 		var item map[string]interface{}
 		if cur.Decode(&item) != nil {
@@ -271,6 +271,7 @@ func (md *MongoDatabase) SearchHosts(mode string, keywords []string, otherFilter
 		}
 		out = append(out, item)
 	}
+
 	return out, nil
 }
 
