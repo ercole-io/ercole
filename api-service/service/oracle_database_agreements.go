@@ -20,7 +20,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ercole-io/ercole/v2/api-service/database"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -95,16 +94,21 @@ func addAssociatedLicenseType(as *APIService, agreement *model.OracleDatabaseAgr
 }
 
 func checkHosts(as *APIService, hosts []string) utils.AdvancedErrorInterface {
-	notInClusterHosts, aerr := as.SearchHosts("hostnames", "", database.SearchHostsFilters{
-		GTECPUCores:    -1,
-		LTECPUCores:    -1,
-		LTECPUThreads:  -1,
-		LTEMemoryTotal: -1,
-		GTECPUThreads:  -1,
-		GTESwapTotal:   -1,
-		GTEMemoryTotal: -1,
-		LTESwapTotal:   -1,
-	}, "", false, -1, -1, "", "", utils.MAX_TIME)
+	notInClusterHosts, aerr := as.SearchHosts("hostnames",
+		dto.SearchHostsFilters{
+			Search:         []string{""},
+			OlderThan:      utils.MAX_TIME,
+			PageNumber:     -1,
+			PageSize:       -1,
+			LTEMemoryTotal: -1,
+			GTEMemoryTotal: -1,
+			LTESwapTotal:   -1,
+			GTESwapTotal:   -1,
+			LTECPUCores:    -1,
+			GTECPUCores:    -1,
+			LTECPUThreads:  -1,
+			GTECPUThreads:  -1,
+		})
 	if aerr != nil {
 		return aerr
 	}
