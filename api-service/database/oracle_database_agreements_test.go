@@ -47,23 +47,25 @@ var agreementSample = model.OracleDatabaseAgreement{
 			Unlimited:       true,
 			Count:           345,
 			CatchAll:        true,
+			Restricted:      true, // there shouldn't be CatchAll==true && Restricted && true, this is only for tests
 			Hosts:           []string{"foo", "bar"},
 		},
 	},
 }
 
 func (m *MongodbSuite) TestInsertOracleDatabaseAgreement_Success() {
-
-	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
-	require.NoError(m.T(), err)
+	_, aerr := m.db.InsertOracleDatabaseAgreement(agreementSample)
+	require.NoError(m.T(), aerr)
 	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsCollection).DeleteMany(context.TODO(), bson.M{})
+
 	val := m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsCollection).FindOne(context.TODO(), bson.M{
 		"_id": agreementSample.ID,
 	})
 	require.NoError(m.T(), val.Err())
 
 	var out model.OracleDatabaseAgreement
-	val.Decode(&out)
+	err := val.Decode(&out)
+	assert.NoError(m.T(), err)
 
 	assert.Equal(m.T(), agreementSample, out)
 }
@@ -135,6 +137,7 @@ func (m *MongodbSuite) TestUpdateOracleDatabaseAgreement() {
 					Unlimited:       true,
 					Count:           345,
 					CatchAll:        true,
+					Restricted:      false,
 					Hosts:           []string{"foo", "bar"},
 				},
 			},
@@ -216,6 +219,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 				LicenseTypeID:   licenseTypeSample1.ID,
 				ReferenceNumber: "R00001",
 				CatchAll:        true,
+				Restricted:      false,
 				Count:           345,
 				Hosts:           []string{"foo", "bar"},
 				Unlimited:       true,
@@ -230,7 +234,8 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 				ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
 				LicenseTypeID:   licenseTypeSample1.ID,
 				ReferenceNumber: "R00002",
-				CatchAll:        true,
+				CatchAll:        false,
+				Restricted:      true,
 				Count:           111,
 				Hosts:           []string{"pippo", "clarabella"},
 				Unlimited:       false,
@@ -240,12 +245,22 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 				LicenseTypeID:   licenseTypeSample2.ID,
 				ReferenceNumber: "R00003",
 				CatchAll:        false,
+				Restricted:      false,
 				Count:           222,
 				Hosts:           []string{"topolino", "minni"},
 				Unlimited:       true,
 			},
 		},
 	}
+
+	m.T().Run("Empty collection", func(t *testing.T) {
+		defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsCollection).DeleteMany(context.TODO(), bson.M{})
+
+		out, err := m.db.ListOracleDatabaseAgreements()
+		m.Require().NoError(err)
+
+		assert.Equal(m.T(), []dto.OracleDatabaseAgreementFE{}, out)
+	})
 
 	m.T().Run("One association agreement-licenseTypes", func(t *testing.T) {
 		defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsCollection).DeleteMany(context.TODO(), bson.M{})
@@ -269,6 +284,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 				Unlimited:       true,
 				Count:           345,
 				CatchAll:        true,
+				Restricted:      false,
 				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 					{
 						Hostname: "foo",
@@ -308,6 +324,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 				Unlimited:       true,
 				Count:           345,
 				CatchAll:        true,
+				Restricted:      false,
 				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 					{
 						Hostname:                  "foo",
@@ -334,7 +351,8 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 				ReferenceNumber: "R00002",
 				Unlimited:       false,
 				Count:           111,
-				CatchAll:        true,
+				CatchAll:        false,
+				Restricted:      true,
 				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 					{
 
@@ -364,6 +382,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 				Unlimited:       true,
 				Count:           222,
 				CatchAll:        false,
+				Restricted:      false,
 				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 					{
 						Hostname:                  "topolino",

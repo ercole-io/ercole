@@ -67,8 +67,9 @@ type OracleDatabaseAgreementFE struct {
 	// If agreement is Named User, Count number express users, not licenses
 	Count float64 `json:"count" bson:"count"`
 
-	CatchAll bool                                      `json:"catchAll" bson:"catchAll"` //TODO Rename in basket
-	Hosts    []OracleDatabaseAgreementAssociatedHostFE `json:"hosts" bson:"hosts"`
+	CatchAll   bool                                      `json:"catchAll" bson:"catchAll"` //TODO Rename in basket
+	Restricted bool                                      `json:"restricted" bson:"restricted"`
+	Hosts      []OracleDatabaseAgreementAssociatedHostFE `json:"hosts" bson:"hosts"`
 
 	// Value of licenses/users yet available to be assigned to hosts
 	AvailableCount float64 `json:"availableCount" bson:"availableCount"`
