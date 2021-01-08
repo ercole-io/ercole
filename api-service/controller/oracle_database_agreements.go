@@ -51,6 +51,11 @@ func (ctrl *APIController) AddAssociatedLicenseTypeToOracleDbAgreement(w http.Re
 		return
 	}
 
+	if err := req.Check(); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
 	id, aerr := ctrl.Service.AddAssociatedLicenseTypeToOracleDbAgreement(req)
 	if aerr != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
@@ -74,6 +79,11 @@ func (ctrl *APIController) UpdateAssociatedLicenseTypeOfOracleDbAgreement(w http
 	if err := decoder.Decode(&req); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
 			utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
+		return
+	}
+
+	if err := req.Check(); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
 	}
 

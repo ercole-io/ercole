@@ -4209,6 +4209,8 @@ paths:
                     type: string
                 catchAll:
                   type: boolean
+                restricted:
+                  type: boolean
             examples:
               example-1:
                 value:
@@ -4252,6 +4254,8 @@ paths:
                   items:
                     type: string
                 catchAll:
+                  type: boolean
+                restricted:
                   type: boolean
                 id:
                   type: string
