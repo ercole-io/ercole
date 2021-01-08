@@ -16,6 +16,9 @@
 package dto
 
 import (
+	"errors"
+
+	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -32,7 +35,16 @@ type AssociatedLicenseTypeInOracleDbAgreementRequest struct {
 	Unlimited       bool     `json:"unlimited"`
 	Count           int      `json:"count"`
 	CatchAll        bool     `json:"catchAll"` //TODO rename basket
+	Restricted      bool     `json:"restricted"`
 	Hosts           []string `json:"hosts"`
+}
+
+func (req AssociatedLicenseTypeInOracleDbAgreementRequest) Check() error {
+	if req.Restricted && req.CatchAll {
+		return utils.NewAdvancedErrorPtr(errors.New("If it's restricted it can't be catchAll"), "BAD_REQUEST")
+	}
+
+	return nil
 }
 
 // OracleDatabaseAgreementFE contains the informations about an AssociatedLicenseType in an Agreement for the frontend
