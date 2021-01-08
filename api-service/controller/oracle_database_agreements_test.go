@@ -56,6 +56,7 @@ func TestAddAssociatedLicenseTypeToOracleDbAgreement_Success(t *testing.T) {
 		Unlimited:       false,
 		Count:           42,
 		CatchAll:        false,
+		Restricted:      false,
 		Hosts:           []string{"foobar"},
 	}
 
@@ -98,7 +99,7 @@ func TestAddAssociatedLicenseTypeToOracleDbAgreement_ReadOnly(t *testing.T) {
 	require.Equal(t, http.StatusForbidden, rr.Code)
 }
 
-func TestAddAssociatedLicenseTypeToOracleDbAgreement_FailToDecode(t *testing.T) {
+func TestAddAssociatedLicenseTypeToOracleDbAgreement_BadRequests(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -113,51 +114,63 @@ func TestAddAssociatedLicenseTypeToOracleDbAgreement_FailToDecode(t *testing.T) 
 		Log: utils.NewLogger("TEST"),
 	}
 
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AddAssociatedLicenseTypeToOracleDbAgreement)
-	req, err := http.NewRequest("POST", "/", &FailingReader{})
-	require.NoError(t, err)
+	t.Run("fail to decode", func(t *testing.T) {
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ac.AddAssociatedLicenseTypeToOracleDbAgreement)
+		req, err := http.NewRequest("POST", "/", &FailingReader{})
+		require.NoError(t, err)
 
-	handler.ServeHTTP(rr, req)
+		handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusBadRequest, rr.Code)
-}
+		require.Equal(t, http.StatusBadRequest, rr.Code)
+	})
 
-func TestAddAssociatedLicenseTypeToOracleDbAgreement_IDMustBeEmpty(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config: config.Configuration{
-			APIService: config.APIService{
-				ReadOnly: false,
-			},
-		},
-		Log: utils.NewLogger("TEST"),
-	}
+	t.Run("id must be empty", func(t *testing.T) {
+		request := dto.AssociatedLicenseTypeInOracleDbAgreementRequest{
+			ID:              "aaaaaaaaaaaaaaaaaaaaaaaa",
+			AgreementID:     "AID001",
+			LicenseTypeID:   "PID001",
+			CSI:             "CSI001",
+			ReferenceNumber: "REF001",
+			Unlimited:       false,
+			Count:           42,
+			CatchAll:        false,
+			Hosts:           []string{"foobar"},
+		}
 
-	request := dto.AssociatedLicenseTypeInOracleDbAgreementRequest{
-		ID:              "aaaaaaaaaaaaaaaaaaaaaaaa",
-		AgreementID:     "AID001",
-		LicenseTypeID:   "PID001",
-		CSI:             "CSI001",
-		ReferenceNumber: "REF001",
-		Unlimited:       false,
-		Count:           42,
-		CatchAll:        false,
-		Hosts:           []string{"foobar"},
-	}
+		handler := http.HandlerFunc(ac.AddAssociatedLicenseTypeToOracleDbAgreement)
+		req, err := http.NewRequest("POST", "/", bytes.NewReader([]byte(utils.ToJSON(request))))
+		require.NoError(t, err)
 
-	handler := http.HandlerFunc(ac.AddAssociatedLicenseTypeToOracleDbAgreement)
-	req, err := http.NewRequest("POST", "/", bytes.NewReader([]byte(utils.ToJSON(request))))
-	require.NoError(t, err)
+		rr := httptest.NewRecorder()
+		handler.ServeHTTP(rr, req)
 
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
+		require.Equal(t, http.StatusBadRequest, rr.Code)
+	})
 
-	require.Equal(t, http.StatusBadRequest, rr.Code)
+	t.Run("if restricted can't be catchAll", func(t *testing.T) {
+		request := dto.AssociatedLicenseTypeInOracleDbAgreementRequest{
+			ID:              "",
+			AgreementID:     "AID001",
+			LicenseTypeID:   "PID001",
+			CSI:             "CSI001",
+			ReferenceNumber: "REF001",
+			Unlimited:       false,
+			Count:           42,
+			CatchAll:        true,
+			Restricted:      true,
+			Hosts:           []string{"foobar"},
+		}
+
+		handler := http.HandlerFunc(ac.AddAssociatedLicenseTypeToOracleDbAgreement)
+		req, err := http.NewRequest("POST", "/", bytes.NewReader([]byte(utils.ToJSON(request))))
+		require.NoError(t, err)
+
+		rr := httptest.NewRecorder()
+		handler.ServeHTTP(rr, req)
+
+		require.Equal(t, http.StatusBadRequest, rr.Code)
+	})
 }
 
 func TestAddAssociatedLicenseTypeToOracleDbAgreement_InternalServerError(t *testing.T) {
@@ -232,7 +245,7 @@ func TestUpdateOracleDatabaseAgreement_Success(t *testing.T) {
 	assert.Equal(t, "null", rr.Body.String())
 }
 
-func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_FailToDecode(t *testing.T) {
+func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_BadRequests(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -247,14 +260,40 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_FailToDecode(t *testing.
 		Log: utils.NewLogger("TEST"),
 	}
 
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.UpdateAssociatedLicenseTypeOfOracleDbAgreement)
-	req, err := http.NewRequest("POST", "/", &FailingReader{})
-	require.NoError(t, err)
+	t.Run("fail to decode", func(t *testing.T) {
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ac.UpdateAssociatedLicenseTypeOfOracleDbAgreement)
+		req, err := http.NewRequest("POST", "/", &FailingReader{})
+		require.NoError(t, err)
 
-	handler.ServeHTTP(rr, req)
+		handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusBadRequest, rr.Code)
+		require.Equal(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("if restricted can't be catchAll", func(t *testing.T) {
+		request := dto.AssociatedLicenseTypeInOracleDbAgreementRequest{
+			ID:              "aaaaaaaaaaaaaaaaaaaaaaaa",
+			AgreementID:     "AID001",
+			LicenseTypeID:   "PID001",
+			CSI:             "CSI001",
+			ReferenceNumber: "REF001",
+			Unlimited:       false,
+			Count:           42,
+			CatchAll:        true,
+			Restricted:      true,
+			Hosts:           []string{"foobar"},
+		}
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ac.UpdateAssociatedLicenseTypeOfOracleDbAgreement)
+		req, err := http.NewRequest("POST", "/", bytes.NewReader([]byte(utils.ToJSON(request))))
+		require.NoError(t, err)
+
+		handler.ServeHTTP(rr, req)
+
+		require.Equal(t, http.StatusBadRequest, rr.Code)
+	})
 }
 
 func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_InternalServerError(t *testing.T) {

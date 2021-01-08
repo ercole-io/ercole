@@ -70,6 +70,7 @@ func TestAddOracleDatabaseAgreements_Success_InsertNew(t *testing.T) {
 		Unlimited:       true,
 		Count:           30,
 		CatchAll:        true,
+		Restricted:      false,
 		Hosts: []string{
 			"test-db",
 			"ercsoldbx",
@@ -113,6 +114,7 @@ func TestAddOracleDatabaseAgreements_Success_InsertNew(t *testing.T) {
 							Unlimited:       true,
 							Count:           30,
 							CatchAll:        true,
+							Restricted:      false,
 							Hosts:           []string{"test-db", "ercsoldbx"},
 						},
 					},
@@ -150,6 +152,7 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 		Unlimited:       false,
 		Count:           33,
 		CatchAll:        true,
+		Restricted:      false,
 		Hosts:           []string{"pippo", "pluto"},
 	}
 
@@ -165,6 +168,7 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 				Unlimited:       true,
 				Count:           30,
 				CatchAll:        false,
+				Restricted:      false,
 				Hosts:           []string{"test-db", "ercsoldbx"},
 			},
 		},
@@ -207,6 +211,7 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 						Unlimited:       true,
 						Count:           30,
 						CatchAll:        false,
+						Restricted:      false,
 						Hosts:           []string{"test-db", "ercsoldbx"},
 					},
 					{
@@ -216,6 +221,7 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 						Unlimited:       false,
 						Count:           33,
 						CatchAll:        true,
+						Restricted:      false,
 						Hosts:           []string{"pippo", "pluto"},
 					},
 				},
@@ -254,6 +260,7 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 		Unlimited:       true,
 		Count:           30,
 		CatchAll:        true,
+		Restricted:      false,
 		Hosts: []string{
 			"test-db",
 			"ercsoldbx",
@@ -302,6 +309,7 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 			Unlimited:       true,
 			Count:           30,
 			CatchAll:        true,
+			Restricted:      false,
 			Hosts: []string{
 				"test-db",
 				"ercsoldbx",
@@ -368,6 +376,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement(t *testing.T) {
 				Unlimited:       true,
 				Count:           30,
 				CatchAll:        true,
+				Restricted:      false,
 				Hosts:           []string{"test-db", "ercsoldbx"},
 			},
 		},
@@ -382,6 +391,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement(t *testing.T) {
 		Unlimited:       true,
 		Count:           42,
 		CatchAll:        false,
+		Restricted:      false,
 		Hosts:           []string{"foobar"},
 	}
 
@@ -397,6 +407,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement(t *testing.T) {
 		agrPart.Unlimited = req.Unlimited
 		agrPart.Count = req.Count
 		agrPart.CatchAll = req.CatchAll
+		agrPart.Restricted = req.Restricted
 		agrPart.Hosts = req.Hosts
 
 		gomock.InOrder(
