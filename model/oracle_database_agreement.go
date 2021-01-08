@@ -35,6 +35,7 @@ type AssociatedLicenseType struct {
 	Unlimited       bool               `json:"unlimited" bson:"unlimited"`
 	Count           int                `json:"count" bson:"count"`
 	CatchAll        bool               `json:"catchAll" bson:"catchAll"` //TODO Rename in IsBasket ?
+	Restricted      bool               `json:"restricted" bson:"restricted"`
 	Hosts           []string           `json:"hosts" bson:"hosts"`
 }
 
