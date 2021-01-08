@@ -86,6 +86,7 @@ func addAssociatedLicenseType(as *APIService, agreement *model.OracleDatabaseAgr
 		Unlimited:       req.Unlimited,
 		Count:           req.Count,
 		CatchAll:        req.CatchAll,
+		Restricted:      req.Restricted,
 		Hosts:           req.Hosts,
 	}
 	agreement.LicenseTypes = append(agreement.LicenseTypes, associatedLicenseType)
@@ -171,6 +172,7 @@ func updateAssociatedPart(as *APIService, agreement *model.OracleDatabaseAgreeme
 	associatedLicenseType.Unlimited = req.Unlimited
 	associatedLicenseType.Count = req.Count
 	associatedLicenseType.CatchAll = req.CatchAll
+	associatedLicenseType.Restricted = req.Restricted
 	associatedLicenseType.Hosts = req.Hosts
 
 	return nil
