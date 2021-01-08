@@ -16,6 +16,9 @@
 package dto
 
 import (
+	"errors"
+
+	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -32,7 +35,16 @@ type AssociatedLicenseTypeInOracleDbAgreementRequest struct {
 	Unlimited       bool     `json:"unlimited"`
 	Count           int      `json:"count"`
 	CatchAll        bool     `json:"catchAll"` //TODO rename basket
+	Restricted      bool     `json:"restricted"`
 	Hosts           []string `json:"hosts"`
+}
+
+func (req AssociatedLicenseTypeInOracleDbAgreementRequest) Check() error {
+	if req.Restricted && req.CatchAll {
+		return utils.NewAdvancedErrorPtr(errors.New("If it's restricted it can't be catchAll"), "BAD_REQUEST")
+	}
+
+	return nil
 }
 
 // OracleDatabaseAgreementFE contains the informations about an AssociatedLicenseType in an Agreement for the frontend
@@ -55,8 +67,9 @@ type OracleDatabaseAgreementFE struct {
 	// If agreement is Named User, Count number express users, not licenses
 	Count float64 `json:"count" bson:"count"`
 
-	CatchAll bool                                      `json:"catchAll" bson:"catchAll"` //TODO Rename in basket
-	Hosts    []OracleDatabaseAgreementAssociatedHostFE `json:"hosts" bson:"hosts"`
+	CatchAll   bool                                      `json:"catchAll" bson:"catchAll"` //TODO Rename in basket
+	Restricted bool                                      `json:"restricted" bson:"restricted"`
+	Hosts      []OracleDatabaseAgreementAssociatedHostFE `json:"hosts" bson:"hosts"`
 
 	// Value of licenses/users yet available to be assigned to hosts
 	AvailableCount float64 `json:"availableCount" bson:"availableCount"`
