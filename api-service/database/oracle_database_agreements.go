@@ -133,6 +133,7 @@ func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgr
 					"unlimited":       "$licenseTypes.unlimited",
 					"count":           "$licenseTypes.count",
 					"catchAll":        "$licenseTypes.catchAll",
+					"restricted":      "$licenseTypes.restricted",
 
 					"hosts": mu.APOMap("$licenseTypes.hosts", "hn", bson.M{
 						"hostname": "$$hn",
