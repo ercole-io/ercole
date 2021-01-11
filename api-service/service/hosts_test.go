@@ -200,7 +200,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 			"operatingSystem":          "Red Hat Enterprise Linux",
 			"options":                  "",
 			"physicalCores":            8,
-			"physicalServerName":       "publicitate-36d06ca83eafa454423d2097f4965517",
+			"physicalServerName":       "",
 			"pluggableDatabaseName":    "",
 			"processorModel":           "Intel(R) Xeon(R) CPU           X5570  @ 2.93GHz",
 			"processorSpeed":           "2.93GHz",
@@ -210,7 +210,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 			"threadsPerCore":           2,
 			"usedManagementPacks":      "",
 			"usingLicenseCount":        4,
-			"virtualServerName":        "",
+			"virtualServerName":        "publicitate-36d06ca83eafa454423d2097f4965517",
 			"virtualizationTechnology": "",
 			"_id":                      utils.Str2oid("5efc38ab79f92e4cbf283b04"),
 		},
@@ -273,8 +273,8 @@ func TestSearchHostsAsLMS(t *testing.T) {
 		assert.Equal(t, "2.53GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AH4"))
 		assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue("Database_&_EBS_DB_Tier", "AJ4"))
 
-		assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sp.GetCellValue("Database_&_EBS_DB_Tier", "B5"))
-		assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "C5"))
+		assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "B5"))
+		assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sp.GetCellValue("Database_&_EBS_DB_Tier", "C5"))
 		assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "D5"))
 		assert.Equal(t, "rudeboy-fb3160a04ffea22b55555bbb58137f77", sp.GetCellValue("Database_&_EBS_DB_Tier", "E5"))
 		assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "F5"))
@@ -372,8 +372,8 @@ func TestSearchHostsAsLMS(t *testing.T) {
 		assert.Equal(t, "2.53GHz", sp.GetCellValue(sheet, "AH4"))
 		assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue(sheet, "AJ4"))
 
-		assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sp.GetCellValue(sheet, "B5"))
-		assert.Equal(t, "", sp.GetCellValue(sheet, "C5"))
+		assert.Equal(t, "", sp.GetCellValue(sheet, "B5"))
+		assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sp.GetCellValue(sheet, "C5"))
 		assert.Equal(t, "", sp.GetCellValue(sheet, "D5"))
 		assert.Equal(t, "rudeboy-fb3160a04ffea22b55555bbb58137f77", sp.GetCellValue(sheet, "E5"))
 		assert.Equal(t, "", sp.GetCellValue(sheet, "F5"))

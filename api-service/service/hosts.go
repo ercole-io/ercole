@@ -64,6 +64,9 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsFilters) (*exceliz
 		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("Q%d", i), val["usingLicenseCount"])
 
 		hostname := val["physicalServerName"].(string)
+		if len(hostname) == 0 {
+			hostname = val["virtualServerName"].(string)
+		}
 		if csi, ok := csiByHostname[hostname]; ok {
 			lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("R%d", i), strings.Join(csi, ", "))
 		}
