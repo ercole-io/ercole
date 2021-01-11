@@ -49,7 +49,7 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsFilters) (*exceliz
 	}
 
 	for i, val := range hosts {
-		i += 5 // offset for headers and example row
+		i += 4 // offset for headers
 		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("B%d", i), val["physicalServerName"])
 		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("C%d", i), val["virtualServerName"])
 		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("D%d", i), val["virtualizationTechnology"])
