@@ -148,7 +148,7 @@ func (md *MongoDatabase) SearchHosts(mode string, filters dto.SearchHostsFilters
 						"vmwareOrOVM": mu.APOOr(mu.APOEqual("$info.hardwareAbstractionTechnology", model.HardwareAbstractionTechnologyVmware), mu.APOEqual("$info.hardwareAbstractionPlatform", model.HardwareAbstractionTechnologyOvm)),
 						"database.pdbs": mu.APOCond("$database.isCDB", bson.M{
 							"$concatArrays": bson.A{
-								bson.A{"CDB$ROOT"},
+								bson.A{""},
 								mu.APOMap("$database.pdbs", "pdb", "$$pdb.name"),
 							},
 						}, bson.A{""}),
