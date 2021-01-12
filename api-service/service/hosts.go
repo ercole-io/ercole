@@ -49,7 +49,7 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsFilters) (*exceliz
 	}
 
 	for i, val := range hosts {
-		i += 5 // offset for headers and example row
+		i += 4 // offset for headers
 		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("B%d", i), val["physicalServerName"])
 		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("C%d", i), val["virtualServerName"])
 		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("D%d", i), val["virtualizationTechnology"])
@@ -64,6 +64,9 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsFilters) (*exceliz
 		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("Q%d", i), val["usingLicenseCount"])
 
 		hostname := val["physicalServerName"].(string)
+		if len(hostname) == 0 {
+			hostname = val["virtualServerName"].(string)
+		}
 		if csi, ok := csiByHostname[hostname]; ok {
 			lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("R%d", i), strings.Join(csi, ", "))
 		}
