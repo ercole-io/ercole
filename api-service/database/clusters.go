@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/amreo/mu"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -105,10 +106,7 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 }
 
 // GetCluster fetch all information about a cluster in the database
-func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
-	var out map[string]interface{}
-
-	//Find the matching hostdata
+func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (*dto.Cluster, utils.AdvancedErrorInterface) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -176,16 +174,15 @@ func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (in
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	//Next the cursor. If there is no document return a empty document
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
 		return nil, utils.AerrHostNotFound
 	}
 
-	//Decode the document
+	var out dto.Cluster
 	if err := cur.Decode(&out); err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
-	return out, nil
+	return &out, nil
 }
