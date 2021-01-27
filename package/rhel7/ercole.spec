@@ -100,7 +100,6 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 /usr/share/ercole/technologies/Microsoft/WindowsServer2012.png
 /usr/share/ercole/technologies/Microsoft/WindowsServer2016.png
 /usr/share/ercole/technologies/Microsoft/WindowsServer2019.png
-/usr/share/ercole/technologies/Microsoft/SQLServer.png
 /usr/share/ercole/technologies/HP/HPUX.png
 /usr/share/ercole/technologies/IBM/AIX.png
 /usr/share/ercole/technologies/RedHat/EnterpriseLinux5.png
