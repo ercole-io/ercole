@@ -152,17 +152,26 @@ func (ctrl *APIController) SearchClustersXLSX(w http.ResponseWriter, r *http.Req
 
 // GetCluster get cluster data using the filters in the request
 func (ctrl *APIController) GetCluster(w http.ResponseWriter, r *http.Request) {
-	var olderThan time.Time
-	var err utils.AdvancedErrorInterface
-
 	clusterName := mux.Vars(r)["name"]
 
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+	olderThan, aerr := utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME)
+	if aerr != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
 		return
 	}
 
-	//get the data
+	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
+	switch choiche {
+	case "application/json":
+		ctrl.GetClusterJSON(w, r, clusterName, olderThan)
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		ctrl.GetClusterXLSX(w, r, clusterName, olderThan)
+	}
+}
+
+//GetClusterJSON get cluster data using the filters in the request and returns it in JSON format
+func (ctrl *APIController) GetClusterJSON(w http.ResponseWriter, r *http.Request, clusterName string, olderThan time.Time) {
 	data, err := ctrl.Service.GetCluster(clusterName, olderThan)
 	if err == utils.AerrClusterNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
@@ -172,6 +181,19 @@ func (ctrl *APIController) GetCluster(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, data)
+}
+
+//GetClusterXLSX get cluster data using the filters in the request and returns it in XLSX format
+func (ctrl *APIController) GetClusterXLSX(w http.ResponseWriter, r *http.Request, clusterName string, olderThan time.Time) {
+	xlsx, err := ctrl.Service.GetClusterXLSX(clusterName, olderThan)
+	if err == utils.AerrClusterNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+		return
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteXLSXResponse(w, xlsx)
 }
