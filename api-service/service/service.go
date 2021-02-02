@@ -47,7 +47,9 @@ type APIServiceInterface interface {
 	// SearchClusters search clusters
 	SearchClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// GetCluster return the cluster specified in the clusterName param
-	GetCluster(clusterName string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface)
+	GetCluster(clusterName string, olderThan time.Time) (*dto.Cluster, utils.AdvancedErrorInterface)
+	// GetClusterXLSX return  cluster vms as xlxs file
+	GetClusterXLSX(clusterName string, olderThan time.Time) (*excelize.File, error)
 	// SearchOracleDatabaseAddms search addm
 	SearchOracleDatabaseAddms(search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// SearchOracleDatabaseSegmentAdvisors search segment advisors

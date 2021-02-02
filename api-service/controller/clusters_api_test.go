@@ -19,11 +19,14 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
+	dto "github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -463,4 +466,83 @@ func TestSearchCluster_XLSXInternalServerError2(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestGetCluster(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	t.Run("json", func(t *testing.T) {
+		cluster := &dto.Cluster{
+			ID:                          [12]byte{},
+			CPU:                         0,
+			CreatedAt:                   time.Time{},
+			Environment:                 "",
+			FetchEndpoint:               "",
+			Hostname:                    "",
+			HostnameAgentVirtualization: "",
+			Location:                    "",
+			Name:                        "",
+			Sockets:                     0,
+			Type:                        "",
+			VirtualizationNodes:         []string{},
+			VirtualizationNodesCount:    0,
+			VirtualizationNodesStats:    []dto.VirtualizationNodesStat{},
+			VMs:                         []dto.VM{},
+			VMsCount:                    0,
+			VMsErcoleAgentCount:         0,
+		}
+
+		as.EXPECT().
+			GetCluster("Pippo", utils.P("2020-06-10T11:54:59Z")).
+			Return(cluster, nil)
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ac.GetCluster)
+		req, err := http.NewRequest("GET", "/hosts/cluster/Pippo?older-than=2020-06-10T11%3A54%3A59Z", nil)
+		require.NoError(t, err)
+
+		req = mux.SetURLVars(req, map[string]string{
+			"name": "Pippo",
+		})
+		req.Header.Add("Accept", "application/json")
+
+		handler.ServeHTTP(rr, req)
+
+		require.Equal(t, http.StatusOK, rr.Code)
+		assert.JSONEq(t, utils.ToJSON(cluster), rr.Body.String())
+	})
+
+	t.Run("xlsx", func(t *testing.T) {
+		xlsx := &excelize.File{}
+
+		as.EXPECT().
+			GetClusterXLSX("Pippo", utils.P("2020-06-10T11:54:59Z")).
+			Return(xlsx, nil)
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ac.GetCluster)
+		req, err := http.NewRequest("GET", "/hosts/cluster/Pippo?older-than=2020-06-10T11%3A54%3A59Z", nil)
+		require.NoError(t, err)
+
+		req = mux.SetURLVars(req, map[string]string{
+			"name": "Pippo",
+		})
+		req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+		handler.ServeHTTP(rr, req)
+
+		require.Equal(t, http.StatusOK, rr.Code)
+		_, err = excelize.OpenReader(rr.Body)
+		require.NoError(t, err)
+	})
 }
