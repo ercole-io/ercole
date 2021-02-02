@@ -111,6 +111,7 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 /usr/share/ercole/technologies/Unknown/Unknown.png
 /usr/share/ercole/technologies/VMWare/VMWare.png
 /usr/share/ercole/templates/template_addm.xlsx
+/usr/share/ercole/templates/template_cluster.xlsx
 /usr/share/ercole/templates/template_clusters.xlsx
 /usr/share/ercole/templates/template_databases.xlsx
 /usr/share/ercole/templates/template_hosts.xlsx
