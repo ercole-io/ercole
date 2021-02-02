@@ -17,9 +17,13 @@
 package service
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -29,6 +33,29 @@ func (as *APIService) SearchClusters(full bool, search string, sortBy string, so
 }
 
 // GetCluster return the cluster specified in the clusterName param
-func (as *APIService) GetCluster(clusterName string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) GetCluster(clusterName string, olderThan time.Time) (*dto.Cluster, utils.AdvancedErrorInterface) {
 	return as.Database.GetCluster(clusterName, olderThan)
+}
+
+// GetClusterXLSX return  cluster vms as xlxs file
+func (as *APIService) GetClusterXLSX(clusterName string, olderThan time.Time) (*excelize.File, error) {
+	cluster, aerr := as.Database.GetCluster(clusterName, olderThan)
+	if aerr != nil {
+		return nil, aerr
+	}
+
+	xlsx, err := excelize.OpenFile(as.Config.ResourceFilePath + "/templates/template_cluster.xlsx")
+	if err != nil {
+		return nil, err
+	}
+
+	for i, val := range cluster.VMs {
+		i += 2
+		xlsx.SetCellValue("VMs", fmt.Sprintf("A%d", i), val.Name)
+		xlsx.SetCellValue("VMs", fmt.Sprintf("B%d", i), val.Hostname)
+		xlsx.SetCellValue("VMs", fmt.Sprintf("C%d", i), val.VirtualizationNode)
+		xlsx.SetCellValue("VMs", fmt.Sprintf("D%d", i), strconv.FormatBool(val.CappedCPU))
+	}
+
+	return xlsx, nil
 }

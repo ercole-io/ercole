@@ -19,6 +19,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
@@ -221,5 +222,68 @@ func (m *MongodbSuite) TestSearchClusters() {
 			},
 		}
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+}
+
+func (m *MongodbSuite) TestGetCluster() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
+
+	m.T().Run("HostNotFound", func(t *testing.T) {
+		clusterName := ""
+		olderThan := utils.MAX_TIME
+		out, err := m.db.GetCluster(clusterName, olderThan)
+		m.Require().Equal(err, utils.AerrHostNotFound)
+
+		var expected *dto.Cluster
+		assert.EqualValues(m.T(), expected, out)
+	})
+
+	m.T().Run("Found", func(t *testing.T) {
+		clusterName := "Puzzait"
+		olderThan := utils.MAX_TIME
+		out, err := m.db.GetCluster(clusterName, olderThan)
+		m.Require().NoError(err)
+
+		expected := &dto.Cluster{
+			ID:                          utils.Str2oid("5eb0222a45d85f4193704944"),
+			CPU:                         140,
+			CreatedAt:                   utils.P("2020-05-04T14:09:46.608Z"),
+			Environment:                 "PROD",
+			FetchEndpoint:               "???",
+			Hostname:                    "test-virt",
+			HostnameAgentVirtualization: "test-virt",
+			Location:                    "Italy",
+			Name:                        "Puzzait",
+			Sockets:                     10,
+			Type:                        "vmware",
+			VirtualizationNodes:         []string{"s157-cb32c10a56c256746c337e21b3f82402"},
+			VirtualizationNodesCount:    1,
+			VirtualizationNodesStats: []dto.VirtualizationNodesStat{
+				{
+					TotalVMsCount:                   2,
+					TotalVMsWithErcoleAgentCount:    1,
+					TotalVMsWithoutErcoleAgentCount: 1,
+					VirtualizationNode:              "s157-cb32c10a56c256746c337e21b3f82402"}},
+
+			VMs: []dto.VM{
+				{
+					CappedCPU:          false,
+					Hostname:           "test-virt",
+					Name:               "test-virt",
+					VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402"},
+
+				{
+					CappedCPU:          false,
+					Hostname:           "test-db",
+					Name:               "test-db",
+					VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402"},
+			},
+			VMsCount:            2,
+			VMsErcoleAgentCount: 1,
+		}
+
+		assert.EqualValues(m.T(), expected, out)
 	})
 }
