@@ -8,6 +8,7 @@ LogDataPatching = false
 EnablePatching = true
 AgentUsername = "user"
 AgentPassword = "password"
+LicenseTypeMetricsDefault = [ "Processor Perpetual", "Named User Plus Perpetual", "Stream Perpetual", "Computer Perpetual" ]
 
   [DataService.CurrentHostCleaningJob]
   Crontab = "@daily"
@@ -18,6 +19,8 @@ AgentPassword = "password"
   Crontab = "@daily"
   HourThreshold = 10
   RunAtStartup = false
+
+  [DataService.LicenseTypeMetricsByEnvironment]
 
 [AlertService]
 RemoteEndpoint = "http://127.0.0.1:11112"
