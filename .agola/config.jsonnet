@@ -93,10 +93,12 @@ local task_deploy_repository(dist) = {
       type: 'run',
       name: 'curl',
       command: |||
-        for f in ./dist/*; do
+        cd dist
+        for f in *; do
         	URL=$(curl --user "${REPO_USER}" \
             --upload-file $f ${REPO_UPLOAD_URL} --insecure)
         	echo $URL
+        	md5sum $f
         	curl -H "X-API-Token: ${REPO_TOKEN}" \
           -H "Content-Type: application/json" --request POST --data "{ \"filename\": \"$f\", \"url\": \"$URL\" }" \
           ${REPO_INSTALL_URL} --insecure
