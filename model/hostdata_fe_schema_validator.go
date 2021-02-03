@@ -66,8 +66,7 @@ var FrontendHostdataSchemaValidator string = `
         "agentVersion": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 64,
-            "pattern": "^(([0-9]+([.][0-9]+)*)|(git-[0-9a-f]+)|(latest))$"
+            "maxLength": 64
         },
         "schemaVersion": {
             "type": "integer",
