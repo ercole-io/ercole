@@ -44,22 +44,19 @@ var FrontendHostdataSchemaValidator string = `
         "location": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 64,
-            "pattern": "^[a-zA-Z0-9-]+$"
+            "maxLength": 64
         },
         "environment": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 16,
-            "pattern": "^[A-Z0-9]+$"
+            "maxLength": 16
         },
         "tags": {
             "type": "array",
             "items": {
                 "type": "string",
                 "minLength": 1,
-                "maxLength": 64,
-                "pattern": "^[a-zA-Z0-9-]+$"
+                "maxLength": 128
             },
             "uniqueItems": true
         },
@@ -107,9 +104,8 @@ var FrontendHostdataSchemaValidator string = `
                 },
                 "cpuFrequency": {
                     "type": "string",
-                    "minLength": 3,
-                    "maxLength": 16,
-                    "pattern": "^[0-9]+([.][0-9]+)?[ ]*(?i)(GHz|MHz)$"
+                    "minLength": 0,
+                    "maxLength": 16
                 },
                 "cpuSockets": {
                     "type": "integer",
@@ -147,7 +143,7 @@ var FrontendHostdataSchemaValidator string = `
                 "kernel": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 64
+                    "maxLength": 128
                 },
                 "kernelVersion": {
                     "type": "string",
@@ -413,22 +409,16 @@ var FrontendHostdataSchemaValidator string = `
                                                                     ],
                                                                     "properties": {
                                                                         "version": {
-                                                                            "type": "string",
-                                                                            "minLength": 1,
-                                                                            "maxLength": 16
+                                                                            "type": "string"
                                                                         },
                                                                         "patchID": {
                                                                             "type": "integer"
                                                                         },
                                                                         "action": {
-                                                                            "type": "string",
-                                                                            "minLength": 1,
-                                                                            "maxLength": 128
+                                                                            "type": "string"
                                                                         },
                                                                         "description": {
-                                                                            "type": "string",
-                                                                            "minLength": 0,
-                                                                            "maxLength": 256
+                                                                            "type": "string"
                                                                         },
                                                                         "date": {
                                                                             "type": "string",
@@ -451,9 +441,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     ],
                                                                     "properties": {
                                                                         "name": {
-                                                                            "type": "string",
-                                                                            "minLength": 1,
-                                                                            "maxLength": 64
+                                                                            "type": "string"
                                                                         },
                                                                         "maxSize": {
                                                                             "type": "number",
@@ -512,9 +500,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                             "minimum": 0
                                                                         },
                                                                         "user": {
-                                                                            "type": "string",
-                                                                            "minLength": 1,
-                                                                            "maxLength": 64
+                                                                            "type": "string"
                                                                         }
                                                                     }
                                                                 }
@@ -552,19 +538,13 @@ var FrontendHostdataSchemaValidator string = `
                                                                     ],
                                                                     "properties": {
                                                                         "finding": {
-                                                                            "type": "string",
-                                                                            "minLength": 1,
-                                                                            "maxLength": 256
+                                                                            "type": "string"
                                                                         },
                                                                         "recommendation": {
-                                                                            "type": "string",
-                                                                            "minLength": 1,
-                                                                            "maxLength": 32
+                                                                            "type": "string"
                                                                         },
                                                                         "action": {
-                                                                            "type": "string",
-                                                                            "minLength": 1,
-                                                                            "maxLength": 256
+                                                                            "type": "string"
                                                                         },
                                                                         "benefit": {
                                                                             "type": "number",
@@ -588,32 +568,23 @@ var FrontendHostdataSchemaValidator string = `
                                                                     ],
                                                                     "properties": {
                                                                         "segmentOwner": {
-                                                                            "type": "string",
-                                                                            "minLength": 1,
-                                                                            "maxLength": 64
+                                                                            "type": "string"
                                                                         },
                                                                         "segmentName": {
-                                                                            "type": "string",
-                                                                            "minLength": 1,
-                                                                            "maxLength": 64
+                                                                            "type": "string"
                                                                         },
                                                                         "segmentType": {
-                                                                            "type": "string",
-                                                                            "minLength": 1,
-                                                                            "maxLength": 32
+                                                                            "type": "string"
                                                                         },
                                                                         "partitionName": {
-                                                                            "type": "string",
-                                                                            "maxLength": 32
+                                                                            "type": "string"
                                                                         },
                                                                         "reclaimable": {
                                                                             "type": "number",
                                                                             "minimum": 0
                                                                         },
                                                                         "recommendation": {
-                                                                            "type": "string",
-                                                                            "minLength": 1,
-                                                                            "maxLength": 256
+                                                                            "type": "string"
                                                                         }
                                                                     }
                                                                 }
@@ -632,9 +603,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                             "format": "date"
                                                                         },
                                                                         "description": {
-                                                                            "type": "string",
-                                                                            "minLength": 1,
-                                                                            "maxLength": 128
+                                                                            "type": "string"
                                                                         }
                                                                     }
                                                                 }
@@ -771,9 +740,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                     ],
                                                                     "properties": {
                                                                         "name": {
-                                                                            "type": "string",
-                                                                            "minLength": 1,
-                                                                            "maxLength": 32
+                                                                            "type": "string"
                                                                         },
                                                                         "status": {
                                                                             "type": "string",
@@ -797,9 +764,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                                 ],
                                                                                 "properties": {
                                                                                     "name": {
-                                                                                        "type": "string",
-                                                                                        "minLength": 1,
-                                                                                        "maxLength": 32
+                                                                                        "type": "string"
                                                                                     },
                                                                                     "maxSize": {
                                                                                         "type": "number",
@@ -858,9 +823,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                                         "minimum": 0
                                                                                     },
                                                                                     "user": {
-                                                                                        "type": "string",
-                                                                                        "minLength": 1,
-                                                                                        "maxLength": 32
+                                                                                        "type": "string"
                                                                                     }
                                                                                 }
                                                                             }
@@ -874,9 +837,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                                 ],
                                                                                 "properties": {
                                                                                     "name": {
-                                                                                        "type": "string",
-                                                                                        "minLength": 1,
-                                                                                        "maxLength": 32
+                                                                                        "type": "string"
                                                                                     }
                                                                                 }
                                                                             }
@@ -891,8 +852,7 @@ var FrontendHostdataSchemaValidator string = `
                                                     "type": "array",
                                                     "items": {
                                                         "type": "string",
-                                                        "minLength": 1,
-                                                        "maxLength": 64
+                                                        "minLength": 1
                                                     },
                                                     "uniqueItems": true
                                                 }
@@ -960,9 +920,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                 "maxLength": 32
                                                             },
                                                             "swVersion": {
-                                                                "type": "string",
-                                                                "minLength": 1,
-                                                                "maxLength": 32
+                                                                "type": "string"
                                                             },
                                                             "swReleaseDate": {
                                                                 "type": "string",
@@ -1377,13 +1335,17 @@ var FrontendHostdataSchemaValidator string = `
                 },
                 "microsoft": {
                     "anyOf": [
-                        { "type": "null"},
+                        {
+                            "type": "null"
+                        },
                         {
                             "type": "object",
                             "properties": {
                                 "sqlServer": {
                                     "anyOf": [
-                                        { "type": "object" },
+                                        {
+                                            "type": "object"
+                                        },
                                         {
                                             "type": "object",
                                             "required": [
@@ -1845,13 +1807,11 @@ var FrontendHostdataSchemaValidator string = `
                 "properties": {
                     "filesystem": {
                         "type": "string",
-                        "minLength": 1,
-                        "maxLength": 256
+                        "minLength": 1
                     },
                     "type": {
                         "type": "string",
-                        "minLength": 1,
-                        "maxLength": 16
+                        "minLength": 1
                     },
                     "size": {
                         "type": "integer",
@@ -1870,8 +1830,7 @@ var FrontendHostdataSchemaValidator string = `
                     },
                     "mountedOn": {
                         "type": "string",
-                        "minLength": 1,
-                        "maxLength": 64
+                        "minLength": 1
                     }
                 }
             }
