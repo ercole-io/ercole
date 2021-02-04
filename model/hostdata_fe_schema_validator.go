@@ -293,10 +293,10 @@ var FrontendHostdataSchemaValidator string = `
                                                             "role": {
                                                                 "type": "string",
                                                                 "enum": [
-				                                                    "PRIMARY",
-				                                                    "LOGICAL STANDBY",
-				                                                    "PHYSICAL STANDBY",
-				                                                    "SNAPSHOT STANDBY"
+                                                                    "PRIMARY",
+                                                                    "LOGICAL STANDBY",
+                                                                    "PHYSICAL STANDBY",
+                                                                    "SNAPSHOT STANDBY"
                                                                 ]
                                                             },
                                                             "isCDB": {
@@ -1846,7 +1846,7 @@ var FrontendHostdataSchemaValidator string = `
                     "filesystem": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 64
+                        "maxLength": 256
                     },
                     "type": {
                         "type": "string",

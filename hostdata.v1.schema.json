@@ -1830,7 +1830,7 @@
                     "filesystem": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 64
+                        "maxLength": 256
                     },
                     "type": {
                         "type": "string",
