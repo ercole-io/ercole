@@ -18,17 +18,13 @@ package migration
 import (
 	"context"
 
-	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/sirupsen/logrus"
-
-	"go.mongodb.org/mongo-driver/mongo/options"
-
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
-
+	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
-
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // ConnectToMongodb connects to the MongoDB and return the connection
@@ -90,7 +86,7 @@ func MigrateHostsSchema(log *logrus.Logger, client *mongo.Database) {
 	if err := client.RunCommand(context.TODO(), bson.D{
 		{"collMod", "hosts"},
 		{"validator", bson.D{
-			{"$jsonSchema", model.HostDataBEBsonValidatorRules},
+			{"$jsonSchema", bson.M{}},
 		}},
 		{"validationAction", "error"},
 	}).Err(); err != nil {
