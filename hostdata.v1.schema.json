@@ -662,12 +662,12 @@
                                                                         "product": {
                                                                             "type": "string",
                                                                             "minLength": 1,
-                                                                            "maxLength": 32
+                                                                            "maxLength": 128
                                                                         },
                                                                         "feature": {
                                                                             "type": "string",
                                                                             "minLength": 1,
-                                                                            "maxLength": 32
+                                                                            "maxLength": 128
                                                                         },
                                                                         "detectedUsages": {
                                                                             "type": "integer",
@@ -686,7 +686,7 @@
                                                                         },
                                                                         "extraFeatureInfo": {
                                                                             "type": "string",
-                                                                            "maxLength": 64
+                                                                            "maxLength": 128
                                                                         }
                                                                     }
                                                                 }
@@ -727,6 +727,7 @@
                                                                             "enum": [
                                                                                 "OPEN",
                                                                                 "READ WRITE",
+                                                                                "READ ONLY",
                                                                                 "MOUNTED"
                                                                             ]
                                                                         },
@@ -1128,9 +1129,6 @@
                                     ]
                                 }
                             }
-                        },
-                        {
-                            "type": "null"
                         }
                     ]
                 },
