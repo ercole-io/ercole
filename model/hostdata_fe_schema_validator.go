@@ -682,12 +682,12 @@ var FrontendHostdataSchemaValidator string = `
                                                                         "product": {
                                                                             "type": "string",
                                                                             "minLength": 1,
-                                                                            "maxLength": 32
+                                                                            "maxLength": 128
                                                                         },
                                                                         "feature": {
                                                                             "type": "string",
                                                                             "minLength": 1,
-                                                                            "maxLength": 32
+                                                                            "maxLength": 128
                                                                         },
                                                                         "detectedUsages": {
                                                                             "type": "integer",
@@ -706,7 +706,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                         },
                                                                         "extraFeatureInfo": {
                                                                             "type": "string",
-                                                                            "maxLength": 64
+                                                                            "maxLength": 128
                                                                         }
                                                                     }
                                                                 }
@@ -747,6 +747,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                             "enum": [
                                                                                 "OPEN",
                                                                                 "READ WRITE",
+                                                                                "READ ONLY",
                                                                                 "MOUNTED"
                                                                             ]
                                                                         },
@@ -1148,9 +1149,6 @@ var FrontendHostdataSchemaValidator string = `
                                     ]
                                 }
                             }
-                        },
-                        {
-                            "type": "null"
                         }
                     ]
                 },
