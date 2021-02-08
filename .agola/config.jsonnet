@@ -73,7 +73,6 @@ local task_pkg_build(setup) = {
 
 local task_deploy_repository(dist) = {
   name: 'deploy repository.ercole.io ' + dist,
-  approval: true,
   runtime: {
     type: 'pod',
     arch: 'amd64',
