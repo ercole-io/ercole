@@ -628,7 +628,8 @@ var FrontendHostdataSchemaValidator string = `
                                                                                 "Level0",
                                                                                 "Level1",
                                                                                 "Incr Lvl 0",
-                                                                                "Incr Lvl 1"
+                                                                                "Incr Lvl 1",
+                                                                                "Db Full"
                                                                             ]
                                                                         },
                                                                         "hour": {
