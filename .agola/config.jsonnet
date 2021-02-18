@@ -231,6 +231,7 @@ local task_build_push_image(push) =
       ] + [
         task_build_push_image(false) + {
           when: {
+            branch: '^(?!master$).*$',
             ref: '#refs/pull/\\d+/head#',
           },
         },
