@@ -1572,7 +1572,8 @@ var FrontendHostdataSchemaValidator string = `
                                                                                         "Differential database",
                                                                                         "Differential file",
                                                                                         "Differential partial",
-                                                                                        "Partial"
+                                                                                        "Partial",
+                                                                                        "Db Full"
                                                                                     ]
                                                                                 },
                                                                                 "hour": {
