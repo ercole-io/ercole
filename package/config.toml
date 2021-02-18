@@ -12,12 +12,12 @@ LicenseTypeMetricsDefault = [ "Processor Perpetual", "Named User Plus Perpetual"
 
   [DataService.CurrentHostCleaningJob]
   Crontab = "@daily"
-  HourThreshold = 1
+  HourThreshold = 8760
   RunAtStartup = false
 
   [DataService.ArchivedHostCleaningJob]
   Crontab = "@daily"
-  HourThreshold = 10
+  HourThreshold = 8760
   RunAtStartup = false
 
   [DataService.LicenseTypeMetricsByEnvironment]
@@ -122,3 +122,4 @@ LogHTTPRequest = true
 URI = "mongodb://localhost:27017/ercole"
 DBName = "ercole"
 Migrate = false
+
