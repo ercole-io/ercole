@@ -628,7 +628,8 @@ var FrontendHostdataSchemaValidator string = `
                                                                                 "Level0",
                                                                                 "Level1",
                                                                                 "Incr Lvl 0",
-                                                                                "Incr Lvl 1"
+                                                                                "Incr Lvl 1",
+                                                                                "Db Full"
                                                                             ]
                                                                         },
                                                                         "hour": {
@@ -1572,8 +1573,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                                         "Differential database",
                                                                                         "Differential file",
                                                                                         "Differential partial",
-                                                                                        "Partial",
-                                                                                        "Db Full"
+                                                                                        "Partial"
                                                                                     ]
                                                                                 },
                                                                                 "hour": {
