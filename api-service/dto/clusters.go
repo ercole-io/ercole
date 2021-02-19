@@ -23,34 +23,34 @@ import (
 
 type Cluster struct {
 	ID                          primitive.ObjectID        `json:"id" bson:"_id"`
-	CPU                         int                       `json,bson:"cpu"`
-	CreatedAt                   time.Time                 `json,bson:"createdAt"`
-	Environment                 string                    `json,bson:"environment"`
-	FetchEndpoint               string                    `json,bson:"fetchEndPoint"`
-	Hostname                    string                    `json,bson:"hostname"`
-	HostnameAgentVirtualization string                    `json,bson:"hostnameAgentVirtualization"`
-	Location                    string                    `json,bson:"location"`
-	Name                        string                    `json,bson:"name"`
-	Sockets                     int                       `json,bson:"sockets"`
-	Type                        string                    `json,bson:"type"`
-	VirtualizationNodes         []string                  `json,bson:"virtualizationNodes"`
-	VirtualizationNodesCount    int                       `json,bson:"virtualizationNodesCount"`
-	VirtualizationNodesStats    []VirtualizationNodesStat `json,bson:"virtualizationNodesStats"`
-	VMs                         []VM                      `json,bson:"vms"`
-	VMsCount                    int                       `json,bson:"vmsCount"`
-	VMsErcoleAgentCount         int                       `json,bson:"vmsErcoleAgentCount"`
+	CPU                         int                       `json:"cpu" bson:"cpu"`
+	CreatedAt                   time.Time                 `json:"createdAt" bson:"createdAt"`
+	Environment                 string                    `json:"environment" bson:"environment"`
+	FetchEndpoint               string                    `json:"fetchEndpoint" bson:"fetchEndpoint"`
+	Hostname                    string                    `json:"hostname" bson:"hostname"`
+	HostnameAgentVirtualization string                    `json:"hostnameAgentVirtualization" bson:"hostnameAgentVirtualization"`
+	Location                    string                    `json:"location" bson:"location"`
+	Name                        string                    `json:"name" bson:"name"`
+	Sockets                     int                       `json:"sockets" bson:"sockets"`
+	Type                        string                    `json:"type" bson:"type"`
+	VirtualizationNodes         []string                  `json:"virtualizationNodes" bson:"virtualizationNodes"`
+	VirtualizationNodesCount    int                       `json:"virtualizationNodesCount" bson:"virtualizationNodesCount"`
+	VirtualizationNodesStats    []VirtualizationNodesStat `json:"virtualizationNodesStats" bson:"virtualizationNodesStats"`
+	VMs                         []VM                      `json:"vms" bson:"vms"`
+	VMsCount                    int                       `json:"vmsCount" bson:"vmsCount"`
+	VMsErcoleAgentCount         int                       `json:"vmsErcoleAgentCount" bson:"vmsErcoleAgentCount"`
 }
 
 type VirtualizationNodesStat struct {
-	TotalVMsCount                   int    `json,bson:"totalVMsCount "`
-	TotalVMsWithErcoleAgentCount    int    `json,bson:"totalVMsWithErcoleAgentCount"`
-	TotalVMsWithoutErcoleAgentCount int    `json,bson:"totalVMsWithoutErcoleAgentCount"`
-	VirtualizationNode              string `json,bson:"virtualizationNode"`
+	TotalVMsCount                   int    `json:"totalVMsCount" bson:"totalVMsCount"`
+	TotalVMsWithErcoleAgentCount    int    `json:"totalVMsWithErcoleAgentCount" bson:"totalVMsWithErcoleAgentCount"`
+	TotalVMsWithoutErcoleAgentCount int    `json:"totalVMsWithoutErcoleAgentCount" bson:"totalVMsWithoutErcoleAgentCount"`
+	VirtualizationNode              string `json:"virtualizationNode" bson:"virtualizationNode"`
 }
 
 type VM struct {
-	CappedCPU          bool   `json,bson:"cappedCPU"`
-	Hostname           string `json,bson:"hostname"`
-	Name               string `json,bson:"name"`
-	VirtualizationNode string `json,bson:"virtualizationNode"`
+	CappedCPU          bool   `json:"cappedCPU" bson:"cappedCPU"`
+	Hostname           string `json:"hostname" bson:"hostname"`
+	Name               string `json:"name" bson:"name"`
+	VirtualizationNode string `json:"virtualizationNode" bson:"virtualizationNode"`
 }
