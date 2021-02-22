@@ -13,29 +13,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Package service is a package that provides methods for manipulating host informations
-package service
+package job
 
 import (
-	"time"
+	"errors"
 
-	"github.com/sirupsen/logrus"
-
-	"github.com/ercole-io/ercole/v2/config"
-	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-
-	"github.com/ercole-io/ercole/v2/data-service/database"
 )
 
-type HostDataServiceInterface interface {
-	InsertHostData(hostdata model.HostDataBE) (interface{}, utils.AdvancedErrorInterface)
-}
+//go:generate mockgen -source ../database/database.go -destination=fake_database_test.go -package=job
 
-type HostDataService struct {
-	Config        config.Configuration
-	ServerVersion string
-	Database      database.MongoDatabaseInterface
-	TimeNow       func() time.Time
-	Log           *logrus.Logger
-}
+var errMock error = errors.New("MockError")
+var aerrMock utils.AdvancedErrorInterface = utils.NewAdvancedErrorPtr(errMock, "mock")
