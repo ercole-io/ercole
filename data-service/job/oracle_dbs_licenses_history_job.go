@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Package service is a package that provides methods for manipulating host informations
-package service
+package job
 
 import (
 	"encoding/json"
@@ -33,11 +33,10 @@ import (
 
 // Save historical data of Oracle Databases licenses
 type OracleDbsLicensesHistory struct {
-	Database        database.MongoDatabaseInterface
-	TimeNow         func() time.Time
-	Config          config.Configuration
-	hostDataService HostDataServiceInterface
-	Log             *logrus.Logger
+	Database database.MongoDatabaseInterface
+	TimeNow  func() time.Time
+	Config   config.Configuration
+	Log      *logrus.Logger
 }
 
 // Run archive every archived hostdata that is older than a amount

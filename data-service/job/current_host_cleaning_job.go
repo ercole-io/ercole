@@ -13,8 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Package service is a package that provides methods for manipulating host informations
-package service
+package job
 
 import (
 	"time"
@@ -25,37 +24,34 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// ArchivedHostCleaningJob is the job used to clean and remove old archived host
-type ArchivedHostCleaningJob struct {
+// CurrentHostCleaningJob is the job used to clean and archive old current host
+type CurrentHostCleaningJob struct {
 	// Database contains the database layer
 	Database database.MongoDatabaseInterface
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
 	// Config contains the dataservice global configuration
 	Config config.Configuration
-	// alertService contains the underlyng hostdata service
-	hostDataService HostDataServiceInterface
 	// Log contains logger formatted
 	Log *logrus.Logger
 }
 
-// Run archive every archived hostdata that is older than a amount
-func (job *ArchivedHostCleaningJob) Run() {
-	//Find the archived hosts older than ArchivedHostCleaningJob.HourThreshold hours
-	ids, err := job.Database.FindOldArchivedHosts(job.TimeNow().Add(time.Duration(-job.Config.DataService.ArchivedHostCleaningJob.HourThreshold) * time.Hour))
+// Run archive every hostdata that is older than a amount
+func (job *CurrentHostCleaningJob) Run() {
+	timeLimit := job.TimeNow().Add(time.Duration(-job.Config.DataService.CurrentHostCleaningJob.HourThreshold) * time.Hour)
+	hosts, err := job.Database.FindOldCurrentHosts(timeLimit)
 	if err != nil {
 		utils.LogErr(job.Log, err)
 		return
 	}
 
-	//For each host, archive the host
-	for _, id := range ids {
-		//Delete the host
-		err := job.Database.DeleteHostData(id)
+	for _, host := range hosts {
+		_, err := job.Database.ArchiveHost(host)
 		if err != nil {
 			utils.LogErr(job.Log, err)
 			return
 		}
-		job.Log.Infof("%s has been deleted because it have passed more than %d hours from the host data insertion", id, job.Config.DataService.ArchivedHostCleaningJob.HourThreshold)
+		job.Log.Infof("%s has been moved because it have passed more than %d hours from last update", host,
+			job.Config.DataService.CurrentHostCleaningJob.HourThreshold)
 	}
 }
