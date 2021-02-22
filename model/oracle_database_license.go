@@ -80,7 +80,7 @@ const (
 	DiffFeatureMissing int = 0
 	// DiffFeatureActivated is used when the feature changes from (0/-) to 1
 	DiffFeatureActivated int = 1
-	// DiffFeatureInactive is used when the feature changes from 1 to 1
+	// DiffFeatureActive is used when the feature changes from 1 to 1
 	DiffFeatureActive int = 2
 )
 
