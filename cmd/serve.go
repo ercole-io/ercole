@@ -33,6 +33,7 @@ import (
 
 	dataservice_controller "github.com/ercole-io/ercole/v2/data-service/controller"
 	dataservice_database "github.com/ercole-io/ercole/v2/data-service/database"
+	dataservice_job "github.com/ercole-io/ercole/v2/data-service/job"
 	dataservice_service "github.com/ercole-io/ercole/v2/data-service/service"
 
 	alertservice_controller "github.com/ercole-io/ercole/v2/alert-service/controller"
@@ -143,7 +144,15 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 		TimeNow:       time.Now,
 		Log:           log,
 	}
-	service.Init()
+
+	job := &dataservice_job.Job{
+		Config:        config,
+		ServerVersion: config.Version,
+		Database:      db,
+		TimeNow:       time.Now,
+		Log:           log,
+	}
+	job.Init()
 
 	router := mux.NewRouter()
 	ctrl := &dataservice_controller.DataController{
