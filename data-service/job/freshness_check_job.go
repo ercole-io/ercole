@@ -13,15 +13,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package service
+package job
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/ercole-io/ercole/v2/alert-service/database"
+	alert_service_client "github.com/ercole-io/ercole/v2/alert-service/client"
+	"github.com/ercole-io/ercole/v2/data-service/database"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -30,20 +34,21 @@ type FreshnessCheckJob struct {
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
 	// Database contains the database layer
-	Database database.MongoDatabaseInterface
+	Database           database.MongoDatabaseInterface
+	AlertServiceClient alert_service_client.AlertSvcClientInterface
 	// Config contains the dataservice global configuration
 	Config config.Configuration
-	// alertService contains the underlyng alert service
-	alertService AlertServiceInterface
 	// Log contains logger formatted
 	Log *logrus.Logger
+	// NewObjectID return a new ObjectID
+	NewObjectID func() primitive.ObjectID
 }
 
 // Run throws NO_DATA alert for each hosts that haven't sent a hostdata withing the FreshnessCheck.DaysThreshold
 func (job *FreshnessCheckJob) Run() {
-	if job.Config.AlertService.FreshnessCheckJob.DaysThreshold <= 0 {
+	if job.Config.DataService.FreshnessCheckJob.DaysThreshold <= 0 {
 		job.Log.Errorf("AlertService.FreshnessCheckJob.DaysThreshold must be higher than 0, but it's set to %v. Job failed.",
-			job.Config.AlertService.FreshnessCheckJob.DaysThreshold)
+			job.Config.DataService.FreshnessCheckJob.DaysThreshold)
 
 		return
 	}
@@ -53,8 +58,8 @@ func (job *FreshnessCheckJob) Run() {
 		return
 	}
 
-	hosts, err := job.Database.FindOldCurrentHosts(
-		job.TimeNow().AddDate(0, 0, -job.Config.AlertService.FreshnessCheckJob.DaysThreshold))
+	hosts, err := job.Database.FindOldCurrentHostdata(
+		job.TimeNow().AddDate(0, 0, -job.Config.DataService.FreshnessCheckJob.DaysThreshold))
 
 	if err != nil {
 		utils.LogErr(job.Log, err)
@@ -65,7 +70,20 @@ func (job *FreshnessCheckJob) Run() {
 		elapsed := job.TimeNow().Sub(host.CreatedAt)
 		elapsedDays := int(elapsed.Truncate(time.Hour*24).Hours() / 24)
 
-		err := job.alertService.ThrowNoDataAlert(host.Hostname, elapsedDays)
+		alert := model.Alert{
+			ID:                      job.NewObjectID(),
+			AlertAffectedTechnology: nil,
+			AlertCategory:           model.AlertCategoryAgent,
+			AlertCode:               model.AlertCodeNoData,
+			AlertSeverity:           model.AlertSeverityCritical,
+			AlertStatus:             model.AlertStatusNew,
+			Date:                    job.TimeNow(),
+			Description:             fmt.Sprintf("No data received from the host %s in the last %d day(s)", host.Hostname, elapsedDays),
+			OtherInfo: map[string]interface{}{
+				"hostname": host.Hostname,
+			},
+		}
+		err := job.AlertServiceClient.ThrowNewAlert(alert)
 		if err != nil {
 			utils.LogErr(job.Log, err)
 			continue

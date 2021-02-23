@@ -38,6 +38,7 @@ import (
 
 	alertservice_controller "github.com/ercole-io/ercole/v2/alert-service/controller"
 	alertservice_database "github.com/ercole-io/ercole/v2/alert-service/database"
+	alertservice_emailer "github.com/ercole-io/ercole/v2/alert-service/emailer"
 	alertservice_service "github.com/ercole-io/ercole/v2/alert-service/service"
 
 	apiservice_auth "github.com/ercole-io/ercole/v2/api-service/auth"
@@ -189,7 +190,7 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	db.Init()
 
-	emailer := &alertservice_service.SMTPEmailer{
+	emailer := &alertservice_emailer.SMTPEmailer{
 		Config: config,
 	}
 

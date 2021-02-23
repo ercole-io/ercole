@@ -12,6 +12,9 @@ AgentUsername = "user"
 AgentPassword = "password"
 LicenseTypeMetricsDefault = [ "Processor Perpetual", "Named User Plus Perpetual", "Stream Perpetual", "Computer Perpetual" ]
 
+  [DataService.LicenseTypeMetricsByEnvironment]
+  TEST = [ "Named User Plus Perpetual", "Processor Perpetual" ]
+
   [DataService.CurrentHostCleaningJob]
   Crontab = "@daily"
   HourThreshold = 8760
@@ -22,8 +25,10 @@ LicenseTypeMetricsDefault = [ "Processor Perpetual", "Named User Plus Perpetual"
   HourThreshold = 8760
   RunAtStartup = false
   
-  [DataService.LicenseTypeMetricsByEnvironment]
-  TEST = [ "Named User Plus Perpetual", "Processor Perpetual" ]
+  [DataService.FreshnessCheckJob]
+  Crontab = "@daily"
+  DaysThreshold = 10
+  RunAtStartup = false
 
 [AlertService]
 RemoteEndpoint = "http://127.0.0.1:11112"
@@ -35,11 +40,6 @@ LogAlertThrows = true
 PublisherUsername = "publisher"
 PublisherPassword = "r4nd0mS3cR3tp4ssW0rd"
 QueueBufferSize = 10240
-
-  [AlertService.FreshnessCheckJob]
-  Crontab = "@daily"
-  DaysThreshold = 10
-  RunAtStartup = false
 
 [APIService]
 RemoteEndpoint = "http://127.0.0.1:11113"

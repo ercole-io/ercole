@@ -35,7 +35,7 @@ import (
 type Configuration struct {
 	// DataService contains configuration about the data service
 	DataService DataService
-	// DataService contains configuration about the alert service
+	// AlertService contains configuration about the alert service
 	AlertService AlertService
 	// APIService contains configuration about the api service
 	APIService APIService
@@ -75,6 +75,8 @@ type DataService struct {
 	CurrentHostCleaningJob CurrentHostCleaningJob
 	// ArchivedCleaningJob contains the parameters of the archived host cleaning
 	ArchivedHostCleaningJob ArchivedHostCleaningJob
+	// FreshnessCheckJob contains the parameters of the freshness check
+	FreshnessCheckJob FreshnessCheckJob
 	// LicenseTypeMetricsDefault default priority order of metric of licenseType when importing HostData
 	LicenseTypeMetricsDefault []string
 	// LicenseTypeMetricsByEnvironment custom priority order of metric of licenseType when importing HostData
@@ -102,8 +104,6 @@ type AlertService struct {
 	PublisherPassword string
 	// QueueBufferSize contains the size of the buffer of the queue
 	QueueBufferSize int
-	// FreshnessCheckJob contains the parameters of the freshness check
-	FreshnessCheckJob FreshnessCheckJob
 	// Emailer contains the settings about the emailer
 	Emailer Emailer
 }
