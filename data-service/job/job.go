@@ -5,9 +5,12 @@ import (
 	"time"
 
 	"github.com/bamzi/jobrunner"
+	alert_service_client "github.com/ercole-io/ercole/v2/alert-service/client"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/data-service/database"
+	"github.com/ercole-io/ercole/v2/data-service/service"
 	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type JobInterface interface {
@@ -20,35 +23,53 @@ type Job struct {
 	Database      database.MongoDatabaseInterface
 	TimeNow       func() time.Time
 	Log           *logrus.Logger
+	DataService   service.HostDataServiceInterface
 }
 
-func (job *Job) Init() {
+func (j *Job) Init() {
 	jobrunner.Start()
 
-	currentHostCleaningJob := &CurrentHostCleaningJob{TimeNow: job.TimeNow, Database: job.Database, Config: job.Config, Log: job.Log}
-	if err := jobrunner.Schedule(job.Config.DataService.CurrentHostCleaningJob.Crontab, currentHostCleaningJob); err != nil {
-		job.Log.Errorf("Something went wrong scheduling CurrentHostCleaningJob: %v", err)
+	currentHostCleaningJob := &CurrentHostCleaningJob{TimeNow: j.TimeNow, Database: j.Database, Config: j.Config, Log: j.Log}
+	if err := jobrunner.Schedule(j.Config.DataService.CurrentHostCleaningJob.Crontab, currentHostCleaningJob); err != nil {
+		j.Log.Errorf("Something went wrong scheduling CurrentHostCleaningJob: %v", err)
 	}
 
-	if job.Config.DataService.CurrentHostCleaningJob.RunAtStartup {
+	if j.Config.DataService.CurrentHostCleaningJob.RunAtStartup {
 		jobrunner.Now(currentHostCleaningJob)
 	}
 
-	archivedHostCleaningJob := &ArchivedHostCleaningJob{TimeNow: job.TimeNow, Database: job.Database, Config: job.Config, Log: job.Log}
-	if err := jobrunner.Schedule(job.Config.DataService.ArchivedHostCleaningJob.Crontab, archivedHostCleaningJob); err != nil {
-		job.Log.Errorf("Something went wrong scheduling ArchivedHostCleaningJob: %v", err)
+	archivedHostCleaningJob := &ArchivedHostCleaningJob{TimeNow: j.TimeNow, Database: j.Database, Config: j.Config, Log: j.Log}
+	if err := jobrunner.Schedule(j.Config.DataService.ArchivedHostCleaningJob.Crontab, archivedHostCleaningJob); err != nil {
+		j.Log.Errorf("Something went wrong scheduling ArchivedHostCleaningJob: %v", err)
 	}
 
-	if job.Config.DataService.ArchivedHostCleaningJob.RunAtStartup {
+	if j.Config.DataService.ArchivedHostCleaningJob.RunAtStartup {
 		jobrunner.Now(archivedHostCleaningJob)
 	}
 
-	oracleDbsLicensesHistory := &OracleDbsLicensesHistory{
-		Database: job.Database,
-		TimeNow:  job.TimeNow,
-		Config:   job.Config,
-		Log:      job.Log,
+	freshnessJob := &FreshnessCheckJob{
+		TimeNow:            j.TimeNow,
+		Database:           j.Database,
+		AlertServiceClient: alert_service_client.NewClient(j.Config.AlertService),
+		Config:             j.Config,
+		Log:                j.Log,
+		NewObjectID: func() primitive.ObjectID {
+			return primitive.NewObjectIDFromTimestamp(j.TimeNow())
+		},
+	}
+	if err := jobrunner.Schedule(j.Config.DataService.FreshnessCheckJob.Crontab, freshnessJob); err != nil {
+		j.Log.Errorf("Something went wrong scheduling FreshnessCheckJob: %v", err)
 	}
 
+	if j.Config.DataService.FreshnessCheckJob.RunAtStartup {
+		jobrunner.Now(freshnessJob)
+	}
+
+	oracleDbsLicensesHistory := &OracleDbsLicensesHistory{
+		Database: j.Database,
+		TimeNow:  j.TimeNow,
+		Config:   j.Config,
+		Log:      j.Log,
+	}
 	jobrunner.Every(5*time.Minute, oracleDbsLicensesHistory)
 }

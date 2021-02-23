@@ -39,7 +39,7 @@ type CurrentHostCleaningJob struct {
 // Run archive every hostdata that is older than a amount
 func (job *CurrentHostCleaningJob) Run() {
 	timeLimit := job.TimeNow().Add(time.Duration(-job.Config.DataService.CurrentHostCleaningJob.HourThreshold) * time.Hour)
-	hosts, err := job.Database.FindOldCurrentHosts(timeLimit)
+	hosts, err := job.Database.FindOldCurrentHostnames(timeLimit)
 	if err != nil {
 		utils.LogErr(job.Log, err)
 		return
