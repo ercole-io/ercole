@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"sort"
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/model"
@@ -31,14 +32,14 @@ func (m *MongodbSuite) TestArchiveHost() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
 
-	list, err := m.db.FindOldCurrentHosts(utils.MAX_TIME)
+	list, err := m.db.FindOldCurrentHostnames(utils.MAX_TIME)
 	require.NoError(m.T(), err)
 	require.Equal(m.T(), []string{"test-small"}, list)
 
 	_, err = m.db.ArchiveHost("test-small")
 	require.NoError(m.T(), err)
 
-	list, err = m.db.FindOldCurrentHosts(utils.MAX_TIME)
+	list, err = m.db.FindOldCurrentHostnames(utils.MAX_TIME)
 	require.NoError(m.T(), err)
 	require.Equal(m.T(), []string{}, list)
 }
@@ -87,52 +88,98 @@ func (m *MongodbSuite) TestInsertHostData() {
 		Clusters:    nil,
 	}
 
-	list, err := m.db.FindOldCurrentHosts(utils.MAX_TIME)
+	list, err := m.db.FindOldCurrentHostnames(utils.MAX_TIME)
 	require.NoError(m.T(), err)
 	assert.Equal(m.T(), []string{}, list)
 
 	_, err = m.db.InsertHostData(hd)
 	require.NoError(m.T(), err)
 
-	list, err = m.db.FindOldCurrentHosts(utils.MAX_TIME)
+	list, err = m.db.FindOldCurrentHostnames(utils.MAX_TIME)
 	require.NoError(m.T(), err)
 	assert.Equal(m.T(), []string{"rac1-x"}, list)
 }
 
-func (m *MongodbSuite) TestFindOldCurrentHost() {
+func (m *MongodbSuite) TestFindOldCurrentHostnames() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_01.json"))
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_04.json"))
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_06.json"))
 
 	m.T().Run("should_return_all_current_hosts", func(t *testing.T) {
-		list, err := m.db.FindOldCurrentHosts(utils.MAX_TIME)
+		list, err := m.db.FindOldCurrentHostnames(utils.MAX_TIME)
 		require.NoError(t, err)
 		assert.Equal(t, []string{"test-small2", "test-small3"}, list)
 	})
 
 	m.T().Run("should_return_no_current_hosts", func(t *testing.T) {
-		list, err := m.db.FindOldCurrentHosts(utils.MIN_TIME)
+		list, err := m.db.FindOldCurrentHostnames(utils.MIN_TIME)
 		require.NoError(t, err)
 		assert.Equal(t, []string{}, list)
 	})
 
 	m.T().Run("should_return_all_current_hosts2", func(t *testing.T) {
-		list, err := m.db.FindOldCurrentHosts(utils.P("2020-04-24T13:42:46+00:00"))
+		list, err := m.db.FindOldCurrentHostnames(utils.P("2020-04-24T13:42:46+00:00"))
 		require.NoError(t, err)
 		assert.Equal(t, []string{"test-small2", "test-small3"}, list)
 	})
 
 	m.T().Run("should_return_no_current_hosts2", func(t *testing.T) {
-		list, err := m.db.FindOldCurrentHosts(utils.P("2020-04-24T10:55:49+00:00"))
+		list, err := m.db.FindOldCurrentHostnames(utils.P("2020-04-24T10:55:49+00:00"))
 		require.NoError(t, err)
 		assert.Equal(t, []string{}, list)
 	})
 
 	m.T().Run("should_return_only_test_small2", func(t *testing.T) {
-		list, err := m.db.FindOldCurrentHosts(utils.P("2020-04-24T12:00:49+00:00"))
+		list, err := m.db.FindOldCurrentHostnames(utils.P("2020-04-24T12:00:49+00:00"))
 		require.NoError(t, err)
 		assert.Equal(t, []string{"test-small2"}, list)
+	})
+}
+
+func (m *MongodbSuite) TestFindOldCurrentHostdata() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	hd := utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
+	m.InsertHostData(hd)
+
+	hd2 := utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_dataservice_mongohostdata_03.json")
+	m.InsertHostData(hd2)
+
+	m.T().Run("Should not find any", func(t *testing.T) {
+		hosts, err := m.db.FindOldCurrentHostdata(utils.P("2019-11-18T16:38:58Z"))
+		require.NoError(t, err)
+		assert.Empty(t, hosts)
+	})
+
+	m.T().Run("Should find one", func(t *testing.T) {
+		hosts, err := m.db.FindOldCurrentHostdata(utils.P("2019-12-04T16:38:58Z"))
+		require.NoError(t, err)
+
+		assert.Len(t, hosts, 1)
+
+		assert.Equal(m.T(), "itl-csllab-112.sorint.localpippo", hosts[0].Hostname)
+		assert.False(m.T(), hosts[0].Archived)
+		assert.Equal(m.T(), utils.P("2019-11-19T16:38:58Z"), hosts[0].CreatedAt)
+	})
+
+	m.T().Run("Should find two", func(t *testing.T) {
+		hosts, err := m.db.FindOldCurrentHostdata(utils.P("2020-01-14T15:38:58Z"))
+		require.NoError(t, err)
+
+		assert.Len(t, hosts, 2)
+
+		sort.Slice(hosts, func(i, j int) bool {
+			return hosts[i].ID.String() < hosts[j].ID.String()
+		})
+
+		assert.Equal(m.T(), "itl-csllab-112.sorint.localpippo", hosts[0].Hostname)
+		assert.False(m.T(), hosts[0].Archived)
+		assert.Equal(m.T(), utils.P("2019-11-19T16:38:58Z"), hosts[0].CreatedAt)
+
+		assert.Equal(m.T(), "itl-csllab-223.sorint.localpippo", hosts[1].Hostname)
+		assert.False(m.T(), hosts[1].Archived)
+		assert.Equal(m.T(), utils.P("2020-01-13T15:38:58Z"), hosts[1].CreatedAt)
 	})
 }
 

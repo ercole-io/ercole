@@ -13,31 +13,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Package service is a package that provides methods for manipulating host informations
-package service
+package database
 
 import (
-	"time"
+	"context"
 
-	"github.com/sirupsen/logrus"
-
-	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-
-	alert_service_client "github.com/ercole-io/ercole/v2/alert-service/client"
-	"github.com/ercole-io/ercole/v2/data-service/database"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-type HostDataServiceInterface interface {
-	InsertHostData(hostdata model.HostDataBE) (interface{}, utils.AdvancedErrorInterface)
-}
+// DeleteAllNoDataAlerts delete all alerts with code NO_DATA
+func (md *MongoDatabase) DeleteAllNoDataAlerts() utils.AdvancedErrorInterface {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).
+		Collection("alerts").
+		DeleteMany(context.TODO(), bson.M{"alertCode": model.AlertCodeNoData})
 
-type HostDataService struct {
-	Config             config.Configuration
-	ServerVersion      string
-	Database           database.MongoDatabaseInterface
-	AlertServiceClient alert_service_client.AlertSvcClientInterface
-	TimeNow            func() time.Time
-	Log                *logrus.Logger
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return nil
 }

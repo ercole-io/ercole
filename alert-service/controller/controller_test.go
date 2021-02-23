@@ -43,11 +43,7 @@ func TestHostDataInsertion_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config: config.Configuration{
-			AlertService: config.AlertService{
-				FreshnessCheckJob: config.FreshnessCheckJob{
-					DaysThreshold: 10,
-				},
-			},
+			AlertService: config.AlertService{},
 		},
 		Log: utils.NewLogger("TEST"),
 	}
@@ -75,11 +71,7 @@ func TestHostDataInsertion_RequestError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config: config.Configuration{
-			AlertService: config.AlertService{
-				FreshnessCheckJob: config.FreshnessCheckJob{
-					DaysThreshold: 10,
-				},
-			},
+			AlertService: config.AlertService{},
 		},
 		Log: utils.NewLogger("TEST"),
 	}
@@ -106,11 +98,7 @@ func TestHostDataInsertion_ServiceError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config: config.Configuration{
-			AlertService: config.AlertService{
-				FreshnessCheckJob: config.FreshnessCheckJob{
-					DaysThreshold: 10,
-				},
-			},
+			AlertService: config.AlertService{},
 		},
 		Log: utils.NewLogger("TEST"),
 	}

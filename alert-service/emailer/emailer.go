@@ -13,29 +13,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package service
+package emailer
 
-import (
-	"errors"
-	"net/http"
+import "github.com/ercole-io/ercole/v2/utils"
 
-	"github.com/ercole-io/ercole/v2/utils"
-)
-
-//go:generate mockgen -source ../database/database.go -destination=fake_database_test.go -package=service
-
-//Common data
-var errMock error = errors.New("MockError")
-var aerrMock utils.AdvancedErrorInterface = utils.NewAdvancedErrorPtr(errMock, "mock")
-
-type RoundTripFunc func(req *http.Request) (*http.Response, error)
-
-func (f RoundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
-	return f(req)
-}
-
-func NewHTTPTestClient(fn RoundTripFunc) *http.Client {
-	return &http.Client{
-		Transport: RoundTripFunc(fn),
-	}
+// Emailer contains the interface of a email senders
+type Emailer interface {
+	// SendEmail send a email
+	SendEmail(subject string, text string, to []string) utils.AdvancedErrorInterface
 }
