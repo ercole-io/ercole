@@ -34,13 +34,16 @@ type MongoDatabaseInterface interface {
 	Init()
 	ArchiveHost(hostname string) (*mongo.UpdateResult, utils.AdvancedErrorInterface)
 	InsertHostData(hostData model.HostDataBE) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
-	// FindOldCurrentHost return the list of current hosts that haven't sent hostdata after time t
-	FindOldCurrentHosts(t time.Time) ([]string, utils.AdvancedErrorInterface)
+	// FindOldCurrentHostnames return the list of current hosts names that haven't sent hostdata after time t
+	FindOldCurrentHostnames(t time.Time) ([]string, utils.AdvancedErrorInterface)
+	// FindOldCurrentHostdata return the list of current hosts that haven't sent hostdata after time t
+	FindOldCurrentHostdata(t time.Time) ([]model.HostDataBE, utils.AdvancedErrorInterface)
 	// FindOldArchivedHosts return the list of archived hosts older than t
 	FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID, utils.AdvancedErrorInterface)
 	DeleteHostData(id primitive.ObjectID) utils.AdvancedErrorInterface
 	FindPatchingFunction(hostname string) (model.PatchingFunction, utils.AdvancedErrorInterface)
 	HistoricizeOracleDbsLicenses(licenses []dto.OracleDatabaseLicenseUsage) error
+	DeleteAllNoDataAlerts() utils.AdvancedErrorInterface
 }
 
 type MongoDatabase struct {

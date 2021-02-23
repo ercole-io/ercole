@@ -13,8 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Package service is a package that provides methods for manipulating host informations
-package service
+package job
 
 import (
 	"time"
@@ -33,8 +32,6 @@ type CurrentHostCleaningJob struct {
 	TimeNow func() time.Time
 	// Config contains the dataservice global configuration
 	Config config.Configuration
-	// alertService contains the underlyng hostdata service
-	hostDataService HostDataServiceInterface
 	// Log contains logger formatted
 	Log *logrus.Logger
 }
@@ -42,7 +39,7 @@ type CurrentHostCleaningJob struct {
 // Run archive every hostdata that is older than a amount
 func (job *CurrentHostCleaningJob) Run() {
 	timeLimit := job.TimeNow().Add(time.Duration(-job.Config.DataService.CurrentHostCleaningJob.HourThreshold) * time.Hour)
-	hosts, err := job.Database.FindOldCurrentHosts(timeLimit)
+	hosts, err := job.Database.FindOldCurrentHostnames(timeLimit)
 	if err != nil {
 		utils.LogErr(job.Log, err)
 		return
