@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package service
+package job
 
 import (
 	"testing"
@@ -29,11 +29,9 @@ func TestArchivedHostCleaningJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
-	hds := NewMockHostDataServiceInterface(mockCtrl)
 	ahcj := ArchivedHostCleaningJob{
-		TimeNow:         utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		hostDataService: hds,
-		Database:        db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database: db,
 		Config: config.Configuration{
 			DataService: config.DataService{
 				ArchivedHostCleaningJob: config.ArchivedHostCleaningJob{
@@ -53,11 +51,9 @@ func TestArchivedHostCleaningJobRun_WithOldCurrentHosts(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
-	hds := NewMockHostDataServiceInterface(mockCtrl)
 	ahcj := ArchivedHostCleaningJob{
-		TimeNow:         utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		hostDataService: hds,
-		Database:        db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database: db,
 		Config: config.Configuration{
 			DataService: config.DataService{
 				ArchivedHostCleaningJob: config.ArchivedHostCleaningJob{
@@ -83,11 +79,9 @@ func TestArchivedHostCleaningJobRun_DatabaseError1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
-	hds := NewMockHostDataServiceInterface(mockCtrl)
 	ahcj := ArchivedHostCleaningJob{
-		TimeNow:         utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		hostDataService: hds,
-		Database:        db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database: db,
 		Config: config.Configuration{
 			DataService: config.DataService{
 				ArchivedHostCleaningJob: config.ArchivedHostCleaningJob{
@@ -111,11 +105,9 @@ func TestArchivedHostCleaningJobRun_DatabaseError2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
-	hds := NewMockHostDataServiceInterface(mockCtrl)
 	ahcj := ArchivedHostCleaningJob{
-		TimeNow:         utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		hostDataService: hds,
-		Database:        db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database: db,
 		Config: config.Configuration{
 			DataService: config.DataService{
 				ArchivedHostCleaningJob: config.ArchivedHostCleaningJob{

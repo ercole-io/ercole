@@ -13,12 +13,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package service
+package job
 
-import "github.com/ercole-io/ercole/v2/utils"
+import (
+	"errors"
 
-// Emailer contains the interface of a email senders
-type Emailer interface {
-	// SendEmail send a email
-	SendEmail(subject string, text string, to []string) utils.AdvancedErrorInterface
-}
+	"github.com/ercole-io/ercole/v2/utils"
+)
+
+//go:generate mockgen -source ../database/database.go -destination=fake_database_test.go -package=job
+//go:generate mockgen -source ../../alert-service/client/client.go -destination=fake_alert_service_client_test.go -package=job
+
+var errMock error = errors.New("MockError")
+var aerrMock utils.AdvancedErrorInterface = utils.NewAdvancedErrorPtr(errMock, "mock")

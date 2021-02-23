@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package service
+package job
 
 import (
 	"testing"
@@ -27,11 +27,9 @@ func TestCurrentHostCleaningJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
-	hds := NewMockHostDataServiceInterface(mockCtrl)
 	chcj := CurrentHostCleaningJob{
-		TimeNow:         utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		hostDataService: hds,
-		Database:        db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database: db,
 		Config: config.Configuration{
 			DataService: config.DataService{
 				CurrentHostCleaningJob: config.CurrentHostCleaningJob{
@@ -42,7 +40,7 @@ func TestCurrentHostCleaningJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	db.EXPECT().FindOldCurrentHosts(utils.P("2019-11-05T4:02:03Z")).Return([]string{}, nil).Times(1)
+	db.EXPECT().FindOldCurrentHostnames(utils.P("2019-11-05T4:02:03Z")).Return([]string{}, nil).Times(1)
 
 	chcj.Run()
 }
@@ -51,11 +49,9 @@ func TestCurrentHostCleaningJobRun_SuccessOldCurrentHosts(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
-	hds := NewMockHostDataServiceInterface(mockCtrl)
 	chcj := CurrentHostCleaningJob{
-		TimeNow:         utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		hostDataService: hds,
-		Database:        db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database: db,
 		Config: config.Configuration{
 			DataService: config.DataService{
 				CurrentHostCleaningJob: config.CurrentHostCleaningJob{
@@ -66,7 +62,7 @@ func TestCurrentHostCleaningJobRun_SuccessOldCurrentHosts(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	db.EXPECT().FindOldCurrentHosts(utils.P("2019-11-05T4:02:03Z")).Return([]string{"superhost", "pippohost"}, nil).Times(1)
+	db.EXPECT().FindOldCurrentHostnames(utils.P("2019-11-05T4:02:03Z")).Return([]string{"superhost", "pippohost"}, nil).Times(1)
 	db.EXPECT().ArchiveHost("superhost").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost("pippohost").Return(nil, nil).Times(1)
 
@@ -77,11 +73,9 @@ func TestCurrentHostCleaningJobRun_DatabaseError1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
-	hds := NewMockHostDataServiceInterface(mockCtrl)
 	chcj := CurrentHostCleaningJob{
-		TimeNow:         utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		hostDataService: hds,
-		Database:        db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database: db,
 		Config: config.Configuration{
 			DataService: config.DataService{
 				CurrentHostCleaningJob: config.CurrentHostCleaningJob{
@@ -92,7 +86,7 @@ func TestCurrentHostCleaningJobRun_DatabaseError1(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	db.EXPECT().FindOldCurrentHosts(utils.P("2019-11-05T4:02:03Z")).Return([]string{"invalid"}, aerrMock).Times(1)
+	db.EXPECT().FindOldCurrentHostnames(utils.P("2019-11-05T4:02:03Z")).Return([]string{"invalid"}, aerrMock).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
 
 	chcj.Run()
@@ -102,11 +96,9 @@ func TestCurrentHostCleaningJobRun_DatabaseError2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
-	hds := NewMockHostDataServiceInterface(mockCtrl)
 	chcj := CurrentHostCleaningJob{
-		TimeNow:         utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		hostDataService: hds,
-		Database:        db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database: db,
 		Config: config.Configuration{
 			DataService: config.DataService{
 				CurrentHostCleaningJob: config.CurrentHostCleaningJob{
@@ -117,7 +109,7 @@ func TestCurrentHostCleaningJobRun_DatabaseError2(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	db.EXPECT().FindOldCurrentHosts(utils.P("2019-11-05T4:02:03Z")).Return([]string{"superhost", "pippohost"}, nil).Times(1)
+	db.EXPECT().FindOldCurrentHostnames(utils.P("2019-11-05T4:02:03Z")).Return([]string{"superhost", "pippohost"}, nil).Times(1)
 	db.EXPECT().ArchiveHost("superhost").Return(nil, aerrMock).Times(1)
 	db.EXPECT().ArchiveHost("pippohost").Times(0)
 

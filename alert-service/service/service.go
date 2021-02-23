@@ -21,8 +21,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bamzi/jobrunner"
 	"github.com/ercole-io/ercole/v2/alert-service/database"
+	"github.com/ercole-io/ercole/v2/alert-service/emailer"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/sirupsen/logrus"
@@ -67,7 +67,7 @@ type AlertService struct {
 	// Log contains logger formatted
 	Log *logrus.Logger
 	// Emailer contains the emailer layer
-	Emailer Emailer
+	Emailer emailer.Emailer
 }
 
 // Init initializes the service and database
@@ -86,24 +86,6 @@ func (as *AlertService) Init(wg *sync.WaitGroup) {
 		as.Log.Info("Stop alert-service/queue")
 		wg.Done()
 	}(sub)
-
-	jobrunner.Start()
-
-	freshnessJob := &FreshnessCheckJob{
-		TimeNow:      as.TimeNow,
-		Database:     as.Database,
-		Config:       as.Config,
-		alertService: as,
-		Log:          as.Log,
-	}
-
-	if err := jobrunner.Schedule(as.Config.AlertService.FreshnessCheckJob.Crontab, freshnessJob); err != nil {
-		as.Log.Errorf("Something went wrong scheduling FreshnessCheckJob: %v", err)
-	}
-
-	if as.Config.AlertService.FreshnessCheckJob.RunAtStartup {
-		jobrunner.Now(freshnessJob)
-	}
 }
 
 // HostDataInsertion inserts the host data insertion in the queue
