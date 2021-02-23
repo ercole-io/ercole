@@ -40,7 +40,7 @@ func TestCurrentHostCleaningJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	db.EXPECT().FindOldCurrentHosts(utils.P("2019-11-05T4:02:03Z")).Return([]string{}, nil).Times(1)
+	db.EXPECT().FindOldCurrentHostnames(utils.P("2019-11-05T4:02:03Z")).Return([]string{}, nil).Times(1)
 
 	chcj.Run()
 }
@@ -62,7 +62,7 @@ func TestCurrentHostCleaningJobRun_SuccessOldCurrentHosts(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	db.EXPECT().FindOldCurrentHosts(utils.P("2019-11-05T4:02:03Z")).Return([]string{"superhost", "pippohost"}, nil).Times(1)
+	db.EXPECT().FindOldCurrentHostnames(utils.P("2019-11-05T4:02:03Z")).Return([]string{"superhost", "pippohost"}, nil).Times(1)
 	db.EXPECT().ArchiveHost("superhost").Return(nil, nil).Times(1)
 	db.EXPECT().ArchiveHost("pippohost").Return(nil, nil).Times(1)
 
@@ -86,7 +86,7 @@ func TestCurrentHostCleaningJobRun_DatabaseError1(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	db.EXPECT().FindOldCurrentHosts(utils.P("2019-11-05T4:02:03Z")).Return([]string{"invalid"}, aerrMock).Times(1)
+	db.EXPECT().FindOldCurrentHostnames(utils.P("2019-11-05T4:02:03Z")).Return([]string{"invalid"}, aerrMock).Times(1)
 	db.EXPECT().ArchiveHost(gomock.Any()).Times(0)
 
 	chcj.Run()
@@ -109,7 +109,7 @@ func TestCurrentHostCleaningJobRun_DatabaseError2(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	db.EXPECT().FindOldCurrentHosts(utils.P("2019-11-05T4:02:03Z")).Return([]string{"superhost", "pippohost"}, nil).Times(1)
+	db.EXPECT().FindOldCurrentHostnames(utils.P("2019-11-05T4:02:03Z")).Return([]string{"superhost", "pippohost"}, nil).Times(1)
 	db.EXPECT().ArchiveHost("superhost").Return(nil, aerrMock).Times(1)
 	db.EXPECT().ArchiveHost("pippohost").Times(0)
 

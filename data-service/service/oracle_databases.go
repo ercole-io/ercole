@@ -1,7 +1,6 @@
 package service
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -66,25 +65,11 @@ func (hds *HostDataService) addLicensesToSecondaryDbs(hostInfo model.Host, secon
 			},
 		}
 
-		url := utils.NewAPIUrlNoParams(
-			hds.Config.AlertService.RemoteEndpoint,
-			hds.Config.AlertService.PublisherUsername,
-			hds.Config.AlertService.PublisherPassword,
-			"/alerts")
-
-		alertBytes, err := json.Marshal(alert)
+		err := hds.AlertServiceClient.ThrowNewAlert(alert)
 		if err != nil {
-			utils.LogErr(hds.Log, utils.NewAdvancedErrorPtr(err, "Can't marshal alert"))
-			return
-		}
-
-		resp, err := http.Post(url.String(), "application/json", bytes.NewReader(alertBytes))
-		if err != nil || resp.StatusCode < 200 || resp.StatusCode > 299 {
 			utils.LogErr(hds.Log, utils.NewAdvancedErrorPtr(err, "Can't throw new alert"))
 			return
 		}
-
-		return
 	}
 
 	coreFactor := secondaryDb.CoreFactor(hostInfo)

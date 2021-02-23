@@ -13,16 +13,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package job
+package database
 
 import (
-	"errors"
+	"context"
 
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-//go:generate mockgen -source ../database/database.go -destination=fake_database_test.go -package=job
-//go:generate mockgen -source ../../alert-service/client/client.go -destination=fake_alert_service_client_test.go -package=job
+// DeleteAllNoDataAlerts delete all alerts with code NO_DATA
+func (md *MongoDatabase) DeleteAllNoDataAlerts() utils.AdvancedErrorInterface {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).
+		Collection("alerts").
+		DeleteMany(context.TODO(), bson.M{"alertCode": model.AlertCodeNoData})
 
-var errMock error = errors.New("MockError")
-var aerrMock utils.AdvancedErrorInterface = utils.NewAdvancedErrorPtr(errMock, "mock")
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return nil
+}

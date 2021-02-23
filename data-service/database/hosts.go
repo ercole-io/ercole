@@ -50,8 +50,8 @@ func (md *MongoDatabase) InsertHostData(hostData model.HostDataBE) (*mongo.Inser
 	return res, nil
 }
 
-// FindOldCurrentHosts return the list of current hosts that haven't sent hostdata after time t
-func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]string, utils.AdvancedErrorInterface) {
+// FindOldCurrentHostnames return the list of current hosts that haven't sent hostdata after time t
+func (md *MongoDatabase) FindOldCurrentHostnames(t time.Time) ([]string, utils.AdvancedErrorInterface) {
 	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
 		context.TODO(),
 		"hostname",
@@ -68,6 +68,36 @@ func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]string, utils.Advan
 		hosts = append(hosts, val.(string))
 	}
 
+	return hosts, nil
+}
+
+// FindOldCurrentHosts return the list of current hosts that haven't sent hostdata after time t
+func (md *MongoDatabase) FindOldCurrentHostdata(t time.Time) ([]model.HostDataBE, utils.AdvancedErrorInterface) {
+	filter := bson.M{
+		"archived":  false,
+		"createdAt": mu.QOLessThan(t),
+	}
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
+		Find(context.TODO(), filter)
+
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	//Decode the documents
+	hosts := make([]model.HostDataBE, 0)
+
+	for cur.Next(context.TODO()) {
+		var host model.HostDataBE
+
+		if cur.Decode(&host) != nil {
+			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		}
+		hosts = append(hosts, host)
+	}
+
+	//Return it
 	return hosts, nil
 }
 

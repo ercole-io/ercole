@@ -19,7 +19,6 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
-	"sort"
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/config"
@@ -145,52 +144,6 @@ func (m *MongodbSuite) TestInsertAlert_Success() {
 	assert.Equal(m.T(), alert1, out)
 }
 
-func (m *MongodbSuite) TestFindOldCurrentHosts() {
-	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
-
-	hd := utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
-	m.InsertHostData(hd)
-
-	hd2 := utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_dataservice_mongohostdata_03.json")
-	m.InsertHostData(hd2)
-
-	m.T().Run("Should not find any", func(t *testing.T) {
-		hosts, err := m.db.FindOldCurrentHosts(utils.P("2019-11-18T16:38:58Z"))
-		require.NoError(t, err)
-		assert.Empty(t, hosts)
-	})
-
-	m.T().Run("Should find one", func(t *testing.T) {
-		hosts, err := m.db.FindOldCurrentHosts(utils.P("2019-12-04T16:38:58Z"))
-		require.NoError(t, err)
-
-		assert.Len(t, hosts, 1)
-
-		assert.Equal(m.T(), "itl-csllab-112.sorint.localpippo", hosts[0].Hostname)
-		assert.False(m.T(), hosts[0].Archived)
-		assert.Equal(m.T(), utils.P("2019-11-19T16:38:58Z"), hosts[0].CreatedAt)
-	})
-
-	m.T().Run("Should find two", func(t *testing.T) {
-		hosts, err := m.db.FindOldCurrentHosts(utils.P("2020-01-14T15:38:58Z"))
-		require.NoError(t, err)
-
-		assert.Len(t, hosts, 2)
-
-		sort.Slice(hosts, func(i, j int) bool {
-			return hosts[i].ID.String() < hosts[j].ID.String()
-		})
-
-		assert.Equal(m.T(), "itl-csllab-112.sorint.localpippo", hosts[0].Hostname)
-		assert.False(m.T(), hosts[0].Archived)
-		assert.Equal(m.T(), utils.P("2019-11-19T16:38:58Z"), hosts[0].CreatedAt)
-
-		assert.Equal(m.T(), "itl-csllab-223.sorint.localpippo", hosts[1].Hostname)
-		assert.False(m.T(), hosts[1].Archived)
-		assert.Equal(m.T(), utils.P("2020-01-13T15:38:58Z"), hosts[1].CreatedAt)
-	})
-}
-
 func (m *MongodbSuite) TestExistNoDataAlert_SuccessNotExist() {
 	_, err := m.db.InsertAlert(alert1)
 	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
@@ -253,40 +206,4 @@ func (m *MongodbSuite) TestDeleteNoDataAlertByHost_Success() {
 		require.NoError(m.T(), err3)
 		require.Equal(m.T(), 0, len(alerts))
 	})
-}
-
-func (m *MongodbSuite) TestDeleteAllNoDataAlerts_Success() {
-	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
-
-	_, err := m.db.InsertAlert(alert1)
-	require.NoError(m.T(), err)
-
-	_, err = m.db.InsertAlert(alert3)
-	require.NoError(m.T(), err)
-	_, err = m.db.InsertAlert(alert4)
-	require.NoError(m.T(), err)
-
-	err = m.db.DeleteAllNoDataAlerts()
-	require.NoError(m.T(), err)
-
-	// Check that there are no more AlertCodeNoData alerts
-	val, erro := m.db.Client.Database(m.dbname).Collection("alerts").
-		Find(context.TODO(), bson.M{"alertCode": model.AlertCodeNoData})
-	require.NoError(m.T(), erro)
-
-	res := make([]model.Alert, 0)
-	erro = val.All(context.TODO(), &res)
-	require.NoError(m.T(), erro)
-	require.Equal(m.T(), 0, len(res))
-
-	// Check that there's still alert1
-	val, erro = m.db.Client.Database(m.dbname).Collection("alerts").
-		Find(context.TODO(), bson.M{})
-	require.NoError(m.T(), erro)
-
-	res = make([]model.Alert, 0)
-	erro = val.All(context.TODO(), &res)
-	require.NoError(m.T(), erro)
-	require.Equal(m.T(), 1, len(res))
-	require.Equal(m.T(), alert1, (res)[0])
 }

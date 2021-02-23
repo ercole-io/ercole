@@ -41,14 +41,10 @@ type MongoDatabaseInterface interface {
 	FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostDataBE, utils.AdvancedErrorInterface)
 	// InsertAlert inserr the alert in the database
 	InsertAlert(alert model.Alert) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
-	// FindOldCurrentHost return the list of current hosts that haven't sent hostdata after time t
-	FindOldCurrentHosts(t time.Time) ([]model.HostDataBE, utils.AdvancedErrorInterface)
 	// ExistNoDataAlertByHost return true if the host has associated a new NO_DATA alert
 	ExistNoDataAlertByHost(hostname string) (bool, utils.AdvancedErrorInterface)
 	// DeleteNoDataAlertByHost delete NO_DATA alert by hostname
 	DeleteNoDataAlertByHost(hostname string) utils.AdvancedErrorInterface
-	// DeleteAllNoDataAlerts delete all alerts with code NO_DATA
-	DeleteAllNoDataAlerts() utils.AdvancedErrorInterface
 }
 
 // MongoDatabase is a implementation
@@ -153,36 +149,6 @@ func (md *MongoDatabase) InsertAlert(alert model.Alert) (*mongo.InsertOneResult,
 	return res, nil
 }
 
-// FindOldCurrentHosts return the list of current hosts that haven't sent hostdata after time t
-func (md *MongoDatabase) FindOldCurrentHosts(t time.Time) ([]model.HostDataBE, utils.AdvancedErrorInterface) {
-	filter := bson.M{
-		"archived":  false,
-		"createdAt": mu.QOLessThan(t),
-	}
-
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
-		Find(context.TODO(), filter)
-
-	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
-	}
-
-	//Decode the documents
-	hosts := make([]model.HostDataBE, 0)
-
-	for cur.Next(context.TODO()) {
-		var host model.HostDataBE
-
-		if cur.Decode(&host) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
-		}
-		hosts = append(hosts, host)
-	}
-
-	//Return it
-	return hosts, nil
-}
-
 // ExistNoDataAlertByHost return true if the host has associated a new NO_DATA alert
 func (md *MongoDatabase) ExistNoDataAlertByHost(hostname string) (bool, utils.AdvancedErrorInterface) {
 	//Count the number of new NO_DATA alerts associated to the host
@@ -210,19 +176,6 @@ func (md *MongoDatabase) DeleteNoDataAlertByHost(hostname string) utils.Advanced
 				"alertCode":          model.AlertCodeNoData,
 				"otherInfo.hostname": hostname,
 			})
-
-	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
-	}
-
-	return nil
-}
-
-// DeleteAllNoDataAlerts delete all alerts with code NO_DATA
-func (md *MongoDatabase) DeleteAllNoDataAlerts() utils.AdvancedErrorInterface {
-	_, err := md.Client.Database(md.Config.Mongodb.DBName).
-		Collection("alerts").
-		DeleteMany(context.TODO(), bson.M{"alertCode": model.AlertCodeNoData})
 
 	if err != nil {
 		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
