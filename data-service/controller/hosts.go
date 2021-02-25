@@ -32,7 +32,6 @@ import (
 // InsertHostData update the informations about a host using the HostData in the request
 func (ctrl *DataController) InsertHostData(w http.ResponseWriter, r *http.Request) {
 	var hostdata model.HostDataBE
-	var aerr utils.AdvancedErrorInterface
 
 	raw, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -72,11 +71,11 @@ func (ctrl *DataController) InsertHostData(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	id, aerr := ctrl.Service.InsertHostData(hostdata)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	err = ctrl.Service.InsertHostData(hostdata)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, id)
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
