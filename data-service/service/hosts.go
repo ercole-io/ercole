@@ -17,16 +17,13 @@
 package service
 
 import (
-	"bytes"
-	"net/http"
-
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // UpdateHostInfo saves the hostdata
-func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) (interface{}, utils.AdvancedErrorInterface) {
+func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 	var aerr utils.AdvancedErrorInterface
 
 	hostdata.ServerVersion = hds.ServerVersion
@@ -36,47 +33,51 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) (interface
 	hostdata.ID = primitive.NewObjectIDFromTimestamp(hds.TimeNow())
 
 	if hds.Config.DataService.EnablePatching {
-		hostdata, aerr = hds.PatchHostData(hostdata)
+		hostdata, aerr = hds.patchHostData(hostdata)
 		if aerr != nil {
-			return nil, aerr
+			return aerr
+		}
+	}
+
+	previousHostdata, err := hds.Database.FindMostRecentHostDataOlderThan(hostdata.Hostname, hostdata.CreatedAt)
+	if err != nil {
+		hds.Log.Error(err)
+		return err
+	}
+
+	if previousHostdata == nil {
+		if err := hds.throwNewServerAlert(hostdata.Hostname); err != nil {
+			return err
 		}
 	}
 
 	if hostdata.Features.Oracle != nil {
-		hds.oracleDatabasesChecks(hostdata.Environment, hostdata.Info, hostdata.Features.Oracle)
+		hds.oracleDatabasesChecks(previousHostdata, &hostdata)
 	}
 
 	_, aerr = hds.Database.ArchiveHost(hostdata.Hostname)
 	if aerr != nil {
-		return nil, aerr
+		return aerr
 	}
 
 	if hds.Config.DataService.LogInsertingHostdata {
 		hds.Log.Info(utils.ToJSON(hostdata))
 	}
-	res, aerr := hds.Database.InsertHostData(hostdata)
+
+	_, aerr = hds.Database.InsertHostData(hostdata)
 	if aerr != nil {
-		return nil, aerr
+		return aerr
 	}
 
-	alertHostDataInsertionURL := utils.NewAPIUrlNoParams(
-		hds.Config.AlertService.RemoteEndpoint,
-		hds.Config.AlertService.PublisherUsername,
-		hds.Config.AlertService.PublisherPassword,
-		"/queue/host-data-insertion/"+res.InsertedID.(primitive.ObjectID).Hex()).String()
-
-	if resp, err := http.Post(alertHostDataInsertionURL, "application/json", bytes.NewReader([]byte{})); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "EVENT ENQUEUE")
-
-	} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return nil, utils.NewAdvancedErrorPtr(utils.ErrEventEnqueue, "EVENT ENQUEUE")
+	if err := hds.Database.DeleteNoDataAlertByHost(hostdata.Hostname); err != nil {
+		hds.Log.Error(err)
 	}
 
-	return res.InsertedID, nil
+	return nil
 }
 
-// PatchHostData patch the hostdata using the pf stored in the db
-func (hds *HostDataService) PatchHostData(hostdata model.HostDataBE) (model.HostDataBE, utils.AdvancedErrorInterface) {
+// patchHostData patch the hostdata using the pf stored in the db
+func (hds *HostDataService) patchHostData(hostdata model.HostDataBE) (model.HostDataBE, utils.AdvancedErrorInterface) {
 	patch, err := hds.Database.FindPatchingFunction(hostdata.Hostname)
 	if err != nil {
 		return model.HostDataBE{}, err

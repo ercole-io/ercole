@@ -15,24 +15,4 @@
 
 package controller
 
-import (
-	"net/http"
-
-	"github.com/gorilla/mux"
-)
-
-// SetupRoutesForAlertQueueController setup the routes of the router using the handler in the controller as http handler
-func SetupRoutesForAlertQueueController(router *mux.Router, ctrl AlertQueueControllerInterface) {
-	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Pong"))
-	})
-
-	router = router.NewRoute().Subrouter()
-	router.Use(ctrl.AuthenticateMiddleware())
-
-	setupProtectedRoutes(router, ctrl)
-}
-
-func setupProtectedRoutes(router *mux.Router, ctrl AlertQueueControllerInterface) {
-	router.HandleFunc("/alerts", ctrl.ThrowNewAlert).Methods("POST")
-}
+//go:generate mockgen -source ../service/service.go -destination=fake_service_test.go -package=controller
