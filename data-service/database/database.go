@@ -43,7 +43,11 @@ type MongoDatabaseInterface interface {
 	DeleteHostData(id primitive.ObjectID) utils.AdvancedErrorInterface
 	FindPatchingFunction(hostname string) (model.PatchingFunction, utils.AdvancedErrorInterface)
 	HistoricizeOracleDbsLicenses(licenses []dto.OracleDatabaseLicenseUsage) error
+
+	DeleteNoDataAlertByHost(hostname string) utils.AdvancedErrorInterface
 	DeleteAllNoDataAlerts() utils.AdvancedErrorInterface
+	// FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
+	FindMostRecentHostDataOlderThan(hostname string, t time.Time) (*model.HostDataBE, utils.AdvancedErrorInterface)
 }
 
 type MongoDatabase struct {

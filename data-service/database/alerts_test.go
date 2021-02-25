@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"testing"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -100,4 +101,74 @@ func (m *MongodbSuite) TestDeleteAllNoDataAlerts_Success() {
 	require.NoError(m.T(), erro)
 	require.Equal(m.T(), 1, len(res))
 	require.Equal(m.T(), alert1, (res)[0])
+}
+
+func (m *MongodbSuite) TestDeleteNoDataAlertByHost_Success() {
+	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
+
+	var alert1 model.Alert = model.Alert{
+		AlertCode:               model.AlertCodeNewServer,
+		AlertSeverity:           model.AlertSeverityInfo,
+		AlertAffectedTechnology: nil,
+		AlertCategory:           model.AlertCategoryEngine,
+		AlertStatus:             model.AlertStatusNew,
+		Date:                    utils.P("2019-11-05T18:02:03Z"),
+		Description:             "pippo",
+		OtherInfo: map[string]interface{}{
+			"hostname": "myhost",
+		},
+		ID: utils.Str2oid("5dd40bfb12f54dfda7b1c291"),
+	}
+
+	var alert3 model.Alert = model.Alert{
+		AlertCode:               model.AlertCodeNoData,
+		AlertSeverity:           model.AlertSeverityCritical,
+		AlertAffectedTechnology: nil,
+		AlertCategory:           model.AlertCategoryEngine,
+		AlertStatus:             model.AlertStatusNew,
+		Date:                    utils.P("2019-11-05T18:02:03Z"),
+		Description:             "test desc pippo",
+		OtherInfo: map[string]interface{}{
+			"hostname": "pippo-host",
+		},
+		ID: utils.Str2oid("5dd40bfb12f54dfda7b1c292"),
+	}
+
+	_, err := m.db.Client.Database(m.dbname).Collection("alerts").InsertOne(context.TODO(), alert1)
+	require.NoError(m.T(), err)
+
+	_, err = m.db.Client.Database(m.dbname).Collection("alerts").InsertOne(context.TODO(), alert3)
+	require.NoError(m.T(), err)
+
+	m.T().Run("There is still alert3", func(t *testing.T) {
+		alert1Hostname := alert1.OtherInfo["hostname"].(string)
+		err = m.db.DeleteNoDataAlertByHost(alert1Hostname)
+		require.NoError(m.T(), err)
+
+		val, err2 := m.db.Client.Database(m.dbname).Collection("alerts").
+			Find(context.TODO(), bson.M{"alertCode": model.AlertCodeNoData})
+		require.NoError(m.T(), err2)
+
+		alerts := make([]model.Alert, 0)
+		err3 := val.All(context.TODO(), &alerts)
+		require.NoError(m.T(), err3)
+
+		require.Equal(m.T(), 1, len(alerts))
+		require.Equal(m.T(), alerts[0], alert3)
+	})
+
+	m.T().Run("There are no more alerts", func(t *testing.T) {
+		alert3Hostname := alert3.OtherInfo["hostname"].(string)
+		err = m.db.DeleteNoDataAlertByHost(alert3Hostname)
+
+		require.NoError(m.T(), err)
+		val, err2 := m.db.Client.Database(m.dbname).Collection("alerts").
+			Find(context.TODO(), bson.M{"alertCode": model.AlertCodeNoData})
+		require.NoError(m.T(), err2)
+
+		alerts := make([]model.Alert, 0)
+		err3 := val.All(context.TODO(), &alerts)
+		require.NoError(m.T(), err3)
+		require.Equal(m.T(), 0, len(alerts))
+	})
 }

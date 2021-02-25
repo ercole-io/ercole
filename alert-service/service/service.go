@@ -26,7 +26,6 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/sirupsen/logrus"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/config"
 
@@ -37,8 +36,6 @@ import (
 type AlertServiceInterface interface {
 	// Init initializes the service
 	Init(wg *sync.WaitGroup)
-	// HostDataInsertion inserts the host data insertion in the queue
-	HostDataInsertion(id primitive.ObjectID) utils.AdvancedErrorInterface
 	// ProcessMsg processes the message msg
 	ProcessMsg(msg hub.Message)
 	ThrowNewAlert(alert model.Alert) utils.AdvancedErrorInterface
@@ -88,17 +85,6 @@ func (as *AlertService) Init(wg *sync.WaitGroup) {
 	}(sub)
 }
 
-// HostDataInsertion inserts the host data insertion in the queue
-func (as *AlertService) HostDataInsertion(id primitive.ObjectID) utils.AdvancedErrorInterface {
-	as.Queue.Publish(hub.Message{
-		Name: model.TopicHostDataInsertion,
-		Fields: hub.Fields{
-			"id": id,
-		},
-	})
-	return nil
-}
-
 // AlertInsertion inserts an alert insertion in the queue
 func (as *AlertService) AlertInsertion(alr model.Alert) utils.AdvancedErrorInterface {
 	as.Queue.Publish(hub.Message{
@@ -117,47 +103,10 @@ func (as *AlertService) ProcessMsg(msg hub.Message) {
 	}
 
 	switch msg.Topic() {
-	case model.TopicHostDataInsertion:
-		as.ProcessHostDataInsertion(msg.Fields)
 	case model.TopicAlertInsertion:
 		as.ProcessAlertInsertion(msg.Fields)
 	default:
 		as.Log.Warnf("Received message with unknown topic: %s", msg.Topic())
-	}
-}
-
-// ProcessHostDataInsertion processes the host data insertion event
-func (as *AlertService) ProcessHostDataInsertion(params hub.Fields) {
-	id := params["id"].(primitive.ObjectID)
-
-	//Get the original data
-	newData, err := as.Database.FindHostData(id)
-	if err != nil {
-		utils.LogErr(as.Log, err)
-		return
-	}
-
-	//Get the previous data
-	oldData, err := as.Database.FindMostRecentHostDataOlderThan(newData.Hostname, newData.CreatedAt)
-	if err != nil {
-		utils.LogErr(as.Log, err)
-		return
-	}
-
-	if err := as.DiffHostDataMapAndGenerateAlert(oldData, newData); err != nil {
-		utils.LogErr(as.Log, err)
-		return
-	}
-
-	//Check for UNLISTED_RUNNING_DATABASE
-	if newData.Features.Oracle != nil && newData.Features.Oracle.Database != nil {
-		for _, dbname := range newData.Features.Oracle.Database.UnlistedRunningDatabases {
-			as.ThrowUnlistedRunningDatabasesAlert(dbname, newData.Hostname)
-		}
-	}
-
-	if err := as.Database.DeleteNoDataAlertByHost(newData.Hostname); err != nil {
-		as.Log.Error(err)
 	}
 }
 
@@ -182,82 +131,4 @@ func (as *AlertService) ProcessAlertInsertion(params hub.Fields) {
 		utils.LogErr(as.Log, err)
 		return
 	}
-}
-
-// DiffHostDataMapAndGenerateAlert find the difference between the data and generate eventually alerts for such difference
-func (as *AlertService) DiffHostDataMapAndGenerateAlert(oldData model.HostDataBE, newData model.HostDataBE) utils.AdvancedErrorInterface {
-	newEnterpriseLicenseAlertThrown := false
-
-	var oldOracleDbs []model.OracleDatabase
-	var newOracleDbs []model.OracleDatabase
-
-	if oldData.Features.Oracle != nil && oldData.Features.Oracle.Database != nil && oldData.Features.Oracle.Database.Databases != nil {
-		oldOracleDbs = oldData.Features.Oracle.Database.Databases
-	} else {
-		oldOracleDbs = []model.OracleDatabase{}
-	}
-	if newData.Features.Oracle != nil && newData.Features.Oracle.Database != nil && newData.Features.Oracle.Database.Databases != nil {
-		newOracleDbs = newData.Features.Oracle.Database.Databases
-	} else {
-		newOracleDbs = []model.OracleDatabase{}
-	}
-
-	//Convert databases array to map
-	oldDatabases := model.DatabasesArrayAsMap(oldOracleDbs)
-	newDatabases := model.DatabasesArrayAsMap(newOracleDbs)
-
-	//If the oldData is empty, fire a new server
-	if oldData.Hostname == "" {
-		if err := as.ThrowNewServerAlert(newData.Hostname); err != nil {
-			return err
-		}
-	}
-
-	//For each new database
-	for _, newDb := range newDatabases {
-		//Get the old database if exist
-		var oldDb model.OracleDatabase
-		if val, ok := oldDatabases[newDb.Name]; ok {
-			oldDb = val
-		} else {
-			oldDb = model.OracleDatabase{
-				Licenses: []model.OracleDatabaseLicense{},
-			}
-			// fire NEW_DATABASE alert
-			if err := as.ThrowNewDatabaseAlert(newDb.Name, newData.Hostname); err != nil {
-				return err
-			}
-		}
-
-		oldDataInfo := oldData.Info
-		newDataInfo := oldData.Info
-
-		//Find new enterprises licenses
-		if ((oldDataInfo.CPUCores < newDataInfo.CPUCores) || (!model.HasEnterpriseLicense(oldDb) && model.HasEnterpriseLicense(newDb))) && !newEnterpriseLicenseAlertThrown {
-			if err := as.ThrowNewEnterpriseLicenseAlert(newData.Hostname); err != nil {
-				return err
-			}
-			newEnterpriseLicenseAlertThrown = true
-		}
-
-		//Get the difference of features
-		diff := model.DiffLicenses(oldDb.Licenses, newDb.Licenses)
-
-		//Extract from the diff the activated features
-		activatedFeatures := []string{}
-		for feature, val := range diff {
-			if val == model.DiffFeatureActivated && feature != "Oracle ENT" && feature != "Oracle STD" && feature != "Oracle EXE" {
-				activatedFeatures = append(activatedFeatures, feature)
-			}
-		}
-
-		//Throw alert for activated features
-		if len(activatedFeatures) > 0 {
-			if err := as.ThrowActivatedFeaturesAlert(newDb.Name, newData.Hostname, activatedFeatures); err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
 }
