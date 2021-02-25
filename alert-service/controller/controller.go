@@ -22,18 +22,13 @@ import (
 
 	"github.com/ercole-io/ercole/v2/alert-service/service"
 	"github.com/ercole-io/ercole/v2/config"
-	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/goji/httpauth"
-	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // AlertQueueControllerInterface is a interface that wrap methods used to inserting events in the queue
 type AlertQueueControllerInterface interface {
 	ThrowNewAlert(w http.ResponseWriter, r *http.Request)
-	// HostDataInsertion insert the event HostDataInsertion with the id in the queue
-	HostDataInsertion(w http.ResponseWriter, r *http.Request)
 	// AuthenticateMiddleware return the middleware used to authenticate users
 	AuthenticateMiddleware() func(http.Handler) http.Handler
 }
@@ -53,22 +48,4 @@ type AlertQueueController struct {
 // AuthenticateMiddleware return the middleware used to authenticate (request) users
 func (ctrl *AlertQueueController) AuthenticateMiddleware() func(http.Handler) http.Handler {
 	return httpauth.SimpleBasicAuth(ctrl.Config.AlertService.PublisherUsername, ctrl.Config.AlertService.PublisherPassword)
-}
-
-// HostDataInsertion insert the event HostDataInsertion with the id in the queue
-func (ctrl *AlertQueueController) HostDataInsertion(w http.ResponseWriter, r *http.Request) {
-	var id primitive.ObjectID
-	var err error
-
-	//Get the id from the path variable
-	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
-		return
-	}
-
-	//Insert the event
-	if err := ctrl.Service.HostDataInsertion(id); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
 }
