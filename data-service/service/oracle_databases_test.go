@@ -16,8 +16,51 @@
 package service
 
 import (
+	"fmt"
+	reflect "reflect"
 	"testing"
+
+	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
+	gomock "github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
 )
+
+type alertSimilarTo struct{ al model.Alert }
+
+func (sa *alertSimilarTo) Matches(x interface{}) bool {
+	if val, ok := x.(model.Alert); !ok {
+		return false
+	} else if val.AlertCode != sa.al.AlertCode {
+		return false
+	} else if (sa.al.AlertAffectedTechnology == nil && val.AlertAffectedTechnology != sa.al.AlertAffectedTechnology) || (sa.al.AlertAffectedTechnology != nil && *val.AlertAffectedTechnology != *sa.al.AlertAffectedTechnology) {
+		return false
+	} else if val.AlertCategory != sa.al.AlertCategory {
+		return false
+	} else {
+		return reflect.DeepEqual(sa.al.OtherInfo, val.OtherInfo)
+	}
+}
+
+func (sa *alertSimilarTo) String() string {
+	return fmt.Sprintf("is similar to %v", sa.al)
+}
+
+var emptyHostData model.HostDataBE = model.HostDataBE{
+	Hostname: "",
+	Features: model.Features{
+		Oracle: &model.OracleFeature{
+			Database: &model.OracleDatabaseFeature{
+				UnlistedRunningDatabases: []string{},
+				Databases:                []model.OracleDatabase{},
+			},
+		},
+	},
+	Info: model.Host{
+		CPUCores: 0,
+	},
+}
 
 func TestAddLicensesToSecondaryDbs(t *testing.T) {
 	//TODO Add test
@@ -50,4 +93,251 @@ func TestAddLicensesToSecondaryDbs(t *testing.T) {
 	//	assert.True(t, db.Status == model.OracleDatabaseStatusMounted && db.Role != model.OracleDatabaseRolePrimary)
 	//
 	//	hds.addLicensesToSecondaryDbs(hdSecondary.Info, &db)
+}
+
+var hostData1 model.HostDataBE = model.HostDataBE{
+	ID:        utils.Str2oid("5dc3f534db7e81a98b726a52"),
+	Hostname:  "superhost1",
+	Archived:  false,
+	CreatedAt: utils.P("2019-11-05T14:02:03Z"),
+	Features: model.Features{
+		Oracle: &model.OracleFeature{
+			Database: &model.OracleDatabaseFeature{
+				UnlistedRunningDatabases: []string{"FOOBAR"},
+				Databases:                []model.OracleDatabase{},
+			},
+		},
+	},
+	Info: model.Host{
+		CPUCores: 0,
+	},
+}
+
+var hostData2 model.HostDataBE = model.HostDataBE{
+	ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
+	Hostname:  "superhost1",
+	Archived:  true,
+	CreatedAt: utils.P("2019-11-05T12:02:03Z"),
+	Features: model.Features{
+		Oracle: &model.OracleFeature{
+			Database: &model.OracleDatabaseFeature{
+				UnlistedRunningDatabases: []string{},
+				Databases:                []model.OracleDatabase{},
+			},
+		},
+	},
+	Info: model.Host{
+		CPUCores: 0,
+	},
+}
+
+var hostData3 model.HostDataBE = model.HostDataBE{
+	ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
+	Hostname:  "superhost1",
+	Archived:  true,
+	CreatedAt: utils.P("2019-11-05T16:02:03Z"),
+	Features: model.Features{
+		Oracle: &model.OracleFeature{
+			Database: &model.OracleDatabaseFeature{
+				UnlistedRunningDatabases: []string{},
+				Databases: []model.OracleDatabase{
+					{
+						Name:     "acd",
+						Licenses: []model.OracleDatabaseLicense{},
+					},
+				},
+			},
+		},
+	},
+	Info: model.Host{
+		CPUCores: 0,
+	},
+}
+
+var hostData4 model.HostDataBE = model.HostDataBE{
+	ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
+	Hostname:  "superhost1",
+	Archived:  true,
+	CreatedAt: utils.P("2019-11-05T18:02:03Z"),
+	Features: model.Features{
+		Oracle: &model.OracleFeature{
+			Database: &model.OracleDatabaseFeature{
+				UnlistedRunningDatabases: []string{},
+				Databases: []model.OracleDatabase{
+					{
+						Name: "acd",
+						Licenses: []model.OracleDatabaseLicense{
+							{
+								Name:  "Oracle ENT",
+								Count: 10,
+							},
+							{
+								Name:  "Driving",
+								Count: 100,
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	Info: model.Host{
+		CPUCores: 0,
+	},
+}
+
+func TestCheckNewLicenses_SuccessNoDifferences(t *testing.T) {
+	hds := HostDataService{
+		Log: utils.NewLogger("TEST"),
+	}
+
+	require.NoError(t, hds.checkNewLicenses(&hostData2, &hostData1))
+}
+
+func TestCheckNewLicenses_SuccessNewDatabase(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	asc := NewMockAlertSvcClientInterface(mockCtrl)
+	hds := HostDataService{
+		Config:         config.Configuration{},
+		ServerVersion:  "",
+		Database:       db,
+		AlertSvcClient: asc,
+		TimeNow:        utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:            utils.NewLogger("TEST"),
+	}
+
+	asc.EXPECT().ThrowNewAlert(&alertSimilarTo{
+		al: model.Alert{
+			AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+			AlertCategory:           model.AlertCategoryLicense,
+			AlertCode:               model.AlertCodeNewDatabase,
+			OtherInfo: map[string]interface{}{
+				"hostname": "superhost1",
+				"dbname":   "acd",
+			},
+		}}).Return(nil)
+
+	require.NoError(t, hds.checkNewLicenses(&hostData1, &hostData3))
+}
+
+func TestCheckNewLicenses_SuccessNewEnterpriseLicense(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	asc := NewMockAlertSvcClientInterface(mockCtrl)
+	hds := HostDataService{
+		Config:         config.Configuration{},
+		ServerVersion:  "",
+		Database:       db,
+		AlertSvcClient: asc,
+		TimeNow:        utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:            utils.NewLogger("TEST"),
+	}
+
+	gomock.InOrder(
+		asc.EXPECT().ThrowNewAlert(&alertSimilarTo{al: model.Alert{
+			AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+			AlertCategory:           model.AlertCategoryLicense,
+			AlertCode:               model.AlertCodeNewLicense,
+			OtherInfo: map[string]interface{}{
+				"hostname": "superhost1",
+			},
+		}}).Return(nil),
+		asc.EXPECT().ThrowNewAlert(&alertSimilarTo{al: model.Alert{
+			AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+			AlertCategory:           model.AlertCategoryLicense,
+			AlertCode:               model.AlertCodeNewOption,
+			OtherInfo: map[string]interface{}{
+				"hostname": "superhost1",
+				"dbname":   "acd",
+				"features": []string{"Driving"},
+			},
+		}}).Return(nil),
+	)
+
+	require.NoError(t, hds.checkNewLicenses(&hostData3, &hostData4))
+}
+
+func TestCheckNewLicenses_CantThrowNewAlert(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	asc := NewMockAlertSvcClientInterface(mockCtrl)
+	hds := HostDataService{
+		Config:         config.Configuration{},
+		ServerVersion:  "",
+		Database:       db,
+		AlertSvcClient: asc,
+		TimeNow:        utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:            utils.NewLogger("TEST"),
+	}
+
+	t.Run("Fail throwNewDatabaseAlert", func(t *testing.T) {
+		asc.EXPECT().ThrowNewAlert(&alertSimilarTo{al: model.Alert{
+			AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+			AlertCategory:           model.AlertCategoryLicense,
+			AlertCode:               model.AlertCodeNewDatabase,
+			OtherInfo: map[string]interface{}{
+				"hostname": "superhost1",
+				"dbname":   "acd",
+			},
+		}}).Return(aerrMock)
+
+		//TODO Add check that error has been logged
+		require.NoError(t, hds.checkNewLicenses(&hostData1, &hostData3))
+	})
+
+	t.Run("Fail throwNewEnterpriseLicenseAlert", func(t *testing.T) {
+		gomock.InOrder(
+			asc.EXPECT().ThrowNewAlert(&alertSimilarTo{al: model.Alert{
+				AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+				AlertCategory:           model.AlertCategoryLicense,
+				AlertCode:               model.AlertCodeNewLicense,
+				OtherInfo: map[string]interface{}{
+					"hostname": "superhost1",
+				},
+			}}).Return(aerrMock),
+			asc.EXPECT().ThrowNewAlert(&alertSimilarTo{al: model.Alert{
+				AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+				AlertCategory:           model.AlertCategoryLicense,
+				AlertCode:               model.AlertCodeNewOption,
+				OtherInfo: map[string]interface{}{
+					"hostname": "superhost1",
+					"dbname":   "acd",
+					"features": []string{"Driving"},
+				},
+			}}).Return(nil),
+		)
+
+		//TODO Add check that error has been logged
+		require.NoError(t, hds.checkNewLicenses(&hostData3, &hostData4))
+	})
+
+	t.Run("Fail throwActivatedFeaturesAlert", func(t *testing.T) {
+		gomock.InOrder(
+			asc.EXPECT().ThrowNewAlert(&alertSimilarTo{al: model.Alert{
+				AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+				AlertCategory:           model.AlertCategoryLicense,
+				AlertCode:               model.AlertCodeNewLicense,
+				OtherInfo: map[string]interface{}{
+					"hostname": "superhost1",
+				},
+			}}).Return(nil),
+			asc.EXPECT().ThrowNewAlert(&alertSimilarTo{al: model.Alert{
+				AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+				AlertCategory:           model.AlertCategoryLicense,
+				AlertCode:               model.AlertCodeNewOption,
+				OtherInfo: map[string]interface{}{
+					"hostname": "superhost1",
+					"dbname":   "acd",
+					"features": []string{"Driving"},
+				},
+			}}).Return(aerrMock),
+		)
+
+		//TODO Add check that error has been logged
+		require.NoError(t, hds.checkNewLicenses(&hostData3, &hostData4))
+	})
 }
