@@ -134,3 +134,36 @@ func (md *MongoDatabase) DeleteHostData(id primitive.ObjectID) utils.AdvancedErr
 
 	return nil
 }
+
+// FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
+func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time.Time) (*model.HostDataBE, utils.AdvancedErrorInterface) {
+	var out model.HostDataBE
+
+	//Find the most recent HostData older than t
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			mu.APMatch(bson.M{
+				"hostname":  hostname,
+				"createdAt": mu.QOLessThan(t),
+			}),
+			mu.APSort(bson.M{
+				"createdAt": -1,
+			}),
+			mu.APLimit(1),
+		),
+	)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return nil, nil
+	}
+
+	if err := cur.Decode(&out); err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return &out, nil
+}

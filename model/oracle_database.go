@@ -367,6 +367,7 @@ func DatabasesArrayAsMap(dbs []OracleDatabase) map[string]OracleDatabase {
 }
 
 // HasEnterpriseLicense return true if the database has enterprise license.
+//TODO Remove: we now use oracle_database_license_types collection, not the name
 func HasEnterpriseLicense(db OracleDatabase) bool {
 	//The database may not support the "license" feature
 	if db.Licenses == nil {

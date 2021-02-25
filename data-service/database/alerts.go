@@ -35,3 +35,20 @@ func (md *MongoDatabase) DeleteAllNoDataAlerts() utils.AdvancedErrorInterface {
 
 	return nil
 }
+
+// DeleteNoDataAlertByHost delete NO_DATA alert by hostname
+func (md *MongoDatabase) DeleteNoDataAlertByHost(hostname string) utils.AdvancedErrorInterface {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).
+		Collection("alerts").
+		DeleteOne(context.TODO(),
+			bson.M{
+				"alertCode":          model.AlertCodeNoData,
+				"otherInfo.hostname": hostname,
+			})
+
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	return nil
+}

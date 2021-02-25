@@ -45,7 +45,7 @@ func TestUpdateHostInfo_Success(t *testing.T) {
 
 	expectedHostDataBE := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
-	as.EXPECT().InsertHostData(expectedHostDataBE).Return(utils.Str2oid("5e9ff545e4c53a19c79eadfd"), nil)
+	as.EXPECT().InsertHostData(expectedHostDataBE).Return(nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.InsertHostData)
@@ -136,7 +136,7 @@ func TestUpdateHostInfo_InternalServerError(t *testing.T) {
 
 	expectedHostDataBE := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
-	as.EXPECT().InsertHostData(expectedHostDataBE).Return(nil, aerrMock)
+	as.EXPECT().InsertHostData(expectedHostDataBE).Return(aerrMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.InsertHostData)
