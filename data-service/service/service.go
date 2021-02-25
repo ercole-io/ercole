@@ -23,21 +23,20 @@ import (
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
 
 	alert_service_client "github.com/ercole-io/ercole/v2/alert-service/client"
 	"github.com/ercole-io/ercole/v2/data-service/database"
 )
 
 type HostDataServiceInterface interface {
-	InsertHostData(hostdata model.HostDataBE) (interface{}, utils.AdvancedErrorInterface)
+	InsertHostData(hostdata model.HostDataBE) error
 }
 
 type HostDataService struct {
-	Config             config.Configuration
-	ServerVersion      string
-	Database           database.MongoDatabaseInterface
-	AlertServiceClient alert_service_client.AlertSvcClientInterface
-	TimeNow            func() time.Time
-	Log                *logrus.Logger
+	Config         config.Configuration
+	ServerVersion  string
+	Database       database.MongoDatabaseInterface
+	AlertSvcClient alert_service_client.AlertSvcClientInterface
+	TimeNow        func() time.Time
+	Log            *logrus.Logger
 }
