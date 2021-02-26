@@ -32,12 +32,12 @@ func TestFreshnessCheckJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	fcj := FreshnessCheckJob{
-		TimeNow:            utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Database:           db,
-		AlertServiceClient: nil,
-		Config:             config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
-		Log:                utils.NewLogger("TEST"),
-		NewObjectID:        utils.NewObjectIDForTests(),
+		TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database:       db,
+		AlertSvcClient: nil,
+		Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
+		Log:            utils.NewLogger("TEST"),
+		NewObjectID:    utils.NewObjectIDForTests(),
 	}
 
 	db.EXPECT().DeleteAllNoDataAlerts().Return(nil).Times(1)
@@ -57,12 +57,12 @@ func TestFreshnessCheckJobRun_SuccessTwoOldCurrentHosts(t *testing.T) {
 	now := utils.Btc(utils.P("2019-11-05T14:02:03Z"))
 
 	fcj := FreshnessCheckJob{
-		TimeNow:            now,
-		Database:           db,
-		AlertServiceClient: asc,
-		Config:             config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
-		Log:                utils.NewLogger("TEST"),
-		NewObjectID:        utils.NewObjectIDForTests(),
+		TimeNow:        now,
+		Database:       db,
+		AlertSvcClient: asc,
+		Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
+		Log:            utils.NewLogger("TEST"),
+		NewObjectID:    utils.NewObjectIDForTests(),
 	}
 
 	db.EXPECT().DeleteAllNoDataAlerts().Return(nil).Times(1)
@@ -119,12 +119,12 @@ func TestFreshnessCheckJobRun_DeleteAllNoDataAlertsError(t *testing.T) {
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	fcj := FreshnessCheckJob{
-		TimeNow:            utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Database:           db,
-		AlertServiceClient: nil,
-		Config:             config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
-		Log:                utils.NewLogger("TEST"),
-		NewObjectID:        utils.NewObjectIDForTests(),
+		TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database:       db,
+		AlertSvcClient: nil,
+		Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
+		Log:            utils.NewLogger("TEST"),
+		NewObjectID:    utils.NewObjectIDForTests(),
 	}
 
 	db.EXPECT().DeleteAllNoDataAlerts().Return(aerrMock).Times(1)
@@ -137,12 +137,12 @@ func TestFreshnessCheckJobRun_FindOldCurrentHostdataError(t *testing.T) {
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	fcj := FreshnessCheckJob{
-		TimeNow:            utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Database:           db,
-		AlertServiceClient: nil,
-		Config:             config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
-		Log:                utils.NewLogger("TEST"),
-		NewObjectID:        utils.NewObjectIDForTests(),
+		TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database:       db,
+		AlertSvcClient: nil,
+		Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
+		Log:            utils.NewLogger("TEST"),
+		NewObjectID:    utils.NewObjectIDForTests(),
 	}
 
 	db.EXPECT().DeleteAllNoDataAlerts().Return(nil).Times(1)
@@ -159,12 +159,12 @@ func TestFreshnessCheckJobRun_ThrowNoDataAlertError(t *testing.T) {
 	now := utils.Btc(utils.P("2019-11-05T14:02:03Z"))
 
 	fcj := FreshnessCheckJob{
-		TimeNow:            utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Database:           db,
-		AlertServiceClient: asc,
-		Config:             config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
-		Log:                utils.NewLogger("TEST"),
-		NewObjectID:        utils.NewObjectIDForTests(),
+		TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database:       db,
+		AlertSvcClient: asc,
+		Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
+		Log:            utils.NewLogger("TEST"),
+		NewObjectID:    utils.NewObjectIDForTests(),
 	}
 
 	db.EXPECT().DeleteAllNoDataAlerts().Return(nil).Times(1)
@@ -224,24 +224,24 @@ func TestFreshnessCheckJobRun_InvalidDaysThresholdValue(t *testing.T) {
 
 	t.Run("DaysThreshold = 0", func(t *testing.T) {
 		fcj := FreshnessCheckJob{
-			TimeNow:            utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-			Database:           db,
-			AlertServiceClient: nil,
-			Config:             config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 0}}},
-			Log:                utils.NewLogger("TEST"),
-			NewObjectID:        utils.NewObjectIDForTests(),
+			TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+			Database:       db,
+			AlertSvcClient: nil,
+			Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 0}}},
+			Log:            utils.NewLogger("TEST"),
+			NewObjectID:    utils.NewObjectIDForTests(),
 		}
 		fcj.Run()
 	})
 
 	t.Run("DaysThreshold < 0", func(t *testing.T) {
 		fcj := FreshnessCheckJob{
-			TimeNow:            utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-			Database:           db,
-			AlertServiceClient: nil,
-			Config:             config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: -42}}},
-			Log:                utils.NewLogger("TEST"),
-			NewObjectID:        utils.NewObjectIDForTests(),
+			TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+			Database:       db,
+			AlertSvcClient: nil,
+			Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: -42}}},
+			Log:            utils.NewLogger("TEST"),
+			NewObjectID:    utils.NewObjectIDForTests(),
 		}
 		fcj.Run()
 	})

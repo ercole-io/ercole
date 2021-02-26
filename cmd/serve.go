@@ -36,6 +36,7 @@ import (
 	dataservice_job "github.com/ercole-io/ercole/v2/data-service/job"
 	dataservice_service "github.com/ercole-io/ercole/v2/data-service/service"
 
+	alertservice_client "github.com/ercole-io/ercole/v2/alert-service/client"
 	alertservice_controller "github.com/ercole-io/ercole/v2/alert-service/controller"
 	alertservice_database "github.com/ercole-io/ercole/v2/alert-service/database"
 	alertservice_emailer "github.com/ercole-io/ercole/v2/alert-service/emailer"
@@ -139,11 +140,12 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 	db.Init()
 
 	service := &dataservice_service.HostDataService{
-		Config:        config,
-		ServerVersion: config.Version,
-		Database:      db,
-		TimeNow:       time.Now,
-		Log:           log,
+		Config:         config,
+		ServerVersion:  config.Version,
+		Database:       db,
+		AlertSvcClient: alertservice_client.NewClient(config.AlertService),
+		TimeNow:        time.Now,
+		Log:            log,
 	}
 
 	job := &dataservice_job.Job{
@@ -175,7 +177,10 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 	go func() {
 		log.Println("Start data-service: listening at", config.DataService.Port)
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.DataService.BindIP, config.DataService.Port), cors.AllowAll().Handler(logRouter))
-		log.Println("Stopping data-service", err)
+		if err != nil {
+			log.Error("Stopped data-service: ", err)
+		}
+
 		wg.Done()
 	}()
 }
@@ -224,7 +229,9 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 	go func() {
 		log.Println("Start alert-service: listening at", config.AlertService.Port)
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.AlertService.BindIP, config.AlertService.Port), cors.AllowAll().Handler(logRouter))
-		log.Println("Stopping alert-service", err)
+		if err != nil {
+			log.Error("Stopping alert-service: ", err)
+		}
 
 		cancel()
 		wg.Done()
@@ -279,7 +286,9 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	go func() {
 		log.Info("Start api-service: listening at ", config.APIService.Port)
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.APIService.BindIP, config.APIService.Port), cors.AllowAll().Handler(logRouter))
-		log.Warn("Stopping api-service", err)
+		if err != nil {
+			log.Error("Stopping api-service: ", err)
+		}
 		wg.Done()
 	}()
 }
@@ -327,7 +336,10 @@ func serveChartService(config config.Configuration, wg *sync.WaitGroup) {
 	go func() {
 		log.Info("Start chart-service: listening at ", config.ChartService.Port)
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.ChartService.BindIP, config.ChartService.Port), cors.AllowAll().Handler(logRouter))
-		log.Warn("Stopping chart-service", err)
+		if err != nil {
+			log.Error("Stopping chart-service: ", err)
+		}
+
 		wg.Done()
 	}()
 }
