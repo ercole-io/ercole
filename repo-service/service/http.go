@@ -54,7 +54,10 @@ func (hs *HTTPSubRepoService) Init(wg *sync.WaitGroup) {
 	go func() {
 		hs.Log.Info("Start repo-service/http: listening at ", hs.Config.RepoService.HTTP.Port)
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", hs.Config.RepoService.HTTP.BindIP, hs.Config.RepoService.HTTP.Port), cors.AllowAll().Handler(logRouter))
-		hs.Log.Info("Stopping repo-service/http", err)
+		if err != nil {
+			hs.Log.Error("Stopping repo-service/http: ", err)
+		}
+
 		wg.Done()
 	}()
 }
