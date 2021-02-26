@@ -64,7 +64,8 @@ func (hs *SFTPRepoSubService) Init(_ *sync.WaitGroup) {
 	hs.Log.Info("Start repo-service/sftp: listening at ", hs.Config.RepoService.SFTP.Port)
 	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", hs.Config.RepoService.SFTP.BindIP, hs.Config.RepoService.SFTP.Port))
 	if err != nil {
-		hs.Log.Fatal("Stopping repo-service/http", err)
+		hs.Log.Error("Stopping repo-service/sftp: ", err)
+		return
 	}
 
 	//Start the sftp sub service
