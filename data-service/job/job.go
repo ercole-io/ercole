@@ -8,7 +8,6 @@ import (
 	alert_service_client "github.com/ercole-io/ercole/v2/alert-service/client"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/data-service/database"
-	"github.com/ercole-io/ercole/v2/data-service/service"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -23,7 +22,6 @@ type Job struct {
 	Database      database.MongoDatabaseInterface
 	TimeNow       func() time.Time
 	Log           *logrus.Logger
-	DataService   service.HostDataServiceInterface
 }
 
 func (j *Job) Init() {
@@ -48,11 +46,11 @@ func (j *Job) Init() {
 	}
 
 	freshnessJob := &FreshnessCheckJob{
-		TimeNow:            j.TimeNow,
-		Database:           j.Database,
-		AlertServiceClient: alert_service_client.NewClient(j.Config.AlertService),
-		Config:             j.Config,
-		Log:                j.Log,
+		TimeNow:        j.TimeNow,
+		Database:       j.Database,
+		AlertSvcClient: alert_service_client.NewClient(j.Config.AlertService),
+		Config:         j.Config,
+		Log:            j.Log,
 		NewObjectID: func() primitive.ObjectID {
 			return primitive.NewObjectIDFromTimestamp(j.TimeNow())
 		},
