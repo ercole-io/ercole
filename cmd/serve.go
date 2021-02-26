@@ -201,7 +201,8 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 		Log:      log,
 		Emailer:  emailer,
 	}
-	service.Init(wg)
+	ctx, cancel := context.WithCancel(context.Background())
+	service.Init(ctx, wg)
 
 	router := mux.NewRouter()
 	ctrl := &alertservice_controller.AlertQueueController{
@@ -224,6 +225,8 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 		log.Println("Start alert-service: listening at", config.AlertService.Port)
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.AlertService.BindIP, config.AlertService.Port), cors.AllowAll().Handler(logRouter))
 		log.Println("Stopping alert-service", err)
+
+		cancel()
 		wg.Done()
 	}()
 }

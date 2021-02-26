@@ -17,6 +17,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"time"
@@ -35,7 +36,7 @@ import (
 // AlertServiceInterface is a interface that wrap methods used to insert and process alert messages
 type AlertServiceInterface interface {
 	// Init initializes the service
-	Init(wg *sync.WaitGroup)
+	Init(ctx context.Context, wg *sync.WaitGroup)
 	// ProcessMsg processes the message msg
 	ProcessMsg(msg hub.Message)
 	ThrowNewAlert(alert model.Alert) utils.AdvancedErrorInterface
@@ -68,21 +69,29 @@ type AlertService struct {
 }
 
 // Init initializes the service and database
-func (as *AlertService) Init(wg *sync.WaitGroup) {
+func (as *AlertService) Init(ctx context.Context, wg *sync.WaitGroup) {
 	//Create a new queue
 	as.Queue = hub.New()
 
 	//Subscribe the alert-service
 	sub := as.Queue.Subscribe(as.Config.AlertService.QueueBufferSize, model.TopicHostDataInsertion, model.TopicAlertInsertion)
+
 	wg.Add(1)
+
 	go func(s hub.Subscription) {
 		as.Log.Info("Start alert-service/queue")
 		for msg := range s.Receiver {
 			as.ProcessMsg(msg)
 		}
 		as.Log.Info("Stop alert-service/queue")
+
 		wg.Done()
 	}(sub)
+
+	go func() {
+		<-ctx.Done()
+		as.Queue.Close()
+	}()
 }
 
 // AlertInsertion inserts an alert insertion in the queue
