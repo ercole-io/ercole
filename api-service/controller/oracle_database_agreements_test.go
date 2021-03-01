@@ -350,7 +350,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_InternalServerError(t *t
 	})
 	t.Run("Invalid PartID", func(t *testing.T) {
 		as.EXPECT().UpdateAssociatedLicenseTypeOfOracleDbAgreement(request).
-			Return(utils.AerrOracleDatabaseAgreementInvalidPartID)
+			Return(utils.AerrOracleDatabaseLicenseTypeIDNotFound)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.UpdateAssociatedLicenseTypeOfOracleDbAgreement)

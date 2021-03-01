@@ -343,7 +343,7 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 
 		res, err := as.AddAssociatedLicenseTypeToOracleDbAgreement(addRequestWrongPart)
 
-		require.EqualError(t, err, utils.AerrOracleDatabaseAgreementInvalidPartID.Error())
+		require.EqualError(t, err, utils.AerrOracleDatabaseLicenseTypeIDNotFound.Error())
 
 		assert.Equal(t, "", res)
 
@@ -505,7 +505,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement(t *testing.T) {
 		req.LicenseTypeID = "this is a wrong licenseTypeID"
 
 		err := as.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
-		assert.EqualError(t, err, utils.AerrOracleDatabaseAgreementInvalidPartID.Error())
+		assert.EqualError(t, err, utils.AerrOracleDatabaseLicenseTypeIDNotFound.Error())
 	})
 }
 
