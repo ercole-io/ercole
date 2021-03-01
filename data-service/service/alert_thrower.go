@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -18,7 +17,7 @@ func (hds *HostDataService) throwNewDatabaseAlert(dbname string, hostname string
 		AlertSeverity:           model.AlertSeverityInfo,
 		AlertStatus:             model.AlertStatusNew,
 		Date:                    hds.TimeNow(),
-		Description:             fmt.Sprintf("The database '%s' was created on the server %s", dbname, hostname),
+		Description:             fmt.Sprintf("The database %s was created on the host %s", dbname, hostname),
 		OtherInfo: map[string]interface{}{
 			"hostname": hostname,
 			"dbname":   dbname,
@@ -38,7 +37,7 @@ func (hds *HostDataService) throwNewServerAlert(hostname string) error {
 		AlertSeverity:           model.AlertSeverityInfo,
 		AlertStatus:             model.AlertStatusNew,
 		Date:                    hds.TimeNow(),
-		Description:             fmt.Sprintf("The server '%s' was added to ercole", hostname),
+		Description:             fmt.Sprintf("The host %s was added to ercole", hostname),
 		OtherInfo: map[string]interface{}{
 			"hostname": hostname,
 		},
@@ -48,18 +47,30 @@ func (hds *HostDataService) throwNewServerAlert(hostname string) error {
 }
 
 // ThrowNewEnterpriseLicenseAlert create and insert in the database a new NEW_DATABASE alert
-func (hds *HostDataService) throwNewEnterpriseLicenseAlert(hostname string) error {
+func (hds *HostDataService) throwNewLicenseAlert(hostname, dbname string, licenseType model.OracleDatabaseLicenseType,
+	alreadyEnabledBefore bool) error {
+
+	severity := model.AlertSeverityCritical
+	description := fmt.Sprintf("The database %s on %s has enabled new license: %s", dbname, hostname, licenseType.ItemDescription)
+
+	if alreadyEnabledBefore {
+		severity = model.AlertSeverityInfo
+		description += " (already enabled before in this host)"
+	}
+
 	alr := model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(hds.TimeNow()),
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
 		AlertCategory:           model.AlertCategoryLicense,
 		AlertCode:               model.AlertCodeNewLicense,
-		AlertSeverity:           model.AlertSeverityCritical,
+		AlertSeverity:           severity,
 		AlertStatus:             model.AlertStatusNew,
 		Date:                    hds.TimeNow(),
-		Description:             fmt.Sprintf("A new Enterprise license has been enabled to %s", hostname),
+		Description:             description,
 		OtherInfo: map[string]interface{}{
-			"hostname": hostname,
+			"hostname":      hostname,
+			"dbname":        dbname,
+			"licenseTypeID": licenseType.ID,
 		},
 	}
 
@@ -67,20 +78,30 @@ func (hds *HostDataService) throwNewEnterpriseLicenseAlert(hostname string) erro
 }
 
 // ThrowActivatedFeaturesAlert create and insert in the database a new NEW_OPTION alert
-func (hds *HostDataService) throwActivatedFeaturesAlert(dbname string, hostname string, activatedFeatures []string) error {
+func (hds *HostDataService) throwNewOptionAlert(hostname, dbname string, licenseType model.OracleDatabaseLicenseType,
+	alreadyEnabledBefore bool) error {
+
+	severity := model.AlertSeverityCritical
+	description := fmt.Sprintf("The database %s on %s has enabled new option: %s", dbname, hostname, licenseType.ItemDescription)
+
+	if alreadyEnabledBefore {
+		severity = model.AlertSeverityInfo
+		description += " (already enabled before in this host)"
+	}
+
 	alr := model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(hds.TimeNow()),
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
 		AlertCategory:           model.AlertCategoryLicense,
 		AlertCode:               model.AlertCodeNewOption,
-		AlertSeverity:           model.AlertSeverityCritical,
+		AlertSeverity:           severity,
 		AlertStatus:             model.AlertStatusNew,
 		Date:                    hds.TimeNow(),
-		Description:             fmt.Sprintf("The database %s on %s has enabled new features (%s) on server", dbname, hostname, strings.Join(activatedFeatures, ", ")),
+		Description:             description,
 		OtherInfo: map[string]interface{}{
-			"hostname": hostname,
-			"dbname":   dbname,
-			"features": activatedFeatures,
+			"hostname":      hostname,
+			"dbname":        dbname,
+			"licenseTypeID": licenseType.ID,
 		},
 	}
 
@@ -101,6 +122,25 @@ func (hds *HostDataService) throwUnlistedRunningDatabasesAlert(dbname string, ho
 		OtherInfo: map[string]interface{}{
 			"hostname": hostname,
 			"dbname":   dbname,
+		},
+	}
+
+	return hds.AlertSvcClient.ThrowNewAlert(alr)
+}
+
+func (hds *HostDataService) throwAugmentedCPUCoresAlert(hostname string, previousCPUCores, newCPUCores int) error {
+	alr := model.Alert{
+		ID:                      primitive.NewObjectIDFromTimestamp(hds.TimeNow()),
+		AlertAffectedTechnology: nil,
+		AlertCategory:           model.AlertCategoryLicense,
+		AlertCode:               model.AlertCodeIncreasedCPUCores,
+		AlertSeverity:           model.AlertSeverityCritical,
+		AlertStatus:             model.AlertStatusNew,
+		Date:                    hds.TimeNow(),
+		Description: fmt.Sprintf("The host %s has now more CPU cores: from %d to %d",
+			hostname, previousCPUCores, newCPUCores),
+		OtherInfo: map[string]interface{}{
+			"hostname": hostname,
 		},
 	}
 

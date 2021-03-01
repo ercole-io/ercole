@@ -85,28 +85,28 @@ const (
 )
 
 // DiffLicenses return a map that contains the difference of status between the oldLicenses and newLicenses
-func DiffLicenses(oldLicenses []OracleDatabaseLicense, newLicenses []OracleDatabaseLicense) map[string]int {
+func DiffLicenses(oldLicenses, newLicenses []OracleDatabaseLicense) map[string]int {
 	result := make(map[string]int)
 
 	//Add the features to the result assuming that the all new features are inactive
 	for _, license := range oldLicenses {
 		if license.Count > 0 {
-			result[license.Name] = DiffFeatureDeactivated
+			result[license.LicenseTypeID] = DiffFeatureDeactivated
 		} else {
-			result[license.Name] = DiffFeatureInactive
+			result[license.LicenseTypeID] = DiffFeatureInactive
 		}
 	}
 
 	//Activate/deactivate missing feature
 	for _, license := range newLicenses {
-		if (result[license.Name] == DiffFeatureInactive || result[license.Name] == DiffFeatureMissing) && license.Count <= 0 {
-			result[license.Name] = DiffFeatureInactive
-		} else if (result[license.Name] == DiffFeatureDeactivated) && license.Count <= 0 {
-			result[license.Name] = DiffFeatureDeactivated
-		} else if (result[license.Name] == DiffFeatureInactive || result[license.Name] == DiffFeatureMissing) && license.Count > 0 {
-			result[license.Name] = DiffFeatureActivated
-		} else if (result[license.Name] == DiffFeatureDeactivated) && license.Count > 0 {
-			result[license.Name] = DiffFeatureActive
+		if (result[license.LicenseTypeID] == DiffFeatureInactive || result[license.LicenseTypeID] == DiffFeatureMissing) && license.Count <= 0 {
+			result[license.LicenseTypeID] = DiffFeatureInactive
+		} else if (result[license.LicenseTypeID] == DiffFeatureDeactivated) && license.Count <= 0 {
+			result[license.LicenseTypeID] = DiffFeatureDeactivated
+		} else if (result[license.LicenseTypeID] == DiffFeatureInactive || result[license.LicenseTypeID] == DiffFeatureMissing) && license.Count > 0 {
+			result[license.LicenseTypeID] = DiffFeatureActivated
+		} else if (result[license.LicenseTypeID] == DiffFeatureDeactivated) && license.Count > 0 {
+			result[license.LicenseTypeID] = DiffFeatureActive
 		}
 	}
 

@@ -13,23 +13,33 @@ import (
 )
 
 func (hds *HostDataService) oracleDatabasesChecks(previousHostdata, hostdata *model.HostDataBE) {
-	oracleFeature := hostdata.Features.Oracle
-
-	if oracleFeature.Database == nil || oracleFeature.Database.Databases == nil {
+	if hostdata.Features.Oracle.Database == nil || hostdata.Features.Oracle.Database.Databases == nil {
 		return
 	}
 
 	hds.checkSecondaryDbs(hostdata)
 
-	hds.setLicenseTypes(hostdata)
+	licenseTypes, err := hds.getOracleDatabaseLicenseTypes(hostdata.Environment)
+	if err != nil {
+		utils.LogErr(hds.Log, utils.NewAdvancedErrorPtr(err, "INSERT_HOSTDATA_ORACLE_DATABASE"))
+		licenseTypes = make([]model.OracleDatabaseLicenseType, 0)
+	}
+	hds.setLicenseTypes(hostdata, licenseTypes)
 
-	if err := hds.checkNewLicenses(previousHostdata, hostdata); err != nil {
+	if err := hds.checkNewLicenses(previousHostdata, hostdata, licenseTypes); err != nil {
 		hds.Log.Error(err)
-		return
 	}
 
 	for _, dbname := range hostdata.Features.Oracle.Database.UnlistedRunningDatabases {
 		if err := hds.throwUnlistedRunningDatabasesAlert(dbname, hostdata.Hostname); err != nil {
+			hds.Log.Error(err)
+		}
+	}
+
+	if previousHostdata != nil && previousHostdata.Info.CPUCores < hostdata.Info.CPUCores {
+		if err := hds.throwAugmentedCPUCoresAlert(hostdata.Hostname,
+			previousHostdata.Info.CPUCores,
+			hostdata.Info.CPUCores); err != nil {
 			hds.Log.Error(err)
 		}
 	}
@@ -168,6 +178,13 @@ func licenseTypesSorter(config config.DataService, environment string, licenseTy
 	}
 }
 
+func (hds *HostDataService) setLicenseTypes(hostdata *model.HostDataBE, licenseTypes []model.OracleDatabaseLicenseType) {
+	for i := range hostdata.Features.Oracle.Database.Databases {
+		db := &hostdata.Features.Oracle.Database.Databases[i]
+		setLicenseTypeIDs(licenseTypes, db)
+	}
+}
+
 func setLicenseTypeIDs(licenseTypes []model.OracleDatabaseLicenseType, database *model.OracleDatabase) {
 licenses:
 	for i := range database.Licenses {
@@ -181,19 +198,6 @@ licenses:
 				}
 			}
 		}
-	}
-}
-
-func (hds *HostDataService) setLicenseTypes(hostdata *model.HostDataBE) {
-	licenseTypes, err := hds.getOracleDatabaseLicenseTypes(hostdata.Environment)
-	if err != nil {
-		utils.LogErr(hds.Log, utils.NewAdvancedErrorPtr(err, "INSERT_HOSTDATA_ORACLE_DATABASE"))
-		licenseTypes = make([]model.OracleDatabaseLicenseType, 0)
-	}
-
-	for i := range hostdata.Features.Oracle.Database.Databases {
-		db := &hostdata.Features.Oracle.Database.Databases[i]
-		setLicenseTypeIDs(licenseTypes, db)
 	}
 }
 
@@ -223,10 +227,12 @@ func (hds *HostDataService) getOracleDatabaseLicenseTypes(environment string,
 	return licenseTypes, nil
 }
 
-// find the difference between the data and generate eventually alerts for such difference
-func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE) error {
+func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, licenseTypes []model.OracleDatabaseLicenseType) error {
 	previousDbs := make(map[string]model.OracleDatabase)
-	if previous.Features.Oracle.Database != nil && previous.Features.Oracle.Database.Databases != nil {
+	if previous != nil &&
+		previous.Features.Oracle != nil &&
+		previous.Features.Oracle.Database != nil &&
+		previous.Features.Oracle.Database.Databases != nil {
 		previousDbs = model.DatabasesArrayAsMap(previous.Features.Oracle.Database.Databases)
 	}
 
@@ -235,13 +241,25 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE) er
 		newDbs = model.DatabasesArrayAsMap(new.Features.Oracle.Database.Databases)
 	}
 
-	newEnterpriseLicenseAlertThrown := false
+	previousLicenseTypesEnabled := make(map[string]bool)
+	for _, db := range previousDbs {
+		for _, license := range db.Licenses {
+			if license.Count > 0 {
+				previousLicenseTypesEnabled[license.LicenseTypeID] = true
+			}
+		}
+	}
+
+	licenseTypesMap := make(map[string]*model.OracleDatabaseLicenseType)
+	for i := range licenseTypes {
+		licenseTypesMap[licenseTypes[i].ID] = &licenseTypes[i]
+	}
+
 	for _, newDb := range newDbs {
 
-		var oldDb model.OracleDatabase
-		if val, ok := previousDbs[newDb.Name]; ok {
-			oldDb = val
-		} else {
+		oldDb, ok := previousDbs[newDb.Name]
+
+		if !ok {
 			oldDb = model.OracleDatabase{
 				Licenses: []model.OracleDatabaseLicense{},
 			}
@@ -251,30 +269,27 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE) er
 			}
 		}
 
-		if ((previous.Info.CPUCores < new.Info.CPUCores) ||
-			(!model.HasEnterpriseLicense(oldDb) && model.HasEnterpriseLicense(newDb))) &&
-			!newEnterpriseLicenseAlertThrown {
-			if err := hds.throwNewEnterpriseLicenseAlert(new.Hostname); err != nil {
-				hds.Log.Error(err)
-			}
-			newEnterpriseLicenseAlertThrown = true
-		}
+		diffs := model.DiffLicenses(oldDb.Licenses, newDb.Licenses)
 
-		//TODO notify Oracle STD
+		for licenseTypeID, diffFeature := range diffs {
 
-		diff := model.DiffLicenses(oldDb.Licenses, newDb.Licenses)
+			if diffFeature == model.DiffFeatureActivated {
+				licenseType, ok := licenseTypesMap[licenseTypeID]
+				if !ok {
+					hds.Log.Warnf("%v: %s", utils.ErrOracleDatabaseLicenseTypeIDNotFound, licenseTypeID)
+					continue
+				}
 
-		activatedLicenses := []string{}
-		for license, val := range diff {
-			if val == model.DiffFeatureActivated && license != "Oracle ENT" && license != "Oracle STD" && license != "Oracle EXE" {
-				activatedLicenses = append(activatedLicenses, license)
-			}
-		}
-
-		//TODO Compare activated licenses with previous hostdata
-		if len(activatedLicenses) > 0 {
-			if err := hds.throwActivatedFeaturesAlert(newDb.Name, new.Hostname, activatedLicenses); err != nil {
-				hds.Log.Error(err)
+				alreadyEnabledBefore := previousLicenseTypesEnabled[licenseTypeID]
+				if licenseType.Option {
+					if err := hds.throwNewOptionAlert(new.Hostname, newDb.Name, *licenseType, alreadyEnabledBefore); err != nil {
+						hds.Log.Error(err)
+					}
+				} else {
+					if err := hds.throwNewLicenseAlert(new.Hostname, newDb.Name, *licenseType, alreadyEnabledBefore); err != nil {
+						hds.Log.Error(err)
+					}
+				}
 			}
 		}
 	}

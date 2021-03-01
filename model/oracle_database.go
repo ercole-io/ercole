@@ -365,21 +365,3 @@ func DatabasesArrayAsMap(dbs []OracleDatabase) map[string]OracleDatabase {
 	}
 	return out
 }
-
-// HasEnterpriseLicense return true if the database has enterprise license.
-//TODO Remove: we now use oracle_database_license_types collection, not the name
-func HasEnterpriseLicense(db OracleDatabase) bool {
-	//The database may not support the "license" feature
-	if db.Licenses == nil {
-		return false
-	}
-
-	//Search for a enterprise license
-	for _, lic := range db.Licenses {
-		if (lic.Name == "Oracle ENT" || lic.Name == "oracle ENT" || lic.Name == "Oracle EXT" || lic.Name == "oracle EXT") && lic.Count > 0 {
-			return true
-		}
-	}
-
-	return false
-}
