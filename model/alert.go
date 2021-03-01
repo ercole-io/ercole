@@ -57,16 +57,17 @@ const (
 
 	// LICENSE
 
-	AlertCodeNewDatabase string = "NEW_DATABASE"
-	AlertCodeNewLicense  string = "NEW_LICENSE"
-	AlertCodeNewOption   string = "NEW_OPTION"
+	AlertCodeNewDatabase       string = "NEW_DATABASE"
+	AlertCodeNewLicense        string = "NEW_LICENSE"
+	AlertCodeNewOption         string = "NEW_OPTION"
+	AlertCodeIncreasedCPUCores string = "INCREASED_CPU_CORES"
 )
 
 func getAlertCodes() []string {
 	return []string{
 		AlertCodeNewServer, AlertCodeUnlistedRunningDatabase, AlertCodeMissingPrimaryDatabase,
 		AlertCodeNoData,
-		AlertCodeNewDatabase, AlertCodeNewLicense, AlertCodeNewOption,
+		AlertCodeNewDatabase, AlertCodeNewLicense, AlertCodeNewOption, AlertCodeIncreasedCPUCores,
 	}
 }
 
