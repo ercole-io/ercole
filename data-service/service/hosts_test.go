@@ -18,10 +18,7 @@
 package service
 
 import (
-	"bytes"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -35,7 +32,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInsertHostData_NewHost(t *testing.T) {
+func TestInsertHostData_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -59,40 +56,88 @@ func TestInsertHostData_NewHost(t *testing.T) {
 	}
 	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
-	gomock.InOrder(
-		db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{}, nil),
-		db.EXPECT().FindMostRecentHostDataOlderThan(hd.Hostname, utils.P("2019-11-05T14:02:03Z")).Return(nil, nil),
-		asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
-			assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
-		}).Return(nil),
-		db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil),
-		db.EXPECT().InsertHostData(gomock.Any()).
-			Do(func(newHD model.HostDataBE) {
-				assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
-				assert.False(t, newHD.Archived)
-				assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
-				assert.Equal(t, model.SchemaVersion, newHD.ServerSchemaVersion)
-				assert.Equal(t, "1.6.6", newHD.ServerVersion)
-				assert.Equal(t, hd.Hostname, newHD.Hostname)
-				assert.Equal(t, hd.Environment, newHD.Environment)
-				//I assume that other fields are correct
-			}).
-			Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil),
-		db.EXPECT().DeleteNoDataAlertByHost(hd.Hostname).Return(nil),
-	)
+	t.Run("New host", func(t *testing.T) {
+		gomock.InOrder(
+			db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{}, nil),
+			db.EXPECT().FindMostRecentHostDataOlderThan(hd.Hostname, utils.P("2019-11-05T14:02:03Z")).Return(nil, nil),
+			asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
+				assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
+			}).Return(nil),
+			db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil),
+			db.EXPECT().InsertHostData(gomock.Any()).
+				Do(func(newHD model.HostDataBE) {
+					assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
+					assert.False(t, newHD.Archived)
+					assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
+					assert.Equal(t, model.SchemaVersion, newHD.ServerSchemaVersion)
+					assert.Equal(t, "1.6.6", newHD.ServerVersion)
+					assert.Equal(t, hd.Hostname, newHD.Hostname)
+					assert.Equal(t, hd.Environment, newHD.Environment)
+					//I assume that other fields are correct
+				}).
+				Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil),
+			db.EXPECT().DeleteNoDataAlertByHost(hd.Hostname).Return(nil),
+		)
 
-	http.DefaultClient = NewHTTPTestClient(func(req *http.Request) (*http.Response, error) {
-		assert.Equal(t, "http://publ1sh3r:M0stS3cretP4ssw0rd@ercole.example.org/queue/host-data-insertion/5dd3a8db184dbf295f0376f2", req.URL.String())
-
-		return &http.Response{
-			StatusCode: 200,
-			Body:       ioutil.NopCloser(bytes.NewBufferString(``)),
-			Header:     make(http.Header),
-		}, nil
+		err := hds.InsertHostData(hd)
+		require.NoError(t, err)
 	})
 
-	err := hds.InsertHostData(hd)
-	require.NoError(t, err)
+	t.Run("Update dismissed host", func(t *testing.T) {
+		previousHostdata := &model.HostDataBE{Archived: true} // it's dismissed!
+
+		gomock.InOrder(
+			db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{}, nil),
+			db.EXPECT().FindMostRecentHostDataOlderThan(hd.Hostname, utils.P("2019-11-05T14:02:03Z")).
+				Return(previousHostdata, nil),
+			asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
+				assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
+			}).Return(nil),
+			db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil),
+			db.EXPECT().InsertHostData(gomock.Any()).
+				Do(func(newHD model.HostDataBE) {
+					assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
+					assert.False(t, newHD.Archived)
+					assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
+					assert.Equal(t, model.SchemaVersion, newHD.ServerSchemaVersion)
+					assert.Equal(t, "1.6.6", newHD.ServerVersion)
+					assert.Equal(t, hd.Hostname, newHD.Hostname)
+					assert.Equal(t, hd.Environment, newHD.Environment)
+					//I assume that other fields are correct
+				}).
+				Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil),
+			db.EXPECT().DeleteNoDataAlertByHost(hd.Hostname).Return(nil),
+		)
+
+		err := hds.InsertHostData(hd)
+		require.NoError(t, err)
+	})
+	t.Run("Update host", func(t *testing.T) {
+		previousHostdata := &model.HostDataBE{Archived: false}
+
+		gomock.InOrder(
+			db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{}, nil),
+			db.EXPECT().FindMostRecentHostDataOlderThan(hd.Hostname, utils.P("2019-11-05T14:02:03Z")).
+				Return(previousHostdata, nil),
+			db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil),
+			db.EXPECT().InsertHostData(gomock.Any()).
+				Do(func(newHD model.HostDataBE) {
+					assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
+					assert.False(t, newHD.Archived)
+					assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
+					assert.Equal(t, model.SchemaVersion, newHD.ServerSchemaVersion)
+					assert.Equal(t, "1.6.6", newHD.ServerVersion)
+					assert.Equal(t, hd.Hostname, newHD.Hostname)
+					assert.Equal(t, hd.Environment, newHD.Environment)
+					//I assume that other fields are correct
+				}).
+				Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil),
+			db.EXPECT().DeleteNoDataAlertByHost(hd.Hostname).Return(nil),
+		)
+
+		err := hds.InsertHostData(hd)
+		require.NoError(t, err)
+	})
 }
 
 func TestInsertHostData_DatabaseError1(t *testing.T) {
