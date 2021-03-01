@@ -22,6 +22,7 @@ type OracleDatabaseLicenseType struct {
 	Metric          string   `json:"metric" bson:"metric"`
 	Cost            float64  `json:"cost" bson:"cost"`
 	Aliases         []string `json:"aliases" bson:"aliases"`
+	Option          bool     `json:"option" bson:"option"`
 }
 
 // OracleDatabaseAgreementPart known metrics

@@ -40,9 +40,8 @@ var AerrAlertNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrAlertNotFo
 var ErrClusterNotFound = errors.New("Cluster not found")
 var AerrClusterNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrClusterNotFound, "DB ERROR")
 
-// ErrOracleDatabaseAgreementInvalidPartID contains "Invalid PartID in request" error
-var ErrOracleDatabaseAgreementInvalidPartID = errors.New("Invalid PartID in request")
-var AerrOracleDatabaseAgreementInvalidPartID AdvancedErrorInterface = NewAdvancedErrorPtr(ErrOracleDatabaseAgreementInvalidPartID, "CLIENT ERROR")
+var ErrOracleDatabaseLicenseTypeIDNotFound = errors.New("Oracle Database LicenseTypeID not found")
+var AerrOracleDatabaseLicenseTypeIDNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrOracleDatabaseLicenseTypeIDNotFound, "CLIENT ERROR")
 
 // ErrOracleDatabaseAgreementNotFound contains "Agreement not found" error
 var ErrOracleDatabaseAgreementNotFound = errors.New("Agreement not found")

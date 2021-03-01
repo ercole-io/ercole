@@ -89,7 +89,7 @@ func (ctrl *APIController) UpdateAssociatedLicenseTypeOfOracleDbAgreement(w http
 
 	err := ctrl.Service.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
 	if err == utils.AerrOracleDatabaseAgreementNotFound ||
-		err == utils.AerrOracleDatabaseAgreementInvalidPartID {
+		err == utils.AerrOracleDatabaseLicenseTypeIDNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 	} else if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)

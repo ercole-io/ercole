@@ -59,7 +59,7 @@ func (as *APIService) GetOracleDatabaseLicenseType(id string) (*model.OracleData
 		}
 	}
 
-	return nil, utils.AerrOracleDatabaseAgreementInvalidPartID
+	return nil, utils.AerrOracleDatabaseLicenseTypeIDNotFound
 }
 
 func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabaseLicenseUsage, utils.AdvancedErrorInterface) {
