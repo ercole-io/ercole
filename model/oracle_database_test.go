@@ -44,30 +44,3 @@ func TestDatabasesArrayAsMap(t *testing.T) {
 		Platform: "PPH 1.2.3",
 	}, dbsMap["superdb2"])
 }
-
-func TestHasEnterpriseLicense_NoEnterpriseLicense(t *testing.T) {
-	assert.False(t, HasEnterpriseLicense(OracleDatabase{
-		Name: "superdb",
-		Licenses: []OracleDatabaseLicense{
-			{Name: "Driving", Count: 10},
-			{Name: "Illegal query engine", Count: 9},
-		},
-	}))
-}
-
-func TestHasEnterpriseLicense_WithEnterpriseLicense(t *testing.T) {
-	assert.True(t, HasEnterpriseLicense(OracleDatabase{
-		Name: "superdb",
-		Licenses: []OracleDatabaseLicense{
-			{Name: "Oracle ENT", Count: 10},
-			{Name: "Illegal query engine", Count: 9},
-		},
-	}))
-}
-
-func TestHasEnterpriseLicense_NilLicense(t *testing.T) {
-	assert.False(t, HasEnterpriseLicense(OracleDatabase{
-		Name:     "superdb",
-		Licenses: nil,
-	}))
-}

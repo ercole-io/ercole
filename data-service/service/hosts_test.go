@@ -63,7 +63,7 @@ func TestInsertHostData_NewHost(t *testing.T) {
 		db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{}, nil),
 		db.EXPECT().FindMostRecentHostDataOlderThan(hd.Hostname, utils.P("2019-11-05T14:02:03Z")).Return(nil, nil),
 		asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
-			assert.Equal(t, "The server 'rac1_x' was added to ercole", a.Description)
+			assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
 		}).Return(nil),
 		db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil),
 		db.EXPECT().InsertHostData(gomock.Any()).
@@ -118,7 +118,7 @@ func TestInsertHostData_DatabaseError1(t *testing.T) {
 	gomock.InOrder(
 		db.EXPECT().FindMostRecentHostDataOlderThan(hd.Hostname, utils.P("2019-11-05T14:02:03Z")).Return(nil, nil),
 		asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
-			assert.Equal(t, "The server 'rac1_x' was added to ercole", a.Description)
+			assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
 		}).Return(nil),
 		db.EXPECT().ArchiveHost("rac1_x").Return(nil, aerrMock),
 	)
@@ -150,7 +150,7 @@ func TestInsertHostData_DatabaseError2(t *testing.T) {
 	gomock.InOrder(
 		db.EXPECT().FindMostRecentHostDataOlderThan(hd.Hostname, utils.P("2019-11-05T14:02:03Z")).Return(nil, nil),
 		asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
-			assert.Equal(t, "The server 'rac1_x' was added to ercole", a.Description)
+			assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
 		}).Return(nil),
 		db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil),
 		db.EXPECT().InsertHostData(gomock.Any()).Return(nil, aerrMock).Do(func(newHD model.HostDataBE) {
@@ -220,7 +220,7 @@ func TestInsertHostData_HttpError(t *testing.T) {
 	gomock.InOrder(
 		db.EXPECT().FindMostRecentHostDataOlderThan(hd.Hostname, utils.P("2019-11-05T14:02:03Z")).Return(nil, nil),
 		asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
-			assert.Equal(t, "The server 'rac1_x' was added to ercole", a.Description)
+			assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
 		}).Return(nil),
 		db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil),
 		db.EXPECT().InsertHostData(gomock.Any()).Return(nil, aerrMock).Do(func(newHD model.HostDataBE) {
@@ -234,11 +234,6 @@ func TestInsertHostData_HttpError(t *testing.T) {
 			//I assume that other fields are correct
 		}),
 	)
-
-	http.DefaultClient = NewHTTPTestClient(func(req *http.Request) (*http.Response, error) {
-		assert.Equal(t, "http://publ1sh3r:M0stS3cretP4ssw0rd@ercole.example.org/queue/host-data-insertion/5dd3a8db184dbf295f0376f2", req.URL.String())
-		return nil, errMock
-	})
 
 	err := hds.InsertHostData(hd)
 	fmt.Println(err.Error())

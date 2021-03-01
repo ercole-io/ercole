@@ -23,18 +23,18 @@ import (
 
 func TestDiffLicenses(t *testing.T) {
 	differences := DiffLicenses([]OracleDatabaseLicense{
-		{Name: "Spatial queryes", Count: 10},
-		{Name: "High heavy database", Count: 0},
-		{Name: "Power saving", Count: 0},
-		{Name: "Crackked", Count: 12},
-		{Name: "Star wars support", Count: 6},
-		{Name: "Star wars support SP3", Count: 0},
+		{LicenseTypeID: "Spatial queryes", Name: "Spatial queryes", Count: 10},
+		{LicenseTypeID: "High heavy database", Name: "High heavy database", Count: 0},
+		{LicenseTypeID: "Power saving", Name: "Power saving", Count: 0},
+		{LicenseTypeID: "Crackked", Name: "Crackked", Count: 12},
+		{LicenseTypeID: "Star wars support", Name: "Star wars support", Count: 6},
+		{LicenseTypeID: "Star wars support SP3", Name: "Star wars support SP3", Count: 0},
 	}, []OracleDatabaseLicense{
-		{Name: "Spatial queryes", Count: 5},
-		{Name: "High heavy database", Count: 7},
-		{Name: "Power saving", Count: 0},
-		{Name: "Crackked", Count: 0},
-		{Name: "Dark Engine", Count: 13},
+		{LicenseTypeID: "Spatial queryes", Name: "Spatial queryes", Count: 5},
+		{LicenseTypeID: "High heavy database", Name: "High heavy database", Count: 7},
+		{LicenseTypeID: "Power saving", Name: "Power saving", Count: 0},
+		{LicenseTypeID: "Crackked", Name: "Crackked", Count: 0},
+		{LicenseTypeID: "Dark Engine", Name: "Dark Engine", Count: 13},
 	})
 
 	assert.Equal(t, differences["Spatial queryes"], DiffFeatureActive)
