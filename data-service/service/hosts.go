@@ -45,6 +45,12 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 		return err
 	}
 
+	if previousHostdata != nil && previousHostdata.Archived {
+		// if the last one is archived, it was dismissed
+		// we want to behave like there isn't any previous one
+		previousHostdata = nil
+	}
+
 	if previousHostdata == nil {
 		if err := hds.throwNewServerAlert(hostdata.Hostname); err != nil {
 			return err
