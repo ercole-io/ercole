@@ -34,8 +34,9 @@ type FreshnessCheckJob struct {
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
 	// Database contains the database layer
-	Database           database.MongoDatabaseInterface
-	AlertServiceClient alert_service_client.AlertSvcClientInterface
+	Database database.MongoDatabaseInterface
+	// AlertSvcClient
+	AlertSvcClient alert_service_client.AlertSvcClientInterface
 	// Config contains the dataservice global configuration
 	Config config.Configuration
 	// Log contains logger formatted
@@ -83,7 +84,7 @@ func (job *FreshnessCheckJob) Run() {
 				"hostname": host.Hostname,
 			},
 		}
-		err := job.AlertServiceClient.ThrowNewAlert(alert)
+		err := job.AlertSvcClient.ThrowNewAlert(alert)
 		if err != nil {
 			utils.LogErr(job.Log, err)
 			continue
