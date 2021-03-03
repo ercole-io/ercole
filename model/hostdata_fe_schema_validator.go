@@ -782,8 +782,7 @@ var FrontendHostdataSchemaValidator string = `
                                                                                     },
                                                                                     "usedPerc": {
                                                                                         "type": "number",
-                                                                                        "minimum": 0,
-                                                                                        "maximum": 100
+                                                                                        "minimum": 0
                                                                                     },
                                                                                     "status": {
                                                                                         "type": "string",
