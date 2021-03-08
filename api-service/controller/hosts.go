@@ -19,7 +19,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -32,7 +31,7 @@ import (
 
 // SearchHosts search hosts data using the filters in the request
 func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
-	filters, err := getSearchHostFilters(r)
+	filters, err := dto.GetSearchHostFilters(r)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -141,83 +140,6 @@ func (ctrl *APIController) searchHostsXLSX(w http.ResponseWriter, r *http.Reques
 	}
 
 	utils.WriteXLSXResponse(w, sheets)
-}
-
-func getSearchHostFilters(r *http.Request) (*dto.SearchHostsFilters, utils.AdvancedErrorInterface) {
-	f := dto.SearchHostsFilters{}
-	var aerr utils.AdvancedErrorInterface
-
-	f.Search = strings.Split(r.URL.Query().Get("search"), " ")
-
-	f.SortBy = r.URL.Query().Get("sort-by")
-
-	if f.SortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
-		return nil, aerr
-	}
-
-	f.Location = r.URL.Query().Get("location")
-	f.Environment = r.URL.Query().Get("environment")
-
-	if f.OlderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
-		return nil, aerr
-	}
-
-	if f.PageNumber, aerr = utils.Str2int(r.URL.Query().Get("page"), -1); aerr != nil {
-		return nil, aerr
-	}
-
-	if f.PageSize, aerr = utils.Str2int(r.URL.Query().Get("size"), -1); aerr != nil {
-		return nil, aerr
-	}
-
-	f.Hostname = r.URL.Query().Get("hostname")
-	f.Database = r.URL.Query().Get("database")
-	f.Technology = r.URL.Query().Get("technology")
-	f.HardwareAbstractionTechnology = r.URL.Query().Get("hardware-abstraction-technology")
-	if r.URL.Query().Get("cluster") == "NULL" {
-		f.Cluster = nil
-	} else {
-		f.Cluster = new(string)
-		*f.Cluster = r.URL.Query().Get("cluster")
-	}
-	f.VirtualizationNode = r.URL.Query().Get("virtualization-node")
-	f.OperatingSystem = r.URL.Query().Get("operating-system")
-	f.Kernel = r.URL.Query().Get("kernel")
-	if f.LTEMemoryTotal, aerr = utils.Str2float64(r.URL.Query().Get("memory-total-lte"), -1); aerr != nil {
-		return nil, aerr
-	}
-	if f.GTEMemoryTotal, aerr = utils.Str2float64(r.URL.Query().Get("memory-total-gte"), -1); aerr != nil {
-		return nil, aerr
-	}
-	if f.LTESwapTotal, aerr = utils.Str2float64(r.URL.Query().Get("swap-total-lte"), -1); aerr != nil {
-		return nil, aerr
-	}
-	if f.GTESwapTotal, aerr = utils.Str2float64(r.URL.Query().Get("swap-total-gte"), -1); aerr != nil {
-		return nil, aerr
-	}
-	if r.URL.Query().Get("is-member-of-cluster") == "" {
-		f.IsMemberOfCluster = nil
-	} else {
-		f.IsMemberOfCluster = new(bool)
-		if *f.IsMemberOfCluster, aerr = utils.Str2bool(r.URL.Query().Get("is-member-of-cluster"), false); aerr != nil {
-			return nil, aerr
-		}
-	}
-	f.CPUModel = r.URL.Query().Get("cpu-model")
-	if f.LTECPUCores, aerr = utils.Str2int(r.URL.Query().Get("cpu-cores-lte"), -1); aerr != nil {
-		return nil, aerr
-	}
-	if f.GTECPUCores, aerr = utils.Str2int(r.URL.Query().Get("cpu-cores-gte"), -1); aerr != nil {
-		return nil, aerr
-	}
-	if f.LTECPUThreads, aerr = utils.Str2int(r.URL.Query().Get("cpu-threads-lte"), -1); aerr != nil {
-		return nil, aerr
-	}
-	if f.GTECPUThreads, aerr = utils.Str2int(r.URL.Query().Get("cpu-threads-gte"), -1); aerr != nil {
-		return nil, aerr
-	}
-
-	return &f, nil
 }
 
 // GetHost return all'informations about the host requested in the id path variable
