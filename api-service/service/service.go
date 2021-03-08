@@ -30,6 +30,8 @@ import (
 	"github.com/ercole-io/ercole/v2/config"
 )
 
+//TODO Order as in routing?
+
 // APIServiceInterface is a interface that wrap methods used to querying data
 type APIServiceInterface interface {
 	// Init initialize the service
@@ -171,6 +173,8 @@ type APIServiceInterface interface {
 
 	// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 	GetInfoForFrontendDashboard(location string, environment string, olderThan time.Time) (map[string]interface{}, utils.AdvancedErrorInterface)
+
+	SearchDatabases(filter dto.GlobalFilter) ([]dto.Database, error)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
