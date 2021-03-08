@@ -1415,7 +1415,13 @@ func TestSearchOracleDatabases_JSONPaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchOracleDatabases(true, "foobar", "Hostname", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		SearchOracleDatabases(
+			dto.SearchOracleDatabasesFilter{
+				dto.GlobalFilter{
+					"Italy", "TST", utils.P("2020-06-10T11:54:59Z"),
+				},
+				true, "foobar", "Hostname", true, 2, 3,
+			}).
 		Return(resFromService, nil)
 
 	rr := httptest.NewRecorder()
@@ -1488,7 +1494,14 @@ func TestSearchOracleDatabases_JSONUnpaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchOracleDatabases(false, "", "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchOracleDatabases(
+			dto.SearchOracleDatabasesFilter{
+				dto.GlobalFilter{
+					"", "", utils.MAX_TIME,
+				},
+				false, "", "", false, -1, -1,
+			},
+		).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
@@ -1619,7 +1632,14 @@ func TestSearchOracleDatabases_JSONInternalServerError1(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchOracleDatabases(false, "", "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchOracleDatabases(
+			dto.SearchOracleDatabasesFilter{
+				dto.GlobalFilter{
+					"", "", utils.MAX_TIME,
+				},
+				false, "", "", false, -1, -1,
+			},
+		).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
@@ -1645,55 +1665,17 @@ func TestSearchOracleDatabases_XLSXSuccess(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []map[string]interface{}{
-		{
-			"archivelog":   true,
-			"blockSize":    8192,
-			"cpuCount":     16,
-			"charset":      "AL32UTF8",
-			"createdAt":    utils.P("2020-07-01T09:18:03.704+02:00"),
-			"datafileSize": 61,
-			"dataguard":    false,
-			"environment":  "SVIL",
-			"ha":           false,
-			"hostname":     "publicitate-36d06ca83eafa454423d2097f4965517",
-			"location":     "Germany",
-			"memory":       4.199,
-			"name":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"rac":          false,
-			"segmentsSize": 41,
-			"status":       "OPEN",
-			"uniqueName":   "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"version":      "11.2.0.3.0 Enterprise Edition",
-			"work":         1,
-			"_id":          utils.Str2oid("5efc38ab79f92e4cbf283b04"),
-		},
-		{
-			"archivelog":   false,
-			"blockSize":    8192,
-			"cpuCount":     2,
-			"charset":      "AL32UTF8",
-			"createdAt":    utils.P("2020-07-01T09:18:03.726+02:00"),
-			"datafileSize": 6,
-			"dataguard":    false,
-			"environment":  "TST",
-			"ha":           false,
-			"hostname":     "test-db",
-			"location":     "Germany",
-			"memory":       1.484,
-			"name":         "ERCOLE",
-			"rac":          false,
-			"segmentsSize": 3,
-			"status":       "OPEN",
-			"uniqueName":   "ERCOLE",
-			"version":      "12.2.0.1.0 Enterprise Edition",
-			"work":         nil,
-			"_id":          utils.Str2oid("5efc38ab79f92e4cbf283b13"),
-		},
-	}
+	expectedRes := excelize.NewFile()
 
 	as.EXPECT().
-		SearchOracleDatabases(false, "foobar", "Hostname", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		SearchOracleDatabasesAsXLSX(
+			dto.SearchOracleDatabasesFilter{
+				dto.GlobalFilter{
+					"Italy", "TST", utils.P("2020-06-10T11:54:59Z"),
+				},
+				false, "foobar", "Hostname", true, -1, -1,
+			},
+		).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
@@ -1705,46 +1687,8 @@ func TestSearchOracleDatabases_XLSXSuccess(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	sp, err := excelize.OpenReader(rr.Body)
+	_, err = excelize.OpenReader(rr.Body)
 	require.NoError(t, err)
-
-	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sp.GetCellValue("Databases", "A2"))
-	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sp.GetCellValue("Databases", "B2"))
-	assert.Equal(t, "11.2.0.3.0 Enterprise Edition", sp.GetCellValue("Databases", "C2"))
-	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sp.GetCellValue("Databases", "D2"))
-	assert.Equal(t, "OPEN", sp.GetCellValue("Databases", "E2"))
-	assert.Equal(t, "SVIL", sp.GetCellValue("Databases", "F2"))
-	assert.Equal(t, "Germany", sp.GetCellValue("Databases", "G2"))
-	assert.Equal(t, "AL32UTF8", sp.GetCellValue("Databases", "H2"))
-	assert.Equal(t, "8192", sp.GetCellValue("Databases", "I2"))
-	assert.Equal(t, "16", sp.GetCellValue("Databases", "J2"))
-	assert.Equal(t, "1", sp.GetCellValue("Databases", "K2"))
-	assert.Equal(t, "4.199", sp.GetCellValue("Databases", "L2"))
-	assert.Equal(t, "61", sp.GetCellValue("Databases", "M2"))
-	assert.Equal(t, "41", sp.GetCellValue("Databases", "N2"))
-	assert.Equal(t, "1", sp.GetCellValue("Databases", "O2"))
-	assert.Equal(t, "0", sp.GetCellValue("Databases", "P2"))
-	assert.Equal(t, "0", sp.GetCellValue("Databases", "Q2"))
-	assert.Equal(t, "0", sp.GetCellValue("Databases", "R2"))
-
-	assert.Equal(t, "ERCOLE", sp.GetCellValue("Databases", "A3"))
-	assert.Equal(t, "ERCOLE", sp.GetCellValue("Databases", "B3"))
-	assert.Equal(t, "12.2.0.1.0 Enterprise Edition", sp.GetCellValue("Databases", "C3"))
-	assert.Equal(t, "test-db", sp.GetCellValue("Databases", "D3"))
-	assert.Equal(t, "OPEN", sp.GetCellValue("Databases", "E3"))
-	assert.Equal(t, "TST", sp.GetCellValue("Databases", "F3"))
-	assert.Equal(t, "Germany", sp.GetCellValue("Databases", "G3"))
-	assert.Equal(t, "AL32UTF8", sp.GetCellValue("Databases", "H3"))
-	assert.Equal(t, "8192", sp.GetCellValue("Databases", "I3"))
-	assert.Equal(t, "2", sp.GetCellValue("Databases", "J3"))
-	assert.Equal(t, "", sp.GetCellValue("Databases", "K3"))
-	assert.Equal(t, "1.484", sp.GetCellValue("Databases", "L3"))
-	assert.Equal(t, "6", sp.GetCellValue("Databases", "M3"))
-	assert.Equal(t, "3", sp.GetCellValue("Databases", "N3"))
-	assert.Equal(t, "0", sp.GetCellValue("Databases", "O3"))
-	assert.Equal(t, "0", sp.GetCellValue("Databases", "P3"))
-	assert.Equal(t, "0", sp.GetCellValue("Databases", "Q3"))
-	assert.Equal(t, "0", sp.GetCellValue("Databases", "R3"))
 }
 
 func TestSearchOracleDatabases_XLSXUnprocessableEntity1(t *testing.T) {
@@ -1809,43 +1753,19 @@ func TestSearchOracleDatabases_XLSXInternalServerError1(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchOracleDatabases(false, "", "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchOracleDatabasesAsXLSX(
+			dto.SearchOracleDatabasesFilter{
+				dto.GlobalFilter{
+					"", "", utils.MAX_TIME,
+				},
+				false, "", "", false, -1, -1,
+			},
+		).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabases)
 	req, err := http.NewRequest("GET", "/databases", nil)
-	require.NoError(t, err)
-	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
-}
-
-func TestSearchOracleDatabases_XLSXInternalServerError2(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	expectedRes := []map[string]interface{}{
-		{
-			"OK": true,
-		},
-	}
-
-	as.EXPECT().
-		SearchOracleDatabases(false, "foobar", "Hostname", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(expectedRes, nil)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabases)
-	req, err := http.NewRequest("GET", "/databases?search=foobar&sort-by=Hostname&sort-desc=true&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
