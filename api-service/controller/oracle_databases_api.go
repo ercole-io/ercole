@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/gddo/httputil"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -407,65 +408,29 @@ func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsXLSX(w http.Response
 func (ctrl *APIController) SearchOracleDatabases(w http.ResponseWriter, r *http.Request) {
 	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
+	filter, err := dto.GetSearchOracleDatabasesFilter(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
 	switch choiche {
 	case "application/json":
-		ctrl.SearchOracleDatabasesJSON(w, r)
+		ctrl.SearchOracleDatabasesJSON(w, r, *filter)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-		ctrl.SearchOracleDatabasesXLSX(w, r)
+		ctrl.SearchOracleDatabasesXLSX(w, r, *filter)
 	}
 }
 
 // SearchOracleDatabasesJSON search databases data using the filters in the request returning it in JSON
-func (ctrl *APIController) SearchOracleDatabasesJSON(w http.ResponseWriter, r *http.Request) {
-	var full bool
-	var search string
-	var sortBy string
-	var sortDesc bool
-	var pageNumber int
-	var pageSize int
-	var location string
-	var environment string
-	var olderThan time.Time
-
-	var err utils.AdvancedErrorInterface
-	//parse the query params
-	if full, err = utils.Str2bool(r.URL.Query().Get("full"), false); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	search = r.URL.Query().Get("search")
-	sortBy = r.URL.Query().Get("sort-by")
-	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	//get the data
-	databases, err := ctrl.Service.SearchOracleDatabases(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+func (ctrl *APIController) SearchOracleDatabasesJSON(w http.ResponseWriter, r *http.Request, filter dto.SearchOracleDatabasesFilter) {
+	databases, err := ctrl.Service.SearchOracleDatabases(filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	if pageNumber == -1 || pageSize == -1 {
+	if filter.PageNumber == -1 || filter.PageSize == -1 {
 		utils.WriteJSONResponse(w, http.StatusOK, databases)
 	} else {
 		utils.WriteJSONResponse(w, http.StatusOK, databases[0])
@@ -473,69 +438,14 @@ func (ctrl *APIController) SearchOracleDatabasesJSON(w http.ResponseWriter, r *h
 }
 
 // SearchOracleDatabasesXLSX search databases data using the filters in the request returning it in XLSX
-func (ctrl *APIController) SearchOracleDatabasesXLSX(w http.ResponseWriter, r *http.Request) {
-	var search string
-	var sortBy string
-	var sortDesc bool
-	var location string
-	var environment string
-	var olderThan time.Time
-
-	var aerr utils.AdvancedErrorInterface
-	//parse the query params
-	search = r.URL.Query().Get("search")
-	sortBy = r.URL.Query().Get("sort-by")
-	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
-		return
-	}
-
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-
-	if olderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
-		return
-	}
-
-	//get the data
-	databases, aerr := ctrl.Service.SearchOracleDatabases(false, search, sortBy, sortDesc, -1, -1, location, environment, olderThan)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
-		return
-	}
-
-	//Open the sheet
-	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_databases.xlsx")
+func (ctrl *APIController) SearchOracleDatabasesXLSX(w http.ResponseWriter, r *http.Request, filter dto.SearchOracleDatabasesFilter) {
+	file, err := ctrl.Service.SearchOracleDatabasesAsXLSX(filter)
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	//Add the data to the sheet
-	for i, val := range databases {
-		sheets.SetCellValue("Databases", fmt.Sprintf("A%d", i+2), val["name"])         //Name column
-		sheets.SetCellValue("Databases", fmt.Sprintf("B%d", i+2), val["uniqueName"])   //UniqueName column
-		sheets.SetCellValue("Databases", fmt.Sprintf("C%d", i+2), val["version"])      //Version column
-		sheets.SetCellValue("Databases", fmt.Sprintf("D%d", i+2), val["hostname"])     //Hostname column
-		sheets.SetCellValue("Databases", fmt.Sprintf("E%d", i+2), val["status"])       //Status column
-		sheets.SetCellValue("Databases", fmt.Sprintf("F%d", i+2), val["environment"])  //Environment column
-		sheets.SetCellValue("Databases", fmt.Sprintf("G%d", i+2), val["location"])     //Location column
-		sheets.SetCellValue("Databases", fmt.Sprintf("H%d", i+2), val["charset"])      //Charset column
-		sheets.SetCellValue("Databases", fmt.Sprintf("I%d", i+2), val["blockSize"])    //BlockSize column
-		sheets.SetCellValue("Databases", fmt.Sprintf("J%d", i+2), val["cpuCount"])     //CPUCount column
-		sheets.SetCellValue("Databases", fmt.Sprintf("K%d", i+2), val["work"])         //Work column
-		sheets.SetCellValue("Databases", fmt.Sprintf("L%d", i+2), val["memory"])       //Memory column
-		sheets.SetCellValue("Databases", fmt.Sprintf("M%d", i+2), val["datafileSize"]) //DatafileSize column
-		sheets.SetCellValue("Databases", fmt.Sprintf("N%d", i+2), val["segmentsSize"]) //SegmentsSize column
-		sheets.SetCellValue("Databases", fmt.Sprintf("O%d", i+2), val["archivelog"])   //ArchiveLogStatus column
-		sheets.SetCellValue("Databases", fmt.Sprintf("P%d", i+2), val["dataguard"])    //Dataguard column
-		sheets.SetCellValue("Databases", fmt.Sprintf("Q%d", i+2), val["rac"])          //RAC column
-		sheets.SetCellValue("Databases", fmt.Sprintf("R%d", i+2), val["ha"])           //HA column
-	}
-
-	//Write it to the response
-	utils.WriteXLSXResponse(w, sheets)
+	utils.WriteXLSXResponse(w, file)
 }
 
 // SearchOracleDatabaseUsedLicenses search licenses consumed by the hosts using the filters in the request
