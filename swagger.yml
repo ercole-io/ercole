@@ -2009,6 +2009,67 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
+  /hosts/technologies/all/databases:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: SearchDatabases
+      summary: Search a list of databases
+      description: Get a list of databases filtered using various search terms and various params.
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: Result of the search
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  databases:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        type:
+                          type: string
+                        version:
+                          type: string
+                        hostname:
+                          type: string
+                        environment:
+                          type: string
+                        charset:
+                          type: string
+                        memory:
+                          type: number
+                        datafileSize:
+                          type: number
+                        segmentSize:
+                          type: number
+                      required:
+                        - name
+                        - type
+                        - version
+                        - hostname
+                        - environment
+                        - charset
+                        - memory
+                        - datafileSize
+                        - segmentSize
+                required:
+                  - databases
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: {}
+    parameters: []
   /hosts/technologies/oracle/databases:
     get:
       tags:

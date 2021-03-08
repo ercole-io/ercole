@@ -44,7 +44,12 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/environments/frequency", ctrl.GetEnvironmentStats).Methods("GET")
 	router.HandleFunc("/hosts/types", ctrl.GetTypeStats).Methods("GET")
 	router.HandleFunc("/hosts/operating-systems", ctrl.GetOperatingSystemStats).Methods("GET")
-	router.HandleFunc("/hosts/technologies", ctrl.ListTechnologies).Methods("GET")
+	router.HandleFunc("/hosts/technologies", ctrl.ListTechnologies).Methods("GET") //TODO update to return mysql value correct
+
+	router.HandleFunc("/hosts/technologies/all/databases", ctrl.SearchDatabases).Methods("GET")
+
+	//TODO router.HandleFunc("/hosts/technologies/all/databases/total-memory-size", ctrl.GetTotalOracleDatabaseMemorySizeStats).Methods("GET")
+	//TODO router.HandleFunc("/hosts/technologies/all/databases/total-segment-size", ctrl.GetTotalOracleDatabaseSegmentSizeStats).Methods("GET")
 
 	router.HandleFunc("/hosts/technologies/oracle/databases", ctrl.SearchOracleDatabases).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/license-modifiers", ctrl.SearchOracleDatabaseLicenseModifiers).Methods("GET")
@@ -74,6 +79,8 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/technologies/oracle/exadata/average-storage-usage", ctrl.GetAverageOracleExadataStorageUsageStats).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/exadata/storage-error-count-status", ctrl.GetOracleExadataStorageErrorCountStatusStats).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/exadata/patch-status", ctrl.GetOracleExadataPatchStatusStats).Methods("GET")
+
+	//TODO router.HandleFunc("/hosts/technologies/mysql/databases", ctrl.SearchMySQLDatabases).Methods("GET")
 
 	router.HandleFunc("/hosts/locations", ctrl.ListLocations).Methods("GET")
 	router.HandleFunc("/hosts/environments", ctrl.ListEnvironments).Methods("GET")
