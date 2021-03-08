@@ -17,9 +17,11 @@
 package service
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 )
@@ -40,8 +42,48 @@ func (as *APIService) SearchOracleDatabasePatchAdvisors(search string, sortBy st
 }
 
 // SearchOracleDatabases search databases
-func (as *APIService) SearchOracleDatabases(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
-	return as.Database.SearchOracleDatabases(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+func (as *APIService) SearchOracleDatabases(f dto.SearchOracleDatabasesFilter) ([]map[string]interface{}, error) {
+	return as.Database.SearchOracleDatabases(f.Full, strings.Split(f.Search, " "), f.SortBy, f.SortDesc,
+		f.PageNumber, f.PageSize, f.Location, f.Environment, f.OlderThan)
+}
+
+func (as *APIService) SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabasesFilter) (*excelize.File, error) {
+	databases, aerr := as.Database.SearchOracleDatabases(false, strings.Split(filter.Search, " "),
+		filter.SortBy, filter.SortDesc,
+		-1, -1,
+		filter.Location, filter.Environment, filter.OlderThan)
+	if aerr != nil {
+		return nil, aerr
+	}
+
+	file, err := excelize.OpenFile(as.Config.ResourceFilePath + "/templates/template_databases.xlsx")
+	if err != nil {
+		return nil, err
+	}
+
+	for i, val := range databases {
+		i += 2 // offset for headers
+		file.SetCellValue("Databases", fmt.Sprintf("A%d", i), val["name"])
+		file.SetCellValue("Databases", fmt.Sprintf("B%d", i), val["uniqueName"])
+		file.SetCellValue("Databases", fmt.Sprintf("C%d", i), val["version"])
+		file.SetCellValue("Databases", fmt.Sprintf("D%d", i), val["hostname"])
+		file.SetCellValue("Databases", fmt.Sprintf("E%d", i), val["status"])
+		file.SetCellValue("Databases", fmt.Sprintf("F%d", i), val["environment"])
+		file.SetCellValue("Databases", fmt.Sprintf("G%d", i), val["location"])
+		file.SetCellValue("Databases", fmt.Sprintf("H%d", i), val["charset"])
+		file.SetCellValue("Databases", fmt.Sprintf("I%d", i), val["blockSize"])
+		file.SetCellValue("Databases", fmt.Sprintf("J%d", i), val["cpuCount"])
+		file.SetCellValue("Databases", fmt.Sprintf("K%d", i), val["work"])
+		file.SetCellValue("Databases", fmt.Sprintf("L%d", i), val["memory"])
+		file.SetCellValue("Databases", fmt.Sprintf("M%d", i), val["datafileSize"])
+		file.SetCellValue("Databases", fmt.Sprintf("N%d", i), val["segmentsSize"])
+		file.SetCellValue("Databases", fmt.Sprintf("O%d", i), val["archivelog"])
+		file.SetCellValue("Databases", fmt.Sprintf("P%d", i), val["dataguard"])
+		file.SetCellValue("Databases", fmt.Sprintf("Q%d", i), val["rac"])
+		file.SetCellValue("Databases", fmt.Sprintf("R%d", i), val["ha"])
+	}
+
+	return file, nil
 }
 
 // SearchOracleDatabaseUsedLicenses return the list of used licenses
