@@ -80,7 +80,7 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/technologies/oracle/exadata/storage-error-count-status", ctrl.GetOracleExadataStorageErrorCountStatusStats).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/exadata/patch-status", ctrl.GetOracleExadataPatchStatusStats).Methods("GET")
 
-	//TODO router.HandleFunc("/hosts/technologies/mysql/databases", ctrl.SearchMySQLDatabases).Methods("GET")
+	router.HandleFunc("/hosts/technologies/mysql/databases", ctrl.SearchMySQLInstances).Methods("GET")
 
 	router.HandleFunc("/hosts/locations", ctrl.ListLocations).Methods("GET")
 	router.HandleFunc("/hosts/environments", ctrl.ListEnvironments).Methods("GET")
