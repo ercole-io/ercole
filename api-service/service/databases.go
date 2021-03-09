@@ -23,7 +23,7 @@ import (
 
 func (as *APIService) SearchDatabases(filter dto.GlobalFilter) ([]dto.Database, error) {
 	type getter func(filter dto.GlobalFilter) ([]dto.Database, error)
-	getters := []getter{as.getOracleDatabases}
+	getters := []getter{as.getOracleDatabases, as.getMySQLDatabases}
 
 	dbs := make([]dto.Database, 0)
 	for _, get := range getters {
@@ -61,6 +61,38 @@ func (as *APIService) getOracleDatabases(filter dto.GlobalFilter) ([]dto.Databas
 			Memory:       oracleDb["memory"].(float64),
 			DatafileSize: oracleDb["datafileSize"].(float64),
 			SegmentsSize: oracleDb["segmentsSize"].(float64),
+		}
+
+		dbs = append(dbs, db)
+	}
+
+	return dbs, nil
+}
+
+func (as *APIService) getMySQLDatabases(filter dto.GlobalFilter) ([]dto.Database, error) {
+	mysqlInstances, err := as.Database.SearchMySQLInstances(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	dbs := make([]dto.Database, 0)
+	for _, instance := range mysqlInstances {
+
+		segmentsSize := 0.0
+		for _, ts := range instance.TableSchemas {
+			segmentsSize += ts.Allocation
+		}
+
+		db := dto.Database{
+			Name:         instance.Name,
+			Type:         model.TechnologyOracleMySQL,
+			Version:      instance.Version,
+			Hostname:     instance.Hostname,
+			Environment:  instance.Environment,
+			Charset:      instance.CharsetServer,
+			Memory:       instance.BufferPoolSize / 1024,
+			DatafileSize: 0,
+			SegmentsSize: segmentsSize / 1024,
 		}
 
 		dbs = append(dbs, db)
