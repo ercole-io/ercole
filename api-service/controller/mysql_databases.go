@@ -24,7 +24,7 @@ import (
 	"github.com/golang/gddo/httputil"
 )
 
-func (ctrl *APIController) SearchDatabases(w http.ResponseWriter, r *http.Request) {
+func (ctrl *APIController) SearchMySQLInstances(w http.ResponseWriter, r *http.Request) {
 	choiche := httputil.NegotiateContentType(r,
 		[]string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
 		"application/json")
@@ -37,14 +37,14 @@ func (ctrl *APIController) SearchDatabases(w http.ResponseWriter, r *http.Reques
 
 	switch choiche {
 	case "application/json":
-		ctrl.SearchDatabasesJSON(w, r, *filter)
+		ctrl.SearchMySQLInstancesJSON(w, r, *filter)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-		ctrl.SearchDatabasesXLSX(w, r, *filter)
+		ctrl.SearchMySQLInstancesXLSX(w, r, *filter)
 	}
 }
 
-func (ctrl *APIController) SearchDatabasesJSON(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
-	databases, err := ctrl.Service.SearchDatabases(filter)
+func (ctrl *APIController) SearchMySQLInstancesJSON(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
+	databases, err := ctrl.Service.SearchMySQLInstances(filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -56,10 +56,10 @@ func (ctrl *APIController) SearchDatabasesJSON(w http.ResponseWriter, r *http.Re
 	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
 
-func (ctrl *APIController) SearchDatabasesXLSX(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
+func (ctrl *APIController) SearchMySQLInstancesXLSX(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
 	// TODO
 	utils.WriteAndLogError(ctrl.Log, w, http.StatusNotImplemented, fmt.Errorf("Not yet implemented"))
-	//file, err := ctrl.Service.SearchDatabasesAsXLSX(filter)
+	//file, err := ctrl.Service.SearchMySQLInstancesAsXLSX(filter)
 	//if err != nil {
 	//	utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 	//	return

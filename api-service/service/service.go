@@ -175,6 +175,8 @@ type APIServiceInterface interface {
 	GetInfoForFrontendDashboard(location string, environment string, olderThan time.Time) (map[string]interface{}, utils.AdvancedErrorInterface)
 
 	SearchDatabases(filter dto.GlobalFilter) ([]dto.Database, error)
+
+	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
