@@ -15,14 +15,12 @@
 
 package dto
 
-type Database struct {
-	Name         string  `json:"name"`
-	Type         string  `json:"type"`
-	Version      string  `json:"version"`
-	Hostname     string  `json:"hostname"`
-	Environment  string  `json:"environment"`
-	Charset      string  `json:"charset"`
-	Memory       float64 `json:"memory"`       // in GB
-	DatafileSize float64 `json:"datafileSize"` // in GB
-	SegmentsSize float64 `json:"segmentSize"`  // in GB
+import "github.com/ercole-io/ercole/v2/model"
+
+type MySQLInstance struct {
+	Hostname    string `json:"hostname" bson:"hostname"`
+	Location    string `json:"location" bson:"location"`
+	Environment string `json:"environment" bson:"environment"`
+
+	model.MySQLInstance `bson:",inline"`
 }
