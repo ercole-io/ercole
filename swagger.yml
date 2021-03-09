@@ -4417,6 +4417,153 @@ paths:
                     - history
       operationId: GetOracleDbLicenseHistory
       description: Get historical values of Oracle Databases Licenses
+  /hosts/technologies/mysql/databases:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: SearchMySQLDatabases
+      summary: Search a list of MySQL databases instances
+      description: Search a list of MySQL databases instances
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: Result of the search
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  databases:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - hostname
+                        - location
+                        - environment
+                        - name
+                        - version
+                        - edition
+                        - platform
+                        - architecture
+                        - engine
+                        - redoLogEnabled
+                        - charsetServer
+                        - charsetSystem
+                        - pageSize
+                        - threadsConcurrency
+                        - bufferPoolSize
+                        - logBufferSize
+                        - sortBufferSize
+                        - readOnly
+                      properties:
+                        hostname:
+                          type: string
+                        location:
+                          type: string
+                        environment:
+                          type: string
+                        name:
+                          type: string
+                        version:
+                          type: string
+                        edition:
+                          type: string
+                        platform:
+                          type: string
+                        architecture:
+                          type: string
+                        engine:
+                          type: string
+                        redoLogEnabled:
+                          type: string
+                        charsetServer:
+                          type: string
+                        charsetSystem:
+                          type: string
+                        pageSize:
+                          type: number
+                        threadsConcurrency:
+                          type: number
+                        bufferPoolSize:
+                          type: number
+                        logBufferSize:
+                          type: number
+                        sortBufferSize:
+                          type: number
+                        readOnly:
+                          type: boolean
+                        databases:
+                          type: array
+                          uniqueItems: true
+                          items:
+                            required:
+                              - name
+                              - charset
+                              - collation
+                              - encrypted
+                            properties:
+                              name:
+                                type: string
+                              charset:
+                                type: string
+                              collation:
+                                type: string
+                              encrypted:
+                                type: boolean
+                        tableSchemas:
+                          type: array
+                          uniqueItems: true
+                          items:
+                            required:
+                              - name
+                              - engine
+                              - allocation
+                            properties:
+                              name:
+                                type: string
+                              engine:
+                                type: string
+                              allocation:
+                                type: number
+                        segmentAdvisors:
+                          type: array
+                          uniqueItems: true
+                          items:
+                            required:
+                              - tableSchema
+                              - tableName
+                              - engine
+                              - allocation
+                              - data
+                              - index
+                              - free
+                            properties:
+                              tableSchema:
+                                type: string
+                              tableName:
+                                type: string
+                              engine:
+                                type: string
+                              allocation:
+                                type: number
+                              data:
+                                type: number
+                              index:
+                                type: number
+                              free:
+                                type: number
+                required:
+                  - databases
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: {}
+    parameters: []
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []
