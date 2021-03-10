@@ -100,3 +100,18 @@ func (as *APIService) getMySQLDatabases(filter dto.GlobalFilter) ([]dto.Database
 
 	return dbs, nil
 }
+
+func (as *APIService) GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.DatabasesStatistics, error) {
+	dbs, err := as.SearchDatabases(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	stats := new(dto.DatabasesStatistics)
+	for _, db := range dbs {
+		stats.TotalMemorySize += db.Memory
+		stats.TotalSegmentsSize += db.SegmentsSize
+	}
+
+	return stats, nil
+}
