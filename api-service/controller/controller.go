@@ -152,6 +152,7 @@ type APIControllerInterface interface {
 	GetInfoForFrontendDashboard(w http.ResponseWriter, r *http.Request)
 
 	SearchDatabases(w http.ResponseWriter, r *http.Request)
+	GetDatabasesStatistics(w http.ResponseWriter, r *http.Request)
 
 	SearchMySQLInstances(w http.ResponseWriter, r *http.Request)
 }

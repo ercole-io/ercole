@@ -26,3 +26,8 @@ type Database struct {
 	DatafileSize float64 `json:"datafileSize"` // in GB
 	SegmentsSize float64 `json:"segmentSize"`  // in GB
 }
+
+type DatabasesStatistics struct {
+	TotalMemorySize   float64 `json:"total-memory-size"`   // in GB
+	TotalSegmentsSize float64 `json:"total-segments-size"` // in GB
+}
