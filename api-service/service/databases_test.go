@@ -239,5 +239,5 @@ func TestGetDatabasesStatistics_Success(t *testing.T) {
 		TotalSegmentsSize: 123.42,
 	}
 
-	assert.Equal(t, expected, actual)
+	assert.Equal(t, expected, *actual)
 }
