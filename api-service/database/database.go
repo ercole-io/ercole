@@ -149,6 +149,8 @@ type MongoDatabaseInterface interface {
 	GetHostsCountUsingTechnologies(location string, environment string, olderThan time.Time) (map[string]float64, utils.AdvancedErrorInterface)
 	// ExistNotInClusterHost return true if the host specified by hostname exist and it is not in cluster, otherwise false
 	ExistNotInClusterHost(hostname string) (bool, utils.AdvancedErrorInterface)
+
+	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
 }
 
 // MongoDatabase is a implementation

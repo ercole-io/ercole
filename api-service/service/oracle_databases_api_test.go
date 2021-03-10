@@ -18,6 +18,7 @@ package service
 import (
 	"testing"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -318,9 +319,13 @@ func TestSearchOracleDatabases_Success(t *testing.T) {
 	).Return(expectedRes, nil).Times(1)
 
 	res, err := as.SearchOracleDatabases(
-		false, "foo bar foobarx", "Memory",
-		true, 1, 1,
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		dto.SearchOracleDatabasesFilter{
+			dto.GlobalFilter{
+				"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+			},
+			false, "foo bar foobarx", "Memory",
+			true, 1, 1,
+		},
 	)
 
 	require.NoError(t, err)
@@ -342,9 +347,14 @@ func TestSearchOracleDatabases_Fail(t *testing.T) {
 	).Return(nil, aerrMock).Times(1)
 
 	res, err := as.SearchOracleDatabases(
-		false, "foo bar foobarx", "Memory",
-		true, 1, 1,
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+
+		dto.SearchOracleDatabasesFilter{
+			dto.GlobalFilter{
+				"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+			},
+			false, "foo bar foobarx", "Memory",
+			true, 1, 1,
+		},
 	)
 
 	require.Nil(t, res)

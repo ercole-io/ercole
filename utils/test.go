@@ -17,6 +17,8 @@ import (
 )
 
 //P parse the string s and return the equivalent time
+// e.g.: 2019-11-05T14:02:03Z
+// e.g.: 2019-11-05T14:02:03+01:00
 func P(s string) time.Time {
 	t, err := time.Parse(time.RFC3339, s)
 	if err != nil {

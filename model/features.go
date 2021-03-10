@@ -26,6 +26,7 @@ import (
 type Features struct {
 	Oracle    *OracleFeature         `json:"oracle,omitempty" bson:"oracle,omitempty"`
 	Microsoft *MicrosoftFeature      `json:"microsoft,omitempty" bson:"microsoft,omitempty"`
+	MySQL     *MySQLFeature          `json:"mysql,omitempty" bson:"mysql,omitempty"`
 	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }
 

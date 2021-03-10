@@ -22,6 +22,7 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -117,6 +118,7 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 			Return(map[string]float64{
 				model.TechnologyOracleDatabase: 42,
 				model.TechnologyOracleExadata:  43,
+				model.TechnologyOracleMySQL:    44,
 			}, nil),
 		db.EXPECT().
 			ListOracleDatabaseAgreements().
@@ -132,17 +134,17 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 		"Count", true,
 		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),
 	)
+	require.NoError(t, err)
 
 	expected := []model.TechnologyStatus{
 		{Product: "Oracle/Database", ConsumedByHosts: 40, CoveredByAgreements: 10, TotalCost: 0, PaidCost: 0, Compliance: 0.25, UnpaidDues: 0, HostsCount: 42},
+		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 44},
 		{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 		{Product: "PostgreSQL/PostgreSQL", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
-		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 		{Product: "Microsoft/SQLServer", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 	}
 
-	require.NoError(t, err)
-	require.Equal(t, expected, actual)
+	assert.Equal(t, expected, actual)
 }
 
 func TestListManagedTechnologies_Success2(t *testing.T) {
@@ -232,9 +234,9 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 
 	expected := []model.TechnologyStatus{
 		{Product: "Oracle/Database", ConsumedByHosts: 100, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 42},
+		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 		{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 		{Product: "PostgreSQL/PostgreSQL", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
-		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 		{Product: "Microsoft/SQLServer", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 	}
 
