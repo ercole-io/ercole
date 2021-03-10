@@ -30,6 +30,8 @@ import (
 	"github.com/ercole-io/ercole/v2/config"
 )
 
+//TODO Order as in routing?
+
 // APIServiceInterface is a interface that wrap methods used to querying data
 type APIServiceInterface interface {
 	// Init initialize the service
@@ -57,7 +59,9 @@ type APIServiceInterface interface {
 	// SearchOracleDatabasePatchAdvisors search patch advisors
 	SearchOracleDatabasePatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) ([]map[string]interface{}, utils.AdvancedErrorInterface)
 	// SearchOracleDatabases search databases
-	SearchOracleDatabases(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface)
+	SearchOracleDatabases(filter dto.SearchOracleDatabasesFilter) ([]map[string]interface{}, error)
+	// SearchOracleDatabases search databases
+	SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabasesFilter) (*excelize.File, error)
 	// SearchOracleExadata search exadata
 	SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface)
 	// SearchOracleDatabaseUsedLicenses return the list of consumed licenses
@@ -169,6 +173,11 @@ type APIServiceInterface interface {
 
 	// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 	GetInfoForFrontendDashboard(location string, environment string, olderThan time.Time) (map[string]interface{}, utils.AdvancedErrorInterface)
+
+	SearchDatabases(filter dto.GlobalFilter) ([]dto.Database, error)
+	GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.DatabasesStatistics, error)
+
+	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

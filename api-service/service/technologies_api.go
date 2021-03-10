@@ -38,10 +38,21 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 	}
 	statuses = append(statuses, *oracleStatus)
 
+	mysqlStatus := model.TechnologyStatus{
+		Product:             model.TechnologyOracleMySQL,
+		ConsumedByHosts:     0,
+		CoveredByAgreements: 0,
+		TotalCost:           0,
+		PaidCost:            0,
+		Compliance:          0,
+		UnpaidDues:          0,
+		HostsCount:          int(hostsCountByTechnology[model.TechnologyOracleMySQL]),
+	}
+	statuses = append(statuses, mysqlStatus)
+
 	for _, technology := range []string{
 		model.TechnologyMariaDBFoundationMariaDB,
 		model.TechnologyPostgreSQLPostgreSQL,
-		model.TechnologyOracleMySQL,
 		model.TechnologyMicrosoftSQLServer,
 	} {
 
@@ -60,8 +71,7 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 	return statuses, nil
 }
 
-func createOracleTechnologyStatus(as *APIService, oracleHosts float64) (*model.TechnologyStatus, utils.AdvancedErrorInterface) {
-
+func createOracleTechnologyStatus(as *APIService, hostsCount float64) (*model.TechnologyStatus, utils.AdvancedErrorInterface) {
 	agreements, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
 		return nil, err
@@ -79,7 +89,7 @@ func createOracleTechnologyStatus(as *APIService, oracleHosts float64) (*model.T
 
 	status := model.TechnologyStatus{
 		Product:    model.TechnologyOracleDatabase,
-		HostsCount: int(oracleHosts),
+		HostsCount: int(hostsCount),
 	}
 
 	for _, host := range hosts {

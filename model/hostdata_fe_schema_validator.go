@@ -1787,6 +1787,207 @@ var FrontendHostdataSchemaValidator string = `
                             }
                         }
                     ]
+                },
+                "mysql": {
+                    "anyOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "type": "object",
+                            "required": [
+                                "instances"
+                            ],
+                            "properties": {
+                                "instances": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "required": [
+                                            "name",
+                                            "version",
+                                            "edition",
+                                            "platform",
+                                            "architecture",
+                                            "engine",
+                                            "redoLogEnabled",
+                                            "charsetServer",
+                                            "charsetSystem",
+                                            "pageSize",
+                                            "threadsConcurrency",
+                                            "bufferPoolSize",
+                                            "logBufferSize",
+                                            "sortBufferSize",
+                                            "readOnly",
+                                            "databases",
+                                            "tableSchemas",
+                                            "segmentAdvisors"
+                                        ],
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "version": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "edition": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "platform": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "architecture": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "engine": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "redoLogEnabled": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "charsetServer": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "charsetSystem": {
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "pageSize": {
+                                                "type": "number",
+                                                "minimum": 0
+                                            },
+                                            "threadsConcurrency": {
+                                                "type": "number",
+                                                "minimum": 0
+                                            },
+                                            "bufferPoolSize": {
+                                                "type": "number",
+                                                "minimum": 0
+                                            },
+                                            "logBufferSize": {
+                                                "type": "number",
+                                                "minimum": 0
+                                            },
+                                            "sortBufferSize": {
+                                                "type": "number",
+                                                "minimum": 0
+                                            },
+                                            "readOnly": {
+                                                "type": "boolean"
+                                            },
+                                            "databases": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "name",
+                                                        "charset",
+                                                        "collation",
+                                                        "encrypted"
+                                                    ],
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string",
+                                                            "minLength": 1
+                                                        },
+                                                        "charset": {
+                                                            "type": "string",
+                                                            "minLength": 1
+                                                        },
+                                                        "collation": {
+                                                            "type": "string",
+                                                            "minLength": 1
+                                                        },
+                                                        "encrypted": {
+                                                            "type": "boolean"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "tableSchemas": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "name",
+                                                        "engine",
+                                                        "allocation"
+                                                    ],
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string",
+                                                            "minLength": 1
+                                                        },
+                                                        "engine": {
+                                                            "type": "string",
+                                                            "minLength": 1
+                                                        },
+                                                        "allocation": {
+                                                            "type": "number",
+                                                            "minimum": 0
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "segmentAdvisors": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "tableSchema",
+                                                        "tableName",
+                                                        "engine",
+                                                        "allocation",
+                                                        "data",
+                                                        "index",
+                                                        "free"
+                                                    ],
+                                                    "properties": {
+                                                        "tableSchema": {
+                                                            "type": "string",
+                                                            "minLength": 1
+                                                        },
+                                                        "tableName": {
+                                                            "type": "string",
+                                                            "minLength": 1
+                                                        },
+                                                        "engine": {
+                                                            "type": "string",
+                                                            "minLength": 1
+                                                        },
+                                                        "allocation": {
+                                                            "type": "number",
+                                                            "minimum": 0
+                                                        },
+                                                        "data": {
+                                                            "type": "number",
+                                                            "minimum": 0
+                                                        },
+                                                        "index": {
+                                                            "type": "number",
+                                                            "minimum": 0
+                                                        },
+                                                        "free": {
+                                                            "type": "number",
+                                                            "minimum": 0
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
                 }
             }
         },
