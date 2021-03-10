@@ -44,10 +44,9 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/environments/frequency", ctrl.GetEnvironmentStats).Methods("GET")
 	router.HandleFunc("/hosts/types", ctrl.GetTypeStats).Methods("GET")
 	router.HandleFunc("/hosts/operating-systems", ctrl.GetOperatingSystemStats).Methods("GET")
-	router.HandleFunc("/hosts/technologies", ctrl.ListTechnologies).Methods("GET") //TODO update to return mysql value correct
+	router.HandleFunc("/hosts/technologies", ctrl.ListTechnologies).Methods("GET")
 
 	router.HandleFunc("/hosts/technologies/all/databases", ctrl.SearchDatabases).Methods("GET")
-
 	router.HandleFunc("/hosts/technologies/all/databases/statistics", ctrl.GetDatabasesStatistics).Methods("GET")
 
 	router.HandleFunc("/hosts/technologies/oracle/databases", ctrl.SearchOracleDatabases).Methods("GET")

@@ -1,0 +1,264 @@
+{
+    "archived": false,
+    "createdAt": {
+        "$date": {
+            "$numberLong": "1612425631000"
+        }
+    },
+    "serverVersion": "428452a6f13dd11333ed4ef6154f576c58fb4090",
+    "serverSchemaVersion": 1,
+    "hostname": "mysql",
+    "location": "Germany",
+    "environment": "TST",
+    "agentVersion": "latest",
+    "tags": [],
+    "info": {
+        "hostname": "mysql",
+        "cpuModel": "Intel Core Processor (Broadwell)",
+        "cpuFrequency": "1698.033Mhz",
+        "cpuSockets": 1,
+        "cpuCores": 1,
+        "cpuThreads": 1,
+        "threadsPerCore": 1,
+        "coresPerSocket": 1,
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "VMWARE",
+        "kernel": "Linux",
+        "kernelVersion": "3.10.0-1127.el7.x86_64",
+        "os": "Red Hat Enterprise Linux",
+        "osVersion": "7",
+        "memoryTotal": 0,
+        "swapTotal": 1
+    },
+    "clusterMembershipStatus": {
+        "oracleClusterware": false,
+        "veritasClusterServer": false,
+        "sunCluster": false,
+        "hacmp": false
+    },
+    "features": {
+        "mysql": {
+            "instances": [
+                {
+                    "name": "mysql:3306",
+                    "version": "8.0.23",
+                    "edition": "COMMUNITY",
+                    "platform": "Linux",
+                    "architecture": "x86_64",
+                    "engine": "InnoDB",
+                    "redoLogEnabled": "ON",
+                    "charsetServer": "utf8mb4",
+                    "charsetSystem": "utf8",
+                    "pageSize": 16,
+                    "threadsConcurrency": 0,
+                    "bufferPoolSize": 128,
+                    "logBufferSize": 16,
+                    "sortBufferSize": 1,
+                    "readOnly": false,
+                    "databases": [
+                        {
+                            "name": "mysql",
+                            "charset": "utf8mb4",
+                            "collation": "utf8mb4_0900_ai_ci",
+                            "encrypted": false
+                        },
+                        {
+                            "name": "information_schema",
+                            "charset": "utf8",
+                            "collation": "utf8_general_ci",
+                            "encrypted": false
+                        },
+                        {
+                            "name": "performance_schema",
+                            "charset": "utf8mb4",
+                            "collation": "utf8mb4_0900_ai_ci",
+                            "encrypted": false
+                        },
+                        {
+                            "name": "sys",
+                            "charset": "utf8mb4",
+                            "collation": "utf8mb4_0900_ai_ci",
+                            "encrypted": false
+                        }
+                    ],
+                    "tableSchemas": [
+                        {
+                            "name": "innodb_temporary",
+                            "engine": "InnoDB",
+                            "allocation": 12
+                        },
+                        {
+                            "name": "innodb_undo_001",
+                            "engine": "InnoDB",
+                            "allocation": 16
+                        },
+                        {
+                            "name": "innodb_undo_002",
+                            "engine": "InnoDB",
+                            "allocation": 16
+                        },
+                        {
+                            "name": "mysql",
+                            "engine": "InnoDB",
+                            "allocation": 24
+                        },
+                        {
+                            "name": "sys",
+                            "engine": "InnoDB",
+                            "allocation": 0.078
+                        }
+                    ],
+                    "segmentAdvisors": [
+                        {
+                            "tableSchema": "innodb_temporary",
+                            "tableName": "innodb_temporary",
+                            "engine": "InnoDB",
+                            "allocation": 12,
+                            "data": 12,
+                            "index": 0,
+                            "free": 0
+                        },
+                        {
+                            "tableSchema": "innodb_undo_001",
+                            "tableName": "innodb_undo_001",
+                            "engine": "InnoDB",
+                            "allocation": 16,
+                            "data": 16,
+                            "index": 0,
+                            "free": 0
+                        },
+                        {
+                            "tableSchema": "innodb_undo_002",
+                            "tableName": "innodb_undo_002",
+                            "engine": "InnoDB",
+                            "allocation": 16,
+                            "data": 16,
+                            "index": 0,
+                            "free": 0
+                        },
+                        {
+                            "tableSchema": "mysql",
+                            "tableName": "mysql",
+                            "engine": "InnoDB",
+                            "allocation": 24,
+                            "data": 24,
+                            "index": 0,
+                            "free": 0
+                        },
+                        {
+                            "tableSchema": "sys",
+                            "tableName": "sys_config",
+                            "engine": "InnoDB",
+                            "allocation": 0.078,
+                            "data": 0.062,
+                            "index": 0.016,
+                            "free": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "filesystems": [
+        {
+            "filesystem": "/dev/mapper/centos-root",
+            "type": "xfs",
+            "size": {
+                "$numberLong": "13092864"
+            },
+            "usedSpace": {
+                "$numberLong": "4338680"
+            },
+            "availableSpace": {
+                "$numberLong": "8754184"
+            },
+            "mountedOn": "/"
+        },
+        {
+            "filesystem": "/dev/vda1",
+            "type": "xfs",
+            "size": {
+                "$numberLong": "1038336"
+            },
+            "usedSpace": {
+                "$numberLong": "139948"
+            },
+            "availableSpace": {
+                "$numberLong": "898388"
+            },
+            "mountedOn": "/boot"
+        },
+        {
+            "filesystem": "devtmpfs",
+            "type": "devtmpfs",
+            "size": {
+                "$numberLong": "461268"
+            },
+            "usedSpace": {
+                "$numberLong": "0"
+            },
+            "availableSpace": {
+                "$numberLong": "461268"
+            },
+            "mountedOn": "/dev"
+        },
+        {
+            "filesystem": "tmpfs",
+            "type": "tmpfs",
+            "size": {
+                "$numberLong": "473212"
+            },
+            "usedSpace": {
+                "$numberLong": "0"
+            },
+            "availableSpace": {
+                "$numberLong": "473212"
+            },
+            "mountedOn": "/dev/shm"
+        },
+        {
+            "filesystem": "tmpfs",
+            "type": "tmpfs",
+            "size": {
+                "$numberLong": "473212"
+            },
+            "usedSpace": {
+                "$numberLong": "6576"
+            },
+            "availableSpace": {
+                "$numberLong": "466636"
+            },
+            "mountedOn": "/run"
+        },
+        {
+            "filesystem": "tmpfs",
+            "type": "tmpfs",
+            "size": {
+                "$numberLong": "94644"
+            },
+            "usedSpace": {
+                "$numberLong": "0"
+            },
+            "availableSpace": {
+                "$numberLong": "94644"
+            },
+            "mountedOn": "/run/user/0"
+        },
+        {
+            "filesystem": "tmpfs",
+            "type": "tmpfs",
+            "size": {
+                "$numberLong": "473212"
+            },
+            "usedSpace": {
+                "$numberLong": "0"
+            },
+            "availableSpace": {
+                "$numberLong": "473212"
+            },
+            "mountedOn": "/sys/fs/cgroup"
+        }
+    ],
+    "clusters": null,
+    "schemaVersion": 1
+}

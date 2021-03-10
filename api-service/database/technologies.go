@@ -43,6 +43,9 @@ func (md *MongoDatabase) GetHostsCountUsingTechnologies(location string, environ
 				model.TechnologyOracleExadata: mu.APOSum(
 					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.oracle.exadata.components", bson.A{})), 0), 1, 0),
 				),
+				model.TechnologyOracleMySQL: mu.APOSum(
+					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.mysql.instances", bson.A{})), 0), 1, 0),
+				),
 			}),
 			mu.APUnset("_id"),
 		),
