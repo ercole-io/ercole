@@ -31,7 +31,7 @@ func (ctrl *APIController) SearchDatabases(w http.ResponseWriter, r *http.Reques
 
 	filter, err := dto.GetGlobalFilter(r)
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -66,4 +66,20 @@ func (ctrl *APIController) SearchDatabasesXLSX(w http.ResponseWriter, r *http.Re
 	//}
 
 	//utils.WriteXLSXResponse(w, file)
+}
+
+func (ctrl *APIController) GetDatabasesStatistics(w http.ResponseWriter, r *http.Request) {
+	filter, err := dto.GetGlobalFilter(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	stats, err := ctrl.Service.GetDatabasesStatistics(*filter)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, stats)
 }

@@ -4564,6 +4564,41 @@ paths:
                   - databases
             application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: {}
     parameters: []
+  /hosts/technologies/all/databases/statistics:
+    get:
+      tags:
+        - api-service
+        - fe-user
+        - read
+      operationId: GetDatabasesStatistics
+      summary: Get statistics about all databases
+      description: Get statistics about all databases
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+      responses:
+        '200':
+          description: statistics
+          content:
+            text/plain:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  total-memory-size:
+                    type: number
+                  total-segments-size:
+                    type: number
+                required:
+                  - total-memory-size
+                  - total-segments-size
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []
