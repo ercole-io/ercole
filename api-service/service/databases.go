@@ -17,8 +17,12 @@
 package service
 
 import (
+	"fmt"
+
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 func (as *APIService) SearchDatabases(filter dto.GlobalFilter) ([]dto.Database, error) {
@@ -99,6 +103,54 @@ func (as *APIService) getMySQLDatabases(filter dto.GlobalFilter) ([]dto.Database
 	}
 
 	return dbs, nil
+}
+
+func (as *APIService) SearchDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	databases, aerr := as.SearchDatabases(filter)
+	if aerr != nil {
+		return nil, aerr
+	}
+
+	file, err := excelize.OpenFile(as.Config.ResourceFilePath + "/templates/template_generic.xlsx")
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Databases"
+	file.SetSheetName("Sheet1", sheet)
+	headers := []string{
+		"Name",
+		"Type",
+		"Version",
+		"Hostname",
+		"Environment",
+		"Charset",
+		"Memory",
+		"Datafile Size",
+		"Segments Size",
+	}
+
+	for i, val := range headers {
+		column := rune('A' + i)
+		file.SetCellValue(sheet, fmt.Sprintf("%c1", column), val)
+	}
+
+	axisHelp := utils.NewAxisHelper(1)
+	for _, val := range databases {
+		nextAxis := axisHelp.NewRow()
+
+		file.SetCellValue(sheet, nextAxis(), val.Name)
+		file.SetCellValue(sheet, nextAxis(), val.Type)
+		file.SetCellValue(sheet, nextAxis(), val.Version)
+		file.SetCellValue(sheet, nextAxis(), val.Hostname)
+		file.SetCellValue(sheet, nextAxis(), val.Environment)
+		file.SetCellValue(sheet, nextAxis(), val.Charset)
+		file.SetCellValue(sheet, nextAxis(), val.Memory)
+		file.SetCellValue(sheet, nextAxis(), val.DatafileSize)
+		file.SetCellValue(sheet, nextAxis(), val.SegmentsSize)
+	}
+
+	return file, nil
 }
 
 func (as *APIService) GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.DatabasesStatistics, error) {
