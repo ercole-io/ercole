@@ -17,6 +17,7 @@ package migration
 
 import (
 	"context"
+	"time"
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
@@ -41,9 +42,11 @@ func ConnectToMongodb(log *logrus.Logger, conf config.Mongodb) *mongo.Client {
 	}
 
 	//Check the connection
-	err = cl.Ping(context.TODO(), nil)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	err = cl.Ping(ctx, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Can't connect to the database! %s\n", err)
 	}
 
 	return cl
