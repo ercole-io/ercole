@@ -179,6 +179,7 @@ type APIServiceInterface interface {
 	GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.DatabasesStatistics, error)
 
 	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
+	SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
