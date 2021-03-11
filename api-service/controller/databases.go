@@ -16,7 +16,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
@@ -57,15 +56,13 @@ func (ctrl *APIController) SearchDatabasesJSON(w http.ResponseWriter, r *http.Re
 }
 
 func (ctrl *APIController) SearchDatabasesXLSX(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
-	// TODO
-	utils.WriteAndLogError(ctrl.Log, w, http.StatusNotImplemented, fmt.Errorf("Not yet implemented"))
-	//file, err := ctrl.Service.SearchDatabasesAsXLSX(filter)
-	//if err != nil {
-	//	utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-	//	return
-	//}
+	file, err := ctrl.Service.SearchDatabasesAsXLSX(filter)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
 
-	//utils.WriteXLSXResponse(w, file)
+	utils.WriteXLSXResponse(w, file)
 }
 
 func (ctrl *APIController) GetDatabasesStatistics(w http.ResponseWriter, r *http.Request) {
