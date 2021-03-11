@@ -27,7 +27,7 @@ LicenseTypeMetricsDefault = [ "Processor Perpetual", "Named User Plus Perpetual"
   
   [DataService.FreshnessCheckJob]
   Crontab = "@daily"
-  DaysThreshold = 10
+  DaysThreshold = 1
   RunAtStartup = false
 
 [AlertService]
