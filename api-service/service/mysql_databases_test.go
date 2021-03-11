@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
@@ -74,4 +75,101 @@ func TestSearchMySQLInstances(t *testing.T) {
 
 		assert.Nil(t, actual)
 	})
+}
+
+func TestSearchMySQLInstancesAsXLSX_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+	}
+
+	returned := []dto.MySQLInstance{
+		{
+			Hostname:    "pippo",
+			Location:    "Italy",
+			Environment: "TST",
+			MySQLInstance: model.MySQLInstance{
+				Name:               "pippo",
+				Version:            "1.1.1",
+				Edition:            "Vanilla",
+				Platform:           "Linux",
+				Architecture:       "",
+				Engine:             "",
+				RedoLogEnabled:     "",
+				CharsetServer:      "",
+				CharsetSystem:      "",
+				PageSize:           0,
+				ThreadsConcurrency: 0,
+				BufferPoolSize:     0,
+				LogBufferSize:      0,
+				SortBufferSize:     0,
+				ReadOnly:           false,
+				Databases: []model.MySQLDatabase{
+					{Name: "pluto"}, {Name: "topolino"}, {Name: "minnie"},
+				},
+				TableSchemas: []model.MySQLTableSchema{
+					{Name: "marte"}, {Name: "venere"}, {Name: "saturno"},
+				},
+				SegmentAdvisors: []model.MySQLSegmentAdvisor{},
+			},
+		},
+		{
+			Hostname:    "pluto",
+			Location:    "",
+			Environment: "TST",
+			MySQLInstance: model.MySQLInstance{
+				Name:               "Ash",
+				Version:            "",
+				Edition:            "Ketchup",
+				Platform:           "",
+				Architecture:       "",
+				Engine:             "",
+				RedoLogEnabled:     "",
+				CharsetServer:      "",
+				CharsetSystem:      "",
+				PageSize:           0,
+				ThreadsConcurrency: 0,
+				BufferPoolSize:     0,
+				LogBufferSize:      0,
+				SortBufferSize:     0,
+				ReadOnly:           false,
+				Databases: []model.MySQLDatabase{
+					{Name: "Picka"}, {Name: "Bulbasaur"},
+				},
+				TableSchemas:    []model.MySQLTableSchema{},
+				SegmentAdvisors: []model.MySQLSegmentAdvisor{},
+			},
+		},
+	}
+
+	thisMoment := utils.P("2019-11-05T14:02:03+01:00")
+
+	globalFilter := dto.GlobalFilter{
+		Location:    "Dubai",
+		Environment: "TEST",
+		OlderThan:   thisMoment,
+	}
+
+	db.EXPECT().SearchMySQLInstances(globalFilter).
+		Return(returned, nil)
+
+	actual, err := as.SearchMySQLInstancesAsXLSX(globalFilter)
+	require.NoError(t, err)
+
+	assert.Equal(t, "Name", actual.GetCellValue("Instances", "A1"))
+	assert.Equal(t, returned[0].MySQLInstance.Name, actual.GetCellValue("Instances", "A2"))
+	assert.Equal(t, returned[1].MySQLInstance.Name, actual.GetCellValue("Instances", "A3"))
+
+	assert.Equal(t, "Version", actual.GetCellValue("Instances", "B1"))
+	assert.Equal(t, returned[0].Version, actual.GetCellValue("Instances", "B2"))
+	assert.Equal(t, returned[1].Version, actual.GetCellValue("Instances", "B3"))
+
+	assert.Equal(t, "Table Schemas", actual.GetCellValue("Instances", "Q1"))
+	assert.Equal(t, "marte, venere, saturno", actual.GetCellValue("Instances", "Q2"))
+	assert.Equal(t, "", actual.GetCellValue("Instances", "Q3"))
 }
