@@ -26,7 +26,7 @@ import (
 )
 
 // FindPatchingFunction find the the patching function associated to the hostname in the database
-func (md *MongoDatabase) FindPatchingFunction(hostname string) (model.PatchingFunction, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) FindPatchingFunction(hostname string) (model.PatchingFunction, error) {
 	var out model.PatchingFunction
 
 	//Find the hostdata
@@ -52,7 +52,7 @@ func (md *MongoDatabase) FindPatchingFunction(hostname string) (model.PatchingFu
 }
 
 // SavePatchingFunction saves the patching function
-func (md *MongoDatabase) SavePatchingFunction(pf model.PatchingFunction) utils.AdvancedErrorInterface {
+func (md *MongoDatabase) SavePatchingFunction(pf model.PatchingFunction) error {
 	//Find the informations
 	true := true
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("patching_functions").ReplaceOne(context.TODO(), bson.M{
@@ -67,7 +67,7 @@ func (md *MongoDatabase) SavePatchingFunction(pf model.PatchingFunction) utils.A
 }
 
 // SearchOracleDatabaseLicenseModifiers search license modifiers
-func (md *MongoDatabase) SearchOracleDatabaseLicenseModifiers(keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchOracleDatabaseLicenseModifiers(keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, error) {
 	var out []map[string]interface{} = make([]map[string]interface{}, 0)
 
 	//Find the matching hostdata
@@ -120,7 +120,7 @@ func (md *MongoDatabase) SearchOracleDatabaseLicenseModifiers(keywords []string,
 }
 
 // DeletePatchingFunction delete the patching function
-func (md *MongoDatabase) DeletePatchingFunction(hostname string) utils.AdvancedErrorInterface {
+func (md *MongoDatabase) DeletePatchingFunction(hostname string) error {
 	//Find the informations
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("patching_functions").DeleteOne(context.TODO(), bson.M{
 		"hostname": hostname,

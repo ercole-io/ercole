@@ -20,12 +20,11 @@ import (
 	"strings"
 
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // ThrowNewAlert create and insert in the database a new NEW_DATABASE alert
-func (as *AlertService) ThrowNewAlert(alert model.Alert) utils.AdvancedErrorInterface {
+func (as *AlertService) ThrowNewAlert(alert model.Alert) error {
 	alert.ID = primitive.NewObjectIDFromTimestamp(as.TimeNow())
 	alert.AlertStatus = model.AlertStatusNew
 
@@ -38,7 +37,7 @@ func (as *AlertService) ThrowNewAlert(alert model.Alert) utils.AdvancedErrorInte
 }
 
 // ThrowNewDatabaseAlert create and insert in the database a new NEW_DATABASE alert
-func (as *AlertService) ThrowNewDatabaseAlert(dbname string, hostname string) utils.AdvancedErrorInterface {
+func (as *AlertService) ThrowNewDatabaseAlert(dbname string, hostname string) error {
 	alr := model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(as.TimeNow()),
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
@@ -66,7 +65,7 @@ func (as *AlertService) ThrowNewDatabaseAlert(dbname string, hostname string) ut
 }
 
 // ThrowNewServerAlert create and insert in the database a new NEW_SERVER alert
-func (as *AlertService) ThrowNewServerAlert(hostname string) utils.AdvancedErrorInterface {
+func (as *AlertService) ThrowNewServerAlert(hostname string) error {
 	alr := model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(as.TimeNow()),
 		AlertAffectedTechnology: nil,
@@ -93,7 +92,7 @@ func (as *AlertService) ThrowNewServerAlert(hostname string) utils.AdvancedError
 }
 
 // ThrowNewEnterpriseLicenseAlert create and insert in the database a new NEW_DATABASE alert
-func (as *AlertService) ThrowNewEnterpriseLicenseAlert(hostname string) utils.AdvancedErrorInterface {
+func (as *AlertService) ThrowNewEnterpriseLicenseAlert(hostname string) error {
 	alr := model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(as.TimeNow()),
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
@@ -120,7 +119,7 @@ func (as *AlertService) ThrowNewEnterpriseLicenseAlert(hostname string) utils.Ad
 }
 
 // ThrowActivatedFeaturesAlert create and insert in the database a new NEW_OPTION alert
-func (as *AlertService) ThrowActivatedFeaturesAlert(dbname string, hostname string, activatedFeatures []string) utils.AdvancedErrorInterface {
+func (as *AlertService) ThrowActivatedFeaturesAlert(dbname string, hostname string, activatedFeatures []string) error {
 	alr := model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(as.TimeNow()),
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
@@ -149,7 +148,7 @@ func (as *AlertService) ThrowActivatedFeaturesAlert(dbname string, hostname stri
 }
 
 // ThrowNoDataAlert create and insert in the database a new NO_DATA alert
-func (as *AlertService) ThrowNoDataAlert(hostname string, freshnessThreshold int) utils.AdvancedErrorInterface {
+func (as *AlertService) ThrowNoDataAlert(hostname string, freshnessThreshold int) error {
 	alr := model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(as.TimeNow()),
 		AlertAffectedTechnology: nil,
@@ -176,7 +175,7 @@ func (as *AlertService) ThrowNoDataAlert(hostname string, freshnessThreshold int
 }
 
 // ThrowUnlistedRunningDatabasesAlert create and insert in the database a new UNLISTED_RUNNING_DATABASE alert
-func (as *AlertService) ThrowUnlistedRunningDatabasesAlert(dbname string, hostname string) utils.AdvancedErrorInterface {
+func (as *AlertService) ThrowUnlistedRunningDatabasesAlert(dbname string, hostname string) error {
 	alr := model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(as.TimeNow()),
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,

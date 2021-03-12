@@ -23,7 +23,6 @@ import (
 	"github.com/ercole-io/ercole/v2/chart-service/database"
 	"github.com/ercole-io/ercole/v2/chart-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/sirupsen/logrus"
 
 	"github.com/ercole-io/ercole/v2/config"
@@ -35,16 +34,16 @@ type ChartServiceInterface interface {
 	Init()
 
 	// GetChangeChart return the chart data related to changes to databases
-	GetChangeChart(from time.Time, location string, environment string, olderThan time.Time) (dto.ChangeChart, utils.AdvancedErrorInterface)
+	GetChangeChart(from time.Time, location string, environment string, olderThan time.Time) (dto.ChangeChart, error)
 
 	// GetOracleDatabaseChart return a chart associated to teh
-	GetOracleDatabaseChart(metric string, location string, environment string, olderThan time.Time) (dto.Chart, utils.AdvancedErrorInterface)
+	GetOracleDatabaseChart(metric string, location string, environment string, olderThan time.Time) (dto.Chart, error)
 	GetOracleDbLicenseHistory() ([]dto.OracleDatabaseLicenseHistory, error)
 
 	// GetTechnologiesMetrics return metrics of all technologies
-	GetTechnologiesMetrics() (map[string]model.TechnologySupportedMetrics, utils.AdvancedErrorInterface)
+	GetTechnologiesMetrics() (map[string]model.TechnologySupportedMetrics, error)
 	// GetTechnologyTypes return the types of techonlogies
-	GetTechnologyTypesChart(location string, environment string, olderThan time.Time) (dto.TechnologyTypesChart, utils.AdvancedErrorInterface)
+	GetTechnologyTypesChart(location string, environment string, olderThan time.Time) (dto.TechnologyTypesChart, error)
 }
 
 // ChartService is the concrete implementation of APIServiceInterface.
@@ -67,7 +66,7 @@ func (as *ChartService) Init() {
 }
 
 // GetTechnologiesMetrics return the list of technologies
-func (as *ChartService) GetTechnologiesMetrics() (map[string]model.TechnologySupportedMetrics, utils.AdvancedErrorInterface) {
+func (as *ChartService) GetTechnologiesMetrics() (map[string]model.TechnologySupportedMetrics, error) {
 	// at the moment, the list of technologies is hardcoded here
 	return model.TechnologiesSupportedMetricsMap, nil
 }

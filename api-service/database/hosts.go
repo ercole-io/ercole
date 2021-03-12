@@ -31,8 +31,7 @@ import (
 )
 
 // SearchHosts search hosts
-func (md *MongoDatabase) SearchHosts(mode string, filters dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
-
+func (md *MongoDatabase) SearchHosts(mode string, filters dto.SearchHostsFilters) ([]map[string]interface{}, error) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -301,7 +300,7 @@ func getIsMemberOfClusterFilterStep(member *bool) interface{} {
 }
 
 // GetHost fetch all informations about a host in the database
-func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, error) {
 	var out map[string]interface{}
 
 	//Find the matching hostdata
@@ -370,7 +369,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 	//Next the cursor. If there is no document return a empty document
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
-		return nil, utils.AerrHostNotFound
+		return nil, utils.ErrHostNotFound
 	}
 
 	//Decode the document
@@ -382,7 +381,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 }
 
 // ListLocations list locations
-func (md *MongoDatabase) ListLocations(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) ListLocations(location string, environment string, olderThan time.Time) ([]string, error) {
 	var out []string = make([]string, 0)
 
 	//Find the matching hostdata
@@ -412,7 +411,7 @@ func (md *MongoDatabase) ListLocations(location string, environment string, olde
 }
 
 // ListEnvironments list environments
-func (md *MongoDatabase) ListEnvironments(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) ListEnvironments(location string, environment string, olderThan time.Time) ([]string, error) {
 	var out []string = make([]string, 0)
 
 	//Find the matching hostdata
@@ -442,14 +441,14 @@ func (md *MongoDatabase) ListEnvironments(location string, environment string, o
 }
 
 // FindHostData find the current hostdata with a certain hostname
-func (md *MongoDatabase) FindHostData(hostname string) (model.HostDataBE, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) FindHostData(hostname string) (model.HostDataBE, error) {
 	//Find the hostdata
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").FindOne(context.TODO(), bson.M{
 		"hostname": hostname,
 		"archived": false,
 	})
 	if res.Err() == mongo.ErrNoDocuments {
-		return model.HostDataBE{}, utils.AerrHostNotFound
+		return model.HostDataBE{}, utils.ErrHostNotFound
 	} else if res.Err() != nil {
 		return model.HostDataBE{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
 	}
@@ -470,7 +469,7 @@ func (md *MongoDatabase) FindHostData(hostname string) (model.HostDataBE, utils.
 }
 
 // ReplaceHostData adds a new hostdata to the database
-func (md *MongoDatabase) ReplaceHostData(hostData model.HostDataBE) utils.AdvancedErrorInterface {
+func (md *MongoDatabase) ReplaceHostData(hostData model.HostDataBE) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").ReplaceOne(context.TODO(),
 		bson.M{
 			"_id": hostData.ID,
@@ -484,7 +483,7 @@ func (md *MongoDatabase) ReplaceHostData(hostData model.HostDataBE) utils.Advanc
 }
 
 // ExistHostdata return true if exist a non-archived hostdata with the hostname equal hostname
-func (md *MongoDatabase) ExistHostdata(hostname string) (bool, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) ExistHostdata(hostname string) (bool, error) {
 	//Count the number of new NO_DATA alerts associated to the host
 	val, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").CountDocuments(context.TODO(), bson.M{
 		"archived": false,
@@ -501,7 +500,7 @@ func (md *MongoDatabase) ExistHostdata(hostname string) (bool, utils.AdvancedErr
 }
 
 // ArchiveHost archive the specified host
-func (md *MongoDatabase) ArchiveHost(hostname string) utils.AdvancedErrorInterface {
+func (md *MongoDatabase) ArchiveHost(hostname string) error {
 	if _, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.M{
 		"hostname": hostname,
 		"archived": false,
@@ -515,7 +514,7 @@ func (md *MongoDatabase) ArchiveHost(hostname string) utils.AdvancedErrorInterfa
 }
 
 // ExistNotInClusterHost return true if the host specified by hostname exist and it is not in cluster, otherwise false
-func (md *MongoDatabase) ExistNotInClusterHost(hostname string) (bool, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) ExistNotInClusterHost(hostname string) (bool, error) {
 	//check that the host exist
 	var out []struct{} = make([]struct{}, 0)
 

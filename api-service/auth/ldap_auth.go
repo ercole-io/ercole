@@ -78,7 +78,7 @@ func (ap *LDAPAuthenticationProvider) Init() {
 }
 
 // GetUserInfoIfCredentialsAreCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
-func (ap *LDAPAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(username string, password string) (map[string]interface{}, utils.AdvancedErrorInterface) {
+func (ap *LDAPAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(username string, password string) (map[string]interface{}, error) {
 	ok, _, err := ap.Client.Authenticate(username, password)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "AUTH")
@@ -99,7 +99,6 @@ func (ap *LDAPAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.Re
 		Password string `json:"password"`
 	}
 
-	var err error
 	var request LoginRequest
 
 	//Parse the request
@@ -109,9 +108,9 @@ func (ap *LDAPAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.Re
 	}
 
 	//Check if the credentials are valid
-	info, aerr := ap.GetUserInfoIfCredentialsAreCorrect(request.Username, request.Password)
-	if aerr != nil {
-		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, aerr)
+	info, err := ap.GetUserInfoIfCredentialsAreCorrect(request.Username, request.Password)
+	if err != nil {
+		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, err)
 		return
 	}
 	if info == nil {
@@ -168,9 +167,9 @@ func (ap *LDAPAuthenticationProvider) AuthenticateMiddleware(next http.Handler) 
 			user := val[:bytes.IndexRune(val, ':')]
 			password := val[bytes.IndexRune(val, ':')+1:]
 
-			info, aerr := ap.GetUserInfoIfCredentialsAreCorrect(string(user), string(password))
-			if aerr != nil {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, aerr)
+			info, err := ap.GetUserInfoIfCredentialsAreCorrect(string(user), string(password))
+			if err != nil {
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, err)
 				return
 			}
 			if info == nil {

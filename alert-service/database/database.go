@@ -36,13 +36,13 @@ type MongoDatabaseInterface interface {
 	// Init initializes the connection to the database
 	Init()
 	// FindHostData find a host data
-	FindHostData(id primitive.ObjectID) (model.HostDataBE, utils.AdvancedErrorInterface)
+	FindHostData(id primitive.ObjectID) (model.HostDataBE, error)
 	// FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
-	FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostDataBE, utils.AdvancedErrorInterface)
+	FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostDataBE, error)
 	// InsertAlert inserr the alert in the database
-	InsertAlert(alert model.Alert) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
+	InsertAlert(alert model.Alert) (*mongo.InsertOneResult, error)
 	// ExistNoDataAlertByHost return true if the host has associated a new NO_DATA alert
-	ExistNoDataAlertByHost(hostname string) (bool, utils.AdvancedErrorInterface)
+	ExistNoDataAlertByHost(hostname string) (bool, error)
 }
 
 // MongoDatabase is a implementation
@@ -85,7 +85,7 @@ func (md *MongoDatabase) ConnectToMongodb() {
 }
 
 // FindHostData find a host data
-func (md *MongoDatabase) FindHostData(id primitive.ObjectID) (model.HostDataBE, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) FindHostData(id primitive.ObjectID) (model.HostDataBE, error) {
 	//Find the hostdata
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").FindOne(context.TODO(), bson.M{
 		"_id": id,
@@ -107,7 +107,7 @@ func (md *MongoDatabase) FindHostData(id primitive.ObjectID) (model.HostDataBE, 
 
 //TODO RM?
 // FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
-func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostDataBE, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostDataBE, error) {
 	var out model.HostDataBE
 
 	//Find the most recent HostData older than t
@@ -140,7 +140,7 @@ func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time
 }
 
 // InsertAlert insert the alert in the database
-func (md *MongoDatabase) InsertAlert(alert model.Alert) (*mongo.InsertOneResult, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) InsertAlert(alert model.Alert) (*mongo.InsertOneResult, error) {
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").InsertOne(context.TODO(), alert)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -149,7 +149,7 @@ func (md *MongoDatabase) InsertAlert(alert model.Alert) (*mongo.InsertOneResult,
 }
 
 // ExistNoDataAlertByHost return true if the host has associated a new NO_DATA alert
-func (md *MongoDatabase) ExistNoDataAlertByHost(hostname string) (bool, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) ExistNoDataAlertByHost(hostname string) (bool, error) {
 	//Count the number of new NO_DATA alerts associated to the host
 	val, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").CountDocuments(context.TODO(), bson.M{
 		"alertCode":          model.AlertCodeNoData,

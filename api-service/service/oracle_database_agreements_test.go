@@ -97,7 +97,7 @@ func TestAddOracleDatabaseAgreements_Success_InsertNew(t *testing.T) {
 			{"hostname": "foobar"},
 			{"hostname": "ercsoldbx"},
 		}, nil),
-		db.EXPECT().GetOracleDatabaseAgreement(addRequest.AgreementID).Return(nil, utils.AerrOracleDatabaseAgreementNotFound),
+		db.EXPECT().GetOracleDatabaseAgreement(addRequest.AgreementID).Return(nil, utils.ErrOracleDatabaseAgreementNotFound),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().Return(licenseTypesSample, nil),
 		db.EXPECT().InsertOracleDatabaseAgreement(gomock.Any()).
 			Do(func(actual model.OracleDatabaseAgreement) {
@@ -293,7 +293,7 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 		)
 
 		res, err := as.AddAssociatedLicenseTypeToOracleDbAgreement(addRequest)
-		require.EqualError(t, err, utils.AerrHostNotFound.Error())
+		require.EqualError(t, err, utils.ErrHostNotFound.Error())
 
 		assert.Equal(t, "", res)
 
@@ -336,14 +336,14 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 					{"hostname": "ercsoldbx"},
 				}, nil),
 			db.EXPECT().GetOracleDatabaseAgreement(addRequest.AgreementID).
-				Return(nil, utils.AerrOracleDatabaseAgreementNotFound),
+				Return(nil, utils.ErrOracleDatabaseAgreementNotFound),
 			db.EXPECT().GetOracleDatabaseLicenseTypes().
 				Return(licenseTypesSample, nil),
 		)
 
 		res, err := as.AddAssociatedLicenseTypeToOracleDbAgreement(addRequestWrongPart)
 
-		require.EqualError(t, err, utils.AerrOracleDatabaseLicenseTypeIDNotFound.Error())
+		require.EqualError(t, err, utils.ErrOracleDatabaseLicenseTypeIDNotFound.Error())
 
 		assert.Equal(t, "", res)
 
@@ -465,13 +465,13 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement(t *testing.T) {
 					{"hostname": "ercsoldbx"},
 				}, nil),
 			db.EXPECT().GetOracleDatabaseAgreementByAssociatedLicenseType(utils.Str2oid(req.ID)).
-				Return(nil, utils.AerrOracleDatabaseAgreementNotFound),
+				Return(nil, utils.ErrOracleDatabaseAgreementNotFound),
 			db.EXPECT().GetOracleDatabaseLicenseTypes().
 				Return(licenseTypesSample, nil),
 		)
 
 		err := as.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
-		assert.EqualError(t, err, utils.AerrOracleDatabaseAgreementNotFound.Error())
+		assert.EqualError(t, err, utils.ErrOracleDatabaseAgreementNotFound.Error())
 	})
 
 	t.Run("Fail: licenseTypeID not valid", func(t *testing.T) {
@@ -505,7 +505,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement(t *testing.T) {
 		req.LicenseTypeID = "this is a wrong licenseTypeID"
 
 		err := as.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
-		assert.EqualError(t, err, utils.AerrOracleDatabaseLicenseTypeIDNotFound.Error())
+		assert.EqualError(t, err, utils.ErrOracleDatabaseLicenseTypeIDNotFound.Error())
 	})
 }
 
@@ -2073,11 +2073,11 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement(t *testing.T) {
 	t.Run("Fail: can't find associated part", func(t *testing.T) {
 		gomock.InOrder(
 			db.EXPECT().GetOracleDatabaseAgreementByAssociatedLicenseType(associateLicenseTypeID).
-				Return(nil, utils.AerrOracleDatabaseAssociatedPartNotFound),
+				Return(nil, utils.ErrOracleDatabaseAssociatedPartNotFound),
 		)
 
 		err := as.DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(associateLicenseTypeID)
-		require.EqualError(t, err, utils.AerrOracleDatabaseAssociatedPartNotFound.Error())
+		require.EqualError(t, err, utils.ErrOracleDatabaseAssociatedPartNotFound.Error())
 	})
 
 	t.Run("Success with only one associated part", func(t *testing.T) {
@@ -2180,11 +2180,11 @@ func TestAddHostToAssociatedPart(t *testing.T) {
 
 		gomock.InOrder(
 			db.EXPECT().GetOracleDatabaseAgreementByAssociatedLicenseType(anotherAssociatedPartID).
-				Return(nil, utils.AerrOracleDatabaseAssociatedPartNotFound),
+				Return(nil, utils.ErrOracleDatabaseAssociatedPartNotFound),
 		)
 
 		err := as.AddHostToAssociatedLicenseType(anotherAssociatedPartID, "pippo")
-		require.EqualError(t, err, utils.AerrOracleDatabaseAssociatedPartNotFound.Error())
+		require.EqualError(t, err, utils.ErrOracleDatabaseAssociatedPartNotFound.Error())
 	})
 
 	associateLicenseTypeID := utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")
@@ -2355,11 +2355,11 @@ func TestRemoveHostFromAssociatedPart(t *testing.T) {
 
 		gomock.InOrder(
 			db.EXPECT().GetOracleDatabaseAgreementByAssociatedLicenseType(anotherAssociatedPartID).
-				Return(nil, utils.AerrOracleDatabaseAssociatedPartNotFound),
+				Return(nil, utils.ErrOracleDatabaseAssociatedPartNotFound),
 		)
 
 		err := as.RemoveHostFromAssociatedLicenseType(anotherAssociatedPartID, "pippo")
-		require.EqualError(t, err, utils.AerrOracleDatabaseAssociatedPartNotFound.Error())
+		require.EqualError(t, err, utils.ErrOracleDatabaseAssociatedPartNotFound.Error())
 	})
 
 	associateLicenseTypeID := utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")

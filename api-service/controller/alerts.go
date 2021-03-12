@@ -44,7 +44,7 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 	var from time.Time
 	var to time.Time
 
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	mode = r.URL.Query().Get("mode")
 	if mode == "" {
@@ -140,9 +140,9 @@ func (ctrl *APIController) searchAlertsXLSX(w http.ResponseWriter, r *http.Reque
 	search string, sortBy string, sortDesc bool, pageNumber int, pageSize int,
 	location, environment, severity string, status string, from time.Time, to time.Time) {
 
-	response, aerr := ctrl.Service.SearchAlerts("all", search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	response, err := ctrl.Service.SearchAlerts("all", search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -182,11 +182,11 @@ func (ctrl *APIController) AckAlerts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	aerr := ctrl.Service.AckAlerts(ids)
-	if aerr == utils.AerrAlertNotFound {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
-	} else if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	err := ctrl.Service.AckAlerts(ids)
+	if err == utils.ErrAlertNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 

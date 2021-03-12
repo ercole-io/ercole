@@ -30,7 +30,7 @@ func (ctrl *APIController) ListTechnologies(w http.ResponseWriter, r *http.Reque
 	var environment string
 	var olderThan time.Time
 
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	sortBy = r.URL.Query().Get("sort-by")
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {

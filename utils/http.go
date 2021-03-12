@@ -27,10 +27,10 @@ import (
 
 // ErrorResponseFE is a struct that contains informations about a error
 type ErrorResponseFE struct {
-	// Error contains the (generic) class of the error
+	// Error contains detailed informations about the error
 	Error string `json:"error"`
-	// ErrorDescription contains detailed informations about the error
-	ErrorDescription string `json:"errorDescription"`
+	// ErrorClass contains the (generic) class of the error
+	ErrorClass string `json:"errorClass"`
 	// File contains the filename of the source code where the error was detected
 	SourceFilename string `json:"sourceFilename"`
 	// LineNumber contains the number of the line where the error was detected
@@ -43,21 +43,23 @@ func WriteAndLogError(log *logrus.Logger, w http.ResponseWriter, statusCode int,
 	var aerr *AdvancedError
 	if errors.As(err, &aerr) {
 		resp = ErrorResponseFE{
-			Error:            aerr.ErrorClass(),
-			ErrorDescription: aerr.Error(),
-			LineNumber:       aerr.LineNumber(),
-			SourceFilename:   aerr.SourceFilename(),
+			Error:          aerr.Err.Error(),
+			ErrorClass:     aerr.Class,
+			LineNumber:     aerr.Line,
+			SourceFilename: aerr.Source,
 		}
 	} else {
 		resp = ErrorResponseFE{
-			Error:            "",
-			ErrorDescription: err.Error(),
-			SourceFilename:   "",
-			LineNumber:       0,
+			ErrorClass:     "",
+			Error:          err.Error(),
+			SourceFilename: "",
+			LineNumber:     0,
 		}
 	}
 
-	LogErr(log, err)
+	if statusCode >= 500 {
+		log.Error(err)
+	}
 
 	WriteJSONResponse(w, statusCode, resp)
 }

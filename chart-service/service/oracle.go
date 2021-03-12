@@ -29,7 +29,7 @@ import (
 )
 
 // GetOracleDatabaseChart return a chart associated to teh
-func (as *ChartService) GetOracleDatabaseChart(metric string, location string, environment string, olderThan time.Time) (dto.Chart, utils.AdvancedErrorInterface) {
+func (as *ChartService) GetOracleDatabaseChart(metric string, location string, environment string, olderThan time.Time) (dto.Chart, error) {
 	switch metric {
 	case "version":
 		data, err := as.Database.GetOracleDatabaseChartByVersion(location, environment, olderThan)

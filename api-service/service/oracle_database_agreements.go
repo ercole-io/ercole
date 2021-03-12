@@ -32,13 +32,13 @@ import (
 
 // AddAssociatedLicenseTypeToOracleDbAgreement add associated part to OracleDatabaseAgreement or create a new one
 func (as *APIService) AddAssociatedLicenseTypeToOracleDbAgreement(request dto.AssociatedLicenseTypeInOracleDbAgreementRequest,
-) (string, utils.AdvancedErrorInterface) {
+) (string, error) {
 	if err := checkHosts(as, request.Hosts); err != nil {
 		return "", err
 	}
 
 	agreement, err := as.Database.GetOracleDatabaseAgreement(request.AgreementID)
-	if err == utils.AerrOracleDatabaseAgreementNotFound {
+	if err == utils.ErrOracleDatabaseAgreementNotFound {
 		agreement = &model.OracleDatabaseAgreement{
 			AgreementID:  request.AgreementID,
 			CSI:          request.CSI,
@@ -73,7 +73,7 @@ func (as *APIService) AddAssociatedLicenseTypeToOracleDbAgreement(request dto.As
 }
 
 func addAssociatedLicenseType(as *APIService, agreement *model.OracleDatabaseAgreement,
-	req dto.AssociatedLicenseTypeInOracleDbAgreementRequest) utils.AdvancedErrorInterface {
+	req dto.AssociatedLicenseTypeInOracleDbAgreementRequest) error {
 	part, err := as.GetOracleDatabaseLicenseType(req.LicenseTypeID)
 	if err != nil {
 		return err
@@ -94,8 +94,8 @@ func addAssociatedLicenseType(as *APIService, agreement *model.OracleDatabaseAgr
 	return nil
 }
 
-func checkHosts(as *APIService, hosts []string) utils.AdvancedErrorInterface {
-	notInClusterHosts, aerr := as.SearchHosts("hostnames",
+func checkHosts(as *APIService, hosts []string) error {
+	notInClusterHosts, err := as.SearchHosts("hostnames",
 		dto.SearchHostsFilters{
 			Search:         []string{""},
 			OlderThan:      utils.MAX_TIME,
@@ -110,8 +110,8 @@ func checkHosts(as *APIService, hosts []string) utils.AdvancedErrorInterface {
 			LTECPUThreads:  -1,
 			GTECPUThreads:  -1,
 		})
-	if aerr != nil {
-		return aerr
+	if err != nil {
+		return utils.NewAdvancedErrorPtr(err, "")
 	}
 
 	notInClusterHostnames := make([]string, len(notInClusterHosts))
@@ -127,7 +127,7 @@ hosts_loop:
 			}
 		}
 
-		return utils.AerrHostNotFound
+		return utils.ErrHostNotFound
 	}
 
 	return nil
@@ -135,7 +135,7 @@ hosts_loop:
 
 // UpdateAssociatedLicenseTypeOfOracleDbAgreement update associated part in OracleDatabaseAgreement
 func (as *APIService) UpdateAssociatedLicenseTypeOfOracleDbAgreement(request dto.AssociatedLicenseTypeInOracleDbAgreementRequest,
-) utils.AdvancedErrorInterface {
+) error {
 	if err := checkHosts(as, request.Hosts); err != nil {
 		return err
 	}
@@ -155,12 +155,12 @@ func (as *APIService) UpdateAssociatedLicenseTypeOfOracleDbAgreement(request dto
 }
 
 func updateAssociatedPart(as *APIService, agreement *model.OracleDatabaseAgreement,
-	req dto.AssociatedLicenseTypeInOracleDbAgreementRequest) utils.AdvancedErrorInterface {
+	req dto.AssociatedLicenseTypeInOracleDbAgreementRequest) error {
 
 	reqID := utils.Str2oid(req.ID)
 	associatedLicenseType := agreement.AssociatedLicenseTypeByID(reqID)
 	if associatedLicenseType == nil {
-		return utils.AerrOracleDatabaseAssociatedPartNotFound
+		return utils.ErrOracleDatabaseAssociatedPartNotFound
 	}
 
 	licenseType, err := as.GetOracleDatabaseLicenseType(req.LicenseTypeID)
@@ -180,7 +180,7 @@ func updateAssociatedPart(as *APIService, agreement *model.OracleDatabaseAgreeme
 
 // SearchAssociatedLicenseTypesInOracleDatabaseAgreements search OracleDatabase associated parts agreements
 func (as *APIService) SearchAssociatedLicenseTypesInOracleDatabaseAgreements(filters dto.SearchOracleDatabaseAgreementsFilter,
-) ([]dto.OracleDatabaseAgreementFE, utils.AdvancedErrorInterface) {
+) ([]dto.OracleDatabaseAgreementFE, error) {
 	agreements, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
 		return nil, err
@@ -650,7 +650,7 @@ func checkOracleDatabaseAgreementMatchFilter(agr dto.OracleDatabaseAgreementFE, 
 
 // DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement delete associated part from OracleDatabaseAgreement
 func (as *APIService) DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(associateLicenseTypeID primitive.ObjectID,
-) utils.AdvancedErrorInterface {
+) error {
 	agreement, err := as.Database.GetOracleDatabaseAgreementByAssociatedLicenseType(associateLicenseTypeID)
 	if err != nil {
 		return err
@@ -672,7 +672,7 @@ func (as *APIService) DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(ass
 
 // AddHostToAssociatedLicenseType add an host to AssociatedLicenseType
 func (as *APIService) AddHostToAssociatedLicenseType(associateLicenseTypeID primitive.ObjectID, hostname string,
-) utils.AdvancedErrorInterface {
+) error {
 
 	agreement, err := as.Database.GetOracleDatabaseAgreementByAssociatedLicenseType(associateLicenseTypeID)
 	if err != nil {
@@ -698,7 +698,7 @@ func (as *APIService) AddHostToAssociatedLicenseType(associateLicenseTypeID prim
 
 // RemoveHostFromAssociatedLicenseType remove host from AssociatedLicenseType
 func (as *APIService) RemoveHostFromAssociatedLicenseType(associateLicenseTypeID primitive.ObjectID, hostname string,
-) utils.AdvancedErrorInterface {
+) error {
 
 	agreement, err := as.Database.GetOracleDatabaseAgreementByAssociatedLicenseType(associateLicenseTypeID)
 	if err != nil {

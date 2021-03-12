@@ -56,9 +56,9 @@ func (ctrl *APIController) AddAssociatedLicenseTypeToOracleDbAgreement(w http.Re
 		return
 	}
 
-	id, aerr := ctrl.Service.AddAssociatedLicenseTypeToOracleDbAgreement(req)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	id, err := ctrl.Service.AddAssociatedLicenseTypeToOracleDbAgreement(req)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -88,8 +88,8 @@ func (ctrl *APIController) UpdateAssociatedLicenseTypeOfOracleDbAgreement(w http
 	}
 
 	err := ctrl.Service.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
-	if err == utils.AerrOracleDatabaseAgreementNotFound ||
-		err == utils.AerrOracleDatabaseLicenseTypeIDNotFound {
+	if err == utils.ErrOracleDatabaseAgreementNotFound ||
+		err == utils.ErrOracleDatabaseLicenseTypeIDNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 	} else if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -101,7 +101,7 @@ func (ctrl *APIController) UpdateAssociatedLicenseTypeOfOracleDbAgreement(w http
 
 // SearchAssociatedLicenseTypesInOracleDatabaseAgreements search Oracle/Database agreements
 func (ctrl *APIController) SearchAssociatedLicenseTypesInOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request) {
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	searchOracleDatabaseAgreementsFilters, err := parseSearchOracleDatabaseAgreementsFilters(r.URL.Query())
 	if err != nil {
@@ -120,9 +120,9 @@ func (ctrl *APIController) SearchAssociatedLicenseTypesInOracleDatabaseAgreement
 
 // parseSearchOracleDatabaseAgreementsFilters return the Oracle/Database agreement search filters in the request
 func parseSearchOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.SearchOracleDatabaseAgreementsFilter,
-	utils.AdvancedErrorInterface) {
+	error) {
 
-	var aerr utils.AdvancedErrorInterface
+	var err error
 
 	filters := dto.SearchOracleDatabaseAgreementsFilter{}
 
@@ -149,28 +149,28 @@ func parseSearchOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.Searc
 			utils.NewAdvancedErrorPtr(errors.New("Invalid value for catch-all"), http.StatusText(http.StatusUnprocessableEntity))
 	}
 
-	if filters.LicensesCountLTE, aerr = utils.Str2int(urlValues.Get("licenses-count-lte"), -1); aerr != nil {
-		return dto.SearchOracleDatabaseAgreementsFilter{}, aerr
+	if filters.LicensesCountLTE, err = utils.Str2int(urlValues.Get("licenses-count-lte"), -1); err != nil {
+		return dto.SearchOracleDatabaseAgreementsFilter{}, err
 	}
 
-	if filters.LicensesCountGTE, aerr = utils.Str2int(urlValues.Get("licenses-count-gte"), -1); aerr != nil {
-		return dto.SearchOracleDatabaseAgreementsFilter{}, aerr
+	if filters.LicensesCountGTE, err = utils.Str2int(urlValues.Get("licenses-count-gte"), -1); err != nil {
+		return dto.SearchOracleDatabaseAgreementsFilter{}, err
 	}
 
-	if filters.UsersCountLTE, aerr = utils.Str2int(urlValues.Get("users-count-lte"), -1); aerr != nil {
-		return dto.SearchOracleDatabaseAgreementsFilter{}, aerr
+	if filters.UsersCountLTE, err = utils.Str2int(urlValues.Get("users-count-lte"), -1); err != nil {
+		return dto.SearchOracleDatabaseAgreementsFilter{}, err
 	}
 
-	if filters.UsersCountGTE, aerr = utils.Str2int(urlValues.Get("users-count-gte"), -1); aerr != nil {
-		return dto.SearchOracleDatabaseAgreementsFilter{}, aerr
+	if filters.UsersCountGTE, err = utils.Str2int(urlValues.Get("users-count-gte"), -1); err != nil {
+		return dto.SearchOracleDatabaseAgreementsFilter{}, err
 	}
 
-	if filters.AvailableCountLTE, aerr = utils.Str2int(urlValues.Get("available-count-lte"), -1); aerr != nil {
-		return dto.SearchOracleDatabaseAgreementsFilter{}, aerr
+	if filters.AvailableCountLTE, err = utils.Str2int(urlValues.Get("available-count-lte"), -1); err != nil {
+		return dto.SearchOracleDatabaseAgreementsFilter{}, err
 	}
 
-	if filters.AvailableCountGTE, aerr = utils.Str2int(urlValues.Get("available-count-gte"), -1); aerr != nil {
-		return dto.SearchOracleDatabaseAgreementsFilter{}, aerr
+	if filters.AvailableCountGTE, err = utils.Str2int(urlValues.Get("available-count-gte"), -1); err != nil {
+		return dto.SearchOracleDatabaseAgreementsFilter{}, err
 	}
 
 	return filters, nil
@@ -184,7 +184,6 @@ func (ctrl *APIController) AddHostToAssociatedLicenseType(w http.ResponseWriter,
 	}
 
 	var err error
-	var aerr utils.AdvancedErrorInterface
 	var id primitive.ObjectID
 
 	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
@@ -200,12 +199,12 @@ func (ctrl *APIController) AddHostToAssociatedLicenseType(w http.ResponseWriter,
 	}
 	defer r.Body.Close()
 
-	if aerr = ctrl.Service.AddHostToAssociatedLicenseType(id, string(raw)); aerr == utils.AerrOracleDatabaseAgreementNotFound ||
-		aerr == utils.AerrNotInClusterHostNotFound {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
+	if err = ctrl.Service.AddHostToAssociatedLicenseType(id, string(raw)); err == utils.ErrOracleDatabaseAgreementNotFound ||
+		err == utils.ErrNotInClusterHostNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
-	} else if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -220,7 +219,6 @@ func (ctrl *APIController) RemoveHostFromAssociatedLicenseType(w http.ResponseWr
 	}
 
 	var err error
-	var aerr utils.AdvancedErrorInterface
 	var id primitive.ObjectID
 	var hostname string
 
@@ -230,11 +228,11 @@ func (ctrl *APIController) RemoveHostFromAssociatedLicenseType(w http.ResponseWr
 	}
 	hostname = mux.Vars(r)["hostname"]
 
-	if aerr = ctrl.Service.RemoveHostFromAssociatedLicenseType(id, hostname); aerr == utils.AerrOracleDatabaseAgreementNotFound {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
+	if err = ctrl.Service.RemoveHostFromAssociatedLicenseType(id, hostname); err == utils.ErrOracleDatabaseAgreementNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
-	} else if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -249,7 +247,6 @@ func (ctrl *APIController) DeleteAssociatedLicenseTypeFromOracleDatabaseAgreemen
 	}
 
 	var err error
-	var aerr utils.AdvancedErrorInterface
 	var id primitive.ObjectID
 
 	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
@@ -257,11 +254,11 @@ func (ctrl *APIController) DeleteAssociatedLicenseTypeFromOracleDatabaseAgreemen
 		return
 	}
 
-	if aerr = ctrl.Service.DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(id); aerr == utils.AerrOracleDatabaseAgreementNotFound {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
+	if err = ctrl.Service.DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(id); err == utils.ErrOracleDatabaseAgreementNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
-	} else if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 

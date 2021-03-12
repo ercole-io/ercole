@@ -27,7 +27,7 @@ func (ctrl *APIController) GetInfoForFrontendDashboard(w http.ResponseWriter, r 
 	var location string
 	var environment string
 	var olderThan time.Time
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")

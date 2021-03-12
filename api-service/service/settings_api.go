@@ -39,12 +39,12 @@ func (as *APIService) loadManagedTechnologiesList() {
 }
 
 // GetDefaultDatabaseTags return the default list of database tags from configuration
-func (as *APIService) GetDefaultDatabaseTags() ([]string, utils.AdvancedErrorInterface) {
+func (as *APIService) GetDefaultDatabaseTags() ([]string, error) {
 	return as.Config.APIService.DefaultDatabaseTags, nil
 }
 
 // GetErcoleFeatures return a map of active/inactive features
-func (as *APIService) GetErcoleFeatures() (map[string]bool, utils.AdvancedErrorInterface) {
+func (as *APIService) GetErcoleFeatures() (map[string]bool, error) {
 	partialList, err := as.Database.GetHostsCountUsingTechnologies("", "", utils.MAX_TIME)
 	if err != nil {
 		return nil, err
@@ -59,6 +59,6 @@ func (as *APIService) GetErcoleFeatures() (map[string]bool, utils.AdvancedErrorI
 }
 
 // GetTechnologyList return the list of technologies
-func (as *APIService) GetTechnologyList() ([]model.TechnologyInfo, utils.AdvancedErrorInterface) {
+func (as *APIService) GetTechnologyList() ([]model.TechnologyInfo, error) {
 	return as.TechnologyInfos, nil
 }

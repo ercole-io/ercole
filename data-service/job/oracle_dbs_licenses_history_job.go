@@ -50,11 +50,11 @@ func (job *OracleDbsLicensesHistory) Run() {
 	resp, err := http.Get(licensesCompliance)
 	if err != nil || resp == nil {
 		err = fmt.Errorf("Error while retrieving licenses compliance: [%w], response: [%v]", err, resp)
-		utils.LogErr(job.Log, utils.NewAdvancedErrorPtr(err, ""))
+		job.Log.Error(err)
 		return
 	} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		err = fmt.Errorf("Error while retrieving licenses compliance: response status code: response: [%+v]", resp)
-		utils.LogErr(job.Log, utils.NewAdvancedErrorPtr(err, ""))
+		job.Log.Error(err)
 		return
 	}
 
@@ -62,13 +62,13 @@ func (job *OracleDbsLicensesHistory) Run() {
 	decoder := json.NewDecoder(resp.Body)
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&licenses); err != nil {
-		utils.LogErr(job.Log, utils.NewAdvancedErrorPtr(err, "Decode ERROR"))
+		job.Log.Error(err)
 		return
 	}
 
 	err = job.Database.HistoricizeOracleDbsLicenses(licenses)
 	if err != nil {
-		utils.LogErr(job.Log, utils.NewAdvancedErrorPtr(err, "Can't historicize Oracle database licenses"))
+		job.Log.Error("Can't historicize Oracle database licenses")
 		return
 	}
 }

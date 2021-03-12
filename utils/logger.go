@@ -75,7 +75,7 @@ func getCaller(entry *logrus.Entry) string {
 	}
 
 	caller := entry.Caller.File
-	if strings.Contains(caller, "ercole-services/") {
+	if strings.Contains(caller, "ercole-services/") { //TODO
 		caller = caller[strings.Index(caller, "ercole-services/")+len("ercole-services/"):]
 	}
 
