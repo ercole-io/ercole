@@ -118,7 +118,6 @@ func (as *APIService) SetPatchingFunction(hostname string, pf model.PatchingFunc
 	if err != nil {
 		return nil, err
 	}
-	const DefaultPatchingCode = DatabaseTagsAdderCode + DatabaseLicensesFixerCode
 
 	//Fill missing fields in the new pf
 	pf.Hostname = hostname
