@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // Features holds various informations about the features of the host.
@@ -48,27 +47,4 @@ func (v Features) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *Features) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// FeaturesBsonValidatorRules contains mongodb validation rules for Features
-var FeaturesBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"properties": bson.M{
-		"oracle": bson.M{
-			"anyOf": bson.A{
-				bson.M{
-					"bsonType": "null",
-				},
-				OracleFeatureBsonValidatorRules,
-			},
-		},
-		"microsoft": bson.M{
-			"anyOf": bson.A{
-				bson.M{
-					"bsonType": "null",
-				},
-				MicrosoftFeatureBsonValidatorRules,
-			},
-		},
-	},
 }
