@@ -29,6 +29,15 @@ import (
 //go:embed hostdata.json
 var hostdataSchema string
 
+//go:embed oracle.json
+var oracleSchema string
+
+//go:embed postgresql.json
+var postgresqlSchema string
+
+//go:embed microsoft.json
+var microsoftSchema string
+
 //go:embed mysql.json
 var mysqlSchema string
 
@@ -36,21 +45,7 @@ var schema *gojsonschema.Schema
 
 func ValidateHostdata(raw []byte) error {
 	if schema == nil {
-		sl := gojsonschema.NewSchemaLoader()
-		mysql := gojsonschema.NewStringLoader(mysqlSchema)
-		if err := sl.AddSchemas(mysql); err != nil {
-			fmt.Println("Should never happen: wrong schema")
-			panic(err)
-		}
-
-		hostdata := gojsonschema.NewStringLoader(hostdataSchema)
-
-		var err error
-		schema, err = sl.Compile(hostdata)
-		if err != nil {
-			fmt.Println("Should never happen: wrong schema")
-			panic(err)
-		}
+		loadSchema()
 	}
 
 	documentLoader := gojsonschema.NewBytesLoader(raw)
@@ -78,4 +73,26 @@ func ValidateHostdata(raw []byte) error {
 	}
 
 	return nil
+}
+
+func loadSchema() {
+	sl := gojsonschema.NewSchemaLoader()
+
+	schemas := []string{oracleSchema, postgresqlSchema, microsoftSchema, mysqlSchema}
+	for i := range schemas {
+		jl := gojsonschema.NewStringLoader(schemas[i])
+		if err := sl.AddSchemas(jl); err != nil {
+			fmt.Printf("Should never happen: [%s]: wrong schema\n", schemas[i])
+			panic(err)
+		}
+	}
+
+	hostdata := gojsonschema.NewStringLoader(hostdataSchema)
+
+	var err error
+	schema, err = sl.Compile(hostdata)
+	if err != nil {
+		fmt.Println("Should never happen: wrong schema")
+		panic(err)
+	}
 }
