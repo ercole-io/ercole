@@ -17,17 +17,13 @@
 package service
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/schema"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/xeipuuv/gojsonschema"
 )
 
 func TestHostdatas(t *testing.T) {
@@ -46,34 +42,8 @@ func TestHostdatas(t *testing.T) {
 			raw, err := ioutil.ReadAll(file)
 			require.NoError(t, err)
 
-			//Validate the data
-			//TODO Refactor this in model.FrontendHostdataSchemaValidator
-			documentLoader := gojsonschema.NewBytesLoader(raw)
-			schemaLoader := gojsonschema.NewStringLoader(schema.FrontendHostdataSchemaValidator)
-
-			result, err := gojsonschema.Validate(schemaLoader, documentLoader)
+			err = schema.ValidateHostdata(raw)
 			require.NoError(t, err)
-
-			assert.True(t, result.Valid())
-
-			if !result.Valid() {
-				fmt.Printf("The input hostdata for file [%v] is not valid:\n", file.Name())
-				for _, desc := range result.Errors() {
-					fmt.Printf("- %s\n", desc)
-				}
-
-				var errorMsg strings.Builder
-				for _, err := range result.Errors() {
-
-					value := fmt.Sprintf("%v", err.Value())
-					if len(value) > 80 {
-						value = value[:78] + ".."
-					}
-					errorMsg.WriteString(fmt.Sprintf("- %s. Value: [%v]\n", err, value))
-				}
-
-				fmt.Println(errorMsg.String())
-			}
 		})
 	}
 }
