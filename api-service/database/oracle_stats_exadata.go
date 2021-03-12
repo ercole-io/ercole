@@ -25,7 +25,7 @@ import (
 )
 
 // GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata
-func (md *MongoDatabase) GetTotalOracleExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalOracleExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float64, error) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -61,7 +61,7 @@ func (md *MongoDatabase) GetTotalOracleExadataMemorySizeStats(location string, e
 }
 
 // GetTotalOracleExadataCPUStats return the total cpu of exadata
-func (md *MongoDatabase) GetTotalOracleExadataCPUStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalOracleExadataCPUStats(location string, environment string, olderThan time.Time) (interface{}, error) {
 	var out map[string]interface{}
 
 	//Calculate the stats
@@ -101,7 +101,7 @@ func (md *MongoDatabase) GetTotalOracleExadataCPUStats(location string, environm
 }
 
 // GetAverageOracleExadataStorageUsageStats return the average usage of cell disks of exadata
-func (md *MongoDatabase) GetAverageOracleExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetAverageOracleExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float64, error) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -168,7 +168,7 @@ func (md *MongoDatabase) GetAverageOracleExadataStorageUsageStats(location strin
 }
 
 // GetOracleExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
-func (md *MongoDatabase) GetOracleExadataStorageErrorCountStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetOracleExadataStorageErrorCountStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, error) {
 	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
@@ -210,7 +210,7 @@ func (md *MongoDatabase) GetOracleExadataStorageErrorCountStatusStats(location s
 }
 
 // GetOracleExadataPatchStatusStats return a array containing the number of exadata per patch status
-func (md *MongoDatabase) GetOracleExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetOracleExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, error) {
 	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats

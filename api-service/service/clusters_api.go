@@ -24,24 +24,23 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
-	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // SearchClusters search clusters
-func (as *APIService) SearchClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) SearchClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error) {
 	return as.Database.SearchClusters(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
 // GetCluster return the cluster specified in the clusterName param
-func (as *APIService) GetCluster(clusterName string, olderThan time.Time) (*dto.Cluster, utils.AdvancedErrorInterface) {
+func (as *APIService) GetCluster(clusterName string, olderThan time.Time) (*dto.Cluster, error) {
 	return as.Database.GetCluster(clusterName, olderThan)
 }
 
 // GetClusterXLSX return  cluster vms as xlxs file
 func (as *APIService) GetClusterXLSX(clusterName string, olderThan time.Time) (*excelize.File, error) {
-	cluster, aerr := as.Database.GetCluster(clusterName, olderThan)
-	if aerr != nil {
-		return nil, aerr
+	cluster, err := as.Database.GetCluster(clusterName, olderThan)
+	if err != nil {
+		return nil, err
 	}
 
 	xlsx, err := excelize.OpenFile(as.Config.ResourceFilePath + "/templates/template_cluster.xlsx")

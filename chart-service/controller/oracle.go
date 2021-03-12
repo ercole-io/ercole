@@ -26,7 +26,7 @@ import (
 
 // GetOracleDatabaseChart return the list of techonlogies
 func (ctrl *ChartController) GetOracleDatabaseChart(w http.ResponseWriter, r *http.Request) {
-	var err utils.AdvancedErrorInterface
+	var err error
 	var metric string
 	var location string
 	var environment string

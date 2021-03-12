@@ -20,7 +20,6 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/v2/config"
-	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -33,7 +32,7 @@ type AuthenticationProvider interface {
 	// TokenEndpoint return the middleware used to check if the users are authenticated
 	GetToken(w http.ResponseWriter, r *http.Request)
 	// GetUserInfoIfCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
-	GetUserInfoIfCredentialsAreCorrect(username string, password string) (map[string]interface{}, utils.AdvancedErrorInterface)
+	GetUserInfoIfCredentialsAreCorrect(username string, password string) (map[string]interface{}, error)
 }
 
 // BuildAuthenticationProvider return a authentication provider that match what is requested in the configuration

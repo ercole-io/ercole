@@ -18,26 +18,24 @@ package service
 
 import (
 	"time"
-
-	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // GetHostsCountStats return the number of the non-archived hosts
-func (as *APIService) GetHostsCountStats(location string, environment string, olderThan time.Time) (int, utils.AdvancedErrorInterface) {
+func (as *APIService) GetHostsCountStats(location string, environment string, olderThan time.Time) (int, error) {
 	return as.Database.GetHostsCountStats(location, environment, olderThan)
 }
 
 // GetEnvironmentStats return a array containing the number of hosts per environment
-func (as *APIService) GetEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) GetEnvironmentStats(location string, olderThan time.Time) ([]interface{}, error) {
 	return as.Database.GetEnvironmentStats(location, olderThan)
 }
 
 // GetTypeStats return a array containing the number of hosts per type
-func (as *APIService) GetTypeStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) GetTypeStats(location string, olderThan time.Time) ([]interface{}, error) {
 	return as.Database.GetTypeStats(location, olderThan)
 }
 
 // GetOperatingSystemStats return a array containing the number of hosts per operating system
-func (as *APIService) GetOperatingSystemStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) GetOperatingSystemStats(location string, olderThan time.Time) ([]interface{}, error) {
 	return as.Database.GetOperatingSystemStats(location, olderThan)
 }

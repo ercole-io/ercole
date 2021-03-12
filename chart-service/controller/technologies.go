@@ -24,7 +24,7 @@ import (
 
 // GetChangeChart return the chart data related to changes
 func (ctrl *ChartController) GetChangeChart(w http.ResponseWriter, r *http.Request) {
-	var err utils.AdvancedErrorInterface
+	var err error
 	var from time.Time
 	var location string
 	var environment string
@@ -52,7 +52,7 @@ func (ctrl *ChartController) GetChangeChart(w http.ResponseWriter, r *http.Reque
 
 // GetTechnologyTypes return the types of techonlogies
 func (ctrl *ChartController) GetTechnologyTypes(w http.ResponseWriter, r *http.Request) {
-	var err utils.AdvancedErrorInterface
+	var err error
 	var location string
 	var environment string
 	var olderThan time.Time

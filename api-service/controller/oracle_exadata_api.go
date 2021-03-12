@@ -34,7 +34,7 @@ func (ctrl *APIController) SearchOracleExadata(w http.ResponseWriter, r *http.Re
 	var environment string
 	var olderThan time.Time
 
-	var err utils.AdvancedErrorInterface
+	var err error
 	//parse the query params
 	if full, err = utils.Str2bool(r.URL.Query().Get("full"), false); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)

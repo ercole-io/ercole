@@ -106,9 +106,9 @@ func (as *APIService) getMySQLDatabases(filter dto.GlobalFilter) ([]dto.Database
 }
 
 func (as *APIService) SearchDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
-	databases, aerr := as.SearchDatabases(filter)
-	if aerr != nil {
-		return nil, aerr
+	databases, err := as.SearchDatabases(filter)
+	if err != nil {
+		return nil, err
 	}
 
 	file, err := excelize.OpenFile(as.Config.ResourceFilePath + "/templates/template_generic.xlsx")

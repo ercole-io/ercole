@@ -28,7 +28,7 @@ import (
 // SearchAlerts search alerts
 func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy string, sortDesc bool,
 	page, pageSize int, location, environment, severity, status string, from, to time.Time,
-) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+) ([]map[string]interface{}, error) {
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").Aggregate(
 		context.TODO(),
@@ -171,7 +171,7 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 }
 
 // UpdateAlertsStatus change the status of the specified alerts
-func (md *MongoDatabase) UpdateAlertsStatus(ids []primitive.ObjectID, newStatus string) utils.AdvancedErrorInterface {
+func (md *MongoDatabase) UpdateAlertsStatus(ids []primitive.ObjectID, newStatus string) error {
 	bsonIds := bson.A{}
 	for _, id := range ids {
 		bsonIds = append(bsonIds, bson.M{"_id": id})
@@ -181,7 +181,7 @@ func (md *MongoDatabase) UpdateAlertsStatus(ids []primitive.ObjectID, newStatus 
 	count, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").
 		CountDocuments(context.TODO(), filter)
 	if count != int64(len(ids)) {
-		return utils.AerrAlertNotFound
+		return utils.ErrAlertNotFound
 	}
 
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").

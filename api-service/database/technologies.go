@@ -26,7 +26,7 @@ import (
 )
 
 // GetHostsCountUsingTechnologies return a map that contains the number of usages for every features
-func (md *MongoDatabase) GetHostsCountUsingTechnologies(location string, environment string, olderThan time.Time) (map[string]float64, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetHostsCountUsingTechnologies(location string, environment string, olderThan time.Time) (map[string]float64, error) {
 	var out map[string]float64 = make(map[string]float64)
 
 	//Find the matching hostdata

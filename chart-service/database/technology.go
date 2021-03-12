@@ -27,7 +27,7 @@ import (
 )
 
 // GetTechnologyCount return the number of occurence per technology
-func (md *MongoDatabase) GetTechnologyCount(location string, environment string, olderThan time.Time) (map[string]float64, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTechnologyCount(location string, environment string, olderThan time.Time) (map[string]float64, error) {
 	var out map[string]float64
 	//Create the operating system technology detector
 	var technologyDetector bson.M = bson.M{}
