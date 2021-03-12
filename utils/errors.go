@@ -54,3 +54,5 @@ var AerrOracleDatabaseAssociatedPartNotFound AdvancedErrorInterface = NewAdvance
 // ErrNotInClusterHostNotFound contains "Baremetal host not found" error
 var ErrNotInClusterHostNotFound = errors.New("Not in cluster host not found")
 var AerrNotInClusterHostNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrNotInClusterHostNotFound, "DB ERROR")
+
+var ErrInvalidHostdata = errors.New("Invalid hostdata")
