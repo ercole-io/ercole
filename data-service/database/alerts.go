@@ -24,7 +24,7 @@ import (
 )
 
 // DeleteAllNoDataAlerts delete all alerts with code NO_DATA
-func (md *MongoDatabase) DeleteAllNoDataAlerts() utils.AdvancedErrorInterface {
+func (md *MongoDatabase) DeleteAllNoDataAlerts() error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).
 		Collection("alerts").
 		DeleteMany(context.TODO(), bson.M{"alertCode": model.AlertCodeNoData})
@@ -37,7 +37,7 @@ func (md *MongoDatabase) DeleteAllNoDataAlerts() utils.AdvancedErrorInterface {
 }
 
 // DeleteNoDataAlertByHost delete NO_DATA alert by hostname
-func (md *MongoDatabase) DeleteNoDataAlertByHost(hostname string) utils.AdvancedErrorInterface {
+func (md *MongoDatabase) DeleteNoDataAlertByHost(hostname string) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).
 		Collection("alerts").
 		DeleteOne(context.TODO(),

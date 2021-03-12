@@ -25,7 +25,7 @@ import (
 )
 
 // GetOracleDatabaseEnvironmentStats return a array containing the number of databases per environment
-func (md *MongoDatabase) GetOracleDatabaseEnvironmentStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetOracleDatabaseEnvironmentStats(location string, olderThan time.Time) ([]interface{}, error) {
 	var out []interface{} = make([]interface{}, 0)
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -63,7 +63,7 @@ func (md *MongoDatabase) GetOracleDatabaseEnvironmentStats(location string, olde
 }
 
 // GetOracleDatabaseHighReliabilityStats return a array containing the number of databases per high-reliability status
-func (md *MongoDatabase) GetOracleDatabaseHighReliabilityStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetOracleDatabaseHighReliabilityStats(location string, environment string, olderThan time.Time) ([]interface{}, error) {
 	var out []interface{} = make([]interface{}, 0)
 	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -102,7 +102,7 @@ func (md *MongoDatabase) GetOracleDatabaseHighReliabilityStats(location string, 
 }
 
 // GetOracleDatabaseVersionStats return a array containing the number of databases per version
-func (md *MongoDatabase) GetOracleDatabaseVersionStats(location string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetOracleDatabaseVersionStats(location string, olderThan time.Time) ([]interface{}, error) {
 	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
@@ -137,7 +137,7 @@ func (md *MongoDatabase) GetOracleDatabaseVersionStats(location string, olderTha
 }
 
 // GetTopReclaimableOracleDatabaseStats return a array containing the total sum of reclaimable of segments advisors of the top reclaimable databases
-func (md *MongoDatabase) GetTopReclaimableOracleDatabaseStats(location string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTopReclaimableOracleDatabaseStats(location string, limit int, olderThan time.Time) ([]interface{}, error) {
 	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
@@ -178,7 +178,7 @@ func (md *MongoDatabase) GetTopReclaimableOracleDatabaseStats(location string, l
 }
 
 // GetTopWorkloadOracleDatabaseStats return a array containing top databases by workload
-func (md *MongoDatabase) GetTopWorkloadOracleDatabaseStats(location string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTopWorkloadOracleDatabaseStats(location string, limit int, olderThan time.Time) ([]interface{}, error) {
 	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
@@ -219,7 +219,7 @@ func (md *MongoDatabase) GetTopWorkloadOracleDatabaseStats(location string, limi
 }
 
 // GetOracleDatabasePatchStatusStats return a array containing the number of databases per patch status
-func (md *MongoDatabase) GetOracleDatabasePatchStatusStats(location string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetOracleDatabasePatchStatusStats(location string, windowTime time.Time, olderThan time.Time) ([]interface{}, error) {
 	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
@@ -273,7 +273,7 @@ func (md *MongoDatabase) GetOracleDatabasePatchStatusStats(location string, wind
 }
 
 // GetOracleDatabaseDataguardStatusStats return a array containing the number of databases per dataguard status
-func (md *MongoDatabase) GetOracleDatabaseDataguardStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetOracleDatabaseDataguardStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, error) {
 	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
@@ -308,7 +308,7 @@ func (md *MongoDatabase) GetOracleDatabaseDataguardStatusStats(location string, 
 }
 
 // GetOracleDatabaseRACStatusStats return a array containing the number of databases per RAC status
-func (md *MongoDatabase) GetOracleDatabaseRACStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetOracleDatabaseRACStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, error) {
 	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
@@ -348,7 +348,7 @@ func (md *MongoDatabase) GetOracleDatabaseRACStatusStats(location string, enviro
 }
 
 // GetOracleDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
-func (md *MongoDatabase) GetOracleDatabaseArchivelogStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetOracleDatabaseArchivelogStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, error) {
 	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats
@@ -383,7 +383,7 @@ func (md *MongoDatabase) GetOracleDatabaseArchivelogStatusStats(location string,
 }
 
 // GetTotalOracleDatabaseWorkStats return the total work of databases
-func (md *MongoDatabase) GetTotalOracleDatabaseWorkStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalOracleDatabaseWorkStats(location string, environment string, olderThan time.Time) (float64, error) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -421,7 +421,7 @@ func (md *MongoDatabase) GetTotalOracleDatabaseWorkStats(location string, enviro
 }
 
 // GetTotalOracleDatabaseMemorySizeStats return the total of memory size of databases
-func (md *MongoDatabase) GetTotalOracleDatabaseMemorySizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalOracleDatabaseMemorySizeStats(location string, environment string, olderThan time.Time) (float64, error) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -463,7 +463,7 @@ func (md *MongoDatabase) GetTotalOracleDatabaseMemorySizeStats(location string, 
 }
 
 // GetTotalOracleDatabaseDatafileSizeStats return the total size of datafiles of databases
-func (md *MongoDatabase) GetTotalOracleDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalOracleDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float64, error) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -501,7 +501,7 @@ func (md *MongoDatabase) GetTotalOracleDatabaseDatafileSizeStats(location string
 }
 
 // GetTotalOracleDatabaseSegmentSizeStats return the total size of segments of databases
-func (md *MongoDatabase) GetTotalOracleDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTotalOracleDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float64, error) {
 	var out map[string]float64
 
 	//Calculate the stats
@@ -539,7 +539,7 @@ func (md *MongoDatabase) GetTotalOracleDatabaseSegmentSizeStats(location string,
 }
 
 // GetTopUnusedOracleDatabaseInstanceResourceStats return a array containing top unused instance resource by workload
-func (md *MongoDatabase) GetTopUnusedOracleDatabaseInstanceResourceStats(location string, environment string, limit int, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetTopUnusedOracleDatabaseInstanceResourceStats(location string, environment string, limit int, olderThan time.Time) ([]interface{}, error) {
 	var out []interface{} = make([]interface{}, 0)
 
 	//Calculate the stats

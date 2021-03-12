@@ -391,11 +391,11 @@ func (m *MongodbSuite) TestGetHost() {
 
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
 		_, err := m.db.GetHost("test-virt", utils.MIN_TIME, false)
-		m.Assert().Equal(utils.AerrHostNotFound, err)
+		m.Assert().Equal(utils.ErrHostNotFound, err)
 	})
 	m.T().Run("should_not_find", func(t *testing.T) {
 		_, err := m.db.GetHost("foobar", utils.MAX_TIME, false)
-		m.Assert().Equal(utils.AerrHostNotFound, err)
+		m.Assert().Equal(utils.ErrHostNotFound, err)
 	})
 
 	m.T().Run("should_detect_cluster_physical_host_and_alerts", func(t *testing.T) {
@@ -1020,12 +1020,12 @@ func (m *MongodbSuite) TestFindHostData() {
 
 	m.T().Run("should_not_find_anything", func(t *testing.T) {
 		_, err := m.db.FindHostData("foobar")
-		assert.Equal(t, utils.AerrHostNotFound, err)
+		assert.Equal(t, utils.ErrHostNotFound, err)
 	})
 
 	m.T().Run("should_not_find_archived_host", func(t *testing.T) {
 		_, err := m.db.FindHostData("test-small3")
-		assert.Equal(t, utils.AerrHostNotFound, err)
+		assert.Equal(t, utils.ErrHostNotFound, err)
 	})
 }
 

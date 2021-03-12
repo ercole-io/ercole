@@ -24,7 +24,7 @@ import (
 )
 
 // FindPatchingFunction find the the patching function associated to the hostname in the database
-func (md *MongoDatabase) FindPatchingFunction(hostname string) (model.PatchingFunction, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) FindPatchingFunction(hostname string) (model.PatchingFunction, error) {
 	var out model.PatchingFunction
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("patching_functions").Find(context.TODO(), bson.M{

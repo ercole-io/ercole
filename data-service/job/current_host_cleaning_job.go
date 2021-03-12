@@ -20,7 +20,6 @@ import (
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/data-service/database"
-	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -41,14 +40,14 @@ func (job *CurrentHostCleaningJob) Run() {
 	timeLimit := job.TimeNow().Add(time.Duration(-job.Config.DataService.CurrentHostCleaningJob.HourThreshold) * time.Hour)
 	hosts, err := job.Database.FindOldCurrentHostnames(timeLimit)
 	if err != nil {
-		utils.LogErr(job.Log, err)
+		job.Log.Error(err)
 		return
 	}
 
 	for _, host := range hosts {
 		_, err := job.Database.ArchiveHost(host)
 		if err != nil {
-			utils.LogErr(job.Log, err)
+			job.Log.Error(err)
 			return
 		}
 		job.Log.Infof("%s has been moved because it have passed more than %d hours from last update", host,

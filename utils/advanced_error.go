@@ -16,22 +16,9 @@
 package utils
 
 import (
-	"errors"
+	"fmt"
 	"runtime"
-
-	"github.com/sirupsen/logrus"
 )
-
-// AdvancedErrorInterface is a extension of the error interface with other informations
-type AdvancedErrorInterface interface {
-	error
-	// ErrorClass returns the class of the error
-	ErrorClass() string
-	// SourceFilename returns the filename of the source code where the error was detected
-	SourceFilename() string
-	// LineNumber returns the number of the line where the error was detected
-	LineNumber() int
-}
 
 // AdvancedError is a struct that contains informations and class about a error
 type AdvancedError struct {
@@ -47,32 +34,7 @@ type AdvancedError struct {
 
 // Error return the representation string of the error
 func (ae *AdvancedError) Error() string {
-	return ae.Err.Error()
-}
-
-// ErrorClass return the class of the error
-func (ae *AdvancedError) ErrorClass() string {
-	return ae.Class
-}
-
-// SourceFilename return the source filename of the error
-func (ae *AdvancedError) SourceFilename() string {
-	return ae.Source
-}
-
-// LineNumber return the line number of the error
-func (ae *AdvancedError) LineNumber() int {
-	return ae.Line
-}
-
-// NewAdvancedError return a new AdvancedError using the err as base error and class as class name
-func NewAdvancedError(err error, class string) AdvancedError {
-	_, file, line, ok := runtime.Caller(1)
-	if ok {
-		return AdvancedError{Err: err, Class: class, Source: file, Line: line}
-	} else {
-		return AdvancedError{Err: err, Class: class, Source: "????", Line: -1}
-	}
+	return fmt.Sprintf("%s:%d %s: '%s'\n", ae.Source, ae.Line, ae.Class, ae.Err.Error())
 }
 
 // NewAdvancedErrorPtr return a pointer to a new AdvancedError using the err as base error and class as class name
@@ -83,15 +45,4 @@ func NewAdvancedErrorPtr(err error, class string) *AdvancedError {
 	} else {
 		return &AdvancedError{Err: err, Class: class, Source: "????", Line: -1}
 	}
-}
-
-// LogErr log the error to the stdout
-func LogErr(log *logrus.Logger, err error) {
-	var aerr *AdvancedError
-	if errors.As(err, &aerr) {
-		log.Errorf("%s:%d %s: '%s'\n", aerr.SourceFilename(), aerr.LineNumber(), aerr.ErrorClass(), err.Error())
-		return
-	}
-
-	log.Errorf("%s\n", err.Error())
 }

@@ -15,10 +15,8 @@
 
 package emailer
 
-import "github.com/ercole-io/ercole/v2/utils"
-
 // Emailer contains the interface of a email senders
 type Emailer interface {
 	// SendEmail send a email
-	SendEmail(subject string, text string, to []string) utils.AdvancedErrorInterface
+	SendEmail(subject string, text string, to []string) error
 }

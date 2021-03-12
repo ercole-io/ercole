@@ -95,7 +95,7 @@ func (m *MongodbSuite) TestGetOracleDatabaseAgreement() {
 	m.T().Run("id_not_exist", func(t *testing.T) {
 		out, err := m.db.GetOracleDatabaseAgreement("this id doesn't exists")
 		require.Nil(t, out)
-		require.Equal(t, utils.AerrOracleDatabaseAgreementNotFound, err)
+		require.Equal(t, utils.ErrOracleDatabaseAgreementNotFound, err)
 	})
 }
 
@@ -114,7 +114,7 @@ func (m *MongodbSuite) TestGetOracleDatabaseAgreementByAssociatedLicenseType() {
 	m.T().Run("id_not_exist", func(t *testing.T) {
 		out, err := m.db.GetOracleDatabaseAgreementByAssociatedLicenseType(utils.Str2oid("5dcad8933b243f80e2ed0000"))
 		require.Nil(t, out)
-		require.Equal(t, utils.AerrOracleDatabaseAgreementNotFound, err)
+		require.Equal(t, utils.ErrOracleDatabaseAgreementNotFound, err)
 	})
 }
 
@@ -164,7 +164,7 @@ func (m *MongodbSuite) TestUpdateOracleDatabaseAgreement() {
 		}
 		err := m.db.UpdateOracleDatabaseAgreement(agreementSampleUpdated)
 
-		require.Equal(t, utils.AerrOracleDatabaseAgreementNotFound, err)
+		require.Equal(t, utils.ErrOracleDatabaseAgreementNotFound, err)
 	})
 }
 
@@ -182,10 +182,10 @@ func (m *MongodbSuite) TestRemoveOracleDatabaseAgreement() {
 	require.NoError(m.T(), err)
 
 	_, err = m.db.GetOracleDatabaseAgreement(agreementSample.AgreementID)
-	require.Equal(m.T(), utils.AerrOracleDatabaseAgreementNotFound, err)
+	require.Equal(m.T(), utils.ErrOracleDatabaseAgreementNotFound, err)
 
 	err = m.db.RemoveOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
-	require.Equal(m.T(), utils.AerrOracleDatabaseAgreementNotFound, err)
+	require.Equal(m.T(), utils.ErrOracleDatabaseAgreementNotFound, err)
 }
 
 func (m *MongodbSuite) TestListOracleDatabaseAgreements() {

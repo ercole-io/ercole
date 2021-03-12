@@ -26,7 +26,7 @@ import (
 )
 
 // SearchClusters search clusters
-func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error) {
 	var out []map[string]interface{} = make([]map[string]interface{}, 0)
 
 	//Find the matching hostdata
@@ -106,7 +106,7 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 }
 
 // GetCluster fetch all information about a cluster in the database
-func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (*dto.Cluster, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (*dto.Cluster, error) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -176,7 +176,7 @@ func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (*d
 
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
-		return nil, utils.AerrHostNotFound
+		return nil, utils.ErrHostNotFound
 	}
 
 	var out dto.Cluster

@@ -26,20 +26,19 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-func (as *APIService) SearchHosts(mode string, filters dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) SearchHosts(mode string, filters dto.SearchHostsFilters) ([]map[string]interface{}, error) {
 	return as.Database.SearchHosts(mode, filters)
 }
 
-func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsFilters) (*excelize.File, utils.AdvancedErrorInterface) {
-	hosts, aerr := as.Database.SearchHosts("lms", filters)
-	if aerr != nil {
-		return nil, aerr
+func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsFilters) (*excelize.File, error) {
+	hosts, err := as.Database.SearchHosts("lms", filters)
+	if err != nil {
+		return nil, utils.NewAdvancedErrorPtr(err, "")
 	}
 
 	csiByHostname, err := as.getCSIsByHostname()
 	if err != nil {
-		aerr := utils.NewAdvancedErrorPtr(err, "")
-		return nil, aerr
+		return nil, utils.NewAdvancedErrorPtr(err, "")
 	}
 
 	lms, err := excelize.OpenFile(as.Config.ResourceFilePath + "/templates/template_lms.xlsm")
@@ -105,21 +104,21 @@ func (as *APIService) getCSIsByHostname() (res map[string][]string, err error) {
 }
 
 // GetHost return the host specified in the hostname param
-func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, error) {
 	return as.Database.GetHost(hostname, olderThan, raw)
 }
 
 // ListLocations list locations
-func (as *APIService) ListLocations(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface) {
+func (as *APIService) ListLocations(location string, environment string, olderThan time.Time) ([]string, error) {
 	return as.Database.ListLocations(location, environment, olderThan)
 }
 
 // ListEnvironments list environments
-func (as *APIService) ListEnvironments(location string, environment string, olderThan time.Time) ([]string, utils.AdvancedErrorInterface) {
+func (as *APIService) ListEnvironments(location string, environment string, olderThan time.Time) ([]string, error) {
 	return as.Database.ListEnvironments(location, environment, olderThan)
 }
 
 // ArchiveHost archive the specified host
-func (as *APIService) ArchiveHost(hostname string) utils.AdvancedErrorInterface {
+func (as *APIService) ArchiveHost(hostname string) error {
 	return as.Database.ArchiveHost(hostname)
 }

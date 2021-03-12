@@ -103,7 +103,7 @@ func Remove(slice []string, i int) []string {
 }
 
 // Str2bool parse a string to a boolean
-func Str2bool(in string, defaultValue bool) (bool, AdvancedErrorInterface) {
+func Str2bool(in string, defaultValue bool) (bool, error) {
 	if in == "" {
 		return defaultValue, nil
 	} else if val, err := strconv.ParseBool(in); err != nil {
@@ -114,7 +114,7 @@ func Str2bool(in string, defaultValue bool) (bool, AdvancedErrorInterface) {
 }
 
 // Str2int parse a string to a int
-func Str2int(in string, defaultValue int) (int, AdvancedErrorInterface) {
+func Str2int(in string, defaultValue int) (int, error) {
 	if in == "" {
 		return defaultValue, nil
 	} else if val, err := strconv.ParseInt(in, 10, 32); err != nil {
@@ -125,7 +125,7 @@ func Str2int(in string, defaultValue int) (int, AdvancedErrorInterface) {
 }
 
 // Str2float64 parse a string to a float64
-func Str2float64(in string, defaultValue float64) (float64, AdvancedErrorInterface) {
+func Str2float64(in string, defaultValue float64) (float64, error) {
 	if in == "" {
 		return defaultValue, nil
 	} else if val, err := strconv.ParseFloat(in, 32); err != nil {
@@ -136,7 +136,7 @@ func Str2float64(in string, defaultValue float64) (float64, AdvancedErrorInterfa
 }
 
 // Str2time parse a string to a time
-func Str2time(in string, defaultValue time.Time) (time.Time, AdvancedErrorInterface) {
+func Str2time(in string, defaultValue time.Time) (time.Time, error) {
 	if in == "" {
 		return defaultValue, nil
 	} else if val, err := time.Parse(time.RFC3339, in); err != nil {
@@ -210,7 +210,7 @@ func DownloadFile(filepath string, url string) (err error) {
 
 // PatchHostdata patch a single hostdata using the pf PatchingFunction.
 // It doesn't check if pf.Hostname equals hostdata["Hostname"]
-func PatchHostdata(pf model.PatchingFunction, hostdata model.HostDataBE) (model.HostDataBE, AdvancedErrorInterface) {
+func PatchHostdata(pf model.PatchingFunction, hostdata model.HostDataBE) (model.HostDataBE, error) {
 	//FIXME: avoid repeated marshalling/unmarshalling...
 
 	//Initialize the vm
@@ -267,7 +267,7 @@ func FileExists(filename string) bool {
 }
 
 // ParsePrivateKey converts a private key expressed as []byte to interface{}
-func ParsePrivateKey(raw []byte) (interface{}, interface{}, AdvancedErrorInterface) {
+func ParsePrivateKey(raw []byte) (interface{}, interface{}, error) {
 	block, _ := pem.Decode(raw)
 	if block == nil {
 		return nil, nil, NewAdvancedErrorPtr(errors.New("Unable to parse the private key"), "PARSE_PRIVATE_KEY")
@@ -281,7 +281,7 @@ func ParsePrivateKey(raw []byte) (interface{}, interface{}, AdvancedErrorInterfa
 }
 
 // ParsePublicKey converts a private key expressed as []byte to interface{}
-func ParsePublicKey(raw []byte) (interface{}, AdvancedErrorInterface) {
+func ParsePublicKey(raw []byte) (interface{}, error) {
 	block, _ := pem.Decode(raw)
 	if block == nil {
 		return nil, NewAdvancedErrorPtr(errors.New("Unable to parse the public key"), "PARSE_PUBLIC_KEY")

@@ -234,7 +234,7 @@ func (m *MongodbSuite) TestGetCluster() {
 		clusterName := ""
 		olderThan := utils.MAX_TIME
 		out, err := m.db.GetCluster(clusterName, olderThan)
-		m.Require().Equal(err, utils.AerrHostNotFound)
+		m.Require().Equal(err, utils.ErrHostNotFound)
 
 		var expected *dto.Cluster
 		assert.EqualValues(m.T(), expected, out)

@@ -27,7 +27,7 @@ func (ctrl *APIController) GetTotalOracleExadataMemorySizeStats(w http.ResponseW
 	var olderThan time.Time
 	var location string
 	var environment string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -54,7 +54,7 @@ func (ctrl *APIController) GetTotalOracleExadataCPUStats(w http.ResponseWriter, 
 	var olderThan time.Time
 	var location string
 	var environment string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -81,7 +81,7 @@ func (ctrl *APIController) GetAverageOracleExadataStorageUsageStats(w http.Respo
 	var olderThan time.Time
 	var location string
 	var environment string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -108,7 +108,7 @@ func (ctrl *APIController) GetOracleExadataStorageErrorCountStatusStats(w http.R
 	var olderThan time.Time
 	var location string
 	var environment string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -137,7 +137,7 @@ func (ctrl *APIController) GetOracleExadataPatchStatusStats(w http.ResponseWrite
 	var environment string
 	var windowTime int
 
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")

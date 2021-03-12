@@ -770,7 +770,7 @@ func TestAckAlerts_FailNotFound(t *testing.T) {
 	}
 
 	as.EXPECT().AckAlerts([]primitive.ObjectID{utils.Str2oid("5dc3f534db7e81a98b726a52")}).
-		Return(utils.AerrAlertNotFound)
+		Return(utils.ErrAlertNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.AckAlerts)
