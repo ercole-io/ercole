@@ -176,7 +176,7 @@ local task_build_push_image(push) =
             { type: 'clone' },
             { type: 'restore_cache', keys: ['cache-sum-{{ md5sum "go.sum" }}', 'cache-date-'], dest_dir: '/go/pkg/mod/cache' },
 
-            { type: 'run', name: '', command: 'go get github.com/golang/mock/mockgen@v1.4.4' },
+            { type: 'run', name: '', command: 'go get github.com/golang/mock/mockgen@v1.5.0' },
             { type: 'run', name: '', command: 'go generate -v ./...' },
             { type: 'run', name: '', command: 'go test -race -coverprofile=coverage.txt -covermode=atomic ./...' },
 
