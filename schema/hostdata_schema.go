@@ -15,7 +15,67 @@
 
 package schema
 
-import _ "embed"
+import (
+	_ "embed"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"strings"
 
-//go:embed hostdata_schema.json
-var FrontendHostdataSchemaValidator string
+	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/xeipuuv/gojsonschema"
+)
+
+//go:embed hostdata.json
+var hostdataSchema string
+
+//go:embed mysql.json
+var mysqlSchema string
+
+var schema *gojsonschema.Schema
+
+func ValidateHostdata(raw []byte) error {
+	if schema == nil {
+		sl := gojsonschema.NewSchemaLoader()
+		mysql := gojsonschema.NewStringLoader(mysqlSchema)
+		if err := sl.AddSchemas(mysql); err != nil {
+			fmt.Println("Should never happen: wrong schema")
+			panic(err)
+		}
+
+		hostdata := gojsonschema.NewStringLoader(hostdataSchema)
+
+		var err error
+		schema, err = sl.Compile(hostdata)
+		if err != nil {
+			fmt.Println("Should never happen: wrong schema")
+			panic(err)
+		}
+	}
+
+	documentLoader := gojsonschema.NewBytesLoader(raw)
+	result, err := schema.Validate(documentLoader)
+	syntaxErr := &json.SyntaxError{}
+	if errors.As(err, &syntaxErr) {
+		return fmt.Errorf("%w: %s", utils.ErrInvalidHostdata, err)
+	} else if err != nil {
+		return err
+	}
+
+	if !result.Valid() {
+		errorMsg := new(strings.Builder)
+
+		for _, err := range result.Errors() {
+
+			value := fmt.Sprintf("%v", err.Value())
+			if len(value) > 80 {
+				value = value[:78] + ".."
+			}
+			errorMsg.WriteString(fmt.Sprintf("- %s. Value: [%v]\n", err, value))
+		}
+
+		return fmt.Errorf("%w: %s", utils.ErrInvalidHostdata, errorMsg.String())
+	}
+
+	return nil
+}
