@@ -8,7 +8,7 @@ local go_runtime(version, arch) = {
 
 local task_build_go() = {
   name: 'build go',
-  runtime: go_runtime('1.15', 'amd64'),
+  runtime: go_runtime('1.16', 'amd64'),
   steps: [
     { type: 'clone' },
     { type: 'restore_cache', keys: ['cache-sum-{{ md5sum "go.sum" }}', 'cache-date-'], dest_dir: '/go/pkg/mod/cache' },
@@ -168,7 +168,7 @@ local task_build_push_image(push) =
             type: 'pod',
             arch: 'amd64',
             containers: [
-              { image: 'golang:1.15' },
+              { image: 'golang:1.16' },
               { image: 'mongo:4' },
             ],
           },
