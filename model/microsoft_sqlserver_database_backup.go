@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type MicrosoftSQLServerDatabaseBackup struct {
@@ -48,52 +47,4 @@ func (v MicrosoftSQLServerDatabaseBackup) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *MicrosoftSQLServerDatabaseBackup) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MicrosoftSQLServerDatabaseBackupBsonValidatorRules contains mongodb validation rules for MicrosoftSQLServerDatabaseBackup
-var MicrosoftSQLServerDatabaseBackupBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"backupType",
-		"hour",
-		"weekDays",
-		"avgBckSize",
-	},
-	"properties": bson.M{
-		"backupType": bson.M{
-			"bsonType": "string",
-			"enum": bson.A{
-				"Database",
-				"Log",
-				"File or filegroup",
-				"Differential database",
-				"Differential file",
-				"Differential partial",
-				"Partial",
-			},
-		},
-		"hour": bson.M{
-			"bsonType":  "string",
-			"minLength": 5,
-			"maxLength": 5,
-			"pattern":   "^[0-9]{2}:[0-9]{2}$",
-		},
-		"weekDays": bson.M{
-			"bsonType": "string",
-			"enum": bson.A{
-				"Monday",
-				"Tuesday",
-				"Wednesday",
-				"Thursday",
-				"Friday",
-				"Saturday",
-				"Sunday",
-			},
-			"uniqueItems": true,
-		},
-		"avgBckSize": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-	},
 }

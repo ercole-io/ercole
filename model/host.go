@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // HardwareAbstractionTechnology list
@@ -72,105 +71,4 @@ func (v Host) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *Host) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// HostBsonValidatorRules contains mongodb validation rules for host
-var HostBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"hostname",
-		"cpuModel",
-		"cpuFrequency",
-		"cpuSockets",
-		"cpuCores",
-		"cpuThreads",
-		"threadsPerCore",
-		"coresPerSocket",
-		"hardwareAbstraction",
-		"hardwareAbstractionTechnology",
-		"kernel",
-		"kernelVersion",
-		"os",
-		"osVersion",
-		"memoryTotal",
-		"swapTotal",
-	},
-	"properties": bson.M{
-		"hostname": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 253,
-			"pattern":   `^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-_]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-_]*[A-Za-z0-9])$`,
-		},
-		"cpuModel": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-			"pattern":   "^[^\n]+$",
-		},
-		"cpuFrequency": bson.M{
-			"bsonType":  "string",
-			"minLength": 3,
-			"maxLength": 16,
-			"pattern":   "^[0-9]+([.][0-9]+)?[ ]*(?i)(GHz|MHz)$",
-		},
-		"cpuSockets": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-		"cpuCores": bson.M{
-			"bsonType": "number",
-			"minimum":  1,
-		},
-		"cpuThreads": bson.M{
-			"bsonType": "number",
-			"minimum":  1,
-		},
-		"threadsPerCore": bson.M{
-			"bsonType": "number",
-			"minimum":  1,
-		},
-		"coresPerSocket": bson.M{
-			"bsonType": "number",
-			"minimum":  1,
-		},
-		"hardwareAbstraction": bson.M{
-			"bsonType": "string",
-			"enum":     bson.A{"PH", "VIRT"},
-		},
-		"hardwareAbstractionTechnology": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 32,
-			"pattern":   "^[A-Z0-9]+$",
-		},
-		"kernel": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-		},
-		"kernelVersion": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-		},
-		"os": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-		},
-		"osVersion": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-		},
-		"memoryTotal": bson.M{
-			"bsonType": "double",
-			"minimum":  0,
-		},
-		"swapTotal": bson.M{
-			"bsonType": "double",
-			"minimum":  1,
-		},
-	},
 }

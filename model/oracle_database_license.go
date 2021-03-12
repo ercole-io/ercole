@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // OracleDatabaseLicense holds information about an Oracle database license
@@ -48,26 +47,6 @@ func (v OracleDatabaseLicense) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *OracleDatabaseLicense) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// OracleDatabaseLicenseBsonValidatorRules contains mongodb validation rules for OracleDatabaseLicense
-var OracleDatabaseLicenseBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"name",
-		"count",
-	},
-	"properties": bson.M{
-		"name": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 32,
-		},
-		"count": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-	},
 }
 
 // DiffFeature status of each feature

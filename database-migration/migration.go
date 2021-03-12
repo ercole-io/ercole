@@ -20,7 +20,6 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/v2/config"
-	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
@@ -280,7 +279,7 @@ func MigratePatchingFunctionsSchema(log *logrus.Logger, client *mongo.Database) 
 	if err := client.RunCommand(context.TODO(), bson.D{
 		{"collMod", "patching_functions"},
 		{"validator", bson.D{
-			{"$jsonSchema", model.PatchingFunctionBsonValidatorRules},
+			{"$jsonSchema", bson.M{}},
 		}},
 		{"validationAction", "error"},
 	}).Err(); err != nil {

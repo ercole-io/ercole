@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // OracleDatabaseAddm contains info about a addm
@@ -49,37 +48,4 @@ func (v OracleDatabaseAddm) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *OracleDatabaseAddm) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// OracleDatabaseAddmBsonValidatorRules contains mongodb validation rules for OracleDatabaseAddm
-var OracleDatabaseAddmBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"finding",
-		"recommendation",
-		"action",
-		"benefit",
-	},
-	"properties": bson.M{
-		"finding": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 256,
-		},
-		"recommendation": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 32,
-		},
-		"action": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 256,
-		},
-		"benefit": bson.M{
-			"bsonType": "string",
-			"minimum":  0,
-			"maximum":  100,
-		},
-	},
 }

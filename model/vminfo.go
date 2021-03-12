@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // VMInfo holds info about the vm
@@ -49,37 +48,4 @@ func (v VMInfo) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *VMInfo) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// VMInfoBsonValidatorRules contains mongodb validation rules for VMInfo
-var VMInfoBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"name",
-		"hostname",
-		"cappedCPU",
-		"virtualizationNode",
-	},
-	"properties": bson.M{
-		"name": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 128,
-		},
-		"hostname": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 253,
-			"pattern":   `^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-_]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-_]*[A-Za-z0-9])$`,
-		},
-		"cappedCPU": bson.M{
-			"bsonType": "bool",
-		},
-		"virtualizationNode": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 253,
-			"pattern":   `^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-_]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-_]*[A-Za-z0-9])$`,
-		},
-	},
 }
