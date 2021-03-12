@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type MicrosoftSQLServerFeature struct {
@@ -47,28 +46,4 @@ func (v MicrosoftSQLServerFeature) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *MicrosoftSQLServerFeature) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MicrosoftSQLServerFeatureBsonValidatorRules contains mongodb validation rules for MicrosoftSQLServerFeature
-var MicrosoftSQLServerFeatureBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"instances",
-		"features",
-		"patches",
-	},
-	"properties": bson.M{
-		"instances": bson.M{
-			"bsonType": "array",
-			"items":    MicrosoftSQLServerInstanceBsonValidatorRules,
-		},
-		"features": bson.M{
-			"bsonType": "array",
-			"items":    MicrosoftSQLServerProductFeatureBsonValidatorRules,
-		},
-		"patches": bson.M{
-			"bsonType": "array",
-			"items":    MicrosoftSQLServerPatchBsonValidatorRules,
-		},
-	},
 }

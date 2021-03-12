@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 //ClusterInfo hold informations about a cluster
@@ -51,46 +50,4 @@ func (v ClusterInfo) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *ClusterInfo) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// ClusterInfoBsonValidatorRules contains mongodb validation rules for clusterInfo
-var ClusterInfoBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"fetchEndpoint",
-		"type",
-		"name",
-		"cpu",
-		"sockets",
-		"vms",
-	},
-	"properties": bson.M{
-		"fetchEndpoint": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-		},
-		"type": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 16,
-		},
-		"name": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 128,
-		},
-		"cpu": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-		"sockets": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-		"vms": bson.M{
-			"bsonType": "array",
-			"items":    VMInfoBsonValidatorRules,
-		},
-	},
 }

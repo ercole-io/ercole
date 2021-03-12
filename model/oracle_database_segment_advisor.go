@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // OracleDatabaseSegmentAdvisor holds information about a segment advisor
@@ -51,47 +50,4 @@ func (v OracleDatabaseSegmentAdvisor) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *OracleDatabaseSegmentAdvisor) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// OracleDatabaseSegmentAdvisorBsonValidatorRules contains mongodb validation rules for OracleDatabaseSegmentAdvisor
-var OracleDatabaseSegmentAdvisorBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"segmentOwner",
-		"segmentName",
-		"segmentType",
-		"partitionName",
-		"reclaimable",
-		"recommendation",
-	},
-	"properties": bson.M{
-		"segmentOwner": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 32,
-		},
-		"segmentName": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 32,
-		},
-		"segmentType": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 32,
-		},
-		"partitionName": bson.M{
-			"bsonType":  "string",
-			"maxLength": 32,
-		},
-		"reclaimable": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-		"recommendation": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 256,
-		},
-	},
 }

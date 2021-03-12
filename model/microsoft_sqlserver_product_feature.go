@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type MicrosoftSQLServerProductFeature struct {
@@ -51,51 +50,4 @@ func (v MicrosoftSQLServerProductFeature) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *MicrosoftSQLServerProductFeature) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MicrosoftSQLServerProductFeatureBsonValidatorRules contains mongodb validation rules for MicrosoftSQLServerProductFeature
-var MicrosoftSQLServerProductFeatureBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"product",
-		"feature",
-		"language",
-		"edition",
-		"version",
-		"clustered",
-		"configured",
-	},
-	"properties": bson.M{
-		"product": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-		},
-		"feature": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-		},
-		"language": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 16,
-		},
-		"edition": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 32,
-		},
-		"version": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 32,
-		},
-		"clustered": bson.M{
-			"bsonType": "bool",
-		},
-		"configured": bson.M{
-			"bsonType": "bool",
-		},
-	},
 }

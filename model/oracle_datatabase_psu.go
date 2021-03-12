@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // OracleDatabasePSU holds information about a OracleDatabasePSU
@@ -47,24 +46,4 @@ func (v OracleDatabasePSU) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *OracleDatabasePSU) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// OracleDatabasePSUBsonValidatorRules contains mongodb validation rules for OracleDatabasePSU
-var OracleDatabasePSUBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"date",
-		"description",
-	},
-	"properties": bson.M{
-		"date": bson.M{
-			"bsonType": "string",
-			"pattern":  "[0-9]{4}-[0-9]{2}-[0-9]{2}",
-		},
-		"description": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 128,
-		},
-	},
 }

@@ -20,7 +20,6 @@ import (
 	"time"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // OracleDatabaseFeatureUsageStat holds information about an Oracle database feature usage stat.
@@ -53,47 +52,4 @@ func (v OracleDatabaseFeatureUsageStat) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *OracleDatabaseFeatureUsageStat) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// OracleDatabaseFeatureUsageStatBsonValidatorRules contains mongodb validation rules for OracleDatabaseFeatureUsageStat
-var OracleDatabaseFeatureUsageStatBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"product",
-		"feature",
-		"detectedUsages",
-		"currentlyUsed",
-		"firstUsageDate",
-		"lastUsageDate",
-		"extraFeatureInfo",
-	},
-	"properties": bson.M{
-		"product": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 32,
-		},
-		"feature": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 32,
-		},
-		"detectedUsages": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-		"currentlyUsed": bson.M{
-			"bsonType": "bool",
-		},
-		"firstUsageDate": bson.M{
-			"bsonType": "date",
-		},
-		"lastUsageDate": bson.M{
-			"bsonType": "date",
-		},
-		"extraFeatureInfo": bson.M{
-			"bsonType":  "string",
-			"maxLength": 64,
-		},
-	},
 }
