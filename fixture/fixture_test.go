@@ -24,7 +24,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/schema"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/xeipuuv/gojsonschema"
@@ -49,7 +49,7 @@ func TestHostdatas(t *testing.T) {
 			//Validate the data
 			//TODO Refactor this in model.FrontendHostdataSchemaValidator
 			documentLoader := gojsonschema.NewBytesLoader(raw)
-			schemaLoader := gojsonschema.NewStringLoader(model.FrontendHostdataSchemaValidator)
+			schemaLoader := gojsonschema.NewStringLoader(schema.FrontendHostdataSchemaValidator)
 
 			result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 			require.NoError(t, err)
