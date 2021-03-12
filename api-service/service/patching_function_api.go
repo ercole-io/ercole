@@ -352,10 +352,10 @@ func (as *APIService) SetOracleDatabaseLicenseModifier(hostname string, dbname s
 		// Check the presence of the database with a slice inside
 		switch licenseModifiers[dbname].(type) {
 		case nil:
-			licenseModifiers[dbname] = make(map[string]interface{}, 0)
+			licenseModifiers[dbname] = make(map[string]interface{})
 		case map[string]interface{}:
 		default:
-			licenseModifiers[dbname] = make(map[string]interface{}, 0)
+			licenseModifiers[dbname] = make(map[string]interface{})
 		}
 
 		//Get the modifiers mof the db
