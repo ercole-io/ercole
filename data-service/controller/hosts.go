@@ -24,6 +24,7 @@ import (
 	"strings"
 
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/schema"
 	"github.com/ercole-io/ercole/v2/utils"
 
 	"github.com/xeipuuv/gojsonschema"
@@ -41,7 +42,7 @@ func (ctrl *DataController) InsertHostData(w http.ResponseWriter, r *http.Reques
 	defer r.Body.Close()
 
 	documentLoader := gojsonschema.NewBytesLoader(raw)
-	schemaLoader := gojsonschema.NewStringLoader(model.FrontendHostdataSchemaValidator)
+	schemaLoader := gojsonschema.NewStringLoader(schema.FrontendHostdataSchemaValidator)
 	if result, err := gojsonschema.Validate(schemaLoader, documentLoader); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, "HOSTDATA_VALIDATION"))
 		return
