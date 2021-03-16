@@ -88,7 +88,7 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 %{_unitdir}/ercole-dataservice.service
 %{_unitdir}/ercole-reposervice.service
 %{_unitdir}/ercole.service
-/usr/share/ercole/config.toml
+%config(noreplace) /usr/share/ercole/config.toml
 /usr/share/ercole/technologies/list.json
 /usr/share/ercole/technologies/Oracle/Database.png
 /usr/share/ercole/technologies/Oracle/Solaris.png
