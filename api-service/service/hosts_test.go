@@ -240,7 +240,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 		gomock.InOrder(
 			db.EXPECT().
 				SearchHosts("lms", gomock.Any()).
-				DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+				DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
 					assert.EqualValues(t, filters, actual)
 
 					return hosts, nil
@@ -337,7 +337,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 		gomock.InOrder(
 			db.EXPECT().
 				SearchHosts("lms", gomock.Any()).
-				DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+				DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
 					assert.EqualValues(t, filters, actual)
 
 					return hosts, nil

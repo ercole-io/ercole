@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // OracleDatabaseTablespace holds the informations about a tablespace.
@@ -51,48 +50,4 @@ func (v OracleDatabaseTablespace) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *OracleDatabaseTablespace) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// OracleDatabaseTablespaceBsonValidatorRules contains mongodb validation rules for OracleDatabaseTablespace
-var OracleDatabaseTablespaceBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"name",
-		"maxSize",
-		"total",
-		"used",
-		"usedPerc",
-		"status",
-	},
-	"properties": bson.M{
-		"name": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 32,
-		},
-		"maxSize": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-		"total": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-		"used": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-		"usedPerc": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-			"maximum":  100,
-		},
-		"status": bson.M{
-			"bsonType": "string",
-			"enum": bson.A{
-				"ONLINE",
-				"OFFLINE",
-			},
-		},
-	},
 }

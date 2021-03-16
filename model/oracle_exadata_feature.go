@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // OracleExadataFeature holds specific informations about a exadata.
@@ -46,18 +45,4 @@ func (v OracleExadataFeature) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *OracleExadataFeature) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// OracleExadataFeatureBsonValidatorRules contains mongodb validation rules for OracleExadataFeature
-var OracleExadataFeatureBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"components",
-	},
-	"properties": bson.M{
-		"components": bson.M{
-			"bsonType": "array",
-			"items":    OracleExadataComponentBsonValidatorRules,
-		},
-	},
 }

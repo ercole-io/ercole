@@ -1,0 +1,174 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "postgresqlFeature",
+    "type": "object",
+    "properties": {
+        "postgresql": {
+            "anyOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "workMem",
+                        "archiveMode",
+                        "archivePath",
+                        "minWalSize",
+                        "maxWalSize",
+                        "maxConnections",
+                        "checkpointCompletionTarget",
+                        "defaultStatisticsTarget",
+                        "randomPageCost",
+                        "maintenanceWorkMem",
+                        "sharedBuffers",
+                        "effectiveCacheSize",
+                        "effectiveIOConcurrency",
+                        "maxWorkerProcesses",
+                        "maxParallelWorkers",
+                        "databases"
+                    ],
+                    "properties": {
+                        "workMem": {
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "archiveMode": {
+                            "type": "boolean"
+                        },
+                        "archivePath": {
+                            "type": "string",
+                            "minLength": 0,
+                            "maxLength": 128
+                        },
+                        "minWalSize": {
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "maxWalSize": {
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "maxConnections": {
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        "checkpointCompletionTarget": {
+                            "type": "number"
+                        },
+                        "defaultStatisticsTarget": {
+                            "type": "number"
+                        },
+                        "randomPageCost": {
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "maintenanceWorkMem": {
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "sharedBuffers": {
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        "effectiveCacheSize": {
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "effectiveIOConcurrency": {
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        "maxWorkerProcesses": {
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        "maxParallelWorkers": {
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        "databases": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "name",
+                                    "replication",
+                                    "replicationDelay",
+                                    "effectiveCacheSize",
+                                    "version",
+                                    "size",
+                                    "collation",
+                                    "characterSet",
+                                    "schemas"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 64
+                                    },
+                                    "replication": {
+                                        "type": "boolean"
+                                    },
+                                    "replicationDelay": {
+                                        "type": "boolean"
+                                    },
+                                    "effectiveCacheSize": {
+                                        "type": "integer",
+                                        "minimum": 0
+                                    },
+                                    "version": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 16
+                                    },
+                                    "size": {
+                                        "type": "number",
+                                        "minimum": 0
+                                    },
+                                    "collation": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 16
+                                    },
+                                    "characterSet": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 16
+                                    },
+                                    "schemas": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "required": [
+                                                "name",
+                                                "size",
+                                                "tableCount"
+                                            ],
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 64
+                                                },
+                                                "size": {
+                                                    "type": "number",
+                                                    "minimum": 0
+                                                },
+                                                "tableCount": {
+                                                    "type": "integer",
+                                                    "minimum": 0
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

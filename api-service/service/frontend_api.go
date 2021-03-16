@@ -18,13 +18,11 @@ package service
 
 import (
 	"time"
-
-	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
-func (as *APIService) GetInfoForFrontendDashboard(location string, environment string, olderThan time.Time) (map[string]interface{}, utils.AdvancedErrorInterface) {
-	var err utils.AdvancedErrorInterface
+func (as *APIService) GetInfoForFrontendDashboard(location string, environment string, olderThan time.Time) (map[string]interface{}, error) {
+	var err error
 	out := map[string]interface{}{}
 	technologiesObject := map[string]interface{}{}
 

@@ -18,7 +18,6 @@ package model
 import (
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -34,28 +33,4 @@ type PatchingFunction struct {
 	// e.g. PF(hostdata) == PF(PF(hostdata)) && ∃ PF⁻¹ | PF⁻¹(patchedHostData) == hostdata
 	Code string                 `json:"code" bson:"code"`
 	Vars map[string]interface{} `json:"vars" bson:"vars"`
-}
-
-// PatchingFunctionBsonValidatorRules contains mongodb validation rules for patching function
-var PatchingFunctionBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"hostname",
-		"createdAt",
-		"code",
-	},
-	"properties": bson.M{
-		"hostname": bson.M{
-			"bsonType": "string",
-		},
-		"createdAt": bson.M{
-			"bsonType": "date",
-		},
-		"code": bson.M{
-			"bsonType": "string",
-		},
-		"vars": bson.M{
-			"bsonType": "object",
-		},
-	},
 }

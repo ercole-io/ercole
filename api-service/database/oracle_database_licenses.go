@@ -29,7 +29,7 @@ import (
 // SearchOracleDatabaseUsedLicenses search used licenses
 func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int,
 	location string, environment string, olderThan time.Time,
-) (*dto.OracleDatabaseUsedLicenseSearchResponse, utils.AdvancedErrorInterface) {
+) (*dto.OracleDatabaseUsedLicenseSearchResponse, error) {
 	cursor, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(

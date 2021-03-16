@@ -337,7 +337,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_InternalServerError(t *t
 	})
 	t.Run("Agreement not found", func(t *testing.T) {
 		as.EXPECT().UpdateAssociatedLicenseTypeOfOracleDbAgreement(request).
-			Return(utils.AerrOracleDatabaseAgreementNotFound)
+			Return(utils.ErrOracleDatabaseAgreementNotFound)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.UpdateAssociatedLicenseTypeOfOracleDbAgreement)
@@ -350,7 +350,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_InternalServerError(t *t
 	})
 	t.Run("Invalid PartID", func(t *testing.T) {
 		as.EXPECT().UpdateAssociatedLicenseTypeOfOracleDbAgreement(request).
-			Return(utils.AerrOracleDatabaseLicenseTypeIDNotFound)
+			Return(utils.ErrOracleDatabaseLicenseTypeIDNotFound)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.UpdateAssociatedLicenseTypeOfOracleDbAgreement)
@@ -682,7 +682,7 @@ func TestAddHostToAssociatedPart_FailedAgreementNotFound(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AddHostToAssociatedLicenseType(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.AerrOracleDatabaseAgreementNotFound)
+	as.EXPECT().AddHostToAssociatedLicenseType(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrOracleDatabaseAgreementNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.AddHostToAssociatedLicenseType)
@@ -712,7 +712,7 @@ func TestAddHostToAssociatedPart_FailedNotInClusterHostNotFound(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AddHostToAssociatedLicenseType(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.AerrNotInClusterHostNotFound)
+	as.EXPECT().AddHostToAssociatedLicenseType(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrNotInClusterHostNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.AddHostToAssociatedLicenseType)
@@ -742,7 +742,7 @@ func TestAddHostToAssociatedPart_FailedAerrOracleDatabaseAgreementNotFound(t *te
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AddHostToAssociatedLicenseType(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.AerrOracleDatabaseAgreementNotFound)
+	as.EXPECT().AddHostToAssociatedLicenseType(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrOracleDatabaseAgreementNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.AddHostToAssociatedLicenseType)
@@ -891,7 +891,7 @@ func TestRemoveHostFromAssociatedPart_FailedAgreementNotFound(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().RemoveHostFromAssociatedLicenseType(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.AerrOracleDatabaseAgreementNotFound)
+	as.EXPECT().RemoveHostFromAssociatedLicenseType(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrOracleDatabaseAgreementNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.RemoveHostFromAssociatedLicenseType)
@@ -1039,7 +1039,7 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement_FailedAgreementNotFound
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(utils.AerrOracleDatabaseAgreementNotFound)
+	as.EXPECT().DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(utils.ErrOracleDatabaseAgreementNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement)

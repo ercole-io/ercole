@@ -62,7 +62,7 @@ func (ap *BasicAuthenticationProvider) Init() {
 }
 
 // GetUserInfoIfCredentialsAreCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
-func (ap *BasicAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(username string, password string) (map[string]interface{}, utils.AdvancedErrorInterface) {
+func (ap *BasicAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(username string, password string) (map[string]interface{}, error) {
 	if ap.Config.Username == username && ap.Config.Password == password {
 		return map[string]interface{}{
 			"Username": username,

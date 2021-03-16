@@ -159,16 +159,16 @@ func TestGetDatabasesStats_GlobalFilter_Error(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, rr.Code)
 
 	expected := utils.ErrorResponseFE{
-		Error:            "Unable to parse string to time.Time",
-		ErrorDescription: "parsing time \"xxxx-06-10T11:54:59Z\" as \"2006-01-02T15:04:05Z07:00\": cannot parse \"xxxx-06-10T11:54:59Z\" as \"2006\"",
+		ErrorClass: "Unable to parse string to time.Time",
+		Error:      "parsing time \"xxxx-06-10T11:54:59Z\" as \"2006-01-02T15:04:05Z07:00\": cannot parse \"xxxx-06-10T11:54:59Z\" as \"2006\"",
 	}
 
 	var actual utils.ErrorResponseFE
 	err = json.Unmarshal(rr.Body.Bytes(), &actual)
 	assert.NoError(t, err)
 
+	assert.Equal(t, expected.ErrorClass, actual.ErrorClass)
 	assert.Equal(t, expected.Error, actual.Error)
-	assert.Equal(t, expected.ErrorDescription, actual.ErrorDescription)
 }
 
 func TestGetDatabasesStats_Service_Error(t *testing.T) {
@@ -201,7 +201,7 @@ func TestGetDatabasesStats_Service_Error(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, rr.Code)
 
 	expected := utils.ErrorResponseFE{
-		ErrorDescription: "MockError",
+		Error: "MockError",
 	}
 	assert.Equal(t, utils.ToJSON(expected), rr.Body.String())
 }

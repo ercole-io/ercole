@@ -20,7 +20,6 @@ import (
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/data-service/database"
-	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -41,7 +40,7 @@ func (job *ArchivedHostCleaningJob) Run() {
 	//Find the archived hosts older than ArchivedHostCleaningJob.HourThreshold hours
 	ids, err := job.Database.FindOldArchivedHosts(job.TimeNow().Add(time.Duration(-job.Config.DataService.ArchivedHostCleaningJob.HourThreshold) * time.Hour))
 	if err != nil {
-		utils.LogErr(job.Log, err)
+		job.Log.Error(err)
 		return
 	}
 
@@ -50,7 +49,7 @@ func (job *ArchivedHostCleaningJob) Run() {
 		//Delete the host
 		err := job.Database.DeleteHostData(id)
 		if err != nil {
-			utils.LogErr(job.Log, err)
+			job.Log.Error(err)
 			return
 		}
 		job.Log.Infof("%s has been deleted because it have passed more than %d hours from the host data insertion", id, job.Config.DataService.ArchivedHostCleaningJob.HourThreshold)

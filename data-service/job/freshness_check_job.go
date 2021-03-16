@@ -26,7 +26,6 @@ import (
 
 	alert_service_client "github.com/ercole-io/ercole/v2/alert-service/client"
 	"github.com/ercole-io/ercole/v2/data-service/database"
-	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // FreshnessCheckJob is the job used to check the freshness of the current hosts
@@ -55,7 +54,7 @@ func (job *FreshnessCheckJob) Run() {
 	}
 
 	if err := job.Database.DeleteAllNoDataAlerts(); err != nil {
-		utils.LogErr(job.Log, err)
+		job.Log.Error(err)
 		return
 	}
 
@@ -63,7 +62,7 @@ func (job *FreshnessCheckJob) Run() {
 		job.TimeNow().AddDate(0, 0, -job.Config.DataService.FreshnessCheckJob.DaysThreshold))
 
 	if err != nil {
-		utils.LogErr(job.Log, err)
+		job.Log.Error(err)
 		return
 	}
 
@@ -86,7 +85,7 @@ func (job *FreshnessCheckJob) Run() {
 		}
 		err := job.AlertSvcClient.ThrowNewAlert(alert)
 		if err != nil {
-			utils.LogErr(job.Log, err)
+			job.Log.Error(err)
 			continue
 		}
 	}

@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type MicrosoftSQLServerDatabase struct {
@@ -60,109 +59,4 @@ func (v MicrosoftSQLServerDatabase) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *MicrosoftSQLServerDatabase) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MicrosoftSQLServerDatabaseBsonValidatorRules contains mongodb validation rules for MicrosoftSQLServerDatabase
-var MicrosoftSQLServerDatabaseBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	// "required": bson.A{
-	// 	"databaseID",
-	// 	"name",
-	// 	"collationName",
-	// 	"status",
-	// 	"recoveryModel",
-	// 	"blockSize",
-	// 	"schedulersCount",
-	// 	"affinityMask",
-	// 	"minServerMemory",
-	// 	"maxServerMemory",
-	// 	"ctp",
-	// 	"maxDop",
-	// 	"alloc",
-	// 	"backups",
-	// 	"schemas",
-	// 	"tablespaces",
-	// },
-	"properties": bson.M{
-		"databaseID": bson.M{
-			"bsonType": "number",
-			"minimum":  1,
-		},
-		"name": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-		},
-		"collationName": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 32,
-		},
-		"status": bson.M{
-			"bsonType": "string",
-			"enum": bson.A{
-				"ONLINE",
-				"RESTORING",
-				"RECOVERING",
-				"RECOVERY_PENDING",
-				"SUSPECT",
-				"EMERGENCY",
-				"OFFLINE",
-				"COPYING",
-				"OFFLINE_SECONDARY",
-			},
-		},
-		"recoveryModel": bson.M{
-			"bsonType": "string",
-			"enum": bson.A{
-				"FULL",
-				"BULK_LOGGED",
-				"SIMPLE",
-			},
-		},
-		"blockSize": bson.M{
-			"bsonType": "number",
-			"minimum":  1,
-		},
-		"schedulersCount": bson.M{
-			"bsonType": "number",
-			"minimum":  1,
-		},
-		"affinityMask": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-		"minServerMemory": bson.M{
-			"bsonType": "number",
-			"minimum":  1,
-		},
-		"maxServerMemory": bson.M{
-			"bsonType": "number",
-			"minimum":  1,
-		},
-		"ctp": bson.M{
-			"bsonType": "number",
-			"minimum":  1,
-		},
-		"maxDop": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-		"alloc": bson.M{
-			"bsonType": "double",
-			"minimum":  0,
-		},
-		"backups": bson.M{
-			"bsonType": "array",
-			"items":    MicrosoftSQLServerDatabaseBackupBsonValidatorRules,
-		},
-		"schemas": bson.M{
-			"bsonType": "array",
-			"items":    MicrosoftSQLServerDatabaseSchemaBsonValidatorRules,
-		},
-		"tablespaces": bson.M{
-			"bsonType": "array",
-			"items":    MicrosoftSQLServerDatabaseTablespaceBsonValidatorRules,
-		},
-	},
 }

@@ -24,7 +24,7 @@ import (
 )
 
 // ListManagedTechnologies returns the list of Technologies with some stats
-func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.TechnologyStatus, utils.AdvancedErrorInterface) {
+func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.TechnologyStatus, error) {
 	hostsCountByTechnology, err := as.Database.GetHostsCountUsingTechnologies(location, environment, olderThan)
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 	return statuses, nil
 }
 
-func createOracleTechnologyStatus(as *APIService, hostsCount float64) (*model.TechnologyStatus, utils.AdvancedErrorInterface) {
+func createOracleTechnologyStatus(as *APIService, hostsCount float64) (*model.TechnologyStatus, error) {
 	agreements, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
 		return nil, err

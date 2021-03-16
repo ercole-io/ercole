@@ -23,7 +23,6 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -32,22 +31,22 @@ import (
 
 type MongoDatabaseInterface interface {
 	Init()
-	ArchiveHost(hostname string) (*mongo.UpdateResult, utils.AdvancedErrorInterface)
-	InsertHostData(hostData model.HostDataBE) (*mongo.InsertOneResult, utils.AdvancedErrorInterface)
+	ArchiveHost(hostname string) (*mongo.UpdateResult, error)
+	InsertHostData(hostData model.HostDataBE) (*mongo.InsertOneResult, error)
 	// FindOldCurrentHostnames return the list of current hosts names that haven't sent hostdata after time t
-	FindOldCurrentHostnames(t time.Time) ([]string, utils.AdvancedErrorInterface)
+	FindOldCurrentHostnames(t time.Time) ([]string, error)
 	// FindOldCurrentHostdata return the list of current hosts that haven't sent hostdata after time t
-	FindOldCurrentHostdata(t time.Time) ([]model.HostDataBE, utils.AdvancedErrorInterface)
+	FindOldCurrentHostdata(t time.Time) ([]model.HostDataBE, error)
 	// FindOldArchivedHosts return the list of archived hosts older than t
-	FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID, utils.AdvancedErrorInterface)
-	DeleteHostData(id primitive.ObjectID) utils.AdvancedErrorInterface
-	FindPatchingFunction(hostname string) (model.PatchingFunction, utils.AdvancedErrorInterface)
+	FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID, error)
+	DeleteHostData(id primitive.ObjectID) error
+	FindPatchingFunction(hostname string) (model.PatchingFunction, error)
 	HistoricizeOracleDbsLicenses(licenses []dto.OracleDatabaseLicenseUsage) error
 
-	DeleteNoDataAlertByHost(hostname string) utils.AdvancedErrorInterface
-	DeleteAllNoDataAlerts() utils.AdvancedErrorInterface
+	DeleteNoDataAlertByHost(hostname string) error
+	DeleteAllNoDataAlerts() error
 	// FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
-	FindMostRecentHostDataOlderThan(hostname string, t time.Time) (*model.HostDataBE, utils.AdvancedErrorInterface)
+	FindMostRecentHostDataOlderThan(hostname string, t time.Time) (*model.HostDataBE, error)
 }
 
 type MongoDatabase struct {

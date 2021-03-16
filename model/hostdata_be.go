@@ -20,7 +20,6 @@ import (
 	"time"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -66,90 +65,4 @@ func (v HostDataBE) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *HostDataBE) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// HostDataBEBsonValidatorRules contains mongodb validation rules for HostDataBE
-var HostDataBEBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"archived",
-		"createdAt",
-		"serverVersion",
-		"serverSchemaVersion",
-
-		"hostname",
-		"location",
-		"environment",
-		"tags",
-		"agentVersion",
-		"info",
-		"clusterMembershipStatus",
-		"features",
-		"filesystems",
-	},
-	"properties": bson.M{
-		"hostname": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 253,
-			"pattern":   `^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-_]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-_]*[A-Za-z0-9])$`,
-		},
-		"location": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-			"pattern":   "^[a-zA-Z0-9-]+$",
-		},
-		"environment": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 16,
-			"pattern":   "^[A-Z0-9]+$",
-		},
-		"tags": bson.M{
-			"bsonType": "array",
-			"items": bson.M{
-				"bsonType":  "string",
-				"minLength": 1,
-				"maxLength": 64,
-				"pattern":   "^[a-zA-Z0-9-]+$",
-			},
-			"uniqueItems": true,
-		},
-		"agentVersion": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-			"pattern":   "^(([0-9]+([.][0-9]+)*)|(git-[0-9a-f]+)|(latest))$",
-		},
-		"info":                    HostBsonValidatorRules,
-		"clusterMembershipStatus": ClusterMembershipStatusBsonValidatorRules,
-		"features":                FeaturesBsonValidatorRules,
-		"clusters": bson.M{
-			"anyOf": bson.A{
-				bson.M{"bsonType": "null"},
-				bson.M{
-					"bsonType": "array",
-					"items":    ClusterInfoBsonValidatorRules,
-				},
-			},
-		},
-		"archived": bson.M{
-			"bsonType": "bool",
-		},
-		"createdAt": bson.M{
-			"bsonType": "date",
-		},
-		"serverVersion": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-			"pattern":   "^(([0-9]+([.][0-9]+)*)|(git-[0-9a-f]+)|(latest))$",
-		},
-		"serverSchemaVersion": bson.M{
-			"bsonType": "number",
-			"minimum":  1,
-			"maximum":  1,
-		},
-	},
 }
