@@ -28,7 +28,7 @@ import (
 )
 
 // TODO return value, not mongo struct
-func (md *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, error) {
 	if res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.M{
 		"hostname": hostname,
 		"archived": false,
@@ -42,7 +42,7 @@ func (md *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, util
 }
 
 // TODO return value, not mongo struct
-func (md *MongoDatabase) InsertHostData(hostData model.HostDataBE) (*mongo.InsertOneResult, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) InsertHostData(hostData model.HostDataBE) (*mongo.InsertOneResult, error) {
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").InsertOne(context.TODO(), hostData)
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -51,7 +51,7 @@ func (md *MongoDatabase) InsertHostData(hostData model.HostDataBE) (*mongo.Inser
 }
 
 // FindOldCurrentHostnames return the list of current hosts that haven't sent hostdata after time t
-func (md *MongoDatabase) FindOldCurrentHostnames(t time.Time) ([]string, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) FindOldCurrentHostnames(t time.Time) ([]string, error) {
 	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
 		context.TODO(),
 		"hostname",
@@ -72,7 +72,7 @@ func (md *MongoDatabase) FindOldCurrentHostnames(t time.Time) ([]string, utils.A
 }
 
 // FindOldCurrentHosts return the list of current hosts that haven't sent hostdata after time t
-func (md *MongoDatabase) FindOldCurrentHostdata(t time.Time) ([]model.HostDataBE, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) FindOldCurrentHostdata(t time.Time) ([]model.HostDataBE, error) {
 	filter := bson.M{
 		"archived":  false,
 		"createdAt": mu.QOLessThan(t),
@@ -102,7 +102,7 @@ func (md *MongoDatabase) FindOldCurrentHostdata(t time.Time) ([]model.HostDataBE
 }
 
 // FindOldArchivedHosts return the list of archived hosts older than t
-func (md *MongoDatabase) FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID, error) {
 	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
 		context.TODO(),
 		"_id",
@@ -122,7 +122,7 @@ func (md *MongoDatabase) FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID
 	return ids, nil
 }
 
-func (md *MongoDatabase) DeleteHostData(id primitive.ObjectID) utils.AdvancedErrorInterface {
+func (md *MongoDatabase) DeleteHostData(id primitive.ObjectID) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").DeleteOne(
 		context.TODO(),
 		bson.M{
@@ -136,7 +136,7 @@ func (md *MongoDatabase) DeleteHostData(id primitive.ObjectID) utils.AdvancedErr
 }
 
 // FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
-func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time.Time) (*model.HostDataBE, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time.Time) (*model.HostDataBE, error) {
 	var out model.HostDataBE
 
 	//Find the most recent HostData older than t

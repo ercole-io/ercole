@@ -25,7 +25,7 @@ import (
 )
 
 // SearchOracleDatabasePatchAdvisors search patch advisors
-func (md *MongoDatabase) SearchOracleDatabasePatchAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchOracleDatabasePatchAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) ([]map[string]interface{}, error) {
 	var out []map[string]interface{} = make([]map[string]interface{}, 0)
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(

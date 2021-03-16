@@ -51,7 +51,7 @@ func (ctrl *APIController) SearchOracleDatabaseAddmsJSON(w http.ResponseWriter, 
 	var environment string
 	var olderThan time.Time
 
-	var err utils.AdvancedErrorInterface
+	var err error
 	//parse the query params
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
@@ -100,22 +100,22 @@ func (ctrl *APIController) SearchOracleDatabaseAddmsXLSX(w http.ResponseWriter, 
 	var environment string
 	var olderThan time.Time
 
-	var aerr utils.AdvancedErrorInterface
+	var err error
 	//parse the query params
 	search = r.URL.Query().Get("search")
 
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
-	if olderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
-	addms, aerr := ctrl.Service.SearchOracleDatabaseAddms(search, "Benefit", true, -1, -1, location, environment, olderThan)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	addms, err := ctrl.Service.SearchOracleDatabaseAddms(search, "Benefit", true, -1, -1, location, environment, olderThan)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -164,7 +164,7 @@ func (ctrl *APIController) SearchOracleDatabaseSegmentAdvisorsJSON(w http.Respon
 	var environment string
 	var olderThan time.Time
 
-	var err utils.AdvancedErrorInterface
+	var err error
 	//parse the query params
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
@@ -215,27 +215,27 @@ func (ctrl *APIController) SearchOracleDatabaseSegmentAdvisorsXLSX(w http.Respon
 	var environment string
 	var olderThan time.Time
 
-	var aerr utils.AdvancedErrorInterface
+	var err error
 	//parse the query params
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
-	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
-	if olderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
-	segmentAdvisors, aerr := ctrl.Service.SearchOracleDatabaseSegmentAdvisors(search, sortBy, sortDesc, -1, -1, location, environment, olderThan)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	segmentAdvisors, err := ctrl.Service.SearchOracleDatabaseSegmentAdvisors(search, sortBy, sortDesc, -1, -1, location, environment, olderThan)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -287,7 +287,7 @@ func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsJSON(w http.Response
 	var environment string
 	var olderThan time.Time
 	var status string
-	var err utils.AdvancedErrorInterface
+	var err error
 	//parse the query params
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
@@ -349,25 +349,25 @@ func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsXLSX(w http.Response
 	var olderThan time.Time
 	var status string
 
-	var aerr utils.AdvancedErrorInterface
+	var err error
 	//parse the query params
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
-	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	if windowTime, aerr = utils.Str2int(r.URL.Query().Get("window-time"), 6); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+	if windowTime, err = utils.Str2int(r.URL.Query().Get("window-time"), 6); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
-	if olderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 	status = r.URL.Query().Get("status")
@@ -377,9 +377,9 @@ func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsXLSX(w http.Response
 	}
 
 	//get the data
-	patchAdvisors, aerr := ctrl.Service.SearchOracleDatabasePatchAdvisors(search, sortBy, sortDesc, -1, -1, ctrl.TimeNow().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	patchAdvisors, err := ctrl.Service.SearchOracleDatabasePatchAdvisors(search, sortBy, sortDesc, -1, -1, ctrl.TimeNow().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -458,7 +458,7 @@ func (ctrl *APIController) SearchOracleDatabaseUsedLicenses(w http.ResponseWrite
 	var environment string
 	var olderThan time.Time
 
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	sortBy = r.URL.Query().Get("sort-by")
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {

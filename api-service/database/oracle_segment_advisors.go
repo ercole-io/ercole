@@ -25,7 +25,7 @@ import (
 )
 
 // SearchOracleDatabaseSegmentAdvisors search segment advisors
-func (md *MongoDatabase) SearchOracleDatabaseSegmentAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchOracleDatabaseSegmentAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error) {
 	var out []map[string]interface{} = make([]map[string]interface{}, 0)
 
 	//Find the matching hostdata

@@ -25,7 +25,7 @@ import (
 )
 
 // SearchOracleExadata search exadata
-func (md *MongoDatabase) SearchOracleExadata(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (md *MongoDatabase) SearchOracleExadata(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, error) {
 	var out []interface{} = make([]interface{}, 0)
 
 	//Find the matching hostdata

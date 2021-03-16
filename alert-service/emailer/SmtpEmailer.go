@@ -28,7 +28,7 @@ type SMTPEmailer struct {
 	Config config.Configuration
 }
 
-func (this *SMTPEmailer) SendEmail(subject string, text string, to []string) utils.AdvancedErrorInterface {
+func (this *SMTPEmailer) SendEmail(subject string, text string, to []string) error {
 	if !this.Config.AlertService.Emailer.Enabled {
 		return nil
 	}

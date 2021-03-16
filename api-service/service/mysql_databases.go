@@ -35,9 +35,9 @@ func (as *APIService) SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQL
 }
 
 func (as *APIService) SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
-	instances, aerr := as.Database.SearchMySQLInstances(filter)
-	if aerr != nil {
-		return nil, aerr
+	instances, err := as.Database.SearchMySQLInstances(filter)
+	if err != nil {
+		return nil, err
 	}
 
 	file, err := excelize.OpenFile(as.Config.ResourceFilePath + "/templates/template_generic.xlsx")

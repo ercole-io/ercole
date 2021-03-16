@@ -22,7 +22,7 @@ import (
 )
 
 // GetOracleDatabaseLicenseTypes return the list of OracleDatabaseLicenseType
-func (as *APIService) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, utils.AdvancedErrorInterface) {
+func (as *APIService) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error) {
 	parts, err := as.Database.GetOracleDatabaseLicenseTypes()
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -32,7 +32,7 @@ func (as *APIService) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLic
 }
 
 // GetOracleDatabaseLicenseTypesAsMap return the list of OracleDatabaseLicenseType as map by ID
-func (as *APIService) GetOracleDatabaseLicenseTypesAsMap() (map[string]model.OracleDatabaseLicenseType, utils.AdvancedErrorInterface) {
+func (as *APIService) GetOracleDatabaseLicenseTypesAsMap() (map[string]model.OracleDatabaseLicenseType, error) {
 	parts, err := as.GetOracleDatabaseLicenseTypes()
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (as *APIService) GetOracleDatabaseLicenseTypesAsMap() (map[string]model.Ora
 }
 
 // GetOracleDatabaseLicenseType return a LicenseType by ID
-func (as *APIService) GetOracleDatabaseLicenseType(id string) (*model.OracleDatabaseLicenseType, utils.AdvancedErrorInterface) {
+func (as *APIService) GetOracleDatabaseLicenseType(id string) (*model.OracleDatabaseLicenseType, error) {
 	parts, err := as.Database.GetOracleDatabaseLicenseTypes()
 	if err != nil {
 		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
@@ -59,10 +59,10 @@ func (as *APIService) GetOracleDatabaseLicenseType(id string) (*model.OracleData
 		}
 	}
 
-	return nil, utils.AerrOracleDatabaseLicenseTypeIDNotFound
+	return nil, utils.ErrOracleDatabaseLicenseTypeIDNotFound
 }
 
-func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabaseLicenseUsage, utils.AdvancedErrorInterface) {
+func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabaseLicenseUsage, error) {
 	agreements, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
 		return nil, err

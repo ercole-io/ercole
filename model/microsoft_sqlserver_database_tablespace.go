@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type MicrosoftSQLServerDatabaseTablespace struct {
@@ -51,64 +50,4 @@ func (v MicrosoftSQLServerDatabaseTablespace) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *MicrosoftSQLServerDatabaseTablespace) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MicrosoftSQLServerDatabaseTablespaceBsonValidatorRules contains mongodb validation rules for MicrosoftSQLServerDatabaseTablespace
-var MicrosoftSQLServerDatabaseTablespaceBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"filename",
-		"alloc",
-		"used",
-		"growth",
-		"growthUnit",
-		"fileType",
-		"status",
-	},
-	"properties": bson.M{
-		"filename": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 32,
-		},
-		"alloc": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-		"used": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-		"growth": bson.M{
-			"bsonType": "double",
-		},
-		"growthUnit": bson.M{
-			"bsonType": "string",
-			"enum": bson.A{
-				"%",
-				"MB",
-			},
-		},
-		"fileType": bson.M{
-			"bsonType": "string",
-			"enum": bson.A{
-				"ROWS",
-				"LOG",
-				"FILESTREAM",
-				"FULLTEXT",
-			},
-		},
-		"status": bson.M{
-			"bsonType": "string",
-			"enum": bson.A{
-				"ONLINE",
-				"RESTORING",
-				"RECOVERING",
-				"RECOVERY_PENDING",
-				"SUSPECT",
-				"OFFLINE",
-				"DEFUNCT",
-			},
-		},
-	},
 }

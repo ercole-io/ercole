@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // OracleDatabaseBackup holds informations about a backup
@@ -50,60 +49,4 @@ func (v OracleDatabaseBackup) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *OracleDatabaseBackup) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// OracleDatabaseBackupBsonValidatorRules contains mongodb validation rules for OracleDatabaseBackup
-var OracleDatabaseBackupBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"backupType",
-		"hour",
-		"weekDays",
-		"avgBckSize",
-		"retention",
-	},
-	"properties": bson.M{
-		"backupType": bson.M{
-			"bsonType": "string",
-			"enum": bson.A{
-				"Archivelog",
-				"Full",
-				"Level0",
-				"Level1",
-				"Incr Lvl 0",
-				"Incr Lvl 1",
-			},
-		},
-		"hour": bson.M{
-			"bsonType":  "string",
-			"minLength": 5,
-			"maxLength": 5,
-			"pattern":   "^[0-9]{2}:[0-9]{2}$",
-		},
-		"weekDays": bson.M{
-			"bsonType": "array",
-			"items": bson.M{
-				"bsonType": "string",
-				"enum": bson.A{
-					"Monday",
-					"Tuesday",
-					"Wednesday",
-					"Thursday",
-					"Friday",
-					"Saturday",
-					"Sunday",
-				},
-			},
-			"uniqueItems": true,
-		},
-		"avgBckSize": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-		"retention": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 16,
-		},
-	},
 }

@@ -29,13 +29,13 @@ import (
 
 // GetPatchingFunction return all'informations about the patching function of the host requested in the hostname path variable
 func (ctrl *APIController) GetPatchingFunction(w http.ResponseWriter, r *http.Request) {
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	hostname := mux.Vars(r)["hostname"]
 
 	//get the data
 	pf, err := ctrl.Service.GetPatchingFunction(hostname)
-	if err == utils.AerrHostNotFound || err == utils.AerrPatchingFunctionNotFound {
+	if err == utils.ErrHostNotFound || err == utils.ErrPatchingFunctionNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
@@ -67,12 +67,12 @@ func (ctrl *APIController) SetPatchingFunction(w http.ResponseWriter, r *http.Re
 		return
 	}
 	//set the value
-	id, aerr := ctrl.Service.SetPatchingFunction(hostname, pf)
-	if aerr == utils.AerrHostNotFound {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
+	id, err := ctrl.Service.SetPatchingFunction(hostname, pf)
+	if err == utils.ErrHostNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
-	} else if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -95,12 +95,12 @@ func (ctrl *APIController) DeletePatchingFunction(w http.ResponseWriter, r *http
 	hostname := mux.Vars(r)["hostname"]
 
 	//delete the value
-	aerr := ctrl.Service.DeletePatchingFunction(hostname)
-	if aerr == utils.AerrHostNotFound {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
+	err := ctrl.Service.DeletePatchingFunction(hostname)
+	if err == utils.ErrHostNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
-	} else if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -126,9 +126,9 @@ func (ctrl *APIController) AddTagToOracleDatabase(w http.ResponseWriter, r *http
 	}
 
 	//set the value
-	aerr := ctrl.Service.AddTagToOracleDatabase(hostname, dbname, string(raw))
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	err = ctrl.Service.AddTagToOracleDatabase(hostname, dbname, string(raw))
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -149,9 +149,9 @@ func (ctrl *APIController) DeleteTagOfOracleDatabase(w http.ResponseWriter, r *h
 	tagname := mux.Vars(r)["tagname"]
 
 	//set the value
-	aerr := ctrl.Service.DeleteTagOfOracleDatabase(hostname, dbname, tagname)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	err := ctrl.Service.DeleteTagOfOracleDatabase(hostname, dbname, tagname)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -184,9 +184,9 @@ func (ctrl *APIController) SetOracleDatabaseLicenseModifier(w http.ResponseWrite
 	}
 
 	//set the value
-	aerr := ctrl.Service.SetOracleDatabaseLicenseModifier(hostname, dbname, licensename, newValue)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	err = ctrl.Service.SetOracleDatabaseLicenseModifier(hostname, dbname, licensename, newValue)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -207,9 +207,9 @@ func (ctrl *APIController) DeleteOracleDatabaseLicenseModifier(w http.ResponseWr
 	licensename := mux.Vars(r)["licenseName"]
 
 	//set the value
-	aerr := ctrl.Service.DeleteOracleDatabaseLicenseModifier(hostname, dbname, licensename)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	err := ctrl.Service.DeleteOracleDatabaseLicenseModifier(hostname, dbname, licensename)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -225,7 +225,7 @@ func (ctrl *APIController) SearchOracleDatabaseLicenseModifiers(w http.ResponseW
 	var pageNumber int
 	var pageSize int
 
-	var err utils.AdvancedErrorInterface
+	var err error
 	//parse the query params
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")

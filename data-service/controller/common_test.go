@@ -24,7 +24,7 @@ import (
 //go:generate mockgen -source ../service/service.go -destination=fake_service_test.go -package=controller
 
 var errMock error = errors.New("MockError")
-var aerrMock utils.AdvancedErrorInterface = utils.NewAdvancedErrorPtr(errMock, "mock")
+var aerrMock error = utils.NewAdvancedErrorPtr(errMock, "mock")
 
 type failingReader struct{}
 

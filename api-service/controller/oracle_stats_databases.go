@@ -26,7 +26,7 @@ import (
 func (ctrl *APIController) GetOracleDatabaseEnvironmentStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
 	var location string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -53,7 +53,7 @@ func (ctrl *APIController) GetOracleDatabaseHighReliabilityStats(w http.Response
 	var location string
 	var environment string
 
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -79,7 +79,7 @@ func (ctrl *APIController) GetOracleDatabaseHighReliabilityStats(w http.Response
 func (ctrl *APIController) GetOracleDatabaseVersionStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
 	var location string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -105,7 +105,7 @@ func (ctrl *APIController) GetTopReclaimableOracleDatabaseStats(w http.ResponseW
 	var olderThan time.Time
 	var location string
 	var limit int
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -135,7 +135,7 @@ func (ctrl *APIController) GetOracleDatabasePatchStatusStats(w http.ResponseWrit
 	var olderThan time.Time
 	var location string
 	var windowTime int
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -165,7 +165,7 @@ func (ctrl *APIController) GetTopWorkloadOracleDatabaseStats(w http.ResponseWrit
 	var olderThan time.Time
 	var location string
 	var limit int
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -195,7 +195,7 @@ func (ctrl *APIController) GetOracleDatabaseDataguardStatusStats(w http.Response
 	var olderThan time.Time
 	var location string
 	var environment string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -222,7 +222,7 @@ func (ctrl *APIController) GetOracleDatabaseRACStatusStats(w http.ResponseWriter
 	var olderThan time.Time
 	var location string
 	var environment string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -249,7 +249,7 @@ func (ctrl *APIController) GetOracleDatabaseArchivelogStatusStats(w http.Respons
 	var olderThan time.Time
 	var location string
 	var environment string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -276,7 +276,7 @@ func (ctrl *APIController) GetTotalOracleDatabaseWorkStats(w http.ResponseWriter
 	var olderThan time.Time
 	var location string
 	var environment string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -303,7 +303,7 @@ func (ctrl *APIController) GetTotalOracleDatabaseMemorySizeStats(w http.Response
 	var olderThan time.Time
 	var location string
 	var environment string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -330,7 +330,7 @@ func (ctrl *APIController) GetTotalOracleDatabaseDatafileSizeStats(w http.Respon
 	var olderThan time.Time
 	var location string
 	var environment string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -357,7 +357,7 @@ func (ctrl *APIController) GetTotalOracleDatabaseSegmentSizeStats(w http.Respons
 	var olderThan time.Time
 	var location string
 	var environment string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -385,7 +385,7 @@ func (ctrl *APIController) GetTopUnusedOracleDatabaseInstanceResourceStats(w htt
 	var location string
 	var environment string
 	var limit int
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")

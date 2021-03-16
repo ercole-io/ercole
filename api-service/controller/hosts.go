@@ -90,9 +90,9 @@ func (ctrl *APIController) searchHostsJSON(w http.ResponseWriter, r *http.Reques
 // searchHostsLMS search hosts data using the filters in the request returning it in LMS+XLSX
 func (ctrl *APIController) searchHostsLMS(w http.ResponseWriter, r *http.Request, filters *dto.SearchHostsFilters) {
 	filters.PageNumber, filters.PageSize = -1, -1
-	lms, aerr := ctrl.Service.SearchHostsAsLMS(*filters)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	lms, err := ctrl.Service.SearchHostsAsLMS(*filters)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -103,9 +103,9 @@ func (ctrl *APIController) searchHostsLMS(w http.ResponseWriter, r *http.Request
 //TODO Move in service
 func (ctrl *APIController) searchHostsXLSX(w http.ResponseWriter, r *http.Request, filters *dto.SearchHostsFilters) {
 	filters.PageNumber, filters.PageSize = -1, -1
-	hosts, aerr := ctrl.Service.SearchHosts("summary", *filters)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	hosts, err := ctrl.Service.SearchHosts("summary", *filters)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -157,7 +157,7 @@ func (ctrl *APIController) GetHost(w http.ResponseWriter, r *http.Request) {
 // GetHostJSON return all'informations about the host requested in the id path variable
 func (ctrl *APIController) GetHostJSON(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	hostname := mux.Vars(r)["hostname"]
 
@@ -167,7 +167,7 @@ func (ctrl *APIController) GetHostJSON(w http.ResponseWriter, r *http.Request) {
 	}
 
 	host, err := ctrl.Service.GetHost(hostname, olderThan, false)
-	if err == utils.AerrHostNotFound {
+	if err == utils.ErrHostNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
@@ -181,21 +181,21 @@ func (ctrl *APIController) GetHostJSON(w http.ResponseWriter, r *http.Request) {
 // GetHostMongoJSON return all'informations about the host requested in the id path variable
 func (ctrl *APIController) GetHostMongoJSON(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
-	var aerr utils.AdvancedErrorInterface
+	var err error
 
 	hostname := mux.Vars(r)["hostname"]
 
-	if olderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	host, aerr := ctrl.Service.GetHost(hostname, olderThan, true)
-	if aerr == utils.AerrHostNotFound {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
+	host, err := ctrl.Service.GetHost(hostname, olderThan, true)
+	if err == utils.ErrHostNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
-	} else if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -208,7 +208,7 @@ func (ctrl *APIController) ListLocations(w http.ResponseWriter, r *http.Request)
 	var environment string
 	var olderThan time.Time
 
-	var err utils.AdvancedErrorInterface
+	var err error
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
@@ -232,7 +232,7 @@ func (ctrl *APIController) ListEnvironments(w http.ResponseWriter, r *http.Reque
 	var environment string
 	var olderThan time.Time
 
-	var err utils.AdvancedErrorInterface
+	var err error
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
@@ -259,11 +259,11 @@ func (ctrl *APIController) ArchiveHost(w http.ResponseWriter, r *http.Request) {
 
 	hostname := mux.Vars(r)["hostname"]
 
-	aerr := ctrl.Service.ArchiveHost(hostname)
-	if aerr == utils.AerrHostNotFound {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, aerr)
-	} else if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	err := ctrl.Service.ArchiveHost(hostname)
+	if err == utils.ErrHostNotFound {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 

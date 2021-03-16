@@ -85,7 +85,7 @@ func TestGetPatchingFunction_FailNotFound(t *testing.T) {
 
 	as.EXPECT().
 		GetPatchingFunction("test-db").
-		Return(nil, utils.AerrPatchingFunctionNotFound)
+		Return(nil, utils.ErrPatchingFunctionNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetPatchingFunction)
@@ -302,7 +302,7 @@ func TestSetPatchingFunction_FailNotFound(t *testing.T) {
 		ID: nil,
 	}
 
-	as.EXPECT().SetPatchingFunction("test-db", pf).Return(nil, utils.AerrHostNotFound)
+	as.EXPECT().SetPatchingFunction("test-db", pf).Return(nil, utils.ErrHostNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SetPatchingFunction)

@@ -325,7 +325,7 @@ func (m *MongodbSuite) TestUpdateAlertsStatus() {
 		ids := []primitive.ObjectID{utils.Str2oid("5ea6a65bb2e36eb58daaaaaa")}
 		err := m.db.UpdateAlertsStatus(ids, model.AlertStatusAck)
 
-		assert.Equal(t, utils.AerrAlertNotFound, err)
+		assert.Equal(t, utils.ErrAlertNotFound, err)
 	})
 
 	m.T().Run("should_success", func(t *testing.T) {

@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // OracleDatabasePatch holds information about an Oracle database patch
@@ -50,40 +49,4 @@ func (v OracleDatabasePatch) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *OracleDatabasePatch) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// OracleDatabasePatchBsonValidatorRules contains mongodb validation rules for OracleDatabasePatch
-var OracleDatabasePatchBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"version",
-		"patchID",
-		"action",
-		"description",
-		"date",
-	},
-	"properties": bson.M{
-		"version": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 16,
-		},
-		"patchID": bson.M{
-			"bsonType": "number",
-		},
-		"action": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 128,
-		},
-		"description": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 256,
-		},
-		"date": bson.M{
-			"bsonType": "string",
-			"pattern":  "[0-9]{4}-[0-9]{2}-[0-9]{2}",
-		},
-	},
 }

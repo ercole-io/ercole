@@ -50,7 +50,7 @@ func (ctrl *APIController) SearchClustersJSON(w http.ResponseWriter, r *http.Req
 	var environment string
 	var olderThan time.Time
 
-	var err utils.AdvancedErrorInterface
+	var err error
 	//parse the query params
 	if full, err = utils.Str2bool(r.URL.Query().Get("full"), false); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
@@ -106,27 +106,27 @@ func (ctrl *APIController) SearchClustersXLSX(w http.ResponseWriter, r *http.Req
 	var environment string
 	var olderThan time.Time
 
-	var aerr utils.AdvancedErrorInterface
+	var err error
 	//parse the query params
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
-	if sortDesc, aerr = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
-	if olderThan, aerr = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
 	//get the data
-	clusters, aerr := ctrl.Service.SearchClusters(false, search, sortBy, sortDesc, -1, -1, location, environment, olderThan)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	clusters, err := ctrl.Service.SearchClusters(false, search, sortBy, sortDesc, -1, -1, location, environment, olderThan)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -154,9 +154,9 @@ func (ctrl *APIController) SearchClustersXLSX(w http.ResponseWriter, r *http.Req
 func (ctrl *APIController) GetCluster(w http.ResponseWriter, r *http.Request) {
 	clusterName := mux.Vars(r)["name"]
 
-	olderThan, aerr := utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, aerr)
+	olderThan, err := utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -173,7 +173,7 @@ func (ctrl *APIController) GetCluster(w http.ResponseWriter, r *http.Request) {
 //GetClusterJSON get cluster data using the filters in the request and returns it in JSON format
 func (ctrl *APIController) GetClusterJSON(w http.ResponseWriter, r *http.Request, clusterName string, olderThan time.Time) {
 	data, err := ctrl.Service.GetCluster(clusterName, olderThan)
-	if err == utils.AerrClusterNotFound {
+	if err == utils.ErrClusterNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
@@ -187,7 +187,7 @@ func (ctrl *APIController) GetClusterJSON(w http.ResponseWriter, r *http.Request
 //GetClusterXLSX get cluster data using the filters in the request and returns it in XLSX format
 func (ctrl *APIController) GetClusterXLSX(w http.ResponseWriter, r *http.Request, clusterName string, olderThan time.Time) {
 	xlsx, err := ctrl.Service.GetClusterXLSX(clusterName, olderThan)
-	if err == utils.AerrClusterNotFound {
+	if err == utils.ErrClusterNotFound {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {

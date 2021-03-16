@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // OracleDatabaseService holds information about an Oracle database service
@@ -46,19 +45,4 @@ func (v OracleDatabaseService) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *OracleDatabaseService) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// OracleDatabaseServiceBsonValidatorRules contains mongodb validation rules for OracleDatabaseService
-var OracleDatabaseServiceBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"name",
-	},
-	"properties": bson.M{
-		"name": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 32,
-		},
-	},
 }

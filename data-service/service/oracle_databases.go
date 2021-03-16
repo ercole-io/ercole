@@ -21,7 +21,8 @@ func (hds *HostDataService) oracleDatabasesChecks(previousHostdata, hostdata *mo
 
 	licenseTypes, err := hds.getOracleDatabaseLicenseTypes(hostdata.Environment)
 	if err != nil {
-		utils.LogErr(hds.Log, utils.NewAdvancedErrorPtr(err, "INSERT_HOSTDATA_ORACLE_DATABASE"))
+		hds.Log.Error("INSERT_HOSTDATA_ORACLE_DATABASE")
+
 		licenseTypes = make([]model.OracleDatabaseLicenseType, 0)
 	}
 	hds.setLicenseTypes(hostdata, licenseTypes)
@@ -59,7 +60,7 @@ func (hds *HostDataService) checkSecondaryDbs(hostdata *model.HostDataBE) {
 func (hds *HostDataService) addLicensesToSecondaryDb(hostInfo model.Host, secondaryDb *model.OracleDatabase) {
 	dbs, err := hds.getPrimaryOpenOracleDatabases()
 	if err != nil {
-		utils.LogErr(hds.Log, utils.NewAdvancedErrorPtr(err, "INSERT_HOSTDATA_ORACLE_DATABASE"))
+		hds.Log.Error("INSERT_HOSTDATA_ORACLE_DATABASE")
 		return
 	}
 
@@ -88,7 +89,7 @@ func (hds *HostDataService) addLicensesToSecondaryDb(hostInfo model.Host, second
 
 		err := hds.AlertSvcClient.ThrowNewAlert(alert)
 		if err != nil {
-			utils.LogErr(hds.Log, utils.NewAdvancedErrorPtr(err, "Can't throw new alert"))
+			hds.Log.Error("Can't throw new alert")
 			return
 		}
 	}

@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // Filesystem holds information about mounted filesystem and used space
@@ -51,43 +50,4 @@ func (v Filesystem) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *Filesystem) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// FilesystemBsonValidatorRules contains mongodb validation rules for Filesystem
-var FilesystemBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"filesystem",
-		"type",
-		"size",
-		"usedSpace",
-		"availableSpace",
-		"mountedOn",
-	},
-	"properties": bson.M{
-		"filesystem": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-		},
-		"type": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 16,
-		},
-		"size": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-		"usedSpace": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-		"availableSpace": bson.M{
-			"bsonType": "number",
-		},
-		"mountedOn": bson.M{
-			"bsonType": "string",
-		},
-	},
 }

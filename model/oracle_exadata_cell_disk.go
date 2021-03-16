@@ -19,7 +19,6 @@ import (
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // OracleExadataCellDisk holds info about a exadata cell disk
@@ -49,34 +48,4 @@ func (v OracleExadataCellDisk) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *OracleExadataCellDisk) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// OracleExadataCellDiskBsonValidatorRules contains mongodb validation rules for OracleExadataCellDisk
-var OracleExadataCellDiskBsonValidatorRules = bson.M{
-	"bsonType": "object",
-	"required": bson.A{
-		"errCount",
-		"name",
-		"status",
-		"usedPerc",
-	},
-	"properties": bson.M{
-		"errCount": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-		},
-		"name": bson.M{
-			"bsonType":  "string",
-			"minLength": 1,
-			"maxLength": 64,
-		},
-		"status": bson.M{
-			"bsonType": "string",
-		},
-		"usedPerc": bson.M{
-			"bsonType": "number",
-			"minimum":  0,
-			"maximum":  100,
-		},
-	},
 }

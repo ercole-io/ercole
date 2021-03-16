@@ -19,11 +19,9 @@ package service
 import (
 	"strings"
 	"time"
-
-	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // SearchOracleExadata search exadata
-func (as *APIService) SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, error) {
 	return as.Database.SearchOracleExadata(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }

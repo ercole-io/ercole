@@ -27,7 +27,7 @@ func (ctrl *APIController) GetHostsCountStats(w http.ResponseWriter, r *http.Req
 	var olderThan time.Time
 	var location string
 	var environment string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -53,7 +53,7 @@ func (ctrl *APIController) GetHostsCountStats(w http.ResponseWriter, r *http.Req
 func (ctrl *APIController) GetEnvironmentStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
 	var location string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -78,7 +78,7 @@ func (ctrl *APIController) GetEnvironmentStats(w http.ResponseWriter, r *http.Re
 func (ctrl *APIController) GetTypeStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
 	var location string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
@@ -103,7 +103,7 @@ func (ctrl *APIController) GetTypeStats(w http.ResponseWriter, r *http.Request) 
 func (ctrl *APIController) GetOperatingSystemStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
 	var location string
-	var err utils.AdvancedErrorInterface
+	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")

@@ -21,36 +21,29 @@ import (
 
 // ErrHostNotFound contains "Host not found" error
 var ErrHostNotFound = errors.New("Host not found")
-var AerrHostNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrHostNotFound, "DB ERROR")
 var ErrPatchingFunctionNotFound = errors.New("Patching Function not found")
-var AerrPatchingFunctionNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrPatchingFunctionNotFound, "DB ERROR")
 
 // ErrEventEnqueue contains "Failed to enqueue event" error
 var ErrEventEnqueue = errors.New("Failed to enqueue event")
 
 // ErrLicenseNotFound contains "License not found" error
 var ErrLicenseNotFound = errors.New("License not found")
-var AerrLicenseNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrLicenseNotFound, "DB ERROR")
 
 // ErrAlertNotFound contains "Alert not found" error
 var ErrAlertNotFound = errors.New("Alert not found")
-var AerrAlertNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrAlertNotFound, "DB ERROR")
 
 // ErrClusterNotFound contains "Cluster not found" error
 var ErrClusterNotFound = errors.New("Cluster not found")
-var AerrClusterNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrClusterNotFound, "DB ERROR")
 
 var ErrOracleDatabaseLicenseTypeIDNotFound = errors.New("Oracle Database LicenseTypeID not found")
-var AerrOracleDatabaseLicenseTypeIDNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrOracleDatabaseLicenseTypeIDNotFound, "CLIENT ERROR")
 
 // ErrOracleDatabaseAgreementNotFound contains "Agreement not found" error
 var ErrOracleDatabaseAgreementNotFound = errors.New("Agreement not found")
-var AerrOracleDatabaseAgreementNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrOracleDatabaseAgreementNotFound, "DB ERROR")
 
 // ErrOracleDatabaseAssociatedPartNotFound Associated Part not found
 var ErrOracleDatabaseAssociatedPartNotFound = errors.New("Associated Part not found")
-var AerrOracleDatabaseAssociatedPartNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrOracleDatabaseAssociatedPartNotFound, "DB ERROR")
 
 // ErrNotInClusterHostNotFound contains "Baremetal host not found" error
 var ErrNotInClusterHostNotFound = errors.New("Not in cluster host not found")
-var AerrNotInClusterHostNotFound AdvancedErrorInterface = NewAdvancedErrorPtr(ErrNotInClusterHostNotFound, "DB ERROR")
+
+var ErrInvalidHostdata = errors.New("Invalid hostdata")
