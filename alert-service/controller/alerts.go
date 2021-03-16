@@ -41,9 +41,9 @@ func (ctrl *AlertQueueController) ThrowNewAlert(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	aerr := ctrl.Service.ThrowNewAlert(alert)
-	if aerr != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, aerr)
+	err := ctrl.Service.ThrowNewAlert(alert)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 

@@ -18,15 +18,12 @@ package controller
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
 
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/schema"
 	"github.com/ercole-io/ercole/v2/utils"
-
-	"github.com/xeipuuv/gojsonschema"
 )
 
 // InsertHostData update the informations about a host using the HostData in the request
@@ -40,28 +37,13 @@ func (ctrl *DataController) InsertHostData(w http.ResponseWriter, r *http.Reques
 	}
 	defer r.Body.Close()
 
-	documentLoader := gojsonschema.NewBytesLoader(raw)
-	schemaLoader := gojsonschema.NewStringLoader(model.FrontendHostdataSchemaValidator)
-	if result, err := gojsonschema.Validate(schemaLoader, documentLoader); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, "HOSTDATA_VALIDATION"))
-		return
-	} else if !result.Valid() {
-		var errorMsg strings.Builder
-		errorMsg.WriteString("Invalid schema! The input hostdata is not valid!\n")
-
-		for _, err := range result.Errors() {
-
-			value := fmt.Sprintf("%v", err.Value())
-			if len(value) > 80 {
-				value = value[:78] + ".."
-			}
-			errorMsg.WriteString(fmt.Sprintf("- %s. Value: [%v]\n", err, value))
+	if err := schema.ValidateHostdata(raw); err != nil {
+		if errors.Is(err, utils.ErrInvalidHostdata) {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+			return
 		}
 
-		errorMsg.WriteString(fmt.Sprintf("hostdata:\n%v", string(raw)))
-
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity,
-			utils.NewAdvancedErrorPtr(errors.New(errorMsg.String()), "HOSTDATA_VALIDATION"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 

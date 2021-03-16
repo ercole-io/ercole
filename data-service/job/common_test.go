@@ -25,4 +25,4 @@ import (
 //go:generate mockgen -source ../../alert-service/client/client.go -destination=fake_alert_service_client_test.go -package=job
 
 var errMock error = errors.New("MockError")
-var aerrMock utils.AdvancedErrorInterface = utils.NewAdvancedErrorPtr(errMock, "mock")
+var aerrMock error = utils.NewAdvancedErrorPtr(errMock, "mock")

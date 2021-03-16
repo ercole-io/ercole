@@ -17,9 +17,9 @@ package migration
 
 import (
 	"context"
+	"time"
 
 	"github.com/ercole-io/ercole/v2/config"
-	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
@@ -41,9 +41,11 @@ func ConnectToMongodb(log *logrus.Logger, conf config.Mongodb) *mongo.Client {
 	}
 
 	//Check the connection
-	err = cl.Ping(context.TODO(), nil)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	err = cl.Ping(ctx, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Can't connect to the database! %s\n", err)
 	}
 
 	return cl
@@ -277,7 +279,7 @@ func MigratePatchingFunctionsSchema(log *logrus.Logger, client *mongo.Database) 
 	if err := client.RunCommand(context.TODO(), bson.D{
 		{"collMod", "patching_functions"},
 		{"validator", bson.D{
-			{"$jsonSchema", model.PatchingFunctionBsonValidatorRules},
+			{"$jsonSchema", bson.M{}},
 		}},
 		{"validationAction", "error"},
 	}).Err(); err != nil {

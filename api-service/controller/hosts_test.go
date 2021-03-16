@@ -130,7 +130,7 @@ func TestSearchHosts_JSONPaged(t *testing.T) {
 	}
 	as.EXPECT().
 		SearchHosts("summary", gomock.Any()).
-		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
 			assert.EqualValues(t, filters, actual)
 
 			return resFromService, nil
@@ -230,7 +230,7 @@ func TestSearchHosts_JSONUnpaged(t *testing.T) {
 	}
 	as.EXPECT().
 		SearchHosts("full", gomock.Any()).
-		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
 			assert.EqualValues(t, filters, actual)
 
 			return expectedRes, nil
@@ -293,7 +293,7 @@ func TestSearchHosts_JSONHostnames(t *testing.T) {
 	}
 	as.EXPECT().
 		SearchHosts("hostnames", gomock.Any()).
-		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
 			assert.EqualValues(t, filters, actual)
 
 			return returnedRes, nil
@@ -447,7 +447,7 @@ func TestSearchHosts_JSONInternalServerError(t *testing.T) {
 	}
 	as.EXPECT().
 		SearchHosts("full", gomock.Any()).
-		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
 			assert.EqualValues(t, filters, actual)
 
 			return nil, aerrMock
@@ -497,7 +497,7 @@ func TestSearchHosts_LMSSuccess(t *testing.T) {
 	}
 	as.EXPECT().
 		SearchHostsAsLMS(gomock.Any()).
-		DoAndReturn(func(actual dto.SearchHostsFilters) (*excelize.File, utils.AdvancedErrorInterface) {
+		DoAndReturn(func(actual dto.SearchHostsFilters) (*excelize.File, error) {
 			assert.EqualValues(t, filters, actual)
 
 			return expected, nil
@@ -598,7 +598,7 @@ func TestSearchHosts_LMSSuccessInternalServerError1(t *testing.T) {
 	}
 	as.EXPECT().
 		SearchHostsAsLMS(gomock.Any()).
-		DoAndReturn(func(actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+		DoAndReturn(func(actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
 			assert.EqualValues(t, filters, actual)
 
 			return nil, aerrMock
@@ -700,7 +700,7 @@ func TestSearchHosts_XLSXSuccess(t *testing.T) {
 	}
 	as.EXPECT().
 		SearchHosts("summary", gomock.Any()).
-		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
 			assert.EqualValues(t, filters, actual)
 
 			return expectedRes, nil
@@ -895,7 +895,7 @@ func TestSearchHosts_XLSXInternalServerError2(t *testing.T) {
 	}
 	as.EXPECT().
 		SearchHosts("summary", gomock.Any()).
-		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, utils.AdvancedErrorInterface) {
+		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
 			assert.EqualValues(t, filters, actual)
 
 			return expectedRes, nil
@@ -1080,7 +1080,7 @@ func TestGetHost_JSONFailNotFound(t *testing.T) {
 
 	as.EXPECT().
 		GetHost("foobar", utils.MAX_TIME, false).
-		Return(nil, utils.AerrHostNotFound)
+		Return(nil, utils.ErrHostNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetHost)
@@ -1196,7 +1196,7 @@ func TestGetHost_MongoJSONFailNotFound(t *testing.T) {
 
 	as.EXPECT().
 		GetHost("foobar", utils.MAX_TIME, true).
-		Return(nil, utils.AerrHostNotFound)
+		Return(nil, utils.ErrHostNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetHost)
@@ -1425,7 +1425,7 @@ func TestArchiveHost_FailNotFound(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().ArchiveHost("foobar").Return(utils.AerrHostNotFound)
+	as.EXPECT().ArchiveHost("foobar").Return(utils.ErrHostNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.ArchiveHost)

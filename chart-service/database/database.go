@@ -24,7 +24,6 @@ import (
 
 	"github.com/ercole-io/ercole/v2/chart-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
-	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -35,12 +34,12 @@ type MongoDatabaseInterface interface {
 	Init()
 
 	// GetTechnologyCount return the number of occurence per technology
-	GetTechnologyCount(location string, environment string, olderThan time.Time) (map[string]float64, utils.AdvancedErrorInterface)
+	GetTechnologyCount(location string, environment string, olderThan time.Time) (map[string]float64, error)
 
 	// GetOracleDatabaseChartByVersion return the chart data about oracle database version
-	GetOracleDatabaseChartByVersion(location string, environment string, olderThan time.Time) ([]dto.ChartBubble, utils.AdvancedErrorInterface)
+	GetOracleDatabaseChartByVersion(location string, environment string, olderThan time.Time) ([]dto.ChartBubble, error)
 	// GetOracleDatabaseChartByWork return the chart data about the work of all database
-	GetOracleDatabaseChartByWork(location string, environment string, olderThan time.Time) ([]dto.ChartBubble, utils.AdvancedErrorInterface)
+	GetOracleDatabaseChartByWork(location string, environment string, olderThan time.Time) ([]dto.ChartBubble, error)
 	GetOracleDbLicenseHistory() ([]dto.OracleDatabaseLicenseHistory, error)
 }
 

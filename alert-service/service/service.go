@@ -39,17 +39,17 @@ type AlertServiceInterface interface {
 	Init(ctx context.Context, wg *sync.WaitGroup)
 	// ProcessMsg processes the message msg
 	ProcessMsg(msg hub.Message)
-	ThrowNewAlert(alert model.Alert) utils.AdvancedErrorInterface
+	ThrowNewAlert(alert model.Alert) error
 	// ThrowNewDatabaseAlert create and insert in the database a new NEW_DATABASE alert
-	ThrowNewDatabaseAlert(dbname string, hostname string) utils.AdvancedErrorInterface
+	ThrowNewDatabaseAlert(dbname string, hostname string) error
 	// ThrowNewServerAlert create and insert in the database a new NEW_SERVER alert
-	ThrowNewServerAlert(hostname string) utils.AdvancedErrorInterface
+	ThrowNewServerAlert(hostname string) error
 	// ThrowNewEnterpriseLicenseAlert create and insert in the database a new NEW_DATABASE alert
-	ThrowNewEnterpriseLicenseAlert(hostname string) utils.AdvancedErrorInterface
+	ThrowNewEnterpriseLicenseAlert(hostname string) error
 	// ThrowActivatedFeaturesAlert create and insert in the database a new NEW_OPTION alert
-	ThrowActivatedFeaturesAlert(dbname string, hostname string, activatedFeatures []string) utils.AdvancedErrorInterface
+	ThrowActivatedFeaturesAlert(dbname string, hostname string, activatedFeatures []string) error
 	// ThrowNoDataAlert create and insert in the database a new NO_DATA alert
-	ThrowNoDataAlert(hostname string, freshnessThreshold int) utils.AdvancedErrorInterface
+	ThrowNoDataAlert(hostname string, freshnessThreshold int) error
 }
 
 // AlertService is the concrete implementation of HostDataServiceInterface. It saves data to a MongoDB database
@@ -95,7 +95,7 @@ func (as *AlertService) Init(ctx context.Context, wg *sync.WaitGroup) {
 }
 
 // AlertInsertion inserts an alert insertion in the queue
-func (as *AlertService) AlertInsertion(alr model.Alert) utils.AdvancedErrorInterface {
+func (as *AlertService) AlertInsertion(alr model.Alert) error {
 	as.Queue.Publish(hub.Message{
 		Name: model.TopicAlertInsertion,
 		Fields: hub.Fields{
@@ -137,7 +137,7 @@ func (as *AlertService) ProcessAlertInsertion(params hub.Fields) {
 	// Send the email
 	err := as.Emailer.SendEmail(subject, message, as.Config.AlertService.Emailer.To)
 	if err != nil {
-		utils.LogErr(as.Log, err)
+		as.Log.Error(err)
 		return
 	}
 }

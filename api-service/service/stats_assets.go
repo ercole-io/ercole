@@ -18,12 +18,10 @@ package service
 
 import (
 	"time"
-
-	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // GetTotalTechnologiesComplianceStats return the total compliance of all technologies
-func (as *APIService) GetTotalTechnologiesComplianceStats(location string, environment string, olderThan time.Time) (map[string]interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) GetTotalTechnologiesComplianceStats(location string, environment string, olderThan time.Time) (map[string]interface{}, error) {
 	technologies, err := as.ListManagedTechnologies("", false, location, environment, olderThan)
 	if err != nil {
 		return nil, err

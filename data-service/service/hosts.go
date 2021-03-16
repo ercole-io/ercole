@@ -24,7 +24,7 @@ import (
 
 // UpdateHostInfo saves the hostdata
 func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
-	var aerr utils.AdvancedErrorInterface
+	var err error
 
 	hostdata.ServerVersion = hds.ServerVersion
 	hostdata.Archived = false
@@ -33,9 +33,9 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 	hostdata.ID = primitive.NewObjectIDFromTimestamp(hds.TimeNow())
 
 	if hds.Config.DataService.EnablePatching {
-		hostdata, aerr = hds.patchHostData(hostdata)
-		if aerr != nil {
-			return aerr
+		hostdata, err = hds.patchHostData(hostdata)
+		if err != nil {
+			return err
 		}
 	}
 
@@ -61,18 +61,18 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 		hds.oracleDatabasesChecks(previousHostdata, &hostdata)
 	}
 
-	_, aerr = hds.Database.ArchiveHost(hostdata.Hostname)
-	if aerr != nil {
-		return aerr
+	_, err = hds.Database.ArchiveHost(hostdata.Hostname)
+	if err != nil {
+		return err
 	}
 
 	if hds.Config.DataService.LogInsertingHostdata {
 		hds.Log.Info(utils.ToJSON(hostdata))
 	}
 
-	_, aerr = hds.Database.InsertHostData(hostdata)
-	if aerr != nil {
-		return aerr
+	_, err = hds.Database.InsertHostData(hostdata)
+	if err != nil {
+		return err
 	}
 
 	if err := hds.Database.DeleteNoDataAlertByHost(hostdata.Hostname); err != nil {
@@ -83,7 +83,7 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 }
 
 // patchHostData patch the hostdata using the pf stored in the db
-func (hds *HostDataService) patchHostData(hostdata model.HostDataBE) (model.HostDataBE, utils.AdvancedErrorInterface) {
+func (hds *HostDataService) patchHostData(hostdata model.HostDataBE) (model.HostDataBE, error) {
 	patch, err := hds.Database.FindPatchingFunction(hostdata.Hostname)
 	if err != nil {
 		return model.HostDataBE{}, err

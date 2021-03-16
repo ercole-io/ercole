@@ -21,11 +21,10 @@ import (
 
 	"github.com/ercole-io/ercole/v2/chart-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // GetChangeChart return the chart data related to changes to databases
-func (as *ChartService) GetChangeChart(from time.Time, location string, environment string, olderThan time.Time) (dto.ChangeChart, utils.AdvancedErrorInterface) {
+func (as *ChartService) GetChangeChart(from time.Time, location string, environment string, olderThan time.Time) (dto.ChangeChart, error) {
 	// get the old counts
 	oldCounts, err := as.Database.GetTechnologyCount(location, environment, from)
 	if err != nil {
@@ -62,7 +61,7 @@ func (as *ChartService) GetChangeChart(from time.Time, location string, environm
 }
 
 // GetTechnologyTypesChart return the types of techonlogies
-func (as *ChartService) GetTechnologyTypesChart(location string, environment string, olderThan time.Time) (dto.TechnologyTypesChart, utils.AdvancedErrorInterface) {
+func (as *ChartService) GetTechnologyTypesChart(location string, environment string, olderThan time.Time) (dto.TechnologyTypesChart, error) {
 	// get the counts
 	counts, err := as.Database.GetTechnologyCount(location, environment, olderThan)
 	if err != nil {

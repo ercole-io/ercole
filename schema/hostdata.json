@@ -1,0 +1,339 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "ercole-hostdata",
+    "type": "object",
+    "required": [
+        "hostname",
+        "location",
+        "environment",
+        "tags",
+        "agentVersion",
+        "schemaVersion",
+        "info",
+        "clusterMembershipStatus",
+        "features",
+        "filesystems"
+    ],
+    "properties": {
+        "hostname": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253,
+            "format": "idn-hostname"
+        },
+        "location": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+        },
+        "environment": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+            },
+            "uniqueItems": true
+        },
+        "agentVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+        },
+        "schemaVersion": {
+            "type": "integer",
+            "const": 1
+        },
+        "info": {
+            "type": "object",
+            "required": [
+                "hostname",
+                "cpuModel",
+                "cpuFrequency",
+                "cpuSockets",
+                "cpuCores",
+                "cpuThreads",
+                "threadsPerCore",
+                "coresPerSocket",
+                "hardwareAbstraction",
+                "hardwareAbstractionTechnology",
+                "kernel",
+                "kernelVersion",
+                "os",
+                "osVersion",
+                "memoryTotal",
+                "swapTotal"
+            ],
+            "properties": {
+                "hostname": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 253,
+                    "format": "idn-hostname"
+                },
+                "cpuModel": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "pattern": "^[^\n]+$"
+                },
+                "cpuFrequency": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 16
+                },
+                "cpuSockets": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "cpuCores": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "cpuThreads": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "threadsPerCore": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "coresPerSocket": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "hardwareAbstraction": {
+                    "type": "string",
+                    "enum": [
+                        "PH",
+                        "VIRT"
+                    ]
+                },
+                "hardwareAbstractionTechnology": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 32,
+                    "pattern": "^[A-Z0-9]+$"
+                },
+                "kernel": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                },
+                "kernelVersion": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64
+                },
+                "os": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64
+                },
+                "osVersion": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64
+                },
+                "memoryTotal": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "swapTotal": {
+                    "type": "number",
+                    "minimum": 0
+                }
+            }
+        },
+        "clusterMembershipStatus": {
+            "type": "object",
+            "properties": {
+                "oracleClusterware": {
+                    "type": "boolean"
+                },
+                "veritasClusterServer": {
+                    "type": "boolean"
+                },
+                "sunCluster": {
+                    "type": "boolean"
+                },
+                "hacmp": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "features": {
+            "type": "object",
+            "properties": {
+                "oracle": {
+                    "anyOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "$ref": "oracleFeature"
+                        }
+                    ]
+                },
+                "postgresql": {
+                    "anyOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "$ref": "postgresqlFeature"
+                        }
+                    ]
+                },
+                "microsoft": {
+                    "anyOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "$ref": "microsoftFeature"
+                        }
+                    ]
+                },
+                "mysql": {
+                    "anyOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "$ref": "mysqlFeature"
+                        }
+                    ]
+                }
+            }
+        },
+        "filesystems": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "filesystem",
+                    "type",
+                    "size",
+                    "usedSpace",
+                    "availableSpace",
+                    "mountedOn"
+                ],
+                "properties": {
+                    "filesystem": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "type": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "size": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "$comment": "size in bytes"
+                    },
+                    "usedSpace": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "$comment": "used in bytes"
+                    },
+                    "availableSpace": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "$comment": "availableSpace in bytes"
+                    },
+                    "mountedOn": {
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            }
+        },
+        "clusters": {
+            "anyOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "fetchEndpoint",
+                            "type",
+                            "name",
+                            "cpu",
+                            "sockets",
+                            "vms"
+                        ],
+                        "properties": {
+                            "fetchEndpoint": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 64
+                            },
+                            "type": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 16
+                            },
+                            "name": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 128
+                            },
+                            "cpu": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "sockets": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "vms": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "required": [
+                                        "name",
+                                        "hostname",
+                                        "cappedCPU",
+                                        "virtualizationNode"
+                                    ],
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 128
+                                        },
+                                        "hostname": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 253,
+                                            "format": "idn-hostname"
+                                        },
+                                        "cappedCPU": {
+                                            "type": "boolean"
+                                        },
+                                        "virtualizationNode": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 253,
+                                            "format": "idn-hostname"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

@@ -18,31 +18,29 @@ package service
 
 import (
 	"time"
-
-	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata
-func (as *APIService) GetTotalOracleExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
+func (as *APIService) GetTotalOracleExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float64, error) {
 	return as.Database.GetTotalOracleExadataMemorySizeStats(location, environment, olderThan)
 }
 
 // GetTotalOracleExadataCPUStats return the total cpu of exadata
-func (as *APIService) GetTotalOracleExadataCPUStats(location string, environment string, olderThan time.Time) (interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) GetTotalOracleExadataCPUStats(location string, environment string, olderThan time.Time) (interface{}, error) {
 	return as.Database.GetTotalOracleExadataCPUStats(location, environment, olderThan)
 }
 
 // GetAverageOracleExadataStorageUsageStats return the average usage of cell disks of exadata
-func (as *APIService) GetAverageOracleExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float64, utils.AdvancedErrorInterface) {
+func (as *APIService) GetAverageOracleExadataStorageUsageStats(location string, environment string, olderThan time.Time) (float64, error) {
 	return as.Database.GetAverageOracleExadataStorageUsageStats(location, environment, olderThan)
 }
 
 // GetOracleExadataStorageErrorCountStatusStats return a array containing the number of cell disks of exadata per error count status
-func (as *APIService) GetOracleExadataStorageErrorCountStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) GetOracleExadataStorageErrorCountStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, error) {
 	return as.Database.GetOracleExadataStorageErrorCountStatusStats(location, environment, olderThan)
 }
 
 // GetOracleExadataPatchStatusStats return a array containing the number of exadata per patch status
-func (as *APIService) GetOracleExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, utils.AdvancedErrorInterface) {
+func (as *APIService) GetOracleExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, error) {
 	return as.Database.GetOracleExadataPatchStatusStats(location, environment, windowTime, olderThan)
 }
