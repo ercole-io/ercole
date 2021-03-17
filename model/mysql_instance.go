@@ -31,6 +31,14 @@ type MySQLInstance struct {
 	LogBufferSize      float64 `json:"logBufferSize" bson:"logBufferSize"`   // in MB
 	SortBufferSize     float64 `json:"sortBufferSize" bson:"sortBufferSize"` // in MB
 	ReadOnly           bool    `json:"readOnly" bson:"readOnly"`
+	LogBin             bool    `json:"logBin" bson:"logBin"`
+	HighAvailability   bool    `json:"highAvailability" bson:"highAvailability"`
+
+	UUID       string   `json:"uuid" bson:"uuid"`
+	IsMaster   bool     `json:"isMaster" bson:"isMaster"`
+	SlaveUUIDs []string `json:"slaveUUIDs" bson:"slaveUUIDs"`
+	IsSlave    bool     `json:"isSlave" bson:"isSlave"`
+	MasterUUID *string  `json:"masterUUID" bson:"masterUUID"`
 
 	Databases       []MySQLDatabase       `json:"databases" bson:"databases"`
 	TableSchemas    []MySQLTableSchema    `json:"tableSchemas" bson:"tableSchemas"`
