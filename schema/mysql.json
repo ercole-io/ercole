@@ -90,6 +90,47 @@
                     "readOnly": {
                         "type": "boolean"
                     },
+                    "logBin": {
+                        "type": "boolean"
+                    },
+                    "highAvailability": {
+                        "type": "boolean"
+                    },
+                    "uuid": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "isMaster": {
+                        "type": "boolean"
+                    },
+                    "slaveUUIDs": {
+                        "anyOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "minLength": 1
+                                }
+                            }
+                        ]
+                    },
+                    "isSlave": {
+                        "type": "boolean"
+                    },
+                    "masterUUID": {
+                        "anyOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "type": "string",
+                                "minLength": 1
+                            }
+                        ]
+                    },
                     "databases": {
                         "type": "array",
                         "items": {
