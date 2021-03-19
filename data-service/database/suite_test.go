@@ -82,8 +82,15 @@ func TestMongodbSuite(t *testing.T) {
 }
 
 func (db *MongodbSuite) TearDownSuite() {
-	db.db.Client.Database(db.db.Config.Mongodb.DBName).Drop(context.TODO())
-	db.db.Client.Disconnect(context.TODO())
+	err := db.db.Client.Database(db.db.Config.Mongodb.DBName).Drop(context.TODO())
+	if err != nil {
+		panic(err)
+	}
+
+	err = db.db.Client.Disconnect(context.TODO())
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (db *MongodbSuite) InsertHostData(hostData model.RawObject) {

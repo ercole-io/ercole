@@ -17,7 +17,6 @@ package database
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"testing"
 	"time"
@@ -33,7 +32,7 @@ import (
 func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 	defer m.db.Client.Database(m.dbname).Collection("oracle_database_licenses_history").DeleteMany(context.TODO(), bson.M{})
 
-	dateDay1 := utils.PDT("2020-12-05T14:02:03Z")
+	expectedDateDay1 := utils.PDT("2020-12-05T00:00:00Z")
 	m.T().Run("First insert, success", func(t *testing.T) {
 		licenses := []dto.OracleDatabaseLicenseUsage{
 			{
@@ -91,12 +90,12 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 		}
 
 		expected := []map[string]interface{}{
-			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": dateDay1}}, "licenseTypeID": "L47247"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": dateDay1}}, "licenseTypeID": "A90611"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": dateDay1}}, "licenseTypeID": "A90620"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": expectedDateDay1}}, "licenseTypeID": "L47247"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": expectedDateDay1}}, "licenseTypeID": "A90611"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay1}}, "licenseTypeID": "A90620"},
 		}
-		assert.Equal(m.T(), expected, actual)
 
+		assert.Equal(m.T(), expected, actual)
 	})
 
 	m.T().Run("Second insert, next day, success", func(t *testing.T) {
@@ -157,14 +156,65 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 			log.Fatal(err)
 		}
 
-		dateDay2 := utils.PDT("2020-12-06T15:02:03Z")
+		expectedDateDay2 := utils.PDT("2020-12-06T00:00:00Z")
 
 		expected := []map[string]interface{}{
-			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": dateDay1}, map[string]interface{}{"consumed": 0.5, "covered": 5.0, "date": dateDay2}}, "licenseTypeID": "L47247"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": dateDay1}, map[string]interface{}{"consumed": 4.5, "covered": 2.5, "date": dateDay2}}, "licenseTypeID": "A90611"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": dateDay1}}, "licenseTypeID": "A90620"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": dateDay2}}, "licenseTypeID": "PID001"}}
-		fmt.Printf("%#v", actual)
+			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": expectedDateDay1}, map[string]interface{}{"consumed": 0.5, "covered": 5.0, "date": expectedDateDay2}}, "licenseTypeID": "L47247"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": expectedDateDay1}, map[string]interface{}{"consumed": 4.5, "covered": 2.5, "date": expectedDateDay2}}, "licenseTypeID": "A90611"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay1}}, "licenseTypeID": "A90620"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay2}}, "licenseTypeID": "PID001"}}
+
+		assert.Equal(m.T(), expected, actual)
+	})
+
+	m.T().Run("Third insert, same day, success", func(t *testing.T) {
+		m.db.TimeNow = func() time.Time { return utils.P("2020-12-06T15:02:03Z") }
+
+		licenses := []dto.OracleDatabaseLicenseUsage{
+			{
+				LicenseTypeID:   "A90611",
+				ItemDescription: "Oracle Database Enterprise Edition",
+				Metric:          "Processor Perpetual",
+				Consumed:        42.52,
+				Covered:         2.5,
+				Compliance:      0,
+				Unlimited:       false,
+			},
+		}
+		err := m.db.HistoricizeOracleDbsLicenses(licenses)
+		require.NoError(m.T(), err)
+
+		cur, err := m.db.Client.Database(m.db.Config.Mongodb.DBName).
+			Collection("oracle_database_licenses_history").
+			Find(context.TODO(), bson.D{})
+		require.NoError(m.T(), err)
+
+		ctx := context.TODO()
+		defer cur.Close(ctx)
+
+		var actual []map[string]interface{}
+		for cur.Next(ctx) {
+			var result map[string]interface{}
+			err := cur.Decode(&result)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			delete(result, "_id")
+			actual = append(actual, result)
+		}
+		if err := cur.Err(); err != nil {
+			log.Fatal(err)
+		}
+
+		expectedDateDay2 := utils.PDT("2020-12-06T00:00:00Z")
+
+		expected := []map[string]interface{}{
+			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": expectedDateDay1}, map[string]interface{}{"consumed": 0.5, "covered": 5.0, "date": expectedDateDay2}}, "licenseTypeID": "L47247"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": expectedDateDay1}, map[string]interface{}{"consumed": 42.52, "covered": 2.5, "date": expectedDateDay2}}, "licenseTypeID": "A90611"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay1}}, "licenseTypeID": "A90620"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay2}}, "licenseTypeID": "PID001"}}
+
 		assert.Equal(m.T(), expected, actual)
 	})
 }
