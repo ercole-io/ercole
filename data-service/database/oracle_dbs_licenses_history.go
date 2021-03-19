@@ -18,6 +18,7 @@ package database
 
 import (
 	"context"
+	"time"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -27,25 +28,76 @@ import (
 
 func (md *MongoDatabase) HistoricizeOracleDbsLicenses(licenses []dto.OracleDatabaseLicenseUsage) error {
 	now := md.TimeNow()
-
-	updateOptions := options.Update()
-	updateOptions.SetUpsert(true)
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 
 	for _, license := range licenses {
-		filter := bson.D{{"licenseTypeID", license.LicenseTypeID}}
-		update := bson.D{
-			{"$push", bson.D{{
-				"history", bson.D{{"date", now}, {"consumed", license.Consumed}, {"covered", license.Covered}},
-			}}}}
-
-		_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("oracle_database_licenses_history").
-			UpdateMany(context.TODO(),
-				filter,
-				update,
-				updateOptions)
+		done, err := md.updateOracleDbsLicenseHistory(license, today)
 		if err != nil {
-			return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+			return err
 		}
+
+		if !done {
+			err := md.insertOracleDbsLicenseHistory(license, today)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (md *MongoDatabase) updateOracleDbsLicenseHistory(license dto.OracleDatabaseLicenseUsage, today time.Time) (done bool, err error) {
+	filter := bson.D{
+		{Key: "licenseTypeID", Value: license.LicenseTypeID},
+		{Key: "history", Value: bson.D{{Key: "$elemMatch", Value: bson.D{{Key: "date", Value: today}}}}}}
+	update := bson.D{
+		{
+			Key: "$set",
+			Value: bson.D{
+				{Key: "history.$.consumed", Value: license.Consumed},
+				{Key: "history.$.covered", Value: license.Covered},
+			},
+		}}
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("oracle_database_licenses_history").
+		UpdateOne(context.TODO(),
+			filter,
+			update)
+	if err != nil {
+		return false, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+	}
+
+	if res.MatchedCount < 1 {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func (md *MongoDatabase) insertOracleDbsLicenseHistory(license dto.OracleDatabaseLicenseUsage, today time.Time) error {
+	filter := bson.D{{Key: "licenseTypeID", Value: license.LicenseTypeID}}
+	updateOptions := options.Update()
+	updateOptions.SetUpsert(true)
+	update := bson.D{
+		{
+			Key: "$push",
+			Value: bson.D{
+				{
+					Key: "history",
+					Value: bson.D{
+						{Key: "date", Value: today},
+						{Key: "consumed", Value: license.Consumed},
+						{Key: "covered", Value: license.Covered}},
+				}}}}
+
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("oracle_database_licenses_history").
+		UpdateMany(context.TODO(),
+			filter,
+			update,
+			updateOptions)
+
+	if (res.ModifiedCount < 1 && res.UpsertedCount < 1) || err != nil {
+		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
 	}
 
 	return nil
