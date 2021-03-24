@@ -16,15 +16,18 @@
 package dto
 
 type Database struct {
-	Name         string  `json:"name"`
-	Type         string  `json:"type"`
-	Version      string  `json:"version"`
-	Hostname     string  `json:"hostname"`
-	Environment  string  `json:"environment"`
-	Charset      string  `json:"charset"`
-	Memory       float64 `json:"memory"`       // in GB
-	DatafileSize float64 `json:"datafileSize"` // in GB
-	SegmentsSize float64 `json:"segmentSize"`  // in GB
+	Name             string  `json:"name"`
+	Type             string  `json:"type"`
+	Version          string  `json:"version"`
+	Hostname         string  `json:"hostname"`
+	Environment      string  `json:"environment"`
+	Charset          string  `json:"charset"`
+	Memory           float64 `json:"memory"`       // in GB
+	DatafileSize     float64 `json:"datafileSize"` // in GB
+	SegmentsSize     float64 `json:"segmentSize"`  // in GB
+	Archivelog       bool    `json:"archivelog"`
+	HighAvailability bool    `json:"highAvailability"`
+	DisasterRecovery bool    `json:"disasterRecovery"`
 }
 
 type DatabasesStatistics struct {
