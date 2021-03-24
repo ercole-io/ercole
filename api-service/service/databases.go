@@ -56,15 +56,18 @@ func (as *APIService) getOracleDatabases(filter dto.GlobalFilter) ([]dto.Databas
 	dbs := make([]dto.Database, 0)
 	for _, oracleDb := range oracleDbs {
 		db := dto.Database{
-			Name:         oracleDb["name"].(string),
-			Type:         model.TechnologyOracleDatabase,
-			Version:      oracleDb["version"].(string),
-			Hostname:     oracleDb["hostname"].(string),
-			Environment:  oracleDb["environment"].(string),
-			Charset:      oracleDb["charset"].(string),
-			Memory:       oracleDb["memory"].(float64),
-			DatafileSize: oracleDb["datafileSize"].(float64),
-			SegmentsSize: oracleDb["segmentsSize"].(float64),
+			Name:             oracleDb["name"].(string),
+			Type:             model.TechnologyOracleDatabase,
+			Version:          oracleDb["version"].(string),
+			Hostname:         oracleDb["hostname"].(string),
+			Environment:      oracleDb["environment"].(string),
+			Charset:          oracleDb["charset"].(string),
+			Memory:           oracleDb["memory"].(float64),
+			DatafileSize:     oracleDb["datafileSize"].(float64),
+			SegmentsSize:     oracleDb["segmentsSize"].(float64),
+			Archivelog:       oracleDb["archivelog"].(bool),
+			HighAvailability: oracleDb["ha"].(bool),
+			DisasterRecovery: oracleDb["dataguard"].(bool),
 		}
 
 		dbs = append(dbs, db)
@@ -88,15 +91,18 @@ func (as *APIService) getMySQLDatabases(filter dto.GlobalFilter) ([]dto.Database
 		}
 
 		db := dto.Database{
-			Name:         instance.Name,
-			Type:         model.TechnologyOracleMySQL,
-			Version:      instance.Version,
-			Hostname:     instance.Hostname,
-			Environment:  instance.Environment,
-			Charset:      instance.CharsetServer,
-			Memory:       instance.BufferPoolSize / 1024,
-			DatafileSize: 0,
-			SegmentsSize: segmentsSize / 1024,
+			Name:             instance.Name,
+			Type:             model.TechnologyOracleMySQL,
+			Version:          instance.Version,
+			Hostname:         instance.Hostname,
+			Environment:      instance.Environment,
+			Charset:          instance.CharsetServer,
+			Memory:           instance.BufferPoolSize / 1024,
+			DatafileSize:     0,
+			SegmentsSize:     segmentsSize / 1024,
+			Archivelog:       instance.LogBin,
+			HighAvailability: instance.HighAvailability,
+			DisasterRecovery: instance.IsMaster || instance.IsSlave,
 		}
 
 		dbs = append(dbs, db)
