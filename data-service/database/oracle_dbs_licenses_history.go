@@ -64,7 +64,7 @@ func (md *MongoDatabase) updateOracleDbsLicenseHistory(license dto.OracleDatabas
 			filter,
 			update)
 	if err != nil {
-		return false, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return false, utils.NewError(err, "DB ERROR")
 	}
 
 	if res.MatchedCount < 1 {
@@ -97,7 +97,7 @@ func (md *MongoDatabase) insertOracleDbsLicenseHistory(license dto.OracleDatabas
 			updateOptions)
 
 	if (res.ModifiedCount < 1 && res.UpsertedCount < 1) || err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 
 	return nil

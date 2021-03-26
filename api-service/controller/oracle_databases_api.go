@@ -122,7 +122,7 @@ func (ctrl *APIController) SearchOracleDatabaseAddmsXLSX(w http.ResponseWriter, 
 	//Open the sheet
 	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_addm.xlsx")
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewError(err, "READ_TEMPLATE"))
 		return
 	}
 
@@ -242,7 +242,7 @@ func (ctrl *APIController) SearchOracleDatabaseSegmentAdvisorsXLSX(w http.Respon
 	//Open the sheet
 	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_segment_advisor.xlsx")
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewError(err, "READ_TEMPLATE"))
 		return
 	}
 
@@ -310,7 +310,7 @@ func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsJSON(w http.Response
 	}
 	status = r.URL.Query().Get("status")
 	if status != "" && status != "OK" && status != "KO" {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid status"), "Invalid  status"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(errors.New("invalid status"), "Invalid  status"))
 		return
 	}
 
@@ -372,7 +372,7 @@ func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsXLSX(w http.Response
 	}
 	status = r.URL.Query().Get("status")
 	if status != "" && status != "OK" && status != "KO" {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid status"), "Invalid  status"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(errors.New("invalid status"), "Invalid  status"))
 		return
 	}
 
@@ -386,7 +386,7 @@ func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsXLSX(w http.Response
 	//Open the sheet
 	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_patch_advisor.xlsx")
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewError(err, "READ_TEMPLATE"))
 		return
 	}
 

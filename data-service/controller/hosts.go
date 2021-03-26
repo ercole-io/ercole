@@ -32,7 +32,7 @@ func (ctrl *DataController) InsertHostData(w http.ResponseWriter, r *http.Reques
 
 	raw, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewError(err, http.StatusText(http.StatusBadRequest)))
 		return
 	}
 	defer r.Body.Close()

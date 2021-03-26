@@ -91,14 +91,14 @@ func (md *MongoDatabase) FindHostData(id primitive.ObjectID) (model.HostDataBE, 
 		"_id": id,
 	})
 	if res.Err() != nil {
-		return model.HostDataBE{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+		return model.HostDataBE{}, utils.NewError(res.Err(), "DB ERROR")
 	}
 
 	//Decode the data
 
 	var out model.HostDataBE
 	if err := res.Decode(&out); err != nil {
-		return model.HostDataBE{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return model.HostDataBE{}, utils.NewError(err, "DB ERROR")
 	}
 
 	//Return it!
@@ -125,7 +125,7 @@ func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time
 		),
 	)
 	if err != nil {
-		return model.HostDataBE{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return model.HostDataBE{}, utils.NewError(err, "DB ERROR")
 	}
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
@@ -133,7 +133,7 @@ func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time
 	}
 
 	if err := cur.Decode(&out); err != nil {
-		return model.HostDataBE{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return model.HostDataBE{}, utils.NewError(err, "DB ERROR")
 	}
 
 	return out, nil
@@ -143,7 +143,7 @@ func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time
 func (md *MongoDatabase) InsertAlert(alert model.Alert) (*mongo.InsertOneResult, error) {
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").InsertOne(context.TODO(), alert)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 	return res, nil
 }
@@ -159,7 +159,7 @@ func (md *MongoDatabase) ExistNoDataAlertByHost(hostname string) (bool, error) {
 		Limit: utils.Intptr(1),
 	})
 	if err != nil {
-		return false, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return false, utils.NewError(err, "DB ERROR")
 	}
 
 	//Return true if the count > 0

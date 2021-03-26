@@ -44,14 +44,14 @@ func (md *MongoDatabase) GetOracleDatabaseChartByVersion(location string, enviro
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	//Decode the documents
 	for cur.Next(context.TODO()) {
 		var item dto.ChartBubble
 		if err := cur.Decode(&item); err != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+			return nil, utils.NewError(err, "Decode ERROR")
 		}
 		out = append(out, item)
 	}
@@ -79,14 +79,14 @@ func (md *MongoDatabase) GetOracleDatabaseChartByWork(location string, environme
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	//Decode the documents
 	for cur.Next(context.TODO()) {
 		var item dto.ChartBubble
 		if err := cur.Decode(&item); err != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+			return nil, utils.NewError(err, "Decode ERROR")
 		}
 		out = append(out, item)
 	}
@@ -98,14 +98,14 @@ func (md *MongoDatabase) GetOracleDbLicenseHistory() ([]dto.OracleDatabaseLicens
 		Collection("oracle_database_licenses_history").
 		Find(context.TODO(), bson.D{})
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	var items []dto.OracleDatabaseLicenseHistory
 	for cur.Next(context.TODO()) {
 		var item dto.OracleDatabaseLicenseHistory
 		if err := cur.Decode(&item); err != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+			return nil, utils.NewError(err, "Decode ERROR")
 		}
 		items = append(items, item)
 	}

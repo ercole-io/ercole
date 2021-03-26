@@ -41,7 +41,7 @@ type AssociatedLicenseTypeInOracleDbAgreementRequest struct {
 
 func (req AssociatedLicenseTypeInOracleDbAgreementRequest) Check() error {
 	if req.Restricted && req.CatchAll {
-		return utils.NewAdvancedErrorPtr(errors.New("If it's restricted it can't be catchAll"), "BAD_REQUEST")
+		return utils.NewError(errors.New("If it's restricted it can't be catchAll"), "BAD_REQUEST")
 	}
 
 	return nil

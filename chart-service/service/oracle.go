@@ -68,7 +68,7 @@ func (as *ChartService) GetOracleDatabaseChart(metric string, location string, e
 			},
 		}, nil
 	default:
-		return dto.Chart{}, utils.NewAdvancedErrorPtr(errors.New("Unsupported metric"), "UNSUPPORTED_METRIC")
+		return dto.Chart{}, utils.NewError(errors.New("Unsupported metric"), "UNSUPPORTED_METRIC")
 	}
 }
 
@@ -103,14 +103,14 @@ func (as *ChartService) getOracleDatabaseLicenseTypes() (map[string]model.Oracle
 		"/settings/oracle/database/license-types").String()
 	resp, err := http.Get(url)
 	if err != nil || resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return nil, utils.NewAdvancedErrorPtr(err, "Can't retrieve from databases")
+		return nil, utils.NewError(err, "Can't retrieve from databases")
 	}
 
 	decoder := json.NewDecoder(resp.Body)
 	decoder.DisallowUnknownFields()
 	var licenseTypes []model.OracleDatabaseLicenseType
 	if err := decoder.Decode(&licenseTypes); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "Can't decode response body")
+		return nil, utils.NewError(err, "Can't decode response body")
 	}
 
 	licenseTypesMap := make(map[string]model.OracleDatabaseLicenseType)

@@ -42,13 +42,13 @@ func (md *MongoDatabase) SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.My
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	var out []dto.MySQLInstance
 	err = cur.All(context.TODO(), &out)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		return nil, utils.NewError(err, "Decode ERROR")
 	}
 
 	return out, nil
