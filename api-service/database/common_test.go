@@ -31,9 +31,7 @@ func TestMongodbSuite(t *testing.T) {
 		t.Skip("Skip test for mongodb database(api-service)")
 	}
 
-	mongodbHandlerSuiteTest := &MongodbSuite{}
-
-	suite.Run(t, mongodbHandlerSuiteTest)
+	suite.Run(t, new(MongodbSuite))
 }
 
 func (m *MongodbSuite) TestFilterByLocationAndEnvironmentSteps() {
