@@ -97,7 +97,7 @@ func WriteJSONResponse(w http.ResponseWriter, statusCode int, resp interface{}) 
 func WriteExtJSONResponse(log *logrus.Logger, w http.ResponseWriter, statusCode int, resp interface{}) {
 	raw, err := bson.MarshalExtJSON(resp, true, false)
 	if err != nil {
-		WriteAndLogError(log, w, http.StatusInternalServerError, NewAdvancedErrorPtr(err, "MARSHAL_EXT_JSON"))
+		WriteAndLogError(log, w, http.StatusInternalServerError, NewError(err, "MARSHAL_EXT_JSON"))
 	}
 
 	w.Header().Set("Content-Type", "application/json")

@@ -48,7 +48,7 @@ func (this *SMTPEmailer) SendEmail(subject string, text string, to []string) err
 
 	err := d.DialAndSend(m)
 	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "EMAILER")
+		return utils.NewError(err, "EMAILER")
 	} else {
 		return nil
 	}

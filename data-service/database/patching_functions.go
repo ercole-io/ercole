@@ -31,7 +31,7 @@ func (md *MongoDatabase) FindPatchingFunction(hostname string) (model.PatchingFu
 		"hostname": hostname,
 	})
 	if err != nil {
-		return model.PatchingFunction{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return model.PatchingFunction{}, utils.NewError(err, "DB ERROR")
 	}
 
 	hasNext := cur.Next(context.TODO())
@@ -40,7 +40,7 @@ func (md *MongoDatabase) FindPatchingFunction(hostname string) (model.PatchingFu
 	}
 
 	if err := cur.Decode(&out); err != nil {
-		return model.PatchingFunction{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return model.PatchingFunction{}, utils.NewError(err, "DB ERROR")
 	}
 
 	return out, nil

@@ -84,14 +84,14 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 
 	//Parse the request
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		utils.WriteAndLogError(ap.Log, w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		utils.WriteAndLogError(ap.Log, w, http.StatusBadRequest, utils.NewError(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 
 	//Check if the credentials are valid
 	info, _ := ap.GetUserInfoIfCredentialsAreCorrect(request.Username, request.Password)
 	if info == nil {
-		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewAdvancedErrorPtr(errors.New("Failed to login, invalid credentials"), http.StatusText(http.StatusUnauthorized)))
+		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("Failed to login, invalid credentials"), http.StatusText(http.StatusUnauthorized)))
 		return
 	}
 
@@ -124,7 +124,7 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 		//Get the token
 		tokenStr := r.Header.Get("Authorization")
 		if tokenStr == "" {
-			utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewAdvancedErrorPtr(errors.New("You don't have setted the authorization header"), http.StatusText(http.StatusUnauthorized)))
+			utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("You don't have setted the authorization header"), http.StatusText(http.StatusUnauthorized)))
 			return
 		}
 
@@ -133,12 +133,12 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 			tokenStr = tokenStr[len("Basic "):]
 			val, err := base64.StdEncoding.DecodeString(tokenStr)
 			if err != nil {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnauthorized)))
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(err, http.StatusText(http.StatusUnauthorized)))
 				return
 			}
 
 			if !bytes.ContainsAny(val, ":") {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewAdvancedErrorPtr(errors.New("A : is missing in the auth header"), http.StatusText(http.StatusUnauthorized)))
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("A : is missing in the auth header"), http.StatusText(http.StatusUnauthorized)))
 				return
 			}
 
@@ -146,7 +146,7 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 			password := val[bytes.IndexRune(val, ':')+1:]
 
 			if subtle.ConstantTimeCompare(user, []byte(ap.Config.Username)) == 0 || subtle.ConstantTimeCompare(password, []byte(ap.Config.Password)) == 0 {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewAdvancedErrorPtr(errors.New("Invalid credentials"), http.StatusText(http.StatusUnauthorized)))
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("Invalid credentials"), http.StatusText(http.StatusUnauthorized)))
 				return
 			}
 
@@ -156,7 +156,7 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 			//Parse the token
 			parsed, err := jwt.ParseSigned(tokenStr)
 			if err != nil {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnauthorized)))
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(err, http.StatusText(http.StatusUnauthorized)))
 				return
 			}
 
@@ -164,7 +164,7 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 			claim := jwt.Claims{}
 			err = parsed.Claims(ap.publicKey, &claim)
 			if err != nil {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnauthorized)))
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(err, http.StatusText(http.StatusUnauthorized)))
 				return
 			}
 
@@ -175,21 +175,21 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 					claim.Expiry.Time().String(), timeNow.String())
 
 				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized,
-					utils.NewAdvancedErrorPtr(errors.New(message), http.StatusText(http.StatusUnauthorized)))
+					utils.NewError(errors.New(message), http.StatusText(http.StatusUnauthorized)))
 
 				return
 			}
 
 			//Check issuedat field
 			if claim.IssuedAt.Time().After(ap.TimeNow()) {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewAdvancedErrorPtr(errors.New("Futuristic tokens (from future) are invalid"), http.StatusText(http.StatusUnauthorized)))
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("Futuristic tokens (from future) are invalid"), http.StatusText(http.StatusUnauthorized)))
 				return
 			}
 
 			//Serve the request
 			next.ServeHTTP(w, r)
 		} else {
-			utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewAdvancedErrorPtr(errors.New("The authorization header value doesn't begin with Basic or Bearer"), http.StatusText(http.StatusUnauthorized)))
+			utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("The authorization header value doesn't begin with Basic or Bearer"), http.StatusText(http.StatusUnauthorized)))
 			return
 		}
 	})

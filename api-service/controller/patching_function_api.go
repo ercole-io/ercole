@@ -50,11 +50,11 @@ func (ctrl *APIController) GetPatchingFunction(w http.ResponseWriter, r *http.Re
 // SetPatchingFunction set the patching function of a host specified in the hostname path variable to the content of the request body
 func (ctrl *APIController) SetPatchingFunction(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is in read-only mode"), "FORBIDDEN_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 	if !ctrl.Config.APIService.EnableInsertingCustomPatchingFunction {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the configuration property EnableInsertingCustomPatchingFunction is false"), "FORBIDDEN_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the configuration property EnableInsertingCustomPatchingFunction is false"), "FORBIDDEN_REQUEST"))
 		return
 	}
 
@@ -63,7 +63,7 @@ func (ctrl *APIController) SetPatchingFunction(w http.ResponseWriter, r *http.Re
 	var pf model.PatchingFunction
 	defer r.Body.Close()
 	if err := json.NewDecoder(r.Body).Decode(&pf); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 	//set the value
@@ -83,11 +83,11 @@ func (ctrl *APIController) SetPatchingFunction(w http.ResponseWriter, r *http.Re
 // DeletePatchingFunction delete the patching function of a host specified in the hostname path variable
 func (ctrl *APIController) DeletePatchingFunction(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is in read-only mode"), "FORBIDDEN_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 	if !ctrl.Config.APIService.EnableInsertingCustomPatchingFunction {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the configuration property EnableInsertingCustomPatchingFunction is false"), "FORBIDDEN_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the configuration property EnableInsertingCustomPatchingFunction is false"), "FORBIDDEN_REQUEST"))
 		return
 	}
 
@@ -111,7 +111,7 @@ func (ctrl *APIController) DeletePatchingFunction(w http.ResponseWriter, r *http
 // AddTagToOracleDatabase add a tag to the database if it hasn't the tag
 func (ctrl *APIController) AddTagToOracleDatabase(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 
@@ -121,7 +121,7 @@ func (ctrl *APIController) AddTagToOracleDatabase(w http.ResponseWriter, r *http
 
 	raw, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, "BAD_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewError(err, "BAD_REQUEST"))
 		return
 	}
 
@@ -139,7 +139,7 @@ func (ctrl *APIController) AddTagToOracleDatabase(w http.ResponseWriter, r *http
 // DeleteTagOfOracleDatabase remove a certain tag from a database if it has the tag
 func (ctrl *APIController) DeleteTagOfOracleDatabase(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 
@@ -162,7 +162,7 @@ func (ctrl *APIController) DeleteTagOfOracleDatabase(w http.ResponseWriter, r *h
 // SetOracleDatabaseLicenseModifier set the license modifier of specified license/db/host in the request to the value in the body
 func (ctrl *APIController) SetOracleDatabaseLicenseModifier(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 
@@ -173,13 +173,13 @@ func (ctrl *APIController) SetOracleDatabaseLicenseModifier(w http.ResponseWrite
 
 	raw, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, "BAD_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewError(err, "BAD_REQUEST"))
 		return
 	}
 
 	newValue, err := strconv.Atoi(string(raw))
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, "BAD_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(err, "BAD_REQUEST"))
 		return
 	}
 
@@ -197,7 +197,7 @@ func (ctrl *APIController) SetOracleDatabaseLicenseModifier(w http.ResponseWrite
 // DeleteOracleDatabaseLicenseModifier delete the license modifier of specified license/db/host in the request
 func (ctrl *APIController) DeleteOracleDatabaseLicenseModifier(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 

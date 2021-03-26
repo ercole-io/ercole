@@ -107,7 +107,7 @@ func Str2bool(in string, defaultValue bool) (bool, error) {
 	if in == "" {
 		return defaultValue, nil
 	} else if val, err := strconv.ParseBool(in); err != nil {
-		return false, NewAdvancedErrorPtr(err, "Unable to parse string to bool")
+		return false, NewError(err, "Unable to parse string to bool")
 	} else {
 		return val, nil
 	}
@@ -118,7 +118,7 @@ func Str2int(in string, defaultValue int) (int, error) {
 	if in == "" {
 		return defaultValue, nil
 	} else if val, err := strconv.ParseInt(in, 10, 32); err != nil {
-		return -1, NewAdvancedErrorPtr(err, "Unable to parse string to int")
+		return -1, NewError(err, "Unable to parse string to int")
 	} else {
 		return int(val), nil
 	}
@@ -129,7 +129,7 @@ func Str2float64(in string, defaultValue float64) (float64, error) {
 	if in == "" {
 		return defaultValue, nil
 	} else if val, err := strconv.ParseFloat(in, 32); err != nil {
-		return -1, NewAdvancedErrorPtr(err, "Unable to parse string to float")
+		return -1, NewError(err, "Unable to parse string to float")
 	} else {
 		return float64(val), nil
 	}
@@ -140,7 +140,7 @@ func Str2time(in string, defaultValue time.Time) (time.Time, error) {
 	if in == "" {
 		return defaultValue, nil
 	} else if val, err := time.Parse(time.RFC3339, in); err != nil {
-		return time.Time{}, NewAdvancedErrorPtr(err, "Unable to parse string to time.Time")
+		return time.Time{}, NewError(err, "Unable to parse string to time.Time")
 	} else {
 		return val, nil
 	}
@@ -220,37 +220,37 @@ func PatchHostdata(pf model.PatchingFunction, hostdata model.HostDataBE) (model.
 	var tempHD map[string]interface{}
 	tempRaw, err := json.Marshal(hostdata)
 	if err != nil {
-		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewError(err, "DATA_PATCHING")
 	}
 	err = json.Unmarshal(tempRaw, &tempHD)
 	if err != nil {
-		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewError(err, "DATA_PATCHING")
 	}
 
 	//Set the global variables
 	err = vm.Set("hostdata", tempHD)
 	if err != nil {
-		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewError(err, "DATA_PATCHING")
 	}
 	err = vm.Set("vars", pf.Vars)
 	if err != nil {
-		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewError(err, "DATA_PATCHING")
 	}
 
 	//Run the code
 	_, err = vm.Run(pf.Code)
 	if err != nil {
-		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewError(err, "DATA_PATCHING")
 	}
 
 	//Convert tempHD to hostdata
 	tempRaw, err = json.Marshal(tempHD)
 	if err != nil {
-		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewError(err, "DATA_PATCHING")
 	}
 	err = json.Unmarshal(tempRaw, &hostdata)
 	if err != nil {
-		return model.HostDataBE{}, NewAdvancedErrorPtr(err, "DATA_PATCHING")
+		return model.HostDataBE{}, NewError(err, "DATA_PATCHING")
 	}
 
 	return hostdata, nil
@@ -270,12 +270,12 @@ func FileExists(filename string) bool {
 func ParsePrivateKey(raw []byte) (interface{}, interface{}, error) {
 	block, _ := pem.Decode(raw)
 	if block == nil {
-		return nil, nil, NewAdvancedErrorPtr(errors.New("Unable to parse the private key"), "PARSE_PRIVATE_KEY")
+		return nil, nil, NewError(errors.New("Unable to parse the private key"), "PARSE_PRIVATE_KEY")
 	}
 
 	privatekey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 	if err != nil {
-		return nil, nil, NewAdvancedErrorPtr(err, "PARSE_PRIVATE_KEY")
+		return nil, nil, NewError(err, "PARSE_PRIVATE_KEY")
 	}
 	return privatekey, &privatekey.PublicKey, nil
 }
@@ -284,12 +284,12 @@ func ParsePrivateKey(raw []byte) (interface{}, interface{}, error) {
 func ParsePublicKey(raw []byte) (interface{}, error) {
 	block, _ := pem.Decode(raw)
 	if block == nil {
-		return nil, NewAdvancedErrorPtr(errors.New("Unable to parse the public key"), "PARSE_PUBLIC_KEY")
+		return nil, NewError(errors.New("Unable to parse the public key"), "PARSE_PUBLIC_KEY")
 	}
 
 	publickey, err := x509.ParsePKCS1PublicKey(block.Bytes)
 	if err != nil {
-		return nil, NewAdvancedErrorPtr(err, "PARSE_PUBLIC_KEY")
+		return nil, NewError(err, "PARSE_PUBLIC_KEY")
 	}
 	return publickey, nil
 }

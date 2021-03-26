@@ -348,7 +348,7 @@ func TestUpdateMySQLAgreement_NotFoundError(t *testing.T) {
 		Hosts:            []string{},
 	}
 
-	aerr := utils.NewAdvancedErrorPtr(utils.ErrNotFound, "test")
+	aerr := utils.NewError(utils.ErrNotFound, "test")
 	as.EXPECT().UpdateMySQLAgreement(agreement).
 		Return(aerr)
 
@@ -573,7 +573,7 @@ func TestDeleteMySQLAgreement_NotFoundError(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	aerr := utils.NewAdvancedErrorPtr(utils.ErrNotFound, "test")
+	aerr := utils.NewError(utils.ErrNotFound, "test")
 	as.EXPECT().DeleteMySQLAgreement(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
 		Return(aerr)
 
