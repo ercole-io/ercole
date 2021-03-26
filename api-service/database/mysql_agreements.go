@@ -33,7 +33,7 @@ func (md *MongoDatabase) AddMySQLAgreement(agreement model.MySQLAgreement) (prim
 			agreement,
 		)
 	if err != nil {
-		return primitive.NilObjectID, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return primitive.NilObjectID, utils.NewError(err, "DB ERROR")
 	}
 
 	return cur.InsertedID.(primitive.ObjectID), nil
@@ -47,11 +47,11 @@ func (md *MongoDatabase) UpdateMySQLAgreement(agreement model.MySQLAgreement) er
 			agreement,
 		)
 	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 
 	if cur.MatchedCount != 1 {
-		return utils.NewAdvancedErrorPtr(utils.ErrNotFound, "DB ERROR")
+		return utils.NewError(utils.ErrNotFound, "DB ERROR")
 	}
 
 	return nil
@@ -61,12 +61,12 @@ func (md *MongoDatabase) GetMySQLAgreements() (agreements []model.MySQLAgreement
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(mySQLAgreementCollection).
 		Find(context.TODO(), bson.D{})
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	err = cur.All(context.TODO(), &agreements)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		return nil, utils.NewError(err, "Decode ERROR")
 	}
 
 	return agreements, nil
@@ -79,11 +79,11 @@ func (md *MongoDatabase) DeleteMySQLAgreement(id primitive.ObjectID) error {
 			bson.M{"_id": id},
 		)
 	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 
 	if cur.DeletedCount != 1 {
-		return utils.NewAdvancedErrorPtr(utils.ErrNotFound, "DB ERROR")
+		return utils.NewError(utils.ErrNotFound, "DB ERROR")
 	}
 
 	return nil

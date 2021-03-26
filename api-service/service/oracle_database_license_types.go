@@ -25,7 +25,7 @@ import (
 func (as *APIService) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error) {
 	parts, err := as.Database.GetOracleDatabaseLicenseTypes()
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	return parts, nil
@@ -50,7 +50,7 @@ func (as *APIService) GetOracleDatabaseLicenseTypesAsMap() (map[string]model.Ora
 func (as *APIService) GetOracleDatabaseLicenseType(id string) (*model.OracleDatabaseLicenseType, error) {
 	parts, err := as.Database.GetOracleDatabaseLicenseTypes()
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	for _, part := range parts {
@@ -75,7 +75,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabas
 
 	err2 := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
 	if err2 != nil {
-		return nil, utils.NewAdvancedErrorPtr(err2, "DB ERROR")
+		return nil, utils.NewError(err2, "DB ERROR")
 	}
 
 	licenses := make(map[string]*dto.OracleDatabaseLicenseUsage)

@@ -91,14 +91,14 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	//Decode the documents
 	for cur.Next(context.TODO()) {
 		var item map[string]interface{}
 		if cur.Decode(&item) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+			return nil, utils.NewError(err, "Decode ERROR")
 		}
 		out = append(out, item)
 	}
@@ -171,7 +171,7 @@ func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (*d
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	hasNext := cur.Next(context.TODO())
@@ -181,7 +181,7 @@ func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (*d
 
 	var out dto.Cluster
 	if err := cur.Decode(&out); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	return &out, nil

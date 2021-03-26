@@ -53,14 +53,14 @@ func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(sortBy string, sortDes
 	)
 
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	var response dto.OracleDatabaseUsedLicenseSearchResponse
 
 	cursor.Next(context.TODO())
 	if err := cursor.Decode(&response); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		return nil, utils.NewError(err, "Decode ERROR")
 	}
 	return &response, nil
 }

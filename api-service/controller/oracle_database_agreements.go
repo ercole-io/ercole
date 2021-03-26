@@ -31,7 +31,7 @@ import (
 // AddAssociatedLicenseTypeToOracleDbAgreement add associated part to an existing agreement else it will create it
 func (ctrl *APIController) AddAssociatedLicenseTypeToOracleDbAgreement(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 
@@ -41,13 +41,13 @@ func (ctrl *APIController) AddAssociatedLicenseTypeToOracleDbAgreement(w http.Re
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&req); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
-			utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
+			utils.NewError(err, http.StatusText(http.StatusBadRequest)))
 		return
 	}
 
 	if req.ID != "" {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
-			utils.NewAdvancedErrorPtr(errors.New("ID must be empty to add a new AssociatedLicenseType"), http.StatusText(http.StatusBadRequest)))
+			utils.NewError(errors.New("ID must be empty to add a new AssociatedLicenseType"), http.StatusText(http.StatusBadRequest)))
 		return
 	}
 
@@ -68,7 +68,7 @@ func (ctrl *APIController) AddAssociatedLicenseTypeToOracleDbAgreement(w http.Re
 // UpdateAssociatedLicenseTypeOfOracleDbAgreement edit an agreement
 func (ctrl *APIController) UpdateAssociatedLicenseTypeOfOracleDbAgreement(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 
@@ -78,7 +78,7 @@ func (ctrl *APIController) UpdateAssociatedLicenseTypeOfOracleDbAgreement(w http
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&req); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
-			utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
+			utils.NewError(err, http.StatusText(http.StatusBadRequest)))
 		return
 	}
 
@@ -138,7 +138,7 @@ func parseSearchOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.Searc
 		filters.Unlimited = "NULL"
 	} else if filters.Unlimited != "true" && filters.Unlimited != "false" && filters.Unlimited != "NULL" {
 		return dto.SearchOracleDatabaseAgreementsFilter{},
-			utils.NewAdvancedErrorPtr(errors.New("Invalid value for unlimited"), http.StatusText(http.StatusUnprocessableEntity))
+			utils.NewError(errors.New("Invalid value for unlimited"), http.StatusText(http.StatusUnprocessableEntity))
 	}
 
 	filters.CatchAll = urlValues.Get("catch-all")
@@ -146,7 +146,7 @@ func parseSearchOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.Searc
 		filters.CatchAll = "NULL"
 	} else if filters.CatchAll != "true" && filters.CatchAll != "false" && filters.CatchAll != "NULL" {
 		return dto.SearchOracleDatabaseAgreementsFilter{},
-			utils.NewAdvancedErrorPtr(errors.New("Invalid value for catch-all"), http.StatusText(http.StatusUnprocessableEntity))
+			utils.NewError(errors.New("Invalid value for catch-all"), http.StatusText(http.StatusUnprocessableEntity))
 	}
 
 	if filters.LicensesCountLTE, err = utils.Str2int(urlValues.Get("licenses-count-lte"), -1); err != nil {
@@ -179,7 +179,7 @@ func parseSearchOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.Searc
 // AddHostToAssociatedLicenseType add an host from AssociatedLicenseType
 func (ctrl *APIController) AddHostToAssociatedLicenseType(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 
@@ -188,13 +188,13 @@ func (ctrl *APIController) AddHostToAssociatedLicenseType(w http.ResponseWriter,
 
 	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity,
-			utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+			utils.NewError(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 
 	raw, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewError(err, http.StatusText(http.StatusBadRequest)))
 		return
 	}
 	defer r.Body.Close()
@@ -214,7 +214,7 @@ func (ctrl *APIController) AddHostToAssociatedLicenseType(w http.ResponseWriter,
 // RemoveHostFromAssociatedLicenseType remove an host from AssociatedLicenseType
 func (ctrl *APIController) RemoveHostFromAssociatedLicenseType(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 
@@ -223,7 +223,7 @@ func (ctrl *APIController) RemoveHostFromAssociatedLicenseType(w http.ResponseWr
 	var hostname string
 
 	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 	hostname = mux.Vars(r)["hostname"]
@@ -242,7 +242,7 @@ func (ctrl *APIController) RemoveHostFromAssociatedLicenseType(w http.ResponseWr
 // DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement delete AssociatedLicenseType from an OracleDatabaseAgreement
 func (ctrl *APIController) DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 
@@ -250,7 +250,7 @@ func (ctrl *APIController) DeleteAssociatedLicenseTypeFromOracleDatabaseAgreemen
 	var id primitive.ObjectID
 
 	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusUnprocessableEntity)))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 

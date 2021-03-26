@@ -37,8 +37,8 @@ func (ae *AdvancedError) Error() string {
 	return fmt.Sprintf("%s:%d %s: '%s'\n", ae.Source, ae.Line, ae.Class, ae.Err.Error())
 }
 
-// NewAdvancedErrorPtr return a pointer to a new AdvancedError using the err as base error and class as class name
-func NewAdvancedErrorPtr(err error, class string) *AdvancedError {
+// NewError return a pointer to a new AdvancedError using the err as base error and class as class name
+func NewError(err error, class string) *AdvancedError {
 	_, file, line, ok := runtime.Caller(1)
 	if ok {
 		return &AdvancedError{Err: err, Class: class, Source: file, Line: line}

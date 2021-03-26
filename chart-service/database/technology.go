@@ -73,7 +73,7 @@ func (md *MongoDatabase) GetTechnologyCount(location string, environment string,
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	//Next the cursor. If there is no document return a empty document
@@ -84,7 +84,7 @@ func (md *MongoDatabase) GetTechnologyCount(location string, environment string,
 
 	//Decode the document
 	if err := cur.Decode(&out); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	return out, nil
