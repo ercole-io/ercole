@@ -177,8 +177,17 @@ type APIServiceInterface interface {
 	SearchDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.DatabasesStatistics, error)
 
+	// MYSQL
+
 	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
 	SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
+
+	// MYSQL AGREEMENTS
+
+	AddMySQLAgreement(agreement model.MySQLAgreement) (primitive.ObjectID, error)
+	UpdateMySQLAgreement(agreement model.MySQLAgreement) error
+	GetMySQLAgreements() ([]model.MySQLAgreement, error)
+	DeleteMySQLAgreement(id primitive.ObjectID) error
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

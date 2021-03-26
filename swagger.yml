@@ -1356,6 +1356,40 @@ components:
         - itemDescription
         - metric
         - cost
+    MySQLAgreement:
+      description: ''
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ObjectID'
+        type:
+          type: string
+          minLength: 1
+        numberOfLicenses:
+          type: integer
+          minimum: 0
+        clusters:
+          type: array
+          items:
+            type: string
+        hosts:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - type
+        - numberOfLicenses
+        - clusters
+        - hosts
+    ObjectID:
+      type: string
+      title: ObjectID
+      example: 605dbac5f3923acddba4fac5
+      minLength: 24
+      maxLength: 24
+      x-examples:
+        example-1: 605dbac5f3923acddba4fac5
   parameters:
     search:
       in: query
@@ -4588,8 +4622,10 @@ paths:
                 properties:
                   total-memory-size:
                     type: number
+                    description: size in GB
                   total-segments-size:
                     type: number
+                    description: size in GB
                 required:
                   - total-memory-size
                   - total-segments-size
@@ -4599,6 +4635,64 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
+  '/agreements/mysql/database/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    put:
+      summary: Update MySQL Agreement
+      operationId: UpdateMySQLAgreement
+      responses:
+        '204':
+          description: No Content
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MySQLAgreement'
+        description: ''
+      description: ''
+      tags:
+        - api-service
+    delete:
+      summary: Delete MySQL Agreement
+      operationId: DeleteMySQLAgreement
+      responses:
+        '204':
+          description: No Content
+  /agreements/mysql/database:
+    parameters: []
+    get:
+      summary: Get MySQL Agreements
+      tags:
+        - api-service
+      responses: {}
+      operationId: GetMySQLAgreements
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                agreements:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/MySQLAgreement'
+      description: ''
+    post:
+      summary: Add MySQL Agreement
+      operationId: AddMySQLAgreement
+      responses:
+        '201':
+          description: Created
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MySQLAgreement'
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []

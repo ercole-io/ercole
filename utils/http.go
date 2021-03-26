@@ -18,7 +18,9 @@ package utils
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
+	"runtime"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/sirupsen/logrus"
@@ -30,16 +32,17 @@ type ErrorResponseFE struct {
 	// Error contains detailed informations about the error
 	Error string `json:"error"`
 	// ErrorClass contains the (generic) class of the error
-	ErrorClass string `json:"errorClass"`
+	ErrorClass string `json:"errorClass,omitempty"`
 	// File contains the filename of the source code where the error was detected
-	SourceFilename string `json:"sourceFilename"`
+	SourceFilename string `json:"sourceFilename,omitempty"`
 	// LineNumber contains the number of the line where the error was detected
-	LineNumber int `json:"lineNumber"`
+	LineNumber int `json:"lineNumber,omitempty"`
 }
 
 // WriteAndLogError write the error to the w with the statusCode as statusCode and log the error to the stdout
 func WriteAndLogError(log *logrus.Logger, w http.ResponseWriter, statusCode int, err error) {
 	var resp ErrorResponseFE
+
 	var aerr *AdvancedError
 	if errors.As(err, &aerr) {
 		resp = ErrorResponseFE{
@@ -48,10 +51,17 @@ func WriteAndLogError(log *logrus.Logger, w http.ResponseWriter, statusCode int,
 			LineNumber:     aerr.Line,
 			SourceFilename: aerr.Source,
 		}
+	} else if _, file, line, ok := runtime.Caller(1); ok {
+		resp = ErrorResponseFE{
+			Error:          err.Error(),
+			ErrorClass:     http.StatusText(statusCode),
+			SourceFilename: file,
+			LineNumber:     line,
+		}
 	} else {
 		resp = ErrorResponseFE{
-			ErrorClass:     "",
 			Error:          err.Error(),
+			ErrorClass:     "",
 			SourceFilename: "",
 			LineNumber:     0,
 		}
@@ -114,4 +124,15 @@ func WriteXLSMResponse(w http.ResponseWriter, resp *excelize.File) {
 // WriteNoContentResponse 204
 func WriteNoContentResponse(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func Decode(body io.ReadCloser, i interface{}) error {
+	decoder := json.NewDecoder(body)
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(&i); err != nil {
+		return err
+	}
+
+	return nil
 }

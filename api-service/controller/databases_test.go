@@ -16,6 +16,7 @@
 package controller
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -200,8 +201,12 @@ func TestGetDatabasesStats_Service_Error(t *testing.T) {
 
 	assert.Equal(t, http.StatusInternalServerError, rr.Code)
 
-	expected := utils.ErrorResponseFE{
-		Error: "MockError",
-	}
-	assert.Equal(t, utils.ToJSON(expected), rr.Body.String())
+	var feErr utils.ErrorResponseFE
+	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&feErr)
+	require.NoError(t, err)
+
+	assert.Equal(t, "MockError", feErr.Error)
+	assert.Equal(t, "Internal Server Error", feErr.ErrorClass)
 }

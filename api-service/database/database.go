@@ -149,7 +149,16 @@ type MongoDatabaseInterface interface {
 	// ExistNotInClusterHost return true if the host specified by hostname exist and it is not in cluster, otherwise false
 	ExistNotInClusterHost(hostname string) (bool, error)
 
+	// MYSQL
+
 	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
+
+	// MYSQL AGREEMENTS
+
+	AddMySQLAgreement(agreement model.MySQLAgreement) (primitive.ObjectID, error)
+	UpdateMySQLAgreement(agreement model.MySQLAgreement) error
+	GetMySQLAgreements() ([]model.MySQLAgreement, error)
+	DeleteMySQLAgreement(id primitive.ObjectID) error
 }
 
 // MongoDatabase is a implementation

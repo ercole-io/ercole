@@ -44,11 +44,27 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/environments/frequency", ctrl.GetEnvironmentStats).Methods("GET")
 	router.HandleFunc("/hosts/types", ctrl.GetTypeStats).Methods("GET")
 	router.HandleFunc("/hosts/operating-systems", ctrl.GetOperatingSystemStats).Methods("GET")
+	router.HandleFunc("/hosts/locations", ctrl.ListLocations).Methods("GET")
+	router.HandleFunc("/hosts/environments", ctrl.ListEnvironments).Methods("GET")
+	router.HandleFunc("/hosts/clusters", ctrl.SearchClusters).Methods("GET")
+	router.HandleFunc("/hosts/clusters/{name}", ctrl.GetCluster).Methods("GET")
+
+	router.HandleFunc("/hosts/{hostname}", ctrl.GetHost).Methods("GET")
+	router.HandleFunc("/hosts/{hostname}", ctrl.ArchiveHost).Methods("DELETE")
+	router.HandleFunc("/hosts/{hostname}/patching-function", ctrl.GetPatchingFunction).Methods("GET")
+	router.HandleFunc("/hosts/{hostname}/patching-function", ctrl.SetPatchingFunction).Methods("PUT")
+	router.HandleFunc("/hosts/{hostname}/patching-function", ctrl.DeletePatchingFunction).Methods("DELETE")
+	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/tags", ctrl.AddTagToOracleDatabase).Methods("POST")
+	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/tags/{tagname}", ctrl.DeleteTagOfOracleDatabase).Methods("DELETE")
+	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseName}", ctrl.SetOracleDatabaseLicenseModifier).Methods("PUT")
+	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/license-modifiers/{licenseName}", ctrl.DeleteOracleDatabaseLicenseModifier).Methods("DELETE")
+
 	router.HandleFunc("/hosts/technologies", ctrl.ListTechnologies).Methods("GET")
 
 	router.HandleFunc("/hosts/technologies/all/databases", ctrl.SearchDatabases).Methods("GET")
 	router.HandleFunc("/hosts/technologies/all/databases/statistics", ctrl.GetDatabasesStatistics).Methods("GET")
 
+	// ORACLE
 	router.HandleFunc("/hosts/technologies/oracle/databases", ctrl.SearchOracleDatabases).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/license-modifiers", ctrl.SearchOracleDatabaseLicenseModifiers).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/top-unused-instance-resource", ctrl.GetTopUnusedOracleDatabaseInstanceResourceStats).Methods("GET")
@@ -78,29 +94,22 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/technologies/oracle/exadata/storage-error-count-status", ctrl.GetOracleExadataStorageErrorCountStatusStats).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/exadata/patch-status", ctrl.GetOracleExadataPatchStatusStats).Methods("GET")
 
-	router.HandleFunc("/hosts/technologies/mysql/databases", ctrl.SearchMySQLInstances).Methods("GET")
-
-	router.HandleFunc("/hosts/locations", ctrl.ListLocations).Methods("GET")
-	router.HandleFunc("/hosts/environments", ctrl.ListEnvironments).Methods("GET")
-	router.HandleFunc("/hosts/clusters", ctrl.SearchClusters).Methods("GET")
-	router.HandleFunc("/hosts/clusters/{name}", ctrl.GetCluster).Methods("GET")
-	router.HandleFunc("/hosts/{hostname}", ctrl.GetHost).Methods("GET")
-	router.HandleFunc("/hosts/{hostname}", ctrl.ArchiveHost).Methods("DELETE")
-	router.HandleFunc("/hosts/{hostname}/patching-function", ctrl.GetPatchingFunction).Methods("GET")
-	router.HandleFunc("/hosts/{hostname}/patching-function", ctrl.SetPatchingFunction).Methods("PUT")
-	router.HandleFunc("/hosts/{hostname}/patching-function", ctrl.DeletePatchingFunction).Methods("DELETE")
-	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/tags", ctrl.AddTagToOracleDatabase).Methods("POST")
-	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/tags/{tagname}", ctrl.DeleteTagOfOracleDatabase).Methods("DELETE")
-	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseName}", ctrl.SetOracleDatabaseLicenseModifier).Methods("PUT")
-	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/license-modifiers/{licenseName}", ctrl.DeleteOracleDatabaseLicenseModifier).Methods("DELETE")
-
-	// AGREEMENTS
+	// ORACLE AGREEMENTS
 	router.HandleFunc("/agreements/oracle/database", ctrl.AddAssociatedLicenseTypeToOracleDbAgreement).Methods("POST")
 	router.HandleFunc("/agreements/oracle/database", ctrl.UpdateAssociatedLicenseTypeOfOracleDbAgreement).Methods("PUT")
 	router.HandleFunc("/agreements/oracle/database", ctrl.SearchAssociatedLicenseTypesInOracleDatabaseAgreements).Methods("GET")
 	router.HandleFunc("/agreements/oracle/database/{id}", ctrl.DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement).Methods("DELETE")
 	router.HandleFunc("/agreements/oracle/database/{id}/hosts", ctrl.AddHostToAssociatedLicenseType).Methods("POST")
 	router.HandleFunc("/agreements/oracle/database/{id}/hosts/{hostname}", ctrl.RemoveHostFromAssociatedLicenseType).Methods("DELETE")
+
+	// MYSQL
+	router.HandleFunc("/hosts/technologies/mysql/databases", ctrl.SearchMySQLInstances).Methods("GET")
+
+	// MYSQL AGREEMENTS
+	router.HandleFunc("/agreements/mysql/database", ctrl.AddMySQLAgreement).Methods("POST")
+	router.HandleFunc("/agreements/mysql/database/{id}", ctrl.UpdateMySQLAgreement).Methods("PUT")
+	router.HandleFunc("/agreements/mysql/database", ctrl.GetMySQLAgreements).Methods("GET")
+	router.HandleFunc("/agreements/mysql/database/{id}", ctrl.DeleteMySQLAgreement).Methods("DELETE")
 
 	// ALERTS
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")

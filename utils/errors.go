@@ -19,6 +19,9 @@ import (
 	"errors"
 )
 
+// ErrNotFound generic not found
+var ErrNotFound = errors.New("Not found")
+
 // ErrHostNotFound contains "Host not found" error
 var ErrHostNotFound = errors.New("Host not found")
 var ErrPatchingFunctionNotFound = errors.New("Patching Function not found")

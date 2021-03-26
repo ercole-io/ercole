@@ -154,7 +154,15 @@ type APIControllerInterface interface {
 	SearchDatabases(w http.ResponseWriter, r *http.Request)
 	GetDatabasesStatistics(w http.ResponseWriter, r *http.Request)
 
+	// MYSQL
+
 	SearchMySQLInstances(w http.ResponseWriter, r *http.Request)
+
+	// MYSQL AGREEMENTS
+	AddMySQLAgreement(w http.ResponseWriter, r *http.Request)
+	UpdateMySQLAgreement(w http.ResponseWriter, r *http.Request)
+	GetMySQLAgreements(w http.ResponseWriter, r *http.Request)
+	DeleteMySQLAgreement(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface
