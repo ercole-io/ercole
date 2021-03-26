@@ -121,11 +121,6 @@ func WriteXLSMResponse(w http.ResponseWriter, resp *excelize.File) {
 	resp.Write(w)
 }
 
-// WriteNoContentResponse 204
-func WriteNoContentResponse(w http.ResponseWriter) {
-	w.WriteHeader(http.StatusNoContent)
-}
-
 func Decode(body io.ReadCloser, i interface{}) error {
 	decoder := json.NewDecoder(body)
 	decoder.DisallowUnknownFields()
