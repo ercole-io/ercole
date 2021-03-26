@@ -47,5 +47,5 @@ func (ctrl *AlertQueueController) ThrowNewAlert(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	utils.WriteNoContentResponse(w)
+	w.WriteHeader(http.StatusNoContent)
 }
