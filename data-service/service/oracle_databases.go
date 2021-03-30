@@ -92,6 +92,8 @@ func (hds *HostDataService) addLicensesToSecondaryDb(hostInfo model.Host, second
 			hds.Log.Error("Can't throw new alert")
 			return
 		}
+
+		return
 	}
 
 	coreFactor := secondaryDb.CoreFactor(hostInfo)
