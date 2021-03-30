@@ -26,6 +26,7 @@ import (
 )
 
 // SearchClusters search clusters
+//TODO Remove and use GetClusters ? convert map[s]i{} in dto?
 func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error) {
 	var out []map[string]interface{} = make([]map[string]interface{}, 0)
 
@@ -103,6 +104,80 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 		out = append(out, item)
 	}
 	return out, nil
+}
+
+func (md *MongoDatabase) GetClusters(filter dto.GlobalFilter) ([]dto.Cluster, error) {
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			FilterByOldnessSteps(filter.OlderThan),
+			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
+			mu.APUnwind("$clusters"),
+			mu.APProject(bson.M{
+				"hostname":    1,
+				"environment": 1,
+				"location":    1,
+				"createdAt":   1,
+				"cluster":     "$clusters",
+			}),
+			mu.APProject(bson.M{
+				"_id":                         true,
+				"environment":                 true,
+				"location":                    true,
+				"createdAt":                   1,
+				"hostnameAgentVirtualization": "$hostname",
+				"hostname":                    true,
+				"fetchEndpoint":               "$cluster.fetchEndpoint",
+				"name":                        "$cluster.name",
+				"type":                        "$cluster.type",
+				"cpu":                         "$cluster.cpu",
+				"sockets":                     "$cluster.sockets",
+				"vms":                         "$cluster.vms",
+				"virtualizationNodes":         mu.APOSetUnion(mu.APOMap("$cluster.vms", "vm", "$$vm.virtualizationNode")),
+				"vmsCount":                    mu.APOSize("$cluster.vms"),
+			}),
+			mu.APLookupPipeline("hosts", bson.M{
+				"vms": "$vms",
+			}, "vmsErcoleAgentCount", mu.MAPipeline(
+				FilterByOldnessSteps(filter.OlderThan),
+				mu.APProject(bson.M{
+					"hostname": 1,
+				}),
+				mu.APSet(bson.M{
+					"virtualizationNode": mu.APOArrayElemAt(mu.APOFilter("$$vms", "vm", mu.APOEqual("$$vm.hostname", "$hostname")), 0),
+				}),
+				mu.APMatch(bson.M{
+					"virtualizationNode": mu.QONotEqual(nil),
+				}),
+				mu.APSet(bson.M{
+					"virtualizationNode": "$virtualizationNode.virtualizationNode",
+				}),
+			)),
+			mu.APSet(bson.M{
+				"virtualizationNodesCount": mu.APOSize("$virtualizationNodes"),
+				"virtualizationNodesStats": mu.APOMap("$virtualizationNodes", "ph", mu.APOLet(bson.M{
+					"vmCount":                mu.APOSize(mu.APOFilter("$vms", "vm", mu.APOEqual("$$vm.virtualizationNode", "$$ph"))),
+					"vmWithErcoleAgentCount": mu.APOSize(mu.APOFilter("$vmsErcoleAgentCount", "vmea", mu.APOEqual("$$vmea.virtualizationNode", "$$ph"))),
+				}, bson.M{
+					"virtualizationNode":              "$$ph",
+					"totalVMsCount":                   "$$vmCount",
+					"totalVMsWithErcoleAgentCount":    "$$vmWithErcoleAgentCount",
+					"totalVMsWithoutErcoleAgentCount": mu.APOSubtract("$$vmCount", "$$vmWithErcoleAgentCount"),
+				})),
+				"vmsErcoleAgentCount": mu.APOSize("$vmsErcoleAgentCount"),
+			}),
+		),
+	)
+	if err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	var clusters []dto.Cluster
+	if err := cur.All(context.TODO(), &clusters); err != nil {
+		return nil, utils.NewError(err, "Decode ERROR")
+	}
+
+	return clusters, nil
 }
 
 // GetCluster fetch all information about a cluster in the database

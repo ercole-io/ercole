@@ -298,3 +298,73 @@ func (m *MongodbSuite) TestSearchMySQLInstances() {
 		assert.Equal(t, expected, actual)
 	})
 }
+
+func (m *MongodbSuite) TestGetMySQLUsedLicenses() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_20.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_23.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_24.json"))
+	first := dto.MySQLUsedLicense{
+		Hostname:        "erc-mysql-2",
+		InstanceName:    "mysql:3306",
+		InstanceEdition: "ENTERPRISE",
+	}
+	second := dto.MySQLUsedLicense{
+		Hostname:        "erc-mysql-prod-2",
+		InstanceName:    "mysql:3306",
+		InstanceEdition: "ENTERPRISE",
+	}
+
+	m.T().Run("should_load_all", func(t *testing.T) {
+		filter := dto.GlobalFilter{
+			Location:    "",
+			Environment: "",
+			OlderThan:   utils.MAX_TIME,
+		}
+		actual, err := m.db.GetMySQLUsedLicenses(filter)
+		m.Require().NoError(err)
+
+		expected := []dto.MySQLUsedLicense{first, second}
+		assert.Equal(t, expected, actual)
+	})
+
+	m.T().Run("should_filter_by_location", func(t *testing.T) {
+		filter := dto.GlobalFilter{
+			Location:    "Cuba",
+			Environment: "",
+			OlderThan:   utils.MAX_TIME,
+		}
+		actual, err := m.db.GetMySQLUsedLicenses(filter)
+		m.Require().NoError(err)
+
+		expected := []dto.MySQLUsedLicense{second}
+		assert.Equal(t, expected, actual)
+	})
+
+	m.T().Run("should_filter_by_environment", func(t *testing.T) {
+		filter := dto.GlobalFilter{
+			Location:    "",
+			Environment: "TST",
+			OlderThan:   utils.MAX_TIME,
+		}
+		actual, err := m.db.GetMySQLUsedLicenses(filter)
+		m.Require().NoError(err)
+
+		expected := []dto.MySQLUsedLicense{first}
+		assert.Equal(t, expected, actual)
+	})
+
+	m.T().Run("should_filter_by_older_than", func(t *testing.T) {
+		filter := dto.GlobalFilter{
+			Location:    "",
+			Environment: "",
+			OlderThan:   utils.P("2021-03-03T09:00:32.981Z"),
+		}
+		actual, err := m.db.GetMySQLUsedLicenses(filter)
+		m.Require().NoError(err)
+
+		expected := []dto.MySQLUsedLicense{second}
+		assert.Equal(t, expected, actual)
+	})
+}

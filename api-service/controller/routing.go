@@ -61,8 +61,11 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 
 	router.HandleFunc("/hosts/technologies", ctrl.ListTechnologies).Methods("GET")
 
+	// ALL TECHNOLOGIES
 	router.HandleFunc("/hosts/technologies/all/databases", ctrl.SearchDatabases).Methods("GET")
 	router.HandleFunc("/hosts/technologies/all/databases/statistics", ctrl.GetDatabasesStatistics).Methods("GET")
+	router.HandleFunc("/hosts/technologies/all/databases/licenses-used", ctrl.GetDatabasesUsedLicenses).Methods("GET")
+	//TODO router.HandleFunc("/hosts/technologies/all/databases/licenses-compliance", ctrl.).Methods("GET") //TODO Swagger
 
 	// ORACLE
 	router.HandleFunc("/hosts/technologies/oracle/databases", ctrl.SearchOracleDatabases).Methods("GET")
