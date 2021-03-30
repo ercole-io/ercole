@@ -22,6 +22,7 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -106,4 +107,80 @@ func (as *APIService) SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*exce
 	}
 
 	return file, nil
+}
+
+func (as *APIService) GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error) {
+	usedLicenses, err := as.Database.GetMySQLUsedLicenses(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	any := dto.GlobalFilter{Location: "", Environment: "", OlderThan: utils.MAX_TIME}
+	clustersList, err := as.Database.GetClusters(any)
+	if err != nil {
+		return nil, err
+	}
+	clusters := make(map[string]dto.Cluster, len(clustersList))
+	for _, cluster := range clustersList {
+		clusters[cluster.Hostname] = cluster
+	}
+
+	agreements, err := as.Database.GetMySQLAgreements()
+	if err != nil {
+		return nil, err
+	}
+
+	hosts := make(map[string]bool)
+	for _, agreement := range agreements {
+		if agreement.Type == model.MySQLAgreementTypeCluster {
+			for _, cluster := range agreement.Clusters {
+				for _, vm := range clusters[cluster].VMs {
+					hosts[vm.Hostname] = true
+				}
+			}
+		}
+	}
+
+	for i := range usedLicenses {
+		usedLicense := &usedLicenses[i]
+		if hosts[usedLicense.Hostname] {
+			usedLicense.AgreementType = model.MySQLAgreementTypeCluster
+		} else {
+			usedLicense.AgreementType = model.MySQLAgreementTypeHost
+		}
+	}
+
+	return usedLicenses, nil
+}
+
+//TODO
+func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error) {
+	//MySQL Enterprise per cluster
+
+	result := make([]dto.LicenseCompliance, 0) //, len(licenses))
+
+	//perServer := dto.LicenseCompliance{
+	//	LicenseTypeID:   "",
+	//	ItemDescription: "MySQL Enterprise per server",
+	//	Metric:          "",
+	//	Consumed:        0,
+	//	Covered:         0,
+	//	Compliance:      0,
+	//	Unlimited:       false,
+	//}
+	//result= append(result, perServer)
+	//for _, license := range licenses {
+	//	if license.Consumed == 0 {
+	//		license.Compliance = 1
+	//	} else {
+	//		license.Compliance = license.Covered / license.Consumed
+	//	}
+
+	//	license.ItemDescription = parts[license.LicenseTypeID].ItemDescription
+	//	license.Metric = parts[license.LicenseTypeID].Metric
+
+	//	result = append(result, *license)
+	//}
+
+	return result, nil
 }

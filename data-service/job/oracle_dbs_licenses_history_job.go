@@ -58,7 +58,7 @@ func (job *OracleDbsLicensesHistory) Run() {
 		return
 	}
 
-	var licenses []dto.OracleDatabaseLicenseUsage
+	var licenses []dto.LicenseCompliance
 	decoder := json.NewDecoder(resp.Body)
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&licenses); err != nil {

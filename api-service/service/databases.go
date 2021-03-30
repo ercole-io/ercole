@@ -173,3 +173,73 @@ func (as *APIService) GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.Data
 
 	return stats, nil
 }
+
+func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
+	type getter func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
+	getters := []getter{as.getOracleDatabasesUsedLicenses, as.getMySQLUsedLicenses}
+
+	usedLicenses := make([]dto.DatabaseUsedLicense, 0)
+	for _, get := range getters {
+		thisDbs, err := get(filter)
+		if err != nil {
+			return nil, err
+		}
+		usedLicenses = append(usedLicenses, thisDbs...)
+	}
+
+	return usedLicenses, nil
+}
+
+func (as *APIService) getOracleDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
+	oracleLics, err := as.Database.SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan)
+	if err != nil {
+		return nil, err
+	}
+
+	licenseTypes, err := as.GetOracleDatabaseLicenseTypesAsMap()
+	if err != nil {
+		return nil, err
+	}
+
+	genericLics := make([]dto.DatabaseUsedLicense, 0, len(oracleLics.Content))
+	for _, o := range oracleLics.Content {
+		lt := licenseTypes[o.LicenseTypeID]
+
+		g := dto.DatabaseUsedLicense{
+			Hostname:      o.Hostname,
+			DbName:        o.DbName,
+			LicenseTypeID: o.LicenseTypeID,
+			Description:   lt.ItemDescription,
+			Metric:        lt.Metric,
+			UsedLicenses:  o.UsedLicenses,
+		}
+
+		genericLics = append(genericLics, g)
+	}
+
+	return genericLics, nil
+}
+
+func (as *APIService) getMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
+	mysqlLics, err := as.GetMySQLUsedLicenses(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	genericLics := make([]dto.DatabaseUsedLicense, 0, len(mysqlLics))
+
+	for _, lic := range mysqlLics {
+		g := dto.DatabaseUsedLicense{
+			Hostname:      lic.Hostname,
+			DbName:        lic.InstanceName,
+			LicenseTypeID: "",
+			Description:   "MySQL " + lic.InstanceEdition,
+			Metric:        lic.AgreementType,
+			UsedLicenses:  1,
+		}
+
+		genericLics = append(genericLics, g)
+	}
+
+	return genericLics, nil
+}

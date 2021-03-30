@@ -42,6 +42,7 @@ type MongoDatabaseInterface interface {
 	SearchAlerts(mode string, keywords []string, sortBy string, sortDesc bool, page, pageSize int, location, environment, severity, status string, from, to time.Time) ([]map[string]interface{}, error)
 	// SearchClusters search clusters
 	SearchClusters(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error)
+	GetClusters(filter dto.GlobalFilter) ([]dto.Cluster, error)
 	// GetCluster fetch all information about a cluster in the database
 	GetCluster(clusterName string, olderThan time.Time) (*dto.Cluster, error)
 	// SearchOracleDatabaseAddms search addms
@@ -152,6 +153,7 @@ type MongoDatabaseInterface interface {
 	// MYSQL
 
 	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
+	GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error)
 
 	// MYSQL AGREEMENTS
 

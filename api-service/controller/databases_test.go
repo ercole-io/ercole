@@ -210,3 +210,39 @@ func TestGetDatabasesStats_Service_Error(t *testing.T) {
 	assert.Equal(t, "MockError", feErr.Error)
 	assert.Equal(t, "Internal Server Error", feErr.ErrorClass)
 }
+
+func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	filter := dto.GlobalFilter{
+		Location:    "Italy",
+		Environment: "TST",
+		OlderThan:   utils.P("2020-06-10T11:54:59Z"),
+	}
+
+	usedLicenses := []dto.DatabaseUsedLicense{}
+	as.EXPECT().GetDatabasesUsedLicenses(filter).
+		Return(usedLicenses, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetDatabasesUsedLicenses)
+	req, err := http.NewRequest("GET", "/stats?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+
+	expected := map[string]interface{}{
+		"usedLicenses": usedLicenses,
+	}
+	assert.JSONEq(t, utils.ToJSON(expected), rr.Body.String())
+}
