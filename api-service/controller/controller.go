@@ -151,8 +151,11 @@ type APIControllerInterface interface {
 	// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 	GetInfoForFrontendDashboard(w http.ResponseWriter, r *http.Request)
 
+	// ALL TECHNOLOGIES
+
 	SearchDatabases(w http.ResponseWriter, r *http.Request)
 	GetDatabasesStatistics(w http.ResponseWriter, r *http.Request)
+	GetDatabasesUsedLicenses(w http.ResponseWriter, r *http.Request)
 
 	// MYSQL
 

@@ -4693,6 +4693,25 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/MySQLAgreement'
+  /hosts/technologies/all/databases/licenses-used:
+    get:
+      summary: Get Databases Used Licenses
+      tags: []
+      responses: {}
+      operationId: GetDatabasesUsedLicenses
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: location
+        - schema:
+            type: string
+          in: query
+          name: environment
+        - schema:
+            type: string
+          in: query
+          name: older-than
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []

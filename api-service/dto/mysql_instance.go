@@ -24,3 +24,10 @@ type MySQLInstance struct {
 
 	model.MySQLInstance `bson:",inline"`
 }
+
+type MySQLUsedLicense struct {
+	Hostname        string `json:"hostname" bson:"hostname"`
+	InstanceName    string `json:"instanceName" bson:"instanceName"`
+	InstanceEdition string `json:"instanceEdition" bson:"instanceEdition"`
+	AgreementType   string `json:"agreementType" bson:"agreementType"`
+}
