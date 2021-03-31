@@ -130,57 +130,101 @@ func (as *APIService) GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQL
 		return nil, err
 	}
 
-	hosts := make(map[string]bool)
+	hostCoveredForCluster := make(map[string]bool, len(agreements))
+	hostCoveredAsHost := make(map[string]bool, len(agreements))
+
 	for _, agreement := range agreements {
 		if agreement.Type == model.MySQLAgreementTypeCluster {
 			for _, cluster := range agreement.Clusters {
 				for _, vm := range clusters[cluster].VMs {
-					hosts[vm.Hostname] = true
+					hostCoveredForCluster[vm.Hostname] = true
 				}
 			}
+			continue
 		}
+
+		if agreement.Type == model.MySQLAgreementTypeHost {
+			for _, host := range agreement.Hosts {
+				hostCoveredAsHost[host] = true
+			}
+			continue
+		}
+
+		as.Log.Errorf("Unknown MySQLAgreementType: %s", agreement.Type)
 	}
 
 	for i := range usedLicenses {
 		usedLicense := &usedLicenses[i]
-		if hosts[usedLicense.Hostname] {
+		if hostCoveredForCluster[usedLicense.Hostname] {
 			usedLicense.AgreementType = model.MySQLAgreementTypeCluster
-		} else {
-			usedLicense.AgreementType = model.MySQLAgreementTypeHost
+			usedLicense.Covered = true
+			continue
 		}
+
+		usedLicense.AgreementType = model.MySQLAgreementTypeHost
 	}
 
 	return usedLicenses, nil
 }
 
-//TODO
 func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error) {
-	//MySQL Enterprise per cluster
+	any := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+	licenses, err := as.GetMySQLUsedLicenses(any)
+	if err != nil {
+		return nil, err
+	}
 
-	result := make([]dto.LicenseCompliance, 0) //, len(licenses))
+	perCluster := dto.LicenseCompliance{
+		LicenseTypeID:   "",
+		ItemDescription: "MySQL Enterprise per cluster",
+		Metric:          "",
+		Consumed:        0,
+		Covered:         0,
+		Compliance:      0,
+		Unlimited:       false,
+	}
 
-	//perServer := dto.LicenseCompliance{
-	//	LicenseTypeID:   "",
-	//	ItemDescription: "MySQL Enterprise per server",
-	//	Metric:          "",
-	//	Consumed:        0,
-	//	Covered:         0,
-	//	Compliance:      0,
-	//	Unlimited:       false,
-	//}
-	//result= append(result, perServer)
-	//for _, license := range licenses {
-	//	if license.Consumed == 0 {
-	//		license.Compliance = 1
-	//	} else {
-	//		license.Compliance = license.Covered / license.Consumed
-	//	}
+	perHost := dto.LicenseCompliance{
+		LicenseTypeID:   "",
+		ItemDescription: "MySQL Enterprise per host",
+		Metric:          "",
+		Consumed:        0,
+		Covered:         0,
+		Compliance:      0,
+		Unlimited:       false,
+	}
 
-	//	license.ItemDescription = parts[license.LicenseTypeID].ItemDescription
-	//	license.Metric = parts[license.LicenseTypeID].Metric
+	for _, license := range licenses {
+		var lc *dto.LicenseCompliance
+		if license.AgreementType == model.MySQLAgreementTypeHost {
+			lc = &perHost
+		} else if license.AgreementType == model.MySQLAgreementTypeCluster {
+			lc = &perCluster
+		} else {
+			as.Log.Errorf("Unknown MySQLAgreementType: %s", license.AgreementType)
+			continue
+		}
 
-	//	result = append(result, *license)
-	//}
+		if license.Covered {
+			lc.Covered += 1
+		}
+		lc.Consumed += 1
+	}
+
+	result := make([]dto.LicenseCompliance, 0, 2)
+	for _, lc := range []*dto.LicenseCompliance{&perCluster, &perHost} {
+		if lc.Consumed == 0 {
+			lc.Compliance = 1
+		} else {
+			lc.Compliance = lc.Covered / lc.Consumed
+		}
+
+		result = append(result, *lc)
+	}
 
 	return result, nil
 }

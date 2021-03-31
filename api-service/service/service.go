@@ -179,6 +179,7 @@ type APIServiceInterface interface {
 	SearchDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.DatabasesStatistics, error)
 	GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
+	GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error)
 
 	// MYSQL
 

@@ -99,3 +99,17 @@ func (ctrl *APIController) GetDatabasesUsedLicenses(w http.ResponseWriter, r *ht
 	}
 	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
+
+func (ctrl *APIController) GetDatabaseLicensesCompliance(w http.ResponseWriter, r *http.Request) {
+	licenses, err := ctrl.Service.GetDatabaseLicensesCompliance()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	response := map[string]interface{}{
+		"licensesCompliance": licenses,
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, response)
+}

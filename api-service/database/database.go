@@ -153,6 +153,8 @@ type MongoDatabaseInterface interface {
 	// MYSQL
 
 	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
+	//GetMySQLUsedLicenses return MySQL used licenses.
+	// Only ENTERPRISE MySQL db are considered as licenses
 	GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error)
 
 	// MYSQL AGREEMENTS
