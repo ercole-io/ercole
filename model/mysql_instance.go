@@ -44,3 +44,8 @@ type MySQLInstance struct {
 	TableSchemas    []MySQLTableSchema    `json:"tableSchemas" bson:"tableSchemas"`
 	SegmentAdvisors []MySQLSegmentAdvisor `json:"segmentAdvisors" bson:"segmentAdvisors"`
 }
+
+const (
+	MySQLEditionCommunity  = "COMMUNITY"
+	MySQLEditionEnterprise = "ENTERPRISE"
+)

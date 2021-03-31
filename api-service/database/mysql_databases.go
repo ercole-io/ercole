@@ -20,6 +20,7 @@ import (
 
 	"github.com/amreo/mu"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -42,13 +43,46 @@ func (md *MongoDatabase) SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.My
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	var out []dto.MySQLInstance
 	err = cur.All(context.TODO(), &out)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		return nil, utils.NewError(err, "Decode ERROR")
+	}
+
+	return out, nil
+}
+
+func (md *MongoDatabase) GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error) {
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			FilterByOldnessSteps(filter.OlderThan),
+			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
+			mu.APUnwind("$features.mysql.instances"),
+			mu.APMatch(bson.M{
+				// Only ENTERPRISE MySQL db are considered as licenses
+				"features.mysql.instances.edition": model.MySQLEditionEnterprise,
+			}),
+			mu.APProject(bson.M{
+				"hostname":        1,
+				"instanceName":    "$features.mysql.instances.name",
+				"instanceEdition": "$features.mysql.instances.edition",
+			}),
+			mu.APReplaceWith(mu.APOMergeObjects("$$ROOT", "$instance")),
+			mu.APUnset("instance"),
+		),
+	)
+	if err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	var out []dto.MySQLUsedLicense
+	err = cur.All(context.TODO(), &out)
+	if err != nil {
+		return nil, utils.NewError(err, "Decode ERROR")
 	}
 
 	return out, nil

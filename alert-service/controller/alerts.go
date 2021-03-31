@@ -31,13 +31,13 @@ func (ctrl *AlertQueueController) ThrowNewAlert(w http.ResponseWriter, r *http.R
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&alert); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
-			utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
+			utils.NewError(err, http.StatusText(http.StatusBadRequest)))
 		return
 	}
 
 	if !alert.IsValid() {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
-			utils.NewAdvancedErrorPtr(errors.New("Invalid alert"), "INVALID_ALERT"))
+			utils.NewError(errors.New("Invalid alert"), "INVALID_ALERT"))
 		return
 	}
 
@@ -47,5 +47,5 @@ func (ctrl *AlertQueueController) ThrowNewAlert(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	utils.WriteNoContentResponse(w)
+	w.WriteHeader(http.StatusNoContent)
 }

@@ -146,10 +146,10 @@ type APIServiceInterface interface {
 	// Remove host from AssociatedLicenseType
 	RemoveHostFromAssociatedLicenseType(associateLicenseTypeID primitive.ObjectID, hostname string) error
 
-	// PARTS
+	// ORACLE DATABASE LICENSES
 
 	GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error)
-	GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabaseLicenseUsage, error)
+	GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error)
 
 	// PATCHING FUNCTIONS
 	// SetPatchingFunction set the patching function of a host
@@ -173,12 +173,26 @@ type APIServiceInterface interface {
 	// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 	GetInfoForFrontendDashboard(location string, environment string, olderThan time.Time) (map[string]interface{}, error)
 
+	// ALL
+
 	SearchDatabases(filter dto.GlobalFilter) ([]dto.Database, error)
 	SearchDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.DatabasesStatistics, error)
+	GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
+	GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error)
+
+	// MYSQL
 
 	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
 	SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
+	GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error)
+
+	// MYSQL AGREEMENTS
+
+	AddMySQLAgreement(agreement model.MySQLAgreement) (primitive.ObjectID, error)
+	UpdateMySQLAgreement(agreement model.MySQLAgreement) error
+	GetMySQLAgreements() ([]model.MySQLAgreement, error)
+	DeleteMySQLAgreement(id primitive.ObjectID) error
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

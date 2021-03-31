@@ -25,7 +25,7 @@ import (
 func (as *APIService) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error) {
 	parts, err := as.Database.GetOracleDatabaseLicenseTypes()
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	return parts, nil
@@ -50,7 +50,7 @@ func (as *APIService) GetOracleDatabaseLicenseTypesAsMap() (map[string]model.Ora
 func (as *APIService) GetOracleDatabaseLicenseType(id string) (*model.OracleDatabaseLicenseType, error) {
 	parts, err := as.Database.GetOracleDatabaseLicenseTypes()
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	for _, part := range parts {
@@ -62,7 +62,7 @@ func (as *APIService) GetOracleDatabaseLicenseType(id string) (*model.OracleData
 	return nil, utils.ErrOracleDatabaseLicenseTypeIDNotFound
 }
 
-func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabaseLicenseUsage, error) {
+func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error) {
 	agreements, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
 		return nil, err
@@ -75,15 +75,15 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabas
 
 	err2 := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
 	if err2 != nil {
-		return nil, utils.NewAdvancedErrorPtr(err2, "DB ERROR")
+		return nil, utils.NewError(err2, "DB ERROR")
 	}
 
-	licenses := make(map[string]*dto.OracleDatabaseLicenseUsage)
+	licenses := make(map[string]*dto.LicenseCompliance)
 
 	for _, host := range hosts {
 		license, ok := licenses[host.LicenseTypeID]
 		if !ok {
-			license = &dto.OracleDatabaseLicenseUsage{
+			license = &dto.LicenseCompliance{
 				LicenseTypeID: host.LicenseTypeID,
 			}
 
@@ -96,7 +96,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabas
 	for _, agreement := range agreements {
 		license, ok := licenses[agreement.LicenseTypeID]
 		if !ok {
-			license = &dto.OracleDatabaseLicenseUsage{
+			license = &dto.LicenseCompliance{
 				LicenseTypeID: agreement.LicenseTypeID,
 			}
 
@@ -117,7 +117,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.OracleDatabas
 		return nil, err
 	}
 
-	result := make([]dto.OracleDatabaseLicenseUsage, 0, len(licenses))
+	result := make([]dto.LicenseCompliance, 0, len(licenses))
 	for _, license := range licenses {
 		if license.Consumed == 0 {
 			license.Compliance = 1

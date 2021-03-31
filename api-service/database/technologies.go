@@ -51,7 +51,7 @@ func (md *MongoDatabase) GetHostsCountUsingTechnologies(location string, environ
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	hasNext := cur.Next(context.TODO())
@@ -60,7 +60,7 @@ func (md *MongoDatabase) GetHostsCountUsingTechnologies(location string, environ
 	}
 
 	if err := cur.Decode(&out); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	return out, nil

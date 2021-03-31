@@ -30,7 +30,7 @@ func (md *MongoDatabase) DeleteAllNoDataAlerts() error {
 		DeleteMany(context.TODO(), bson.M{"alertCode": model.AlertCodeNoData})
 
 	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 
 	return nil
@@ -47,7 +47,7 @@ func (md *MongoDatabase) DeleteNoDataAlertByHost(hostname string) error {
 			})
 
 	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 
 	return nil

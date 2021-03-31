@@ -72,7 +72,7 @@ func (c *Client) getResponse(ctx context.Context, path, method string, body []by
 func (c *Client) ThrowNewAlert(alert model.Alert) error {
 	body, err := json.Marshal(alert)
 	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "Can't marshal alert")
+		return utils.NewError(err, "Can't marshal alert")
 	}
 
 	_, err = c.getResponse(context.TODO(), "/alerts", "POST", body)

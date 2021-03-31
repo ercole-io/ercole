@@ -15,16 +15,14 @@
 
 package dto
 
-// OracleDatabaseUsedLicenseSearchResponse dto
-type OracleDatabaseUsedLicenseSearchResponse struct {
-	Content  []OracleDatabaseUsedLicense `json:"content" bson:"content"`
-	Metadata PagingMetadata              `json:"metadata" bson:"metadata"`
-}
+// LicenseCompliance contains the information about usage of a license
+type LicenseCompliance struct {
+	LicenseTypeID   string `json:"licenseTypeID" bson:"licenseTypeID"`
+	ItemDescription string `json:"itemDescription" bson:"itemDescription"`
+	Metric          string `json:"metric" bson:"metric"`
 
-// OracleDatabaseUsedLicense dto
-type OracleDatabaseUsedLicense struct {
-	LicenseTypeID string  `json:"licenseTypeID" bson:"licenseTypeID"`
-	DbName        string  `json:"dbName" bson:"dbName"`
-	Hostname      string  `json:"hostname" bson:"hostname"`
-	UsedLicenses  float64 `json:"usedLicenses" bson:"usedLicenses"`
+	Consumed   float64 `json:"consumed"`
+	Covered    float64 `json:"covered"`
+	Compliance float64 `json:"compliance"`
+	Unlimited  bool    `json:"unlimited"`
 }

@@ -34,7 +34,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 
 	expectedDateDay1 := utils.PDT("2020-12-05T00:00:00Z")
 	m.T().Run("First insert, success", func(t *testing.T) {
-		licenses := []dto.OracleDatabaseLicenseUsage{
+		licenses := []dto.LicenseCompliance{
 			{
 				LicenseTypeID:   "L47247",
 				ItemDescription: "Oracle Real Application Testing",
@@ -101,7 +101,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 	m.T().Run("Second insert, next day, success", func(t *testing.T) {
 		m.db.TimeNow = func() time.Time { return utils.P("2020-12-06T15:02:03Z") }
 
-		licenses := []dto.OracleDatabaseLicenseUsage{
+		licenses := []dto.LicenseCompliance{
 			{
 				LicenseTypeID:   "L47247",
 				ItemDescription: "Oracle Real Application Testing",
@@ -170,7 +170,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 	m.T().Run("Third insert, same day, success", func(t *testing.T) {
 		m.db.TimeNow = func() time.Time { return utils.P("2020-12-06T15:02:03Z") }
 
-		licenses := []dto.OracleDatabaseLicenseUsage{
+		licenses := []dto.LicenseCompliance{
 			{
 				LicenseTypeID:   "A90611",
 				ItemDescription: "Oracle Database Enterprise Edition",

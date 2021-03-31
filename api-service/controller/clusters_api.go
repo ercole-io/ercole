@@ -133,7 +133,7 @@ func (ctrl *APIController) SearchClustersXLSX(w http.ResponseWriter, r *http.Req
 	//Open the sheet
 	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_clusters.xlsx")
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewError(err, "READ_TEMPLATE"))
 		return
 	}
 
