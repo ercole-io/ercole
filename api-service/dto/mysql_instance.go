@@ -30,4 +30,6 @@ type MySQLUsedLicense struct {
 	InstanceName    string `json:"instanceName" bson:"instanceName"`
 	InstanceEdition string `json:"instanceEdition" bson:"instanceEdition"`
 	AgreementType   string `json:"agreementType" bson:"agreementType"`
+
+	Covered bool `json:"-"`
 }
