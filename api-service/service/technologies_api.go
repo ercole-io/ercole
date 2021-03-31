@@ -84,7 +84,7 @@ func createOracleTechnologyStatus(as *APIService, hostsCount float64) (*model.Te
 
 	err2 := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
 	if err2 != nil {
-		return nil, utils.NewAdvancedErrorPtr(err2, "DB ERROR")
+		return nil, utils.NewError(err2, "DB ERROR")
 	}
 
 	status := model.TechnologyStatus{

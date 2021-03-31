@@ -35,7 +35,7 @@ func (md *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, erro
 	}, mu.UOSet(bson.M{
 		"archived": true,
 	})); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	} else {
 		return res, nil
 	}
@@ -45,7 +45,7 @@ func (md *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, erro
 func (md *MongoDatabase) InsertHostData(hostData model.HostDataBE) (*mongo.InsertOneResult, error) {
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").InsertOne(context.TODO(), hostData)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 	return res, nil
 }
@@ -60,7 +60,7 @@ func (md *MongoDatabase) FindOldCurrentHostnames(t time.Time) ([]string, error) 
 			"createdAt": mu.QOLessThan(t),
 		})
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	var hosts []string = make([]string, 0)
@@ -82,7 +82,7 @@ func (md *MongoDatabase) FindOldCurrentHostdata(t time.Time) ([]model.HostDataBE
 		Find(context.TODO(), filter)
 
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	//Decode the documents
@@ -92,7 +92,7 @@ func (md *MongoDatabase) FindOldCurrentHostdata(t time.Time) ([]model.HostDataBE
 		var host model.HostDataBE
 
 		if cur.Decode(&host) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+			return nil, utils.NewError(err, "Decode ERROR")
 		}
 		hosts = append(hosts, host)
 	}
@@ -111,7 +111,7 @@ func (md *MongoDatabase) FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID
 			"createdAt": mu.QOLessThan(t),
 		})
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	var ids []primitive.ObjectID = make([]primitive.ObjectID, 0)
@@ -129,7 +129,7 @@ func (md *MongoDatabase) DeleteHostData(id primitive.ObjectID) error {
 			"_id": id,
 		})
 	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 
 	return nil
@@ -154,7 +154,7 @@ func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
@@ -162,7 +162,7 @@ func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time
 	}
 
 	if err := cur.Decode(&out); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	return &out, nil

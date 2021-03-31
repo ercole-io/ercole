@@ -80,3 +80,36 @@ func (ctrl *APIController) GetDatabasesStatistics(w http.ResponseWriter, r *http
 
 	utils.WriteJSONResponse(w, http.StatusOK, stats)
 }
+
+func (ctrl *APIController) GetDatabasesUsedLicenses(w http.ResponseWriter, r *http.Request) {
+	filter, err := dto.GetGlobalFilter(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	usedLicenses, err := ctrl.Service.GetDatabasesUsedLicenses(*filter)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	response := map[string]interface{}{
+		"usedLicenses": usedLicenses,
+	}
+	utils.WriteJSONResponse(w, http.StatusOK, response)
+}
+
+func (ctrl *APIController) GetDatabaseLicensesCompliance(w http.ResponseWriter, r *http.Request) {
+	licenses, err := ctrl.Service.GetDatabaseLicensesCompliance()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	response := map[string]interface{}{
+		"licensesCompliance": licenses,
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, response)
+}

@@ -35,7 +35,7 @@ func (md *MongoDatabase) InsertOracleDatabaseAgreement(agreement model.OracleDat
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsCollection).
 		InsertOne(context.TODO(), agreement)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	return res, nil
@@ -50,12 +50,12 @@ func (md *MongoDatabase) GetOracleDatabaseAgreement(agreementID string) (*model.
 	if res.Err() == mongo.ErrNoDocuments {
 		return nil, utils.ErrOracleDatabaseAgreementNotFound
 	} else if res.Err() != nil {
-		return nil, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+		return nil, utils.NewError(res.Err(), "DB ERROR")
 	}
 
 	var out model.OracleDatabaseAgreement
 	if err := res.Decode(&out); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		return nil, utils.NewError(err, "Decode ERROR")
 	}
 	return &out, nil
 }
@@ -69,12 +69,12 @@ func (md *MongoDatabase) GetOracleDatabaseAgreementByAssociatedLicenseType(assoc
 	if res.Err() == mongo.ErrNoDocuments {
 		return nil, utils.ErrOracleDatabaseAgreementNotFound
 	} else if res.Err() != nil {
-		return nil, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+		return nil, utils.NewError(res.Err(), "DB ERROR")
 	}
 
 	var out model.OracleDatabaseAgreement
 	if err := res.Decode(&out); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		return nil, utils.NewError(err, "Decode ERROR")
 	}
 	return &out, nil
 }
@@ -86,7 +86,7 @@ func (md *MongoDatabase) UpdateOracleDatabaseAgreement(agreement model.OracleDat
 			"_id": agreement.ID,
 		}, agreement)
 	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 	if result.MatchedCount != 1 {
 		return utils.ErrOracleDatabaseAgreementNotFound
@@ -102,7 +102,7 @@ func (md *MongoDatabase) RemoveOracleDatabaseAgreement(id primitive.ObjectID) er
 			"_id": id,
 		})
 	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 
 	if res.DeletedCount == 0 {
@@ -155,11 +155,11 @@ func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgr
 			),
 		)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	if err = cur.All(context.TODO(), &out); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		return nil, utils.NewError(err, "Decode ERROR")
 	}
 
 	return out, nil
@@ -249,13 +249,13 @@ func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingO
 			),
 		)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	var out []dto.HostUsingOracleDatabaseLicenses = make([]dto.HostUsingOracleDatabaseLicenses, 0)
 
 	if err := cur.All(context.TODO(), &out); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		return nil, utils.NewError(err, "Decode ERROR")
 	}
 
 	return out, nil

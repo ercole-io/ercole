@@ -201,7 +201,7 @@ Severity: CRITICAL
 Code: NEW_LICENSE
 This is just an alert test to a mocked emailer.`,
 		as.Config.AlertService.Emailer.To).
-		Return(utils.NewAdvancedErrorPtr(fmt.Errorf("test error from emailer"), "test EMAILER"))
+		Return(utils.NewError(fmt.Errorf("test error from emailer"), "test EMAILER"))
 
 	params := make(hub.Fields, 1)
 	params["alert"] = model.Alert{

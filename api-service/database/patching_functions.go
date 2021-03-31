@@ -34,7 +34,7 @@ func (md *MongoDatabase) FindPatchingFunction(hostname string) (model.PatchingFu
 		"hostname": hostname,
 	})
 	if err != nil {
-		return model.PatchingFunction{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return model.PatchingFunction{}, utils.NewError(err, "DB ERROR")
 	}
 
 	//Next the cursor. If there is no document return a empty document
@@ -45,7 +45,7 @@ func (md *MongoDatabase) FindPatchingFunction(hostname string) (model.PatchingFu
 
 	//Decode the document
 	if err := cur.Decode(&out); err != nil {
-		return model.PatchingFunction{}, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return model.PatchingFunction{}, utils.NewError(err, "DB ERROR")
 	}
 
 	return out, nil
@@ -61,7 +61,7 @@ func (md *MongoDatabase) SavePatchingFunction(pf model.PatchingFunction) error {
 		Upsert: &true,
 	})
 	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 	return nil
 }
@@ -105,14 +105,14 @@ func (md *MongoDatabase) SearchOracleDatabaseLicenseModifiers(keywords []string,
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	//Decode the documents
 	for cur.Next(context.TODO()) {
 		var item map[string]interface{}
 		if cur.Decode(&item) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+			return nil, utils.NewError(err, "Decode ERROR")
 		}
 		out = append(out, item)
 	}
@@ -126,7 +126,7 @@ func (md *MongoDatabase) DeletePatchingFunction(hostname string) error {
 		"hostname": hostname,
 	}, nil)
 	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 	return nil
 }

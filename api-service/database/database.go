@@ -42,6 +42,7 @@ type MongoDatabaseInterface interface {
 	SearchAlerts(mode string, keywords []string, sortBy string, sortDesc bool, page, pageSize int, location, environment, severity, status string, from, to time.Time) ([]map[string]interface{}, error)
 	// SearchClusters search clusters
 	SearchClusters(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error)
+	GetClusters(filter dto.GlobalFilter) ([]dto.Cluster, error)
 	// GetCluster fetch all information about a cluster in the database
 	GetCluster(clusterName string, olderThan time.Time) (*dto.Cluster, error)
 	// SearchOracleDatabaseAddms search addms
@@ -149,7 +150,19 @@ type MongoDatabaseInterface interface {
 	// ExistNotInClusterHost return true if the host specified by hostname exist and it is not in cluster, otherwise false
 	ExistNotInClusterHost(hostname string) (bool, error)
 
+	// MYSQL
+
 	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
+	//GetMySQLUsedLicenses return MySQL used licenses.
+	// Only ENTERPRISE MySQL db are considered as licenses
+	GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error)
+
+	// MYSQL AGREEMENTS
+
+	AddMySQLAgreement(agreement model.MySQLAgreement) (primitive.ObjectID, error)
+	UpdateMySQLAgreement(agreement model.MySQLAgreement) error
+	GetMySQLAgreements() ([]model.MySQLAgreement, error)
+	DeleteMySQLAgreement(id primitive.ObjectID) error
 }
 
 // MongoDatabase is a implementation

@@ -30,7 +30,7 @@ func (md *MongoDatabase) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabase
 		Collection("oracle_database_license_types").
 		Find(ctx, bson.M{})
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	licenseTypes := make([]model.OracleDatabaseLicenseType, 0)
@@ -45,7 +45,7 @@ func (md *MongoDatabase) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabase
 		licenseTypes = append(licenseTypes, licenseType)
 	}
 	if err := cur.Err(); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	return licenseTypes, nil

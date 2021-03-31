@@ -62,7 +62,7 @@ func (ctrl *APIController) searchHostsJSON(w http.ResponseWriter, r *http.Reques
 	if mode == "" {
 		mode = "full"
 	} else if mode != "full" && mode != "summary" && mode != "lms" && mode != "mhd" && mode != "hostnames" {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Invalid mode value"), http.StatusText(http.StatusUnprocessableEntity)))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(errors.New("Invalid mode value"), http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 
@@ -111,7 +111,7 @@ func (ctrl *APIController) searchHostsXLSX(w http.ResponseWriter, r *http.Reques
 
 	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_hosts.xlsx")
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewError(err, "READ_TEMPLATE"))
 		return
 	}
 
@@ -253,7 +253,7 @@ func (ctrl *APIController) ListEnvironments(w http.ResponseWriter, r *http.Reque
 // ArchiveHost archive the specified host in the request
 func (ctrl *APIController) ArchiveHost(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 

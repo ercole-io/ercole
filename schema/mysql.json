@@ -41,7 +41,10 @@
                     },
                     "edition": {
                         "type": "string",
-                        "minLength": 1
+                        "enum": [
+                            "COMMUNITY",
+                            "ENTERPRISE"
+                        ]
                     },
                     "platform": {
                         "type": "string",

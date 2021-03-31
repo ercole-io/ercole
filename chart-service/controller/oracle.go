@@ -41,7 +41,7 @@ func (ctrl *ChartController) GetOracleDatabaseChart(w http.ResponseWriter, r *ht
 	}
 
 	if !utils.Contains(model.TechnologiesSupportedMetricsMap[model.TechnologyOracleDatabase].Metrics, metric) {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Unrecognized"), http.StatusText(http.StatusUnprocessableEntity)))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(errors.New("Unrecognized"), http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 

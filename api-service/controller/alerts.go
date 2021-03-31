@@ -50,7 +50,7 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 	if mode == "" {
 		mode = "all"
 	} else if mode != "all" && mode != "aggregated-code-severity" && mode != "aggregated-category-severity" {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("Invalid mode value"), http.StatusText(http.StatusUnprocessableEntity)))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(errors.New("Invalid mode value"), http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
 
@@ -79,13 +79,13 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 
 	severity = r.URL.Query().Get("severity")
 	if severity != "" && severity != model.AlertSeverityWarning && severity != model.AlertSeverityCritical && severity != model.AlertSeverityInfo {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid severity"), "Invalid  severity"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(errors.New("invalid severity"), "Invalid  severity"))
 		return
 	}
 
 	status = r.URL.Query().Get("status")
 	if status != "" && status != model.AlertStatusNew && status != model.AlertStatusAck {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewAdvancedErrorPtr(errors.New("invalid status"), "Invalid  status"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(errors.New("invalid status"), "Invalid  status"))
 		return
 	}
 
@@ -105,7 +105,7 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		if mode != "all" {
 			utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
-				utils.NewAdvancedErrorPtr(fmt.Errorf("only mode 'all' is acceptable for xlsx"), http.StatusText(http.StatusBadRequest)))
+				utils.NewError(fmt.Errorf("only mode 'all' is acceptable for xlsx"), http.StatusText(http.StatusBadRequest)))
 			return
 		}
 
@@ -149,7 +149,7 @@ func (ctrl *APIController) searchAlertsXLSX(w http.ResponseWriter, r *http.Reque
 	//TODO Move in service
 	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_alerts.xlsx")
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewError(err, "READ_TEMPLATE"))
 		return
 	}
 
@@ -168,7 +168,7 @@ func (ctrl *APIController) searchAlertsXLSX(w http.ResponseWriter, r *http.Reque
 // AckAlerts ack the specified alert in the request
 func (ctrl *APIController) AckAlerts(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewAdvancedErrorPtr(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 
@@ -178,7 +178,7 @@ func (ctrl *APIController) AckAlerts(w http.ResponseWriter, r *http.Request) {
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&ids); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
-			utils.NewAdvancedErrorPtr(err, http.StatusText(http.StatusBadRequest)))
+			utils.NewError(err, http.StatusText(http.StatusBadRequest)))
 		return
 	}
 
