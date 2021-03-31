@@ -152,7 +152,7 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	var out []map[string]interface{} = make([]map[string]interface{}, 0)
@@ -161,7 +161,7 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 		var item map[string]interface{}
 
 		if cur.Decode(&item) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+			return nil, utils.NewError(err, "Decode ERROR")
 		}
 
 		out = append(out, item)
@@ -191,7 +191,7 @@ func (md *MongoDatabase) UpdateAlertsStatus(ids []primitive.ObjectID, newStatus 
 				"alertStatus": newStatus,
 			}))
 	if err != nil || res.MatchedCount != int64(len(ids)) {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 
 	return nil

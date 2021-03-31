@@ -111,7 +111,7 @@ func checkHosts(as *APIService, hosts []string) error {
 			GTECPUThreads:  -1,
 		})
 	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "")
+		return utils.NewError(err, "")
 	}
 
 	notInClusterHostnames := make([]string, len(notInClusterHosts))
@@ -193,7 +193,7 @@ func (as *APIService) SearchAssociatedLicenseTypesInOracleDatabaseAgreements(fil
 
 	err2 := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
 	if err2 != nil {
-		return nil, utils.NewAdvancedErrorPtr(err2, "DB ERROR")
+		return nil, utils.NewError(err2, "DB ERROR")
 	}
 
 	filteredAgrs := make([]dto.OracleDatabaseAgreementFE, 0)

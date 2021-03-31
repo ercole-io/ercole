@@ -43,7 +43,7 @@ func (md *MongoDatabase) GetTotalOracleExadataMemorySizeStats(location string, e
 		),
 	)
 	if err != nil {
-		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return 0, utils.NewError(err, "DB ERROR")
 	}
 
 	//Next the cursor. If there is no document return a empty document
@@ -54,7 +54,7 @@ func (md *MongoDatabase) GetTotalOracleExadataMemorySizeStats(location string, e
 
 	//Decode the document
 	if err := cur.Decode(&out); err != nil {
-		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return 0, utils.NewError(err, "DB ERROR")
 	}
 
 	return float64(out["value"]), nil
@@ -80,7 +80,7 @@ func (md *MongoDatabase) GetTotalOracleExadataCPUStats(location string, environm
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	//Next the cursor. If there is no document return a empty document
@@ -94,7 +94,7 @@ func (md *MongoDatabase) GetTotalOracleExadataCPUStats(location string, environm
 
 	//Decode the document
 	if err := cur.Decode(&out); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	return out, nil
@@ -150,7 +150,7 @@ func (md *MongoDatabase) GetAverageOracleExadataStorageUsageStats(location strin
 		),
 	)
 	if err != nil {
-		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return 0, utils.NewError(err, "DB ERROR")
 	}
 
 	//Next the cursor. If there is no document return a empty document
@@ -161,7 +161,7 @@ func (md *MongoDatabase) GetAverageOracleExadataStorageUsageStats(location strin
 
 	//Decode the document
 	if err := cur.Decode(&out); err != nil {
-		return 0, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return 0, utils.NewError(err, "DB ERROR")
 	}
 
 	return float64(out["value"]), nil
@@ -195,14 +195,14 @@ func (md *MongoDatabase) GetOracleExadataStorageErrorCountStatusStats(location s
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	//Decode the documents
 	for cur.Next(context.TODO()) {
 		var item map[string]interface{}
 		if cur.Decode(&item) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+			return nil, utils.NewError(err, "Decode ERROR")
 		}
 		out = append(out, &item)
 	}
@@ -235,14 +235,14 @@ func (md *MongoDatabase) GetOracleExadataPatchStatusStats(location string, envir
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	//Decode the documents
 	for cur.Next(context.TODO()) {
 		var item map[string]interface{}
 		if cur.Decode(&item) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+			return nil, utils.NewError(err, "Decode ERROR")
 		}
 		out = append(out, &item)
 	}

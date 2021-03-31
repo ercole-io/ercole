@@ -26,4 +26,4 @@ import (
 
 //Common data
 var errMock error = errors.New("MockError")
-var aerrMock error = utils.NewAdvancedErrorPtr(errMock, "mock")
+var aerrMock error = utils.NewError(errMock, "mock")

@@ -26,7 +26,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (md *MongoDatabase) HistoricizeOracleDbsLicenses(licenses []dto.OracleDatabaseLicenseUsage) error {
+func (md *MongoDatabase) HistoricizeOracleDbsLicenses(licenses []dto.LicenseCompliance) error {
 	now := md.TimeNow()
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 
@@ -47,7 +47,7 @@ func (md *MongoDatabase) HistoricizeOracleDbsLicenses(licenses []dto.OracleDatab
 	return nil
 }
 
-func (md *MongoDatabase) updateOracleDbsLicenseHistory(license dto.OracleDatabaseLicenseUsage, today time.Time) (done bool, err error) {
+func (md *MongoDatabase) updateOracleDbsLicenseHistory(license dto.LicenseCompliance, today time.Time) (done bool, err error) {
 	filter := bson.D{
 		{Key: "licenseTypeID", Value: license.LicenseTypeID},
 		{Key: "history", Value: bson.D{{Key: "$elemMatch", Value: bson.D{{Key: "date", Value: today}}}}}}
@@ -64,7 +64,7 @@ func (md *MongoDatabase) updateOracleDbsLicenseHistory(license dto.OracleDatabas
 			filter,
 			update)
 	if err != nil {
-		return false, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return false, utils.NewError(err, "DB ERROR")
 	}
 
 	if res.MatchedCount < 1 {
@@ -74,7 +74,7 @@ func (md *MongoDatabase) updateOracleDbsLicenseHistory(license dto.OracleDatabas
 	return true, nil
 }
 
-func (md *MongoDatabase) insertOracleDbsLicenseHistory(license dto.OracleDatabaseLicenseUsage, today time.Time) error {
+func (md *MongoDatabase) insertOracleDbsLicenseHistory(license dto.LicenseCompliance, today time.Time) error {
 	filter := bson.D{{Key: "licenseTypeID", Value: license.LicenseTypeID}}
 	updateOptions := options.Update()
 	updateOptions.SetUpsert(true)
@@ -97,7 +97,7 @@ func (md *MongoDatabase) insertOracleDbsLicenseHistory(license dto.OracleDatabas
 			updateOptions)
 
 	if (res.ModifiedCount < 1 && res.UpsertedCount < 1) || err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 
 	return nil

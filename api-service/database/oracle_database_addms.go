@@ -67,14 +67,14 @@ func (md *MongoDatabase) SearchOracleDatabaseAddms(keywords []string, sortBy str
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	//Decode the documents
 	for cur.Next(context.TODO()) {
 		var item map[string]interface{}
 		if cur.Decode(&item) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+			return nil, utils.NewError(err, "Decode ERROR")
 		}
 		out = append(out, item)
 	}

@@ -33,17 +33,17 @@ func (as *APIService) SearchHosts(mode string, filters dto.SearchHostsFilters) (
 func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsFilters) (*excelize.File, error) {
 	hosts, err := as.Database.SearchHosts("lms", filters)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "")
+		return nil, utils.NewError(err, "")
 	}
 
 	csiByHostname, err := as.getCSIsByHostname()
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "")
+		return nil, utils.NewError(err, "")
 	}
 
 	lms, err := excelize.OpenFile(as.Config.ResourceFilePath + "/templates/template_lms.xlsm")
 	if err != nil {
-		aerr := utils.NewAdvancedErrorPtr(err, "READ_TEMPLATE")
+		aerr := utils.NewError(err, "READ_TEMPLATE")
 		return nil, aerr
 	}
 

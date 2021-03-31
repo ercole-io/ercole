@@ -92,6 +92,8 @@ func (hds *HostDataService) addLicensesToSecondaryDb(hostInfo model.Host, second
 			hds.Log.Error("Can't throw new alert")
 			return
 		}
+
+		return
 	}
 
 	coreFactor := secondaryDb.CoreFactor(hostInfo)
@@ -130,13 +132,13 @@ func (hds *HostDataService) getPrimaryOpenOracleDatabases() (dbs []model.OracleD
 
 	resp, err := http.Get(url)
 	if err != nil || resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return nil, utils.NewAdvancedErrorPtr(err, "Can't retrieve databases")
+		return nil, utils.NewError(err, "Can't retrieve databases")
 	}
 
 	decoder := json.NewDecoder(resp.Body)
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&dbs); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "Can't decode databases")
+		return nil, utils.NewError(err, "Can't decode databases")
 	}
 
 	for i := 0; i < len(dbs); {
@@ -212,7 +214,7 @@ func (hds *HostDataService) getOracleDatabaseLicenseTypes(environment string,
 
 	resp, err := http.Get(url)
 	if err != nil || resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return nil, utils.NewAdvancedErrorPtr(err, "Can't retrieve licenseTypes")
+		return nil, utils.NewError(err, "Can't retrieve licenseTypes")
 	}
 
 	licenseTypes := make([]model.OracleDatabaseLicenseType, 0)
@@ -220,7 +222,7 @@ func (hds *HostDataService) getOracleDatabaseLicenseTypes(environment string,
 	decoder := json.NewDecoder(resp.Body)
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&licenseTypes); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "Can't decode licenseTypes")
+		return nil, utils.NewError(err, "Can't decode licenseTypes")
 	}
 
 	sort.Slice(licenseTypes, licenseTypesSorter(hds.Config.DataService, environment, licenseTypes))

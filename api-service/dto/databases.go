@@ -34,3 +34,12 @@ type DatabasesStatistics struct {
 	TotalMemorySize   float64 `json:"total-memory-size"`   // in GB
 	TotalSegmentsSize float64 `json:"total-segments-size"` // in GB
 }
+
+type DatabaseUsedLicense struct {
+	Hostname      string  `json:"hostname" bson:"hostname"`
+	DbName        string  `json:"dbName" bson:"dbName"`
+	LicenseTypeID string  `json:"licenseTypeID" bson:"licenseTypeID"`
+	Description   string  `json:"description" bson:"description"`
+	Metric        string  `json:"metric" bson:"metric"`
+	UsedLicenses  float64 `json:"usedLicenses" bson:"usedLicenses"`
+}

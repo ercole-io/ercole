@@ -260,7 +260,7 @@ func (md *MongoDatabase) SearchHosts(mode string, filters dto.SearchHostsFilters
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	var out []map[string]interface{} = make([]map[string]interface{}, 0)
@@ -268,7 +268,7 @@ func (md *MongoDatabase) SearchHosts(mode string, filters dto.SearchHostsFilters
 	for cur.Next(context.TODO()) {
 		var item map[string]interface{}
 		if cur.Decode(&item) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+			return nil, utils.NewError(err, "Decode ERROR")
 		}
 		out = append(out, item)
 	}
@@ -363,7 +363,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	//Next the cursor. If there is no document return a empty document
@@ -374,7 +374,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 
 	//Decode the document
 	if err := cur.Decode(&out); err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	return out, nil
@@ -396,14 +396,14 @@ func (md *MongoDatabase) ListLocations(location string, environment string, olde
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	//Decode the documents
 	for cur.Next(context.TODO()) {
 		var item map[string]string
 		if cur.Decode(&item) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+			return nil, utils.NewError(err, "Decode ERROR")
 		}
 		out = append(out, item["_id"])
 	}
@@ -426,14 +426,14 @@ func (md *MongoDatabase) ListEnvironments(location string, environment string, o
 		),
 	)
 	if err != nil {
-		return nil, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	//Decode the documents
 	for cur.Next(context.TODO()) {
 		var item map[string]string
 		if cur.Decode(&item) != nil {
-			return nil, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+			return nil, utils.NewError(err, "Decode ERROR")
 		}
 		out = append(out, item["_id"])
 	}
@@ -450,13 +450,13 @@ func (md *MongoDatabase) FindHostData(hostname string) (model.HostDataBE, error)
 	if res.Err() == mongo.ErrNoDocuments {
 		return model.HostDataBE{}, utils.ErrHostNotFound
 	} else if res.Err() != nil {
-		return model.HostDataBE{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+		return model.HostDataBE{}, utils.NewError(res.Err(), "DB ERROR")
 	}
 
 	//Decode the data
 	var out model.HostDataBE
 	if err := res.Decode(&out); err != nil {
-		return model.HostDataBE{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
+		return model.HostDataBE{}, utils.NewError(res.Err(), "DB ERROR")
 	}
 
 	var out2 map[string]interface{}
@@ -477,7 +477,7 @@ func (md *MongoDatabase) ReplaceHostData(hostData model.HostDataBE) error {
 		hostData,
 	)
 	if err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 	return nil
 }
@@ -492,7 +492,7 @@ func (md *MongoDatabase) ExistHostdata(hostname string) (bool, error) {
 		Limit: utils.Intptr(1),
 	})
 	if err != nil {
-		return false, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return false, utils.NewError(err, "DB ERROR")
 	}
 
 	//Return true if the count > 0
@@ -507,7 +507,7 @@ func (md *MongoDatabase) ArchiveHost(hostname string) error {
 	}, mu.UOSet(bson.M{
 		"archived": true,
 	})); err != nil {
-		return utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 
 	return nil
@@ -546,12 +546,12 @@ func (md *MongoDatabase) ExistNotInClusterHost(hostname string) (bool, error) {
 		),
 	)
 	if err != nil {
-		return false, utils.NewAdvancedErrorPtr(err, "DB ERROR")
+		return false, utils.NewError(err, "DB ERROR")
 	}
 
 	//Decode the documents
 	if err = cur.All(context.TODO(), &out); err != nil {
-		return false, utils.NewAdvancedErrorPtr(err, "Decode ERROR")
+		return false, utils.NewError(err, "Decode ERROR")
 	}
 
 	return len(out) > 0, nil
