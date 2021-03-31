@@ -243,3 +243,20 @@ func (as *APIService) getMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.Datab
 
 	return genericLics, nil
 }
+
+func (as *APIService) GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error) {
+	licenses := make([]dto.LicenseCompliance, 0)
+
+	oracle, err := as.GetOracleDatabaseLicensesCompliance()
+	if err != nil {
+		return nil, err
+	}
+	licenses = append(licenses, oracle...)
+
+	mysql, err := as.GetMySQLDatabaseLicensesCompliance()
+	if err != nil {
+		return nil, err
+	}
+	licenses = append(licenses, mysql...)
+	return licenses, nil
+}

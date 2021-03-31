@@ -156,6 +156,7 @@ type APIControllerInterface interface {
 	SearchDatabases(w http.ResponseWriter, r *http.Request)
 	GetDatabasesStatistics(w http.ResponseWriter, r *http.Request)
 	GetDatabasesUsedLicenses(w http.ResponseWriter, r *http.Request)
+	GetDatabaseLicensesCompliance(w http.ResponseWriter, r *http.Request)
 
 	// MYSQL
 

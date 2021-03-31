@@ -199,7 +199,7 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 				{
 					Hostname:        "pippo",
 					InstanceName:    "pippo-instance",
-					InstanceEdition: model.MySQLEditionCommunity,
+					InstanceEdition: model.MySQLEditionEnterprise,
 					AgreementType:   "",
 				},
 			},
@@ -226,7 +226,7 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 				{
 					Hostname:        "pippo",
 					InstanceName:    "pippo-instance",
-					InstanceEdition: model.MySQLEditionCommunity,
+					InstanceEdition: model.MySQLEditionEnterprise,
 					AgreementType:   model.MySQLAgreementTypeHost,
 				},
 			},
@@ -265,6 +265,7 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 					InstanceName:    "pluto-instance",
 					InstanceEdition: model.MySQLEditionEnterprise,
 					AgreementType:   model.MySQLAgreementTypeCluster,
+					Covered:         true,
 				},
 			},
 		},
@@ -295,5 +296,179 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, tc.expected, actual)
+	}
+}
+
+func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
+
+	testCases := []struct {
+		usedLicenses []dto.MySQLUsedLicense
+		clusters     []dto.Cluster
+		agreements   []model.MySQLAgreement
+		expected     []dto.LicenseCompliance
+	}{
+		{
+			usedLicenses: []dto.MySQLUsedLicense{},
+			clusters:     []dto.Cluster{},
+			agreements:   []model.MySQLAgreement{},
+			expected: []dto.LicenseCompliance{
+				{
+					LicenseTypeID:   "",
+					ItemDescription: "MySQL Enterprise per host",
+					Metric:          "",
+					Consumed:        0,
+					Covered:         0,
+					Compliance:      1,
+					Unlimited:       false,
+				},
+				{
+					LicenseTypeID:   "",
+					ItemDescription: "MySQL Enterprise per cluster",
+					Metric:          "",
+					Consumed:        0,
+					Covered:         0,
+					Compliance:      1,
+					Unlimited:       false,
+				},
+			},
+		},
+		{
+			usedLicenses: []dto.MySQLUsedLicense{
+				{
+					Hostname:        "pluto",
+					InstanceName:    "pluto-instance",
+					InstanceEdition: model.MySQLEditionEnterprise,
+					AgreementType:   "",
+					Covered:         true,
+				},
+			},
+			clusters: []dto.Cluster{
+				{
+					Name: "pippo-cluster",
+					VMs: []dto.VM{
+						{
+							Hostname: "pippo",
+						},
+					},
+				},
+			},
+			agreements: []model.MySQLAgreement{
+				{
+					ID:               [12]byte{},
+					Type:             model.MySQLAgreementTypeHost,
+					NumberOfLicenses: 12,
+					Clusters:         []string{},
+					Hosts:            []string{"pippo", "topolino", "pluto"},
+				},
+			},
+			expected: []dto.LicenseCompliance{
+				{
+					LicenseTypeID:   "",
+					ItemDescription: "MySQL Enterprise per host",
+					Metric:          "",
+					Consumed:        1,
+					Covered:         1,
+					Compliance:      1,
+					Unlimited:       false,
+				},
+				{
+					LicenseTypeID:   "",
+					ItemDescription: "MySQL Enterprise per cluster",
+					Metric:          "",
+					Consumed:        0,
+					Covered:         0,
+					Compliance:      1,
+					Unlimited:       false,
+				},
+			},
+		},
+		{
+			usedLicenses: []dto.MySQLUsedLicense{
+				{
+					Hostname:        "pluto",
+					InstanceName:    "pluto-instance",
+					InstanceEdition: model.MySQLEditionEnterprise,
+					AgreementType:   "",
+				},
+				{
+					Hostname:        "pippo",
+					InstanceName:    "pippo-instance",
+					InstanceEdition: model.MySQLEditionEnterprise,
+					AgreementType:   "",
+				},
+			},
+			clusters: []dto.Cluster{
+				{
+					Hostname: "pluto-cluster",
+					VMs: []dto.VM{
+						{
+							Hostname: "pluto",
+						},
+					},
+				},
+			},
+			agreements: []model.MySQLAgreement{
+				{
+					ID:               [12]byte{},
+					Type:             model.MySQLAgreementTypeCluster,
+					NumberOfLicenses: 12,
+					Clusters:         []string{"pippo-cluster", "pluto-cluster"},
+					Hosts:            []string{},
+				},
+			},
+			expected: []dto.LicenseCompliance{
+				{
+					LicenseTypeID:   "",
+					ItemDescription: "MySQL Enterprise per host",
+					Metric:          "",
+					Consumed:        1,
+					Covered:         0,
+					Compliance:      0,
+					Unlimited:       false,
+				},
+				{
+					LicenseTypeID:   "",
+					ItemDescription: "MySQL Enterprise per cluster",
+					Metric:          "",
+					Consumed:        1,
+					Covered:         1,
+					Compliance:      1,
+					Unlimited:       false,
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		filter := dto.GlobalFilter{
+			Location:    "",
+			Environment: "",
+			OlderThan:   utils.MAX_TIME,
+		}
+		any := dto.GlobalFilter{
+			Location:    "",
+			Environment: "",
+			OlderThan:   utils.MAX_TIME,
+		}
+
+		gomock.InOrder(
+			db.EXPECT().GetMySQLUsedLicenses(filter).
+				Return(tc.usedLicenses, nil),
+			db.EXPECT().GetClusters(any).
+				Return(tc.clusters, nil),
+			db.EXPECT().GetMySQLAgreements().
+				Return(tc.agreements, nil),
+		)
+
+		actual, err := as.GetMySQLDatabaseLicensesCompliance()
+		require.NoError(t, err)
+
+		assert.ElementsMatch(t, tc.expected, actual)
 	}
 }
