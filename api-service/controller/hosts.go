@@ -167,7 +167,7 @@ func (ctrl *APIController) GetHostJSON(w http.ResponseWriter, r *http.Request) {
 	}
 
 	host, err := ctrl.Service.GetHost(hostname, olderThan, false)
-	if err == utils.ErrHostNotFound {
+	if errors.Is(err, utils.ErrHostNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
@@ -191,7 +191,7 @@ func (ctrl *APIController) GetHostMongoJSON(w http.ResponseWriter, r *http.Reque
 	}
 
 	host, err := ctrl.Service.GetHost(hostname, olderThan, true)
-	if err == utils.ErrHostNotFound {
+	if errors.Is(err, utils.ErrHostNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
@@ -260,7 +260,7 @@ func (ctrl *APIController) ArchiveHost(w http.ResponseWriter, r *http.Request) {
 	hostname := mux.Vars(r)["hostname"]
 
 	err := ctrl.Service.ArchiveHost(hostname)
-	if err == utils.ErrHostNotFound {
+	if errors.Is(err, utils.ErrHostNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 	} else if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
