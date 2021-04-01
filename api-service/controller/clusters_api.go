@@ -16,6 +16,7 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -173,7 +174,7 @@ func (ctrl *APIController) GetCluster(w http.ResponseWriter, r *http.Request) {
 //GetClusterJSON get cluster data using the filters in the request and returns it in JSON format
 func (ctrl *APIController) GetClusterJSON(w http.ResponseWriter, r *http.Request, clusterName string, olderThan time.Time) {
 	data, err := ctrl.Service.GetCluster(clusterName, olderThan)
-	if err == utils.ErrClusterNotFound {
+	if errors.Is(err, utils.ErrClusterNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
@@ -187,7 +188,7 @@ func (ctrl *APIController) GetClusterJSON(w http.ResponseWriter, r *http.Request
 //GetClusterXLSX get cluster data using the filters in the request and returns it in XLSX format
 func (ctrl *APIController) GetClusterXLSX(w http.ResponseWriter, r *http.Request, clusterName string, olderThan time.Time) {
 	xlsx, err := ctrl.Service.GetClusterXLSX(clusterName, olderThan)
-	if err == utils.ErrClusterNotFound {
+	if errors.Is(err, utils.ErrClusterNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {

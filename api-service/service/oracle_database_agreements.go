@@ -16,6 +16,7 @@
 package service
 
 import (
+	"errors"
 	"math"
 	"sort"
 	"strings"
@@ -38,7 +39,7 @@ func (as *APIService) AddAssociatedLicenseTypeToOracleDbAgreement(request dto.As
 	}
 
 	agreement, err := as.Database.GetOracleDatabaseAgreement(request.AgreementID)
-	if err == utils.ErrOracleDatabaseAgreementNotFound {
+	if errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) {
 		agreement = &model.OracleDatabaseAgreement{
 			AgreementID:  request.AgreementID,
 			CSI:          request.CSI,

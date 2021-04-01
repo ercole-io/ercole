@@ -183,7 +183,7 @@ func (ctrl *APIController) AckAlerts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := ctrl.Service.AckAlerts(ids)
-	if err == utils.ErrAlertNotFound {
+	if errors.Is(err, utils.ErrAlertNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 	} else if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)

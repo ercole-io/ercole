@@ -251,7 +251,7 @@ func (md *MongoDatabase) GetCluster(clusterName string, olderThan time.Time) (*d
 
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
-		return nil, utils.ErrHostNotFound
+		return nil, utils.NewError(utils.ErrClusterNotFound)
 	}
 
 	var out dto.Cluster

@@ -31,8 +31,8 @@ import (
 type ErrorResponseFE struct {
 	// Error contains detailed informations about the error
 	Error string `json:"error"`
-	// ErrorClass contains the (generic) class of the error
-	ErrorClass string `json:"errorClass,omitempty"`
+	// Message contains more information about the error
+	Message string `json:"message,omitempty"`
 	// File contains the filename of the source code where the error was detected
 	SourceFilename string `json:"sourceFilename,omitempty"`
 	// LineNumber contains the number of the line where the error was detected
@@ -47,21 +47,21 @@ func WriteAndLogError(log *logrus.Logger, w http.ResponseWriter, statusCode int,
 	if errors.As(err, &aerr) {
 		resp = ErrorResponseFE{
 			Error:          aerr.Err.Error(),
-			ErrorClass:     aerr.Class,
+			Message:        aerr.Message,
 			LineNumber:     aerr.Line,
 			SourceFilename: aerr.Source,
 		}
 	} else if _, file, line, ok := runtime.Caller(1); ok {
 		resp = ErrorResponseFE{
 			Error:          err.Error(),
-			ErrorClass:     http.StatusText(statusCode),
+			Message:        http.StatusText(statusCode),
 			SourceFilename: file,
 			LineNumber:     line,
 		}
 	} else {
 		resp = ErrorResponseFE{
 			Error:          err.Error(),
-			ErrorClass:     "",
+			Message:        "",
 			SourceFilename: "",
 			LineNumber:     0,
 		}

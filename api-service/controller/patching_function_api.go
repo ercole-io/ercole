@@ -35,7 +35,7 @@ func (ctrl *APIController) GetPatchingFunction(w http.ResponseWriter, r *http.Re
 
 	//get the data
 	pf, err := ctrl.Service.GetPatchingFunction(hostname)
-	if err == utils.ErrHostNotFound || err == utils.ErrPatchingFunctionNotFound {
+	if errors.Is(err, utils.ErrHostNotFound) || errors.Is(err, utils.ErrPatchingFunctionNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
@@ -68,7 +68,7 @@ func (ctrl *APIController) SetPatchingFunction(w http.ResponseWriter, r *http.Re
 	}
 	//set the value
 	id, err := ctrl.Service.SetPatchingFunction(hostname, pf)
-	if err == utils.ErrHostNotFound {
+	if errors.Is(err, utils.ErrHostNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
@@ -96,7 +96,7 @@ func (ctrl *APIController) DeletePatchingFunction(w http.ResponseWriter, r *http
 
 	//delete the value
 	err := ctrl.Service.DeletePatchingFunction(hostname)
-	if err == utils.ErrHostNotFound {
+	if errors.Is(err, utils.ErrHostNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
