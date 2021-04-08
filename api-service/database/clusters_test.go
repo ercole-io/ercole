@@ -342,11 +342,11 @@ func (m *MongodbSuite) TestGetCluster() {
 
 	m.InsertHostData(utils.LoadFixtureHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
 
-	m.T().Run("HostNotFound", func(t *testing.T) {
+	m.T().Run("ClusterNotFound", func(t *testing.T) {
 		clusterName := ""
 		olderThan := utils.MAX_TIME
 		out, err := m.db.GetCluster(clusterName, olderThan)
-		m.Require().Equal(err, utils.ErrHostNotFound)
+		m.Require().ErrorIs(err, utils.ErrClusterNotFound)
 
 		var expected *dto.Cluster
 		assert.EqualValues(m.T(), expected, out)
