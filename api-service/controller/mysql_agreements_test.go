@@ -111,7 +111,7 @@ func TestAddMySQLAgreement_BadRequest_CantDecode(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "json: unknown field \"Pippo\"", feErr.Error)
-	assert.Equal(t, "Bad Request", feErr.ErrorClass)
+	assert.Equal(t, "Bad Request", feErr.Message)
 }
 
 func TestAddMySQLAgreement_BadRequest_HasID(t *testing.T) {
@@ -153,7 +153,7 @@ func TestAddMySQLAgreement_BadRequest_HasID(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "ID must be empty", feErr.Error)
-	assert.Equal(t, "Bad Request", feErr.ErrorClass)
+	assert.Equal(t, "Bad Request", feErr.Message)
 }
 
 func TestAddMySQLAgreement_InternalServerError(t *testing.T) {
@@ -198,7 +198,7 @@ func TestAddMySQLAgreement_InternalServerError(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "MockError", feErr.Error)
-	assert.Equal(t, "Internal Server Error", feErr.ErrorClass)
+	assert.Equal(t, "Internal Server Error", feErr.Message)
 }
 
 func TestUpdateMySQLAgreement_Success(t *testing.T) {
@@ -282,7 +282,7 @@ func TestUpdateMySQLAgreement_BadRequest_CantDecode(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "json: unknown field \"Pippo\"", feErr.Error)
-	assert.Equal(t, "Bad Request", feErr.ErrorClass)
+	assert.Equal(t, "Bad Request", feErr.Message)
 }
 
 func TestUpdateMySQLAgreement_BadRequest_HasWrongID(t *testing.T) {
@@ -326,7 +326,7 @@ func TestUpdateMySQLAgreement_BadRequest_HasWrongID(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "Object ID does not correspond", feErr.Error)
-	assert.Equal(t, "Bad Request", feErr.ErrorClass)
+	assert.Equal(t, "Bad Request", feErr.Message)
 }
 
 func TestUpdateMySQLAgreement_NotFoundError(t *testing.T) {
@@ -375,7 +375,7 @@ func TestUpdateMySQLAgreement_NotFoundError(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "Not found", feErr.Error)
-	assert.Equal(t, "test", feErr.ErrorClass)
+	assert.Equal(t, "test", feErr.Message)
 }
 
 func TestUpdateMySQLAgreement_InternalServerError(t *testing.T) {
@@ -423,7 +423,7 @@ func TestUpdateMySQLAgreement_InternalServerError(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "MockError", feErr.Error)
-	assert.Equal(t, "Internal Server Error", feErr.ErrorClass)
+	assert.Equal(t, "Internal Server Error", feErr.Message)
 }
 
 func TestGetMySQLAgreements_Success(t *testing.T) {
@@ -499,7 +499,7 @@ func TestGetMySQLAgreements_InternalServerError(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "MockError", feErr.Error)
-	assert.Equal(t, "Internal Server Error", feErr.ErrorClass)
+	assert.Equal(t, "Internal Server Error", feErr.Message)
 }
 
 func TestDeleteMySQLAgreement_Success(t *testing.T) {
@@ -559,7 +559,7 @@ func TestDeleteMySQLAgreement_BadRequest_HasWrongID(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "Can't decode id: encoding/hex: invalid byte: U+0073 's'", feErr.Error)
-	assert.Equal(t, "Unprocessable Entity", feErr.ErrorClass)
+	assert.Equal(t, "Unprocessable Entity", feErr.Message)
 }
 
 func TestDeleteMySQLAgreement_NotFoundError(t *testing.T) {
@@ -596,7 +596,7 @@ func TestDeleteMySQLAgreement_NotFoundError(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "Not found", feErr.Error)
-	assert.Equal(t, "test", feErr.ErrorClass)
+	assert.Equal(t, "test", feErr.Message)
 }
 
 func TestDeleteMySQLAgreement_InternalServerError(t *testing.T) {
@@ -632,5 +632,5 @@ func TestDeleteMySQLAgreement_InternalServerError(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "MockError", feErr.Error)
-	assert.Equal(t, "Internal Server Error", feErr.ErrorClass)
+	assert.Equal(t, "Internal Server Error", feErr.Message)
 }

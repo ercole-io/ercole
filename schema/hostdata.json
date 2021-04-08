@@ -156,14 +156,28 @@
                 "oracleClusterware": {
                     "type": "boolean"
                 },
-                "veritasClusterServer": {
-                    "type": "boolean"
-                },
                 "sunCluster": {
                     "type": "boolean"
                 },
                 "hacmp": {
                     "type": "boolean"
+                },
+                "veritasClusterServer": {
+                    "type": "boolean"
+                },
+                "veritasClusterHostnames": {
+                    "anyOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
                 }
             }
         },
