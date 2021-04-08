@@ -21,13 +21,16 @@ import (
 	godynstruct "github.com/amreo/go-dyn-struct"
 )
 
-//ClusterMembershipStatus hold informations about the cluster membership
+//ClusterMembershipStatus hold informations about the physical cluster membership
 type ClusterMembershipStatus struct {
-	OracleClusterware    bool                   `json:"oracleClusterware" bson:"oracleClusterware"`
-	VeritasClusterServer bool                   `json:"veritasClusterServer" bson:"veritasClusterServer"`
-	SunCluster           bool                   `json:"sunCluster" bson:"sunCluster"`
-	HACMP                bool                   `json:"hacmp" bson:"hacmp"`
-	OtherInfo            map[string]interface{} `json:"-" bson:"-"`
+	OracleClusterware bool `json:"oracleClusterware" bson:"oracleClusterware"`
+	SunCluster        bool `json:"sunCluster" bson:"sunCluster"`
+	HACMP             bool `json:"hacmp" bson:"hacmp"`
+
+	VeritasClusterServer    bool     `json:"veritasClusterServer" bson:"veritasClusterServer"`
+	VeritasClusterHostnames []string `json:"veritasClusterHostnames" bson:"veritasClusterHostnames"`
+
+	OtherInfo map[string]interface{} `json:"-" bson:"-"`
 }
 
 // MarshalJSON return the JSON rappresentation of this
