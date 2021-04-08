@@ -43,7 +43,7 @@
     "clusters": [
         {
             "name": "Puzzait",
-            "type": "vmware",
+            "type": "VMWare/VMWare",
             "cpu": 140,
             "sockets": 10,
             "vms": [

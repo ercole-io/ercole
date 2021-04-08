@@ -43,7 +43,7 @@
     "clusters": [
         {
             "name": "Puzzait",
-            "type": "vmware",
+            "type": "VMWare/VMWare",
             "cpu": 140,
             "sockets": 10,
             "vms": [
@@ -64,7 +64,7 @@
         },
         {
             "name": "Puzzait2",
-            "type": "vmware",
+            "type": "VMWare/VMWare",
             "cpu": 140,
             "sockets": 10,
             "vms": [
@@ -85,7 +85,7 @@
         },
         {
             "name": "Puzzait3",
-            "type": "vmware",
+            "type": "VMWare/VMWare",
             "cpu": 140,
             "sockets": 10,
             "vms": [
@@ -106,7 +106,7 @@
         },
         {
             "name": "Puzzait4",
-            "type": "vmware",
+            "type": "VMWare/VMWare",
             "cpu": 140,
             "sockets": 10,
             "vms": [
@@ -139,7 +139,7 @@
         },
         {
             "name": "Puzzait5",
-            "type": "vmware",
+            "type": "VMWare/VMWare",
             "cpu": 140,
             "sockets": 10,
             "vms": [
@@ -160,7 +160,7 @@
         },
         {
             "name": "Puzzait6",
-            "type": "vmware",
+            "type": "VMWare/VMWare",
             "cpu": 140,
             "sockets": 10,
             "vms": [
@@ -181,7 +181,7 @@
         },
         {
             "name": "Puzzait7",
-            "type": "vmware",
+            "type": "VMWare/VMWare",
             "cpu": 140,
             "sockets": 10,
             "vms": [
@@ -202,7 +202,7 @@
         },
         {
             "name": "Puzzait8",
-            "type": "vmware",
+            "type": "VMWare/VMWare",
             "cpu": 140,
             "sockets": 10,
             "vms": [
@@ -223,7 +223,7 @@
         },
         {
             "name": "Puzzait9",
-            "type": "vmware",
+            "type": "VMWare/VMWare",
             "cpu": 140,
             "sockets": 10,
             "vms": [
@@ -244,7 +244,7 @@
         },
         {
             "name": "Puzzait10",
-            "type": "vmware",
+            "type": "VMWare/VMWare",
             "cpu": 140,
             "sockets": 10,
             "vms": [
