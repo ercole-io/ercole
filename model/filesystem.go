@@ -25,9 +25,9 @@ import (
 type Filesystem struct {
 	Filesystem     string                 `json:"filesystem" bson:"filesystem"`
 	Type           string                 `json:"type" bson:"type"`
-	Size           int64                  `json:"size" bson:"size"`
-	UsedSpace      int64                  `json:"usedSpace" bson:"usedSpace"`
-	AvailableSpace int64                  `json:"availableSpace" bson:"availableSpace"`
+	Size           int64                  `json:"size" bson:"size"`                     // in bytes
+	UsedSpace      int64                  `json:"usedSpace" bson:"usedSpace"`           // in bytes
+	AvailableSpace int64                  `json:"availableSpace" bson:"availableSpace"` // in bytes
 	MountedOn      string                 `json:"mountedOn" bson:"mountedOn"`
 	OtherInfo      map[string]interface{} `json:"-" bson:"-"`
 }

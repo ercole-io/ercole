@@ -17,6 +17,7 @@
 package service
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/ercole-io/ercole/v2/model"
@@ -295,7 +296,7 @@ func (as *APIService) DeleteTagOfOracleDatabase(hostname string, dbname string, 
 func (as *APIService) ApplyPatch(pf model.PatchingFunction) error {
 	//Get the data
 	data, err := as.Database.FindHostData(pf.Hostname)
-	if err == utils.ErrHostNotFound {
+	if errors.Is(err, utils.ErrHostNotFound) {
 		return nil
 	} else if err != nil {
 		return err

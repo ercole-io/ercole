@@ -68,8 +68,7 @@ func (ctrl *APIController) UpdateMySQLAgreement(w http.ResponseWriter, r *http.R
 	}
 
 	err = ctrl.Service.UpdateMySQLAgreement(agreement)
-	var aerr *utils.AdvancedError
-	if errors.As(err, &aerr) && errors.Is(aerr.Err, utils.ErrNotFound) {
+	if errors.Is(err, utils.ErrNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	}
@@ -102,8 +101,7 @@ func (ctrl *APIController) DeleteMySQLAgreement(w http.ResponseWriter, r *http.R
 	}
 
 	err = ctrl.Service.DeleteMySQLAgreement(id)
-	var aerr *utils.AdvancedError
-	if errors.As(err, &aerr) && errors.Is(aerr.Err, utils.ErrNotFound) {
+	if errors.Is(err, utils.ErrNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	}

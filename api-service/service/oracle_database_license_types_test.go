@@ -16,7 +16,6 @@
 package service
 
 import (
-	"sort"
 	"testing"
 
 	dto "github.com/ercole-io/ercole/v2/api-service/dto"
@@ -195,6 +194,16 @@ func TestGetLicensesCompliance(t *testing.T) {
 		Log:      utils.NewLogger("TEST"),
 	}
 
+	hostdata := model.HostDataBE{
+		ClusterMembershipStatus: model.ClusterMembershipStatus{
+			OracleClusterware:       false,
+			SunCluster:              false,
+			HACMP:                   false,
+			VeritasClusterServer:    false,
+			VeritasClusterHostnames: []string{},
+		},
+	}
+
 	gomock.InOrder(
 		db.EXPECT().
 			ListOracleDatabaseAgreements().
@@ -204,9 +213,19 @@ func TestGetLicensesCompliance(t *testing.T) {
 			Return(sampleHosts, nil),
 		db.EXPECT().
 			GetOracleDatabaseLicenseTypes().
-			Times(2).
+			Times(1).
+			Return(expectedLicenseTypes, nil),
+		db.EXPECT().
+			GetOracleDatabaseLicenseTypes().
+			Times(1).
 			Return(expectedLicenseTypes, nil),
 	)
+
+	for _, h := range sampleHosts {
+		db.EXPECT().GetHostData(h.Name, utils.MAX_TIME).
+			Times(1).
+			Return(&hostdata, nil)
+	}
 
 	actual, err := as.GetOracleDatabaseLicensesCompliance()
 	require.NoError(t, err)
@@ -219,9 +238,187 @@ func TestGetLicensesCompliance(t *testing.T) {
 		{LicenseTypeID: "PID005", ItemDescription: "itemDesc5", Metric: "Computer Perpetual", Consumed: 12, Covered: 0.0, Compliance: 0, Unlimited: false},
 	}
 
-	sort.Slice(actual, func(i, j int) bool {
-		return actual[i].LicenseTypeID < actual[j].LicenseTypeID
-	})
+	assert.ElementsMatch(t, expected, actual)
+}
 
-	require.Equal(t, expected, actual)
+func TestGetLicensesCompliance_Veritas(t *testing.T) {
+	var sampleAgreements []dto.OracleDatabaseAgreementFE = []dto.OracleDatabaseAgreementFE{
+		{
+			ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+			AgreementID:     "",
+			CSI:             "",
+			LicenseTypeID:   "PID001",
+			ItemDescription: "",
+			Metric:          "",
+			ReferenceNumber: "",
+			Unlimited:       false,
+			Count:           50,
+			CatchAll:        false,
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+				{Hostname: "pippo"},
+				{Hostname: "pluto"},
+			},
+			AvailableCount: 50,
+			LicensesCount:  0,
+			UsersCount:     0,
+		},
+		{
+			ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
+			AgreementID:     "",
+			CSI:             "",
+			LicenseTypeID:   "PID002",
+			ItemDescription: "",
+			Metric:          "",
+			ReferenceNumber: "",
+			Unlimited:       false,
+			Count:           75,
+			CatchAll:        false,
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+				{Hostname: "topolino"},
+				{Hostname: "minnie"},
+			},
+			AvailableCount: 75,
+			LicensesCount:  0,
+			UsersCount:     0,
+		},
+		{
+			ID:              utils.Str2oid("cccccccccccccccccccccccc"),
+			AgreementID:     "",
+			CSI:             "",
+			LicenseTypeID:   "PID003",
+			ItemDescription: "",
+			Metric:          "",
+			ReferenceNumber: "",
+			Unlimited:       true,
+			Count:           75,
+			CatchAll:        false,
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+				{Hostname: "topolino"},
+				{Hostname: "minnie"},
+			},
+			AvailableCount: 75,
+			LicensesCount:  0,
+			UsersCount:     0,
+		},
+		{
+			ID:              utils.Str2oid("dddddddddddddddddddddddd"),
+			AgreementID:     "",
+			CSI:             "",
+			LicenseTypeID:   "PID004",
+			ItemDescription: "",
+			Metric:          "",
+			ReferenceNumber: "",
+			Unlimited:       false,
+			Count:           50,
+			CatchAll:        false,
+			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			AvailableCount:  50,
+			LicensesCount:   0,
+			UsersCount:      0,
+		},
+	}
+
+	var sampleHosts []dto.HostUsingOracleDatabaseLicenses = []dto.HostUsingOracleDatabaseLicenses{
+		{LicenseTypeID: "PID001", Name: "test1", Type: "host", LicenseCount: 2, OriginalCount: 2},
+		{LicenseTypeID: "PID001", Name: "test2", Type: "host", LicenseCount: 2, OriginalCount: 2},
+		{LicenseTypeID: "PID001", Name: "test3", Type: "host", LicenseCount: 2, OriginalCount: 2},
+
+		{LicenseTypeID: "PID002", Name: "test1", Type: "host", LicenseCount: 2, OriginalCount: 2},
+
+		{LicenseTypeID: "PID003", Name: "test1", Type: "host", LicenseCount: 2, OriginalCount: 2},
+
+		{LicenseTypeID: "PID004", Name: "test3", Type: "host", LicenseCount: 2, OriginalCount: 2},
+	}
+
+	var expectedLicenseTypes = []model.OracleDatabaseLicenseType{
+		{
+			ID:              "PID001",
+			ItemDescription: "itemDesc1",
+			Aliases:         []string{"alias1"},
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+		},
+		{
+			ID:              "PID002",
+			ItemDescription: "itemDesc2",
+			Aliases:         []string{"alias2"},
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+		},
+		{
+			ID:              "PID003",
+			ItemDescription: "itemDesc3",
+			Aliases:         []string{"alias3"},
+			Metric:          model.LicenseTypeMetricComputerPerpetual,
+		},
+		{
+			ID:              "PID004",
+			ItemDescription: "itemDesc4",
+			Aliases:         []string{"alias4"},
+			Metric:          model.LicenseTypeMetricComputerPerpetual,
+		},
+		{
+			ID:              "PID005",
+			ItemDescription: "itemDesc5",
+			Aliases:         []string{"alias5"},
+			Metric:          model.LicenseTypeMetricComputerPerpetual,
+		},
+	}
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Log:      utils.NewLogger("TEST"),
+	}
+
+	hostdata := model.HostDataBE{
+		ClusterMembershipStatus: model.ClusterMembershipStatus{
+			OracleClusterware:       false,
+			SunCluster:              false,
+			HACMP:                   false,
+			VeritasClusterServer:    true,
+			VeritasClusterHostnames: []string{"test1", "test2", "test3"},
+		},
+		Info: model.Host{
+			CPUCores: 2,
+		},
+	}
+
+	gomock.InOrder(
+		db.EXPECT().
+			ListOracleDatabaseAgreements().
+			Return(sampleAgreements, nil),
+		db.EXPECT().
+			ListHostUsingOracleDatabaseLicenses().
+			Return(sampleHosts, nil),
+		db.EXPECT().
+			GetOracleDatabaseLicenseTypes().
+			Times(1).
+			Return(expectedLicenseTypes, nil),
+		db.EXPECT().
+			GetOracleDatabaseLicenseTypes().
+			Times(1).
+			Return(expectedLicenseTypes, nil),
+	)
+
+	db.EXPECT().GetHostData("test1", utils.MAX_TIME).
+		Times(7).
+		Return(&hostdata, nil)
+	db.EXPECT().GetHostData("test2", utils.MAX_TIME).
+		Times(5).
+		Return(&hostdata, nil)
+	db.EXPECT().GetHostData("test3", utils.MAX_TIME).
+		Times(6).
+		Return(&hostdata, nil)
+
+	actual, err := as.GetOracleDatabaseLicensesCompliance()
+	require.NoError(t, err)
+
+	expected := []dto.LicenseCompliance{
+		{LicenseTypeID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 3, Covered: 0, Compliance: 0, Unlimited: false},
+		{LicenseTypeID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 3, Covered: 0, Compliance: 0, Unlimited: false},
+		{LicenseTypeID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Consumed: 3, Covered: 0, Compliance: 0, Unlimited: true},
+		{LicenseTypeID: "PID004", ItemDescription: "itemDesc4", Metric: "Computer Perpetual", Consumed: 3, Covered: 0, Compliance: 0, Unlimited: false},
+	}
+
+	assert.ElementsMatch(t, expected, actual)
 }

@@ -88,8 +88,8 @@ func (ctrl *APIController) UpdateAssociatedLicenseTypeOfOracleDbAgreement(w http
 	}
 
 	err := ctrl.Service.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
-	if err == utils.ErrOracleDatabaseAgreementNotFound ||
-		err == utils.ErrOracleDatabaseLicenseTypeIDNotFound {
+	if errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) ||
+		errors.Is(err, utils.ErrOracleDatabaseLicenseTypeIDNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 	} else if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -199,8 +199,8 @@ func (ctrl *APIController) AddHostToAssociatedLicenseType(w http.ResponseWriter,
 	}
 	defer r.Body.Close()
 
-	if err = ctrl.Service.AddHostToAssociatedLicenseType(id, string(raw)); err == utils.ErrOracleDatabaseAgreementNotFound ||
-		err == utils.ErrNotInClusterHostNotFound {
+	if err = ctrl.Service.AddHostToAssociatedLicenseType(id, string(raw)); errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) ||
+		errors.Is(err, utils.ErrNotInClusterHostNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
@@ -228,7 +228,7 @@ func (ctrl *APIController) RemoveHostFromAssociatedLicenseType(w http.ResponseWr
 	}
 	hostname = mux.Vars(r)["hostname"]
 
-	if err = ctrl.Service.RemoveHostFromAssociatedLicenseType(id, hostname); err == utils.ErrOracleDatabaseAgreementNotFound {
+	if err = ctrl.Service.RemoveHostFromAssociatedLicenseType(id, hostname); errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
@@ -254,7 +254,7 @@ func (ctrl *APIController) DeleteAssociatedLicenseTypeFromOracleDatabaseAgreemen
 		return
 	}
 
-	if err = ctrl.Service.DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(id); err == utils.ErrOracleDatabaseAgreementNotFound {
+	if err = ctrl.Service.DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(id); errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
