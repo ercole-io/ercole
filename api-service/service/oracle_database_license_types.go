@@ -73,13 +73,13 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 		return nil, err
 	}
 
-	err2 := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
-	if err2 != nil {
-		return nil, utils.NewError(err2, "DB ERROR")
+	if err := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts); err != nil {
+		return nil, utils.NewError(err, "can't assign agreements to hosts")
 	}
 
-	licenses := make(map[string]*dto.LicenseCompliance)
+	getLicensesConsumedByHost := as.getterLicensesConsumedByHost()
 
+	licenses := make(map[string]*dto.LicenseCompliance)
 	for _, host := range hosts {
 		license, ok := licenses[host.LicenseTypeID]
 		if !ok {
@@ -90,7 +90,12 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 			licenses[license.LicenseTypeID] = license
 		}
 
-		license.Consumed += host.OriginalCount
+		if consumedLicenses, err := getLicensesConsumedByHost(host); err != nil {
+			as.Log.Error(err)
+			license.Consumed += host.OriginalCount
+		} else {
+			license.Consumed += consumedLicenses
+		}
 	}
 
 	for _, agreement := range agreements {
@@ -112,7 +117,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 		}
 	}
 
-	parts, err := as.GetOracleDatabaseLicenseTypesAsMap()
+	licenseTypes, err := as.GetOracleDatabaseLicenseTypesAsMap()
 	if err != nil {
 		return nil, err
 	}
@@ -125,11 +130,67 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 			license.Compliance = license.Covered / license.Consumed
 		}
 
-		license.ItemDescription = parts[license.LicenseTypeID].ItemDescription
-		license.Metric = parts[license.LicenseTypeID].Metric
+		license.ItemDescription = licenseTypes[license.LicenseTypeID].ItemDescription
+		license.Metric = licenseTypes[license.LicenseTypeID].Metric
 
 		result = append(result, *license)
 	}
 
 	return result, nil
+}
+
+func (as *APIService) getterLicensesConsumedByHost() func(host dto.HostUsingOracleDatabaseLicenses) (float64, error) {
+	// map to keep history if a certain host per a certain licence as already be counted
+	// by another host in its veritas cluster
+	hostLicenseAlreadyCounted := make(map[string]map[string]bool)
+
+	return func(host dto.HostUsingOracleDatabaseLicenses) (float64, error) {
+		return as.getLicensesConsumedByHost(host, hostLicenseAlreadyCounted)
+	}
+}
+
+func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabaseLicenses,
+	hostnamesPerLicense map[string]map[string]bool) (float64, error) {
+
+	hostdata, err := as.Database.GetHostData(host.Name, utils.MAX_TIME)
+	if err != nil {
+		return 0, err
+	}
+
+	cms := hostdata.ClusterMembershipStatus
+	if !cms.VeritasClusterServer ||
+		(cms.VeritasClusterServer && len(cms.VeritasClusterHostnames) <= 2) {
+		return host.OriginalCount, nil
+	}
+
+	_, found := hostnamesPerLicense[host.Name]
+	if !found {
+		hostnamesPerLicense[host.Name] = make(map[string]bool)
+	}
+
+	alreadyUsed := hostnamesPerLicense[host.Name][host.LicenseTypeID]
+	if alreadyUsed {
+		return 0, nil
+	}
+
+	var sumClusterCores int
+	for _, h := range cms.VeritasClusterHostnames {
+		_, found := hostnamesPerLicense[h]
+		if !found {
+			hostnamesPerLicense[h] = make(map[string]bool)
+		}
+		hostnamesPerLicense[h][host.LicenseTypeID] = true
+
+		anotherHostdata, err := as.Database.GetHostData(h, utils.MAX_TIME)
+		if err != nil {
+			as.Log.Error(err)
+			continue
+		}
+		sumClusterCores += anotherHostdata.Info.CPUCores
+	}
+
+	hostnamesPerLicense[host.Name][host.LicenseTypeID] = true
+	consumedLicenses := float64(sumClusterCores) * 0.5 // core factor
+
+	return consumedLicenses, nil
 }
