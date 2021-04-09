@@ -3336,8 +3336,8 @@ paths:
         - fe-user
         - read
       operationId: GetTotalOracleDatabaseMemorySizeStats
-      summary: Get the total size of the memory of the databases
-      description: Get the total size of the memory of the databases
+      summary: Get the total size of the memory of the databases, in bytes
+      description: Get the total size of the memory of the databases, in bytes
       parameters:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
@@ -3362,8 +3362,8 @@ paths:
         - fe-user
         - read
       operationId: GetTotalOracleDatabaseDatafileSizeStats
-      summary: Get the total size of the datafile of the databases
-      description: Get the total size of the datafile of the databases
+      summary: Get the total size of the datafile of the databases, in bytes
+      description: Get the total size of the datafile of the databases, in bytes
       parameters:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
@@ -3388,8 +3388,8 @@ paths:
         - fe-user
         - read
       operationId: GetTotalOracleDatabaseSegmentSizeStats
-      summary: Get the total size of the segments of the databases
-      description: Get the total size of the segments of the databases
+      summary: Get the total size of the segments of the databases, in bytes
+      description: Get the total size of the segments of the databases, in bytes
       parameters:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
@@ -4622,10 +4622,10 @@ paths:
                 properties:
                   total-memory-size:
                     type: number
-                    description: size in GB
+                    description: size in bytes
                   total-segments-size:
                     type: number
-                    description: size in GB
+                    description: size in bytes
                 required:
                   - total-memory-size
                   - total-segments-size

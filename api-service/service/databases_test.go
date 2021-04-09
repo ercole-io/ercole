@@ -350,8 +350,8 @@ func TestGetDatabasesStatistics_Success(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := dto.DatabasesStatistics{
-		TotalMemorySize:   84.42,
-		TotalSegmentsSize: 123.42,
+		TotalMemorySize:   84.42 * 1024 * 1024 * 1024,
+		TotalSegmentsSize: 123.42 * 1024 * 1024 * 1024,
 	}
 
 	assert.Equal(t, expected, *actual)
