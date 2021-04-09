@@ -58,7 +58,7 @@ type MongoDatabase struct {
 
 func (md *MongoDatabase) Init() {
 	md.ConnectToMongodb()
-	md.Log.Info("MongoDatabase is connected to MongoDB! ", md.Config.Mongodb.URI)
+	md.Log.Debug("MongoDatabase is connected to MongoDB! ", md.Config.Mongodb.URI)
 }
 
 func (md *MongoDatabase) ConnectToMongodb() {
