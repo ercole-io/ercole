@@ -61,7 +61,7 @@ DefaultDatabaseTags = [
   Password = "password"
   PrivateKey = "/path/to/my_private_rsa_key"
   PublicKey = "/path/to/my_public_rsa_key.pub"
-  TokenValidityTimeout = 900
+  TokenValidityTimeout = 7200
 
   [[APIService.OperatingSystemAggregationRules]]
   Regex = "^Red Hat Enterprise Linux 8.*$"

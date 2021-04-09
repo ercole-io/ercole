@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"regexp"
 	"time"
 
@@ -397,7 +398,7 @@ func (md *MongoDatabase) GetHostData(hostname string, olderThan time.Time) (*mod
 
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
-		return nil, utils.ErrHostNotFound
+		return nil, fmt.Errorf("%w: %s", utils.ErrHostNotFound, hostname)
 	}
 
 	var hostdata model.HostDataBE
