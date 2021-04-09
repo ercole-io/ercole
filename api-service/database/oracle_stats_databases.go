@@ -422,9 +422,6 @@ func (md *MongoDatabase) GetTotalOracleDatabaseWorkStats(location string, enviro
 
 // GetTotalOracleDatabaseMemorySizeStats return the total of memory size of databases
 func (md *MongoDatabase) GetTotalOracleDatabaseMemorySizeStats(location string, environment string, olderThan time.Time) (float64, error) {
-	var out map[string]float64
-
-	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -442,31 +439,34 @@ func (md *MongoDatabase) GetTotalOracleDatabaseMemorySizeStats(location string, 
 					"$database.memoryTarget",
 				)),
 			}),
+			mu.APProject(bson.M{
+				"value": bson.M{
+					"$multiply": bson.A{
+						"$value", 1024 * 1024 * 1024,
+					},
+				},
+			}),
 		),
 	)
 	if err != nil {
 		return 0, utils.NewError(err, "DB ERROR")
 	}
 
-	//Next the cursor. If there is no document return a empty document
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
 		return 0, nil
 	}
 
-	//Decode the document
+	var out map[string]float64
 	if err := cur.Decode(&out); err != nil {
 		return 0, utils.NewError(err, "DB ERROR")
 	}
 
-	return float64(out["value"]), nil
+	return out["value"], nil
 }
 
 // GetTotalOracleDatabaseDatafileSizeStats return the total size of datafiles of databases
 func (md *MongoDatabase) GetTotalOracleDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float64, error) {
-	var out map[string]float64
-
-	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -480,19 +480,25 @@ func (md *MongoDatabase) GetTotalOracleDatabaseDatafileSizeStats(location string
 				"_id":   0,
 				"value": mu.APOSum("$database.datafileSize"),
 			}),
+			mu.APProject(bson.M{
+				"value": bson.M{
+					"$multiply": bson.A{
+						"$value", 1024 * 1024 * 1024,
+					},
+				},
+			}),
 		),
 	)
 	if err != nil {
 		return 0, utils.NewError(err, "DB ERROR")
 	}
 
-	//Next the cursor. If there is no document return a empty document
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
 		return 0, nil
 	}
 
-	//Decode the document
+	var out map[string]float64
 	if err := cur.Decode(&out); err != nil {
 		return 0, utils.NewError(err, "DB ERROR")
 	}
@@ -502,9 +508,6 @@ func (md *MongoDatabase) GetTotalOracleDatabaseDatafileSizeStats(location string
 
 // GetTotalOracleDatabaseSegmentSizeStats return the total size of segments of databases
 func (md *MongoDatabase) GetTotalOracleDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float64, error) {
-	var out map[string]float64
-
-	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -518,19 +521,25 @@ func (md *MongoDatabase) GetTotalOracleDatabaseSegmentSizeStats(location string,
 				"_id":   0,
 				"value": mu.APOSum(mu.APOConvertToDoubleOrZero("$database.segmentsSize")),
 			}),
+			mu.APProject(bson.M{
+				"value": bson.M{
+					"$multiply": bson.A{
+						"$value", 1024 * 1024 * 1024,
+					},
+				},
+			}),
 		),
 	)
 	if err != nil {
 		return 0, utils.NewError(err, "DB ERROR")
 	}
 
-	//Next the cursor. If there is no document return a empty document
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
 		return 0, nil
 	}
 
-	//Decode the document
+	var out map[string]float64
 	if err := cur.Decode(&out); err != nil {
 		return 0, utils.NewError(err, "DB ERROR")
 	}
