@@ -167,8 +167,8 @@ func (as *APIService) GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.Data
 
 	stats := new(dto.DatabasesStatistics)
 	for _, db := range dbs {
-		stats.TotalMemorySize += db.Memory
-		stats.TotalSegmentsSize += db.SegmentsSize
+		stats.TotalMemorySize += db.Memory * 1024 * 1024 * 1024         // From GBytes to bytes
+		stats.TotalSegmentsSize += db.SegmentsSize * 1024 * 1024 * 1024 // From GBytes to bytes
 	}
 
 	return stats, nil

@@ -294,8 +294,10 @@
                             },
                             "type": {
                                 "type": "string",
-                                "minLength": 1,
-                                "maxLength": 16
+                                "enum": [
+                                    "Oracle/VM",
+                                    "VMWare/VMWare"
+                                ]
                             },
                             "name": {
                                 "type": "string",

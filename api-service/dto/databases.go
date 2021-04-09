@@ -31,8 +31,8 @@ type Database struct {
 }
 
 type DatabasesStatistics struct {
-	TotalMemorySize   float64 `json:"total-memory-size"`   // in GB
-	TotalSegmentsSize float64 `json:"total-segments-size"` // in GB
+	TotalMemorySize   float64 `json:"total-memory-size"`   // in bytes
+	TotalSegmentsSize float64 `json:"total-segments-size"` // in bytes
 }
 
 type DatabaseUsedLicense struct {

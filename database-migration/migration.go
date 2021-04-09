@@ -45,7 +45,7 @@ func ConnectToMongodb(log *logrus.Logger, conf config.Mongodb) *mongo.Client {
 	defer cancel()
 	err = cl.Ping(ctx, nil)
 	if err != nil {
-		log.Fatalf("Can't connect to the database! %s\n", err)
+		log.Fatalf("Can't connect to the database!\n%s\n", err)
 	}
 
 	return cl
