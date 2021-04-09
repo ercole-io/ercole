@@ -182,9 +182,8 @@ type MongoDatabase struct {
 
 // Init initializes the connection to the database
 func (md *MongoDatabase) Init() {
-	//Connect to mongodb
 	md.ConnectToMongodb()
-	md.Log.Info("MongoDatabase is connected to MongoDB! ", md.Config.Mongodb.URI)
+	md.Log.Debug("MongoDatabase is connected to MongoDB! ", md.Config.Mongodb.URI)
 }
 
 // ConnectToMongodb connects to the MongoDB and return the connection
