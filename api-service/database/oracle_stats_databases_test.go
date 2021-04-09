@@ -501,7 +501,7 @@ func (m *MongodbSuite) TestGetTotalOracleDatabaseDatafileSizeStats() {
 		out, err := m.db.GetTotalOracleDatabaseDatafileSizeStats("", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
-		assert.True(t, math.Abs(float64(out)-132) < 0.00001)
+		assert.True(t, math.Abs(float64(out)-132*1024*1024*1024) < 0.00001)
 	})
 }
 
@@ -536,7 +536,7 @@ func (m *MongodbSuite) TestGetTotalOracleDatabaseMemorySizeStats() {
 		out, err := m.db.GetTotalOracleDatabaseMemorySizeStats("", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
-		assert.True(t, math.Abs(float64(out)-34.642) < 0.00001)
+		assert.True(t, math.Abs(float64(out)-34.642*1024*1024*1024) < 0.00001)
 	})
 }
 
@@ -571,6 +571,6 @@ func (m *MongodbSuite) TestGetTotalOracleDatabaseSegmentSizeStats() {
 		out, err := m.db.GetTotalOracleDatabaseSegmentSizeStats("", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
-		assert.True(t, math.Abs(float64(out)-48) < 0.00001)
+		assert.True(t, math.Abs(float64(out)-48*1024*1024*1024) < 0.00001)
 	})
 }
