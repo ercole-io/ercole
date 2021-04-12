@@ -124,7 +124,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 
 	result := make([]dto.LicenseCompliance, 0, len(licenses))
 	for _, license := range licenses {
-		if license.Consumed == 0 {
+		if license.Unlimited || license.Consumed == 0 {
 			license.Compliance = 1
 		} else {
 			license.Compliance = license.Covered / license.Consumed
