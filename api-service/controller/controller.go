@@ -90,14 +90,7 @@ type APIControllerInterface interface {
 	GetOracleDatabaseRACStatusStats(w http.ResponseWriter, r *http.Request)
 	// GetDatabasArchivelogStatusStats return all statistics about the archivelog status of the databases using the filters in the request
 	GetOracleDatabaseArchivelogStatusStats(w http.ResponseWriter, r *http.Request)
-	// GetTotalOracleDatabaseWorkStats return the total work of databases using the filters in the request
-	GetTotalOracleDatabaseWorkStats(w http.ResponseWriter, r *http.Request)
-	// GetTotalOracleDatabaseMemorySizeStats return the total size of memory of databases using the filters in the request
-	GetTotalOracleDatabaseMemorySizeStats(w http.ResponseWriter, r *http.Request)
-	// GetTotalOracleDatabaseDatafileSizeStats return the total size of datafiles of databases using the filters in the request
-	GetTotalOracleDatabaseDatafileSizeStats(w http.ResponseWriter, r *http.Request)
-	// GetTotalOracleDatabaseSegmentSizeStats return the total size of segments of databases using the filters in the request
-	GetTotalOracleDatabaseSegmentSizeStats(w http.ResponseWriter, r *http.Request)
+	GetOracleDatabasesStatistics(w http.ResponseWriter, r *http.Request)
 	// GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata using the filters in the request
 	GetTotalOracleExadataMemorySizeStats(w http.ResponseWriter, r *http.Request)
 	// GetTotalOracleExadataCPUStats return the total cpu of exadata using the filters in the request

@@ -76,20 +76,20 @@ components:
           schema:
             type: object
             additionalProperties: false
-            required:
-              - error
-              - errorDescription
-              - sourceFilename
-              - lineNumber
             properties:
               error:
                 type: string
-              errorDescription:
+              message:
                 type: string
               sourceFilename:
                 type: string
               lineNumber:
                 type: integer
+            required:
+              - error
+              - message
+              - sourceFilename
+              - lineNumber
           examples:
             Test1:
               value:
@@ -3303,15 +3303,15 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  /hosts/technologies/oracle/databases/total-work:
+  /hosts/technologies/oracle/databases/statistics:
     get:
       tags:
         - api-service
         - fe-user
         - read
-      operationId: GetTotalOracleDatabaseWorkStats
-      summary: Get the total work of the databases
-      description: Get the total work of the databases
+      operationId: GetOracleDatabasesStatistics
+      summary: Get statistics about Oracle databases
+      description: Get statistics about Oracle databases
       parameters:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
@@ -3322,85 +3322,22 @@ paths:
           content:
             text/plain:
               schema:
-                type: number
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
-  /hosts/technologies/oracle/databases/total-memory-size:
-    get:
-      tags:
-        - api-service
-        - fe-user
-        - read
-      operationId: GetTotalOracleDatabaseMemorySizeStats
-      summary: Get the total size of the memory of the databases, in bytes
-      description: Get the total size of the memory of the databases, in bytes
-      parameters:
-        - $ref: '#/components/parameters/location'
-        - $ref: '#/components/parameters/environment'
-        - $ref: '#/components/parameters/older-than'
-      responses:
-        '200':
-          description: statistics
-          content:
-            text/plain:
-              schema:
-                type: number
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
-  /hosts/technologies/oracle/databases/total-datafile-size:
-    get:
-      tags:
-        - api-service
-        - fe-user
-        - read
-      operationId: GetTotalOracleDatabaseDatafileSizeStats
-      summary: Get the total size of the datafile of the databases, in bytes
-      description: Get the total size of the datafile of the databases, in bytes
-      parameters:
-        - $ref: '#/components/parameters/location'
-        - $ref: '#/components/parameters/environment'
-        - $ref: '#/components/parameters/older-than'
-      responses:
-        '200':
-          description: statistics
-          content:
-            text/plain:
-              schema:
-                type: number
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
-  /hosts/technologies/oracle/databases/total-segment-size:
-    get:
-      tags:
-        - api-service
-        - fe-user
-        - read
-      operationId: GetTotalOracleDatabaseSegmentSizeStats
-      summary: Get the total size of the segments of the databases, in bytes
-      description: Get the total size of the segments of the databases, in bytes
-      parameters:
-        - $ref: '#/components/parameters/location'
-        - $ref: '#/components/parameters/environment'
-        - $ref: '#/components/parameters/older-than'
-      responses:
-        '200':
-          description: statistics
-          content:
-            text/plain:
-              schema:
-                type: number
+                description: ''
+                type: object
+                properties:
+                  total-memory-size:
+                    type: number
+                  total-segments-size:
+                    type: number
+                  total-datafile-size:
+                    type: number
+                  total-work:
+                    type: number
+                required:
+                  - total-memory-size
+                  - total-segments-size
+                  - total-datafile-size
+                  - total-work
         '401':
           $ref: '#/components/responses/error'
         '422':

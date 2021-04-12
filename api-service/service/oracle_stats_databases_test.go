@@ -18,6 +18,7 @@ package service
 import (
 	"testing"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -440,7 +441,7 @@ func TestGetOracleDatabaseDataguardStatusStats_Fail(t *testing.T) {
 	assert.Equal(t, aerrMock, err)
 }
 
-func TestGetTotalOracleDatabaseWorkStats_Success(t *testing.T) {
+func TestGetOracleDatabasesStatistics(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -448,19 +449,41 @@ func TestGetTotalOracleDatabaseWorkStats_Success(t *testing.T) {
 		Database: db,
 	}
 
-	db.EXPECT().GetTotalOracleDatabaseWorkStats(
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float64(5), nil).Times(1)
-
-	res, err := as.GetTotalOracleDatabaseWorkStats(
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+	gomock.InOrder(
+		db.EXPECT().GetTotalOracleDatabaseMemorySizeStats(
+			"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		).Return(float64(1.1), nil).Times(1),
+		db.EXPECT().GetTotalOracleDatabaseSegmentSizeStats(
+			"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		).Return(float64(2.2), nil).Times(1),
+		db.EXPECT().GetTotalOracleDatabaseDatafileSizeStats(
+			"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		).Return(float64(3.3), nil).Times(1),
+		db.EXPECT().GetTotalOracleDatabaseWorkStats(
+			"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		).Return(float64(4.4), nil).Times(1),
 	)
+
+	res, err := as.GetOracleDatabasesStatistics(
+		dto.GlobalFilter{
+			Location:    "Italy",
+			Environment: "PROD",
+			OlderThan:   utils.P("2019-12-05T14:02:03Z"),
+		},
+	)
+
+	expected := dto.OracleDatabasesStatistics{
+		TotalMemorySize:   1.1,
+		TotalSegmentsSize: 2.2,
+		TotalDatafileSize: 3.3,
+		TotalWork:         4.4,
+	}
 
 	require.NoError(t, err)
-	assert.Equal(t, float64(5), res)
+	assert.Equal(t, expected, *res)
 }
 
-func TestGetTotalOracleDatabaseWorkStatsStats_Fail(t *testing.T) {
+func TestGetOracleDatabasesStatistics_Fail1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -468,19 +491,34 @@ func TestGetTotalOracleDatabaseWorkStatsStats_Fail(t *testing.T) {
 		Database: db,
 	}
 
-	db.EXPECT().GetTotalOracleDatabaseWorkStats(
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float64(0), aerrMock).Times(1)
-
-	res, err := as.GetTotalOracleDatabaseWorkStats(
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+	gomock.InOrder(
+		db.EXPECT().GetTotalOracleDatabaseMemorySizeStats(
+			"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		).Return(float64(1.1), nil).Times(1),
+		db.EXPECT().GetTotalOracleDatabaseSegmentSizeStats(
+			"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		).Return(float64(2.2), nil).Times(1),
+		db.EXPECT().GetTotalOracleDatabaseDatafileSizeStats(
+			"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		).Return(float64(3.3), nil).Times(1),
+		db.EXPECT().GetTotalOracleDatabaseWorkStats(
+			"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		).Return(float64(0), aerrMock).Times(1),
 	)
 
-	assert.Zero(t, res)
+	res, err := as.GetOracleDatabasesStatistics(
+		dto.GlobalFilter{
+			Location:    "Italy",
+			Environment: "PROD",
+			OlderThan:   utils.P("2019-12-05T14:02:03Z"),
+		},
+	)
+
 	assert.Equal(t, aerrMock, err)
+	assert.Nil(t, res)
 }
 
-func TestGetTotalOracleDatabaseMemorySizeStats_Success(t *testing.T) {
+func TestGetOracleDatabasesStatistics_Fail2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -488,39 +526,31 @@ func TestGetTotalOracleDatabaseMemorySizeStats_Success(t *testing.T) {
 		Database: db,
 	}
 
-	db.EXPECT().GetTotalOracleDatabaseMemorySizeStats(
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float64(17.151), nil).Times(1)
-
-	res, err := as.GetTotalOracleDatabaseMemorySizeStats(
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+	gomock.InOrder(
+		db.EXPECT().GetTotalOracleDatabaseMemorySizeStats(
+			"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		).Return(float64(1.1), nil).Times(1),
+		db.EXPECT().GetTotalOracleDatabaseSegmentSizeStats(
+			"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		).Return(float64(2.2), nil).Times(1),
+		db.EXPECT().GetTotalOracleDatabaseDatafileSizeStats(
+			"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		).Return(float64(0), aerrMock).Times(1),
 	)
 
-	require.NoError(t, err)
-	assert.Equal(t, float64(17.151), res)
-}
-
-func TestGetTotalOracleDatabaseMemorySizeStats_Fail(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-	}
-
-	db.EXPECT().GetTotalOracleDatabaseMemorySizeStats(
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float64(0), aerrMock).Times(1)
-
-	res, err := as.GetTotalOracleDatabaseMemorySizeStats(
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+	res, err := as.GetOracleDatabasesStatistics(
+		dto.GlobalFilter{
+			Location:    "Italy",
+			Environment: "PROD",
+			OlderThan:   utils.P("2019-12-05T14:02:03Z"),
+		},
 	)
 
-	assert.Zero(t, res)
 	assert.Equal(t, aerrMock, err)
+	assert.Nil(t, res)
 }
 
-func TestGetTotalOracleDatabaseDatafileSizeStats_Success(t *testing.T) {
+func TestGetOracleDatabasesStatistics_Fail3(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -528,39 +558,28 @@ func TestGetTotalOracleDatabaseDatafileSizeStats_Success(t *testing.T) {
 		Database: db,
 	}
 
-	db.EXPECT().GetTotalOracleDatabaseDatafileSizeStats(
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float64(158), nil).Times(1)
-
-	res, err := as.GetTotalOracleDatabaseDatafileSizeStats(
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+	gomock.InOrder(
+		db.EXPECT().GetTotalOracleDatabaseMemorySizeStats(
+			"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		).Return(float64(1.1), nil).Times(1),
+		db.EXPECT().GetTotalOracleDatabaseSegmentSizeStats(
+			"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		).Return(float64(0), aerrMock).Times(1),
 	)
 
-	require.NoError(t, err)
-	assert.Equal(t, float64(158), res)
-}
-
-func TestGetTotalOracleDatabaseDatafileSizeStats_Fail(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-	}
-
-	db.EXPECT().GetTotalOracleDatabaseDatafileSizeStats(
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float64(0), aerrMock).Times(1)
-
-	res, err := as.GetTotalOracleDatabaseDatafileSizeStats(
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+	res, err := as.GetOracleDatabasesStatistics(
+		dto.GlobalFilter{
+			Location:    "Italy",
+			Environment: "PROD",
+			OlderThan:   utils.P("2019-12-05T14:02:03Z"),
+		},
 	)
 
-	assert.Zero(t, res)
 	assert.Equal(t, aerrMock, err)
+	assert.Nil(t, res)
 }
 
-func TestGetTotalOracleDatabaseSegmentSizeStats_Success(t *testing.T) {
+func TestGetOracleDatabasesStatistics_Fail4(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -568,34 +587,20 @@ func TestGetTotalOracleDatabaseSegmentSizeStats_Success(t *testing.T) {
 		Database: db,
 	}
 
-	db.EXPECT().GetTotalOracleDatabaseSegmentSizeStats(
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float64(117), nil).Times(1)
-
-	res, err := as.GetTotalOracleDatabaseSegmentSizeStats(
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+	gomock.InOrder(
+		db.EXPECT().GetTotalOracleDatabaseMemorySizeStats(
+			"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		).Return(float64(0), aerrMock).Times(1),
 	)
 
-	require.NoError(t, err)
-	assert.Equal(t, float64(117), res)
-}
-
-func TestGetTotalOracleDatabaseSegmentSizeStats_Fail(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-	}
-
-	db.EXPECT().GetTotalOracleDatabaseSegmentSizeStats(
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(float64(0), aerrMock).Times(1)
-
-	res, err := as.GetTotalOracleDatabaseSegmentSizeStats(
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+	res, err := as.GetOracleDatabasesStatistics(
+		dto.GlobalFilter{
+			Location:    "Italy",
+			Environment: "PROD",
+			OlderThan:   utils.P("2019-12-05T14:02:03Z"),
+		},
 	)
 
-	assert.Zero(t, res)
 	assert.Equal(t, aerrMock, err)
+	assert.Nil(t, res)
 }
