@@ -18,6 +18,8 @@ package service
 
 import (
 	"time"
+
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 )
 
 // GetOracleDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
@@ -65,24 +67,28 @@ func (as *APIService) GetOracleDatabaseDataguardStatusStats(location string, env
 	return as.Database.GetOracleDatabaseDataguardStatusStats(location, environment, olderThan)
 }
 
-// GetTotalOracleDatabaseWorkStats return the total work of databases
-func (as *APIService) GetTotalOracleDatabaseWorkStats(location string, environment string, olderThan time.Time) (float64, error) {
-	return as.Database.GetTotalOracleDatabaseWorkStats(location, environment, olderThan)
-}
+func (as *APIService) GetOracleDatabasesStatistics(filter dto.GlobalFilter) (*dto.OracleDatabasesStatistics, error) {
+	stats := new(dto.OracleDatabasesStatistics)
+	var err error
 
-// GetTotalOracleDatabaseMemorySizeStats return the total of memory size of databases
-func (as *APIService) GetTotalOracleDatabaseMemorySizeStats(location string, environment string, olderThan time.Time) (float64, error) {
-	return as.Database.GetTotalOracleDatabaseMemorySizeStats(location, environment, olderThan)
-}
+	stats.TotalMemorySize, err = as.Database.GetTotalOracleDatabaseMemorySizeStats(filter.Location, filter.Environment, filter.OlderThan)
+	if err != nil {
+		return nil, err
+	}
+	stats.TotalSegmentsSize, err = as.Database.GetTotalOracleDatabaseSegmentSizeStats(filter.Location, filter.Environment, filter.OlderThan)
+	if err != nil {
+		return nil, err
+	}
+	stats.TotalDatafileSize, err = as.Database.GetTotalOracleDatabaseDatafileSizeStats(filter.Location, filter.Environment, filter.OlderThan)
+	if err != nil {
+		return nil, err
+	}
+	stats.TotalWork, err = as.Database.GetTotalOracleDatabaseWorkStats(filter.Location, filter.Environment, filter.OlderThan)
+	if err != nil {
+		return nil, err
+	}
 
-// GetTotalOracleDatabaseDatafileSizeStats return the total size of datafiles of databases
-func (as *APIService) GetTotalOracleDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float64, error) {
-	return as.Database.GetTotalOracleDatabaseDatafileSizeStats(location, environment, olderThan)
-}
-
-// GetTotalOracleDatabaseSegmentSizeStats return the total size of segments of databases
-func (as *APIService) GetTotalOracleDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float64, error) {
-	return as.Database.GetTotalOracleDatabaseSegmentSizeStats(location, environment, olderThan)
+	return stats, nil
 }
 
 // GetTopUnusedOracleDatabaseInstanceResourceStats return a array containing top unused instance resource by workload
