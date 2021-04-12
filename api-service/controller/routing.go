@@ -80,10 +80,8 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/technologies/oracle/databases/dataguard-status", ctrl.GetOracleDatabaseDataguardStatusStats).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/archivelog-status", ctrl.GetOracleDatabaseArchivelogStatusStats).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/rac-status", ctrl.GetOracleDatabaseRACStatusStats).Methods("GET")
-	router.HandleFunc("/hosts/technologies/oracle/databases/total-work", ctrl.GetTotalOracleDatabaseWorkStats).Methods("GET")
-	router.HandleFunc("/hosts/technologies/oracle/databases/total-memory-size", ctrl.GetTotalOracleDatabaseMemorySizeStats).Methods("GET")
-	router.HandleFunc("/hosts/technologies/oracle/databases/total-datafile-size", ctrl.GetTotalOracleDatabaseDatafileSizeStats).Methods("GET")
-	router.HandleFunc("/hosts/technologies/oracle/databases/total-segment-size", ctrl.GetTotalOracleDatabaseSegmentSizeStats).Methods("GET")
+
+	router.HandleFunc("/hosts/technologies/oracle/databases/statistics", ctrl.GetOracleDatabasesStatistics).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/consumed-licenses", ctrl.SearchOracleDatabaseUsedLicenses).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/licenses-compliance", ctrl.GetOracleDatabaseLicensesCompliance).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/addms", ctrl.SearchOracleDatabaseAddms).Methods("GET")

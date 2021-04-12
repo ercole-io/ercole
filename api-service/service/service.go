@@ -106,14 +106,6 @@ type APIServiceInterface interface {
 	GetOracleDatabaseRACStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, error)
 	// GetOracleDatabaseArchivelogStatusStats return a array containing the number of databases per archivelog status
 	GetOracleDatabaseArchivelogStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, error)
-	// GetTotalOracleDatabaseWorkStats return the total work of databases
-	GetTotalOracleDatabaseWorkStats(location string, environment string, olderThan time.Time) (float64, error)
-	// GetTotalOracleDatabaseMemorySizeStats return the total of memory size of databases
-	GetTotalOracleDatabaseMemorySizeStats(location string, environment string, olderThan time.Time) (float64, error)
-	// GetTotalOracleDatabaseDatafileSizeStats return the total size of datafiles of databases
-	GetTotalOracleDatabaseDatafileSizeStats(location string, environment string, olderThan time.Time) (float64, error)
-	// GetTotalOracleDatabaseSegmentSizeStats return the total size of segments of databases
-	GetTotalOracleDatabaseSegmentSizeStats(location string, environment string, olderThan time.Time) (float64, error)
 	// GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata
 	GetTotalOracleExadataMemorySizeStats(location string, environment string, olderThan time.Time) (float64, error)
 	// GetTotalOracleExadataCPUStats return the total cpu of exadata
@@ -130,6 +122,7 @@ type APIServiceInterface interface {
 	GetErcoleFeatures() (map[string]bool, error)
 	// GetErcoleFeatures return the list of technologies
 	GetTechnologyList() ([]model.TechnologyInfo, error)
+	GetOracleDatabasesStatistics(filter dto.GlobalFilter) (*dto.OracleDatabasesStatistics, error)
 
 	// ORACLE DATABASE AGREEMENTS
 
