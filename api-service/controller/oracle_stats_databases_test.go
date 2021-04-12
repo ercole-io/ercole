@@ -20,6 +20,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
@@ -762,7 +763,7 @@ func TestGetOracleDatabaseArchivelogStatusStats_FailInternalServerError(t *testi
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestGetTotalOracleDatabaseWorkStats_Success(t *testing.T) {
+func TestGetOracleDatabasesStatistics_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -773,24 +774,34 @@ func TestGetTotalOracleDatabaseWorkStats_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := float64(10.3)
+	filter := dto.GlobalFilter{
+		Location:    "Italy",
+		Environment: "TST",
+		OlderThan:   utils.P("2020-06-10T11:54:59Z"),
+	}
+	result := dto.OracleDatabasesStatistics{
+		TotalMemorySize:   1.1,
+		TotalSegmentsSize: 2.2,
+		TotalDatafileSize: 3.3,
+		TotalWork:         4.4,
+	}
 
 	as.EXPECT().
-		GetTotalOracleDatabaseWorkStats("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(expectedRes, nil)
+		GetOracleDatabasesStatistics(filter).
+		Return(&result, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTotalOracleDatabaseWorkStats)
-	req, err := http.NewRequest("GET", "/stats/databases/total-work?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	handler := http.HandlerFunc(ac.GetOracleDatabasesStatistics)
+	req, err := http.NewRequest("GET", "/stats?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+	assert.JSONEq(t, utils.ToJSON(result), rr.Body.String())
 }
 
-func TestGetTotalOracleDatabaseWorkStats_FailUnprocessableEntity(t *testing.T) {
+func TestGetOracleDatabasesStatistics_FailUnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -802,8 +813,8 @@ func TestGetTotalOracleDatabaseWorkStats_FailUnprocessableEntity(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTotalOracleDatabaseWorkStats)
-	req, err := http.NewRequest("GET", "/stats/databases/total-work?older-than=sdfsdfsdf", nil)
+	handler := http.HandlerFunc(ac.GetOracleDatabasesStatistics)
+	req, err := http.NewRequest("GET", "/stats?older-than=sdfsdfsdf", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -811,7 +822,7 @@ func TestGetTotalOracleDatabaseWorkStats_FailUnprocessableEntity(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestGetTotalOracleDatabaseWorkStats_FailInternalServerError(t *testing.T) {
+func TestGetOracleDatabasesStatistics_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -822,235 +833,16 @@ func TestGetTotalOracleDatabaseWorkStats_FailInternalServerError(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
+	filter := dto.GlobalFilter{
+		OlderThan: utils.MAX_TIME,
+	}
 	as.EXPECT().
-		GetTotalOracleDatabaseWorkStats("", "", utils.MAX_TIME).
-		Return(float64(0), aerrMock)
+		GetOracleDatabasesStatistics(filter).
+		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTotalOracleDatabaseWorkStats)
-	req, err := http.NewRequest("GET", "/stats/databases/total-work", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
-}
-
-func TestGetTotalOracleDatabaseMemorySizeStats_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	expectedRes := float64(10.3)
-
-	as.EXPECT().
-		GetTotalOracleDatabaseMemorySizeStats("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(expectedRes, nil)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTotalOracleDatabaseMemorySizeStats)
-	req, err := http.NewRequest("GET", "/stats/databases/total-memory-size?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
-}
-
-func TestGetTotalOracleDatabaseMemorySizeStats_FailUnprocessableEntity(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTotalOracleDatabaseMemorySizeStats)
-	req, err := http.NewRequest("GET", "/stats/databases/total-memory-size?older-than=sdfsdfsdf", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-}
-
-func TestGetTotalOracleDatabaseMemorySizeStats_FailInternalServerError(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	as.EXPECT().
-		GetTotalOracleDatabaseMemorySizeStats("", "", utils.MAX_TIME).
-		Return(float64(0), aerrMock)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTotalOracleDatabaseMemorySizeStats)
-	req, err := http.NewRequest("GET", "/stats/databases/total-memory-size", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
-}
-
-func TestGetTotalOracleDatabaseDatafileSizeStats_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	expectedRes := float64(10.3)
-
-	as.EXPECT().
-		GetTotalOracleDatabaseDatafileSizeStats("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(expectedRes, nil)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTotalOracleDatabaseDatafileSizeStats)
-	req, err := http.NewRequest("GET", "/stats/databases/total-datafile-size?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
-}
-
-func TestGetTotalOracleDatabaseDatafileSizeStats_FailUnprocessableEntity(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTotalOracleDatabaseDatafileSizeStats)
-	req, err := http.NewRequest("GET", "/stats/databases/total-datafile-size?older-than=sdfsdfsdf", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-}
-
-func TestGetTotalOracleDatabaseDatafileSizeStats_FailInternalServerError(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	as.EXPECT().
-		GetTotalOracleDatabaseDatafileSizeStats("", "", utils.MAX_TIME).
-		Return(float64(0), aerrMock)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTotalOracleDatabaseDatafileSizeStats)
-	req, err := http.NewRequest("GET", "/stats/databases/total-datafile-size", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
-}
-
-func TestGetTotalOracleDatabaseSegmentSizeStats_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	expectedRes := float64(10.3)
-
-	as.EXPECT().
-		GetTotalOracleDatabaseSegmentSizeStats("Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(expectedRes, nil)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTotalOracleDatabaseSegmentSizeStats)
-	req, err := http.NewRequest("GET", "/stats/databases/total-segment-size?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
-}
-
-func TestGetTotalOracleDatabaseSegmentSizeStats_FailUnprocessableEntity(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTotalOracleDatabaseSegmentSizeStats)
-	req, err := http.NewRequest("GET", "/stats/databases/total-segment-size?older-than=sdfsdfsdf", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-}
-
-func TestGetTotalOracleDatabaseSegmentSizeStats_FailInternalServerError(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	as.EXPECT().
-		GetTotalOracleDatabaseSegmentSizeStats("", "", utils.MAX_TIME).
-		Return(float64(0), aerrMock)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetTotalOracleDatabaseSegmentSizeStats)
-	req, err := http.NewRequest("GET", "/stats/databases/total-segment-size", nil)
+	handler := http.HandlerFunc(ac.GetOracleDatabasesStatistics)
+	req, err := http.NewRequest("GET", "/stats", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
