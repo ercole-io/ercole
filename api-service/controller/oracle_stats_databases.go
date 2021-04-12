@@ -19,6 +19,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -271,111 +272,19 @@ func (ctrl *APIController) GetOracleDatabaseArchivelogStatusStats(w http.Respons
 	utils.WriteJSONResponse(w, http.StatusOK, stats)
 }
 
-// GetTotalOracleDatabaseWorkStats return the total work of databases using the filters in the request
-func (ctrl *APIController) GetTotalOracleDatabaseWorkStats(w http.ResponseWriter, r *http.Request) {
-	var olderThan time.Time
-	var location string
-	var environment string
-	var err error
-
-	//parse the query params
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
+func (ctrl *APIController) GetOracleDatabasesStatistics(w http.ResponseWriter, r *http.Request) {
+	filter, err := dto.GetGlobalFilter(r)
+	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	//get the data
-	stats, err := ctrl.Service.GetTotalOracleDatabaseWorkStats(location, environment, olderThan)
+	stats, err := ctrl.Service.GetOracleDatabasesStatistics(*filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	//Write the data
-	utils.WriteJSONResponse(w, http.StatusOK, stats)
-}
-
-// GetTotalOracleDatabaseMemorySizeStats return the total size of memory of databases using the filters in the request
-func (ctrl *APIController) GetTotalOracleDatabaseMemorySizeStats(w http.ResponseWriter, r *http.Request) {
-	var olderThan time.Time
-	var location string
-	var environment string
-	var err error
-
-	//parse the query params
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	//get the data
-	stats, err := ctrl.Service.GetTotalOracleDatabaseMemorySizeStats(location, environment, olderThan)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	//Write the data
-	utils.WriteJSONResponse(w, http.StatusOK, stats)
-}
-
-// GetTotalOracleDatabaseDatafileSizeStats return the total size of datafiles of databases using the filters in the request
-func (ctrl *APIController) GetTotalOracleDatabaseDatafileSizeStats(w http.ResponseWriter, r *http.Request) {
-	var olderThan time.Time
-	var location string
-	var environment string
-	var err error
-
-	//parse the query params
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	//get the data
-	stats, err := ctrl.Service.GetTotalOracleDatabaseDatafileSizeStats(location, environment, olderThan)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	//Write the data
-	utils.WriteJSONResponse(w, http.StatusOK, stats)
-}
-
-// GetTotalOracleDatabaseSegmentSizeStats return the total size of segments of databases using the filters in the request
-func (ctrl *APIController) GetTotalOracleDatabaseSegmentSizeStats(w http.ResponseWriter, r *http.Request) {
-	var olderThan time.Time
-	var location string
-	var environment string
-	var err error
-
-	//parse the query params
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	//get the data
-	stats, err := ctrl.Service.GetTotalOracleDatabaseSegmentSizeStats(location, environment, olderThan)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, stats)
 }
 

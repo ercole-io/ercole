@@ -60,3 +60,10 @@ func GetSearchOracleDatabasesFilter(r *http.Request) (f *SearchOracleDatabasesFi
 
 	return
 }
+
+type OracleDatabasesStatistics struct {
+	TotalMemorySize   float64 `json:"total-memory-size"`   // in bytes
+	TotalSegmentsSize float64 `json:"total-segments-size"` // in bytes
+	TotalDatafileSize float64 `json:"total-datafile-size"` // in bytes
+	TotalWork         float64 `json:"total-work"`
+}
