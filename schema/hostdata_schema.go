@@ -45,7 +45,9 @@ var schema *gojsonschema.Schema
 
 func ValidateHostdata(raw []byte) error {
 	if schema == nil {
-		loadSchema()
+		if err := loadSchema(); err != nil {
+			return err
+		}
 	}
 
 	documentLoader := gojsonschema.NewBytesLoader(raw)
@@ -75,15 +77,14 @@ func ValidateHostdata(raw []byte) error {
 	return nil
 }
 
-func loadSchema() {
+func loadSchema() error {
 	sl := gojsonschema.NewSchemaLoader()
 
 	schemas := []string{oracleSchema, postgresqlSchema, microsoftSchema, mysqlSchema}
 	for i := range schemas {
 		jl := gojsonschema.NewStringLoader(schemas[i])
 		if err := sl.AddSchemas(jl); err != nil {
-			fmt.Printf("Should never happen: [%s]: wrong schema\n", schemas[i])
-			panic(err)
+			return utils.NewError(err, "Wrong hostdata schema: [%s]", schemas[i])
 		}
 	}
 
@@ -92,7 +93,8 @@ func loadSchema() {
 	var err error
 	schema, err = sl.Compile(hostdata)
 	if err != nil {
-		fmt.Println("Should never happen: wrong schema")
-		panic(err)
+		return utils.NewError(err, "Wrong hostdata schema: can't load or compile it")
 	}
+
+	return nil
 }
