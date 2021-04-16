@@ -13,7 +13,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// Package service is a package that provides methods for manipulating host informations
 package service
 
 import (
@@ -59,6 +58,10 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 
 	if hostdata.Features.Oracle != nil {
 		hds.oracleDatabasesChecks(previousHostdata, &hostdata)
+	}
+
+	if hostdata.Clusters != nil {
+		hds.clusterInfoChecks(hostdata.Clusters)
 	}
 
 	_, err = hds.Database.ArchiveHost(hostdata.Hostname)

@@ -167,3 +167,21 @@ func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time
 
 	return &out, nil
 }
+
+func (md *MongoDatabase) GetHostnames() ([]string, error) {
+	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
+		Distinct(
+			context.TODO(),
+			"hostname",
+			bson.M{})
+	if err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	var hostnames []string = make([]string, 0, len(values))
+	for i := range values {
+		hostnames = append(hostnames, values[i].(string))
+	}
+
+	return hostnames, nil
+}
