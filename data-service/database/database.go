@@ -47,6 +47,7 @@ type MongoDatabaseInterface interface {
 	DeleteAllNoDataAlerts() error
 	// FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
 	FindMostRecentHostDataOlderThan(hostname string, t time.Time) (*model.HostDataBE, error)
+	GetHostnames() ([]string, error)
 }
 
 type MongoDatabase struct {
