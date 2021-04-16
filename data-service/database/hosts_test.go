@@ -235,3 +235,23 @@ func (m *MongodbSuite) TestDeleteHostData() {
 	require.NoError(m.T(), err)
 	require.Equal(m.T(), []primitive.ObjectID{}, list)
 }
+
+func (m *MongodbSuite) TestGetHostnames() {
+	m.T().Run("should_return_all", func(t *testing.T) {
+		defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+		m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_01.json"))
+		m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_04.json"))
+		m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_06.json"))
+
+		list, err := m.db.GetHostnames()
+		require.NoError(t, err)
+		assert.Equal(t, []string{"test-small", "test-small2", "test-small3"}, list)
+	})
+
+	m.T().Run("should_return_empty", func(t *testing.T) {
+		list, err := m.db.GetHostnames()
+		require.NoError(t, err)
+		assert.Equal(t, []string{}, list)
+	})
+
+}
