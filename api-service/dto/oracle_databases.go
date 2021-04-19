@@ -73,8 +73,10 @@ type OracleDatabaseSegmentAdvisor struct {
 	SegmentOwner   string    `json:"segmentOwner"`
 	SegmentName    string    `json:"segmentName"`
 	SegmentType    string    `json:"segmentType"`
+	SegmentsSize   float64   `json:"segmentsSize"`
 	PartitionName  string    `json:"partitionName"`
 	Reclaimable    float64   `json:"reclaimable"`
+	Retrieve       float64   `json:"retrieve"`
 	Recommendation string    `json:"recommendation"`
 	CreatedAt      time.Time `json:"createdAt"`
 	Dbname         string    `json:"dbname"`
