@@ -158,26 +158,15 @@ func (ctrl *APIController) SearchOracleDatabaseSegmentAdvisorsJSON(w http.Respon
 	var search string
 	var sortBy string
 	var sortDesc bool
-	var pageNumber int
-	var pageSize int
 	var location string
 	var environment string
 	var olderThan time.Time
 
 	var err error
-	//parse the query params
+
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
@@ -190,20 +179,16 @@ func (ctrl *APIController) SearchOracleDatabaseSegmentAdvisorsJSON(w http.Respon
 		return
 	}
 
-	//get the data
-	segmentAdvisors, err := ctrl.Service.SearchOracleDatabaseSegmentAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	segmentAdvisors, err := ctrl.Service.SearchOracleDatabaseSegmentAdvisors(search, sortBy, sortDesc, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	if pageNumber == -1 || pageSize == -1 {
-		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, segmentAdvisors)
-	} else {
-		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, segmentAdvisors[0])
+	resp := map[string]interface{}{
+		"segmentAdvisors": segmentAdvisors,
 	}
+	utils.WriteJSONResponse(w, http.StatusOK, resp)
 }
 
 // SearchOracleDatabaseSegmentAdvisorsXLSX search segment advisors data using the filters in the request returning it in XLSX format
@@ -233,7 +218,7 @@ func (ctrl *APIController) SearchOracleDatabaseSegmentAdvisorsXLSX(w http.Respon
 	}
 
 	//get the data
-	segmentAdvisors, err := ctrl.Service.SearchOracleDatabaseSegmentAdvisors(search, sortBy, sortDesc, -1, -1, location, environment, olderThan)
+	segmentAdvisors, err := ctrl.Service.SearchOracleDatabaseSegmentAdvisors(search, sortBy, sortDesc, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -248,15 +233,15 @@ func (ctrl *APIController) SearchOracleDatabaseSegmentAdvisorsXLSX(w http.Respon
 
 	//Add the data to the sheet
 	for i, val := range segmentAdvisors {
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("A%d", i+2), val["dbname"])         //Dbname column
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("B%d", i+2), val["environment"])    //Environment column
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("C%d", i+2), val["hostname"])       //Hostname column
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("D%d", i+2), val["partitionName"])  //PartitionName column
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("E%d", i+2), val["reclaimable"])    //Reclaimable column
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("F%d", i+2), val["recommendation"]) //Recommendation column
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("G%d", i+2), val["segmentName"])    //SegmentName column
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("H%d", i+2), val["segmentOwner"])   //SegmentOwner column
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("I%d", i+2), val["segmentType"])    //SegmentType column
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("A%d", i+2), val.Dbname)
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("B%d", i+2), val.Environment)
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("C%d", i+2), val.Hostname)
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("D%d", i+2), val.PartitionName)
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("E%d", i+2), val.Reclaimable)
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("F%d", i+2), val.Recommendation)
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("G%d", i+2), val.SegmentName)
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("H%d", i+2), val.SegmentOwner)
+		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("I%d", i+2), val.SegmentType)
 	}
 
 	//Write it to the response
