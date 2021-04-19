@@ -417,7 +417,7 @@ func TestSearchOracleDatabaseAddms_XLSXInternalServerError2(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestSearchOracleDatabaseSegmentAdvisors_JSONPaged(t *testing.T) {
+func TestSearchOracleDatabaseSegmentAdvisors_JSON(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -428,112 +428,40 @@ func TestSearchOracleDatabaseSegmentAdvisors_JSONPaged(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := map[string]interface{}{
-		"content": []interface{}{
-			map[string]interface{}{
-				"CreatedAt":      utils.P("2020-04-07T08:52:59.82+02:00"),
-				"Dbname":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-				"Environment":    "SVIL",
-				"Hostname":       "publicitate-36d06ca83eafa454423d2097f4965517",
-				"Location":       "Germany",
-				"PartitionName":  "",
-				"Reclaimable":    "\u003c1",
-				"Recommendation": "3d7e603f515ed171fc99bdb908f38fb2",
-				"SegmentName":    "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3",
-				"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-				"SegmentType":    "TABLE",
-				"_id":            utils.Str2oid("5e8c234b24f648a08585bd32"),
-			},
-			map[string]interface{}{
-				"CreatedAt":      utils.P("2020-04-07T08:52:59.872+02:00"),
-				"Dbname":         "ERCOLE",
-				"Environment":    "TST",
-				"Hostname":       "test-db",
-				"Location":       "Germany",
-				"PartitionName":  "iyyiuyyoy",
-				"Reclaimable":    "\u003c1",
-				"Recommendation": "32b36a77e7481343ef175483c086859e",
-				"SegmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-				"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-				"SegmentType":    "TABLE",
-				"_id":            utils.Str2oid("5e8c234b24f648a08585bd43"),
-			},
-		},
-		"Metadata": map[string]interface{}{
-			"Empty":         false,
-			"First":         true,
-			"Last":          true,
-			"Number":        0,
-			"Size":          20,
-			"TotalElements": 25,
-			"TotalPages":    1,
-		},
-	}
-
-	resFromService := []map[string]interface{}{
-		expectedRes,
-	}
-
-	as.EXPECT().
-		SearchOracleDatabaseSegmentAdvisors("foobar", "Reclaimable", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(resFromService, nil)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabaseSegmentAdvisors)
-	req, err := http.NewRequest("GET", "/segment-advisors?search=foobar&sort-by=Reclaimable&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
-}
-
-func TestSearchOracleDatabaseSegmentAdvisors_JSONUnpaged(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	expectedRes := []map[string]interface{}{
+	segmentAdvisors := []dto.OracleDatabaseSegmentAdvisor{
 		{
-			"CreatedAt":      utils.P("2020-04-07T08:52:59.82+02:00"),
-			"Dbname":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"Environment":    "SVIL",
-			"Hostname":       "publicitate-36d06ca83eafa454423d2097f4965517",
-			"Location":       "Germany",
-			"PartitionName":  "",
-			"Reclaimable":    "\u003c1",
-			"Recommendation": "3d7e603f515ed171fc99bdb908f38fb2",
-			"SegmentName":    "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3",
-			"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-			"SegmentType":    "TABLE",
-			"_id":            utils.Str2oid("5e8c234b24f648a08585bd32"),
+			// Id:             utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
+			Hostname:       "test-db3",
+			Location:       "Germany",
+			Environment:    "PRD",
+			CreatedAt:      utils.P("2020-05-13T10:08:23.885+02:00").UTC(),
+			Dbname:         "foobar4",
+			Reclaimable:    534.34,
+			SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+			SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+			SegmentType:    "TABLE",
+			PartitionName:  "iyyiuyyoy",
+			Recommendation: "32b36a77e7481343ef175483c086859e",
 		},
 		{
-			"CreatedAt":      utils.P("2020-04-07T08:52:59.872+02:00"),
-			"Dbname":         "ERCOLE",
-			"Environment":    "TST",
-			"Hostname":       "test-db",
-			"Location":       "Germany",
-			"PartitionName":  "iyyiuyyoy",
-			"Reclaimable":    "\u003c1",
-			"Recommendation": "32b36a77e7481343ef175483c086859e",
-			"SegmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-			"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-			"SegmentType":    "TABLE",
-			"_id":            utils.Str2oid("5e8c234b24f648a08585bd43"),
+			// _id:            utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
+			Hostname:       "test-db3",
+			Location:       "Germany",
+			Environment:    "PRD",
+			CreatedAt:      utils.P("2020-05-13T10:08:23.885+02:00").UTC(),
+			Dbname:         "foobar3",
+			Reclaimable:    4.3,
+			SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+			SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+			SegmentType:    "TABLE",
+			PartitionName:  "iyyiuyyoy",
+			Recommendation: "32b36a77e7481343ef175483c086859e",
 		},
 	}
 
 	as.EXPECT().
-		SearchOracleDatabaseSegmentAdvisors("", "", false, -1, -1, "", "", utils.MAX_TIME).
-		Return(expectedRes, nil)
+		SearchOracleDatabaseSegmentAdvisors("", "", false, "", "", utils.MAX_TIME).
+		Return(segmentAdvisors, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabaseSegmentAdvisors)
@@ -543,6 +471,10 @@ func TestSearchOracleDatabaseSegmentAdvisors_JSONUnpaged(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
+
+	expectedRes := map[string]interface{}{
+		"segmentAdvisors": segmentAdvisors,
+	}
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 
@@ -560,48 +492,6 @@ func TestSearchOracleDatabaseSegmentAdvisors_JSONUnprocessableEntity1(t *testing
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabaseSegmentAdvisors)
 	req, err := http.NewRequest("GET", "/segment-advisors?sort-desc=asasdasd", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-}
-
-func TestSearchOracleDatabaseSegmentAdvisors_JSONUnprocessableEntity2(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabaseSegmentAdvisors)
-	req, err := http.NewRequest("GET", "/segment-advisors?page=asasdasd", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-}
-
-func TestSearchOracleDatabaseSegmentAdvisors_JSONUnprocessableEntity3(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabaseSegmentAdvisors)
-	req, err := http.NewRequest("GET", "/segment-advisors?size=asasdasd", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -642,7 +532,7 @@ func TestSearchOracleDatabaseSegmentAdvisors_JSONInternalServerError(t *testing.
 	}
 
 	as.EXPECT().
-		SearchOracleDatabaseSegmentAdvisors("", "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchOracleDatabaseSegmentAdvisors("", "", false, "", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
@@ -668,40 +558,40 @@ func TestSearchOracleDatabaseSegmentAdvisors_XLSXSuccess(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []map[string]interface{}{
+	segmentAdvisors := []dto.OracleDatabaseSegmentAdvisor{
 		{
-			"createdAt":      utils.P("2020-07-01T09:18:03.704+02:00"),
-			"dbname":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"environment":    "SVIL",
-			"hostname":       "publicitate-36d06ca83eafa454423d2097f4965517",
-			"location":       "Germany",
-			"partitionName":  "",
-			"reclaimable":    0.5,
-			"recommendation": "3d7e603f515ed171fc99bdb908f38fb2",
-			"segmentName":    "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3",
-			"segmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-			"segmentType":    "TABLE",
-			"_id":            utils.Str2oid("5efc38ab79f92e4cbf283b04"),
+			// _id:            utils.Str2oid("5efc38ab79f92e4cbf283b04"),
+			CreatedAt:      utils.P("2020-07-01T09:18:03.704+02:00"),
+			Dbname:         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			Environment:    "SVIL",
+			Hostname:       "publicitate-36d06ca83eafa454423d2097f4965517",
+			Location:       "Germany",
+			PartitionName:  "",
+			Reclaimable:    0.5,
+			Recommendation: "3d7e603f515ed171fc99bdb908f38fb2",
+			SegmentName:    "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3",
+			SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+			SegmentType:    "TABLE",
 		},
 		{
-			"createdAt":      utils.P("2020-07-01T09:18:03.726+02:00"),
-			"dbname":         "ERCOLE",
-			"environment":    "TST",
-			"hostname":       "test-db",
-			"location":       "Germany",
-			"partitionName":  "iyyiuyyoy",
-			"reclaimable":    0.5,
-			"recommendation": "32b36a77e7481343ef175483c086859e",
-			"segmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-			"segmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-			"segmentType":    "TABLE",
-			"_id":            utils.Str2oid("5efc38ab79f92e4cbf283b13"),
+			// _id:            utils.Str2oid("5efc38ab79f92e4cbf283b13"),
+			CreatedAt:      utils.P("2020-07-01T09:18:03.726+02:00"),
+			Dbname:         "ERCOLE",
+			Environment:    "TST",
+			Hostname:       "test-db",
+			Location:       "Germany",
+			PartitionName:  "iyyiuyyoy",
+			Reclaimable:    0.5,
+			Recommendation: "32b36a77e7481343ef175483c086859e",
+			SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+			SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+			SegmentType:    "TABLE",
 		},
 	}
 
 	as.EXPECT().
-		SearchOracleDatabaseSegmentAdvisors("foobar", "Reclaimable", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(expectedRes, nil)
+		SearchOracleDatabaseSegmentAdvisors("foobar", "Reclaimable", true, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		Return(segmentAdvisors, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabaseSegmentAdvisors)
@@ -798,7 +688,7 @@ func TestSearchOracleDatabaseSegmentAdvisors_XLSXInternalServerError1(t *testing
 	}
 
 	as.EXPECT().
-		SearchOracleDatabaseSegmentAdvisors("", "", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchOracleDatabaseSegmentAdvisors("", "", false, "", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
@@ -823,15 +713,10 @@ func TestSearchOracleDatabaseSegmentAdvisors_XLSXInternalServerError2(t *testing
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []map[string]interface{}{
-		{
-			"OK": true,
-		},
-	}
-
+	segmentAdvisors := make([]dto.OracleDatabaseSegmentAdvisor, 0)
 	as.EXPECT().
-		SearchOracleDatabaseSegmentAdvisors("", "", false, -1, -1, "", "", utils.MAX_TIME).
-		Return(expectedRes, nil)
+		SearchOracleDatabaseSegmentAdvisors("", "", false, "", "", utils.MAX_TIME).
+		Return(segmentAdvisors, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabaseSegmentAdvisors)

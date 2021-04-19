@@ -3736,8 +3736,6 @@ paths:
         - $ref: '#/components/parameters/search'
         - $ref: '#/components/parameters/sort-by'
         - $ref: '#/components/parameters/sort-desc'
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/size'
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
         - $ref: '#/components/parameters/older-than'
