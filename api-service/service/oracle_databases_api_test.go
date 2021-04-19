@@ -108,47 +108,45 @@ func TestSearchOracleDatabaseSegmentAdvisors_Success(t *testing.T) {
 		Database: db,
 	}
 
-	expectedRes := []map[string]interface{}{
+	expectedRes := []dto.OracleDatabaseSegmentAdvisor{
 		{
-			"CreatedAt":      utils.P("2020-04-07T08:52:59.82+02:00"),
-			"Dbname":         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"Environment":    "SVIL",
-			"Hostname":       "publicitate-36d06ca83eafa454423d2097f4965517",
-			"Location":       "Germany",
-			"PartitionName":  "",
-			"Reclaimable":    "\u003c1",
-			"Recommendation": "3d7e603f515ed171fc99bdb908f38fb2",
-			"SegmentName":    "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3",
-			"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-			"SegmentType":    "TABLE",
-			"_id":            utils.Str2oid("5e8c234b24f648a08585bd32"),
+			// Id:             utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
+			Hostname:       "test-db3",
+			Location:       "Germany",
+			Environment:    "PRD",
+			CreatedAt:      utils.P("2020-05-13T10:08:23.885+02:00").UTC(),
+			Dbname:         "foobar4",
+			Reclaimable:    534.34,
+			SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+			SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+			SegmentType:    "TABLE",
+			PartitionName:  "iyyiuyyoy",
+			Recommendation: "32b36a77e7481343ef175483c086859e",
 		},
 		{
-			"CreatedAt":      utils.P("2020-04-07T08:52:59.872+02:00"),
-			"Dbname":         "ERCOLE",
-			"Environment":    "TST",
-			"Hostname":       "test-db",
-			"Location":       "Germany",
-			"PartitionName":  "iyyiuyyoy",
-			"Reclaimable":    "\u003c1",
-			"Recommendation": "32b36a77e7481343ef175483c086859e",
-			"SegmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-			"SegmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-			"SegmentType":    "TABLE",
-			"_id":            utils.Str2oid("5e8c234b24f648a08585bd43"),
+			// _id:            utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
+			Hostname:       "test-db3",
+			Location:       "Germany",
+			Environment:    "PRD",
+			CreatedAt:      utils.P("2020-05-13T10:08:23.885+02:00").UTC(),
+			Dbname:         "foobar3",
+			Reclaimable:    4.3,
+			SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+			SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+			SegmentType:    "TABLE",
+			PartitionName:  "iyyiuyyoy",
+			Recommendation: "32b36a77e7481343ef175483c086859e",
 		},
 	}
 
 	db.EXPECT().SearchOracleDatabaseSegmentAdvisors(
 		[]string{"foo", "bar", "foobarx"}, "Reclaimable",
-		true, 1, 1,
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		true, "Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	).Return(expectedRes, nil).Times(1)
 
 	res, err := as.SearchOracleDatabaseSegmentAdvisors(
 		"foo bar foobarx", "Reclaimable",
-		true, 1, 1,
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		true, "Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
 
 	require.NoError(t, err)
@@ -165,14 +163,12 @@ func TestSearchOracleDatabaseSegmentAdvisors_Fail(t *testing.T) {
 
 	db.EXPECT().SearchOracleDatabaseSegmentAdvisors(
 		[]string{"foo", "bar", "foobarx"}, "Reclaimable",
-		true, 1, 1,
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		true, "Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	).Return(nil, aerrMock).Times(1)
 
 	res, err := as.SearchOracleDatabaseSegmentAdvisors(
 		"foo bar foobarx", "Reclaimable",
-		true, 1, 1,
-		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		true, "Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	)
 
 	require.Nil(t, res)
