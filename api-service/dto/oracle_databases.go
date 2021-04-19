@@ -17,6 +17,7 @@ package dto
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/ercole-io/ercole/v2/utils"
 )
@@ -66,4 +67,18 @@ type OracleDatabasesStatistics struct {
 	TotalSegmentsSize float64 `json:"total-segments-size"` // in bytes
 	TotalDatafileSize float64 `json:"total-datafile-size"` // in bytes
 	TotalWork         float64 `json:"total-work"`
+}
+
+type OracleDatabaseSegmentAdvisor struct {
+	SegmentOwner   string    `json:"segmentOwner"`
+	SegmentName    string    `json:"segmentName"`
+	SegmentType    string    `json:"segmentType"`
+	PartitionName  string    `json:"partitionName"`
+	Reclaimable    float64   `json:"reclaimable"`
+	Recommendation string    `json:"recommendation"`
+	CreatedAt      time.Time `json:"createdAt"`
+	Dbname         string    `json:"dbname"`
+	Environment    string    `json:"environment"`
+	Hostname       string    `json:"hostname"`
+	Location       string    `json:"location"`
 }
