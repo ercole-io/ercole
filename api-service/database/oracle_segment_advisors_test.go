@@ -19,6 +19,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
@@ -31,124 +32,88 @@ func (m *MongodbSuite) TestSearchOracleDatabaseSegmentAdvisors() {
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_13.json"))
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabaseSegmentAdvisors([]string{""}, "", false, -1, -1, "", "PROD", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabaseSegmentAdvisors([]string{""}, "", false, "", "PROD", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+		expectedOut := []dto.OracleDatabaseSegmentAdvisor{}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabaseSegmentAdvisors([]string{""}, "", false, -1, -1, "France", "", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabaseSegmentAdvisors([]string{""}, "", false, "France", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+		expectedOut := []dto.OracleDatabaseSegmentAdvisor{}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabaseSegmentAdvisors([]string{""}, "", false, -1, -1, "", "", utils.P("1999-05-04T16:09:46.608+02:00"))
+		out, err := m.db.SearchOracleDatabaseSegmentAdvisors([]string{""}, "", false, "", "", utils.P("1999-05-04T16:09:46.608+02:00"))
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
-
-		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	})
-
-	m.T().Run("should_be_paging", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabaseSegmentAdvisors([]string{""}, "", false, 0, 1, "", "", utils.MAX_TIME)
-		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"content": []interface{}{
-					map[string]interface{}{
-						"_id":            utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
-						"hostname":       "test-db2",
-						"location":       "Germany",
-						"environment":    "TST",
-						"createdAt":      utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-						"dbname":         "foobar1",
-						"reclaimable":    0.5,
-						"segmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-						"segmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-						"segmentType":    "TABLE",
-						"partitionName":  "iyyiuyyoy",
-						"recommendation": "32b36a77e7481343ef175483c086859e",
-					},
-				},
-				"metadata": map[string]interface{}{
-					"empty":         false,
-					"first":         true,
-					"last":          false,
-					"number":        0,
-					"size":          1,
-					"totalElements": 4,
-					"totalPages":    4,
-				},
-			},
-		}
+		expectedOut := []dto.OracleDatabaseSegmentAdvisor{}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_be_sorting", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabaseSegmentAdvisors([]string{""}, "dbname", true, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabaseSegmentAdvisors([]string{""}, "dbname", true, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"_id":            utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
-				"hostname":       "test-db3",
-				"location":       "Germany",
-				"environment":    "PRD",
-				"createdAt":      utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":         "foobar4",
-				"reclaimable":    534.34,
-				"segmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-				"segmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-				"segmentType":    "TABLE",
-				"partitionName":  "iyyiuyyoy",
-				"recommendation": "32b36a77e7481343ef175483c086859e",
+		expectedOut := []dto.OracleDatabaseSegmentAdvisor{
+			{
+				// Id:             utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
+				Hostname:       "test-db3",
+				Location:       "Germany",
+				Environment:    "PRD",
+				CreatedAt:      utils.P("2020-05-13T10:08:23.885+02:00").UTC(),
+				Dbname:         "foobar4",
+				Reclaimable:    534.34,
+				SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+				SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+				SegmentType:    "TABLE",
+				PartitionName:  "iyyiuyyoy",
+				Recommendation: "32b36a77e7481343ef175483c086859e",
 			},
-			map[string]interface{}{
-				"_id":            utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
-				"hostname":       "test-db3",
-				"location":       "Germany",
-				"environment":    "PRD",
-				"createdAt":      utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":         "foobar3",
-				"reclaimable":    4.3,
-				"segmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-				"segmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-				"segmentType":    "TABLE",
-				"partitionName":  "iyyiuyyoy",
-				"recommendation": "32b36a77e7481343ef175483c086859e",
+			{
+				// _id:            utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
+				Hostname:       "test-db3",
+				Location:       "Germany",
+				Environment:    "PRD",
+				CreatedAt:      utils.P("2020-05-13T10:08:23.885+02:00").UTC(),
+				Dbname:         "foobar3",
+				Reclaimable:    4.3,
+				SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+				SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+				SegmentType:    "TABLE",
+				PartitionName:  "iyyiuyyoy",
+				Recommendation: "32b36a77e7481343ef175483c086859e",
 			},
-			map[string]interface{}{
-				"_id":            utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
-				"hostname":       "test-db2",
-				"location":       "Germany",
-				"environment":    "TST",
-				"createdAt":      utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":         "foobar2",
-				"reclaimable":    0.5,
-				"segmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-				"segmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-				"segmentType":    "TABLE",
-				"partitionName":  "iyyiuyyoy",
-				"recommendation": "32b36a77e7481343ef175483c086859e",
+			{
+				// _id:            utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
+				Hostname:       "test-db2",
+				Location:       "Germany",
+				Environment:    "TST",
+				CreatedAt:      utils.P("2020-05-13T10:08:23.885+02:00").UTC(),
+				Dbname:         "foobar2",
+				Reclaimable:    0.5,
+				SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+				SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+				SegmentType:    "TABLE",
+				PartitionName:  "iyyiuyyoy",
+				Recommendation: "32b36a77e7481343ef175483c086859e",
 			},
-			map[string]interface{}{
-				"_id":            utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
-				"hostname":       "test-db2",
-				"location":       "Germany",
-				"environment":    "TST",
-				"createdAt":      utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":         "foobar1",
-				"reclaimable":    0.5,
-				"segmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-				"segmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-				"segmentType":    "TABLE",
-				"partitionName":  "iyyiuyyoy",
-				"recommendation": "32b36a77e7481343ef175483c086859e",
+			{
+				// 	"_id":            utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
+				Hostname:       "test-db2",
+				Location:       "Germany",
+				Environment:    "TST",
+				CreatedAt:      utils.P("2020-05-13T10:08:23.885+02:00").UTC(),
+				Dbname:         "foobar1",
+				Reclaimable:    0.5,
+				SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+				SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+				SegmentType:    "TABLE",
+				PartitionName:  "iyyiuyyoy",
+				Recommendation: "32b36a77e7481343ef175483c086859e",
 			},
 		}
 
@@ -156,30 +121,30 @@ func (m *MongodbSuite) TestSearchOracleDatabaseSegmentAdvisors() {
 	})
 
 	m.T().Run("should_search_return_anything", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabaseSegmentAdvisors([]string{"barfoo"}, "", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabaseSegmentAdvisors([]string{"barfoo"}, "", false, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+		expectedOut := []dto.OracleDatabaseSegmentAdvisor{}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_search_return_found", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabaseSegmentAdvisors([]string{"test-db2", "foobar1"}, "", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabaseSegmentAdvisors([]string{"test-db2", "foobar1"}, "", false, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"_id":            utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
-				"hostname":       "test-db2",
-				"location":       "Germany",
-				"environment":    "TST",
-				"createdAt":      utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":         "foobar1",
-				"reclaimable":    0.5,
-				"segmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-				"segmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-				"segmentType":    "TABLE",
-				"partitionName":  "iyyiuyyoy",
-				"recommendation": "32b36a77e7481343ef175483c086859e",
+		expectedOut := []dto.OracleDatabaseSegmentAdvisor{
+			{
+				// "_id":            utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
+				Hostname:       "test-db2",
+				Location:       "Germany",
+				Environment:    "TST",
+				CreatedAt:      utils.P("2020-05-13T10:08:23.885+02:00").UTC(),
+				Dbname:         "foobar1",
+				Reclaimable:    0.5,
+				SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+				SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+				SegmentType:    "TABLE",
+				PartitionName:  "iyyiuyyoy",
+				Recommendation: "32b36a77e7481343ef175483c086859e",
 			},
 		}
 
@@ -187,64 +152,64 @@ func (m *MongodbSuite) TestSearchOracleDatabaseSegmentAdvisors() {
 	})
 
 	m.T().Run("should_return_correct_results", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabaseSegmentAdvisors([]string{""}, "", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabaseSegmentAdvisors([]string{""}, "", false, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"_id":            utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
-				"hostname":       "test-db2",
-				"location":       "Germany",
-				"environment":    "TST",
-				"createdAt":      utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":         "foobar1",
-				"reclaimable":    0.5,
-				"segmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-				"segmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-				"segmentType":    "TABLE",
-				"partitionName":  "iyyiuyyoy",
-				"recommendation": "32b36a77e7481343ef175483c086859e",
+		expectedOut := []dto.OracleDatabaseSegmentAdvisor{
+			{
+				// "_id":            utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
+				Hostname:       "test-db2",
+				Location:       "Germany",
+				Environment:    "TST",
+				CreatedAt:      utils.P("2020-05-13T10:08:23.885+02:00").UTC(),
+				Dbname:         "foobar1",
+				Reclaimable:    0.5,
+				SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+				SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+				SegmentType:    "TABLE",
+				PartitionName:  "iyyiuyyoy",
+				Recommendation: "32b36a77e7481343ef175483c086859e",
 			},
-			map[string]interface{}{
-				"_id":            utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
-				"hostname":       "test-db2",
-				"location":       "Germany",
-				"environment":    "TST",
-				"createdAt":      utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":         "foobar2",
-				"reclaimable":    0.5,
-				"segmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-				"segmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-				"segmentType":    "TABLE",
-				"partitionName":  "iyyiuyyoy",
-				"recommendation": "32b36a77e7481343ef175483c086859e",
+			{
+				// _id:            utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
+				Hostname:       "test-db2",
+				Location:       "Germany",
+				Environment:    "TST",
+				CreatedAt:      utils.P("2020-05-13T10:08:23.885+02:00").UTC(),
+				Dbname:         "foobar2",
+				Reclaimable:    0.5,
+				SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+				SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+				SegmentType:    "TABLE",
+				PartitionName:  "iyyiuyyoy",
+				Recommendation: "32b36a77e7481343ef175483c086859e",
 			},
-			map[string]interface{}{
-				"_id":            utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
-				"hostname":       "test-db3",
-				"location":       "Germany",
-				"environment":    "PRD",
-				"createdAt":      utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":         "foobar3",
-				"reclaimable":    4.3,
-				"segmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-				"segmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-				"segmentType":    "TABLE",
-				"partitionName":  "iyyiuyyoy",
-				"recommendation": "32b36a77e7481343ef175483c086859e",
+			{
+				// _id:            utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
+				Hostname:       "test-db3",
+				Location:       "Germany",
+				Environment:    "PRD",
+				CreatedAt:      utils.P("2020-05-13T10:08:23.885+02:00").UTC(),
+				Dbname:         "foobar3",
+				Reclaimable:    4.3,
+				SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+				SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+				SegmentType:    "TABLE",
+				PartitionName:  "iyyiuyyoy",
+				Recommendation: "32b36a77e7481343ef175483c086859e",
 			},
-			map[string]interface{}{
-				"_id":            utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
-				"hostname":       "test-db3",
-				"location":       "Germany",
-				"environment":    "PRD",
-				"createdAt":      utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":         "foobar4",
-				"reclaimable":    534.34,
-				"segmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-				"segmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-				"segmentType":    "TABLE",
-				"partitionName":  "iyyiuyyoy",
-				"recommendation": "32b36a77e7481343ef175483c086859e",
+			{
+				// _id:            utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
+				Hostname:       "test-db3",
+				Location:       "Germany",
+				Environment:    "PRD",
+				CreatedAt:      utils.P("2020-05-13T10:08:23.885+02:00").UTC(),
+				Dbname:         "foobar4",
+				Reclaimable:    534.34,
+				SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+				SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+				SegmentType:    "TABLE",
+				PartitionName:  "iyyiuyyoy",
+				Recommendation: "32b36a77e7481343ef175483c086859e",
 			},
 		}
 

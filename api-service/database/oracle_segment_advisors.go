@@ -20,15 +20,15 @@ import (
 	"time"
 
 	"github.com/amreo/mu"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 // SearchOracleDatabaseSegmentAdvisors search segment advisors
-func (md *MongoDatabase) SearchOracleDatabaseSegmentAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error) {
-	var out []map[string]interface{} = make([]map[string]interface{}, 0)
-
-	//Find the matching hostdata
+func (md *MongoDatabase) SearchOracleDatabaseSegmentAdvisors(keywords []string, sortBy string, sortDesc bool,
+	location string, environment string, olderThan time.Time,
+) ([]dto.OracleDatabaseSegmentAdvisor, error) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -66,20 +66,16 @@ func (md *MongoDatabase) SearchOracleDatabaseSegmentAdvisors(keywords []string, 
 				"recommendation": "$database.segmentAdvisors.recommendation",
 			}),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
-			mu.APOptionalPagingStage(page, pageSize),
 		),
 	)
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	//Decode the documents
-	for cur.Next(context.TODO()) {
-		var item map[string]interface{}
-		if cur.Decode(&item) != nil {
-			return nil, utils.NewError(err, "Decode ERROR")
-		}
-		out = append(out, item)
+	segmentAdvisors := make([]dto.OracleDatabaseSegmentAdvisor, 0)
+	if err := cur.All(context.TODO(), &segmentAdvisors); err != nil {
+		return nil, utils.NewError(err, "Decode ERROR")
 	}
-	return out, nil
+
+	return segmentAdvisors, nil
 }
