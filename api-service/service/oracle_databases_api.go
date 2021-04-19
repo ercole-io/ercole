@@ -31,8 +31,8 @@ func (as *APIService) SearchOracleDatabaseAddms(search string, sortBy string, so
 }
 
 // SearchOracleDatabaseSegmentAdvisors search segment advisors
-func (as *APIService) SearchOracleDatabaseSegmentAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error) {
-	return as.Database.SearchOracleDatabaseSegmentAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+func (as *APIService) SearchOracleDatabaseSegmentAdvisors(search string, sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]dto.OracleDatabaseSegmentAdvisor, error) {
+	return as.Database.SearchOracleDatabaseSegmentAdvisors(strings.Split(search, " "), sortBy, sortDesc, location, environment, olderThan)
 }
 
 // SearchOracleDatabasePatchAdvisors search patch advisors
