@@ -29,25 +29,22 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-//TODO Throw away this job when agreement history will be implemented
-
-// Save historical data of Oracle Databases licenses
-type OracleDbsLicensesHistory struct {
+type HistoricizeLicensesComplianceJob struct {
 	Database database.MongoDatabaseInterface
 	TimeNow  func() time.Time
 	Config   config.Configuration
 	Log      *logrus.Logger
 }
 
-// Run archive every archived hostdata that is older than a amount
-func (job *OracleDbsLicensesHistory) Run() {
-	licensesCompliance := utils.NewAPIUrlNoParams(
+//TODO Add tests
+func (job *HistoricizeLicensesComplianceJob) Run() {
+	url := utils.NewAPIUrlNoParams(
 		job.Config.APIService.RemoteEndpoint,
 		job.Config.APIService.AuthenticationProvider.Username,
 		job.Config.APIService.AuthenticationProvider.Password,
-		"/hosts/technologies/oracle/databases/licenses-compliance").String()
+		"/hosts/technologies/all/databases/licenses-compliance").String()
 
-	resp, err := http.Get(licensesCompliance)
+	resp, err := http.Get(url)
 	if err != nil || resp == nil {
 		err = fmt.Errorf("Error while retrieving licenses compliance: [%w], response: [%v]", err, resp)
 		job.Log.Error(err)
@@ -58,17 +55,19 @@ func (job *OracleDbsLicensesHistory) Run() {
 		return
 	}
 
-	var licenses []dto.LicenseCompliance
+	response := map[string][]dto.LicenseCompliance{}
+
 	decoder := json.NewDecoder(resp.Body)
 	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&licenses); err != nil {
+	if err := decoder.Decode(&response); err != nil {
 		job.Log.Error(err)
 		return
 	}
 
-	err = job.Database.HistoricizeOracleDbsLicenses(licenses)
+	licenses := response["licensesCompliance"]
+	err = job.Database.HistoricizeLicensesCompliance(licenses)
 	if err != nil {
-		job.Log.Error("Can't historicize Oracle database licenses")
+		job.Log.Error("Can't historicize database licenses")
 		return
 	}
 }
