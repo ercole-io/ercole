@@ -56,7 +56,9 @@ func (c *Client) doRequest(ctx context.Context, path, method string, body []byte
 
 func (c *Client) getResponse(ctx context.Context, path, method string, body []byte) (*http.Response, error) {
 	resp, err := c.doRequest(ctx, path, method, body)
-	if err != nil || resp.StatusCode < 200 || resp.StatusCode > 299 {
+	if err != nil {
+		return nil, err
+	} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {

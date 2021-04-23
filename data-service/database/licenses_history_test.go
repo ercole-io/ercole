@@ -29,7 +29,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
+func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 	defer m.db.Client.Database(m.dbname).Collection("oracle_database_licenses_history").DeleteMany(context.TODO(), bson.M{})
 
 	expectedDateDay1 := utils.PDT("2020-12-05T00:00:00Z")
@@ -62,8 +62,17 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 				Compliance:      1,
 				Unlimited:       false,
 			},
+			{
+				LicenseTypeID:   "",
+				ItemDescription: "MySQL Enterprise per cluster",
+				Metric:          "",
+				Consumed:        42,
+				Covered:         84,
+				Compliance:      0.5,
+				Unlimited:       false,
+			},
 		}
-		err := m.db.HistoricizeOracleDbsLicenses(licenses)
+		err := m.db.HistoricizeLicensesCompliance(licenses)
 		require.NoError(m.T(), err)
 
 		cur, err := m.db.Client.Database(m.db.Config.Mongodb.DBName).
@@ -93,9 +102,10 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": expectedDateDay1}}, "licenseTypeID": "L47247"},
 			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": expectedDateDay1}}, "licenseTypeID": "A90611"},
 			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay1}}, "licenseTypeID": "A90620"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 42.0, "covered": 84.0, "date": expectedDateDay1}}, "licenseTypeID": "", "itemDescription": "MySQL Enterprise per cluster"},
 		}
 
-		assert.Equal(m.T(), expected, actual)
+		assert.ElementsMatch(m.T(), expected, actual)
 	})
 
 	m.T().Run("Second insert, next day, success", func(t *testing.T) {
@@ -129,8 +139,17 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 				Compliance:      1,
 				Unlimited:       false,
 			},
+			{
+				LicenseTypeID:   "",
+				ItemDescription: "MySQL Enterprise per cluster",
+				Metric:          "",
+				Consumed:        43,
+				Covered:         86,
+				Compliance:      0.5,
+				Unlimited:       false,
+			},
 		}
-		err := m.db.HistoricizeOracleDbsLicenses(licenses)
+		err := m.db.HistoricizeLicensesCompliance(licenses)
 		require.NoError(m.T(), err)
 
 		cur, err := m.db.Client.Database(m.db.Config.Mongodb.DBName).
@@ -162,9 +181,11 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": expectedDateDay1}, map[string]interface{}{"consumed": 0.5, "covered": 5.0, "date": expectedDateDay2}}, "licenseTypeID": "L47247"},
 			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": expectedDateDay1}, map[string]interface{}{"consumed": 4.5, "covered": 2.5, "date": expectedDateDay2}}, "licenseTypeID": "A90611"},
 			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay1}}, "licenseTypeID": "A90620"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay2}}, "licenseTypeID": "PID001"}}
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay2}}, "licenseTypeID": "PID001"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 42.0, "covered": 84.0, "date": expectedDateDay1}, map[string]interface{}{"consumed": 43.0, "covered": 86.0, "date": expectedDateDay2}}, "licenseTypeID": "", "itemDescription": "MySQL Enterprise per cluster"},
+		}
 
-		assert.Equal(m.T(), expected, actual)
+		assert.ElementsMatch(m.T(), expected, actual)
 	})
 
 	m.T().Run("Third insert, same day, success", func(t *testing.T) {
@@ -181,7 +202,7 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 				Unlimited:       false,
 			},
 		}
-		err := m.db.HistoricizeOracleDbsLicenses(licenses)
+		err := m.db.HistoricizeLicensesCompliance(licenses)
 		require.NoError(m.T(), err)
 
 		cur, err := m.db.Client.Database(m.db.Config.Mongodb.DBName).
@@ -213,8 +234,10 @@ func (m *MongodbSuite) TestHistoricizeOracleDbsLicenses() {
 			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": expectedDateDay1}, map[string]interface{}{"consumed": 0.5, "covered": 5.0, "date": expectedDateDay2}}, "licenseTypeID": "L47247"},
 			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": expectedDateDay1}, map[string]interface{}{"consumed": 42.52, "covered": 2.5, "date": expectedDateDay2}}, "licenseTypeID": "A90611"},
 			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay1}}, "licenseTypeID": "A90620"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay2}}, "licenseTypeID": "PID001"}}
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay2}}, "licenseTypeID": "PID001"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 42.0, "covered": 84.0, "date": expectedDateDay1}, map[string]interface{}{"consumed": 43.0, "covered": 86.0, "date": expectedDateDay2}}, "licenseTypeID": "", "itemDescription": "MySQL Enterprise per cluster"},
+		}
 
-		assert.Equal(m.T(), expected, actual)
+		assert.ElementsMatch(m.T(), expected, actual)
 	})
 }

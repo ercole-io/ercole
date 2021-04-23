@@ -63,11 +63,11 @@ func (j *Job) Init() {
 		jobrunner.Now(freshnessJob)
 	}
 
-	oracleDbsLicensesHistory := &OracleDbsLicensesHistory{
+	historicizeLicensesComplianceJob := &HistoricizeLicensesComplianceJob{
 		Database: j.Database,
 		TimeNow:  j.TimeNow,
 		Config:   j.Config,
 		Log:      j.Log,
 	}
-	jobrunner.Every(5*time.Minute, oracleDbsLicensesHistory)
+	jobrunner.Every(5*time.Minute, historicizeLicensesComplianceJob)
 }
