@@ -72,29 +72,6 @@ func (as *ChartService) GetOracleDatabaseChart(metric string, location string, e
 	}
 }
 
-func (as *ChartService) GetOracleDbLicenseHistory() ([]dto.OracleDatabaseLicenseHistory, error) {
-	licenses, err := as.Database.GetOracleDbLicenseHistory()
-	if err != nil {
-		return nil, err
-	}
-
-	types, err := as.getOracleDatabaseLicenseTypes()
-	if err != nil {
-		return nil, err
-	}
-
-	for i := range licenses {
-		license := &licenses[i]
-		licenseType := types[license.LicenseTypeID]
-		license.ItemDescription = licenseType.ItemDescription
-		license.Metric = licenseType.Metric
-
-		license.History = keepOnlyLastEntryOfEachDay(license.History)
-	}
-
-	return licenses, nil
-}
-
 func (as *ChartService) getOracleDatabaseLicenseTypes() (map[string]model.OracleDatabaseLicenseType, error) {
 	url := utils.NewAPIUrlNoParams(
 		as.Config.APIService.RemoteEndpoint,
@@ -121,13 +98,13 @@ func (as *ChartService) getOracleDatabaseLicenseTypes() (map[string]model.Oracle
 	return licenseTypesMap, nil
 }
 
-func keepOnlyLastEntryOfEachDay(history []dto.OracleDbHistoricValue) []dto.OracleDbHistoricValue {
+func keepOnlyLastEntryOfEachDay(history []dto.LicenseComplianceHistoricValue) []dto.LicenseComplianceHistoricValue {
 	sort.Slice(history, func(i, j int) bool {
 		return history[i].Date.After(history[j].Date)
 	})
 
 	currentDay := utils.MAX_TIME
-	newHistory := make([]dto.OracleDbHistoricValue, 0, len(history))
+	newHistory := make([]dto.LicenseComplianceHistoricValue, 0, len(history))
 
 	for i := range history {
 		entry := &history[i]

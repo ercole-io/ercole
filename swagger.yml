@@ -4338,7 +4338,7 @@ paths:
                   $ref: '#/components/schemas/LicenseType'
       operationId: GetOracleDatabaseAgreementPartsList
       description: Get Oracle database agreement parts list
-  /technologies/oracle/license-history:
+  /technologies/all/license-history:
     get:
       summary: Get historical values of Oracle Databases Licenses
       tags:
@@ -4384,7 +4384,7 @@ paths:
                     - itemDescription
                     - metric
                     - history
-      operationId: GetOracleDbLicenseHistory
+      operationId: GetLicenseComplianceHistory
       description: Get historical values of Oracle Databases Licenses
   /hosts/technologies/mysql/databases:
     get:
