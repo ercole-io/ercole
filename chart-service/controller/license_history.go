@@ -12,20 +12,25 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-package dto
+
+package controller
 
 import (
-	"time"
+	"net/http"
+
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
-type OracleDatabaseLicenseHistory struct {
-	LicenseTypeID   string                  `json:"licenseTypeID" bson:"licenseTypeID"`
-	ItemDescription string                  `json:"itemDescription" bson:"itemDescription"`
-	Metric          string                  `json:"metric" bson:"metric"`
-	History         []OracleDbHistoricValue `json:"history" bson:"history"`
-}
-type OracleDbHistoricValue struct {
-	Date     time.Time `json:"date" bson:"date"`
-	Consumed float64   `json:"consumed" bson:"consumed"`
-	Covered  float64   `json:"covered" bson:"covered"`
+func (ctrl *ChartController) GetLicenseComplianceHistory(w http.ResponseWriter, r *http.Request) {
+	history, err := ctrl.Service.GetLicenseComplianceHistory()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	response := map[string]interface{}{
+		"licenseComplianceHistory": history,
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, response)
 }

@@ -39,8 +39,8 @@ func SetupRoutesForChartController(router *mux.Router, ctrl ChartControllerInter
 func setupProtectedRoutes(router *mux.Router, ctrl ChartControllerInterface) {
 	router.HandleFunc("/settings/technologies-metrics", ctrl.GetTechnologiesMetrics).Methods("GET")
 
+	router.HandleFunc("/technologies/all/license-history", ctrl.GetLicenseComplianceHistory).Methods("GET")
 	router.HandleFunc("/technologies/oracle/database", ctrl.GetOracleDatabaseChart).Methods("GET")
-	router.HandleFunc("/technologies/oracle/license-history", ctrl.GetOracleDbLicenseHistory).Methods("GET")
 
 	router.HandleFunc("/technologies/changes", ctrl.GetChangeChart).Methods("GET")
 	router.HandleFunc("/technologies/types", ctrl.GetTechnologyTypes).Methods("GET")
