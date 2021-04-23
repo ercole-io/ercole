@@ -16,6 +16,8 @@
 package service
 
 import (
+	"errors"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -91,7 +93,12 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 		}
 
 		if consumedLicenses, err := getLicensesConsumedByHost(host); err != nil {
-			as.Log.Error(err)
+			if errors.Is(err, utils.ErrHostNotFound) {
+				as.Log.Warn(err)
+			} else {
+				as.Log.Error(err)
+			}
+
 			license.Consumed += host.OriginalCount
 		} else {
 			license.Consumed += consumedLicenses
@@ -182,7 +189,10 @@ func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabase
 		hostnamesPerLicense[h][host.LicenseTypeID] = true
 
 		anotherHostdata, err := as.Database.GetHostData(h, utils.MAX_TIME)
-		if err != nil {
+		if errors.Is(err, utils.ErrHostNotFound) {
+			as.Log.Warn(err)
+			continue
+		} else if err != nil {
 			as.Log.Error(err)
 			continue
 		}
