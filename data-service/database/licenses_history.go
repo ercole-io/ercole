@@ -26,18 +26,21 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (md *MongoDatabase) HistoricizeOracleDbsLicenses(licenses []dto.LicenseCompliance) error {
+//TODO rename this collection with a more generic name
+const licensesHistoryCollection = "oracle_database_licenses_history"
+
+func (md *MongoDatabase) HistoricizeLicensesCompliance(licenses []dto.LicenseCompliance) error {
 	now := md.TimeNow()
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 
 	for _, license := range licenses {
-		done, err := md.updateOracleDbsLicenseHistory(license, today)
+		done, err := md.updateLicenseComplianceHistoric(license, today)
 		if err != nil {
 			return err
 		}
 
 		if !done {
-			err := md.insertOracleDbsLicenseHistory(license, today)
+			err := md.insertLicenseComplianceHistoric(license, today)
 			if err != nil {
 				return err
 			}
@@ -47,10 +50,16 @@ func (md *MongoDatabase) HistoricizeOracleDbsLicenses(licenses []dto.LicenseComp
 	return nil
 }
 
-func (md *MongoDatabase) updateOracleDbsLicenseHistory(license dto.LicenseCompliance, today time.Time) (done bool, err error) {
-	filter := bson.D{
-		{Key: "licenseTypeID", Value: license.LicenseTypeID},
-		{Key: "history", Value: bson.D{{Key: "$elemMatch", Value: bson.D{{Key: "date", Value: today}}}}}}
+func (md *MongoDatabase) updateLicenseComplianceHistoric(license dto.LicenseCompliance, today time.Time) (done bool, err error) {
+	filter := bson.M{
+		"licenseTypeID": license.LicenseTypeID,
+		"history":       bson.D{{Key: "$elemMatch", Value: bson.D{{Key: "date", Value: today}}}},
+	}
+
+	if len(license.LicenseTypeID) == 0 {
+		filter["itemDescription"] = license.ItemDescription
+	}
+
 	update := bson.D{
 		{
 			Key: "$set",
@@ -59,7 +68,7 @@ func (md *MongoDatabase) updateOracleDbsLicenseHistory(license dto.LicenseCompli
 				{Key: "history.$.covered", Value: license.Covered},
 			},
 		}}
-	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("oracle_database_licenses_history").
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(licensesHistoryCollection).
 		UpdateOne(context.TODO(),
 			filter,
 			update)
@@ -74,8 +83,15 @@ func (md *MongoDatabase) updateOracleDbsLicenseHistory(license dto.LicenseCompli
 	return true, nil
 }
 
-func (md *MongoDatabase) insertOracleDbsLicenseHistory(license dto.LicenseCompliance, today time.Time) error {
-	filter := bson.D{{Key: "licenseTypeID", Value: license.LicenseTypeID}}
+func (md *MongoDatabase) insertLicenseComplianceHistoric(license dto.LicenseCompliance, today time.Time) error {
+	filter := bson.M{
+		"licenseTypeID": license.LicenseTypeID,
+	}
+
+	if len(license.LicenseTypeID) == 0 {
+		filter["itemDescription"] = license.ItemDescription
+	}
+
 	updateOptions := options.Update()
 	updateOptions.SetUpsert(true)
 	update := bson.D{
@@ -90,7 +106,7 @@ func (md *MongoDatabase) insertOracleDbsLicenseHistory(license dto.LicenseCompli
 						{Key: "covered", Value: license.Covered}},
 				}}}}
 
-	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("oracle_database_licenses_history").
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(licensesHistoryCollection).
 		UpdateMany(context.TODO(),
 			filter,
 			update,

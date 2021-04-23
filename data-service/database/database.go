@@ -41,7 +41,7 @@ type MongoDatabaseInterface interface {
 	FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID, error)
 	DeleteHostData(id primitive.ObjectID) error
 	FindPatchingFunction(hostname string) (model.PatchingFunction, error)
-	HistoricizeOracleDbsLicenses(licenses []dto.LicenseCompliance) error
+	HistoricizeLicensesCompliance(licenses []dto.LicenseCompliance) error
 
 	DeleteNoDataAlertByHost(hostname string) error
 	DeleteAllNoDataAlerts() error

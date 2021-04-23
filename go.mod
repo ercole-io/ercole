@@ -21,7 +21,6 @@ require (
 	github.com/jtblin/go-ldap-client v0.0.0-20170223121919-b73f66626b33
 	github.com/leandro-lugaresi/hub v1.1.1
 	github.com/lucasb-eyer/go-colorful v1.2.0
-	github.com/mitchellh/mapstructure v1.1.2
 	github.com/pkg/sftp v1.13.0
 	github.com/robertkrimen/otto v0.0.0-20200922221731-ef014fd054ac
 	github.com/robfig/cron/v3 v3.0.1 // indirect
