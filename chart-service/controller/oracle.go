@@ -53,13 +53,3 @@ func (ctrl *ChartController) GetOracleDatabaseChart(w http.ResponseWriter, r *ht
 
 	utils.WriteJSONResponse(w, http.StatusOK, data)
 }
-
-func (ctrl *ChartController) GetOracleDbLicenseHistory(w http.ResponseWriter, r *http.Request) {
-	data, err := ctrl.Service.GetOracleDbLicenseHistory()
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	utils.WriteJSONResponse(w, http.StatusOK, data)
-}
