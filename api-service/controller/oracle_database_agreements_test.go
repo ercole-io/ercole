@@ -362,6 +362,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_InternalServerError(t *t
 		require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 	})
 }
+
 func TestSearchAssociatedPartsInOracleDatabaseAgreements_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -373,7 +374,7 @@ func TestSearchAssociatedPartsInOracleDatabaseAgreements_Success(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []dto.OracleDatabaseAgreementFE{
+	agreements := []dto.OracleDatabaseAgreementFE{
 		{
 			ItemDescription: "foobar",
 		},
@@ -390,7 +391,7 @@ func TestSearchAssociatedPartsInOracleDatabaseAgreements_Success(t *testing.T) {
 			UsersCountGTE:     -1,
 			UsersCountLTE:     -1,
 		}).
-		Return(expectedRes, nil)
+		Return(agreements, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAssociatedLicenseTypesInOracleDatabaseAgreements)
@@ -400,7 +401,11 @@ func TestSearchAssociatedPartsInOracleDatabaseAgreements_Success(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+
+	expectedResponse := map[string]interface{}{
+		"agreements": agreements,
+	}
+	assert.JSONEq(t, utils.ToJSON(expectedResponse), rr.Body.String())
 }
 
 func TestSearchAssociatedPartsInOracleDatabaseAgreements_FailedUnprocessableEntity(t *testing.T) {
