@@ -109,10 +109,14 @@ func (ctrl *APIController) SearchAssociatedLicenseTypesInOracleDatabaseAgreement
 		return
 	}
 
-	response, err := ctrl.Service.SearchAssociatedLicenseTypesInOracleDatabaseAgreements(searchOracleDatabaseAgreementsFilters)
+	agreements, err := ctrl.Service.SearchAssociatedLicenseTypesInOracleDatabaseAgreements(searchOracleDatabaseAgreementsFilters)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
+	}
+
+	response := map[string]interface{}{
+		"agreements": agreements,
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, response)
