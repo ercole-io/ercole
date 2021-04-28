@@ -57,13 +57,14 @@ func (md *MongoDatabase) UpdateMySQLAgreement(agreement model.MySQLAgreement) er
 	return nil
 }
 
-func (md *MongoDatabase) GetMySQLAgreements() (agreements []model.MySQLAgreement, err error) {
+func (md *MongoDatabase) GetMySQLAgreements() ([]model.MySQLAgreement, error) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(mySQLAgreementCollection).
 		Find(context.TODO(), bson.D{})
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
+	agreements := make([]model.MySQLAgreement, 0)
 	err = cur.All(context.TODO(), &agreements)
 	if err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
