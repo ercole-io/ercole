@@ -77,35 +77,43 @@ func (m *MongodbSuite) TestUpdateMySQLAgreement() {
 }
 
 func (m *MongodbSuite) TestGetMySQLAgreements() {
-	defer m.db.Client.Database(m.dbname).Collection(mySQLAgreementCollection).DeleteMany(context.TODO(), bson.M{})
-
-	agreements := []model.MySQLAgreement{
-		{
-			ID:               utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-			Type:             "",
-			NumberOfLicenses: 0,
-			Clusters:         []string{},
-			Hosts:            []string{},
-		},
-		{
-			ID:               utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
-			Type:             "",
-			NumberOfLicenses: 0,
-			Clusters:         []string{},
-			Hosts:            []string{},
-		},
-	}
-	agreementsInt := []interface{}{
-		agreements[0],
-		agreements[1],
-	}
-	_, err := m.db.Client.Database(m.dbname).Collection(mySQLAgreementCollection).InsertMany(context.TODO(), agreementsInt)
-	require.Nil(m.T(), err)
-
 	m.T().Run("should_load_all", func(t *testing.T) {
+		defer m.db.Client.Database(m.dbname).Collection(mySQLAgreementCollection).DeleteMany(context.TODO(), bson.M{})
+
+		agreements := []model.MySQLAgreement{
+			{
+				ID:               utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+				Type:             "",
+				NumberOfLicenses: 0,
+				Clusters:         []string{},
+				Hosts:            []string{},
+			},
+			{
+				ID:               utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
+				Type:             "",
+				NumberOfLicenses: 0,
+				Clusters:         []string{},
+				Hosts:            []string{},
+			},
+		}
+		agreementsInt := []interface{}{
+			agreements[0],
+			agreements[1],
+		}
+		_, err := m.db.Client.Database(m.dbname).Collection(mySQLAgreementCollection).InsertMany(context.TODO(), agreementsInt)
+		require.Nil(m.T(), err)
+
 		actual, err := m.db.GetMySQLAgreements()
 		m.Require().NoError(err)
 
+		assert.Equal(t, agreements, actual)
+	})
+
+	m.T().Run("should_load_empty", func(t *testing.T) {
+		actual, err := m.db.GetMySQLAgreements()
+		m.Require().NoError(err)
+
+		agreements := make([]model.MySQLAgreement, 0)
 		assert.Equal(t, agreements, actual)
 	})
 }
