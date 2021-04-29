@@ -232,7 +232,8 @@ func TestUpdateOracleDatabaseAgreement_Success(t *testing.T) {
 		Hosts:           []string{"foobar"},
 	}
 
-	as.EXPECT().UpdateAssociatedLicenseTypeOfOracleDbAgreement(request).Return(nil)
+	agr := new(dto.OracleDatabaseAgreementFE)
+	as.EXPECT().UpdateAssociatedLicenseTypeOfOracleDbAgreement(request).Return(agr, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.UpdateAssociatedLicenseTypeOfOracleDbAgreement)
@@ -242,7 +243,7 @@ func TestUpdateOracleDatabaseAgreement_Success(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	assert.Equal(t, "null", rr.Body.String())
+	assert.JSONEq(t, utils.ToJSON(agr), rr.Body.String())
 }
 
 func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_BadRequests(t *testing.T) {
@@ -324,7 +325,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_InternalServerError(t *t
 	}
 
 	t.Run("Unknown error", func(t *testing.T) {
-		as.EXPECT().UpdateAssociatedLicenseTypeOfOracleDbAgreement(request).Return(aerrMock)
+		as.EXPECT().UpdateAssociatedLicenseTypeOfOracleDbAgreement(request).Return(nil, aerrMock)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.UpdateAssociatedLicenseTypeOfOracleDbAgreement)
@@ -337,7 +338,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_InternalServerError(t *t
 	})
 	t.Run("Agreement not found", func(t *testing.T) {
 		as.EXPECT().UpdateAssociatedLicenseTypeOfOracleDbAgreement(request).
-			Return(utils.ErrOracleDatabaseAgreementNotFound)
+			Return(nil, utils.ErrOracleDatabaseAgreementNotFound)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.UpdateAssociatedLicenseTypeOfOracleDbAgreement)
@@ -350,7 +351,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_InternalServerError(t *t
 	})
 	t.Run("Invalid PartID", func(t *testing.T) {
 		as.EXPECT().UpdateAssociatedLicenseTypeOfOracleDbAgreement(request).
-			Return(utils.ErrOracleDatabaseLicenseTypeIDNotFound)
+			Return(nil, utils.ErrOracleDatabaseLicenseTypeIDNotFound)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.UpdateAssociatedLicenseTypeOfOracleDbAgreement)
