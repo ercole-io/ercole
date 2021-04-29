@@ -237,7 +237,9 @@ func TestUpdateMySQLAgreement_Success(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusNoContent, rr.Code)
+	require.Equal(t, http.StatusOK, rr.Code)
+
+	assert.JSONEq(t, utils.ToJSON(agreement), rr.Body.String())
 }
 
 func TestUpdateMySQLAgreement_BadRequest_CantDecode(t *testing.T) {
