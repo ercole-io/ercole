@@ -4033,61 +4033,63 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    agreementID:
-                      type: string
-                    licenseTypeID:
-                      type: string
-                    itemDescription:
-                      type: string
-                    metrics:
-                      type: string
-                    csi:
-                      type: string
-                    referenceNumber:
-                      type: string
-                    unlimited:
-                      type: boolean
-                      description: Indicates that the agreement has unlimited part or no
-                    licensesCount:
-                      type: integer
-                      description: |
-                        It's the number of the licenses
-                    usersCount:
-                      type: integer
-                      description: |
-                        It's the number of the users
-                    availableCount:
-                      type: number
-                      description: |
-                        It's the number of available licenses. Mock this field by putting -1
-                      format: number
-                    catchAll:
-                      type: boolean
-                      description: |
-                        Indicate that the agreement also provides the licenses to non-associated hosts
-                    hosts:
-                      type: array
-                      description: |
-                        Contains the list of (manually) associated hosts
-                      items:
-                        type: object
-                        properties:
-                          hostname:
-                            type: string
-                          coveredLicensesCount:
-                            type: number
-                            description: |
-                              Contains the number of used licenses borrowed from this agreement. Mock this field by putting -1
-                          totalCoveredLicensesCount:
-                            type: number
-                            description: |
-                              Contains the number of used licenses borrowed from all agreements. Mock this field by putting -1
+                description: ''
+                type: object
+                properties:
+                  agreements:
+                    type: array
+                    items:
+                      properties:
+                        id:
+                          type: string
+                        agreementID:
+                          type: string
+                        csi:
+                          type: string
+                        licenseTypeID:
+                          type: string
+                        itemDescription:
+                          type: string
+                        metric:
+                          type: string
+                        referenceNumber:
+                          type: string
+                        unlimited:
+                          type: boolean
+                          description: Indicates that the agreement has unlimited part or no
+                        count:
+                          type: number
+                        licensesCount:
+                          type: number
+                        usersCount:
+                          type: number
+                        availableCount:
+                          type: number
+                        catchAll:
+                          type: boolean
+                        restricted:
+                          type: boolean
+                        hosts:
+                          type: array
+                          description: |
+                            Contains the list of (manually) associated hosts
+                          items:
+                            required:
+                              - hostname
+                              - coveredLicensesCount
+                              - totalCoveredLicensesCount
+                              - consumedLicensesCount
+                            properties:
+                              hostname:
+                                type: string
+                              consumedLicensesCount:
+                                type: number
+                              coveredLicensesCount:
+                                type: number
+                              totalCoveredLicensesCount:
+                                type: number
+                required:
+                  - agreements
               examples:
                 example-1:
                   value:
