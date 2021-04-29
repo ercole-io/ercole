@@ -129,7 +129,7 @@ type APIServiceInterface interface {
 	// Add associated part to OracleDatabaseAgreement or create a new one
 	AddAssociatedLicenseTypeToOracleDbAgreement(request dto.AssociatedLicenseTypeInOracleDbAgreementRequest) (string, error)
 	// Update associated part in OracleDatabaseAgreement
-	UpdateAssociatedLicenseTypeOfOracleDbAgreement(request dto.AssociatedLicenseTypeInOracleDbAgreementRequest) error
+	UpdateAssociatedLicenseTypeOfOracleDbAgreement(request dto.AssociatedLicenseTypeInOracleDbAgreementRequest) (*dto.OracleDatabaseAgreementFE, error)
 	// Search OracleDatabase associated parts agreements
 	SearchAssociatedLicenseTypesInOracleDatabaseAgreements(filters dto.SearchOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
 	// Delete associated part from OracleDatabaseAgreement
@@ -204,6 +204,8 @@ type APIService struct {
 	TechnologyInfos []model.TechnologyInfo
 	// NewObjectID return a new ObjectID
 	NewObjectID func() primitive.ObjectID
+
+	mockSearchAssociatedLicenseTypesInOracleDatabaseAgreements func(filters dto.SearchOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
 }
 
 // Init initializes the service and database
