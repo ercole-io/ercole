@@ -136,23 +136,39 @@ hosts_loop:
 
 // UpdateAssociatedLicenseTypeOfOracleDbAgreement update associated part in OracleDatabaseAgreement
 func (as *APIService) UpdateAssociatedLicenseTypeOfOracleDbAgreement(request dto.AssociatedLicenseTypeInOracleDbAgreementRequest,
-) error {
+) (*dto.OracleDatabaseAgreementFE, error) {
 	if err := checkHosts(as, request.Hosts); err != nil {
-		return err
+		return nil, err
 	}
 
 	associateLicenseTypeID := utils.Str2oid(request.ID)
 	agreement, err := as.Database.GetOracleDatabaseAgreementByAssociatedLicenseType(associateLicenseTypeID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = updateAssociatedPart(as, agreement, request)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return as.Database.UpdateOracleDatabaseAgreement(*agreement)
+	err = as.Database.UpdateOracleDatabaseAgreement(*agreement)
+	if err != nil {
+		return nil, err
+	}
+
+	filters := dto.SearchOracleDatabaseAgreementsFilter{}
+	agrs, err := as.SearchAssociatedLicenseTypesInOracleDatabaseAgreements(filters)
+	if err != nil {
+		return nil, err
+	}
+	for _, agr := range agrs {
+		if agr.ID == associateLicenseTypeID {
+			return &agr, nil
+		}
+	}
+
+	return nil, utils.NewError(errors.New("Can't find associated licenseTypeID which has just been saved"))
 }
 
 func updateAssociatedPart(as *APIService, agreement *model.OracleDatabaseAgreement,
@@ -182,6 +198,10 @@ func updateAssociatedPart(as *APIService, agreement *model.OracleDatabaseAgreeme
 // SearchAssociatedLicenseTypesInOracleDatabaseAgreements search OracleDatabase associated parts agreements
 func (as *APIService) SearchAssociatedLicenseTypesInOracleDatabaseAgreements(filters dto.SearchOracleDatabaseAgreementsFilter,
 ) ([]dto.OracleDatabaseAgreementFE, error) {
+	if as.mockSearchAssociatedLicenseTypesInOracleDatabaseAgreements != nil {
+		return as.mockSearchAssociatedLicenseTypesInOracleDatabaseAgreements(filters)
+	}
+
 	agreements, err := as.Database.ListOracleDatabaseAgreements()
 	if err != nil {
 		return nil, err
@@ -199,11 +219,9 @@ func (as *APIService) SearchAssociatedLicenseTypesInOracleDatabaseAgreements(fil
 
 	filteredAgrs := make([]dto.OracleDatabaseAgreementFE, 0)
 	for _, agr := range agreements {
-
 		if checkOracleDatabaseAgreementMatchFilter(agr, filters) {
 			filteredAgrs = append(filteredAgrs, agr)
 		}
-
 	}
 
 	return filteredAgrs, nil

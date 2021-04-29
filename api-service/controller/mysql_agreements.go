@@ -77,7 +77,7 @@ func (ctrl *APIController) UpdateMySQLAgreement(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	utils.WriteJSONResponse(w, http.StatusOK, agreement)
 }
 
 func (ctrl *APIController) GetMySQLAgreements(w http.ResponseWriter, r *http.Request) {

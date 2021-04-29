@@ -350,7 +350,7 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 	})
 }
 
-func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement(t *testing.T) {
+func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -395,118 +395,203 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement(t *testing.T) {
 		Hosts:           []string{"foobar"},
 	}
 
-	t.Run("Update successfully", func(t *testing.T) {
-		agrForGet := agreement
+	agrForGet := agreement
 
-		agrForUpdate := agreement
-		agrForUpdate.AgreementID = req.AgreementID
-		agrForUpdate.CSI = req.CSI
+	gomock.InOrder(
+		db.EXPECT().SearchHosts("hostnames",
+			dto.SearchHostsFilters{
+				Search:         []string{""},
+				OlderThan:      utils.MAX_TIME,
+				PageNumber:     -1,
+				PageSize:       -1,
+				LTEMemoryTotal: -1,
+				GTEMemoryTotal: -1,
+				LTESwapTotal:   -1,
+				GTESwapTotal:   -1,
+				LTECPUCores:    -1,
+				GTECPUCores:    -1,
+				LTECPUThreads:  -1,
+				GTECPUThreads:  -1,
+			}).
+			Return([]map[string]interface{}{
+				{"hostname": "test-db"},
+				{"hostname": "foobar"},
+				{"hostname": "ercsoldbx"},
+			}, nil),
+		db.EXPECT().GetOracleDatabaseAgreementByAssociatedLicenseType(utils.Str2oid(req.ID)).
+			Return(&agrForGet, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypesSample, nil),
+		db.EXPECT().UpdateOracleDatabaseAgreement(agreement).Return(nil),
+	)
 
-		agrPart := &agrForUpdate.LicenseTypes[0]
-		agrPart.ReferenceNumber = req.AgreementID
-		agrPart.Unlimited = req.Unlimited
-		agrPart.Count = req.Count
-		agrPart.CatchAll = req.CatchAll
-		agrPart.Restricted = req.Restricted
-		agrPart.Hosts = req.Hosts
+	searchedAgreementItem := dto.OracleDatabaseAgreementFE{
+		ID:              agreement.LicenseTypes[0].ID,
+		AgreementID:     agreement.AgreementID,
+		CSI:             agreement.CSI,
+		LicenseTypeID:   agreement.LicenseTypes[0].LicenseTypeID,
+		ItemDescription: "",
+		Metric:          "",
+		ReferenceNumber: "",
+		Unlimited:       false,
+		Count:           0,
+		CatchAll:        false,
+		Restricted:      false,
+		Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
+		AvailableCount:  0,
+		LicensesCount:   0,
+		UsersCount:      0,
+	}
+	as.mockSearchAssociatedLicenseTypesInOracleDatabaseAgreements = func(filters dto.SearchOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error) {
+		agrs := make([]dto.OracleDatabaseAgreementFE, 0, 1)
+		agrs = append(agrs, searchedAgreementItem)
+		return agrs, nil
+	}
 
-		gomock.InOrder(
-			db.EXPECT().SearchHosts("hostnames",
-				dto.SearchHostsFilters{
-					Search:         []string{""},
-					OlderThan:      utils.MAX_TIME,
-					PageNumber:     -1,
-					PageSize:       -1,
-					LTEMemoryTotal: -1,
-					GTEMemoryTotal: -1,
-					LTESwapTotal:   -1,
-					GTESwapTotal:   -1,
-					LTECPUCores:    -1,
-					GTECPUCores:    -1,
-					LTECPUThreads:  -1,
-					GTECPUThreads:  -1,
-				}).
-				Return([]map[string]interface{}{
-					{"hostname": "test-db"},
-					{"hostname": "foobar"},
-					{"hostname": "ercsoldbx"},
-				}, nil),
-			db.EXPECT().GetOracleDatabaseAgreementByAssociatedLicenseType(utils.Str2oid(req.ID)).
-				Return(&agrForGet, nil),
-			db.EXPECT().GetOracleDatabaseLicenseTypes().
-				Return(licenseTypesSample, nil),
-			db.EXPECT().UpdateOracleDatabaseAgreement(agreement).Return(nil),
-		)
+	actualAgreement, err := as.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
+	require.NoError(t, err)
 
-		err := as.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
-		require.NoError(t, err)
-	})
+	assert.Equal(t, searchedAgreementItem, *actualAgreement)
+}
 
-	t.Run("Fail: agreement not found", func(t *testing.T) {
-		gomock.InOrder(
-			db.EXPECT().SearchHosts("hostnames",
-				dto.SearchHostsFilters{
-					Search:         []string{""},
-					OlderThan:      utils.MAX_TIME,
-					PageNumber:     -1,
-					PageSize:       -1,
-					LTEMemoryTotal: -1,
-					GTEMemoryTotal: -1,
-					LTESwapTotal:   -1,
-					GTESwapTotal:   -1,
-					LTECPUCores:    -1,
-					GTECPUCores:    -1,
-					LTECPUThreads:  -1,
-					GTECPUThreads:  -1,
-				}).
-				Return([]map[string]interface{}{
-					{"hostname": "test-db"},
-					{"hostname": "foobar"},
-					{"hostname": "ercsoldbx"},
-				}, nil),
-			db.EXPECT().GetOracleDatabaseAgreementByAssociatedLicenseType(utils.Str2oid(req.ID)).
-				Return(nil, utils.ErrOracleDatabaseAgreementNotFound),
-			db.EXPECT().GetOracleDatabaseLicenseTypes().
-				Return(licenseTypesSample, nil),
-		)
+func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_Fail_AgreementNotFound(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
 
-		err := as.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
-		assert.EqualError(t, err, utils.ErrOracleDatabaseAgreementNotFound.Error())
-	})
+	db := NewMockMongoDatabaseInterface(mockCtrl)
 
-	t.Run("Fail: licenseTypeID not valid", func(t *testing.T) {
-		agrForGet := agreement
+	as := APIService{
+		Database: db,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		TimeNow:     utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID: utils.NewObjectIDForTests(),
+	}
 
-		gomock.InOrder(
-			db.EXPECT().SearchHosts("hostnames",
-				dto.SearchHostsFilters{
-					Search:         []string{""},
-					OlderThan:      utils.MAX_TIME,
-					PageNumber:     -1,
-					PageSize:       -1,
-					LTEMemoryTotal: -1,
-					GTEMemoryTotal: -1,
-					LTESwapTotal:   -1,
-					GTESwapTotal:   -1,
-					LTECPUCores:    -1,
-					GTECPUCores:    -1,
-					LTECPUThreads:  -1,
-					GTECPUThreads:  -1,
-				}).
-				Return([]map[string]interface{}{
-					{"hostname": "test-db"},
-					{"hostname": "foobar"},
-					{"hostname": "ercsoldbx"},
-				}, nil),
-			db.EXPECT().GetOracleDatabaseAgreementByAssociatedLicenseType(utils.Str2oid(req.ID)).
-				Return(&agrForGet, nil),
-		)
+	req := dto.AssociatedLicenseTypeInOracleDbAgreementRequest{
+		ID:              "aaaaaaaaaaaaaaaaaaaaaaaa",
+		AgreementID:     "AID999",
+		LicenseTypeID:   "PID002",
+		CSI:             "CSI999",
+		ReferenceNumber: "REFREF",
+		Unlimited:       true,
+		Count:           42,
+		CatchAll:        false,
+		Restricted:      false,
+		Hosts:           []string{"foobar"},
+	}
 
-		req.LicenseTypeID = "this is a wrong licenseTypeID"
+	gomock.InOrder(
+		db.EXPECT().SearchHosts("hostnames",
+			dto.SearchHostsFilters{
+				Search:         []string{""},
+				OlderThan:      utils.MAX_TIME,
+				PageNumber:     -1,
+				PageSize:       -1,
+				LTEMemoryTotal: -1,
+				GTEMemoryTotal: -1,
+				LTESwapTotal:   -1,
+				GTESwapTotal:   -1,
+				LTECPUCores:    -1,
+				GTECPUCores:    -1,
+				LTECPUThreads:  -1,
+				GTECPUThreads:  -1,
+			}).
+			Return([]map[string]interface{}{
+				{"hostname": "test-db"},
+				{"hostname": "foobar"},
+				{"hostname": "ercsoldbx"},
+			}, nil),
+		db.EXPECT().GetOracleDatabaseAgreementByAssociatedLicenseType(utils.Str2oid(req.ID)).
+			Return(nil, utils.ErrOracleDatabaseAgreementNotFound),
+	)
 
-		err := as.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
-		assert.EqualError(t, err, utils.ErrOracleDatabaseLicenseTypeIDNotFound.Error())
-	})
+	as.mockSearchAssociatedLicenseTypesInOracleDatabaseAgreements = func(filters dto.SearchOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error) {
+		t.Fail()
+		return nil, nil
+	}
+	_, err := as.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
+	assert.EqualError(t, err, utils.ErrOracleDatabaseAgreementNotFound.Error())
+}
+
+func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_Fail_LicenseTypeIdNotValid(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+
+	as := APIService{
+		Database: db,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		TimeNow:     utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID: utils.NewObjectIDForTests(),
+	}
+
+	req := dto.AssociatedLicenseTypeInOracleDbAgreementRequest{
+		ID:              "aaaaaaaaaaaaaaaaaaaaaaaa",
+		AgreementID:     "AID999",
+		LicenseTypeID:   "PID002",
+		CSI:             "CSI999",
+		ReferenceNumber: "REFREF",
+		Unlimited:       true,
+		Count:           42,
+		CatchAll:        false,
+		Restricted:      false,
+		Hosts:           []string{"foobar"},
+	}
+	agreement := model.OracleDatabaseAgreement{
+		AgreementID: "AID001",
+		CSI:         "CSI001",
+		LicenseTypes: []model.AssociatedLicenseType{
+			{
+				ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+				LicenseTypeID:   licenseTypesSample[0].ID,
+				ReferenceNumber: "RF0001",
+				Unlimited:       true,
+				Count:           30,
+				CatchAll:        true,
+				Restricted:      false,
+				Hosts:           []string{"test-db", "ercsoldbx"},
+			},
+		},
+	}
+
+	gomock.InOrder(
+		db.EXPECT().SearchHosts("hostnames",
+			dto.SearchHostsFilters{
+				Search:         []string{""},
+				OlderThan:      utils.MAX_TIME,
+				PageNumber:     -1,
+				PageSize:       -1,
+				LTEMemoryTotal: -1,
+				GTEMemoryTotal: -1,
+				LTESwapTotal:   -1,
+				GTESwapTotal:   -1,
+				LTECPUCores:    -1,
+				GTECPUCores:    -1,
+				LTECPUThreads:  -1,
+				GTECPUThreads:  -1,
+			}).
+			Return([]map[string]interface{}{
+				{"hostname": "test-db"},
+				{"hostname": "foobar"},
+				{"hostname": "ercsoldbx"},
+			}, nil),
+		db.EXPECT().GetOracleDatabaseAgreementByAssociatedLicenseType(utils.Str2oid(req.ID)).
+			Return(&agreement, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypesSample, nil),
+	)
+
+	req.LicenseTypeID = "this is a wrong licenseTypeID"
+
+	actual, err := as.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
+
+	assert.EqualError(t, err, utils.ErrOracleDatabaseLicenseTypeIDNotFound.Error())
+	assert.Nil(t, actual)
 }
 
 func TestSearchOracleDatabaseAgreements_Success(t *testing.T) {
