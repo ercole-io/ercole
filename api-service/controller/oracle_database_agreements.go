@@ -87,7 +87,7 @@ func (ctrl *APIController) UpdateAssociatedLicenseTypeOfOracleDbAgreement(w http
 		return
 	}
 
-	err := ctrl.Service.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
+	agr, err := ctrl.Service.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
 	if errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) ||
 		errors.Is(err, utils.ErrOracleDatabaseLicenseTypeIDNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
@@ -96,7 +96,7 @@ func (ctrl *APIController) UpdateAssociatedLicenseTypeOfOracleDbAgreement(w http
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, nil)
+	utils.WriteJSONResponse(w, http.StatusOK, agr)
 }
 
 // SearchAssociatedLicenseTypesInOracleDatabaseAgreements search Oracle/Database agreements
