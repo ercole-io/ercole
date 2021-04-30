@@ -16,9 +16,14 @@
 // Package service is a package that provides methods for querying data
 package service
 
-import "github.com/ercole-io/ercole/v2/chart-service/dto"
+import (
+	"sort"
+	"strings"
+	"time"
 
-//TODO Add tests
+	"github.com/ercole-io/ercole/v2/chart-service/dto"
+)
+
 func (as *ChartService) GetLicenseComplianceHistory() ([]dto.LicenseComplianceHistory, error) {
 	licenses, err := as.Database.GetLicenseComplianceHistory()
 	if err != nil {
@@ -40,8 +45,107 @@ func (as *ChartService) GetLicenseComplianceHistory() ([]dto.LicenseComplianceHi
 			}
 		}
 
-		license.History = keepOnlyLastEntryOfEachDay(license.History)
+		license.History = sortAndKeepOnlyLastEntryOfEachDay(license.History)
 	}
 
+	licenses = mergeMySqlLicensesCompliance(licenses)
 	return licenses, nil
+}
+
+func sortAndKeepOnlyLastEntryOfEachDay(history []dto.LicenseComplianceHistoricValue) []dto.LicenseComplianceHistoricValue {
+	sort.Slice(history, func(i, j int) bool {
+		return history[i].Date.Before(history[j].Date)
+	})
+
+	newHistory := make([]dto.LicenseComplianceHistoricValue, 0, len(history))
+
+	var nextEntry *dto.LicenseComplianceHistoricValue
+	for i := range history {
+		val := &history[i]
+		valDay := time.Date(val.Date.Year(), val.Date.Month(), val.Date.Day(), 0, 0, 0, 0, val.Date.Location())
+
+		if nextEntry == nil || valDay.Equal(nextEntry.Date) {
+			nextEntry = val
+			nextEntry.Date = valDay
+			continue
+		}
+
+		if valDay.After(nextEntry.Date) {
+			newHistory = append(newHistory, *nextEntry)
+			nextEntry.Date = time.Date(val.Date.Year(), val.Date.Month(), val.Date.Day(), 0, 0, 0, 0, val.Date.Location())
+			nextEntry = val
+		}
+	}
+
+	if nextEntry != nil {
+		newHistory = append(newHistory, *nextEntry)
+	}
+
+	return newHistory
+}
+
+func mergeMySqlLicensesCompliance(licenses []dto.LicenseComplianceHistory) []dto.LicenseComplianceHistory {
+	var mySql *dto.LicenseComplianceHistory
+	mySqlEnterprisePrefix := "MySQL Enterprise"
+
+	for i := len(licenses) - 1; i >= 0; i-- {
+		l := licenses[i]
+
+		if len(l.LicenseTypeID) > 0 || !strings.HasPrefix(l.ItemDescription, mySqlEnterprisePrefix) {
+			continue
+		}
+
+		if mySql == nil {
+			mySql = new(dto.LicenseComplianceHistory)
+			mySql.ItemDescription = mySqlEnterprisePrefix
+		}
+
+		mySql.History = mergeLicenseComplianceHistoricValues(mySql.History, l.History)
+
+		licenses = append(licenses[:i], licenses[i+1:]...)
+	}
+
+	if mySql == nil {
+		return licenses
+	}
+
+	return append(licenses, *mySql)
+}
+
+func mergeLicenseComplianceHistoricValues(a, b []dto.LicenseComplianceHistoricValue) []dto.LicenseComplianceHistoricValue {
+	merged := make([]dto.LicenseComplianceHistoricValue, 0)
+	for i, j := 0, 0; i < len(a) || j < len(b); {
+		var valA, valB *dto.LicenseComplianceHistoricValue
+
+		if i < len(a) {
+			valA = &a[i]
+		}
+		if j < len(b) {
+			valB = &b[j]
+		}
+
+		if valA != nil && (valB == nil || valA.Date.Before(valB.Date)) {
+			merged = append(merged, *valA)
+			i += 1
+			continue
+		}
+
+		if valA == nil || valB.Date.Before(valA.Date) {
+			merged = append(merged, *valB)
+			j += 1
+			continue
+		}
+
+		newVal := dto.LicenseComplianceHistoricValue{
+			Date:     valA.Date,
+			Consumed: valA.Consumed + valB.Consumed,
+			Covered:  valA.Covered + valB.Covered,
+		}
+
+		merged = append(merged, newVal)
+
+		i, j = i+1, j+1
+	}
+
+	return merged
 }
