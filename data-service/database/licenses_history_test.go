@@ -32,7 +32,9 @@ import (
 func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 	defer m.db.Client.Database(m.dbname).Collection("oracle_database_licenses_history").DeleteMany(context.TODO(), bson.M{})
 
-	expectedDateDay1 := utils.PDT("2020-12-05T00:00:00Z")
+	m.db.TimeNow = func() time.Time { return utils.P("2020-12-05T14:02:03+02:00") }
+
+	expectedDateDay1 := utils.PDT("2020-12-05T00:00:00+02:00")
 	m.T().Run("First insert, success", func(t *testing.T) {
 		licenses := []dto.LicenseCompliance{
 			{
@@ -109,7 +111,7 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 	})
 
 	m.T().Run("Second insert, next day, success", func(t *testing.T) {
-		m.db.TimeNow = func() time.Time { return utils.P("2020-12-06T15:02:03Z") }
+		m.db.TimeNow = func() time.Time { return utils.P("2020-12-06T15:02:03+02:00") }
 
 		licenses := []dto.LicenseCompliance{
 			{
@@ -175,7 +177,7 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 			log.Fatal(err)
 		}
 
-		expectedDateDay2 := utils.PDT("2020-12-06T00:00:00Z")
+		expectedDateDay2 := utils.PDT("2020-12-06T00:00:00+02:00")
 
 		expected := []map[string]interface{}{
 			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": expectedDateDay1}, map[string]interface{}{"consumed": 0.5, "covered": 5.0, "date": expectedDateDay2}}, "licenseTypeID": "L47247"},
@@ -189,7 +191,7 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 	})
 
 	m.T().Run("Third insert, same day, success", func(t *testing.T) {
-		m.db.TimeNow = func() time.Time { return utils.P("2020-12-06T15:02:03Z") }
+		m.db.TimeNow = func() time.Time { return utils.P("2020-12-06T15:02:03+02:00") }
 
 		licenses := []dto.LicenseCompliance{
 			{
@@ -228,7 +230,7 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 			log.Fatal(err)
 		}
 
-		expectedDateDay2 := utils.PDT("2020-12-06T00:00:00Z")
+		expectedDateDay2 := utils.PDT("2020-12-06T00:00:00+02:00")
 
 		expected := []map[string]interface{}{
 			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": expectedDateDay1}, map[string]interface{}{"consumed": 0.5, "covered": 5.0, "date": expectedDateDay2}}, "licenseTypeID": "L47247"},
