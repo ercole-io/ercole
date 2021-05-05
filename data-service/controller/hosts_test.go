@@ -47,11 +47,11 @@ func TestUpdateHostInfo_Success(t *testing.T) {
 
 	as.EXPECT().InsertHostData(expectedHostDataBE).Return(nil)
 
-	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.InsertHostData)
 	req, err := http.NewRequest("PUT", "/", bytes.NewReader(raw))
 	require.NoError(t, err)
 
+	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)

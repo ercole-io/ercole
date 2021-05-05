@@ -97,6 +97,24 @@ func Contains(a []string, x string) bool {
 	return false
 }
 
+// Difference returns the elements in `a` that aren't in `b`
+// If a has multiple times on item, which is in b even only once, no occurrences will be returned
+func Difference(a, b []string) []string {
+	mb := make(map[string]struct{}, len(b))
+	for _, x := range b {
+		mb[x] = struct{}{}
+	}
+
+	var diff []string
+	for _, x := range a {
+		if _, found := mb[x]; !found {
+			diff = append(diff, x)
+		}
+	}
+
+	return diff
+}
+
 // Remove return slice without element at position i, mantaining order
 func Remove(slice []string, i int) []string {
 	return append(slice[:i], slice[i+1:]...)
