@@ -31,7 +31,7 @@ const licensesHistoryCollection = "oracle_database_licenses_history"
 
 func (md *MongoDatabase) HistoricizeLicensesCompliance(licenses []dto.LicenseCompliance) error {
 	now := md.TimeNow()
-	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 
 	for _, license := range licenses {
 		done, err := md.updateLicenseComplianceHistoric(license, today)
