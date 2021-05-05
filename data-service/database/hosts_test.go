@@ -100,6 +100,26 @@ func (m *MongodbSuite) TestInsertHostData() {
 	assert.Equal(m.T(), []string{"rac1-x"}, list)
 }
 
+func (m *MongodbSuite) TestGetCurrentHostnames() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.T().Run("should_return_empty", func(t *testing.T) {
+		list, err := m.db.GetCurrentHostnames()
+		require.NoError(t, err)
+		assert.Equal(t, []string{}, list)
+	})
+
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_01.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_04.json"))
+	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_06.json"))
+
+	m.T().Run("should_return_all_current_hosts", func(t *testing.T) {
+		list, err := m.db.GetCurrentHostnames()
+		require.NoError(t, err)
+		assert.Equal(t, []string{"test-small2", "test-small3"}, list)
+	})
+}
+
 func (m *MongodbSuite) TestFindOldCurrentHostnames() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 	m.InsertHostData(utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_01.json"))
