@@ -28,6 +28,8 @@ import (
 
 type DataControllerInterface interface {
 	InsertHostData(w http.ResponseWriter, r *http.Request)
+	CompareCmdbInfo(w http.ResponseWriter, r *http.Request)
+
 	AuthenticateMiddleware(h http.Handler) http.Handler
 }
 
