@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"sort"
 	"time"
 
 	"github.com/ercole-io/ercole/v2/chart-service/dto"
@@ -96,28 +95,4 @@ func (as *ChartService) getOracleDatabaseLicenseTypes() (map[string]model.Oracle
 	}
 
 	return licenseTypesMap, nil
-}
-
-func keepOnlyLastEntryOfEachDay(history []dto.LicenseComplianceHistoricValue) []dto.LicenseComplianceHistoricValue {
-	sort.Slice(history, func(i, j int) bool {
-		return history[i].Date.After(history[j].Date)
-	})
-
-	currentDay := utils.MAX_TIME
-	newHistory := make([]dto.LicenseComplianceHistoricValue, 0, len(history))
-
-	for i := range history {
-		entry := &history[i]
-		entryDate := entry.Date
-		entryDay := time.Date(entryDate.Year(), entryDate.Month(), entryDate.Day(), 0, 0, 0, 0, time.UTC)
-
-		if entryDay.Before(currentDay) {
-			currentDay = entryDay
-
-			entry.Date = entryDay
-			newHistory = append(newHistory, *entry)
-		}
-	}
-
-	return newHistory
 }
