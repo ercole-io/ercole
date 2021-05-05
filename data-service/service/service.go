@@ -26,10 +26,12 @@ import (
 
 	alertservice_client "github.com/ercole-io/ercole/v2/alert-service/client"
 	"github.com/ercole-io/ercole/v2/data-service/database"
+	"github.com/ercole-io/ercole/v2/data-service/dto"
 )
 
 type HostDataServiceInterface interface {
 	InsertHostData(hostdata model.HostDataBE) error
+	CompareCmdbInfo(cmdbInfo dto.CmdbInfo) error
 }
 
 type HostDataService struct {

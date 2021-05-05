@@ -50,6 +50,25 @@ func (md *MongoDatabase) InsertHostData(hostData model.HostDataBE) (*mongo.Inser
 	return res, nil
 }
 
+func (md *MongoDatabase) GetCurrentHostnames() ([]string, error) {
+	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
+		context.TODO(),
+		"hostname",
+		bson.M{
+			"archived": false,
+		})
+	if err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	var hosts []string = make([]string, 0)
+	for _, val := range values {
+		hosts = append(hosts, val.(string))
+	}
+
+	return hosts, nil
+}
+
 // FindOldCurrentHostnames return the list of current hosts that haven't sent hostdata after time t
 func (md *MongoDatabase) FindOldCurrentHostnames(t time.Time) ([]string, error) {
 	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(

@@ -33,6 +33,7 @@ type MongoDatabaseInterface interface {
 	Init()
 	ArchiveHost(hostname string) (*mongo.UpdateResult, error)
 	InsertHostData(hostData model.HostDataBE) (*mongo.InsertOneResult, error)
+	GetCurrentHostnames() ([]string, error)
 	// FindOldCurrentHostnames return the list of current hosts names that haven't sent hostdata after time t
 	FindOldCurrentHostnames(t time.Time) ([]string, error)
 	// FindOldCurrentHostdata return the list of current hosts that haven't sent hostdata after time t
