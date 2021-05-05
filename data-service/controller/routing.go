@@ -36,6 +36,7 @@ func SetupRoutesForHostDataController(router *mux.Router, ctrl DataControllerInt
 
 func setupProtectedRoutes(router *mux.Router, ctrl DataControllerInterface) {
 	router.HandleFunc("/hosts", ctrl.InsertHostData).Methods("POST")
+	router.HandleFunc("/cmdbs", ctrl.CompareCmdbInfo).Methods("POST")
 }
 
 // AuthenticateMiddleware return the middleware used to authenticate (request) users
