@@ -4697,6 +4697,29 @@ paths:
                   - licensesCompliance
       operationId: GetDatabaseLicensesCompliance
       description: Get list of licenses with usage and compliance
+  /cmdbs:
+    post:
+      summary: ''
+      operationId: CompareCmdbInfo
+      responses:
+        '204':
+          description: No Content
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                hostnames:
+                  type: array
+                  items:
+                    type: string
+            examples: {}
+      tags:
+        - data-service
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []
