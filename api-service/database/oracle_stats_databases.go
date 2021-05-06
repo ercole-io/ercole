@@ -551,26 +551,25 @@ func (md *MongoDatabase) GetTotalOracleDatabaseSegmentSizeStats(location string,
 func (md *MongoDatabase) GetTopUnusedOracleDatabaseInstanceResourceStats(location string, environment string, limit int, olderThan time.Time) ([]interface{}, error) {
 	var out []interface{} = make([]interface{}, 0)
 
-	//Calculate the stats
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APProject(bson.M{
-				"hostname": 1,
+				"hostname":        1,
+				"info.cpuThreads": 1,
 				"works": mu.APOReduce(
 					mu.APOFilter("$features.oracle.database.databases", "db", mu.APONotEqual("$$db.work", nil)),
-					bson.M{"totalWork": 0, "totalCPUCount": 0},
+					bson.M{"totalWork": 0},
 					bson.M{
-						"totalWork":     mu.APOAdd("$$value.totalWork", "$$this.work"),
-						"totalCPUCount": mu.APOAdd("$$value.totalCPUCount", "$$this.cpuCount"),
+						"totalWork": mu.APOAdd("$$value.totalWork", "$$this.work"),
 					},
 				),
 			}),
 			mu.APProject(bson.M{
 				"hostname": 1,
-				"unused":   mu.APOSubtract("$works.totalCPUCount", "$works.totalWork"),
+				"unused":   mu.APOSubtract("$info.cpuThreads", "$works.totalWork"),
 			}),
 			mu.APSort(bson.M{
 				"unused": -1,
@@ -582,7 +581,6 @@ func (md *MongoDatabase) GetTopUnusedOracleDatabaseInstanceResourceStats(locatio
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	//Decode the documents
 	for cur.Next(context.TODO()) {
 		var item map[string]interface{}
 		if cur.Decode(&item) != nil {
