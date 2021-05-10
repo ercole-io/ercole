@@ -101,9 +101,10 @@ func serve(enableDataService bool,
 
 	if ercoleConfig.Mongodb.Migrate {
 		log.Info("Migrating...")
-		cl := migration.ConnectToMongodb(log, ercoleConfig.Mongodb)
-		migration.Migrate(log, cl.Database(ercoleConfig.Mongodb.DBName))
-		cl.Disconnect(context.TODO())
+		err := migration.Migrate(ercoleConfig.Mongodb)
+		if err != nil {
+			log.Fatal("Failed migrating database: %w", err)
+		}
 	}
 
 	if enableDataService {
