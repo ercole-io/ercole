@@ -16,8 +16,6 @@
 package cmd
 
 import (
-	"context"
-
 	"github.com/spf13/cobra"
 
 	migration "github.com/ercole-io/ercole/v2/database-migration"
@@ -32,9 +30,10 @@ var migrateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		log := utils.NewLogger("SERV")
 
-		cl := migration.ConnectToMongodb(log, ercoleConfig.Mongodb)
-		migration.Migrate(log, cl.Database(ercoleConfig.Mongodb.DBName))
-		cl.Disconnect(context.TODO())
+		err := migration.Migrate(ercoleConfig.Mongodb)
+		if err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 

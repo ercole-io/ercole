@@ -62,10 +62,9 @@ func (db *MongodbSuite) SetupSuite() {
 
 	log := utils.NewLogger("test")
 
-	cl := migration.ConnectToMongodb(log, db.db.Config.Mongodb)
-	migration.Migrate(log, cl.Database(db.db.Config.Mongodb.DBName))
-	if err := cl.Disconnect(context.TODO()); err != nil {
-		log.Error(err)
+	err := migration.Migrate(db.db.Config.Mongodb)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	db.db.ConnectToMongodb()
