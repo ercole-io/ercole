@@ -38,7 +38,7 @@ func (as *APIService) AddAssociatedLicenseTypeToOracleDbAgreement(request dto.As
 		return "", err
 	}
 
-	agreement, err := as.Database.GetOracleDatabaseAgreement(request.AgreementID)
+	agreement, err := as.Database.GetOracleDatabaseAgreement(request.AgreementID, request.CSI)
 	if errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) {
 		agreement = &model.OracleDatabaseAgreement{
 			AgreementID:  request.AgreementID,

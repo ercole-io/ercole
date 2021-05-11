@@ -87,13 +87,13 @@ func (m *MongodbSuite) TestGetOracleDatabaseAgreement() {
 	require.NoError(m.T(), err)
 
 	m.T().Run("id_exist", func(t *testing.T) {
-		out, err := m.db.GetOracleDatabaseAgreement(agreementSample.AgreementID)
+		out, err := m.db.GetOracleDatabaseAgreement(agreementSample.AgreementID, agreementSample.CSI)
 		require.NoError(t, err)
 		assert.Equal(t, agreementSample, *out)
 	})
 
 	m.T().Run("id_not_exist", func(t *testing.T) {
-		out, err := m.db.GetOracleDatabaseAgreement("this id doesn't exists")
+		out, err := m.db.GetOracleDatabaseAgreement("this id doesn't exists", "this csi doesn't exists")
 		require.Nil(t, out)
 		require.Equal(t, utils.ErrOracleDatabaseAgreementNotFound, err)
 	})
@@ -174,14 +174,14 @@ func (m *MongodbSuite) TestRemoveOracleDatabaseAgreement() {
 	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
 	require.NoError(m.T(), err)
 
-	out, err := m.db.GetOracleDatabaseAgreement(agreementSample.AgreementID)
+	out, err := m.db.GetOracleDatabaseAgreement(agreementSample.AgreementID, agreementSample.CSI)
 	require.NoError(m.T(), err)
 	assert.Equal(m.T(), agreementSample, *out)
 
 	err = m.db.RemoveOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
 	require.NoError(m.T(), err)
 
-	_, err = m.db.GetOracleDatabaseAgreement(agreementSample.AgreementID)
+	_, err = m.db.GetOracleDatabaseAgreement(agreementSample.AgreementID, agreementSample.CSI)
 	require.Equal(m.T(), utils.ErrOracleDatabaseAgreementNotFound, err)
 
 	err = m.db.RemoveOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))

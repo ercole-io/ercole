@@ -42,10 +42,11 @@ func (md *MongoDatabase) InsertOracleDatabaseAgreement(agreement model.OracleDat
 }
 
 // GetOracleDatabaseAgreement return the agreement specified by id
-func (md *MongoDatabase) GetOracleDatabaseAgreement(agreementID string) (*model.OracleDatabaseAgreement, error) {
+func (md *MongoDatabase) GetOracleDatabaseAgreement(agreementID, csi string) (*model.OracleDatabaseAgreement, error) {
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsCollection).
 		FindOne(context.TODO(), bson.M{
 			"agreementID": agreementID,
+			"csi":         csi,
 		})
 	if res.Err() == mongo.ErrNoDocuments {
 		return nil, utils.ErrOracleDatabaseAgreementNotFound
