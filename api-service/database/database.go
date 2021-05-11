@@ -116,7 +116,7 @@ type MongoDatabaseInterface interface {
 	// InsertOracleDatabaseAgreement insert an Oracle/Database agreement into the database
 	InsertOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, error)
 	// GetOracleDatabaseAgreement return the agreement specified by id
-	GetOracleDatabaseAgreement(agreementID string) (*model.OracleDatabaseAgreement, error)
+	GetOracleDatabaseAgreement(agreementID, csi string) (*model.OracleDatabaseAgreement, error)
 	// GetOracleDatabaseAgreementByAssociatedLicenseType return the agreement specified by an associated part id
 	GetOracleDatabaseAgreementByAssociatedLicenseType(associateLicenseTypeID primitive.ObjectID) (*model.OracleDatabaseAgreement, error)
 	// UpdateOracleDatabaseAgreement update an Oracle/Database agreement in the database

@@ -97,7 +97,7 @@ func TestAddOracleDatabaseAgreements_Success_InsertNew(t *testing.T) {
 			{"hostname": "foobar"},
 			{"hostname": "ercsoldbx"},
 		}, nil),
-		db.EXPECT().GetOracleDatabaseAgreement(addRequest.AgreementID).Return(nil, utils.ErrOracleDatabaseAgreementNotFound),
+		db.EXPECT().GetOracleDatabaseAgreement(addRequest.AgreementID, addRequest.CSI).Return(nil, utils.ErrOracleDatabaseAgreementNotFound),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().Return(licenseTypesSample, nil),
 		db.EXPECT().InsertOracleDatabaseAgreement(gomock.Any()).
 			Do(func(actual model.OracleDatabaseAgreement) {
@@ -194,7 +194,7 @@ func TestAddOracleDatabaseAgreements_Success_AlreadyExists(t *testing.T) {
 				{"hostname": "pippo"},
 				{"hostname": "pluto"},
 			}, nil),
-		db.EXPECT().GetOracleDatabaseAgreement(addRequest.AgreementID).
+		db.EXPECT().GetOracleDatabaseAgreement(addRequest.AgreementID, addRequest.CSI).
 			Return(&alreadyExistsAgreement, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypesSample, nil),
@@ -335,7 +335,7 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 					{"hostname": "test-db"},
 					{"hostname": "ercsoldbx"},
 				}, nil),
-			db.EXPECT().GetOracleDatabaseAgreement(addRequest.AgreementID).
+			db.EXPECT().GetOracleDatabaseAgreement(addRequest.AgreementID, addRequest.CSI).
 				Return(nil, utils.ErrOracleDatabaseAgreementNotFound),
 			db.EXPECT().GetOracleDatabaseLicenseTypes().
 				Return(licenseTypesSample, nil),
