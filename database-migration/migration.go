@@ -17,6 +17,8 @@ package migration
 
 import (
 	"context"
+	"errors"
+	"sort"
 	"time"
 
 	migrate "github.com/xakep666/mongo-migrate"
@@ -33,8 +35,8 @@ func Migrate(conf config.Mongodb) error {
 	if err != nil {
 		return err
 	}
-
 	migrate.SetDatabase(database)
+
 	if err := migrate.Up(migrate.AllAvailable); err != nil {
 		return err
 	}
@@ -63,4 +65,43 @@ func connectToMongodb(conf config.Mongodb) (*mongo.Database, error) {
 	}
 
 	return client.Database(conf.DBName), nil
+}
+
+func IsAtTheLatestVersion(conf config.Mongodb) (bool, error) {
+	actual, latest, err := GetVersions(conf)
+	if err != nil {
+		return false, err
+	}
+
+	if latest < actual {
+		return false, utils.NewError(errors.New("Db version is higher than last migration version"))
+	} else if latest > actual {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func GetVersions(conf config.Mongodb) (actual, latest uint64, err error) {
+	database, err := connectToMongodb(conf)
+	if err != nil {
+		return
+	}
+
+	migrate.SetDatabase(database)
+
+	migrations := migrate.RegisteredMigrations()
+
+	sort.Slice(migrations, func(i, j int) bool {
+		return migrations[i].Version < migrations[j].Version
+	})
+
+	actual, _, err = migrate.Version()
+	if err != nil {
+		return
+	}
+
+	lastMigration := migrations[len(migrations)-1]
+
+	return actual, lastMigration.Version, nil
 }

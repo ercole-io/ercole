@@ -20,9 +20,11 @@ import (
 	"os"
 	"strings"
 
+	"github.com/spf13/cobra"
+
+	"github.com/ercole-io/ercole/v2/cmd/migration"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/spf13/cobra"
 )
 
 var ercoleConfig config.Configuration
@@ -66,4 +68,7 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&extraConfigFile, "config", "c", "", "Configuration file")
+
+	rootCmd.AddCommand(migration.NewMigrateCmd(&ercoleConfig))
+	rootCmd.AddCommand(migration.NewMigrateStatusCmd(&ercoleConfig))
 }
