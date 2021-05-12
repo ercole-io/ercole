@@ -16,20 +16,16 @@
 package model
 
 import (
+	"errors"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // OracleDatabaseAgreement holds informations about a sigle OracleDatabaseAgreement
 type OracleDatabaseAgreement struct {
-	ID           primitive.ObjectID      `json:"id" bson:"_id"`
-	AgreementID  string                  `json:"agreementID" bson:"agreementID"`
-	CSI          string                  `json:"csi" bson:"csi"`
-	LicenseTypes []AssociatedLicenseType `json:"licenseTypes" bson:"licenseTypes"`
-}
-
-// AssociatedLicenseType describe an association of a LicenseType to an Agreement
-type AssociatedLicenseType struct {
 	ID              primitive.ObjectID `json:"id" bson:"_id"`
+	AgreementID     string             `json:"agreementID" bson:"agreementID"`
+	CSI             string             `json:"csi" bson:"csi"`
 	LicenseTypeID   string             `json:"licenseTypeID" bson:"licenseTypeID"`
 	ReferenceNumber string             `json:"referenceNumber" bson:"referenceNumber"`
 	Unlimited       bool               `json:"unlimited" bson:"unlimited"`
@@ -39,13 +35,10 @@ type AssociatedLicenseType struct {
 	Hosts           []string           `json:"hosts" bson:"hosts"`
 }
 
-func (agreement *OracleDatabaseAgreement) AssociatedLicenseTypeByID(associatedLicenseTypeID primitive.ObjectID,
-) (associatedLicenseType *AssociatedLicenseType) {
-	for i := range agreement.LicenseTypes {
-		if agreement.LicenseTypes[i].ID == associatedLicenseTypeID {
-			return &agreement.LicenseTypes[i]
-		}
+func (agreement OracleDatabaseAgreement) Check() error {
+	if agreement.Restricted && agreement.CatchAll {
+		return errors.New("If it's restricted it can't be catchAll")
 	}
 
-	return
+	return nil
 }

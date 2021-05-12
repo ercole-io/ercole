@@ -96,12 +96,13 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/technologies/oracle/exadata/patch-status", ctrl.GetOracleExadataPatchStatusStats).Methods("GET")
 
 	// ORACLE AGREEMENTS
-	router.HandleFunc("/agreements/oracle/database", ctrl.AddAssociatedLicenseTypeToOracleDbAgreement).Methods("POST")
-	router.HandleFunc("/agreements/oracle/database", ctrl.UpdateAssociatedLicenseTypeOfOracleDbAgreement).Methods("PUT")
-	router.HandleFunc("/agreements/oracle/database", ctrl.SearchAssociatedLicenseTypesInOracleDatabaseAgreements).Methods("GET")
-	router.HandleFunc("/agreements/oracle/database/{id}", ctrl.DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement).Methods("DELETE")
-	router.HandleFunc("/agreements/oracle/database/{id}/hosts", ctrl.AddHostToAssociatedLicenseType).Methods("POST")
-	router.HandleFunc("/agreements/oracle/database/{id}/hosts/{hostname}", ctrl.RemoveHostFromAssociatedLicenseType).Methods("DELETE")
+	router.HandleFunc("/agreements/oracle/database", ctrl.AddOracleDatabaseAgreement).Methods("POST")
+	router.HandleFunc("/agreements/oracle/database", ctrl.UpdateOracleDatabaseAgreement).Methods("PUT")
+	router.HandleFunc("/agreements/oracle/database", ctrl.GetOracleDatabaseAgreements).Methods("GET")
+	router.HandleFunc("/agreements/oracle/database/{id}", ctrl.DeleteOracleDatabaseAgreement).Methods("DELETE")
+
+	router.HandleFunc("/agreements/oracle/database/{id}/hosts", ctrl.AddHostToOracleDatabaseAgreement).Methods("POST")                   //TODO Swagger
+	router.HandleFunc("/agreements/oracle/database/{id}/hosts/{hostname}", ctrl.DeleteHostFromOracleDatabaseAgreement).Methods("DELETE") //TODO Swagger
 
 	// MYSQL
 	router.HandleFunc("/hosts/technologies/mysql/databases", ctrl.SearchMySQLInstances).Methods("GET")

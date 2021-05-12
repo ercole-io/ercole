@@ -16,36 +16,10 @@
 package dto
 
 import (
-	"errors"
-
-	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 //TODO Should I remove some of these?
-
-// AssociatedLicenseTypeInOracleDbAgreementRequest contains the informations needed to add or update an
-// AssociatedLicenseType in an OracleDatabaseAgreement
-type AssociatedLicenseTypeInOracleDbAgreementRequest struct {
-	ID              string   `json:"id"`
-	AgreementID     string   `json:"agreementID"`
-	LicenseTypeID   string   `json:"licenseTypeID"`
-	CSI             string   `json:"csi"`
-	ReferenceNumber string   `json:"referenceNumber"`
-	Unlimited       bool     `json:"unlimited"`
-	Count           int      `json:"count"`
-	CatchAll        bool     `json:"catchAll"` //TODO rename basket
-	Restricted      bool     `json:"restricted"`
-	Hosts           []string `json:"hosts"`
-}
-
-func (req AssociatedLicenseTypeInOracleDbAgreementRequest) Check() error {
-	if req.Restricted && req.CatchAll {
-		return utils.NewError(errors.New("If it's restricted it can't be catchAll"), "BAD_REQUEST")
-	}
-
-	return nil
-}
 
 // OracleDatabaseAgreementFE contains the informations about an AssociatedLicenseType in an Agreement for the frontend
 type OracleDatabaseAgreementFE struct {
@@ -93,8 +67,8 @@ type OracleDatabaseAgreementAssociatedHostFE struct {
 	ConsumedLicensesCount float64 `json:"consumedLicensesCount" bson:"consumedLicensesCount"`
 }
 
-// SearchOracleDatabaseAgreementsFilter contains the filter used to get the list of Oracle/Database agreements
-type SearchOracleDatabaseAgreementsFilter struct {
+// GetOracleDatabaseAgreementsFilter contains the filter used to get the list of Oracle/Database agreements
+type GetOracleDatabaseAgreementsFilter struct {
 	AgreementID       string
 	LicenseTypeID     string
 	ItemDescription   string
@@ -109,6 +83,17 @@ type SearchOracleDatabaseAgreementsFilter struct {
 	UsersCountGTE     int
 	AvailableCountLTE int
 	AvailableCountGTE int
+}
+
+func NewGetOracleDatabaseAgreementsFilter() GetOracleDatabaseAgreementsFilter {
+	return GetOracleDatabaseAgreementsFilter{
+		LicensesCountLTE:  -1,
+		LicensesCountGTE:  -1,
+		UsersCountLTE:     -1,
+		UsersCountGTE:     -1,
+		AvailableCountLTE: -1,
+		AvailableCountGTE: -1,
+	}
 }
 
 // HostUsingOracleDatabaseLicenses contains the information about the hosts that use licenses by Oracle/Database
