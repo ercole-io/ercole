@@ -25,6 +25,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
@@ -32,7 +33,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestAddAssociatedLicenseTypeToOracleDbAgreement_Success(t *testing.T) {
+func TestAddOracleDatabaseAgreement_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -47,8 +48,7 @@ func TestAddAssociatedLicenseTypeToOracleDbAgreement_Success(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	request := dto.AssociatedLicenseTypeInOracleDbAgreementRequest{
-		ID:              "",
+	request := model.OracleDatabaseAgreement{
 		AgreementID:     "AID001",
 		LicenseTypeID:   "PID001",
 		CSI:             "CSI001",
@@ -60,21 +60,31 @@ func TestAddAssociatedLicenseTypeToOracleDbAgreement_Success(t *testing.T) {
 		Hosts:           []string{"foobar"},
 	}
 
-	newID := fmt.Sprintf("%024d", 1)
-	as.EXPECT().AddAssociatedLicenseTypeToOracleDbAgreement(request).Return(newID, nil)
+	result := dto.OracleDatabaseAgreementFE{
+		ID:              utils.Str2oid(fmt.Sprintf("%024d", 1)),
+		AgreementID:     request.AgreementID,
+		CSI:             request.CSI,
+		LicenseTypeID:   request.LicenseTypeID,
+		ReferenceNumber: request.ReferenceNumber,
+		Unlimited:       request.Unlimited,
+		CatchAll:        request.CatchAll,
+		Restricted:      request.Restricted,
+	}
+
+	as.EXPECT().AddOracleDatabaseAgreement(request).Return(&result, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AddAssociatedLicenseTypeToOracleDbAgreement)
+	handler := http.HandlerFunc(ac.AddOracleDatabaseAgreement)
 	req, err := http.NewRequest("POST", "/", bytes.NewReader([]byte(utils.ToJSON(request))))
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(newID), rr.Body.String())
+	assert.JSONEq(t, utils.ToJSON(result), rr.Body.String())
 }
 
-func TestAddAssociatedLicenseTypeToOracleDbAgreement_ReadOnly(t *testing.T) {
+func TestAddOracleDatabaseAgreement_ReadOnly(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -90,7 +100,7 @@ func TestAddAssociatedLicenseTypeToOracleDbAgreement_ReadOnly(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AddAssociatedLicenseTypeToOracleDbAgreement)
+	handler := http.HandlerFunc(ac.AddOracleDatabaseAgreement)
 	req, err := http.NewRequest("POST", "/", nil)
 	require.NoError(t, err)
 
@@ -99,7 +109,7 @@ func TestAddAssociatedLicenseTypeToOracleDbAgreement_ReadOnly(t *testing.T) {
 	require.Equal(t, http.StatusForbidden, rr.Code)
 }
 
-func TestAddAssociatedLicenseTypeToOracleDbAgreement_BadRequests(t *testing.T) {
+func TestAddOracleDatabaseAgreement_BadRequests(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -116,7 +126,7 @@ func TestAddAssociatedLicenseTypeToOracleDbAgreement_BadRequests(t *testing.T) {
 
 	t.Run("fail to decode", func(t *testing.T) {
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.AddAssociatedLicenseTypeToOracleDbAgreement)
+		handler := http.HandlerFunc(ac.AddOracleDatabaseAgreement)
 		req, err := http.NewRequest("POST", "/", &FailingReader{})
 		require.NoError(t, err)
 
@@ -126,8 +136,8 @@ func TestAddAssociatedLicenseTypeToOracleDbAgreement_BadRequests(t *testing.T) {
 	})
 
 	t.Run("id must be empty", func(t *testing.T) {
-		request := dto.AssociatedLicenseTypeInOracleDbAgreementRequest{
-			ID:              "aaaaaaaaaaaaaaaaaaaaaaaa",
+		request := model.OracleDatabaseAgreement{
+			ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 			AgreementID:     "AID001",
 			LicenseTypeID:   "PID001",
 			CSI:             "CSI001",
@@ -138,7 +148,7 @@ func TestAddAssociatedLicenseTypeToOracleDbAgreement_BadRequests(t *testing.T) {
 			Hosts:           []string{"foobar"},
 		}
 
-		handler := http.HandlerFunc(ac.AddAssociatedLicenseTypeToOracleDbAgreement)
+		handler := http.HandlerFunc(ac.AddOracleDatabaseAgreement)
 		req, err := http.NewRequest("POST", "/", bytes.NewReader([]byte(utils.ToJSON(request))))
 		require.NoError(t, err)
 
@@ -149,8 +159,8 @@ func TestAddAssociatedLicenseTypeToOracleDbAgreement_BadRequests(t *testing.T) {
 	})
 
 	t.Run("if restricted can't be catchAll", func(t *testing.T) {
-		request := dto.AssociatedLicenseTypeInOracleDbAgreementRequest{
-			ID:              "",
+		request := model.OracleDatabaseAgreement{
+			ID:              utils.Str2oid(""),
 			AgreementID:     "AID001",
 			LicenseTypeID:   "PID001",
 			CSI:             "CSI001",
@@ -162,7 +172,7 @@ func TestAddAssociatedLicenseTypeToOracleDbAgreement_BadRequests(t *testing.T) {
 			Hosts:           []string{"foobar"},
 		}
 
-		handler := http.HandlerFunc(ac.AddAssociatedLicenseTypeToOracleDbAgreement)
+		handler := http.HandlerFunc(ac.AddOracleDatabaseAgreement)
 		req, err := http.NewRequest("POST", "/", bytes.NewReader([]byte(utils.ToJSON(request))))
 		require.NoError(t, err)
 
@@ -173,7 +183,7 @@ func TestAddAssociatedLicenseTypeToOracleDbAgreement_BadRequests(t *testing.T) {
 	})
 }
 
-func TestAddAssociatedLicenseTypeToOracleDbAgreement_InternalServerError(t *testing.T) {
+func TestAddOracleDatabaseAgreement_InternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -188,15 +198,15 @@ func TestAddAssociatedLicenseTypeToOracleDbAgreement_InternalServerError(t *test
 		Log: utils.NewLogger("TEST"),
 	}
 
-	request := dto.AssociatedLicenseTypeInOracleDbAgreementRequest{
+	request := model.OracleDatabaseAgreement{
 		AgreementID: "foobar",
 		Count:       20,
 	}
 
-	as.EXPECT().AddAssociatedLicenseTypeToOracleDbAgreement(request).Return("", aerrMock)
+	as.EXPECT().AddOracleDatabaseAgreement(request).Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AddAssociatedLicenseTypeToOracleDbAgreement)
+	handler := http.HandlerFunc(ac.AddOracleDatabaseAgreement)
 	req, err := http.NewRequest("POST", "/", bytes.NewReader([]byte(utils.ToJSON(request))))
 	require.NoError(t, err)
 
@@ -220,8 +230,8 @@ func TestUpdateOracleDatabaseAgreement_Success(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	request := dto.AssociatedLicenseTypeInOracleDbAgreementRequest{
-		ID:              "aaaaaaaaaaaaaaaaaaaaaaaa",
+	request := model.OracleDatabaseAgreement{
+		ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 		AgreementID:     "AID001",
 		LicenseTypeID:   "PID001",
 		CSI:             "CSI001",
@@ -233,10 +243,10 @@ func TestUpdateOracleDatabaseAgreement_Success(t *testing.T) {
 	}
 
 	agr := new(dto.OracleDatabaseAgreementFE)
-	as.EXPECT().UpdateAssociatedLicenseTypeOfOracleDbAgreement(request).Return(agr, nil)
+	as.EXPECT().UpdateOracleDatabaseAgreement(request).Return(agr, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.UpdateAssociatedLicenseTypeOfOracleDbAgreement)
+	handler := http.HandlerFunc(ac.UpdateOracleDatabaseAgreement)
 	req, err := http.NewRequest("POST", "/", bytes.NewReader([]byte(utils.ToJSON(request))))
 	require.NoError(t, err)
 
@@ -246,7 +256,7 @@ func TestUpdateOracleDatabaseAgreement_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(agr), rr.Body.String())
 }
 
-func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_BadRequests(t *testing.T) {
+func TestUpdateOracleDatabaseAgreement_BadRequests(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -263,7 +273,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_BadRequests(t *testing.T
 
 	t.Run("fail to decode", func(t *testing.T) {
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.UpdateAssociatedLicenseTypeOfOracleDbAgreement)
+		handler := http.HandlerFunc(ac.UpdateOracleDatabaseAgreement)
 		req, err := http.NewRequest("POST", "/", &FailingReader{})
 		require.NoError(t, err)
 
@@ -273,8 +283,8 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_BadRequests(t *testing.T
 	})
 
 	t.Run("if restricted can't be catchAll", func(t *testing.T) {
-		request := dto.AssociatedLicenseTypeInOracleDbAgreementRequest{
-			ID:              "aaaaaaaaaaaaaaaaaaaaaaaa",
+		request := model.OracleDatabaseAgreement{
+			ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 			AgreementID:     "AID001",
 			LicenseTypeID:   "PID001",
 			CSI:             "CSI001",
@@ -287,7 +297,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_BadRequests(t *testing.T
 		}
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.UpdateAssociatedLicenseTypeOfOracleDbAgreement)
+		handler := http.HandlerFunc(ac.UpdateOracleDatabaseAgreement)
 		req, err := http.NewRequest("POST", "/", bytes.NewReader([]byte(utils.ToJSON(request))))
 		require.NoError(t, err)
 
@@ -297,7 +307,7 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_BadRequests(t *testing.T
 	})
 }
 
-func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_InternalServerError(t *testing.T) {
+func TestUpdateOracleDatabaseAgreement_InternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -312,8 +322,8 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_InternalServerError(t *t
 		Log: utils.NewLogger("TEST"),
 	}
 
-	request := dto.AssociatedLicenseTypeInOracleDbAgreementRequest{
-		ID:              "aaaaaaaaaaaaaaaaaaaaaaaa",
+	request := model.OracleDatabaseAgreement{
+		ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 		AgreementID:     "AID001",
 		LicenseTypeID:   "PID001",
 		CSI:             "CSI001",
@@ -325,10 +335,10 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_InternalServerError(t *t
 	}
 
 	t.Run("Unknown error", func(t *testing.T) {
-		as.EXPECT().UpdateAssociatedLicenseTypeOfOracleDbAgreement(request).Return(nil, aerrMock)
+		as.EXPECT().UpdateOracleDatabaseAgreement(request).Return(nil, aerrMock)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.UpdateAssociatedLicenseTypeOfOracleDbAgreement)
+		handler := http.HandlerFunc(ac.UpdateOracleDatabaseAgreement)
 		req, err := http.NewRequest("POST", "/", bytes.NewReader([]byte(utils.ToJSON(request))))
 		require.NoError(t, err)
 
@@ -337,11 +347,11 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_InternalServerError(t *t
 		require.Equal(t, http.StatusInternalServerError, rr.Code)
 	})
 	t.Run("Agreement not found", func(t *testing.T) {
-		as.EXPECT().UpdateAssociatedLicenseTypeOfOracleDbAgreement(request).
+		as.EXPECT().UpdateOracleDatabaseAgreement(request).
 			Return(nil, utils.ErrOracleDatabaseAgreementNotFound)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.UpdateAssociatedLicenseTypeOfOracleDbAgreement)
+		handler := http.HandlerFunc(ac.UpdateOracleDatabaseAgreement)
 		req, err := http.NewRequest("POST", "/", bytes.NewReader([]byte(utils.ToJSON(request))))
 		require.NoError(t, err)
 
@@ -350,11 +360,11 @@ func TestUpdateAssociatedLicenseTypeOfOracleDbAgreement_InternalServerError(t *t
 		require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 	})
 	t.Run("Invalid PartID", func(t *testing.T) {
-		as.EXPECT().UpdateAssociatedLicenseTypeOfOracleDbAgreement(request).
+		as.EXPECT().UpdateOracleDatabaseAgreement(request).
 			Return(nil, utils.ErrOracleDatabaseLicenseTypeIDNotFound)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.UpdateAssociatedLicenseTypeOfOracleDbAgreement)
+		handler := http.HandlerFunc(ac.UpdateOracleDatabaseAgreement)
 		req, err := http.NewRequest("POST", "/", bytes.NewReader([]byte(utils.ToJSON(request))))
 		require.NoError(t, err)
 
@@ -382,9 +392,9 @@ func TestSearchAssociatedPartsInOracleDatabaseAgreements_Success(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchAssociatedLicenseTypesInOracleDatabaseAgreements(dto.SearchOracleDatabaseAgreementsFilter{
+		GetOracleDatabaseAgreements(dto.GetOracleDatabaseAgreementsFilter{
 			Unlimited:         "true",
-			CatchAll:          "NULL",
+			CatchAll:          "",
 			AvailableCountGTE: -1,
 			AvailableCountLTE: -1,
 			LicensesCountGTE:  -1,
@@ -395,7 +405,7 @@ func TestSearchAssociatedPartsInOracleDatabaseAgreements_Success(t *testing.T) {
 		Return(agreements, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchAssociatedLicenseTypesInOracleDatabaseAgreements)
+	handler := http.HandlerFunc(ac.GetOracleDatabaseAgreements)
 	req, err := http.NewRequest("GET", "/?unlimited=true", nil)
 	require.NoError(t, err)
 
@@ -421,7 +431,7 @@ func TestSearchAssociatedPartsInOracleDatabaseAgreements_FailedUnprocessableEnti
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchAssociatedLicenseTypesInOracleDatabaseAgreements)
+	handler := http.HandlerFunc(ac.GetOracleDatabaseAgreements)
 	req, err := http.NewRequest("GET", "/?unlimited=sasasd", nil)
 	require.NoError(t, err)
 
@@ -442,9 +452,9 @@ func TestSearchAssociatedPartsInOracleDatabaseAgreements_FailedInternalServerErr
 	}
 
 	as.EXPECT().
-		SearchAssociatedLicenseTypesInOracleDatabaseAgreements(dto.SearchOracleDatabaseAgreementsFilter{
-			Unlimited:         "NULL",
-			CatchAll:          "NULL",
+		GetOracleDatabaseAgreements(dto.GetOracleDatabaseAgreementsFilter{
+			Unlimited:         "",
+			CatchAll:          "",
 			AvailableCountGTE: -1,
 			AvailableCountLTE: -1,
 			LicensesCountGTE:  -1,
@@ -455,7 +465,7 @@ func TestSearchAssociatedPartsInOracleDatabaseAgreements_FailedInternalServerErr
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchAssociatedLicenseTypesInOracleDatabaseAgreements)
+	handler := http.HandlerFunc(ac.GetOracleDatabaseAgreements)
 	req, err := http.NewRequest("GET", "/", nil)
 	require.NoError(t, err)
 
@@ -464,13 +474,13 @@ func TestSearchAssociatedPartsInOracleDatabaseAgreements_FailedInternalServerErr
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestParseSearchOracleDatabaseAgreementsFilters_SuccessEmpty(t *testing.T) {
+func TestParseGetOracleDatabaseAgreementsFilters_SuccessEmpty(t *testing.T) {
 	r, _ := http.NewRequest("GET", "/", nil)
-	filters, err := parseSearchOracleDatabaseAgreementsFilters(r.URL.Query())
+	filters, err := parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.NoError(t, err)
-	assert.Equal(t, dto.SearchOracleDatabaseAgreementsFilter{
-		CatchAll:          "NULL",
-		Unlimited:         "NULL",
+	assert.Equal(t, dto.GetOracleDatabaseAgreementsFilter{
+		CatchAll:          "",
+		Unlimited:         "",
 		AvailableCountGTE: -1,
 		AvailableCountLTE: -1,
 		LicensesCountGTE:  -1,
@@ -483,9 +493,9 @@ func TestParseSearchOracleDatabaseAgreementsFilters_SuccessEmpty(t *testing.T) {
 func TestParseSearchOracleDatabaseAgreementsFilters_SuccessFull(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?agreement-id=foo&license-type-id=bar&item-description=boz&csi=pippo&metrics=pluto&reference-number=foobar&unlimited=false&catch-all=true&licenses-count-lte=10&licenses-count-gte=20&users-count-lte=5&users-count-gte=15&available-count-lte=3&available-count-gte=13", nil)
 	require.NoError(t, err)
-	filters, err := parseSearchOracleDatabaseAgreementsFilters(r.URL.Query())
+	filters, err := parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.NoError(t, err)
-	assert.Equal(t, dto.SearchOracleDatabaseAgreementsFilter{
+	assert.Equal(t, dto.GetOracleDatabaseAgreementsFilter{
 		AgreementID:       "foo",
 		LicenseTypeID:     "bar",
 		ItemDescription:   "boz",
@@ -506,56 +516,56 @@ func TestParseSearchOracleDatabaseAgreementsFilters_SuccessFull(t *testing.T) {
 func TestParseSearchOracleDatabaseAgreementsFilters_Fail1(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?unlimited=asdfasdf", nil)
 	require.NoError(t, err)
-	_, err = parseSearchOracleDatabaseAgreementsFilters(r.URL.Query())
+	_, err = parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.Error(t, err)
 }
 
 func TestParseSearchOracleDatabaseAgreementsFilters_Fail2(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?catch-all=asdfasdf", nil)
 	require.NoError(t, err)
-	_, err = parseSearchOracleDatabaseAgreementsFilters(r.URL.Query())
+	_, err = parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.Error(t, err)
 }
 
 func TestParseSearchOracleDatabaseAgreementsFilters_Fail3(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?licenses-count-lte=asdfasdf", nil)
 	require.NoError(t, err)
-	_, err = parseSearchOracleDatabaseAgreementsFilters(r.URL.Query())
+	_, err = parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.Error(t, err)
 }
 
 func TestParseSearchOracleDatabaseAgreementsFilters_Fail4(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?licenses-count-gte=asdfasdf", nil)
 	require.NoError(t, err)
-	_, err = parseSearchOracleDatabaseAgreementsFilters(r.URL.Query())
+	_, err = parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.Error(t, err)
 }
 
 func TestParseSearchOracleDatabaseAgreementsFilters_Fail5(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?users-count-lte=asdfasdf", nil)
 	require.NoError(t, err)
-	_, err = parseSearchOracleDatabaseAgreementsFilters(r.URL.Query())
+	_, err = parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.Error(t, err)
 }
 
 func TestParseSearchOracleDatabaseAgreementsFilters_Fail6(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?users-count-gte=asdfasdf", nil)
 	require.NoError(t, err)
-	_, err = parseSearchOracleDatabaseAgreementsFilters(r.URL.Query())
+	_, err = parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.Error(t, err)
 }
 
 func TestParseSearchOracleDatabaseAgreementsFilters_Fail7(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?available-count-lte=asdfasdf", nil)
 	require.NoError(t, err)
-	_, err = parseSearchOracleDatabaseAgreementsFilters(r.URL.Query())
+	_, err = parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.Error(t, err)
 }
 
 func TestParseSearchOracleDatabaseAgreementsFilters_Fail8(t *testing.T) {
 	r, err := http.NewRequest("GET", "/?available-count-gte=asdfasdf", nil)
 	require.NoError(t, err)
-	_, err = parseSearchOracleDatabaseAgreementsFilters(r.URL.Query())
+	_, err = parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.Error(t, err)
 }
 
@@ -574,10 +584,10 @@ func TestAddHostToAssociatedPart_Success(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AddHostToAssociatedLicenseType(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(nil)
+	as.EXPECT().AddHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AddHostToAssociatedLicenseType)
+	handler := http.HandlerFunc(ac.AddHostToOracleDatabaseAgreement)
 	req, err := http.NewRequest("POST", "/", strings.NewReader("foohost"))
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "5f50a98611959b1baa17525e",
@@ -605,7 +615,7 @@ func TestAddHostToAssociatedPart_FailedReadOnly(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AddHostToAssociatedLicenseType)
+	handler := http.HandlerFunc(ac.AddHostToOracleDatabaseAgreement)
 	req, err := http.NewRequest("POST", "/", strings.NewReader("foohost"))
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "5f50a98611959b1baa17525e",
@@ -633,7 +643,7 @@ func TestAddHostToAssociatedPart_FailedInvalidID(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AddHostToAssociatedLicenseType)
+	handler := http.HandlerFunc(ac.AddHostToOracleDatabaseAgreement)
 	req, err := http.NewRequest("POST", "/", strings.NewReader("foohost"))
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "saddsfadasf",
@@ -661,7 +671,7 @@ func TestAddHostToAssociatedPart_FailedBrokenBody(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AddHostToAssociatedLicenseType)
+	handler := http.HandlerFunc(ac.AddHostToOracleDatabaseAgreement)
 	req, err := http.NewRequest("POST", "/", &FailingReader{})
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "5f50a98611959b1baa17525e",
@@ -688,10 +698,10 @@ func TestAddHostToAssociatedPart_FailedAgreementNotFound(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AddHostToAssociatedLicenseType(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrOracleDatabaseAgreementNotFound)
+	as.EXPECT().AddHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrOracleDatabaseAgreementNotFound)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AddHostToAssociatedLicenseType)
+	handler := http.HandlerFunc(ac.AddHostToOracleDatabaseAgreement)
 	req, err := http.NewRequest("POST", "/", strings.NewReader("foohost"))
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "5f50a98611959b1baa17525e",
@@ -718,10 +728,10 @@ func TestAddHostToAssociatedPart_FailedNotInClusterHostNotFound(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AddHostToAssociatedLicenseType(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrNotInClusterHostNotFound)
+	as.EXPECT().AddHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrNotInClusterHostNotFound)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AddHostToAssociatedLicenseType)
+	handler := http.HandlerFunc(ac.AddHostToOracleDatabaseAgreement)
 	req, err := http.NewRequest("POST", "/", strings.NewReader("foohost"))
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "5f50a98611959b1baa17525e",
@@ -748,10 +758,10 @@ func TestAddHostToAssociatedPart_FailedAerrOracleDatabaseAgreementNotFound(t *te
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AddHostToAssociatedLicenseType(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrOracleDatabaseAgreementNotFound)
+	as.EXPECT().AddHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrOracleDatabaseAgreementNotFound)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AddHostToAssociatedLicenseType)
+	handler := http.HandlerFunc(ac.AddHostToOracleDatabaseAgreement)
 	req, err := http.NewRequest("POST", "/", strings.NewReader("foohost"))
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "5f50a98611959b1baa17525e",
@@ -778,10 +788,10 @@ func TestAddHostToAssociatedPart_FailedInternalServerError(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AddHostToAssociatedLicenseType(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(aerrMock)
+	as.EXPECT().AddHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AddHostToAssociatedLicenseType)
+	handler := http.HandlerFunc(ac.AddHostToOracleDatabaseAgreement)
 	req, err := http.NewRequest("POST", "/", strings.NewReader("foohost"))
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "5f50a98611959b1baa17525e",
@@ -808,10 +818,10 @@ func TestRemoveHostFromAssociatedPart_Success(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().RemoveHostFromAssociatedLicenseType(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(nil)
+	as.EXPECT().DeleteHostFromOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.RemoveHostFromAssociatedLicenseType)
+	handler := http.HandlerFunc(ac.DeleteHostFromOracleDatabaseAgreement)
 	req, err := http.NewRequest("DELETE", "/", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"id":       "5f50a98611959b1baa17525e",
@@ -840,7 +850,7 @@ func TestRemoveHostFromAssociatedPart_FailedReadOnly(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.RemoveHostFromAssociatedLicenseType)
+	handler := http.HandlerFunc(ac.DeleteHostFromOracleDatabaseAgreement)
 	req, err := http.NewRequest("DELETE", "/", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"id":       "5f50a98611959b1baa17525e",
@@ -869,7 +879,7 @@ func TestRemoveHostFromAssociatedPart_FailedInvalidID(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.RemoveHostFromAssociatedLicenseType)
+	handler := http.HandlerFunc(ac.DeleteHostFromOracleDatabaseAgreement)
 	req, err := http.NewRequest("DELETE", "/", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"id":       "sdsdfaasdf",
@@ -897,10 +907,10 @@ func TestRemoveHostFromAssociatedPart_FailedAgreementNotFound(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().RemoveHostFromAssociatedLicenseType(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrOracleDatabaseAgreementNotFound)
+	as.EXPECT().DeleteHostFromOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrOracleDatabaseAgreementNotFound)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.RemoveHostFromAssociatedLicenseType)
+	handler := http.HandlerFunc(ac.DeleteHostFromOracleDatabaseAgreement)
 	req, err := http.NewRequest("DELETE", "/", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"id":       "5f50a98611959b1baa17525e",
@@ -928,10 +938,10 @@ func TestRemoveHostFromAssociatedPart_FailedInternalServerError(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().RemoveHostFromAssociatedLicenseType(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(aerrMock)
+	as.EXPECT().DeleteHostFromOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.RemoveHostFromAssociatedLicenseType)
+	handler := http.HandlerFunc(ac.DeleteHostFromOracleDatabaseAgreement)
 	req, err := http.NewRequest("DELETE", "/", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"id":       "5f50a98611959b1baa17525e",
@@ -959,10 +969,10 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement_Success(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(nil)
+	as.EXPECT().DeleteOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement)
+	handler := http.HandlerFunc(ac.DeleteOracleDatabaseAgreement)
 	req, err := http.NewRequest("DELETE", "/", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "5f50a98611959b1baa17525e",
@@ -990,7 +1000,7 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement_FailedReadOnly(t *testi
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement)
+	handler := http.HandlerFunc(ac.DeleteOracleDatabaseAgreement)
 	req, err := http.NewRequest("DELETE", "/", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "5f50a98611959b1baa17525e",
@@ -1018,7 +1028,7 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement_FailedInvalidID(t *test
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement)
+	handler := http.HandlerFunc(ac.DeleteOracleDatabaseAgreement)
 	req, err := http.NewRequest("DELETE", "/", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "sdasdasdf",
@@ -1045,10 +1055,10 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement_FailedAgreementNotFound
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(utils.ErrOracleDatabaseAgreementNotFound)
+	as.EXPECT().DeleteOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(utils.ErrOracleDatabaseAgreementNotFound)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement)
+	handler := http.HandlerFunc(ac.DeleteOracleDatabaseAgreement)
 	req, err := http.NewRequest("DELETE", "/", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "5f50a98611959b1baa17525e",
@@ -1075,10 +1085,10 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement_FailedInternalServerErr
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(aerrMock)
+	as.EXPECT().DeleteOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement)
+	handler := http.HandlerFunc(ac.DeleteOracleDatabaseAgreement)
 	req, err := http.NewRequest("DELETE", "/", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "5f50a98611959b1baa17525e",

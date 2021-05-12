@@ -49,6 +49,7 @@ func (as *APIService) GetOracleDatabaseLicenseTypesAsMap() (map[string]model.Ora
 }
 
 // GetOracleDatabaseLicenseType return a LicenseType by ID
+//TODO Create db method ad hoc
 func (as *APIService) GetOracleDatabaseLicenseType(id string) (*model.OracleDatabaseLicenseType, error) {
 	parts, err := as.Database.GetOracleDatabaseLicenseTypes()
 	if err != nil {

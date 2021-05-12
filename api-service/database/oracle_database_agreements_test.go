@@ -36,25 +36,20 @@ var licenseTypeSample = model.OracleDatabaseLicenseType{
 }
 
 var agreementSample = model.OracleDatabaseAgreement{
-	ID:          utils.Str2oid("5dcad8933b243f80e2ed8538"),
-	AgreementID: "AID001",
-	CSI:         "csi001",
-	LicenseTypes: []model.AssociatedLicenseType{
-		{
-			ID:              utils.Str2oid("5dcad8933b243f80e2ed8551"),
-			LicenseTypeID:   licenseTypeSample.ID,
-			ReferenceNumber: "R00001",
-			Unlimited:       true,
-			Count:           345,
-			CatchAll:        true,
-			Restricted:      true, // there shouldn't be CatchAll==true && Restricted && true, this is only for tests
-			Hosts:           []string{"foo", "bar"},
-		},
-	},
+	ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+	AgreementID:     "AID001",
+	CSI:             "csi001",
+	LicenseTypeID:   licenseTypeSample.ID,
+	ReferenceNumber: "R00001",
+	Unlimited:       true,
+	Count:           345,
+	CatchAll:        true,
+	Restricted:      true, // there shouldn't be CatchAll==true && Restricted && true, this is only for tests
+	Hosts:           []string{"foo", "bar"},
 }
 
 func (m *MongodbSuite) TestInsertOracleDatabaseAgreement_Success() {
-	_, aerr := m.db.InsertOracleDatabaseAgreement(agreementSample)
+	aerr := m.db.InsertOracleDatabaseAgreement(agreementSample)
 	require.NoError(m.T(), aerr)
 	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsCollection).DeleteMany(context.TODO(), bson.M{})
 
@@ -73,46 +68,27 @@ func (m *MongodbSuite) TestInsertOracleDatabaseAgreement_Success() {
 func (m *MongodbSuite) TestInsertOracleDatabaseAgreement_DuplicateError() {
 	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsCollection).DeleteMany(context.TODO(), bson.M{})
 
-	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
+	err := m.db.InsertOracleDatabaseAgreement(agreementSample)
 	require.NoError(m.T(), err)
 
-	_, err = m.db.InsertOracleDatabaseAgreement(agreementSample)
+	err = m.db.InsertOracleDatabaseAgreement(agreementSample)
 	require.Error(m.T(), err, "Should not accept two agreements with same ID")
 }
 
 func (m *MongodbSuite) TestGetOracleDatabaseAgreement() {
 	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsCollection).DeleteMany(context.TODO(), bson.M{})
 
-	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
+	err := m.db.InsertOracleDatabaseAgreement(agreementSample)
 	require.NoError(m.T(), err)
 
 	m.T().Run("id_exist", func(t *testing.T) {
-		out, err := m.db.GetOracleDatabaseAgreement(agreementSample.AgreementID, agreementSample.CSI)
+		out, err := m.db.GetOracleDatabaseAgreement(agreementSample.ID)
 		require.NoError(t, err)
 		assert.Equal(t, agreementSample, *out)
 	})
 
 	m.T().Run("id_not_exist", func(t *testing.T) {
-		out, err := m.db.GetOracleDatabaseAgreement("this id doesn't exists", "this csi doesn't exists")
-		require.Nil(t, out)
-		require.Equal(t, utils.ErrOracleDatabaseAgreementNotFound, err)
-	})
-}
-
-func (m *MongodbSuite) TestGetOracleDatabaseAgreementByAssociatedLicenseType() {
-	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsCollection).DeleteMany(context.TODO(), bson.M{})
-
-	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
-	require.NoError(m.T(), err)
-
-	m.T().Run("id_exist", func(t *testing.T) {
-		out, err := m.db.GetOracleDatabaseAgreementByAssociatedLicenseType(agreementSample.LicenseTypes[0].ID)
-		require.NoError(t, err)
-		assert.Equal(t, agreementSample, *out)
-	})
-
-	m.T().Run("id_not_exist", func(t *testing.T) {
-		out, err := m.db.GetOracleDatabaseAgreementByAssociatedLicenseType(utils.Str2oid("5dcad8933b243f80e2ed0000"))
+		out, err := m.db.GetOracleDatabaseAgreement(utils.Str2oid("xxxxxxxxxxxxxxxxxxxxxxxx"))
 		require.Nil(t, out)
 		require.Equal(t, utils.ErrOracleDatabaseAgreementNotFound, err)
 	})
@@ -121,26 +97,21 @@ func (m *MongodbSuite) TestGetOracleDatabaseAgreementByAssociatedLicenseType() {
 func (m *MongodbSuite) TestUpdateOracleDatabaseAgreement() {
 	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsCollection).DeleteMany(context.TODO(), bson.M{})
 
-	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
+	err := m.db.InsertOracleDatabaseAgreement(agreementSample)
 	require.NoError(m.T(), err)
 
 	m.T().Run("id_exist", func(t *testing.T) {
 		agreementSampleUpdated := model.OracleDatabaseAgreement{
-			ID:          utils.Str2oid("5dcad8933b243f80e2ed8538"),
-			AgreementID: "AID001",
-			CSI:         "000001",
-			LicenseTypes: []model.AssociatedLicenseType{
-				{
-					ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-					LicenseTypeID:   licenseTypeSample.ID,
-					ReferenceNumber: "000002",
-					Unlimited:       true,
-					Count:           345,
-					CatchAll:        true,
-					Restricted:      false,
-					Hosts:           []string{"foo", "bar"},
-				},
-			},
+			ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+			AgreementID:     "AID001",
+			CSI:             "000001",
+			LicenseTypeID:   licenseTypeSample.ID,
+			ReferenceNumber: "000002",
+			Unlimited:       true,
+			Count:           345,
+			CatchAll:        true,
+			Restricted:      false,
+			Hosts:           []string{"foo", "bar"},
 		}
 
 		err := m.db.UpdateOracleDatabaseAgreement(agreementSampleUpdated)
@@ -171,18 +142,11 @@ func (m *MongodbSuite) TestUpdateOracleDatabaseAgreement() {
 func (m *MongodbSuite) TestRemoveOracleDatabaseAgreement() {
 	defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsCollection).DeleteMany(context.TODO(), bson.M{})
 
-	_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
+	err := m.db.InsertOracleDatabaseAgreement(agreementSample)
 	require.NoError(m.T(), err)
 
-	out, err := m.db.GetOracleDatabaseAgreement(agreementSample.AgreementID, agreementSample.CSI)
+	err = m.db.RemoveOracleDatabaseAgreement(agreementSample.ID)
 	require.NoError(m.T(), err)
-	assert.Equal(m.T(), agreementSample, *out)
-
-	err = m.db.RemoveOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
-	require.NoError(m.T(), err)
-
-	_, err = m.db.GetOracleDatabaseAgreement(agreementSample.AgreementID, agreementSample.CSI)
-	require.Equal(m.T(), utils.ErrOracleDatabaseAgreementNotFound, err)
 
 	err = m.db.RemoveOracleDatabaseAgreement(utils.Str2oid("5dcad8933b243f80e2ed8538"))
 	require.Equal(m.T(), utils.ErrOracleDatabaseAgreementNotFound, err)
@@ -209,48 +173,41 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 	require.NoError(m.T(), err2)
 
 	agreementSample := model.OracleDatabaseAgreement{
-		ID:          utils.Str2oid("5dcad8933b243f80e2ed8538"),
-		AgreementID: "agr001",
-		CSI:         "csi001",
-		LicenseTypes: []model.AssociatedLicenseType{
-			{
-
-				ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-				LicenseTypeID:   licenseTypeSample1.ID,
-				ReferenceNumber: "R00001",
-				CatchAll:        true,
-				Restricted:      false,
-				Count:           345,
-				Hosts:           []string{"foo", "bar"},
-				Unlimited:       true,
-			}},
+		ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+		AgreementID:     "agr001",
+		CSI:             "csi001",
+		LicenseTypeID:   licenseTypeSample1.ID,
+		ReferenceNumber: "R00001",
+		CatchAll:        true,
+		Restricted:      false,
+		Count:           345,
+		Hosts:           []string{"foo", "bar"},
+		Unlimited:       true,
 	}
 	agreementSample2 := model.OracleDatabaseAgreement{
-		ID:          utils.Str2oid("5dcad8933b243f80e2ed8539"),
-		AgreementID: "agr002",
-		CSI:         "csi002",
-		LicenseTypes: []model.AssociatedLicenseType{
-			{
-				ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
-				LicenseTypeID:   licenseTypeSample1.ID,
-				ReferenceNumber: "R00002",
-				CatchAll:        false,
-				Restricted:      true,
-				Count:           111,
-				Hosts:           []string{"pippo", "clarabella"},
-				Unlimited:       false,
-			},
-			{
-				ID:              utils.Str2oid("cccccccccccccccccccccccc"),
-				LicenseTypeID:   licenseTypeSample2.ID,
-				ReferenceNumber: "R00003",
-				CatchAll:        false,
-				Restricted:      false,
-				Count:           222,
-				Hosts:           []string{"topolino", "minni"},
-				Unlimited:       true,
-			},
-		},
+		ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
+		AgreementID:     "agr002",
+		CSI:             "csi002",
+		LicenseTypeID:   licenseTypeSample1.ID,
+		ReferenceNumber: "R00002",
+		CatchAll:        false,
+		Restricted:      true,
+		Count:           111,
+		Hosts:           []string{"pippo", "clarabella"},
+		Unlimited:       false,
+	}
+
+	agreementSample3 := model.OracleDatabaseAgreement{
+		ID:              utils.Str2oid("cccccccccccccccccccccccc"),
+		AgreementID:     "agr002",
+		CSI:             "csi002",
+		LicenseTypeID:   licenseTypeSample2.ID,
+		ReferenceNumber: "R00003",
+		CatchAll:        false,
+		Restricted:      false,
+		Count:           222,
+		Hosts:           []string{"topolino", "minni"},
+		Unlimited:       true,
 	}
 
 	m.T().Run("Empty collection", func(t *testing.T) {
@@ -262,9 +219,9 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 		assert.Equal(m.T(), []dto.OracleDatabaseAgreementFE{}, out)
 	})
 
-	m.T().Run("One association agreement-licenseTypes", func(t *testing.T) {
+	m.T().Run("One agreement", func(t *testing.T) {
 		defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsCollection).DeleteMany(context.TODO(), bson.M{})
-		_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
+		err := m.db.InsertOracleDatabaseAgreement(agreementSample)
 		require.NoError(m.T(), err)
 
 		out, err := m.db.ListOracleDatabaseAgreements()
@@ -304,9 +261,11 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 	m.T().Run("Multiple associations agreement-licenseTypes", func(t *testing.T) {
 		defer m.db.Client.Database(m.dbname).Collection(oracleDbAgreementsCollection).DeleteMany(context.TODO(), bson.M{})
 
-		_, err := m.db.InsertOracleDatabaseAgreement(agreementSample)
+		err := m.db.InsertOracleDatabaseAgreement(agreementSample)
 		require.NoError(m.T(), err)
-		_, err = m.db.InsertOracleDatabaseAgreement(agreementSample2)
+		err = m.db.InsertOracleDatabaseAgreement(agreementSample2)
+		require.NoError(m.T(), err)
+		err = m.db.InsertOracleDatabaseAgreement(agreementSample3)
 		require.NoError(m.T(), err)
 
 		out, err := m.db.ListOracleDatabaseAgreements()

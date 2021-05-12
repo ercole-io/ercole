@@ -31,41 +31,21 @@ import (
 const oracleDbAgreementsCollection = "oracle_database_agreements"
 
 // InsertOracleDatabaseAgreement insert an Oracle/Database agreement into the database
-func (md *MongoDatabase) InsertOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*mongo.InsertOneResult, error) {
-	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsCollection).
+func (md *MongoDatabase) InsertOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsCollection).
 		InsertOne(context.TODO(), agreement)
 	if err != nil {
-		return nil, utils.NewError(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 
-	return res, nil
+	return nil
 }
 
 // GetOracleDatabaseAgreement return the agreement specified by id
-func (md *MongoDatabase) GetOracleDatabaseAgreement(agreementID, csi string) (*model.OracleDatabaseAgreement, error) {
+func (md *MongoDatabase) GetOracleDatabaseAgreement(id primitive.ObjectID) (*model.OracleDatabaseAgreement, error) {
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsCollection).
 		FindOne(context.TODO(), bson.M{
-			"agreementID": agreementID,
-			"csi":         csi,
-		})
-	if res.Err() == mongo.ErrNoDocuments {
-		return nil, utils.ErrOracleDatabaseAgreementNotFound
-	} else if res.Err() != nil {
-		return nil, utils.NewError(res.Err(), "DB ERROR")
-	}
-
-	var out model.OracleDatabaseAgreement
-	if err := res.Decode(&out); err != nil {
-		return nil, utils.NewError(err, "Decode ERROR")
-	}
-	return &out, nil
-}
-
-// GetOracleDatabaseAgreementByAssociatedLicenseType return the agreement specified by an associated part id
-func (md *MongoDatabase) GetOracleDatabaseAgreementByAssociatedLicenseType(associateLicenseTypeID primitive.ObjectID) (*model.OracleDatabaseAgreement, error) {
-	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsCollection).
-		FindOne(context.TODO(), bson.M{
-			"licenseTypes._id": associateLicenseTypeID,
+			"_id": id,
 		})
 	if res.Err() == mongo.ErrNoDocuments {
 		return nil, utils.ErrOracleDatabaseAgreementNotFound
@@ -120,39 +100,27 @@ func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgr
 		Aggregate(
 			context.TODO(),
 			mu.MAPipeline(
-				mu.APUnwind("$licenseTypes"),
-				mu.APLookupSimple("oracle_database_license_types", "licenseTypes.licenseTypeID", "_id", "licenseType"),
+				mu.APLookupSimple("oracle_database_license_types", "licenseTypeID", "_id", "licenseType"),
 				mu.APUnwind("$licenseType"),
 				mu.APSet(bson.M{
-					"_id": "$licenseTypes._id",
-
-					"licenseTypeID":   "$licenseTypes.licenseTypeID",
 					"itemDescription": "$licenseType.itemDescription",
 					"metric":          "$licenseType.metric",
-
-					"referenceNumber": "$licenseTypes.referenceNumber",
-					"unlimited":       "$licenseTypes.unlimited",
-					"count":           "$licenseTypes.count",
-					"catchAll":        "$licenseTypes.catchAll",
-					"restricted":      "$licenseTypes.restricted",
-
-					"hosts": mu.APOMap("$licenseTypes.hosts", "hn", bson.M{
+					"hosts": mu.APOMap("$hosts", "hn", bson.M{
 						"hostname": "$$hn",
 					}),
 
-					"availableCount": "$licenseTypes.count",
+					"availableCount": "$count",
 					//TODO And other licenses types?
 					"licensesCount": mu.APOCond(
 						mu.APOOr(
 							mu.APOEqual("$licenseType.metric", model.LicenseTypeMetricProcessorPerpetual),
 							mu.APOEqual("$licenseType.metric", model.LicenseTypeMetricComputerPerpetual)),
-						"$licenseTypes.count",
+						"$count",
 						0),
 					"usersCount": mu.APOCond(
-						mu.APOEqual("$licenseType.metric", model.LicenseTypeMetricNamedUserPlusPerpetual), "$licenseTypes.count", 0),
+						mu.APOEqual("$licenseType.metric", model.LicenseTypeMetricNamedUserPlusPerpetual), "$count", 0),
 				}),
 				mu.APUnset("licenseType"),
-				mu.APUnset("licenseTypes"),
 			),
 		)
 	if err != nil {
