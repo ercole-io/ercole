@@ -53,8 +53,6 @@ type APIControllerInterface interface {
 	SearchOracleDatabaseUsedLicenses(w http.ResponseWriter, r *http.Request)
 	// SearchOracleDatabaseLicenseModifiers search a license modifier using the filters in the request
 	SearchOracleDatabaseLicenseModifiers(w http.ResponseWriter, r *http.Request)
-	// SearchOracleDatabaseAgreements search OracleDatabase agreements data using the filters in the request
-	SearchAssociatedLicenseTypesInOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request)
 
 	// GetPatchingFunction return all'informations about the patching function of the host requested in the hostnmae path variable
 	GetPatchingFunction(w http.ResponseWriter, r *http.Request)
@@ -113,17 +111,6 @@ type APIControllerInterface interface {
 	// GetOracleDatabaseLicenseTypes return the list of Oracle/Database agreement parts
 	GetOracleDatabaseLicenseTypes(w http.ResponseWriter, r *http.Request)
 
-	// Add associated part to an existing/new agreement
-	AddAssociatedLicenseTypeToOracleDbAgreement(w http.ResponseWriter, r *http.Request)
-	// Edit an agreement
-	UpdateAssociatedLicenseTypeOfOracleDbAgreement(w http.ResponseWriter, r *http.Request)
-	// delete AssociatedLicenseType from an OracleDatabaseAgreement
-	DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
-	// Add an host from AssociatedLicenseType
-	AddHostToAssociatedLicenseType(w http.ResponseWriter, r *http.Request)
-	// Remove an host from AssociatedLicenseType
-	RemoveHostFromAssociatedLicenseType(w http.ResponseWriter, r *http.Request)
-
 	// SetPatchingFunction set the patching function of a host specified in the hostname path variable to the content of the request body
 	SetPatchingFunction(w http.ResponseWriter, r *http.Request)
 	// DeletePatchingFunction remove the patching function of a host specified in the hostname path variable
@@ -150,6 +137,16 @@ type APIControllerInterface interface {
 	GetDatabasesStatistics(w http.ResponseWriter, r *http.Request)
 	GetDatabasesUsedLicenses(w http.ResponseWriter, r *http.Request)
 	GetDatabaseLicensesCompliance(w http.ResponseWriter, r *http.Request)
+
+	// ORACLE DATABASE AGREEMENTS
+
+	AddOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
+	UpdateOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
+	GetOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request)
+	DeleteOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
+
+	AddHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
+	DeleteHostFromOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
 
 	// MYSQL
 

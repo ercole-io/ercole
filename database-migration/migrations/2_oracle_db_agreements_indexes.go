@@ -17,79 +17,98 @@ package migrations
 
 import (
 	"context"
+	"errors"
 
 	"github.com/ercole-io/ercole/v2/utils"
 	migrate "github.com/xakep666/mongo-migrate"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func init() {
+	err := migrate.Register(unwind_oracle_agreements, group_oracle_agreementy_by_license_type_id)
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+func unwind_oracle_agreements(db *mongo.Database) error {
 	collection := "oracle_database_agreements"
+	ctx := context.TODO()
 
-	migrate.Register(func(db *mongo.Database) error {
-		ctx := context.TODO()
-
+	for _, index := range []string{"agreementID_1", "licenseTypes._id_1"} {
 		_, err := db.Collection(collection).
-			Indexes().DropOne(ctx, "agreementID_1")
+			Indexes().DropOne(ctx, index)
 		if err != nil {
-			return utils.NewError(err, "Can't drop agreementID_1 index")
+			return utils.NewError(err, "Can't drop index:", index)
 		}
+	}
 
-		if _, err := db.Collection(collection).
-			Indexes().
-			CreateMany(context.TODO(),
-				[]mongo.IndexModel{
-					{
-
-						Keys: bson.D{
-							{Key: "agreementID", Value: 1},
-							{Key: "csi", Value: 1},
+	cursor, err := db.Collection(collection).
+		Aggregate(ctx,
+			bson.A{
+				bson.M{
+					"$unwind": bson.M{"path": "$licenseTypes"},
+				},
+				bson.M{
+					"$replaceRoot": bson.M{
+						"newRoot": bson.M{
+							"$mergeObjects": bson.A{
+								bson.M{
+									"agreementID": "$agreementID",
+									"csi":         "$csi",
+								},
+								"$licenseTypes",
+							},
 						},
-						Options: options.Index().SetUnique(true),
 					},
-					{
-						Keys: bson.D{
-							{Key: "licenseTypes._id", Value: 1},
-						},
-						Options: options.Index().SetUnique(true),
-					}},
-			); err != nil {
-			return err
+				},
+			})
+	if err != nil {
+		return utils.NewError(err, "Can't aggregate", collection)
+	}
+
+	if err := db.Collection(collection).Drop(ctx); err != nil {
+		return utils.NewError(err, "Can't drop", collection)
+	}
+
+	if cursor.RemainingBatchLength() > 0 {
+		var agrs []interface{}
+		if err := cursor.All(ctx, &agrs); err != nil {
+			return utils.NewError(err, "Can't decode cursor")
 		}
 
-		return nil
-	}, func(db *mongo.Database) error {
-		ctx := context.TODO()
-
-		_, err := db.Collection(collection).
-			Indexes().DropOne(ctx, "agreementID_1_csi_1")
-		if err != nil {
-			return utils.NewError(err, "Can't drop agreementID_1_csi_1 index")
+		if _, err := db.Collection(collection).InsertMany(ctx, agrs); err != nil {
+			return utils.NewError(err, "Can't insert all agreements")
 		}
+	}
 
-		if _, err := db.Collection(collection).
-			Indexes().
-			CreateMany(context.TODO(),
-				[]mongo.IndexModel{
-					{
+	return nil
+}
 
-						Keys: bson.D{
-							{Key: "agreementID", Value: 1},
-						},
-						Options: options.Index().SetUnique(true),
-					},
-					{
-						Keys: bson.D{
-							{Key: "licenseTypes._id", Value: 1},
-						},
-						Options: options.Index().SetUnique(true),
-					}},
-			); err != nil {
-			return err
-		}
+func group_oracle_agreementy_by_license_type_id(db *mongo.Database) error {
+	return utils.NewError(errors.New("Not yet implemented"))
+	// collection := "oracle_database_agreements"
+	// if _, err := db.Collection(collection).
+	// 	Indexes().
+	// 	CreateMany(context.TODO(),
+	// 		[]mongo.IndexModel{
+	// 			{
 
-		return nil
-	})
+	// 				Keys: bson.D{
+	// 					{Key: "agreementID", Value: 1},
+	// 				},
+	// 				Options: options.Index().SetUnique(true),
+	// 			},
+	// 			{
+	// 				Keys: bson.D{
+	// 					{Key: "licenseTypes._id", Value: 1},
+	// 				},
+	// 				Options: options.Index().SetUnique(true),
+	// 			}},
+	// 	); err != nil {
+	// 	return err
+	// }
+	// return nil
 }

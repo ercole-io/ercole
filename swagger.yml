@@ -4129,7 +4129,7 @@ paths:
                           coveredLicensesCount: 0
                           totalCoveredLicensesCount: 0
                           consumedLicensesCount: 2
-      operationId: SearchAssociatedLicenseTypesInOracleDatabaseAgreements
+      operationId: GetOracleDatabaseAgreements
       parameters:
         - schema:
             type: string
@@ -4211,7 +4211,7 @@ paths:
       tags:
         - api-service
       summary: Add Oracle database agreements
-      operationId: AddAssociatedLicenseTypeToOracleDbAgreement
+      operationId: AddOracleDatabaseAgreement
       responses:
         '200':
           description: OK
@@ -4259,7 +4259,7 @@ paths:
       description: Add Oracle database agreement
     put:
       summary: Update Oracle Database Agreement
-      operationId: UpdateAssociatedLicenseTypeOfOracleDbAgreement
+      operationId: UpdateOracleDatabaseAgreement
       responses:
         '200':
           description: OK
@@ -4316,7 +4316,7 @@ paths:
         required: true
     delete:
       summary: Delete Oracle database agreements
-      operationId: DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement
+      operationId: DeleteOracleDatabaseAgreement
       responses:
         '200':
           description: OK

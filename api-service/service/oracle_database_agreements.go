@@ -31,68 +31,32 @@ import (
 
 // TODO When insert or update unlimited agr, set count == 0
 
-// AddAssociatedLicenseTypeToOracleDbAgreement add associated part to OracleDatabaseAgreement or create a new one
-func (as *APIService) AddAssociatedLicenseTypeToOracleDbAgreement(request dto.AssociatedLicenseTypeInOracleDbAgreementRequest,
-) (string, error) {
-	if err := checkHosts(as, request.Hosts); err != nil {
-		return "", err
+func (as *APIService) AddOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*dto.OracleDatabaseAgreementFE, error) {
+	if err := checkHosts(as, agreement.Hosts); err != nil {
+		return nil, err
 	}
 
-	agreement, err := as.Database.GetOracleDatabaseAgreement(request.AgreementID, request.CSI)
-	if errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) {
-		agreement = &model.OracleDatabaseAgreement{
-			AgreementID:  request.AgreementID,
-			CSI:          request.CSI,
-			LicenseTypes: make([]model.AssociatedLicenseType, 0),
-		}
-
-	} else if err != nil {
-		return "", err
+	if err := checkLicenseTypeIDExists(as, &agreement); err != nil {
+		return nil, err
 	}
 
-	if err := addAssociatedLicenseType(as, agreement, request); err != nil {
-		return "", err
-	}
-
-	if agreement.ID == primitive.NilObjectID {
-		agreement.ID = as.NewObjectID()
-
-		res, err := as.Database.InsertOracleDatabaseAgreement(*agreement)
-		if err != nil {
-			return "", err
-		}
-
-		agreement.ID = res.InsertedID.(primitive.ObjectID)
-	} else {
-		err := as.Database.UpdateOracleDatabaseAgreement(*agreement)
-		if err != nil {
-			return "", err
-		}
-	}
-
-	return agreement.ID.Hex(), nil
-}
-
-func addAssociatedLicenseType(as *APIService, agreement *model.OracleDatabaseAgreement,
-	req dto.AssociatedLicenseTypeInOracleDbAgreementRequest) error {
-	part, err := as.GetOracleDatabaseLicenseType(req.LicenseTypeID)
+	agreement.ID = as.NewObjectID()
+	err := as.Database.InsertOracleDatabaseAgreement(agreement)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	associatedLicenseType := model.AssociatedLicenseType{
-		ID:              as.NewObjectID(),
-		LicenseTypeID:   part.ID,
-		ReferenceNumber: req.ReferenceNumber,
-		Unlimited:       req.Unlimited,
-		Count:           req.Count,
-		CatchAll:        req.CatchAll,
-		Restricted:      req.Restricted,
-		Hosts:           req.Hosts,
+	agrs, err := as.GetOracleDatabaseAgreements(dto.NewGetOracleDatabaseAgreementsFilter())
+	if err != nil {
+		return nil, err
 	}
-	agreement.LicenseTypes = append(agreement.LicenseTypes, associatedLicenseType)
+	for _, agr := range agrs {
+		if agr.ID == agreement.ID {
+			return &agr, nil
+		}
+	}
 
-	return nil
+	return nil, utils.NewError(errors.New("Can't find agreement which has just been saved"))
 }
 
 func checkHosts(as *APIService, hosts []string) error {
@@ -134,72 +98,44 @@ hosts_loop:
 	return nil
 }
 
-// UpdateAssociatedLicenseTypeOfOracleDbAgreement update associated part in OracleDatabaseAgreement
-func (as *APIService) UpdateAssociatedLicenseTypeOfOracleDbAgreement(request dto.AssociatedLicenseTypeInOracleDbAgreementRequest,
-) (*dto.OracleDatabaseAgreementFE, error) {
-	if err := checkHosts(as, request.Hosts); err != nil {
-		return nil, err
-	}
-
-	associateLicenseTypeID := utils.Str2oid(request.ID)
-	agreement, err := as.Database.GetOracleDatabaseAgreementByAssociatedLicenseType(associateLicenseTypeID)
-	if err != nil {
-		return nil, err
-	}
-
-	err = updateAssociatedPart(as, agreement, request)
-	if err != nil {
-		return nil, err
-	}
-
-	err = as.Database.UpdateOracleDatabaseAgreement(*agreement)
-	if err != nil {
-		return nil, err
-	}
-
-	filters := dto.SearchOracleDatabaseAgreementsFilter{}
-	agrs, err := as.SearchAssociatedLicenseTypesInOracleDatabaseAgreements(filters)
-	if err != nil {
-		return nil, err
-	}
-	for _, agr := range agrs {
-		if agr.ID == associateLicenseTypeID {
-			return &agr, nil
-		}
-	}
-
-	return nil, utils.NewError(errors.New("Can't find associated licenseTypeID which has just been saved"))
-}
-
-func updateAssociatedPart(as *APIService, agreement *model.OracleDatabaseAgreement,
-	req dto.AssociatedLicenseTypeInOracleDbAgreementRequest) error {
-
-	reqID := utils.Str2oid(req.ID)
-	associatedLicenseType := agreement.AssociatedLicenseTypeByID(reqID)
-	if associatedLicenseType == nil {
-		return utils.ErrOracleDatabaseAssociatedPartNotFound
-	}
-
-	licenseType, err := as.GetOracleDatabaseLicenseType(req.LicenseTypeID)
+func checkLicenseTypeIDExists(as *APIService, agreement *model.OracleDatabaseAgreement) error {
+	_, err := as.GetOracleDatabaseLicenseType(agreement.LicenseTypeID)
 	if err != nil {
 		return err
 	}
-	associatedLicenseType.LicenseTypeID = licenseType.ID
-	associatedLicenseType.ReferenceNumber = req.ReferenceNumber
-	associatedLicenseType.Unlimited = req.Unlimited
-	associatedLicenseType.Count = req.Count
-	associatedLicenseType.CatchAll = req.CatchAll
-	associatedLicenseType.Restricted = req.Restricted
-	associatedLicenseType.Hosts = req.Hosts
 
 	return nil
 }
 
-// SearchAssociatedLicenseTypesInOracleDatabaseAgreements search OracleDatabase associated parts agreements
-func (as *APIService) SearchAssociatedLicenseTypesInOracleDatabaseAgreements(filters dto.SearchOracleDatabaseAgreementsFilter,
-) ([]dto.OracleDatabaseAgreementFE, error) {
-	if as.mockSearchAssociatedLicenseTypesInOracleDatabaseAgreements != nil {
-		return as.mockSearchAssociatedLicenseTypesInOracleDatabaseAgreements(filters)
+func (as *APIService) UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*dto.OracleDatabaseAgreementFE, error) {
+	if err := checkHosts(as, agreement.Hosts); err != nil {
+		return nil, err
+	}
+
+	if err := checkLicenseTypeIDExists(as, &agreement); err != nil {
+		return nil, err
+	}
+
+	if err := as.Database.UpdateOracleDatabaseAgreement(agreement); err != nil {
+		return nil, err
+	}
+
+	agrs, err := as.GetOracleDatabaseAgreements(dto.NewGetOracleDatabaseAgreementsFilter())
+	if err != nil {
+		return nil, err
+	}
+	for _, agr := range agrs {
+		if agr.ID == agreement.ID {
+			return &agr, nil
+		}
+	}
+
+	return nil, utils.NewError(errors.New("Can't find agreement which has just been saved"))
+}
+
+func (as *APIService) GetOracleDatabaseAgreements(filter dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error) {
+	if as.mockGetOracleDatabaseAgreements != nil {
+		return as.mockGetOracleDatabaseAgreements(filter)
 	}
 
 	agreements, err := as.Database.ListOracleDatabaseAgreements()
@@ -212,14 +148,13 @@ func (as *APIService) SearchAssociatedLicenseTypesInOracleDatabaseAgreements(fil
 		return nil, err
 	}
 
-	err2 := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
-	if err2 != nil {
-		return nil, utils.NewError(err2, "DB ERROR")
+	if err := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts); err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	filteredAgrs := make([]dto.OracleDatabaseAgreementFE, 0)
 	for _, agr := range agreements {
-		if checkOracleDatabaseAgreementMatchFilter(agr, filters) {
+		if checkOracleDatabaseAgreementMatchFilter(agr, filter) {
 			filteredAgrs = append(filteredAgrs, agr)
 		}
 	}
@@ -650,15 +585,15 @@ func calculateCoverStatusByLicenseType(hosts []dto.HostUsingOracleDatabaseLicens
 }
 
 // checkOracleDatabaseAgreementMatchFilter check that agr match the filters
-func checkOracleDatabaseAgreementMatchFilter(agr dto.OracleDatabaseAgreementFE, filters dto.SearchOracleDatabaseAgreementsFilter) bool {
+func checkOracleDatabaseAgreementMatchFilter(agr dto.OracleDatabaseAgreementFE, filters dto.GetOracleDatabaseAgreementsFilter) bool {
 	return strings.Contains(strings.ToLower(agr.AgreementID), strings.ToLower(filters.AgreementID)) &&
 		strings.Contains(strings.ToLower(agr.LicenseTypeID), strings.ToLower(filters.LicenseTypeID)) &&
 		strings.Contains(strings.ToLower(agr.ItemDescription), strings.ToLower(filters.ItemDescription)) &&
 		strings.Contains(strings.ToLower(agr.CSI), strings.ToLower(filters.CSI)) &&
 		(filters.Metric == "" || strings.EqualFold(agr.Metric, filters.Metric)) &&
 		strings.Contains(strings.ToLower(agr.ReferenceNumber), strings.ToLower(filters.ReferenceNumber)) &&
-		(filters.Unlimited == "NULL" || agr.Unlimited == (filters.Unlimited == "true")) &&
-		(filters.CatchAll == "NULL" || agr.CatchAll == (filters.CatchAll == "true")) &&
+		(filters.Unlimited == "" || agr.Unlimited == (filters.Unlimited == "true")) &&
+		(filters.CatchAll == "" || agr.CatchAll == (filters.CatchAll == "true")) &&
 		(filters.LicensesCountLTE == -1 || agr.LicensesCount <= float64(filters.LicensesCountLTE)) &&
 		(filters.LicensesCountGTE == -1 || agr.LicensesCount >= float64(filters.LicensesCountGTE)) &&
 		(filters.UsersCountLTE == -1 || agr.UsersCount <= float64(filters.UsersCountLTE)) &&
@@ -667,72 +602,50 @@ func checkOracleDatabaseAgreementMatchFilter(agr dto.OracleDatabaseAgreementFE, 
 		(filters.AvailableCountGTE == -1 || agr.AvailableCount >= float64(filters.AvailableCountGTE))
 }
 
-// DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement delete associated part from OracleDatabaseAgreement
-func (as *APIService) DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(associateLicenseTypeID primitive.ObjectID,
-) error {
-	agreement, err := as.Database.GetOracleDatabaseAgreementByAssociatedLicenseType(associateLicenseTypeID)
-	if err != nil {
-		return err
-	}
-
-	if len(agreement.LicenseTypes) <= 1 {
-		return as.Database.RemoveOracleDatabaseAgreement(agreement.ID)
-	}
-
-	for i := range agreement.LicenseTypes {
-		if agreement.LicenseTypes[i].ID == associateLicenseTypeID {
-			agreement.LicenseTypes = append(agreement.LicenseTypes[:i], agreement.LicenseTypes[i+1])
-			break
-		}
-	}
-
-	return as.Database.UpdateOracleDatabaseAgreement(*agreement)
+func (as *APIService) DeleteOracleDatabaseAgreement(id primitive.ObjectID) error {
+	return as.Database.RemoveOracleDatabaseAgreement(id)
 }
 
-// AddHostToAssociatedLicenseType add an host to AssociatedLicenseType
-func (as *APIService) AddHostToAssociatedLicenseType(associateLicenseTypeID primitive.ObjectID, hostname string,
-) error {
+func (as *APIService) AddHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) error {
+	if err := checkHosts(as, []string{hostname}); err != nil {
+		return err
+	}
 
-	agreement, err := as.Database.GetOracleDatabaseAgreementByAssociatedLicenseType(associateLicenseTypeID)
+	agreement, err := as.Database.GetOracleDatabaseAgreement(id)
 	if err != nil {
 		return err
 	}
 
-	associatedLicenseType := agreement.AssociatedLicenseTypeByID(associateLicenseTypeID)
-
-	for _, host := range associatedLicenseType.Hosts {
+	for _, host := range agreement.Hosts {
 		if host == hostname {
 			return nil
 		}
 	}
 
-	if err := checkHosts(as, []string{hostname}); err != nil {
-		return err
-	}
-
-	associatedLicenseType.Hosts = append(associatedLicenseType.Hosts, hostname)
+	agreement.Hosts = append(agreement.Hosts, hostname)
 
 	return as.Database.UpdateOracleDatabaseAgreement(*agreement)
 }
 
-// RemoveHostFromAssociatedLicenseType remove host from AssociatedLicenseType
-func (as *APIService) RemoveHostFromAssociatedLicenseType(associateLicenseTypeID primitive.ObjectID, hostname string,
-) error {
+func (as *APIService) DeleteHostFromOracleDatabaseAgreement(id primitive.ObjectID, hostname string) error {
+	if err := checkHosts(as, []string{hostname}); err != nil {
+		return err
+	}
 
-	agreement, err := as.Database.GetOracleDatabaseAgreementByAssociatedLicenseType(associateLicenseTypeID)
+	agreement, err := as.Database.GetOracleDatabaseAgreement(id)
 	if err != nil {
 		return err
 	}
 
-	associatedLicenseType := agreement.AssociatedLicenseTypeByID(associateLicenseTypeID)
-
-	for i, host := range associatedLicenseType.Hosts {
+	for i := range agreement.Hosts {
+		host := agreement.Hosts[i]
 		if host == hostname {
-			associatedLicenseType.Hosts = append(associatedLicenseType.Hosts[:i], associatedLicenseType.Hosts[i+1:]...)
-
-			return as.Database.UpdateOracleDatabaseAgreement(*agreement)
+			agreement.Hosts = append(
+				agreement.Hosts[0:i],
+				agreement.Hosts[i+1:len(agreement.Hosts)]...)
+			break
 		}
 	}
 
-	return nil
+	return as.Database.UpdateOracleDatabaseAgreement(*agreement)
 }

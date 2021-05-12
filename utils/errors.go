@@ -43,9 +43,6 @@ var ErrOracleDatabaseLicenseTypeIDNotFound = errors.New("Oracle Database License
 // ErrOracleDatabaseAgreementNotFound contains "Agreement not found" error
 var ErrOracleDatabaseAgreementNotFound = errors.New("Agreement not found")
 
-// ErrOracleDatabaseAssociatedPartNotFound Associated Part not found
-var ErrOracleDatabaseAssociatedPartNotFound = errors.New("Associated Part not found")
-
 // ErrNotInClusterHostNotFound contains "Baremetal host not found" error
 var ErrNotInClusterHostNotFound = errors.New("Not in cluster host not found")
 

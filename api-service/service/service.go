@@ -126,18 +126,12 @@ type APIServiceInterface interface {
 
 	// ORACLE DATABASE AGREEMENTS
 
-	// Add associated part to OracleDatabaseAgreement or create a new one
-	AddAssociatedLicenseTypeToOracleDbAgreement(request dto.AssociatedLicenseTypeInOracleDbAgreementRequest) (string, error)
-	// Update associated part in OracleDatabaseAgreement
-	UpdateAssociatedLicenseTypeOfOracleDbAgreement(request dto.AssociatedLicenseTypeInOracleDbAgreementRequest) (*dto.OracleDatabaseAgreementFE, error)
-	// Search OracleDatabase associated parts agreements
-	SearchAssociatedLicenseTypesInOracleDatabaseAgreements(filters dto.SearchOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
-	// Delete associated part from OracleDatabaseAgreement
-	DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(associateLicenseTypeID primitive.ObjectID) error
-	// Add an host to AssociatedLicenseType
-	AddHostToAssociatedLicenseType(associateLicenseTypeID primitive.ObjectID, hostname string) error
-	// Remove host from AssociatedLicenseType
-	RemoveHostFromAssociatedLicenseType(associateLicenseTypeID primitive.ObjectID, hostname string) error
+	AddOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*dto.OracleDatabaseAgreementFE, error)
+	UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*dto.OracleDatabaseAgreementFE, error)
+	GetOracleDatabaseAgreements(filter dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
+	DeleteOracleDatabaseAgreement(id primitive.ObjectID) error
+	AddHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) error
+	DeleteHostFromOracleDatabaseAgreement(id primitive.ObjectID, hostname string) error
 
 	// ORACLE DATABASE LICENSES
 
@@ -205,7 +199,7 @@ type APIService struct {
 	// NewObjectID return a new ObjectID
 	NewObjectID func() primitive.ObjectID
 
-	mockSearchAssociatedLicenseTypesInOracleDatabaseAgreements func(filters dto.SearchOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
+	mockGetOracleDatabaseAgreements func(filters dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
 }
 
 // Init initializes the service and database

@@ -23,19 +23,19 @@ import (
 	"net/url"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// AddAssociatedLicenseTypeToOracleDbAgreement add associated part to an existing agreement else it will create it
-func (ctrl *APIController) AddAssociatedLicenseTypeToOracleDbAgreement(w http.ResponseWriter, r *http.Request) {
+func (ctrl *APIController) AddOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
 	}
 
-	var req dto.AssociatedLicenseTypeInOracleDbAgreementRequest
+	var req model.OracleDatabaseAgreement
 
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
@@ -45,7 +45,7 @@ func (ctrl *APIController) AddAssociatedLicenseTypeToOracleDbAgreement(w http.Re
 		return
 	}
 
-	if req.ID != "" {
+	if req.ID != primitive.NilObjectID {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
 			utils.NewError(errors.New("ID must be empty to add a new AssociatedLicenseType"), http.StatusText(http.StatusBadRequest)))
 		return
@@ -56,38 +56,7 @@ func (ctrl *APIController) AddAssociatedLicenseTypeToOracleDbAgreement(w http.Re
 		return
 	}
 
-	id, err := ctrl.Service.AddAssociatedLicenseTypeToOracleDbAgreement(req)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	utils.WriteJSONResponse(w, http.StatusOK, id)
-}
-
-// UpdateAssociatedLicenseTypeOfOracleDbAgreement edit an agreement
-func (ctrl *APIController) UpdateAssociatedLicenseTypeOfOracleDbAgreement(w http.ResponseWriter, r *http.Request) {
-	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
-		return
-	}
-
-	var req dto.AssociatedLicenseTypeInOracleDbAgreementRequest
-
-	decoder := json.NewDecoder(r.Body)
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&req); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
-			utils.NewError(err, http.StatusText(http.StatusBadRequest)))
-		return
-	}
-
-	if err := req.Check(); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
-		return
-	}
-
-	agr, err := ctrl.Service.UpdateAssociatedLicenseTypeOfOracleDbAgreement(req)
+	agr, err := ctrl.Service.AddOracleDatabaseAgreement(req)
 	if errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) ||
 		errors.Is(err, utils.ErrOracleDatabaseLicenseTypeIDNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
@@ -99,17 +68,47 @@ func (ctrl *APIController) UpdateAssociatedLicenseTypeOfOracleDbAgreement(w http
 	utils.WriteJSONResponse(w, http.StatusOK, agr)
 }
 
-// SearchAssociatedLicenseTypesInOracleDatabaseAgreements search Oracle/Database agreements
-func (ctrl *APIController) SearchAssociatedLicenseTypesInOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request) {
-	var err error
+func (ctrl *APIController) UpdateOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
 
-	searchOracleDatabaseAgreementsFilters, err := parseSearchOracleDatabaseAgreementsFilters(r.URL.Query())
+	var req model.OracleDatabaseAgreement
+
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&req); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
+			utils.NewError(err, http.StatusText(http.StatusBadRequest)))
+		return
+	}
+
+	if err := req.Check(); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	agr, err := ctrl.Service.UpdateOracleDatabaseAgreement(req)
+	if errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) ||
+		errors.Is(err, utils.ErrOracleDatabaseLicenseTypeIDNotFound) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, agr)
+}
+
+func (ctrl *APIController) GetOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request) {
+	searchOracleDatabaseAgreementsFilters, err := parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	agreements, err := ctrl.Service.SearchAssociatedLicenseTypesInOracleDatabaseAgreements(searchOracleDatabaseAgreementsFilters)
+	agreements, err := ctrl.Service.GetOracleDatabaseAgreements(searchOracleDatabaseAgreementsFilters)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -122,13 +121,12 @@ func (ctrl *APIController) SearchAssociatedLicenseTypesInOracleDatabaseAgreement
 	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
 
-// parseSearchOracleDatabaseAgreementsFilters return the Oracle/Database agreement search filters in the request
-func parseSearchOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.SearchOracleDatabaseAgreementsFilter,
+func parseGetOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.GetOracleDatabaseAgreementsFilter,
 	error) {
 
 	var err error
 
-	filters := dto.SearchOracleDatabaseAgreementsFilter{}
+	filters := dto.GetOracleDatabaseAgreementsFilter{}
 
 	filters.AgreementID = urlValues.Get("agreement-id")
 	filters.LicenseTypeID = urlValues.Get("license-type-id")
@@ -138,50 +136,70 @@ func parseSearchOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.Searc
 	filters.ReferenceNumber = urlValues.Get("reference-number")
 
 	filters.Unlimited = urlValues.Get("unlimited")
-	if filters.Unlimited == "" {
-		filters.Unlimited = "NULL"
-	} else if filters.Unlimited != "true" && filters.Unlimited != "false" && filters.Unlimited != "NULL" {
-		return dto.SearchOracleDatabaseAgreementsFilter{},
+	if filters.Unlimited != "true" && filters.Unlimited != "false" && filters.Unlimited != "" {
+		return dto.GetOracleDatabaseAgreementsFilter{},
 			utils.NewError(errors.New("Invalid value for unlimited"), http.StatusText(http.StatusUnprocessableEntity))
 	}
 
 	filters.CatchAll = urlValues.Get("catch-all")
-	if filters.CatchAll == "" {
-		filters.CatchAll = "NULL"
-	} else if filters.CatchAll != "true" && filters.CatchAll != "false" && filters.CatchAll != "NULL" {
-		return dto.SearchOracleDatabaseAgreementsFilter{},
+	if filters.CatchAll != "true" && filters.CatchAll != "false" && filters.CatchAll != "" {
+		return dto.GetOracleDatabaseAgreementsFilter{},
 			utils.NewError(errors.New("Invalid value for catch-all"), http.StatusText(http.StatusUnprocessableEntity))
 	}
 
 	if filters.LicensesCountLTE, err = utils.Str2int(urlValues.Get("licenses-count-lte"), -1); err != nil {
-		return dto.SearchOracleDatabaseAgreementsFilter{}, err
+		return dto.GetOracleDatabaseAgreementsFilter{}, err
 	}
 
 	if filters.LicensesCountGTE, err = utils.Str2int(urlValues.Get("licenses-count-gte"), -1); err != nil {
-		return dto.SearchOracleDatabaseAgreementsFilter{}, err
+		return dto.GetOracleDatabaseAgreementsFilter{}, err
 	}
 
 	if filters.UsersCountLTE, err = utils.Str2int(urlValues.Get("users-count-lte"), -1); err != nil {
-		return dto.SearchOracleDatabaseAgreementsFilter{}, err
+		return dto.GetOracleDatabaseAgreementsFilter{}, err
 	}
 
 	if filters.UsersCountGTE, err = utils.Str2int(urlValues.Get("users-count-gte"), -1); err != nil {
-		return dto.SearchOracleDatabaseAgreementsFilter{}, err
+		return dto.GetOracleDatabaseAgreementsFilter{}, err
 	}
 
 	if filters.AvailableCountLTE, err = utils.Str2int(urlValues.Get("available-count-lte"), -1); err != nil {
-		return dto.SearchOracleDatabaseAgreementsFilter{}, err
+		return dto.GetOracleDatabaseAgreementsFilter{}, err
 	}
 
 	if filters.AvailableCountGTE, err = utils.Str2int(urlValues.Get("available-count-gte"), -1); err != nil {
-		return dto.SearchOracleDatabaseAgreementsFilter{}, err
+		return dto.GetOracleDatabaseAgreementsFilter{}, err
 	}
 
 	return filters, nil
 }
 
-// AddHostToAssociatedLicenseType add an host from AssociatedLicenseType
-func (ctrl *APIController) AddHostToAssociatedLicenseType(w http.ResponseWriter, r *http.Request) {
+func (ctrl *APIController) DeleteOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	var err error
+	var id primitive.ObjectID
+
+	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(err, http.StatusText(http.StatusUnprocessableEntity)))
+		return
+	}
+
+	if err = ctrl.Service.DeleteOracleDatabaseAgreement(id); errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+		return
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
+}
+
+func (ctrl *APIController) AddHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
@@ -203,7 +221,7 @@ func (ctrl *APIController) AddHostToAssociatedLicenseType(w http.ResponseWriter,
 	}
 	defer r.Body.Close()
 
-	if err = ctrl.Service.AddHostToAssociatedLicenseType(id, string(raw)); errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) ||
+	if err = ctrl.Service.AddHostToOracleDatabaseAgreement(id, string(raw)); errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) ||
 		errors.Is(err, utils.ErrNotInClusterHostNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
@@ -215,8 +233,7 @@ func (ctrl *APIController) AddHostToAssociatedLicenseType(w http.ResponseWriter,
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
-// RemoveHostFromAssociatedLicenseType remove an host from AssociatedLicenseType
-func (ctrl *APIController) RemoveHostFromAssociatedLicenseType(w http.ResponseWriter, r *http.Request) {
+func (ctrl *APIController) DeleteHostFromOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
@@ -232,33 +249,7 @@ func (ctrl *APIController) RemoveHostFromAssociatedLicenseType(w http.ResponseWr
 	}
 	hostname = mux.Vars(r)["hostname"]
 
-	if err = ctrl.Service.RemoveHostFromAssociatedLicenseType(id, hostname); errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
-		return
-	} else if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	utils.WriteJSONResponse(w, http.StatusOK, nil)
-}
-
-// DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement delete AssociatedLicenseType from an OracleDatabaseAgreement
-func (ctrl *APIController) DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {
-	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
-		return
-	}
-
-	var err error
-	var id primitive.ObjectID
-
-	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(err, http.StatusText(http.StatusUnprocessableEntity)))
-		return
-	}
-
-	if err = ctrl.Service.DeleteAssociatedLicenseTypeFromOracleDatabaseAgreement(id); errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) {
+	if err = ctrl.Service.DeleteHostFromOracleDatabaseAgreement(id, hostname); errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
