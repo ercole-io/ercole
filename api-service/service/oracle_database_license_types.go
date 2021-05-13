@@ -80,39 +80,45 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 		return nil, utils.NewError(err, "can't assign agreements to hosts")
 	}
 
-	getLicensesConsumedByHost := as.getterLicensesConsumedByHost()
+	getLicenseCompliance, err := as.getterNewLicenseCompliance()
+	if err != nil {
+		return nil, err
+	}
 
 	licenses := make(map[string]*dto.LicenseCompliance)
+
+	// get consumptions value by hosts
+	getLicensesConsumedByHost := as.getterLicensesConsumedByHost()
 	for _, host := range hosts {
 		license, ok := licenses[host.LicenseTypeID]
 		if !ok {
-			license = &dto.LicenseCompliance{
-				LicenseTypeID: host.LicenseTypeID,
-			}
-
+			license = getLicenseCompliance(host.LicenseTypeID)
 			licenses[license.LicenseTypeID] = license
 		}
 
-		if consumedLicenses, err := getLicensesConsumedByHost(host); err != nil {
+		consumedLicenses, err := getLicensesConsumedByHost(host)
+		if err != nil {
 			if errors.Is(err, utils.ErrHostNotFound) {
 				as.Log.Warn(err)
 			} else {
 				as.Log.Error(err)
 			}
 
-			license.Consumed += host.OriginalCount
-		} else {
-			license.Consumed += consumedLicenses
+			consumedLicenses += host.OriginalCount
 		}
+
+		if license.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
+			consumedLicenses *= 25
+		}
+
+		license.Consumed += consumedLicenses
 	}
 
+	// get coverage values from agreements
 	for _, agreement := range agreements {
 		license, ok := licenses[agreement.LicenseTypeID]
 		if !ok {
-			license = &dto.LicenseCompliance{
-				LicenseTypeID: agreement.LicenseTypeID,
-			}
-
+			license = getLicenseCompliance(agreement.LicenseTypeID)
 			licenses[license.LicenseTypeID] = license
 		}
 
@@ -125,11 +131,6 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 		}
 	}
 
-	licenseTypes, err := as.GetOracleDatabaseLicenseTypesAsMap()
-	if err != nil {
-		return nil, err
-	}
-
 	result := make([]dto.LicenseCompliance, 0, len(licenses))
 	for _, license := range licenses {
 		if license.Unlimited || license.Consumed == 0 {
@@ -138,13 +139,34 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 			license.Compliance = license.Covered / license.Consumed
 		}
 
-		license.ItemDescription = licenseTypes[license.LicenseTypeID].ItemDescription
-		license.Metric = licenseTypes[license.LicenseTypeID].Metric
-
 		result = append(result, *license)
 	}
 
 	return result, nil
+}
+
+func (as *APIService) getterNewLicenseCompliance() (func(licenseTypeID string) *dto.LicenseCompliance, error) {
+	licenseTypes, err := as.GetOracleDatabaseLicenseTypesAsMap()
+	if err != nil {
+		return nil, err
+	}
+
+	getter := func(licenseTypeID string) *dto.LicenseCompliance {
+		l, ok := licenseTypes[licenseTypeID]
+		if !ok {
+			return &dto.LicenseCompliance{
+				LicenseTypeID: l.ID,
+			}
+		}
+
+		return &dto.LicenseCompliance{
+			LicenseTypeID:   l.ID,
+			ItemDescription: l.ItemDescription,
+			Metric:          l.Metric,
+		}
+	}
+
+	return getter, nil
 }
 
 func (as *APIService) getterLicensesConsumedByHost() func(host dto.HostUsingOracleDatabaseLicenses) (float64, error) {
