@@ -49,6 +49,8 @@ func (as *ChartService) GetLicenseComplianceHistory() ([]dto.LicenseComplianceHi
 	}
 
 	licenses = mergeMySqlLicensesCompliance(licenses)
+	licenses = removeEmptyLicensesCompliance(licenses)
+
 	return licenses, nil
 }
 
@@ -148,4 +150,22 @@ func mergeLicenseComplianceHistoricValues(a, b []dto.LicenseComplianceHistoricVa
 	}
 
 	return merged
+}
+
+func removeEmptyLicensesCompliance(licenses []dto.LicenseComplianceHistory) []dto.LicenseComplianceHistory {
+	result := make([]dto.LicenseComplianceHistory, 0)
+
+licenses:
+	for i := range licenses {
+		l := &licenses[i]
+
+		for _, x := range l.History {
+			if x.Consumed > 0 || x.Covered > 0 {
+				result = append(result, *l)
+				continue licenses
+			}
+		}
+	}
+
+	return result
 }
