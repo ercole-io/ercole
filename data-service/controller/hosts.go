@@ -39,6 +39,7 @@ func (ctrl *DataController) InsertHostData(w http.ResponseWriter, r *http.Reques
 
 	if err := schema.ValidateHostdata(raw); err != nil {
 		if errors.Is(err, utils.ErrInvalidHostdata) {
+			ctrl.Log.Infof("Invalid Hostdata: %s", err)
 			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 			return
 		}
