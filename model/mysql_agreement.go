@@ -20,6 +20,8 @@ import "go.mongodb.org/mongo-driver/bson/primitive"
 type MySQLAgreement struct {
 	ID               primitive.ObjectID `json:"id" bson:"_id"`
 	Type             string             `json:"type" bson:"type"`
+	AgreementID      string             `json:"agreementID" bson:"agreementID"`
+	CSI              string             `json:"csi" bson:"csi"`
 	NumberOfLicenses uint               `json:"numberOfLicenses" bson:"numberOfLicenses"`
 	Clusters         []string           `json:"clusters" bson:"clusters"`
 	Hosts            []string           `json:"hosts" bson:"hosts"`
