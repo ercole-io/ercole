@@ -1365,6 +1365,12 @@ components:
         type:
           type: string
           minLength: 1
+        agreementID:
+          type: string
+          minLength: 1
+        csi:
+          type: string
+          minLength: 1
         numberOfLicenses:
           type: integer
           minimum: 0
@@ -1379,6 +1385,8 @@ components:
       required:
         - id
         - type
+        - agreementID
+        - csi
         - numberOfLicenses
         - clusters
         - hosts
