@@ -26,17 +26,17 @@ import (
 
 const mySQLAgreementCollection = "mysql_agreements"
 
-func (md *MongoDatabase) AddMySQLAgreement(agreement model.MySQLAgreement) (primitive.ObjectID, error) {
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(mySQLAgreementCollection).
+func (md *MongoDatabase) AddMySQLAgreement(agreement model.MySQLAgreement) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(mySQLAgreementCollection).
 		InsertOne(
 			context.TODO(),
 			agreement,
 		)
 	if err != nil {
-		return primitive.NilObjectID, utils.NewError(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 
-	return cur.InsertedID.(primitive.ObjectID), nil
+	return nil
 }
 
 func (md *MongoDatabase) UpdateMySQLAgreement(agreement model.MySQLAgreement) error {

@@ -38,10 +38,8 @@ func (m *MongodbSuite) TestAddMySQLAgreement() {
 	}
 
 	m.T().Run("should_insert", func(t *testing.T) {
-		actual, err := m.db.AddMySQLAgreement(agreement)
+		err := m.db.AddMySQLAgreement(agreement)
 		m.Require().NoError(err)
-
-		assert.Equal(t, agreement.ID, actual)
 	})
 }
 
