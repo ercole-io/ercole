@@ -4591,8 +4591,12 @@ paths:
       summary: Update MySQL Agreement
       operationId: UpdateMySQLAgreement
       responses:
-        '204':
-          description: No Content
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MySQLAgreement'
       requestBody:
         content:
           application/json:
@@ -4633,6 +4637,10 @@ paths:
       responses:
         '201':
           description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MySQLAgreement'
       requestBody:
         content:
           application/json:

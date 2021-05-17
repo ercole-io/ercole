@@ -158,7 +158,7 @@ type MongoDatabaseInterface interface {
 
 	// MYSQL AGREEMENTS
 
-	AddMySQLAgreement(agreement model.MySQLAgreement) (primitive.ObjectID, error)
+	AddMySQLAgreement(agreement model.MySQLAgreement) error
 	UpdateMySQLAgreement(agreement model.MySQLAgreement) error
 	GetMySQLAgreements() ([]model.MySQLAgreement, error)
 	DeleteMySQLAgreement(id primitive.ObjectID) error
