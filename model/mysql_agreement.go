@@ -31,3 +31,29 @@ const (
 	MySQLAgreementTypeHost    string = "HOST"
 	MySQLAgreementTypeCluster string = "CLUSTER"
 )
+
+func getMySQLAgreementTypes() []string {
+	return []string{MySQLAgreementTypeHost, MySQLAgreementTypeCluster}
+}
+
+func (agr MySQLAgreement) IsValid() bool {
+	if agr.AgreementID == "" || agr.CSI == "" || agr.NumberOfLicenses == 0 {
+		return false
+	}
+
+	fields := make(map[string][]string)
+	fields[agr.Type] = getMySQLAgreementTypes()
+
+fields:
+	for thisValue, allValidValues := range fields {
+		for _, validValue := range allValidValues {
+			if thisValue == validValue {
+				continue fields
+			}
+		}
+
+		return false
+	}
+
+	return true
+}

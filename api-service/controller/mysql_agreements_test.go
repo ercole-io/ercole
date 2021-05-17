@@ -44,18 +44,21 @@ func TestAddMySQLAgreement_Success(t *testing.T) {
 	}
 
 	agreement := model.MySQLAgreement{
-		ID:               [12]byte{},
-		Type:             "server",
+		Type:             model.MySQLAgreementTypeCluster,
+		AgreementID:      "agr01",
+		CSI:              "csi01",
 		NumberOfLicenses: 42,
 		Clusters:         []string{"pippo", "pluto"},
 		Hosts:            []string{"topolino", "minnie"},
 	}
 
-	pid, err := primitive.ObjectIDFromHex("aaaaaaaaaaaaaaaaaaaaaaaa")
+	returnAgr := agreement
+	var err error
+	returnAgr.ID, err = primitive.ObjectIDFromHex("aaaaaaaaaaaaaaaaaaaaaaaa")
 	require.Nil(t, err)
 
 	as.EXPECT().AddMySQLAgreement(agreement).
-		Return(pid, nil)
+		Return(&returnAgr, nil)
 
 	agrBytes, err := json.Marshal(agreement)
 	require.NoError(t, err)
@@ -69,7 +72,7 @@ func TestAddMySQLAgreement_Success(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusCreated, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(pid), rr.Body.String())
+	assert.JSONEq(t, utils.ToJSON(returnAgr), rr.Body.String())
 }
 
 func TestAddMySQLAgreement_BadRequest_CantDecode(t *testing.T) {
@@ -128,6 +131,8 @@ func TestAddMySQLAgreement_BadRequest_HasID(t *testing.T) {
 	wrongAgr := model.MySQLAgreement{
 		ID:               utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 		Type:             "",
+		AgreementID:      "agr01",
+		CSI:              "csi01",
 		NumberOfLicenses: 0,
 		Clusters:         []string{},
 		Hosts:            []string{},
@@ -156,6 +161,49 @@ func TestAddMySQLAgreement_BadRequest_HasID(t *testing.T) {
 	assert.Equal(t, "Bad Request", feErr.Message)
 }
 
+func TestAddMySQLAgreement_BadRequest(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     utils.NewLogger("TEST"),
+	}
+
+	wrongAgr := model.MySQLAgreement{
+		Type: "",
+		// AgreementID:      "agr01",
+		CSI:              "csi01",
+		NumberOfLicenses: 0,
+		Clusters:         []string{},
+		Hosts:            []string{},
+	}
+
+	agrBytes, err := json.Marshal(wrongAgr)
+	require.NoError(t, err)
+
+	reader := bytes.NewReader(agrBytes)
+	req, err := http.NewRequest("GET", "", reader)
+	require.NoError(t, err)
+
+	handler := http.HandlerFunc(ac.AddMySQLAgreement)
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusBadRequest, rr.Code)
+
+	var feErr utils.ErrorResponseFE
+	decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&feErr)
+	require.NoError(t, err)
+
+	assert.Equal(t, "Agreement isn't valid", feErr.Error)
+	assert.Equal(t, "Bad Request", feErr.Message)
+}
+
 func TestAddMySQLAgreement_InternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -168,15 +216,16 @@ func TestAddMySQLAgreement_InternalServerError(t *testing.T) {
 	}
 
 	agreement := model.MySQLAgreement{
-		ID:               [12]byte{},
-		Type:             "",
-		NumberOfLicenses: 0,
+		Type:             model.MySQLAgreementTypeCluster,
+		AgreementID:      "agr01",
+		CSI:              "csi01",
+		NumberOfLicenses: 42,
 		Clusters:         []string{},
 		Hosts:            []string{},
 	}
 
 	as.EXPECT().AddMySQLAgreement(agreement).
-		Return(primitive.NilObjectID, errMock)
+		Return(nil, errMock)
 
 	agrBytes, err := json.Marshal(agreement)
 	require.NoError(t, err)
@@ -214,14 +263,16 @@ func TestUpdateMySQLAgreement_Success(t *testing.T) {
 
 	agreement := model.MySQLAgreement{
 		ID:               utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-		Type:             "",
-		NumberOfLicenses: 0,
+		Type:             model.MySQLAgreementTypeCluster,
+		AgreementID:      "agr01",
+		CSI:              "csi01",
+		NumberOfLicenses: 42,
 		Clusters:         []string{},
 		Hosts:            []string{},
 	}
 
 	as.EXPECT().UpdateMySQLAgreement(agreement).
-		Return(nil)
+		Return(&agreement, nil)
 
 	agrBytes, err := json.Marshal(agreement)
 	require.NoError(t, err)
@@ -344,15 +395,17 @@ func TestUpdateMySQLAgreement_NotFoundError(t *testing.T) {
 
 	agreement := model.MySQLAgreement{
 		ID:               utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-		Type:             "",
-		NumberOfLicenses: 0,
+		Type:             model.MySQLAgreementTypeCluster,
+		AgreementID:      "agr01",
+		CSI:              "csi01",
+		NumberOfLicenses: 42,
 		Clusters:         []string{},
 		Hosts:            []string{},
 	}
 
 	aerr := utils.NewError(utils.ErrNotFound, "test")
 	as.EXPECT().UpdateMySQLAgreement(agreement).
-		Return(aerr)
+		Return(nil, aerr)
 
 	agrBytes, err := json.Marshal(agreement)
 	require.NoError(t, err)
@@ -393,14 +446,16 @@ func TestUpdateMySQLAgreement_InternalServerError(t *testing.T) {
 
 	agreement := model.MySQLAgreement{
 		ID:               utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-		Type:             "",
-		NumberOfLicenses: 0,
+		Type:             model.MySQLAgreementTypeCluster,
+		AgreementID:      "agr01",
+		CSI:              "csi01",
+		NumberOfLicenses: 42,
 		Clusters:         []string{},
 		Hosts:            []string{},
 	}
 
 	as.EXPECT().UpdateMySQLAgreement(agreement).
-		Return(errMock)
+		Return(nil, errMock)
 
 	agrBytes, err := json.Marshal(agreement)
 	require.NoError(t, err)

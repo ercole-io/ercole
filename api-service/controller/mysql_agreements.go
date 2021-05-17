@@ -39,13 +39,18 @@ func (ctrl *APIController) AddMySQLAgreement(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	id, err := ctrl.Service.AddMySQLAgreement(agreement)
+	if !agreement.IsValid() {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Agreement isn't valid"))
+		return
+	}
+
+	agreementAdded, err := ctrl.Service.AddMySQLAgreement(agreement)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusCreated, id)
+	utils.WriteJSONResponse(w, http.StatusCreated, agreementAdded)
 }
 
 func (ctrl *APIController) UpdateMySQLAgreement(w http.ResponseWriter, r *http.Request) {
@@ -67,7 +72,12 @@ func (ctrl *APIController) UpdateMySQLAgreement(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	err = ctrl.Service.UpdateMySQLAgreement(agreement)
+	if !agreement.IsValid() {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Agreement isn't valid"))
+		return
+	}
+
+	agreementUpdated, err := ctrl.Service.UpdateMySQLAgreement(agreement)
 	if errors.Is(err, utils.ErrNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
@@ -77,7 +87,7 @@ func (ctrl *APIController) UpdateMySQLAgreement(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, agreement)
+	utils.WriteJSONResponse(w, http.StatusOK, agreementUpdated)
 }
 
 func (ctrl *APIController) GetMySQLAgreements(w http.ResponseWriter, r *http.Request) {

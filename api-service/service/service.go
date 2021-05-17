@@ -176,8 +176,8 @@ type APIServiceInterface interface {
 
 	// MYSQL AGREEMENTS
 
-	AddMySQLAgreement(agreement model.MySQLAgreement) (primitive.ObjectID, error)
-	UpdateMySQLAgreement(agreement model.MySQLAgreement) error
+	AddMySQLAgreement(agreement model.MySQLAgreement) (*model.MySQLAgreement, error)
+	UpdateMySQLAgreement(agreement model.MySQLAgreement) (*model.MySQLAgreement, error)
 	GetMySQLAgreements() ([]model.MySQLAgreement, error)
 	DeleteMySQLAgreement(id primitive.ObjectID) error
 }
