@@ -21,21 +21,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (as *APIService) AddMySQLAgreement(agreement model.MySQLAgreement) (primitive.ObjectID, error) {
+func (as *APIService) AddMySQLAgreement(agreement model.MySQLAgreement) (*model.MySQLAgreement, error) {
 	agreement.ID = as.NewObjectID()
-	id, err := as.Database.AddMySQLAgreement(agreement)
+
+	err := as.Database.AddMySQLAgreement(agreement)
 	if err != nil {
-		return primitive.NilObjectID, err
+		return nil, err
 	}
-	return id, nil
+
+	return &agreement, nil
 }
 
-func (as *APIService) UpdateMySQLAgreement(agreement model.MySQLAgreement) error {
+func (as *APIService) UpdateMySQLAgreement(agreement model.MySQLAgreement) (*model.MySQLAgreement, error) {
 	if err := as.Database.UpdateMySQLAgreement(agreement); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &agreement, nil
 }
 
 func (as *APIService) GetMySQLAgreements() ([]model.MySQLAgreement, error) {

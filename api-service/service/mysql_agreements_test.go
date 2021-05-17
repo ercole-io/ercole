@@ -23,7 +23,6 @@ import (
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestAddMySQLAgreement(t *testing.T) {
@@ -44,7 +43,7 @@ func TestAddMySQLAgreement(t *testing.T) {
 			Hosts:            []string{"pluto"},
 		}
 		db.EXPECT().AddMySQLAgreement(expected).
-			Return(utils.Str2oid("000000000000000000000001"), nil).Times(1)
+			Return(nil).Times(1)
 
 		agreement := model.MySQLAgreement{
 			Type:             "server",
@@ -55,7 +54,7 @@ func TestAddMySQLAgreement(t *testing.T) {
 		actual, err := as.AddMySQLAgreement(agreement)
 		require.NoError(t, err)
 
-		assert.Equal(t, utils.Str2oid("000000000000000000000001"), actual)
+		assert.Equal(t, &expected, actual)
 	})
 
 	t.Run("Error", func(t *testing.T) {
@@ -63,13 +62,12 @@ func TestAddMySQLAgreement(t *testing.T) {
 			ID: utils.Str2oid("000000000000000000000002"),
 		}
 		db.EXPECT().AddMySQLAgreement(agreement).
-			Return(utils.Str2oid(""), errMock).Times(1)
+			Return(errMock).Times(1)
 
 		actual, err := as.AddMySQLAgreement(agreement)
-		require.EqualError(t, err, "MockError")
+		assert.EqualError(t, err, "MockError")
 
-		expected := primitive.NilObjectID
-		assert.Equal(t, expected, actual)
+		assert.Nil(t, actual)
 	})
 }
 
@@ -86,8 +84,9 @@ func TestUpdateMySQLAgreement(t *testing.T) {
 		db.EXPECT().UpdateMySQLAgreement(agreement).
 			Return(nil).Times(1)
 
-		err := as.UpdateMySQLAgreement(agreement)
+		actual, err := as.UpdateMySQLAgreement(agreement)
 		require.NoError(t, err)
+		assert.Equal(t, agreement, *actual)
 	})
 
 	t.Run("Error", func(t *testing.T) {
@@ -95,8 +94,9 @@ func TestUpdateMySQLAgreement(t *testing.T) {
 		db.EXPECT().UpdateMySQLAgreement(agreement).
 			Return(errMock).Times(1)
 
-		err := as.UpdateMySQLAgreement(agreement)
+		actual, err := as.UpdateMySQLAgreement(agreement)
 		require.EqualError(t, err, "MockError")
+		assert.Nil(t, actual)
 	})
 }
 
