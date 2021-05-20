@@ -104,15 +104,6 @@ LogHTTPRequest = true
   Port = 11114
   LogHTTPRequest = true
 
-  [RepoService.SFTP]
-  Enable = true
-  RemoteEndpoint = "sftp://127.0.0.1:11115"
-  BindIP = "0.0.0.0"
-  Port = 11115
-  PrivateKey = "/etc/ssh/ssh_host_rsa_key"
-  LogConnections = true
-  DebugConnections = false
-
   [[RepoService.UpstreamRepositories]]
   Name = "ercole-io"
   Type = "ercole-reposervice"

@@ -367,13 +367,5 @@ func serveRepoService(config config.Configuration, wg *sync.WaitGroup) {
 			})
 	}
 
-	if config.RepoService.SFTP.Enable {
-		service.SubServices = append(service.SubServices,
-			&reposervice_service.SFTPRepoSubService{
-				Config: config,
-				Log:    utils.NewLogger("REPO"),
-			})
-	}
-
 	service.Init(wg)
 }
