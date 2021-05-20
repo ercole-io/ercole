@@ -82,6 +82,7 @@ var (
 	OracleDatabaseEditionEnterprise = "ENT"
 	OracleDatabaseEditionExtreme    = "EXE"
 	OracleDatabaseEditionStandard   = "STD"
+	OracleDatabaseEditionExpress    = "XE"
 )
 
 func (v OracleDatabase) Edition() (dbEdition string) {
@@ -89,6 +90,8 @@ func (v OracleDatabase) Edition() (dbEdition string) {
 		dbEdition = OracleDatabaseEditionEnterprise
 	} else if strings.Contains(strings.ToUpper(v.Version), "EXTREME") {
 		dbEdition = OracleDatabaseEditionExtreme
+	} else if strings.Contains(strings.ToUpper(v.Version), "EXPRESS") {
+		dbEdition = OracleDatabaseEditionExpress
 	} else {
 		dbEdition = OracleDatabaseEditionStandard
 	}
