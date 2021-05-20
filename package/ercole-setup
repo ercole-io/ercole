@@ -17,14 +17,12 @@ API_SERVICE_AUTH_PROVIDER_PRIVATE_KEY=$(grep "APIService.AuthenticationProvider.
 API_SERVICE_AUTH_PROVIDER_PUBLIC_KEY=$(grep "APIService.AuthenticationProvider.PublicKey" /etc/ercole/conf.d/20-ercolesetup.toml | cut -d'=' -f2 | sed -e 's/[[:space:]]*"//' | sed -e 's/"[[:space:]]*//')
 CHART_SERVICE_REMOTE_ENDPOINT=$(grep "ChartService.RemoteEndpoint" /etc/ercole/conf.d/20-ercolesetup.toml | cut -d'=' -f2 | sed -e 's/[[:space:]]*"//' | sed -e 's/"[[:space:]]*//')
 REPO_SERVICE_HTTP_REMOTE_ENDPOINT=$(grep "RepoService.HTTP.RemoteEndpoint" /etc/ercole/conf.d/20-ercolesetup.toml | cut -d'=' -f2 | sed -e 's/[[:space:]]*"//' | sed -e 's/"[[:space:]]*//')
-REPO_SERVICE_SFTP_REMOTE_ENDPOINT=$(grep "RepoService.SFTP.RemoteEndpoint" /etc/ercole/conf.d/20-ercolesetup.toml | cut -d'=' -f2 | sed -e 's/[[:space:]]*"//' | sed -e 's/"[[:space:]]*//')
-REPO_SERVICE_SFTP_PRIVATE_KEY=$(grep "RepoService.SFTP.PrivateKey" /etc/ercole/conf.d/20-ercolesetup.toml | cut -d'=' -f2 | sed -e 's/[[:space:]]*"//' | sed -e 's/"[[:space:]]*//')
 
 echo "Getting/choosing ip address..."
 
 # Get actual IP Addres
 CURRENT_IP_ADDRESS=""
-if [ -z $DATA_SERVICE_REMOTE_ENDPOINT ] || [ -z $API_SERVICE_REMOTE_ENDPOINT ] || [ -z $CHART_SERVICE_REMOTE_ENDPOINT ] || [ -z $REPO_SERVICE_HTTP_REMOTE_ENDPOINT ] || [ -z $REPO_SERVICE_SFTP_REMOTE_ENDPOINT ]; then
+if [ -z $DATA_SERVICE_REMOTE_ENDPOINT ] || [ -z $API_SERVICE_REMOTE_ENDPOINT ] || [ -z $CHART_SERVICE_REMOTE_ENDPOINT ] || [ -z $REPO_SERVICE_HTTP_REMOTE_ENDPOINT ]; then
 	CURRENT_IP_ADDRESS=$(hostname -I | cut -d' ' -f1)
 	if [ -z $NOINTERACTIVE ]; then
 		read -p "IP address($CURRENT_IP_ADDRESS): " INPUT
@@ -53,10 +51,6 @@ if [ -z $REPO_SERVICE_HTTP_REMOTE_ENDPOINT ]; then
 	REPO_SERVICE_HTTP_REMOTE_ENDPOINT="http://$CURRENT_IP_ADDRESS:11114"
 	echo "RepoService.HTTP.RemoteEndpoint = \"$REPO_SERVICE_HTTP_REMOTE_ENDPOINT\"" >> /etc/ercole/conf.d/20-ercolesetup.toml
 fi
-if [ -z $REPO_SERVICE_SFTP_REMOTE_ENDPOINT ]; then
-	REPO_SERVICE_SFTP_REMOTE_ENDPOINT="http://$CURRENT_IP_ADDRESS:11115"
-	echo "RepoService.SFTP.RemoteEndpoint = \"$REPO_SERVICE_SFTP_REMOTE_ENDPOINT\"" >> /etc/ercole/conf.d/20-ercolesetup.toml
-fi
 
 echo "Setting publisher password..."
 
@@ -83,23 +77,6 @@ if [ -z $API_SERVICE_AUTH_PROVIDER_PRIVATE_KEY ] || [ -z $API_SERVICE_AUTH_PROVI
 	# Fix permissions
 	chown root:ercole $API_SERVICE_AUTH_PROVIDER_PRIVATE_KEY $API_SERVICE_AUTH_PROVIDER_PUBLIC_KEY
 	chmod g+r $API_SERVICE_AUTH_PROVIDER_PRIVATE_KEY $API_SERVICE_AUTH_PROVIDER_PUBLIC_KEY
-fi
-
-echo "Generating SFTP repo service keys..."
-
-# Create and set the authentication provider keys if not found
-if [ -z $REPO_SERVICE_SFTP_PRIVATE_KEY ]; then
-	if [ ! -f /etc/ercole/ercole-repo-sftp.pem ]; then
-		openssl genrsa -out /etc/ercole/ercole-repo-sftp.pem 2048
-		openssl rsa -in /etc/ercole/ercole-repo-sftp.pem -pubout -out /etc/ercole/ercole-repo-sftp.pub
-	fi
-
-	REPO_SERVICE_SFTP_PRIVATE_KEY="/etc/ercole/ercole-repo-sftp.pem"
-	echo "RepoService.SFTP.PrivateKey = \"$REPO_SERVICE_SFTP_PRIVATE_KEY\"" >> /etc/ercole/conf.d/20-ercolesetup.toml
-
-	# Fix permissions
-	chown root:ercole $REPO_SERVICE_SFTP_PRIVATE_KEY 
-	chmod g+r $REPO_SERVICE_SFTP_PRIVATE_KEY 
 fi
 
 echo "Initializing /var/lib/ercole/distributed_files..."

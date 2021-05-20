@@ -140,8 +140,6 @@ type RepoService struct {
 	DistributedFiles string
 	// HTTP contains the configuration about the HTTP server
 	HTTP HTTPRepoService
-	// SFTP contains the configuration about the SFTP server
-	SFTP SFTPRepoService
 }
 
 // ChartService contains configuration about the chart service
@@ -208,24 +206,6 @@ type HTTPRepoService struct {
 	Port uint16
 	// LogHTTPRequest enable the logging of the internal http serverl
 	LogHTTPRequest bool
-}
-
-// SFTPRepoService contains parameters for a single serving service
-type SFTPRepoService struct {
-	// Enable contains true it the service is enabled, otherwise false
-	Enable bool
-	// RemoteEndpoint contains the endpoint used to connect to the SFTPRepoService
-	RemoteEndpoint string
-	// BindIP contains the bind ip
-	BindIP string
-	// Port contains the port of the sftp server
-	Port uint16
-	// PrivateKey contains the path to the private key
-	PrivateKey string
-	// LogConnections contains true if log connections, otherwise false
-	LogConnections bool
-	// DebugConnections contains true if debug connections, otherwise false
-	DebugConnections bool
 }
 
 // AggregationRule contains a rule used to aggregate string per group

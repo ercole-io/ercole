@@ -115,15 +115,6 @@ DistributedFiles = "distributed_files/"
   Port = 11114
   LogHTTPRequest = true
 
-  [RepoService.SFTP]
-  Enable = true
-  RemoteEndpoint = "sftp://127.0.0.1:11115"
-  BindIP = "0.0.0.0"
-  Port = 11115
-  PrivateKey = "/path/to/my_private_rsa_key"
-  LogConnections = true
-  DebugConnections = true
-
   [[RepoService.UpstreamRepositories]]
   Name = "ercole-io"
   Type = "ercole-reposervice"
