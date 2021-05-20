@@ -7,8 +7,5 @@ DistributedFiles = "%TEST_DIR%/distributed_files/"
   Port = "%PORT%"
   LogHTTPRequest = false
 
-  [RepoService.SFTP]
-  Enable = false
-
 [Mongodb]
 Migrate = false

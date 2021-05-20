@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# SCOPE: This test try to list files inside repo service and download foo.bar via SFTP
+# SCOPE: This test try to list files inside repo service and download foo.bar via HTTP
 
 # TEST config
 TEST_ROOT_DIR=`mktemp -d /tmp/ercole-XXXXXXXXXXXXXXXX`
