@@ -161,26 +161,6 @@ func removeFromDBs(s []model.OracleDatabase, i int) []model.OracleDatabase {
 	return s[:len(s)-1]
 }
 
-func licenseTypesSorter(config config.DataService, environment string, licenseTypes []model.OracleDatabaseLicenseType,
-) func(int, int) bool {
-	orderOfPriority, ok := config.LicenseTypeMetricsByEnvironment[environment]
-	if !ok {
-		orderOfPriority = config.LicenseTypeMetricsDefault
-	}
-
-	priorityMap := make(map[string]int, len(orderOfPriority))
-	for i, p := range orderOfPriority {
-		priorityMap[p] = len(orderOfPriority) - i
-	}
-
-	return func(i, j int) bool {
-		x := &licenseTypes[i]
-		y := &licenseTypes[j]
-
-		return priorityMap[x.Metric] >= priorityMap[y.Metric]
-	}
-}
-
 func (hds *HostDataService) setLicenseTypes(hostdata *model.HostDataBE, licenseTypes []model.OracleDatabaseLicenseType) {
 	for i := range hostdata.Features.Oracle.Database.Databases {
 		db := &hostdata.Features.Oracle.Database.Databases[i]
@@ -230,18 +210,42 @@ func (hds *HostDataService) getOracleDatabaseLicenseTypes(environment string,
 	return licenseTypes, nil
 }
 
+func licenseTypesSorter(config config.DataService, environment string, licenseTypes []model.OracleDatabaseLicenseType,
+) func(int, int) bool {
+	orderOfPriority, ok := config.LicenseTypeMetricsByEnvironment[environment]
+	if !ok {
+		orderOfPriority = config.LicenseTypeMetricsDefault
+	}
+
+	priorityMap := make(map[string]int, len(orderOfPriority))
+	for i, p := range orderOfPriority {
+		priorityMap[p] = len(orderOfPriority) - i
+	}
+
+	return func(i, j int) bool {
+		x := &licenseTypes[i]
+		y := &licenseTypes[j]
+
+		if priorityMap[x.Metric] == priorityMap[y.Metric] {
+			return x.ItemDescription < y.ItemDescription
+		}
+
+		return priorityMap[x.Metric] > priorityMap[y.Metric]
+	}
+}
+
 func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, licenseTypes []model.OracleDatabaseLicenseType) error {
 	previousDbs := make(map[string]model.OracleDatabase)
 	if previous != nil &&
 		previous.Features.Oracle != nil &&
 		previous.Features.Oracle.Database != nil &&
 		previous.Features.Oracle.Database.Databases != nil {
-		previousDbs = model.DatabasesArrayAsMap(previous.Features.Oracle.Database.Databases)
+		previousDbs = model.DatabaseSliceAsMap(previous.Features.Oracle.Database.Databases)
 	}
 
 	newDbs := make(map[string]model.OracleDatabase)
 	if new.Features.Oracle.Database != nil && new.Features.Oracle.Database.Databases != nil {
-		newDbs = model.DatabasesArrayAsMap(new.Features.Oracle.Database.Databases)
+		newDbs = model.DatabaseSliceAsMap(new.Features.Oracle.Database.Databases)
 	}
 
 	previousLicenseTypesEnabled := make(map[string]bool)

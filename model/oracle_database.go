@@ -144,8 +144,8 @@ func (v *OracleDatabase) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-// DatabasesArrayAsMap return the equivalent map of the database array with Database.Name as Key
-func DatabasesArrayAsMap(dbs []OracleDatabase) map[string]OracleDatabase {
+// DatabaseSliceAsMap return the equivalent map of the database slice with Database.Name as Key
+func DatabaseSliceAsMap(dbs []OracleDatabase) map[string]OracleDatabase {
 	out := make(map[string]OracleDatabase)
 	for _, db := range dbs {
 		out[db.Name] = db
