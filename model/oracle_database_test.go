@@ -33,7 +33,7 @@ func TestDatabasesArrayAsMap(t *testing.T) {
 		},
 	}
 
-	dbsMap := DatabasesArrayAsMap(dbs)
+	dbsMap := DatabaseSliceAsMap(dbs)
 	assert.Len(t, dbsMap, 2)
 	assert.Equal(t, OracleDatabase{
 		Name:     "superdb",
