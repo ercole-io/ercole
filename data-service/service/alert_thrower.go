@@ -146,3 +146,21 @@ func (hds *HostDataService) throwAugmentedCPUCoresAlert(hostname string, previou
 
 	return hds.AlertSvcClient.ThrowNewAlert(alr)
 }
+
+func (hds *HostDataService) throwMissingPrimaryDatabase(hostname, secondaryDbName string) error {
+	alert := model.Alert{
+		AlertCategory:           model.AlertCategoryEngine,
+		AlertAffectedTechnology: nil,
+		AlertCode:               model.AlertCodeMissingPrimaryDatabase,
+		AlertSeverity:           model.AlertSeverityWarning,
+		AlertStatus:             model.AlertStatusNew,
+		Description:             fmt.Sprintf("Missing primary database on standby database: %s", secondaryDbName),
+		Date:                    hds.TimeNow(),
+		OtherInfo: map[string]interface{}{
+			"hostname": hostname,
+			"dbname":   secondaryDbName,
+		},
+	}
+
+	return hds.AlertSvcClient.ThrowNewAlert(alert)
+}
