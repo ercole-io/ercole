@@ -18,12 +18,14 @@ package service
 import (
 	"fmt"
 	reflect "reflect"
+	"sort"
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -514,4 +516,122 @@ func TestCheckNewLicenses_ErrOracleDatabaseLicenseTypeIDNotFound(t *testing.T) {
 
 	//TODO Add check that error has been logged
 	require.NoError(t, hds.checkNewLicenses(&hostData3, &hostData4, []model.OracleDatabaseLicenseType{}))
+}
+
+func TestLicenseTypesSorter(t *testing.T) {
+	testCases := []struct {
+		config       config.DataService
+		environment  string
+		licenseTypes []model.OracleDatabaseLicenseType
+		expected     []model.OracleDatabaseLicenseType
+	}{
+		{
+			config: config.DataService{
+				LicenseTypeMetricsDefault:       []string{"Processor Perpetual", "Named User Plus Perpetual", "Stream Perpetual", "Computer Perpetual"},
+				LicenseTypeMetricsByEnvironment: map[string][]string{},
+			},
+			environment: "TST",
+			licenseTypes: []model.OracleDatabaseLicenseType{
+				{
+					ID:              "ID02",
+					ItemDescription: "bbbbb",
+					Metric:          "",
+					Cost:            0,
+					Aliases:         []string{"Pippo"},
+					Option:          true,
+				},
+				{
+					ID:              "ID01",
+					ItemDescription: "aaaaa",
+					Metric:          "",
+					Cost:            0,
+					Aliases:         []string{"Pippo"},
+					Option:          false,
+				},
+			},
+			expected: []model.OracleDatabaseLicenseType{
+				{
+					ID:              "ID01",
+					ItemDescription: "aaaaa",
+					Metric:          "",
+					Cost:            0,
+					Aliases:         []string{"Pippo"},
+					Option:          false,
+				},
+				{
+					ID:              "ID02",
+					ItemDescription: "bbbbb",
+					Metric:          "",
+					Cost:            0,
+					Aliases:         []string{"Pippo"},
+					Option:          true,
+				},
+			},
+		},
+		{
+			config: config.DataService{
+				LicenseTypeMetricsDefault:       []string{"a", "b", "c"},
+				LicenseTypeMetricsByEnvironment: map[string][]string{},
+			},
+			environment: "TST",
+			licenseTypes: []model.OracleDatabaseLicenseType{
+				{
+					ID:              "ID01",
+					ItemDescription: "",
+					Metric:          "b",
+					Cost:            0,
+					Aliases:         []string{"Pippo"},
+					Option:          false,
+				},
+				{
+					ID:              "ID01",
+					ItemDescription: "",
+					Metric:          "c",
+					Cost:            0,
+					Aliases:         []string{"Pippo"},
+					Option:          false,
+				},
+				{
+					ID:              "ID01",
+					ItemDescription: "aaaaa",
+					Metric:          "a",
+					Cost:            0,
+					Aliases:         []string{"Pippo"},
+					Option:          false,
+				},
+			},
+			expected: []model.OracleDatabaseLicenseType{
+				{
+					ID:              "ID01",
+					ItemDescription: "aaaaa",
+					Metric:          "a",
+					Cost:            0,
+					Aliases:         []string{"Pippo"},
+					Option:          false,
+				},
+				{
+					ID:              "ID01",
+					ItemDescription: "",
+					Metric:          "b",
+					Cost:            0,
+					Aliases:         []string{"Pippo"},
+					Option:          false,
+				},
+				{
+					ID:              "ID01",
+					ItemDescription: "",
+					Metric:          "c",
+					Cost:            0,
+					Aliases:         []string{"Pippo"},
+					Option:          false,
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		sort.Slice(tc.licenseTypes, licenseTypesSorter(tc.config, tc.environment, tc.licenseTypes))
+
+		assert.Equal(t, tc.licenseTypes, tc.expected)
+	}
 }
