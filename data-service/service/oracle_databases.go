@@ -2,7 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
 	"sort"
@@ -73,24 +72,9 @@ func (hds *HostDataService) addLicensesToSecondaryDb(hostInfo model.Host, second
 	}
 
 	if primaryDb == nil {
-		alert := model.Alert{
-			AlertCategory:           model.AlertCategoryEngine,
-			AlertAffectedTechnology: nil,
-			AlertCode:               model.AlertCodeMissingPrimaryDatabase,
-			AlertSeverity:           model.AlertSeverityWarning,
-			AlertStatus:             model.AlertStatusNew,
-			Description:             fmt.Sprintf("Missing primary database on standby database: %s", secondaryDb.Name),
-			Date:                    hds.TimeNow(),
-			OtherInfo: map[string]interface{}{
-				"hostname": hostInfo.Hostname,
-				"dbname":   secondaryDb.Name,
-			},
-		}
-
-		err := hds.AlertSvcClient.ThrowNewAlert(alert)
-		if err != nil {
-			hds.Log.Error("Can't throw new alert")
-			return
+		if err := hds.throwMissingPrimaryDatabase(hostInfo.Hostname, secondaryDb.Name); err != nil {
+			hds.Log.Errorf("Can't throw missing primary database alert, hostname %s, secondaryDbName %s",
+				hostInfo.Hostname, secondaryDb.Name)
 		}
 
 		return
