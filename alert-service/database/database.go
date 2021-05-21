@@ -20,12 +20,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/amreo/mu"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/sirupsen/logrus"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -81,86 +78,4 @@ func (md *MongoDatabase) ConnectToMongodb() {
 	if err != nil {
 		md.Log.Fatal(err)
 	}
-}
-
-// FindHostData find a host data
-func (md *MongoDatabase) FindHostData(id primitive.ObjectID) (model.HostDataBE, error) {
-	//Find the hostdata
-	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").FindOne(context.TODO(), bson.M{
-		"_id": id,
-	})
-	if res.Err() != nil {
-		return model.HostDataBE{}, utils.NewError(res.Err(), "DB ERROR")
-	}
-
-	//Decode the data
-
-	var out model.HostDataBE
-	if err := res.Decode(&out); err != nil {
-		return model.HostDataBE{}, utils.NewError(err, "DB ERROR")
-	}
-
-	//Return it!
-	return out, nil
-}
-
-//TODO RM?
-// FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
-func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostDataBE, error) {
-	var out model.HostDataBE
-
-	//Find the most recent HostData older than t
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
-		context.TODO(),
-		mu.MAPipeline(
-			mu.APMatch(bson.M{
-				"hostname":  hostname,
-				"createdAt": mu.QOLessThan(t),
-			}),
-			mu.APSort(bson.M{
-				"createdAt": -1,
-			}),
-			mu.APLimit(1),
-		),
-	)
-	if err != nil {
-		return model.HostDataBE{}, utils.NewError(err, "DB ERROR")
-	}
-	hasNext := cur.Next(context.TODO())
-	if !hasNext {
-		return model.HostDataBE{}, nil
-	}
-
-	if err := cur.Decode(&out); err != nil {
-		return model.HostDataBE{}, utils.NewError(err, "DB ERROR")
-	}
-
-	return out, nil
-}
-
-// InsertAlert insert the alert in the database
-func (md *MongoDatabase) InsertAlert(alert model.Alert) (*mongo.InsertOneResult, error) {
-	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").InsertOne(context.TODO(), alert)
-	if err != nil {
-		return nil, utils.NewError(err, "DB ERROR")
-	}
-	return res, nil
-}
-
-// ExistNoDataAlertByHost return true if the host has associated a new NO_DATA alert
-func (md *MongoDatabase) ExistNoDataAlertByHost(hostname string) (bool, error) {
-	//Count the number of new NO_DATA alerts associated to the host
-	val, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").CountDocuments(context.TODO(), bson.M{
-		"alertCode":          model.AlertCodeNoData,
-		"alertStatus":        model.AlertStatusNew,
-		"otherInfo.hostname": hostname,
-	}, &options.CountOptions{
-		Limit: utils.Intptr(1),
-	})
-	if err != nil {
-		return false, utils.NewError(err, "DB ERROR")
-	}
-
-	//Return true if the count > 0
-	return val > 0, nil
 }
