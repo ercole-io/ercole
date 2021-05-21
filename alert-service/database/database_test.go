@@ -16,17 +16,13 @@
 package database
 
 import (
-	"context"
 	"fmt"
 	"math/rand"
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/config"
-	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/stretchr/testify/suite"
 )
@@ -58,110 +54,4 @@ func TestConnectToMongodb_FailToConnect(t *testing.T) {
 	}
 
 	assert.PanicsWithValue(t, "log.Fatal called by test", db.ConnectToMongodb)
-}
-
-func (m *MongodbSuite) TestFindHostData_SuccessExist() {
-	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
-
-	hd := utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
-
-	m.InsertHostData(hd)
-
-	hd2, err := m.db.FindHostData(utils.Str2oid("5dd41aa2b2fa40163c878538"))
-	require.NoError(m.T(), err)
-
-	assert.Equal(m.T(), "itl-csllab-112.sorint.localpippo", hd2.Hostname)
-	assert.False(m.T(), hd2.Archived)
-	assert.Equal(m.T(), utils.P("2019-11-19T16:38:58Z"), hd2.CreatedAt)
-}
-
-func (m *MongodbSuite) TestFindHostData_FailWrongID() {
-	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
-
-	hd := utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
-	m.InsertHostData(hd)
-
-	notExistingID := utils.Str2oid("8a46027b2ddab34ed01a8c56")
-
-	hd2, err := m.db.FindHostData(notExistingID)
-	require.Error(m.T(), err)
-
-	assert.Equal(m.T(), model.HostDataBE{}, hd2)
-}
-
-func (m *MongodbSuite) TestFindMostRecentHostDataOlderThan_OnlyOne() {
-	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
-
-	hd := utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_dataservice_mongohostdata_01.json")
-	m.InsertHostData(hd)
-
-	foundHd, err := m.db.FindMostRecentHostDataOlderThan("itl-csllab-112.sorint.localpippo", utils.P("2020-04-25T11:45:23Z"))
-	require.NoError(m.T(), err)
-	assert.Equal(m.T(), "itl-csllab-112.sorint.localpippo", foundHd.Hostname)
-	assert.False(m.T(), foundHd.Archived)
-	assert.Equal(m.T(), utils.P("2019-11-19T16:38:58Z"), foundHd.CreatedAt)
-}
-
-func (m *MongodbSuite) TestFindMostRecentHostDataOlderThan_MoreThanOne() {
-	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
-
-	hd := utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_dataservice_mongohostdata_04.json")
-	m.InsertHostData(hd)
-
-	m.T().Run("Should_find_hd_even_if_archived", func(t *testing.T) {
-		foundHd, err := m.db.FindMostRecentHostDataOlderThan("itl-csllab-112.sorint.localpippo", utils.P("2019-11-20T15:38:58Z"))
-		require.NoError(t, err)
-		assert.True(t, foundHd.Archived)
-		assert.Equal(t, "itl-csllab-112.sorint.localpippo", foundHd.Hostname)
-		assert.Equal(t, utils.P("2019-11-19T15:38:58Z"), foundHd.CreatedAt)
-	})
-
-	hd2 := utils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_dataservice_mongohostdata_02.json")
-	m.InsertHostData(hd2)
-	assert.NotEqual(m.T(), hd, hd2)
-
-	m.T().Run("Should_find_hd2_more_inserts", func(t *testing.T) {
-		foundHd, err := m.db.FindMostRecentHostDataOlderThan("itl-csllab-112.sorint.localpippo", utils.P("2019-12-20T15:38:58Z"))
-		require.NoError(t, err)
-		assert.False(t, foundHd.Archived)
-		assert.Equal(t, "itl-csllab-112.sorint.localpippo", foundHd.Hostname)
-		assert.Equal(t, utils.P("2019-12-19T15:38:58Z"), foundHd.CreatedAt)
-	})
-}
-
-func (m *MongodbSuite) TestInsertAlert_Success() {
-	_, err := m.db.InsertAlert(alert1)
-	require.NoError(m.T(), err)
-	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
-	val := m.db.Client.Database(m.dbname).Collection("alerts").FindOne(context.TODO(), bson.M{
-		"_id": alert1.ID,
-	})
-	require.NoError(m.T(), val.Err())
-
-	var out model.Alert
-	val.Decode(&out)
-
-	assert.Equal(m.T(), alert1, out)
-}
-
-func (m *MongodbSuite) TestExistNoDataAlert_SuccessNotExist() {
-	_, err := m.db.InsertAlert(alert1)
-	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
-	require.NoError(m.T(), err)
-
-	exist, err := m.db.ExistNoDataAlertByHost("myhost")
-	require.NoError(m.T(), err)
-
-	assert.False(m.T(), exist)
-}
-
-func (m *MongodbSuite) TestExistNoDataAlert_SuccessExist() {
-	_, err := m.db.InsertAlert(alert2)
-	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
-	require.NoError(m.T(), err)
-
-	exist, err := m.db.ExistNoDataAlertByHost("myhost")
-	require.NoError(m.T(), err)
-
-	assert.True(m.T(), exist)
 }
