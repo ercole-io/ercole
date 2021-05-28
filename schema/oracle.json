@@ -434,6 +434,7 @@
                                                         "Incr Lvl 0",
                                                         "Incr Lvl 1",
                                                         "Db Full",
+                                                        "Datafile Full",
                                                         "Recvr Area"
                                                     ]
                                                 },
