@@ -75,7 +75,6 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 			Unlimited:       false,
 			LicensesCount:   55,
 			UsersCount:      0,
-			Count:           55,
 			AvailableCount:  55,
 		},
 	}

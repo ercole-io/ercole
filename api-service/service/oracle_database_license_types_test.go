@@ -71,7 +71,6 @@ func TestGetLicensesCompliance(t *testing.T) {
 			Metric:          "",
 			ReferenceNumber: "",
 			Unlimited:       false,
-			Count:           50,
 			CatchAll:        false,
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{Hostname: "pippo"},
@@ -90,7 +89,6 @@ func TestGetLicensesCompliance(t *testing.T) {
 			Metric:          "",
 			ReferenceNumber: "",
 			Unlimited:       false,
-			Count:           75,
 			CatchAll:        false,
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{Hostname: "topolino"},
@@ -109,7 +107,6 @@ func TestGetLicensesCompliance(t *testing.T) {
 			Metric:          "",
 			ReferenceNumber: "",
 			Unlimited:       true,
-			Count:           75,
 			CatchAll:        false,
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{Hostname: "topolino"},
@@ -128,7 +125,6 @@ func TestGetLicensesCompliance(t *testing.T) {
 			Metric:          "",
 			ReferenceNumber: "",
 			Unlimited:       false,
-			Count:           50,
 			CatchAll:        false,
 			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
 			AvailableCount:  50,
@@ -252,7 +248,6 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 			Metric:          "",
 			ReferenceNumber: "",
 			Unlimited:       false,
-			Count:           50,
 			CatchAll:        false,
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{Hostname: "pippo"},
@@ -271,7 +266,6 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 			Metric:          "",
 			ReferenceNumber: "",
 			Unlimited:       false,
-			Count:           75,
 			CatchAll:        false,
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{Hostname: "topolino"},
@@ -290,7 +284,6 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 			Metric:          "",
 			ReferenceNumber: "",
 			Unlimited:       true,
-			Count:           75,
 			CatchAll:        false,
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{Hostname: "topolino"},
@@ -309,7 +302,6 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 			Metric:          "",
 			ReferenceNumber: "",
 			Unlimited:       false,
-			Count:           50,
 			CatchAll:        false,
 			Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
 			AvailableCount:  50,
