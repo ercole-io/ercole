@@ -250,9 +250,9 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 					},
 				},
 
-				AvailableCount: 345,
-				LicensesCount:  345,
-				UsersCount:     0,
+				AvailableCount:  345,
+				LicensesPerCore: 345,
+				LicensesPerUser: 0,
 			},
 		}, out)
 	})
@@ -295,9 +295,9 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 						ConsumedLicensesCount:     0,
 					},
 				},
-				AvailableCount: 345,
-				LicensesCount:  345,
-				UsersCount:     0},
+				AvailableCount:  345,
+				LicensesPerCore: 345,
+				LicensesPerUser: 0},
 			{
 				ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
 				AgreementID:     "agr002",
@@ -323,9 +323,9 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 						TotalCoveredLicensesCount: 0,
 						ConsumedLicensesCount:     0,
 					}},
-				AvailableCount: 111,
-				LicensesCount:  111,
-				UsersCount:     0,
+				AvailableCount:  111,
+				LicensesPerCore: 111,
+				LicensesPerUser: 0,
 			},
 			{
 				ID:              utils.Str2oid("cccccccccccccccccccccccc"),
@@ -352,9 +352,9 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 						ConsumedLicensesCount:     0,
 					},
 				},
-				AvailableCount: 222,
-				LicensesCount:  0,
-				UsersCount:     222}},
+				AvailableCount:  222,
+				LicensesPerCore: 0,
+				LicensesPerUser: 222}},
 
 			out)
 	})

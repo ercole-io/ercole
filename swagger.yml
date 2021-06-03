@@ -4065,11 +4065,9 @@ paths:
                         unlimited:
                           type: boolean
                           description: Indicates that the agreement has unlimited part or no
-                        count:
+                        licensesPerCore:
                           type: number
-                        licensesCount:
-                          type: number
-                        usersCount:
+                        licensesPerUser:
                           type: number
                         availableCount:
                           type: number
@@ -4109,9 +4107,8 @@ paths:
                       csi: ''
                       referenceNumber: '444'
                       unlimited: false
-                      count: 42
-                      licensesCount: 0
-                      usersCount: 42
+                      licensesPerCore: 0
+                      licensesPerUser: 42
                       availableCount: -2
                       catchAll: false
                       hosts:
@@ -4127,9 +4124,8 @@ paths:
                       csi: ''
                       referenceNumber: '444'
                       unlimited: false
-                      count: 42
-                      licensesCount: 0
-                      usersCount: 42
+                      licensesPerCore: 0
+                      licensesPerUser: 42
                       availableCount: -2
                       catchAll: false
                       hosts:
