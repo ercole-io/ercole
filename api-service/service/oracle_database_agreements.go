@@ -212,11 +212,11 @@ func sortOracleDatabaseAgreements(obj []dto.OracleDatabaseAgreementFE) {
 		} else if obj[i].Unlimited != obj[j].Unlimited {
 			return obj[j].Unlimited
 
-		} else if obj[i].UsersCount != obj[j].UsersCount {
-			return obj[i].UsersCount > obj[j].UsersCount
+		} else if obj[i].LicensesPerUser != obj[j].LicensesPerUser {
+			return obj[i].LicensesPerUser > obj[j].LicensesPerUser
 
 		} else {
-			return obj[i].LicensesCount > obj[j].LicensesCount
+			return obj[i].LicensesPerCore > obj[j].LicensesPerCore
 		}
 	})
 }
@@ -586,10 +586,10 @@ func checkOracleDatabaseAgreementMatchFilter(agr dto.OracleDatabaseAgreementFE, 
 		strings.Contains(strings.ToLower(agr.ReferenceNumber), strings.ToLower(filters.ReferenceNumber)) &&
 		(filters.Unlimited == "" || agr.Unlimited == (filters.Unlimited == "true")) &&
 		(filters.CatchAll == "" || agr.CatchAll == (filters.CatchAll == "true")) &&
-		(filters.LicensesCountLTE == -1 || agr.LicensesCount <= float64(filters.LicensesCountLTE)) &&
-		(filters.LicensesCountGTE == -1 || agr.LicensesCount >= float64(filters.LicensesCountGTE)) &&
-		(filters.UsersCountLTE == -1 || agr.UsersCount <= float64(filters.UsersCountLTE)) &&
-		(filters.UsersCountGTE == -1 || agr.UsersCount >= float64(filters.UsersCountGTE)) &&
+		(filters.LicensesCountLTE == -1 || agr.LicensesPerCore <= float64(filters.LicensesCountLTE)) &&
+		(filters.LicensesCountGTE == -1 || agr.LicensesPerCore >= float64(filters.LicensesCountGTE)) &&
+		(filters.UsersCountLTE == -1 || agr.LicensesPerUser <= float64(filters.UsersCountLTE)) &&
+		(filters.UsersCountGTE == -1 || agr.LicensesPerUser >= float64(filters.UsersCountGTE)) &&
 		(filters.AvailableCountLTE == -1 || agr.AvailableCount <= float64(filters.AvailableCountLTE)) &&
 		(filters.AvailableCountGTE == -1 || agr.AvailableCount >= float64(filters.AvailableCountGTE))
 }
