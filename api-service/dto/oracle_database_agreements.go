@@ -37,9 +37,6 @@ type OracleDatabaseAgreementFE struct {
 
 	ReferenceNumber string `json:"referenceNumber" bson:"referenceNumber"`
 	Unlimited       bool   `json:"unlimited" bson:"unlimited"` // Or "ULA"
-	// Number of licenses or users set by user.
-	// If agreement is Named User, Count number express users, not licenses
-	Count float64 `json:"count" bson:"count"`
 
 	CatchAll   bool                                      `json:"catchAll" bson:"catchAll"` //TODO Rename in basket
 	Restricted bool                                      `json:"restricted" bson:"restricted"`

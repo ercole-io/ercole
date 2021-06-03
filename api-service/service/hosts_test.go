@@ -305,7 +305,6 @@ func TestSearchHostsAsLMS(t *testing.T) {
 				Metric:          "",
 				ReferenceNumber: "",
 				Unlimited:       false,
-				Count:           0,
 				CatchAll:        false,
 				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 					{Hostname: "publicitate-36d06ca83eafa454423d2097f4965517"},
@@ -323,7 +322,6 @@ func TestSearchHostsAsLMS(t *testing.T) {
 				Metric:          "",
 				ReferenceNumber: "",
 				Unlimited:       false,
-				Count:           0,
 				CatchAll:        false,
 				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 					{Hostname: "publicitate-36d06ca83eafa454423d2097f4965517"},

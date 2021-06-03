@@ -58,7 +58,6 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 			Metric:          "",
 			ReferenceNumber: "",
 			Unlimited:       false,
-			Count:           50,
 			CatchAll:        false,
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{Hostname: "pippo"},
@@ -77,7 +76,6 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 			Metric:          "",
 			ReferenceNumber: "",
 			Unlimited:       false,
-			Count:           75,
 			CatchAll:        false,
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{Hostname: "topolino"},
@@ -177,7 +175,6 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 			Unlimited:       false,
 			LicensesCount:   55,
 			UsersCount:      0,
-			Count:           55,
 		},
 	}
 	returnedHosts := []dto.HostUsingOracleDatabaseLicenses{
@@ -296,7 +293,6 @@ func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
 				Metric:          "",
 				ReferenceNumber: "",
 				Unlimited:       false,
-				Count:           50,
 				CatchAll:        false,
 				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 					{Hostname: "pippo"},
@@ -315,7 +311,6 @@ func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
 				Metric:          "",
 				ReferenceNumber: "",
 				Unlimited:       false,
-				Count:           75,
 				CatchAll:        false,
 				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 					{Hostname: "topolino"},

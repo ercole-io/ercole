@@ -111,7 +111,6 @@ func TestAddOracleDatabaseAgreement_Success_InsertNew(t *testing.T) {
 		Metric:          "",
 		ReferenceNumber: "",
 		Unlimited:       false,
-		Count:           0,
 		CatchAll:        false,
 		Restricted:      false,
 		Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
@@ -131,35 +130,34 @@ func TestAddOracleDatabaseAgreement_Success_InsertNew(t *testing.T) {
 }
 
 func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-
-	as := APIService{
-		Database: db,
-		Config: config.Configuration{
-			ResourceFilePath: "../../resources",
-		},
-		TimeNow:     utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		NewObjectID: utils.NewObjectIDForTests(),
-	}
-
-	addRequest := model.OracleDatabaseAgreement{
-		AgreementID:     "AID001",
-		LicenseTypeID:   "PID001",
-		CSI:             "CSI001",
-		ReferenceNumber: "RF0001",
-		Unlimited:       true,
-		Count:           30,
-		CatchAll:        true,
-		Restricted:      false,
-		Hosts: []string{
-			"test-db",
-			"ercsoldbx",
-		},
-	}
-
 	t.Run("Fail: can't find host", func(t *testing.T) {
+		mockCtrl := gomock.NewController(t)
+		defer mockCtrl.Finish()
+		db := NewMockMongoDatabaseInterface(mockCtrl)
+
+		as := APIService{
+			Database: db,
+			Config: config.Configuration{
+				ResourceFilePath: "../../resources",
+			},
+			TimeNow:     utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+			NewObjectID: utils.NewObjectIDForTests(),
+		}
+
+		addRequest := model.OracleDatabaseAgreement{
+			AgreementID:     "AID001",
+			LicenseTypeID:   "PID001",
+			CSI:             "CSI001",
+			ReferenceNumber: "RF0001",
+			Unlimited:       true,
+			Count:           30,
+			CatchAll:        true,
+			Restricted:      false,
+			Hosts: []string{
+				"test-db",
+				"ercsoldbx",
+			},
+		}
 
 		gomock.InOrder(
 			db.EXPECT().SearchHosts("hostnames",
@@ -190,6 +188,19 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 	})
 
 	t.Run("Fail: can't find licenseType", func(t *testing.T) {
+		mockCtrl := gomock.NewController(t)
+		defer mockCtrl.Finish()
+		db := NewMockMongoDatabaseInterface(mockCtrl)
+
+		as := APIService{
+			Database: db,
+			Config: config.Configuration{
+				ResourceFilePath: "../../resources",
+			},
+			TimeNow:     utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+			NewObjectID: utils.NewObjectIDForTests(),
+		}
+
 		agreementWrongLicenseType := model.OracleDatabaseAgreement{
 			AgreementID:     "AID001",
 			LicenseTypeID:   "xxxxxx",
@@ -298,7 +309,6 @@ func TestUpdateOracleDatabaseAgreement_Success(t *testing.T) {
 		Metric:          "",
 		ReferenceNumber: "",
 		Unlimited:       false,
-		Count:           0,
 		CatchAll:        false,
 		Restricted:      false,
 		Hosts:           []dto.OracleDatabaseAgreementAssociatedHostFE{},
@@ -414,7 +424,6 @@ func TestGetOracleDatabaseAgreements_Success(t *testing.T) {
 			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			UsersCount:      0,
-			Count:           0,
 		},
 	}
 	returnedHosts := []dto.HostUsingOracleDatabaseLicenses{
@@ -449,7 +458,6 @@ func TestGetOracleDatabaseAgreements_Success(t *testing.T) {
 			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			UsersCount:      0,
-			Count:           0,
 		},
 	}
 
@@ -516,7 +524,6 @@ func TestGetOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			UsersCount:      0,
-			Count:           0,
 		},
 	}
 	returnedHosts := []dto.HostUsingOracleDatabaseLicenses{
@@ -631,7 +638,6 @@ func TestGetOracleDatabaseAgreements_Failed2(t *testing.T) {
 			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			UsersCount:      0,
-			Count:           0,
 		},
 	}
 
@@ -911,7 +917,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCase(t *testing.T)
 			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			UsersCount:      0,
-			Count:           0,
 		},
 	}
 	hosts := []dto.HostUsingOracleDatabaseLicenses{
@@ -946,7 +951,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCase(t *testing.T)
 			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			UsersCount:      0,
-			Count:           0,
 		},
 	}
 
@@ -998,7 +1002,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *t
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           5,
 		},
 	}
 	hosts := []dto.HostUsingOracleDatabaseLicenses{
@@ -1033,7 +1036,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *t
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           5,
 		},
 	}
 
@@ -1085,7 +1087,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      250,
-			Count:           250,
 		},
 	}
 	hosts := []dto.HostUsingOracleDatabaseLicenses{
@@ -1120,7 +1121,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      250,
-			Count:           250,
 		},
 	}
 
@@ -1177,7 +1177,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           5,
 		},
 	}
 	hosts := []dto.HostUsingOracleDatabaseLicenses{
@@ -1225,7 +1224,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           5,
 		},
 	}
 
@@ -1277,7 +1275,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           5,
 		},
 		{
 			AgreementID:    "5051863",
@@ -1299,7 +1296,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           10,
 		},
 	}
 	hosts := []dto.HostUsingOracleDatabaseLicenses{
@@ -1334,7 +1330,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           10,
 		},
 		{
 			AgreementID:    "5051863",
@@ -1357,7 +1352,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           5,
 		},
 	}
 
@@ -1403,7 +1397,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCaseNoAssociatedHo
 			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			UsersCount:      0,
-			Count:           0,
 		},
 	}
 	hosts := []dto.HostUsingOracleDatabaseLicenses{
@@ -1431,7 +1424,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCaseNoAssociatedHo
 			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			UsersCount:      0,
-			Count:           0,
 		},
 	}
 
@@ -1477,7 +1469,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAss
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           5,
 		},
 	}
 	hosts := []dto.HostUsingOracleDatabaseLicenses{
@@ -1505,7 +1496,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAss
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           5,
 		},
 	}
 
@@ -1551,7 +1541,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      200,
-			Count:           200,
 		},
 	}
 	hosts := []dto.HostUsingOracleDatabaseLicenses{
@@ -1579,7 +1568,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      200,
-			Count:           200,
 		},
 	}
 
@@ -1627,7 +1615,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           10,
 		},
 	}
 	hosts := []dto.HostUsingOracleDatabaseLicenses{
@@ -1669,7 +1656,6 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
 			UsersCount:      0,
-			Count:           10,
 		},
 	}
 
