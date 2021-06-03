@@ -57,25 +57,21 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 
 	returnedAgreements := []dto.OracleDatabaseAgreementFE{
 		{
-			AgreementID: "AID001",
-			CatchAll:    false,
-			CSI:         "CSI001",
-			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
-				{
-					CoveredLicensesCount:      0,
-					Hostname:                  "test-db",
-					TotalCoveredLicensesCount: 0,
-				},
-			},
-			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			ItemDescription: "Oracle Partitioning",
-			Metric:          model.LicenseTypeMetricProcessorPerpetual,
-			LicenseTypeID:   "PID002",
-			ReferenceNumber: "RF0001",
-			Unlimited:       false,
-			LicensesPerCore: 55,
-			LicensesPerUser: 0,
-			AvailableCount:  55,
+			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			AgreementID:              "AID001",
+			CSI:                      "CSI001",
+			LicenseTypeID:            "PID002",
+			ItemDescription:          "Oracle Partitioning",
+			Metric:                   model.LicenseTypeMetricProcessorPerpetual,
+			ReferenceNumber:          "RF0001",
+			Unlimited:                false,
+			CatchAll:                 false,
+			Restricted:               false,
+			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
+			LicensesPerCore:          55,
+			LicensesPerUser:          0,
+			AvailableLicensesPerCore: 55,
+			AvailableLicensesPerUser: 0,
 		},
 	}
 	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
