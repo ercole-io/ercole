@@ -63,9 +63,9 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 				{Hostname: "pippo"},
 				{Hostname: "pluto"},
 			},
-			AvailableCount: 50,
-			LicensesCount:  0,
-			UsersCount:     0,
+			AvailableCount:  50,
+			LicensesPerCore: 0,
+			LicensesPerUser: 0,
 		},
 		{
 			ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
@@ -81,9 +81,9 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 				{Hostname: "topolino"},
 				{Hostname: "minnie"},
 			},
-			AvailableCount: 75,
-			LicensesCount:  0,
-			UsersCount:     0,
+			AvailableCount:  75,
+			LicensesPerCore: 0,
+			LicensesPerUser: 0,
 		},
 	}
 
@@ -173,8 +173,8 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 			LicenseTypeID:   "PID002",
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
-			LicensesCount:   55,
-			UsersCount:      0,
+			LicensesPerCore: 55,
+			LicensesPerUser: 0,
 		},
 	}
 	returnedHosts := []dto.HostUsingOracleDatabaseLicenses{
@@ -298,9 +298,9 @@ func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
 					{Hostname: "pippo"},
 					{Hostname: "pluto"},
 				},
-				AvailableCount: 50,
-				LicensesCount:  0,
-				UsersCount:     0,
+				AvailableCount:  50,
+				LicensesPerCore: 0,
+				LicensesPerUser: 0,
 			},
 			{
 				ID:              utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
@@ -316,9 +316,9 @@ func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
 					{Hostname: "topolino"},
 					{Hostname: "minnie"},
 				},
-				AvailableCount: 75,
-				LicensesCount:  0,
-				UsersCount:     0,
+				AvailableCount:  75,
+				LicensesPerCore: 0,
+				LicensesPerUser: 0,
 			},
 		}
 

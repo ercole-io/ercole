@@ -309,9 +309,9 @@ func TestSearchHostsAsLMS(t *testing.T) {
 				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 					{Hostname: "publicitate-36d06ca83eafa454423d2097f4965517"},
 				},
-				AvailableCount: 0,
-				LicensesCount:  0,
-				UsersCount:     0,
+				AvailableCount:  0,
+				LicensesPerCore: 0,
+				LicensesPerUser: 0,
 			},
 			{
 				ID:              utils.Str2oid("aaaaaaaaaaaa"),
@@ -326,9 +326,9 @@ func TestSearchHostsAsLMS(t *testing.T) {
 				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 					{Hostname: "publicitate-36d06ca83eafa454423d2097f4965517"},
 				},
-				AvailableCount: 0,
-				LicensesCount:  0,
-				UsersCount:     0,
+				AvailableCount:  0,
+				LicensesPerCore: 0,
+				LicensesPerUser: 0,
 			},
 		}
 

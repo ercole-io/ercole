@@ -42,12 +42,11 @@ type OracleDatabaseAgreementFE struct {
 	Restricted bool                                      `json:"restricted" bson:"restricted"`
 	Hosts      []OracleDatabaseAgreementAssociatedHostFE `json:"hosts" bson:"hosts"`
 
-	// Value of licenses/users yet available to be assigned to hosts
+	LicensesPerCore float64 `json:"licensesPerCore" bson:"licensesPerCore"`
+	LicensesPerUser float64 `json:"licensesPerUser" bson:"licensesPerUser"`
+
+	// Value of licenses yet available to be assigned to hosts
 	AvailableCount float64 `json:"availableCount" bson:"availableCount"`
-	// Number of licenses
-	LicensesCount float64 `json:"licensesCount" bson:"licensesCount"`
-	// Number of users
-	UsersCount float64 `json:"usersCount" bson:"usersCount"`
 }
 
 // OracleDatabaseAgreementAssociatedHostFE contains the informations about an associated host in agreement
