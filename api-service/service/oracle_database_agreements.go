@@ -272,13 +272,6 @@ func fillAgreementsInfo(as *APIService, agrs []dto.OracleDatabaseAgreementFE, li
 		if licenseType, ok := licenseTypes[agr.LicenseTypeID]; ok {
 			agr.ItemDescription = licenseType.ItemDescription
 			agr.Metric = licenseType.Metric
-
-			switch agr.Metric {
-			case model.LicenseTypeMetricProcessorPerpetual:
-				agr.LicensesCount = agr.Count
-			case model.LicenseTypeMetricNamedUserPlusPerpetual:
-				agr.UsersCount = agr.Count
-			}
 		} else {
 			as.Log.Errorf("Unknown PartID: [%s] in agreement: [%#v]", agr.LicenseTypeID, agr)
 		}
@@ -444,12 +437,11 @@ func assignLicensesFromCatchAllAgreements(
 			doAssignLicenseFromCatchAllAgreement(as, agr, host)
 
 			if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
-				as.Log.Debugf("Distributing with metric [%s] [ULA? %t] %f licenses to obj %s. aggCount=%f objCount=0 licenseTypeID=%s\n",
+				as.Log.Debugf("Distributing with metric [%s] [ULA? %t] %f licenses to obj %s. objCount=0 licenseTypeID=%s\n",
 					agr.Metric,
 					agr.Unlimited,
 					host.LicenseCount,
 					host.Name,
-					agr.Count,
 					agr.LicenseTypeID)
 			}
 		}

@@ -168,7 +168,7 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 		Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
 		Aliases:         []string{},
 	}
-	_, err2 := m.db.Client.Database(m.dbname).Collection("oracle_database_license_types").
+	_, err2 := m.db.Client.Database(m.dbname).Collection(oracleDbLicenseTypesCollection).
 		InsertMany(context.TODO(), []interface{}{licenseTypeSample1, licenseTypeSample2})
 	require.NoError(m.T(), err2)
 
@@ -239,7 +239,6 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 
 				ReferenceNumber: "R00001",
 				Unlimited:       true,
-				Count:           345,
 				CatchAll:        true,
 				Restricted:      false,
 				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
@@ -281,7 +280,6 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 				Metric:          "Processor Perpetual",
 				ReferenceNumber: "R00001",
 				Unlimited:       true,
-				Count:           345,
 				CatchAll:        true,
 				Restricted:      false,
 				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
@@ -309,7 +307,6 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 				Metric:          "Processor Perpetual",
 				ReferenceNumber: "R00002",
 				Unlimited:       false,
-				Count:           111,
 				CatchAll:        false,
 				Restricted:      true,
 				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
@@ -339,7 +336,6 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 				Metric:          "Named User Plus Perpetual",
 				ReferenceNumber: "R00003",
 				Unlimited:       true,
-				Count:           222,
 				CatchAll:        false,
 				Restricted:      false,
 				Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
