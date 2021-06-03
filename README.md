@@ -1,6 +1,6 @@
 # Ercole
 [![Build Status](https://travis-ci.com/ercole-io/ercole.png)](https://travis-ci.com/ercole-io/ercole)
-[![Join the chat at https://gitter.im/ercole-server/community](https://badges.gitter.im/ercole-server/community.svg)](https://gitter.im/ercole-server/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Gitter](https://badges.gitter.im/ercole-io/community.svg)](https://gitter.im/ercole-io/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![codecov](https://codecov.io/gh/amreo/ercole-services/branch/master/graph/badge.svg)](https://codecov.io/gh/ercole-io/ercole)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ercole-io/ercole)](https://goreportcard.com/report/github.com/ercole-io/ercole)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ercole-io_ercole&metric=alert_status)](https://sonarcloud.io/dashboard?id=ercole-io_ercole)
