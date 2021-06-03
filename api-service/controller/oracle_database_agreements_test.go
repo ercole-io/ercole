@@ -374,7 +374,7 @@ func TestUpdateOracleDatabaseAgreement_InternalServerError(t *testing.T) {
 	})
 }
 
-func TestSearchAssociatedPartsInOracleDatabaseAgreements_Success(t *testing.T) {
+func TestGetOracleDatabaseAgreements_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -393,14 +393,22 @@ func TestSearchAssociatedPartsInOracleDatabaseAgreements_Success(t *testing.T) {
 
 	as.EXPECT().
 		GetOracleDatabaseAgreements(dto.GetOracleDatabaseAgreementsFilter{
-			Unlimited:         "true",
-			CatchAll:          "",
-			AvailableCountGTE: -1,
-			AvailableCountLTE: -1,
-			LicensesCountGTE:  -1,
-			LicensesCountLTE:  -1,
-			UsersCountGTE:     -1,
-			UsersCountLTE:     -1,
+			AgreementID:                 "",
+			LicenseTypeID:               "",
+			ItemDescription:             "",
+			CSI:                         "",
+			Metric:                      "",
+			ReferenceNumber:             "",
+			Unlimited:                   "true",
+			CatchAll:                    "",
+			LicensesPerCoreLTE:          -1,
+			LicensesPerCoreGTE:          -1,
+			LicensesPerUserLTE:          -1,
+			LicensesPerUserGTE:          -1,
+			AvailableLicensesPerCoreLTE: -1,
+			AvailableLicensesPerCoreGTE: -1,
+			AvailableLicensesPerUserLTE: -1,
+			AvailableLicensesPerUserGTE: -1,
 		}).
 		Return(agreements, nil)
 
@@ -419,7 +427,7 @@ func TestSearchAssociatedPartsInOracleDatabaseAgreements_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expectedResponse), rr.Body.String())
 }
 
-func TestSearchAssociatedPartsInOracleDatabaseAgreements_FailedUnprocessableEntity(t *testing.T) {
+func TestGetOracleDatabaseAgreements_FailedUnprocessableEntity(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -440,7 +448,7 @@ func TestSearchAssociatedPartsInOracleDatabaseAgreements_FailedUnprocessableEnti
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchAssociatedPartsInOracleDatabaseAgreements_FailedInternalServerError(t *testing.T) {
+func TestGetOracleDatabaseAgreements_FailedInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -452,16 +460,7 @@ func TestSearchAssociatedPartsInOracleDatabaseAgreements_FailedInternalServerErr
 	}
 
 	as.EXPECT().
-		GetOracleDatabaseAgreements(dto.GetOracleDatabaseAgreementsFilter{
-			Unlimited:         "",
-			CatchAll:          "",
-			AvailableCountGTE: -1,
-			AvailableCountLTE: -1,
-			LicensesCountGTE:  -1,
-			LicensesCountLTE:  -1,
-			UsersCountGTE:     -1,
-			UsersCountLTE:     -1,
-		}).
+		GetOracleDatabaseAgreements(dto.NewGetOracleDatabaseAgreementsFilter()).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
@@ -479,37 +478,54 @@ func TestParseGetOracleDatabaseAgreementsFilters_SuccessEmpty(t *testing.T) {
 	filters, err := parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.NoError(t, err)
 	assert.Equal(t, dto.GetOracleDatabaseAgreementsFilter{
-		CatchAll:          "",
-		Unlimited:         "",
-		AvailableCountGTE: -1,
-		AvailableCountLTE: -1,
-		LicensesCountGTE:  -1,
-		LicensesCountLTE:  -1,
-		UsersCountGTE:     -1,
-		UsersCountLTE:     -1,
+		AgreementID:                 "",
+		LicenseTypeID:               "",
+		ItemDescription:             "",
+		CSI:                         "",
+		Metric:                      "",
+		ReferenceNumber:             "",
+		Unlimited:                   "",
+		CatchAll:                    "",
+		LicensesPerCoreLTE:          -1,
+		LicensesPerCoreGTE:          -1,
+		LicensesPerUserLTE:          -1,
+		LicensesPerUserGTE:          -1,
+		AvailableLicensesPerCoreLTE: -1,
+		AvailableLicensesPerCoreGTE: -1,
+		AvailableLicensesPerUserLTE: -1,
+		AvailableLicensesPerUserGTE: -1,
 	}, filters)
 }
 
 func TestParseSearchOracleDatabaseAgreementsFilters_SuccessFull(t *testing.T) {
-	r, err := http.NewRequest("GET", "/?agreement-id=foo&license-type-id=bar&item-description=boz&csi=pippo&metrics=pluto&reference-number=foobar&unlimited=false&catch-all=true&licenses-count-lte=10&licenses-count-gte=20&users-count-lte=5&users-count-gte=15&available-count-lte=3&available-count-gte=13", nil)
+	r, err := http.NewRequest("GET",
+		"/?agreement-id=foo&license-type-id=bar&item-description=boz&csi=pippo&metrics=pluto&reference-number=foobar&"+
+			"unlimited=false&catch-all=true&"+
+			"licenses-per-core-lte=1&licenses-per-core-gte=2&"+
+			"licenses-per-user-lte=3&licenses-per-user-gte=4&"+
+			"available-licenses-per-core-lte=3&available-licenses-per-core-gte=13&"+
+			"available-licenses-per-user-lte=4&available-licenses-per-user-gte=2",
+		nil)
 	require.NoError(t, err)
 	filters, err := parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.NoError(t, err)
 	assert.Equal(t, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:       "foo",
-		LicenseTypeID:     "bar",
-		ItemDescription:   "boz",
-		CSI:               "pippo",
-		Metric:            "pluto",
-		ReferenceNumber:   "foobar",
-		Unlimited:         "false",
-		CatchAll:          "true",
-		LicensesCountLTE:  10,
-		LicensesCountGTE:  20,
-		UsersCountLTE:     5,
-		UsersCountGTE:     15,
-		AvailableCountLTE: 3,
-		AvailableCountGTE: 13,
+		AgreementID:                 "foo",
+		LicenseTypeID:               "bar",
+		ItemDescription:             "boz",
+		CSI:                         "pippo",
+		Metric:                      "pluto",
+		ReferenceNumber:             "foobar",
+		Unlimited:                   "false",
+		CatchAll:                    "true",
+		LicensesPerCoreLTE:          1,
+		LicensesPerCoreGTE:          2,
+		LicensesPerUserLTE:          3,
+		LicensesPerUserGTE:          4,
+		AvailableLicensesPerCoreLTE: 3,
+		AvailableLicensesPerCoreGTE: 13,
+		AvailableLicensesPerUserLTE: 4,
+		AvailableLicensesPerUserGTE: 2,
 	}, filters)
 }
 
@@ -528,42 +544,42 @@ func TestParseSearchOracleDatabaseAgreementsFilters_Fail2(t *testing.T) {
 }
 
 func TestParseSearchOracleDatabaseAgreementsFilters_Fail3(t *testing.T) {
-	r, err := http.NewRequest("GET", "/?licenses-count-lte=asdfasdf", nil)
+	r, err := http.NewRequest("GET", "/?licenses-per-core-lte=asdfasdf", nil)
 	require.NoError(t, err)
 	_, err = parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.Error(t, err)
 }
 
 func TestParseSearchOracleDatabaseAgreementsFilters_Fail4(t *testing.T) {
-	r, err := http.NewRequest("GET", "/?licenses-count-gte=asdfasdf", nil)
+	r, err := http.NewRequest("GET", "/?licenses-per-core-gte=asdfasdf", nil)
 	require.NoError(t, err)
 	_, err = parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.Error(t, err)
 }
 
 func TestParseSearchOracleDatabaseAgreementsFilters_Fail5(t *testing.T) {
-	r, err := http.NewRequest("GET", "/?users-count-lte=asdfasdf", nil)
+	r, err := http.NewRequest("GET", "/?licenses-per-user-lte=asdfasdf", nil)
 	require.NoError(t, err)
 	_, err = parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.Error(t, err)
 }
 
 func TestParseSearchOracleDatabaseAgreementsFilters_Fail6(t *testing.T) {
-	r, err := http.NewRequest("GET", "/?users-count-gte=asdfasdf", nil)
+	r, err := http.NewRequest("GET", "/?licenses-per-user-gte=asdfasdf", nil)
 	require.NoError(t, err)
 	_, err = parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.Error(t, err)
 }
 
 func TestParseSearchOracleDatabaseAgreementsFilters_Fail7(t *testing.T) {
-	r, err := http.NewRequest("GET", "/?available-count-lte=asdfasdf", nil)
+	r, err := http.NewRequest("GET", "/?available-licenses-per-core-lte=asdfasdf", nil)
 	require.NoError(t, err)
 	_, err = parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.Error(t, err)
 }
 
 func TestParseSearchOracleDatabaseAgreementsFilters_Fail8(t *testing.T) {
-	r, err := http.NewRequest("GET", "/?available-count-gte=asdfasdf", nil)
+	r, err := http.NewRequest("GET", "/?available-licenses-per-core-gte=asdfasdf", nil)
 	require.NoError(t, err)
 	_, err = parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.Error(t, err)

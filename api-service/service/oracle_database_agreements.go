@@ -297,7 +297,7 @@ func assignAgreementsLicensesToItsAssociatedHosts(
 		for j := range agreement.Hosts {
 			associatedHost := &agreement.Hosts[j]
 
-			if agreement.AvailableCount <= 0 && !agreement.Unlimited {
+			if !hasAvailableLicenses(agreement) {
 				break
 			}
 
@@ -320,22 +320,39 @@ func assignAgreementsLicensesToItsAssociatedHosts(
 			doAssignAgreementLicensesToAssociatedHost(as, agreement, hostUsingLicenses, associatedHost)
 
 			if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
-				as.Log.Debugf(`Distributing %f licenses to host %s. agr.Metrics=%s agr.AvailableCount=%f \
+				as.Log.Debugf(`Distributing %f licenses to host %s. agr.Metrics=%s \
+					agr.AvailableLicensesPerCore=%f agr.AvailableLicensesPerUser=%f \
 					hostInAgr.CoveredLicensesCount=%f hostUsingLicenses.LicenseCount=%f licenseName=%s\n`,
 					hostUsingLicenses.LicenseCount,
 					associatedHost.Hostname,
 					agreement.Metric,
-					agreement.AvailableCount,
+					agreement.AvailableLicensesPerCore,
+					agreement.AvailableLicensesPerUser,
 					associatedHost.CoveredLicensesCount,
 					hostUsingLicenses.LicenseCount,
 					ltID)
 			}
-
-			if agreement.AvailableCount <= 0 && !agreement.Unlimited {
-				break
-			}
 		}
 	}
+}
+
+func hasAvailableLicenses(agreement *dto.OracleDatabaseAgreementFE) bool {
+	if agreement.Unlimited {
+		return true
+	}
+
+	if agreement.AvailableLicensesPerCore > 0 &&
+		agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual {
+		return true
+
+	}
+
+	if agreement.AvailableLicensesPerUser > 0 &&
+		agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
+		return true
+	}
+
+	return false
 }
 
 // sortHostsInAgreementByLicenseCount sort the associated hosts by license count
@@ -370,16 +387,14 @@ func doAssignAgreementLicensesToAssociatedHost(
 	associatedHost *dto.OracleDatabaseAgreementAssociatedHostFE) {
 
 	switch {
-	case agreement.Metric == model.LicenseTypeMetricProcessorPerpetual ||
-		agreement.Metric == model.LicenseTypeMetricComputerPerpetual:
-
+	case agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual:
 		var coverableLicenses float64
 		if agreement.Unlimited {
 			coverableLicenses = host.LicenseCount
-			agreement.AvailableCount = 0
+			agreement.AvailableLicensesPerCore = 0
 		} else {
-			coverableLicenses = math.Min(agreement.AvailableCount, host.LicenseCount)
-			agreement.AvailableCount -= coverableLicenses
+			coverableLicenses = math.Min(agreement.AvailableLicensesPerCore, host.LicenseCount)
+			agreement.AvailableLicensesPerCore -= coverableLicenses
 		}
 
 		associatedHost.CoveredLicensesCount += coverableLicenses
@@ -387,14 +402,13 @@ func doAssignAgreementLicensesToAssociatedHost(
 		host.LicenseCount -= coverableLicenses
 
 	case agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual:
-
 		var coverableLicenses float64
 		if agreement.Unlimited {
 			coverableLicenses = host.LicenseCount
-			agreement.AvailableCount = 0
+			agreement.AvailableLicensesPerUser = 0
 		} else {
-			coverableLicenses = math.Floor(math.Min(agreement.AvailableCount, host.LicenseCount*25) / 25)
-			agreement.AvailableCount -= coverableLicenses * 25
+			coverableLicenses = math.Floor(math.Min(agreement.AvailableLicensesPerUser, host.LicenseCount*25) / 25)
+			agreement.AvailableLicensesPerUser -= coverableLicenses * 25
 		}
 
 		associatedHost.CoveredLicensesCount += coverableLicenses * 25
@@ -426,7 +440,7 @@ func assignLicensesFromCatchAllAgreements(
 				continue
 			}
 
-			if agr.AvailableCount <= 0 && !agr.Unlimited {
+			if !hasAvailableLicenses(agr) {
 				continue
 			}
 
@@ -459,16 +473,15 @@ func doAssignLicenseFromCatchAllAgreement(
 	hostUsingLicenses *dto.HostUsingOracleDatabaseLicenses) {
 
 	switch {
-	case agreement.Metric == model.LicenseTypeMetricProcessorPerpetual ||
-		agreement.Metric == model.LicenseTypeMetricComputerPerpetual:
+	case agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual:
 
 		var coverableLicenses float64
 		if agreement.Unlimited {
 			coverableLicenses = hostUsingLicenses.LicenseCount
-			agreement.AvailableCount = 0
+			agreement.AvailableLicensesPerCore = 0
 		} else {
-			coverableLicenses = math.Min(agreement.AvailableCount, hostUsingLicenses.LicenseCount)
-			agreement.AvailableCount -= coverableLicenses
+			coverableLicenses = math.Min(agreement.AvailableLicensesPerCore, hostUsingLicenses.LicenseCount)
+			agreement.AvailableLicensesPerCore -= coverableLicenses
 		}
 
 		hostUsingLicenses.LicenseCount -= coverableLicenses
@@ -478,10 +491,10 @@ func doAssignLicenseFromCatchAllAgreement(
 		var coverableLicenses float64
 		if agreement.Unlimited {
 			coverableLicenses = hostUsingLicenses.LicenseCount
-			agreement.AvailableCount = 0
+			agreement.AvailableLicensesPerUser = 0
 		} else {
-			coverableLicenses = math.Floor(math.Min(agreement.AvailableCount, hostUsingLicenses.LicenseCount*25) / 25)
-			agreement.AvailableCount -= coverableLicenses * 25
+			coverableLicenses = math.Floor(math.Min(agreement.AvailableLicensesPerUser, hostUsingLicenses.LicenseCount*25) / 25)
+			agreement.AvailableLicensesPerUser -= coverableLicenses * 25
 		}
 
 		hostUsingLicenses.LicenseCount -= coverableLicenses
@@ -520,8 +533,7 @@ func calculateTotalCoveredLicensesAndAvailableCount(
 			}
 
 			switch {
-			case agreement.Metric == model.LicenseTypeMetricProcessorPerpetual ||
-				agreement.Metric == model.LicenseTypeMetricComputerPerpetual:
+			case agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual:
 				associatedHost.TotalCoveredLicensesCount = host.OriginalCount - host.LicenseCount
 				associatedHost.ConsumedLicensesCount = host.OriginalCount
 				uncoveredLicensesByAssociatedHosts += host.LicenseCount
@@ -546,14 +558,17 @@ func calculateTotalCoveredLicensesAndAvailableCount(
 		}
 
 		if uncoveredLicenses > 0 {
-			if (agreement.AvailableCount > 0 && agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual) ||
-				(agreement.AvailableCount > 25 && agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual) {
-
+			if (agreement.AvailableLicensesPerCore > 0 && agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual) ||
+				(agreement.AvailableLicensesPerUser > 25 && agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual) {
 				as.Log.Errorf("Agreement has still some available licenses but hosts are uncovered. Agreement: [%v]",
 					agreement)
 			}
 
-			agreement.AvailableCount -= uncoveredLicenses
+			if agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual {
+				agreement.AvailableLicensesPerCore -= uncoveredLicenses
+			} else {
+				agreement.AvailableLicensesPerUser -= uncoveredLicenses
+			}
 		}
 	}
 }
@@ -586,12 +601,14 @@ func checkOracleDatabaseAgreementMatchFilter(agr dto.OracleDatabaseAgreementFE, 
 		strings.Contains(strings.ToLower(agr.ReferenceNumber), strings.ToLower(filters.ReferenceNumber)) &&
 		(filters.Unlimited == "" || agr.Unlimited == (filters.Unlimited == "true")) &&
 		(filters.CatchAll == "" || agr.CatchAll == (filters.CatchAll == "true")) &&
-		(filters.LicensesCountLTE == -1 || agr.LicensesPerCore <= float64(filters.LicensesCountLTE)) &&
-		(filters.LicensesCountGTE == -1 || agr.LicensesPerCore >= float64(filters.LicensesCountGTE)) &&
-		(filters.UsersCountLTE == -1 || agr.LicensesPerUser <= float64(filters.UsersCountLTE)) &&
-		(filters.UsersCountGTE == -1 || agr.LicensesPerUser >= float64(filters.UsersCountGTE)) &&
-		(filters.AvailableCountLTE == -1 || agr.AvailableCount <= float64(filters.AvailableCountLTE)) &&
-		(filters.AvailableCountGTE == -1 || agr.AvailableCount >= float64(filters.AvailableCountGTE))
+		(filters.LicensesPerCoreLTE == -1 || agr.LicensesPerCore <= float64(filters.LicensesPerCoreLTE)) &&
+		(filters.LicensesPerCoreGTE == -1 || agr.LicensesPerCore >= float64(filters.LicensesPerCoreGTE)) &&
+		(filters.LicensesPerUserLTE == -1 || agr.LicensesPerUser <= float64(filters.LicensesPerUserLTE)) &&
+		(filters.LicensesPerUserGTE == -1 || agr.LicensesPerUser >= float64(filters.LicensesPerUserGTE)) &&
+		(filters.AvailableLicensesPerCoreLTE == -1 || agr.AvailableLicensesPerCore <= float64(filters.AvailableLicensesPerCoreLTE)) &&
+		(filters.AvailableLicensesPerCoreGTE == -1 || agr.AvailableLicensesPerCore >= float64(filters.AvailableLicensesPerCoreGTE)) &&
+		(filters.AvailableLicensesPerUserLTE == -1 || agr.AvailableLicensesPerUser <= float64(filters.AvailableLicensesPerCoreLTE)) &&
+		(filters.AvailableLicensesPerUserGTE == -1 || agr.AvailableLicensesPerUser >= float64(filters.AvailableLicensesPerCoreGTE))
 }
 
 func (as *APIService) DeleteOracleDatabaseAgreement(id primitive.ObjectID) error {
