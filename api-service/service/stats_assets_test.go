@@ -73,8 +73,8 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 			LicenseTypeID:   "PID002",
 			ReferenceNumber: "RF0001",
 			Unlimited:       false,
-			LicensesCount:   55,
-			UsersCount:      0,
+			LicensesPerCore: 55,
+			LicensesPerUser: 0,
 			AvailableCount:  55,
 		},
 	}
