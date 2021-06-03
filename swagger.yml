@@ -4182,32 +4182,42 @@ paths:
         - schema:
             type: number
           in: query
-          name: licenses-count-lte
+          name: licenses-per-core-lte
           description: ''
         - schema:
             type: number
           in: query
-          name: licenses-count-gte
+          name: licenses-per-core-gte
           description: ''
         - schema:
             type: number
           in: query
-          name: users-count-lte
+          name: licenses-per-user-lte
           description: ''
         - schema:
             type: number
           in: query
-          name: users-count-gte
+          name: licenses-per-user-gte
           description: ''
         - schema:
             type: number
           in: query
-          name: available-count-lte
+          name: available-licenses-per-core-lte
           description: ''
         - schema:
             type: number
           in: query
-          name: available-count-gte
+          name: available-licenses-per-core-gte
+          description: ''
+        - schema:
+            type: number
+          in: query
+          name: available-licenses-per-user-lte
+          description: ''
+        - schema:
+            type: number
+          in: query
+          name: available-licenses-per-user-gte
           description: ''
       description: Retun oracle database agreements by query parameters filters
     parameters: []

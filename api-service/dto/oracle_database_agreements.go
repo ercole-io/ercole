@@ -36,7 +36,7 @@ type OracleDatabaseAgreementFE struct {
 	// Associated LicenseType
 
 	ReferenceNumber string `json:"referenceNumber" bson:"referenceNumber"`
-	Unlimited       bool   `json:"unlimited" bson:"unlimited"` // Or "ULA"
+	Unlimited       bool   `json:"unlimited" bson:"unlimited"` // Or "ULA", "Unlimited License Agreement"
 
 	CatchAll   bool                                      `json:"catchAll" bson:"catchAll"` //TODO Rename in basket
 	Restricted bool                                      `json:"restricted" bson:"restricted"`
@@ -46,7 +46,8 @@ type OracleDatabaseAgreementFE struct {
 	LicensesPerUser float64 `json:"licensesPerUser" bson:"licensesPerUser"`
 
 	// Value of licenses yet available to be assigned to hosts
-	AvailableCount float64 `json:"availableCount" bson:"availableCount"`
+	AvailableLicensesPerCore float64 `json:"availableLicensesPerCore" bson:"availableLicensesPerCore"`
+	AvailableLicensesPerUser float64 `json:"availableLicensesPerUser" bson:"availableLicensesPerUser"`
 }
 
 // OracleDatabaseAgreementAssociatedHostFE contains the informations about an associated host in agreement
@@ -65,30 +66,34 @@ type OracleDatabaseAgreementAssociatedHostFE struct {
 
 // GetOracleDatabaseAgreementsFilter contains the filter used to get the list of Oracle/Database agreements
 type GetOracleDatabaseAgreementsFilter struct {
-	AgreementID       string
-	LicenseTypeID     string
-	ItemDescription   string
-	CSI               string
-	Metric            string
-	ReferenceNumber   string
-	Unlimited         string //"" -> Ignore, "true" -> true, "false" -> false
-	CatchAll          string //"" -> Ignore, "true" -> true, "false" -> false //TODO Rename in Basket
-	LicensesCountLTE  int
-	LicensesCountGTE  int
-	UsersCountLTE     int
-	UsersCountGTE     int
-	AvailableCountLTE int
-	AvailableCountGTE int
+	AgreementID                 string
+	LicenseTypeID               string
+	ItemDescription             string
+	CSI                         string
+	Metric                      string
+	ReferenceNumber             string
+	Unlimited                   string //"" -> Ignore, "true" -> true, "false" -> false
+	CatchAll                    string //"" -> Ignore, "true" -> true, "false" -> false //TODO Rename in Basket
+	LicensesPerCoreLTE          int
+	LicensesPerCoreGTE          int
+	LicensesPerUserLTE          int
+	LicensesPerUserGTE          int
+	AvailableLicensesPerCoreLTE int
+	AvailableLicensesPerCoreGTE int
+	AvailableLicensesPerUserLTE int
+	AvailableLicensesPerUserGTE int
 }
 
 func NewGetOracleDatabaseAgreementsFilter() GetOracleDatabaseAgreementsFilter {
 	return GetOracleDatabaseAgreementsFilter{
-		LicensesCountLTE:  -1,
-		LicensesCountGTE:  -1,
-		UsersCountLTE:     -1,
-		UsersCountGTE:     -1,
-		AvailableCountLTE: -1,
-		AvailableCountGTE: -1,
+		LicensesPerCoreLTE:          -1,
+		LicensesPerCoreGTE:          -1,
+		LicensesPerUserLTE:          -1,
+		LicensesPerUserGTE:          -1,
+		AvailableLicensesPerCoreLTE: -1,
+		AvailableLicensesPerCoreGTE: -1,
+		AvailableLicensesPerUserLTE: -1,
+		AvailableLicensesPerUserGTE: -1,
 	}
 }
 

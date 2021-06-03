@@ -126,7 +126,7 @@ func parseGetOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.GetOracl
 
 	var err error
 
-	filters := dto.GetOracleDatabaseAgreementsFilter{}
+	filters := dto.NewGetOracleDatabaseAgreementsFilter()
 
 	filters.AgreementID = urlValues.Get("agreement-id")
 	filters.LicenseTypeID = urlValues.Get("license-type-id")
@@ -147,27 +147,35 @@ func parseGetOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.GetOracl
 			utils.NewError(errors.New("Invalid value for catch-all"), http.StatusText(http.StatusUnprocessableEntity))
 	}
 
-	if filters.LicensesCountLTE, err = utils.Str2int(urlValues.Get("licenses-count-lte"), -1); err != nil {
+	if filters.LicensesPerCoreLTE, err = utils.Str2int(urlValues.Get("licenses-per-core-lte"), -1); err != nil {
 		return dto.GetOracleDatabaseAgreementsFilter{}, err
 	}
 
-	if filters.LicensesCountGTE, err = utils.Str2int(urlValues.Get("licenses-count-gte"), -1); err != nil {
+	if filters.LicensesPerCoreGTE, err = utils.Str2int(urlValues.Get("licenses-per-core-gte"), -1); err != nil {
 		return dto.GetOracleDatabaseAgreementsFilter{}, err
 	}
 
-	if filters.UsersCountLTE, err = utils.Str2int(urlValues.Get("users-count-lte"), -1); err != nil {
+	if filters.LicensesPerUserLTE, err = utils.Str2int(urlValues.Get("licenses-per-user-lte"), -1); err != nil {
 		return dto.GetOracleDatabaseAgreementsFilter{}, err
 	}
 
-	if filters.UsersCountGTE, err = utils.Str2int(urlValues.Get("users-count-gte"), -1); err != nil {
+	if filters.LicensesPerUserGTE, err = utils.Str2int(urlValues.Get("licenses-per-user-gte"), -1); err != nil {
 		return dto.GetOracleDatabaseAgreementsFilter{}, err
 	}
 
-	if filters.AvailableCountLTE, err = utils.Str2int(urlValues.Get("available-count-lte"), -1); err != nil {
+	if filters.AvailableLicensesPerCoreLTE, err = utils.Str2int(urlValues.Get("available-licenses-per-core-lte"), -1); err != nil {
 		return dto.GetOracleDatabaseAgreementsFilter{}, err
 	}
 
-	if filters.AvailableCountGTE, err = utils.Str2int(urlValues.Get("available-count-gte"), -1); err != nil {
+	if filters.AvailableLicensesPerCoreGTE, err = utils.Str2int(urlValues.Get("available-licenses-per-core-gte"), -1); err != nil {
+		return dto.GetOracleDatabaseAgreementsFilter{}, err
+	}
+
+	if filters.AvailableLicensesPerUserLTE, err = utils.Str2int(urlValues.Get("available-licenses-per-user-lte"), -1); err != nil {
+		return dto.GetOracleDatabaseAgreementsFilter{}, err
+	}
+
+	if filters.AvailableLicensesPerUserGTE, err = utils.Str2int(urlValues.Get("available-licenses-per-user-gte"), -1); err != nil {
 		return dto.GetOracleDatabaseAgreementsFilter{}, err
 	}
 
