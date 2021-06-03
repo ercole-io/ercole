@@ -24,10 +24,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+const oracleDbLicenseTypesCollection = "oracle_database_license_types"
+
 func (md *MongoDatabase) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error) {
 	ctx := context.TODO()
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).
-		Collection("oracle_database_license_types").
+		Collection(oracleDbLicenseTypesCollection).
 		Find(ctx, bson.M{})
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
