@@ -196,7 +196,7 @@ func (as *APIService) assignOracleDatabaseAgreementsToHosts(
 
 	assignLicensesFromCatchAllAgreements(as, agrs, hosts)
 
-	calculateTotalCoveredLicensesAndAvailableCount(as, agrs, hosts, hostsMap, licenseTypesMap)
+	calculateTotalCoveredAndConsumedLicenses(as, agrs, hostsMap)
 
 	return nil
 }
@@ -504,20 +504,13 @@ func doAssignLicenseFromCatchAllAgreement(
 	}
 }
 
-func calculateTotalCoveredLicensesAndAvailableCount(
+func calculateTotalCoveredAndConsumedLicenses(
 	as *APIService,
 	agrs []dto.OracleDatabaseAgreementFE,
-	hosts []dto.HostUsingOracleDatabaseLicenses,
-	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses,
-	licenseTypes map[string]*model.OracleDatabaseLicenseType) {
-
-	licensesCoverStatusByLicenseTypeID := calculateCoverStatusByLicenseType(hosts)
+	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses) {
 
 	for i := range agrs {
 		agreement := &agrs[i]
-
-		uncoveredLicensesByAssociatedHosts := 0.0
-		uncoveredLicensesByAllHosts := 0.0
 
 		ltID := agreement.LicenseTypeID
 
@@ -532,63 +525,15 @@ func calculateTotalCoveredLicensesAndAvailableCount(
 				continue
 			}
 
-			switch {
-			case agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual:
+			if agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual {
 				associatedHost.TotalCoveredLicensesCount = host.OriginalCount - host.LicenseCount
 				associatedHost.ConsumedLicensesCount = host.OriginalCount
-				uncoveredLicensesByAssociatedHosts += host.LicenseCount
-
-			case agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual:
+			} else {
 				associatedHost.TotalCoveredLicensesCount = (host.OriginalCount - host.LicenseCount) * 25
 				associatedHost.ConsumedLicensesCount = host.OriginalCount * 25
-				uncoveredLicensesByAssociatedHosts += host.LicenseCount * 25
-
-			default:
-				as.Log.Errorf("Unknown metric type: [%s]", agreement.Metric)
-			}
-		}
-
-		uncoveredLicensesByAllHosts += licensesCoverStatusByLicenseTypeID[ltID].Consumed - licensesCoverStatusByLicenseTypeID[ltID].Covered
-
-		var uncoveredLicenses float64
-		if agreement.CatchAll {
-			uncoveredLicenses = uncoveredLicensesByAllHosts
-		} else {
-			uncoveredLicenses = uncoveredLicensesByAssociatedHosts
-		}
-
-		if uncoveredLicenses > 0 {
-			if (agreement.AvailableLicensesPerCore > 0 && agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual) ||
-				(agreement.AvailableLicensesPerUser > 25 && agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual) {
-				as.Log.Errorf("Agreement has still some available licenses but hosts are uncovered. Agreement: [%v]",
-					agreement)
-			}
-
-			if agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual {
-				agreement.AvailableLicensesPerCore -= uncoveredLicenses
-			} else {
-				agreement.AvailableLicensesPerUser -= uncoveredLicenses
 			}
 		}
 	}
-}
-
-type coverStatus struct {
-	Covered  float64 //==purchased
-	Consumed float64 //==consumed
-}
-
-func calculateCoverStatusByLicenseType(hosts []dto.HostUsingOracleDatabaseLicenses) map[string]coverStatus {
-	licensesStatus := make(map[string]coverStatus)
-
-	for _, host := range hosts {
-		licensesStatus[host.LicenseTypeID] = coverStatus{
-			Consumed: licensesStatus[host.LicenseTypeID].Consumed + host.OriginalCount,
-			Covered:  licensesStatus[host.LicenseTypeID].Covered + (host.OriginalCount - host.LicenseCount),
-		}
-	}
-
-	return licensesStatus
 }
 
 // checkOracleDatabaseAgreementMatchFilter check that agr match the filters
