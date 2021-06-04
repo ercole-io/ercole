@@ -111,7 +111,7 @@ func serve(enableDataService bool,
 			log.Fatalf("Failed checking database version: %s", err)
 		}
 		if !check {
-			log.Fatal("Database is not at the latest version\nYou must migrate to the latest")
+			log.Fatal("Database is not at the latest version\nYou can migrate to the latest version by running `ercole migrate`")
 		}
 	}
 
