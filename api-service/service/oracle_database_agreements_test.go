@@ -1240,7 +1240,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 4, Hostname: "test-db2", TotalCoveredLicensesCount: 4, ConsumedLicensesCount: 4}, {CoveredLicensesCount: 1, Hostname: "test-db", TotalCoveredLicensesCount: 1, ConsumedLicensesCount: 3}},
 			LicensesPerCore:          5,
 			LicensesPerUser:          0,
-			AvailableLicensesPerCore: -2,
+			AvailableLicensesPerCore: 0,
 			AvailableLicensesPerUser: 0,
 		},
 	}
@@ -1333,7 +1333,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 10, Hostname: "test-db", TotalCoveredLicensesCount: 15, ConsumedLicensesCount: 20}},
 			LicensesPerCore:          10,
 			LicensesPerUser:          0,
-			AvailableLicensesPerCore: -5,
+			AvailableLicensesPerCore: 0,
 			AvailableLicensesPerUser: 0,
 		},
 		{
@@ -1350,7 +1350,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 5, Hostname: "test-db", TotalCoveredLicensesCount: 15, ConsumedLicensesCount: 20}},
 			LicensesPerCore:          5,
 			LicensesPerUser:          0,
-			AvailableLicensesPerCore: -5,
+			AvailableLicensesPerCore: 0,
 			AvailableLicensesPerUser: 0,
 		},
 	}
@@ -1661,7 +1661,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "test-db", CoveredLicensesCount: 3, TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 3}},
 			LicensesPerCore:          10,
 			LicensesPerUser:          0,
-			AvailableLicensesPerCore: -13,
+			AvailableLicensesPerCore: 0,
 			AvailableLicensesPerUser: 0,
 		},
 	}
