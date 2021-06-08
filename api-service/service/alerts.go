@@ -20,6 +20,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -35,4 +36,8 @@ func (as *APIService) SearchAlerts(mode string, search string, sortBy string, so
 // AckAlerts ack the specified alerts
 func (as *APIService) AckAlerts(ids []primitive.ObjectID) error {
 	return as.Database.UpdateAlertsStatus(ids, model.AlertStatusAck)
+}
+
+func (as *APIService) AckAlertsByFilter(alertsFilter dto.AlertsFilter) error {
+	return as.Database.UpdateAlertsStatusByFilter(alertsFilter, model.AlertStatusAck)
 }

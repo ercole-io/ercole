@@ -20,17 +20,19 @@ import (
 	"time"
 
 	"github.com/amreo/mu"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// SearchAlerts search alerts
+const alertsCollection = "alerts"
+
 func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy string, sortDesc bool,
 	page, pageSize int, location, environment, severity, status string, from, to time.Time,
 ) ([]map[string]interface{}, error) {
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").Aggregate(
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(alertsCollection).Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
 			mu.APOptionalStage(status != "", mu.APMatch(bson.M{
@@ -170,7 +172,6 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 	return out, nil
 }
 
-// UpdateAlertsStatus change the status of the specified alerts
 func (md *MongoDatabase) UpdateAlertsStatus(ids []primitive.ObjectID, newStatus string) error {
 	bsonIds := bson.A{}
 	for _, id := range ids {
@@ -178,13 +179,16 @@ func (md *MongoDatabase) UpdateAlertsStatus(ids []primitive.ObjectID, newStatus 
 	}
 	filter := bson.M{"$or": bsonIds}
 
-	count, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").
+	count, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(alertsCollection).
 		CountDocuments(context.TODO(), filter)
+	if err != nil {
+		return utils.NewError(err, "DB ERROR")
+	}
 	if count != int64(len(ids)) {
 		return utils.ErrAlertNotFound
 	}
 
-	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("alerts").
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(alertsCollection).
 		UpdateMany(context.TODO(),
 			filter,
 			mu.UOSet(bson.M{
@@ -192,6 +196,51 @@ func (md *MongoDatabase) UpdateAlertsStatus(ids []primitive.ObjectID, newStatus 
 			}))
 	if err != nil || res.MatchedCount != int64(len(ids)) {
 		return utils.NewError(err, "DB ERROR")
+	}
+
+	return nil
+}
+
+func (md *MongoDatabase) UpdateAlertsStatusByFilter(alertsFilter dto.AlertsFilter, newStatus string) error {
+	data, err := bson.Marshal(alertsFilter)
+	if err != nil {
+		return err
+	}
+
+	var filter map[string]interface{}
+	err = bson.Unmarshal(data, &filter)
+	if err != nil {
+		return err
+	}
+	if len(filter) < 1 {
+		return nil //Do not acknowledge anything
+	}
+
+	if v, ok := filter["otherInfo"]; ok {
+		if v, ok := v.(map[string]interface{}); ok {
+			for k, vv := range v {
+				filter["otherInfo."+k] = vv
+			}
+		}
+
+		delete(filter, "otherInfo")
+	}
+
+	result, err := md.Client.Database(md.Config.Mongodb.DBName).
+		Collection(alertsCollection).
+		UpdateMany(
+			context.TODO(),
+			filter,
+			bson.M{"$set": bson.M{
+				"alertStatus": newStatus,
+			}},
+		)
+	if err != nil {
+		return utils.NewError(err, "DB ERROR")
+	}
+
+	if result.ModifiedCount <= 0 {
+		return utils.NewError(utils.ErrAlertNotFound)
 	}
 
 	return nil
