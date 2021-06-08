@@ -18,6 +18,7 @@ package service
 import (
 	"testing"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
@@ -129,4 +130,37 @@ func TestAckAlerts_Fail(t *testing.T) {
 
 	err := as.AckAlerts([]primitive.ObjectID{utils.Str2oid("5e8c234b24f648a08585bd44")})
 	require.Equal(t, aerrMock, err)
+}
+
+func TestAcknowledgeAlerts(t *testing.T) {
+	testCases := []struct {
+		filter dto.AlertsFilter
+		expErr error
+	}{
+		{
+			filter: dto.AlertsFilter{},
+			expErr: nil,
+		},
+		{
+			filter: dto.AlertsFilter{},
+			expErr: aerrMock,
+		},
+	}
+
+	for _, tc := range testCases {
+		mockCtrl := gomock.NewController(t)
+		defer func() {
+			mockCtrl.Finish()
+		}()
+
+		db := NewMockMongoDatabaseInterface(mockCtrl)
+		as := APIService{
+			Database: db,
+		}
+
+		db.EXPECT().UpdateAlertsStatusByFilter(tc.filter, model.AlertStatusAck).Return(tc.expErr)
+
+		actErr := as.AckAlertsByFilter(tc.filter)
+		assert.Equal(t, tc.expErr, actErr)
+	}
 }
