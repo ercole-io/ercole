@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/gddo/httputil"
@@ -172,23 +173,47 @@ func (ctrl *APIController) AckAlerts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var ids []primitive.ObjectID
+	body := struct {
+		Ids    []primitive.ObjectID `json:"ids"`
+		Filter *dto.AlertsFilter    `json:"filter"`
+	}{}
 
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&ids); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
-			utils.NewError(err, http.StatusText(http.StatusBadRequest)))
+	if err := decoder.Decode(&body); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
 	}
 
-	err := ctrl.Service.AckAlerts(ids)
-	if errors.Is(err, utils.ErrAlertNotFound) {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
-	} else if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+	if (body.Ids != nil && body.Filter != nil) ||
+		(body.Ids == nil && body.Filter == nil) {
+		err := errors.New("you must send ids or filter (but not both: they are mutually exclusive)")
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, nil)
+	if body.Ids != nil {
+		err := ctrl.Service.AckAlerts(body.Ids)
+		if errors.Is(err, utils.ErrAlertNotFound) {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+		} else if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+			return
+		}
+
+		utils.WriteJSONResponse(w, http.StatusNoContent, nil)
+
+		return
+	} else {
+		err := ctrl.Service.AckAlertsByFilter(*body.Filter)
+		if errors.Is(err, utils.ErrAlertNotFound) {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+		} else if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+			return
+		}
+
+		utils.WriteJSONResponse(w, http.StatusNoContent, nil)
+		return
+	}
 }

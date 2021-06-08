@@ -2384,15 +2384,17 @@ paths:
   /alerts/ack:
     parameters: []
     post:
-      summary: Acknowledge alerts
-      description: Update status of specified alerts to set alert status to acknowledged
+      summary: Acknowledge alerts by ids
+      description: |-
+        Update status of specified alerts to set alert status to acknowledged.
+        Select alerts by a list of ids or by filter, not both.
       tags:
         - api-service
         - fe-user
       operationId: AckAlerts
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
         '401':
           $ref: '#/components/responses/error'
         '403':
@@ -2405,14 +2407,59 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                type: string
+              description: ''
+              type: object
+              x-examples:
+                example-1:
+                  filter:
+                    id: '000000000000000000000000'
+                    alertCategory: ''
+                    alertAffectedTechnology: ''
+                    alertCode: ''
+                    alertSeverity: ''
+                    alertStatus: ''
+                    description: ''
+                    date: '0001-01-01T00:00:00Z'
+                    otherInfo: {}
+              properties:
+                filter:
+                  type: object
+                  properties:
+                    id:
+                      minLength: 1
+                      $ref: ''
+                    alertCategory:
+                      type: string
+                    alertAffectedTechnology:
+                      type: string
+                    alertCode:
+                      type: string
+                    alertSeverity:
+                      type: string
+                    alertStatus:
+                      type: string
+                    description:
+                      type: string
+                    date:
+                      type: string
+                      minLength: 1
+                    otherInfo:
+                      type: object
+                ids:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ObjectID'
             examples:
-              example-1:
+              example with ids:
                 value:
                   - 5f2acc476b16f5bea302ba0b
                   - 5f2acc476b16f5bea302ba0c
+              example with filter:
+                value:
+                  filter:
+                    id: '012345678910'
+                    alertCategory: AGENT
+                    alertStatus: NEW
         description: an array of notifications id
   /hosts/clusters:
     get:

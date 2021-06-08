@@ -20,8 +20,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -693,13 +695,15 @@ func TestAckAlerts_Success(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.AckAlerts)
-	body := []string{"5dc3f534db7e81a98b726a52"}
+	body := map[string]interface{}{
+		"ids": []string{"5dc3f534db7e81a98b726a52"},
+	}
 	req, err := http.NewRequest("POST", "/alerts/acks", bytes.NewReader([]byte(utils.ToJSON(body))))
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusOK, rr.Code)
+	require.Equal(t, http.StatusNoContent, rr.Code)
 }
 
 func TestAckAlerts_FailForbidden(t *testing.T) {
@@ -719,7 +723,9 @@ func TestAckAlerts_FailForbidden(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.AckAlerts)
-	body := []string{"5dc3f534db7e81a98b726a52"}
+	body := map[string]interface{}{
+		"ids": []string{"5dc3f534db7e81a98b726a52"},
+	}
 	req, err := http.NewRequest("POST", "/alerts/acks", bytes.NewReader([]byte(utils.ToJSON(body))))
 	require.NoError(t, err)
 
@@ -745,7 +751,9 @@ func TestAckAlerts_FailBadRequest(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.AckAlerts)
-	body := []string{"asdasd"}
+	body := map[string]interface{}{
+		"ids": []string{"asdasd"},
+	}
 	req, err := http.NewRequest("POST", "/alerts/acks", bytes.NewReader([]byte(utils.ToJSON(body))))
 	require.NoError(t, err)
 
@@ -774,7 +782,9 @@ func TestAckAlerts_FailNotFound(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.AckAlerts)
-	body := []string{"5dc3f534db7e81a98b726a52"}
+	body := map[string]interface{}{
+		"ids": []string{"5dc3f534db7e81a98b726a52"},
+	}
 	req, err := http.NewRequest("POST", "/alerts/acks", bytes.NewReader([]byte(utils.ToJSON(body))))
 	require.NoError(t, err)
 
@@ -803,11 +813,56 @@ func TestAckAlerts_FailInternalServerError(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.AckAlerts)
-	body := []string{"5dc3f534db7e81a98b726a52"}
+	body := map[string]interface{}{
+		"ids": []string{"5dc3f534db7e81a98b726a52"},
+	}
 	req, err := http.NewRequest("POST", "/alerts/acks", bytes.NewReader([]byte(utils.ToJSON(body))))
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestAckAlerts_ByFilter(t *testing.T) {
+	t.Run("Success", func(t *testing.T) {
+		mockCtrl := gomock.NewController(t)
+		defer mockCtrl.Finish()
+		as := NewMockAPIServiceInterface(mockCtrl)
+		ac := APIController{
+			TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+			Service: as,
+			Config: config.Configuration{
+				APIService: config.APIService{
+					ReadOnly: false,
+				},
+			},
+			Log: utils.NewLogger("TEST"),
+		}
+
+		s := model.AlertStatusNew
+		a := dto.AlertsFilter{
+			ID:          utils.Str2oid("000000000000"),
+			AlertStatus: &s,
+			Date:        time.Time{},
+			OtherInfo: map[string]interface{}{
+				"host": "pippo",
+			},
+		}
+		as.EXPECT().AckAlertsByFilter(a).Return(nil)
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ac.AckAlerts)
+		body := struct {
+			Filter dto.AlertsFilter
+		}{
+			Filter: a,
+		}
+		req, err := http.NewRequest("POST", "/alerts/acks", bytes.NewReader([]byte(utils.ToJSON(body))))
+		require.NoError(t, err)
+
+		handler.ServeHTTP(rr, req)
+
+		require.Equal(t, http.StatusNoContent, rr.Code)
+	})
 }
