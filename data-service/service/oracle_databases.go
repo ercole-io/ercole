@@ -72,6 +72,21 @@ func (hds *HostDataService) addLicensesToSecondaryDb(hostInfo model.Host, second
 	}
 
 	if primaryDb == nil {
+		//  I'd like to acknowledge alerts when MISSING_PRIMARY_DATABASE and UNLISTED_RUNNING_DATABASE
+		// new alerts are sent for the same hostname and the same database.
+		// f := dto.AlertsFilter{
+		// 	AlertCategory: model.AlertCategoryEngine,
+		// 	AlertCode:     model.AlertCodeMissingPrimaryDatabase,
+		// 	AlertSeverity: model.AlertSeverityWarning,
+		// 	AlertStatus:   model.AlertStatusNew,
+		// 	OtherInfo: map[string]interface{}{
+		// 		"hostname": hostInfo.Hostname,
+		// 		"dbname":   secondaryDb.Name,
+		// 	},
+		// }
+		// if err := hds.ApiSvcClient.AckAlertsByFilter(f); err != nil {
+
+		// }
 		if err := hds.throwMissingPrimaryDatabase(hostInfo.Hostname, secondaryDb.Name); err != nil {
 			hds.Log.Errorf("Can't throw missing primary database alert, hostname %s, secondaryDbName %s",
 				hostInfo.Hostname, secondaryDb.Name)

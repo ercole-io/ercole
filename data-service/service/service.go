@@ -25,6 +25,7 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 
 	alertservice_client "github.com/ercole-io/ercole/v2/alert-service/client"
+	apiservice_client "github.com/ercole-io/ercole/v2/api-service/client"
 	"github.com/ercole-io/ercole/v2/data-service/database"
 	"github.com/ercole-io/ercole/v2/data-service/dto"
 )
@@ -39,6 +40,7 @@ type HostDataService struct {
 	ServerVersion  string
 	Database       database.MongoDatabaseInterface
 	AlertSvcClient alertservice_client.AlertSvcClientInterface
+	ApiSvcClient   apiservice_client.ApiSvcClientInterface
 	TimeNow        func() time.Time
 	Log            *logrus.Logger
 }

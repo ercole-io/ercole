@@ -18,6 +18,7 @@ package service
 import (
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
+	patch_lib "github.com/ercole-io/ercole/v2/utils/patch"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -97,7 +98,7 @@ func (hds *HostDataService) patchHostData(hostdata model.HostDataBE) (model.Host
 			hds.Log.Printf("Patching %s hostdata with the patch %s\n", patch.Hostname, patch.ID)
 		}
 
-		return utils.PatchHostdata(patch, hostdata)
+		return patch_lib.PatchHostdata(patch, hostdata)
 	}
 
 	return hostdata, nil
