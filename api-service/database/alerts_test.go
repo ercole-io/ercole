@@ -424,6 +424,14 @@ func (m *MongodbSuite) TestUpdateAlertsStatusByFilter() {
 			expectedResult: []model.Alert{a, b},
 		},
 		{
+			insert: []model.Alert{a, b},
+			filter: dto.AlertsFilter{
+				AlertAffectedTechnology: utils.Str2ptr("NONE"),
+			},
+			expErr:         nil,
+			expectedResult: []model.Alert{a, b},
+		},
+		{
 			insert:         []model.Alert{a, b},
 			filter:         dto.AlertsFilter{ID: a.ID},
 			expErr:         nil,
@@ -440,14 +448,6 @@ func (m *MongodbSuite) TestUpdateAlertsStatusByFilter() {
 			filter:         dto.AlertsFilter{OtherInfo: a.OtherInfo},
 			expErr:         nil,
 			expectedResult: []model.Alert{a_ack, b_ack},
-		},
-		{
-			insert: []model.Alert{a, b},
-			filter: dto.AlertsFilter{
-				ID: utils.Str2oid("cccccccccccccccccccccccc"),
-			},
-			expErr:         utils.ErrAlertNotFound,
-			expectedResult: []model.Alert{a, b},
 		},
 	}
 

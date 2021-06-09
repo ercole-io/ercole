@@ -43,6 +43,7 @@ import (
 	alertservice_service "github.com/ercole-io/ercole/v2/alert-service/service"
 
 	apiservice_auth "github.com/ercole-io/ercole/v2/api-service/auth"
+	apiservice_client "github.com/ercole-io/ercole/v2/api-service/client"
 	apiservice_controller "github.com/ercole-io/ercole/v2/api-service/controller"
 	apiservice_database "github.com/ercole-io/ercole/v2/api-service/database"
 	apiservice_service "github.com/ercole-io/ercole/v2/api-service/service"
@@ -153,6 +154,7 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 		ServerVersion:  config.Version,
 		Database:       db,
 		AlertSvcClient: alertservice_client.NewClient(config.AlertService),
+		ApiSvcClient:   apiservice_client.NewClient(config.APIService),
 		TimeNow:        time.Now,
 		Log:            log,
 	}

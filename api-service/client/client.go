@@ -74,7 +74,9 @@ func (c *Client) getResponse(ctx context.Context, path, method string, body []by
 func (c *Client) AckAlertsByFilter(filter dto.AlertsFilter) error {
 	b := struct {
 		Filter dto.AlertsFilter `json:"filter"`
-	}{}
+	}{
+		Filter: filter,
+	}
 	body, err := json.Marshal(b)
 	if err != nil {
 		return utils.NewError(err, "Can't marshal")
