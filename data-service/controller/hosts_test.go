@@ -25,6 +25,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 )
@@ -43,7 +44,7 @@ func TestUpdateHostInfo_Success(t *testing.T) {
 	raw, err := ioutil.ReadFile("../../fixture/test_dataservice_hostdata_v1_00.json")
 	require.NoError(t, err)
 
-	expectedHostDataBE := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+	expectedHostDataBE := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
 	as.EXPECT().InsertHostData(expectedHostDataBE).Return(nil)
 
@@ -134,7 +135,7 @@ func TestUpdateHostInfo_InternalServerError(t *testing.T) {
 	raw, err := ioutil.ReadFile("../../fixture/test_dataservice_hostdata_v1_00.json")
 	require.NoError(t, err)
 
-	expectedHostDataBE := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+	expectedHostDataBE := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
 	as.EXPECT().InsertHostData(expectedHostDataBE).Return(aerrMock)
 
