@@ -22,6 +22,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/utils/patch"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -306,7 +307,7 @@ func (as *APIService) ApplyPatch(pf model.PatchingFunction) error {
 	if as.Config.DataService.LogDataPatching {
 		as.Log.Printf("Patching %s hostdata with the patch %s\n", pf.Hostname, pf.ID)
 	}
-	data, err = utils.PatchHostdata(pf, data)
+	data, err = patch.PatchHostdata(pf, data)
 	if err != nil {
 		return err
 	}

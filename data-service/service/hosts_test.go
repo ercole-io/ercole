@@ -28,6 +28,7 @@ import (
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -54,7 +55,7 @@ func TestInsertHostData_Success(t *testing.T) {
 		TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Log:            utils.NewLogger("TEST"),
 	}
-	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+	hd := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
 	t.Run("New host", func(t *testing.T) {
 		gomock.InOrder(
@@ -158,7 +159,7 @@ func TestInsertHostData_DatabaseError1(t *testing.T) {
 		},
 		ServerVersion: "1.6.6",
 	}
-	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+	hd := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
 	gomock.InOrder(
 		db.EXPECT().FindMostRecentHostDataOlderThan(hd.Hostname, utils.P("2019-11-05T14:02:03Z")).Return(nil, nil),
@@ -190,7 +191,7 @@ func TestInsertHostData_DatabaseError2(t *testing.T) {
 		},
 		ServerVersion: "1.6.6",
 	}
-	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+	hd := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
 	gomock.InOrder(
 		db.EXPECT().FindMostRecentHostDataOlderThan(hd.Hostname, utils.P("2019-11-05T14:02:03Z")).Return(nil, nil),
@@ -234,7 +235,7 @@ func TestInsertHostData_DatabaseError3(t *testing.T) {
 		},
 		ServerVersion: "1.6.6",
 	}
-	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+	hd := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
 	db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{}, aerrMock)
 
@@ -260,7 +261,7 @@ func TestInsertHostData_HttpError(t *testing.T) {
 		},
 		ServerVersion: "1.6.6",
 	}
-	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+	hd := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
 	gomock.InOrder(
 		db.EXPECT().FindMostRecentHostDataOlderThan(hd.Hostname, utils.P("2019-11-05T14:02:03Z")).Return(nil, nil),
@@ -293,7 +294,7 @@ func TestPatchHostData_SuccessNoPatchingFunction(t *testing.T) {
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Database: db,
 	}
-	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+	hd := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
 	db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{}, nil)
 
@@ -316,7 +317,7 @@ func TestPatchHostData_SuccessPatchingFunction(t *testing.T) {
 		},
 		Log: utils.NewLogger("TEST"),
 	}
-	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+	hd := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 	patchedHd := hd
 	patchedHd.Tags = []string{"topolino", "pluto"}
 
@@ -346,7 +347,7 @@ func TestPatchHostData_FailPatchingFunction(t *testing.T) {
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Database: db,
 	}
-	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+	hd := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
 	db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{}, aerrMock)
 
@@ -368,7 +369,7 @@ func TestPatchHostData_FailPatchingFunction2(t *testing.T) {
 		},
 		Log: utils.NewLogger("TEST"),
 	}
-	hd := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+	hd := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
 	objID := utils.Str2oid("5ef9b4bcda4e04c0c1a94e9e")
 	db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{
