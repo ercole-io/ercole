@@ -15,6 +15,8 @@
 
 package model
 
+import "github.com/ercole-io/ercole/v2/utils"
+
 // Technology names
 const (
 	TechnologyOracleDatabase           string = "Oracle/Database"
@@ -30,15 +32,15 @@ const (
 
 // Pointers to technology names
 var (
-	TechnologyOracleDatabasePtr           *string = str2CopyPtr(TechnologyOracleDatabase)
-	TechnologyOracleExadataPtr            *string = str2CopyPtr(TechnologyOracleExadata)
-	TechnologyMicrosoftSQLServerPrt       *string = str2CopyPtr(TechnologyMicrosoftSQLServer)
-	TechnologyMariaDBFoundationMariaDBPrt *string = str2CopyPtr(TechnologyMariaDBFoundationMariaDB)
-	TechnologyPostgreSQLPostgreSQLPrt     *string = str2CopyPtr(TechnologyPostgreSQLPostgreSQL)
-	TechnologyOracleMySQLPrt              *string = str2CopyPtr(TechnologyOracleMySQL)
-	TechnologyOracleVMPrt                 *string = str2CopyPtr(TechnologyOracleVM)
-	TechnologyVMWarePrt                   *string = str2CopyPtr(TechnologyVMWare)
-	TechnologyUnknownOperatingSystemPrt   *string = str2CopyPtr(TechnologyUnknownOperatingSystem)
+	TechnologyOracleDatabasePtr           *string = utils.Str2ptr(TechnologyOracleDatabase)
+	TechnologyOracleExadataPtr            *string = utils.Str2ptr(TechnologyOracleExadata)
+	TechnologyMicrosoftSQLServerPrt       *string = utils.Str2ptr(TechnologyMicrosoftSQLServer)
+	TechnologyMariaDBFoundationMariaDBPrt *string = utils.Str2ptr(TechnologyMariaDBFoundationMariaDB)
+	TechnologyPostgreSQLPostgreSQLPrt     *string = utils.Str2ptr(TechnologyPostgreSQLPostgreSQL)
+	TechnologyOracleMySQLPrt              *string = utils.Str2ptr(TechnologyOracleMySQL)
+	TechnologyOracleVMPrt                 *string = utils.Str2ptr(TechnologyOracleVM)
+	TechnologyVMWarePrt                   *string = utils.Str2ptr(TechnologyVMWare)
+	TechnologyUnknownOperatingSystemPrt   *string = utils.Str2ptr(TechnologyUnknownOperatingSystem)
 )
 
 // TechnologyInfo contains the informations about a technology
