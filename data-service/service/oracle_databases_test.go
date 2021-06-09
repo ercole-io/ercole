@@ -77,8 +77,8 @@ func TestAddLicensesToSecondaryDbs(t *testing.T) {
 	//		Log:     utils.NewLogger("TEST"),
 	//	}
 	//
-	//	hdPrimary := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_22.json")
-	//	hdSecondary := utils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_23.json")
+	//	hdPrimary := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_22.json")
+	//	hdSecondary := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_23.json")
 	//
 	//	db := hdSecondary.Features.Oracle.Database.Databases[0]
 	//	assert.True(t, db.Status == model.OracleDatabaseStatusMounted && db.Role != model.OracleDatabaseRolePrimary)
