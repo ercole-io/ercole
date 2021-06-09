@@ -201,9 +201,9 @@ func (ctrl *APIController) AckAlerts(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		utils.WriteJSONResponse(w, http.StatusNoContent, nil)
-
+		w.WriteHeader(http.StatusNoContent)
 		return
+
 	} else {
 		err := ctrl.Service.AckAlertsByFilter(*body.Filter)
 		if errors.Is(err, utils.ErrAlertNotFound) {
@@ -213,7 +213,7 @@ func (ctrl *APIController) AckAlerts(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		utils.WriteJSONResponse(w, http.StatusNoContent, nil)
+		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 }

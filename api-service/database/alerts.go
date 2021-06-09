@@ -226,7 +226,7 @@ func (md *MongoDatabase) UpdateAlertsStatusByFilter(alertsFilter dto.AlertsFilte
 		delete(filter, "otherInfo")
 	}
 
-	result, err := md.Client.Database(md.Config.Mongodb.DBName).
+	_, err = md.Client.Database(md.Config.Mongodb.DBName).
 		Collection(alertsCollection).
 		UpdateMany(
 			context.TODO(),
@@ -237,10 +237,6 @@ func (md *MongoDatabase) UpdateAlertsStatusByFilter(alertsFilter dto.AlertsFilte
 		)
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")
-	}
-
-	if result.ModifiedCount <= 0 {
-		return utils.NewError(utils.ErrAlertNotFound)
 	}
 
 	return nil
