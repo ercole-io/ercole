@@ -162,6 +162,13 @@ func Str2time(in string, defaultValue time.Time) (time.Time, error) {
 	}
 }
 
+// Str2ptr return a pointer to a copy of s
+// Go pass values by copy, so a copy of the value passed
+// is already made when calling method
+func Str2ptr(s string) *string {
+	return &s
+}
+
 // NewAPIUrl return a new url crafted using the parameters
 func NewAPIUrl(baseURL string, username string, password string, path string, params url.Values) *url.URL {
 	u := NewAPIUrlNoParams(baseURL, username, password, path)
