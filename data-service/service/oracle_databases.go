@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"sort"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -31,6 +32,9 @@ func (hds *HostDataService) oracleDatabasesChecks(previousHostdata, hostdata *mo
 	}
 
 	for _, dbname := range hostdata.Features.Oracle.Database.UnlistedRunningDatabases {
+		if err := hds.ackOldUnlistedRunningDatabasesAlerts(hostdata.Hostname, dbname); err != nil {
+			hds.Log.Errorf("Can't ack UnlistedRunningDatabases alerts by filter")
+		}
 		if err := hds.throwUnlistedRunningDatabasesAlert(dbname, hostdata.Hostname); err != nil {
 			hds.Log.Error(err)
 		}
@@ -43,6 +47,20 @@ func (hds *HostDataService) oracleDatabasesChecks(previousHostdata, hostdata *mo
 			hds.Log.Error(err)
 		}
 	}
+}
+
+func (hds *HostDataService) ackOldUnlistedRunningDatabasesAlerts(hostname, dbname string) error {
+	f := dto.AlertsFilter{
+		AlertCategory:           utils.Str2ptr(model.AlertCategoryEngine),
+		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+		AlertCode:               utils.Str2ptr(model.AlertCodeUnlistedRunningDatabase),
+		AlertSeverity:           utils.Str2ptr(model.AlertSeverityWarning),
+		OtherInfo: map[string]interface{}{
+			"hostname": hostname,
+			"dbname":   dbname,
+		},
+	}
+	return hds.ApiSvcClient.AckAlertsByFilter(f)
 }
 
 func (hds *HostDataService) checkSecondaryDbs(hostdata *model.HostDataBE) {
@@ -72,21 +90,10 @@ func (hds *HostDataService) addLicensesToSecondaryDb(hostInfo model.Host, second
 	}
 
 	if primaryDb == nil {
-		//  I'd like to acknowledge alerts when MISSING_PRIMARY_DATABASE and UNLISTED_RUNNING_DATABASE
-		// new alerts are sent for the same hostname and the same database.
-		// f := dto.AlertsFilter{
-		// 	AlertCategory: model.AlertCategoryEngine,
-		// 	AlertCode:     model.AlertCodeMissingPrimaryDatabase,
-		// 	AlertSeverity: model.AlertSeverityWarning,
-		// 	AlertStatus:   model.AlertStatusNew,
-		// 	OtherInfo: map[string]interface{}{
-		// 		"hostname": hostInfo.Hostname,
-		// 		"dbname":   secondaryDb.Name,
-		// 	},
-		// }
-		// if err := hds.ApiSvcClient.AckAlertsByFilter(f); err != nil {
+		if err := hds.ackOldMissingPrimaryDbAlerts(hostInfo.Hostname, secondaryDb.Name); err != nil {
+			hds.Log.Errorf("Can't ack MissingPrimaryDatabase alerts by filter")
+		}
 
-		// }
 		if err := hds.throwMissingPrimaryDatabase(hostInfo.Hostname, secondaryDb.Name); err != nil {
 			hds.Log.Errorf("Can't throw missing primary database alert, hostname %s, secondaryDbName %s",
 				hostInfo.Hostname, secondaryDb.Name)
@@ -118,6 +125,19 @@ primaryDbLicensesCycle:
 				})
 		}
 	}
+}
+
+func (hds *HostDataService) ackOldMissingPrimaryDbAlerts(hostname, dbname string) error {
+	f := dto.AlertsFilter{
+		AlertCategory: utils.Str2ptr(model.AlertCategoryEngine),
+		AlertCode:     utils.Str2ptr(model.AlertCodeMissingPrimaryDatabase),
+		AlertSeverity: utils.Str2ptr(model.AlertSeverityWarning),
+		OtherInfo: map[string]interface{}{
+			"hostname": hostname,
+			"dbname":   dbname,
+		},
+	}
+	return hds.ApiSvcClient.AckAlertsByFilter(f)
 }
 
 func (hds *HostDataService) getPrimaryOpenOracleDatabases() (dbs []model.OracleDatabase, err error) {
