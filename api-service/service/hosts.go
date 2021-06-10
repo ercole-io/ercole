@@ -120,5 +120,10 @@ func (as *APIService) ListEnvironments(location string, environment string, olde
 
 // ArchiveHost archive the specified host
 func (as *APIService) ArchiveHost(hostname string) error {
+	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": hostname}}
+	if err := as.AckAlertsByFilter(filter); err != nil {
+		as.Log.Errorf("Can't ack hostname %s alerts by filter", hostname)
+	}
+
 	return as.Database.ArchiveHost(hostname)
 }
