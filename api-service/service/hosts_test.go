@@ -598,6 +598,8 @@ func TestArchiveHost_Success(t *testing.T) {
 		Database: db,
 	}
 
+	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": "foobar"}}
+	db.EXPECT().UpdateAlertsStatusByFilter(filter, model.AlertStatusAck).Return(nil).Times(1)
 	db.EXPECT().ArchiveHost("foobar").Return(nil).Times(1)
 
 	err := as.ArchiveHost("foobar")
@@ -610,10 +612,13 @@ func TestArchiveHost_Fail(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := APIService{
 		Database: db,
+		Log:      utils.NewLogger("TEST"),
 	}
 
-	db.EXPECT().ArchiveHost("foobar").Return(nil).Times(1)
+	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": "foobar"}}
+	db.EXPECT().UpdateAlertsStatusByFilter(filter, model.AlertStatusAck).Return(aerrMock).Times(1)
+	db.EXPECT().ArchiveHost("foobar").Return(aerrMock).Times(1)
 
 	err := as.ArchiveHost("foobar")
-	require.NoError(t, err)
+	assert.Error(t, err)
 }
