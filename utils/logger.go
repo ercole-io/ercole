@@ -13,7 +13,11 @@ import (
 // NewLogger return a logrus.Logger initialized with ercole log standard
 func NewLogger(componentName string) *logrus.Logger {
 	logger := logrus.New()
-	logger.SetFormatter(&ercoleFormatter{ComponentName: componentName[0:4]})
+
+	if len(componentName) > 4 {
+		componentName = componentName[0:4]
+	}
+	logger.SetFormatter(&ercoleFormatter{ComponentName: componentName})
 	logger.SetReportCaller(true)
 	logger.SetOutput(os.Stdout)
 
