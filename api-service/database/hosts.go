@@ -31,8 +31,26 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// SearchHosts search hosts
 func (md *MongoDatabase) SearchHosts(mode string, filters dto.SearchHostsFilters) ([]map[string]interface{}, error) {
+	out := make([]map[string]interface{}, 0)
+	if err := md.getHosts(mode, filters, &out); err != nil {
+		return nil, err
+	}
+
+	return out, nil
+}
+
+func (md *MongoDatabase) GetHostDataSummaries(filters dto.SearchHostsFilters) ([]dto.HostDataSummary, error) {
+	filters.PageNumber, filters.PageSize = -1, -1
+	out := make([]dto.HostDataSummary, 0)
+	if err := md.getHosts("summary", filters, &out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// out must be a pointer to a slice
+func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, out interface{}) error {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -115,27 +133,21 @@ func (md *MongoDatabase) SearchHosts(mode string, filters dto.SearchHostsFilters
 					mu.QOExpr(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.oracle.database.databases", bson.A{})), 0))),
 				),
 				mu.APOptionalStage(mode == "summary", mu.APProject(bson.M{
-					"hostname":                      true,
-					"location":                      true,
-					"environment":                   true,
-					"cluster":                       true,
-					"agentVersion":                  true,
-					"virtualizationNode":            true,
-					"createdAt":                     true,
-					"os":                            mu.APOConcat("$info.os", " ", "$info.osVersion"),
-					"kernel":                        mu.APOConcat("$info.kernel", " ", "$info.kernelVersion"),
-					"oracleClusterware":             "$clusterMembershipStatus.oracleClusterware",
-					"veritasClusterServer":          "$clusterMembershipStatus.veritasClusterServer",
-					"sunCluster":                    "$clusterMembershipStatus.sunCluster",
-					"hacmp":                         "$clusterMembershipStatus.hacmp",
-					"hardwareAbstraction":           "$info.hardwareAbstraction",
-					"hardwareAbstractionTechnology": "$info.hardwareAbstractionTechnology",
-					"cpuThreads":                    "$info.cpuThreads",
-					"cpuCores":                      "$info.cpuCores",
-					"cpuSockets":                    "$info.cpuSockets",
-					"memTotal":                      "$info.memoryTotal",
-					"swapTotal":                     "$info.swapTotal",
-					"cpuModel":                      "$info.cpuModel",
+					"createdAt":               true,
+					"hostname":                true,
+					"location":                true,
+					"environment":             true,
+					"agentVersion":            true,
+					"info":                    true,
+					"clusterMembershipStatus": true,
+
+					"virtualizationNode": true,
+					"cluster":            true,
+					"databases": bson.M{
+						model.TechnologyOracleDatabase:     "$features.oracle.database.databases.name",
+						model.TechnologyMicrosoftSQLServer: "$features.microsoft.sqlServer.instances.name",
+						model.TechnologyOracleMySQL:        "$features.mysql.instances.name",
+					},
 				})),
 				mu.APOptionalStage(mode == "lms", mu.MAPipeline(
 					mu.APMatch(mu.QOExpr(mu.APOGreater(mu.APOSize("$features.oracle.database.databases"), 0))),
@@ -261,20 +273,14 @@ func (md *MongoDatabase) SearchHosts(mode string, filters dto.SearchHostsFilters
 		),
 	)
 	if err != nil {
-		return nil, utils.NewError(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
 
-	var out []map[string]interface{} = make([]map[string]interface{}, 0)
-
-	for cur.Next(context.TODO()) {
-		var item map[string]interface{}
-		if cur.Decode(&item) != nil {
-			return nil, utils.NewError(err, "Decode ERROR")
-		}
-		out = append(out, item)
+	if err := cur.All(context.TODO(), out); err != nil {
+		return utils.NewError(err, "Decode ERROR")
 	}
 
-	return out, nil
+	return nil
 }
 
 func getClusterFilterStep(cl *string) interface{} {
