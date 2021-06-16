@@ -20,10 +20,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 	gomock "github.com/golang/mock/gomock"
@@ -44,72 +46,19 @@ func TestSearchHosts_JSONPaged(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	expectedRes := map[string]interface{}{
-		"content": []interface{}{
-			map[string]interface{}{
-				"CPUCores":                      1,
-				"CPUModel":                      "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
-				"CPUThreads":                    2,
-				"Cluster":                       "Angola-1dac9f7418db9b52c259ce4ba087cdb6",
-				"CreatedAt":                     utils.P("2020-04-07T08:52:59.844+02:00"),
-				"Databases":                     "8888888-d41d8cd98f00b204e9800998ecf8427e",
-				"Environment":                   "PROD",
-				"Hostname":                      "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
-				"Kernel":                        "3.10.0-862.9.1.el7.x86_64",
-				"Location":                      "Italy",
-				"MemTotal":                      3,
-				"OS":                            "Red Hat Enterprise Linux Server release 7.5 (Maipo)",
-				"OracleCluster":                 false,
-				"VirtualizationNode":            "suspended-290dce22a939f3868f8f23a6e1f57dd8",
-				"Socket":                        2,
-				"SunCluster":                    false,
-				"SwapTotal":                     4,
-				"HardwareAbstractionTechnology": "VMWARE",
-				"VeritasCluster":                false,
-				"Version":                       "1.6.1",
-				"HardwareAbstraction":           "VIRT",
-				"_id":                           utils.Str2oid("5e8c234b24f648a08585bd3d"),
-			},
-			map[string]interface{}{
-				"CPUCores":                      1,
-				"CPUModel":                      "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
-				"CPUThreads":                    2,
-				"Cluster":                       "Puzzait",
-				"CreatedAt":                     utils.P("2020-04-07T08:52:59.869+02:00"),
-				"Databases":                     "",
-				"Environment":                   "PROD",
-				"Hostname":                      "test-virt",
-				"Kernel":                        "3.10.0-862.9.1.el7.x86_64",
-				"Location":                      "Italy",
-				"MemTotal":                      3,
-				"OS":                            "Red Hat Enterprise Linux Server release 7.5 (Maipo)",
-				"OracleCluster":                 false,
-				"VirtualizationNode":            "s157-cb32c10a56c256746c337e21b3f82402",
-				"Socket":                        2,
-				"SunCluster":                    false,
-				"SwapTotal":                     4,
-				"HardwareAbstractionTechnology": "VMWARE",
-				"VeritasCluster":                false,
-				"Version":                       "1.6.1",
-				"HardwareAbstraction":           "VIRT",
-				"_id":                           utils.Str2oid("5e8c234b24f648a08585bd41"),
-			},
-		},
-		"Metadata": map[string]interface{}{
-			"Empty":         false,
-			"First":         true,
-			"Last":          true,
-			"Number":        0,
-			"Size":          20,
-			"TotalElements": 25,
-			"TotalPages":    1,
+	resFromService := []dto.HostDataSummary{
+		{
+			CreatedAt:               time.Time{},
+			Hostname:                "sample",
+			Location:                "",
+			Environment:             "",
+			AgentVersion:            "",
+			Tags:                    []string{},
+			Info:                    model.Host{},
+			ClusterMembershipStatus: model.ClusterMembershipStatus{},
+			Databases:               map[string][]string{},
 		},
 	}
-
-	resFromService := []map[string]interface{}{
-		expectedRes,
-	}
-
 	filters := dto.SearchHostsFilters{
 		Search:         []string{"foobar"},
 		SortBy:         "Hostname",
@@ -130,8 +79,8 @@ func TestSearchHosts_JSONPaged(t *testing.T) {
 		GTECPUThreads:  -1,
 	}
 	as.EXPECT().
-		SearchHosts("summary", gomock.Any()).
-		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
+		GetHostDataSummaries(gomock.Any()).
+		DoAndReturn(func(actual dto.SearchHostsFilters) ([]dto.HostDataSummary, error) {
 			assert.EqualValues(t, filters, actual)
 
 			return resFromService, nil
@@ -145,6 +94,9 @@ func TestSearchHosts_JSONPaged(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
+	expectedRes := map[string]interface{}{
+		"hosts": resFromService,
+	}
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
 

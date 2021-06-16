@@ -61,8 +61,15 @@ func (ctrl *APIController) searchHostsJSON(w http.ResponseWriter, r *http.Reques
 	mode := r.URL.Query().Get("mode")
 	if mode == "" {
 		mode = "full"
-	} else if mode != "full" && mode != "summary" && mode != "lms" && mode != "mhd" && mode != "hostnames" {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(errors.New("Invalid mode value"), http.StatusText(http.StatusUnprocessableEntity)))
+	}
+
+	if mode != "full" && mode != "summary" && mode != "lms" && mode != "mhd" && mode != "hostnames" {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, errors.New("Invalid mode value"))
+		return
+	}
+
+	if mode == "summary" {
+		ctrl.getHostDataSummaries(w, r, filters)
 		return
 	}
 
@@ -85,6 +92,19 @@ func (ctrl *APIController) searchHostsJSON(w http.ResponseWriter, r *http.Reques
 			utils.WriteJSONResponse(w, http.StatusOK, hosts[0])
 		}
 	}
+}
+
+func (ctrl *APIController) getHostDataSummaries(w http.ResponseWriter, r *http.Request, filters *dto.SearchHostsFilters) {
+	hosts, err := ctrl.Service.GetHostDataSummaries(*filters)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	resp := map[string]interface{}{
+		"hosts": hosts,
+	}
+	utils.WriteJSONResponse(w, http.StatusOK, resp)
 }
 
 // searchHostsLMS search hosts data using the filters in the request returning it in LMS+XLSX

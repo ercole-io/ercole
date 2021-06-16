@@ -20,6 +20,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -51,6 +52,38 @@ type SearchHostsFilters struct {
 	GTECPUCores                   int
 	LTECPUThreads                 int
 	GTECPUThreads                 int
+}
+
+func NewSearchHostsFilters() SearchHostsFilters {
+	return SearchHostsFilters{
+		Search:                        []string{},
+		SortBy:                        "",
+		SortDesc:                      false,
+		Location:                      "",
+		Environment:                   "",
+		OlderThan:                     utils.MAX_TIME,
+		PageNumber:                    -1,
+		PageSize:                      -1,
+		Hostname:                      "",
+		Database:                      "",
+		Technology:                    "",
+		HardwareAbstractionTechnology: "",
+		Cluster:                       new(string),
+		VirtualizationNode:            "",
+		OperatingSystem:               "",
+		Kernel:                        "",
+
+		LTEMemoryTotal:    -1,
+		GTEMemoryTotal:    -1,
+		LTESwapTotal:      -1,
+		GTESwapTotal:      -1,
+		IsMemberOfCluster: nil,
+		CPUModel:          "",
+		LTECPUCores:       -1,
+		GTECPUCores:       -1,
+		LTECPUThreads:     -1,
+		GTECPUThreads:     -1,
+	}
 }
 
 func GetSearchHostFilters(r *http.Request) (*SearchHostsFilters, error) {
@@ -128,4 +161,16 @@ func GetSearchHostFilters(r *http.Request) (*SearchHostsFilters, error) {
 	}
 
 	return &f, nil
+}
+
+type HostDataSummary struct {
+	CreatedAt               time.Time                     `json:"createdAt" bson:"createdAt"`
+	Hostname                string                        `json:"hostname" bson:"hostname"`
+	Location                string                        `json:"location" bson:"location"`
+	Environment             string                        `json:"environment" bson:"environment"`
+	AgentVersion            string                        `json:"agentVersion" bson:"agentVersion"`
+	Tags                    []string                      `json:"tags" bson:"tags"`
+	Info                    model.Host                    `json:"info" bson:"info"`
+	ClusterMembershipStatus model.ClusterMembershipStatus `json:"clusterMembershipStatus" bson:"clusterMembershipStatus"`
+	Databases               map[string][]string           `json:"databases" bson:"databases"`
 }

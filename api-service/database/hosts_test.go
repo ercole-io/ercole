@@ -34,289 +34,9 @@ func (m *MongodbSuite) TestSearchHosts() {
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
 
-	commonFilters := dto.SearchHostsFilters{
-		Search:                        []string{},
-		SortBy:                        "",
-		SortDesc:                      false,
-		Location:                      "",
-		Environment:                   "",
-		OlderThan:                     utils.MAX_TIME,
-		PageNumber:                    -1,
-		PageSize:                      -1,
-		Hostname:                      "",
-		Database:                      "",
-		Technology:                    "",
-		HardwareAbstractionTechnology: "",
-		Cluster:                       new(string),
-		VirtualizationNode:            "",
-		OperatingSystem:               "",
-		Kernel:                        "",
-
-		LTEMemoryTotal:    -1,
-		GTEMemoryTotal:    -1,
-		LTESwapTotal:      -1,
-		GTESwapTotal:      -1,
-		IsMemberOfCluster: nil,
-		CPUModel:          "",
-		LTECPUCores:       -1,
-		GTECPUCores:       -1,
-		LTECPUThreads:     -1,
-		GTECPUThreads:     -1,
-	}
+	commonFilters := dto.NewSearchHostsFilters()
 
 	//TODO: add search hosts filter tests!
-
-	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
-		thisFilter := commonFilters
-		thisFilter.Environment = "FOOBAR"
-		out, err := m.db.SearchHosts("summary", thisFilter)
-		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
-
-		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	})
-
-	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
-		thisFilter := commonFilters
-		thisFilter.Location = "France"
-
-		out, err := m.db.SearchHosts("summary", thisFilter)
-		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
-
-		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	})
-
-	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
-		thisFilter := commonFilters
-		thisFilter.OlderThan = utils.MIN_TIME
-
-		out, err := m.db.SearchHosts("summary", thisFilter)
-		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
-
-		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	})
-
-	m.T().Run("should_be_paging", func(t *testing.T) {
-		thisFilter := commonFilters
-		thisFilter.SortBy = "_id"
-		thisFilter.SortDesc = true
-		thisFilter.PageNumber = 0
-		thisFilter.PageSize = 1
-
-		out, err := m.db.SearchHosts("summary", thisFilter)
-		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"content": []interface{}{
-					map[string]interface{}{
-						"cpuCores":                      1,
-						"cpuModel":                      "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
-						"cpuThreads":                    2,
-						"cluster":                       "Puzzait",
-						"createdAt":                     utils.P("2020-05-04T16:09:46.608+02:00").Local(),
-						"environment":                   "PROD",
-						"hostname":                      "test-virt",
-						"kernel":                        "Linux 3.10.0-862.9.1.el7.x86_64",
-						"location":                      "Italy",
-						"memTotal":                      3,
-						"os":                            "Red Hat Enterprise Linux 7.5",
-						"oracleClusterware":             false,
-						"virtualizationNode":            "s157-cb32c10a56c256746c337e21b3f82402",
-						"cpuSockets":                    2,
-						"sunCluster":                    false,
-						"swapTotal":                     4,
-						"hardwareAbstractionTechnology": "VMWARE",
-						"veritasClusterServer":          false,
-						"agentVersion":                  "1.6.1",
-						"hardwareAbstraction":           "VIRT",
-						"_id":                           utils.Str2oid("5eb0222a45d85f4193704944"),
-						"hacmp":                         false,
-					},
-				},
-				"metadata": map[string]interface{}{
-					"empty":         false,
-					"first":         true,
-					"last":          false,
-					"number":        0,
-					"size":          1,
-					"totalElements": 3,
-					"totalPages":    3,
-				},
-			},
-		}
-
-		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	})
-
-	m.T().Run("should_be_sorting", func(t *testing.T) {
-		thisFilter := commonFilters
-		thisFilter.SortBy = "createdAt"
-		thisFilter.SortDesc = true
-
-		out, err := m.db.SearchHosts("summary", thisFilter)
-		m.Require().NoError(err)
-		var expectedOut interface{} = []map[string]interface{}{
-			{
-				"cpuCores":                      1,
-				"cpuModel":                      "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
-				"cpuThreads":                    2,
-				"cluster":                       "Puzzait",
-				"createdAt":                     utils.P("2020-05-04T16:09:46.608+02:00").Local(),
-				"environment":                   "PROD",
-				"hostname":                      "test-virt",
-				"kernel":                        "Linux 3.10.0-862.9.1.el7.x86_64",
-				"location":                      "Italy",
-				"memTotal":                      3,
-				"os":                            "Red Hat Enterprise Linux 7.5",
-				"oracleClusterware":             false,
-				"virtualizationNode":            "s157-cb32c10a56c256746c337e21b3f82402",
-				"cpuSockets":                    2,
-				"sunCluster":                    false,
-				"swapTotal":                     4,
-				"hardwareAbstractionTechnology": "VMWARE",
-				"veritasClusterServer":          false,
-				"agentVersion":                  "1.6.1",
-				"hardwareAbstraction":           "VIRT",
-				"_id":                           utils.Str2oid("5eb0222a45d85f4193704944"),
-				"hacmp":                         false,
-			},
-			{
-				"cpuCores":                      1,
-				"cpuModel":                      "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-				"cpuThreads":                    2,
-				"cluster":                       interface{}(nil),
-				"createdAt":                     utils.P("2020-04-24T13:50:05.46+02:00").Local(),
-				"environment":                   "TST",
-				"hostname":                      "test-small",
-				"kernel":                        "Linux 3.10.0-514.el7.x86_64",
-				"location":                      "Germany",
-				"memTotal":                      3,
-				"os":                            "Red Hat Enterprise Linux 7.6",
-				"oracleClusterware":             false,
-				"virtualizationNode":            interface{}(nil),
-				"cpuSockets":                    2,
-				"sunCluster":                    false,
-				"swapTotal":                     1,
-				"hardwareAbstractionTechnology": "VMWARE",
-				"veritasClusterServer":          false,
-				"agentVersion":                  "latest",
-				"hardwareAbstraction":           "VIRT",
-				"_id":                           utils.Str2oid("5ea2d26d20d55cbdc35022b4"),
-				"hacmp":                         false,
-			},
-			{
-				"cpuCores":                      1,
-				"cpuModel":                      "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-				"cpuThreads":                    2,
-				"cluster":                       "Puzzait",
-				"createdAt":                     utils.P("2020-04-15T08:46:58.471+02:00").Local(),
-				"environment":                   "TST",
-				"hostname":                      "test-db",
-				"kernel":                        "Linux 3.10.0-514.el7.x86_64",
-				"location":                      "Germany",
-				"memTotal":                      3,
-				"os":                            "Red Hat Enterprise Linux 7.6",
-				"oracleClusterware":             false,
-				"virtualizationNode":            "s157-cb32c10a56c256746c337e21b3f82402",
-				"cpuSockets":                    2,
-				"sunCluster":                    false,
-				"swapTotal":                     1,
-				"hardwareAbstractionTechnology": "VMWARE",
-				"veritasClusterServer":          false,
-				"agentVersion":                  "latest",
-				"hardwareAbstraction":           "VIRT",
-				"_id":                           utils.Str2oid("5e96ade270c184faca93fe36"),
-				"hacmp":                         false,
-			},
-		}
-
-		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	})
-
-	m.T().Run("should_search1", func(t *testing.T) {
-
-		thisFilter := commonFilters
-		thisFilter.Search = []string{"foobar"}
-		out, err := m.db.SearchHosts("summary", thisFilter)
-		m.Require().NoError(err)
-		var expectedOut interface{} = []map[string]interface{}{}
-
-		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	})
-
-	m.T().Run("should_search2", func(t *testing.T) {
-		thisFilter := commonFilters
-		thisFilter.Search = []string{"test-db", "ERCOLE"}
-		out, err := m.db.SearchHosts("summary", thisFilter)
-
-		m.Require().NoError(err)
-		var expectedOut interface{} = []map[string]interface{}{
-			{
-				"cpuCores":                      1,
-				"cpuModel":                      "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-				"cpuThreads":                    2,
-				"cluster":                       "Puzzait",
-				"createdAt":                     utils.P("2020-04-15T08:46:58.471+02:00").Local(),
-				"environment":                   "TST",
-				"hostname":                      "test-db",
-				"kernel":                        "Linux 3.10.0-514.el7.x86_64",
-				"location":                      "Germany",
-				"memTotal":                      3,
-				"os":                            "Red Hat Enterprise Linux 7.6",
-				"oracleClusterware":             false,
-				"virtualizationNode":            "s157-cb32c10a56c256746c337e21b3f82402",
-				"cpuSockets":                    2,
-				"sunCluster":                    false,
-				"swapTotal":                     1,
-				"hardwareAbstractionTechnology": "VMWARE",
-				"veritasClusterServer":          false,
-				"agentVersion":                  "latest",
-				"hardwareAbstraction":           "VIRT",
-				"_id":                           utils.Str2oid("5e96ade270c184faca93fe36"),
-				"hacmp":                         false,
-			},
-		}
-
-		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	})
-
-	m.T().Run("should_search3", func(t *testing.T) {
-		thisFilter := commonFilters
-		thisFilter.Search = []string{"Puzzait"}
-
-		out, err := m.db.SearchHosts("summary", thisFilter)
-		m.Require().NoError(err)
-		var expectedOut interface{} = []map[string]interface{}{
-			{
-				"cpuCores":                      1,
-				"cpuModel":                      "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
-				"cpuThreads":                    2,
-				"cluster":                       "Puzzait",
-				"createdAt":                     utils.P("2020-05-04T16:09:46.608+02:00").Local(),
-				"environment":                   "PROD",
-				"hostname":                      "test-virt",
-				"kernel":                        "Linux 3.10.0-862.9.1.el7.x86_64",
-				"location":                      "Italy",
-				"memTotal":                      3,
-				"os":                            "Red Hat Enterprise Linux 7.5",
-				"oracleClusterware":             false,
-				"virtualizationNode":            "s157-cb32c10a56c256746c337e21b3f82402",
-				"cpuSockets":                    2,
-				"sunCluster":                    false,
-				"swapTotal":                     4,
-				"hardwareAbstractionTechnology": "VMWARE",
-				"veritasClusterServer":          false,
-				"agentVersion":                  "1.6.1",
-				"hardwareAbstraction":           "VIRT",
-				"_id":                           utils.Str2oid("5eb0222a45d85f4193704944"),
-				"hacmp":                         false,
-			},
-		}
-
-		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	})
 
 	m.T().Run("lms_mode", func(t *testing.T) {
 		out, err := m.db.SearchHosts("lms", commonFilters)
@@ -365,6 +85,275 @@ func (m *MongodbSuite) TestSearchHosts() {
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+}
+
+func (m *MongodbSuite) TestGetHostDataSummaries() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
+
+	commonFilters := dto.NewSearchHostsFilters()
+	// asdf := dto.SearchHostsFilters{Search: []string{""}, SortBy: "", SortDesc: false, Location: "", Environment: "", OlderThan: time.Time{wall: 0x1f52f60d, ext: 95316340478, loc: (*time.Location)(0x1a63ec0)}, PageNumber: -1, PageSize: -1, Hostname: "", Database: "", Technology: "", HardwareAbstractionTechnology: "", Cluster: (*string)(0xc001940280), VirtualizationNode: "", OperatingSystem: "", Kernel: "", LTEMemoryTotal: -1, GTEMemoryTotal: -1, LTESwapTotal: -1, GTESwapTotal: -1, IsMemberOfCluster: (*bool)(nil), CPUModel: "", LTECPUCores: -1, GTECPUCores: -1, LTECPUThreads: -1, GTECPUThreads: -1}
+
+	//TODO: add search hosts filter tests!
+
+	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
+		thisFilter := commonFilters
+		thisFilter.Environment = "FOOBAR"
+		out, err := m.db.GetHostDataSummaries(thisFilter)
+		m.Require().NoError(err)
+		expectedOut := []dto.HostDataSummary{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
+		thisFilter := commonFilters
+		thisFilter.Location = "France"
+
+		out, err := m.db.GetHostDataSummaries(thisFilter)
+		m.Require().NoError(err)
+		expectedOut := []dto.HostDataSummary{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
+		thisFilter := commonFilters
+		thisFilter.OlderThan = utils.MIN_TIME
+
+		out, err := m.db.GetHostDataSummaries(thisFilter)
+		m.Require().NoError(err)
+		expectedOut := []dto.HostDataSummary{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_be_sorting", func(t *testing.T) {
+		thisFilter := commonFilters
+		thisFilter.SortBy = "createdAt"
+		thisFilter.SortDesc = true
+
+		out, err := m.db.GetHostDataSummaries(thisFilter)
+		m.Require().NoError(err)
+
+		expectedOut := []dto.HostDataSummary{
+			{
+				CreatedAt:    utils.P("2020-05-04T14:09:46.608Z").UTC(),
+				Hostname:     "test-virt",
+				Location:     "Italy",
+				Environment:  "PROD",
+				AgentVersion: "1.6.1",
+				Tags:         []string(nil),
+				Info: model.Host{
+					Hostname:                      "test-virt",
+					CPUModel:                      "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
+					CPUFrequency:                  "2.50GHz",
+					CPUSockets:                    2,
+					CPUCores:                      1,
+					CPUThreads:                    2,
+					ThreadsPerCore:                2,
+					CoresPerSocket:                1,
+					HardwareAbstraction:           "VIRT",
+					HardwareAbstractionTechnology: "VMWARE",
+					Kernel:                        "Linux",
+					KernelVersion:                 "3.10.0-862.9.1.el7.x86_64",
+					OS:                            "Red Hat Enterprise Linux",
+					OSVersion:                     "7.5",
+					MemoryTotal:                   3,
+					SwapTotal:                     4,
+					OtherInfo:                     map[string]interface{}{}},
+				ClusterMembershipStatus: model.ClusterMembershipStatus{
+					OracleClusterware:       false,
+					SunCluster:              false,
+					HACMP:                   false,
+					VeritasClusterServer:    false,
+					VeritasClusterHostnames: []string(nil),
+					OtherInfo:               map[string]interface{}{},
+				},
+				Databases: map[string][]string{}},
+			{
+				CreatedAt:    utils.P("2020-04-24T13:50:05.46+02:00").UTC(),
+				Hostname:     "test-small",
+				Location:     "Germany",
+				Environment:  "TST",
+				AgentVersion: "latest",
+				Tags:         []string(nil),
+				Info: model.Host{
+					Hostname:                      "test-small",
+					CPUModel:                      "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+					CPUFrequency:                  "2.53GHz",
+					CPUSockets:                    2,
+					CPUCores:                      1,
+					CPUThreads:                    2,
+					ThreadsPerCore:                2,
+					CoresPerSocket:                1,
+					HardwareAbstraction:           "VIRT",
+					HardwareAbstractionTechnology: "VMWARE",
+					Kernel:                        "Linux",
+					KernelVersion:                 "3.10.0-514.el7.x86_64",
+					OS:                            "Red Hat Enterprise Linux",
+					OSVersion:                     "7.6",
+					MemoryTotal:                   3,
+					SwapTotal:                     1,
+					OtherInfo: map[string]interface {
+					}{}},
+				ClusterMembershipStatus: model.ClusterMembershipStatus{
+					OracleClusterware:       false,
+					SunCluster:              false,
+					HACMP:                   false,
+					VeritasClusterServer:    false,
+					VeritasClusterHostnames: []string(nil),
+					OtherInfo: map[string]interface {
+					}{}},
+				Databases: map[string][]string{}},
+			{
+				CreatedAt:    utils.P("2020-04-15T08:46:58.471+02:00").UTC(),
+				Hostname:     "test-db",
+				Location:     "Germany",
+				Environment:  "TST",
+				AgentVersion: "latest",
+				Tags:         []string(nil),
+				Info: model.Host{
+					Hostname:                      "test-db",
+					CPUModel:                      "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+					CPUFrequency:                  "2.53GHz",
+					CPUSockets:                    2,
+					CPUCores:                      1,
+					CPUThreads:                    2,
+					ThreadsPerCore:                2,
+					CoresPerSocket:                1,
+					HardwareAbstraction:           "VIRT",
+					HardwareAbstractionTechnology: "VMWARE",
+					Kernel:                        "Linux",
+					KernelVersion:                 "3.10.0-514.el7.x86_64",
+					OS:                            "Red Hat Enterprise Linux",
+					OSVersion:                     "7.6",
+					MemoryTotal:                   3,
+					SwapTotal:                     1,
+					OtherInfo: map[string]interface {
+					}{}},
+				ClusterMembershipStatus: model.ClusterMembershipStatus{
+					OracleClusterware:       false,
+					SunCluster:              false,
+					HACMP:                   false,
+					VeritasClusterServer:    false,
+					VeritasClusterHostnames: []string(nil),
+					OtherInfo: map[string]interface {
+					}{}},
+				Databases: map[string][]string{
+					"Oracle/Database": {
+						"ERCOLE"}}}}
+
+		assert.Equal(t, expectedOut, out)
+	})
+
+	m.T().Run("should_search1", func(t *testing.T) {
+
+		thisFilter := commonFilters
+		thisFilter.Search = []string{"foobar"}
+		out, err := m.db.GetHostDataSummaries(thisFilter)
+		m.Require().NoError(err)
+		var expectedOut interface{} = []map[string]interface{}{}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_search2", func(t *testing.T) {
+		thisFilter := commonFilters
+		thisFilter.Search = []string{"test-db", "ERCOLE"}
+
+		out, err := m.db.GetHostDataSummaries(thisFilter)
+		m.Require().NoError(err)
+
+		expectedOut := []dto.HostDataSummary{
+			{
+				CreatedAt:    utils.P("2020-04-15T08:46:58.471+02:00").UTC(),
+				Hostname:     "test-db",
+				Location:     "Germany",
+				Environment:  "TST",
+				AgentVersion: "latest",
+				Tags:         []string(nil),
+				Info: model.Host{
+					Hostname:                      "test-db",
+					CPUModel:                      "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+					CPUFrequency:                  "2.53GHz",
+					CPUSockets:                    2,
+					CPUCores:                      1,
+					CPUThreads:                    2,
+					ThreadsPerCore:                2,
+					CoresPerSocket:                1,
+					HardwareAbstraction:           "VIRT",
+					HardwareAbstractionTechnology: "VMWARE",
+					Kernel:                        "Linux",
+					KernelVersion:                 "3.10.0-514.el7.x86_64",
+					OS:                            "Red Hat Enterprise Linux",
+					OSVersion:                     "7.6",
+					MemoryTotal:                   3,
+					SwapTotal:                     1,
+					OtherInfo: map[string]interface {
+					}{}},
+				ClusterMembershipStatus: model.ClusterMembershipStatus{
+					OracleClusterware:       false,
+					SunCluster:              false,
+					HACMP:                   false,
+					VeritasClusterServer:    false,
+					VeritasClusterHostnames: []string(nil),
+					OtherInfo: map[string]interface {
+					}{}},
+				Databases: map[string][]string{
+					"Oracle/Database": {
+						"ERCOLE"}}},
+		}
+		assert.Equal(t, expectedOut, out)
+	})
+
+	m.T().Run("should_search3", func(t *testing.T) {
+		thisFilter := commonFilters
+		thisFilter.Search = []string{"Puzzait"}
+
+		out, err := m.db.GetHostDataSummaries(thisFilter)
+		m.Require().NoError(err)
+
+		expectedOut := []dto.HostDataSummary{
+			{
+				CreatedAt:    utils.P("2020-05-04T14:09:46.608Z").UTC(),
+				Hostname:     "test-virt",
+				Location:     "Italy",
+				Environment:  "PROD",
+				AgentVersion: "1.6.1",
+				Tags:         []string(nil),
+				Info: model.Host{
+					Hostname:                      "test-virt",
+					CPUModel:                      "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
+					CPUFrequency:                  "2.50GHz",
+					CPUSockets:                    2,
+					CPUCores:                      1,
+					CPUThreads:                    2,
+					ThreadsPerCore:                2,
+					CoresPerSocket:                1,
+					HardwareAbstraction:           "VIRT",
+					HardwareAbstractionTechnology: "VMWARE",
+					Kernel:                        "Linux",
+					KernelVersion:                 "3.10.0-862.9.1.el7.x86_64",
+					OS:                            "Red Hat Enterprise Linux",
+					OSVersion:                     "7.5",
+					MemoryTotal:                   3,
+					SwapTotal:                     4,
+					OtherInfo:                     map[string]interface{}{}},
+				ClusterMembershipStatus: model.ClusterMembershipStatus{
+					OracleClusterware:       false,
+					SunCluster:              false,
+					HACMP:                   false,
+					VeritasClusterServer:    false,
+					VeritasClusterHostnames: []string(nil),
+					OtherInfo:               map[string]interface{}{},
+				},
+				Databases: map[string][]string{}},
+		}
+		assert.Equal(t, expectedOut, out)
 	})
 }
 

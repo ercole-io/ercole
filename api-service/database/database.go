@@ -36,6 +36,7 @@ type MongoDatabaseInterface interface {
 	Init()
 	// SearchHosts search hosts
 	SearchHosts(mode string, filters dto.SearchHostsFilters) ([]map[string]interface{}, error)
+	GetHostDataSummaries(filters dto.SearchHostsFilters) ([]dto.HostDataSummary, error)
 	// GetHost fetch all informations about a host in the database
 	GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, error)
 	GetHostData(hostname string, olderThan time.Time) (*model.HostDataBE, error)
