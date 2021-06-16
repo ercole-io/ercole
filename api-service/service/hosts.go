@@ -103,6 +103,10 @@ func (as *APIService) getCSIsByHostname() (res map[string][]string, err error) {
 	return res, nil
 }
 
+func (as *APIService) GetHostDataSummaries(filters dto.SearchHostsFilters) ([]dto.HostDataSummary, error) {
+	return as.Database.GetHostDataSummaries(filters)
+}
+
 // GetHost return the host specified in the hostname param
 func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, error) {
 	return as.Database.GetHost(hostname, olderThan, raw)
