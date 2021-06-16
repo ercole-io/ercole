@@ -17,6 +17,7 @@ package service
 
 import (
 	"testing"
+	"time"
 
 	dto "github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
@@ -391,6 +392,66 @@ func TestSearchHostsAsLMS(t *testing.T) {
 		assert.Equal(t, "2.93GHz", sp.GetCellValue(sheet, "AH5"))
 		assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue(sheet, "AJ5"))
 	})
+}
+
+func TestGetHostDataSummaries(t *testing.T) {
+	testCases := []struct {
+		filters dto.SearchHostsFilters
+		res     []dto.HostDataSummary
+		err     error
+	}{
+		{
+			filters: dto.SearchHostsFilters{
+				Search:      []string{"foo", "bar", "foobarx"},
+				SortBy:      "Memory",
+				SortDesc:    true,
+				Location:    "Italy",
+				Environment: "PROD",
+				OlderThan:   utils.P("2019-12-05T14:02:03Z"),
+				PageNumber:  1,
+				PageSize:    1,
+			},
+			res: []dto.HostDataSummary{
+				{
+					CreatedAt:               time.Now(),
+					Hostname:                "pluto",
+					Location:                "Germany",
+					Environment:             "TEST",
+					AgentVersion:            "0.0.1-alpha",
+					Tags:                    []string{},
+					Info:                    model.Host{},
+					ClusterMembershipStatus: model.ClusterMembershipStatus{},
+					Databases:               map[string][]string{},
+				},
+			},
+			err: nil,
+		},
+		{
+			filters: dto.SearchHostsFilters{},
+			res:     []dto.HostDataSummary{},
+			err:     aerrMock,
+		},
+	}
+
+	for _, tc := range testCases {
+		mockCtrl := gomock.NewController(t)
+		defer mockCtrl.Finish()
+		db := NewMockMongoDatabaseInterface(mockCtrl)
+		as := APIService{
+			Database: db,
+		}
+
+		db.EXPECT().GetHostDataSummaries(tc.filters).Return(tc.res, tc.err).Times(1)
+
+		res, err := as.GetHostDataSummaries(tc.filters)
+		if tc.err == nil {
+			assert.Nil(t, err)
+		} else {
+			assert.EqualError(t, err, tc.err.Error())
+		}
+
+		assert.Equal(t, tc.res, res)
+	}
 }
 
 func TestGetHost_Success(t *testing.T) {
