@@ -133,6 +133,7 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 					mu.QOExpr(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.oracle.database.databases", bson.A{})), 0))),
 				),
 				mu.APOptionalStage(mode == "summary", mu.APProject(bson.M{
+					"_id":                     true,
 					"createdAt":               true,
 					"hostname":                true,
 					"location":                true,
@@ -140,9 +141,8 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 					"agentVersion":            true,
 					"info":                    true,
 					"clusterMembershipStatus": true,
-
-					"virtualizationNode": true,
-					"cluster":            true,
+					"virtualizationNode":      true,
+					"cluster":                 true,
 					"databases": bson.M{
 						model.TechnologyOracleDatabase:     "$features.oracle.database.databases.name",
 						model.TechnologyMicrosoftSQLServer: "$features.microsoft.sqlServer.instances.name",
