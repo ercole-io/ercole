@@ -53,7 +53,6 @@ func TestSearchHosts_JSONPaged(t *testing.T) {
 			Location:                "",
 			Environment:             "",
 			AgentVersion:            "",
-			Tags:                    []string{},
 			Info:                    model.Host{},
 			ClusterMembershipStatus: model.ClusterMembershipStatus{},
 			Databases:               map[string][]string{},

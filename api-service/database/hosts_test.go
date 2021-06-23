@@ -141,12 +141,12 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 
 		expectedOut := []dto.HostDataSummary{
 			{
+				ID:           "5eb0222a45d85f4193704944",
 				CreatedAt:    utils.P("2020-05-04T14:09:46.608Z").UTC(),
 				Hostname:     "test-virt",
 				Location:     "Italy",
 				Environment:  "PROD",
 				AgentVersion: "1.6.1",
-				Tags:         []string(nil),
 				Info: model.Host{
 					Hostname:                      "test-virt",
 					CPUModel:                      "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
@@ -164,7 +164,8 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 					OSVersion:                     "7.5",
 					MemoryTotal:                   3,
 					SwapTotal:                     4,
-					OtherInfo:                     map[string]interface{}{}},
+					OtherInfo:                     map[string]interface{}{},
+				},
 				ClusterMembershipStatus: model.ClusterMembershipStatus{
 					OracleClusterware:       false,
 					SunCluster:              false,
@@ -173,14 +174,17 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 					VeritasClusterHostnames: []string(nil),
 					OtherInfo:               map[string]interface{}{},
 				},
-				Databases: map[string][]string{}},
+				VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402",
+				Cluster:            "Puzzait",
+				Databases:          map[string][]string{},
+			},
 			{
+				ID:           "5ea2d26d20d55cbdc35022b4",
 				CreatedAt:    utils.P("2020-04-24T13:50:05.46+02:00").UTC(),
 				Hostname:     "test-small",
 				Location:     "Germany",
 				Environment:  "TST",
 				AgentVersion: "latest",
-				Tags:         []string(nil),
 				Info: model.Host{
 					Hostname:                      "test-small",
 					CPUModel:                      "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
@@ -208,14 +212,15 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 					VeritasClusterHostnames: []string(nil),
 					OtherInfo: map[string]interface {
 					}{}},
-				Databases: map[string][]string{}},
+				Databases: map[string][]string{},
+			},
 			{
+				ID:           "5e96ade270c184faca93fe36",
 				CreatedAt:    utils.P("2020-04-15T08:46:58.471+02:00").UTC(),
 				Hostname:     "test-db",
 				Location:     "Germany",
 				Environment:  "TST",
 				AgentVersion: "latest",
-				Tags:         []string(nil),
 				Info: model.Host{
 					Hostname:                      "test-db",
 					CPUModel:                      "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
@@ -234,7 +239,8 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 					MemoryTotal:                   3,
 					SwapTotal:                     1,
 					OtherInfo: map[string]interface {
-					}{}},
+					}{},
+				},
 				ClusterMembershipStatus: model.ClusterMembershipStatus{
 					OracleClusterware:       false,
 					SunCluster:              false,
@@ -242,10 +248,15 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 					VeritasClusterServer:    false,
 					VeritasClusterHostnames: []string(nil),
 					OtherInfo: map[string]interface {
-					}{}},
+					}{},
+				},
+				VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402",
+				Cluster:            "Puzzait",
 				Databases: map[string][]string{
-					"Oracle/Database": {
-						"ERCOLE"}}}}
+					"Oracle/Database": {"ERCOLE"},
+				},
+			},
+		}
 
 		assert.Equal(t, expectedOut, out)
 	})
@@ -270,12 +281,12 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 
 		expectedOut := []dto.HostDataSummary{
 			{
+				ID:           "5e96ade270c184faca93fe36",
 				CreatedAt:    utils.P("2020-04-15T08:46:58.471+02:00").UTC(),
 				Hostname:     "test-db",
 				Location:     "Germany",
 				Environment:  "TST",
 				AgentVersion: "latest",
-				Tags:         []string(nil),
 				Info: model.Host{
 					Hostname:                      "test-db",
 					CPUModel:                      "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
@@ -303,6 +314,8 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 					VeritasClusterHostnames: []string(nil),
 					OtherInfo: map[string]interface {
 					}{}},
+				VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402",
+				Cluster:            "Puzzait",
 				Databases: map[string][]string{
 					"Oracle/Database": {
 						"ERCOLE"}}},
@@ -319,12 +332,12 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 
 		expectedOut := []dto.HostDataSummary{
 			{
+				ID:           "5eb0222a45d85f4193704944",
 				CreatedAt:    utils.P("2020-05-04T14:09:46.608Z").UTC(),
 				Hostname:     "test-virt",
 				Location:     "Italy",
 				Environment:  "PROD",
 				AgentVersion: "1.6.1",
-				Tags:         []string(nil),
 				Info: model.Host{
 					Hostname:                      "test-virt",
 					CPUModel:                      "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
@@ -351,7 +364,9 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 					VeritasClusterHostnames: []string(nil),
 					OtherInfo:               map[string]interface{}{},
 				},
-				Databases: map[string][]string{}},
+				VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402",
+				Cluster:            "Puzzait",
+				Databases:          map[string][]string{}},
 		}
 		assert.Equal(t, expectedOut, out)
 	})

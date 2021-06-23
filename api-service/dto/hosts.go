@@ -164,13 +164,15 @@ func GetSearchHostFilters(r *http.Request) (*SearchHostsFilters, error) {
 }
 
 type HostDataSummary struct {
+	ID                      string                        `json:"id" bson:"_id"`
 	CreatedAt               time.Time                     `json:"createdAt" bson:"createdAt"`
 	Hostname                string                        `json:"hostname" bson:"hostname"`
 	Location                string                        `json:"location" bson:"location"`
 	Environment             string                        `json:"environment" bson:"environment"`
 	AgentVersion            string                        `json:"agentVersion" bson:"agentVersion"`
-	Tags                    []string                      `json:"tags" bson:"tags"`
 	Info                    model.Host                    `json:"info" bson:"info"`
 	ClusterMembershipStatus model.ClusterMembershipStatus `json:"clusterMembershipStatus" bson:"clusterMembershipStatus"`
+	VirtualizationNode      string                        `json:"virtualizationNode" bson:"virtualizationNode"`
+	Cluster                 string                        `json:"cluster" bson:"cluster"`
 	Databases               map[string][]string           `json:"databases" bson:"databases"`
 }
