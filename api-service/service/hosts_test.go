@@ -418,7 +418,6 @@ func TestGetHostDataSummaries(t *testing.T) {
 					Location:                "Germany",
 					Environment:             "TEST",
 					AgentVersion:            "0.0.1-alpha",
-					Tags:                    []string{},
 					Info:                    model.Host{},
 					ClusterMembershipStatus: model.ClusterMembershipStatus{},
 					Databases:               map[string][]string{},
