@@ -44,6 +44,7 @@ type HostDataBE struct {
 	Features                Features                `json:"features" bson:"features"`
 	Filesystems             []Filesystem            `json:"filesystems" bson:"filesystems"`
 	Clusters                []ClusterInfo           `json:"clusters" bson:"clusters"`
+	Errors                  []AgentError            `json:"errors" bson:"errors"`
 	OtherInfo               map[string]interface{}  `json:"-" bson:"-"`
 }
 
