@@ -17,12 +17,10 @@
 package service
 
 import (
-	"fmt"
-
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
 func (as *APIService) SearchDatabases(filter dto.GlobalFilter) ([]dto.Database, error) {
@@ -117,13 +115,7 @@ func (as *APIService) SearchDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.
 		return nil, err
 	}
 
-	file, err := excelize.OpenFile(as.Config.ResourceFilePath + "/templates/template_generic.xlsx")
-	if err != nil {
-		return nil, err
-	}
-
 	sheet := "Databases"
-	file.SetSheetName("Sheet1", sheet)
 	headers := []string{
 		"Name",
 		"Type",
@@ -135,13 +127,12 @@ func (as *APIService) SearchDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.
 		"Datafile Size",
 		"Segments Size",
 	}
-
-	for i, val := range headers {
-		column := rune('A' + i)
-		file.SetCellValue(sheet, fmt.Sprintf("%c1", column), val)
+	file, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
 	}
 
-	axisHelp := utils.NewAxisHelper(1)
+	axisHelp := exutils.NewAxisHelper(1)
 	for _, val := range databases {
 		nextAxis := axisHelp.NewRow()
 
