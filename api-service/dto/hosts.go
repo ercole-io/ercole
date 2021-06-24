@@ -174,5 +174,5 @@ type HostDataSummary struct {
 	ClusterMembershipStatus model.ClusterMembershipStatus `json:"clusterMembershipStatus" bson:"clusterMembershipStatus"`
 	VirtualizationNode      string                        `json:"virtualizationNode" bson:"virtualizationNode"`
 	Cluster                 string                        `json:"cluster" bson:"cluster"`
-	Databases               map[string][]string           `json:"databases" bson:"databases"`
+	Databases               map[string][]string           `json:"databases" bson:"databases"` // map[Technology] []database names
 }

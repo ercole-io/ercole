@@ -17,16 +17,13 @@ package controller
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SearchHosts search hosts data using the filters in the request
@@ -120,46 +117,15 @@ func (ctrl *APIController) searchHostsLMS(w http.ResponseWriter, r *http.Request
 }
 
 // searchHostsXLSX search hosts data using the filters in the request returning it in XLSX
-//TODO Move in service
 func (ctrl *APIController) searchHostsXLSX(w http.ResponseWriter, r *http.Request, filters *dto.SearchHostsFilters) {
 	filters.PageNumber, filters.PageSize = -1, -1
-	hosts, err := ctrl.Service.SearchHosts("summary", *filters)
+	xlsx, err := ctrl.Service.SearchHostsAsXLSX(*filters)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_hosts.xlsx")
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewError(err, "READ_TEMPLATE"))
-		return
-	}
-
-	for i, val := range hosts {
-		sheets.SetCellValue("Hosts", fmt.Sprintf("A%d", i+2), val["hostname"])
-		sheets.SetCellValue("Hosts", fmt.Sprintf("B%d", i+2), val["environment"])
-		if val["cluster"] != nil && val["virtualizationNode"] != nil {
-			sheets.SetCellValue("Hosts", fmt.Sprintf("D%d", i+2), val["cluster"])
-			sheets.SetCellValue("Hosts", fmt.Sprintf("E%d", i+2), val["virtualizationNode"])
-		}
-		sheets.SetCellValue("Hosts", fmt.Sprintf("F%d", i+2), val["agentVersion"])
-		sheets.SetCellValue("Hosts", fmt.Sprintf("G%d", i+2), val["createdAt"].(primitive.DateTime).Time().UTC().String())
-		sheets.SetCellValue("Hosts", fmt.Sprintf("I%d", i+2), val["os"])
-		sheets.SetCellValue("Hosts", fmt.Sprintf("J%d", i+2), val["kernel"])
-		sheets.SetCellValue("Hosts", fmt.Sprintf("K%d", i+2), val["oracleClusterware"])
-		sheets.SetCellValue("Hosts", fmt.Sprintf("L%d", i+2), val["sunCluster"])
-		sheets.SetCellValue("Hosts", fmt.Sprintf("M%d", i+2), val["veritasClusterServer"])
-		sheets.SetCellValue("Hosts", fmt.Sprintf("N%d", i+2), val["hardwareAbstraction"])
-		sheets.SetCellValue("Hosts", fmt.Sprintf("O%d", i+2), val["hardwareAbstractionTechnology"])
-		sheets.SetCellValue("Hosts", fmt.Sprintf("P%d", i+2), val["cpuThreads"])
-		sheets.SetCellValue("Hosts", fmt.Sprintf("Q%d", i+2), val["cpuCores"])
-		sheets.SetCellValue("Hosts", fmt.Sprintf("R%d", i+2), val["cpuSockets"])
-		sheets.SetCellValue("Hosts", fmt.Sprintf("S%d", i+2), val["memTotal"])
-		sheets.SetCellValue("Hosts", fmt.Sprintf("T%d", i+2), val["swapTotal"])
-		sheets.SetCellValue("Hosts", fmt.Sprintf("U%d", i+2), val["cpuModel"])
-	}
-
-	utils.WriteXLSXResponse(w, sheets)
+	utils.WriteXLSXResponse(w, xlsx)
 }
 
 // GetHost return all'informations about the host requested in the id path variable
