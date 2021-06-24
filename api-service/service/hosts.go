@@ -18,6 +18,7 @@ package service
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -80,6 +81,52 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsFilters) (*exceliz
 	}
 
 	return lms, nil
+}
+
+func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*excelize.File, error) {
+	hosts, err := as.Database.GetHostDataSummaries(filters)
+	if err != nil {
+		return nil, err
+	}
+
+	xlsx, err := excelize.OpenFile(as.Config.ResourceFilePath + "/templates/template_hosts.xlsx")
+	if err != nil {
+		return nil, utils.NewError(err, "READ_TEMPLATE")
+	}
+
+	for i, val := range hosts {
+		sheet := "Hosts"
+		xlsx.SetCellValue(sheet, fmt.Sprintf("A%d", i+2), val.Hostname)
+		xlsx.SetCellValue(sheet, fmt.Sprintf("B%d", i+2), val.Environment)
+		if val.Cluster != "" && val.VirtualizationNode != "" {
+			xlsx.SetCellValue(sheet, fmt.Sprintf("D%d", i+2), val.Cluster)
+			xlsx.SetCellValue(sheet, fmt.Sprintf("E%d", i+2), val.VirtualizationNode)
+		}
+		xlsx.SetCellValue(sheet, fmt.Sprintf("F%d", i+2), val.AgentVersion)
+		xlsx.SetCellValue(sheet, fmt.Sprintf("G%d", i+2), val.CreatedAt.UTC().String())
+
+		databases := strings.Builder{}
+		for _, v := range val.Databases {
+			databases.WriteString(strings.Join(v, " "))
+		}
+		xlsx.SetCellValue(sheet, fmt.Sprintf("H%d", i+2), databases.String())
+
+		xlsx.SetCellValue(sheet, fmt.Sprintf("I%d", i+2), val.Info.OS)
+		xlsx.SetCellValue(sheet, fmt.Sprintf("J%d", i+2), val.Info.Kernel)
+		xlsx.SetCellValue(sheet, fmt.Sprintf("K%d", i+2), strconv.FormatBool(val.ClusterMembershipStatus.OracleClusterware))
+		xlsx.SetCellValue(sheet, fmt.Sprintf("L%d", i+2), strconv.FormatBool(val.ClusterMembershipStatus.SunCluster))
+		xlsx.SetCellValue(sheet, fmt.Sprintf("M%d", i+2), strconv.FormatBool(val.ClusterMembershipStatus.VeritasClusterServer))
+		xlsx.SetCellValue(sheet, fmt.Sprintf("N%d", i+2), val.Info.HardwareAbstraction)
+		xlsx.SetCellValue(sheet, fmt.Sprintf("O%d", i+2), val.Info.HardwareAbstractionTechnology)
+		xlsx.SetCellValue(sheet, fmt.Sprintf("P%d", i+2), val.Info.CPUThreads)
+		xlsx.SetCellValue(sheet, fmt.Sprintf("Q%d", i+2), val.Info.CPUCores)
+		xlsx.SetCellValue(sheet, fmt.Sprintf("R%d", i+2), val.Info.CPUSockets)
+		xlsx.SetCellValue(sheet, fmt.Sprintf("S%d", i+2), val.Info.MemoryTotal)
+		xlsx.SetCellValue(sheet, fmt.Sprintf("T%d", i+2), val.Info.SwapTotal)
+		xlsx.SetCellValue(sheet, fmt.Sprintf("U%d", i+2), val.Info.CPUModel)
+	}
+
+	return xlsx, nil
 }
 
 func (as *APIService) getCSIsByHostname() (res map[string][]string, err error) {
