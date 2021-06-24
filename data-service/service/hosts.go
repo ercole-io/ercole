@@ -83,6 +83,12 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 		hds.Log.Error(err)
 	}
 
+	if hostdata.Errors != nil && len(hostdata.Errors) > 0 {
+		if err := hds.throwAgentErrorsAlert(hostdata.Hostname, hostdata.Errors); err != nil {
+			hds.Log.Error(err)
+		}
+	}
+
 	return nil
 }
 

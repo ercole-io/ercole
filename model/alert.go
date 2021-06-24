@@ -52,6 +52,7 @@ const (
 	AlertCodeMissingPrimaryDatabase  string = "MISSING_PRIMARY_DATABASE"
 	AlertCodeMissingHostInErcole     string = "MISSING_HOST_IN_ERCOLE"
 	AlertCodeMissingHostInCmdb       string = "MISSING_HOST_IN_CMDB"
+	AlertCodeAgentError              string = "AGENT_ERROR"
 
 	// AGENT
 
@@ -67,7 +68,7 @@ const (
 
 func getAlertCodes() []string {
 	return []string{
-		AlertCodeNewServer, AlertCodeUnlistedRunningDatabase, AlertCodeMissingPrimaryDatabase, AlertCodeMissingHostInErcole, AlertCodeMissingHostInCmdb,
+		AlertCodeNewServer, AlertCodeUnlistedRunningDatabase, AlertCodeMissingPrimaryDatabase, AlertCodeMissingHostInErcole, AlertCodeMissingHostInCmdb, AlertCodeAgentError,
 		AlertCodeNoData,
 		AlertCodeNewDatabase, AlertCodeNewLicense, AlertCodeNewOption, AlertCodeIncreasedCPUCores,
 	}

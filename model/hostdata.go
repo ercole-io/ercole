@@ -37,6 +37,7 @@ type HostData struct {
 	Features                Features                `json:"features"`
 	Filesystems             []Filesystem            `json:"filesystems"`
 	Clusters                []ClusterInfo           `json:"clusters"`
+	Errors                  []AgentError            `json:"errors"`
 	OtherInfo               map[string]interface{}  `json:"-"`
 }
 
@@ -58,4 +59,14 @@ func (v HostData) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *HostData) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+}
+
+func (v *HostData) AddErrors(errs ...error) {
+	for _, e := range errs {
+		if e == nil {
+			continue
+		}
+
+		v.Errors = append(v.Errors, NewAgentError(e))
+	}
 }

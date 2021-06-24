@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -159,6 +160,36 @@ func (hds *HostDataService) throwMissingPrimaryDatabase(hostname, secondaryDbNam
 		OtherInfo: map[string]interface{}{
 			"hostname": hostname,
 			"dbname":   secondaryDbName,
+		},
+	}
+
+	return hds.AlertSvcClient.ThrowNewAlert(alert)
+}
+
+func (hds *HostDataService) throwAgentErrorsAlert(hostname string, errs []model.AgentError) error {
+	b := strings.Builder{}
+	prefix := ""
+	if len(errs) > 1 {
+		prefix = "- "
+	}
+
+	for _, e := range errs {
+		b.WriteString(prefix)
+		b.WriteString(e.Message)
+		b.WriteString("\n")
+	}
+
+	alert := model.Alert{
+		AlertCategory:           model.AlertCategoryEngine,
+		AlertAffectedTechnology: nil,
+		AlertCode:               model.AlertCodeAgentError,
+		AlertSeverity:           model.AlertSeverityCritical,
+		AlertStatus:             model.AlertStatusNew,
+		Description:             b.String(),
+		Date:                    hds.TimeNow(),
+		OtherInfo: map[string]interface{}{
+			"hostname": hostname,
+			"errors":   errs,
 		},
 	}
 

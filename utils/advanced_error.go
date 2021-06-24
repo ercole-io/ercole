@@ -42,12 +42,24 @@ func (ae *AdvancedError) Unwrap() error {
 	return ae.Err
 }
 
-// NewError return a pointer to a new AdvancedError using the err as base error and class as class name
+// NewError return a pointer to a new AdvancedError using the err as base error adding message and source position
 func NewError(err error, message ...string) *AdvancedError {
 	_, file, line, ok := runtime.Caller(1)
 	if ok {
 		return &AdvancedError{Err: err, Message: strings.Join(message, " "), Source: file, Line: line}
 	} else {
-		return &AdvancedError{Err: err, Message: strings.Join(message, " "), Source: "????", Line: -1}
+		return &AdvancedError{Err: err, Message: strings.Join(message, " "), Source: "unknown", Line: -1}
+	}
+}
+
+// NewErrorf return a pointer to a new AdvancedError using the err as base error and class as class name
+func NewErrorf(format string, a ...interface{}) *AdvancedError {
+	err := fmt.Errorf(format, a...)
+
+	_, file, line, ok := runtime.Caller(1)
+	if ok {
+		return &AdvancedError{Err: err, Message: "", Source: file, Line: line}
+	} else {
+		return &AdvancedError{Err: err, Message: "", Source: "unknown", Line: -1}
 	}
 }
