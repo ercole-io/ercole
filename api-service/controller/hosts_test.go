@@ -580,57 +580,6 @@ func TestSearchHosts_XLSXSuccess(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []map[string]interface{}{
-		{
-			"agentVersion":                  "latest",
-			"cpuCores":                      24,
-			"cpuModel":                      "Intel(R) Xeon(R) Platinum 8160 CPU @ 2.10GHz",
-			"cpuSockets":                    1,
-			"cpuThreads":                    48,
-			"cluster":                       nil,
-			"createdAt":                     utils.PDT("2020-07-01T09:18:03.715+02:00"),
-			"environment":                   "PROD",
-			"hacmp":                         false,
-			"hardwareAbstraction":           "PH",
-			"hardwareAbstractionTechnology": "PH",
-			"hostname":                      "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
-			"kernel":                        "Linux 4.1.12-124.26.12.el7uek.x86_64",
-			"location":                      "Italy",
-			"memTotal":                      376,
-			"os":                            "Red Hat Enterprise Linux 7.6",
-			"oracleClusterware":             true,
-			"sunCluster":                    false,
-			"swapTotal":                     23,
-			"veritasClusterServer":          false,
-			"virtualizationNode":            nil,
-			"_id":                           utils.Str2oid("5efc38ab79f92e4cbf283b0b"),
-		},
-		{
-			"agentVersion":                  "latest",
-			"cpuCores":                      1,
-			"cpuModel":                      "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-			"cpuSockets":                    2,
-			"cpuThreads":                    2,
-			"cluster":                       "Puzzait",
-			"createdAt":                     utils.PDT("2020-07-01T09:18:03.726+02:00"),
-			"environment":                   "TST",
-			"hacmp":                         false,
-			"hardwareAbstraction":           "VIRT",
-			"hardwareAbstractionTechnology": "VMWARE",
-			"hostname":                      "test-db",
-			"kernel":                        "Linux 3.10.0-514.el7.x86_64",
-			"location":                      "Germany",
-			"memTotal":                      3,
-			"os":                            "Red Hat Enterprise Linux 7.6",
-			"oracleClusterware":             false,
-			"sunCluster":                    false,
-			"swapTotal":                     1,
-			"veritasClusterServer":          false,
-			"virtualizationNode":            "s157-cb32c10a56c256746c337e21b3f82402",
-			"_id":                           utils.Str2oid("5efc38ab79f92e4cbf283b13"),
-		},
-	}
-
 	filters := dto.SearchHostsFilters{
 		Search:         []string{"foobar"},
 		SortBy:         "Processors",
@@ -650,13 +599,12 @@ func TestSearchHosts_XLSXSuccess(t *testing.T) {
 		LTECPUThreads:  -1,
 		GTECPUThreads:  -1,
 	}
-	as.EXPECT().
-		SearchHosts("summary", gomock.Any()).
-		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
-			assert.EqualValues(t, filters, actual)
 
-			return expectedRes, nil
-		})
+	xlsx := excelize.NewFile()
+
+	as.EXPECT().
+		SearchHostsAsXLSX(filters).
+		Return(xlsx, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchHosts)
@@ -665,53 +613,10 @@ func TestSearchHosts_XLSXSuccess(t *testing.T) {
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 	handler.ServeHTTP(rr, req)
-
 	require.Equal(t, http.StatusOK, rr.Code)
-	sp, err := excelize.OpenReader(rr.Body)
-	require.NoError(t, err)
-	assert.Equal(t, "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804", sp.GetCellValue("Hosts", "A2"))
-	assert.Equal(t, "PROD", sp.GetCellValue("Hosts", "B2"))
-	assert.Equal(t, "", sp.GetCellValue("Hosts", "C2"))
-	assert.Equal(t, "", sp.GetCellValue("Hosts", "D2"))
-	assert.Equal(t, "", sp.GetCellValue("Hosts", "E2"))
-	assert.Equal(t, "latest", sp.GetCellValue("Hosts", "F2"))
-	assert.Equal(t, utils.P("2020-07-01T09:18:03.715+02:00").UTC().String(), sp.GetCellValue("Hosts", "G2"))
-	assert.Equal(t, "", sp.GetCellValue("Hosts", "H2"))
-	assert.Equal(t, "Red Hat Enterprise Linux 7.6", sp.GetCellValue("Hosts", "I2"))
-	assert.Equal(t, "Linux 4.1.12-124.26.12.el7uek.x86_64", sp.GetCellValue("Hosts", "J2"))
-	assert.Equal(t, "1", sp.GetCellValue("Hosts", "K2"))
-	assert.Equal(t, "0", sp.GetCellValue("Hosts", "L2"))
-	assert.Equal(t, "0", sp.GetCellValue("Hosts", "M2"))
-	assert.Equal(t, "PH", sp.GetCellValue("Hosts", "N2"))
-	assert.Equal(t, "PH", sp.GetCellValue("Hosts", "O2"))
-	assert.Equal(t, "48", sp.GetCellValue("Hosts", "P2"))
-	assert.Equal(t, "24", sp.GetCellValue("Hosts", "Q2"))
-	assert.Equal(t, "1", sp.GetCellValue("Hosts", "R2"))
-	assert.Equal(t, "376", sp.GetCellValue("Hosts", "S2"))
-	assert.Equal(t, "23", sp.GetCellValue("Hosts", "T2"))
-	assert.Equal(t, "Intel(R) Xeon(R) Platinum 8160 CPU @ 2.10GHz", sp.GetCellValue("Hosts", "U2"))
 
-	assert.Equal(t, "test-db", sp.GetCellValue("Hosts", "A3"))
-	assert.Equal(t, "TST", sp.GetCellValue("Hosts", "B3"))
-	assert.Equal(t, "", sp.GetCellValue("Hosts", "C3"))
-	assert.Equal(t, "Puzzait", sp.GetCellValue("Hosts", "D3"))
-	assert.Equal(t, "s157-cb32c10a56c256746c337e21b3f82402", sp.GetCellValue("Hosts", "E3"))
-	assert.Equal(t, "latest", sp.GetCellValue("Hosts", "F3"))
-	assert.Equal(t, utils.P("2020-07-01T09:18:03.726+02:00").UTC().String(), sp.GetCellValue("Hosts", "G3"))
-	assert.Equal(t, "", sp.GetCellValue("Hosts", "H3"))
-	assert.Equal(t, "Red Hat Enterprise Linux 7.6", sp.GetCellValue("Hosts", "I3"))
-	assert.Equal(t, "Linux 3.10.0-514.el7.x86_64", sp.GetCellValue("Hosts", "J3"))
-	assert.Equal(t, "0", sp.GetCellValue("Hosts", "K3"))
-	assert.Equal(t, "0", sp.GetCellValue("Hosts", "L3"))
-	assert.Equal(t, "0", sp.GetCellValue("Hosts", "M3"))
-	assert.Equal(t, "VIRT", sp.GetCellValue("Hosts", "N3"))
-	assert.Equal(t, "VMWARE", sp.GetCellValue("Hosts", "O3"))
-	assert.Equal(t, "2", sp.GetCellValue("Hosts", "P3"))
-	assert.Equal(t, "1", sp.GetCellValue("Hosts", "Q3"))
-	assert.Equal(t, "2", sp.GetCellValue("Hosts", "R3"))
-	assert.Equal(t, "3", sp.GetCellValue("Hosts", "S3"))
-	assert.Equal(t, "1", sp.GetCellValue("Hosts", "T3"))
-	assert.Equal(t, "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz", sp.GetCellValue("Hosts", "U3"))
+	_, err = excelize.OpenReader(rr.Body)
+	assert.NoError(t, err)
 }
 
 func TestSearchHosts_XLSXUnprocessableEntity1(t *testing.T) {
@@ -795,63 +700,8 @@ func TestSearchHosts_XLSXInternalServerError1(t *testing.T) {
 		GTECPUThreads:  -1,
 	}
 	as.EXPECT().
-		SearchHosts("summary", filters).
+		SearchHostsAsXLSX(filters).
 		Return(nil, aerrMock)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchHosts)
-	req, err := http.NewRequest("GET", "/hosts", nil)
-	require.NoError(t, err)
-	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
-}
-
-func TestSearchHosts_XLSXInternalServerError2(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	expectedRes := []map[string]interface{}{
-		{
-			"OK": true,
-		},
-	}
-
-	filters := dto.SearchHostsFilters{
-		Search:         []string{""},
-		SortBy:         "",
-		SortDesc:       false,
-		Location:       "",
-		Environment:    "",
-		OlderThan:      utils.MAX_TIME,
-		PageNumber:     -1,
-		PageSize:       -1,
-		Cluster:        new(string),
-		LTEMemoryTotal: -1,
-		GTEMemoryTotal: -1,
-		LTESwapTotal:   -1,
-		GTESwapTotal:   -1,
-		LTECPUCores:    -1,
-		GTECPUCores:    -1,
-		LTECPUThreads:  -1,
-		GTECPUThreads:  -1,
-	}
-	as.EXPECT().
-		SearchHosts("summary", gomock.Any()).
-		DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
-			assert.EqualValues(t, filters, actual)
-
-			return expectedRes, nil
-		})
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchHosts)
