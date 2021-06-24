@@ -17,13 +17,13 @@
 package service
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
 func (as *APIService) SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error) {
@@ -41,13 +41,7 @@ func (as *APIService) SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*exce
 		return nil, err
 	}
 
-	file, err := excelize.OpenFile(as.Config.ResourceFilePath + "/templates/template_generic.xlsx")
-	if err != nil {
-		return nil, err
-	}
-
 	sheet := "Instances"
-	file.SetSheetName("Sheet1", sheet)
 	headers := []string{
 		"Name",
 		"Version",
@@ -67,13 +61,12 @@ func (as *APIService) SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*exce
 		"Databases",
 		"Table Schemas",
 	}
-
-	for i, val := range headers {
-		column := rune('A' + i)
-		file.SetCellValue(sheet, fmt.Sprintf("%c1", column), val)
+	file, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
 	}
 
-	axisHelp := utils.NewAxisHelper(1)
+	axisHelp := exutils.NewAxisHelper(1)
 	for _, val := range instances {
 		nextAxis := axisHelp.NewRow()
 
