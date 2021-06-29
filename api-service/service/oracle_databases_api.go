@@ -18,6 +18,7 @@ package service
 
 import (
 	"fmt"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 	"strings"
 	"time"
 
@@ -33,6 +34,52 @@ func (as *APIService) SearchOracleDatabaseAddms(search string, sortBy string, so
 // SearchOracleDatabaseSegmentAdvisors search segment advisors
 func (as *APIService) SearchOracleDatabaseSegmentAdvisors(search string, sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]dto.OracleDatabaseSegmentAdvisor, error) {
 	return as.Database.SearchOracleDatabaseSegmentAdvisors(strings.Split(search, " "), sortBy, sortDesc, location, environment, olderThan)
+}
+
+func (as *APIService) SearchOracleDatabaseSegmentAdvisorsAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	segmentAdvisors, err := as.Database.SearchOracleDatabaseSegmentAdvisors([]string{}, "", false, filter.Location, filter.Environment, filter.OlderThan)
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Segment_Advisor"
+	headers := []string{
+		"ReclaimableGB",
+		"GB Total",
+		"Retrieve",
+		"Hostname",
+		"DB Names",
+		"Segment Owner",
+		"Segment Name",
+		"Segment Type",
+		"Partition Name",
+		"Recommendation",
+	}
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+	axisHelp := exutils.NewAxisHelper(1)
+
+	for _ , val := range segmentAdvisors {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue(sheet,nextAxis(), val.Reclaimable)
+		sheets.SetCellValue(sheet,nextAxis(), val.SegmentsSize)
+		if val.SegmentsSize == 0 {
+			nextAxis()
+		}else {
+			sheets.SetCellValue(sheet,nextAxis(), val.Reclaimable/val.SegmentsSize)
+		}
+		sheets.SetCellValue(sheet,nextAxis(), val.Hostname)
+		sheets.SetCellValue(sheet,nextAxis(), val.Dbname)
+		sheets.SetCellValue(sheet,nextAxis(), val.SegmentOwner)
+		sheets.SetCellValue(sheet,nextAxis(), val.SegmentName)
+		sheets.SetCellValue(sheet,nextAxis(), val.SegmentType)
+		sheets.SetCellValue(sheet,nextAxis(), val.PartitionName)
+		sheets.SetCellValue(sheet,nextAxis(), val.Recommendation)
+	}
+
+	return sheets, err
 }
 
 // SearchOracleDatabasePatchAdvisors search patch advisors
