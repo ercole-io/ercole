@@ -19,6 +19,7 @@ require (
 	github.com/goraz/onion v0.1.3
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
+	github.com/hashicorp/go-multierror v1.0.0
 	github.com/hashicorp/go-version v1.2.1
 	github.com/jinzhu/now v1.1.1
 	github.com/jtblin/go-ldap-client v0.0.0-20170223121919-b73f66626b33
