@@ -16,9 +16,11 @@
 package model
 
 import (
+	"errors"
 	"reflect"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
+	"github.com/hashicorp/go-multierror"
 )
 
 // SchemaVersion contains the version of the schema
@@ -64,6 +66,15 @@ func (v *HostData) UnmarshalBSON(data []byte) error {
 func (v *HostData) AddErrors(errs ...error) {
 	for _, e := range errs {
 		if e == nil {
+			continue
+		}
+
+		var merr *multierror.Error
+		if errors.As(e, &merr) {
+			for _, merre := range merr.Errors {
+				v.Errors = append(v.Errors, NewAgentError(merre))
+			}
+
 			continue
 		}
 

@@ -16,6 +16,7 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -30,8 +31,8 @@ type AgentError struct {
 func NewAgentError(e error) AgentError {
 	agentError := AgentError{}
 
-	ae, ok := e.(*utils.AdvancedError)
-	if !ok {
+	var ae *utils.AdvancedError
+	if !errors.As(e, &ae) {
 		agentError.Message = e.Error()
 		return agentError
 	}
