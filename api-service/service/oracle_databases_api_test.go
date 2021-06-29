@@ -16,13 +16,13 @@
 package service
 
 import (
-	"testing"
-
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/utils"
-	gomock "github.com/golang/mock/gomock"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 func TestSearchOracleDatabaseAddms_Success(t *testing.T) {
@@ -100,23 +100,22 @@ func TestSearchOracleDatabaseAddms_Fail(t *testing.T) {
 	assert.Equal(t, aerrMock, err)
 }
 
-func TestSearchOracleDatabaseSegmentAdvisors_Success(t *testing.T) {
+func TestSearchOracleDatabaseSegmentAdvisorsXLSX_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := APIService{
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
 		Database: db,
 	}
-
-	expectedRes := []dto.OracleDatabaseSegmentAdvisor{
+	data := []dto.OracleDatabaseSegmentAdvisor{
 		{
-			// Id:             utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
+			Reclaimable:    4.3,
+			SegmentsSize:   50,
 			Hostname:       "test-db3",
-			Location:       "Germany",
-			Environment:    "PRD",
-			CreatedAt:      utils.P("2020-05-13T10:08:23.885+02:00").UTC(),
-			Dbname:         "foobar4",
-			Reclaimable:    534.34,
+			Dbname:         "foobar3",
 			SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
 			SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
 			SegmentType:    "TABLE",
@@ -124,13 +123,10 @@ func TestSearchOracleDatabaseSegmentAdvisors_Success(t *testing.T) {
 			Recommendation: "32b36a77e7481343ef175483c086859e",
 		},
 		{
-			// _id:            utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
-			Hostname:       "test-db3",
-			Location:       "Germany",
-			Environment:    "PRD",
-			CreatedAt:      utils.P("2020-05-13T10:08:23.885+02:00").UTC(),
-			Dbname:         "foobar3",
 			Reclaimable:    4.3,
+			SegmentsSize:   0,
+			Hostname:       "test-db3",
+			Dbname:         "foobar3",
 			SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
 			SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
 			SegmentType:    "TABLE",
@@ -140,20 +136,42 @@ func TestSearchOracleDatabaseSegmentAdvisors_Success(t *testing.T) {
 	}
 
 	db.EXPECT().SearchOracleDatabaseSegmentAdvisors(
-		[]string{"foo", "bar", "foobarx"}, "Reclaimable",
-		true, "Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(expectedRes, nil).Times(1)
+		[]string{}, "",
+		false, "Italy", "TST", utils.P("2019-12-05T14:02:03Z"),
+	).Return(data, nil).Times(1)
 
-	res, err := as.SearchOracleDatabaseSegmentAdvisors(
-		"foo bar foobarx", "Reclaimable",
-		true, "Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	)
+	filter := dto.GlobalFilter{
+		Location:    "Italy",
+		Environment: "TST",
+		OlderThan:   utils.P("2019-12-05T14:02:03Z"),
+	}
 
+	actual, err := as.SearchOracleDatabaseSegmentAdvisorsAsXLSX(filter)
 	require.NoError(t, err)
-	assert.Equal(t, expectedRes, res)
+
+	assert.Equal(t, "4.3", actual.GetCellValue("Segment_Advisor", "A2"))
+	assert.Equal(t, "50", actual.GetCellValue("Segment_Advisor", "B2"))
+	assert.Equal(t, "0.086", actual.GetCellValue("Segment_Advisor", "C2"))
+	assert.Equal(t, "test-db3", actual.GetCellValue("Segment_Advisor", "D2"))
+	assert.Equal(t, "foobar3", actual.GetCellValue("Segment_Advisor", "E2"))
+	assert.Equal(t, "Brittany-424f6a749eef846fa40a1ad1ee3d3674", actual.GetCellValue("Segment_Advisor", "F2"))
+	assert.Equal(t, "pasta-973e4d1f937da4d9bc1b092f934ab0ec", actual.GetCellValue("Segment_Advisor", "G2"))
+	assert.Equal(t, "TABLE", actual.GetCellValue("Segment_Advisor", "H2"))
+	assert.Equal(t, "iyyiuyyoy", actual.GetCellValue("Segment_Advisor", "I2"))
+
+	assert.Equal(t, "4.3", actual.GetCellValue("Segment_Advisor", "A3"))
+	assert.Equal(t, "0", actual.GetCellValue("Segment_Advisor", "B3"))
+	assert.Equal(t, "", actual.GetCellValue("Segment_Advisor", "C3"))
+	assert.Equal(t, "test-db3", actual.GetCellValue("Segment_Advisor", "D3"))
+	assert.Equal(t, "foobar3", actual.GetCellValue("Segment_Advisor", "E3"))
+	assert.Equal(t, "Brittany-424f6a749eef846fa40a1ad1ee3d3674", actual.GetCellValue("Segment_Advisor", "F3"))
+	assert.Equal(t, "pasta-973e4d1f937da4d9bc1b092f934ab0ec", actual.GetCellValue("Segment_Advisor", "G3"))
+	assert.Equal(t, "TABLE", actual.GetCellValue("Segment_Advisor", "H3"))
+	assert.Equal(t, "iyyiuyyoy", actual.GetCellValue("Segment_Advisor", "I3"))
+
 }
 
-func TestSearchOracleDatabaseSegmentAdvisors_Fail(t *testing.T) {
+func TestSearchOracleDatabaseSegmentAdvisorsXLSX_Fail(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -162,14 +180,17 @@ func TestSearchOracleDatabaseSegmentAdvisors_Fail(t *testing.T) {
 	}
 
 	db.EXPECT().SearchOracleDatabaseSegmentAdvisors(
-		[]string{"foo", "bar", "foobarx"}, "Reclaimable",
-		true, "Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+		[]string{}, "",
+		false, "Italy", "TST", utils.P("2019-12-05T14:02:03Z"),
 	).Return(nil, aerrMock).Times(1)
 
-	res, err := as.SearchOracleDatabaseSegmentAdvisors(
-		"foo bar foobarx", "Reclaimable",
-		true, "Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	)
+	filter := dto.GlobalFilter{
+		Location:    "Italy",
+		Environment: "TST",
+		OlderThan:   utils.P("2019-12-05T14:02:03Z"),
+	}
+
+	res, err := as.SearchOracleDatabaseSegmentAdvisorsAsXLSX(filter)
 
 	require.Nil(t, res)
 	assert.Equal(t, aerrMock, err)

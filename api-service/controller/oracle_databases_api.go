@@ -193,59 +193,19 @@ func (ctrl *APIController) SearchOracleDatabaseSegmentAdvisorsJSON(w http.Respon
 
 // SearchOracleDatabaseSegmentAdvisorsXLSX search segment advisors data using the filters in the request returning it in XLSX format
 func (ctrl *APIController) SearchOracleDatabaseSegmentAdvisorsXLSX(w http.ResponseWriter, r *http.Request) {
-	var search string
-	var sortBy string
-	var sortDesc bool
-	var location string
-	var environment string
-	var olderThan time.Time
-
-	var err error
-	//parse the query params
-	search = r.URL.Query().Get("search")
-	sortBy = r.URL.Query().Get("sort-by")
-	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
+	filter, err := dto.GetGlobalFilter(r)
+	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	//get the data
-	segmentAdvisors, err := ctrl.Service.SearchOracleDatabaseSegmentAdvisors(search, sortBy, sortDesc, location, environment, olderThan)
+	xlsx, err := ctrl.Service.SearchOracleDatabaseSegmentAdvisorsAsXLSX(*filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	//Open the sheet
-	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_segment_advisor.xlsx")
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewError(err, "READ_TEMPLATE"))
-		return
-	}
-
-	//Add the data to the sheet
-	for i, val := range segmentAdvisors {
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("A%d", i+2), val.Dbname)
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("B%d", i+2), val.Environment)
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("C%d", i+2), val.Hostname)
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("D%d", i+2), val.PartitionName)
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("E%d", i+2), val.Reclaimable)
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("F%d", i+2), val.Recommendation)
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("G%d", i+2), val.SegmentName)
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("H%d", i+2), val.SegmentOwner)
-		sheets.SetCellValue("Segment_Advisor", fmt.Sprintf("I%d", i+2), val.SegmentType)
-	}
-
-	//Write it to the response
-	utils.WriteXLSXResponse(w, sheets)
+	utils.WriteXLSXResponse(w, xlsx)
 }
 
 // SearchOracleDatabasePatchAdvisors search patch advisors data using the filters in the request

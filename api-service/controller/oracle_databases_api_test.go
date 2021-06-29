@@ -16,11 +16,10 @@
 package controller
 
 import (
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/360EntSecGroup-Skylar/excelize"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
@@ -558,72 +557,29 @@ func TestSearchOracleDatabaseSegmentAdvisors_XLSXSuccess(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	segmentAdvisors := []dto.OracleDatabaseSegmentAdvisor{
-		{
-			// _id:            utils.Str2oid("5efc38ab79f92e4cbf283b04"),
-			CreatedAt:      utils.P("2020-07-01T09:18:03.704+02:00"),
-			Dbname:         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			Environment:    "SVIL",
-			Hostname:       "publicitate-36d06ca83eafa454423d2097f4965517",
-			Location:       "Germany",
-			PartitionName:  "",
-			Reclaimable:    0.5,
-			Recommendation: "3d7e603f515ed171fc99bdb908f38fb2",
-			SegmentName:    "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3",
-			SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-			SegmentType:    "TABLE",
-		},
-		{
-			// _id:            utils.Str2oid("5efc38ab79f92e4cbf283b13"),
-			CreatedAt:      utils.P("2020-07-01T09:18:03.726+02:00"),
-			Dbname:         "ERCOLE",
-			Environment:    "TST",
-			Hostname:       "test-db",
-			Location:       "Germany",
-			PartitionName:  "iyyiuyyoy",
-			Reclaimable:    0.5,
-			Recommendation: "32b36a77e7481343ef175483c086859e",
-			SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-			SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-			SegmentType:    "TABLE",
-		},
+	filter := dto.GlobalFilter{
+		Location:    "Italy",
+		Environment: "TST",
+		OlderThan:   utils.P("2020-06-10T11:54:59Z"),
 	}
 
+	xlsx := excelize.File{}
+
 	as.EXPECT().
-		SearchOracleDatabaseSegmentAdvisors("foobar", "Reclaimable", true, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(segmentAdvisors, nil)
+		SearchOracleDatabaseSegmentAdvisorsAsXLSX(filter).
+		Return(&xlsx, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabaseSegmentAdvisors)
-	req, err := http.NewRequest("GET", "/segment-advisors?search=foobar&sort-by=Reclaimable&sort-desc=true&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	handler := http.HandlerFunc(ac.SearchOracleDatabaseSegmentAdvisorsXLSX)
+	req, err := http.NewRequest("GET", "/segment-advisors?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	sp, err := excelize.OpenReader(rr.Body)
+	_, err = excelize.OpenReader(rr.Body)
 	require.NoError(t, err)
-
-	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sp.GetCellValue("Segment_Advisor", "A2"))
-	assert.Equal(t, "SVIL", sp.GetCellValue("Segment_Advisor", "B2"))
-	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sp.GetCellValue("Segment_Advisor", "C2"))
-	assert.Equal(t, "", sp.GetCellValue("Segment_Advisor", "D2"))
-	assert.Equal(t, "0.5", sp.GetCellValue("Segment_Advisor", "E2"))
-	assert.Equal(t, "3d7e603f515ed171fc99bdb908f38fb2", sp.GetCellValue("Segment_Advisor", "F2"))
-	assert.Equal(t, "nascar1-f9b3703bf8b3cc7ae070cd28e7fed7b3", sp.GetCellValue("Segment_Advisor", "G2"))
-	assert.Equal(t, "Brittany-424f6a749eef846fa40a1ad1ee3d3674", sp.GetCellValue("Segment_Advisor", "H2"))
-	assert.Equal(t, "TABLE", sp.GetCellValue("Segment_Advisor", "I2"))
-
-	assert.Equal(t, "ERCOLE", sp.GetCellValue("Segment_Advisor", "A3"))
-	assert.Equal(t, "TST", sp.GetCellValue("Segment_Advisor", "B3"))
-	assert.Equal(t, "test-db", sp.GetCellValue("Segment_Advisor", "C3"))
-	assert.Equal(t, "iyyiuyyoy", sp.GetCellValue("Segment_Advisor", "D3"))
-	assert.Equal(t, "0.5", sp.GetCellValue("Segment_Advisor", "E3"))
-	assert.Equal(t, "32b36a77e7481343ef175483c086859e", sp.GetCellValue("Segment_Advisor", "F3"))
-	assert.Equal(t, "pasta-973e4d1f937da4d9bc1b092f934ab0ec", sp.GetCellValue("Segment_Advisor", "G3"))
-	assert.Equal(t, "Brittany-424f6a749eef846fa40a1ad1ee3d3674", sp.GetCellValue("Segment_Advisor", "H3"))
-	assert.Equal(t, "TABLE", sp.GetCellValue("Segment_Advisor", "I3"))
 }
 
 func TestSearchOracleDatabaseSegmentAdvisors_XLSXUnprocessableEntity1(t *testing.T) {
@@ -640,8 +596,8 @@ func TestSearchOracleDatabaseSegmentAdvisors_XLSXUnprocessableEntity1(t *testing
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabaseSegmentAdvisors)
-	req, err := http.NewRequest("GET", "/segment-advisors?sort-desc=sadasddasasd", nil)
+	handler := http.HandlerFunc(ac.SearchOracleDatabaseSegmentAdvisorsXLSX)
+	req, err := http.NewRequest("GET", "/segment-advisors?older-than=sadasddasasd", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)
 
@@ -687,36 +643,15 @@ func TestSearchOracleDatabaseSegmentAdvisors_XLSXInternalServerError1(t *testing
 		Log: utils.NewLogger("TEST"),
 	}
 
-	as.EXPECT().
-		SearchOracleDatabaseSegmentAdvisors("", "", false, "", "", utils.MAX_TIME).
-		Return(nil, aerrMock)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabaseSegmentAdvisors)
-	req, err := http.NewRequest("GET", "/segment-advisors", nil)
-	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
-}
-
-func TestSearchOracleDatabaseSegmentAdvisors_XLSXInternalServerError2(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+	filter := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
 	}
 
-	segmentAdvisors := make([]dto.OracleDatabaseSegmentAdvisor, 0)
 	as.EXPECT().
-		SearchOracleDatabaseSegmentAdvisors("", "", false, "", "", utils.MAX_TIME).
-		Return(segmentAdvisors, nil)
+		SearchOracleDatabaseSegmentAdvisorsAsXLSX(filter).
+		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabaseSegmentAdvisors)
