@@ -25,7 +25,6 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/gddo/httputil"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SearchOracleDatabaseAddms search addms data using the filters in the request
@@ -285,20 +284,9 @@ func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsJSON(w http.Response
 
 // SearchOracleDatabasePatchAdvisorsXLSX search patch advisors data using the filters in the request returning it in XLSX format
 func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsXLSX(w http.ResponseWriter, r *http.Request) {
-	var search string
-	var sortBy string
-	var sortDesc bool
 	var windowTime int
-	var location string
-	var environment string
-	var olderThan time.Time
-	var status string
-
-	var err error
-	//parse the query params
-	search = r.URL.Query().Get("search")
-	sortBy = r.URL.Query().Get("sort-by")
-	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
+	filter, err := dto.GetGlobalFilter(r)
+	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
@@ -308,45 +296,13 @@ func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsXLSX(w http.Response
 		return
 	}
 
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-	status = r.URL.Query().Get("status")
-	if status != "" && status != "OK" && status != "KO" {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(errors.New("invalid status"), "Invalid  status"))
-		return
-	}
-
-	//get the data
-	patchAdvisors, err := ctrl.Service.SearchOracleDatabasePatchAdvisors(search, sortBy, sortDesc, -1, -1, ctrl.TimeNow().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
+	xlsx, err := ctrl.Service.SearchOracleDatabasePatchAdvisorsAsXLSX(ctrl.TimeNow().AddDate(0, -windowTime, 0), *filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	//Open the sheet
-	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_patch_advisor.xlsx")
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewError(err, "READ_TEMPLATE"))
-		return
-	}
-
-	//Add the data to the sheet
-	for i, val := range patchAdvisors {
-		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("A%d", i+2), val["description"])                                     //Description column
-		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("B%d", i+2), val["hostname"])                                        //Hostname column
-		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("C%d", i+2), val["dbname"])                                          //Dbname column
-		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("D%d", i+2), val["dbver"])                                           //Dbver column
-		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("E%d", i+2), val["date"].(primitive.DateTime).Time().UTC().String()) //Date column
-		sheets.SetCellValue("Patch_Advisor", fmt.Sprintf("F%d", i+2), val["status"])                                          //Status column
-	}
-
-	//Write it to the response
-	utils.WriteXLSXResponse(w, sheets)
+	utils.WriteXLSXResponse(w, xlsx)
 }
 
 // SearchOracleDatabases search databases data using the filters in the request
