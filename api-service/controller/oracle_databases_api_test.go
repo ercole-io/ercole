@@ -949,7 +949,7 @@ func TestSearchOracleDatabasePatchAdvisors_XLSXSuccess(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	windowTime := utils.P("2019-12-05T14:02:03Z")
+	windowTime := utils.P("2019-05-05T14:02:03Z")
 	filter := dto.GlobalFilter{
 		Location:    "Italy",
 		Environment: "TST",
@@ -961,7 +961,6 @@ func TestSearchOracleDatabasePatchAdvisors_XLSXSuccess(t *testing.T) {
 	as.EXPECT().
 		SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime, filter).
 		Return(&xlsx, nil)
-
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabasePatchAdvisors)
@@ -1013,7 +1012,7 @@ func TestSearchOracleDatabasePatchAdvisors_XLSXInternalServerError1(t *testing.T
 		Log: utils.NewLogger("TEST"),
 	}
 
-	windowTime := utils.P("2019-11-05T14:02:03Z").UTC()
+	windowTime := utils.P("2019-05-05T14:02:03Z")
 	filter := dto.GlobalFilter{
 		Location:    "",
 		Environment: "",
