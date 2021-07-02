@@ -16,15 +16,14 @@
 package service
 
 import (
-	"strconv"
-	"testing"
-
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/utils"
-	gomock "github.com/golang/mock/gomock"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"strconv"
+	"testing"
 )
 
 func TestSearchClusters_Success(t *testing.T) {
@@ -153,7 +152,7 @@ func TestGetClusterXLSX(t *testing.T) {
 		VMsErcoleAgentCount: 1,
 	}
 
-	var clusterName string = "pippo"
+	var clusterName = "pippo"
 	var olderThan = utils.P("2019-11-05T14:02:03Z")
 
 	db.EXPECT().
@@ -192,4 +191,46 @@ func TestGetClusterXLSX(t *testing.T) {
 	assert.Equal(t, "", nextVal())
 	assert.Equal(t, "", nextVal())
 	assert.Equal(t, "", nextVal())
+}
+
+func TestSearchClustersAsXLSX_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Database: db,
+	}
+
+	data := []map[string]interface{}{
+		{
+			"name":          "Puzzait",
+			"type":          "VMWare/VMWare",
+			"cpu":          140,
+			"sockets":       10,
+			"virtualizationNodes": "s157-cb32c10a56c256746c337e21b3f82402",
+		},
+	}
+
+	db.EXPECT().SearchClusters(
+		false, []string{}, "",
+		false, -1, -1,
+		"Italy", "TST", utils.P("2019-12-05T14:02:03Z"),
+	).Return(data, nil).Times(1)
+
+	filter := dto.GlobalFilter{
+		Location:    "Italy",
+		Environment: "TST",
+		OlderThan:   utils.P("2019-12-05T14:02:03Z"),
+	}
+
+	actual, err := as.SearchClustersAsXLSX(filter)
+	require.NoError(t, err)
+	assert.Equal(t, "Puzzait", actual.GetCellValue("Hypervisor", "A2"))
+	assert.Equal(t, "VMWare/VMWare", actual.GetCellValue("Hypervisor", "B2"))
+	assert.Equal(t, "140", actual.GetCellValue("Hypervisor", "C2"))
+	assert.Equal(t, "10", actual.GetCellValue("Hypervisor", "D2"))
+	assert.Equal(t, "s157-cb32c10a56c256746c337e21b3f82402", actual.GetCellValue("Hypervisor", "E2"))
 }
