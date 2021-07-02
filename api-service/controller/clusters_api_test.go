@@ -282,7 +282,7 @@ func TestSearchCluster_JSONInternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestSearchCluster_XLSXSuccess(t *testing.T) {
+func TestSearchClustersAsXLSX_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -296,67 +296,32 @@ func TestSearchCluster_XLSXSuccess(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	res := []map[string]interface{}{
-		{
-			"cpu":                         0.0,
-			"environment":                 "PROD",
-			"hostname":                    "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
-			"hostnameAgentVirtualization": "fb-canvas-b9b1d8fa8328fe972b1e031621e8a6c9",
-			"location":                    "Italy",
-			"name":                        "not_in_cluster",
-			"virtualizationNodes":         "aspera-b1fe49e8501c9ef031e5acff4b5e69a9",
-			"sockets":                     0.0,
-			"type":                        "unknown",
-			"vmsCount":                    4,
-			"vmsErcoleAgentCount":         1,
-			"_id":                         utils.Str2oid("5e8c234b24f648a08585bd3d"),
-		},
-		{
-			"cpu":                         140,
-			"environment":                 "PROD",
-			"hostname":                    "test-virt",
-			"hostnameAgentVirtualization": "test-virt",
-			"location":                    "Italy",
-			"name":                        "Puzzait",
-			"sockets":                     10,
-			"type":                        "vmware",
-			"vmsCount":                    2,
-			"vmsErcoleAgentCount":         2,
-			"virtualizationNodes":         "s157-cb32c10a56c256746c337e21b3f82402",
-			"_id":                         utils.Str2oid("5efc38ab79f92e4cbf283b11"),
-		},
+	filter := dto.GlobalFilter{
+		Location:    "Italy",
+		Environment: "TST",
+		OlderThan:   utils.P("2020-06-10T11:54:59Z"),
 	}
 
+	xlsx := excelize.File{}
+
 	as.EXPECT().
-		SearchClusters(false, "foobar", "CPU", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(res, nil)
+		SearchClustersAsXLSX(filter).
+		Return(&xlsx, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchClusters)
-	req, err := http.NewRequest("GET", "/clusters?search=foobar&sort-by=CPU&sort-desc=true&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	handler := http.HandlerFunc(ac.SearchClustersXLSX)
+	req, err := http.NewRequest("GET", "/clusters?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	sp, err := excelize.OpenReader(rr.Body)
+	_, err = excelize.OpenReader(rr.Body)
 	require.NoError(t, err)
-
-	assert.Equal(t, "not_in_cluster", sp.GetCellValue("Hypervisor", "A2"))
-	assert.Equal(t, "unknown", sp.GetCellValue("Hypervisor", "B2"))
-	assert.Equal(t, "0", sp.GetCellValue("Hypervisor", "C2"))
-	assert.Equal(t, "0", sp.GetCellValue("Hypervisor", "D2"))
-	assert.Equal(t, "aspera-b1fe49e8501c9ef031e5acff4b5e69a9", sp.GetCellValue("Hypervisor", "E2"))
-
-	assert.Equal(t, "Puzzait", sp.GetCellValue("Hypervisor", "A3"))
-	assert.Equal(t, "vmware", sp.GetCellValue("Hypervisor", "B3"))
-	assert.Equal(t, "140", sp.GetCellValue("Hypervisor", "C3"))
-	assert.Equal(t, "10", sp.GetCellValue("Hypervisor", "D3"))
-	assert.Equal(t, "s157-cb32c10a56c256746c337e21b3f82402", sp.GetCellValue("Hypervisor", "E3"))
 }
 
-func TestSearchCluster_XLSXUnprocessableEntity1(t *testing.T) {
+func TestSearchClustersAS_XLSXUnprocessableEntity1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -371,8 +336,8 @@ func TestSearchCluster_XLSXUnprocessableEntity1(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchClusters)
-	req, err := http.NewRequest("GET", "/clusters?sort-desc=sdsdsdf", nil)
+	handler := http.HandlerFunc(ac.SearchClustersXLSX)
+	req, err := http.NewRequest("GET", "/clusters?older-than=dsasdasd", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)
 
@@ -406,7 +371,7 @@ func TestSearchCluster_XLSXUnprocessableEntity2(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchCluster_XLSXInternalServerError1(t *testing.T) {
+func TestSearchClustersAs_XLSXInternalServerError1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -420,46 +385,19 @@ func TestSearchCluster_XLSXInternalServerError1(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
+	filter := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
 	as.EXPECT().
-		SearchClusters(false, "foobar", "CPU", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		SearchClustersAsXLSX(filter).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchClusters)
-	req, err := http.NewRequest("GET", "/clusters?search=foobar&sort-by=CPU&sort-desc=true&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
-	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
-}
-
-func TestSearchCluster_XLSXInternalServerError2(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	res := []map[string]interface{}{
-		{
-			"OK": true,
-		},
-	}
-
-	as.EXPECT().
-		SearchClusters(false, "foobar", "CPU", true, -1, -1, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(res, nil)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchClusters)
-	req, err := http.NewRequest("GET", "/clusters?search=foobar&sort-by=CPU&sort-desc=true&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	req, err := http.NewRequest("GET", "/clusters", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)
 

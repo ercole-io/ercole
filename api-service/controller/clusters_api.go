@@ -17,11 +17,10 @@ package controller
 
 import (
 	"errors"
-	"fmt"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"net/http"
 	"time"
 
-	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
@@ -100,55 +99,19 @@ func (ctrl *APIController) SearchClustersJSON(w http.ResponseWriter, r *http.Req
 
 // SearchClustersXLSX search clusters data using the filters in the request returning it in XLSX format
 func (ctrl *APIController) SearchClustersXLSX(w http.ResponseWriter, r *http.Request) {
-	var search string
-	var sortBy string
-	var sortDesc bool
-	var location string
-	var environment string
-	var olderThan time.Time
-
-	var err error
-	//parse the query params
-	search = r.URL.Query().Get("search")
-	sortBy = r.URL.Query().Get("sort-by")
-	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
+	filter, err := dto.GetGlobalFilter(r)
+	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	location = r.URL.Query().Get("location")
-	environment = r.URL.Query().Get("environment")
-
-	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	//get the data
-	clusters, err := ctrl.Service.SearchClusters(false, search, sortBy, sortDesc, -1, -1, location, environment, olderThan)
+	xlsx, err := ctrl.Service.SearchClustersAsXLSX(*filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	//Open the sheet
-	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_clusters.xlsx")
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewError(err, "READ_TEMPLATE"))
-		return
-	}
-
-	//Add the data to the sheet
-	for i, val := range clusters {
-		sheets.SetCellValue("Hypervisor", fmt.Sprintf("A%d", i+2), val["name"])
-		sheets.SetCellValue("Hypervisor", fmt.Sprintf("B%d", i+2), val["type"])
-		sheets.SetCellValue("Hypervisor", fmt.Sprintf("C%d", i+2), val["cpu"])
-		sheets.SetCellValue("Hypervisor", fmt.Sprintf("D%d", i+2), val["sockets"])
-		sheets.SetCellValue("Hypervisor", fmt.Sprintf("E%d", i+2), val["virtualizationNodes"])
-	}
-
-	//Write it to the response
-	utils.WriteXLSXResponse(w, sheets)
+	utils.WriteXLSXResponse(w, xlsx)
 }
 
 // GetCluster get cluster data using the filters in the request
