@@ -113,7 +113,6 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 /usr/share/ercole/templates/template_addm.xlsx
 /usr/share/ercole/templates/template_alerts.xlsx
 /usr/share/ercole/templates/template_cluster.xlsx
-/usr/share/ercole/templates/template_clusters.xlsx
 /usr/share/ercole/templates/template_databases.xlsx
 /usr/share/ercole/templates/template_generic.xlsx
 /usr/share/ercole/templates/template_lms.xlsm
