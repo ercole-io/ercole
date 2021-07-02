@@ -49,6 +49,7 @@ type APIServiceInterface interface {
 	SearchAlerts(mode string, search string, sortBy string, sortDesc bool, page, pageSize int, location, environment, severity, status string, from, to time.Time) ([]map[string]interface{}, error)
 	// SearchClusters search clusters
 	SearchClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error)
+	SearchClustersAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	// GetCluster return the cluster specified in the clusterName param
 	GetCluster(clusterName string, olderThan time.Time) (*dto.Cluster, error)
 	// GetClusterXLSX return  cluster vms as xlxs file
