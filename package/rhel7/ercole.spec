@@ -117,7 +117,6 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 /usr/share/ercole/templates/template_databases.xlsx
 /usr/share/ercole/templates/template_generic.xlsx
 /usr/share/ercole/templates/template_lms.xlsm
-/usr/share/ercole/templates/template_patch_advisor.xlsx
 /usr/share/ercole/examples/ercole-rhel5-x86_64.repo
 /usr/share/ercole/examples/ercole-rhel6-x86_64.repo
 /usr/share/ercole/examples/ercole-rhel7-x86_64.repo

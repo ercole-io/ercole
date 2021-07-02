@@ -949,62 +949,31 @@ func TestSearchOracleDatabasePatchAdvisors_XLSXSuccess(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	expectedRes := []map[string]interface{}{
-		{
-			"createdAt":   utils.P("2020-07-01T09:18:03.704+02:00"),
-			"date":        utils.PDT("2012-04-16T02:00:00+02:00"),
-			"dbname":      "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"dbver":       "11.2.0.3.0 Enterprise Edition",
-			"description": "PSU 11.2.0.3.2",
-			"environment": "SVIL",
-			"hostname":    "publicitate-36d06ca83eafa454423d2097f4965517",
-			"location":    "Germany",
-			"status":      "KO",
-			"_id":         utils.Str2oid("5efc38ab79f92e4cbf283b04"),
-		},
-		{
-			"createdAt":   utils.P("2020-04-07T08:52:59.872+02:00"),
-			"date":        utils.PDT("2012-04-16T02:00:00+02:00"),
-			"dbname":      "ERCOLE",
-			"dbver":       "12.2.0.1.0 Enterprise Edition",
-			"description": "PSU 11.2.0.3.2",
-			"environment": "TST",
-			"hostname":    "test-db",
-			"location":    "Germany",
-			"status":      "KO",
-			"_id":         utils.Str2oid("5e8c234b24f648a08585bd43"),
-		},
+	windowTime := utils.P("2019-12-05T14:02:03Z")
+	filter := dto.GlobalFilter{
+		Location:    "Italy",
+		Environment: "TST",
+		OlderThan:   utils.P("2020-06-10T11:54:59Z"),
 	}
 
+	xlsx := excelize.File{}
+
 	as.EXPECT().
-		SearchOracleDatabasePatchAdvisors("foobar", "Hostname", true, -1, -1, utils.P("2019-03-05T14:02:03Z"), "Italy", "TST", utils.P("2020-06-10T11:54:59Z"), "KO").
-		Return(expectedRes, nil)
+		SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime, filter).
+		Return(&xlsx, nil)
+
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabasePatchAdvisors)
-	req, err := http.NewRequest("GET", "/patch-advisors?search=foobar&sort-by=Hostname&sort-desc=true&window-time=8&status=KO&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	req, err := http.NewRequest("GET", "/patch-advisors?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	sp, err := excelize.OpenReader(rr.Body)
+	_, err = excelize.OpenReader(rr.Body)
 	require.NoError(t, err)
-
-	assert.Equal(t, "PSU 11.2.0.3.2", sp.GetCellValue("Patch_Advisor", "A2"))
-	assert.Equal(t, "publicitate-36d06ca83eafa454423d2097f4965517", sp.GetCellValue("Patch_Advisor", "B2"))
-	assert.Equal(t, "4wcqjn-ecf040bdfab7695ab332aef7401f185c", sp.GetCellValue("Patch_Advisor", "C2"))
-	assert.Equal(t, "11.2.0.3.0 Enterprise Edition", sp.GetCellValue("Patch_Advisor", "D2"))
-	assert.Equal(t, utils.P("2012-04-16T00:00:00Z").String(), sp.GetCellValue("Patch_Advisor", "E2"))
-	assert.Equal(t, "KO", sp.GetCellValue("Patch_Advisor", "F2"))
-
-	assert.Equal(t, "PSU 11.2.0.3.2", sp.GetCellValue("Patch_Advisor", "A3"))
-	assert.Equal(t, "test-db", sp.GetCellValue("Patch_Advisor", "B3"))
-	assert.Equal(t, "ERCOLE", sp.GetCellValue("Patch_Advisor", "C3"))
-	assert.Equal(t, "12.2.0.1.0 Enterprise Edition", sp.GetCellValue("Patch_Advisor", "D3"))
-	assert.Equal(t, utils.P("2012-04-16T00:00:00Z").String(), sp.GetCellValue("Patch_Advisor", "E3"))
-	assert.Equal(t, "KO", sp.GetCellValue("Patch_Advisor", "F3"))
 }
 
 func TestSearchOracleDatabasePatchAdvisors_XLSXUnprocessableEntity1(t *testing.T) {
@@ -1021,80 +990,8 @@ func TestSearchOracleDatabasePatchAdvisors_XLSXUnprocessableEntity1(t *testing.T
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabasePatchAdvisors)
-	req, err := http.NewRequest("GET", "/patch-advisors?sort-desc=dsasdasd", nil)
-	require.NoError(t, err)
-	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-}
-
-func TestSearchOracleDatabasePatchAdvisors_XLSXUnprocessableEntity2(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config: config.Configuration{
-			ResourceFilePath: "../../resources",
-		},
-		Log: utils.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabasePatchAdvisors)
-	req, err := http.NewRequest("GET", "/patch-advisors?window-time=dsasdasd", nil)
-	require.NoError(t, err)
-	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-}
-
-func TestSearchOracleDatabasePatchAdvisors_XLSXUnprocessableEntity3(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config: config.Configuration{
-			ResourceFilePath: "../../resources",
-		},
-		Log: utils.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabasePatchAdvisors)
+	handler := http.HandlerFunc(ac.SearchOracleDatabasePatchAdvisorsXLSX)
 	req, err := http.NewRequest("GET", "/patch-advisors?older-than=dsasdasd", nil)
-	require.NoError(t, err)
-	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-}
-
-func TestSearchOracleDatabasePatchAdvisors_XLSXUnprocessableEntity4(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config: config.Configuration{
-			ResourceFilePath: "../../resources",
-		},
-		Log: utils.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabasePatchAdvisors)
-	req, err := http.NewRequest("GET", "/patch-advisors?status=dsasdasd", nil)
 	require.NoError(t, err)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
@@ -1116,43 +1013,20 @@ func TestSearchOracleDatabasePatchAdvisors_XLSXInternalServerError1(t *testing.T
 		Log: utils.NewLogger("TEST"),
 	}
 
+	windowTime := utils.P("2019-11-05T14:02:03Z").UTC()
+	filter := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
 	as.EXPECT().
-		SearchOracleDatabasePatchAdvisors("", "", false, -1, -1, utils.P("2019-05-05T14:02:03Z"), "", "", utils.MAX_TIME, "").
+		SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime, filter).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabasePatchAdvisors)
 	req, err := http.NewRequest("GET", "/patch-advisors", nil)
-	require.NoError(t, err)
-	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
-}
-func TestSearchOracleDatabasePatchAdvisors_XLSXInternalServerError2(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Log:     utils.NewLogger("TEST"),
-	}
-
-	expectedRes := []map[string]interface{}{
-		{
-			"OK": true,
-		},
-	}
-
-	as.EXPECT().
-		SearchOracleDatabasePatchAdvisors("foobar", "Hostname", true, -1, -1, utils.P("2019-03-05T14:02:03Z"), "Italy", "TST", utils.P("2020-06-10T11:54:59Z"), "KO").
-		Return(expectedRes, nil)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabasePatchAdvisors)
-	req, err := http.NewRequest("GET", "/patch-advisors?search=foobar&sort-by=Hostname&sort-desc=true&window-time=8&status=KO&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
