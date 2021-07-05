@@ -311,8 +311,8 @@ func TestSearchClustersAsXLSX_Success(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchClustersXLSX)
 	req, err := http.NewRequest("GET", "/clusters?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
-	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 	handler.ServeHTTP(rr, req)
 
