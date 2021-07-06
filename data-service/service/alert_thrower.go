@@ -180,7 +180,7 @@ func (hds *HostDataService) throwAgentErrorsAlert(hostname string, errs []model.
 	}
 
 	alert := model.Alert{
-		AlertCategory:           model.AlertCategoryAgent,
+		AlertCategory:           model.AlertCategoryEngine,
 		AlertAffectedTechnology: nil,
 		AlertCode:               model.AlertCodeAgentError,
 		AlertSeverity:           model.AlertSeverityCritical,
