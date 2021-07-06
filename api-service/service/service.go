@@ -47,6 +47,7 @@ type APIServiceInterface interface {
 	ListManagedTechnologies(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.TechnologyStatus, error)
 	// SearchAlerts search alerts
 	SearchAlerts(mode string, search string, sortBy string, sortDesc bool, page, pageSize int, location, environment, severity, status string, from, to time.Time) ([]map[string]interface{}, error)
+	SearchAlertsAsXLSX(from time.Time, to time.Time, filter dto.GlobalFilter) (*excelize.File, error)
 	// SearchClusters search clusters
 	SearchClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error)
 	SearchClustersAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
