@@ -17,6 +17,8 @@
 package service
 
 import (
+	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 	"strings"
 	"time"
 
@@ -31,6 +33,40 @@ func (as *APIService) SearchAlerts(mode string, search string, sortBy string, so
 ) ([]map[string]interface{}, error) {
 	return as.Database.SearchAlerts(mode, strings.Split(search, " "), sortBy, sortDesc, page, pageSize,
 		location, environment, severity, status, from, to)
+}
+// SearchAlertsAsXLSX return alerts as xlxs file
+func (as *APIService) SearchAlertsAsXLSX(from, to time.Time, filter dto.GlobalFilter) (*excelize.File, error) {
+	alerts, err := as.Database.SearchAlerts("all", []string{}, "", false, -1, -1, filter.Location, filter.Environment, "", "", from, to)
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Alerts"
+	headers := []string {
+		"Type",
+		"Date",
+		"Severity",
+		"Hostname",
+		"Code",
+		"Description",
+	}
+
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+
+	axisHelp := exutils.NewAxisHelper(1)
+	for _, val := range alerts {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue("Alerts", nextAxis(), val["alertCategory"])
+		sheets.SetCellValue("Alerts", nextAxis(), val["date"].(primitive.DateTime).Time().UTC().String())
+		sheets.SetCellValue("Alerts", nextAxis(), val["alertSeverity"])
+		sheets.SetCellValue("Alerts", nextAxis(), val["hostname"])
+		sheets.SetCellValue("Alerts", nextAxis(), val["alertCode"])
+		sheets.SetCellValue("Alerts", nextAxis(), val["description"])
+	}
+	return sheets, nil
 }
 
 // AckAlerts ack the specified alerts
