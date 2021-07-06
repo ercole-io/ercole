@@ -68,10 +68,10 @@ func ValidateHostdata(raw []byte) error {
 			if len(value) > 80 {
 				value = value[:78] + ".."
 			}
-			errorMsg.WriteString(fmt.Sprintf("- %s. Value: [%v]\n", err, value))
+			errorMsg.WriteString(fmt.Sprintf("\t- %s. Value: [%v]\n", err, value))
 		}
 
-		return fmt.Errorf("%w: %s", utils.ErrInvalidHostdata, errorMsg.String())
+		return fmt.Errorf("%w:\n%s", utils.ErrInvalidHostdata, errorMsg.String())
 	}
 
 	return nil

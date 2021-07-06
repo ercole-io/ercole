@@ -37,14 +37,21 @@ func (ctrl *DataController) InsertHostData(w http.ResponseWriter, r *http.Reques
 	}
 	defer r.Body.Close()
 
-	if err := schema.ValidateHostdata(raw); err != nil {
-		if errors.Is(err, utils.ErrInvalidHostdata) {
-			ctrl.Log.Infof("Invalid Hostdata: %s", err)
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+	if validationErr := schema.ValidateHostdata(raw); validationErr != nil {
+		if errors.Is(validationErr, utils.ErrInvalidHostdata) {
+			ctrl.Log.Info(validationErr)
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, validationErr)
+
+			if unmarshalErr := json.Unmarshal(raw, &hostdata); unmarshalErr != nil {
+				ctrl.Service.AlertInvalidHostData(validationErr, nil)
+			} else {
+				ctrl.Service.AlertInvalidHostData(validationErr, &hostdata)
+			}
+
 			return
 		}
 
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, validationErr)
 		return
 	}
 
