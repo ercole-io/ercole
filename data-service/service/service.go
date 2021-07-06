@@ -32,6 +32,7 @@ import (
 
 type HostDataServiceInterface interface {
 	InsertHostData(hostdata model.HostDataBE) error
+	AlertInvalidHostData(validationErr error, hostdata *model.HostDataBE)
 	CompareCmdbInfo(cmdbInfo dto.CmdbInfo) error
 }
 

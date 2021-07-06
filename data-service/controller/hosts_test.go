@@ -27,6 +27,7 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 	gomock "github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -90,6 +91,12 @@ func TestUpdateHostInfo_UnprocessableEntity1(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
+	as.EXPECT().
+		AlertInvalidHostData(gomock.Any(), nil).
+		Do(func(err error, _ interface{}) {
+			assert.ErrorIs(t, err, utils.ErrInvalidHostdata)
+		})
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.InsertHostData)
 	req, err := http.NewRequest("PUT", "/", strings.NewReader("{asasdsad"))
@@ -110,6 +117,13 @@ func TestUpdateHostInfo_UnprocessableEntity2(t *testing.T) {
 		Config:  config.Configuration{},
 		Log:     utils.NewLogger("TEST"),
 	}
+
+	as.EXPECT().
+		AlertInvalidHostData(gomock.Any(), gomock.Any()).
+		Do(func(err error, hd interface{}) {
+			assert.ErrorIs(t, err, utils.ErrInvalidHostdata)
+			assert.NotNil(t, hd)
+		})
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.InsertHostData)

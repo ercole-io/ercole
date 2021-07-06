@@ -109,3 +109,18 @@ func (hds *HostDataService) patchHostData(hostdata model.HostDataBE) (model.Host
 
 	return hostdata, nil
 }
+
+func (hds *HostDataService) AlertInvalidHostData(validationErr error, hostdata *model.HostDataBE) {
+	hostname := "Unknown"
+	errs := make([]model.AgentError, 0)
+	errs = append(errs, model.NewAgentError(validationErr))
+
+	if hostdata != nil && hostdata.Errors != nil && len(hostdata.Errors) > 0 {
+		hostname = hostdata.Hostname
+		errs = append(errs, hostdata.Errors...)
+	}
+
+	if err := hds.throwAgentErrorsAlert(hostname, errs); err != nil {
+		hds.Log.Error(err)
+	}
+}
