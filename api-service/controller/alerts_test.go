@@ -343,7 +343,7 @@ func TestSearchAlertsAsXLSX_Success(t *testing.T) {
 	filter := dto.GlobalFilter{
 		Location:    "Italy",
 		Environment: "TST",
-		OlderThan: utils.MAX_TIME,
+		OlderThan:   utils.MAX_TIME,
 	}
 
 	from := utils.P("2020-06-10T11:54:59Z")
@@ -370,7 +370,7 @@ func TestSearchAlertsAsXLSX_Success(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestSearchAlerts_XLSXUnprocessableEntity1(t *testing.T) {
+func TestSearchAlertsXLSX_UnprocessableEntity1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -395,7 +395,7 @@ func TestSearchAlerts_XLSXUnprocessableEntity1(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchAlerts_XLSXUnprocessableEntity2(t *testing.T) {
+func TestSearchAlertsXLSX_UnprocessableEntity2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -420,7 +420,7 @@ func TestSearchAlerts_XLSXUnprocessableEntity2(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchAlerts_XLSXUnprocessableEntity3(t *testing.T) {
+func TestSearchAlertsXLSX_UnprocessableEntity3(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -445,7 +445,7 @@ func TestSearchAlerts_XLSXUnprocessableEntity3(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchAlerts_XLSXUnprocessableEntity4(t *testing.T) {
+func TestSearchAlertsXLSX_UnprocessableEntity4(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -470,7 +470,7 @@ func TestSearchAlerts_XLSXUnprocessableEntity4(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchAlerts_XLSXUnprocessableEntity5(t *testing.T) {
+func TestSearchAlertsXLSX_UnprocessableEntity5(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -495,7 +495,7 @@ func TestSearchAlerts_XLSXUnprocessableEntity5(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchAlerts_XLSXUnprocessableEntity6(t *testing.T) {
+func TestSearchAlertsXLSX_UnprocessableEntity6(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -520,7 +520,7 @@ func TestSearchAlerts_XLSXUnprocessableEntity6(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchAlerts_XLSXUnprocessableEntity7(t *testing.T) {
+func TestSearchAlertsXLSX_UnprocessableEntity7(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -545,7 +545,7 @@ func TestSearchAlerts_XLSXUnprocessableEntity7(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchAlerts_XLSXInternalServerError(t *testing.T) {
+func TestSearchAlertsXLSX_InternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -558,14 +558,22 @@ func TestSearchAlerts_XLSXInternalServerError(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
+	filter := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	from := utils.P("2020-06-10T11:54:59Z")
+	to := utils.P("2020-06-17T11:54:59Z")
+
 	as.EXPECT().
-		SearchAlerts("all",
-			"foo", "CreatedAt", true, -1, -1, "", "", model.AlertSeverityCritical, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
+		SearchAlertsAsXLSX(from, to, filter).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts?search=foo&sort-by=CreatedAt&sort-desc=true&severity=CRITICAL&status=ACK&from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
+	req, err := http.NewRequest("GET", "/alerts?from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 	require.NoError(t, err)
@@ -575,7 +583,7 @@ func TestSearchAlerts_XLSXInternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestSearchAlerts_XLSXInternalServerError2(t *testing.T) {
+func TestSearchAlertsXLSX_InternalServerError2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -588,48 +596,22 @@ func TestSearchAlerts_XLSXInternalServerError2(t *testing.T) {
 		Log: utils.NewLogger("TEST"),
 	}
 
-	res := []map[string]interface{}{
-		{
-			"_id":                     utils.Str2oid("5f1943c97238d4bb6c98ef82"),
-			"alertAffectedTechnology": "Oracle/Database",
-			"alertCategory":           "LICENSE",
-			"alertCode":               "NEW_LICENSE",
-			"alertSeverity":           "CRITICAL",
-			"alertStatus":             "NEW",
-			"date":                    utils.PDT("2020-07-23T10:01:13.746+02:00"),
-			"description":             "A new Enterprise license has been enabled to ercsoldbx",
-			"hostname":                "ercsoldbx",
-			"otherInfo": map[string]interface{}{
-				"hostname": "ercsoldbx",
-			},
-		},
-		{
-			"_id":                     utils.Str2oid("5f1943c97238d4bb6c98ef83"),
-			"alertAffectedTechnology": "Oracle/Database",
-			"alertCategory":           "LICENSE",
-			"alertCode":               "NEW_OPTION",
-			"alertSeverity":           "CRITICAL",
-			"alertStatus":             "NEW",
-			"date":                    utils.PDT("2020-07-23T10:01:13.746+02:00"),
-			"description":             "The database ERCSOL19 on ercsoldbx has enabled new features (Diagnostics Pack) on server",
-			"hostname":                "ercsoldbx",
-			"otherInfo": map[string]interface{}{
-				"dbname": "ERCSOL19",
-				"features": []string{
-					"Diagnostics Pack",
-				},
-				"hostname": "ercsoldbx",
-			},
-		},
+	filter := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
 	}
+
+	from := utils.P("2020-06-10T11:54:59Z")
+	to := utils.P("2020-06-17T11:54:59Z")
+
 	as.EXPECT().
-		SearchAlerts("all",
-			"foo", "CreatedAt", true, -1, -1, "", "", model.AlertSeverityCritical, model.AlertStatusAck, utils.P("2020-06-10T11:54:59Z"), utils.P("2020-06-17T11:54:59Z")).
-		Return(res, nil)
+		SearchAlertsAsXLSX(from, to, filter).
+		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts?search=foo&sort-by=CreatedAt&sort-desc=true&severity=CRITICAL&status=ACK&from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
+	req, err := http.NewRequest("GET", "/alerts?from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 	require.NoError(t, err)
