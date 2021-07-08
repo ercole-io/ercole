@@ -135,6 +135,7 @@ type APIServiceInterface interface {
 	AddOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*dto.OracleDatabaseAgreementFE, error)
 	UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*dto.OracleDatabaseAgreementFE, error)
 	GetOracleDatabaseAgreements(filter dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
+	GetOracleDatabaseAgreementsAsXLSX(filter dto.GetOracleDatabaseAgreementsFilter) (*excelize.File, error)
 	DeleteOracleDatabaseAgreement(id primitive.ObjectID) error
 	AddHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) error
 	DeleteHostFromOracleDatabaseAgreement(id primitive.ObjectID, hostname string) error
