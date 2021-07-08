@@ -18,6 +18,7 @@ package controller
 import (
 	"encoding/json"
 	"errors"
+	"github.com/golang/gddo/httputil"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -108,7 +109,18 @@ func (ctrl *APIController) GetOracleDatabaseAgreements(w http.ResponseWriter, r 
 		return
 	}
 
-	agreements, err := ctrl.Service.GetOracleDatabaseAgreements(searchOracleDatabaseAgreementsFilters)
+	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
+	switch choiche {
+	case "application/json":
+		ctrl.GetOracleDatabaseAgreementsJSON(w, r, searchOracleDatabaseAgreementsFilters)
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		ctrl.GetOracleDatabaseAgreementsXLSX(w, r, searchOracleDatabaseAgreementsFilters)
+	}
+}
+
+func (ctrl *APIController) GetOracleDatabaseAgreementsJSON(w http.ResponseWriter, r *http.Request, filters dto.GetOracleDatabaseAgreementsFilter) {
+	agreements, err := ctrl.Service.GetOracleDatabaseAgreements(filters)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -119,6 +131,16 @@ func (ctrl *APIController) GetOracleDatabaseAgreements(w http.ResponseWriter, r 
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, response)
+}
+
+func (ctrl *APIController) GetOracleDatabaseAgreementsXLSX(w http.ResponseWriter, r *http.Request, filters dto.GetOracleDatabaseAgreementsFilter) {
+	file, err := ctrl.Service.GetOracleDatabaseAgreementsAsXLSX(filters)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteXLSXResponse(w, file)
 }
 
 func parseGetOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.GetOracleDatabaseAgreementsFilter,

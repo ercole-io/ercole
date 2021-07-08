@@ -2204,3 +2204,82 @@ func TestDeleteHostFromOracleDatabaseAgreement(t *testing.T) {
 		assert.Nil(t, err)
 	})
 }
+
+func TestGetOracleDatabaseAgreementsAsXLSX_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Database: db,
+	}
+
+	agreement := model.OracleDatabaseAgreement{
+		AgreementID:     "5051863",
+		CSI:             "13902248",
+		ID:              utils.Str2oid("609ce3072eff5d5540ec4a28"),
+		LicenseTypeID:   licenseTypesSample[0].ID,
+		ReferenceNumber: "37255828",
+		Unlimited:       false,
+		Count:           30,
+		CatchAll:        false,
+		Restricted:      false,
+		Hosts:           []string{"test-db", "ercsoldbx"},
+	}
+
+	searchedAgreementItem := dto.OracleDatabaseAgreementFE{
+		ID:                       agreement.ID,
+		AgreementID:              agreement.AgreementID,
+		CSI:                      agreement.CSI,
+		LicenseTypeID:            agreement.LicenseTypeID,
+		ItemDescription:          "Oracle Database Enterprise Edition",
+		Metric:                   "Named User Plus Perpetual",
+		ReferenceNumber:          agreement.ReferenceNumber,
+		Unlimited:                false,
+		CatchAll:                 false,
+		Restricted:               false,
+		Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{},
+		LicensesPerCore:          0,
+		LicensesPerUser:          350,
+		AvailableLicensesPerCore: 0,
+		AvailableLicensesPerUser: 0,
+	}
+	as.mockGetOracleDatabaseAgreements = func(filters dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error) {
+		return []dto.OracleDatabaseAgreementFE{searchedAgreementItem}, nil
+	}
+
+	filter := dto.GetOracleDatabaseAgreementsFilter{
+		AgreementID:                 "",
+		LicenseTypeID:               "",
+		ItemDescription:             "",
+		CSI:                         "",
+		Metric:                      "",
+		ReferenceNumber:             "",
+		Unlimited:                   "true",
+		CatchAll:                    "",
+		LicensesPerCoreLTE:          -1,
+		LicensesPerCoreGTE:          -1,
+		LicensesPerUserLTE:          -1,
+		LicensesPerUserGTE:          -1,
+		AvailableLicensesPerCoreLTE: -1,
+		AvailableLicensesPerCoreGTE: -1,
+		AvailableLicensesPerUserLTE: -1,
+		AvailableLicensesPerUserGTE: -1,
+	}
+
+	actual, err := as.GetOracleDatabaseAgreementsAsXLSX(filter)
+	require.NoError(t, err)
+
+	assert.Equal(t, "5051863", actual.GetCellValue("Agreements", "A2"))
+	assert.Equal(t, "PID001", actual.GetCellValue("Agreements", "B2"))
+	assert.Equal(t, "Oracle Database Enterprise Edition", actual.GetCellValue("Agreements", "C2"))
+	assert.Equal(t, "Named User Plus Perpetual", actual.GetCellValue("Agreements", "D2"))
+	assert.Equal(t, "13902248", actual.GetCellValue("Agreements", "E2"))
+	assert.Equal(t, "37255828", actual.GetCellValue("Agreements", "F2"))
+	assert.Equal(t, "0", actual.GetCellValue("Agreements", "H2"))
+	assert.Equal(t, "350", actual.GetCellValue("Agreements", "I2"))
+	assert.Equal(t, "0", actual.GetCellValue("Agreements", "J2"))
+	assert.Equal(t, "0", actual.GetCellValue("Agreements", "K2"))
+}
