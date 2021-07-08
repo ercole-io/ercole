@@ -18,6 +18,7 @@ package controller
 import (
 	"bytes"
 	"fmt"
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -1109,6 +1110,128 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement_FailedInternalServerErr
 	req = mux.SetURLVars(req, map[string]string{
 		"id": "5f50a98611959b1baa17525e",
 	})
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestGetOracleDatabaseAgreementsXLSX_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	filter := dto.GetOracleDatabaseAgreementsFilter{
+		AgreementID:                 "",
+		LicenseTypeID:               "",
+		ItemDescription:             "",
+		CSI:                         "",
+		Metric:                      "",
+		ReferenceNumber:             "",
+		Unlimited:                   "true",
+		CatchAll:                    "",
+		LicensesPerCoreLTE:          -1,
+		LicensesPerCoreGTE:          -1,
+		LicensesPerUserLTE:          -1,
+		LicensesPerUserGTE:          -1,
+		AvailableLicensesPerCoreLTE: -1,
+		AvailableLicensesPerCoreGTE: -1,
+		AvailableLicensesPerUserLTE: -1,
+		AvailableLicensesPerUserGTE: -1,
+	}
+
+	xlsx := excelize.File{}
+
+	as.EXPECT().
+		GetOracleDatabaseAgreementsAsXLSX(filter).
+		Return(&xlsx, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetOracleDatabaseAgreements)
+	req, err := http.NewRequest("GET", "/?unlimited=true", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	_, err = excelize.OpenReader(rr.Body)
+	require.NoError(t, err)
+}
+
+func TestGetOracleDatabaseAgreementsXLSX_UnprocessableEntity1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetOracleDatabaseAgreements)
+	req, err := http.NewRequest("GET", "/?unlimited=sadasddasasd", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+}
+
+func TestGetOracleDatabaseAgreementsXLSX_InternalServerError1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	filter := dto.GetOracleDatabaseAgreementsFilter{
+		AgreementID:                 "",
+		LicenseTypeID:               "",
+		ItemDescription:             "",
+		CSI:                         "",
+		Metric:                      "",
+		ReferenceNumber:             "",
+		Unlimited:                   "",
+		CatchAll:                    "",
+		LicensesPerCoreLTE:          -1,
+		LicensesPerCoreGTE:          -1,
+		LicensesPerUserLTE:          -1,
+		LicensesPerUserGTE:          -1,
+		AvailableLicensesPerCoreLTE: -1,
+		AvailableLicensesPerCoreGTE: -1,
+		AvailableLicensesPerUserLTE: -1,
+		AvailableLicensesPerUserGTE: -1,
+	}
+
+	as.EXPECT().
+		GetOracleDatabaseAgreementsAsXLSX(filter).
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetOracleDatabaseAgreements)
+	req, err := http.NewRequest("GET", "/", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)

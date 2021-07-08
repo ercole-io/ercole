@@ -17,6 +17,8 @@ package service
 
 import (
 	"errors"
+	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 	"math"
 	"sort"
 	"strings"
@@ -160,6 +162,54 @@ func (as *APIService) GetOracleDatabaseAgreements(filter dto.GetOracleDatabaseAg
 	}
 
 	return filteredAgrs, nil
+}
+
+func (as *APIService) GetOracleDatabaseAgreementsAsXLSX(filter dto.GetOracleDatabaseAgreementsFilter) (*excelize.File, error) {
+	agreements, err := as.GetOracleDatabaseAgreements(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Agreements"
+	headers := []string{
+		"Agreement Number",
+		"Part Number",
+		"Description",
+		"Metric",
+		"CSI",
+		"Reference Number",
+		"ULA",
+		"Licenses Core",
+		"Licenses User",
+		"Available Licenses Core",
+		"Available Licenses User",
+		"Basket",
+		"Restricted",
+	}
+
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+	axisHelp := exutils.NewAxisHelper(1)
+
+	for _, val := range agreements {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue(sheet, nextAxis(), val.AgreementID)
+		sheets.SetCellValue(sheet, nextAxis(), val.LicenseTypeID)
+		sheets.SetCellValue(sheet, nextAxis(), val.ItemDescription)
+		sheets.SetCellValue(sheet, nextAxis(), val.Metric)
+		sheets.SetCellValue(sheet, nextAxis(), val.CSI)
+		sheets.SetCellValue(sheet, nextAxis(), val.ReferenceNumber)
+		sheets.SetCellValue(sheet, nextAxis(), val.Unlimited)
+		sheets.SetCellValue(sheet, nextAxis(), val.LicensesPerCore)
+		sheets.SetCellValue(sheet, nextAxis(), val.LicensesPerUser)
+		sheets.SetCellValue(sheet, nextAxis(), val.AvailableLicensesPerCore)
+		sheets.SetCellValue(sheet, nextAxis(), val.AvailableLicensesPerUser)
+		sheets.SetCellValue(sheet, nextAxis(), val.CatchAll)
+		sheets.SetCellValue(sheet, nextAxis(), val.Restricted)
+	}
+	return sheets, err
 }
 
 // assignOracleDatabaseAgreementsToHosts assign available licenses in each agreements to hosts using licenses
