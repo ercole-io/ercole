@@ -583,44 +583,6 @@ func TestSearchAlertsXLSX_InternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestSearchAlertsXLSX_InternalServerError2(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config: config.Configuration{
-			ResourceFilePath: "asdsad",
-		},
-		Log: utils.NewLogger("TEST"),
-	}
-
-	filter := dto.GlobalFilter{
-		Location:    "",
-		Environment: "",
-		OlderThan:   utils.MAX_TIME,
-	}
-
-	from := utils.P("2020-06-10T11:54:59Z")
-	to := utils.P("2020-06-17T11:54:59Z")
-
-	as.EXPECT().
-		SearchAlertsAsXLSX(from, to, filter).
-		Return(nil, aerrMock)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchAlerts)
-	req, err := http.NewRequest("GET", "/alerts?from=2020-06-10T11%3A54%3A59Z&to=2020-06-17T11%3A54%3A59Z", nil)
-	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusInternalServerError, rr.Code)
-}
-
 func TestAckAlerts_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
