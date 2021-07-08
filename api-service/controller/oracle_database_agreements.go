@@ -134,13 +134,13 @@ func (ctrl *APIController) GetOracleDatabaseAgreementsJSON(w http.ResponseWriter
 }
 
 func (ctrl *APIController) GetOracleDatabaseAgreementsXLSX(w http.ResponseWriter, r *http.Request, filters dto.GetOracleDatabaseAgreementsFilter) {
-	file, err := ctrl.Service.GetOracleDatabaseAgreementsAsXLSX(filters)
+	xlsx, err := ctrl.Service.GetOracleDatabaseAgreementsAsXLSX(filters)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	utils.WriteXLSXResponse(w, file)
+	utils.WriteXLSXResponse(w, xlsx)
 }
 
 func parseGetOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.GetOracleDatabaseAgreementsFilter,
