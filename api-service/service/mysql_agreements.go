@@ -17,7 +17,9 @@
 package service
 
 import (
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -53,4 +55,45 @@ func (as *APIService) DeleteMySQLAgreement(id primitive.ObjectID) error {
 		return err
 	}
 	return nil
+}
+
+
+func (as *APIService) GetMySQLAgreementsAsXLSX() (*excelize.File, error) {
+	agreements, err := as.GetMySQLAgreements()
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Agreements"
+	headers := []string{
+		"Type",
+		"Agreement Number",
+		"CSI",
+		"Number of licenses",
+		"Clusters",
+		"Host",
+	}
+
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+	axisHelp := exutils.NewAxisHelper(1)
+
+	for _, val := range agreements {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue(sheet, nextAxis(), val.Type)
+		sheets.SetCellValue(sheet, nextAxis(), val.AgreementID)
+		sheets.SetCellValue(sheet, nextAxis(), val.CSI)
+		sheets.SetCellValue(sheet, nextAxis(), val.NumberOfLicenses)
+		sheets.SetCellValue(sheet, nextAxis(), val.Clusters)
+		for _, val2 := range val.Hosts {
+			indexAxis := axisHelp.GetIndexRow()
+			sheets.DuplicateRow(sheet, indexAxis())
+			nextCol := axisHelp.InsertNewRow()
+
+			sheets.SetCellValue(sheet, nextCol(), val2)
+		}
+	}
+	return sheets, err
 }
