@@ -90,7 +90,7 @@ func TestCompareCmdbInfo_MissingHostInErcole(t *testing.T) {
 	}
 
 	db.EXPECT().GetCurrentHostnames().
-		Return([]string{"pippo", "topolino"}, nil)
+		Return([]string{"pippo.topolinia.top", "topolino"}, nil)
 
 	alert := model.Alert{
 		AlertCategory: model.AlertCategoryEngine,
@@ -104,7 +104,7 @@ func TestCompareCmdbInfo_MissingHostInErcole(t *testing.T) {
 
 	cmdbInfo := dto.CmdbInfo{
 		Name:      "thisCmdb",
-		Hostnames: []string{"pippo", "topolino", "pluto"},
+		Hostnames: []string{"pippo", "topolino.topolinia.top", "pluto"},
 	}
 	actualErr := hds.CompareCmdbInfo(cmdbInfo)
 	assert.Nil(t, actualErr)
@@ -126,7 +126,7 @@ func TestCompareCmdbInfo_MissingHostInCmdb(t *testing.T) {
 	}
 
 	db.EXPECT().GetCurrentHostnames().
-		Return([]string{"pippo", "topolino", "pluto"}, nil)
+		Return([]string{"pippo.topolinia.top", "topolino", "pluto"}, nil)
 
 	alert := model.Alert{
 		AlertCategory: model.AlertCategoryEngine,
@@ -140,7 +140,7 @@ func TestCompareCmdbInfo_MissingHostInCmdb(t *testing.T) {
 
 	cmdbInfo := dto.CmdbInfo{
 		Name:      "thisCmdb",
-		Hostnames: []string{"pippo", "topolino"},
+		Hostnames: []string{"pippo", "topolino.topolinia.top"},
 	}
 	actualErr := hds.CompareCmdbInfo(cmdbInfo)
 	assert.Nil(t, actualErr)
