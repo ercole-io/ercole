@@ -236,6 +236,10 @@ func (as *APIService) getMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.Datab
 }
 
 func (as *APIService) GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error) {
+	if as.mockGetDatabaseLicensesCompliance != nil {
+		return as.mockGetDatabaseLicensesCompliance()
+	}
+
 	licenses := make([]dto.LicenseCompliance, 0)
 
 	oracle, err := as.GetOracleDatabaseLicensesCompliance()
@@ -250,4 +254,40 @@ func (as *APIService) GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, 
 	}
 	licenses = append(licenses, mysql...)
 	return licenses, nil
+}
+
+func (as *APIService) GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, error) {
+	licenses, err := as.GetDatabaseLicensesCompliance()
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Licenses Compliance"
+	headers := []string{
+		"Part Number",
+		"Description",
+		"Metric",
+		"Consumed",
+		"Covered",
+		"Compliance",
+		"ULA",
+	}
+
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+	axisHelp := exutils.NewAxisHelper(1)
+
+	for _, val := range licenses {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue(sheet, nextAxis(), val.LicenseTypeID)
+		sheets.SetCellValue(sheet, nextAxis(), val.ItemDescription)
+		sheets.SetCellValue(sheet, nextAxis(), val.Metric)
+		sheets.SetCellValue(sheet, nextAxis(), val.Consumed)
+		sheets.SetCellValue(sheet, nextAxis(), val.Covered)
+		sheets.SetCellValue(sheet, nextAxis(), val.Compliance)
+		sheets.SetCellValue(sheet, nextAxis(), val.Unlimited)
+	}
+	return sheets, err
 }
