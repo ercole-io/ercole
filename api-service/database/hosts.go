@@ -157,7 +157,7 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 					}),
 					mu.APUnset("features"),
 					mu.APSet(bson.M{
-						"vmwareOrOVM": mu.APOOr(mu.APOEqual("$info.hardwareAbstractionTechnology", model.HardwareAbstractionTechnologyVmware), mu.APOEqual("$info.hardwareAbstractionPlatform", model.HardwareAbstractionTechnologyOvm)),
+						"isVirtualServer": mu.APOEqual("$info.hardwareAbstraction", model.HardwareAbstractionVirtual),
 						"database.pdbs": mu.APOCond("$database.isCDB", bson.M{
 							"$concatArrays": bson.A{
 								bson.A{""},
@@ -168,8 +168,8 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 					mu.APUnwind("$database.pdbs"),
 					mu.APProject(bson.M{
 						// "Database":           1,
-						"physicalServerName": mu.APOCond("$vmwareOrOVM", mu.APOIfNull("$cluster", ""), "$hostname"),
-						"virtualServerName":  mu.APOCond("$vmwareOrOVM", "$hostname", mu.APOIfNull("$cluster", "")),
+						"physicalServerName": mu.APOCond("$isVirtualServer", mu.APOIfNull("$cluster", ""), "$hostname"),
+						"virtualServerName":  mu.APOCond("$isVirtualServer", "$hostname", mu.APOIfNull("$cluster", "")),
 						"virtualizationTechnology": bson.M{
 							"$switch": bson.M{
 								"branches": bson.A{
