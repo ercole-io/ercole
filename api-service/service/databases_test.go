@@ -463,3 +463,39 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 
 	assert.Equal(t, expected, actual)
 }
+
+func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Database: db,
+	}
+
+	licenses := dto.LicenseCompliance{
+			LicenseTypeID:   "L47247",
+			ItemDescription: "Oracle Real Application Testing",
+			Metric:          "Processor Perpetual",
+			Consumed:        0,
+			Covered:         0,
+			Compliance:      1,
+			Unlimited:       false,
+	}
+	as.mockGetDatabaseLicensesCompliance = func() ([]dto.LicenseCompliance, error) {
+		return []dto.LicenseCompliance{licenses}, nil
+	}
+
+	actual, err := as.GetDatabaseLicensesComplianceAsXLSX()
+	require.NoError(t, err)
+
+	assert.Equal(t, "L47247", actual.GetCellValue("Licenses Compliance", "A2"))
+	assert.Equal(t, "Oracle Real Application Testing", actual.GetCellValue("Licenses Compliance", "B2"))
+	assert.Equal(t, "Processor Perpetual", actual.GetCellValue("Licenses Compliance", "C2"))
+	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "D2"))
+	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "E2"))
+	assert.Equal(t, "1", actual.GetCellValue("Licenses Compliance", "F2"))
+	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "G2"))
+}

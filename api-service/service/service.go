@@ -175,6 +175,7 @@ type APIServiceInterface interface {
 	GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.DatabasesStatistics, error)
 	GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
 	GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error)
+	GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, error)
 
 	// MYSQL
 
@@ -208,6 +209,7 @@ type APIService struct {
 	NewObjectID func() primitive.ObjectID
 
 	mockGetOracleDatabaseAgreements func(filters dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
+	mockGetDatabaseLicensesCompliance func() ([]dto.LicenseCompliance, error)
 }
 
 // Init initializes the service and database
