@@ -96,6 +96,7 @@ func TestCompareCmdbInfo_MissingHostInErcole(t *testing.T) {
 		AlertCategory: model.AlertCategoryEngine,
 		AlertCode:     model.AlertCodeMissingHostInErcole,
 		AlertSeverity: model.AlertSeverityWarning,
+		AlertStatus:   model.AlertStatusNew,
 		Description:   "Received unknown hostname pluto from CMDB thisCmdb",
 		Date:          hds.TimeNow(),
 	}

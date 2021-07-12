@@ -34,6 +34,7 @@ func (hds *HostDataService) CompareCmdbInfo(cmdbInfo dto.CmdbInfo) error {
 			AlertCategory: model.AlertCategoryEngine,
 			AlertCode:     model.AlertCodeMissingHostInErcole,
 			AlertSeverity: model.AlertSeverityWarning,
+			AlertStatus:   model.AlertStatusNew,
 			Description:   fmt.Sprintf("Received unknown hostname %s from CMDB %s", h, cmdbInfo.Name),
 			Date:          hds.TimeNow(),
 		}
