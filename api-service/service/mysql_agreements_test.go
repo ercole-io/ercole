@@ -16,11 +16,12 @@
 package service
 
 import (
+	"github.com/ercole-io/ercole/v2/config"
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	gomock "github.com/golang/mock/gomock"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -136,6 +137,41 @@ func TestGetMySQLAgreements(t *testing.T) {
 
 		assert.Nil(t, actual)
 	})
+}
+
+func TestGetMySQLAgreementsAsXLSX_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Database: db,
+	}
+
+	data := []model.MySQLAgreement{
+		{
+			Type:             "server",
+			AgreementID:      "",
+			CSI:              "",
+			NumberOfLicenses: 42,
+			Clusters:         []string{"pippo"},
+			Hosts:            []string{"pluto"},
+		},
+	}
+
+	db.EXPECT().GetMySQLAgreements().
+		Return(data, nil).Times(1)
+
+	actual, err := as.GetMySQLAgreementsAsXLSX()
+	require.NoError(t, err)
+	assert.Equal(t, "server", actual.GetCellValue("Agreements", "A2"))
+	assert.Equal(t, "", actual.GetCellValue("Agreements", "B2"))
+	assert.Equal(t, "", actual.GetCellValue("Agreements", "C2"))
+	assert.Equal(t, "42", actual.GetCellValue("Agreements", "D2"))
+	assert.Equal(t, "[pippo]", actual.GetCellValue("Agreements", "E2"))
+	assert.Equal(t, "pluto", actual.GetCellValue("Agreements", "F3"))
 }
 
 func TestDeleteMySQLAgreement(t *testing.T) {

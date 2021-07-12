@@ -18,6 +18,7 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -25,7 +26,7 @@ import (
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	gomock "github.com/golang/mock/gomock"
+	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -557,6 +558,64 @@ func TestGetMySQLAgreements_InternalServerError(t *testing.T) {
 
 	assert.Equal(t, "MockError", feErr.Error)
 	assert.Equal(t, "Internal Server Error", feErr.Message)
+}
+
+func TestGetMySQLAgreementsXLSX_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	xlsx := excelize.File{}
+
+	as.EXPECT().
+		GetMySQLAgreementsAsXLSX().
+		Return(&xlsx, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetMySQLAgreements)
+	req, err := http.NewRequest("GET", "/", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	_, err = excelize.OpenReader(rr.Body)
+	require.NoError(t, err)
+}
+
+func TestGetMySQLAgreementsXLSX_InternalServerError1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		GetMySQLAgreementsAsXLSX().
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetMySQLAgreements)
+	req, err := http.NewRequest("GET", "/", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
 func TestDeleteMySQLAgreement_Success(t *testing.T) {
