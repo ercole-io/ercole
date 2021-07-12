@@ -188,6 +188,7 @@ type APIServiceInterface interface {
 	AddMySQLAgreement(agreement model.MySQLAgreement) (*model.MySQLAgreement, error)
 	UpdateMySQLAgreement(agreement model.MySQLAgreement) (*model.MySQLAgreement, error)
 	GetMySQLAgreements() ([]model.MySQLAgreement, error)
+	GetMySQLAgreementsAsXLSX() (*excelize.File, error)
 	DeleteMySQLAgreement(id primitive.ObjectID) error
 }
 
