@@ -185,6 +185,10 @@ func (as *APIService) GetOracleDatabaseAgreementsAsXLSX(filter dto.GetOracleData
 		"Available Licenses User",
 		"Basket",
 		"Restricted",
+		"Hostname",
+		"Used Licenses",
+		"Covered by this agreement",
+		"Covered by all agreements",
 	}
 
 	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
@@ -208,6 +212,17 @@ func (as *APIService) GetOracleDatabaseAgreementsAsXLSX(filter dto.GetOracleData
 		sheets.SetCellValue(sheet, nextAxis(), val.AvailableLicensesPerUser)
 		sheets.SetCellValue(sheet, nextAxis(), val.CatchAll)
 		sheets.SetCellValue(sheet, nextAxis(), val.Restricted)
+
+		for _, val2 := range val.Hosts {
+			indexAxis := axisHelp.GetIndexRow()
+			sheets.DuplicateRow(sheet, indexAxis())
+			nextCol := axisHelp.InsertNewRow()
+
+			sheets.SetCellValue(sheet, nextCol(), val2.Hostname)
+			sheets.SetCellValue(sheet, nextCol(), val2.ConsumedLicensesCount)
+			sheets.SetCellValue(sheet, nextCol(), val2.CoveredLicensesCount)
+			sheets.SetCellValue(sheet, nextCol(), val2.TotalCoveredLicensesCount)
+		}
 	}
 	return sheets, err
 }
