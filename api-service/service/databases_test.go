@@ -464,6 +464,47 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+func TestGetDatabasesUsedLicensesAsXLSX_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Database: db,
+	}
+
+	filter := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	usedLicenses := dto.DatabaseUsedLicense{
+		Hostname:      "topolino-hostname",
+		DbName:        "topolino-dbname",
+		LicenseTypeID: "A12345",
+		Description:   "ThisDesc",
+		Metric:        "ThisMetric",
+		UsedLicenses:  0,
+	}
+
+	as.mockGetDatabasesUsedLicenses = func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
+		return []dto.DatabaseUsedLicense{usedLicenses}, nil
+	}
+
+	actual, err := as.GetDatabasesUsedLicensesAsXLSX(filter)
+	require.NoError(t, err)
+
+	assert.Equal(t, "topolino-hostname", actual.GetCellValue("Licenses Used", "A2"))
+	assert.Equal(t, "topolino-dbname", actual.GetCellValue("Licenses Used", "B2"))
+	assert.Equal(t, "A12345", actual.GetCellValue("Licenses Used", "C2"))
+	assert.Equal(t, "ThisDesc", actual.GetCellValue("Licenses Used", "D2"))
+	assert.Equal(t, "ThisMetric", actual.GetCellValue("Licenses Used", "E2"))
+	assert.Equal(t, "0", actual.GetCellValue("Licenses Used", "F2"))
+}
+
 func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()

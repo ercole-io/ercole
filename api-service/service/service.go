@@ -182,7 +182,7 @@ type APIServiceInterface interface {
 	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
 	SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error)
-
+	GetDatabasesUsedLicensesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	// MYSQL AGREEMENTS
 
 	AddMySQLAgreement(agreement model.MySQLAgreement) (*model.MySQLAgreement, error)
@@ -210,6 +210,7 @@ type APIService struct {
 
 	mockGetOracleDatabaseAgreements func(filters dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
 	mockGetDatabaseLicensesCompliance func() ([]dto.LicenseCompliance, error)
+	mockGetDatabasesUsedLicenses func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
 }
 
 // Init initializes the service and database
