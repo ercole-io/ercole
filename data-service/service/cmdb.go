@@ -17,10 +17,10 @@ package service
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ercole-io/ercole/v2/data-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
 )
 
 func (hds *HostDataService) CompareCmdbInfo(cmdbInfo dto.CmdbInfo) error {
@@ -29,7 +29,7 @@ func (hds *HostDataService) CompareCmdbInfo(cmdbInfo dto.CmdbInfo) error {
 		return err
 	}
 
-	for _, h := range utils.Difference(cmdbInfo.Hostnames, hostnames) {
+	for _, h := range differenceHostnames(cmdbInfo.Hostnames, hostnames) {
 		alert := model.Alert{
 			AlertCategory: model.AlertCategoryEngine,
 			AlertCode:     model.AlertCodeMissingHostInErcole,
@@ -44,7 +44,7 @@ func (hds *HostDataService) CompareCmdbInfo(cmdbInfo dto.CmdbInfo) error {
 		}
 	}
 
-	for _, h := range utils.Difference(hostnames, cmdbInfo.Hostnames) {
+	for _, h := range differenceHostnames(hostnames, cmdbInfo.Hostnames) {
 		alert := model.Alert{
 			AlertCategory: model.AlertCategoryEngine,
 			AlertCode:     model.AlertCodeMissingHostInCmdb,
@@ -60,4 +60,37 @@ func (hds *HostDataService) CompareCmdbInfo(cmdbInfo dto.CmdbInfo) error {
 	}
 
 	return nil
+}
+
+// differenceHostnames returns hostnames in `a` that aren't in `b`
+// If a has multiple times on item, which is in b even only once, no occurrences will be returned
+func differenceHostnames(a, b []string) []string {
+	mb := make(map[string]struct{}, len(b))
+	for _, x := range b {
+		mb[x] = struct{}{}
+
+		withoutDomain := hostnameWithoutDomain(x)
+		if x != withoutDomain {
+			mb[withoutDomain] = struct{}{}
+		}
+	}
+
+	var diff []string
+	for _, x := range a {
+		if _, found := mb[x]; found {
+			continue
+		}
+
+		if _, found := mb[hostnameWithoutDomain(x)]; found {
+			continue
+		}
+
+		diff = append(diff, x)
+	}
+
+	return diff
+}
+
+func hostnameWithoutDomain(hostname string) string {
+	return strings.Split(hostname, ".")[0]
 }
