@@ -166,6 +166,10 @@ func (as *APIService) GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.Data
 }
 
 func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
+	if as.mockGetDatabasesUsedLicenses != nil {
+		return as.mockGetDatabasesUsedLicenses(filter)
+	}
+
 	type getter func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
 	getters := []getter{as.getOracleDatabasesUsedLicenses, as.getMySQLUsedLicenses}
 
@@ -179,6 +183,40 @@ func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.D
 	}
 
 	return usedLicenses, nil
+}
+
+func (as *APIService) GetDatabasesUsedLicensesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	licenses, err := as.GetDatabasesUsedLicenses(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Licenses Used"
+	headers := []string{
+		"Hostname",
+		"DB Name",
+		"Part Number",
+		"Description",
+		"Metric",
+		"Used Licenses",
+	}
+
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+	axisHelp := exutils.NewAxisHelper(1)
+
+	for _, val := range licenses {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue(sheet, nextAxis(), val.Hostname)
+		sheets.SetCellValue(sheet, nextAxis(), val.DbName)
+		sheets.SetCellValue(sheet, nextAxis(), val.LicenseTypeID)
+		sheets.SetCellValue(sheet, nextAxis(), val.Description)
+		sheets.SetCellValue(sheet, nextAxis(), val.Metric)
+		sheets.SetCellValue(sheet, nextAxis(), val.UsedLicenses)
+	}
+	return sheets, err
 }
 
 func (as *APIService) getOracleDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
