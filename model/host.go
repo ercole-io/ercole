@@ -21,7 +21,11 @@ import (
 	godynstruct "github.com/amreo/go-dyn-struct"
 )
 
-// HardwareAbstractionTechnology list
+const (
+	HardwareAbstractionPhysical string = "PH"
+	HardwareAbstractionVirtual  string = "VIRT"
+)
+
 const (
 	HardwareAbstractionTechnologyPhysical string = "PH"
 	HardwareAbstractionTechnologyOvm      string = "OVM"
