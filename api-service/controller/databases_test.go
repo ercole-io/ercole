@@ -246,3 +246,61 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 	}
 	assert.JSONEq(t, utils.ToJSON(expected), rr.Body.String())
 }
+
+func TestGetDatabaseLicensesComplianceXLSX_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	xlsx := excelize.File{}
+
+	as.EXPECT().
+		GetDatabaseLicensesComplianceAsXLSX().
+		Return(&xlsx, nil)
+
+	rr := httptest.NewRecorder(	)
+	handler := http.HandlerFunc(ac.GetDatabaseLicensesCompliance)
+	req, err := http.NewRequest("GET", "/", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	_, err = excelize.OpenReader(rr.Body)
+	require.NoError(t, err)
+}
+
+func TestGetDatabaseLicensesComplianceXLSX_InternalServerError1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	as.EXPECT().
+		GetDatabaseLicensesComplianceAsXLSX().
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetDatabaseLicensesCompliance)
+	req, err := http.NewRequest("GET", "/", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
