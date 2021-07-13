@@ -17,15 +17,17 @@ package exutils
 
 import (
 	"fmt"
+
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
 type AxisHelper struct {
-	row int
+	row          int
+	columnOffset int
 }
-var LastColumn int
+
 // NewAxisHelper is made to help feel and excel file
 // headersOffset is the number of line occupied by headers
 // e.g.:
@@ -51,25 +53,26 @@ func (ah *AxisHelper) NewRow() func() string {
 	columnOffset := -1
 	return func() string {
 		columnOffset++
+		ah.columnOffset = columnOffset
 
-		LastColumn = columnOffset
 		return fmt.Sprintf("%c%d", rune('A'+columnOffset), ah.row)
 	}
 }
-//TODO Rename
-func (ah *AxisHelper) GetIndexRow() func() int {
-	return func() int {
-		return ah.row
-	}
+
+func (ah *AxisHelper) GetIndexRow() int {
+	return ah.row
 }
 
-//TODO Rename
-func (ah *AxisHelper) InsertNewRow() func() string {
-	var Col = LastColumn
+// NewRow must be used when you want to go to the next row
+// It returns a `nextAxis` anonymous func that return axis for the new row
+func (ah *AxisHelper) NewRowSincePreviousColumn() func() string {
 	ah.row++
+
+	columnOffset := ah.columnOffset
 	return func() string {
-		Col++
-		return fmt.Sprintf("%c%d", rune('A'+Col), ah.row)
+		columnOffset++
+
+		return fmt.Sprintf("%c%d", rune('A'+columnOffset), ah.row)
 	}
 }
 
