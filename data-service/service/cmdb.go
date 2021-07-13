@@ -67,21 +67,23 @@ func (hds *HostDataService) CompareCmdbInfo(cmdbInfo dto.CmdbInfo) error {
 func differenceHostnames(a, b []string) []string {
 	mb := make(map[string]struct{}, len(b))
 	for _, x := range b {
-		mb[x] = struct{}{}
+		lcx := strings.ToLower(x)
+		mb[lcx] = struct{}{}
 
-		withoutDomain := hostnameWithoutDomain(x)
-		if x != withoutDomain {
+		withoutDomain := hostnameWithoutDomain(lcx)
+		if lcx != withoutDomain {
 			mb[withoutDomain] = struct{}{}
 		}
 	}
 
 	var diff []string
 	for _, x := range a {
-		if _, found := mb[x]; found {
+		lcx := strings.ToLower(x)
+		if _, found := mb[lcx]; found {
 			continue
 		}
 
-		if _, found := mb[hostnameWithoutDomain(x)]; found {
+		if _, found := mb[hostnameWithoutDomain(lcx)]; found {
 			continue
 		}
 
