@@ -18,6 +18,7 @@ package controller
 import (
 	"errors"
 	"fmt"
+	"github.com/golang/gddo/httputil"
 	"net/http"
 
 	"github.com/ercole-io/ercole/v2/model"
@@ -91,6 +92,17 @@ func (ctrl *APIController) UpdateMySQLAgreement(w http.ResponseWriter, r *http.R
 }
 
 func (ctrl *APIController) GetMySQLAgreements(w http.ResponseWriter, r *http.Request) {
+	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
+	switch choiche {
+	case "application/json":
+		ctrl.GetMySQLAgreementsJSON(w, r)
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		ctrl.GetMySQLAgreementsXLSX(w, r)
+	}
+}
+
+func (ctrl *APIController) GetMySQLAgreementsJSON(w http.ResponseWriter, r *http.Request) {
 	agreements, err := ctrl.Service.GetMySQLAgreements()
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -101,6 +113,16 @@ func (ctrl *APIController) GetMySQLAgreements(w http.ResponseWriter, r *http.Req
 		"agreements": agreements,
 	}
 	utils.WriteJSONResponse(w, http.StatusOK, response)
+}
+
+func (ctrl *APIController) GetMySQLAgreementsXLSX(w http.ResponseWriter, r *http.Request) {
+	xlsx, err := ctrl.Service.GetMySQLAgreementsAsXLSX()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteXLSXResponse(w, xlsx)
 }
 
 func (ctrl *APIController) DeleteMySQLAgreement(w http.ResponseWriter, r *http.Request) {

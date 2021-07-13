@@ -88,7 +88,18 @@ func (ctrl *APIController) GetDatabasesUsedLicenses(w http.ResponseWriter, r *ht
 		return
 	}
 
-	usedLicenses, err := ctrl.Service.GetDatabasesUsedLicenses(*filter)
+	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
+	switch choiche {
+	case "application/json":
+		ctrl.GetDatabasesUsedLicensesJSON(w, r, *filter)
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		ctrl.GetDatabasesUsedLicensesXLSX(w, r, *filter)
+	}
+}
+
+func (ctrl *APIController) GetDatabasesUsedLicensesJSON(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
+	usedLicenses, err := ctrl.Service.GetDatabasesUsedLicenses(filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -100,7 +111,29 @@ func (ctrl *APIController) GetDatabasesUsedLicenses(w http.ResponseWriter, r *ht
 	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
 
+func (ctrl *APIController) GetDatabasesUsedLicensesXLSX(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
+	xlsx, err := ctrl.Service.GetDatabasesUsedLicensesAsXLSX(filter)
+
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteXLSXResponse(w, xlsx)
+}
+
 func (ctrl *APIController) GetDatabaseLicensesCompliance(w http.ResponseWriter, r *http.Request) {
+	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
+	switch choiche {
+	case "application/json":
+		ctrl.GetDatabaseLicensesComplianceJSON(w, r)
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		ctrl.GetDatabaseLicensesComplianceXLSX(w, r)
+	}
+}
+
+func (ctrl *APIController) GetDatabaseLicensesComplianceJSON(w http.ResponseWriter, r *http.Request) {
 	licenses, err := ctrl.Service.GetDatabaseLicensesCompliance()
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -112,4 +145,14 @@ func (ctrl *APIController) GetDatabaseLicensesCompliance(w http.ResponseWriter, 
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, response)
+}
+
+func (ctrl *APIController) GetDatabaseLicensesComplianceXLSX(w http.ResponseWriter, r *http.Request) {
+	xlsx, err := ctrl.Service.GetDatabaseLicensesComplianceAsXLSX()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteXLSXResponse(w, xlsx)
 }

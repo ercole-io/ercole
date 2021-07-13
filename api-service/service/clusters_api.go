@@ -18,6 +18,7 @@ package service
 
 import (
 	"fmt"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 	"strconv"
 	"strings"
 	"time"
@@ -57,4 +58,37 @@ func (as *APIService) GetClusterXLSX(clusterName string, olderThan time.Time) (*
 	}
 
 	return xlsx, nil
+}
+
+// SearchClustersAsXLSX return  clusters vms as xlxs file
+func (as *APIService) SearchClustersAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	clusters, err := as.Database.SearchClusters(false, []string{}, "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan)
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Hypervisor"
+	headers := []string{
+		"Name",
+		"Type",
+		"Core",
+		"Sockets",
+		"Physical Hosts",
+	}
+
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+	axisHelp := exutils.NewAxisHelper(1)
+
+	for _, val := range clusters {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue(sheet, nextAxis(), val["name"])
+		sheets.SetCellValue(sheet, nextAxis(), val["type"])
+		sheets.SetCellValue(sheet, nextAxis(), val["cpu"])
+		sheets.SetCellValue(sheet, nextAxis(), val["sockets"])
+		sheets.SetCellValue(sheet, nextAxis(), val["virtualizationNodes"])
+	}
+	return sheets, nil
 }

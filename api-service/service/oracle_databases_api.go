@@ -18,6 +18,8 @@ package service
 
 import (
 	"fmt"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"strings"
 	"time"
 
@@ -35,9 +37,94 @@ func (as *APIService) SearchOracleDatabaseSegmentAdvisors(search string, sortBy 
 	return as.Database.SearchOracleDatabaseSegmentAdvisors(strings.Split(search, " "), sortBy, sortDesc, location, environment, olderThan)
 }
 
+func (as *APIService) SearchOracleDatabaseSegmentAdvisorsAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	segmentAdvisors, err := as.Database.SearchOracleDatabaseSegmentAdvisors([]string{}, "", false, filter.Location, filter.Environment, filter.OlderThan)
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Segment_Advisor"
+	headers := []string{
+		"ReclaimableGB",
+		"GB Total",
+		"Retrieve",
+		"Hostname",
+		"DB Names",
+		"Segment Owner",
+		"Segment Name",
+		"Segment Type",
+		"Partition Name",
+		"Recommendation",
+	}
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+	axisHelp := exutils.NewAxisHelper(1)
+
+	for _, val := range segmentAdvisors {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue(sheet, nextAxis(), val.Reclaimable)
+		sheets.SetCellValue(sheet, nextAxis(), val.SegmentsSize)
+		if val.SegmentsSize == 0 {
+			nextAxis()
+		} else {
+			sheets.SetCellValue(sheet, nextAxis(), val.Reclaimable/val.SegmentsSize)
+		}
+		sheets.SetCellValue(sheet, nextAxis(), val.Hostname)
+		sheets.SetCellValue(sheet, nextAxis(), val.Dbname)
+		sheets.SetCellValue(sheet, nextAxis(), val.SegmentOwner)
+		sheets.SetCellValue(sheet, nextAxis(), val.SegmentName)
+		sheets.SetCellValue(sheet, nextAxis(), val.SegmentType)
+		sheets.SetCellValue(sheet, nextAxis(), val.PartitionName)
+		sheets.SetCellValue(sheet, nextAxis(), val.Recommendation)
+	}
+
+	return sheets, err
+}
+
 // SearchOracleDatabasePatchAdvisors search patch advisors
 func (as *APIService) SearchOracleDatabasePatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) ([]map[string]interface{}, error) {
 	return as.Database.SearchOracleDatabasePatchAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, windowTime, location, environment, olderThan, status)
+}
+
+func (as *APIService) SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime time.Time ,filter dto.GlobalFilter) (*excelize.File, error) {
+	patchAdvisors, err := as.Database.SearchOracleDatabasePatchAdvisors([]string{}, "", false, -1, -1, windowTime, filter.Location, filter.Environment, filter.OlderThan, "")
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Patch_Advisor"
+	headers := []string{
+		"Hostname",
+		"Database",
+		"Version",
+		"Release Date",
+		"PSU",
+		"Status",
+	}
+
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+	axisHelp := exutils.NewAxisHelper(1)
+
+	for _, val := range patchAdvisors {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue("Patch_Advisor", nextAxis(), val["hostname"])
+		sheets.SetCellValue("Patch_Advisor", nextAxis(), val["dbname"])
+		sheets.SetCellValue("Patch_Advisor", nextAxis(), val["dbver"])
+		if val["date"] != nil || val["date"] != "" {
+			sheets.SetCellValue("Patch_Advisor", nextAxis(), val["date"].(primitive.DateTime).Time().UTC().String())
+		}else {
+			nextAxis()
+		}
+		sheets.SetCellValue("Patch_Advisor", nextAxis(), val["description"])
+		sheets.SetCellValue("Patch_Advisor", nextAxis(), val["status"])
+	}
+
+	return sheets, err
 }
 
 // SearchOracleDatabases search databases

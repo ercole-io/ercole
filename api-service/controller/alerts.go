@@ -22,7 +22,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -74,10 +73,6 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	location = r.URL.Query().Get("location")
-
-	environment = r.URL.Query().Get("environment")
-
 	severity = r.URL.Query().Get("severity")
 	if severity != "" && severity != model.AlertSeverityWarning && severity != model.AlertSeverityCritical && severity != model.AlertSeverityInfo {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(errors.New("invalid severity"), "Invalid  severity"))
@@ -110,7 +105,7 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 
-		ctrl.searchAlertsXLSX(w, r, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
+		ctrl.searchAlertsXLSX(w, r, from, to)
 
 	default:
 		ctrl.searchAlertsJSON(w, r, mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
@@ -137,33 +132,20 @@ func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Reque
 }
 
 // searchAlertsXLSX search alerts using the filters in the request returning it in XLSX format
-func (ctrl *APIController) searchAlertsXLSX(w http.ResponseWriter, r *http.Request,
-	search string, sortBy string, sortDesc bool, pageNumber int, pageSize int,
-	location, environment, severity string, status string, from time.Time, to time.Time) {
+func (ctrl *APIController) searchAlertsXLSX(w http.ResponseWriter, r *http.Request, from time.Time, to time.Time) {
 
-	response, err := ctrl.Service.SearchAlerts("all", search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
+	filter, err := dto.GetGlobalFilter(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	xlsx, err := ctrl.Service.SearchAlertsAsXLSX(from, to, *filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	//TODO Move in service
-	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_alerts.xlsx")
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewError(err, "READ_TEMPLATE"))
-		return
-	}
-
-	for i, val := range response {
-		sheets.SetCellValue("Alerts", fmt.Sprintf("A%d", i+2), val["alertCategory"])
-		sheets.SetCellValue("Alerts", fmt.Sprintf("B%d", i+2), val["date"].(primitive.DateTime).Time().UTC().String())
-		sheets.SetCellValue("Alerts", fmt.Sprintf("C%d", i+2), val["alertSeverity"])
-		sheets.SetCellValue("Alerts", fmt.Sprintf("D%d", i+2), val["hostname"])
-		sheets.SetCellValue("Alerts", fmt.Sprintf("E%d", i+2), val["alertCode"])
-		sheets.SetCellValue("Alerts", fmt.Sprintf("F%d", i+2), val["description"])
-	}
-
-	utils.WriteXLSXResponse(w, sheets)
+	utils.WriteXLSXResponse(w, xlsx)
 }
 
 // AckAlerts ack the specified alert in the request

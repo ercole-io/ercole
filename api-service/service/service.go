@@ -47,8 +47,10 @@ type APIServiceInterface interface {
 	ListManagedTechnologies(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.TechnologyStatus, error)
 	// SearchAlerts search alerts
 	SearchAlerts(mode string, search string, sortBy string, sortDesc bool, page, pageSize int, location, environment, severity, status string, from, to time.Time) ([]map[string]interface{}, error)
+	SearchAlertsAsXLSX(from time.Time, to time.Time, filter dto.GlobalFilter) (*excelize.File, error)
 	// SearchClusters search clusters
 	SearchClusters(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error)
+	SearchClustersAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	// GetCluster return the cluster specified in the clusterName param
 	GetCluster(clusterName string, olderThan time.Time) (*dto.Cluster, error)
 	// GetClusterXLSX return  cluster vms as xlxs file
@@ -57,8 +59,10 @@ type APIServiceInterface interface {
 	SearchOracleDatabaseAddms(search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error)
 	// SearchOracleDatabaseSegmentAdvisors search segment advisors
 	SearchOracleDatabaseSegmentAdvisors(search string, sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]dto.OracleDatabaseSegmentAdvisor, error)
+	SearchOracleDatabaseSegmentAdvisorsAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	// SearchOracleDatabasePatchAdvisors search patch advisors
 	SearchOracleDatabasePatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) ([]map[string]interface{}, error)
+	SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime time.Time, filter dto.GlobalFilter) (*excelize.File, error)
 	// SearchOracleDatabases search databases
 	SearchOracleDatabases(filter dto.SearchOracleDatabasesFilter) ([]map[string]interface{}, error)
 	// SearchOracleDatabases search databases
@@ -131,6 +135,7 @@ type APIServiceInterface interface {
 	AddOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*dto.OracleDatabaseAgreementFE, error)
 	UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*dto.OracleDatabaseAgreementFE, error)
 	GetOracleDatabaseAgreements(filter dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
+	GetOracleDatabaseAgreementsAsXLSX(filter dto.GetOracleDatabaseAgreementsFilter) (*excelize.File, error)
 	DeleteOracleDatabaseAgreement(id primitive.ObjectID) error
 	AddHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) error
 	DeleteHostFromOracleDatabaseAgreement(id primitive.ObjectID, hostname string) error
@@ -170,18 +175,20 @@ type APIServiceInterface interface {
 	GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.DatabasesStatistics, error)
 	GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
 	GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error)
+	GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, error)
 
 	// MYSQL
 
 	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
 	SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error)
-
+	GetDatabasesUsedLicensesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	// MYSQL AGREEMENTS
 
 	AddMySQLAgreement(agreement model.MySQLAgreement) (*model.MySQLAgreement, error)
 	UpdateMySQLAgreement(agreement model.MySQLAgreement) (*model.MySQLAgreement, error)
 	GetMySQLAgreements() ([]model.MySQLAgreement, error)
+	GetMySQLAgreementsAsXLSX() (*excelize.File, error)
 	DeleteMySQLAgreement(id primitive.ObjectID) error
 }
 
@@ -203,6 +210,8 @@ type APIService struct {
 	NewObjectID func() primitive.ObjectID
 
 	mockGetOracleDatabaseAgreements func(filters dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
+	mockGetDatabaseLicensesCompliance func() ([]dto.LicenseCompliance, error)
+	mockGetDatabasesUsedLicenses func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
 }
 
 // Init initializes the service and database
