@@ -17,11 +17,12 @@ package service
 
 import (
 	"errors"
-	"github.com/360EntSecGroup-Skylar/excelize"
-	"github.com/ercole-io/ercole/v2/utils/exutils"
 	"math"
 	"sort"
 	"strings"
+
+	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
@@ -214,14 +215,13 @@ func (as *APIService) GetOracleDatabaseAgreementsAsXLSX(filter dto.GetOracleData
 		sheets.SetCellValue(sheet, nextAxis(), val.Restricted)
 
 		for _, val2 := range val.Hosts {
-			indexAxis := axisHelp.GetIndexRow()
-			sheets.DuplicateRow(sheet, indexAxis())
-			nextCol := axisHelp.InsertNewRow()
+			sheets.DuplicateRow(sheet, axisHelp.GetIndexRow())
+			duplicateRowNextAxis := axisHelp.NewRowSincePreviousColumn()
 
-			sheets.SetCellValue(sheet, nextCol(), val2.Hostname)
-			sheets.SetCellValue(sheet, nextCol(), val2.ConsumedLicensesCount)
-			sheets.SetCellValue(sheet, nextCol(), val2.CoveredLicensesCount)
-			sheets.SetCellValue(sheet, nextCol(), val2.TotalCoveredLicensesCount)
+			sheets.SetCellValue(sheet, duplicateRowNextAxis(), val2.Hostname)
+			sheets.SetCellValue(sheet, duplicateRowNextAxis(), val2.ConsumedLicensesCount)
+			sheets.SetCellValue(sheet, duplicateRowNextAxis(), val2.CoveredLicensesCount)
+			sheets.SetCellValue(sheet, duplicateRowNextAxis(), val2.TotalCoveredLicensesCount)
 		}
 	}
 	return sheets, err
