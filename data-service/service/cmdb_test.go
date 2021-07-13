@@ -90,7 +90,7 @@ func TestCompareCmdbInfo_MissingHostInErcole(t *testing.T) {
 	}
 
 	db.EXPECT().GetCurrentHostnames().
-		Return([]string{"pippo.topolinia.top", "topolino"}, nil)
+		Return([]string{"PIPPO.TOPOLINIA.TOP", "topolino"}, nil)
 
 	alert := model.Alert{
 		AlertCategory: model.AlertCategoryEngine,
@@ -126,7 +126,7 @@ func TestCompareCmdbInfo_MissingHostInCmdb(t *testing.T) {
 	}
 
 	db.EXPECT().GetCurrentHostnames().
-		Return([]string{"pippo.topolinia.top", "topolino", "pluto"}, nil)
+		Return([]string{"pippo.topolinia.top", "TOPOLINO", "pluto"}, nil)
 
 	alert := model.Alert{
 		AlertCategory: model.AlertCategoryEngine,
