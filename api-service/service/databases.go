@@ -329,3 +329,71 @@ func (as *APIService) GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, err
 	}
 	return sheets, err
 }
+
+func (as *APIService) GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	usedLicenses, err := as.GetDatabasesUsedLicensesPerHost(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Licenses Used"
+	headers := []string{
+		"Hostname",
+		"Databases",
+		"Part Number",
+		"Description",
+		"Metric",
+		"Used Licenses",
+	}
+
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+	axisHelp := exutils.NewAxisHelper(1)
+
+	for _, val := range usedLicenses {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue(sheet, nextAxis(), val.Hostname)
+		sheets.SetCellValue(sheet, nextAxis(), val.Databases)
+		sheets.SetCellValue(sheet, nextAxis(), val.LicenseTypeID)
+		sheets.SetCellValue(sheet, nextAxis(), val.Description)
+		sheets.SetCellValue(sheet, nextAxis(), val.Metric)
+		sheets.SetCellValue(sheet, nextAxis(), val.UsedLicenses)
+	}
+	return sheets, err
+}
+
+func (as *APIService) GetDatabasesUsedLicensesPerHost(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error) {
+	if as.mockGetDatabasesUsedLicensesPerHost != nil {
+		return as.mockGetDatabasesUsedLicensesPerHost(filter)
+	}
+	licenses, err := as.GetDatabasesUsedLicenses(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	return convertUsedLicensesInLicensesPerHost(licenses), nil
+}
+
+func convertUsedLicensesInLicensesPerHost(licenses []dto.DatabaseUsedLicense) []dto.DatabaseUsedLicensePerHost {
+	var output []dto.DatabaseUsedLicensePerHost
+	nextLicenses:
+	for _, v := range licenses {
+		for i, v2 := range output {
+			if v.Hostname == v2.Hostname && v.LicenseTypeID == v2.LicenseTypeID {
+				output[i].Databases++
+				continue nextLicenses
+			}
+		}
+		output = append(output, dto.DatabaseUsedLicensePerHost{
+			Hostname:      v.Hostname,
+			Databases:     1,
+			LicenseTypeID: v.LicenseTypeID,
+			Description:   v.Description,
+			Metric:        v.Metric,
+			UsedLicenses:  v.UsedLicenses,
+		})
+	}
+	return output
+}
