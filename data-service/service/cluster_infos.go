@@ -27,37 +27,43 @@ func (hds *HostDataService) clusterInfoChecks(clusters []model.ClusterInfo) {
 }
 
 func (hds *HostDataService) assignKnownHostnames(clusters []model.ClusterInfo) {
-	var hostnames map[string]bool
+	var hostnames map[string]string
 	{
-		hostnamesSlice, err := hds.Database.GetHostnames()
+		knownHostnames, err := hds.Database.GetHostnames()
 		if err != nil {
 			hds.Log.Error(utils.NewError(err, "Can't retrieve hostnames"))
 			return
 		}
 
-		hostnames = make(map[string]bool, len(hostnamesSlice))
-		for _, h := range hostnamesSlice {
-			hostnames[strings.ToLower(h)] = true
+		hostnames = make(map[string]string, len(knownHostnames))
+		for _, knownHostname := range knownHostnames {
+			alternatives := []string{
+				strings.ToLower(knownHostname),
+				strings.ToLower(strings.Split(knownHostname, ".")[0]),
+			}
+
+			for _, a := range alternatives {
+				hostnames[a] = knownHostname
+			}
 		}
 	}
 
 	for i := range clusters {
 		cluster := &clusters[i]
+	vms:
 		for j := range cluster.VMs {
 			vm := &cluster.VMs[j]
 
-			vmHostname := strings.ToLower(vm.Hostname)
-			if hostnames[vmHostname] {
-				continue
+			alternatives := []string{
+				strings.ToLower(vm.Hostname),
+				strings.ToLower(strings.Split(vm.Hostname, ".")[0]),
 			}
-
-			for hostname := range hostnames {
-				if vmHostname == strings.Split(hostname, ".")[0] {
-					vm.Hostname = hostname
-					continue
+			for _, a := range alternatives {
+				if knownHostname, ok := hostnames[a]; ok {
+					vm.Hostname = knownHostname
+					continue vms
 				}
 			}
 		}
 	}
-
 }
