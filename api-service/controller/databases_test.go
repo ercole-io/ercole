@@ -397,3 +397,97 @@ func TestGetDatabaseLicensesComplianceXLSX_InternalServerError1(t *testing.T) {
 
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
+
+func TestGetHostUsedLicensesXLSX_StatusBadRequest(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetDatabasesUsedLicensesPerHost)
+	req, err := http.NewRequest("GET", "/?location=Italy&environment=TST&older-than=sdaaadsd", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusBadRequest, rr.Code)
+}
+
+func TestGetHostUsedLicensesXLSX_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	filter := dto.GlobalFilter{
+		Location:    "Italy",
+		Environment: "TST",
+		OlderThan:   utils.P("2020-06-10T11:54:59Z"),
+	}
+
+	xlsx := excelize.File{}
+
+	as.EXPECT().
+		GetDatabasesUsedLicensesPerHostAsXLSX(filter).
+		Return(&xlsx, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetDatabasesUsedLicensesPerHost)
+	req, err := http.NewRequest("GET", "/?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	_, err = excelize.OpenReader(rr.Body)
+	require.NoError(t, err)
+}
+
+func TestGetHostUsedLicensesXLSX_InternalServerError1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: utils.NewLogger("TEST"),
+	}
+
+	filter := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	as.EXPECT().
+		GetDatabasesUsedLicensesPerHostAsXLSX(filter).
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetDatabasesUsedLicensesPerHost)
+	req, err := http.NewRequest("GET", "/", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
