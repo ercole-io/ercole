@@ -48,7 +48,6 @@ func TestCheckClusterInfos(t *testing.T) {
 		actual    []model.ClusterInfo
 	}{
 		{
-
 			name:      "Empty",
 			hostnames: []string{},
 			expected:  []model.ClusterInfo{},
@@ -223,6 +222,89 @@ func TestCheckClusterInfos(t *testing.T) {
 						{
 							Name:               "",
 							Hostname:           "qui",
+							CappedCPU:          false,
+							VirtualizationNode: "",
+							OtherInfo:          map[string]interface{}{},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Multiple match with UPPER CASES, Camel Case, not fully qualified names",
+			hostnames: []string{"qui.paperopolis.dn", "quo.paperopolis.dn",
+				"pippo.topolinia.dn", "TOPOLINO"},
+			expected: []model.ClusterInfo{
+				{
+					FetchEndpoint: "",
+					Type:          "",
+					Name:          "",
+					CPU:           0,
+					Sockets:       0,
+					VMs: []model.VMInfo{
+						{
+							Name:               "",
+							Hostname:           "pippo.topolinia.dn",
+							CappedCPU:          false,
+							VirtualizationNode: "",
+							OtherInfo:          map[string]interface{}{},
+						},
+						{
+							Name:               "",
+							Hostname:           "qui.paperopolis.dn",
+							CappedCPU:          false,
+							VirtualizationNode: "",
+							OtherInfo:          map[string]interface{}{},
+						},
+						{
+							Name:               "",
+							Hostname:           "TOPOLINO",
+							CappedCPU:          false,
+							VirtualizationNode: "",
+							OtherInfo:          map[string]interface{}{},
+						},
+						{
+							Name:               "",
+							Hostname:           "PLUTO",
+							CappedCPU:          false,
+							VirtualizationNode: "",
+							OtherInfo:          map[string]interface{}{},
+						},
+					},
+				},
+			},
+			actual: []model.ClusterInfo{
+				{
+					FetchEndpoint: "",
+					Type:          "",
+					Name:          "",
+					CPU:           0,
+					Sockets:       0,
+					VMs: []model.VMInfo{
+						{
+							Name:               "",
+							Hostname:           "PIPPO",
+							CappedCPU:          false,
+							VirtualizationNode: "",
+							OtherInfo:          map[string]interface{}{},
+						},
+						{
+							Name:               "",
+							Hostname:           "Qui.quo.Qua",
+							CappedCPU:          false,
+							VirtualizationNode: "",
+							OtherInfo:          map[string]interface{}{},
+						},
+						{
+							Name:               "",
+							Hostname:           "topolino.topolinia.top",
+							CappedCPU:          false,
+							VirtualizationNode: "",
+							OtherInfo:          map[string]interface{}{},
+						},
+						{
+							Name:               "",
+							Hostname:           "PLUTO",
 							CappedCPU:          false,
 							VirtualizationNode: "",
 							OtherInfo:          map[string]interface{}{},
