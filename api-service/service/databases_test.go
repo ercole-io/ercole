@@ -540,3 +540,44 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "1", actual.GetCellValue("Licenses Compliance", "F2"))
 	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "G2"))
 }
+
+func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Database: db,
+	}
+
+	filter := dto.GlobalFilter{
+		Location:    "Dubai",
+		Environment: "TEST",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	licenses := dto.DatabaseUsedLicensePerHost{
+		Hostname:      "ercsoldbx",
+		Databases:     2,
+		LicenseTypeID: "A90611",
+		Description:   "Oracle Database Enterprise Edition",
+		Metric:        "Processor Perpetual",
+		UsedLicenses:  2,
+	}
+
+	as.mockGetDatabasesUsedLicensesPerHost = func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error) {
+		return []dto.DatabaseUsedLicensePerHost{licenses}, nil
+	}
+
+	actual, err := as.GetDatabasesUsedLicensesPerHostAsXLSX(filter)
+	require.NoError(t, err)
+
+	assert.Equal(t, "ercsoldbx", actual.GetCellValue("Licenses Used", "A2"))
+	assert.Equal(t, "2", actual.GetCellValue("Licenses Used", "B2"))
+	assert.Equal(t, "A90611", actual.GetCellValue("Licenses Used", "C2"))
+	assert.Equal(t, "Oracle Database Enterprise Edition", actual.GetCellValue("Licenses Used", "D2"))
+	assert.Equal(t, "Processor Perpetual", actual.GetCellValue("Licenses Used", "E2"))
+	assert.Equal(t, "2", actual.GetCellValue("Licenses Used", "F2"))
+}

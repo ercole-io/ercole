@@ -4718,6 +4718,25 @@ paths:
             type: string
           in: query
           name: older-than
+  /hosts/technologies/all/databases/licenses-used-per-host:
+    get:
+      summary: Get Databases Used Licenses Per Host
+      tags: [ ]
+      responses: { }
+      operationId: GetDatabasesUsedLicensesPerHost
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: location
+        - schema:
+            type: string
+          in: query
+          name: environment
+        - schema:
+            type: string
+          in: query
+          name: older-than
   /hosts/technologies/all/databases/licenses-compliance:
     get:
       summary: Get Database Licenses Compliance

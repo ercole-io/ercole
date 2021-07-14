@@ -174,6 +174,8 @@ type APIServiceInterface interface {
 	SearchDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.DatabasesStatistics, error)
 	GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
+	GetDatabasesUsedLicensesPerHost(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error)
+	GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error)
 	GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, error)
 
@@ -212,6 +214,7 @@ type APIService struct {
 	mockGetOracleDatabaseAgreements func(filters dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
 	mockGetDatabaseLicensesCompliance func() ([]dto.LicenseCompliance, error)
 	mockGetDatabasesUsedLicenses func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
+	mockGetDatabasesUsedLicensesPerHost func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error)
 }
 
 // Init initializes the service and database
