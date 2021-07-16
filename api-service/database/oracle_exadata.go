@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"time"
 
 	"github.com/amreo/mu"
@@ -25,8 +26,7 @@ import (
 )
 
 // SearchOracleExadata search exadata
-func (md *MongoDatabase) SearchOracleExadata(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, error) {
-	var out []interface{} = make([]interface{}, 0)
+func (md *MongoDatabase) SearchOracleExadata(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]dto.OracleExadata, error) {
 
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -122,13 +122,11 @@ func (md *MongoDatabase) SearchOracleExadata(full bool, keywords []string, sortB
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	//Decode the documents
-	for cur.Next(context.TODO()) {
-		var item map[string]interface{}
-		if cur.Decode(&item) != nil {
-			return nil, utils.NewError(err, "Decode ERROR")
-		}
-		out = append(out, &item)
+	out := make([]dto.OracleExadata, 0)
+
+	if err := cur.All(context.TODO(), &out); err != nil {
+		return nil, utils.NewError(err, "Decode ERROR")
 	}
+
 	return out, nil
 }

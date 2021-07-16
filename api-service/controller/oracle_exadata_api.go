@@ -16,14 +16,27 @@
 package controller
 
 import (
+	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/golang/gddo/httputil"
 	"net/http"
 	"time"
-
-	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // SearchOracleExadata search exadata data using the filters in the request
 func (ctrl *APIController) SearchOracleExadata(w http.ResponseWriter, r *http.Request) {
+
+	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+
+	switch choiche {
+	case "application/json":
+		ctrl.SearchOracleExadataJSON(w, r)
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		ctrl.SearchOracleExadataXLSX(w, r)
+	}
+}
+
+func (ctrl *APIController) SearchOracleExadataJSON(w http.ResponseWriter, r *http.Request) {
 	var full bool
 	var search string
 	var sortBy string
@@ -79,4 +92,20 @@ func (ctrl *APIController) SearchOracleExadata(w http.ResponseWriter, r *http.Re
 		//Write the data
 		utils.WriteJSONResponse(w, http.StatusOK, exadata[0])
 	}
+}
+
+func (ctrl *APIController) SearchOracleExadataXLSX(w http.ResponseWriter, r *http.Request) {
+	filter, err := dto.GetGlobalFilter(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	}
+
+	xlsx, err := ctrl.Service.SearchOracleExadataAsXLSX(*filter)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteXLSXResponse(w, xlsx)
 }

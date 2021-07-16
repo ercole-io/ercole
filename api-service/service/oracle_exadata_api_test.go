@@ -16,10 +16,13 @@
 package service
 
 import (
+	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/config"
 	"testing"
+	"time"
 
 	"github.com/ercole-io/ercole/v2/utils"
-	gomock "github.com/golang/mock/gomock"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -32,73 +35,46 @@ func TestSearchOracleExadata_Success(t *testing.T) {
 		Database: db,
 	}
 
-	expectedRes := []interface{}{
-		map[string]interface{}{
-			"CreatedAt": utils.P("2020-04-07T08:52:59.865+02:00"),
-			"DBServers": []interface{}{
-				map[string]interface{}{
-					"RunningCPUCount":    48,
-					"TotalCPUCount":      48,
-					"SwVersion":          "19.2.4.0.0.190709",
-					"Hostname":           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
-					"Memory":             376,
-					"Model":              "X7-2",
-					"RunningPowerSupply": 2,
-					"TotalPowerSupply":   2,
-					"TempActual":         24.0,
-				},
-				map[string]interface{}{
-					"RunningCPUCount":    48,
-					"TotalCPUCount":      48,
-					"SwVersion":          "19.2.4.0.0.190709",
-					"Hostname":           "kantoor-43a6cdc54bb211eb127bca5c6651950c",
-					"Memory":             376,
-					"Model":              "X7-2",
-					"RunningPowerSupply": 2,
-					"TotalPowerSupply":   2,
-					"TempActual":         24.0,
+	expectedRes := []dto.OracleExadata{
+		{
+			Id:        "5e8c234b24f648a08585bd3e",
+			CreatedAt: time.Time{},
+			DbServers: []dto.DbServers{
+				{
+					Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
+					Memory:             48,
+					Model:              "19.2.4.0.0.190709",
+					RunningCPUCount:    48,
+					RunningPowerSupply: 376,
+					SwVersion:          "X7-2",
+					TempActual:         2,
+					TotalCPUCount:      2,
+					TotalPowerSupply:   24.0,
 				},
 			},
-			"Environment": "PROD",
-			"Hostname":    "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
-			"IBSwitches": []interface{}{
-				map[string]interface{}{
-					"SwVersion": "2.2.13-2.190326",
-					"Hostname":  "off-df8b95a01746a464e69203c840a6a46a",
-					"Model":     "SUN_DCS_36p",
-				},
-				map[string]interface{}{
-					"SwVersion": "2.2.13-2.190326",
-					"Hostname":  "aspen-8d1d1b210625b1f1024b686135f889a1",
-					"Model":     "SUN_DCS_36p",
+			Environment: "PROD",
+			Hostname:    "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
+			IbSwitches: []dto.IbSwitches{
+				{
+					Hostname:  "2.2.13-2.190326",
+					Model:     "off-df8b95a01746a464e69203c840a6a46a",
+					SwVersion: "SUN_DCS_36p",
 				},
 			},
-			"Location": "Italy",
-			"StorageServers": []interface{}{
-				map[string]interface{}{
-					"RunningCPUCount":    20,
-					"TotalCPUCount":      40,
-					"SwVersion":          "19.2.4.0.0.190709",
-					"Hostname":           "s75-c2449b0e89e5a0b38401636eaa07abd5",
-					"Memory":             188,
-					"Model":              "X7-2L_High_Capacity",
-					"RunningPowerSupply": 2,
-					"TotalPowerSupply":   2,
-					"TempActual":         23.0,
-				},
-				map[string]interface{}{
-					"RunningCPUCount":    20,
-					"TotalCPUCount":      40,
-					"SwVersion":          "19.2.4.0.0.190709",
-					"Hostname":           "itl-b22fa37cad1326aba990cdec7facace2",
-					"Memory":             188,
-					"Model":              "X7-2L_High_Capacity",
-					"RunningPowerSupply": 2,
-					"TotalPowerSupply":   2,
-					"TempActual":         24.0,
+			Location: "Italy",
+			StorageServers: []dto.StorageServers{
+				{
+					Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
+					Memory:             48,
+					Model:              "19.2.4.0.0.190709",
+					RunningCPUCount:    48,
+					RunningPowerSupply: 376,
+					SwVersion:          "X7-2",
+					TempActual:         2,
+					TotalCPUCount:      2,
+					TotalPowerSupply:   24.0,
 				},
 			},
-			"_id": utils.Str2oid("5e8c234b24f648a08585bd3e"),
 		},
 	}
 
@@ -140,4 +116,61 @@ func TestSearchOracleExadata_Fail(t *testing.T) {
 
 	require.Nil(t, res)
 	assert.Equal(t, aerrMock, err)
+}
+
+func TestSearchOracleExadataAsXLSX_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Database: db,
+	}
+
+	data := []dto.OracleExadata{
+		{
+			Id:        "5e8c234b24f648a08585bd3e",
+			CreatedAt: time.Time{},
+			DbServers: []dto.DbServers{
+				{
+					Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
+					Memory:             48,
+					Model:              "19.2.4.0.0.190709",
+					RunningCPUCount:    48,
+					RunningPowerSupply: 376,
+					SwVersion:          "X7-2",
+					TempActual:         2,
+					TotalCPUCount:      2,
+					TotalPowerSupply:   24.0,
+				},
+			},
+			Environment:    "PROD",
+			Hostname:       "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
+			IbSwitches:     nil,
+			Location:       "",
+			StorageServers: nil,
+		},
+	}
+
+	filter := dto.GlobalFilter{
+		Location:    "Italy",
+		Environment: "TST",
+		OlderThan:   utils.P("2020-06-10T11:54:59Z"),
+	}
+
+	db.EXPECT().SearchOracleExadata(true, []string{}, "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+		Return(data, nil).Times(1)
+
+	actual, err := as.SearchOracleExadataAsXLSX(filter)
+	require.NoError(t, err)
+	assert.Equal(t, "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804", actual.GetCellValue("engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804", "A1"))
+
+	assert.Equal(t, "zombie-0d1347d47a10b673a4df7aeeecc24a8a", actual.GetCellValue("engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804", "A4"))
+	assert.Equal(t, "19.2.4.0.0.190709", actual.GetCellValue("engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804", "B4"))
+	assert.Equal(t, "2", actual.GetCellValue("engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804", "C4"))
+	assert.Equal(t, "48", actual.GetCellValue("engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804", "D4"))
+	assert.Equal(t, "X7-2", actual.GetCellValue("engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804", "E4"))
+	assert.Equal(t, "24", actual.GetCellValue("engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804", "F4"))
 }

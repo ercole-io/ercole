@@ -19,6 +19,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 	"github.com/stretchr/testify/assert"
@@ -33,7 +34,7 @@ func (m *MongodbSuite) TestSearchOracleExadata() {
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
 		out, err := m.db.SearchOracleExadata(false, []string{""}, "", false, -1, -1, "", "FOOBAR", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+		var expectedOut = []dto.OracleExadata{}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
@@ -41,7 +42,7 @@ func (m *MongodbSuite) TestSearchOracleExadata() {
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.SearchOracleExadata(false, []string{""}, "", false, -1, -1, "France", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+		var expectedOut = []dto.OracleExadata{}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
@@ -49,7 +50,7 @@ func (m *MongodbSuite) TestSearchOracleExadata() {
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
 		out, err := m.db.SearchOracleExadata(false, []string{""}, "", false, -1, -1, "", "", utils.P("1999-05-04T16:09:46.608+02:00"))
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+		var expectedOut = []dto.OracleExadata{}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
@@ -57,97 +58,7 @@ func (m *MongodbSuite) TestSearchOracleExadata() {
 	m.T().Run("should_search_return_anything", func(t *testing.T) {
 		out, err := m.db.SearchOracleExadata(false, []string{"foobar"}, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
-
-		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	})
-
-	m.T().Run("should_be_paging", func(t *testing.T) {
-		out, err := m.db.SearchOracleExadata(false, []string{}, "", false, 0, 1, "", "", utils.MAX_TIME)
-		m.Require().NoError(err)
-
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"content": []interface{}{
-					map[string]interface{}{
-						"createdAt": utils.P("2020-05-12T10:39:44.831+02:00").Local(),
-						"dbServers": []map[string]interface{}{
-							{
-								"runningCPUCount":    48,
-								"totalCPUCount":      48,
-								"swVersion":          "19.2.4.0.0.190709",
-								"hostname":           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
-								"memory":             376,
-								"model":              "X7-2",
-								"runningPowerSupply": 2,
-								"totalPowerSupply":   2,
-								"tempActual":         24.0,
-							},
-							{
-								"runningCPUCount":    48,
-								"totalCPUCount":      48,
-								"swVersion":          "19.2.4.0.0.190709",
-								"hostname":           "kantoor-43a6cdc54bb211eb127bca5c6651950c",
-								"memory":             376,
-								"model":              "X7-2",
-								"runningPowerSupply": 2,
-								"totalPowerSupply":   2,
-								"tempActual":         24.0,
-							},
-						},
-						"environment": "PROD",
-						"hostname":    "test-exadata",
-						"ibSwitches": []map[string]interface{}{
-							{
-								"swVersion": "2.2.13-2.190326",
-								"hostname":  "off-df8b95a01746a464e69203c840a6a46a",
-								"model":     "SUN_DCS_36p",
-							},
-							{
-								"swVersion": "2.2.13-2.190326",
-								"hostname":  "aspen-8d1d1b210625b1f1024b686135f889a1",
-								"model":     "SUN_DCS_36p",
-							},
-						},
-						"location": "Italy",
-						"storageServers": []map[string]interface{}{
-							{
-								"runningCPUCount":    20,
-								"totalCPUCount":      40,
-								"swVersion":          "19.2.4.0.0.190709",
-								"hostname":           "s75-c2449b0e89e5a0b38401636eaa07abd5",
-								"memory":             188,
-								"model":              "X7-2L_High_Capacity",
-								"runningPowerSupply": 2,
-								"totalPowerSupply":   2,
-								"tempActual":         23.0,
-							},
-							{
-								"runningCPUCount":    20,
-								"totalCPUCount":      40,
-								"swVersion":          "19.2.4.0.0.190709",
-								"hostname":           "itl-b22fa37cad1326aba990cdec7facace2",
-								"memory":             188,
-								"model":              "X7-2L_High_Capacity",
-								"runningPowerSupply": 2,
-								"totalPowerSupply":   2,
-								"tempActual":         24.0,
-							},
-						},
-						"_id": utils.Str2oid("5eba60d00b606515fdc2c554"),
-					},
-				},
-				"metadata": map[string]interface{}{
-					"empty":         false,
-					"first":         true,
-					"last":          true,
-					"number":        0,
-					"size":          1,
-					"totalElements": 1,
-					"totalPages":    1,
-				},
-			},
-		}
+		var expectedOut = []dto.OracleExadata{}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
@@ -157,73 +68,74 @@ func (m *MongodbSuite) TestSearchOracleExadata() {
 	m.T().Run("should_search_test_exadata", func(t *testing.T) {
 		out, err := m.db.SearchOracleExadata(false, []string{"test-exadata", "s75-c2449b0e89e5a0b38401636eaa07abd5"}, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"createdAt": utils.P("2020-05-12T10:39:44.831+02:00").Local(),
-				"dbServers": []map[string]interface{}{
+
+		var expectedOut = []dto.OracleExadata{
+			{
+				Id:        "5eba60d00b606515fdc2c554",
+				CreatedAt: utils.P("2020-05-12T08:39:44.831Z"),
+				DbServers: []dto.DbServers{
 					{
-						"runningCPUCount":    48,
-						"totalCPUCount":      48,
-						"swVersion":          "19.2.4.0.0.190709",
-						"hostname":           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
-						"memory":             376,
-						"model":              "X7-2",
-						"runningPowerSupply": 2,
-						"totalPowerSupply":   2,
-						"tempActual":         24.0,
+						Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
+						Memory:             376,
+						Model:              "X7-2",
+						RunningCPUCount:    48,
+						RunningPowerSupply: 2,
+						SwVersion:          "19.2.4.0.0.190709",
+						TempActual:         24,
+						TotalCPUCount:      48,
+						TotalPowerSupply:   2,
 					},
 					{
-						"runningCPUCount":    48,
-						"totalCPUCount":      48,
-						"swVersion":          "19.2.4.0.0.190709",
-						"hostname":           "kantoor-43a6cdc54bb211eb127bca5c6651950c",
-						"memory":             376,
-						"model":              "X7-2",
-						"runningPowerSupply": 2,
-						"totalPowerSupply":   2,
-						"tempActual":         24.0,
-					},
-				},
-				"environment": "PROD",
-				"hostname":    "test-exadata",
-				"ibSwitches": []map[string]interface{}{
-					{
-						"swVersion": "2.2.13-2.190326",
-						"hostname":  "off-df8b95a01746a464e69203c840a6a46a",
-						"model":     "SUN_DCS_36p",
-					},
-					{
-						"swVersion": "2.2.13-2.190326",
-						"hostname":  "aspen-8d1d1b210625b1f1024b686135f889a1",
-						"model":     "SUN_DCS_36p",
+						Hostname:           "kantoor-43a6cdc54bb211eb127bca5c6651950c",
+						Memory:             376,
+						Model:              "X7-2",
+						RunningCPUCount:    48,
+						RunningPowerSupply: 2,
+						SwVersion:          "19.2.4.0.0.190709",
+						TempActual:         24,
+						TotalCPUCount:      48,
+						TotalPowerSupply:   2,
 					},
 				},
-				"location": "Italy",
-				"storageServers": []map[string]interface{}{
+				Environment: "PROD",
+				Hostname:    "test-exadata",
+				IbSwitches: []dto.IbSwitches{
 					{
-						"runningCPUCount":    20,
-						"totalCPUCount":      40,
-						"swVersion":          "19.2.4.0.0.190709",
-						"hostname":           "s75-c2449b0e89e5a0b38401636eaa07abd5",
-						"memory":             188,
-						"model":              "X7-2L_High_Capacity",
-						"runningPowerSupply": 2,
-						"totalPowerSupply":   2,
-						"tempActual":         23.0,
+						Hostname:  "off-df8b95a01746a464e69203c840a6a46a",
+						Model:     "SUN_DCS_36p",
+						SwVersion: "2.2.13-2.190326",
 					},
 					{
-						"runningCPUCount":    20,
-						"totalCPUCount":      40,
-						"swVersion":          "19.2.4.0.0.190709",
-						"hostname":           "itl-b22fa37cad1326aba990cdec7facace2",
-						"memory":             188,
-						"model":              "X7-2L_High_Capacity",
-						"runningPowerSupply": 2,
-						"totalPowerSupply":   2,
-						"tempActual":         24.0,
+						Hostname:  "aspen-8d1d1b210625b1f1024b686135f889a1",
+						Model:     "SUN_DCS_36p",
+						SwVersion: "2.2.13-2.190326",
 					},
 				},
-				"_id": utils.Str2oid("5eba60d00b606515fdc2c554"),
+				Location: "Italy",
+				StorageServers: []dto.StorageServers{
+					{
+						Hostname:           "s75-c2449b0e89e5a0b38401636eaa07abd5",
+						Memory:             188,
+						Model:              "X7-2L_High_Capacity",
+						RunningCPUCount:    20,
+						RunningPowerSupply: 2,
+						SwVersion:          "19.2.4.0.0.190709",
+						TempActual:         23,
+						TotalCPUCount:      40,
+						TotalPowerSupply:   2,
+					},
+					{
+						Hostname:           "itl-b22fa37cad1326aba990cdec7facace2",
+						Memory:             188,
+						Model:              "X7-2L_High_Capacity",
+						RunningCPUCount:    20,
+						RunningPowerSupply: 2,
+						SwVersion:          "19.2.4.0.0.190709",
+						TempActual:         24,
+						TotalCPUCount:      40,
+						TotalPowerSupply:   2,
+					},
+				},
 			},
 		}
 
@@ -233,145 +145,74 @@ func (m *MongodbSuite) TestSearchOracleExadata() {
 	m.T().Run("fullmode", func(t *testing.T) {
 		out, err := m.db.SearchOracleExadata(true, []string{}, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"createdAt": utils.P("2020-05-12T08:39:44.831Z").Local(),
-				"dbServers": []map[string]interface{}{
+
+		var expectedOut = []dto.OracleExadata{
+			{
+				Id:        "5eba60d00b606515fdc2c554",
+				CreatedAt: utils.P("2020-05-12T08:39:44.831Z"),
+				DbServers: []dto.DbServers{
 					{
-						"runningCPUCount":      48,
-						"totalCPUCount":        48,
-						"cellsrvServiceStatus": nil,
-						"swVersion":            "19.2.4.0.0.190709",
-						"runningFanCount":      16,
-						"totalFanCount":        16,
-						"fanStatus":            "normal",
-						"hostname":             "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
-						"memory":               376,
-						"model":                "X7-2",
-						"msServiceStatus":      "running",
-						"runningPowerSupply":   2,
-						"totalPowerSupply":     2,
-						"powerStatus":          "normal",
-						"rsServiceStatus":      "running",
-						"status":               "online",
-						"tempActual":           24.0,
-						"tempStatus":           "normal",
+						Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
+						Memory:             376,
+						Model:              "X7-2",
+						RunningCPUCount:    48,
+						RunningPowerSupply: 2,
+						SwVersion:          "19.2.4.0.0.190709",
+						TempActual:         24,
+						TotalCPUCount:      48,
+						TotalPowerSupply:   2,
 					},
 					{
-						"runningCPUCount":      48,
-						"totalCPUCount":        48,
-						"cellsrvServiceStatus": nil,
-						"swVersion":            "19.2.4.0.0.190709",
-						"runningFanCount":      16,
-						"totalFanCount":        16,
-						"fanStatus":            "normal",
-						"hostname":             "kantoor-43a6cdc54bb211eb127bca5c6651950c",
-						"memory":               376,
-						"model":                "X7-2",
-						"msServiceStatus":      "running",
-						"runningPowerSupply":   2,
-						"totalPowerSupply":     2,
-						"powerStatus":          "normal",
-						"rsServiceStatus":      "running",
-						"status":               "online",
-						"tempActual":           24.0,
-						"tempStatus":           "normal",
+						Hostname:           "kantoor-43a6cdc54bb211eb127bca5c6651950c",
+						Memory:             376,
+						Model:              "X7-2",
+						RunningCPUCount:    48,
+						RunningPowerSupply: 2,
+						SwVersion:          "19.2.4.0.0.190709",
+						TempActual:         24,
+						TotalCPUCount:      48,
+						TotalPowerSupply:   2,
 					},
 				},
-				"environment": "PROD",
-				"hostname":    "test-exadata",
-				"ibSwitches": []map[string]interface{}{
+				Environment: "PROD",
+				Hostname:    "test-exadata",
+				IbSwitches: []dto.IbSwitches{
 					{
-						"swVersion": "2.2.13-2.190326",
-						"hostname":  "off-df8b95a01746a464e69203c840a6a46a",
-						"model":     "SUN_DCS_36p",
+						Hostname:  "off-df8b95a01746a464e69203c840a6a46a",
+						Model:     "SUN_DCS_36p",
+						SwVersion: "2.2.13-2.190326",
 					},
 					{
-						"swVersion": "2.2.13-2.190326",
-						"hostname":  "aspen-8d1d1b210625b1f1024b686135f889a1",
-						"model":     "SUN_DCS_36p",
-					},
-				},
-				"location": "Italy",
-				"storageServers": []map[string]interface{}{
-					{
-						"runningCPUCount": 20,
-						"totalCPUCount":   40,
-						"cellDisks": []map[string]interface{}{
-							{
-								"errCount": 0,
-								"name":     "fanshop-5bde7badf2c9deceea5f615c3840c0b9",
-								"status":   "normal",
-								"usedPerc": 32,
-							},
-							{
-								"errCount": 0,
-								"name":     "globe-b31fa3756675a5c8ac052437ff7e439b",
-								"status":   "normal",
-								"usedPerc": 54,
-							},
-							{
-								"errCount": 3,
-								"name":     "srvc28-3807c977788c598cfa31fe21c0d3d5be",
-								"status":   "normal",
-								"usedPerc": 90,
-							},
-						},
-						"cellsrvServiceStatus": "running",
-						"swVersion":            "19.2.4.0.0.190709",
-						"runningFanCount":      8,
-						"totalFanCount":        8,
-						"fanStatus":            "normal",
-						"flashcacheMode":       "WriteBack",
-						"hostname":             "s75-c2449b0e89e5a0b38401636eaa07abd5",
-						"memory":               188,
-						"model":                "X7-2L_High_Capacity",
-						"msServiceStatus":      "running",
-						"runningPowerSupply":   2,
-						"totalPowerSupply":     2,
-						"powerStatus":          "normal",
-						"rsServiceStatus":      "running",
-						"status":               "online",
-						"tempActual":           23.0,
-						"tempStatus":           "normal",
-					},
-					{
-						"runningCPUCount": 20,
-						"totalCPUCount":   40,
-						"cellDisks": []map[string]interface{}{
-							{
-								"errCount": 0,
-								"name":     "server52-390b5dac8c3b68e3471c657ef97a7ae6",
-								"status":   "normal",
-								"usedPerc": 32,
-							},
-							{
-								"errCount": 1,
-								"name":     "srvc07-5b888ab40dbd25e106309fd482f859a0",
-								"status":   "normal",
-								"usedPerc": 54,
-							},
-						},
-						"cellsrvServiceStatus": "running",
-						"swVersion":            "19.2.4.0.0.190709",
-						"runningFanCount":      8,
-						"totalFanCount":        8,
-						"fanStatus":            "normal",
-						"flashcacheMode":       "WriteBack",
-						"hostname":             "itl-b22fa37cad1326aba990cdec7facace2",
-						"memory":               188,
-						"model":                "X7-2L_High_Capacity",
-						"msServiceStatus":      "running",
-						"runningPowerSupply":   2,
-						"totalPowerSupply":     2,
-						"powerStatus":          "normal",
-						"rsServiceStatus":      "running",
-						"status":               "online",
-						"tempActual":           24.0,
-						"tempStatus":           "normal",
+						Hostname:  "aspen-8d1d1b210625b1f1024b686135f889a1",
+						Model:     "SUN_DCS_36p",
+						SwVersion: "2.2.13-2.190326",
 					},
 				},
-				"_id": utils.Str2oid("5eba60d00b606515fdc2c554"),
+				Location: "Italy",
+				StorageServers: []dto.StorageServers{
+					{
+						Hostname:           "s75-c2449b0e89e5a0b38401636eaa07abd5",
+						Memory:             188,
+						Model:              "X7-2L_High_Capacity",
+						RunningCPUCount:    20,
+						RunningPowerSupply: 2,
+						SwVersion:          "19.2.4.0.0.190709",
+						TempActual:         23,
+						TotalCPUCount:      40,
+						TotalPowerSupply:   2,
+					},
+					{
+						Hostname:           "itl-b22fa37cad1326aba990cdec7facace2",
+						Memory:             188,
+						Model:              "X7-2L_High_Capacity",
+						RunningCPUCount:    20,
+						RunningPowerSupply: 2,
+						SwVersion:          "19.2.4.0.0.190709",
+						TempActual:         24,
+						TotalCPUCount:      40,
+						TotalPowerSupply:   2,
+					},
+				},
 			},
 		}
 
