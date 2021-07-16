@@ -19,9 +19,82 @@ package service
 import (
 	"strings"
 	"time"
+
+	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
 // SearchOracleExadata search exadata
-func (as *APIService) SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, error) {
+func (as *APIService) SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]dto.OracleExadata, error) {
 	return as.Database.SearchOracleExadata(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+}
+
+func (as *APIService) SearchOracleExadataAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	exadatas, err := as.Database.SearchOracleExadata(true, []string{}, "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan)
+	if err != nil {
+		return nil, err
+	}
+
+	var sheets *excelize.File
+	templateSheet := "template"
+	sheets, err = exutils.NewXLSX(as.Config, templateSheet, "")
+	if err != nil {
+		return nil, err
+	}
+
+	for _, exa := range exadatas {
+
+		indexNewSheet := sheets.NewSheet(exa.Hostname)
+		errs := sheets.CopySheet(1, indexNewSheet)
+		if errs != nil {
+			return nil, errs
+		}
+
+		axisHelp := exutils.NewAxisHelper(1)
+		axisHelp.FillRow(sheets, exa.Hostname, exa.Hostname)
+		headers := []string{
+			"Hostname",
+			"Model",
+			"CPU",
+			"Memory",
+			"Version",
+			"Power/Temp",
+		}
+		axisHelp.NewRowAndFill(sheets, exa.Hostname, headers...)
+		axisHelp.NewRowAndFill(sheets, exa.Hostname, "DB Servers")
+		for _, server := range exa.DbServers {
+			nextAxis := axisHelp.NewRow()
+			sheets.SetCellValue(exa.Hostname, nextAxis(), server.Hostname)
+			sheets.SetCellValue(exa.Hostname, nextAxis(), server.Model)
+			sheets.SetCellValue(exa.Hostname, nextAxis(), server.TotalCPUCount)
+			sheets.SetCellValue(exa.Hostname, nextAxis(), server.Memory)
+			sheets.SetCellValue(exa.Hostname, nextAxis(), server.SwVersion)
+			sheets.SetCellValue(exa.Hostname, nextAxis(), server.TotalPowerSupply)
+		}
+		axisHelp.NewRowAndFill(sheets, exa.Hostname, "IBSwitch")
+		for _, ibSwitch := range exa.IbSwitches {
+			nextAxis := axisHelp.NewRow()
+			sheets.SetCellValue(exa.Hostname, nextAxis(), ibSwitch.Hostname)
+			sheets.SetCellValue(exa.Hostname, nextAxis(), ibSwitch.Model)
+			sheets.SetCellValue(exa.Hostname, nextAxis(), nil)
+			sheets.SetCellValue(exa.Hostname, nextAxis(), nil)
+			sheets.SetCellValue(exa.Hostname, nextAxis(), ibSwitch.SwVersion)
+			sheets.SetCellValue(exa.Hostname, nextAxis(), nil)
+		}
+		axisHelp.NewRowAndFill(sheets, exa.Hostname, "Storage")
+		for _, server := range exa.StorageServers {
+			nextAxis := axisHelp.NewRow()
+			sheets.SetCellValue(exa.Hostname, nextAxis(), server.Hostname)
+			sheets.SetCellValue(exa.Hostname, nextAxis(), server.Model)
+			sheets.SetCellValue(exa.Hostname, nextAxis(), server.TotalCPUCount)
+			sheets.SetCellValue(exa.Hostname, nextAxis(), server.Memory)
+			sheets.SetCellValue(exa.Hostname, nextAxis(), server.SwVersion)
+			sheets.SetCellValue(exa.Hostname, nextAxis(), server.TotalPowerSupply)
+		}
+	}
+
+	sheets.DeleteSheet(templateSheet)
+
+	return sheets, nil
 }
