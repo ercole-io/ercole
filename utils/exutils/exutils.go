@@ -92,3 +92,22 @@ func NewXLSX(c config.Configuration, sheet string, headers ...string) (*excelize
 
 	return file, nil
 }
+
+// FillRow return *excelize.File initialized with sheet fill
+func (ah *AxisHelper) FillRow(xlsx *excelize.File, sheet string, values ...string) *excelize.File {
+	for i, val := range values {
+		column := rune('A' + i)
+		xlsx.SetCellValue(sheet, fmt.Sprintf("%c%d", column, ah.row), val)
+	}
+	return xlsx
+}
+
+// NewRowAndFill return *excelize.File initialized with sheet fill to the next row
+func (ah *AxisHelper) NewRowAndFill(xlsx *excelize.File, sheet string, values ...string) *excelize.File {
+	ah.row++
+	for i, val := range values {
+		column := rune('A' + i)
+		xlsx.SetCellValue(sheet, fmt.Sprintf("%c%d", column, ah.row), val)
+	}
+	return xlsx
+}

@@ -68,7 +68,8 @@ type APIServiceInterface interface {
 	// SearchOracleDatabases search databases
 	SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabasesFilter) (*excelize.File, error)
 	// SearchOracleExadata search exadata
-	SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]interface{}, error)
+	SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]dto.OracleExadata, error)
+	SearchOracleExadataAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	// SearchOracleDatabaseUsedLicenses return the list of consumed licenses
 	SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseUsedLicenseSearchResponse, error)
 
@@ -211,9 +212,9 @@ type APIService struct {
 	// NewObjectID return a new ObjectID
 	NewObjectID func() primitive.ObjectID
 
-	mockGetOracleDatabaseAgreements func(filters dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
-	mockGetDatabaseLicensesCompliance func() ([]dto.LicenseCompliance, error)
-	mockGetDatabasesUsedLicenses func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
+	mockGetOracleDatabaseAgreements     func(filters dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
+	mockGetDatabaseLicensesCompliance   func() ([]dto.LicenseCompliance, error)
+	mockGetDatabasesUsedLicenses        func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
 	mockGetDatabasesUsedLicensesPerHost func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error)
 }
 
