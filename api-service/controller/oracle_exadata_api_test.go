@@ -41,7 +41,7 @@ func TestSearchOracleExadata_SuccessPaged(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	var resFromService = []dto.OracleExadata{
+	var resFromService2 = []dto.OracleExadata{
 		{
 			Id:        "5eba60d00b606515fdc2c554",
 			CreatedAt: utils.P("2020-05-12T08:39:44.831Z"),
@@ -111,6 +111,10 @@ func TestSearchOracleExadata_SuccessPaged(t *testing.T) {
 		},
 	}
 
+	var resFromService = []dto.OracleExadataResponse{
+		{Content: resFromService2},
+	}
+
 	as.EXPECT().
 		SearchOracleExadata(true, "foobar", "Hostname", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(resFromService, nil)
@@ -124,7 +128,7 @@ func TestSearchOracleExadata_SuccessPaged(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, rr.Code)
 
-	assert.JSONEq(t, utils.ToJSON(resFromService[0]), rr.Body.String())
+	assert.JSONEq(t, utils.ToJSON(resFromService[0].Content), rr.Body.String())
 }
 
 func TestSearchOracleExadata_SuccessUnpaged(t *testing.T) {
@@ -138,7 +142,7 @@ func TestSearchOracleExadata_SuccessUnpaged(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	var expectedRes = []dto.OracleExadata{
+	var expectedRes2 = []dto.OracleExadata{
 		{
 			Id:        "",
 			CreatedAt: time.Time{},
@@ -183,6 +187,10 @@ func TestSearchOracleExadata_SuccessUnpaged(t *testing.T) {
 			Location:       "",
 			StorageServers: nil,
 		},
+	}
+
+	var expectedRes = []dto.OracleExadataResponse{
+		{Content: expectedRes2},
 	}
 
 	as.EXPECT().
@@ -197,7 +205,7 @@ func TestSearchOracleExadata_SuccessUnpaged(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+	assert.JSONEq(t, utils.ToJSON(expectedRes[0].Content), rr.Body.String())
 }
 
 func TestSearchOracleExadata_FailUnprocessableEntity1(t *testing.T) {

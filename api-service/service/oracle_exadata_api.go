@@ -26,7 +26,7 @@ import (
 )
 
 // SearchOracleExadata search exadata
-func (as *APIService) SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]dto.OracleExadata, error) {
+func (as *APIService) SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]dto.OracleExadataResponse, error) {
 	return as.Database.SearchOracleExadata(full, strings.Split(search, " "), sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }
 
@@ -43,7 +43,7 @@ func (as *APIService) SearchOracleExadataAsXLSX(filter dto.GlobalFilter) (*excel
 		return nil, err
 	}
 
-	for _, exa := range exadatas {
+	for _, exa := range exadatas[0].Content {
 
 		indexNewSheet := sheets.NewSheet(exa.Hostname)
 		errs := sheets.CopySheet(1, indexNewSheet)

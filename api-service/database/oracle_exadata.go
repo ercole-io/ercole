@@ -26,7 +26,7 @@ import (
 )
 
 // SearchOracleExadata search exadata
-func (md *MongoDatabase) SearchOracleExadata(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]dto.OracleExadata, error) {
+func (md *MongoDatabase) SearchOracleExadata(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]dto.OracleExadataResponse, error) {
 
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
@@ -115,14 +115,14 @@ func (md *MongoDatabase) SearchOracleExadata(full bool, keywords []string, sortB
 				),
 			}),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
-			mu.APOptionalPagingStage(page, pageSize),
+			PagingMetadataStage(page, pageSize),
 		),
 	)
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	out := make([]dto.OracleExadata, 0)
+	out := make([]dto.OracleExadataResponse, 0)
 
 	if err := cur.All(context.TODO(), &out); err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
