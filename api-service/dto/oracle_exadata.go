@@ -2,6 +2,11 @@ package dto
 
 import "time"
 
+type OracleExadataResponse struct {
+	Content  []OracleExadata `json:"content" bson:"content"`
+	Metadata PagingMetadata  `json:"metadata" bson:"metadata"`
+}
+
 type OracleExadata struct {
 	Id             string           `json:"_id" bson:"_id"`
 	CreatedAt      time.Time        `json:"createdAt" bson:"createdAt"`

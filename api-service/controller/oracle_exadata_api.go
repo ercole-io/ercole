@@ -87,10 +87,10 @@ func (ctrl *APIController) SearchOracleExadataJSON(w http.ResponseWriter, r *htt
 
 	if pageNumber == -1 || pageSize == -1 {
 		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, exadata)
+		utils.WriteJSONResponse(w, http.StatusOK, exadata[0].Content)
 	} else {
 		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, exadata[0])
+		utils.WriteJSONResponse(w, http.StatusOK, exadata[0].Content)
 	}
 }
 

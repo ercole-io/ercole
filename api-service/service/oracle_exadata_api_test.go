@@ -35,45 +35,58 @@ func TestSearchOracleExadata_Success(t *testing.T) {
 		Database: db,
 	}
 
-	expectedRes := []dto.OracleExadata{
+	var expectedRes = []dto.OracleExadataResponse{
 		{
-			Id:        "5e8c234b24f648a08585bd3e",
-			CreatedAt: time.Time{},
-			DbServers: []dto.DbServers{
+			Content: []dto.OracleExadata{
 				{
-					Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
-					Memory:             48,
-					Model:              "19.2.4.0.0.190709",
-					RunningCPUCount:    48,
-					RunningPowerSupply: 376,
-					SwVersion:          "X7-2",
-					TempActual:         2,
-					TotalCPUCount:      2,
-					TotalPowerSupply:   24.0,
+					Id:        "5e8c234b24f648a08585bd3e",
+					CreatedAt: time.Time{},
+					DbServers: []dto.DbServers{
+						{
+							Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
+							Memory:             48,
+							Model:              "19.2.4.0.0.190709",
+							RunningCPUCount:    48,
+							RunningPowerSupply: 376,
+							SwVersion:          "X7-2",
+							TempActual:         2,
+							TotalCPUCount:      2,
+							TotalPowerSupply:   24.0,
+						},
+					},
+					Environment: "PROD",
+					Hostname:    "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
+					IbSwitches: []dto.IbSwitches{
+						{
+							Hostname:  "2.2.13-2.190326",
+							Model:     "off-df8b95a01746a464e69203c840a6a46a",
+							SwVersion: "SUN_DCS_36p",
+						},
+					},
+					Location: "Italy",
+					StorageServers: []dto.StorageServers{
+						{
+							Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
+							Memory:             48,
+							Model:              "19.2.4.0.0.190709",
+							RunningCPUCount:    48,
+							RunningPowerSupply: 376,
+							SwVersion:          "X7-2",
+							TempActual:         2,
+							TotalCPUCount:      2,
+							TotalPowerSupply:   24.0,
+						},
+					},
 				},
 			},
-			Environment: "PROD",
-			Hostname:    "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
-			IbSwitches: []dto.IbSwitches{
-				{
-					Hostname:  "2.2.13-2.190326",
-					Model:     "off-df8b95a01746a464e69203c840a6a46a",
-					SwVersion: "SUN_DCS_36p",
-				},
-			},
-			Location: "Italy",
-			StorageServers: []dto.StorageServers{
-				{
-					Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
-					Memory:             48,
-					Model:              "19.2.4.0.0.190709",
-					RunningCPUCount:    48,
-					RunningPowerSupply: 376,
-					SwVersion:          "X7-2",
-					TempActual:         2,
-					TotalCPUCount:      2,
-					TotalPowerSupply:   24.0,
-				},
+			Metadata: dto.PagingMetadata{
+				Empty:         false,
+				First:         true,
+				Last:          true,
+				Number:        0,
+				Size:          1,
+				TotalElements: 1,
+				TotalPages:    0,
 			},
 		},
 	}
@@ -129,28 +142,41 @@ func TestSearchOracleExadataAsXLSX_Success(t *testing.T) {
 		Database: db,
 	}
 
-	data := []dto.OracleExadata{
+	var expectedRes = []dto.OracleExadataResponse{
 		{
-			Id:        "5e8c234b24f648a08585bd3e",
-			CreatedAt: time.Time{},
-			DbServers: []dto.DbServers{
+			Content: []dto.OracleExadata{
 				{
-					Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
-					Memory:             48,
-					Model:              "19.2.4.0.0.190709",
-					RunningCPUCount:    48,
-					RunningPowerSupply: 376,
-					SwVersion:          "X7-2",
-					TempActual:         2,
-					TotalCPUCount:      2,
-					TotalPowerSupply:   24.0,
+					Id:        "5e8c234b24f648a08585bd3e",
+					CreatedAt: time.Time{},
+					DbServers: []dto.DbServers{
+						{
+							Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
+							Memory:             48,
+							Model:              "19.2.4.0.0.190709",
+							RunningCPUCount:    48,
+							RunningPowerSupply: 376,
+							SwVersion:          "X7-2",
+							TempActual:         2,
+							TotalCPUCount:      2,
+							TotalPowerSupply:   24.0,
+						},
+					},
+					Environment:    "PROD",
+					Hostname:       "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
+					IbSwitches:     nil,
+					Location:       "",
+					StorageServers: nil,
 				},
 			},
-			Environment:    "PROD",
-			Hostname:       "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
-			IbSwitches:     nil,
-			Location:       "",
-			StorageServers: nil,
+			Metadata: dto.PagingMetadata{
+				Empty:         false,
+				First:         true,
+				Last:          true,
+				Number:        0,
+				Size:          1,
+				TotalElements: 1,
+				TotalPages:    0,
+			},
 		},
 	}
 
@@ -161,7 +187,7 @@ func TestSearchOracleExadataAsXLSX_Success(t *testing.T) {
 	}
 
 	db.EXPECT().SearchOracleExadata(true, []string{}, "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
-		Return(data, nil).Times(1)
+		Return(expectedRes, nil).Times(1)
 
 	actual, err := as.SearchOracleExadataAsXLSX(filter)
 	require.NoError(t, err)
