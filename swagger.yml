@@ -3439,7 +3439,7 @@ paths:
                     properties:
                       content:
                         type: array
-                        items: {}
+                        items: { }
                       metadata:
                         type: object
                         properties:
@@ -4722,7 +4722,6 @@ paths:
     get:
       summary: Get Databases Used Licenses Per Host
       tags: [ ]
-      responses: { }
       operationId: GetDatabasesUsedLicensesPerHost
       parameters:
         - schema:
@@ -4737,6 +4736,56 @@ paths:
             type: string
           in: query
           name: older-than
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              examples:
+                Without pagination:
+                  value:
+                    usedLicenses:
+                      - hostname: ercsoldbxs
+                        databases: 2,
+                        licenseTypeID: A90611
+                        description: Oracle Database Enterprise Edition
+                        metric: Processor Perpetual
+                        usedLicenses: 2
+                      - hostname: ercsoldbx
+                        databases: 1
+                        licenseTypeID: A90650
+                        description: Oracle Tuning Pack
+                        metric: Processor Perpetual
+                        usedLicenses: 8
+                      - hostname: ercsoldbx
+                        databases: 1
+                        licenseTypeID: A90649
+                        description: Oracle Diagnostics Pack
+                        metric: Processor Perpetual
+                        usedLicenses: 8
+                      - hostname: ex91db01.syssede.systest.sanpaoloimi.com
+                        databases: 44
+                        licenseTypeID: L10001
+                        description: Oracle Database Enterprise Edition
+                        metric: Named User Plus Perpetual
+                        usedLicenses: 12
+                      - hostname: ex91db01.syssede.systest.sanpaoloimi.com
+                        databases: 44,
+                        licenseTypeID: L10005
+                        description: Oracle Real Application Clusters
+                        metric: Named User Plus Perpetual
+                        usedLicenses: 12
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: object
+                properties: { }
+              examples: { }
+        '401':
+          description: Unauthorized
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal server error
   /hosts/technologies/all/databases/licenses-compliance:
     get:
       summary: Get Database Licenses Compliance
