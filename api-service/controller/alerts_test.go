@@ -332,7 +332,6 @@ func TestSearchAlertsAsXLSX_Success(t *testing.T) {
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
 	ac := APIController{
-		//TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
