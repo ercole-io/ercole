@@ -274,9 +274,6 @@ func (as *APIService) getMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.Datab
 }
 
 func (as *APIService) GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error) {
-	if as.mockGetDatabaseLicensesCompliance != nil {
-		return as.mockGetDatabaseLicensesCompliance()
-	}
 
 	licenses := make([]dto.LicenseCompliance, 0)
 
@@ -378,7 +375,7 @@ func (as *APIService) GetDatabasesUsedLicensesPerHost(filter dto.GlobalFilter) (
 
 func convertUsedLicensesInLicensesPerHost(licenses []dto.DatabaseUsedLicense) []dto.DatabaseUsedLicensePerHost {
 	var output []dto.DatabaseUsedLicensePerHost
-	nextLicenses:
+nextLicenses:
 	for _, v := range licenses {
 		for i, v2 := range output {
 			if v.Hostname == v2.Hostname && v.LicenseTypeID == v2.LicenseTypeID {
