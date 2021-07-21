@@ -475,24 +475,80 @@ func TestGetDatabasesUsedLicensesAsXLSX_Success(t *testing.T) {
 		Database: db,
 	}
 
+	thisMoment := utils.P("2019-11-05T14:02:03+01:00")
+
 	filter := dto.GlobalFilter{
+		Location:    "Dubai",
+		Environment: "TEST",
+		OlderThan:   thisMoment,
+	}
+
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{{
+			LicenseTypeID: "A12345",
+			DbName:        "topolino-dbname",
+			Hostname:      "topolino-hostname",
+			UsedLicenses:  0,
+		}},
+	}
+
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "A12345",
+			ItemDescription: "ThisDesc",
+			Metric:          "ThisMetric",
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+	}
+	usedLicenses := []dto.MySQLUsedLicense{
+		{
+			Hostname:        "pluto",
+			InstanceName:    "pluto-instance",
+			InstanceEdition: model.MySQLEditionEnterprise,
+			AgreementType:   "",
+		},
+	}
+	clusters := []dto.Cluster{
+		{
+			Hostname: "pluto-cluster",
+			VMs: []dto.VM{
+				{
+					Hostname: "pluto",
+				},
+			},
+		},
+	}
+	agreements := []model.MySQLAgreement{
+		{
+			ID:               [12]byte{},
+			Type:             model.MySQLAgreementTypeCluster,
+			NumberOfLicenses: 12,
+			Clusters:         []string{"pippo-cluster", "pluto-cluster"},
+			Hosts:            []string{},
+		},
+	}
+	any := dto.GlobalFilter{
 		Location:    "",
 		Environment: "",
 		OlderThan:   utils.MAX_TIME,
 	}
 
-	usedLicenses := dto.DatabaseUsedLicense{
-		Hostname:      "topolino-hostname",
-		DbName:        "topolino-dbname",
-		LicenseTypeID: "A12345",
-		Description:   "ThisDesc",
-		Metric:        "ThisMetric",
-		UsedLicenses:  0,
-	}
+	gomock.InOrder(
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
 
-	as.mockGetDatabasesUsedLicenses = func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
-		return []dto.DatabaseUsedLicense{usedLicenses}, nil
-	}
+		db.EXPECT().GetMySQLUsedLicenses(filter).
+			Return(usedLicenses, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
+		db.EXPECT().GetMySQLAgreements().
+			Return(agreements, nil),
+	)
 
 	actual, err := as.GetDatabasesUsedLicensesAsXLSX(filter)
 	require.NoError(t, err)
