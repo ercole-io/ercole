@@ -48,6 +48,8 @@ type OracleDatabaseAgreementFE struct {
 	// Value of licenses yet available to be assigned to hosts
 	AvailableLicensesPerCore float64 `json:"availableLicensesPerCore" bson:"availableLicensesPerCore"`
 	AvailableLicensesPerUser float64 `json:"availableLicensesPerUser" bson:"availableLicensesPerUser"`
+
+	CoveredLicenses float64 `json:"-" bson:"-"`
 }
 
 // OracleDatabaseAgreementAssociatedHostFE contains the informations about an associated host in agreement
