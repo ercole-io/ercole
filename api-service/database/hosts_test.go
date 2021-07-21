@@ -943,124 +943,27 @@ func (m *MongodbSuite) TestGetHostData() {
 	actual, err := m.db.GetHostData("newdb", utils.MAX_TIME)
 	require.NoError(m.T(), err)
 
-	var elapsed float64 = 12059.18
-	var dbTime float64 = 184.81
-	var dailyCPUUsage float64 = 3.4
-	var work float64 = 1
-
-	expected := model.HostDataBE{
-		ID:                  utils.Str2oid("5ec64ac640c089c5aff44e9d"),
-		Archived:            false,
-		CreatedAt:           utils.P("2020-05-21T09:32:54.83Z"),
-		ServerVersion:       "latest",
-		ServerSchemaVersion: 1,
-		Hostname:            "newdb",
-		Location:            "Germany",
-		Environment:         "TST",
-		AgentVersion:        "latest",
-		Tags:                []string{},
-		Info: model.Host{Hostname: "newdb",
-			CPUModel:                      "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
-			CPUFrequency:                  "2.53GHz",
-			CPUSockets:                    2,
-			CPUCores:                      1,
-			CPUThreads:                    2,
-			ThreadsPerCore:                2,
-			CoresPerSocket:                1,
-			HardwareAbstraction:           "VIRT",
-			HardwareAbstractionTechnology: "VMWARE",
-			Kernel:                        "Linux",
-			KernelVersion:                 "3.10.0-514.el7.x86_64",
-			OS:                            "Red Hat Enterprise Linux",
-			OSVersion:                     "7.6",
-			MemoryTotal:                   3,
-			SwapTotal:                     1,
-			OtherInfo:                     map[string]interface{}{},
-		},
-		ClusterMembershipStatus: model.ClusterMembershipStatus{OracleClusterware: false,
-			SunCluster:              false,
-			HACMP:                   false,
-			VeritasClusterServer:    false,
-			VeritasClusterHostnames: []string(nil),
-			OtherInfo:               map[string]interface{}{},
-		},
-		Features: model.Features{
-			Oracle: &model.OracleFeature{
-				Database: &model.OracleDatabaseFeature{
-					Databases: []model.OracleDatabase{
-						{InstanceNumber: 1,
-							InstanceName:      "pippodb1",
-							Name:              "pippodb",
-							UniqueName:        "pippodb",
-							Status:            "OPEN",
-							DbID:              0x0,
-							Role:              "",
-							IsCDB:             false,
-							Version:           "12.2.0.1.0 Enterprise Edition",
-							Platform:          "Linux x86 64-bit",
-							Archivelog:        false,
-							Charset:           "AL32UTF8",
-							NCharset:          "AL16UTF16",
-							BlockSize:         8192,
-							CPUCount:          2,
-							SGATarget:         0,
-							PGATarget:         0,
-							MemoryTarget:      1.484,
-							SGAMaxSize:        1.484,
-							SegmentsSize:      50,
-							DatafileSize:      8,
-							Allocable:         129,
-							Elapsed:           &elapsed,
-							DBTime:            &dbTime,
-							DailyCPUUsage:     &dailyCPUUsage,
-							Work:              &work,
-							ASM:               false,
-							Dataguard:         false,
-							Patches:           []model.OracleDatabasePatch{},
-							Tablespaces:       []model.OracleDatabaseTablespace{},
-							Schemas:           []model.OracleDatabaseSchema{},
-							Licenses:          []model.OracleDatabaseLicense{},
-							ADDMs:             []model.OracleDatabaseAddm{},
-							SegmentAdvisors:   []model.OracleDatabaseSegmentAdvisor{},
-							PSUs:              []model.OracleDatabasePSU{},
-							Backups:           []model.OracleDatabaseBackup{},
-							FeatureUsageStats: []model.OracleDatabaseFeatureUsageStat{},
-							PDBs:              []model.OracleDatabasePluggableDatabase{},
-							Services:          []model.OracleDatabaseService{},
-							OtherInfo:         map[string]interface{}{},
-						}},
-					UnlistedRunningDatabases: []string{},
-					OtherInfo:                map[string]interface{}{},
-				},
-				Exadata:   nil,
-				OtherInfo: map[string]interface{}{},
-			},
-			Microsoft: (*model.MicrosoftFeature)(nil),
-			MySQL:     (*model.MySQLFeature)(nil),
-			OtherInfo: map[string]interface{}{},
-		},
-		Filesystems: []model.Filesystem{
-			{Filesystem: "/dev/mapper/cl_itl--csllab--112-root",
-				Type:           "ext4",
-				Size:           13958643712,
-				UsedSpace:      7194070220,
-				AvailableSpace: 5798205849,
-				MountedOn:      "/",
-				OtherInfo:      map[string]interface{}{},
-			},
-			{Filesystem: "/dev/sda1",
-				Type:           "ext4",
-				Size:           511705088,
-				UsedSpace:      139460608,
-				AvailableSpace: 335544320,
-				MountedOn:      "/boot",
-				OtherInfo:      map[string]interface{}{},
-			}},
-		Clusters:  []model.ClusterInfo(nil),
-		OtherInfo: map[string]interface{}{"schemaVersion": 1.0},
-	}
+	expected := mongoutils.LoadFixtureMongoHostDataMapAsHostData(m.T(), "../../fixture/test_apiservice_mongohostdata_16.json")
 
 	assert.Equal(m.T(), expected, *actual)
+}
+
+func (m *MongodbSuite) TestGetHostDatas() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_14.json"))
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_15.json"))
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_16.json"))
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_17.json"))
+
+	actual, err := m.db.GetHostDatas(utils.MAX_TIME)
+	require.NoError(m.T(), err)
+
+	expected := []model.HostDataBE{
+		mongoutils.LoadFixtureMongoHostDataMapAsHostData(m.T(), "../../fixture/test_apiservice_mongohostdata_16.json"),
+		mongoutils.LoadFixtureMongoHostDataMapAsHostData(m.T(), "../../fixture/test_apiservice_mongohostdata_17.json"),
+	}
+
+	assert.Equal(m.T(), expected, actual)
 }
 
 func (m *MongodbSuite) TestListLocations() {

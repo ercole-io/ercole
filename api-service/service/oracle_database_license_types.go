@@ -17,6 +17,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
@@ -88,7 +89,12 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 	licenses := make(map[string]*dto.LicenseCompliance)
 
 	// get consumptions value by hosts
-	getLicensesConsumedByHost := as.getterLicensesConsumedByHost()
+	getLicensesConsumedByHost, err := as.getterLicensesConsumedByHost()
+	if err != nil {
+		as.Log.Error(err)
+		return nil, err
+	}
+
 	for _, host := range hosts {
 		license, ok := licenses[host.LicenseTypeID]
 		if !ok {
@@ -167,22 +173,35 @@ func (as *APIService) getterNewLicenseCompliance() (func(licenseTypeID string) *
 	return getter, nil
 }
 
-func (as *APIService) getterLicensesConsumedByHost() func(host dto.HostUsingOracleDatabaseLicenses) (float64, error) {
+func (as *APIService) getterLicensesConsumedByHost() (func(host dto.HostUsingOracleDatabaseLicenses) (float64, error), error) {
 	// map to keep history if a certain host per a certain licence as already be counted
 	// by another host in its veritas cluster
 	hostLicenseAlreadyCounted := make(map[string]map[string]bool)
 
-	return func(host dto.HostUsingOracleDatabaseLicenses) (float64, error) {
-		return as.getLicensesConsumedByHost(host, hostLicenseAlreadyCounted)
+	hostdatas, err := as.Database.GetHostDatas(utils.MAX_TIME)
+	if err != nil {
+		return nil, err
 	}
+
+	hostdatasPerHostname := make(map[string]*model.HostDataBE, len(hostdatas))
+	for i := range hostdatas {
+		hd := &hostdatas[i]
+		hostdatasPerHostname[hd.Hostname] = hd
+	}
+
+	return func(host dto.HostUsingOracleDatabaseLicenses) (float64, error) {
+		return as.getLicensesConsumedByHost(host, hostLicenseAlreadyCounted, hostdatasPerHostname)
+	}, nil
 }
 
 func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabaseLicenses,
-	hostnamesPerLicense map[string]map[string]bool) (float64, error) {
+	hostnamesPerLicense map[string]map[string]bool,
+	hostdatasPerHostname map[string]*model.HostDataBE,
+) (float64, error) {
 
-	hostdata, err := as.Database.GetHostData(host.Name, utils.MAX_TIME)
-	if err != nil {
-		return 0, err
+	hostdata, found := hostdatasPerHostname[host.Name]
+	if !found {
+		return 0, fmt.Errorf("%w: %s", utils.ErrHostNotFound, host.Name)
 	}
 
 	cms := hostdata.ClusterMembershipStatus
@@ -191,7 +210,7 @@ func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabase
 		return host.OriginalCount, nil
 	}
 
-	_, found := hostnamesPerLicense[host.Name]
+	_, found = hostnamesPerLicense[host.Name]
 	if !found {
 		hostnamesPerLicense[host.Name] = make(map[string]bool)
 	}
@@ -209,14 +228,12 @@ func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabase
 		}
 		hostnamesPerLicense[h][host.LicenseTypeID] = true
 
-		anotherHostdata, err := as.Database.GetHostData(h, utils.MAX_TIME)
-		if errors.Is(err, utils.ErrHostNotFound) {
-			as.Log.Warn(err)
-			continue
-		} else if err != nil {
-			as.Log.Error(err)
+		anotherHostdata, found := hostdatasPerHostname[host.Name]
+		if !found {
+			as.Log.Warn(fmt.Errorf("%w: %s", utils.ErrHostNotFound, host.Name))
 			continue
 		}
+
 		sumClusterCores += anotherHostdata.Info.CPUCores
 	}
 

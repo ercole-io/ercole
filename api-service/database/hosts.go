@@ -415,6 +415,26 @@ func (md *MongoDatabase) GetHostData(hostname string, olderThan time.Time) (*mod
 	return &hostdata, nil
 }
 
+func (md *MongoDatabase) GetHostDatas(olderThan time.Time) ([]model.HostDataBE, error) {
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
+		Aggregate(
+			context.TODO(),
+			mu.MAPipeline(
+				FilterByOldnessSteps(olderThan),
+			),
+		)
+	if err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	hostdatas := make([]model.HostDataBE, 0)
+	if err := cur.All(context.TODO(), &hostdatas); err != nil {
+		return nil, utils.NewError(err, "DECODE ERROR")
+	}
+
+	return hostdatas, nil
+}
+
 // ListLocations list locations
 func (md *MongoDatabase) ListLocations(location string, environment string, olderThan time.Time) ([]string, error) {
 	var out []string = make([]string, 0)
