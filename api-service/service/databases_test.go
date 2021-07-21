@@ -703,24 +703,77 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 		OlderThan:   utils.MAX_TIME,
 	}
 
-	licenses := dto.DatabaseUsedLicensePerHost{
-		Hostname:      "ercsoldbx",
-		Databases:     2,
-		LicenseTypeID: "A90611",
-		Description:   "Oracle Database Enterprise Edition",
-		Metric:        "Processor Perpetual",
-		UsedLicenses:  2,
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{{
+			LicenseTypeID: "A90611",
+			DbName:        "ercsoldbx",
+			Hostname:      "ercsoldbx",
+			UsedLicenses:  2,
+		}},
+	}
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "A90611",
+			ItemDescription: "Oracle Database Enterprise Edition",
+			Metric:          "Processor Perpetual",
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+	}
+	usedLicenses := []dto.MySQLUsedLicense{
+		{
+			Hostname:        "pluto",
+			InstanceName:    "pluto-instance",
+			InstanceEdition: model.MySQLEditionEnterprise,
+			AgreementType:   "",
+		},
+	}
+	clusters := []dto.Cluster{
+		{
+			Hostname: "pluto-cluster",
+			VMs: []dto.VM{
+				{
+					Hostname: "pluto",
+				},
+			},
+		},
+	}
+	agreements := []model.MySQLAgreement{
+		{
+			ID:               [12]byte{},
+			Type:             model.MySQLAgreementTypeCluster,
+			NumberOfLicenses: 12,
+			Clusters:         []string{"pippo-cluster", "pluto-cluster"},
+			Hosts:            []string{},
+		},
+	}
+	any := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
 	}
 
-	as.mockGetDatabasesUsedLicensesPerHost = func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error) {
-		return []dto.DatabaseUsedLicensePerHost{licenses}, nil
-	}
+	gomock.InOrder(
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+
+		db.EXPECT().GetMySQLUsedLicenses(filter).
+			Return(usedLicenses, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
+		db.EXPECT().GetMySQLAgreements().
+			Return(agreements, nil),
+	)
 
 	actual, err := as.GetDatabasesUsedLicensesPerHostAsXLSX(filter)
 	require.NoError(t, err)
 
 	assert.Equal(t, "ercsoldbx", actual.GetCellValue("Licenses Used", "A2"))
-	assert.Equal(t, "2", actual.GetCellValue("Licenses Used", "B2"))
+	assert.Equal(t, "1", actual.GetCellValue("Licenses Used", "B2"))
 	assert.Equal(t, "A90611", actual.GetCellValue("Licenses Used", "C2"))
 	assert.Equal(t, "Oracle Database Enterprise Edition", actual.GetCellValue("Licenses Used", "D2"))
 	assert.Equal(t, "Processor Perpetual", actual.GetCellValue("Licenses Used", "E2"))
