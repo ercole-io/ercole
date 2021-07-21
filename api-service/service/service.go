@@ -212,8 +212,7 @@ type APIService struct {
 	// NewObjectID return a new ObjectID
 	NewObjectID func() primitive.ObjectID
 
-	mockGetOracleDatabaseAgreements     func(filters dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
-	mockGetDatabasesUsedLicensesPerHost func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error)
+	mockGetOracleDatabaseAgreements func(filters dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
 }
 
 // Init initializes the service and database
