@@ -16,15 +16,15 @@
 package service
 
 import (
-	"testing"
-
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	gomock "github.com/golang/mock/gomock"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"testing"
 )
 
 func TestSearchDatabases_Success(t *testing.T) {
@@ -516,28 +516,117 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 		Database: db,
 	}
 
-	licenses := dto.LicenseCompliance{
-			LicenseTypeID:   "L47247",
-			ItemDescription: "Oracle Real Application Testing",
-			Metric:          "Processor Perpetual",
-			Consumed:        0,
-			Covered:         0,
-			Compliance:      1,
+	objID, _ := primitive.ObjectIDFromHex("609ce4782eff5d5540ec4a30")
+
+	oracleAgreements := []dto.OracleDatabaseAgreementFE{
+		{
+			ID:              objID,
+			AgreementID:     "5051863",
+			CSI:             "18000742",
+			LicenseTypeID:   "L47225",
+			ItemDescription: "Oracle Advanced Compression",
+			Metric:          "Named User Plus Perpetual",
+			ReferenceNumber: "66880702",
 			Unlimited:       false,
+			CatchAll:        false,
+			Restricted:      false,
+			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+				{
+					Hostname:                  "sdlsts101",
+					CoveredLicensesCount:      0,
+					TotalCoveredLicensesCount: 0,
+					ConsumedLicensesCount:     0,
+				},
+			},
+			LicensesPerCore:          0,
+			LicensesPerUser:          150,
+			AvailableLicensesPerCore: 0,
+			AvailableLicensesPerUser: 150,
+		},
 	}
-	as.mockGetDatabaseLicensesCompliance = func() ([]dto.LicenseCompliance, error) {
-		return []dto.LicenseCompliance{licenses}, nil
+
+	oracleHosts := []dto.HostUsingOracleDatabaseLicenses{
+		{
+			LicenseTypeID: "L47225",
+			Name:          "sdlsts103",
+			Type:          "host",
+			LicenseCount:  6,
+			OriginalCount: 6,
+		},
 	}
+
+	oracleLicenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "L47225",
+			ItemDescription: "Oracle Advanced Compression",
+			Metric:          "Named User Plus Perpetual",
+			Cost:            230,
+			Aliases:         []string{"Advanced Compression"},
+			Option:          true,
+		},
+	}
+
+	usedLicenses := []dto.MySQLUsedLicense{
+		{
+			Hostname:        "pluto",
+			InstanceName:    "pluto-instance",
+			InstanceEdition: model.MySQLEditionEnterprise,
+			AgreementType:   "",
+		},
+	}
+	clusters := []dto.Cluster{
+		{
+			Hostname: "pluto-cluster",
+			VMs: []dto.VM{
+				{
+					Hostname: "pluto",
+				},
+			},
+		},
+	}
+	agreements := []model.MySQLAgreement{
+		{
+			ID:               [12]byte{},
+			Type:             model.MySQLAgreementTypeCluster,
+			NumberOfLicenses: 12,
+			Clusters:         []string{"pippo-cluster", "pluto-cluster"},
+			Hosts:            []string{},
+		},
+	}
+	any := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	gomock.InOrder(
+		db.EXPECT().ListOracleDatabaseAgreements().
+			Return(oracleAgreements, nil),
+		db.EXPECT().ListHostUsingOracleDatabaseLicenses().
+			Return(oracleHosts, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(oracleLicenseTypes, nil).
+			Times(2),
+		db.EXPECT().GetHostData(oracleHosts[0].Name, utils.MAX_TIME).
+			Return(&model.HostDataBE{}, nil),
+
+		db.EXPECT().GetMySQLUsedLicenses(any).
+			Return(usedLicenses, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
+		db.EXPECT().GetMySQLAgreements().
+			Return(agreements, nil),
+	)
 
 	actual, err := as.GetDatabaseLicensesComplianceAsXLSX()
 	require.NoError(t, err)
 
-	assert.Equal(t, "L47247", actual.GetCellValue("Licenses Compliance", "A2"))
-	assert.Equal(t, "Oracle Real Application Testing", actual.GetCellValue("Licenses Compliance", "B2"))
-	assert.Equal(t, "Processor Perpetual", actual.GetCellValue("Licenses Compliance", "C2"))
-	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "D2"))
+	assert.Equal(t, "L47225", actual.GetCellValue("Licenses Compliance", "A2"))
+	assert.Equal(t, "Oracle Advanced Compression", actual.GetCellValue("Licenses Compliance", "B2"))
+	assert.Equal(t, "Named User Plus Perpetual", actual.GetCellValue("Licenses Compliance", "C2"))
+	assert.Equal(t, "150", actual.GetCellValue("Licenses Compliance", "D2"))
 	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "E2"))
-	assert.Equal(t, "1", actual.GetCellValue("Licenses Compliance", "F2"))
+	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "F2"))
 	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "G2"))
 }
 
