@@ -126,9 +126,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 			license.Unlimited = true
 		}
 
-		for _, host := range agreement.Hosts {
-			license.Covered += host.CoveredLicensesCount
-		}
+		license.Covered += agreement.CoveredLicenses
 	}
 
 	result := make([]dto.LicenseCompliance, 0, len(licenses))
@@ -155,7 +153,7 @@ func (as *APIService) getterNewLicenseCompliance() (func(licenseTypeID string) *
 		l, ok := licenseTypes[licenseTypeID]
 		if !ok {
 			return &dto.LicenseCompliance{
-				LicenseTypeID: l.ID,
+				LicenseTypeID: l.ID, //TODO
 			}
 		}
 

@@ -451,6 +451,7 @@ func TestGetOracleDatabaseAgreements_Success(t *testing.T) {
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
 			AvailableLicensesPerUser: 0,
+			CoveredLicenses:          3,
 		},
 	}
 
@@ -1007,6 +1008,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCase(t *testing.T)
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
 			AvailableLicensesPerUser: 0,
+			CoveredLicenses:          3,
 		},
 	}
 
@@ -1083,6 +1085,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *t
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 2,
 			AvailableLicensesPerUser: 0,
+			CoveredLicenses:          3,
 		},
 	}
 
@@ -1159,6 +1162,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 			LicensesPerUser:          250,
 			AvailableLicensesPerCore: 0,
 			AvailableLicensesPerUser: 125,
+			CoveredLicenses:          125,
 		},
 	}
 
@@ -1242,6 +1246,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
 			AvailableLicensesPerUser: 0,
+			CoveredLicenses:          5,
 		},
 	}
 
@@ -1335,6 +1340,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
 			AvailableLicensesPerUser: 0,
+			CoveredLicenses:          10,
 		},
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
@@ -1352,6 +1358,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
 			AvailableLicensesPerUser: 0,
+			CoveredLicenses:          5,
 		},
 	}
 
@@ -1504,6 +1511,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAss
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 2,
 			AvailableLicensesPerUser: 0,
+			CoveredLicenses:          3,
 		},
 	}
 
@@ -1580,6 +1588,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 			LicensesPerUser:          200,
 			AvailableLicensesPerCore: 0,
 			AvailableLicensesPerUser: 75,
+			CoveredLicenses:          5,
 		},
 	}
 
@@ -1663,6 +1672,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
 			AvailableLicensesPerUser: 0,
+			CoveredLicenses:          10,
 		},
 	}
 
