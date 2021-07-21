@@ -166,10 +166,6 @@ func (as *APIService) GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.Data
 }
 
 func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
-	if as.mockGetDatabasesUsedLicenses != nil {
-		return as.mockGetDatabasesUsedLicenses(filter)
-	}
-
 	type getter func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
 	getters := []getter{as.getOracleDatabasesUsedLicenses, as.getMySQLUsedLicenses}
 
@@ -362,9 +358,6 @@ func (as *APIService) GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFil
 }
 
 func (as *APIService) GetDatabasesUsedLicensesPerHost(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error) {
-	if as.mockGetDatabasesUsedLicensesPerHost != nil {
-		return as.mockGetDatabasesUsedLicensesPerHost(filter)
-	}
 	licenses, err := as.GetDatabasesUsedLicenses(filter)
 	if err != nil {
 		return nil, err
