@@ -189,13 +189,15 @@ func TestGetLicensesCompliance(t *testing.T) {
 		Log:      utils.NewLogger("TEST"),
 	}
 
-	hostdata := model.HostDataBE{
-		ClusterMembershipStatus: model.ClusterMembershipStatus{
-			OracleClusterware:       false,
-			SunCluster:              false,
-			HACMP:                   false,
-			VeritasClusterServer:    false,
-			VeritasClusterHostnames: []string{},
+	hostdatas := []model.HostDataBE{
+		{
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
 		},
 	}
 
@@ -216,11 +218,8 @@ func TestGetLicensesCompliance(t *testing.T) {
 			Return(expectedLicenseTypes, nil),
 	)
 
-	for _, h := range sampleHosts {
-		db.EXPECT().GetHostData(h.Name, utils.MAX_TIME).
-			Times(1).
-			Return(&hostdata, nil)
-	}
+	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+		Return(hostdatas, nil)
 
 	actual, err := as.GetOracleDatabaseLicensesCompliance()
 	require.NoError(t, err)
@@ -360,16 +359,45 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 		Log:      utils.NewLogger("TEST"),
 	}
 
-	hostdata := model.HostDataBE{
-		ClusterMembershipStatus: model.ClusterMembershipStatus{
-			OracleClusterware:       false,
-			SunCluster:              false,
-			HACMP:                   false,
-			VeritasClusterServer:    true,
-			VeritasClusterHostnames: []string{"test1", "test2", "test3"},
+	hostdatas := []model.HostDataBE{
+		{
+			Hostname: "test1",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    true,
+				VeritasClusterHostnames: []string{"test1", "test2", "test3"},
+			},
+			Info: model.Host{
+				CPUCores: 2,
+			},
 		},
-		Info: model.Host{
-			CPUCores: 2,
+		{
+			Hostname: "test2",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    true,
+				VeritasClusterHostnames: []string{"test1", "test2", "test3"},
+			},
+			Info: model.Host{
+				CPUCores: 2,
+			},
+		},
+		{
+			Hostname: "test3",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    true,
+				VeritasClusterHostnames: []string{"test1", "test2", "test3"},
+			},
+			Info: model.Host{
+				CPUCores: 2,
+			},
 		},
 	}
 
@@ -390,15 +418,8 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 			Return(expectedLicenseTypes, nil),
 	)
 
-	db.EXPECT().GetHostData("test1", utils.MAX_TIME).
-		Times(7).
-		Return(&hostdata, nil)
-	db.EXPECT().GetHostData("test2", utils.MAX_TIME).
-		Times(5).
-		Return(&hostdata, nil)
-	db.EXPECT().GetHostData("test3", utils.MAX_TIME).
-		Times(6).
-		Return(&hostdata, nil)
+	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+		Return(hostdatas, nil)
 
 	actual, err := as.GetOracleDatabaseLicensesCompliance()
 	require.NoError(t, err)
