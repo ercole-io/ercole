@@ -35,59 +35,57 @@ func TestSearchOracleExadata_Success(t *testing.T) {
 		Database: db,
 	}
 
-	var expectedRes = []dto.OracleExadataResponse{
-		{
-			Content: []dto.OracleExadata{
-				{
-					Id:        "5e8c234b24f648a08585bd3e",
-					CreatedAt: time.Time{},
-					DbServers: []dto.DbServers{
-						{
-							Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
-							Memory:             48,
-							Model:              "19.2.4.0.0.190709",
-							RunningCPUCount:    48,
-							RunningPowerSupply: 376,
-							SwVersion:          "X7-2",
-							TempActual:         2,
-							TotalCPUCount:      2,
-							TotalPowerSupply:   24.0,
-						},
+	var expectedRes = dto.OracleExadataResponse{
+		Content: []dto.OracleExadata{
+			{
+				Id:        "5e8c234b24f648a08585bd3e",
+				CreatedAt: time.Time{},
+				DbServers: []dto.DbServers{
+					{
+						Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
+						Memory:             48,
+						Model:              "19.2.4.0.0.190709",
+						RunningCPUCount:    48,
+						RunningPowerSupply: 376,
+						SwVersion:          "X7-2",
+						TempActual:         2,
+						TotalCPUCount:      2,
+						TotalPowerSupply:   24.0,
 					},
-					Environment: "PROD",
-					Hostname:    "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
-					IbSwitches: []dto.IbSwitches{
-						{
-							Hostname:  "2.2.13-2.190326",
-							Model:     "off-df8b95a01746a464e69203c840a6a46a",
-							SwVersion: "SUN_DCS_36p",
-						},
+				},
+				Environment: "PROD",
+				Hostname:    "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
+				IbSwitches: []dto.IbSwitches{
+					{
+						Hostname:  "2.2.13-2.190326",
+						Model:     "off-df8b95a01746a464e69203c840a6a46a",
+						SwVersion: "SUN_DCS_36p",
 					},
-					Location: "Italy",
-					StorageServers: []dto.StorageServers{
-						{
-							Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
-							Memory:             48,
-							Model:              "19.2.4.0.0.190709",
-							RunningCPUCount:    48,
-							RunningPowerSupply: 376,
-							SwVersion:          "X7-2",
-							TempActual:         2,
-							TotalCPUCount:      2,
-							TotalPowerSupply:   24.0,
-						},
+				},
+				Location: "Italy",
+				StorageServers: []dto.StorageServers{
+					{
+						Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
+						Memory:             48,
+						Model:              "19.2.4.0.0.190709",
+						RunningCPUCount:    48,
+						RunningPowerSupply: 376,
+						SwVersion:          "X7-2",
+						TempActual:         2,
+						TotalCPUCount:      2,
+						TotalPowerSupply:   24.0,
 					},
 				},
 			},
-			Metadata: dto.PagingMetadata{
-				Empty:         false,
-				First:         true,
-				Last:          true,
-				Number:        0,
-				Size:          1,
-				TotalElements: 1,
-				TotalPages:    0,
-			},
+		},
+		Metadata: dto.PagingMetadata{
+			Empty:         false,
+			First:         true,
+			Last:          true,
+			Number:        0,
+			Size:          1,
+			TotalElements: 1,
+			TotalPages:    0,
 		},
 	}
 
@@ -95,7 +93,7 @@ func TestSearchOracleExadata_Success(t *testing.T) {
 		false, []string{"foo", "bar", "foobarx"}, "CPU",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(expectedRes, nil).Times(1)
+	).Return(&expectedRes, nil).Times(1)
 
 	res, err := as.SearchOracleExadata(
 		false, "foo bar foobarx", "CPU",
@@ -104,7 +102,7 @@ func TestSearchOracleExadata_Success(t *testing.T) {
 	)
 
 	require.NoError(t, err)
-	assert.Equal(t, expectedRes, res)
+	assert.Equal(t, &expectedRes, res)
 }
 
 func TestSearchOracleExadata_Fail(t *testing.T) {
@@ -142,41 +140,39 @@ func TestSearchOracleExadataAsXLSX_Success(t *testing.T) {
 		Database: db,
 	}
 
-	var expectedRes = []dto.OracleExadataResponse{
-		{
-			Content: []dto.OracleExadata{
-				{
-					Id:        "5e8c234b24f648a08585bd3e",
-					CreatedAt: time.Time{},
-					DbServers: []dto.DbServers{
-						{
-							Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
-							Memory:             48,
-							Model:              "19.2.4.0.0.190709",
-							RunningCPUCount:    48,
-							RunningPowerSupply: 376,
-							SwVersion:          "X7-2",
-							TempActual:         2,
-							TotalCPUCount:      2,
-							TotalPowerSupply:   24.0,
-						},
+	var expectedRes = dto.OracleExadataResponse{
+		Content: []dto.OracleExadata{
+			{
+				Id:        "5e8c234b24f648a08585bd3e",
+				CreatedAt: time.Time{},
+				DbServers: []dto.DbServers{
+					{
+						Hostname:           "zombie-0d1347d47a10b673a4df7aeeecc24a8a",
+						Memory:             48,
+						Model:              "19.2.4.0.0.190709",
+						RunningCPUCount:    48,
+						RunningPowerSupply: 376,
+						SwVersion:          "X7-2",
+						TempActual:         2,
+						TotalCPUCount:      2,
+						TotalPowerSupply:   24.0,
 					},
-					Environment:    "PROD",
-					Hostname:       "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
-					IbSwitches:     nil,
-					Location:       "",
-					StorageServers: nil,
 				},
+				Environment:    "PROD",
+				Hostname:       "engelsiz-ee2ceb8e1e7fc19e4aeccbae135e2804",
+				IbSwitches:     nil,
+				Location:       "",
+				StorageServers: nil,
 			},
-			Metadata: dto.PagingMetadata{
-				Empty:         false,
-				First:         true,
-				Last:          true,
-				Number:        0,
-				Size:          1,
-				TotalElements: 1,
-				TotalPages:    0,
-			},
+		},
+		Metadata: dto.PagingMetadata{
+			Empty:         false,
+			First:         true,
+			Last:          true,
+			Number:        0,
+			Size:          1,
+			TotalElements: 1,
+			TotalPages:    0,
 		},
 	}
 
@@ -187,7 +183,7 @@ func TestSearchOracleExadataAsXLSX_Success(t *testing.T) {
 	}
 
 	db.EXPECT().SearchOracleExadata(true, []string{}, "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
-		Return(expectedRes, nil).Times(1)
+		Return(&expectedRes, nil).Times(1)
 
 	actual, err := as.SearchOracleExadataAsXLSX(filter)
 	require.NoError(t, err)
