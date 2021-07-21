@@ -213,7 +213,6 @@ type APIService struct {
 	NewObjectID func() primitive.ObjectID
 
 	mockGetOracleDatabaseAgreements     func(filters dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
-	mockGetDatabaseLicensesCompliance   func() ([]dto.LicenseCompliance, error)
 	mockGetDatabasesUsedLicenses        func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
 	mockGetDatabasesUsedLicensesPerHost func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error)
 }
