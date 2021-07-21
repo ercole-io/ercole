@@ -16,11 +16,12 @@
 package controller
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/gddo/httputil"
-	"net/http"
-	"time"
 )
 
 // SearchOracleExadata search exadata data using the filters in the request
@@ -79,18 +80,16 @@ func (ctrl *APIController) SearchOracleExadataJSON(w http.ResponseWriter, r *htt
 	}
 
 	//get the data
-	exadata, err := ctrl.Service.SearchOracleExadata(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	exadataResponse, err := ctrl.Service.SearchOracleExadata(full, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
 	if pageNumber == -1 || pageSize == -1 {
-		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, exadata[0].Content)
+		utils.WriteJSONResponse(w, http.StatusOK, exadataResponse.Content)
 	} else {
-		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, exadata[0].Content)
+		utils.WriteJSONResponse(w, http.StatusOK, exadataResponse)
 	}
 }
 

@@ -16,11 +16,6 @@
 package controller
 
 import (
-	"net/http"
-	"net/http/httptest"
-	"testing"
-	"time"
-
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
@@ -28,6 +23,10 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+	"time"
 )
 
 func TestSearchOracleExadata_SuccessPaged(t *testing.T) {
@@ -111,13 +110,22 @@ func TestSearchOracleExadata_SuccessPaged(t *testing.T) {
 		},
 	}
 
-	var resFromService = []dto.OracleExadataResponse{
-		{Content: resFromService2},
+	var resFromService = dto.OracleExadataResponse{
+		Content: resFromService2,
+		Metadata: dto.PagingMetadata{
+			Empty:         false,
+			First:         true,
+			Last:          true,
+			Number:        0,
+			Size:          1,
+			TotalElements: 1,
+			TotalPages:    0,
+		},
 	}
 
 	as.EXPECT().
 		SearchOracleExadata(true, "foobar", "Hostname", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
-		Return(resFromService, nil)
+		Return(&resFromService, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleExadata)
@@ -128,7 +136,7 @@ func TestSearchOracleExadata_SuccessPaged(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, rr.Code)
 
-	assert.JSONEq(t, utils.ToJSON(resFromService[0].Content), rr.Body.String())
+	assert.JSONEq(t, utils.ToJSON(&resFromService), rr.Body.String())
 }
 
 func TestSearchOracleExadata_SuccessUnpaged(t *testing.T) {
@@ -142,60 +150,25 @@ func TestSearchOracleExadata_SuccessUnpaged(t *testing.T) {
 		Log:     utils.NewLogger("TEST"),
 	}
 
-	var expectedRes2 = []dto.OracleExadata{
-		{
-			Id:        "",
-			CreatedAt: time.Time{},
-			DbServers: []dto.DbServers{
-				{
-					Hostname:           "",
-					Memory:             0,
-					Model:              "",
-					RunningCPUCount:    0,
-					RunningPowerSupply: 0,
-					SwVersion:          "",
-					TempActual:         0,
-					TotalCPUCount:      0,
-					TotalPowerSupply:   0,
-				},
+	var exo = dto.OracleExadataResponse{
+		Content: []dto.OracleExadata{
+			{
+				Id:             "",
+				CreatedAt:      time.Time{},
+				DbServers:      nil,
+				Environment:    "",
+				Hostname:       "",
+				IbSwitches:     nil,
+				Location:       "",
+				StorageServers: nil,
 			},
-			Environment:    "",
-			Hostname:       "",
-			IbSwitches:     nil,
-			Location:       "",
-			StorageServers: nil,
 		},
-		{
-			Id:        "",
-			CreatedAt: time.Time{},
-			DbServers: []dto.DbServers{
-				{
-					Hostname:           "",
-					Memory:             0,
-					Model:              "",
-					RunningCPUCount:    0,
-					RunningPowerSupply: 0,
-					SwVersion:          "",
-					TempActual:         0,
-					TotalCPUCount:      0,
-					TotalPowerSupply:   0,
-				},
-			},
-			Environment:    "",
-			Hostname:       "",
-			IbSwitches:     nil,
-			Location:       "",
-			StorageServers: nil,
-		},
-	}
-
-	var expectedRes = []dto.OracleExadataResponse{
-		{Content: expectedRes2},
+		Metadata: dto.PagingMetadata{},
 	}
 
 	as.EXPECT().
 		SearchOracleExadata(false, "", "", false, -1, -1, "", "", utils.MAX_TIME).
-		Return(expectedRes, nil)
+		Return(&exo, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleExadata)
@@ -205,7 +178,7 @@ func TestSearchOracleExadata_SuccessUnpaged(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes[0].Content), rr.Body.String())
+	assert.JSONEq(t, utils.ToJSON(&exo.Content), rr.Body.String())
 }
 
 func TestSearchOracleExadata_FailUnprocessableEntity1(t *testing.T) {
