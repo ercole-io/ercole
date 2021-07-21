@@ -60,7 +60,7 @@ func (as *APIService) AddOracleDatabaseAgreement(agreement model.OracleDatabaseA
 }
 
 func checkHosts(as *APIService, hosts []string) error {
-	notInClusterHosts, err := as.SearchHosts("hostnames",
+	notInClusterHosts, err := as.SearchHosts("hostnames", //TODO Why not in cluster hosts?
 		dto.SearchHostsFilters{
 			Search:         []string{""},
 			OlderThan:      utils.MAX_TIME,
@@ -386,8 +386,7 @@ func doAssignAgreementLicensesToAssociatedHost(
 	host *dto.HostUsingOracleDatabaseLicenses,
 	associatedHost *dto.OracleDatabaseAgreementAssociatedHostFE) {
 
-	switch {
-	case agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual:
+	if agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual {
 		var coverableLicenses float64
 		if agreement.Unlimited {
 			coverableLicenses = host.LicenseCount
@@ -398,11 +397,12 @@ func doAssignAgreementLicensesToAssociatedHost(
 		}
 
 		associatedHost.CoveredLicensesCount += coverableLicenses
-
+		agreement.CoveredLicenses += coverableLicenses
 		host.LicenseCount -= coverableLicenses
 
-	case agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual:
+	} else {
 		var coverableLicenses float64
+
 		if agreement.Unlimited {
 			coverableLicenses = host.LicenseCount
 			agreement.AvailableLicensesPerUser = 0
@@ -412,11 +412,8 @@ func doAssignAgreementLicensesToAssociatedHost(
 		}
 
 		associatedHost.CoveredLicensesCount += coverableLicenses * 25
-
+		agreement.CoveredLicenses += coverableLicenses * 25
 		host.LicenseCount -= coverableLicenses
-
-	default:
-		as.Log.Errorf("Distributing licenses. Unknown metric type: [%s]", agreement.Metric)
 	}
 }
 
@@ -440,11 +437,11 @@ func assignLicensesFromCatchAllAgreements(
 				continue
 			}
 
-			if !hasAvailableLicenses(agr) {
+			if host.LicenseTypeID != agr.LicenseTypeID {
 				continue
 			}
 
-			if host.LicenseTypeID != agr.LicenseTypeID {
+			if !hasAvailableLicenses(agr) {
 				continue
 			}
 
@@ -472,10 +469,9 @@ func doAssignLicenseFromCatchAllAgreement(
 	agreement *dto.OracleDatabaseAgreementFE,
 	hostUsingLicenses *dto.HostUsingOracleDatabaseLicenses) {
 
-	switch {
-	case agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual:
+	var coverableLicenses float64
 
-		var coverableLicenses float64
+	if agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual {
 		if agreement.Unlimited {
 			coverableLicenses = hostUsingLicenses.LicenseCount
 			agreement.AvailableLicensesPerCore = 0
@@ -485,10 +481,7 @@ func doAssignLicenseFromCatchAllAgreement(
 		}
 
 		hostUsingLicenses.LicenseCount -= coverableLicenses
-
-	case agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual:
-
-		var coverableLicenses float64
+	} else {
 		if agreement.Unlimited {
 			coverableLicenses = hostUsingLicenses.LicenseCount
 			agreement.AvailableLicensesPerUser = 0
@@ -498,10 +491,9 @@ func doAssignLicenseFromCatchAllAgreement(
 		}
 
 		hostUsingLicenses.LicenseCount -= coverableLicenses
-
-	default:
-		as.Log.Errorf("Distributing licenses. Unknown metric type: [%s]", agreement.Metric)
 	}
+
+	agreement.CoveredLicenses += coverableLicenses
 }
 
 func calculateTotalCoveredAndConsumedLicenses(
