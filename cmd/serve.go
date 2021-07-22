@@ -230,7 +230,7 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 	alertservice_controller.SetupRoutesForAlertQueueController(router, ctrl)
 
 	var logRouter http.Handler
-	if config.DataService.LogHTTPRequest {
+	if config.AlertService.LogHTTPRequest {
 		logRouter = utils.CustomLoggingHandler(router, log)
 	} else {
 		logRouter = router
@@ -287,7 +287,7 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	apiservice_controller.SetupRoutesForAPIController(router, ctrl, auth)
 
 	var logRouter http.Handler
-	if config.DataService.LogHTTPRequest {
+	if config.APIService.LogHTTPRequest {
 		logRouter = utils.CustomLoggingHandler(router, log)
 	} else {
 		logRouter = router
@@ -337,7 +337,7 @@ func serveChartService(config config.Configuration, wg *sync.WaitGroup) {
 	chartservice_controller.SetupRoutesForChartController(router, ctrl, auth)
 
 	var logRouter http.Handler
-	if config.DataService.LogHTTPRequest {
+	if config.ChartService.LogHTTPRequest {
 		logRouter = utils.CustomLoggingHandler(router, log)
 	} else {
 		logRouter = router
