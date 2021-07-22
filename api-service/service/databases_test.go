@@ -16,6 +16,8 @@
 package service
 
 import (
+	"testing"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
@@ -24,7 +26,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"testing"
 )
 
 func TestSearchDatabases_Success(t *testing.T) {
@@ -663,8 +664,10 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(oracleLicenseTypes, nil).
 			Times(2),
-		db.EXPECT().GetHostData(oracleHosts[0].Name, utils.MAX_TIME).
-			Return(&model.HostDataBE{}, nil),
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return([]model.HostDataBE{{
+				Hostname: "sdlsts103",
+			}}, nil),
 
 		db.EXPECT().GetMySQLUsedLicenses(any).
 			Return(usedLicenses, nil),
