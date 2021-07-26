@@ -22,6 +22,7 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
@@ -38,7 +39,7 @@ func TestGetPatchingFunction_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	id := utils.Str2oid("5e9fee9920d55cbdc35022ad")
@@ -80,7 +81,7 @@ func TestGetPatchingFunction_FailNotFound(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -108,7 +109,7 @@ func TestGetPatchingFunction_FailInternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -141,7 +142,7 @@ func TestSetPatchingFunction_Success(t *testing.T) {
 				EnableInsertingCustomPatchingFunction: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	pf := model.PatchingFunction{
@@ -182,7 +183,7 @@ func TestSetPatchingFunction_FailReadOnly(t *testing.T) {
 				EnableInsertingCustomPatchingFunction: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	pf := model.PatchingFunction{
@@ -221,7 +222,7 @@ func TestSetPatchingFunction_FailDisabled(t *testing.T) {
 				EnableInsertingCustomPatchingFunction: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	pf := model.PatchingFunction{
@@ -260,7 +261,7 @@ func TestSetPatchingFunction_FailUnprocessableEntity(t *testing.T) {
 				EnableInsertingCustomPatchingFunction: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -289,7 +290,7 @@ func TestSetPatchingFunction_FailNotFound(t *testing.T) {
 				EnableInsertingCustomPatchingFunction: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	pf := model.PatchingFunction{
@@ -330,7 +331,7 @@ func TestSetPatchingFunction_FailInternalServerError(t *testing.T) {
 				EnableInsertingCustomPatchingFunction: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	pf := model.PatchingFunction{
@@ -370,7 +371,7 @@ func TestAddTagToOracleDatabase_Success(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().AddTagToOracleDatabase("test-db", "ERCOLE", "awesome").Return(nil)
@@ -401,7 +402,7 @@ func TestAddTagToOracleDatabase_FailReadOnly(t *testing.T) {
 				ReadOnly: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -430,7 +431,7 @@ func TestAddTagToOracleDatabase_FailBadRequest(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -459,7 +460,7 @@ func TestAddTagToOracleDatabase_FailInternalServerError(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().AddTagToOracleDatabase("test-db", "ERCOLE", "awesome").Return(aerrMock)
@@ -490,7 +491,7 @@ func TestDeleteTagOfOracleDatabase_Success(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().DeleteTagOfOracleDatabase("test-db", "ERCOLE", "awesome").Return(nil)
@@ -522,7 +523,7 @@ func TestDeleteTagOfOracleDatabase_FailReadOnly(t *testing.T) {
 				ReadOnly: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -552,7 +553,7 @@ func TestDeleteTagOfOracleDatabase_FailInternalServerError(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().DeleteTagOfOracleDatabase("test-db", "ERCOLE", "awesome").Return(aerrMock)
@@ -584,7 +585,7 @@ func TestSetOracleDatabaseLicenseModifier_Success(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().SetOracleDatabaseLicenseModifier("test-db", "ERCOLE", "Diagnostics Pack", 20).Return(nil)
@@ -616,7 +617,7 @@ func TestSetOracleDatabaseLicenseModifier_FailReadOnly(t *testing.T) {
 				ReadOnly: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -646,7 +647,7 @@ func TestSetOracleDatabaseLicenseModifier_FailBadRequest(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -676,7 +677,7 @@ func TestSetOracleDatabaseLicenseModifier_FailUnprocessableEntity(t *testing.T) 
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -706,7 +707,7 @@ func TestSetOracleDatabaseLicenseModifier_FailInternalServerError(t *testing.T) 
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().SetOracleDatabaseLicenseModifier("test-db", "ERCOLE", "Diagnostics Pack", 20).Return(aerrMock)
@@ -738,7 +739,7 @@ func TestDeleteOracleDatabaseLicenseModifier_Success(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().DeleteOracleDatabaseLicenseModifier("test-db", "ERCOLE", "Diagnostics Pack").Return(nil)
@@ -770,7 +771,7 @@ func TestDeleteOracleDatabaseLicenseModifier_FailReadOnly(t *testing.T) {
 				ReadOnly: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -800,7 +801,7 @@ func TestDeleteOracleDatabaseLicenseModifier_FailInternalServerError(t *testing.
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().DeleteOracleDatabaseLicenseModifier("test-db", "ERCOLE", "Diagnostics Pack").Return(aerrMock)
@@ -828,7 +829,7 @@ func TestSearchOracleDatabaseLicenseModifiers_SuccessPaged(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := map[string]interface{}{
@@ -886,7 +887,7 @@ func TestSearchOracleDatabaseLicenseModifiers_FailedUnprocessableEntity1(t *test
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -907,7 +908,7 @@ func TestSearchOracleDatabaseLicenseModifiers_FailedUnprocessableEntity2(t *test
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -928,7 +929,7 @@ func TestSearchOracleDatabaseLicenseModifiers_FailedUnprocessableEntity3(t *test
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -949,7 +950,7 @@ func TestSearchOracleDatabaseLicenseModifiers_FailedInternalServerError(t *testi
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().

@@ -19,9 +19,8 @@ package service
 import (
 	"time"
 
-	"github.com/sirupsen/logrus"
-
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 
 	alertservice_client "github.com/ercole-io/ercole/v2/alert-service/client"
@@ -43,5 +42,5 @@ type HostDataService struct {
 	AlertSvcClient alertservice_client.AlertSvcClientInterface
 	ApiSvcClient   apiservice_client.ApiSvcClientInterface
 	TimeNow        func() time.Time
-	Log            *logrus.Logger
+	Log            logger.Logger
 }

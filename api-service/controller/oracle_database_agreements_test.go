@@ -18,7 +18,6 @@ package controller
 import (
 	"bytes"
 	"fmt"
-	"github.com/360EntSecGroup-Skylar/excelize"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -26,8 +25,11 @@ import (
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
+
+	"github.com/360EntSecGroup-Skylar/excelize"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
@@ -46,7 +48,7 @@ func TestAddOracleDatabaseAgreement_Success(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	request := model.OracleDatabaseAgreement{
@@ -97,7 +99,7 @@ func TestAddOracleDatabaseAgreement_ReadOnly(t *testing.T) {
 				ReadOnly: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -122,7 +124,7 @@ func TestAddOracleDatabaseAgreement_BadRequests(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	t.Run("fail to decode", func(t *testing.T) {
@@ -196,7 +198,7 @@ func TestAddOracleDatabaseAgreement_InternalServerError(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	request := model.OracleDatabaseAgreement{
@@ -228,7 +230,7 @@ func TestUpdateOracleDatabaseAgreement_Success(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	request := model.OracleDatabaseAgreement{
@@ -269,7 +271,7 @@ func TestUpdateOracleDatabaseAgreement_BadRequests(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	t.Run("fail to decode", func(t *testing.T) {
@@ -320,7 +322,7 @@ func TestUpdateOracleDatabaseAgreement_InternalServerError(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	request := model.OracleDatabaseAgreement{
@@ -383,7 +385,7 @@ func TestGetOracleDatabaseAgreements_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	agreements := []dto.OracleDatabaseAgreementFE{
@@ -436,7 +438,7 @@ func TestGetOracleDatabaseAgreements_FailedUnprocessableEntity(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -457,7 +459,7 @@ func TestGetOracleDatabaseAgreements_FailedInternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -598,7 +600,7 @@ func TestAddHostToAssociatedPart_Success(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().AddHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(nil)
@@ -628,7 +630,7 @@ func TestAddHostToAssociatedPart_FailedReadOnly(t *testing.T) {
 				ReadOnly: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -656,7 +658,7 @@ func TestAddHostToAssociatedPart_FailedInvalidID(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -684,7 +686,7 @@ func TestAddHostToAssociatedPart_FailedBrokenBody(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -712,7 +714,7 @@ func TestAddHostToAssociatedPart_FailedAgreementNotFound(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().AddHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrOracleDatabaseAgreementNotFound)
@@ -742,7 +744,7 @@ func TestAddHostToAssociatedPart_FailedNotInClusterHostNotFound(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().AddHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrNotInClusterHostNotFound)
@@ -772,7 +774,7 @@ func TestAddHostToAssociatedPart_FailedAerrOracleDatabaseAgreementNotFound(t *te
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().AddHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrOracleDatabaseAgreementNotFound)
@@ -802,7 +804,7 @@ func TestAddHostToAssociatedPart_FailedInternalServerError(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().AddHostToOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(aerrMock)
@@ -832,7 +834,7 @@ func TestRemoveHostFromAssociatedPart_Success(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().DeleteHostFromOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(nil)
@@ -863,7 +865,7 @@ func TestRemoveHostFromAssociatedPart_FailedReadOnly(t *testing.T) {
 				ReadOnly: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -892,7 +894,7 @@ func TestRemoveHostFromAssociatedPart_FailedInvalidID(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -921,7 +923,7 @@ func TestRemoveHostFromAssociatedPart_FailedAgreementNotFound(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().DeleteHostFromOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrOracleDatabaseAgreementNotFound)
@@ -952,7 +954,7 @@ func TestRemoveHostFromAssociatedPart_FailedInternalServerError(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().DeleteHostFromOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(aerrMock)
@@ -983,7 +985,7 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement_Success(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().DeleteOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(nil)
@@ -1013,7 +1015,7 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement_FailedReadOnly(t *testi
 				ReadOnly: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1041,7 +1043,7 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement_FailedInvalidID(t *test
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1069,7 +1071,7 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement_FailedAgreementNotFound
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().DeleteOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(utils.ErrOracleDatabaseAgreementNotFound)
@@ -1099,7 +1101,7 @@ func TestDeleteAssociatedPartFromOracleDatabaseAgreement_FailedInternalServerErr
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().DeleteOracleDatabaseAgreement(utils.Str2oid("5f50a98611959b1baa17525e")).Return(aerrMock)
@@ -1127,7 +1129,7 @@ func TestGetOracleDatabaseAgreementsXLSX_Success(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GetOracleDatabaseAgreementsFilter{
@@ -1178,7 +1180,7 @@ func TestGetOracleDatabaseAgreementsXLSX_UnprocessableEntity1(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1202,7 +1204,7 @@ func TestGetOracleDatabaseAgreementsXLSX_InternalServerError1(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GetOracleDatabaseAgreementsFilter{

@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
@@ -38,7 +39,7 @@ func TestCheckClusterInfos(t *testing.T) {
 		Database:       db,
 		AlertSvcClient: asc,
 		TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Log:            utils.NewLogger("TEST"),
+		Log:            logger.NewLogger("TEST"),
 	}
 
 	testCases := []struct {

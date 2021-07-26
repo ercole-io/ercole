@@ -21,10 +21,10 @@ import (
 
 	"github.com/ercole-io/ercole/v2/api-service/auth"
 	"github.com/ercole-io/ercole/v2/chart-service/service"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
 
 	"github.com/ercole-io/ercole/v2/config"
-	"github.com/sirupsen/logrus"
 )
 
 // ChartControllerInterface is a interface that wrap methods used to querying data
@@ -51,7 +51,7 @@ type ChartController struct {
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
 	// Log contains logger formatted
-	Log *logrus.Logger
+	Log logger.Logger
 	// Authenticator contains the authenticator
 	Authenticator auth.AuthenticationProvider
 }

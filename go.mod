@@ -10,6 +10,7 @@ require (
 	github.com/amreo/mu v0.0.0-20200710133257-efe27ae7258a
 	github.com/aws/aws-sdk-go v1.38.36 // indirect
 	github.com/bamzi/jobrunner v1.0.0
+	github.com/fatih/color v1.12.0
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
 	github.com/golang/gddo v0.0.0-20210115222349-20d68f94ee1f
 	github.com/golang/mock v1.5.0

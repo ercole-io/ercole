@@ -305,7 +305,7 @@ func (as *APIService) ApplyPatch(pf model.PatchingFunction) error {
 
 	//Patch it
 	if as.Config.DataService.LogDataPatching {
-		as.Log.Printf("Patching %s hostdata with the patch %s\n", pf.Hostname, pf.ID)
+		as.Log.Infof("Patching %s hostdata with the patch %s\n", pf.Hostname, pf.ID)
 	}
 	data, err = patch.PatchHostdata(pf, data)
 	if err != nil {

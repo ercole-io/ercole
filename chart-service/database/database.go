@@ -20,10 +20,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/sirupsen/logrus"
-
 	"github.com/ercole-io/ercole/v2/chart-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -52,7 +51,7 @@ type MongoDatabase struct {
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
 	// Log contains logger formatted
-	Log *logrus.Logger
+	Log logger.Logger
 	// OperatingSystemAggregationRules contains rules used to aggregate various operating systems
 	OperatingSystemAggregationRules []config.AggregationRule
 }

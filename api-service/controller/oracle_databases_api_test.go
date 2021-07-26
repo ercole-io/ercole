@@ -16,13 +16,15 @@
 package controller
 
 import (
-	"github.com/360EntSecGroup-Skylar/excelize"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -37,7 +39,7 @@ func TestSearchOracleDatabaseAddms_JSONPaged(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := map[string]interface{}{
@@ -105,7 +107,7 @@ func TestSearchOracleDatabaseAddms_JSONUnpaged(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := []map[string]interface{}{
@@ -158,7 +160,7 @@ func TestSearchOracleDatabaseAddms_JSONUnprocessableEntity1(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -179,7 +181,7 @@ func TestSearchOracleDatabaseAddms_JSONUnprocessableEntity2(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -200,7 +202,7 @@ func TestSearchOracleDatabaseAddms_JSONUnprocessableEntity3(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -221,7 +223,7 @@ func TestSearchOracleDatabaseAddms_JSONUnprocessableEntity4(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -242,7 +244,7 @@ func TestSearchOracleDatabaseAddms_JSONInternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -269,7 +271,7 @@ func TestSearchOracleDatabaseAddms_XLSXSuccess(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	expectedRes := []map[string]interface{}{
@@ -342,7 +344,7 @@ func TestSearchOracleDatabaseAddms_XLSXUnprocessableEntity1(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -366,7 +368,7 @@ func TestSearchOracleDatabaseAddms_XLSXInternalServerError1(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -392,7 +394,7 @@ func TestSearchOracleDatabaseAddms_XLSXInternalServerError2(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := []map[string]interface{}{
@@ -424,7 +426,7 @@ func TestSearchOracleDatabaseSegmentAdvisors_JSON(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	segmentAdvisors := []dto.OracleDatabaseSegmentAdvisor{
@@ -485,7 +487,7 @@ func TestSearchOracleDatabaseSegmentAdvisors_JSONUnprocessableEntity1(t *testing
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -506,7 +508,7 @@ func TestSearchOracleDatabaseSegmentAdvisors_JSONUnprocessableEntity4(t *testing
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -527,7 +529,7 @@ func TestSearchOracleDatabaseSegmentAdvisors_JSONInternalServerError(t *testing.
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -554,7 +556,7 @@ func TestSearchOracleDatabaseSegmentAdvisors_XLSXSuccess(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{
@@ -592,7 +594,7 @@ func TestSearchOracleDatabaseSegmentAdvisors_XLSXUnprocessableEntity1(t *testing
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -616,7 +618,7 @@ func TestSearchOracleDatabaseSegmentAdvisors_XLSXUnprocessableEntity2(t *testing
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -640,7 +642,7 @@ func TestSearchOracleDatabaseSegmentAdvisors_XLSXInternalServerError1(t *testing
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{
@@ -672,7 +674,7 @@ func TestSearchOracleDatabasePatchAdvisors_JSONPaged(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := map[string]interface{}{
@@ -740,7 +742,7 @@ func TestSearchOracleDatabasePatchAdvisors_JSONUnpaged(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := []map[string]interface{}{
@@ -793,7 +795,7 @@ func TestSearchOracleDatabasePatchAdvisors_JSONUnprocessableEntity1(t *testing.T
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -814,7 +816,7 @@ func TestSearchOracleDatabasePatchAdvisors_JSONUnprocessableEntity2(t *testing.T
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -835,7 +837,7 @@ func TestSearchOracleDatabasePatchAdvisors_JSONUnprocessableEntity3(t *testing.T
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -856,7 +858,7 @@ func TestSearchOracleDatabasePatchAdvisors_JSONUnprocessableEntity4(t *testing.T
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -877,7 +879,7 @@ func TestSearchOracleDatabasePatchAdvisors_JSONUnprocessableEntity5(t *testing.T
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -898,7 +900,7 @@ func TestSearchOracleDatabasePatchAdvisors_JSONUnprocessableEntity6(t *testing.T
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -919,7 +921,7 @@ func TestSearchOracleDatabasePatchAdvisors_JSONInternalServerError(t *testing.T)
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -946,7 +948,7 @@ func TestSearchOracleDatabasePatchAdvisors_XLSXSuccess(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	windowTime := utils.P("2019-05-05T14:02:03Z")
@@ -985,7 +987,7 @@ func TestSearchOracleDatabasePatchAdvisors_XLSXUnprocessableEntity1(t *testing.T
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1009,7 +1011,7 @@ func TestSearchOracleDatabasePatchAdvisors_XLSXInternalServerError1(t *testing.T
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	windowTime := utils.P("2019-05-05T14:02:03Z")
@@ -1042,7 +1044,7 @@ func TestSearchOracleDatabases_JSONPaged(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := map[string]interface{}{
@@ -1136,7 +1138,7 @@ func TestSearchOracleDatabases_JSONUnpaged(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := []map[string]interface{}{
@@ -1216,7 +1218,7 @@ func TestSearchOracleDatabases_JSONUnprocessableEntity1(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1237,7 +1239,7 @@ func TestSearchOracleDatabases_JSONUnprocessableEntity2(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1258,7 +1260,7 @@ func TestSearchOracleDatabases_JSONUnprocessableEntity3(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1279,7 +1281,7 @@ func TestSearchOracleDatabases_JSONUnprocessableEntity4(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1300,7 +1302,7 @@ func TestSearchOracleDatabases_JSONUnprocessableEntity5(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1321,7 +1323,7 @@ func TestSearchOracleDatabases_JSONInternalServerError1(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -1355,7 +1357,7 @@ func TestSearchOracleDatabases_XLSXSuccess(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	expectedRes := excelize.NewFile()
@@ -1394,7 +1396,7 @@ func TestSearchOracleDatabases_XLSXUnprocessableEntity1(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1418,7 +1420,7 @@ func TestSearchOracleDatabases_XLSXUnprocessableEntity2(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1442,7 +1444,7 @@ func TestSearchOracleDatabases_XLSXInternalServerError1(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -1475,7 +1477,7 @@ func TestSearchOracleDatabaseUsedLicenses_JSONPaged(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	resFromService := dto.OracleDatabaseUsedLicenseSearchResponse{
@@ -1540,7 +1542,7 @@ func TestSearchOracleDatabaseUsedLicenses_JSONUnprocessableEntity1(t *testing.T)
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1561,7 +1563,7 @@ func TestSearchOracleDatabaseUsedLicenses_JSONUnprocessableEntity2(t *testing.T)
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1582,7 +1584,7 @@ func TestSearchOracleDatabaseUsedLicenses_JSONUnprocessableEntity3(t *testing.T)
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1603,7 +1605,7 @@ func TestSearchOracleDatabaseUsedLicenses_JSONUnprocessableEntity4(t *testing.T)
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1624,7 +1626,7 @@ func TestSearchOracleDatabaseUsedLicenses_JSONInternalServerError(t *testing.T) 
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().

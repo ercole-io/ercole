@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -37,7 +38,7 @@ func TestCurrentHostCleaningJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 				},
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldCurrentHostnames(utils.P("2019-11-05T4:02:03Z")).Return([]string{}, nil).Times(1)
@@ -59,7 +60,7 @@ func TestCurrentHostCleaningJobRun_SuccessOldCurrentHosts(t *testing.T) {
 				},
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldCurrentHostnames(utils.P("2019-11-05T4:02:03Z")).Return([]string{"superhost", "pippohost"}, nil).Times(1)
@@ -83,7 +84,7 @@ func TestCurrentHostCleaningJobRun_DatabaseError1(t *testing.T) {
 				},
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldCurrentHostnames(utils.P("2019-11-05T4:02:03Z")).Return([]string{"invalid"}, aerrMock).Times(1)
@@ -106,7 +107,7 @@ func TestCurrentHostCleaningJobRun_DatabaseError2(t *testing.T) {
 				},
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldCurrentHostnames(utils.P("2019-11-05T4:02:03Z")).Return([]string{"superhost", "pippohost"}, nil).Times(1)

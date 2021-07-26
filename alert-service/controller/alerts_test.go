@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/mock/gomock"
@@ -40,7 +41,7 @@ func TestThrowNewAlert(t *testing.T) {
 			TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 			Service: as,
 			Config:  config.Configuration{},
-			Log:     utils.NewLogger("TEST"),
+			Log:     logger.NewLogger("TEST"),
 		}
 
 		alert := model.Alert{
@@ -72,7 +73,7 @@ func TestThrowNewAlert(t *testing.T) {
 			TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 			Service: as,
 			Config:  config.Configuration{},
-			Log:     utils.NewLogger("TEST"),
+			Log:     logger.NewLogger("TEST"),
 		}
 
 		alert := model.Alert{

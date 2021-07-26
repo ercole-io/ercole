@@ -235,10 +235,7 @@ func DownloadFile(filepath string, url string) (err error) {
 // try using it to prevent further errors.
 func FileExists(filename string) bool {
 	_, err := os.Stat(filename)
-	if os.IsNotExist(err) {
-		return false
-	}
-	return true
+	return !os.IsNotExist(err)
 }
 
 // ParsePrivateKey converts a private key expressed as []byte to interface{}

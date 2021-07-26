@@ -21,7 +21,7 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/config"
-	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/stretchr/testify/suite"
@@ -38,10 +38,11 @@ func TestMongodbSuite(t *testing.T) {
 }
 
 func TestConnectToMongodb_FailToConnect(t *testing.T) {
-	logger := utils.NewLogger("TEST")
-	logger.ExitFunc = func(int) {
-		panic("log.Fatal called by test")
-	}
+	logger := logger.NewLogger("TEST", logger.SetExitFunc(
+		func(int) {
+			panic("log.Fatal called by test")
+		},
+	))
 
 	db := MongoDatabase{
 		Config: config.Configuration{

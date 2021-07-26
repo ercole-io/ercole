@@ -20,6 +20,7 @@ import (
 
 	dto "github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
@@ -186,7 +187,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := APIService{
 		Database: db,
-		Log:      utils.NewLogger("TEST"),
+		Log:      logger.NewLogger("TEST"),
 	}
 
 	hostdatas := []model.HostDataBE{
@@ -356,7 +357,7 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := APIService{
 		Database: db,
-		Log:      utils.NewLogger("TEST"),
+		Log:      logger.NewLogger("TEST"),
 	}
 
 	hostdatas := []model.HostDataBE{

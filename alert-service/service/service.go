@@ -24,9 +24,9 @@ import (
 
 	"github.com/ercole-io/ercole/v2/alert-service/database"
 	"github.com/ercole-io/ercole/v2/alert-service/emailer"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/sirupsen/logrus"
 
 	"github.com/ercole-io/ercole/v2/config"
 
@@ -63,7 +63,7 @@ type AlertService struct {
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
 	// Log contains logger formatted
-	Log *logrus.Logger
+	Log logger.Logger
 	// Emailer contains the emailer layer
 	Emailer emailer.Emailer
 }

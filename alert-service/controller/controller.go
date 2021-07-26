@@ -22,8 +22,8 @@ import (
 
 	"github.com/ercole-io/ercole/v2/alert-service/service"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/goji/httpauth"
-	"github.com/sirupsen/logrus"
 )
 
 // AlertQueueControllerInterface is a interface that wrap methods used to inserting events in the queue
@@ -42,7 +42,7 @@ type AlertQueueController struct {
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
 	// Log contains logger formatted
-	Log *logrus.Logger
+	Log logger.Logger
 }
 
 // AuthenticateMiddleware return the middleware used to authenticate (request) users

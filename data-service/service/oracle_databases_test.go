@@ -22,6 +22,7 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
@@ -74,7 +75,7 @@ func TestAddLicensesToSecondaryDbs(t *testing.T) {
 	//			},
 	//		},
 	//		Version: "1.6.6",
-	//		Log:     utils.NewLogger("TEST"),
+	//		Log:     logger.NewLoggerOrFail("TEST"),
 	//	}
 	//
 	//	hdPrimary := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_22.json")
@@ -264,7 +265,7 @@ var licenseTypes = []model.OracleDatabaseLicenseType{
 //		Database:       db,
 //		AlertSvcClient: asc,
 //		TimeNow:        utils.Btc(utils.P("2019-11-05T16:02:03Z")),
-//		Log:            utils.NewLogger("TEST"),
+//		Log:            logger.NewLoggerOrFail("TEST"),
 //	}
 //
 //	gomock.InOrder(
@@ -297,7 +298,7 @@ var licenseTypes = []model.OracleDatabaseLicenseType{
 
 func TestCheckNewLicenses_SuccessNoDifferences(t *testing.T) {
 	hds := HostDataService{
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	require.NoError(t, hds.checkNewLicenses(&hostData2, &hostData1, licenseTypes))
@@ -314,7 +315,7 @@ func TestCheckNewLicenses_SuccessNewDatabase(t *testing.T) {
 		Database:       db,
 		AlertSvcClient: asc,
 		TimeNow:        utils.Btc(utils.P("2019-11-05T16:02:03Z")),
-		Log:            utils.NewLogger("TEST"),
+		Log:            logger.NewLogger("TEST"),
 	}
 
 	asc.EXPECT().ThrowNewAlert(&alertSimilarTo{
@@ -342,7 +343,7 @@ func TestCheckNewLicenses_ThrowNewLicenseAndNewOption(t *testing.T) {
 		Database:       db,
 		AlertSvcClient: asc,
 		TimeNow:        utils.Btc(utils.P("2019-11-05T16:02:03Z")),
-		Log:            utils.NewLogger("TEST"),
+		Log:            logger.NewLogger("TEST"),
 	}
 
 	asc.EXPECT().ThrowNewAlert(&alertSimilarTo{al: model.Alert{
@@ -381,7 +382,7 @@ func TestCheckNewLicenses_ThrowNewLicenseAndNewOptionAlreadyEnabled(t *testing.T
 		Database:       db,
 		AlertSvcClient: asc,
 		TimeNow:        utils.Btc(utils.P("2019-11-05T16:02:03Z")),
-		Log:            utils.NewLogger("TEST"),
+		Log:            logger.NewLogger("TEST"),
 	}
 
 	asc.EXPECT().ThrowNewAlert(&alertSimilarTo{
@@ -429,7 +430,7 @@ func TestCheckNewLicenses_CantThrowNewAlert(t *testing.T) {
 		Database:       db,
 		AlertSvcClient: asc,
 		TimeNow:        utils.Btc(utils.P("2019-11-05T16:02:03Z")),
-		Log:            utils.NewLogger("TEST"),
+		Log:            logger.NewLogger("TEST"),
 	}
 
 	t.Run("Fail throwNewDatabaseAlert", func(t *testing.T) {
@@ -511,7 +512,7 @@ func TestCheckNewLicenses_ErrOracleDatabaseLicenseTypeIDNotFound(t *testing.T) {
 		Database:       db,
 		AlertSvcClient: asc,
 		TimeNow:        utils.Btc(utils.P("2019-11-05T16:02:03Z")),
-		Log:            utils.NewLogger("TEST"),
+		Log:            logger.NewLogger("TEST"),
 	}
 
 	//TODO Add check that error has been logged
