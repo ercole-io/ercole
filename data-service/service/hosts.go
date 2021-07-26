@@ -101,7 +101,7 @@ func (hds *HostDataService) patchHostData(hostdata model.HostDataBE) (model.Host
 
 	if patch.Hostname == hostdata.Hostname && patch.Code != "" {
 		if hds.Config.DataService.LogDataPatching {
-			hds.Log.Printf("Patching %s hostdata with the patch %s\n", patch.Hostname, patch.ID)
+			hds.Log.Infof("Patching %s hostdata with the patch %s\n", patch.Hostname, patch.ID)
 		}
 
 		return patch_lib.PatchHostdata(patch, hostdata)

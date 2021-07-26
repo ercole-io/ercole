@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/stretchr/testify/require"
 )
@@ -36,7 +37,7 @@ func TestAuthenticateMiddleware_Success(t *testing.T) {
 				AgentPassword: "p4ssW0rd",
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -64,7 +65,7 @@ func TestAuthenticateMiddleware_Unauthorized(t *testing.T) {
 				AgentPassword: "p4ssW0rd",
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()

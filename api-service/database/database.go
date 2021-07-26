@@ -21,8 +21,8 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/sirupsen/logrus"
 
 	"github.com/ercole-io/ercole/v2/config"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -178,7 +178,7 @@ type MongoDatabase struct {
 	// OperatingSystemAggregationRules contains rules used to aggregate various operating systems
 	OperatingSystemAggregationRules []config.AggregationRule
 	// Log contains logger formatted
-	Log *logrus.Logger
+	Log logger.Logger
 }
 
 // Init initializes the connection to the database

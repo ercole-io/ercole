@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -42,7 +43,7 @@ func TestBuildAuthenticationProvider_Basic(t *testing.T) {
 		PrivateKey: "/tmp/path/to/private.key",
 		PublicKey:  "/tmp/path/to/public.pem",
 	}
-	logger := utils.NewLogger("TEST")
+	logger := logger.NewLogger("TEST")
 	time := utils.Btc(utils.P("2019-11-05T14:02:03Z"))
 
 	ap := BuildAuthenticationProvider(testConf, time, logger)

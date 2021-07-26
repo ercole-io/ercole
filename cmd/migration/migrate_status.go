@@ -18,7 +18,7 @@ package migration
 import (
 	"github.com/ercole-io/ercole/v2/config"
 	migration "github.com/ercole-io/ercole/v2/database-migration"
-	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/spf13/cobra"
 )
 
@@ -29,7 +29,7 @@ func NewMigrateStatusCmd(conf *config.Configuration) *cobra.Command {
 		Short: "Check migration status of the database",
 		Long:  `Check migration status of the database`,
 		Run: func(command *cobra.Command, args []string) {
-			log := utils.NewLogger("SERV")
+			log := logger.NewLogger("SERV")
 
 			actual, latest, err := migration.GetVersions(conf.Mongodb)
 			if err != nil {

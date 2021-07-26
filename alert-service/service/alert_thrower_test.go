@@ -22,6 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/mock/gomock"
@@ -42,7 +43,7 @@ func TestThrowNewDatabaseAlert_Success(t *testing.T) {
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Queue:    hub.New(),
-		Log:      utils.NewLogger("TEST"),
+		Log:      logger.NewLogger("TEST"),
 		Config: config.Configuration{
 			AlertService: config.AlertService{
 				LogAlertThrows: true},
@@ -90,7 +91,7 @@ func TestThrowNewServerAlert_Success(t *testing.T) {
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Queue:    hub.New(),
-		Log:      utils.NewLogger("TEST"),
+		Log:      logger.NewLogger("TEST"),
 		Config: config.Configuration{
 			AlertService: config.AlertService{
 				LogAlertThrows: true},
@@ -136,7 +137,7 @@ func TestThrowNewEnterpriseLicenseAlert_Success(t *testing.T) {
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Queue:    hub.New(),
-		Log:      utils.NewLogger("TEST"),
+		Log:      logger.NewLogger("TEST"),
 		Config: config.Configuration{
 			AlertService: config.AlertService{
 				LogAlertThrows: true},
@@ -180,7 +181,7 @@ func TestThrowActivatedFeaturesAlert_Success(t *testing.T) {
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Queue:    hub.New(),
-		Log:      utils.NewLogger("TEST"),
+		Log:      logger.NewLogger("TEST"),
 		Config: config.Configuration{
 			AlertService: config.AlertService{
 				LogAlertThrows: true},
@@ -226,7 +227,7 @@ func TestThrowNoDataAlert_Success(t *testing.T) {
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Queue:    hub.New(),
-		Log:      utils.NewLogger("TEST"),
+		Log:      logger.NewLogger("TEST"),
 		Config: config.Configuration{
 			AlertService: config.AlertService{
 				LogAlertThrows: true},
@@ -268,7 +269,7 @@ func TestThrowUnlistedRunningDatabasesAlert_Success(t *testing.T) {
 		Database: db,
 		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Queue:    hub.New(),
-		Log:      utils.NewLogger("TEST"),
+		Log:      logger.NewLogger("TEST"),
 		Config: config.Configuration{
 			AlertService: config.AlertService{
 				LogAlertThrows: true},

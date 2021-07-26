@@ -24,6 +24,7 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -169,7 +170,7 @@ func TestGetToken_OK(t *testing.T) {
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAKey))
@@ -210,7 +211,7 @@ func TestGetToken_InvalidRequest(t *testing.T) {
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAKey))
@@ -236,7 +237,7 @@ func TestGetToken_InvalidCredentials(t *testing.T) {
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAKey))
@@ -262,7 +263,7 @@ func TestGetToken_InvalidKeys(t *testing.T) {
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -285,7 +286,7 @@ func TestAuthenticateMiddleware_NoAuthorizationHeader(t *testing.T) {
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAKey))
@@ -313,7 +314,7 @@ func TestAuthenticateMiddleware_WrongAuthorizationHeader(t *testing.T) {
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAKey))
@@ -342,7 +343,7 @@ func TestAuthenticateMiddleware_BasicInvalidBase64(t *testing.T) {
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAKey))
@@ -371,7 +372,7 @@ func TestAuthenticateMiddleware_BasicMissingColon(t *testing.T) {
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAKey))
@@ -400,7 +401,7 @@ func TestAuthenticateMiddleware_BasicInvalidCredentials(t *testing.T) {
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAKey))
@@ -429,7 +430,7 @@ func TestAuthenticateMiddleware_BasicOk(t *testing.T) {
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAKey))
@@ -458,7 +459,7 @@ func TestAuthenticateMiddleware_BearerInvalidToken(t *testing.T) {
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAKey))
@@ -487,7 +488,7 @@ func TestAuthenticateMiddleware_BearerInvalidSignature(t *testing.T) {
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAKey))
@@ -516,7 +517,7 @@ func TestAuthenticateMiddleware_BearerTokenExpired(t *testing.T) {
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAKey))
@@ -545,7 +546,7 @@ func TestAuthenticateMiddleware_BearerTokenFromFuture(t *testing.T) {
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T12:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAKey))
@@ -574,7 +575,7 @@ func TestAuthenticateMiddleware_BearerOk(t *testing.T) {
 			TokenValidityTimeout: 20,
 		},
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAKey))

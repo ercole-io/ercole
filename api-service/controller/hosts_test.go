@@ -25,6 +25,7 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/mongoutils"
@@ -43,7 +44,7 @@ func TestSearchHosts_JSONPaged(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	resFromService := []dto.HostDataSummary{
@@ -107,7 +108,7 @@ func TestSearchHosts_JSONUnpaged(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := []map[string]interface{}{
@@ -207,7 +208,7 @@ func TestSearchHosts_JSONHostnames(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	returnedRes := []map[string]interface{}{
@@ -270,7 +271,7 @@ func TestSearchHosts_JSONUnprocessableEntity1(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -291,7 +292,7 @@ func TestSearchHosts_JSONUnprocessableEntity2(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -312,7 +313,7 @@ func TestSearchHosts_JSONUnprocessableEntity3(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -333,7 +334,7 @@ func TestSearchHosts_JSONUnprocessableEntity4(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -354,7 +355,7 @@ func TestSearchHosts_JSONUnprocessableEntity5(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -375,7 +376,7 @@ func TestSearchHosts_JSONInternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	filters := dto.SearchHostsFilters{
@@ -424,7 +425,7 @@ func TestSearchHosts_LMSSuccess(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	expected := excelize.NewFile()
@@ -478,7 +479,7 @@ func TestSearchHosts_LMSUnprocessableEntity1(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -502,7 +503,7 @@ func TestSearchHosts_LMSUnprocessableEntity2(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -526,7 +527,7 @@ func TestSearchHosts_LMSSuccessInternalServerError1(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	filters := dto.SearchHostsFilters{
@@ -577,7 +578,7 @@ func TestSearchHosts_XLSXSuccess(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	filters := dto.SearchHostsFilters{
@@ -629,7 +630,7 @@ func TestSearchHosts_XLSXUnprocessableEntity1(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -653,7 +654,7 @@ func TestSearchHosts_XLSXUnprocessableEntity2(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -677,7 +678,7 @@ func TestSearchHosts_XLSXInternalServerError1(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	filters := dto.SearchHostsFilters{
@@ -722,7 +723,7 @@ func TestGetHost_JSONSuccess(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := map[string]interface{}{
@@ -825,7 +826,7 @@ func TestGetHost_JSONFailUnprocessableEntity(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -849,7 +850,7 @@ func TestGetHost_JSONFailInternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -877,7 +878,7 @@ func TestGetHost_JSONFailNotFound(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -905,7 +906,7 @@ func TestGetHost_MongoJSONSuccess(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	res := mongoutils.LoadFixtureMongoHostDataMap(t, "../../fixture/test_dataservice_mongohostdata_02.json")
@@ -939,7 +940,7 @@ func TestGetHost_MongoJSONFailUnprocessableEntity(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -964,7 +965,7 @@ func TestGetHost_MongoJSONFailInternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -993,7 +994,7 @@ func TestGetHost_MongoJSONFailNotFound(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -1022,7 +1023,7 @@ func TestListLocations_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := []string{"Italy", "German", "France"}
@@ -1050,7 +1051,7 @@ func TestListLocations_FailUnprocessableEntity1(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1071,7 +1072,7 @@ func TestListLocations_FailInternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -1096,7 +1097,7 @@ func TestListEnvironments_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := []string{"TST", "PRD", "DEV"}
@@ -1124,7 +1125,7 @@ func TestListEnvironments_FailUnprocessableEntity1(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1145,7 +1146,7 @@ func TestListEnvironments_FailInternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -1170,7 +1171,7 @@ func TestArchiveHost_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().ArchiveHost("foobar").Return(nil)
@@ -1200,7 +1201,7 @@ func TestArchiveHost_FailReadOnly(t *testing.T) {
 				ReadOnly: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -1224,7 +1225,7 @@ func TestArchiveHost_FailNotFound(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().ArchiveHost("foobar").Return(utils.ErrHostNotFound)
@@ -1250,7 +1251,7 @@ func TestArchiveHost_FailInternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().ArchiveHost("foobar").Return(aerrMock)

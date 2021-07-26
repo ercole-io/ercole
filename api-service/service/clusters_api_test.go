@@ -16,14 +16,16 @@
 package service
 
 import (
+	"strconv"
+	"testing"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"strconv"
-	"testing"
 )
 
 func TestSearchClusters_Success(t *testing.T) {
@@ -111,7 +113,7 @@ func TestGetClusterXLSX(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	cluster := &dto.Cluster{
@@ -206,10 +208,10 @@ func TestSearchClustersAsXLSX_Success(t *testing.T) {
 
 	data := []map[string]interface{}{
 		{
-			"name":          "Puzzait",
-			"type":          "VMWare/VMWare",
-			"cpu":          140,
-			"sockets":       10,
+			"name":                "Puzzait",
+			"type":                "VMWare/VMWare",
+			"cpu":                 140,
+			"sockets":             10,
 			"virtualizationNodes": "s157-cb32c10a56c256746c337e21b3f82402",
 		},
 	}

@@ -22,7 +22,7 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/auth"
 	"github.com/ercole-io/ercole/v2/api-service/service"
 	"github.com/ercole-io/ercole/v2/config"
-	"github.com/sirupsen/logrus"
+	"github.com/ercole-io/ercole/v2/logger"
 )
 
 // APIControllerInterface is a interface that wrap methods used to querying data
@@ -169,7 +169,7 @@ type APIController struct {
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
 	// Log contains logger formatted
-	Log *logrus.Logger
+	Log logger.Logger
 	// Authenticator contains the authenticator
 	Authenticator auth.AuthenticationProvider
 }

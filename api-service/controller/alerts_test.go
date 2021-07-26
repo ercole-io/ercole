@@ -25,6 +25,7 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
@@ -41,7 +42,7 @@ func TestSearchAlerts_JSONSuccessPaged(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := map[string]interface{}{
@@ -99,7 +100,7 @@ func TestSearchAlerts_JSONSuccessUnpaged(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := []map[string]interface{}{
@@ -142,7 +143,7 @@ func TestSearchAlerts_JSONFailUnprocessable1(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -163,7 +164,7 @@ func TestSearchAlerts_JSONFailUnprocessable2(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -184,7 +185,7 @@ func TestSearchAlerts_JSONFailUnprocessable3(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -205,7 +206,7 @@ func TestSearchAlerts_JSONFailUnprocessable4(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -226,7 +227,7 @@ func TestSearchAlerts_JSONFailUnprocessable5(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -247,7 +248,7 @@ func TestSearchAlerts_JSONFailUnprocessable6(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -268,7 +269,7 @@ func TestSearchAlerts_JSONFailUnprocessable7(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -289,7 +290,7 @@ func TestSearchAlerts_JSONFailUnprocessable8(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -310,7 +311,7 @@ func TestSearchAlerts_JSONFailInternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -336,7 +337,7 @@ func TestSearchAlertsAsXLSX_Success(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{
@@ -379,7 +380,7 @@ func TestSearchAlertsXLSX_UnprocessableEntity1(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -404,7 +405,7 @@ func TestSearchAlertsXLSX_UnprocessableEntity2(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -429,7 +430,7 @@ func TestSearchAlertsXLSX_UnprocessableEntity3(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -454,7 +455,7 @@ func TestSearchAlertsXLSX_UnprocessableEntity4(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -479,7 +480,7 @@ func TestSearchAlertsXLSX_UnprocessableEntity5(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -504,7 +505,7 @@ func TestSearchAlertsXLSX_UnprocessableEntity6(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -529,7 +530,7 @@ func TestSearchAlertsXLSX_UnprocessableEntity7(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -554,7 +555,7 @@ func TestSearchAlertsXLSX_InternalServerError(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{
@@ -594,7 +595,7 @@ func TestAckAlerts_Success(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().AckAlerts([]primitive.ObjectID{utils.Str2oid("5dc3f534db7e81a98b726a52")}).Return(nil)
@@ -624,7 +625,7 @@ func TestAckAlerts_FailForbidden(t *testing.T) {
 				ReadOnly: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -652,7 +653,7 @@ func TestAckAlerts_FailBadRequest(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -680,7 +681,7 @@ func TestAckAlerts_FailNotFound(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().AckAlerts([]primitive.ObjectID{utils.Str2oid("5dc3f534db7e81a98b726a52")}).
@@ -711,7 +712,7 @@ func TestAckAlerts_FailInternalServerError(t *testing.T) {
 				ReadOnly: false,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().AckAlerts([]primitive.ObjectID{utils.Str2oid("5dc3f534db7e81a98b726a52")}).
@@ -743,7 +744,7 @@ func TestAckAlerts_ByFilter(t *testing.T) {
 					ReadOnly: false,
 				},
 			},
-			Log: utils.NewLogger("TEST"),
+			Log: logger.NewLogger("TEST"),
 		}
 
 		s := model.AlertStatusNew

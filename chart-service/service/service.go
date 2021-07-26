@@ -22,8 +22,8 @@ import (
 
 	"github.com/ercole-io/ercole/v2/chart-service/database"
 	"github.com/ercole-io/ercole/v2/chart-service/dto"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/sirupsen/logrus"
 
 	"github.com/ercole-io/ercole/v2/config"
 )
@@ -55,7 +55,7 @@ type ChartService struct {
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
 	// Log contains logger formatted
-	Log *logrus.Logger
+	Log logger.Logger
 	// Random contains the generator used to generate colors
 	Random *rand.Rand
 }

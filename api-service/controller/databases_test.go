@@ -18,16 +18,18 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"net/http"
-	"net/http/httptest"
-	"testing"
 )
 
 func TestSearchDatabases_JSON_Success(t *testing.T) {
@@ -38,7 +40,7 @@ func TestSearchDatabases_JSON_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{
@@ -74,7 +76,7 @@ func TestSearchDatabases_XLSX_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{
@@ -110,7 +112,7 @@ func TestGetDatabasesStats_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{
@@ -146,7 +148,7 @@ func TestGetDatabasesStats_GlobalFilter_Error(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -179,7 +181,7 @@ func TestGetDatabasesStats_Service_Error(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{
@@ -218,7 +220,7 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{
@@ -255,7 +257,7 @@ func TestGetDatabasesUsedLicensesXLSX_Success(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{
@@ -292,7 +294,7 @@ func TestGetDatabasesUsedLicensesXLSX_StatusBadRequest(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -316,7 +318,7 @@ func TestGetDatabasesUsedLicensesXLSX_InternalServerError1(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{
@@ -349,7 +351,7 @@ func TestGetDatabaseLicensesComplianceXLSX_Success(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	xlsx := excelize.File{}
@@ -380,7 +382,7 @@ func TestGetDatabaseLicensesComplianceXLSX_InternalServerError1(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -407,7 +409,7 @@ func TestGetHostUsedLicensesXLSX_StatusBadRequest(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -431,7 +433,7 @@ func TestGetHostUsedLicensesXLSX_Success(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{
@@ -468,7 +470,7 @@ func TestGetHostUsedLicensesXLSX_InternalServerError1(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{

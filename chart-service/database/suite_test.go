@@ -23,8 +23,8 @@ import (
 
 	"github.com/ercole-io/ercole/v2/config"
 	migration "github.com/ercole-io/ercole/v2/database-migration"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 
 	"math/rand"
@@ -58,7 +58,7 @@ func (db *MongodbSuite) SetupSuite() {
 	db.db.Config.Mongodb.URI += "/" + db.db.Config.Mongodb.DBName
 	db.dbname = db.db.Config.Mongodb.DBName
 
-	log := utils.NewLogger("test")
+	log := logger.NewLogger("TEST")
 
 	err := migration.Migrate(db.db.Config.Mongodb)
 	if err != nil {

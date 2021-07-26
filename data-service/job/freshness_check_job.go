@@ -20,8 +20,8 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	alert_service_client "github.com/ercole-io/ercole/v2/alert-service/client"
@@ -39,7 +39,7 @@ type FreshnessCheckJob struct {
 	// Config contains the dataservice global configuration
 	Config config.Configuration
 	// Log contains logger formatted
-	Log *logrus.Logger
+	Log logger.Logger
 	// NewObjectID return a new ObjectID
 	NewObjectID func() primitive.ObjectID
 }

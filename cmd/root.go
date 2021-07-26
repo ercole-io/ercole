@@ -24,7 +24,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/cmd/migration"
 	"github.com/ercole-io/ercole/v2/config"
-	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/logger"
 )
 
 var ercoleConfig config.Configuration
@@ -38,7 +38,8 @@ var rootCmd = &cobra.Command{
 	Long:    `Ercole is a software for proactively managing software assets`,
 	Version: serverVersion,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		log := utils.NewLogger("CONF")
+		log := logger.NewLogger("CONF", logger.LogVerbosely(verbose))
+
 		extraConfigFile = strings.TrimSpace(extraConfigFile)
 
 		if len(extraConfigFile) > 0 && !fileExists(extraConfigFile) {
@@ -68,6 +69,7 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&extraConfigFile, "config", "c", "", "Configuration file")
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose")
 
 	rootCmd.AddCommand(migration.NewMigrateCmd(&ercoleConfig))
 	rootCmd.AddCommand(migration.NewMigrateStatusCmd(&ercoleConfig))

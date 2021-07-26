@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -35,7 +36,7 @@ func TestGetTotalOracleExadataMemorySizeStats_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := float64(10.3)
@@ -63,7 +64,7 @@ func TestGetTotalOracleExadataMemorySizeStats_FailUnprocessableEntity(t *testing
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -84,7 +85,7 @@ func TestGetTotalOracleExadataMemorySizeStats_FailInternalServerError(t *testing
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -109,7 +110,7 @@ func TestGetTotalOracleExadataCPUStats_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := map[string]interface{}{
@@ -140,7 +141,7 @@ func TestGetTotalOracleExadataCPUStats_FailUnprocessableEntity(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -161,7 +162,7 @@ func TestGetTotalOracleExadataCPUStats_FailInternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -186,7 +187,7 @@ func TestGetAverageOracleExadataStorageUsageStats_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := float64(10.3)
@@ -214,7 +215,7 @@ func TestGetAverageOracleExadataStorageUsageStats_FailUnprocessableEntity(t *tes
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -235,7 +236,7 @@ func TestGetAverageOracleExadataStorageUsageStats_FailInternalServerError(t *tes
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -260,7 +261,7 @@ func TestGetOracleExadataStorageErrorCountStatusStats_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := []interface{}{
@@ -297,7 +298,7 @@ func TestGetOracleExadataStorageErrorCountStatusStats_FailUnprocessableEntity(t 
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -318,7 +319,7 @@ func TestGetOracleExadataStorageErrorCountStatusStats_FailInternalServerError(t 
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -343,7 +344,7 @@ func TestGetOracleExadataPatchStatusStats_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := []interface{}{
@@ -380,7 +381,7 @@ func TestGetOracleExadataPatchStatusStats_FailUnprocessableEntity1(t *testing.T)
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -401,7 +402,7 @@ func TestGetOracleExadataPatchStatusStats_FailUnprocessableEntity2(t *testing.T)
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -422,7 +423,7 @@ func TestGetOracleExadataPatchStatusStats_FailInternalServerError(t *testing.T) 
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().

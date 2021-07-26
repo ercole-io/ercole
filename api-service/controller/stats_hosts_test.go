@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -35,7 +36,7 @@ func TestGetEnvironmentStats_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := []interface{}{
@@ -72,7 +73,7 @@ func TestGetEnvironmentStats_FailUnprocessableEntity(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -93,7 +94,7 @@ func TestGetEnvironmentStats_FailInternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -118,7 +119,7 @@ func TestGetTypeStats_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := []interface{}{
@@ -155,7 +156,7 @@ func TestGetTypeStats_FailUnprocessableEntity(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -176,7 +177,7 @@ func TestGetTypeStats_FailInternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -201,7 +202,7 @@ func TestGetOperatingSystemStats_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := []interface{}{
@@ -238,7 +239,7 @@ func TestGetOperatingSystemStatsStats_FailUnprocessableEntity(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -259,7 +260,7 @@ func TestGetOperatingSystemStats_FailInternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -284,7 +285,7 @@ func TestGetTopUnusedOracleDatabaseInstanceResourceStats_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	expectedRes := []interface{}{
@@ -323,7 +324,7 @@ func TestGetTopUnusedOracleDatabaseInstanceResourceStats_FailUnprocessableEntity
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -344,7 +345,7 @@ func TestGetTopUnusedOracleDatabaseInstanceResourceStats_FailUnprocessableEntity
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	rr := httptest.NewRecorder()
@@ -365,7 +366,7 @@ func TestGetTopUnusedOracleDatabaseInstanceResourceStats_FailInternalServerError
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().

@@ -22,9 +22,9 @@ import (
 	"sync"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/rs/cors"
-	"github.com/sirupsen/logrus"
 )
 
 // HTTPSubRepoService is a concrete implementation of SubRepoServiceInterface
@@ -32,7 +32,7 @@ type HTTPSubRepoService struct {
 	// Config contains the reposervice global configuration
 	Config config.Configuration
 	// Log contains logger formatted
-	Log *logrus.Logger
+	Log logger.Logger
 }
 
 // Init start the service

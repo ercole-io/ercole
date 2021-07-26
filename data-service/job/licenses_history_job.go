@@ -25,15 +25,15 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/data-service/database"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/sirupsen/logrus"
 )
 
 type HistoricizeLicensesComplianceJob struct {
 	Database database.MongoDatabaseInterface
 	TimeNow  func() time.Time
 	Config   config.Configuration
-	Log      *logrus.Logger
+	Log      logger.Logger
 }
 
 //TODO Add tests
