@@ -26,9 +26,9 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/jtblin/go-ldap-client"
-	"github.com/sirupsen/logrus"
 	"gopkg.in/square/go-jose.v2"
 	"gopkg.in/square/go-jose.v2/jwt"
 )
@@ -40,7 +40,7 @@ type LDAPAuthenticationProvider struct {
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
 	// Log contains logger formatted
-	Log *logrus.Logger
+	Log logger.Logger
 	// privateKey contains the private key used to sign the JWT tokens
 	privateKey interface{}
 	// publicKey contains the public key used to check the JWT tokens
@@ -52,7 +52,7 @@ type LDAPAuthenticationProvider struct {
 func (ap *LDAPAuthenticationProvider) Init() {
 	raw, err := ioutil.ReadFile(ap.Config.PrivateKey)
 	if err != nil {
-		ap.Log.Panic(err)
+		ap.Log.Fatal(err)
 	}
 
 	ap.privateKey, ap.publicKey, err = utils.ParsePrivateKey(raw)

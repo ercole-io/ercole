@@ -22,8 +22,8 @@ import (
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -55,7 +55,7 @@ type MongoDatabase struct {
 	Config  config.Configuration
 	Client  *mongo.Client
 	TimeNow func() time.Time
-	Log     *logrus.Logger
+	Log     logger.Logger
 }
 
 func (md *MongoDatabase) Init() {

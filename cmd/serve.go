@@ -23,10 +23,10 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
 	migration "github.com/ercole-io/ercole/v2/database-migration"
@@ -88,7 +88,7 @@ func init() {
 // serve setup and start the services
 func serve(enableDataService bool,
 	enableAlertService bool, enableAPIService bool, enableChartService bool, enableRepoService bool) {
-	log := utils.NewLogger("SERV")
+	log := logger.NewLogger("SERV", logger.LogVerbosely(verbose))
 
 	if !utils.FileExists(ercoleConfig.RepoService.DistributedFiles) {
 		log.Warnf("The directory %s for RepoService doesn't exist so the RepoService will be disabled\n", ercoleConfig.RepoService.DistributedFiles)
@@ -140,7 +140,7 @@ func serve(enableDataService bool,
 }
 
 func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
-	log := utils.NewLogger("DATA")
+	log := logger.NewLogger("DATA", logger.LogVerbosely(verbose))
 
 	db := &dataservice_database.MongoDatabase{
 		Config:  config,
@@ -186,7 +186,7 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 
 	wg.Add(1)
 	go func() {
-		log.Println("Start data-service: listening at", config.DataService.Port)
+		log.Info("Start data-service: listening at ", config.DataService.Port)
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.DataService.BindIP, config.DataService.Port), cors.AllowAll().Handler(logRouter))
 		if err != nil {
 			log.Error("Stopped data-service: ", err)
@@ -197,7 +197,7 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 }
 
 func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
-	log := utils.NewLogger("ALRT")
+	log := logger.NewLogger("ALRT", logger.LogVerbosely(verbose))
 
 	db := &alertservice_database.MongoDatabase{
 		Config:  config,
@@ -238,7 +238,7 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 
 	wg.Add(1)
 	go func() {
-		log.Println("Start alert-service: listening at", config.AlertService.Port)
+		log.Info("Start alert-service: listening at ", config.AlertService.Port)
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.AlertService.BindIP, config.AlertService.Port), cors.AllowAll().Handler(logRouter))
 		if err != nil {
 			log.Error("Stopping alert-service: ", err)
@@ -250,11 +250,7 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 }
 
 func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
-	log := utils.NewLogger("APIS")
-
-	if config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
-		log.Level = logrus.DebugLevel
-	}
+	log := logger.NewLogger("APIS", logger.LogVerbosely(verbose))
 
 	db := &apiservice_database.MongoDatabase{
 		Config:                          config,
@@ -305,7 +301,7 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 }
 
 func serveChartService(config config.Configuration, wg *sync.WaitGroup) {
-	log := utils.NewLogger("CHRT")
+	log := logger.NewLogger("CHRT", logger.LogVerbosely(verbose))
 
 	db := &chartservice_database.MongoDatabase{
 		Config:                          config,
@@ -361,11 +357,13 @@ func serveRepoService(config config.Configuration, wg *sync.WaitGroup) {
 		SubServices: []reposervice_service.SubRepoServiceInterface{},
 	}
 
+	log := logger.NewLogger("REPO", logger.LogVerbosely(verbose))
+
 	if config.RepoService.HTTP.Enable {
 		service.SubServices = append(service.SubServices,
 			&reposervice_service.HTTPSubRepoService{
 				Config: config,
-				Log:    utils.NewLogger("REPO"),
+				Log:    log,
 			})
 	}
 

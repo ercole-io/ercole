@@ -21,6 +21,7 @@ import (
 
 	dto "github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
@@ -167,7 +168,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	hosts := []map[string]interface{}{
@@ -404,7 +405,7 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	expectedRes := []dto.HostDataSummary{
@@ -848,7 +849,7 @@ func TestArchiveHost_Fail(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := APIService{
 		Database: db,
-		Log:      utils.NewLogger("TEST"),
+		Log:      logger.NewLogger("TEST"),
 	}
 
 	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": "foobar"}}

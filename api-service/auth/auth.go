@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/v2/config"
-	"github.com/sirupsen/logrus"
+	"github.com/ercole-io/ercole/v2/logger"
 )
 
 // AuthenticationProvider is a interface that wrap methods used to authenticate users
@@ -37,7 +37,7 @@ type AuthenticationProvider interface {
 
 // BuildAuthenticationProvider return a authentication provider that match what is requested in the configuration
 // It's initialized
-func BuildAuthenticationProvider(conf config.AuthenticationProviderConfig, timeNow func() time.Time, log *logrus.Logger) AuthenticationProvider {
+func BuildAuthenticationProvider(conf config.AuthenticationProviderConfig, timeNow func() time.Time, log logger.Logger) AuthenticationProvider {
 	switch conf.Type {
 	case "basic":
 		prov := new(BasicAuthenticationProvider)

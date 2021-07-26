@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/v2/data-service/service"
-	"github.com/sirupsen/logrus"
+	"github.com/ercole-io/ercole/v2/logger"
 
 	"github.com/ercole-io/ercole/v2/config"
 )
@@ -37,5 +37,5 @@ type DataController struct {
 	Config  config.Configuration
 	Service service.HostDataServiceInterface
 	TimeNow func() time.Time
-	Log     *logrus.Logger
+	Log     logger.Logger
 }

@@ -28,8 +28,8 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/sirupsen/logrus"
 	"gopkg.in/square/go-jose.v2"
 	"gopkg.in/square/go-jose.v2/jwt"
 )
@@ -41,7 +41,7 @@ type BasicAuthenticationProvider struct {
 	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
 	// Log contains logger formatted
-	Log *logrus.Logger
+	Log logger.Logger
 	// privateKey contains the private key used to sign the JWT tokens
 	privateKey interface{}
 	// publicKey contains the public key used to check the JWT tokens

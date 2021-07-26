@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/leandro-lugaresi/hub"
@@ -36,7 +37,7 @@ func TestProcessMsg_AlertInsertion(t *testing.T) {
 	as := AlertService{
 		Emailer: emailer,
 		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 		Queue:   hub.New(),
 		Config: config.Configuration{
 			AlertService: config.AlertService{
@@ -79,7 +80,7 @@ func TestProcessMsg_WrongInsertion(t *testing.T) {
 	as := AlertService{
 		Config: config.Configuration{
 			AlertService: config.AlertService{LogMessages: true}},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	msg := hub.Message{
@@ -98,7 +99,7 @@ func TestProcessAlertInsertion_WithHostname(t *testing.T) {
 	as := AlertService{
 		Emailer: emailer,
 		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 		Queue:   hub.New(),
 		Config: config.Configuration{
 			AlertService: config.AlertService{
@@ -141,7 +142,7 @@ func TestProcessAlertInsertion_WithoutHostname(t *testing.T) {
 	as := AlertService{
 		Emailer: emailer,
 		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 		Queue:   hub.New(),
 		Config: config.Configuration{
 			AlertService: config.AlertService{
@@ -183,7 +184,7 @@ func TestProcessAlertInsertion_EmailerError(t *testing.T) {
 	as := AlertService{
 		Emailer: emailer,
 		TimeNow: utils.Btc(utils.P("2019-11-05T16:02:03Z")),
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 		Queue:   hub.New(),
 		Config: config.Configuration{
 			AlertService: config.AlertService{

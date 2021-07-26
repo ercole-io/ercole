@@ -22,13 +22,13 @@ import (
 	"strings"
 
 	"github.com/OpenPeeDeeP/xdg"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/goraz/onion"
 	"github.com/goraz/onion/layers/directorylayer"
 	_ "github.com/goraz/onion/loaders/toml-0.5.0" // Needed to load toml files
 	"github.com/goraz/onion/onionwriter"
-	"github.com/sirupsen/logrus"
 )
 
 // Configuration contains Ercole DataService configuration
@@ -279,7 +279,7 @@ type AuthenticationProviderConfig struct {
 }
 
 // ReadConfig read, parse and return a Configuration from the configuration file
-func ReadConfig(log *logrus.Logger, extraConfigFile string) (configuration Configuration) {
+func ReadConfig(log logger.Logger, extraConfigFile string) (configuration Configuration) {
 	layers := make([]onion.Layer, 0)
 
 	layers = addFileLayers(log, layers, "/opt/ercole/config.toml")
@@ -293,6 +293,7 @@ func ReadConfig(log *logrus.Logger, extraConfigFile string) (configuration Confi
 	layers = addFileLayers(log, layers, "/etc/ercole/ercole.toml")
 
 	etcErcoleDirectory := "/etc/ercole/conf.d/"
+	log.Debugf("Read folder for conf files: %s", etcErcoleDirectory)
 	directoryLayer, err := directorylayer.NewDirectoryLayer(etcErcoleDirectory, "toml")
 	if err == nil {
 		layers = append(layers, directoryLayer)
@@ -318,14 +319,14 @@ func ReadConfig(log *logrus.Logger, extraConfigFile string) (configuration Confi
 	return configuration
 }
 
-func addFileLayers(log *logrus.Logger, layers []onion.Layer, configFiles ...string) []onion.Layer {
-
+func addFileLayers(log logger.Logger, layers []onion.Layer, configFiles ...string) []onion.Layer {
 	for _, file := range configFiles {
 		layer, err := onion.NewFileLayer(file, nil)
 
 		var pathErr *os.PathError
 
 		if err == nil {
+			log.Debugf("Read file for conf: %s", file)
 			layers = append(layers, layer)
 		} else if !errors.As(err, &pathErr) {
 			log.Warnf("error reading file [%s]: [%s]", file, err)
@@ -335,7 +336,7 @@ func addFileLayers(log *logrus.Logger, layers []onion.Layer, configFiles ...stri
 	return layers
 }
 
-func checkConfiguration(log *logrus.Logger, config *Configuration) {
+func checkConfiguration(log logger.Logger, config *Configuration) {
 	cwd, _ := os.Readlink("/proc/self/exe")
 	cwd = filepath.Dir(cwd)
 
@@ -362,7 +363,7 @@ func checkConfiguration(log *logrus.Logger, config *Configuration) {
 	checkOracleDatabaseLicenseTypeMetrics(log, config)
 }
 
-func checkOracleDatabaseLicenseTypeMetrics(log *logrus.Logger, config *Configuration) {
+func checkOracleDatabaseLicenseTypeMetrics(log logger.Logger, config *Configuration) {
 	metrics := make([]string, 0)
 	metrics = append(metrics, config.DataService.LicenseTypeMetricsDefault...)
 	for _, sl := range config.DataService.LicenseTypeMetricsByEnvironment {

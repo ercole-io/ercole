@@ -18,7 +18,7 @@ package migration
 import (
 	"github.com/ercole-io/ercole/v2/config"
 	migration "github.com/ercole-io/ercole/v2/database-migration"
-	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/spf13/cobra"
 )
 
@@ -29,7 +29,7 @@ func NewMigrateCmd(conf *config.Configuration) *cobra.Command {
 		Short: "Migrate the database",
 		Long:  `Migrate the database to the latest known version`,
 		Run: func(command *cobra.Command, args []string) {
-			log := utils.NewLogger("SERV")
+			log := logger.NewLogger("SERV")
 
 			err := migration.Migrate(conf.Mongodb)
 			if err != nil {

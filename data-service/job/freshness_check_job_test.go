@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/mock/gomock"
@@ -36,7 +37,7 @@ func TestFreshnessCheckJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 		Database:       db,
 		AlertSvcClient: nil,
 		Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
-		Log:            utils.NewLogger("TEST"),
+		Log:            logger.NewLogger("TEST"),
 		NewObjectID:    utils.NewObjectIDForTests(),
 	}
 
@@ -61,7 +62,7 @@ func TestFreshnessCheckJobRun_SuccessTwoOldCurrentHosts(t *testing.T) {
 		Database:       db,
 		AlertSvcClient: asc,
 		Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
-		Log:            utils.NewLogger("TEST"),
+		Log:            logger.NewLogger("TEST"),
 		NewObjectID:    utils.NewObjectIDForTests(),
 	}
 
@@ -123,7 +124,7 @@ func TestFreshnessCheckJobRun_DeleteAllNoDataAlertsError(t *testing.T) {
 		Database:       db,
 		AlertSvcClient: nil,
 		Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
-		Log:            utils.NewLogger("TEST"),
+		Log:            logger.NewLogger("TEST"),
 		NewObjectID:    utils.NewObjectIDForTests(),
 	}
 
@@ -141,7 +142,7 @@ func TestFreshnessCheckJobRun_FindOldCurrentHostdataError(t *testing.T) {
 		Database:       db,
 		AlertSvcClient: nil,
 		Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
-		Log:            utils.NewLogger("TEST"),
+		Log:            logger.NewLogger("TEST"),
 		NewObjectID:    utils.NewObjectIDForTests(),
 	}
 
@@ -163,7 +164,7 @@ func TestFreshnessCheckJobRun_ThrowNoDataAlertError(t *testing.T) {
 		Database:       db,
 		AlertSvcClient: asc,
 		Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 10}}},
-		Log:            utils.NewLogger("TEST"),
+		Log:            logger.NewLogger("TEST"),
 		NewObjectID:    utils.NewObjectIDForTests(),
 	}
 
@@ -228,7 +229,7 @@ func TestFreshnessCheckJobRun_InvalidDaysThresholdValue(t *testing.T) {
 			Database:       db,
 			AlertSvcClient: nil,
 			Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: 0}}},
-			Log:            utils.NewLogger("TEST"),
+			Log:            logger.NewLogger("TEST"),
 			NewObjectID:    utils.NewObjectIDForTests(),
 		}
 		fcj.Run()
@@ -240,7 +241,7 @@ func TestFreshnessCheckJobRun_InvalidDaysThresholdValue(t *testing.T) {
 			Database:       db,
 			AlertSvcClient: nil,
 			Config:         config.Configuration{DataService: config.DataService{FreshnessCheckJob: config.FreshnessCheckJob{DaysThreshold: -42}}},
-			Log:            utils.NewLogger("TEST"),
+			Log:            logger.NewLogger("TEST"),
 			NewObjectID:    utils.NewObjectIDForTests(),
 		}
 		fcj.Run()

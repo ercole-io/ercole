@@ -20,7 +20,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/data-service/database"
-	"github.com/sirupsen/logrus"
+	"github.com/ercole-io/ercole/v2/logger"
 )
 
 // ArchivedHostCleaningJob is the job used to clean and remove old archived host
@@ -32,7 +32,7 @@ type ArchivedHostCleaningJob struct {
 	// Config contains the dataservice global configuration
 	Config config.Configuration
 	// Log contains logger formatted
-	Log *logrus.Logger
+	Log logger.Logger
 }
 
 // Run archive every archived hostdata that is older than a amount

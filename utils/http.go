@@ -23,6 +23,7 @@ import (
 	"runtime"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -40,7 +41,7 @@ type ErrorResponseFE struct {
 }
 
 // WriteAndLogError write the error to the w with the statusCode as statusCode and log the error to the stdout
-func WriteAndLogError(log *logrus.Logger, w http.ResponseWriter, statusCode int, err error) {
+func WriteAndLogError(log logger.Logger, w http.ResponseWriter, statusCode int, err error) {
 	var resp ErrorResponseFE
 
 	var aerr *AdvancedError
@@ -94,7 +95,7 @@ func WriteJSONResponse(w http.ResponseWriter, statusCode int, resp interface{}) 
 }
 
 // WriteExtJSONResponse write the statuscode and the response to w
-func WriteExtJSONResponse(log *logrus.Logger, w http.ResponseWriter, statusCode int, resp interface{}) {
+func WriteExtJSONResponse(log logger.Logger, w http.ResponseWriter, statusCode int, resp interface{}) {
 	raw, err := bson.MarshalExtJSON(resp, true, false)
 	if err != nil {
 		WriteAndLogError(log, w, http.StatusInternalServerError, NewError(err, "MARSHAL_EXT_JSON"))

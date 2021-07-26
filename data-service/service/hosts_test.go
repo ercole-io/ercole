@@ -26,6 +26,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/mongoutils"
@@ -53,7 +54,7 @@ func TestInsertHostData_Success(t *testing.T) {
 		Database:       db,
 		AlertSvcClient: asc,
 		TimeNow:        utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Log:            utils.NewLogger("TEST"),
+		Log:            logger.NewLogger("TEST"),
 	}
 	hd := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 
@@ -315,7 +316,7 @@ func TestPatchHostData_SuccessPatchingFunction(t *testing.T) {
 				LogDataPatching: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 	hd := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 	patchedHd := hd
@@ -367,7 +368,7 @@ func TestPatchHostData_FailPatchingFunction2(t *testing.T) {
 				LogDataPatching: true,
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 	hd := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
 

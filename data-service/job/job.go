@@ -8,7 +8,7 @@ import (
 	alert_service_client "github.com/ercole-io/ercole/v2/alert-service/client"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/data-service/database"
-	"github.com/sirupsen/logrus"
+	"github.com/ercole-io/ercole/v2/logger"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -21,7 +21,7 @@ type Job struct {
 	ServerVersion string
 	Database      database.MongoDatabaseInterface
 	TimeNow       func() time.Time
-	Log           *logrus.Logger
+	Log           logger.Logger
 }
 
 func (j *Job) Init() {

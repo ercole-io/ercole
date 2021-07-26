@@ -18,12 +18,14 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/360EntSecGroup-Skylar/excelize"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
+
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/mock/gomock"
@@ -41,7 +43,7 @@ func TestAddMySQLAgreement_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	agreement := model.MySQLAgreement{
@@ -84,7 +86,7 @@ func TestAddMySQLAgreement_BadRequest_CantDecode(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	wrongAgr := struct {
@@ -126,7 +128,7 @@ func TestAddMySQLAgreement_BadRequest_HasID(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	wrongAgr := model.MySQLAgreement{
@@ -170,7 +172,7 @@ func TestAddMySQLAgreement_BadRequest(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	wrongAgr := model.MySQLAgreement{
@@ -213,7 +215,7 @@ func TestAddMySQLAgreement_InternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	agreement := model.MySQLAgreement{
@@ -259,7 +261,7 @@ func TestUpdateMySQLAgreement_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	agreement := model.MySQLAgreement{
@@ -302,7 +304,7 @@ func TestUpdateMySQLAgreement_BadRequest_CantDecode(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	wrongAgr := struct {
@@ -347,7 +349,7 @@ func TestUpdateMySQLAgreement_BadRequest_HasWrongID(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	wrongAgr := model.MySQLAgreement{
@@ -391,7 +393,7 @@ func TestUpdateMySQLAgreement_NotFoundError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	agreement := model.MySQLAgreement{
@@ -442,7 +444,7 @@ func TestUpdateMySQLAgreement_InternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	agreement := model.MySQLAgreement{
@@ -492,7 +494,7 @@ func TestGetMySQLAgreements_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	agreements := []model.MySQLAgreement{
@@ -535,7 +537,7 @@ func TestGetMySQLAgreements_InternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().GetMySQLAgreements().
@@ -569,7 +571,7 @@ func TestGetMySQLAgreementsXLSX_Success(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	xlsx := excelize.File{}
@@ -600,7 +602,7 @@ func TestGetMySQLAgreementsXLSX_InternalServerError1(t *testing.T) {
 		Config: config.Configuration{
 			ResourceFilePath: "../../resources",
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().
@@ -626,7 +628,7 @@ func TestDeleteMySQLAgreement_Success(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().DeleteMySQLAgreement(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
@@ -653,7 +655,7 @@ func TestDeleteMySQLAgreement_BadRequest_HasWrongID(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	req, err := http.NewRequest("DELETE", "", nil)
@@ -686,7 +688,7 @@ func TestDeleteMySQLAgreement_NotFoundError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	aerr := utils.NewError(utils.ErrNotFound, "test")
@@ -723,7 +725,7 @@ func TestDeleteMySQLAgreement_InternalServerError(t *testing.T) {
 		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
 		Service: as,
 		Config:  config.Configuration{},
-		Log:     utils.NewLogger("TEST"),
+		Log:     logger.NewLogger("TEST"),
 	}
 
 	as.EXPECT().DeleteMySQLAgreement(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).

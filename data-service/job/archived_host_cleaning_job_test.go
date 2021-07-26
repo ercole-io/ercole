@@ -21,6 +21,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -39,7 +40,7 @@ func TestArchivedHostCleaningJobRun_SuccessNoOldCurrentHosts(t *testing.T) {
 				},
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldArchivedHosts(utils.P("2019-11-05T4:02:03Z")).Return([]primitive.ObjectID{}, nil).Times(1)
@@ -61,7 +62,7 @@ func TestArchivedHostCleaningJobRun_WithOldCurrentHosts(t *testing.T) {
 				},
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldArchivedHosts(utils.P("2019-11-05T4:02:03Z")).Return([]primitive.ObjectID{
@@ -89,7 +90,7 @@ func TestArchivedHostCleaningJobRun_DatabaseError1(t *testing.T) {
 				},
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldArchivedHosts(utils.P("2019-11-05T4:02:03Z")).Return([]primitive.ObjectID{
@@ -115,7 +116,7 @@ func TestArchivedHostCleaningJobRun_DatabaseError2(t *testing.T) {
 				},
 			},
 		},
-		Log: utils.NewLogger("TEST"),
+		Log: logger.NewLogger("TEST"),
 	}
 
 	db.EXPECT().FindOldArchivedHosts(utils.P("2019-11-05T4:02:03Z")).Return([]primitive.ObjectID{
