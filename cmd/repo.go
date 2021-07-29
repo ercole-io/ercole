@@ -37,6 +37,172 @@ import (
 var githubToken string
 var rebuildCache bool
 
+// repoCmd represents the repo command
+var repoCmd = &cobra.Command{
+	Use:   "repo",
+	Short: "Manage the internal repository",
+	Long:  `Manage the internal repository. It requires to be run where the repository is installed`,
+}
+
+func init() {
+	rootCmd.AddCommand(repoCmd)
+
+	repoCmd.PersistentFlags().StringVarP(&githubToken, "github-token", "g", "", "Github token used to perform requests")
+	repoCmd.PersistentFlags().BoolVar(&rebuildCache, "rebuild-cache", false, "Force the rebuild the cache")
+}
+
+// readOrUpdateIndex return an index of available artifacts
+func readOrUpdateIndex() repo.Index {
+	var index repo.Index
+
+	if verbose {
+		fmt.Fprintln(os.Stderr, "Trying to read index.json...")
+	}
+	indexFile, err := os.Stat(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "index.json"))
+	if err != nil && !os.IsNotExist(err) {
+		panic(err)
+
+	} else if os.IsNotExist(err) || indexFile.ModTime().Add(time.Duration(8)*time.Hour).Before(time.Now()) || rebuildCache {
+		if verbose {
+			fmt.Fprintln(os.Stderr, "Scanning the repositories...")
+		}
+		index = scanRepositories()
+
+		if verbose {
+			fmt.Fprintln(os.Stderr, "Writing the index...")
+		}
+		index.SaveOnFile(ercoleConfig.RepoService.DistributedFiles)
+
+	} else {
+		if verbose {
+			fmt.Fprintln(os.Stderr, "Read index.json...")
+		}
+		index = repo.ReadIndexFromFile(ercoleConfig.RepoService.DistributedFiles)
+	}
+
+	for _, art := range index {
+		art.Installed = art.IsInstalled(ercoleConfig.RepoService.DistributedFiles)
+	}
+
+	index = append(index, getArtifactsNotIndexed(index, ercoleConfig.RepoService.DistributedFiles)...)
+
+	index.SortArtifactInfo()
+
+	return index
+}
+
+// getArtifactsNotIndexed scan filesystem for installed artifacts not in index
+func getArtifactsNotIndexed(index repo.Index, distributedFiles string) repo.Index {
+	filesNotIndexed := getFilesNotIndexed(index, distributedFiles)
+
+	artifactsNotIndexed := make(repo.Index, 0)
+
+	for _, file := range filesNotIndexed {
+		artifactInfo := new(repo.ArtifactInfo)
+		artifactInfo.Filename = filepath.Base(file.Name())
+
+		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
+			fmt.Fprintf(os.Stderr, "Warning! File %v is not a supported filename\n", artifactInfo.Filename)
+
+			artifactInfo.Name = artifactInfo.Filename
+			artifactInfo.Version = "0.0.0"
+			artifactInfo.Arch = "unknown"
+			artifactInfo.OperatingSystemFamily = "unknown"
+			artifactInfo.OperatingSystem = "unknown"
+		}
+
+		artifactInfo.Repository = repo.UpstreamTypeLocal
+		artifactInfo.Installed = true
+		artifactInfo.ReleaseDate = file.ModTime().Format("2006-01-02")
+		artifactInfo.UpstreamType = repo.UpstreamTypeLocal
+
+		artifactsNotIndexed = append(artifactsNotIndexed, artifactInfo)
+	}
+
+	return artifactsNotIndexed
+}
+
+func getFilesNotIndexed(index repo.Index, distributedFiles string) []os.FileInfo {
+	installedInIndex := make(map[string]bool)
+
+	allDirectory := filepath.Join(distributedFiles, "all")
+
+	for _, artifact := range index {
+		if artifact.Installed {
+			installedInIndex[filepath.Join(allDirectory, artifact.Filename)] = true
+		}
+	}
+
+	matches, err := filepath.Glob(allDirectory + "/*")
+	if err != nil {
+		panic(err)
+	}
+
+	filesNotIndexed := make([]os.FileInfo, 0)
+
+	for _, filePath := range matches {
+		if installedInIndex[filePath] {
+			continue
+		}
+
+		fileInfo, err := os.Stat(filePath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Something went wrong reading file: %v\n", filePath)
+			continue
+		}
+
+		if fileInfo.IsDir() {
+			fmt.Fprintf(os.Stderr, "Warning! Directories in /all aren't supported, but I found: %v\n", filePath)
+			continue
+		}
+
+		filesNotIndexed = append(filesNotIndexed, fileInfo)
+	}
+
+	return filesNotIndexed
+}
+
+// scanRepositories scan all configured repositories and return an index
+func scanRepositories() repo.Index {
+	out := make(repo.Index, 0)
+
+	for _, repo := range ercoleConfig.RepoService.UpstreamRepositories {
+		//Get repository files
+		files, err := scanRepository(repo)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "I can't get files from: %+v\n%s\n", repo, err)
+			continue
+		}
+
+		out = append(out, files...)
+	}
+
+	return out
+}
+
+// scanRepository scan a single repository and return detected files
+func scanRepository(upstreamRepo config.UpstreamRepository) (repo.Index, error) {
+	if strings.TrimSpace(upstreamRepo.Name) == "local" {
+		return nil,
+			fmt.Errorf("\"local\" isn't a valid name for an upstream repository")
+	}
+
+	switch upstreamRepo.Type {
+
+	case repo.UpstreamTypeGitHub:
+		return scanGithubReleaseRepository(upstreamRepo)
+
+	case repo.UpstreamTypeDirectory:
+		return scanDirectoryRepository(upstreamRepo)
+
+	case repo.UpstreamTypeErcoleRepo:
+		return scanErcoleReposerviceRepository(upstreamRepo)
+
+	default:
+		return nil, fmt.Errorf("Unknown repository type %q of %q", upstreamRepo.Type, upstreamRepo.Name)
+	}
+}
+
 // scanGithubReleaseRepository scan a github releases repository and return detected files
 func scanGithubReleaseRepository(upstreamRepo config.UpstreamRepository) (repo.Index, error) {
 	//Fetch the data
@@ -179,170 +345,4 @@ func scanErcoleReposerviceRepository(upstreamRepo config.UpstreamRepository) (re
 
 	//Fetch the data
 	return out, nil
-}
-
-// scanRepository scan a single repository and return detected files
-func scanRepository(upstreamRepo config.UpstreamRepository) (repo.Index, error) {
-	if strings.TrimSpace(upstreamRepo.Name) == "local" {
-		return nil,
-			fmt.Errorf("\"local\" isn't a valid name for an upstream repository")
-	}
-
-	switch upstreamRepo.Type {
-
-	case repo.UpstreamTypeGitHub:
-		return scanGithubReleaseRepository(upstreamRepo)
-
-	case repo.UpstreamTypeDirectory:
-		return scanDirectoryRepository(upstreamRepo)
-
-	case repo.UpstreamTypeErcoleRepo:
-		return scanErcoleReposerviceRepository(upstreamRepo)
-
-	default:
-		return nil, fmt.Errorf("Unknown repository type %q of %q", upstreamRepo.Type, upstreamRepo.Name)
-	}
-}
-
-// scanRepositories scan all configured repositories and return an index
-func scanRepositories() repo.Index {
-	out := make(repo.Index, 0)
-
-	for _, repo := range ercoleConfig.RepoService.UpstreamRepositories {
-		//Get repository files
-		files, err := scanRepository(repo)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "I can't get files from: %+v\n%s\n", repo, err)
-			continue
-		}
-
-		out = append(out, files...)
-	}
-
-	return out
-}
-
-// readOrUpdateIndex return an index of available artifacts
-func readOrUpdateIndex() repo.Index {
-	var index repo.Index
-
-	if verbose {
-		fmt.Fprintln(os.Stderr, "Trying to read index.json...")
-	}
-	indexFile, err := os.Stat(filepath.Join(ercoleConfig.RepoService.DistributedFiles, "index.json"))
-	if err != nil && !os.IsNotExist(err) {
-		panic(err)
-
-	} else if os.IsNotExist(err) || indexFile.ModTime().Add(time.Duration(8)*time.Hour).Before(time.Now()) || rebuildCache {
-		if verbose {
-			fmt.Fprintln(os.Stderr, "Scanning the repositories...")
-		}
-		index = scanRepositories()
-
-		if verbose {
-			fmt.Fprintln(os.Stderr, "Writing the index...")
-		}
-		index.SaveOnFile(ercoleConfig.RepoService.DistributedFiles)
-
-	} else {
-		if verbose {
-			fmt.Fprintln(os.Stderr, "Read index.json...")
-		}
-		index = repo.ReadIndexFromFile(ercoleConfig.RepoService.DistributedFiles)
-	}
-
-	for _, art := range index {
-		art.Installed = art.IsInstalled(ercoleConfig.RepoService.DistributedFiles)
-	}
-
-	index = append(index, getArtifactsNotIndexed(index, ercoleConfig.RepoService.DistributedFiles)...)
-
-	index.SortArtifactInfo()
-
-	return index
-}
-
-// getArtifactsNotIndexed scan filesystem for installed artifacts not in index
-func getArtifactsNotIndexed(index repo.Index, distributedFiles string) repo.Index {
-	filesNotIndexed := getFilesNotIndexed(index, distributedFiles)
-
-	artifactsNotIndexed := make(repo.Index, 0)
-
-	for _, file := range filesNotIndexed {
-		artifactInfo := new(repo.ArtifactInfo)
-		artifactInfo.Filename = filepath.Base(file.Name())
-
-		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
-			fmt.Fprintf(os.Stderr, "Warning! File %v is not a supported filename\n", artifactInfo.Filename)
-
-			artifactInfo.Name = artifactInfo.Filename
-			artifactInfo.Version = "0.0.0"
-			artifactInfo.Arch = "unknown"
-			artifactInfo.OperatingSystemFamily = "unknown"
-			artifactInfo.OperatingSystem = "unknown"
-		}
-
-		artifactInfo.Repository = repo.UpstreamTypeLocal
-		artifactInfo.Installed = true
-		artifactInfo.ReleaseDate = file.ModTime().Format("2006-01-02")
-		artifactInfo.UpstreamType = repo.UpstreamTypeLocal
-
-		artifactsNotIndexed = append(artifactsNotIndexed, artifactInfo)
-	}
-
-	return artifactsNotIndexed
-}
-
-func getFilesNotIndexed(index repo.Index, distributedFiles string) []os.FileInfo {
-	installedInIndex := make(map[string]bool)
-
-	allDirectory := filepath.Join(distributedFiles, "all")
-
-	for _, artifact := range index {
-		if artifact.Installed {
-			installedInIndex[filepath.Join(allDirectory, artifact.Filename)] = true
-		}
-	}
-
-	matches, err := filepath.Glob(allDirectory + "/*")
-	if err != nil {
-		panic(err)
-	}
-
-	filesNotIndexed := make([]os.FileInfo, 0)
-
-	for _, filePath := range matches {
-		if installedInIndex[filePath] {
-			continue
-		}
-
-		fileInfo, err := os.Stat(filePath)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Something went wrong reading file: %v\n", filePath)
-			continue
-		}
-
-		if fileInfo.IsDir() {
-			fmt.Fprintf(os.Stderr, "Warning! Directories in /all aren't supported, but I found: %v\n", filePath)
-			continue
-		}
-
-		filesNotIndexed = append(filesNotIndexed, fileInfo)
-	}
-
-	return filesNotIndexed
-}
-
-// repoCmd represents the repo command
-var repoCmd = &cobra.Command{
-	Use:   "repo",
-	Short: "Manage the internal repository",
-	Long:  `Manage the internal repository. It requires to be run where the repository is installed`,
-}
-
-func init() {
-	rootCmd.AddCommand(repoCmd)
-
-	repoCmd.PersistentFlags().StringVarP(&githubToken, "github-token", "g", "", "Github token used to perform requests")
-	repoCmd.PersistentFlags().BoolVar(&rebuildCache, "rebuild-cache", false, "Force the rebuild the cache")
 }
