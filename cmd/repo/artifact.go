@@ -44,18 +44,18 @@ type ArtifactInfo struct {
 
 //Regex for filenames
 var (
-	agentRHEL5Regex              *regexp.Regexp = regexp.MustCompile("^ercole-agent-(?P<version>.*)-1.(?P<arch>x86_64).rpm$")
-	agentRHELRegex               *regexp.Regexp = regexp.MustCompile("^ercole-agent-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
-	agentVirtualizationRHELRegex *regexp.Regexp = regexp.MustCompile("^ercole-agent-virtualization-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
-	agentExadataRHELRegex        *regexp.Regexp = regexp.MustCompile("^ercole-agent-exadata-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
-	agentWinRegex                *regexp.Regexp = regexp.MustCompile("^ercole-agent-setup-(?P<version>.*).exe$")
-	agentHpuxRegex               *regexp.Regexp = regexp.MustCompile("^ercole-agent-hpux-(?P<version>.*).tar.gz")
-	agentAixRegexRpm             *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*)-1.(?P<dist>.*).(?P<arch>noarch).rpm$")
-	agentAixRegexTarGz           *regexp.Regexp = regexp.MustCompile("^ercole-agent-aix-(?P<version>.*).tar.gz$")
-	ercoleRHELRegex              *regexp.Regexp = regexp.MustCompile("^ercole-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>x86_64).rpm$")
-	ercoleWebRHELRegex           *regexp.Regexp = regexp.MustCompile("^ercole-web-(?P<version>.*)-1.el(?P<dist>\\d+).(?P<arch>noarch).rpm$")
-	ercoleAgentPerlRpmRegex      *regexp.Regexp = regexp.MustCompile("^ercole-agent-perl-(?P<version>.*)-1.(?P<dist>[a-z0-9.]+).(?P<arch>noarch).rpm$")
-	ercoleAgentPerlTarGzRegex    *regexp.Regexp = regexp.MustCompile("^ercole-agent-perl-(?P<version>.*)-1.(?P<dist>[a-z0-9.]+).(?P<arch>noarch).tar.gz$")
+	agentRHEL5Regex              *regexp.Regexp = regexp.MustCompile(`^ercole-agent-(?P<version>.*)-1.(?P<arch>x86_64).rpm$`)
+	agentRHELRegex               *regexp.Regexp = regexp.MustCompile(`^ercole-agent-(?P<version>.*)-1.el(?P<dist>\d+).(?P<arch>x86_64).rpm$`)
+	agentVirtualizationRHELRegex *regexp.Regexp = regexp.MustCompile(`^ercole-agent-virtualization-(?P<version>.*)-1.el(?P<dist>\d+).(?P<arch>x86_64).rpm$`)
+	agentExadataRHELRegex        *regexp.Regexp = regexp.MustCompile(`^ercole-agent-exadata-(?P<version>.*)-1.el(?P<dist>\d+).(?P<arch>x86_64).rpm$`)
+	agentWinRegex                *regexp.Regexp = regexp.MustCompile(`^ercole-agent-setup-(?P<version>.*).exe$`)
+	agentHpuxRegex               *regexp.Regexp = regexp.MustCompile(`^ercole-agent-hpux-(?P<version>.*).tar.gz`)
+	agentAixRegexRpm             *regexp.Regexp = regexp.MustCompile(`^ercole-agent-aix-(?P<version>.*)-1.(?P<dist>.*).(?P<arch>noarch).rpm$`)
+	agentAixRegexTarGz           *regexp.Regexp = regexp.MustCompile(`^ercole-agent-aix-(?P<version>.*).tar.gz$`)
+	ercoleRHELRegex              *regexp.Regexp = regexp.MustCompile(`^ercole-(?P<version>.*)-1.el(?P<dist>\d+).(?P<arch>x86_64).rpm$`)
+	ercoleWebRHELRegex           *regexp.Regexp = regexp.MustCompile(`^ercole-web-(?P<version>.*)-1.el(?P<dist>\d+).(?P<arch>noarch).rpm$`)
+	ercoleAgentPerlRpmRegex      *regexp.Regexp = regexp.MustCompile(`^ercole-agent-perl-(?P<version>.*)-1.(?P<dist>[a-z0-9.]+).(?P<arch>noarch).rpm$`)
+	ercoleAgentPerlTarGzRegex    *regexp.Regexp = regexp.MustCompile(`^ercole-agent-perl-(?P<version>.*)-1.(?P<dist>[a-z0-9.]+).(?P<arch>noarch).tar.gz$`)
 )
 
 const (
