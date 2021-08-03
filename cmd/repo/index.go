@@ -80,21 +80,18 @@ func readOrUpdateIndex(log logger.Logger) Index {
 }
 
 func (idx *Index) getArtifactsFromUpstreamRepositories() {
-	artifacts := make([]*ArtifactInfo, 0)
-
 	for _, repo := range ercoleConfig.RepoService.UpstreamRepositories {
 		var err error
-		var repoArts []*ArtifactInfo
 
 		switch repo.Type {
 		case UpstreamTypeGitHub:
-			repoArts, err = getArtifactsFromGithub(idx.log, repo)
+			err = idx.getArtifactsFromGithub(repo)
 
 		case UpstreamTypeDirectory:
-			repoArts, err = getArtifactsFromDirectory(idx.log, repo)
+			err = idx.getArtifactsFromDirectory(repo)
 
 		case UpstreamTypeErcoleRepo:
-			repoArts, err = getArtifactsFromErcoleReposervice(idx.log, repo)
+			err = idx.getArtifactsFromErcoleReposervice(repo)
 
 		default:
 			err = fmt.Errorf("Unknown repository type %q of %q, skipped", repo.Type, repo.Name)
@@ -102,19 +99,14 @@ func (idx *Index) getArtifactsFromUpstreamRepositories() {
 
 		if err != nil {
 			idx.log.Warnf("%+v\n%s\n", repo, err)
-			continue
 		}
-
-		artifacts = append(artifacts, repoArts...)
 	}
-
-	idx.artifacts = artifacts
 }
 
-func getArtifactsFromGithub(log logger.Logger, upstreamRepo config.UpstreamRepository) ([]*ArtifactInfo, error) {
+func (idx *Index) getArtifactsFromGithub(upstreamRepo config.UpstreamRepository) error {
 	req, err := http.NewRequest("GET", upstreamRepo.URL, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if githubToken != "" {
@@ -123,17 +115,17 @@ func getArtifactsFromGithub(log logger.Logger, upstreamRepo config.UpstreamRepos
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, err
+		return err
 	} else if resp.StatusCode != 200 {
 		bytes, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("Received %d from github for URL %s (body: %s)", resp.StatusCode, upstreamRepo.URL, string(bytes))
+		return fmt.Errorf("Received %d from github for URL %s (body: %s)", resp.StatusCode, upstreamRepo.URL, string(bytes))
 	}
 
-	log.Debugf("Fetched data from %s\n", upstreamRepo.URL)
+	idx.log.Debugf("Fetched data from %s\n", upstreamRepo.URL)
 
 	var releases []github.RepositoryRelease
 	if err = json.NewDecoder(resp.Body).Decode(&releases); err != nil {
-		return nil, err
+		return err
 	}
 
 	var artifacts []*ArtifactInfo
@@ -151,12 +143,12 @@ func getArtifactsFromGithub(log logger.Logger, upstreamRepo config.UpstreamRepos
 			}
 
 			if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
-				log.Warn(err)
+				idx.log.Warn(err)
 				continue
 			}
 
 			if artifactInfo.Version == "latest" {
-				log.Debugf("Ignore latest %+v", artifactInfo.Filename)
+				idx.log.Debugf("Ignore latest %+v", artifactInfo.Filename)
 				continue
 			}
 
@@ -164,16 +156,17 @@ func getArtifactsFromGithub(log logger.Logger, upstreamRepo config.UpstreamRepos
 		}
 	}
 
-	return artifacts, nil
+	idx.artifacts = append(idx.artifacts, artifacts...)
+	return nil
 }
 
-func getArtifactsFromDirectory(log logger.Logger, upstreamRepo config.UpstreamRepository) ([]*ArtifactInfo, error) {
+func (idx *Index) getArtifactsFromDirectory(upstreamRepo config.UpstreamRepository) error {
 	files, err := ioutil.ReadDir(upstreamRepo.URL)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var out []*ArtifactInfo
+	var artifacts []*ArtifactInfo
 	for _, file := range files {
 		artifactInfo := new(ArtifactInfo)
 
@@ -186,44 +179,45 @@ func getArtifactsFromDirectory(log logger.Logger, upstreamRepo config.UpstreamRe
 		}
 
 		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
-			log.Warn(err)
+			idx.log.Warn(err)
 		}
 
 		if artifactInfo.Version == "latest" {
-			log.Debug("Ignore latest %+v", artifactInfo)
+			idx.log.Debug("Ignore latest %+v", artifactInfo)
 			continue
 		}
 
-		out = append(out, artifactInfo)
+		artifacts = append(artifacts, artifactInfo)
 	}
 
-	return out, nil
+	idx.artifacts = append(idx.artifacts, artifacts...)
+	return nil
 }
 
-func getArtifactsFromErcoleReposervice(log logger.Logger, upstreamRepo config.UpstreamRepository) ([]*ArtifactInfo, error) {
+func (idx *Index) getArtifactsFromErcoleReposervice(upstreamRepo config.UpstreamRepository) error {
 	req, err := http.NewRequest("GET", upstreamRepo.URL+"/all", nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, err
+		return err
 	} else if resp.StatusCode != 200 {
 		bytes, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("Received %d from ercole reposervice for URL %s (body: %s)", resp.StatusCode, upstreamRepo.URL+"/all", string(bytes))
+		return fmt.Errorf("Received %d from ercole reposervice for URL %s (body: %s)", resp.StatusCode, upstreamRepo.URL+"/all", string(bytes))
 	}
 
-	log.Debugf("Fetched data from %s\n", upstreamRepo.URL)
+	idx.log.Debugf("Fetched data from %s\n", upstreamRepo.URL)
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	regex := regexp.MustCompile(`<a href="([^"]*)">`)
 
-	var out []*ArtifactInfo
+	var artifacts []*ArtifactInfo
 	installedNames := make([]string, 0)
 
 	for _, fn := range regex.FindAllStringSubmatch(string(data), -1) {
@@ -242,19 +236,20 @@ func getArtifactsFromErcoleReposervice(log logger.Logger, upstreamRepo config.Up
 		}
 
 		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
-			log.Warn(err)
+			idx.log.Warn(err)
 			continue
 		}
 
 		if artifactInfo.Version == "latest" {
-			log.Debug("Ignore latest %+v", artifactInfo)
+			idx.log.Debug("Ignore latest %+v", artifactInfo)
 			continue
 		}
 
-		out = append(out, artifactInfo)
+		artifacts = append(artifacts, artifactInfo)
 	}
 
-	return out, nil
+	idx.artifacts = append(idx.artifacts, artifacts...)
+	return nil
 }
 
 // getArtifactsNotIndexed scan filesystem for installed artifacts not in index
