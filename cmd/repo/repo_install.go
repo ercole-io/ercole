@@ -13,41 +13,36 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package cmd
+package repo
 
 import (
-	"github.com/ercole-io/ercole/v2/cmd/repo"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/spf13/cobra"
 )
 
 func init() {
-	repoUpdateCmd := &cobra.Command{
-		Use:   "update",
-		Short: "Update all artifacts installed",
-		Long:  `Install the most recent version of all installed artifacts`,
-		Args:  cobra.NoArgs,
+	repoInstallCmd := &cobra.Command{
+		Use:   "install [artifact...]",
+		Short: "Install an artifact",
+		Long:  `Install an artifact`,
+		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			//Get the list of the repository
-			index := readOrUpdateIndex()
+			index := readOrUpdateIndex(logger.NewLogger("REPO", logger.LogVerbosely(verbose)))
 
-			updateCandidates := make(map[*repo.ArtifactInfo]bool)
-
-			//Search the artifact and install it for every artifact
-			for _, art := range index {
-				f := index.SearchLatestArtifactByRepositoryAndName(art.Repository, art.Name)
+			for _, arg := range args {
+				f := index.searchArtifactByArg(arg)
+				if f == nil {
+					index.log.Errorf("Argument %q wasn't undestood\n", arg)
+					continue
+				}
 
 				if !f.Installed {
-					updateCandidates[f] = true
+					index.Install(f)
+					index.log.Debugf("Installed %q", f.FullName())
 				}
-			}
-
-			//Install all updateCandidates
-			for art := range updateCandidates {
-				art.Install(verbose, ercoleConfig.RepoService.DistributedFiles)
 			}
 		},
 	}
-	repoUpdateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose")
 
-	repoCmd.AddCommand(repoUpdateCmd)
+	repoCmd.AddCommand(repoInstallCmd)
 }

@@ -13,40 +13,35 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package cmd
+package repo
 
 import (
-	"fmt"
-	"os"
-
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/spf13/cobra"
 )
 
 func init() {
-	repoInstallCmd := &cobra.Command{
-		Use:   "install [artifact...]",
-		Short: "Install an artifact",
-		Long:  `Install an artifact`,
+	repoRemoveCmd := &cobra.Command{
+		Use:   "remove [artifact...]",
+		Short: "Remove an artifact",
+		Long:  `Remove an artifact`,
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			//Get the list of the repository
-			index := readOrUpdateIndex()
+			index := readOrUpdateIndex(logger.NewLogger("REPO", logger.LogVerbosely(verbose)))
 
-			//Search the artifact and install it for every artifact
 			for _, arg := range args {
-				f := index.SearchArtifactByArg(arg)
+				f := index.searchArtifactByArg(arg)
 				if f == nil {
-					fmt.Fprintf(os.Stderr, "The argument %q wasn't undestood\n", arg)
-					os.Exit(1)
+					index.log.Warnf("Artifact %q wasn't undestood\n", arg)
+					continue
 				}
 
-				if !f.Installed {
-					f.Install(verbose, ercoleConfig.RepoService.DistributedFiles)
+				if f.Installed {
+					index.Uninstall(f)
 				}
 			}
 		},
 	}
-	repoInstallCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose")
 
-	repoCmd.AddCommand(repoInstallCmd)
+	repoCmd.AddCommand(repoRemoveCmd)
 }

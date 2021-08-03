@@ -13,40 +13,37 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package cmd
+package repo
 
 import (
-	"fmt"
-	"os"
-
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/spf13/cobra"
 )
 
 func init() {
-	repoRemoveCmd := &cobra.Command{
-		Use:   "remove [artifact...]",
-		Short: "Remove an artifact",
-		Long:  `Remove an artifact`,
-		Args:  cobra.MinimumNArgs(1),
+	repoUpdateCmd := &cobra.Command{
+		Use:   "update",
+		Short: "Update all artifacts installed",
+		Long:  `Install the most recent version of all installed artifacts`,
+		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
-			//Get the list of the repository
-			index := readOrUpdateIndex()
+			index := readOrUpdateIndex(logger.NewLogger("REPO", logger.LogVerbosely(verbose)))
 
-			//Search the artifact and install it for every artifact
-			for _, arg := range args {
-				f := index.SearchArtifactByArg(arg)
-				if f == nil {
-					fmt.Fprintf(os.Stderr, "The argument %q wasn't undestood\n", arg)
-					os.Exit(1)
-				}
+			updateCandidates := make(map[*ArtifactInfo]bool)
 
-				if f.Installed {
-					f.Uninstall(verbose, ercoleConfig.RepoService.DistributedFiles)
+			for _, art := range index.artifacts {
+				f := index.searchLatestArtifactByRepositoryAndName(art.Repository, art.Name)
+
+				if !f.Installed {
+					updateCandidates[f] = true
 				}
+			}
+
+			for art := range updateCandidates {
+				index.Install(art)
 			}
 		},
 	}
-	repoRemoveCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose")
 
-	repoCmd.AddCommand(repoRemoveCmd)
+	repoCmd.AddCommand(repoUpdateCmd)
 }

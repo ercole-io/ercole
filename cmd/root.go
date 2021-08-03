@@ -23,6 +23,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/ercole-io/ercole/v2/cmd/migration"
+	"github.com/ercole-io/ercole/v2/cmd/repo"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 )
@@ -31,7 +32,6 @@ var ercoleConfig config.Configuration
 var serverVersion string = "latest"
 var extraConfigFile string
 
-// serveCmd represents the root command
 var rootCmd = &cobra.Command{
 	Use:     "ercole",
 	Short:   "Ercole services & tools",
@@ -48,6 +48,8 @@ var rootCmd = &cobra.Command{
 
 		ercoleConfig = config.ReadConfig(log, extraConfigFile)
 		ercoleConfig.Version = serverVersion
+
+		repo.SetRepoVerbose(verbose)
 	},
 }
 
@@ -73,4 +75,6 @@ func init() {
 
 	rootCmd.AddCommand(migration.NewMigrateCmd(&ercoleConfig))
 	rootCmd.AddCommand(migration.NewMigrateStatusCmd(&ercoleConfig))
+
+	rootCmd.AddCommand(repo.NewRepoCmd(&ercoleConfig))
 }

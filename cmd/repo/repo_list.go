@@ -13,11 +13,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package cmd
+package repo
 
 import (
 	"fmt"
 
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/spf13/cobra"
 )
 
@@ -32,10 +33,9 @@ func init() {
 		Long:  `List artifacts from repositories`,
 		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
-			//Get the list of the repository
-			index := readOrUpdateIndex()
+			index := readOrUpdateIndex(logger.NewLogger("REPO", logger.LogVerbosely(verbose)))
 
-			for _, f := range index {
+			for _, f := range index.artifacts {
 				if filterInstalled && !filterUninstalled && !f.Installed {
 					continue
 				} else if filterUninstalled && !filterInstalled && f.Installed {
@@ -58,7 +58,6 @@ func init() {
 		},
 	}
 
-	repoListCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose")
 	repoListCmd.Flags().BoolVarP(&filterInstalled, "installed", "i", false, "Filter by installed artifacts")
 	repoListCmd.Flags().BoolVarP(&filterUninstalled, "uninstalled", "u", false, "Filter by uninstalled artifacts")
 	repoListCmd.Flags().BoolVarP(&showOnlyNameColumn, "name", "n", false, "Show only the name column")

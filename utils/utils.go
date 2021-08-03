@@ -270,11 +270,27 @@ func ParsePublicKey(raw []byte) (interface{}, error) {
 func IsVersionLessThan(a, b string) bool {
 	va, err := version.NewVersion(a)
 	if err != nil {
-		panic(err)
+		// panic(err)
+		return false //TODO
 	}
 	vb, err := version.NewVersion(b)
 	if err != nil {
-		panic(err)
+		// panic(err)
+		return false //TODO
 	}
 	return va.LessThan(vb)
+}
+
+func IsVersionEqual(a, b string) (bool, error) {
+	thisSemver, err := version.NewSemver(a)
+	if err != nil {
+		return false, err
+	}
+
+	semver, err := version.NewSemver(b)
+	if err != nil {
+		return false, err
+	}
+
+	return thisSemver.Equal(semver), nil
 }
