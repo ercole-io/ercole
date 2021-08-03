@@ -74,7 +74,7 @@ func TestSortArtifactInfo(t *testing.T) {
 		},
 	}
 
-	actual.sortArtifactInfo()
+	actual.sortArtifactsInfo()
 
 	assert.Equal(t, expected, actual)
 }
