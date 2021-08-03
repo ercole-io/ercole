@@ -384,13 +384,14 @@ func (idx *Index) searchArtifactByFilename(filename string) *ArtifactInfo {
 func (idx *Index) searchArtifactByName(name string) *ArtifactInfo {
 	var foundArtifact *ArtifactInfo
 
-	//Find the artifact
 	for _, f := range idx.artifacts {
 		if name == f.Name {
 			if foundArtifact == nil {
 				foundArtifact = f
 			} else if foundArtifact.Repository == f.Repository {
-				if utils.IsVersionLessThan(foundArtifact.Version, f.Version) {
+				if is, err := utils.IsVersionLessThan(foundArtifact.Version, f.Version); err != nil {
+					idx.log.Warnf("Invalid version comparing %q with %q", foundArtifact.Version, f.Version)
+				} else if is {
 					foundArtifact = f
 				}
 			} else {
@@ -452,7 +453,9 @@ func (idx *Index) searchLatestArtifactByRepositoryAndName(repo string, name stri
 		if name == f.Name && repo == f.Repository {
 			if foundArtifact == nil {
 				foundArtifact = f
-			} else if utils.IsVersionLessThan(foundArtifact.Version, f.Version) {
+			} else if is, err := utils.IsVersionLessThan(foundArtifact.Version, f.Version); err != nil {
+				idx.log.Warnf("Invalid version comparing %q with %q", foundArtifact.Version, f.Version)
+			} else if is {
 				foundArtifact = f
 			}
 		}
@@ -471,7 +474,13 @@ func (idx Index) sortArtifactInfo() {
 		} else if artifacts[i].Name != artifacts[j].Name {
 			return artifacts[i].Name < artifacts[j].Name
 		} else {
-			return utils.IsVersionLessThan(artifacts[i].Version, artifacts[j].Version)
+			is, err := utils.IsVersionLessThan(artifacts[i].Version, artifacts[j].Version)
+			if err != nil {
+				idx.log.Warnf("Invalid version comparing %q with %q", artifacts[i].Version, artifacts[j].Version)
+				return false
+			}
+
+			return is
 		}
 	})
 }
