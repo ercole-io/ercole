@@ -74,7 +74,7 @@ func readOrUpdateIndex(log logger.Logger) Index {
 
 	index.getArtifactsNotIndexed()
 
-	index.sortArtifactInfo()
+	index.sortArtifactsInfo()
 
 	return index
 }
@@ -363,14 +363,15 @@ func (idx *Index) searchArtifactByFilename(filename string) *ArtifactInfo {
 	var foundArtifact *ArtifactInfo
 
 	for _, f := range idx.artifacts {
-		if filename == f.Filename {
-			if foundArtifact == nil {
-				foundArtifact = f
-			} else {
-				idx.log.Fatalf("Two artifact have the same filename: %v and %v", foundArtifact, f)
-			}
-
+		if filename != f.Filename {
+			continue
 		}
+
+		if foundArtifact != nil {
+			idx.log.Fatalf("Two artifact have the same filename: %v and %v", foundArtifact, f)
+		}
+
+		foundArtifact = f
 	}
 
 	return foundArtifact
@@ -380,18 +381,26 @@ func (idx *Index) searchArtifactByName(name string) *ArtifactInfo {
 	var foundArtifact *ArtifactInfo
 
 	for _, f := range idx.artifacts {
-		if name == f.Name {
-			if foundArtifact == nil {
-				foundArtifact = f
-			} else if foundArtifact.Repository == f.Repository {
-				if is, err := utils.IsVersionLessThan(foundArtifact.Version, f.Version); err != nil {
-					idx.log.Warnf("Invalid version comparing %q with %q", foundArtifact.Version, f.Version)
-				} else if is {
-					foundArtifact = f
-				}
-			} else {
-				idx.log.Fatalf("Two artifact have the same filename: %v and %v", foundArtifact, f)
-			}
+		if name != f.Name {
+			continue
+		}
+
+		if foundArtifact == nil {
+			foundArtifact = f
+			continue
+		}
+
+		if foundArtifact.Repository != f.Repository {
+			idx.log.Fatalf("Two artifact have the same filename: %v and %v", foundArtifact, f)
+		}
+
+		foundVersionIsLess, err := utils.IsVersionLessThan(foundArtifact.Version, f.Version)
+		if err != nil {
+			idx.log.Warnf("Invalid version comparing %q with %q", foundArtifact.Version, f.Version)
+			continue
+		}
+		if foundVersionIsLess {
+			foundArtifact = f
 		}
 	}
 
@@ -401,15 +410,16 @@ func (idx *Index) searchArtifactByName(name string) *ArtifactInfo {
 func (idx *Index) searchArtifactByNameAndVersion(name string, version string) *ArtifactInfo {
 	var foundArtifact *ArtifactInfo
 
-	//Find the artifact
 	for _, f := range idx.artifacts {
-		if name == f.Name && version == f.Version {
-			if foundArtifact == nil {
-				foundArtifact = f
-			} else {
-				idx.log.Fatalf("Two artifact have the same filename: %v and %v", foundArtifact, f)
-			}
+		if name != f.Name || version != f.Version {
+			continue
 		}
+
+		if foundArtifact != nil {
+			idx.log.Fatalf("Two artifact have the same filename: %v and %v", foundArtifact, f)
+		}
+
+		foundArtifact = f
 	}
 
 	return foundArtifact
@@ -430,11 +440,11 @@ func (idx *Index) searchArtifactByFullname(repository, name, version string) *Ar
 			continue
 		}
 
-		if f != nil {
-			foundArtifact = f
-		} else {
+		if foundArtifact != nil {
 			idx.log.Fatalf("Two artifact have the same filename: %v and %v", foundArtifact, f)
 		}
+
+		foundArtifact = f
 	}
 
 	return foundArtifact
@@ -445,22 +455,30 @@ func (idx *Index) searchLatestArtifactByRepositoryAndName(repo string, name stri
 	var foundArtifact *ArtifactInfo
 
 	for _, f := range idx.artifacts {
-		if name == f.Name && repo == f.Repository {
-			if foundArtifact == nil {
-				foundArtifact = f
-			} else if is, err := utils.IsVersionLessThan(foundArtifact.Version, f.Version); err != nil {
-				idx.log.Warnf("Invalid version comparing %q with %q", foundArtifact.Version, f.Version)
-			} else if is {
-				foundArtifact = f
-			}
+		if name != f.Name || repo != f.Repository {
+			continue
+		}
+
+		if foundArtifact == nil {
+			foundArtifact = f
+			continue
+		}
+
+		foundVersionIsLess, err := utils.IsVersionLessThan(foundArtifact.Version, f.Version)
+		if err != nil {
+			idx.log.Warnf("Invalid version comparing %q with %q", foundArtifact.Version, f.Version)
+			continue
+		}
+		if foundVersionIsLess {
+			foundArtifact = f
 		}
 	}
 
 	return foundArtifact
 }
 
-// sortArtifactInfo sort artifact information inside index
-func (idx Index) sortArtifactInfo() {
+// sortArtifactsInfo sort artifact information inside index
+func (idx Index) sortArtifactsInfo() {
 	artifacts := idx.artifacts
 
 	sort.Slice(artifacts, func(i, j int) bool {
