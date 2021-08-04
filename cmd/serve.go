@@ -106,11 +106,14 @@ func serve(enableDataService bool,
 		if err != nil {
 			log.Fatalf("Failed migrating database: %s", err)
 		}
-	} else {
+	}
+
+	if enableDataService || enableAlertService || enableAPIService || enableChartService {
 		check, err := migration.IsAtTheLatestVersion(ercoleConfig.Mongodb)
 		if err != nil {
 			log.Fatalf("Failed checking database version: %s", err)
 		}
+
 		if !check {
 			log.Fatal("Database is not at the latest version\nYou can migrate to the latest version by running `ercole migrate`")
 		}
