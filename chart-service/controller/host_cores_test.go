@@ -29,7 +29,7 @@ func TestGetHostsHistory_Success(t *testing.T) {
 	OlderThan := utils.MAX_TIME
 	NewerThan := utils.MIN_TIME
 
-	as.EXPECT().GetHostsHistory(location, Environment, OlderThan, NewerThan).
+	as.EXPECT().GetHostCores(location, Environment, OlderThan, NewerThan).
 		Return(host, nil)
 
 	rr := httptest.NewRecorder()
@@ -102,7 +102,7 @@ func TestGetHostsHistory_InternalServerError(t *testing.T) {
 	olderThan := utils.MAX_TIME
 	newerThan := utils.MIN_TIME
 
-	as.EXPECT().GetHostsHistory(location, environment, olderThan, newerThan).
+	as.EXPECT().GetHostCores(location, environment, olderThan, newerThan).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
