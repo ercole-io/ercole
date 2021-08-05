@@ -37,7 +37,9 @@ func init() {
 				}
 
 				if f.Installed {
-					index.Uninstall(f)
+					index.Remove(f)
+				} else {
+					index.log.Infof("%q isn't installed", f.FullName())
 				}
 			}
 		},
