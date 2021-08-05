@@ -569,9 +569,10 @@ func (idx *Index) Install(artifact *ArtifactInfo) {
 	}
 
 	artifact.Installed = true
+	idx.log.Infof("Installed %q", artifact.FullName())
 }
 
-func (idx *Index) Uninstall(artifact *ArtifactInfo) {
+func (idx *Index) Remove(artifact *ArtifactInfo) {
 	idx.log.Debugf("Removing the file %s\n", filepath.Join(idx.distributedFiles, "all", artifact.Filename))
 
 	allArtifactsPath := filepath.Join(idx.distributedFiles, "all", artifact.Filename)
@@ -580,27 +581,27 @@ func (idx *Index) Uninstall(artifact *ArtifactInfo) {
 	}
 
 	artifactPath := artifact.FilePath(idx.distributedFiles)
-	if _, errStat := os.Stat(artifactPath); errStat == nil {
-		idx.log.Debugf("Removing the file %s\n", artifact.FilePath(idx.distributedFiles))
+	idx.log.Debugf("Removing the file %s\n", artifactPath)
 
-		if err := os.Remove(artifact.FilePath(idx.distributedFiles)); err != nil {
-			idx.log.Fatalf("Can't remove %s from %s: %s", artifact.Filename, artifactPath, err)
-		}
-
-		if strings.HasSuffix(artifact.Filename, ".rpm") {
-			idx.log.Debugf("Executing createrepo %s\n", artifact.DirectoryPath(idx.distributedFiles))
-			cmd := exec.Command("createrepo", artifact.DirectoryPath(idx.distributedFiles))
-			if verbose {
-				cmd.Stdout = os.Stdout
-			}
-			cmd.Stderr = os.Stderr
-			if err := cmd.Run(); err != nil {
-				panic(err)
-			}
-		}
-
-		artifact.Installed = false
+	if err := os.Remove(artifactPath); err != nil {
+		idx.log.Errorf("Can't remove %s from %s: %s", artifact.Filename, artifactPath, err)
+		return
 	}
+
+	if strings.HasSuffix(artifact.Filename, ".rpm") {
+		idx.log.Debugf("Executing createrepo %s\n", artifact.DirectoryPath(idx.distributedFiles))
+		cmd := exec.Command("createrepo", artifact.DirectoryPath(idx.distributedFiles)) //TODO Refactor
+		if verbose {
+			cmd.Stdout = os.Stdout
+		}
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			panic(err)
+		}
+	}
+
+	artifact.Installed = false
+	idx.log.Infof("Removed %q", artifact.FullName())
 }
 
 func (idx *Index) Download(artifact *ArtifactInfo) error {
