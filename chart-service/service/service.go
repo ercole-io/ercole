@@ -44,6 +44,8 @@ type ChartServiceInterface interface {
 	GetTechnologiesMetrics() (map[string]model.TechnologySupportedMetrics, error)
 	// GetTechnologyTypes return the types of techonlogies
 	GetTechnologyTypesChart(location string, environment string, olderThan time.Time) (dto.TechnologyTypesChart, error)
+
+	GetHostCores(location string, environment string, olderThan time.Time, newerThan time.Time) ([]dto.HostCores, error)
 }
 
 // ChartService is the concrete implementation of APIServiceInterface.
