@@ -38,7 +38,8 @@ func init() {
 
 				if !f.Installed {
 					index.Install(f)
-					index.log.Debugf("Installed %q", f.FullName())
+				} else {
+					index.log.Infof("%q is already installed", f.FullName())
 				}
 			}
 		},
