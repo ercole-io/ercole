@@ -39,6 +39,14 @@ type ArtifactInfo struct {
 	UpstreamInfo          map[string]interface{}
 }
 
+//valid formats
+//	- <filename>
+//	- <name>
+//	- <name>@<version>
+//	- <repository>/<name>@<version>
+//	- <repository>/<name>
+var artifactNameRegex *regexp.Regexp = regexp.MustCompile(`^(?:(?P<repository>[a-z-0-9]+)/)?(?P<name>[a-z-.0-9]+)(?:@(?P<version>[a-z0-9.0-9]+))?$`)
+
 //Regex for filenames
 var (
 	ercoleRHELRegex    *regexp.Regexp = regexp.MustCompile(`^ercole-(?P<version>.*)-1\.el(?P<dist>\d+)\.(?P<arch>x86_64)\.rpm$`)

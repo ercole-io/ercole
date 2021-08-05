@@ -325,14 +325,7 @@ func getFilesNotIndexed(log logger.Logger, index []*ArtifactInfo, distributedFil
 
 // searchArtifactByArg get *ArtifactInfo by string
 func (idx *Index) searchArtifactByArg(arg string) *ArtifactInfo {
-	//valid formats
-	//	- <filename>
-	//	- <name>
-	//	- <name>@<version>
-	//	- <repository>/<name>@<version>
-	//	- <repository>/<name>
-	var regex *regexp.Regexp = regexp.MustCompile("^(?:(?P<repository>[a-z-0-9]+)/)?(?P<name>[a-z-.0-9]+)(?:@(?P<version>[a-z0-9.0-9]+))?$")
-	submatches := utils.FindNamedMatches(regex, arg)
+	submatches := utils.FindNamedMatches(artifactNameRegex, arg)
 
 	var repository string = submatches["repository"]
 	var name string = submatches["name"]
