@@ -40,6 +40,8 @@ type MongoDatabaseInterface interface {
 	// GetOracleDatabaseChartByWork return the chart data about the work of all database
 	GetOracleDatabaseChartByWork(location string, environment string, olderThan time.Time) ([]dto.ChartBubble, error)
 	GetLicenseComplianceHistory() ([]dto.LicenseComplianceHistory, error)
+
+	GetHostCores(location string, environment string, olderThan time.Time, newerThan time.Time) ([]dto.HostCores, error)
 }
 
 // MongoDatabase is a implementation

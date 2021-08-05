@@ -4449,6 +4449,27 @@ paths:
                     - history
       operationId: GetLicenseComplianceHistory
       description: Get historical values of Oracle Databases Licenses
+  /technologies/all/host-cores:
+    get:
+      tags:
+        - chart-service
+      operationId: GetHostCores
+      summary: Get the cores about hosts
+      description: Get cores values of the hosts
+      parameters:
+        - $ref: '#/components/parameters/location'
+        - $ref: '#/components/parameters/environment'
+        - $ref: '#/components/parameters/older-than'
+        - $ref: '#/components/parameters/newer-than'
+      responses:
+        '200':
+          $ref: '#/components/schemas/Chart'
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
   /hosts/technologies/mysql/databases:
     get:
       tags:
