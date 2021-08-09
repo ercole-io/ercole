@@ -47,15 +47,18 @@ type ArtifactInfo struct {
 //	- <repository>/<name>
 var artifactNameRegex *regexp.Regexp = regexp.MustCompile(`^(?:(?P<repository>[a-z-0-9]+)/)?(?P<name>[a-z-.0-9]+)(?:@(?P<version>[a-z0-9.0-9]+))?$`)
 
+// https://semver.org/
+var semVer = `(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?`
+
 //Regex for filenames
 var (
-	ercoleRHELRegex    *regexp.Regexp = regexp.MustCompile(`^ercole-(?P<version>.*)-1\.el(?P<dist>\d+)\.(?P<arch>x86_64)\.rpm$`)
-	ercoleWebRHELRegex *regexp.Regexp = regexp.MustCompile(`^ercole-web-(?P<version>.*)-1\.el(?P<dist>\d+)\.(?P<arch>noarch)\.rpm$`)
+	ercoleRHELRegex    *regexp.Regexp = regexp.MustCompile(`^ercole-(?P<version>` + semVer + `)-1\.el(?P<dist>\d+)\.(?P<arch>x86_64)\.rpm$`)
+	ercoleWebRHELRegex *regexp.Regexp = regexp.MustCompile(`^ercole-web-(?P<version>` + semVer + `)-1\.el(?P<dist>\d+)\.(?P<arch>noarch)\.rpm$`)
 
-	agentRHELRegex      *regexp.Regexp = regexp.MustCompile(`^ercole-agent-(?P<version>.*)-1\.el(?P<dist>\d+)\.(?P<arch>x86_64).rpm$`)
-	agentWinRegex       *regexp.Regexp = regexp.MustCompile(`^ercole-agent-setup-(?P<version>.*)\.exe$`)
-	agentPerlRpmRegex   *regexp.Regexp = regexp.MustCompile(`^ercole-agent-perl-(?P<version>.*)-1\.(?P<dist>[a-z0-9.]+)\.(?P<arch>noarch)\.rpm$`)
-	agentPerlTarGzRegex *regexp.Regexp = regexp.MustCompile(`^ercole-agent-perl-(?P<version>.*)-1\.(?P<dist>[a-z0-9.]+)\.(?P<arch>noarch)\.tar\.gz$`)
+	agentRHELRegex      *regexp.Regexp = regexp.MustCompile(`^ercole-agent-(?P<version>` + semVer + `)-1\.el(?P<dist>\d+)\.(?P<arch>x86_64).rpm$`)
+	agentWinRegex       *regexp.Regexp = regexp.MustCompile(`^ercole-agent-setup-(?P<version>` + semVer + `)\.exe$`)
+	agentPerlRpmRegex   *regexp.Regexp = regexp.MustCompile(`^ercole-agent-perl-(?P<version>` + semVer + `)-1\.(?P<dist>[a-z0-9.]+)\.(?P<arch>noarch)\.rpm$`)
+	agentPerlTarGzRegex *regexp.Regexp = regexp.MustCompile(`^ercole-agent-perl-(?P<version>` + semVer + `)-1\.(?P<dist>[a-z0-9.]+)\.(?P<arch>noarch)\.tar\.gz$`)
 )
 
 const (
@@ -94,14 +97,6 @@ func (artifact *ArtifactInfo) IsInstalled(distributedFiles string) bool {
 // SetInfoFromFileName sets to fileInfo informations taken from filename
 func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) error {
 	switch {
-	case agentRHELRegex.MatchString(filename):
-		data := utils.FindNamedMatches(agentRHELRegex, filename)
-		artifact.Name = "ercole-agent-rhel" + data["dist"]
-		artifact.Version = data["version"]
-		artifact.Arch = data["arch"]
-		artifact.OperatingSystemFamily = "rhel"
-		artifact.OperatingSystem = "rhel" + data["dist"]
-
 	case ercoleRHELRegex.MatchString(filename):
 		data := utils.FindNamedMatches(ercoleRHELRegex, filename)
 		artifact.Name = "ercole-" + data["dist"]
@@ -113,6 +108,14 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) error {
 	case ercoleWebRHELRegex.MatchString(filename):
 		data := utils.FindNamedMatches(ercoleWebRHELRegex, filename)
 		artifact.Name = "ercole-web" + data["dist"]
+		artifact.Version = data["version"]
+		artifact.Arch = data["arch"]
+		artifact.OperatingSystemFamily = "rhel"
+		artifact.OperatingSystem = "rhel" + data["dist"]
+
+	case agentRHELRegex.MatchString(filename):
+		data := utils.FindNamedMatches(agentRHELRegex, filename)
+		artifact.Name = "ercole-agent-rhel" + data["dist"]
 		artifact.Version = data["version"]
 		artifact.Arch = data["arch"]
 		artifact.OperatingSystemFamily = "rhel"
