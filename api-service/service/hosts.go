@@ -139,8 +139,16 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 		file.SetCellValue(sheet, nextAxis(), strconv.FormatBool(val.ClusterMembershipStatus.OracleClusterware))
 		file.SetCellValue(sheet, nextAxis(), strconv.FormatBool(val.ClusterMembershipStatus.SunCluster))
 		file.SetCellValue(sheet, nextAxis(), strconv.FormatBool(val.ClusterMembershipStatus.VeritasClusterServer))
-		file.SetCellValue(sheet, nextAxis(), val.Info.HardwareAbstraction)
-		file.SetCellValue(sheet, nextAxis(), val.Info.HardwareAbstractionTechnology)
+		if val.Info.HardwareAbstraction == "PH" {
+			file.SetCellValue(sheet, nextAxis(), "Bare metal")
+		} else {
+			file.SetCellValue(sheet, nextAxis(), val.Info.HardwareAbstraction)
+		}
+		if val.Info.HardwareAbstractionTechnology == "PH" {
+			file.SetCellValue(sheet, nextAxis(), "Bare metal")
+		} else {
+			file.SetCellValue(sheet, nextAxis(), val.Info.HardwareAbstractionTechnology)
+		}
 		file.SetCellValue(sheet, nextAxis(), val.Info.CPUThreads)
 		file.SetCellValue(sheet, nextAxis(), val.Info.CPUCores)
 		file.SetCellValue(sheet, nextAxis(), val.Info.CPUSockets)
