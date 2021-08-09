@@ -213,6 +213,8 @@ func TestSearchClustersAsXLSX_Success(t *testing.T) {
 			"cpu":                 140,
 			"sockets":             10,
 			"virtualizationNodes": "s157-cb32c10a56c256746c337e21b3f82402",
+			"vmsCount":            2,
+			"vmsErcoleAgentCount": 2,
 		},
 	}
 
@@ -235,4 +237,6 @@ func TestSearchClustersAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "140", actual.GetCellValue("Hypervisor", "C2"))
 	assert.Equal(t, "10", actual.GetCellValue("Hypervisor", "D2"))
 	assert.Equal(t, "s157-cb32c10a56c256746c337e21b3f82402", actual.GetCellValue("Hypervisor", "E2"))
+	assert.Equal(t, "2", actual.GetCellValue("Hypervisor", "F2"))
+	assert.Equal(t, "2", actual.GetCellValue("Hypervisor", "G2"))
 }

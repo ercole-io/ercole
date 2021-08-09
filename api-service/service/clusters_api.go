@@ -71,9 +71,11 @@ func (as *APIService) SearchClustersAsXLSX(filter dto.GlobalFilter) (*excelize.F
 	headers := []string{
 		"Name",
 		"Type",
-		"Core",
-		"Sockets",
-		"Physical Hosts",
+		"Cores",
+		"Socket",
+		"Physical Host",
+		"Total VM",
+		"Total VM Ercole",
 	}
 
 	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
@@ -89,6 +91,8 @@ func (as *APIService) SearchClustersAsXLSX(filter dto.GlobalFilter) (*excelize.F
 		sheets.SetCellValue(sheet, nextAxis(), val["cpu"])
 		sheets.SetCellValue(sheet, nextAxis(), val["sockets"])
 		sheets.SetCellValue(sheet, nextAxis(), val["virtualizationNodes"])
+		sheets.SetCellValue(sheet, nextAxis(), val["vmsCount"])
+		sheets.SetCellValue(sheet, nextAxis(), val["vmsErcoleAgentCount"])
 	}
 	return sheets, nil
 }
