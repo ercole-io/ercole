@@ -18,7 +18,6 @@ package service
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
@@ -93,26 +92,25 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 	sheet := "Hosts"
 	headers := []string{
 		"Hostname",
-		"Env",
-		"Cluster",
-		"Physical Host",
-		"Version",
-		"Last Update",
-		"Databases",
-		"OS",
-		"Kernel",
-		"Oracle Cluster",
-		"Sun Cluster",
-		"Veritas Cluster",
-		"Host type",
 		"Platform",
-		"CPU Threads",
-		"CPU Cores",
+		"Cluster",
+		"Node",
+		"Processor Model",
+		"Threads",
+		"Cores",
 		"Socket",
-		"Mem Total",
-		"Swap Total",
-		"CPU Model",
+		"Version",
+		"Updated",
+		"Environment",
+		"Databases",
+		"Technology",
+		"Operating System",
+		"Clust",
+		"Kernel",
+		"Memory",
+		"Swap",
 	}
+
 	file, err := exutils.NewXLSX(as.Config, sheet, headers...)
 	if err != nil {
 		return nil, err
@@ -122,39 +120,36 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 	for _, val := range hosts {
 		nextAxis := axisHelp.NewRow()
 		file.SetCellValue(sheet, nextAxis(), val.Hostname)
-		file.SetCellValue(sheet, nextAxis(), val.Environment)
-		file.SetCellValue(sheet, nextAxis(), val.Cluster)
-		file.SetCellValue(sheet, nextAxis(), val.VirtualizationNode)
-		file.SetCellValue(sheet, nextAxis(), val.AgentVersion)
-		file.SetCellValue(sheet, nextAxis(), val.CreatedAt.Local().String())
 
-		databases := strings.Builder{}
-		for _, v := range val.Databases {
-			databases.WriteString(strings.Join(v, " "))
-		}
-		file.SetCellValue(sheet, nextAxis(), databases.String())
-
-		file.SetCellValue(sheet, nextAxis(), val.Info.OS)
-		file.SetCellValue(sheet, nextAxis(), val.Info.Kernel)
-		file.SetCellValue(sheet, nextAxis(), strconv.FormatBool(val.ClusterMembershipStatus.OracleClusterware))
-		file.SetCellValue(sheet, nextAxis(), strconv.FormatBool(val.ClusterMembershipStatus.SunCluster))
-		file.SetCellValue(sheet, nextAxis(), strconv.FormatBool(val.ClusterMembershipStatus.VeritasClusterServer))
-		if val.Info.HardwareAbstraction == "PH" {
-			file.SetCellValue(sheet, nextAxis(), "Bare metal")
-		} else {
-			file.SetCellValue(sheet, nextAxis(), val.Info.HardwareAbstraction)
-		}
 		if val.Info.HardwareAbstractionTechnology == "PH" {
 			file.SetCellValue(sheet, nextAxis(), "Bare metal")
 		} else {
 			file.SetCellValue(sheet, nextAxis(), val.Info.HardwareAbstractionTechnology)
 		}
+
+		file.SetCellValue(sheet, nextAxis(), val.Cluster)
+		file.SetCellValue(sheet, nextAxis(), val.VirtualizationNode)
+		file.SetCellValue(sheet, nextAxis(), val.Info.CPUModel)
 		file.SetCellValue(sheet, nextAxis(), val.Info.CPUThreads)
 		file.SetCellValue(sheet, nextAxis(), val.Info.CPUCores)
 		file.SetCellValue(sheet, nextAxis(), val.Info.CPUSockets)
+		file.SetCellValue(sheet, nextAxis(), val.AgentVersion)
+		file.SetCellValue(sheet, nextAxis(), val.CreatedAt)
+		file.SetCellValue(sheet, nextAxis(), val.Environment)
+
+		databases := strings.Builder{}
+		technology := strings.Builder{}
+		for k, v := range val.Databases {
+			databases.WriteString(strings.Join(v, " "))
+			technology.WriteString(k)
+		}
+		file.SetCellValue(sheet, nextAxis(), databases.String())
+		file.SetCellValue(sheet, nextAxis(), technology.String())
+		file.SetCellValue(sheet, nextAxis(), val.Info.OS)
+		file.SetCellValue(sheet, nextAxis(), val.ClusterMembershipStatus.OracleClusterware)
+		file.SetCellValue(sheet, nextAxis(), val.Info.KernelVersion)
 		file.SetCellValue(sheet, nextAxis(), val.Info.MemoryTotal)
 		file.SetCellValue(sheet, nextAxis(), val.Info.SwapTotal)
-		file.SetCellValue(sheet, nextAxis(), val.Info.CPUModel)
 	}
 
 	return file, nil
