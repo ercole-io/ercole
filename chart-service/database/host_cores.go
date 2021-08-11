@@ -10,8 +10,6 @@ import (
 )
 
 func (md *MongoDatabase) GetHostCores(location string, environment string, olderThan time.Time, newerThan time.Time) ([]dto.HostCores, error) {
-	var items []dto.HostCores
-
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -39,12 +37,9 @@ func (md *MongoDatabase) GetHostCores(location string, environment string, older
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	for cur.Next(context.TODO()) {
-		var item dto.HostCores
-		if err := cur.Decode(&item); err != nil {
-			return nil, utils.NewError(err, "Decode ERROR")
-		}
-		items = append(items, item)
+	var items []dto.HostCores
+	if err := cur.All(context.TODO(), &items); err != nil {
+		return nil, utils.NewError(err, "Decode ERROR")
 	}
 
 	return items, nil
