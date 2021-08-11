@@ -36,7 +36,7 @@ func (md *MongoDatabase) GetHostCores(location, environment string, olderThan, n
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	var items []dto.HostCores
+	var items = make([]dto.HostCores, 0)
 	if err := cur.All(context.TODO(), &items); err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
 	}
