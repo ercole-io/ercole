@@ -25,11 +25,11 @@ func TestGetHostsHistory_Success(t *testing.T) {
 
 	host := []dto.HostCores{}
 	location := "Italy"
-	Environment := "TST"
+	environment := "TST"
 	OlderThan := utils.MAX_TIME
 	NewerThan := utils.MIN_TIME
 
-	as.EXPECT().GetHostCores(location, Environment, OlderThan, NewerThan).
+	as.EXPECT().GetHostCores(location, environment, OlderThan, NewerThan).
 		Return(host, nil)
 
 	rr := httptest.NewRecorder()

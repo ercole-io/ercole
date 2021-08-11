@@ -45,5 +45,5 @@ func setupProtectedRoutes(router *mux.Router, ctrl ChartControllerInterface) {
 	router.HandleFunc("/technologies/changes", ctrl.GetChangeChart).Methods("GET")
 	router.HandleFunc("/technologies/types", ctrl.GetTechnologyTypes).Methods("GET")
 
-	router.HandleFunc("/technologies/all/host-cores", ctrl.GetHostCores).Methods("GET")
+	router.HandleFunc("/host/cores", ctrl.GetHostCores).Methods("GET")
 }

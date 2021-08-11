@@ -1468,6 +1468,15 @@ components:
       name: older-than
       description: Filter until the date
       allowEmptyValue: true
+    newer-than:
+      schema:
+        type: string
+        format: date-time
+        example: '2020-01-05T08:23:40+00:00'
+      in: query
+      name: newer-than
+      description: Filter after the date
+      allowEmptyValue: true
     limit:
       schema:
         type: integer
@@ -4449,7 +4458,7 @@ paths:
                     - history
       operationId: GetLicenseComplianceHistory
       description: Get historical values of Oracle Databases Licenses
-  /technologies/all/host-cores:
+  /host/cores:
     get:
       tags:
         - chart-service
