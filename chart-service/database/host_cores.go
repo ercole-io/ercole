@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func (md *MongoDatabase) GetHostCores(location string, environment string, olderThan time.Time, newerThan time.Time) ([]dto.HostCores, error) {
+func (md *MongoDatabase) GetHostCores(location, environment string, olderThan, newerThan time.Time) ([]dto.HostCores, error) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -18,7 +18,6 @@ func (md *MongoDatabase) GetHostCores(location string, environment string, older
 					"$gte": newerThan,
 					"$lte": olderThan,
 				},
-
 			}),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APGroup(
@@ -30,7 +29,7 @@ func (md *MongoDatabase) GetHostCores(location string, environment string, older
 			mu.APSort(bson.M{
 				"_id": 1,
 			}),
-			mu.APProject(bson.M{"date": bson.M{"$dateFromString":bson.M{"dateString":"$_id"}}, "cores": 1, "_id": 0}),
+			mu.APProject(bson.M{"date": bson.M{"$dateFromString": bson.M{"dateString": "$_id"}}, "cores": 1, "_id": 0}),
 		),
 	)
 	if err != nil {
