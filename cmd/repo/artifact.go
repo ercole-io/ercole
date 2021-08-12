@@ -155,7 +155,7 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) error {
 		case "hpux":
 			artifact.OperatingSystemFamily = "hpux"
 			artifact.OperatingSystem = data["dist"]
-		case "solaris11":
+		case "solaris10", "solaris11":
 			artifact.OperatingSystemFamily = "solaris"
 			artifact.OperatingSystem = data["dist"]
 		default:
