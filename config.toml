@@ -119,6 +119,13 @@ DistributedFiles = "distributed_files/"
   Name = "ercole-io"
   Type = "ercole-reposervice"
   URL = "https://repository.ercole.io"
+  
+[ThunderService]
+RemoteEndpoint = "http://127.0.0.1:11117"
+BindIP = "127.0.0.1"
+Port = 11117
+LogHTTPRequest = true
+LogMessages = true
 
 [Mongodb]
 URI = "mongodb://localhost:27017/ercole"
