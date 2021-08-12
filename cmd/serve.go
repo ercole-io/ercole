@@ -403,22 +403,17 @@ func serveThunderService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	service.Init()
 
-	/*
-		auth := apiservice_auth.BuildAuthenticationProvider(config.APIService.AuthenticationProvider, time.Now, log)
-		auth.Init()
-	*/
 	router := mux.NewRouter()
 	ctrl := &thunderservice_controller.ThunderController{
 		Config:  config,
 		Service: service,
 		TimeNow: time.Now,
 		Log:     log,
-		//		Authenticator: auth,
 	}
 	thunderservice_controller.SetupRoutesForThunderController(router, ctrl)
 
 	var logRouter http.Handler
-	if config.ChartService.LogHTTPRequest {
+	if config.ThunderService.LogHTTPRequest {
 		logRouter = utils.CustomLoggingHandler(router, log)
 	} else {
 		logRouter = router

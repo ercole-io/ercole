@@ -167,8 +167,6 @@ type ThunderService struct {
 	Port uint16
 	// LogHTTPRequest enable the logging of the internal http serverl
 	LogHTTPRequest bool
-	// LogHTTPRequest enable the logging of the received messages
-	LogMessages bool
 }
 
 // Mongodb contains configuration about the database connection, some data logic and migration
