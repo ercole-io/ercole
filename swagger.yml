@@ -4458,7 +4458,7 @@ paths:
                     - history
       operationId: GetLicenseComplianceHistory
       description: Get historical values of Oracle Databases Licenses
-  /host/cores:
+  /hosts/cores:
     get:
       tags:
         - chart-service
