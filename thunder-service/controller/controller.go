@@ -28,23 +28,16 @@ import (
 // ThunderControllerInterface is a interface that wrap methods used to inserting events in the queue
 type ThunderControllerInterface interface {
 
-	// GetOCRecommendations get recommendations from Oracle Cloud Infracstructure
+	// GetOCRecommendations get recommendations from Oracle Cloud Infrastructure
 	GetOCRecommendations(w http.ResponseWriter, r *http.Request)
-
-	// GetOCRecommendations get recommendations from Oracle Cloud Infracstructure
+	// GetOCRecommendationsWithCategory get recommendations related to category from Oracle Cloud Infrastructure
 	GetOCRecommendationsWithCategory(w http.ResponseWriter, r *http.Request)
-
-	//AuthenticateMiddleware(h http.Handler) http.Handler
 }
 
-// ThunderController is the struct used to handle the requests from agents and contains the concrete implementation of AlertQueueControllerInterface
+// ThunderController is the struct used to handle the requests from agents and contains the concrete implementation of ThunderControllerInterface
 type ThunderController struct {
-	// Config contains the dataservice global configuration
-	Config config.Configuration
-	// Service contains the underlying service used to perform various logical and store operations
+	Config  config.Configuration
 	Service service.ThunderServiceInterface
-	// TimeNow contains a function that return the current time
 	TimeNow func() time.Time
-	// Log contains logger formatted
-	Log logger.Logger
+	Log     logger.Logger
 }

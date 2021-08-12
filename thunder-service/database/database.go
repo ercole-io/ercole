@@ -30,14 +30,6 @@ import (
 type MongoDatabaseInterface interface {
 	// Init initializes the connection to the database
 	Init()
-	// FindHostData find a host data
-	//FindHostData(id primitive.ObjectID) (model.HostDataBE, error)
-	// FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
-	//FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostDataBE, error)
-	// InsertAlert inserr the alert in the database
-	//InsertAlert(alert model.Alert) (*mongo.InsertOneResult, error)
-	// ExistNoDataAlertByHost return true if the host has associated a new NO_DATA alert
-	//ExistNoDataAlertByHost(hostname string) (bool, error)
 }
 
 // MongoDatabase is a implementation

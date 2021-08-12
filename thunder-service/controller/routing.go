@@ -18,18 +18,16 @@ package controller
 import (
 	"net/http"
 
-	//	"github.com/goji/httpauth"
 	"github.com/gorilla/mux"
 )
 
 // SetupRoutesForThunderController setup the routes of the router using the handler in the controller as http handler
 func SetupRoutesForThunderController(router *mux.Router, ctrl ThunderControllerInterface) {
 	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("ABPong"))
+		w.Write([]byte("Pong"))
 	})
 
 	router = router.NewRoute().Subrouter()
-	//	router.Use(ctrl.AuthenticateMiddleware())
 
 	setupProtectedRoutes(router, ctrl)
 }

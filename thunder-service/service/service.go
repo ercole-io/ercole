@@ -27,50 +27,20 @@ import (
 	"github.com/ercole-io/ercole/v2/config"
 )
 
-// ThunderServiceInterface is a interface that wrap methods used to insert and process alert messages
 type ThunderServiceInterface interface {
-	// Init initializes the service
-	//Init(ctx context.Context, wg *sync.WaitGroup)
 	Init()
-	//GetOCRecommendations get recommendation from Oracle Cloud
 	GetOCRecommendations(compartmentId string) ([]model.Recommendation, error)
-	//GetOCRecommendations get recommendation from Oracle Cloud
 	GetOCRecommendationsWithCategory(compartmentId string) ([]model.RecommendationWithCategory, error)
-
-	// ProcessMsg processes the message msg
-	//ProcessMsg(msg hub.Message)
-	//ThrowNewAlert(alert model.Alert) error
-	// ThrowNewDatabaseAlert create and insert in the database a new NEW_DATABASE alert
-	//ThrowNewDatabaseAlert(dbname string, hostname string) error
-	// ThrowNewServerAlert create and insert in the database a new NEW_SERVER alert
-	//ThrowNewServerAlert(hostname string) error
-	// ThrowNewEnterpriseLicenseAlert create and insert in the database a new NEW_DATABASE alert
-	//ThrowNewEnterpriseLicenseAlert(hostname string) error
-	// ThrowActivatedFeaturesAlert create and insert in the database a new NEW_OPTION alert
-	//ThrowActivatedFeaturesAlert(dbname string, hostname string, activatedFeatures []string) error
-	// ThrowNoDataAlert create and insert in the database a new NO_DATA alert
-	//ThrowNoDataAlert(hostname string, freshnessThreshold int) error
 }
 
-// AlertService is the concrete implementation of HostDataServiceInterface. It saves data to a MongoDB database
 type ThunderService struct {
-	// Config contains the dataservice global configuration
-	Config config.Configuration
-	// Queue that contains all messages to be processed
-	//Queue *hub.Hub
-	// Database contains the database layer
+	Config   config.Configuration
 	Database database.MongoDatabaseInterface
-	// TimeNow contains a function that return the current time
-	TimeNow func() time.Time
-	// Log contains logger formatted
-	Log logger.Logger
-	// Emailer contains the emailer layer
-	//Emailer emailer.Emailer
-	// Random contains the generator used to generate colors
-	Random *rand.Rand
+	TimeNow  func() time.Time
+	Log      logger.Logger
+	Random   *rand.Rand
 }
 
-// Init initializes the service and database
 func (as *ThunderService) Init() {
 	as.Random = rand.New(rand.NewSource(as.TimeNow().UnixNano()))
 }
