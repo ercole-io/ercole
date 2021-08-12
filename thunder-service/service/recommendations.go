@@ -27,18 +27,14 @@ import (
 	"github.com/oracle/oci-go-sdk/v45/optimizer"
 )
 
-// 0 high-availability-name high-availability-desc 0 ocid1.optimizercategory.oc1..aaaaaaaa34bnli7iarbwzpaz6abuup2egv2hcdyiixzellvxplhmceqvzula
-// 1 performance-name performance-desc 0 ocid1.optimizercategory.oc1..aaaaaaaazihon4oggqfjsut576fsd45cm2d6g7g6qr2n3nxlpljsp7j33n4q
-// 2 cost-management-name cost-management-desc 25.92 ocid1.optimizercategory.oc1..aaaaaaaaqeiskhuyp4pr7tohuooyujgyjmcq6cibc3btq6na62ev4ytz7ppa
-
 func (as *ThunderService) GetOCRecommendations(compartmentId string) ([]model.Recommendation, error) {
 
-	return GetOCListRecommendations("ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q")
+	return GetOCListRecommendations(compartmentId)
 }
 
 func (as *ThunderService) GetOCRecommendationsWithCategory(compartmentId string) ([]model.RecommendationWithCategory, error) {
 
-	return GetOCListRecommendationsWithCategory("ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q")
+	return GetOCListRecommendationsWithCategory(compartmentId)
 }
 
 func GetOCListRecommendations(compartmentId string) ([]model.Recommendation, error) {
@@ -51,7 +47,6 @@ func GetOCListRecommendations(compartmentId string) ([]model.Recommendation, err
 	if err != nil {
 		return nil, err
 	} else {
-		// Create a request and dependent object(s).
 		req := optimizer.ListRecommendationsRequest{
 			CompartmentId:          &compartmentId,
 			CategoryId:             common.String("ocid1.optimizercategory.oc1..aaaaaaaaqeiskhuyp4pr7tohuooyujgyjmcq6cibc3btq6na62ev4ytz7ppa"),
@@ -59,7 +54,6 @@ func GetOCListRecommendations(compartmentId string) ([]model.Recommendation, err
 			Limit:                  common.Int(964),
 		}
 
-		// Send the request using the service client
 		resp, err := client.ListRecommendations(context.Background(), req)
 		helpers.FatalIfError(err)
 		if err != nil {
@@ -69,7 +63,6 @@ func GetOCListRecommendations(compartmentId string) ([]model.Recommendation, err
 			var recTmp model.Recommendation
 			var listRec []model.Recommendation
 
-			// Retrieve value from the response.
 			for i, s := range resp.Items {
 				fmt.Println(i, *s.Name, *s.EstimatedCostSaving, s.Status, s.Importance, *s.Id)
 				for j, p := range s.ResourceCounts {
@@ -98,7 +91,6 @@ func GetOCListRecommendationsWithCategory(compartmentId string) ([]model.Recomme
 		return nil, err
 	} else {
 		var listRecWithCat []model.RecommendationWithCategory
-		// Retrieve Recommendation Categories
 		listCategory, err := GetOCListCategories(compartmentId)
 
 		if err != nil {
@@ -106,14 +98,12 @@ func GetOCListRecommendationsWithCategory(compartmentId string) ([]model.Recomme
 		} else {
 
 			for _, q := range listCategory {
-				// Create a request and dependent object(s).
 				req := optimizer.ListRecommendationsRequest{
 					CompartmentId:          &compartmentId,
 					CategoryId:             &q.CategoryId,
 					CompartmentIdInSubtree: common.Bool(true),
 				}
 
-				// Send the request using the service client
 				resp, err := client.ListRecommendations(context.Background(), req)
 				helpers.FatalIfError(err)
 				if err != nil {
@@ -124,11 +114,8 @@ func GetOCListRecommendationsWithCategory(compartmentId string) ([]model.Recomme
 					var recWithCatTmp model.RecommendationWithCategory
 					var listRec []model.Recommendation
 
-					// Retrieve value from the response.
 					for _, s := range resp.Items {
-						//fmt.Println(i, *s.Name, *s.EstimatedCostSaving, s.Status, s.Importance, *s.Id)
 						for _, p := range s.ResourceCounts {
-							//fmt.Println(j, *p.Count, p.Status)
 							if p.Status == "PENDING" {
 								cnt = *p.Count
 							}
@@ -154,13 +141,11 @@ func GetOCListCategories(compartmentId string) ([]model.Category, error) {
 	client, err := optimizer.NewOptimizerClientWithConfigurationProvider(common.DefaultConfigProvider())
 	helpers.FatalIfError(err)
 
-	// Create a request and dependent object(s).
 	req := optimizer.ListCategoriesRequest{
 		CompartmentId:          &compartmentId,
 		CompartmentIdInSubtree: common.Bool(true),
 	}
 
-	// Send the request using the service client
 	resp, err := client.ListCategories(context.Background(), req)
 	helpers.FatalIfError(err)
 
@@ -170,7 +155,6 @@ func GetOCListCategories(compartmentId string) ([]model.Category, error) {
 		var catTmp model.Category
 		var listCategory []model.Category
 
-		// Retrieve value from the response.
 		for _, s := range resp.Items {
 			catTmp = model.Category{*s.Name, *s.Id}
 			listCategory = append(listCategory, catTmp)

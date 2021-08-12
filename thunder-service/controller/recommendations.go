@@ -26,9 +26,7 @@ import (
 //GetOCRecommendations get recommendation from Oracle Cloud
 func (ctrl *ThunderController) GetOCRecommendations(w http.ResponseWriter, r *http.Request) {
 
-	// da recuprare come parametro dalla request
-	compartmentId := "ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q"
-	data, err := ctrl.Service.GetOCRecommendations(compartmentId)
+	data, err := ctrl.Service.GetOCRecommendations("ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q")
 
 	if errors.Is(err, utils.ErrClusterNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
@@ -44,7 +42,6 @@ func (ctrl *ThunderController) GetOCRecommendations(w http.ResponseWriter, r *ht
 //GetOCRecommendations get recommendation with Category from Oracle Cloud
 func (ctrl *ThunderController) GetOCRecommendationsWithCategory(w http.ResponseWriter, r *http.Request) {
 
-	// compartmentId parameter has to be retrieved from configuration
 	data, err := ctrl.Service.GetOCRecommendationsWithCategory("ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q")
 
 	if errors.Is(err, utils.ErrClusterNotFound) {
