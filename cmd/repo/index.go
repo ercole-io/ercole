@@ -38,20 +38,20 @@ import (
 
 // Index is the index of all artifact in a repository
 type Index struct {
-	log              logger.Logger
-	artifacts        []*ArtifactInfo
-	distributedFiles string
+	config    config.Configuration
+	log       logger.Logger
+	artifacts []*ArtifactInfo
 }
 
 func readOrUpdateIndex(log logger.Logger) Index {
 	index := Index{
-		log:              log,
-		distributedFiles: ercoleConfig.RepoService.DistributedFiles,
+		config: *ercoleConfig,
+		log:    log,
 	}
 
 	log.Debug("Trying to read index.json...")
 
-	indexFile, err := os.Stat(filepath.Join(index.distributedFiles, "index.json"))
+	indexFile, err := os.Stat(filepath.Join(index.distributedFiles(), "index.json"))
 	if err != nil && !os.IsNotExist(err) {
 		log.Fatal(err)
 	}
@@ -61,16 +61,17 @@ func readOrUpdateIndex(log logger.Logger) Index {
 		index.getArtifactsFromUpstreamRepositories()
 
 		index.log.Debug("Writing the index...")
-		index.saveArtifactsToFile()
 
 	} else {
 		log.Debug("Read index.json...")
-		if index.artifacts, err = readArtifactsFromFile(index.distributedFiles); err != nil {
+		if index.artifacts, err = readArtifactsFromFile(index.distributedFiles()); err != nil {
 			log.Fatalf("Can't read artifacts from file: %s", err)
 		}
 	}
 
 	index.checkInstalledArtifacts()
+
+	index.saveArtifactsToFile()
 
 	index.getArtifactsNotIndexed()
 
@@ -79,8 +80,12 @@ func readOrUpdateIndex(log logger.Logger) Index {
 	return index
 }
 
+func (idx *Index) distributedFiles() string {
+	return idx.config.RepoService.DistributedFiles
+}
+
 func (idx *Index) getArtifactsFromUpstreamRepositories() {
-	for _, repo := range ercoleConfig.RepoService.UpstreamRepositories {
+	for _, repo := range idx.config.RepoService.UpstreamRepositories {
 		var err error
 
 		switch repo.Type {
@@ -137,9 +142,9 @@ func (idx *Index) getArtifactsFromGithub(upstreamRepo config.UpstreamRepository)
 			artifactInfo.Filename = asset.GetName()
 			artifactInfo.Version = release.GetTagName()
 			artifactInfo.ReleaseDate = asset.GetUpdatedAt().Format("2006-01-02")
-			artifactInfo.UpstreamType = "github-release"
-			artifactInfo.UpstreamInfo = map[string]interface{}{
-				"DownloadUrl": asset.GetBrowserDownloadURL(),
+			artifactInfo.UpstreamRepository = upstreamRepository{
+				Type:        UpstreamTypeGitHub,
+				DownloadUrl: asset.GetBrowserDownloadURL(),
 			}
 
 			if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
@@ -173,9 +178,9 @@ func (idx *Index) getArtifactsFromDirectory(upstreamRepo config.UpstreamReposito
 		artifactInfo.Repository = upstreamRepo.Name
 		artifactInfo.Filename = filepath.Base(file.Name())
 		artifactInfo.ReleaseDate = file.ModTime().Format("2006-01-02")
-		artifactInfo.UpstreamType = UpstreamTypeDirectory
-		artifactInfo.UpstreamInfo = map[string]interface{}{
-			"Filename": filepath.Join(upstreamRepo.URL, file.Name()),
+		artifactInfo.UpstreamRepository = upstreamRepository{
+			Type:     UpstreamTypeDirectory,
+			Filename: filepath.Join(upstreamRepo.URL, file.Name()),
 		}
 
 		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
@@ -230,9 +235,9 @@ func (idx *Index) getArtifactsFromErcoleReposervice(upstreamRepo config.Upstream
 		artifactInfo.Repository = upstreamRepo.Name
 		artifactInfo.Filename = file
 		artifactInfo.ReleaseDate = "????-??-??"
-		artifactInfo.UpstreamType = UpstreamTypeErcoleRepo
-		artifactInfo.UpstreamInfo = map[string]interface{}{
-			"DownloadUrl": upstreamRepo.URL + "/all/" + file,
+		artifactInfo.UpstreamRepository = upstreamRepository{
+			Type:        UpstreamTypeErcoleRepo,
+			DownloadUrl: upstreamRepo.URL + "/all/" + file,
 		}
 
 		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
@@ -254,7 +259,7 @@ func (idx *Index) getArtifactsFromErcoleReposervice(upstreamRepo config.Upstream
 
 // getArtifactsNotIndexed scan filesystem for installed artifacts not in index
 func (idx *Index) getArtifactsNotIndexed() {
-	filesNotIndexed := getFilesNotIndexed(idx.log, idx.artifacts, idx.distributedFiles)
+	filesNotIndexed := getFilesNotIndexed(idx.log, idx.artifacts, idx.distributedFiles())
 
 	artifactsNotIndexed := make([]*ArtifactInfo, 0)
 
@@ -275,7 +280,9 @@ func (idx *Index) getArtifactsNotIndexed() {
 		artifactInfo.Repository = UpstreamTypeLocal
 		artifactInfo.Installed = true
 		artifactInfo.ReleaseDate = file.ModTime().Format("2006-01-02")
-		artifactInfo.UpstreamType = UpstreamTypeLocal
+		artifactInfo.UpstreamRepository = upstreamRepository{
+			Type: UpstreamTypeLocal,
+		}
 
 		artifactsNotIndexed = append(artifactsNotIndexed, artifactInfo)
 	}
@@ -507,12 +514,12 @@ func readArtifactsFromFile(distributedFiles string) ([]*ArtifactInfo, error) {
 
 func (idx *Index) checkInstalledArtifacts() {
 	for _, art := range idx.artifacts {
-		art.Installed = art.IsInstalled(idx.distributedFiles)
+		art.checkIsInstalled(idx.distributedFiles())
 	}
 }
 
 func (idx *Index) saveArtifactsToFile() {
-	file, err := os.Create(filepath.Join(idx.distributedFiles, "index.json"))
+	file, err := os.Create(filepath.Join(idx.distributedFiles(), "index.json"))
 	if err != nil {
 		log.Fatalf("Can't create index.json file: %s", err)
 	}
@@ -526,31 +533,31 @@ func (idx *Index) saveArtifactsToFile() {
 
 func (idx *Index) Install(artifact *ArtifactInfo) {
 	idx.log.Debugf("Creating the directories (if missing) %s, %s\n",
-		artifact.DirectoryPath(idx.distributedFiles),
-		filepath.Join(idx.distributedFiles, "all"),
+		artifact.DirectoryPath(idx.distributedFiles()),
+		filepath.Join(idx.distributedFiles(), "all"),
 	)
 
-	if err := os.MkdirAll(artifact.DirectoryPath(idx.distributedFiles), 0755); err != nil {
+	if err := os.MkdirAll(artifact.DirectoryPath(idx.distributedFiles()), 0755); err != nil {
 		idx.log.Fatal(err)
 	}
 
-	if err := os.MkdirAll(filepath.Join(idx.distributedFiles, "all"), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Join(idx.distributedFiles(), "all"), 0755); err != nil {
 		idx.log.Fatal(err)
 	}
 
-	idx.log.Debugf("Downloading the artifact %s to %s\n", artifact.Filename, artifact.FilePath(idx.distributedFiles))
+	idx.log.Debugf("Downloading the artifact %s to %s\n", artifact.Filename, artifact.FilePath(idx.distributedFiles()))
 	if err := idx.Download(artifact); err != nil {
 		log.Fatalf("Unable to download artifact: %s", err)
 	}
 
-	idx.log.Debugf("Linking the artifact to %s\n", filepath.Join(idx.distributedFiles, "all", artifact.Filename))
-	if err := os.Link(artifact.FilePath(idx.distributedFiles), filepath.Join(idx.distributedFiles, "all", artifact.Filename)); err != nil {
+	idx.log.Debugf("Linking the artifact to %s\n", filepath.Join(idx.distributedFiles(), "all", artifact.Filename))
+	if err := os.Link(artifact.FilePath(idx.distributedFiles()), filepath.Join(idx.distributedFiles(), "all", artifact.Filename)); err != nil {
 		log.Fatalf("Unable to link artifact to \"all\" folder: %s", err)
 	}
 
 	if strings.HasSuffix(artifact.Filename, ".rpm") {
-		idx.log.Debugf("Executing createrepo %s\n", artifact.DirectoryPath(idx.distributedFiles))
-		cmd := exec.Command("createrepo", artifact.DirectoryPath(idx.distributedFiles))
+		idx.log.Debugf("Executing createrepo %s\n", artifact.DirectoryPath(idx.distributedFiles()))
+		cmd := exec.Command("createrepo", artifact.DirectoryPath(idx.distributedFiles()))
 
 		if verbose {
 			cmd.Stdout = os.Stdout
@@ -566,14 +573,14 @@ func (idx *Index) Install(artifact *ArtifactInfo) {
 }
 
 func (idx *Index) Remove(artifact *ArtifactInfo) {
-	idx.log.Debugf("Removing the file %s\n", filepath.Join(idx.distributedFiles, "all", artifact.Filename))
+	idx.log.Debugf("Removing the file %s\n", filepath.Join(idx.distributedFiles(), "all", artifact.Filename))
 
-	allArtifactsPath := filepath.Join(idx.distributedFiles, "all", artifact.Filename)
+	allArtifactsPath := filepath.Join(idx.distributedFiles(), "all", artifact.Filename)
 	if err := os.Remove(allArtifactsPath); err != nil {
 		idx.log.Fatalf("Can't remove %s from %s: %s", artifact.Filename, allArtifactsPath, err)
 	}
 
-	artifactPath := artifact.FilePath(idx.distributedFiles)
+	artifactPath := artifact.FilePath(idx.distributedFiles())
 	idx.log.Debugf("Removing the file %s\n", artifactPath)
 
 	if err := os.Remove(artifactPath); err != nil {
@@ -582,8 +589,8 @@ func (idx *Index) Remove(artifact *ArtifactInfo) {
 	}
 
 	if strings.HasSuffix(artifact.Filename, ".rpm") {
-		idx.log.Debugf("Executing createrepo %s\n", artifact.DirectoryPath(idx.distributedFiles))
-		cmd := exec.Command("createrepo", artifact.DirectoryPath(idx.distributedFiles)) //TODO Refactor
+		idx.log.Debugf("Executing createrepo %s\n", artifact.DirectoryPath(idx.distributedFiles()))
+		cmd := exec.Command("createrepo", artifact.DirectoryPath(idx.distributedFiles())) //TODO Refactor
 		if verbose {
 			cmd.Stdout = os.Stdout
 		}
@@ -598,19 +605,19 @@ func (idx *Index) Remove(artifact *ArtifactInfo) {
 }
 
 func (idx *Index) Download(artifact *ArtifactInfo) error {
-	dest := artifact.FilePath(idx.distributedFiles)
+	dest := artifact.FilePath(idx.distributedFiles())
 
-	switch artifact.UpstreamType {
+	switch artifact.UpstreamRepository.Type {
 	case UpstreamTypeGitHub:
-		if err := utils.DownloadFile(dest, artifact.UpstreamInfo["DownloadUrl"].(string)); err != nil {
+		if err := utils.DownloadFile(dest, artifact.UpstreamRepository.DownloadUrl); err != nil {
 			return err
 		}
 
 	case UpstreamTypeDirectory:
 		if verbose {
-			fmt.Printf("Copying file from %s to %s\n", artifact.UpstreamInfo["Filename"].(string), dest)
+			fmt.Printf("Copying file from %s to %s\n", artifact.UpstreamRepository.Filename, dest)
 		}
-		err := yos.CopyFile(artifact.UpstreamInfo["Filename"].(string), dest)
+		err := yos.CopyFile(artifact.UpstreamRepository.Filename, dest)
 		if err != nil {
 			panic(err)
 		}
@@ -620,7 +627,7 @@ func (idx *Index) Download(artifact *ArtifactInfo) error {
 		}
 
 	case UpstreamTypeErcoleRepo:
-		if err := utils.DownloadFile(dest, artifact.UpstreamInfo["DownloadUrl"].(string)); err != nil {
+		if err := utils.DownloadFile(dest, artifact.UpstreamRepository.DownloadUrl); err != nil {
 			return err
 		}
 
@@ -628,7 +635,7 @@ func (idx *Index) Download(artifact *ArtifactInfo) error {
 		fmt.Println("Nothing to do, artifact already installed")
 
 	default:
-		return fmt.Errorf("Unknown UpstreamType: %s", artifact.UpstreamType)
+		return fmt.Errorf("Unknown UpstreamType: %s", artifact.UpstreamRepository.Type)
 	}
 
 	return nil
