@@ -23,7 +23,7 @@ import (
 
 func TestSortArtifactInfo(t *testing.T) {
 	expected := Index{
-		artifacts: []*ArtifactInfo{
+		artifacts: []ArtifactInfo{
 			{},
 			{Repository: "ercole-agent", Installed: false, Version: "1.6.11", ReleaseDate: "2020-03-27", Filename: "ercole-agent-1.6.11-1.el6.x86_64.rpm", Name: "ercole-agent-rhel6", OperatingSystemFamily: "rhel", OperatingSystem: "rhel6", Arch: "x86_64", UpstreamRepository: upstreamRepository{DownloadUrl: "https://github.com/ercole-io/ercole/v2-agent/releases/download/1.6.11/ercole-agent-1.6.11-1.el6.x86_64.rpm"}},
 			{Repository: "ercole-agent", Installed: false, Version: "1.6.12", ReleaseDate: "2020-06-08", Filename: "ercole-agent-1.6.12-1.el6.x86_64.rpm", Name: "ercole-agent-rhel6", OperatingSystemFamily: "rhel", OperatingSystem: "rhel6", Arch: "x86_64", UpstreamRepository: upstreamRepository{DownloadUrl: "https://github.com/ercole-io/ercole/v2-agent/releases/download/1.6.12/ercole-agent-1.6.12-1.el6.x86_64.rpm"}},
@@ -49,7 +49,7 @@ func TestSortArtifactInfo(t *testing.T) {
 	}
 
 	actual := Index{
-		artifacts: []*ArtifactInfo{
+		artifacts: []ArtifactInfo{
 			{},
 			{Repository: "ercole-agent-aix", Installed: false, Version: "1.6.7", ReleaseDate: "2020-01-31", Filename: "ercole-agent-aix-1.6.7.tar.gz", Name: "ercole-agent-aix-targz", OperatingSystemFamily: "aix-tar-gz", OperatingSystem: "aix6.1", Arch: "noarch", UpstreamRepository: upstreamRepository{DownloadUrl: "https://github.com/ercole-io/ercole/v2-agent-aix/releases/download/1.6.7/ercole-agent-aix-1.6.7.tar.gz"}},
 			{Repository: "ercole-agent-aix", Installed: false, Version: "1.6.8", ReleaseDate: "2020-03-19", Filename: "ercole-agent-aix-1.6.8.tar.gz", Name: "ercole-agent-aix-targz", OperatingSystemFamily: "aix-tar-gz", OperatingSystem: "aix6.1", Arch: "noarch", UpstreamRepository: upstreamRepository{DownloadUrl: "https://github.com/ercole-io/ercole/v2-agent-aix/releases/download/1.6.8/ercole-agent-aix-1.6.8.tar.gz"}},

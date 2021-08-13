@@ -40,7 +40,7 @@ import (
 type Index struct {
 	config    config.Configuration
 	log       logger.Logger
-	artifacts []*ArtifactInfo
+	artifacts []ArtifactInfo
 }
 
 func readOrUpdateIndex(log logger.Logger) Index {
@@ -130,10 +130,10 @@ func (idx *Index) getArtifactsFromGithub(upstreamRepo config.UpstreamRepository)
 		return err
 	}
 
-	var artifacts []*ArtifactInfo
+	artifacts := make([]ArtifactInfo, 0)
 	for _, release := range releases {
 		for _, asset := range release.Assets {
-			artifactInfo := new(ArtifactInfo)
+			artifactInfo := ArtifactInfo{}
 
 			artifactInfo.Repository = upstreamRepo.Name
 			artifactInfo.Filename = asset.GetName()
@@ -168,9 +168,9 @@ func (idx *Index) getArtifactsFromDirectory(upstreamRepo config.UpstreamReposito
 		return err
 	}
 
-	var artifacts []*ArtifactInfo
+	artifacts := make([]ArtifactInfo, 0)
 	for _, file := range files {
-		artifactInfo := new(ArtifactInfo)
+		artifactInfo := ArtifactInfo{}
 
 		artifactInfo.Repository = upstreamRepo.Name
 		artifactInfo.Filename = filepath.Base(file.Name())
@@ -219,7 +219,7 @@ func (idx *Index) getArtifactsFromErcoleReposervice(upstreamRepo config.Upstream
 
 	regex := regexp.MustCompile(`<a href="([^"]*)">`)
 
-	var artifacts []*ArtifactInfo
+	artifacts := make([]ArtifactInfo, 0)
 	installedNames := make([]string, 0)
 
 	for _, fn := range regex.FindAllStringSubmatch(string(data), -1) {
@@ -227,7 +227,7 @@ func (idx *Index) getArtifactsFromErcoleReposervice(upstreamRepo config.Upstream
 	}
 
 	for _, file := range installedNames {
-		artifactInfo := new(ArtifactInfo)
+		artifactInfo := ArtifactInfo{}
 
 		artifactInfo.Repository = upstreamRepo.Name
 		artifactInfo.Filename = file
@@ -258,10 +258,10 @@ func (idx *Index) getArtifactsFromErcoleReposervice(upstreamRepo config.Upstream
 func (idx *Index) getLocalArtifacts() {
 	localFiles := getLocalFiles(idx.log, idx.artifacts, idx.distributedFiles())
 
-	localArtifacts := make([]*ArtifactInfo, 0)
+	localArtifacts := make([]ArtifactInfo, 0)
 
 	for _, file := range localFiles {
-		artifactInfo := new(ArtifactInfo)
+		artifactInfo := ArtifactInfo{}
 		artifactInfo.Filename = filepath.Base(file.Name())
 
 		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
@@ -287,7 +287,7 @@ func (idx *Index) getLocalArtifacts() {
 	idx.artifacts = append(idx.artifacts, localArtifacts...)
 }
 
-func getLocalFiles(log logger.Logger, index []*ArtifactInfo, distributedFiles string) []os.FileInfo {
+func getLocalFiles(log logger.Logger, index []ArtifactInfo, distributedFiles string) []os.FileInfo {
 	installedInIndex := make(map[string]bool)
 
 	allDirectory := filepath.Join(distributedFiles, "all")
@@ -368,7 +368,7 @@ func (idx *Index) searchArtifactByFilename(filename string) *ArtifactInfo {
 			idx.log.Fatalf("Two artifact have the same filename: %v and %v", foundArtifact, f)
 		}
 
-		foundArtifact = f
+		foundArtifact = &f
 	}
 
 	return foundArtifact
@@ -383,7 +383,7 @@ func (idx *Index) searchArtifactByName(name string) *ArtifactInfo {
 		}
 
 		if foundArtifact == nil {
-			foundArtifact = f
+			foundArtifact = &f
 			continue
 		}
 
@@ -397,7 +397,7 @@ func (idx *Index) searchArtifactByName(name string) *ArtifactInfo {
 			continue
 		}
 		if foundVersionIsLess {
-			foundArtifact = f
+			foundArtifact = &f
 		}
 	}
 
@@ -416,7 +416,7 @@ func (idx *Index) searchArtifactByNameAndVersion(name string, version string) *A
 			idx.log.Fatalf("Two artifact have the same filename: %v and %v", foundArtifact, f)
 		}
 
-		foundArtifact = f
+		foundArtifact = &f
 	}
 
 	return foundArtifact
@@ -441,7 +441,7 @@ func (idx *Index) searchArtifactByFullname(repository, name, version string) *Ar
 			idx.log.Fatalf("Two artifact have the same filename: %v and %v", foundArtifact, f)
 		}
 
-		foundArtifact = f
+		foundArtifact = &f
 	}
 
 	return foundArtifact
@@ -457,7 +457,7 @@ func (idx *Index) searchLatestArtifactByRepositoryAndName(repo string, name stri
 		}
 
 		if foundArtifact == nil {
-			foundArtifact = f
+			foundArtifact = &f
 			continue
 		}
 
@@ -467,7 +467,7 @@ func (idx *Index) searchLatestArtifactByRepositoryAndName(repo string, name stri
 			continue
 		}
 		if foundVersionIsLess {
-			foundArtifact = f
+			foundArtifact = &f
 		}
 	}
 
@@ -495,13 +495,13 @@ func (idx Index) sortArtifactsInfo() {
 	})
 }
 
-func readArtifactsFromFile(distributedFiles string) ([]*ArtifactInfo, error) {
+func readArtifactsFromFile(distributedFiles string) ([]ArtifactInfo, error) {
 	file, err := os.Open(filepath.Join(distributedFiles, "index.json"))
 	if err != nil {
 		return nil, err
 	}
 
-	var artifacts []*ArtifactInfo
+	var artifacts []ArtifactInfo
 	if err = json.NewDecoder(file).Decode(&artifacts); err != nil {
 		return nil, err
 	}
