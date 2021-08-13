@@ -27,7 +27,7 @@ import (
 // ArtifactInfo contains info about all files in repository
 type ArtifactInfo struct {
 	Repository            string
-	Installed             bool `json:"-"`
+	Installed             bool
 	Version               string
 	ReleaseDate           string
 	Filename              string
@@ -35,8 +35,15 @@ type ArtifactInfo struct {
 	OperatingSystemFamily string
 	OperatingSystem       string
 	Arch                  string
-	UpstreamType          string
-	UpstreamInfo          map[string]interface{}
+	UpstreamRepository    upstreamRepository
+	//TODO mod time
+	//TODO md5sum
+}
+
+type upstreamRepository struct {
+	Type        string
+	DownloadUrl string
+	Filename    string
 }
 
 //valid formats
@@ -62,13 +69,9 @@ var (
 )
 
 const (
-	// UpstreamTypeLocal repository upstream type
-	UpstreamTypeLocal = "local"
-	// UpstreamTypeDirectory repository upstream type
-	UpstreamTypeDirectory = "directory"
-	// UpstreamTypeGitHub repository upstream type
-	UpstreamTypeGitHub = "github-release"
-	// UpstreamTypeErcoleRepo repository upstream type
+	UpstreamTypeLocal      = "local"
+	UpstreamTypeDirectory  = "directory"
+	UpstreamTypeGitHub     = "github-release"
 	UpstreamTypeErcoleRepo = "ercole-reposervice"
 )
 
@@ -87,11 +90,11 @@ func (artifact *ArtifactInfo) FilePath(distributedFiles string) string {
 	return filepath.Join(artifact.DirectoryPath(distributedFiles), artifact.Filename)
 }
 
-// IsInstalled return true if file is detected in the distribution directory
-func (artifact *ArtifactInfo) IsInstalled(distributedFiles string) bool {
+// checkIsInstalled return true if file is detected in the distribution directory
+func (artifact *ArtifactInfo) checkIsInstalled(distributedFiles string) {
 	_, err := os.Stat(filepath.Join(distributedFiles, "all", artifact.Filename))
 
-	return !os.IsNotExist(err)
+	artifact.Installed = !os.IsNotExist(err)
 }
 
 // SetInfoFromFileName sets to fileInfo informations taken from filename

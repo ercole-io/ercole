@@ -47,7 +47,7 @@ func init() {
 				fmt.Println("Operating system:", f.OperatingSystem)
 				fmt.Println("Arch:", f.Arch)
 				fmt.Println("Installed:", f.Installed)
-				fmt.Println("UpstreamType:", f.UpstreamType)
+				fmt.Println("UpstreamRepository.Type:", f.UpstreamRepository.Type)
 
 				fmt.Println()
 			}
