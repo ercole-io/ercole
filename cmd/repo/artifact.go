@@ -29,21 +29,20 @@ type ArtifactInfo struct {
 	Repository            string
 	Installed             bool
 	Version               string
-	ReleaseDate           string
+	ReleaseDate           string //TODO modify in time
 	Filename              string
 	Name                  string
 	OperatingSystemFamily string
 	OperatingSystem       string
 	Arch                  string
 	UpstreamRepository    upstreamRepository
-	//TODO mod time
-	//TODO md5sum
+	//TODO Add md5sum
 }
 
 type upstreamRepository struct {
 	Type        string
 	DownloadUrl string
-	Filename    string
+	Filepath    string
 }
 
 //valid formats
