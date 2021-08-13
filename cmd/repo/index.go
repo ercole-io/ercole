@@ -70,11 +70,8 @@ func readOrUpdateIndex(log logger.Logger) Index {
 	}
 
 	index.checkInstalledArtifacts()
-
+	index.getLocalArtifacts()
 	index.saveArtifactsToFile()
-
-	index.getArtifactsNotIndexed()
-
 	index.sortArtifactsInfo()
 
 	return index
@@ -180,7 +177,7 @@ func (idx *Index) getArtifactsFromDirectory(upstreamRepo config.UpstreamReposito
 		artifactInfo.ReleaseDate = file.ModTime().Format("2006-01-02")
 		artifactInfo.UpstreamRepository = upstreamRepository{
 			Type:     UpstreamTypeDirectory,
-			Filename: filepath.Join(upstreamRepo.URL, file.Name()),
+			Filepath: filepath.Join(upstreamRepo.URL, file.Name()),
 		}
 
 		if err := artifactInfo.SetInfoFromFileName(artifactInfo.Filename); err != nil {
@@ -257,13 +254,13 @@ func (idx *Index) getArtifactsFromErcoleReposervice(upstreamRepo config.Upstream
 	return nil
 }
 
-// getArtifactsNotIndexed scan filesystem for installed artifacts not in index
-func (idx *Index) getArtifactsNotIndexed() {
-	filesNotIndexed := getFilesNotIndexed(idx.log, idx.artifacts, idx.distributedFiles())
+// getLocalArtifacts scan filesystem for installed artifacts not in index
+func (idx *Index) getLocalArtifacts() {
+	localFiles := getLocalFiles(idx.log, idx.artifacts, idx.distributedFiles())
 
-	artifactsNotIndexed := make([]*ArtifactInfo, 0)
+	localArtifacts := make([]*ArtifactInfo, 0)
 
-	for _, file := range filesNotIndexed {
+	for _, file := range localFiles {
 		artifactInfo := new(ArtifactInfo)
 		artifactInfo.Filename = filepath.Base(file.Name())
 
@@ -284,13 +281,13 @@ func (idx *Index) getArtifactsNotIndexed() {
 			Type: UpstreamTypeLocal,
 		}
 
-		artifactsNotIndexed = append(artifactsNotIndexed, artifactInfo)
+		localArtifacts = append(localArtifacts, artifactInfo)
 	}
 
-	idx.artifacts = append(idx.artifacts, artifactsNotIndexed...)
+	idx.artifacts = append(idx.artifacts, localArtifacts...)
 }
 
-func getFilesNotIndexed(log logger.Logger, index []*ArtifactInfo, distributedFiles string) []os.FileInfo {
+func getLocalFiles(log logger.Logger, index []*ArtifactInfo, distributedFiles string) []os.FileInfo {
 	installedInIndex := make(map[string]bool)
 
 	allDirectory := filepath.Join(distributedFiles, "all")
@@ -615,9 +612,9 @@ func (idx *Index) Download(artifact *ArtifactInfo) error {
 
 	case UpstreamTypeDirectory:
 		if verbose {
-			fmt.Printf("Copying file from %s to %s\n", artifact.UpstreamRepository.Filename, dest)
+			fmt.Printf("Copying file from %s to %s\n", artifact.UpstreamRepository.Filepath, dest)
 		}
-		err := yos.CopyFile(artifact.UpstreamRepository.Filename, dest)
+		err := yos.CopyFile(artifact.UpstreamRepository.Filepath, dest)
 		if err != nil {
 			panic(err)
 		}
