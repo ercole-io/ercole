@@ -171,6 +171,10 @@ func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseComplia
 		return nil, err
 	}
 
+	if len(licenses) == 0 {
+		return []dto.LicenseCompliance{}, nil
+	}
+	
 	perCluster := dto.LicenseCompliance{
 		LicenseTypeID:   "",
 		ItemDescription: "MySQL Enterprise per cluster",
