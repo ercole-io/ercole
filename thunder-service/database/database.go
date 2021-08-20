@@ -28,20 +28,15 @@ import (
 
 // MongoDatabaseInterface is a interface that wrap methods used to perform CRUD operations in the mongodb database
 type MongoDatabaseInterface interface {
-	// Init initializes the connection to the database
 	Init()
 }
 
 // MongoDatabase is a implementation
 type MongoDatabase struct {
-	// Config contains the dataservice global configuration
-	Config config.Configuration
-	// Client contain the mongodb client
-	Client *mongo.Client
-	// TimeNow contains a function that return the current time
+	Config  config.Configuration
+	Client  *mongo.Client
 	TimeNow func() time.Time
-	// Log contains logger formatted
-	Log logger.Logger
+	Log     logger.Logger
 }
 
 // Init initializes the connection to the database
