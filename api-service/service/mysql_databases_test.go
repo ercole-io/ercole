@@ -317,26 +317,7 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 			usedLicenses: []dto.MySQLUsedLicense{},
 			clusters:     []dto.Cluster{},
 			agreements:   []model.MySQLAgreement{},
-			expected: []dto.LicenseCompliance{
-				{
-					LicenseTypeID:   "",
-					ItemDescription: "MySQL Enterprise per host",
-					Metric:          "",
-					Consumed:        0,
-					Covered:         0,
-					Compliance:      1,
-					Unlimited:       false,
-				},
-				{
-					LicenseTypeID:   "",
-					ItemDescription: "MySQL Enterprise per cluster",
-					Metric:          "",
-					Consumed:        0,
-					Covered:         0,
-					Compliance:      1,
-					Unlimited:       false,
-				},
-			},
+			expected:     []dto.LicenseCompliance{},
 		},
 		{
 			usedLicenses: []dto.MySQLUsedLicense{
