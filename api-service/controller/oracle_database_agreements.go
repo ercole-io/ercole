@@ -90,6 +90,11 @@ func (ctrl *APIController) UpdateOracleDatabaseAgreement(w http.ResponseWriter, 
 		return
 	}
 
+	if req.Unlimited && !req.CatchAll {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewErrorf("Agreement is unlimited so it must be even CatchAll"))
+		return
+	}
+
 	agr, err := ctrl.Service.UpdateOracleDatabaseAgreement(req)
 	if errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) ||
 		errors.Is(err, utils.ErrOracleDatabaseLicenseTypeIDNotFound) {
