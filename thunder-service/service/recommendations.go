@@ -23,21 +23,10 @@ import (
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/oracle/oci-go-sdk/v45/common"
-	"github.com/oracle/oci-go-sdk/v45/example/helpers"
 	"github.com/oracle/oci-go-sdk/v45/optimizer"
 )
 
 func (as *ThunderService) GetOCRecommendations(compartmentId string) ([]model.Recommendation, error) {
-
-	return GetOCListRecommendations(compartmentId)
-}
-
-func (as *ThunderService) GetOCRecommendationsWithCategory(compartmentId string) ([]model.RecommendationWithCategory, error) {
-
-	return GetOCListRecommendationsWithCategory(compartmentId)
-}
-
-func GetOCListRecommendations(compartmentId string) ([]model.Recommendation, error) {
 	// Create a default authentication provider that uses the DEFAULT
 	// profile in the configuration file.
 	// Refer to <see href="https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#SDK_and_CLI_Configuration_File>the public documentation</see> on how to prepare a configuration file.
@@ -54,7 +43,6 @@ func GetOCListRecommendations(compartmentId string) ([]model.Recommendation, err
 		}
 
 		resp, err := client.ListRecommendations(context.Background(), req)
-		helpers.FatalIfError(err)
 		if err != nil {
 			return nil, err
 		} else {
@@ -62,10 +50,8 @@ func GetOCListRecommendations(compartmentId string) ([]model.Recommendation, err
 			var recTmp model.Recommendation
 			var listRec []model.Recommendation
 
-			for i, s := range resp.Items {
-				fmt.Println(i, *s.Name, *s.EstimatedCostSaving, s.Status, s.Importance, *s.Id)
-				for j, p := range s.ResourceCounts {
-					fmt.Println(j, *p.Count, p.Status)
+			for _, s := range resp.Items {
+				for _, p := range s.ResourceCounts {
 					if p.Status == "PENDING" {
 						cnt = *p.Count
 					}
@@ -79,7 +65,7 @@ func GetOCListRecommendations(compartmentId string) ([]model.Recommendation, err
 	}
 }
 
-func GetOCListRecommendationsWithCategory(compartmentId string) ([]model.RecommendationWithCategory, error) {
+func (as *ThunderService) GetOCRecommendationsWithCategory(compartmentId string) ([]model.RecommendationWithCategory, error) {
 	// Create a default authentication provider that uses the DEFAULT
 	// profile in the configuration file.
 	// Refer to <see href="https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#SDK_and_CLI_Configuration_File>the public documentation</see> on how to prepare a configuration file.
@@ -103,7 +89,6 @@ func GetOCListRecommendationsWithCategory(compartmentId string) ([]model.Recomme
 				}
 
 				resp, err := client.ListRecommendations(context.Background(), req)
-				helpers.FatalIfError(err)
 				if err != nil {
 					return nil, err
 				} else {
@@ -126,7 +111,6 @@ func GetOCListRecommendationsWithCategory(compartmentId string) ([]model.Recomme
 					listRecWithCat = append(listRecWithCat, recWithCatTmp)
 				}
 			}
-
 			return listRecWithCat, nil
 		}
 	}
@@ -137,26 +121,28 @@ func GetOCListCategories(compartmentId string) ([]model.Category, error) {
 	// profile in the configuration file.
 	// Refer to <see href="https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#SDK_and_CLI_Configuration_File>the public documentation</see> on how to prepare a configuration file.
 	client, err := optimizer.NewOptimizerClientWithConfigurationProvider(common.DefaultConfigProvider())
-	helpers.FatalIfError(err)
-
-	req := optimizer.ListCategoriesRequest{
-		CompartmentId:          &compartmentId,
-		CompartmentIdInSubtree: common.Bool(true),
-	}
-
-	resp, err := client.ListCategories(context.Background(), req)
-	helpers.FatalIfError(err)
 
 	if err != nil {
 		return nil, err
 	} else {
-		var catTmp model.Category
-		var listCategory []model.Category
-
-		for _, s := range resp.Items {
-			catTmp = model.Category{*s.Name, *s.Id}
-			listCategory = append(listCategory, catTmp)
+		req := optimizer.ListCategoriesRequest{
+			CompartmentId:          &compartmentId,
+			CompartmentIdInSubtree: common.Bool(true),
 		}
-		return listCategory, nil
+
+		resp, err := client.ListCategories(context.Background(), req)
+
+		if err != nil {
+			return nil, err
+		} else {
+			var catTmp model.Category
+			var listCategory []model.Category
+
+			for _, s := range resp.Items {
+				catTmp = model.Category{*s.Name, *s.Id}
+				listCategory = append(listCategory, catTmp)
+			}
+			return listCategory, nil
+		}
 	}
 }
