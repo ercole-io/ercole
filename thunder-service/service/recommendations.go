@@ -42,7 +42,6 @@ func GetOCListRecommendations(compartmentId string) ([]model.Recommendation, err
 	// profile in the configuration file.
 	// Refer to <see href="https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#SDK_and_CLI_Configuration_File>the public documentation</see> on how to prepare a configuration file.
 	client, err := optimizer.NewOptimizerClientWithConfigurationProvider(common.DefaultConfigProvider())
-	helpers.FatalIfError(err)
 
 	if err != nil {
 		return nil, err
@@ -85,7 +84,6 @@ func GetOCListRecommendationsWithCategory(compartmentId string) ([]model.Recomme
 	// profile in the configuration file.
 	// Refer to <see href="https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#SDK_and_CLI_Configuration_File>the public documentation</see> on how to prepare a configuration file.
 	client, err := optimizer.NewOptimizerClientWithConfigurationProvider(common.DefaultConfigProvider())
-	helpers.FatalIfError(err)
 
 	if err != nil {
 		return nil, err

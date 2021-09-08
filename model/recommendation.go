@@ -17,12 +17,12 @@ package model
 
 // Recommendation holds informations about a recommendation
 type Recommendation struct {
-	Name                string
-	NumPending          string
-	EstimatedCostSaving string
-	Status              string
-	Importance          string
-	RecommendationId    string
+	Name                string `json:"name"`
+	NumPending          string `json:"numPending"`
+	EstimatedCostSaving string `json:"estimatedCostSaving"`
+	Status              string `json:"status"`
+	Importance          string `json:"importance"`
+	RecommendationId    string `json:"recommendationId"`
 }
 
 type RecommendationWithCategory struct {
