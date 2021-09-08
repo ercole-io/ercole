@@ -34,35 +34,33 @@ func (as *ThunderService) GetOCRecommendations(compartmentId string) ([]model.Re
 
 	if err != nil {
 		return nil, err
-	} else {
-		req := optimizer.ListRecommendationsRequest{
-			CompartmentId:          &compartmentId,
-			CategoryId:             common.String("ocid1.optimizercategory.oc1..aaaaaaaaqeiskhuyp4pr7tohuooyujgyjmcq6cibc3btq6na62ev4ytz7ppa"),
-			CompartmentIdInSubtree: common.Bool(true),
-			Limit:                  common.Int(964),
-		}
-
-		resp, err := client.ListRecommendations(context.Background(), req)
-		if err != nil {
-			return nil, err
-		} else {
-			var cnt int
-			var recTmp model.Recommendation
-			var listRec []model.Recommendation
-
-			for _, s := range resp.Items {
-				for _, p := range s.ResourceCounts {
-					if p.Status == "PENDING" {
-						cnt = *p.Count
-					}
-					recTmp = model.Recommendation{*s.Name, strconv.Itoa(cnt), fmt.Sprintf("%.2f", *s.EstimatedCostSaving), fmt.Sprintf("%v", s.Status), fmt.Sprintf("%v", s.Importance), *s.Id}
-
-				}
-				listRec = append(listRec, recTmp)
-			}
-			return listRec, nil
-		}
 	}
+	req := optimizer.ListRecommendationsRequest{
+		CompartmentId:          &compartmentId,
+		CategoryId:             common.String("ocid1.optimizercategory.oc1..aaaaaaaaqeiskhuyp4pr7tohuooyujgyjmcq6cibc3btq6na62ev4ytz7ppa"),
+		CompartmentIdInSubtree: common.Bool(true),
+		Limit:                  common.Int(964),
+	}
+
+	resp, err := client.ListRecommendations(context.Background(), req)
+	if err != nil {
+		return nil, err
+	}
+	var cnt int
+	var recTmp model.Recommendation
+	var listRec []model.Recommendation
+
+	for _, s := range resp.Items {
+		for _, p := range s.ResourceCounts {
+			if p.Status == "PENDING" {
+				cnt = *p.Count
+			}
+			recTmp = model.Recommendation{*s.Name, strconv.Itoa(cnt), fmt.Sprintf("%.2f", *s.EstimatedCostSaving), fmt.Sprintf("%v", s.Status), fmt.Sprintf("%v", s.Importance), *s.Id}
+
+		}
+		listRec = append(listRec, recTmp)
+	}
+	return listRec, nil
 }
 
 func (as *ThunderService) GetOCRecommendationsWithCategory(compartmentId string) ([]model.RecommendationWithCategory, error) {
@@ -73,47 +71,44 @@ func (as *ThunderService) GetOCRecommendationsWithCategory(compartmentId string)
 
 	if err != nil {
 		return nil, err
-	} else {
-		var listRecWithCat []model.RecommendationWithCategory
-		listCategory, err := GetOCListCategories(compartmentId)
+	}
+	var listRecWithCat []model.RecommendationWithCategory
+	listCategory, err := GetOCListCategories(compartmentId)
 
+	if err != nil {
+		return nil, err
+	}
+	for _, q := range listCategory {
+		req := optimizer.ListRecommendationsRequest{
+			CompartmentId:          &compartmentId,
+			CategoryId:             &q.CategoryId,
+			CompartmentIdInSubtree: common.Bool(true),
+		}
+
+		resp, err := client.ListRecommendations(context.Background(), req)
 		if err != nil {
 			return nil, err
-		} else {
-
-			for _, q := range listCategory {
-				req := optimizer.ListRecommendationsRequest{
-					CompartmentId:          &compartmentId,
-					CategoryId:             &q.CategoryId,
-					CompartmentIdInSubtree: common.Bool(true),
-				}
-
-				resp, err := client.ListRecommendations(context.Background(), req)
-				if err != nil {
-					return nil, err
-				} else {
-					var cnt int
-					var recTmp model.Recommendation
-					var recWithCatTmp model.RecommendationWithCategory
-					var listRec []model.Recommendation
-
-					for _, s := range resp.Items {
-						for _, p := range s.ResourceCounts {
-							if p.Status == "PENDING" {
-								cnt = *p.Count
-							}
-							recTmp = model.Recommendation{*s.Name, strconv.Itoa(cnt), fmt.Sprintf("%.2f", *s.EstimatedCostSaving), fmt.Sprintf("%v", s.Status), fmt.Sprintf("%v", s.Importance), *s.Id}
-
-						}
-						listRec = append(listRec, recTmp)
-					}
-					recWithCatTmp = model.RecommendationWithCategory{q.Name, listRec}
-					listRecWithCat = append(listRecWithCat, recWithCatTmp)
-				}
-			}
-			return listRecWithCat, nil
 		}
+		var cnt int
+		var recTmp model.Recommendation
+		var recWithCatTmp model.RecommendationWithCategory
+		var listRec []model.Recommendation
+
+		for _, s := range resp.Items {
+			for _, p := range s.ResourceCounts {
+				if p.Status == "PENDING" {
+					cnt = *p.Count
+				}
+				recTmp = model.Recommendation{*s.Name, strconv.Itoa(cnt), fmt.Sprintf("%.2f", *s.EstimatedCostSaving), fmt.Sprintf("%v", s.Status), fmt.Sprintf("%v", s.Importance), *s.Id}
+
+			}
+			listRec = append(listRec, recTmp)
+		}
+		recWithCatTmp = model.RecommendationWithCategory{q.Name, listRec}
+		listRecWithCat = append(listRecWithCat, recWithCatTmp)
+
 	}
+	return listRecWithCat, nil
 }
 
 func GetOCListCategories(compartmentId string) ([]model.Category, error) {
@@ -124,25 +119,23 @@ func GetOCListCategories(compartmentId string) ([]model.Category, error) {
 
 	if err != nil {
 		return nil, err
-	} else {
-		req := optimizer.ListCategoriesRequest{
-			CompartmentId:          &compartmentId,
-			CompartmentIdInSubtree: common.Bool(true),
-		}
-
-		resp, err := client.ListCategories(context.Background(), req)
-
-		if err != nil {
-			return nil, err
-		} else {
-			var catTmp model.Category
-			var listCategory []model.Category
-
-			for _, s := range resp.Items {
-				catTmp = model.Category{*s.Name, *s.Id}
-				listCategory = append(listCategory, catTmp)
-			}
-			return listCategory, nil
-		}
 	}
+	req := optimizer.ListCategoriesRequest{
+		CompartmentId:          &compartmentId,
+		CompartmentIdInSubtree: common.Bool(true),
+	}
+
+	resp, err := client.ListCategories(context.Background(), req)
+
+	if err != nil {
+		return nil, err
+	}
+	var catTmp model.Category
+	var listCategory []model.Category
+
+	for _, s := range resp.Items {
+		catTmp = model.Category{*s.Name, *s.Id}
+		listCategory = append(listCategory, catTmp)
+	}
+	return listCategory, nil
 }
