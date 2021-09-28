@@ -18,10 +18,10 @@ package service
 import (
 	"errors"
 	"fmt"
-
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
+	"math"
 )
 
 // GetOracleDatabaseLicenseTypes return the list of OracleDatabaseLicenseType
@@ -117,7 +117,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 			consumedLicenses *= 25
 		}
 
-		license.Consumed += consumedLicenses
+		license.Consumed += math.Round(consumedLicenses)
 	}
 
 	// get coverage values from agreements
@@ -132,7 +132,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 			license.Unlimited = true
 		}
 
-		license.Covered += agreement.CoveredLicenses
+		license.Covered += math.Round(agreement.CoveredLicenses)
 	}
 
 	result := make([]dto.LicenseCompliance, 0, len(licenses))
