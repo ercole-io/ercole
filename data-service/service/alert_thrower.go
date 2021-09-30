@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -200,6 +201,7 @@ func (hds *HostDataService) throwAgentErrorsAlert(hostname string, errs []model.
 const dbNamesOtherInfo = "dbNames"
 
 func (hds *HostDataService) throwMissingDatabasesAlert(hostname string, dbNames []string, alertSeverity string) error {
+	sort.Strings(dbNames)
 	description := fmt.Sprintf("The databases %q on %q are missing compared to the previous hostdata",
 		strings.Join(dbNames, ", "), hostname)
 
