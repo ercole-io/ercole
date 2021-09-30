@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ercole-io/ercole/v2/model"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	"github.com/ercole-io/ercole/v2/model"
 )
 
 // ThrowNewDatabaseAlert create and insert in the database a new NEW_DATABASE alert
@@ -194,4 +195,27 @@ func (hds *HostDataService) throwAgentErrorsAlert(hostname string, errs []model.
 	}
 
 	return hds.AlertSvcClient.ThrowNewAlert(alert)
+}
+
+const dbNamesOtherInfo = "dbNames"
+
+func (hds *HostDataService) throwMissingDatabasesAlert(hostname string, dbNames []string, alertSeverity string) error {
+	description := fmt.Sprintf("The databases %q on %q are missing compared to the previous hostdata",
+		strings.Join(dbNames, ", "), hostname)
+
+	alr := model.Alert{
+		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+		AlertCategory:           model.AlertCategoryLicense,
+		AlertCode:               model.AlertCodeMissingDatabase,
+		AlertSeverity:           alertSeverity,
+		AlertStatus:             model.AlertStatusNew,
+		Date:                    hds.TimeNow(),
+		Description:             description,
+		OtherInfo: map[string]interface{}{
+			"hostname":       hostname,
+			dbNamesOtherInfo: dbNames,
+		},
+	}
+
+	return hds.AlertSvcClient.ThrowNewAlert(alr)
 }

@@ -64,6 +64,7 @@ const (
 	AlertCodeNewLicense        string = "NEW_LICENSE"
 	AlertCodeNewOption         string = "NEW_OPTION"
 	AlertCodeIncreasedCPUCores string = "INCREASED_CPU_CORES"
+	AlertCodeMissingDatabase   string = "MISSING_DATABASE"
 )
 
 func getAlertCodes() []string {

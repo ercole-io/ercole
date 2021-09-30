@@ -20,14 +20,16 @@ import (
 	reflect "reflect"
 	"sort"
 	"testing"
+	"time"
 
+	gomock "github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+
+	dto "github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	gomock "github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 type alertSimilarTo struct{ al model.Alert }
@@ -301,7 +303,7 @@ func TestCheckNewLicenses_SuccessNoDifferences(t *testing.T) {
 		Log: logger.NewLogger("TEST"),
 	}
 
-	require.NoError(t, hds.checkNewLicenses(&hostData2, &hostData1, licenseTypes))
+	hds.checkNewLicenses(&hostData2, &hostData1, licenseTypes)
 }
 
 func TestCheckNewLicenses_SuccessNewDatabase(t *testing.T) {
@@ -329,7 +331,7 @@ func TestCheckNewLicenses_SuccessNewDatabase(t *testing.T) {
 			},
 		}}).Return(nil)
 
-	require.NoError(t, hds.checkNewLicenses(&hostData1, &hostData3, licenseTypes))
+	hds.checkNewLicenses(&hostData1, &hostData3, licenseTypes)
 }
 
 func TestCheckNewLicenses_ThrowNewLicenseAndNewOption(t *testing.T) {
@@ -368,7 +370,7 @@ func TestCheckNewLicenses_ThrowNewLicenseAndNewOption(t *testing.T) {
 		},
 	}}).Return(nil)
 
-	require.NoError(t, hds.checkNewLicenses(&hostData3, &hostData4, licenseTypes))
+	hds.checkNewLicenses(&hostData3, &hostData4, licenseTypes)
 }
 
 func TestCheckNewLicenses_ThrowNewLicenseAndNewOptionAlreadyEnabled(t *testing.T) {
@@ -416,7 +418,7 @@ func TestCheckNewLicenses_ThrowNewLicenseAndNewOptionAlreadyEnabled(t *testing.T
 			OtherInfo:               map[string]interface{}{"hostname": "superhost1", "dbname": "acd-two", "licenseTypeID": "Oracle ENT"},
 		}}).Return(nil)
 
-	require.NoError(t, hds.checkNewLicenses(&hostData4, &hostData5, licenseTypes))
+	hds.checkNewLicenses(&hostData4, &hostData5, licenseTypes)
 }
 
 func TestCheckNewLicenses_CantThrowNewAlert(t *testing.T) {
@@ -445,7 +447,7 @@ func TestCheckNewLicenses_CantThrowNewAlert(t *testing.T) {
 		}}).Return(aerrMock)
 
 		//TODO Add check that error has been logged
-		require.NoError(t, hds.checkNewLicenses(&hostData1, &hostData3, licenseTypes))
+		hds.checkNewLicenses(&hostData1, &hostData3, licenseTypes)
 	})
 
 	t.Run("Fail throwNewLicenseAlert", func(t *testing.T) {
@@ -471,7 +473,7 @@ func TestCheckNewLicenses_CantThrowNewAlert(t *testing.T) {
 		}}).Return(nil)
 
 		//TODO Add check that error has been logged
-		require.NoError(t, hds.checkNewLicenses(&hostData3, &hostData4, licenseTypes))
+		hds.checkNewLicenses(&hostData3, &hostData4, licenseTypes)
 	})
 
 	t.Run("Fail throwActivatedFeaturesAlert", func(t *testing.T) {
@@ -497,7 +499,7 @@ func TestCheckNewLicenses_CantThrowNewAlert(t *testing.T) {
 		}}).Return(aerrMock)
 
 		//TODO Add check that error has been logged
-		require.NoError(t, hds.checkNewLicenses(&hostData3, &hostData4, licenseTypes))
+		hds.checkNewLicenses(&hostData3, &hostData4, licenseTypes)
 	})
 }
 
@@ -516,7 +518,7 @@ func TestCheckNewLicenses_ErrOracleDatabaseLicenseTypeIDNotFound(t *testing.T) {
 	}
 
 	//TODO Add check that error has been logged
-	require.NoError(t, hds.checkNewLicenses(&hostData3, &hostData4, []model.OracleDatabaseLicenseType{}))
+	hds.checkNewLicenses(&hostData3, &hostData4, []model.OracleDatabaseLicenseType{})
 }
 
 func TestLicenseTypesSorter(t *testing.T) {
@@ -635,4 +637,287 @@ func TestLicenseTypesSorter(t *testing.T) {
 
 		assert.Equal(t, tc.licenseTypes, tc.expected)
 	}
+}
+
+func TestCheckMissingDatabases_NoneMissing(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	alertsc := NewMockAlertSvcClientInterface(mockCtrl)
+	apisc := NewMockApiSvcClientInterface(mockCtrl)
+	hds := HostDataService{
+		Config:         config.Configuration{},
+		ServerVersion:  "",
+		Database:       db,
+		AlertSvcClient: alertsc,
+		ApiSvcClient:   apisc,
+		TimeNow:        utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:            logger.NewLogger("TEST"),
+	}
+
+	f := dto.AlertsFilter{
+		AlertCategory:           utils.Str2ptr(model.AlertCategoryLicense),
+		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+		AlertCode:               utils.Str2ptr(model.AlertCodeMissingDatabase),
+		AlertStatus:             utils.Str2ptr(model.AlertStatusNew),
+		OtherInfo: map[string]interface{}{
+			"hostname": "superhost1",
+		},
+	}
+	apisc.EXPECT().GetAlertsByFilter(f)
+
+	hds.checkMissingDatabases(&hostData3, &hostData4)
+}
+
+func TestCheckMissingDatabases_OneMissing(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	alertsc := NewMockAlertSvcClientInterface(mockCtrl)
+	apisc := NewMockApiSvcClientInterface(mockCtrl)
+	hds := HostDataService{
+		Config:         config.Configuration{},
+		ServerVersion:  "",
+		Database:       db,
+		AlertSvcClient: alertsc,
+		ApiSvcClient:   apisc,
+		TimeNow:        utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:            logger.NewLogger("TEST"),
+	}
+
+	f := dto.AlertsFilter{
+		AlertCategory:           utils.Str2ptr(model.AlertCategoryLicense),
+		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+		AlertCode:               utils.Str2ptr(model.AlertCodeMissingDatabase),
+		AlertStatus:             utils.Str2ptr(model.AlertStatusNew),
+		OtherInfo: map[string]interface{}{
+			"hostname": "superhost1",
+		},
+	}
+	apisc.EXPECT().GetAlertsByFilter(f)
+
+	alertsc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(actualAlert model.Alert) {
+		expectedAlert := model.Alert{
+			AlertCategory:           model.AlertCategoryLicense,
+			AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+			AlertCode:               model.AlertCodeMissingDatabase,
+			AlertSeverity:           model.AlertSeverityWarning,
+			AlertStatus:             model.AlertStatusNew,
+			Description:             "The databases \"second\" on \"superhost1\" are missing compared to the previous hostdata",
+			Date:                    utils.P("2019-11-05T16:02:03Z"),
+			OtherInfo: map[string]interface{}{
+				"hostname": "superhost1",
+				"dbNames":  []string{"second"},
+			},
+		}
+
+		assert.Equal(t, expectedAlert, actualAlert)
+	})
+
+	hdPrevious := model.HostDataBE{
+		ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
+		Hostname:  "superhost1",
+		Archived:  true,
+		CreatedAt: utils.P("2019-11-05T16:02:03Z"),
+		Features: model.Features{
+			Oracle: &model.OracleFeature{
+				Database: &model.OracleDatabaseFeature{
+					UnlistedRunningDatabases: []string{},
+					Databases: []model.OracleDatabase{
+						{
+							Name:     "first",
+							Licenses: []model.OracleDatabaseLicense{},
+						},
+						{
+							Name:     "second",
+							Licenses: []model.OracleDatabaseLicense{},
+						},
+					},
+				},
+			},
+		},
+		Info: model.Host{
+			CPUCores: 2,
+		},
+	}
+
+	hdNew := model.HostDataBE{
+		ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
+		Hostname:  "superhost1",
+		Archived:  true,
+		CreatedAt: utils.P("2019-11-05T16:02:03Z"),
+		Features: model.Features{
+			Oracle: &model.OracleFeature{
+				Database: &model.OracleDatabaseFeature{
+					UnlistedRunningDatabases: []string{},
+					Databases: []model.OracleDatabase{
+						{
+							Name:     "first",
+							Licenses: []model.OracleDatabaseLicense{},
+						},
+					},
+				},
+			},
+		},
+		Info: model.Host{
+			CPUCores: 2,
+		},
+	}
+
+	hds.checkMissingDatabases(&hdPrevious, &hdNew)
+}
+
+func TestCheckMissingDatabases_AllMissing(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	alertsc := NewMockAlertSvcClientInterface(mockCtrl)
+	apisc := NewMockApiSvcClientInterface(mockCtrl)
+	hds := HostDataService{
+		Config:         config.Configuration{},
+		ServerVersion:  "",
+		Database:       db,
+		AlertSvcClient: alertsc,
+		ApiSvcClient:   apisc,
+		TimeNow:        utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:            logger.NewLogger("TEST"),
+	}
+
+	f := dto.AlertsFilter{
+		AlertCategory:           utils.Str2ptr(model.AlertCategoryLicense),
+		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+		AlertCode:               utils.Str2ptr(model.AlertCodeMissingDatabase),
+		AlertStatus:             utils.Str2ptr(model.AlertStatusNew),
+		OtherInfo: map[string]interface{}{
+			"hostname": "superhost1",
+		},
+	}
+	apisc.EXPECT().GetAlertsByFilter(f)
+
+	alertsc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(actualAlert model.Alert) {
+		expectedAlert := model.Alert{
+			AlertCategory:           model.AlertCategoryLicense,
+			AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+			AlertCode:               model.AlertCodeMissingDatabase,
+			AlertSeverity:           model.AlertSeverityCritical,
+			AlertStatus:             model.AlertStatusNew,
+			Description:             "The databases \"first, second\" on \"superhost1\" are missing compared to the previous hostdata",
+			Date:                    utils.P("2019-11-05T16:02:03Z"),
+			OtherInfo: map[string]interface{}{
+				"hostname": "superhost1",
+				"dbNames":  []string{"first", "second"},
+			},
+		}
+
+		assert.Equal(t, expectedAlert, actualAlert)
+	})
+
+	hdPrevious := model.HostDataBE{
+		ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
+		Hostname:  "superhost1",
+		Archived:  true,
+		CreatedAt: utils.P("2019-11-05T16:02:03Z"),
+		Features: model.Features{
+			Oracle: &model.OracleFeature{
+				Database: &model.OracleDatabaseFeature{
+					UnlistedRunningDatabases: []string{},
+					Databases: []model.OracleDatabase{
+						{
+							Name:     "first",
+							Licenses: []model.OracleDatabaseLicense{},
+						},
+						{
+							Name:     "second",
+							Licenses: []model.OracleDatabaseLicense{},
+						},
+					},
+				},
+			},
+		},
+		Info: model.Host{
+			CPUCores: 2,
+		},
+	}
+
+	hdNew := model.HostDataBE{
+		ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
+		Hostname:  "superhost1",
+		Archived:  true,
+		CreatedAt: utils.P("2019-11-05T16:02:03Z"),
+		Features: model.Features{
+			Oracle: &model.OracleFeature{
+				Database: &model.OracleDatabaseFeature{
+					UnlistedRunningDatabases: []string{},
+					Databases:                []model.OracleDatabase{},
+				},
+			},
+		},
+		Info: model.Host{
+			CPUCores: 2,
+		},
+	}
+
+	hds.checkMissingDatabases(&hdPrevious, &hdNew)
+}
+
+func TestSearchAndAckOldMissingDatabasesAlerts(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	alertsc := NewMockAlertSvcClientInterface(mockCtrl)
+	apisc := NewMockApiSvcClientInterface(mockCtrl)
+	hds := HostDataService{
+		Config:         config.Configuration{},
+		ServerVersion:  "",
+		Database:       db,
+		AlertSvcClient: alertsc,
+		ApiSvcClient:   apisc,
+		TimeNow:        utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:            logger.NewLogger("TEST"),
+	}
+
+	newDbs := map[string]bool{
+		"db1": true,
+		"db2": true,
+	}
+
+	ids := utils.NewObjectIDForTests()
+	alerts := []model.Alert{
+		{ID: ids()},
+		{
+			ID: ids(),
+			OtherInfo: map[string]interface{}{
+				"dbNames": []string{"db1"},
+			},
+		},
+		{
+			ID: ids(),
+			OtherInfo: map[string]interface{}{
+				"dbNames": []string{"db1", "db2"},
+			},
+		},
+	}
+
+	apisc.EXPECT().GetAlertsByFilter(gomock.Any()).DoAndReturn(func(fff dto.AlertsFilter) ([]model.Alert, error) {
+		expectedFilter := dto.AlertsFilter{
+			AlertCategory:           utils.Str2ptr(model.AlertCategoryLicense),
+			AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+			AlertCode:               utils.Str2ptr(model.AlertCodeMissingDatabase),
+			AlertSeverity:           nil,
+			AlertStatus:             utils.Str2ptr(model.AlertStatusNew),
+			Description:             nil,
+			Date:                    time.Time{},
+			OtherInfo: map[string]interface{}{
+				"hostname": "pippo",
+			},
+		}
+		assert.Equal(t, expectedFilter, fff)
+
+		return alerts, nil
+	})
+
+	apisc.EXPECT().AckAlertsByFilter(dto.AlertsFilter{ID: alerts[1].ID})
+	apisc.EXPECT().AckAlertsByFilter(dto.AlertsFilter{ID: alerts[2].ID})
+
+	hds.searchAndAckOldMissingDatabasesAlerts("pippo", newDbs)
 }

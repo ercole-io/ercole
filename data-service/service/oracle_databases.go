@@ -27,9 +27,7 @@ func (hds *HostDataService) oracleDatabasesChecks(previousHostdata, hostdata *mo
 	}
 	hds.setLicenseTypes(hostdata, licenseTypes)
 
-	if err := hds.checkNewLicenses(previousHostdata, hostdata, licenseTypes); err != nil {
-		hds.Log.Error(err)
-	}
+	hds.checkNewLicenses(previousHostdata, hostdata, licenseTypes)
 
 	for _, dbname := range hostdata.Features.Oracle.Database.UnlistedRunningDatabases {
 		if err := hds.ackOldUnlistedRunningDatabasesAlerts(hostdata.Hostname, dbname); err != nil {
@@ -47,6 +45,8 @@ func (hds *HostDataService) oracleDatabasesChecks(previousHostdata, hostdata *mo
 			hds.Log.Error(err)
 		}
 	}
+
+	hds.checkMissingDatabases(previousHostdata, hostdata)
 }
 
 func (hds *HostDataService) ackOldUnlistedRunningDatabasesAlerts(hostname, dbname string) error {
@@ -253,7 +253,7 @@ func licenseTypesSorter(config config.DataService, environment string, licenseTy
 	}
 }
 
-func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, licenseTypes []model.OracleDatabaseLicenseType) error {
+func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, licenseTypes []model.OracleDatabaseLicenseType) {
 	previousDbs := make(map[string]model.OracleDatabase)
 	if previous != nil &&
 		previous.Features.Oracle != nil &&
@@ -317,6 +317,100 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 					}
 				}
 			}
+		}
+	}
+}
+
+func (hds *HostDataService) checkMissingDatabases(previous, new *model.HostDataBE) {
+	if previous == nil &&
+		previous.Features.Oracle == nil &&
+		previous.Features.Oracle.Database == nil &&
+		previous.Features.Oracle.Database.Databases == nil {
+		return
+	}
+
+	newDbs := getDbNames(new.Features.Oracle.Database.Databases)
+
+	if err := hds.searchAndAckOldMissingDatabasesAlerts(new.Hostname, newDbs); err != nil {
+		hds.Log.Error(err)
+	}
+
+	previousDbs := getDbNames(previous.Features.Oracle.Database.Databases)
+
+	if err := hds.findMissingDatabasesAndThrowAlerts(new.Hostname, newDbs, previousDbs); err != nil {
+		hds.Log.Error(err)
+	}
+}
+
+func getDbNames(dbs []model.OracleDatabase) map[string]bool {
+	m := make(map[string]bool, len(dbs))
+	for i := range dbs {
+		m[dbs[i].Name] = true
+	}
+
+	return m
+}
+
+func (hds *HostDataService) searchAndAckOldMissingDatabasesAlerts(hostname string, newDbs map[string]bool) error {
+	f := dto.AlertsFilter{
+		AlertCategory:           utils.Str2ptr(model.AlertCategoryLicense),
+		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+		AlertCode:               utils.Str2ptr(model.AlertCodeMissingDatabase),
+		AlertStatus:             utils.Str2ptr(model.AlertStatusNew),
+		OtherInfo: map[string]interface{}{
+			"hostname": hostname,
+		},
+	}
+	alerts, err := hds.ApiSvcClient.GetAlertsByFilter(f)
+	if err != nil {
+		return err
+	}
+
+alerts:
+	for i := range alerts {
+		dbNamesInterf, ok := alerts[i].OtherInfo[dbNamesOtherInfo]
+		if !ok {
+			continue
+		}
+
+		dbNames, ok := dbNamesInterf.([]string)
+		if !ok {
+			return utils.NewErrorf("Can't convert dbNames in []string: %s", dbNamesInterf)
+		}
+
+		for _, dbName := range dbNames {
+			if !newDbs[dbName] {
+				continue alerts
+			}
+		}
+
+		// all dbNames are in newDbs
+		f = dto.AlertsFilter{ID: alerts[i].ID}
+		err = hds.ApiSvcClient.AckAlertsByFilter(f)
+		if err != nil {
+			hds.Log.Error(err)
+		}
+	}
+
+	return nil
+}
+
+func (hds *HostDataService) findMissingDatabasesAndThrowAlerts(hostname string, newDbs, previousDbs map[string]bool) error {
+	severity := model.AlertSeverityCritical
+	missingDbs := make([]string, 0)
+
+	for x := range previousDbs {
+		if newDbs[x] {
+			severity = model.AlertSeverityWarning // at least one database is still present
+		} else {
+			missingDbs = append(missingDbs, x)
+		}
+	}
+
+	if len(missingDbs) > 0 {
+		err := hds.throwMissingDatabasesAlert(hostname, missingDbs, severity)
+		if err != nil {
+			return err
 		}
 	}
 
