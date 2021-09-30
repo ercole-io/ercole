@@ -11,10 +11,12 @@ import (
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
 type ApiSvcClientInterface interface {
+	GetAlertsByFilter(filter dto.AlertsFilter) ([]model.Alert, error)
 	AckAlertsByFilter(filter dto.AlertsFilter) error
 }
 
@@ -71,21 +73,14 @@ func (c *Client) getResponse(ctx context.Context, path, method string, body []by
 	return resp, nil
 }
 
-func (c *Client) AckAlertsByFilter(filter dto.AlertsFilter) error {
-	b := struct {
-		Filter dto.AlertsFilter `json:"filter"`
-	}{
-		Filter: filter,
-	}
-	body, err := json.Marshal(b)
+func (c *Client) getParsedResponse(ctx context.Context, path, method string, body []byte, response interface{}) (*http.Response, error) {
+	resp, err := c.getResponse(ctx, path, method, body)
 	if err != nil {
-		return utils.NewError(err, "Can't marshal")
+		return resp, err
 	}
+	defer resp.Body.Close()
 
-	_, err = c.getResponse(context.TODO(), "/alerts/ack", "POST", body)
-	if err != nil {
-		return err
-	}
+	d := json.NewDecoder(resp.Body)
 
-	return nil
+	return resp, d.Decode(response)
 }
