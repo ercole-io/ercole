@@ -18,6 +18,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"math"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
@@ -137,6 +138,9 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 
 	result := make([]dto.LicenseCompliance, 0, len(licenses))
 	for _, license := range licenses {
+		license.Consumed = math.Round(license.Consumed)
+		license.Covered = math.Round(license.Covered)
+
 		if license.Unlimited || license.Consumed == 0 {
 			license.Compliance = 1
 		} else {
