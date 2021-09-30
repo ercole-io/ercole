@@ -18,9 +18,10 @@ package controller
 import (
 	"net/http"
 
+	"github.com/golang/gddo/httputil"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/golang/gddo/httputil"
 )
 
 func (ctrl *APIController) SearchDatabases(w http.ResponseWriter, r *http.Request) {
@@ -168,13 +169,13 @@ func (ctrl *APIController) GetDatabasesUsedLicensesPerHost(w http.ResponseWriter
 
 	switch choiche {
 	case "application/json":
-		ctrl.GetHostUsedLicensesJSON(w, r, *filter)
+		ctrl.GetDatabasesUsedLicensesPerHostJSON(w, r, *filter)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-		ctrl.GetHostUsedLicensesXLSX(w, r, *filter)
+		ctrl.GetDatabasesUsedLicensesPerHostAsXLSX(w, r, *filter)
 	}
 }
 
-func (ctrl *APIController) GetHostUsedLicensesJSON(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
+func (ctrl *APIController) GetDatabasesUsedLicensesPerHostJSON(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
 	usedLicenses, err := ctrl.Service.GetDatabasesUsedLicensesPerHost(filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -187,7 +188,7 @@ func (ctrl *APIController) GetHostUsedLicensesJSON(w http.ResponseWriter, r *htt
 	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
 
-func (ctrl *APIController) GetHostUsedLicensesXLSX(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
+func (ctrl *APIController) GetDatabasesUsedLicensesPerHostAsXLSX(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
 	xlsx, err := ctrl.Service.GetDatabasesUsedLicensesPerHostAsXLSX(filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
