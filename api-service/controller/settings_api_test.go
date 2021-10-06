@@ -49,7 +49,7 @@ func TestGetDefaultDatabaseTags_Success(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetDefaultDatabaseTags)
-	req, err := http.NewRequest("GET", "/settings/default-database-tag-choiches", nil)
+	req, err := http.NewRequest("GET", "/settings/default-database-tag-choices", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -75,7 +75,7 @@ func TestGetDefaultDatabaseTags_FailInternalServerError(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetDefaultDatabaseTags)
-	req, err := http.NewRequest("GET", "/settings/default-database-tag-choiches", nil)
+	req, err := http.NewRequest("GET", "/settings/default-database-tag-choices", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)

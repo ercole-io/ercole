@@ -25,7 +25,7 @@ import (
 )
 
 func (ctrl *APIController) SearchMySQLInstances(w http.ResponseWriter, r *http.Request) {
-	choiche := httputil.NegotiateContentType(r,
+	choice := httputil.NegotiateContentType(r,
 		[]string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
 		"application/json")
 
@@ -35,7 +35,7 @@ func (ctrl *APIController) SearchMySQLInstances(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	switch choiche {
+	switch choice {
 	case "application/json":
 		ctrl.SearchMySQLInstancesJSON(w, r, *filter)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
