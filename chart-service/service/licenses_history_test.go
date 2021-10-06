@@ -4,8 +4,9 @@ import (
 	"testing"
 	time "time"
 
-	"github.com/ercole-io/ercole/v2/chart-service/dto"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/ercole-io/ercole/v2/chart-service/dto"
 )
 
 func TestGetLicenseComplianceHistory(t *testing.T) {

@@ -18,9 +18,10 @@ package database
 import (
 	"context"
 
+	"go.mongodb.org/mongo-driver/bson"
+
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // FindPatchingFunction find the the patching function associated to the hostname in the database

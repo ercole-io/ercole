@@ -1,15 +1,15 @@
 {
-	"agreementID": "10051863",
-	"partsID": [
-		"A90649"
-	],
-	"csi": "687144235",
-	"referenceNumber": "410032246681",
-	"unlimited": false,
-	"count": 10,
-	"catchAll": true,
-	"hosts": [
-		"test-db",
-		"ercsoldbx"
-	]
+    "agreementID": "10051863",
+    "partsID": [
+        "A90649"
+    ],
+    "csi": "687144235",
+    "referenceNumber": "410032246681",
+    "unlimited": false,
+    "count": 10,
+    "catchAll": true,
+    "hosts": [
+        "test-db",
+        "ercsoldbx"
+    ]
 }

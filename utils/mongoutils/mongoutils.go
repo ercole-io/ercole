@@ -5,9 +5,10 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/ercole-io/ercole/v2/model"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
+
+	"github.com/ercole-io/ercole/v2/model"
 )
 
 //LoadFixtureHostData load the hostdata in the filename and return it

@@ -16,8 +16,9 @@
 package repo
 
 import (
-	"github.com/ercole-io/ercole/v2/config"
 	"github.com/spf13/cobra"
+
+	"github.com/ercole-io/ercole/v2/config"
 )
 
 // githubToken contains the token used to authorize GitHub requests (to avoid rate limit)

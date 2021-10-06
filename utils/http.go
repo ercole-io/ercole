@@ -23,9 +23,10 @@ import (
 	"runtime"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
-	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
+
+	"github.com/ercole-io/ercole/v2/logger"
 )
 
 // ErrorResponseFE is a struct that contains informations about a error

@@ -20,10 +20,11 @@ import (
 	"time"
 
 	"github.com/amreo/mu"
-	"github.com/ercole-io/ercole/v2/api-service/dto"
-	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 const alertsCollection = "alerts"

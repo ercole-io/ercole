@@ -3,9 +3,10 @@ package patch
 import (
 	"encoding/json"
 
+	"github.com/robertkrimen/otto"
+
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/robertkrimen/otto"
 )
 
 // PatchHostdata patch a single hostdata using the pf PatchingFunction.

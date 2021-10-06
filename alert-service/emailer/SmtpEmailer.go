@@ -18,9 +18,10 @@ package emailer
 import (
 	"crypto/tls"
 
+	gomail "gopkg.in/gomail.v2"
+
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/utils"
-	gomail "gopkg.in/gomail.v2"
 )
 
 type SMTPEmailer struct {

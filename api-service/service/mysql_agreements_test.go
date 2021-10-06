@@ -16,14 +16,16 @@
 package service
 
 import (
-	"github.com/ercole-io/ercole/v2/config"
 	"testing"
 
-	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/config"
+
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 func TestAddMySQLAgreement(t *testing.T) {

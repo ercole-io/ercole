@@ -20,9 +20,10 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
-	"github.com/stretchr/testify/assert"
 
 	"github.com/stretchr/testify/suite"
 )

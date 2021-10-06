@@ -20,13 +20,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	gomock "github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	dto "github.com/ercole-io/ercole/v2/chart-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
-	gomock "github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestGetLicenseComplianceHistory_Success(t *testing.T) {

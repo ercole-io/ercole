@@ -16,10 +16,11 @@
 package service
 
 import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	patch_lib "github.com/ercole-io/ercole/v2/utils/patch"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // UpdateHostInfo saves the hostdata

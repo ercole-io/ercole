@@ -1,9 +1,10 @@
 package controller
 
 import (
-	"github.com/ercole-io/ercole/v2/utils"
 	"net/http"
 	"time"
+
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 func (ctrl *ChartController) GetHostCores(w http.ResponseWriter, r *http.Request) {

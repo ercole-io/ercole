@@ -23,12 +23,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ercole-io/ercole/v2/config"
-	"github.com/ercole-io/ercole/v2/logger"
-	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/square/go-jose.v2/jwt"
+
+	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 var testRSAKey string = `

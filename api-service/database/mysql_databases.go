@@ -19,10 +19,11 @@ import (
 	"context"
 
 	"github.com/amreo/mu"
+	"go.mongodb.org/mongo-driver/bson"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func (md *MongoDatabase) SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error) {

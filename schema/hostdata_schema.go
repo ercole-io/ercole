@@ -22,8 +22,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/xeipuuv/gojsonschema"
+
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 //go:embed hostdata.json

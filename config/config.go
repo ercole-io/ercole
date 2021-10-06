@@ -22,13 +22,14 @@ import (
 	"strings"
 
 	"github.com/OpenPeeDeeP/xdg"
-	"github.com/ercole-io/ercole/v2/logger"
-	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/goraz/onion"
 	"github.com/goraz/onion/layers/directorylayer"
 	_ "github.com/goraz/onion/loaders/toml-0.5.0" // Needed to load toml files
 	"github.com/goraz/onion/onionwriter"
+
+	"github.com/ercole-io/ercole/v2/logger"
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // Configuration contains Ercole DataService configuration

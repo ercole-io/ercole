@@ -22,14 +22,15 @@ import (
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
-	dto "github.com/ercole-io/ercole/v2/api-service/dto"
-	"github.com/ercole-io/ercole/v2/config"
-	"github.com/ercole-io/ercole/v2/logger"
-	"github.com/ercole-io/ercole/v2/utils"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	dto "github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 func TestSearchCluster_JSONPaged(t *testing.T) {

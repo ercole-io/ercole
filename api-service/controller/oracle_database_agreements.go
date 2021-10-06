@@ -18,16 +18,18 @@ package controller
 import (
 	"encoding/json"
 	"errors"
-	"github.com/golang/gddo/httputil"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 
+	"github.com/golang/gddo/httputil"
+
+	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (ctrl *APIController) AddOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request) {

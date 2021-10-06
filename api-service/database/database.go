@@ -24,10 +24,11 @@ import (
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 
-	"github.com/ercole-io/ercole/v2/config"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"github.com/ercole-io/ercole/v2/config"
 )
 
 // MongoDatabaseInterface is a interface that wrap methods used to perform CRUD operations in the mongodb database

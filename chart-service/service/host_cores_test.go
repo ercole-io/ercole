@@ -1,12 +1,14 @@
 package service
 
 import (
-	"github.com/ercole-io/ercole/v2/chart-service/dto"
-	"github.com/ercole-io/ercole/v2/utils"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
+
+	"github.com/ercole-io/ercole/v2/chart-service/dto"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 func TestGetHostsHistory_Success(t *testing.T) {

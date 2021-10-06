@@ -21,9 +21,10 @@ import (
 
 	"github.com/amreo/mu"
 
+	"go.mongodb.org/mongo-driver/bson"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // SearchOracleDatabaseUsedLicenses search used licenses
