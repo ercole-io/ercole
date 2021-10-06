@@ -116,9 +116,9 @@ func (ctrl *APIController) GetOracleDatabaseAgreements(w http.ResponseWriter, r 
 		return
 	}
 
-	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	switch choiche {
+	switch choice {
 	case "application/json":
 		ctrl.GetOracleDatabaseAgreementsJSON(w, r, searchOracleDatabaseAgreementsFilters)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":

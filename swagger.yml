@@ -3852,7 +3852,7 @@ paths:
         - api-service
         - fe-user
         - read
-  /settings/default-database-tag-choiches:
+  /settings/default-database-tag-choices:
     get:
       operationId: GetDefaultDatabaseTags
       description: Return the default list of database tags from configuration

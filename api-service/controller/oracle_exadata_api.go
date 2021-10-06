@@ -28,9 +28,9 @@ import (
 // SearchOracleExadata search exadata data using the filters in the request
 func (ctrl *APIController) SearchOracleExadata(w http.ResponseWriter, r *http.Request) {
 
-	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	switch choiche {
+	switch choice {
 	case "application/json":
 		ctrl.SearchOracleExadataJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
