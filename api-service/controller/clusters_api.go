@@ -30,9 +30,9 @@ import (
 
 // SearchClusters search clusters data using the filters in the request
 func (ctrl *APIController) SearchClusters(w http.ResponseWriter, r *http.Request) {
-	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	switch choiche {
+	switch choice {
 	case "application/json":
 		ctrl.SearchClustersJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
@@ -126,9 +126,9 @@ func (ctrl *APIController) GetCluster(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	switch choiche {
+	switch choice {
 	case "application/json":
 		ctrl.GetClusterJSON(w, r, clusterName, olderThan)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":

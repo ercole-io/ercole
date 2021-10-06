@@ -94,9 +94,9 @@ func (ctrl *APIController) UpdateMySQLAgreement(w http.ResponseWriter, r *http.R
 }
 
 func (ctrl *APIController) GetMySQLAgreements(w http.ResponseWriter, r *http.Request) {
-	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	switch choiche {
+	switch choice {
 	case "application/json":
 		ctrl.GetMySQLAgreementsJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":

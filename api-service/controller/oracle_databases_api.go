@@ -30,9 +30,9 @@ import (
 
 // SearchOracleDatabaseAddms search addms data using the filters in the request
 func (ctrl *APIController) SearchOracleDatabaseAddms(w http.ResponseWriter, r *http.Request) {
-	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	switch choiche {
+	switch choice {
 	case "application/json":
 		ctrl.SearchOracleDatabaseAddmsJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
@@ -143,9 +143,9 @@ func (ctrl *APIController) SearchOracleDatabaseAddmsXLSX(w http.ResponseWriter, 
 
 // SearchOracleDatabaseSegmentAdvisors search segment advisors data using the filters in the request
 func (ctrl *APIController) SearchOracleDatabaseSegmentAdvisors(w http.ResponseWriter, r *http.Request) {
-	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	switch choiche {
+	switch choice {
 	case "application/json":
 		ctrl.SearchOracleDatabaseSegmentAdvisorsJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
@@ -210,9 +210,9 @@ func (ctrl *APIController) SearchOracleDatabaseSegmentAdvisorsXLSX(w http.Respon
 
 // SearchOracleDatabasePatchAdvisors search patch advisors data using the filters in the request
 func (ctrl *APIController) SearchOracleDatabasePatchAdvisors(w http.ResponseWriter, r *http.Request) {
-	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	switch choiche {
+	switch choice {
 	case "application/json":
 		ctrl.SearchOracleDatabasePatchAdvisorsJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
@@ -308,7 +308,7 @@ func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsXLSX(w http.Response
 
 // SearchOracleDatabases search databases data using the filters in the request
 func (ctrl *APIController) SearchOracleDatabases(w http.ResponseWriter, r *http.Request) {
-	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
 	filter, err := dto.GetSearchOracleDatabasesFilter(r)
 	if err != nil {
@@ -316,7 +316,7 @@ func (ctrl *APIController) SearchOracleDatabases(w http.ResponseWriter, r *http.
 		return
 	}
 
-	switch choiche {
+	switch choice {
 	case "application/json":
 		ctrl.SearchOracleDatabasesJSON(w, r, *filter)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":

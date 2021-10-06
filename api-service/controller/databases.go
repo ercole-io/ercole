@@ -25,7 +25,7 @@ import (
 )
 
 func (ctrl *APIController) SearchDatabases(w http.ResponseWriter, r *http.Request) {
-	choiche := httputil.NegotiateContentType(r,
+	choice := httputil.NegotiateContentType(r,
 		[]string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
 		"application/json")
 
@@ -35,7 +35,7 @@ func (ctrl *APIController) SearchDatabases(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	switch choiche {
+	switch choice {
 	case "application/json":
 		ctrl.SearchDatabasesJSON(w, r, *filter)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
@@ -89,9 +89,9 @@ func (ctrl *APIController) GetDatabasesUsedLicenses(w http.ResponseWriter, r *ht
 		return
 	}
 
-	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	switch choiche {
+	switch choice {
 	case "application/json":
 		ctrl.GetDatabasesUsedLicensesJSON(w, r, *filter)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
@@ -124,9 +124,9 @@ func (ctrl *APIController) GetDatabasesUsedLicensesXLSX(w http.ResponseWriter, r
 }
 
 func (ctrl *APIController) GetDatabaseLicensesCompliance(w http.ResponseWriter, r *http.Request) {
-	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	switch choiche {
+	switch choice {
 	case "application/json":
 		ctrl.GetDatabaseLicensesComplianceJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
@@ -165,9 +165,9 @@ func (ctrl *APIController) GetDatabasesUsedLicensesPerHost(w http.ResponseWriter
 		return
 	}
 
-	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	switch choiche {
+	switch choice {
 	case "application/json":
 		ctrl.GetDatabasesUsedLicensesPerHostJSON(w, r, *filter)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":

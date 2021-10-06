@@ -131,9 +131,9 @@ func (ctrl *APIController) searchHostsXLSX(w http.ResponseWriter, r *http.Reques
 
 // GetHost return all'informations about the host requested in the id path variable
 func (ctrl *APIController) GetHost(w http.ResponseWriter, r *http.Request) {
-	choiche := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.ercole.mongohostdata+json"}, "application/json")
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.ercole.mongohostdata+json"}, "application/json")
 
-	switch choiche {
+	switch choice {
 	case "application/json":
 		ctrl.GetHostJSON(w, r)
 	case "application/vnd.ercole.mongohostdata+json":
