@@ -176,6 +176,8 @@ type APIServiceInterface interface {
 	GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.DatabasesStatistics, error)
 	GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
 	GetDatabasesUsedLicensesPerHost(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error)
+	GetDatabasesUsedLicensesPerCluster(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerCluster, error)
+	GetDatabasesUsedLicensesPerClusterAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error)
 	GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, error)

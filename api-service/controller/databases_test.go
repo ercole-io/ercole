@@ -23,13 +23,14 @@ import (
 	"testing"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestSearchDatabases_JSON_Success(t *testing.T) {
@@ -485,6 +486,112 @@ func TestGetHostUsedLicensesXLSX_InternalServerError1(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetDatabasesUsedLicensesPerHost)
+	req, err := http.NewRequest("GET", "/", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusInternalServerError, rr.Code)
+}
+
+func TestGetDatabasesUsedLicensesPerCluster_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     logger.NewLogger("TEST"),
+	}
+
+	filter := dto.GlobalFilter{
+		Location:    "Italy",
+		Environment: "TST",
+		OlderThan:   utils.P("2020-06-10T11:54:59Z"),
+	}
+
+	usedLicenses := []dto.DatabaseUsedLicensePerCluster{}
+	as.EXPECT().GetDatabasesUsedLicensesPerCluster(filter).
+		Return(usedLicenses, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetDatabasesUsedLicensesPerCluster)
+	req, err := http.NewRequest("GET", "/stats?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+
+	expected := map[string]interface{}{
+		"usedLicensesPerCluster": usedLicenses,
+	}
+	assert.JSONEq(t, utils.ToJSON(expected), rr.Body.String())
+}
+
+func TestGetDatabasesUsedLicensesPerClusterXLSX_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: logger.NewLogger("TEST"),
+	}
+
+	filter := dto.GlobalFilter{
+		Location:    "Italy",
+		Environment: "TST",
+		OlderThan:   utils.P("2020-06-10T11:54:59Z"),
+	}
+
+	xlsx := excelize.File{}
+
+	as.EXPECT().
+		GetDatabasesUsedLicensesPerClusterAsXLSX(filter).
+		Return(&xlsx, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetDatabasesUsedLicensesPerCluster)
+	req, err := http.NewRequest("GET", "/?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	_, err = excelize.OpenReader(rr.Body)
+	require.NoError(t, err)
+}
+
+func TestGetDatabasesUsedLicensesPerClusterXLSX_InternalServerError1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: logger.NewLogger("TEST"),
+	}
+
+	filter := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	as.EXPECT().
+		GetDatabasesUsedLicensesPerClusterAsXLSX(filter).
+		Return(nil, aerrMock)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.GetDatabasesUsedLicensesPerCluster)
 	req, err := http.NewRequest("GET", "/", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)

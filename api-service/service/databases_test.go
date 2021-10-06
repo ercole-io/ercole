@@ -17,15 +17,17 @@ package service
 
 import (
 	"testing"
+	"time"
+
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestSearchDatabases_Success(t *testing.T) {
@@ -781,4 +783,294 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "Oracle Database Enterprise Edition", actual.GetCellValue("Licenses Used", "D2"))
 	assert.Equal(t, "Processor Perpetual", actual.GetCellValue("Licenses Used", "E2"))
 	assert.Equal(t, "2", actual.GetCellValue("Licenses Used", "F2"))
+}
+
+func TestGetDatabasesUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Database: db,
+	}
+
+	filter := dto.GlobalFilter{
+		Location:    "Dubai",
+		Environment: "TEST",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	usedLicenses := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "id1",
+				DbName:        "pippo",
+				Hostname:      "vm1",
+				UsedLicenses:  42,
+			},
+		},
+		Metadata: dto.PagingMetadata{},
+	}
+
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "id1",
+			ItemDescription: "desc1",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+	}
+
+	clusters := []dto.Cluster{
+		{
+			ID:                          [12]byte{},
+			CreatedAt:                   time.Time{},
+			Hostname:                    "cluster1",
+			HostnameAgentVirtualization: "",
+			Name:                        "name1",
+			Environment:                 "",
+			Location:                    "",
+			FetchEndpoint:               "",
+			CPU:                         12,
+			Sockets:                     0,
+			Type:                        "",
+			VirtualizationNodes:         []string{},
+			VirtualizationNodesCount:    0,
+			VirtualizationNodesStats:    []dto.VirtualizationNodesStat{},
+			VMs: []dto.VM{
+				{
+					CappedCPU:          false,
+					Hostname:           "vm1",
+					Name:               "",
+					VirtualizationNode: "",
+				},
+			},
+			VMsCount:            0,
+			VMsErcoleAgentCount: 0,
+		},
+	}
+	gomock.InOrder(
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			Return(&usedLicenses, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().Return(licenseTypes, nil),
+		db.EXPECT().GetClusters(filter).Return(clusters, nil),
+	)
+
+	actual, actErr := as.GetDatabasesUsedLicensesPerCluster(filter)
+	require.NoError(t, actErr)
+
+	expected := []dto.DatabaseUsedLicensePerCluster{
+		{
+			Cluster:       "name1",
+			Hostnames:     []string{"vm1"},
+			LicenseTypeID: "id1",
+			Description:   "desc1",
+			Metric:        model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:  6,
+		},
+	}
+	assert.ElementsMatch(t, expected, actual)
+}
+
+func TestGetDatabasesUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Database: db,
+	}
+
+	filter := dto.GlobalFilter{
+		Location:    "Dubai",
+		Environment: "TEST",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	usedLicenses := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "id1",
+				DbName:        "pippo",
+				Hostname:      "vm1",
+				UsedLicenses:  42,
+			},
+			{
+				LicenseTypeID: "id1",
+				DbName:        "pippo",
+				Hostname:      "vm2",
+				UsedLicenses:  42,
+			},
+			{
+				LicenseTypeID: "id1",
+				DbName:        "pippo",
+				Hostname:      "vm3",
+				UsedLicenses:  42,
+			},
+		},
+		Metadata: dto.PagingMetadata{},
+	}
+
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "id1",
+			ItemDescription: "desc1",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+	}
+
+	clusters := []dto.Cluster{
+		{
+			ID:                          [12]byte{},
+			CreatedAt:                   time.Time{},
+			Hostname:                    "cluster1",
+			HostnameAgentVirtualization: "",
+			Name:                        "name1",
+			Environment:                 "",
+			Location:                    "",
+			FetchEndpoint:               "",
+			CPU:                         12,
+			Sockets:                     0,
+			Type:                        "",
+			VirtualizationNodes:         []string{},
+			VirtualizationNodesCount:    0,
+			VirtualizationNodesStats:    []dto.VirtualizationNodesStat{},
+			VMs: []dto.VM{
+				{
+					CappedCPU:          false,
+					Hostname:           "vm1",
+					Name:               "",
+					VirtualizationNode: "",
+				},
+				{
+					CappedCPU:          false,
+					Hostname:           "vm2",
+					Name:               "",
+					VirtualizationNode: "",
+				},
+			},
+			VMsCount:            0,
+			VMsErcoleAgentCount: 0,
+		},
+	}
+	gomock.InOrder(
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			Return(&usedLicenses, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().Return(licenseTypes, nil),
+		db.EXPECT().GetClusters(filter).Return(clusters, nil),
+	)
+
+	actual, actErr := as.GetDatabasesUsedLicensesPerCluster(filter)
+	require.NoError(t, actErr)
+
+	expected := []dto.DatabaseUsedLicensePerCluster{
+		{
+			Cluster:       "name1",
+			Hostnames:     []string{"vm1", "vm2"},
+			LicenseTypeID: "id1",
+			Description:   "desc1",
+			Metric:        model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:  6,
+		},
+	}
+	assert.ElementsMatch(t, expected, actual)
+}
+
+func TestGetDatabasesUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Database: db,
+	}
+
+	filter := dto.GlobalFilter{
+		Location:    "Dubai",
+		Environment: "TEST",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	usedLicenses := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "id1",
+				DbName:        "pippo",
+				Hostname:      "vm1",
+				UsedLicenses:  42,
+			},
+		},
+		Metadata: dto.PagingMetadata{},
+	}
+
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "id1",
+			ItemDescription: "desc1",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+	}
+
+	clusters := []dto.Cluster{
+		{
+			ID:                          [12]byte{},
+			CreatedAt:                   time.Time{},
+			Hostname:                    "cluster1",
+			HostnameAgentVirtualization: "",
+			Name:                        "name1",
+			Environment:                 "",
+			Location:                    "",
+			FetchEndpoint:               "",
+			CPU:                         12,
+			Sockets:                     0,
+			Type:                        "",
+			VirtualizationNodes:         []string{},
+			VirtualizationNodesCount:    0,
+			VirtualizationNodesStats:    []dto.VirtualizationNodesStat{},
+			VMs: []dto.VM{
+				{
+					CappedCPU:          false,
+					Hostname:           "vm1",
+					Name:               "",
+					VirtualizationNode: "",
+				},
+			},
+			VMsCount:            0,
+			VMsErcoleAgentCount: 0,
+		},
+	}
+
+	gomock.InOrder(
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			Return(&usedLicenses, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().Return(licenseTypes, nil),
+		db.EXPECT().GetClusters(filter).Return(clusters, nil),
+	)
+
+	actual, err := as.GetDatabasesUsedLicensesPerClusterAsXLSX(filter)
+	require.NoError(t, err)
+
+	assert.Equal(t, "name1", actual.GetCellValue("Licenses Used Per Cluster", "A2"))
+	assert.Equal(t, "id1", actual.GetCellValue("Licenses Used Per Cluster", "B2"))
+	assert.Equal(t, "desc1", actual.GetCellValue("Licenses Used Per Cluster", "C2"))
+	assert.Equal(t, "Named User Plus Perpetual", actual.GetCellValue("Licenses Used Per Cluster", "D2"))
+	assert.Equal(t, "vm1", actual.GetCellValue("Licenses Used Per Cluster", "E2"))
+	assert.Equal(t, "6", actual.GetCellValue("Licenses Used Per Cluster", "F2"))
 }
