@@ -23,14 +23,14 @@ import (
 
 type Cluster struct {
 	ID                          primitive.ObjectID        `json:"id" bson:"_id"`
-	CPU                         int                       `json:"cpu" bson:"cpu"`
 	CreatedAt                   time.Time                 `json:"createdAt" bson:"createdAt"`
-	Environment                 string                    `json:"environment" bson:"environment"`
-	FetchEndpoint               string                    `json:"fetchEndpoint" bson:"fetchEndpoint"`
 	Hostname                    string                    `json:"hostname" bson:"hostname"`
 	HostnameAgentVirtualization string                    `json:"hostnameAgentVirtualization" bson:"hostnameAgentVirtualization"`
-	Location                    string                    `json:"location" bson:"location"`
 	Name                        string                    `json:"name" bson:"name"`
+	Environment                 string                    `json:"environment" bson:"environment"`
+	Location                    string                    `json:"location" bson:"location"`
+	FetchEndpoint               string                    `json:"fetchEndpoint" bson:"fetchEndpoint"`
+	CPU                         int                       `json:"cpu" bson:"cpu"`
 	Sockets                     int                       `json:"sockets" bson:"sockets"`
 	Type                        string                    `json:"type" bson:"type"`
 	VirtualizationNodes         []string                  `json:"virtualizationNodes" bson:"virtualizationNodes"`

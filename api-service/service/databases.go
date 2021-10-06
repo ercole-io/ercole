@@ -17,7 +17,10 @@
 package service
 
 import (
+	"strings"
+
 	"github.com/360EntSecGroup-Skylar/excelize"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils/exutils"
@@ -363,20 +366,18 @@ func (as *APIService) GetDatabasesUsedLicensesPerHost(filter dto.GlobalFilter) (
 		return nil, err
 	}
 
-	return convertUsedLicensesInLicensesPerHost(licenses), nil
-}
+	var licensesPerHost []dto.DatabaseUsedLicensePerHost
 
-func convertUsedLicensesInLicensesPerHost(licenses []dto.DatabaseUsedLicense) []dto.DatabaseUsedLicensePerHost {
-	var output []dto.DatabaseUsedLicensePerHost
-nextLicenses:
+licenses:
 	for _, v := range licenses {
-		for i, v2 := range output {
+		for i, v2 := range licensesPerHost {
 			if v.Hostname == v2.Hostname && v.LicenseTypeID == v2.LicenseTypeID {
-				output[i].Databases++
-				continue nextLicenses
+				licensesPerHost[i].Databases++
+				continue licenses
 			}
 		}
-		output = append(output, dto.DatabaseUsedLicensePerHost{
+
+		licensesPerHost = append(licensesPerHost, dto.DatabaseUsedLicensePerHost{
 			Hostname:      v.Hostname,
 			Databases:     1,
 			LicenseTypeID: v.LicenseTypeID,
@@ -385,5 +386,107 @@ nextLicenses:
 			UsedLicenses:  v.UsedLicenses,
 		})
 	}
-	return output
+
+	return licensesPerHost, nil
+}
+
+func (as *APIService) GetDatabasesUsedLicensesPerCluster(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerCluster, error) {
+	licenses, err := as.getOracleDatabasesUsedLicenses(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	clusters, err := as.Database.GetClusters(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	clusterByHostnames := make(map[string]*dto.Cluster)
+	for i := range clusters {
+		for j := range clusters[i].VMs {
+			clusterByHostnames[clusters[i].VMs[j].Hostname] = &clusters[i]
+		}
+	}
+
+	// By cluster.Hostname and by LicenseTypeID
+	m := make(map[string]map[string]*dto.DatabaseUsedLicensePerCluster)
+
+licenses:
+	for _, l := range licenses {
+		c, ok := clusterByHostnames[l.Hostname]
+		if !ok {
+			continue licenses
+		}
+
+		clusterLicenses, ok := m[c.Name]
+		if !ok {
+			clusterLicenses = make(map[string]*dto.DatabaseUsedLicensePerCluster)
+			m[c.Name] = clusterLicenses
+		}
+
+		ll, ok := clusterLicenses[l.LicenseTypeID]
+		if !ok {
+			ll = &dto.DatabaseUsedLicensePerCluster{
+				Cluster:       c.Name,
+				Hostnames:     []string{},
+				LicenseTypeID: l.LicenseTypeID,
+				Description:   l.Description,
+				Metric:        l.Metric,
+				UsedLicenses:  float64(c.CPU) * 0.5,
+			}
+
+			clusterLicenses[l.LicenseTypeID] = ll
+		}
+
+		for _, h := range ll.Hostnames {
+			if l.Hostname == h {
+				continue licenses
+			}
+		}
+		ll.Hostnames = append(ll.Hostnames, l.Hostname)
+	}
+
+	result := make([]dto.DatabaseUsedLicensePerCluster, 0)
+	for i := range m {
+		for j := range m[i] {
+			result = append(result, *m[i][j])
+		}
+	}
+
+	return result, nil
+}
+
+func (as *APIService) GetDatabasesUsedLicensesPerClusterAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	usedLicenses, err := as.GetDatabasesUsedLicensesPerCluster(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Licenses Used Per Cluster"
+	headers := []string{
+		"Cluster",
+		"Part Number",
+		"Description",
+		"Metric",
+		"Hostnames",
+		"Used Licenses",
+	}
+
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+	axisHelp := exutils.NewAxisHelper(1)
+
+	for _, val := range usedLicenses {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue(sheet, nextAxis(), val.Cluster)
+		sheets.SetCellValue(sheet, nextAxis(), val.LicenseTypeID)
+		sheets.SetCellValue(sheet, nextAxis(), val.Description)
+		sheets.SetCellValue(sheet, nextAxis(), val.Metric)
+		sheets.SetCellValue(sheet, nextAxis(), strings.Join(val.Hostnames, ", "))
+		sheets.SetCellValue(sheet, nextAxis(), val.UsedLicenses)
+	}
+
+	return sheets, err
 }
