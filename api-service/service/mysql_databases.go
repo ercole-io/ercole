@@ -20,6 +20,7 @@ import (
 	"strings"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -174,7 +175,7 @@ func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseComplia
 	if len(licenses) == 0 {
 		return []dto.LicenseCompliance{}, nil
 	}
-	
+
 	perCluster := dto.LicenseCompliance{
 		LicenseTypeID:   "",
 		ItemDescription: "MySQL Enterprise per cluster",

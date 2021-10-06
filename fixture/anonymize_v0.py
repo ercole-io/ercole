@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-import json, sys, io
+import json
+import sys
+import io
 from hashlib import md5
-from functools import reduce 
+from functools import reduce
 
 list0 = []
 with open("fixture/list0.txt") as fp:
@@ -25,12 +27,17 @@ with open("fixture/list4.txt") as fp:
         list4.append(line.strip())
 
 # A injective and suriective function...
+
+
 def assoc(p: str, mod: int):
-    digest = reduce(lambda x, y: (x+y) % mod, map(lambda x: x[0]*256 + ord(x[1]), enumerate(list(md5(p.encode("ascii")).hexdigest()))))
+    digest = reduce(lambda x, y: (x+y) % mod, map(lambda x: x[0]*256 + ord(
+        x[1]), enumerate(list(md5(p.encode("ascii")).hexdigest()))))
     return digest
+
 
 def assoc_list(p: str, l: list):
     return l[assoc(p, len(l))] + "-" + md5(p.encode("ascii")).hexdigest()
+
 
 data = json.load(sys.stdin)
 
@@ -43,11 +50,13 @@ try:
 except Exception as ex:
     pass
 try:
-    data["Databases"] = " ".join(map(lambda x: assoc_list(x, list2),  data["Databases"].split(" ")))
+    data["Databases"] = " ".join(
+        map(lambda x: assoc_list(x, list2),  data["Databases"].split(" ")))
 except Exception as ex:
     pass
 try:
-    data["Schemas"] = " ".join(map(lambda x: assoc_list(x, list2),  data["Schemas"].split(" ")))
+    data["Schemas"] = " ".join(
+        map(lambda x: assoc_list(x, list2),  data["Schemas"].split(" ")))
 except Exception as ex:
     pass
 try:
@@ -95,7 +104,8 @@ try:
             for sa in db["SegmentAdvisors"]:
                 sa["SegmentOwner"] = assoc_list(sa["SegmentOwner"], list3)
                 sa["SegmentName"] = assoc_list(sa["SegmentName"], list2)
-                sa["Recommendation"] = md5(sa["Recommendation"].encode("ascii")).hexdigest()
+                sa["Recommendation"] = md5(
+                    sa["Recommendation"].encode("ascii")).hexdigest()
         except Exception as ex:
             pass
 except Exception as ex:
@@ -133,7 +143,8 @@ try:
             for sa in db["SegmentAdvisors"]:
                 sa["SegmentOwner"] = assoc_list(sa["SegmentOwner"], list3)
                 sa["SegmentName"] = assoc_list(sa["SegmentName"], list2)
-                sa["Recommendation"] = md5(sa["Recommendation"].encode("ascii")).hexdigest()
+                sa["Recommendation"] = md5(
+                    sa["Recommendation"].encode("ascii")).hexdigest()
         except Exception as ex:
             pass
 except Exception as ex:
@@ -148,7 +159,8 @@ try:
                 try:
                     vm["Name"] = assoc_list(vm["Name"], list0)
                     vm["Hostname"] = assoc_list(vm["Hostname"], list0)
-                    vm["VirtualizationNode"] = assoc_list(vm["VirtualizationNode"], list0)
+                    vm["VirtualizationNode"] = assoc_list(
+                        vm["VirtualizationNode"], list0)
                     vm["ClusterName"] = assoc_list(vm["ClusterName"], list1)
                 except Exception:
                     pass

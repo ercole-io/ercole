@@ -20,8 +20,9 @@ import (
 	"time"
 
 	"github.com/amreo/mu"
-	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
+
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // SearchOracleDatabasePatchAdvisors search patch advisors

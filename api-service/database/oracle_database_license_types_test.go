@@ -19,9 +19,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/ercole-io/ercole/v2/model"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
+
+	"github.com/ercole-io/ercole/v2/model"
 )
 
 func (m *MongodbSuite) TestGetOracleDatabaseLicenseTypes() {

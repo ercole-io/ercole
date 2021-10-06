@@ -18,8 +18,9 @@ package controller
 import (
 	"net/http"
 
-	"github.com/ercole-io/ercole/v2/api-service/auth"
 	"github.com/gorilla/mux"
+
+	"github.com/ercole-io/ercole/v2/api-service/auth"
 )
 
 // SetupRoutesForChartController setup the routes of the router using the handler in the controller as http handler

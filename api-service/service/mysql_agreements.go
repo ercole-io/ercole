@@ -18,9 +18,10 @@ package service
 
 import (
 	"github.com/360EntSecGroup-Skylar/excelize"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils/exutils"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (as *APIService) AddMySQLAgreement(agreement model.MySQLAgreement) (*model.MySQLAgreement, error) {

@@ -19,10 +19,11 @@ import (
 	"context"
 	"errors"
 
-	"github.com/ercole-io/ercole/v2/utils"
 	migrate "github.com/xakep666/mongo-migrate"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 func init() {

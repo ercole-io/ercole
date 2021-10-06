@@ -2,11 +2,13 @@ package database
 
 import (
 	"context"
+	"time"
+
 	"github.com/amreo/mu"
+	"go.mongodb.org/mongo-driver/bson"
+
 	"github.com/ercole-io/ercole/v2/chart-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
-	"go.mongodb.org/mongo-driver/bson"
-	"time"
 )
 
 func (md *MongoDatabase) GetHostCores(location, environment string, olderThan, newerThan time.Time) ([]dto.HostCores, error) {

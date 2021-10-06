@@ -19,13 +19,13 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"github.com/leandro-lugaresi/hub"
+
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/leandro-lugaresi/hub"
-
-	"github.com/golang/mock/gomock"
 )
 
 func TestProcessMsg_AlertInsertion(t *testing.T) {

@@ -18,12 +18,15 @@ package service
 
 import (
 	"fmt"
-	"github.com/ercole-io/ercole/v2/utils/exutils"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"strings"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	"github.com/ercole-io/ercole/v2/utils/exutils"
+
 	"github.com/360EntSecGroup-Skylar/excelize"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 )
 
@@ -88,7 +91,7 @@ func (as *APIService) SearchOracleDatabasePatchAdvisors(search string, sortBy st
 	return as.Database.SearchOracleDatabasePatchAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, windowTime, location, environment, olderThan, status)
 }
 
-func (as *APIService) SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime time.Time ,filter dto.GlobalFilter) (*excelize.File, error) {
+func (as *APIService) SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime time.Time, filter dto.GlobalFilter) (*excelize.File, error) {
 	patchAdvisors, err := as.Database.SearchOracleDatabasePatchAdvisors([]string{}, "", false, -1, -1, windowTime, filter.Location, filter.Environment, filter.OlderThan, "")
 	if err != nil {
 		return nil, err
@@ -117,7 +120,7 @@ func (as *APIService) SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime time.Ti
 		sheets.SetCellValue("Patch_Advisor", nextAxis(), val["dbver"])
 		if val["date"] != nil || val["date"] != "" {
 			sheets.SetCellValue("Patch_Advisor", nextAxis(), val["date"].(primitive.DateTime).Time().UTC().String())
-		}else {
+		} else {
 			nextAxis()
 		}
 		sheets.SetCellValue("Patch_Advisor", nextAxis(), val["description"])

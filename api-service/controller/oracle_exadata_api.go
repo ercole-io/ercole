@@ -19,9 +19,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/golang/gddo/httputil"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/golang/gddo/httputil"
 )
 
 // SearchOracleExadata search exadata data using the filters in the request

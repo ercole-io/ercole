@@ -19,8 +19,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ercole-io/ercole/v2/model"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	"github.com/ercole-io/ercole/v2/model"
 )
 
 // ThrowNewAlert create and insert in the database a new NEW_DATABASE alert

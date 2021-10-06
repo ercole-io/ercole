@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/gorilla/handlers"
 	"github.com/sirupsen/logrus"
+
+	"github.com/ercole-io/ercole/v2/logger"
 )
 
 // CustomLoggingHandler return a loggingHandler using ercole formatting

@@ -20,9 +20,10 @@ import (
 	"time"
 
 	"github.com/amreo/mu"
+	"go.mongodb.org/mongo-driver/bson"
+
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // GetHostsCountUsingTechnologies return a map that contains the number of usages for every features
