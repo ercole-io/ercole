@@ -18,8 +18,9 @@ package controller
 import (
 	"net/http"
 
-	"github.com/ercole-io/ercole/v2/api-service/auth"
 	"github.com/gorilla/mux"
+
+	"github.com/ercole-io/ercole/v2/api-service/auth"
 )
 
 // SetupRoutesForAPIController setup the routes of the router using the handler in the controller as http handler
@@ -66,6 +67,7 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/technologies/all/databases/statistics", ctrl.GetDatabasesStatistics).Methods("GET")
 	router.HandleFunc("/hosts/technologies/all/databases/licenses-used", ctrl.GetDatabasesUsedLicenses).Methods("GET")
 	router.HandleFunc("/hosts/technologies/all/databases/licenses-used-per-host", ctrl.GetDatabasesUsedLicensesPerHost).Methods("GET")
+	router.HandleFunc("/hosts/technologies/all/databases/licenses-used-per-cluster", ctrl.GetDatabasesUsedLicensesPerCluster).Methods("GET")
 	router.HandleFunc("/hosts/technologies/all/databases/licenses-compliance", ctrl.GetDatabaseLicensesCompliance).Methods("GET")
 
 	// ORACLE

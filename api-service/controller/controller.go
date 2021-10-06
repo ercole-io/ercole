@@ -137,6 +137,7 @@ type APIControllerInterface interface {
 	GetDatabasesStatistics(w http.ResponseWriter, r *http.Request)
 	GetDatabasesUsedLicenses(w http.ResponseWriter, r *http.Request)
 	GetDatabasesUsedLicensesPerHost(w http.ResponseWriter, r *http.Request)
+	GetDatabasesUsedLicensesPerCluster(w http.ResponseWriter, r *http.Request)
 	GetDatabaseLicensesCompliance(w http.ResponseWriter, r *http.Request)
 
 	// ORACLE DATABASE AGREEMENTS
