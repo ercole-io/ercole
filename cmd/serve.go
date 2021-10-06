@@ -22,12 +22,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ercole-io/ercole/v2/config"
-	"github.com/ercole-io/ercole/v2/logger"
-	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"github.com/spf13/cobra"
+
+	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
+	"github.com/ercole-io/ercole/v2/utils"
 
 	migration "github.com/ercole-io/ercole/v2/database-migration"
 

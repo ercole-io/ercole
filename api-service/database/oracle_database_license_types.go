@@ -19,9 +19,10 @@ import (
 	"context"
 	"log"
 
+	"go.mongodb.org/mongo-driver/bson"
+
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 const oracleDbLicenseTypesCollection = "oracle_database_license_types"

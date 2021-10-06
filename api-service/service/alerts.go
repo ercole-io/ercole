@@ -17,14 +17,17 @@
 package service
 
 import (
-	"github.com/360EntSecGroup-Skylar/excelize"
-	"github.com/ercole-io/ercole/v2/utils/exutils"
 	"strings"
 	"time"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
+
+	"github.com/ercole-io/ercole/v2/utils/exutils"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SearchAlerts search alerts
@@ -34,6 +37,7 @@ func (as *APIService) SearchAlerts(mode string, search string, sortBy string, so
 	return as.Database.SearchAlerts(mode, strings.Split(search, " "), sortBy, sortDesc, page, pageSize,
 		location, environment, severity, status, from, to)
 }
+
 // SearchAlertsAsXLSX return alerts as xlxs file
 func (as *APIService) SearchAlertsAsXLSX(from, to time.Time, filter dto.GlobalFilter) (*excelize.File, error) {
 	alerts, err := as.Database.SearchAlerts("all", []string{}, "", false, -1, -1, filter.Location, filter.Environment, "", "", from, to)
@@ -42,7 +46,7 @@ func (as *APIService) SearchAlertsAsXLSX(from, to time.Time, filter dto.GlobalFi
 	}
 
 	sheet := "Alerts"
-	headers := []string {
+	headers := []string{
 		"Type",
 		"Date",
 		"Severity",

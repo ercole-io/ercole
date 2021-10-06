@@ -20,10 +20,11 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
+	gomock "github.com/golang/mock/gomock"
+
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
-	gomock "github.com/golang/mock/gomock"
 )
 
 func TestArchivedHostCleaningJobRun_SuccessNoOldCurrentHosts(t *testing.T) {

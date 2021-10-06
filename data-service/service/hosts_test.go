@@ -25,13 +25,14 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 
+	gomock "github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/mongoutils"
-	gomock "github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestInsertHostData_Success(t *testing.T) {

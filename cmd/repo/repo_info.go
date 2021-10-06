@@ -19,8 +19,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/spf13/cobra"
+
+	"github.com/ercole-io/ercole/v2/logger"
 )
 
 func init() {

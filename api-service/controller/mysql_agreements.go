@@ -18,13 +18,15 @@ package controller
 import (
 	"errors"
 	"fmt"
-	"github.com/golang/gddo/httputil"
 	"net/http"
+
+	"github.com/golang/gddo/httputil"
+
+	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (ctrl *APIController) AddMySQLAgreement(w http.ResponseWriter, r *http.Request) {

@@ -22,8 +22,9 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 
 	"github.com/amreo/mu"
-	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
+
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // SearchOracleExadata search exadata

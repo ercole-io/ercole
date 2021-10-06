@@ -18,9 +18,10 @@ package controller
 import (
 	"net/http"
 
+	"github.com/golang/gddo/httputil"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/golang/gddo/httputil"
 )
 
 func (ctrl *APIController) SearchMySQLInstances(w http.ResponseWriter, r *http.Request) {

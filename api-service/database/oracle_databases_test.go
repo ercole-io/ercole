@@ -19,10 +19,11 @@ import (
 	"context"
 	"testing"
 
-	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
+
+	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 )
 
 func (m *MongodbSuite) TestSearchOracleDatabases() {

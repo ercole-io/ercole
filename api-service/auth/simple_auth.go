@@ -27,11 +27,12 @@ import (
 	"strings"
 	"time"
 
+	"gopkg.in/square/go-jose.v2"
+	"gopkg.in/square/go-jose.v2/jwt"
+
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
-	"gopkg.in/square/go-jose.v2"
-	"gopkg.in/square/go-jose.v2/jwt"
 )
 
 // BasicAuthenticationProvider is the concrete implementation of AuthenticationProvider that provide a simple user authentication.

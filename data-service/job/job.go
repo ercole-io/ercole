@@ -5,11 +5,12 @@ import (
 	"time"
 
 	"github.com/bamzi/jobrunner"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	alert_service_client "github.com/ercole-io/ercole/v2/alert-service/client"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/data-service/database"
 	"github.com/ercole-io/ercole/v2/logger"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type JobInterface interface {

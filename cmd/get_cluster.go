@@ -24,8 +24,9 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/spf13/cobra"
+
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 func init() {

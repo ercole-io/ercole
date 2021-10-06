@@ -19,10 +19,11 @@ import (
 	"context"
 
 	"github.com/amreo/mu"
-	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // FindPatchingFunction find the the patching function associated to the hostname in the database

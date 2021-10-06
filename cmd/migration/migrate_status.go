@@ -16,10 +16,11 @@
 package migration
 
 import (
+	"github.com/spf13/cobra"
+
 	"github.com/ercole-io/ercole/v2/config"
 	migration "github.com/ercole-io/ercole/v2/database-migration"
 	"github.com/ercole-io/ercole/v2/logger"
-	"github.com/spf13/cobra"
 )
 
 // migrateCmd represents the migrate command
