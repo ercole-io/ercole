@@ -20,10 +20,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/goji/httpauth"
+
 	"github.com/ercole-io/ercole/v2/alert-service/service"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
-	"github.com/goji/httpauth"
 )
 
 // AlertQueueControllerInterface is a interface that wrap methods used to inserting events in the queue

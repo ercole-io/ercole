@@ -22,8 +22,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ercole-io/ercole/v2/schema"
 	"github.com/stretchr/testify/require"
+
+	"github.com/ercole-io/ercole/v2/schema"
 )
 
 func TestHostdatas(t *testing.T) {

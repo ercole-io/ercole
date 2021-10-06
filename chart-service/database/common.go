@@ -19,8 +19,9 @@ import (
 	"time"
 
 	"github.com/amreo/mu"
-	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
+
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // FilterByLocationAndEnvironmentSteps return the steps required to filter the data by the location and environment field.

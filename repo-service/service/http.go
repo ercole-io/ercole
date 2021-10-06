@@ -21,10 +21,11 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/rs/cors"
+
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/rs/cors"
 )
 
 // HTTPSubRepoService is a concrete implementation of SubRepoServiceInterface

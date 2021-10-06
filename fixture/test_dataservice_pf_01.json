@@ -1,6 +1,6 @@
 {
-	"code": "hostdata[\"foo\"] = vars[\"What\"]",
-	"vars": {
-		"what": "bar"
-	}
+    "code": "hostdata[\"foo\"] = vars[\"What\"]",
+    "vars": {
+        "what": "bar"
+    }
 }

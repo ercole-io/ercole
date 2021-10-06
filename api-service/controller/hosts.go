@@ -20,10 +20,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ercole-io/ercole/v2/api-service/dto"
-	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
+
+	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // SearchHosts search hosts data using the filters in the request

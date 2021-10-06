@@ -30,10 +30,11 @@ import (
 	"time"
 
 	"github.com/1set/gut/yos"
+	"github.com/google/go-github/v28/github"
+
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/google/go-github/v28/github"
 )
 
 // Index is the index of all artifact in a repository

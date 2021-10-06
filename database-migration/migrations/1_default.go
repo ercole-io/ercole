@@ -18,11 +18,12 @@ package migrations
 import (
 	"context"
 
-	"github.com/ercole-io/ercole/v2/utils"
 	migrate "github.com/xakep666/mongo-migrate"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 func init() {

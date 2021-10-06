@@ -22,9 +22,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gorilla/mux"
+
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/gorilla/mux"
 )
 
 // GetPatchingFunction return all'informations about the patching function of the host requested in the hostname path variable

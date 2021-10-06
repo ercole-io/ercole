@@ -17,13 +17,15 @@ package controller
 
 import (
 	"errors"
-	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"net/http"
 	"time"
 
-	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
+
 	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
+
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // SearchClusters search clusters data using the filters in the request

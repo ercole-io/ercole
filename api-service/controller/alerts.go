@@ -22,11 +22,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/golang/gddo/httputil"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/golang/gddo/httputil"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // SearchAlerts search alerts using the filters in the request
