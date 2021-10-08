@@ -129,6 +129,8 @@ type MongoDatabaseInterface interface {
 	ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgreementFE, error)
 	// ListHostUsingOracleDatabaseLicenses lists the hosts/clusters that need to be licensed by Oracle/Database agreements
 	ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingOracleDatabaseLicenses, error)
+	// RemoveOracleDatabaseLicenseTypes remove a licence type - Oracle/Database agreement part from the database
+	RemoveOracleDatabaseLicenseTypes(id string) error
 
 	// SavePatchingFunction saves the patching function
 	SavePatchingFunction(pf model.PatchingFunction) error
