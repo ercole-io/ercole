@@ -23,7 +23,6 @@ import (
 	"net/url"
 
 	"github.com/golang/gddo/httputil"
-
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
@@ -92,8 +91,8 @@ func (ctrl *APIController) UpdateOracleDatabaseAgreement(w http.ResponseWriter, 
 		return
 	}
 
-	if req.Unlimited && !req.CatchAll {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewErrorf("Agreement is unlimited so it must be even CatchAll"))
+	if req.Unlimited && !req.Basket {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewErrorf("Agreement is unlimited so it must be even Basket"))
 		return
 	}
 
@@ -170,10 +169,10 @@ func parseGetOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.GetOracl
 			utils.NewError(errors.New("Invalid value for unlimited"), http.StatusText(http.StatusUnprocessableEntity))
 	}
 
-	filters.CatchAll = urlValues.Get("catch-all")
-	if filters.CatchAll != "true" && filters.CatchAll != "false" && filters.CatchAll != "" {
+	filters.Basket = urlValues.Get("basket")
+	if filters.Basket != "true" && filters.Basket != "false" && filters.Basket != "" {
 		return dto.GetOracleDatabaseAgreementsFilter{},
-			utils.NewError(errors.New("Invalid value for catch-all"), http.StatusText(http.StatusUnprocessableEntity))
+			utils.NewError(errors.New("Invalid value for basket"), http.StatusText(http.StatusUnprocessableEntity))
 	}
 
 	if filters.LicensesPerCoreLTE, err = utils.Str2int(urlValues.Get("licenses-per-core-lte"), -1); err != nil {
