@@ -16,9 +16,11 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/gorilla/mux"
 )
 
 // GetOracleDatabaseLicenseTypes return the list of OracleDatabaseLicenseTypes
@@ -41,4 +43,26 @@ func (ctrl *APIController) GetOracleDatabaseLicensesCompliance(w http.ResponseWr
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, licenses)
+}
+
+// DeleteOracleDatabaseLicenseTypes remove a licence type - Oracle/Database agreement part
+func (ctrl *APIController) DeleteOracleDatabaseLicenseTypes(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	var err error
+
+	id := mux.Vars(r)["id"]
+
+	if err = ctrl.Service.DeleteOracleDatabaseLicenseTypes(id); errors.Is(err, utils.ErrOracleDatabaseLicenseTypeNotFound) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+		return
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }

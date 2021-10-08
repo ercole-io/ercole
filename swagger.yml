@@ -4410,6 +4410,23 @@ paths:
                   $ref: '#/components/schemas/LicenseType'
       operationId: GetOracleDatabaseAgreementPartsList
       description: Get Oracle database agreement parts list
+  '/settings/oracle/database/license-types/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    delete:
+      summary: Delete Oracle database license types
+      operationId: DeleteOracleDatabaseLicenseTypes
+      responses:
+        '200':
+          description: OK
+      description: Remove Oracle database license type by ID
+      parameters: []
+      tags:
+        - api-service
   /technologies/all/license-history:
     get:
       summary: Get historical values of Oracle Databases Licenses
