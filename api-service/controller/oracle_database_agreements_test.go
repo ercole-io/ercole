@@ -58,7 +58,7 @@ func TestAddOracleDatabaseAgreement_Success(t *testing.T) {
 		ReferenceNumber: "REF001",
 		Unlimited:       false,
 		Count:           42,
-		CatchAll:        false,
+		Basket:          false,
 		Restricted:      false,
 		Hosts:           []string{"foobar"},
 	}
@@ -70,7 +70,7 @@ func TestAddOracleDatabaseAgreement_Success(t *testing.T) {
 		LicenseTypeID:   request.LicenseTypeID,
 		ReferenceNumber: request.ReferenceNumber,
 		Unlimited:       request.Unlimited,
-		CatchAll:        request.CatchAll,
+		Basket:          request.Basket,
 		Restricted:      request.Restricted,
 	}
 
@@ -147,7 +147,7 @@ func TestAddOracleDatabaseAgreement_BadRequests(t *testing.T) {
 			ReferenceNumber: "REF001",
 			Unlimited:       false,
 			Count:           42,
-			CatchAll:        false,
+			Basket:          false,
 			Hosts:           []string{"foobar"},
 		}
 
@@ -161,7 +161,7 @@ func TestAddOracleDatabaseAgreement_BadRequests(t *testing.T) {
 		require.Equal(t, http.StatusBadRequest, rr.Code)
 	})
 
-	t.Run("if restricted can't be catchAll", func(t *testing.T) {
+	t.Run("if restricted can't be basket", func(t *testing.T) {
 		request := model.OracleDatabaseAgreement{
 			ID:              utils.Str2oid(""),
 			AgreementID:     "AID001",
@@ -170,7 +170,7 @@ func TestAddOracleDatabaseAgreement_BadRequests(t *testing.T) {
 			ReferenceNumber: "REF001",
 			Unlimited:       false,
 			Count:           42,
-			CatchAll:        true,
+			Basket:          true,
 			Restricted:      true,
 			Hosts:           []string{"foobar"},
 		}
@@ -241,7 +241,7 @@ func TestUpdateOracleDatabaseAgreement_Success(t *testing.T) {
 		ReferenceNumber: "REF001",
 		Unlimited:       false,
 		Count:           42,
-		CatchAll:        false,
+		Basket:          false,
 		Hosts:           []string{"foobar"},
 	}
 
@@ -285,7 +285,7 @@ func TestUpdateOracleDatabaseAgreement_BadRequests(t *testing.T) {
 		require.Equal(t, http.StatusBadRequest, rr.Code)
 	})
 
-	t.Run("if restricted can't be catchAll", func(t *testing.T) {
+	t.Run("if restricted can't be basket", func(t *testing.T) {
 		request := model.OracleDatabaseAgreement{
 			ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 			AgreementID:     "AID001",
@@ -294,7 +294,7 @@ func TestUpdateOracleDatabaseAgreement_BadRequests(t *testing.T) {
 			ReferenceNumber: "REF001",
 			Unlimited:       false,
 			Count:           42,
-			CatchAll:        true,
+			Basket:          true,
 			Restricted:      true,
 			Hosts:           []string{"foobar"},
 		}
@@ -333,7 +333,7 @@ func TestUpdateOracleDatabaseAgreement_InternalServerError(t *testing.T) {
 		ReferenceNumber: "REF001",
 		Unlimited:       false,
 		Count:           42,
-		CatchAll:        false,
+		Basket:          false,
 		Hosts:           []string{"foobar"},
 	}
 
@@ -403,7 +403,7 @@ func TestGetOracleDatabaseAgreements_Success(t *testing.T) {
 			Metric:                      "",
 			ReferenceNumber:             "",
 			Unlimited:                   "true",
-			CatchAll:                    "",
+			Basket:                      "",
 			LicensesPerCoreLTE:          -1,
 			LicensesPerCoreGTE:          -1,
 			LicensesPerUserLTE:          -1,
@@ -488,7 +488,7 @@ func TestParseGetOracleDatabaseAgreementsFilters_SuccessEmpty(t *testing.T) {
 		Metric:                      "",
 		ReferenceNumber:             "",
 		Unlimited:                   "",
-		CatchAll:                    "",
+		Basket:                      "",
 		LicensesPerCoreLTE:          -1,
 		LicensesPerCoreGTE:          -1,
 		LicensesPerUserLTE:          -1,
@@ -503,7 +503,7 @@ func TestParseGetOracleDatabaseAgreementsFilters_SuccessEmpty(t *testing.T) {
 func TestParseSearchOracleDatabaseAgreementsFilters_SuccessFull(t *testing.T) {
 	r, err := http.NewRequest("GET",
 		"/?agreement-id=foo&license-type-id=bar&item-description=boz&csi=pippo&metrics=pluto&reference-number=foobar&"+
-			"unlimited=false&catch-all=true&"+
+			"unlimited=false&basket=true&"+
 			"licenses-per-core-lte=1&licenses-per-core-gte=2&"+
 			"licenses-per-user-lte=3&licenses-per-user-gte=4&"+
 			"available-licenses-per-core-lte=3&available-licenses-per-core-gte=13&"+
@@ -520,7 +520,7 @@ func TestParseSearchOracleDatabaseAgreementsFilters_SuccessFull(t *testing.T) {
 		Metric:                      "pluto",
 		ReferenceNumber:             "foobar",
 		Unlimited:                   "false",
-		CatchAll:                    "true",
+		Basket:                      "true",
 		LicensesPerCoreLTE:          1,
 		LicensesPerCoreGTE:          2,
 		LicensesPerUserLTE:          3,
@@ -540,7 +540,7 @@ func TestParseSearchOracleDatabaseAgreementsFilters_Fail1(t *testing.T) {
 }
 
 func TestParseSearchOracleDatabaseAgreementsFilters_Fail2(t *testing.T) {
-	r, err := http.NewRequest("GET", "/?catch-all=asdfasdf", nil)
+	r, err := http.NewRequest("GET", "/?basket=asdfasdf", nil)
 	require.NoError(t, err)
 	_, err = parseGetOracleDatabaseAgreementsFilters(r.URL.Query())
 	require.Error(t, err)
@@ -1140,7 +1140,7 @@ func TestGetOracleDatabaseAgreementsXLSX_Success(t *testing.T) {
 		Metric:                      "",
 		ReferenceNumber:             "",
 		Unlimited:                   "true",
-		CatchAll:                    "",
+		Basket:                      "",
 		LicensesPerCoreLTE:          -1,
 		LicensesPerCoreGTE:          -1,
 		LicensesPerUserLTE:          -1,
@@ -1215,7 +1215,7 @@ func TestGetOracleDatabaseAgreementsXLSX_InternalServerError1(t *testing.T) {
 		Metric:                      "",
 		ReferenceNumber:             "",
 		Unlimited:                   "",
-		CatchAll:                    "",
+		Basket:                      "",
 		LicensesPerCoreLTE:          -1,
 		LicensesPerCoreGTE:          -1,
 		LicensesPerUserLTE:          -1,

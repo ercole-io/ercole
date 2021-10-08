@@ -214,7 +214,7 @@ func (as *APIService) GetOracleDatabaseAgreementsAsXLSX(filter dto.GetOracleData
 		sheets.SetCellValue(sheet, nextAxis(), val.LicensesPerUser)
 		sheets.SetCellValue(sheet, nextAxis(), val.AvailableLicensesPerCore)
 		sheets.SetCellValue(sheet, nextAxis(), val.AvailableLicensesPerUser)
-		sheets.SetCellValue(sheet, nextAxis(), val.CatchAll)
+		sheets.SetCellValue(sheet, nextAxis(), val.Basket)
 		sheets.SetCellValue(sheet, nextAxis(), val.Restricted)
 
 		for _, val2 := range val.Hosts {
@@ -262,7 +262,7 @@ func (as *APIService) assignOracleDatabaseAgreementsToHosts(
 		as.Log.Debugf("Resorted LicensingObjects: %#v\n", hosts)
 	}
 
-	assignLicensesFromCatchAllAgreements(as, agrs, hosts)
+	assignLicensesFromBasketAgreements(as, agrs, hosts)
 
 	calculateTotalCoveredAndConsumedLicenses(as, agrs, hostsMap)
 
@@ -270,12 +270,12 @@ func (as *APIService) assignOracleDatabaseAgreementsToHosts(
 }
 
 // sortOracleDatabaseAgreements sort the list of dto.OracleDatabaseAgreementsFE
-// by CatchAll (falses first), Unlimited (falses first), decreasing UsersCount, decreasing LicensesCount
+// by Basket (falses first), Unlimited (falses first), decreasing UsersCount, decreasing LicensesCount
 func sortOracleDatabaseAgreements(obj []dto.OracleDatabaseAgreementFE) {
 	sort.Slice(obj, func(i, j int) bool {
 
-		if obj[i].CatchAll != obj[j].CatchAll {
-			return obj[j].CatchAll
+		if obj[i].Basket != obj[j].Basket {
+			return obj[j].Basket
 
 		} else if obj[i].Unlimited != obj[j].Unlimited {
 			return obj[j].Unlimited
@@ -485,8 +485,8 @@ func doAssignAgreementLicensesToAssociatedHost(
 	}
 }
 
-// If an agreement is catchAll (or basket..) distributes its licenses to every hosts that use that kind of license
-func assignLicensesFromCatchAllAgreements(
+// If an agreement is basket distributes its licenses to every hosts that use that kind of license
+func assignLicensesFromBasketAgreements(
 	as *APIService,
 	agrs []dto.OracleDatabaseAgreementFE,
 	hosts []dto.HostUsingOracleDatabaseLicenses) {
@@ -501,7 +501,7 @@ func assignLicensesFromCatchAllAgreements(
 		for j := range agrs {
 			agr := &agrs[j]
 
-			if !agr.CatchAll {
+			if !agr.Basket {
 				continue
 			}
 
@@ -513,7 +513,7 @@ func assignLicensesFromCatchAllAgreements(
 				continue
 			}
 
-			doAssignLicenseFromCatchAllAgreement(as, agr, host)
+			doAssignLicenseFromBasketAgreement(as, agr, host)
 
 			if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
 				as.Log.Debugf("Distributing with metric [%s] [ULA? %t] %f licenses to obj %s. objCount=0 licenseTypeID=%s\n",
@@ -532,7 +532,7 @@ func assignLicensesFromCatchAllAgreements(
 }
 
 // Use all the licenses available in agreement to cover host and associatedHost if provided
-func doAssignLicenseFromCatchAllAgreement(
+func doAssignLicenseFromBasketAgreement(
 	as *APIService,
 	agreement *dto.OracleDatabaseAgreementFE,
 	hostUsingLicenses *dto.HostUsingOracleDatabaseLicenses) {
@@ -605,7 +605,7 @@ func checkOracleDatabaseAgreementMatchFilter(agr dto.OracleDatabaseAgreementFE, 
 		(filters.Metric == "" || strings.EqualFold(agr.Metric, filters.Metric)) &&
 		strings.Contains(strings.ToLower(agr.ReferenceNumber), strings.ToLower(filters.ReferenceNumber)) &&
 		(filters.Unlimited == "" || agr.Unlimited == (filters.Unlimited == "true")) &&
-		(filters.CatchAll == "" || agr.CatchAll == (filters.CatchAll == "true")) &&
+		(filters.Basket == "" || agr.Basket == (filters.Basket == "true")) &&
 		(filters.LicensesPerCoreLTE == -1 || agr.LicensesPerCore <= float64(filters.LicensesPerCoreLTE)) &&
 		(filters.LicensesPerCoreGTE == -1 || agr.LicensesPerCore >= float64(filters.LicensesPerCoreGTE)) &&
 		(filters.LicensesPerUserLTE == -1 || agr.LicensesPerUser <= float64(filters.LicensesPerUserLTE)) &&

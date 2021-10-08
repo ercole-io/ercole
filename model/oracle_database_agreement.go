@@ -30,14 +30,14 @@ type OracleDatabaseAgreement struct {
 	ReferenceNumber string             `json:"referenceNumber" bson:"referenceNumber"`
 	Unlimited       bool               `json:"unlimited" bson:"unlimited"`
 	Count           int                `json:"count" bson:"count"`
-	CatchAll        bool               `json:"catchAll" bson:"catchAll"` //TODO Rename in IsBasket ?
+	Basket          bool               `json:"basket" bson:"basket"`
 	Restricted      bool               `json:"restricted" bson:"restricted"`
 	Hosts           []string           `json:"hosts" bson:"hosts"`
 }
 
 func (agreement OracleDatabaseAgreement) Check() error {
-	if agreement.Restricted && agreement.CatchAll {
-		return errors.New("If it's restricted it can't be catchAll")
+	if agreement.Restricted && agreement.Basket {
+		return errors.New("If it's restricted it can't be basket")
 	}
 
 	return nil

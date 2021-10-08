@@ -38,7 +38,7 @@ type OracleDatabaseAgreementFE struct {
 	ReferenceNumber string `json:"referenceNumber" bson:"referenceNumber"`
 	Unlimited       bool   `json:"unlimited" bson:"unlimited"` // Or "ULA", "Unlimited License Agreement"
 
-	CatchAll   bool                                      `json:"catchAll" bson:"catchAll"` //TODO Rename in basket
+	Basket     bool                                      `json:"basket" bson:"basket"`
 	Restricted bool                                      `json:"restricted" bson:"restricted"`
 	Hosts      []OracleDatabaseAgreementAssociatedHostFE `json:"hosts" bson:"hosts"`
 
@@ -75,7 +75,7 @@ type GetOracleDatabaseAgreementsFilter struct {
 	Metric                      string
 	ReferenceNumber             string
 	Unlimited                   string //"" -> Ignore, "true" -> true, "false" -> false
-	CatchAll                    string //"" -> Ignore, "true" -> true, "false" -> false //TODO Rename in Basket
+	Basket                      string //"" -> Ignore, "true" -> true, "false" -> false
 	LicensesPerCoreLTE          int
 	LicensesPerCoreGTE          int
 	LicensesPerUserLTE          int
