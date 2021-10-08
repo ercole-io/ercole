@@ -21,8 +21,6 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-//TODO Rename parts in licenses
-
 // GetOracleDatabaseLicenseTypes return the list of OracleDatabaseLicenseTypes
 func (ctrl *APIController) GetOracleDatabaseLicenseTypes(w http.ResponseWriter, r *http.Request) {
 	data, err := ctrl.Service.GetOracleDatabaseLicenseTypes()
