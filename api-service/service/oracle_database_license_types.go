@@ -248,3 +248,7 @@ func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabase
 
 	return consumedLicenses, nil
 }
+
+func (as *APIService) DeleteOracleDatabaseLicenseTypes(id string) error {
+	return as.Database.RemoveOracleDatabaseLicenseTypes(id)
+}

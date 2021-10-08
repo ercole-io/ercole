@@ -110,6 +110,8 @@ type APIControllerInterface interface {
 	GetTechnologyList(w http.ResponseWriter, r *http.Request)
 	// GetOracleDatabaseLicenseTypes return the list of Oracle/Database agreement parts
 	GetOracleDatabaseLicenseTypes(w http.ResponseWriter, r *http.Request)
+	// DeleteOracleDatabaseLicenseTypes remove a licence type - Oracle/Database agreement part
+	DeleteOracleDatabaseLicenseTypes(w http.ResponseWriter, r *http.Request)
 
 	// SetPatchingFunction set the patching function of a host specified in the hostname path variable to the content of the request body
 	SetPatchingFunction(w http.ResponseWriter, r *http.Request)
