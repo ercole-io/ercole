@@ -4233,7 +4233,7 @@ paths:
         - schema:
             type: string
           in: query
-          name: catch-all
+          name: basket
           description: ''
         - schema:
             type: number

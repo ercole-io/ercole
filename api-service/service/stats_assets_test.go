@@ -66,7 +66,7 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 			Metric:                   model.LicenseTypeMetricProcessorPerpetual,
 			ReferenceNumber:          "RF0001",
 			Unlimited:                false,
-			CatchAll:                 false,
+			Basket:                   false,
 			Restricted:               false,
 			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
 			LicensesPerCore:          55,

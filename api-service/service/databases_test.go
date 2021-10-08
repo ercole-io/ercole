@@ -587,7 +587,7 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 			Metric:          "Named User Plus Perpetual",
 			ReferenceNumber: "66880702",
 			Unlimited:       false,
-			CatchAll:        false,
+			Basket:          false,
 			Restricted:      false,
 			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
 				{
