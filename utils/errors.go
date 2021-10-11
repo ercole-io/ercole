@@ -38,13 +38,11 @@ var ErrAlertNotFound = errors.New("Alert not found")
 // ErrClusterNotFound contains "Cluster not found" error
 var ErrClusterNotFound = errors.New("Cluster not found")
 
+// ErrOracleDatabaseLicenseTypeIDNotFound contains "LicenseTypeID Not Found" error
 var ErrOracleDatabaseLicenseTypeIDNotFound = errors.New("Oracle Database LicenseTypeID not found")
 
 // ErrOracleDatabaseAgreementNotFound contains "Agreement not found" error
 var ErrOracleDatabaseAgreementNotFound = errors.New("Agreement not found")
-
-// ErrOracleDatabaseLicenseTypeNotFound contains "License Type Not Found" error
-var ErrOracleDatabaseLicenseTypeNotFound = errors.New("License Type Not Found")
 
 // ErrNotInClusterHostNotFound contains "Baremetal host not found" error
 var ErrNotInClusterHostNotFound = errors.New("Not in cluster host not found")
