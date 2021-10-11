@@ -108,10 +108,6 @@ type APIControllerInterface interface {
 	GetErcoleFeatures(w http.ResponseWriter, r *http.Request)
 	// GetTechnologyList return the list of techonlogies
 	GetTechnologyList(w http.ResponseWriter, r *http.Request)
-	// GetOracleDatabaseLicenseTypes return the list of Oracle/Database agreement parts
-	GetOracleDatabaseLicenseTypes(w http.ResponseWriter, r *http.Request)
-	// DeleteOracleDatabaseLicenseTypes remove a licence type - Oracle/Database agreement part
-	DeleteOracleDatabaseLicenseTypes(w http.ResponseWriter, r *http.Request)
 
 	// SetPatchingFunction set the patching function of a host specified in the hostname path variable to the content of the request body
 	SetPatchingFunction(w http.ResponseWriter, r *http.Request)
@@ -151,6 +147,15 @@ type APIControllerInterface interface {
 
 	AddHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
 	DeleteHostFromOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
+
+	// ORACLE DATABASE LICENSE TYPES
+
+	// GetOracleDatabaseLicenseTypes return the list of Oracle/Database agreement parts
+	GetOracleDatabaseLicenseTypes(w http.ResponseWriter, r *http.Request)
+	// DeleteOracleDatabaseLicenseType remove a licence type - Oracle/Database agreement part
+	DeleteOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request)
+	// AddOracleDatabaseLicenseType add a licence type - Oracle/Database agreement part to the database if it hasn't a licence type
+	AddOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request)
 
 	// MYSQL
 

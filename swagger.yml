@@ -4410,6 +4410,43 @@ paths:
                   $ref: '#/components/schemas/LicenseType'
       operationId: GetOracleDatabaseAgreementPartsList
       description: Get Oracle database agreement parts list
+    post:
+      tags:
+        - api-service
+      summary: Add Oracle database license type
+      operationId: AddOracleDatabaseLicenseType
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                itemDescription:
+                  type: string
+                metric:
+                  type: string
+                cost:
+                  type: number
+                aliases:
+                  type: array
+                option:
+                  type: boolean  
+            examples:
+              example-1:
+                value:
+                  id: 'Test'
+                  itemDescription: 'Oracle Database Enterprise Edition'
+                  metric: 'Processor Perpetual'
+                  cost: 500
+                  aliases:
+                    - Tuning Pack
+                  option: false
+      description: Add Oracle database license type
   '/settings/oracle/database/license-types/{id}':
     parameters:
       - schema:
@@ -4418,8 +4455,8 @@ paths:
         in: path
         required: true
     delete:
-      summary: Delete Oracle database license types
-      operationId: DeleteOracleDatabaseLicenseTypes
+      summary: Delete Oracle database license type
+      operationId: DeleteOracleDatabaseLicenseType
       responses:
         '200':
           description: OK
