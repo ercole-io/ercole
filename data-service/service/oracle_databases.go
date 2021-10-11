@@ -322,9 +322,9 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 }
 
 func (hds *HostDataService) checkMissingDatabases(previous, new *model.HostDataBE) {
-	if previous == nil &&
-		previous.Features.Oracle == nil &&
-		previous.Features.Oracle.Database == nil &&
+	if previous == nil ||
+		previous.Features.Oracle == nil ||
+		previous.Features.Oracle.Database == nil ||
 		previous.Features.Oracle.Database.Databases == nil {
 		return
 	}
