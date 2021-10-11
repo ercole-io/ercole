@@ -860,6 +860,26 @@ func TestCheckMissingDatabases_AllMissing(t *testing.T) {
 	hds.checkMissingDatabases(&hdPrevious, &hdNew)
 }
 
+func TestCheckMissingDatabases_NoFeature(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	alertsc := NewMockAlertSvcClientInterface(mockCtrl)
+	apisc := NewMockApiSvcClientInterface(mockCtrl)
+	hds := HostDataService{
+		Config:         config.Configuration{},
+		ServerVersion:  "",
+		Database:       db,
+		AlertSvcClient: alertsc,
+		ApiSvcClient:   apisc,
+		TimeNow:        utils.Btc(utils.P("2019-11-05T16:02:03Z")),
+		Log:            logger.NewLogger("TEST"),
+	}
+
+	hd := model.HostDataBE{}
+	hds.checkMissingDatabases(&hd, nil)
+}
+
 func TestSearchAndAckOldMissingDatabasesAlerts(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
