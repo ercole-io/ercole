@@ -16,9 +16,11 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/gorilla/mux"
 )
@@ -45,8 +47,8 @@ func (ctrl *APIController) GetOracleDatabaseLicensesCompliance(w http.ResponseWr
 	utils.WriteJSONResponse(w, http.StatusOK, licenses)
 }
 
-// DeleteOracleDatabaseLicenseTypes remove a licence type - Oracle/Database agreement part
-func (ctrl *APIController) DeleteOracleDatabaseLicenseTypes(w http.ResponseWriter, r *http.Request) {
+// DeleteOracleDatabaseLicenseType remove a licence type - Oracle/Database agreement part
+func (ctrl *APIController) DeleteOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
@@ -56,7 +58,7 @@ func (ctrl *APIController) DeleteOracleDatabaseLicenseTypes(w http.ResponseWrite
 
 	id := mux.Vars(r)["id"]
 
-	if err = ctrl.Service.DeleteOracleDatabaseLicenseTypes(id); errors.Is(err, utils.ErrOracleDatabaseLicenseTypeNotFound) {
+	if err = ctrl.Service.DeleteOracleDatabaseLicenseType(id); errors.Is(err, utils.ErrOracleDatabaseLicenseTypeIDNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
@@ -65,4 +67,30 @@ func (ctrl *APIController) DeleteOracleDatabaseLicenseTypes(w http.ResponseWrite
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
+}
+
+// AddOracleDatabaseLicenseType add a licence type - Oracle/Database agreement part to the database if it hasn't a licence type
+func (ctrl *APIController) AddOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	var req model.OracleDatabaseLicenseType
+
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&req); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
+			utils.NewError(err, http.StatusText(http.StatusBadRequest)))
+		return
+	}
+
+	agr, err := ctrl.Service.AddOracleDatabaseLicenseType(req)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, agr)
 }

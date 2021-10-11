@@ -54,8 +54,8 @@ func (md *MongoDatabase) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabase
 	return licenseTypes, nil
 }
 
-// RemoveOracleDatabaseLicenseTypes remove a licence type - Oracle/Database agreement part
-func (md *MongoDatabase) RemoveOracleDatabaseLicenseTypes(id string) error {
+// RemoveOracleDatabaseLicenseType remove a licence type - Oracle/Database agreement part
+func (md *MongoDatabase) RemoveOracleDatabaseLicenseType(id string) error {
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbLicenseTypesCollection).
 		DeleteOne(context.TODO(), bson.M{
 			"_id": id,
@@ -65,7 +65,18 @@ func (md *MongoDatabase) RemoveOracleDatabaseLicenseTypes(id string) error {
 	}
 
 	if res.DeletedCount == 0 {
-		return utils.ErrOracleDatabaseLicenseTypeNotFound
+		return utils.ErrOracleDatabaseLicenseTypeIDNotFound
 	}
+	return nil
+}
+
+// InsertOracleDatabaseLicenseType insert an Oracle/Database license type into the database
+func (md *MongoDatabase) InsertOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbLicenseTypesCollection).
+		InsertOne(context.TODO(), licenseType)
+	if err != nil {
+		return utils.NewError(err, "DB ERROR")
+	}
+
 	return nil
 }
