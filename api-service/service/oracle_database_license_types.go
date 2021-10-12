@@ -260,6 +260,22 @@ func (as *APIService) AddOracleDatabaseLicenseType(licenseType model.OracleDatab
 	}
 
 	lt, err := as.GetOracleDatabaseLicenseType(licenseType.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return lt, nil
+}
+
+func (as *APIService) UpdateOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) (*model.OracleDatabaseLicenseType, error) {
+	if err := as.Database.UpdateOracleDatabaseLicenseType(licenseType); err != nil {
+		return nil, err
+	}
+
+	lt, err := as.GetOracleDatabaseLicenseType(licenseType.ID)
+	if err != nil {
+		return nil, err
+	}
 
 	return lt, nil
 }

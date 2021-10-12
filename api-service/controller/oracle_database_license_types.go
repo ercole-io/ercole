@@ -94,3 +94,28 @@ func (ctrl *APIController) AddOracleDatabaseLicenseType(w http.ResponseWriter, r
 
 	utils.WriteJSONResponse(w, http.StatusOK, agr)
 }
+
+func (ctrl *APIController) UpdateOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	var req model.OracleDatabaseLicenseType
+
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&req); err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
+			utils.NewError(err, http.StatusText(http.StatusBadRequest)))
+		return
+	}
+
+	agr, err := ctrl.Service.UpdateOracleDatabaseLicenseType(req)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, agr)
+}

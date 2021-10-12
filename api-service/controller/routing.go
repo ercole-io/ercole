@@ -131,6 +131,7 @@ func setupSettingsRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/oracle/database/license-types", ctrl.GetOracleDatabaseLicenseTypes).Methods("GET")
 	router.HandleFunc("/oracle/database/license-types/{id}", ctrl.DeleteOracleDatabaseLicenseType).Methods("DELETE")
 	router.HandleFunc("/oracle/database/license-types", ctrl.AddOracleDatabaseLicenseType).Methods("POST")
+	router.HandleFunc("/oracle/database/license-types", ctrl.UpdateOracleDatabaseLicenseType).Methods("PUT")
 }
 
 func setupFrontendAPIRoutes(router *mux.Router, ctrl APIControllerInterface) {

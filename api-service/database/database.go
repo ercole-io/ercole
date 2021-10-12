@@ -132,6 +132,8 @@ type MongoDatabaseInterface interface {
 
 	// InsertOracleDatabaseLicenseType insert an Oracle/Database license type into the database
 	InsertOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) error
+	// UpdateOracleDatabaseLicenseType update an Oracle/Database license type in the database
+	UpdateOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) error
 	// RemoveOracleDatabaseLicenseType remove a licence type - Oracle/Database agreement part from the database
 	RemoveOracleDatabaseLicenseType(id string) error
 
