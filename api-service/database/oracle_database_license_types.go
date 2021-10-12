@@ -80,3 +80,19 @@ func (md *MongoDatabase) InsertOracleDatabaseLicenseType(licenseType model.Oracl
 
 	return nil
 }
+
+// UpdateOracleDatabaseLicenseType update an Oracle/Database license type in the database
+func (md *MongoDatabase) UpdateOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) error {
+	result, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbLicenseTypesCollection).
+		ReplaceOne(context.TODO(), bson.M{
+			"_id": licenseType.ID,
+		}, licenseType)
+	if err != nil {
+		return utils.NewError(err, "DB ERROR")
+	}
+	if result.MatchedCount != 1 {
+		return utils.ErrOracleDatabaseLicenseTypeIDNotFound
+	}
+
+	return nil
+}

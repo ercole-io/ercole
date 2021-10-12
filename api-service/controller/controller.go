@@ -156,6 +156,8 @@ type APIControllerInterface interface {
 	DeleteOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request)
 	// AddOracleDatabaseLicenseType add a licence type - Oracle/Database agreement part to the database if it hasn't a licence type
 	AddOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request)
+	// UpdateOracleDatabaseLicenseType update a licence type - Oracle/Database agreement part
+	UpdateOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request)
 
 	// MYSQL
 

@@ -148,6 +148,7 @@ type APIServiceInterface interface {
 	GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error)
 	DeleteOracleDatabaseLicenseType(id string) error
 	AddOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) (*model.OracleDatabaseLicenseType, error)
+	UpdateOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) (*model.OracleDatabaseLicenseType, error)
 
 	// PATCHING FUNCTIONS
 	// SetPatchingFunction set the patching function of a host
