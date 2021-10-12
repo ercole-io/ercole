@@ -4447,6 +4447,43 @@ paths:
                     - Tuning Pack
                   option: false
       description: Add Oracle database license type
+    put:
+      summary: Update Oracle Database License Type
+      operationId: UpdateOracleDatabaseLicenseType
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                itemDescription:
+                  type: string
+                metric:
+                  type: string
+                cost:
+                  type: number
+                aliases:
+                  type: array
+                option:
+                  type: boolean
+            examples:
+              example-1:
+                value:
+                  id: 'Test'
+                  itemDescription: 'Oracle Secure Backup'
+                  metric: 'Processor Perpetual'
+                  cost: 500
+                  aliases:
+                    - Tuning Pack
+                  option: false
+      description: Update Oracle license type
+      tags:
+        - api-service
   '/settings/oracle/database/license-types/{id}':
     parameters:
       - schema:
