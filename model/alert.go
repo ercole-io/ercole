@@ -71,7 +71,7 @@ func getAlertCodes() []string {
 	return []string{
 		AlertCodeNewServer, AlertCodeUnlistedRunningDatabase, AlertCodeMissingPrimaryDatabase, AlertCodeMissingHostInErcole, AlertCodeMissingHostInCmdb, AlertCodeAgentError,
 		AlertCodeNoData,
-		AlertCodeNewDatabase, AlertCodeNewLicense, AlertCodeNewOption, AlertCodeIncreasedCPUCores,
+		AlertCodeNewDatabase, AlertCodeNewLicense, AlertCodeNewOption, AlertCodeIncreasedCPUCores, AlertCodeMissingDatabase,
 	}
 }
 
