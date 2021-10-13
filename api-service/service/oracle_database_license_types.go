@@ -212,12 +212,6 @@ func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabase
 		return 0, fmt.Errorf("%w: %s", utils.ErrHostNotFound, host.Name)
 	}
 
-	cms := hostdata.ClusterMembershipStatus
-	if !cms.VeritasClusterServer ||
-		(cms.VeritasClusterServer && len(cms.VeritasClusterHostnames) <= 2) {
-		return host.OriginalCount, nil
-	}
-
 	_, found = hostnamesPerLicense[host.Name]
 	if !found {
 		hostnamesPerLicense[host.Name] = make(map[string]bool)
@@ -228,25 +222,22 @@ func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabase
 		return 0, nil
 	}
 
-	var sumClusterCores int
-	for _, h := range cms.VeritasClusterHostnames {
+	consumedLicenses, err := hostdata.GetClusterCores(hostdatasPerHostname)
+	if errors.Is(err, utils.ErrHostNotInCluster) {
+		return host.OriginalCount, nil
+	} else if err != nil {
+		return 0, err
+	}
+
+	for _, h := range hostdata.ClusterMembershipStatus.VeritasClusterHostnames {
 		_, found := hostnamesPerLicense[h]
 		if !found {
 			hostnamesPerLicense[h] = make(map[string]bool)
 		}
 		hostnamesPerLicense[h][host.LicenseTypeID] = true
-
-		anotherHostdata, found := hostdatasPerHostname[host.Name]
-		if !found {
-			as.Log.Warn(fmt.Errorf("%w: %s", utils.ErrHostNotFound, host.Name))
-			continue
-		}
-
-		sumClusterCores += anotherHostdata.Info.CPUCores
 	}
 
 	hostnamesPerLicense[host.Name][host.LicenseTypeID] = true
-	consumedLicenses := float64(sumClusterCores) * 0.5 // core factor
 
 	return consumedLicenses, nil
 }

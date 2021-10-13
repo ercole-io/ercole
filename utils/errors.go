@@ -50,3 +50,6 @@ var ErrNotInClusterHostNotFound = errors.New("Not in cluster host not found")
 var ErrInvalidHostdata = errors.New("Invalid hostdata")
 
 var ErrInvalidAck = errors.New("Alert(s) cannot be acknowledged")
+
+// ErrHostNotInCluster
+var ErrHostNotInCluster = errors.New("host not in cluster")

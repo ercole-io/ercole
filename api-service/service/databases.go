@@ -17,7 +17,10 @@
 package service
 
 import (
+	"errors"
 	"strings"
+
+	"github.com/ercole-io/ercole/v2/utils"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
@@ -181,6 +184,35 @@ func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.D
 		usedLicenses = append(usedLicenses, thisDbs...)
 	}
 
+	hostdatas, err := as.Database.GetHostDatas(utils.MAX_TIME)
+	if err != nil {
+		return nil, err
+	}
+
+	hostdatasPerHostname := make(map[string]*model.HostDataBE, len(hostdatas))
+	for i := range hostdatas {
+		hd := &hostdatas[i]
+		hostdatasPerHostname[hd.Hostname] = hd
+	}
+
+	for i, l := range usedLicenses {
+
+		hostdata, found := hostdatasPerHostname[l.Hostname]
+		if !found {
+			as.Log.Errorf("%w: %s", utils.ErrHostNotFound, l.Hostname)
+			continue
+		}
+
+		clusterLicenses, err := hostdata.GetClusterCores(hostdatasPerHostname)
+		if errors.Is(err, utils.ErrHostNotInCluster) {
+			continue
+		} else if err != nil {
+			return nil, err
+		}
+
+		usedLicenses[i].ClusterLicenses = clusterLicenses
+	}
+
 	return usedLicenses, nil
 }
 
@@ -198,6 +230,7 @@ func (as *APIService) GetDatabasesUsedLicensesAsXLSX(filter dto.GlobalFilter) (*
 		"Description",
 		"Metric",
 		"Used Licenses",
+		"Cluster Licenses",
 	}
 
 	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
@@ -214,6 +247,7 @@ func (as *APIService) GetDatabasesUsedLicensesAsXLSX(filter dto.GlobalFilter) (*
 		sheets.SetCellValue(sheet, nextAxis(), val.Description)
 		sheets.SetCellValue(sheet, nextAxis(), val.Metric)
 		sheets.SetCellValue(sheet, nextAxis(), val.UsedLicenses)
+		sheets.SetCellValue(sheet, nextAxis(), val.ClusterLicenses)
 	}
 	return sheets, err
 }
@@ -340,6 +374,7 @@ func (as *APIService) GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFil
 		"Description",
 		"Metric",
 		"Used Licenses",
+		"Cluster Licenses",
 	}
 
 	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
@@ -356,6 +391,7 @@ func (as *APIService) GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFil
 		sheets.SetCellValue(sheet, nextAxis(), val.Description)
 		sheets.SetCellValue(sheet, nextAxis(), val.Metric)
 		sheets.SetCellValue(sheet, nextAxis(), val.UsedLicenses)
+		sheets.SetCellValue(sheet, nextAxis(), val.ClusterLicenses)
 	}
 	return sheets, err
 }
@@ -378,12 +414,13 @@ licenses:
 		}
 
 		licensesPerHost = append(licensesPerHost, dto.DatabaseUsedLicensePerHost{
-			Hostname:      v.Hostname,
-			Databases:     1,
-			LicenseTypeID: v.LicenseTypeID,
-			Description:   v.Description,
-			Metric:        v.Metric,
-			UsedLicenses:  v.UsedLicenses,
+			Hostname:        v.Hostname,
+			Databases:       1,
+			LicenseTypeID:   v.LicenseTypeID,
+			Description:     v.Description,
+			Metric:          v.Metric,
+			UsedLicenses:    v.UsedLicenses,
+			ClusterLicenses: v.ClusterLicenses,
 		})
 	}
 
