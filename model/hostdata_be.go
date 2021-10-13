@@ -20,6 +20,7 @@ import (
 	"time"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
+	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -66,4 +67,27 @@ func (v HostDataBE) MarshalBSON() ([]byte, error) {
 // UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
 func (v *HostDataBE) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+}
+
+func (v *HostDataBE) GetClusterCores(hostdatasPerHostname map[string]*HostDataBE) (float64, error) {
+	cms := v.ClusterMembershipStatus
+	if !cms.VeritasClusterServer ||
+		(cms.VeritasClusterServer && len(cms.VeritasClusterHostnames) <= 2) {
+		return 0, utils.ErrHostNotInCluster
+	}
+
+	var sumClusterCores int
+	for _, h := range cms.VeritasClusterHostnames {
+		anotherHostdata, found := hostdatasPerHostname[h]
+		if !found {
+			sumClusterCores += v.Info.CPUCores // Use current hostdata as fallback
+			continue
+		}
+
+		sumClusterCores += anotherHostdata.Info.CPUCores
+	}
+
+	consumedLicenses := float64(sumClusterCores) * 0.5 // core factor
+
+	return consumedLicenses, nil
 }

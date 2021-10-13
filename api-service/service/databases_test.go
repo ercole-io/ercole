@@ -16,6 +16,7 @@
 package service
 
 import (
+	"github.com/ercole-io/ercole/v2/logger"
 	"testing"
 	"time"
 
@@ -366,6 +367,7 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := APIService{
 		Database: db,
+		Log:      logger.NewLogger("TEST"),
 	}
 
 	thisMoment := utils.P("2019-11-05T14:02:03+01:00")
@@ -422,6 +424,17 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 			Hosts:            []string{},
 		},
 	}
+	hostdatas := []model.HostDataBE{
+		{
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+		},
+	}
 	any := dto.GlobalFilter{
 		Location:    "",
 		Environment: "",
@@ -440,8 +453,10 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 			Return(clusters, nil),
 		db.EXPECT().GetMySQLAgreements().
 			Return(agreements, nil),
-	)
 
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+	)
 	actual, err := as.GetDatabasesUsedLicenses(filter)
 	require.NoError(t, err)
 
@@ -476,6 +491,7 @@ func TestGetDatabasesUsedLicensesAsXLSX_Success(t *testing.T) {
 			ResourceFilePath: "../../resources",
 		},
 		Database: db,
+		Log:      logger.NewLogger("TEST"),
 	}
 
 	thisMoment := utils.P("2019-11-05T14:02:03+01:00")
@@ -532,6 +548,17 @@ func TestGetDatabasesUsedLicensesAsXLSX_Success(t *testing.T) {
 			Hosts:            []string{},
 		},
 	}
+	hostdatas := []model.HostDataBE{
+		{
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+		},
+	}
 	any := dto.GlobalFilter{
 		Location:    "",
 		Environment: "",
@@ -551,6 +578,9 @@ func TestGetDatabasesUsedLicensesAsXLSX_Success(t *testing.T) {
 			Return(clusters, nil),
 		db.EXPECT().GetMySQLAgreements().
 			Return(agreements, nil),
+
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
 	)
 
 	actual, err := as.GetDatabasesUsedLicensesAsXLSX(filter)
@@ -689,6 +719,7 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "E2"))
 	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "F2"))
 	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "G2"))
+	assert.Equal(t, "", actual.GetCellValue("Licenses Compliance", "H2"))
 }
 
 func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
@@ -700,6 +731,7 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 			ResourceFilePath: "../../resources",
 		},
 		Database: db,
+		Log:      logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{
@@ -753,6 +785,17 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 			Hosts:            []string{},
 		},
 	}
+	hostdatas := []model.HostDataBE{
+		{
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+		},
+	}
 	any := dto.GlobalFilter{
 		Location:    "",
 		Environment: "",
@@ -772,6 +815,9 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 			Return(clusters, nil),
 		db.EXPECT().GetMySQLAgreements().
 			Return(agreements, nil),
+
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
 	)
 
 	actual, err := as.GetDatabasesUsedLicensesPerHostAsXLSX(filter)
@@ -783,6 +829,7 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "Oracle Database Enterprise Edition", actual.GetCellValue("Licenses Used", "D2"))
 	assert.Equal(t, "Processor Perpetual", actual.GetCellValue("Licenses Used", "E2"))
 	assert.Equal(t, "2", actual.GetCellValue("Licenses Used", "F2"))
+	assert.Equal(t, "", actual.GetCellValue("Licenses Used", "H2"))
 }
 
 func TestGetDatabasesUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
