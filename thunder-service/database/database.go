@@ -22,6 +22,8 @@ import (
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
+	"github.com/ercole-io/ercole/v2/model"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -29,6 +31,13 @@ import (
 // MongoDatabaseInterface is a interface that wrap methods used to perform CRUD operations in the mongodb database
 type MongoDatabaseInterface interface {
 	Init()
+
+	// Oracle Cloud Configuration
+	GetOciProfiles() ([]model.OciProfile, error)
+	GetMapOciProfiles() (map[primitive.ObjectID]model.OciProfile, error)
+	AddOciProfile(profile model.OciProfile) error
+	DeleteOciProfile(id primitive.ObjectID) error
+	UpdateOciProfile(profile model.OciProfile) error
 }
 
 // MongoDatabase is a implementation
