@@ -25,22 +25,31 @@ import (
 	"github.com/ercole-io/ercole/v2/thunder-service/database"
 
 	"github.com/ercole-io/ercole/v2/config"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type ThunderServiceInterface interface {
 	Init()
-	GetOCRecommendations(compartmentId string) ([]model.Recommendation, error)
-	GetOCRecommendationsWithCategory(compartmentId string) ([]model.RecommendationWithCategory, error)
+	GetOciRecommendations(profiles []string) ([]model.Recommendation, error)
+	AddOciProfile(profile model.OciProfile) (*model.OciProfile, error)
+	UpdateOciProfile(profile model.OciProfile) (*model.OciProfile, error)
+	GetOciProfiles() ([]model.OciProfile, error)
+	DeleteOciProfile(id primitive.ObjectID) error
 }
 
 type ThunderService struct {
-	Config   config.Configuration
-	Database database.MongoDatabaseInterface
-	TimeNow  func() time.Time
-	Log      logger.Logger
-	Random   *rand.Rand
+	Config      config.Configuration
+	Database    database.MongoDatabaseInterface
+	TimeNow     func() time.Time
+	Log         logger.Logger
+	Random      *rand.Rand
+	NewObjectID func() primitive.ObjectID
 }
 
 func (as *ThunderService) Init() {
 	as.Random = rand.New(rand.NewSource(as.TimeNow().UnixNano()))
+
+	as.NewObjectID = func() primitive.ObjectID {
+		return primitive.NewObjectIDFromTimestamp(as.TimeNow())
+	}
 }

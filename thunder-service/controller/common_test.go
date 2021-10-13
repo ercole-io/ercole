@@ -13,15 +13,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package model
+package controller
 
-// Recommendation holds informations about a recommendation
-type Recommendation struct {
-	TenancyOCID         string `json:"tenancyOCID"`
-	Name                string `json:"name"`
-	NumPending          string `json:"numPending"`
-	EstimatedCostSaving string `json:"estimatedCostSaving"`
-	Status              string `json:"status"`
-	Importance          string `json:"importance"`
-	RecommendationId    string `json:"recommendationId"`
-}
+//go:generate mockgen -source ../service/service.go -destination=fake_service_test.go -package=controller
