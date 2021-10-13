@@ -28,10 +28,16 @@ import (
 // ThunderControllerInterface is a interface that wrap methods used to inserting events in the queue
 type ThunderControllerInterface interface {
 
-	// GetOCRecommendations get recommendations from Oracle Cloud Infrastructure
-	GetOCRecommendations(w http.ResponseWriter, r *http.Request)
-	// GetOCRecommendationsWithCategory get recommendations related to category from Oracle Cloud Infrastructure
-	GetOCRecommendationsWithCategory(w http.ResponseWriter, r *http.Request)
+	// GetOciRecommendations get recommendations from Oracle Cloud Infrastructure
+	GetOciRecommendations(w http.ResponseWriter, r *http.Request)
+	// Get Configuration profiles for Oracle Cloud Access
+	GetOciProfiles(w http.ResponseWriter, r *http.Request)
+	// Add a new Configuration profile for Oracle Cloud Access
+	AddOciProfile(w http.ResponseWriter, r *http.Request)
+	// Update an existing Configuration profile for Oracle Cloud Access
+	UpdateOciProfile(w http.ResponseWriter, r *http.Request)
+	// Delete an existing Configuration profile for Oracle Cloud Access
+	DeleteOciProfile(w http.ResponseWriter, r *http.Request)
 }
 
 // ThunderController is the struct used to handle the requests from agents and contains the concrete implementation of ThunderControllerInterface
