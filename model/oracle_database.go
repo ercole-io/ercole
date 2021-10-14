@@ -20,6 +20,8 @@ import (
 	"strings"
 
 	godynstruct "github.com/amreo/go-dyn-struct"
+
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // OracleDatabase holds information about an Oracle database.
@@ -99,9 +101,8 @@ func (v OracleDatabase) Edition() (dbEdition string) {
 	return
 }
 
-func (v OracleDatabase) CoreFactor(host Host) float64 {
+func (v OracleDatabase) CoreFactor(host Host) (float64, error) {
 	dbEdition := v.Edition()
-	coreFactor := float64(-1)
 
 	if host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyOvm ||
 		host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyVmware ||
@@ -109,20 +110,28 @@ func (v OracleDatabase) CoreFactor(host Host) float64 {
 		host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyKvm {
 
 		if dbEdition == OracleDatabaseEditionExtreme || dbEdition == OracleDatabaseEditionEnterprise {
-			coreFactor = 0.5
-		} else if dbEdition == OracleDatabaseEditionStandard {
-			coreFactor = 0
+			return 0.5, nil
 		}
 
-	} else if host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyPhysical {
-		if dbEdition == OracleDatabaseEditionExtreme || dbEdition == OracleDatabaseEditionEnterprise {
-			coreFactor = 0.5
-		} else if dbEdition == OracleDatabaseEditionStandard {
-			coreFactor = float64(host.CPUSockets)
+		if dbEdition == OracleDatabaseEditionStandard {
+			return 0, nil
 		}
+
+		return 0, utils.NewErrorf("%q db: dbEdition %q unknown", v.Name, dbEdition)
 	}
 
-	return coreFactor
+	if host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyPhysical {
+		if dbEdition == OracleDatabaseEditionExtreme || dbEdition == OracleDatabaseEditionEnterprise {
+			return 0.5, nil
+		} else if dbEdition == OracleDatabaseEditionStandard {
+			return float64(host.CPUSockets), nil
+		}
+
+		return 0, utils.NewErrorf("%q db: dbEdition %q unknown", v.Name, dbEdition)
+	}
+
+	return 0, utils.NewErrorf("%q db: hardwareAbstractionTechnology %q unknown",
+		v.Name, host.HardwareAbstractionTechnology)
 }
 
 // MarshalJSON return the JSON rappresentation of this
