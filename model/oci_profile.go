@@ -22,7 +22,7 @@ import (
 )
 
 type OciProfile struct {
-	ID             primitive.ObjectID `json:"_id" bson:"_id"`
+	ID             primitive.ObjectID `json:"id" bson:"_id"`
 	Profile        string             `json:"profile" bson:"profile"`
 	TenancyOCID    string             `json:"tenancyOCID" bson:"tenancyOCID"`
 	UserOCID       string             `json:"userOCID" bson:"userOCID"`
