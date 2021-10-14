@@ -44,7 +44,7 @@ func TestGetOracleDatabaseLicenseTypes_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	expectedRes := []model.OracleDatabaseLicenseType{
+	ltRes := []model.OracleDatabaseLicenseType{
 		{
 			ItemDescription: "foobar",
 		},
@@ -52,7 +52,7 @@ func TestGetOracleDatabaseLicenseTypes_Success(t *testing.T) {
 
 	as.EXPECT().
 		GetOracleDatabaseLicenseTypes().
-		Return(expectedRes, nil)
+		Return(ltRes, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetOracleDatabaseLicenseTypes)
@@ -61,6 +61,9 @@ func TestGetOracleDatabaseLicenseTypes_Success(t *testing.T) {
 
 	handler.ServeHTTP(rr, req)
 
+	expectedRes := map[string]interface{}{
+		"licenses-types": ltRes,
+	}
 	require.Equal(t, http.StatusOK, rr.Code)
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
 }
