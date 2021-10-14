@@ -105,7 +105,8 @@ func (v OracleDatabase) CoreFactor(host Host) float64 {
 
 	if host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyOvm ||
 		host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyVmware ||
-		host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyVmother {
+		host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyVmother ||
+		host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyKvm {
 
 		if dbEdition == OracleDatabaseEditionExtreme || dbEdition == OracleDatabaseEditionEnterprise {
 			coreFactor = 0.5

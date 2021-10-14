@@ -34,6 +34,7 @@ const (
 	HardwareAbstractionTechnologyVmother  string = "VMOTHER"
 	HardwareAbstractionTechnologyXen      string = "XEN"
 	HardwareAbstractionTechnologyHpvirt   string = "HPVIRT"
+	HardwareAbstractionTechnologyKvm      string = "KVM"
 )
 
 // Host contains info about the host
