@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,17 +25,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// GetOracleDatabaseLicenseTypes return the list of OracleDatabaseLicenseTypes
-func (ctrl *APIController) GetOracleDatabaseLicenseTypes(w http.ResponseWriter, r *http.Request) {
-	data, err := ctrl.Service.GetOracleDatabaseLicenseTypes()
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	utils.WriteJSONResponse(w, http.StatusOK, data)
-}
-
 // GetOracleDatabaseLicensesCompliance return list of licenses with usage and compliance
 func (ctrl *APIController) GetOracleDatabaseLicensesCompliance(w http.ResponseWriter, r *http.Request) {
 	licenses, err := ctrl.Service.GetOracleDatabaseLicensesCompliance()
@@ -47,6 +36,21 @@ func (ctrl *APIController) GetOracleDatabaseLicensesCompliance(w http.ResponseWr
 	utils.WriteJSONResponse(w, http.StatusOK, licenses)
 }
 
+// GetOracleDatabaseLicenseTypes return the list of OracleDatabaseLicenseTypes
+func (ctrl *APIController) GetOracleDatabaseLicenseTypes(w http.ResponseWriter, r *http.Request) {
+	data, err := ctrl.Service.GetOracleDatabaseLicenseTypes()
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	response := map[string]interface{}{
+		"licenses-types": data,
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, response)
+}
+
 // DeleteOracleDatabaseLicenseType remove a licence type - Oracle/Database agreement part
 func (ctrl *APIController) DeleteOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
@@ -54,11 +58,11 @@ func (ctrl *APIController) DeleteOracleDatabaseLicenseType(w http.ResponseWriter
 		return
 	}
 
-	var err error
-
 	id := mux.Vars(r)["id"]
 
-	if err = ctrl.Service.DeleteOracleDatabaseLicenseType(id); errors.Is(err, utils.ErrOracleDatabaseLicenseTypeIDNotFound) {
+	err := ctrl.Service.DeleteOracleDatabaseLicenseType(id)
+
+	if errors.Is(err, utils.ErrOracleDatabaseLicenseTypeIDNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
@@ -86,13 +90,13 @@ func (ctrl *APIController) AddOracleDatabaseLicenseType(w http.ResponseWriter, r
 		return
 	}
 
-	agr, err := ctrl.Service.AddOracleDatabaseLicenseType(req)
+	lt, err := ctrl.Service.AddOracleDatabaseLicenseType(req)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, agr)
+	utils.WriteJSONResponse(w, http.StatusOK, lt)
 }
 
 func (ctrl *APIController) UpdateOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request) {
@@ -111,11 +115,11 @@ func (ctrl *APIController) UpdateOracleDatabaseLicenseType(w http.ResponseWriter
 		return
 	}
 
-	agr, err := ctrl.Service.UpdateOracleDatabaseLicenseType(req)
+	lt, err := ctrl.Service.UpdateOracleDatabaseLicenseType(req)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, agr)
+	utils.WriteJSONResponse(w, http.StatusOK, lt)
 }
