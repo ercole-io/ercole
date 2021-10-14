@@ -102,7 +102,11 @@ func (hds *HostDataService) addLicensesToSecondaryDb(hostInfo model.Host, second
 		return
 	}
 
-	coreFactor := secondaryDb.CoreFactor(hostInfo)
+	coreFactor, err := secondaryDb.CoreFactor(hostInfo)
+	if err != nil {
+		hds.Log.Error(err.Error())
+		return
+	}
 
 primaryDbLicensesCycle:
 	for _, primaryDbLicense := range primaryDb.Licenses {
