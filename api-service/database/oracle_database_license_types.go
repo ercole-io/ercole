@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ func (md *MongoDatabase) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabase
 	return licenseTypes, nil
 }
 
-// RemoveOracleDatabaseLicenseType remove a licence type - Oracle/Database agreement part
+// RemoveOracleDatabaseLicenseType remove a licence type
 func (md *MongoDatabase) RemoveOracleDatabaseLicenseType(id string) error {
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbLicenseTypesCollection).
 		DeleteOne(context.TODO(), bson.M{

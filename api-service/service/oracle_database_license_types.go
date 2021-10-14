@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -259,12 +259,7 @@ func (as *APIService) AddOracleDatabaseLicenseType(licenseType model.OracleDatab
 		return nil, err
 	}
 
-	lt, err := as.GetOracleDatabaseLicenseType(licenseType.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	return lt, nil
+	return &licenseType, nil
 }
 
 func (as *APIService) UpdateOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) (*model.OracleDatabaseLicenseType, error) {
@@ -272,10 +267,5 @@ func (as *APIService) UpdateOracleDatabaseLicenseType(licenseType model.OracleDa
 		return nil, err
 	}
 
-	lt, err := as.GetOracleDatabaseLicenseType(licenseType.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	return lt, nil
+	return &licenseType, nil
 }
