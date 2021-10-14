@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -131,7 +131,7 @@ func setupSettingsRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/oracle/database/license-types", ctrl.GetOracleDatabaseLicenseTypes).Methods("GET")
 	router.HandleFunc("/oracle/database/license-types/{id}", ctrl.DeleteOracleDatabaseLicenseType).Methods("DELETE")
 	router.HandleFunc("/oracle/database/license-types", ctrl.AddOracleDatabaseLicenseType).Methods("POST")
-	router.HandleFunc("/oracle/database/license-types", ctrl.UpdateOracleDatabaseLicenseType).Methods("PUT")
+	router.HandleFunc("/oracle/database/license-types/{id}", ctrl.UpdateOracleDatabaseLicenseType).Methods("PUT")
 }
 
 func setupFrontendAPIRoutes(router *mux.Router, ctrl APIControllerInterface) {

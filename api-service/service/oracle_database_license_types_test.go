@@ -435,3 +435,105 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 
 	assert.ElementsMatch(t, expected, actual)
 }
+
+func TestAddOracleDatabaseLicenseTypes_Success_InsertNew(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+	}
+
+	licenseType := model.OracleDatabaseLicenseType{
+		ID:              "Test",
+		ItemDescription: "Oracle Database Enterprise Edition",
+		Metric:          "Processor Perpetual",
+		Cost:            500,
+		Aliases:         []string{"Tuning Pack"},
+		Option:          false,
+	}
+
+	expectedLT := licenseType
+
+	db.EXPECT().InsertOracleDatabaseLicenseType(expectedLT).Return(nil)
+
+	searchedLT := model.OracleDatabaseLicenseType{
+		ID:              expectedLT.ID,
+		ItemDescription: licenseType.ItemDescription,
+		Metric:          licenseType.Metric,
+		Cost:            licenseType.Cost,
+		Aliases:         licenseType.Aliases,
+		Option:          licenseType.Option,
+	}
+
+	res, err := as.AddOracleDatabaseLicenseType(licenseType)
+	require.NoError(t, err)
+	assert.Equal(t,
+		searchedLT,
+		*res)
+
+}
+
+func TestUpdateOracleDatabaseLicenseTypes_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+	}
+
+	licenseType := model.OracleDatabaseLicenseType{
+		ID:              "Test",
+		ItemDescription: "Oracle Database Enterprise Edition",
+		Metric:          "Processor Perpetual",
+		Cost:            500,
+		Aliases:         []string{"Tuning Pack"},
+		Option:          false,
+	}
+
+	db.EXPECT().UpdateOracleDatabaseLicenseType(licenseType).Return(nil)
+
+	searchedLTItem := model.OracleDatabaseLicenseType{
+		ID:              licenseType.ID,
+		ItemDescription: licenseType.ItemDescription,
+		Metric:          licenseType.Metric,
+		Cost:            licenseType.Cost,
+		Aliases:         licenseType.Aliases,
+		Option:          licenseType.Option,
+	}
+
+	actualLT, err := as.UpdateOracleDatabaseLicenseType(licenseType)
+	require.NoError(t, err)
+	assert.Equal(t, searchedLTItem, *actualLT)
+}
+
+func TestDeleteOracleDatabaseLicenseTypes(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+	}
+
+	t.Run("Success", func(t *testing.T) {
+		LT := model.OracleDatabaseLicenseType{
+			ID:              "Test",
+			ItemDescription: "Oracle Database Enterprise Edition",
+			Metric:          "Processor Perpetual",
+			Cost:            500,
+			Aliases:         []string{"Tuning Pack"},
+			Option:          false,
+		}
+
+		gomock.InOrder(
+			db.EXPECT().RemoveOracleDatabaseLicenseType(LT.ID).
+				Return(nil),
+		)
+
+		err := as.DeleteOracleDatabaseLicenseType(LT.ID)
+		assert.Nil(t, err)
+	})
+}

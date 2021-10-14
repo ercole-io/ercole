@@ -4447,6 +4447,23 @@ paths:
                     - Tuning Pack
                   option: false
       description: Add Oracle database license type
+  '/settings/oracle/database/license-types/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    delete:
+      summary: Delete Oracle database license type
+      operationId: DeleteOracleDatabaseLicenseType
+      responses:
+        '200':
+          description: OK
+      description: Remove Oracle database license type by ID
+      parameters: []
+      tags:
+        - api-service
     put:
       summary: Update Oracle Database License Type
       operationId: UpdateOracleDatabaseLicenseType
@@ -4483,24 +4500,7 @@ paths:
                   option: false
       description: Update Oracle license type
       tags:
-        - api-service
-  '/settings/oracle/database/license-types/{id}':
-    parameters:
-      - schema:
-          type: string
-        name: id
-        in: path
-        required: true
-    delete:
-      summary: Delete Oracle database license type
-      operationId: DeleteOracleDatabaseLicenseType
-      responses:
-        '200':
-          description: OK
-      description: Remove Oracle database license type by ID
-      parameters: []
-      tags:
-        - api-service
+        - api-service    
   /technologies/all/license-history:
     get:
       summary: Get historical values of Oracle Databases Licenses

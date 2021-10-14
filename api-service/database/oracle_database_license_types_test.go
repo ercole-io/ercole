@@ -19,11 +19,22 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson"
-
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
+
+var licenseTypeExample = model.OracleDatabaseLicenseType{
+	ID:              "Test",
+	ItemDescription: "Oracle Database Enterprise Edition",
+	Metric:          "Processor Perpetual",
+	Cost:            500,
+	Aliases:         []string{"Tuning Pack"},
+	Option:          false,
+}
 
 func (m *MongodbSuite) TestGetOracleDatabaseLicenseTypes() {
 	defer m.db.Client.Database(m.dbname).Collection("oracle_database_license_types").DeleteMany(context.TODO(), bson.M{})
@@ -65,4 +76,75 @@ func (m *MongodbSuite) TestGetOracleDatabaseLicenseTypes() {
 
 		assert.ElementsMatch(m.T(), expected, actual)
 	})
+}
+
+func (m *MongodbSuite) TestInsertOracleDatabaseLicenseTypes_Success() {
+	aerr := m.db.InsertOracleDatabaseLicenseType(licenseTypeExample)
+	require.NoError(m.T(), aerr)
+	defer m.db.Client.Database(m.dbname).Collection(oracleDbLicenseTypesCollection).DeleteMany(context.TODO(), bson.M{})
+
+	val := m.db.Client.Database(m.dbname).Collection(oracleDbLicenseTypesCollection).FindOne(context.TODO(), bson.M{
+		"_id": licenseTypeExample.ID,
+	})
+	require.NoError(m.T(), val.Err())
+
+	var out model.OracleDatabaseLicenseType
+	err := val.Decode(&out)
+	assert.NoError(m.T(), err)
+
+	assert.Equal(m.T(), licenseTypeExample, out)
+}
+
+func (m *MongodbSuite) TestUpdateOracleDatabaseLicenseTypes() {
+	defer m.db.Client.Database(m.dbname).Collection(oracleDbLicenseTypesCollection).DeleteMany(context.TODO(), bson.M{})
+
+	err := m.db.InsertOracleDatabaseLicenseType(licenseTypeExample)
+	require.NoError(m.T(), err)
+
+	m.T().Run("id_exist", func(t *testing.T) {
+		licenseTypeSampleUpdated := model.OracleDatabaseLicenseType{
+			ID:              "Test",
+			ItemDescription: "Oracle Database Enterprise Edition",
+			Metric:          "Processor Perpetual",
+			Cost:            500,
+			Aliases:         []string{"Tuning Pack"},
+			Option:          false,
+		}
+
+		err := m.db.UpdateOracleDatabaseLicenseType(licenseTypeSampleUpdated)
+		require.NoError(t, err)
+
+		val := m.db.Client.Database(m.dbname).Collection(oracleDbLicenseTypesCollection).FindOne(context.TODO(), bson.M{
+			"_id": licenseTypeSampleUpdated.ID,
+		})
+		require.NoError(m.T(), val.Err())
+
+		var out model.OracleDatabaseLicenseType
+		err2 := val.Decode(&out)
+		assert.NoError(t, err2)
+
+		assert.Equal(m.T(), licenseTypeSampleUpdated, out)
+	})
+
+	m.T().Run("id_not_exist", func(t *testing.T) {
+		licenseTypeSampleUpdated := model.OracleDatabaseLicenseType{
+			ID: "doesn't exist",
+		}
+		err := m.db.UpdateOracleDatabaseLicenseType(licenseTypeSampleUpdated)
+
+		require.Equal(t, utils.ErrOracleDatabaseLicenseTypeIDNotFound, err)
+	})
+}
+
+func (m *MongodbSuite) TestRemoveOracleDatabaseLicenseType() {
+	defer m.db.Client.Database(m.dbname).Collection(oracleDbLicenseTypesCollection).DeleteMany(context.TODO(), bson.M{})
+
+	err := m.db.InsertOracleDatabaseLicenseType(licenseTypeExample)
+	require.NoError(m.T(), err)
+
+	err = m.db.RemoveOracleDatabaseLicenseType(licenseTypeExample.ID)
+	require.NoError(m.T(), err)
+
+	err = m.db.RemoveOracleDatabaseLicenseType("Test")
+	require.Equal(m.T(), utils.ErrOracleDatabaseLicenseTypeIDNotFound, err)
 }
