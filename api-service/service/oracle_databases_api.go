@@ -154,8 +154,8 @@ func (as *APIService) SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabas
 		i += 2 // offset for headers
 		file.SetCellValue("Databases", fmt.Sprintf("A%d", i), val["name"])
 		file.SetCellValue("Databases", fmt.Sprintf("B%d", i), val["uniqueName"])
-		file.SetCellValue("Databases", fmt.Sprintf("C%d", i), val["version"])
-		file.SetCellValue("Databases", fmt.Sprintf("D%d", i), val["hostname"])
+		file.SetCellValue("Databases", fmt.Sprintf("C%d", i), val["hostname"])
+		file.SetCellValue("Databases", fmt.Sprintf("D%d", i), val["version"])
 		file.SetCellValue("Databases", fmt.Sprintf("E%d", i), val["status"])
 		file.SetCellValue("Databases", fmt.Sprintf("F%d", i), val["environment"])
 		file.SetCellValue("Databases", fmt.Sprintf("G%d", i), val["location"])
