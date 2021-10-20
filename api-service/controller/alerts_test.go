@@ -584,36 +584,6 @@ func TestSearchAlertsXLSX_InternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestAckAlerts_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config: config.Configuration{
-			APIService: config.APIService{
-				ReadOnly: false,
-			},
-		},
-		Log: logger.NewLogger("TEST"),
-	}
-
-	as.EXPECT().AckAlerts([]primitive.ObjectID{utils.Str2oid("5dc3f534db7e81a98b726a52")}).Return(nil)
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.AckAlerts)
-	body := map[string]interface{}{
-		"ids": []string{"5dc3f534db7e81a98b726a52"},
-	}
-	req, err := http.NewRequest("POST", "/alerts/acks", bytes.NewReader([]byte(utils.ToJSON(body))))
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusNoContent, rr.Code)
-}
-
 func TestAckAlerts_FailForbidden(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -685,13 +655,19 @@ func TestAckAlerts_FailNotFound(t *testing.T) {
 		Log: logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AckAlerts([]primitive.ObjectID{utils.Str2oid("5dc3f534db7e81a98b726a52")}).
+	a := dto.AlertsFilter{
+		IDS: []primitive.ObjectID{utils.Str2oid("5dc3f534db7e81a98b726a52")},
+	}
+
+	as.EXPECT().AckAlerts(a).
 		Return(utils.ErrAlertNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.AckAlerts)
-	body := map[string]interface{}{
-		"ids": []string{"5dc3f534db7e81a98b726a52"},
+	body := struct {
+		Filter dto.AlertsFilter
+	}{
+		Filter: a,
 	}
 	req, err := http.NewRequest("POST", "/alerts/acks", bytes.NewReader([]byte(utils.ToJSON(body))))
 	require.NoError(t, err)
@@ -716,14 +692,21 @@ func TestAckAlerts_FailInternalServerError(t *testing.T) {
 		Log: logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AckAlerts([]primitive.ObjectID{utils.Str2oid("5dc3f534db7e81a98b726a52")}).
+	a := dto.AlertsFilter{
+		IDS: []primitive.ObjectID{utils.Str2oid("5dc3f534db7e81a98b726a52")},
+	}
+
+	as.EXPECT().AckAlerts(a).
 		Return(aerrMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.AckAlerts)
-	body := map[string]interface{}{
-		"ids": []string{"5dc3f534db7e81a98b726a52"},
+	body := struct {
+		Filter dto.AlertsFilter
+	}{
+		Filter: a,
 	}
+
 	req, err := http.NewRequest("POST", "/alerts/acks", bytes.NewReader([]byte(utils.ToJSON(body))))
 	require.NoError(t, err)
 
@@ -732,7 +715,7 @@ func TestAckAlerts_FailInternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestAckAlerts_ByFilter(t *testing.T) {
+func TestAckAlerts_Success(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		mockCtrl := gomock.NewController(t)
 		defer mockCtrl.Finish()
