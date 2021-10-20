@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@ import (
 
 	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -173,36 +172,58 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 	return out, nil
 }
 
-func (md *MongoDatabase) UpdateAlertsStatus(ids []primitive.ObjectID, newStatus string) error {
-	bsonIds := bson.A{}
-	for _, id := range ids {
-		bsonIds = append(bsonIds, bson.M{"_id": id})
+func (md *MongoDatabase) GetAlertsNODATA(alertsFilter dto.AlertsFilter) (int64, error) {
+	data, err := bson.Marshal(alertsFilter)
+	if err != nil {
+		return 0, err
 	}
-	filter := bson.M{"$or": bsonIds}
+
+	var filter map[string]interface{}
+	err = bson.Unmarshal(data, &filter)
+	if err != nil {
+		return 0, err
+	}
+	if len(filter) < 1 {
+		return 0, nil //Do not acknowledge anything
+	}
+
+	if v, ok := filter["otherInfo"]; ok {
+		if v, ok := v.(map[string]interface{}); ok {
+			for k, vv := range v {
+				filter["otherInfo."+k] = vv
+			}
+		}
+
+		delete(filter, "otherInfo")
+	}
+
+	ids := alertsFilter.IDS
+	if len(ids) >= 1 {
+		filter["_id"] = bson.M{"$in": ids}
+	}
+
+	if alertsFilter.AlertCode != nil {
+		alertCode := *alertsFilter.AlertCode
+		if alertCode == "NO_DATA" {
+			return -1, nil
+		} else {
+			return 0, nil
+		}
+
+	} else {
+		filter["alertCode"] = bson.M{"$eq": "NO_DATA"}
+	}
 
 	count, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(alertsCollection).
 		CountDocuments(context.TODO(), filter)
 	if err != nil {
-		return utils.NewError(err, "DB ERROR")
-	}
-	if count != int64(len(ids)) {
-		return utils.ErrAlertNotFound
+		return 0, utils.NewError(err, "DB ERROR")
 	}
 
-	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(alertsCollection).
-		UpdateMany(context.TODO(),
-			filter,
-			mu.UOSet(bson.M{
-				"alertStatus": newStatus,
-			}))
-	if err != nil || res.MatchedCount != int64(len(ids)) {
-		return utils.NewError(err, "DB ERROR")
-	}
-
-	return nil
+	return count, nil
 }
 
-func (md *MongoDatabase) UpdateAlertsStatusByFilter(alertsFilter dto.AlertsFilter, newStatus string) error {
+func (md *MongoDatabase) UpdateAlertsStatus(alertsFilter dto.AlertsFilter, newStatus string) error {
 	data, err := bson.Marshal(alertsFilter)
 	if err != nil {
 		return err
@@ -225,6 +246,11 @@ func (md *MongoDatabase) UpdateAlertsStatusByFilter(alertsFilter dto.AlertsFilte
 		}
 
 		delete(filter, "otherInfo")
+	}
+
+	ids := alertsFilter.IDS
+	if len(ids) >= 1 {
+		filter["_id"] = bson.M{"$in": ids}
 	}
 
 	_, err = md.Client.Database(md.Config.Mongodb.DBName).

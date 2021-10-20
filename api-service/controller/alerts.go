@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -175,28 +175,20 @@ func (ctrl *APIController) AckAlerts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if body.Ids != nil {
-		err := ctrl.Service.AckAlerts(body.Ids)
-		if errors.Is(err, utils.ErrAlertNotFound) {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
-		} else if err != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-			return
-		}
-
-		w.WriteHeader(http.StatusNoContent)
-		return
-
+	var filter dto.AlertsFilter
+	if body.Filter != nil {
+		filter = *body.Filter
 	} else {
-		err := ctrl.Service.AckAlertsByFilter(*body.Filter)
-		if errors.Is(err, utils.ErrAlertNotFound) {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
-		} else if err != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-			return
-		}
+		filter.IDS = body.Ids
+	}
 
-		w.WriteHeader(http.StatusNoContent)
+	err := ctrl.Service.AckAlerts(filter)
+	if errors.Is(err, utils.ErrAlertNotFound) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

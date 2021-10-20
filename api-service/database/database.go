@@ -142,8 +142,9 @@ type MongoDatabaseInterface interface {
 	// ReplaceHostData adds a new hostdata to the database
 	ReplaceHostData(hostData model.HostDataBE) error
 	// UpdateAlertsStatus change the status of the specified alerts
-	UpdateAlertsStatus(id []primitive.ObjectID, newStatus string) error
-	UpdateAlertsStatusByFilter(alertsFilter dto.AlertsFilter, newStatus string) error
+	UpdateAlertsStatus(alertsFilter dto.AlertsFilter, newStatus string) error
+	// GetAlertsNODATA gets alert with alertCode equals to "NO_DATA"
+	GetAlertsNODATA(alertsFilter dto.AlertsFilter) (int64, error)
 	// ArchiveHost archive the specified host
 	ArchiveHost(hostname string) error
 	// DeletePatchingFunction delete the patching function

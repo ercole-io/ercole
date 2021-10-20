@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -199,7 +199,7 @@ func (as *APIService) ListEnvironments(location string, environment string, olde
 // ArchiveHost archive the specified host
 func (as *APIService) ArchiveHost(hostname string) error {
 	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": hostname}}
-	if err := as.AckAlertsByFilter(filter); err != nil {
+	if err := as.AckAlerts(filter); err != nil {
 		as.Log.Errorf("Can't ack hostname %s alerts by filter", hostname)
 	}
 

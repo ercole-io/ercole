@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	dto "github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
@@ -936,8 +937,8 @@ func TestSearchAndAckOldMissingDatabasesAlerts(t *testing.T) {
 		return alerts, nil
 	})
 
-	apisc.EXPECT().AckAlertsByFilter(dto.AlertsFilter{ID: alerts[1].ID})
-	apisc.EXPECT().AckAlertsByFilter(dto.AlertsFilter{ID: alerts[2].ID})
+	apisc.EXPECT().AckAlerts(dto.AlertsFilter{IDS: []primitive.ObjectID{alerts[1].ID}})
+	apisc.EXPECT().AckAlerts(dto.AlertsFilter{IDS: []primitive.ObjectID{alerts[2].ID}})
 
 	hds.searchAndAckOldMissingDatabasesAlerts("pippo", newDbs)
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -750,14 +750,14 @@ func TestAckAlerts_ByFilter(t *testing.T) {
 
 		s := model.AlertStatusNew
 		a := dto.AlertsFilter{
-			ID:          utils.Str2oid("000000000000"),
+			IDS:         []primitive.ObjectID{utils.Str2oid("000000000000")},
 			AlertStatus: &s,
 			Date:        time.Time{},
 			OtherInfo: map[string]interface{}{
 				"host": "pippo",
 			},
 		}
-		as.EXPECT().AckAlertsByFilter(a).Return(nil)
+		as.EXPECT().AckAlerts(a).Return(nil)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.AckAlerts)
