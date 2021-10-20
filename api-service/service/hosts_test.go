@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -837,7 +837,7 @@ func TestArchiveHost_Success(t *testing.T) {
 	}
 
 	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": "foobar"}}
-	db.EXPECT().UpdateAlertsStatusByFilter(filter, model.AlertStatusAck).Return(nil).Times(1)
+	db.EXPECT().UpdateAlertsStatus(filter, model.AlertStatusAck).Return(nil).Times(1)
 	db.EXPECT().ArchiveHost("foobar").Return(nil).Times(1)
 
 	err := as.ArchiveHost("foobar")
@@ -854,7 +854,7 @@ func TestArchiveHost_Fail(t *testing.T) {
 	}
 
 	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": "foobar"}}
-	db.EXPECT().UpdateAlertsStatusByFilter(filter, model.AlertStatusAck).Return(aerrMock).Times(1)
+	db.EXPECT().UpdateAlertsStatus(filter, model.AlertStatusAck).Return(aerrMock).Times(1)
 	db.EXPECT().ArchiveHost("foobar").Return(aerrMock).Times(1)
 
 	err := as.ArchiveHost("foobar")

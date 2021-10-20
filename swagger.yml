@@ -2393,10 +2393,9 @@ paths:
   /alerts/ack:
     parameters: []
     post:
-      summary: Acknowledge alerts by ids
+      summary: Acknowledge alerts
       description: |-
         Update status of specified alerts to set alert status to acknowledged.
-        Select alerts by a list of ids or by filter, not both.
       tags:
         - api-service
         - fe-user
@@ -2404,6 +2403,8 @@ paths:
       responses:
         '204':
           description: No Content
+        '400':
+          $ref: '#/components/responses/error' 
         '401':
           $ref: '#/components/responses/error'
         '403':
@@ -2454,22 +2455,17 @@ paths:
                       minLength: 1
                     otherInfo:
                       type: object
-                ids:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/ObjectID'
+                  ids:    
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ObjectID'
             examples:
-              example with ids:
-                value:
-                  - 5f2acc476b16f5bea302ba0b
-                  - 5f2acc476b16f5bea302ba0c
-              example with filter:
+              example:
                 value:
                   filter:
-                    id: '012345678910'
+                    id: ['000000000000000000000000']
                     alertCategory: AGENT
                     alertStatus: NEW
-        description: an array of notifications id
   /hosts/clusters:
     get:
       summary: Search a list of clusters

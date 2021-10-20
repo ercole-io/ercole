@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
@@ -105,36 +104,6 @@ func TestSearchAlerts_Fail(t *testing.T) {
 	assert.Nil(t, res)
 }
 
-func TestAckAlerts_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-	}
-
-	db.EXPECT().UpdateAlertsStatus([]primitive.ObjectID{utils.Str2oid("5e8c234b24f648a08585bd44")}, model.AlertStatusAck).
-		Return(nil).Times(1)
-
-	err := as.AckAlerts([]primitive.ObjectID{utils.Str2oid("5e8c234b24f648a08585bd44")})
-	require.NoError(t, err)
-}
-
-func TestAckAlerts_Fail(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	db := NewMockMongoDatabaseInterface(mockCtrl)
-	as := APIService{
-		Database: db,
-	}
-
-	db.EXPECT().UpdateAlertsStatus([]primitive.ObjectID{utils.Str2oid("5e8c234b24f648a08585bd44")}, model.AlertStatusAck).
-		Return(aerrMock).Times(1)
-
-	err := as.AckAlerts([]primitive.ObjectID{utils.Str2oid("5e8c234b24f648a08585bd44")})
-	require.Equal(t, aerrMock, err)
-}
-
 func TestAcknowledgeAlerts(t *testing.T) {
 	testCases := []struct {
 		filter dto.AlertsFilter
@@ -161,9 +130,9 @@ func TestAcknowledgeAlerts(t *testing.T) {
 			Database: db,
 		}
 
-		db.EXPECT().UpdateAlertsStatusByFilter(tc.filter, model.AlertStatusAck).Return(tc.expErr)
+		db.EXPECT().UpdateAlertsStatus(tc.filter, model.AlertStatusAck).Return(tc.expErr)
 
-		actErr := as.AckAlertsByFilter(tc.filter)
+		actErr := as.AckAlerts(tc.filter)
 		assert.Equal(t, tc.expErr, actErr)
 	}
 }

@@ -44,7 +44,7 @@ func (c *Client) GetAlertsByFilter(filter dto.AlertsFilter) ([]model.Alert, erro
 	return alerts, nil
 }
 
-func (c *Client) AckAlertsByFilter(filter dto.AlertsFilter) error {
+func (c *Client) AckAlerts(filter dto.AlertsFilter) error {
 	b := struct {
 		Filter dto.AlertsFilter `json:"filter"`
 	}{
