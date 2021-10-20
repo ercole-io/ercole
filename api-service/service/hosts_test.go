@@ -836,7 +836,10 @@ func TestArchiveHost_Success(t *testing.T) {
 		Database: db,
 	}
 
+	var count int64
+
 	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": "foobar"}}
+	db.EXPECT().GetAlertsNODATA(filter).Return(count, nil).Times(1)
 	db.EXPECT().UpdateAlertsStatus(filter, model.AlertStatusAck).Return(nil).Times(1)
 	db.EXPECT().ArchiveHost("foobar").Return(nil).Times(1)
 
@@ -853,7 +856,10 @@ func TestArchiveHost_Fail(t *testing.T) {
 		Log:      logger.NewLogger("TEST"),
 	}
 
+	var count int64
+
 	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": "foobar"}}
+	db.EXPECT().GetAlertsNODATA(filter).Return(count, nil).Times(1)
 	db.EXPECT().UpdateAlertsStatus(filter, model.AlertStatusAck).Return(aerrMock).Times(1)
 	db.EXPECT().ArchiveHost("foobar").Return(aerrMock).Times(1)
 
