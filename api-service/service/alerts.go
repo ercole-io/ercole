@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,11 +17,14 @@
 package service
 
 import (
+	"errors"
+	"net/http"
 	"strings"
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
+	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/exutils"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -73,11 +76,15 @@ func (as *APIService) SearchAlertsAsXLSX(from, to time.Time, filter dto.GlobalFi
 	return sheets, nil
 }
 
-// AckAlerts ack the specified alerts
-func (as *APIService) AckAlerts(ids []primitive.ObjectID) error {
-	return as.Database.UpdateAlertsStatus(ids, model.AlertStatusAck)
-}
+func (as *APIService) AckAlerts(alertsFilter dto.AlertsFilter) error {
 
-func (as *APIService) AckAlertsByFilter(alertsFilter dto.AlertsFilter) error {
-	return as.Database.UpdateAlertsStatusByFilter(alertsFilter, model.AlertStatusAck)
+	count, err := as.Database.GetAlertsNODATA(alertsFilter)
+	if err != nil {
+		return err
+	}
+	if count != 0 {
+		return utils.NewError(errors.New("Alert cannot have alertCode equals to ACK"), http.StatusText(http.StatusBadRequest))
+	}
+
+	return as.Database.UpdateAlertsStatus(alertsFilter, model.AlertStatusAck)
 }

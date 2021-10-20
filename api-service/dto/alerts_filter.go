@@ -22,7 +22,7 @@ import (
 )
 
 type AlertsFilter struct {
-	ID                      primitive.ObjectID     `json:"id" bson:"_id,omitempty"`
+	IDS                     []primitive.ObjectID   `json:"id" bson:"_id,omitempty"`
 	AlertCategory           *string                `json:"alertCategory" bson:"alertCategory,omitempty"`
 	AlertAffectedTechnology *string                `json:"alertAffectedTechnology" bson:"alertAffectedTechnology,omitempty"`
 	AlertCode               *string                `json:"alertCode" bson:"alertCode,omitempty"`

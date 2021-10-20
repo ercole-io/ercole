@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -328,14 +328,20 @@ func (m *MongodbSuite) TestUpdateAlertsStatus() {
 
 	m.T().Run("should_return_not_found", func(t *testing.T) {
 		ids := []primitive.ObjectID{utils.Str2oid("5ea6a65bb2e36eb58daaaaaa")}
-		err := m.db.UpdateAlertsStatus(ids, model.AlertStatusAck)
+		a := dto.AlertsFilter{
+			IDS: ids,
+		}
+		err := m.db.UpdateAlertsStatus(a, model.AlertStatusAck)
 
 		assert.Equal(t, utils.ErrAlertNotFound, err)
 	})
 
 	m.T().Run("should_success", func(t *testing.T) {
 		ids := []primitive.ObjectID{utils.Str2oid("5ea6a65bb2e36eb58da2f67c")}
-		err := m.db.UpdateAlertsStatus(ids, model.AlertStatusAck)
+		b := dto.AlertsFilter{
+			IDS: ids,
+		}
+		err := m.db.UpdateAlertsStatus(b, model.AlertStatusAck)
 		assert.NoError(t, err)
 
 		val := m.db.Client.Database(m.dbname).Collection("alerts").FindOne(context.TODO(), bson.M{"_id": utils.Str2oid("5ea6a65bb2e36eb58da2f67c")})
@@ -434,7 +440,7 @@ func (m *MongodbSuite) TestUpdateAlertsStatusByFilter() {
 		},
 		{
 			insert:         []model.Alert{a, b},
-			filter:         dto.AlertsFilter{ID: a.ID},
+			filter:         dto.AlertsFilter{IDS: []primitive.ObjectID{a.ID}},
 			expErr:         nil,
 			expectedResult: []model.Alert{a_ack, b},
 		},
@@ -468,7 +474,7 @@ func (m *MongodbSuite) TestUpdateAlertsStatusByFilter() {
 		_, _ = m.db.Client.Database(m.dbname).Collection(alertsCollection).
 			InsertMany(context.TODO(), alerts)
 
-		actErr := m.db.UpdateAlertsStatusByFilter(tc.filter, model.AlertStatusAck)
+		actErr := m.db.UpdateAlertsStatus(tc.filter, model.AlertStatusAck)
 		if tc.expErr == nil {
 			assert.Nil(m.T(), actErr)
 		} else {

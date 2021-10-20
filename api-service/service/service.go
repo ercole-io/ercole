@@ -165,8 +165,7 @@ type APIServiceInterface interface {
 	// DeleteOracleDatabaseLicenseModifier delete the modifier of a certain license
 	DeleteOracleDatabaseLicenseModifier(hostname string, dbname string, licenseName string) error
 	// AckAlerts ack the specified alerts
-	AckAlerts(ids []primitive.ObjectID) error
-	AckAlertsByFilter(alertsFilter dto.AlertsFilter) error
+	AckAlerts(alertsFilter dto.AlertsFilter) error
 	// ArchiveHost archive the specified host
 	ArchiveHost(hostname string) error
 
