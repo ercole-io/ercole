@@ -305,55 +305,151 @@ func (m *MongodbSuite) TestSearchAlerts() {
 	})
 }
 
-func (m *MongodbSuite) TestUpdateAlertsStatus() {
-	defer m.db.Client.Database(m.dbname).Collection("alerts").DeleteMany(context.TODO(), bson.M{})
-	alert := model.Alert{
-		ID:                      utils.Str2oid("5ea6a65bb2e36eb58da2f67c"),
-		AlertCategory:           model.AlertCategoryLicense,
-		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
-		AlertCode:               model.AlertCodeNewOption,
+func (m *MongodbSuite) TestGetAlertsNODATA() {
+	a := model.Alert{
+
+		AlertAffectedTechnology: nil,
+		AlertCategory:           model.AlertCategoryAgent,
+		AlertCode:               model.AlertCodeNoData,
 		AlertSeverity:           model.AlertSeverityCritical,
 		AlertStatus:             model.AlertStatusNew,
-		Date:                    utils.P("2020-04-15T08:46:58.475Z"),
-		Description:             "The database ERCOLE on test-db has enabled new features (Diagnostics Pack) on server",
+		Date:                    utils.P("2019-11-05T18:02:03Z"),
+		Description:             "No data received from the host myhost in the last 90 days",
 		OtherInfo: map[string]interface{}{
-			"dbname": "ERCOLE",
-			"features": bson.A{
-				"Diagnostics Pack",
+			"hostname": "myhost",
+		},
+		ID: utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+	}
+	a_ack := model.Alert{
+
+		AlertAffectedTechnology: nil,
+		AlertCategory:           model.AlertCategoryAgent,
+		AlertCode:               model.AlertCodeNoData,
+		AlertSeverity:           model.AlertSeverityCritical,
+		AlertStatus:             model.AlertStatusAck,
+		Date:                    utils.P("2019-11-05T18:02:03Z"),
+		Description:             "No data received from the host myhost in the last 90 days",
+		OtherInfo: map[string]interface{}{
+			"hostname": "myhost",
+		},
+		ID: utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+	}
+
+	b := model.Alert{
+		AlertAffectedTechnology: nil,
+		AlertCategory:           model.AlertCategoryEngine,
+		AlertCode:               model.AlertCodeNoData,
+		AlertSeverity:           model.AlertSeverityCritical,
+		AlertStatus:             model.AlertStatusNew,
+		Date:                    utils.P("2019-11-05T18:02:03Z"),
+		Description:             "No data received from the host myhost in the last 90 days",
+		OtherInfo: map[string]interface{}{
+			"hostname": "myhost",
+			"dbname":   "pippo",
+		},
+		ID: utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
+	}
+	b_ack := model.Alert{
+		AlertAffectedTechnology: nil,
+		AlertCategory:           model.AlertCategoryEngine,
+		AlertCode:               model.AlertCodeNoData,
+		AlertSeverity:           model.AlertSeverityCritical,
+		AlertStatus:             model.AlertStatusAck,
+		Date:                    utils.P("2019-11-05T18:02:03Z"),
+		Description:             "No data received from the host myhost in the last 90 days",
+		OtherInfo: map[string]interface{}{
+			"hostname": "myhost",
+			"dbname":   "pippo",
+		},
+		ID: utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
+	}
+
+	testCases := []struct {
+		insert         []model.Alert
+		filter         dto.AlertsFilter
+		expErr         error
+		expectedResult []model.Alert
+	}{
+		{
+			insert:         []model.Alert{},
+			filter:         dto.AlertsFilter{},
+			expErr:         nil,
+			expectedResult: []model.Alert{},
+		},
+		{
+			insert:         []model.Alert{a, b},
+			filter:         dto.AlertsFilter{},
+			expErr:         nil,
+			expectedResult: []model.Alert{a, b},
+		},
+		{
+			insert: []model.Alert{a, b},
+			filter: dto.AlertsFilter{
+				AlertAffectedTechnology: utils.Str2ptr("NONE"),
 			},
-			"hostname": "test-db",
+			expErr:         nil,
+			expectedResult: []model.Alert{a, b},
+		},
+		{
+			insert:         []model.Alert{a, b},
+			filter:         dto.AlertsFilter{IDS: []primitive.ObjectID{a.ID}},
+			expErr:         nil,
+			expectedResult: []model.Alert{a_ack, b},
+		},
+		{
+			insert:         []model.Alert{a, b},
+			filter:         dto.AlertsFilter{AlertCategory: &a.AlertCategory},
+			expErr:         nil,
+			expectedResult: []model.Alert{a_ack, b},
+		},
+		{
+			insert:         []model.Alert{a, b},
+			filter:         dto.AlertsFilter{OtherInfo: a.OtherInfo},
+			expErr:         nil,
+			expectedResult: []model.Alert{a_ack, b_ack},
 		},
 	}
-	m.InsertAlert(alert)
 
-	m.T().Run("should_return_not_found", func(t *testing.T) {
-		ids := []primitive.ObjectID{utils.Str2oid("5ea6a65bb2e36eb58daaaaaa")}
-		a := dto.AlertsFilter{
-			IDS: ids,
+	clean := func() {
+		_, err := m.db.Client.Database(m.dbname).Collection(alertsCollection).
+			DeleteMany(context.TODO(), bson.M{})
+		require.Nil(m.T(), err)
+	}
+
+	for _, tc := range testCases {
+
+		alerts := make([]interface{}, len(tc.insert))
+		for i := range tc.insert {
+			alerts[i] = tc.insert[i]
 		}
-		err := m.db.UpdateAlertsStatus(a, model.AlertStatusAck)
 
-		assert.Equal(t, utils.ErrAlertNotFound, err)
-	})
+		_, _ = m.db.Client.Database(m.dbname).Collection(alertsCollection).
+			InsertMany(context.TODO(), alerts)
 
-	m.T().Run("should_success", func(t *testing.T) {
-		ids := []primitive.ObjectID{utils.Str2oid("5ea6a65bb2e36eb58da2f67c")}
-		b := dto.AlertsFilter{
-			IDS: ids,
+		actErr := m.db.UpdateAlertsStatus(tc.filter, model.AlertStatusAck)
+		if tc.expErr == nil {
+			assert.Nil(m.T(), actErr)
+		} else {
+			var actAdvErr *utils.AdvancedError
+			require.True(m.T(), errors.As(actErr, &actAdvErr))
+			assert.Equal(m.T(), tc.expErr, actAdvErr.Err)
 		}
-		err := m.db.UpdateAlertsStatus(b, model.AlertStatusAck)
-		assert.NoError(t, err)
 
-		val := m.db.Client.Database(m.dbname).Collection("alerts").FindOne(context.TODO(), bson.M{"_id": utils.Str2oid("5ea6a65bb2e36eb58da2f67c")})
-		var res model.Alert
-		val.Decode(&res)
+		res, err := m.db.Client.Database(m.dbname).Collection(alertsCollection).
+			Find(context.TODO(), bson.M{})
+		require.Nil(m.T(), err)
 
-		alert.AlertStatus = model.AlertStatusAck
-		assert.Equal(t, alert, res)
-	})
+		var actualResult []model.Alert
+		err = res.All(context.TODO(), &actualResult)
+		require.Nil(m.T(), err)
+
+		assert.ElementsMatch(m.T(), tc.expectedResult, actualResult)
+
+		clean()
+	}
 }
 
-func (m *MongodbSuite) TestUpdateAlertsStatusByFilter() {
+func (m *MongodbSuite) TestUpdateAlertsStatus() {
 	a := model.Alert{
 
 		AlertAffectedTechnology: nil,
