@@ -119,6 +119,9 @@ func TestAcknowledgeAlerts(t *testing.T) {
 		},
 	}
 
+	var count int64
+	var noDataErr error
+
 	for _, tc := range testCases {
 		mockCtrl := gomock.NewController(t)
 		defer func() {
@@ -130,6 +133,7 @@ func TestAcknowledgeAlerts(t *testing.T) {
 			Database: db,
 		}
 
+		db.EXPECT().GetAlertsNODATA(tc.filter).Return(count, noDataErr)
 		db.EXPECT().UpdateAlertsStatus(tc.filter, model.AlertStatusAck).Return(tc.expErr)
 
 		actErr := as.AckAlerts(tc.filter)

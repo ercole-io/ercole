@@ -426,7 +426,7 @@ func (m *MongodbSuite) TestGetAlertsNODATA() {
 		_, _ = m.db.Client.Database(m.dbname).Collection(alertsCollection).
 			InsertMany(context.TODO(), alerts)
 
-		actErr := m.db.UpdateAlertsStatus(tc.filter, model.AlertStatusAck)
+		_, actErr := m.db.GetAlertsNODATA(tc.filter)
 		if tc.expErr == nil {
 			assert.Nil(m.T(), actErr)
 		} else {
