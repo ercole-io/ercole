@@ -321,6 +321,7 @@ func (as *APIService) GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, 
 		return nil, err
 	}
 	licenses = append(licenses, mysql...)
+
 	return licenses, nil
 }
 
