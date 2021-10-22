@@ -117,6 +117,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 		license.Consumed += consumedLicenses
 	}
 
+	availableLicenses := make(map[string]float64)
 	// get coverage values from agreements
 	for _, agreement := range agreements {
 		license, ok := licenses[agreement.LicenseTypeID]
@@ -127,6 +128,12 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 
 		if agreement.Unlimited {
 			license.Unlimited = true
+		}
+
+		if agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
+			availableLicenses[agreement.LicenseTypeID] += agreement.AvailableLicensesPerUser
+		} else {
+			availableLicenses[agreement.LicenseTypeID] += agreement.AvailableLicensesPerCore
 		}
 
 		license.Covered += agreement.CoveredLicenses
@@ -149,6 +156,8 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 		} else {
 			license.Compliance = license.Covered / license.Consumed
 		}
+
+		license.Available = availableLicenses[license.LicenseTypeID]
 
 		result = append(result, *license)
 	}

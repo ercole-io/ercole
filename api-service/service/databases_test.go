@@ -16,7 +16,6 @@
 package service
 
 import (
-	"github.com/ercole-io/ercole/v2/logger"
 	"testing"
 	"time"
 
@@ -27,6 +26,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
@@ -720,6 +720,201 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "F2"))
 	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "G2"))
 	assert.Equal(t, "", actual.GetCellValue("Licenses Compliance", "H2"))
+}
+
+func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Database: db,
+	}
+
+	objID, _ := primitive.ObjectIDFromHex("609ce4782eff5d5540ec4a30")
+
+	oracleAgreements := []dto.OracleDatabaseAgreementFE{
+		{
+			ID:                       objID,
+			AgreementID:              "5051863",
+			CSI:                      "19338486",
+			LicenseTypeID:            "L10006",
+			ItemDescription:          "Oracle Partitioning",
+			Metric:                   "Named User Plus Perpetual",
+			ReferenceNumber:          "96661555",
+			Unlimited:                false,
+			Basket:                   true,
+			Restricted:               false,
+			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			LicensesPerCore:          0,
+			LicensesPerUser:          450,
+			AvailableLicensesPerCore: 0,
+			AvailableLicensesPerUser: 450,
+			CoveredLicenses:          0,
+		},
+		{
+			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			AgreementID:              "TEST",
+			CSI:                      "99999999",
+			LicenseTypeID:            "M10080",
+			ItemDescription:          "Oracle Database Enterprise Edition",
+			Metric:                   "Processor Perpetual",
+			ReferenceNumber:          "666666666",
+			Unlimited:                false,
+			Basket:                   true,
+			Restricted:               false,
+			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			LicensesPerCore:          50,
+			LicensesPerUser:          0,
+			AvailableLicensesPerCore: 50,
+			AvailableLicensesPerUser: 0,
+			CoveredLicenses:          0,
+		},
+	}
+
+	oracleHosts := []dto.HostUsingOracleDatabaseLicenses{
+		{
+			LicenseTypeID: "L10006",
+			Name:          "sdlmoc100.syssede.systest.sanpaoloimi.com",
+			Type:          "host",
+			LicenseCount:  10,
+			OriginalCount: 20,
+		},
+	}
+
+	var oracleLicenseTypes = []model.OracleDatabaseLicenseType{
+		{
+			ID:              "L10006",
+			ItemDescription: "Oracle Partitioning",
+			Metric:          "Named User Plus Perpetual",
+			Cost:            230,
+			Aliases:         []string{"Partitioning"},
+			Option:          true,
+		},
+		{
+			ID:              "M10080",
+			ItemDescription: "Oracle Real Application Testing",
+			Metric:          "Processor Perpetual",
+			Cost:            230,
+			Aliases:         []string{},
+			Option:          true,
+		},
+		{
+			ID:              "A90611",
+			ItemDescription: "Oracle Database Enterprise Edition",
+			Metric:          "Processor Perpetual",
+			Cost:            47500,
+			Aliases:         []string{"Oracle ENT", "Oracle EXE"},
+			Option:          false,
+		},
+	}
+	usedLicenses := []dto.MySQLUsedLicense{
+		{
+			Hostname:        "pluto",
+			InstanceName:    "pluto-instance",
+			InstanceEdition: model.MySQLEditionEnterprise,
+			AgreementType:   "",
+		},
+	}
+	clusters := []dto.Cluster{
+		{
+			Hostname: "pluto-cluster",
+			VMs: []dto.VM{
+				{
+					Hostname: "pluto",
+				},
+			},
+		},
+	}
+	agreements := []model.MySQLAgreement{
+		{
+			ID:               [12]byte{},
+			Type:             model.MySQLAgreementTypeCluster,
+			NumberOfLicenses: 12,
+			Clusters:         []string{"pippo-cluster", "pluto-cluster"},
+			Hosts:            []string{},
+		},
+	}
+	any := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	gomock.InOrder(
+		db.EXPECT().ListOracleDatabaseAgreements().
+			Return(oracleAgreements, nil),
+		db.EXPECT().ListHostUsingOracleDatabaseLicenses().
+			Return(oracleHosts, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(oracleLicenseTypes, nil).
+			Times(2),
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return([]model.HostDataBE{{
+				Hostname: "sdlmoc100.syssede.systest.sanpaoloimi.com",
+			}}, nil),
+
+		db.EXPECT().GetMySQLUsedLicenses(any).
+			Return(usedLicenses, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
+		db.EXPECT().GetMySQLAgreements().
+			Return(agreements, nil),
+	)
+
+	actual, err := as.GetDatabaseLicensesCompliance()
+	require.NoError(t, err)
+
+	expected := []dto.LicenseCompliance{
+		{
+			LicenseTypeID:   "L10006",
+			ItemDescription: "Oracle Partitioning",
+			Metric:          "Named User Plus Perpetual",
+			Consumed:        500,
+			Covered:         250,
+			Purchased:       450,
+			Compliance:      0.5,
+			Unlimited:       false,
+			Available:       200,
+		},
+		{
+			LicenseTypeID:   "M10080",
+			ItemDescription: "Oracle Real Application Testing",
+			Metric:          "Processor Perpetual",
+			Consumed:        0,
+			Covered:         0,
+			Purchased:       50,
+			Compliance:      1,
+			Unlimited:       false,
+			Available:       50,
+		},
+		{
+			LicenseTypeID:   "",
+			ItemDescription: "MySQL Enterprise per cluster",
+			Metric:          "",
+			Consumed:        1,
+			Covered:         1,
+			Purchased:       0,
+			Compliance:      1,
+			Unlimited:       false,
+			Available:       0,
+		},
+		{
+			LicenseTypeID:   "",
+			ItemDescription: "MySQL Enterprise per host",
+			Metric:          "",
+			Consumed:        0,
+			Covered:         0,
+			Purchased:       0,
+			Compliance:      1,
+			Unlimited:       false,
+			Available:       0,
+		},
+	}
+
+	assert.Equal(t, expected, actual)
 }
 
 func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {

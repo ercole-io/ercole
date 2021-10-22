@@ -3539,6 +3539,7 @@ paths:
                     - covered
                     - compliance
                     - unlimited
+                    - available
                   properties:
                     licenseTypeID:
                       type: string
@@ -3567,6 +3568,7 @@ paths:
                       covered: 3
                       compliance: 1
                       unlimited: false
+                      available: 200
                     - licenseTypeID: PID002
                       itemDescription: Oracle Database Enterprise Edition
                       metric: Processor Perpetual
@@ -3574,6 +3576,7 @@ paths:
                       covered: 5
                       compliance: 0.5
                       unlimited: false
+                      available: 600
         '401':
           $ref: '#/components/responses/error'
         '422':
