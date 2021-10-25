@@ -4401,10 +4401,11 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/LicenseType'
-      operationId: GetOracleDatabaseAgreementPartsList
+                type: object
+                properties:
+                  license-types:
+                    $ref: '#/components/schemas/LicenseType'
+      operationId: GetOracleDatabaseLicenseTypes
       description: Get Oracle database agreement parts list
     post:
       tags:
@@ -4431,13 +4432,13 @@ paths:
                 aliases:
                   type: array
                 option:
-                  type: boolean  
+                  type: boolean
             examples:
               example-1:
                 value:
-                  id: 'Test'
-                  itemDescription: 'Oracle Database Enterprise Edition'
-                  metric: 'Processor Perpetual'
+                  id: Test
+                  itemDescription: Oracle Database Enterprise Edition
+                  metric: Processor Perpetual
                   cost: 500
                   aliases:
                     - Tuning Pack
@@ -4487,16 +4488,16 @@ paths:
             examples:
               example-1:
                 value:
-                  id: 'Test'
-                  itemDescription: 'Oracle Secure Backup'
-                  metric: 'Processor Perpetual'
+                  id: Test
+                  itemDescription: Oracle Secure Backup
+                  metric: Processor Perpetual
                   cost: 500
                   aliases:
                     - Tuning Pack
                   option: false
       description: Update Oracle license type
       tags:
-        - api-service    
+        - api-service
   /technologies/all/license-history:
     get:
       summary: Get historical values of Oracle Databases Licenses

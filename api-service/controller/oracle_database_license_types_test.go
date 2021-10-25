@@ -62,7 +62,7 @@ func TestGetOracleDatabaseLicenseTypes_Success(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	expectedRes := map[string]interface{}{
-		"licenses-types": ltRes,
+		"license-types": ltRes,
 	}
 	require.Equal(t, http.StatusOK, rr.Code)
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
