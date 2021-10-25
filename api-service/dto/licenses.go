@@ -23,6 +23,7 @@ type LicenseCompliance struct {
 
 	Consumed   float64 `json:"consumed"`
 	Covered    float64 `json:"covered"`
+	Purchased  float64 `json:"purchased"`
 	Compliance float64 `json:"compliance"`
 	Unlimited  bool    `json:"unlimited"`
 }
