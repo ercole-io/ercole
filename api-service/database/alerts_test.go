@@ -392,7 +392,7 @@ func (m *MongodbSuite) TestUpdateAlertsStatus() {
 		},
 		{
 			insert:         []model.Alert{a, b},
-			filter:         dto.AlertsFilter{IDS: []primitive.ObjectID{a.ID}},
+			filter:         dto.AlertsFilter{IDs: []primitive.ObjectID{a.ID}},
 			expErr:         nil,
 			expectedResult: []model.Alert{a_ack, b},
 		},
