@@ -37,10 +37,10 @@ func (hds *HostDataService) oracleDatabasesChecks(previousHostdata, hostdata *mo
 
 	licenseTypes, err := hds.getOracleDatabaseLicenseTypes(hostdata.Environment)
 	if err != nil {
-		hds.Log.Error("INSERT_HOSTDATA_ORACLE_DATABASE")
-
+		hds.Log.Error(err)
 		licenseTypes = make([]model.OracleDatabaseLicenseType, 0)
 	}
+
 	hds.setLicenseTypes(hostdata, licenseTypes)
 
 	hds.checkNewLicenses(previousHostdata, hostdata, licenseTypes)
@@ -223,25 +223,10 @@ licenses:
 	}
 }
 
-func (hds *HostDataService) getOracleDatabaseLicenseTypes(environment string,
-) ([]model.OracleDatabaseLicenseType, error) {
-	url := utils.NewAPIUrlNoParams(
-		hds.Config.APIService.RemoteEndpoint,
-		hds.Config.APIService.AuthenticationProvider.Username,
-		hds.Config.APIService.AuthenticationProvider.Password,
-		"settings/oracle/database/license-types").String()
-
-	resp, err := http.Get(url)
-	if err != nil || resp.StatusCode < 200 || resp.StatusCode > 299 {
+func (hds *HostDataService) getOracleDatabaseLicenseTypes(environment string) ([]model.OracleDatabaseLicenseType, error) {
+	licenseTypes, err := hds.ApiSvcClient.GetOracleDatabaseLicenseTypes()
+	if err != nil {
 		return nil, utils.NewError(err, "Can't retrieve licenseTypes")
-	}
-
-	licenseTypes := make([]model.OracleDatabaseLicenseType, 0)
-
-	decoder := json.NewDecoder(resp.Body)
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&licenseTypes); err != nil {
-		return nil, utils.NewError(err, "Can't decode licenseTypes")
 	}
 
 	sort.Slice(licenseTypes, licenseTypesSorter(hds.Config.DataService, environment, licenseTypes))
