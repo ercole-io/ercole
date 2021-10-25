@@ -20,12 +20,12 @@ import (
 	"math/rand"
 	"time"
 
+	apiservice_client "github.com/ercole-io/ercole/v2/api-service/client"
 	"github.com/ercole-io/ercole/v2/chart-service/database"
 	"github.com/ercole-io/ercole/v2/chart-service/dto"
+	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
-
-	"github.com/ercole-io/ercole/v2/config"
 )
 
 // ChartServiceInterface is a interface that wrap methods used to querying data
@@ -48,21 +48,16 @@ type ChartServiceInterface interface {
 	GetHostCores(location string, environment string, olderThan time.Time, newerThan time.Time) ([]dto.HostCores, error)
 }
 
-// ChartService is the concrete implementation of APIServiceInterface.
 type ChartService struct {
-	// Config contains the dataservice global configuration
-	Config config.Configuration
-	// Database contains the database layer
-	Database database.MongoDatabaseInterface
-	// TimeNow contains a function that return the current time
-	TimeNow func() time.Time
-	// Log contains logger formatted
-	Log logger.Logger
+	Config       config.Configuration
+	Database     database.MongoDatabaseInterface
+	ApiSvcClient apiservice_client.ApiSvcClientInterface
+	TimeNow      func() time.Time
+	Log          logger.Logger
 	// Random contains the generator used to generate colors
 	Random *rand.Rand
 }
 
-// Init initializes the service and database
 func (as *ChartService) Init() {
 	as.Random = rand.New(rand.NewSource(as.TimeNow().UnixNano()))
 }
