@@ -67,7 +67,7 @@ const (
 func DiffLicenses(oldLicenses, newLicenses []OracleDatabaseLicense) map[string]int {
 	result := make(map[string]int)
 
-	//Add the features to the result assuming that the all new features are inactive
+	// Add the features to the result assuming that the all new features are inactive
 	for _, license := range oldLicenses {
 		if license.Count > 0 {
 			result[license.LicenseTypeID] = DiffFeatureDeactivated
@@ -76,16 +76,27 @@ func DiffLicenses(oldLicenses, newLicenses []OracleDatabaseLicense) map[string]i
 		}
 	}
 
-	//Activate/deactivate missing feature
 	for _, license := range newLicenses {
-		if (result[license.LicenseTypeID] == DiffFeatureInactive || result[license.LicenseTypeID] == DiffFeatureMissing) && license.Count <= 0 {
-			result[license.LicenseTypeID] = DiffFeatureInactive
-		} else if (result[license.LicenseTypeID] == DiffFeatureDeactivated) && license.Count <= 0 {
-			result[license.LicenseTypeID] = DiffFeatureDeactivated
-		} else if (result[license.LicenseTypeID] == DiffFeatureInactive || result[license.LicenseTypeID] == DiffFeatureMissing) && license.Count > 0 {
-			result[license.LicenseTypeID] = DiffFeatureActivated
-		} else if (result[license.LicenseTypeID] == DiffFeatureDeactivated) && license.Count > 0 {
-			result[license.LicenseTypeID] = DiffFeatureActive
+		id := license.LicenseTypeID
+
+		if (result[id] == DiffFeatureInactive || result[id] == DiffFeatureMissing) && license.Count <= 0 {
+			result[id] = DiffFeatureInactive
+			continue
+		}
+
+		if (result[id] == DiffFeatureDeactivated) && license.Count <= 0 {
+			result[id] = DiffFeatureDeactivated
+			continue
+		}
+
+		if (result[id] == DiffFeatureInactive || result[id] == DiffFeatureMissing) && license.Count > 0 {
+			result[id] = DiffFeatureActivated
+			continue
+		}
+
+		if (result[id] == DiffFeatureDeactivated) && license.Count > 0 {
+			result[id] = DiffFeatureActive
+			continue
 		}
 	}
 
