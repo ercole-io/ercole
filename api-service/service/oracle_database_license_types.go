@@ -130,6 +130,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 		}
 
 		license.Covered += agreement.CoveredLicenses
+		license.Purchased += (agreement.LicensesPerCore + agreement.LicensesPerUser)
 	}
 
 	result := make([]dto.LicenseCompliance, 0, len(licenses))
@@ -142,6 +143,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 
 		license.Consumed = math.Round(license.Consumed)
 		license.Covered = math.Round(license.Covered)
+		license.Purchased = math.Round(license.Purchased)
 
 		if license.Unlimited || license.Consumed == 0 {
 			license.Compliance = 1
