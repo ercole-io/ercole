@@ -4988,6 +4988,7 @@ paths:
                         - metric
                         - consumed
                         - covered
+                        - purchased
                         - compliance
                         - unlimited
                       properties:
@@ -5004,6 +5005,8 @@ paths:
                           type: number
                         covered:
                           type: number
+                        purchased:
+                          type: number  
                         compliance:
                           type: number
                         unlimited:

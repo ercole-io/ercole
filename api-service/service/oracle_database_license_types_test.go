@@ -77,7 +77,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 			Restricted:               false,
 			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "pippo"}, {Hostname: "pluto"}},
 			LicensesPerCore:          0,
-			LicensesPerUser:          0,
+			LicensesPerUser:          20,
 			AvailableLicensesPerCore: 50,
 			AvailableLicensesPerUser: 0,
 		},
@@ -94,7 +94,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 			Restricted:               false,
 			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "topolino"}, {Hostname: "minnie"}},
 			LicensesPerCore:          0,
-			LicensesPerUser:          0,
+			LicensesPerUser:          2000,
 			AvailableLicensesPerCore: 0,
 			AvailableLicensesPerUser: 75,
 		},
@@ -111,7 +111,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 			Restricted:               false,
 			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "topolino"}, {Hostname: "minnie"}},
 			LicensesPerCore:          0,
-			LicensesPerUser:          0,
+			LicensesPerUser:          20,
 			AvailableLicensesPerCore: 75,
 			AvailableLicensesPerUser: 0,
 		},
@@ -227,11 +227,11 @@ func TestGetLicensesCompliance(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := []dto.LicenseCompliance{
-		{LicenseTypeID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 10, Covered: 7, Compliance: 0.7, Unlimited: false},
-		{LicenseTypeID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 475, Covered: 1875, Compliance: 1875.0 / 475.0, Unlimited: false},
-		{LicenseTypeID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Consumed: 11, Covered: 1, Compliance: 1, Unlimited: true},
-		{LicenseTypeID: "PID004", ItemDescription: "itemDesc4", Metric: "Computer Perpetual", Consumed: 0.0, Covered: 0.0, Compliance: 1, Unlimited: false},
-		{LicenseTypeID: "PID005", ItemDescription: "itemDesc5", Metric: "Computer Perpetual", Consumed: 12, Covered: 0.0, Compliance: 0, Unlimited: false},
+		{LicenseTypeID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 10, Covered: 7, Purchased: 20, Compliance: 0.7, Unlimited: false},
+		{LicenseTypeID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 475, Covered: 1875, Purchased: 2000, Compliance: 1875.0 / 475.0, Unlimited: false},
+		{LicenseTypeID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Consumed: 11, Covered: 1, Purchased: 20, Compliance: 1, Unlimited: true},
+		{LicenseTypeID: "PID004", ItemDescription: "itemDesc4", Metric: "Computer Perpetual", Consumed: 0.0, Covered: 0.0, Purchased: 0, Compliance: 1, Unlimited: false},
+		{LicenseTypeID: "PID005", ItemDescription: "itemDesc5", Metric: "Computer Perpetual", Consumed: 12, Covered: 0.0, Purchased: 0, Compliance: 0, Unlimited: false},
 	}
 
 	assert.ElementsMatch(t, expected, actual)
@@ -252,7 +252,7 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 			Restricted:               false,
 			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "pippo"}, {Hostname: "pluto"}},
 			LicensesPerCore:          0,
-			LicensesPerUser:          0,
+			LicensesPerUser:          5,
 			AvailableLicensesPerCore: 50,
 			AvailableLicensesPerUser: 0,
 		},
@@ -269,7 +269,7 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 			Restricted:               false,
 			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "topolino"}, {Hostname: "minnie"}},
 			LicensesPerCore:          0,
-			LicensesPerUser:          0,
+			LicensesPerUser:          100,
 			AvailableLicensesPerCore: 0,
 			AvailableLicensesPerUser: 75,
 		},
@@ -286,7 +286,7 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 			Restricted:               false,
 			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "topolino"}, {Hostname: "minnie"}},
 			LicensesPerCore:          0,
-			LicensesPerUser:          0,
+			LicensesPerUser:          10,
 			AvailableLicensesPerCore: 75,
 			AvailableLicensesPerUser: 0,
 		},
@@ -303,7 +303,7 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 			Restricted:               false,
 			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{},
 			LicensesPerCore:          0,
-			LicensesPerUser:          0,
+			LicensesPerUser:          5,
 			AvailableLicensesPerCore: 50,
 			AvailableLicensesPerUser: 0,
 		},
@@ -427,10 +427,10 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := []dto.LicenseCompliance{
-		{LicenseTypeID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 3, Covered: 0, Compliance: 0, Unlimited: false},
-		{LicenseTypeID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 75, Covered: 0, Compliance: 0, Unlimited: false},
-		{LicenseTypeID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Consumed: 3, Covered: 0, Compliance: 1, Unlimited: true},
-		{LicenseTypeID: "PID004", ItemDescription: "itemDesc4", Metric: "Computer Perpetual", Consumed: 3, Covered: 0, Compliance: 0, Unlimited: false},
+		{LicenseTypeID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 3, Covered: 0, Purchased: 5, Compliance: 0, Unlimited: false},
+		{LicenseTypeID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 75, Covered: 0, Purchased: 100, Compliance: 0, Unlimited: false},
+		{LicenseTypeID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Consumed: 3, Covered: 0, Purchased: 10, Compliance: 1, Unlimited: true},
+		{LicenseTypeID: "PID004", ItemDescription: "itemDesc4", Metric: "Computer Perpetual", Consumed: 3, Covered: 0, Purchased: 5, Compliance: 0, Unlimited: false},
 	}
 
 	assert.ElementsMatch(t, expected, actual)
