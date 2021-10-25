@@ -20,9 +20,10 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/gorilla/mux"
+
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/gorilla/mux"
 )
 
 // GetOracleDatabaseLicensesCompliance return list of licenses with usage and compliance
@@ -45,7 +46,7 @@ func (ctrl *APIController) GetOracleDatabaseLicenseTypes(w http.ResponseWriter, 
 	}
 
 	response := map[string]interface{}{
-		"licenses-types": data,
+		"license-types": data,
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, response)
