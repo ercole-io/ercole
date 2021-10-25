@@ -133,7 +133,7 @@ func TestAcknowledgeAlerts(t *testing.T) {
 			Database: db,
 		}
 
-		db.EXPECT().GetAlertsNODATA(tc.filter).Return(count, noDataErr)
+		db.EXPECT().CountAlertsNODATA(tc.filter).Return(count, noDataErr)
 		db.EXPECT().UpdateAlertsStatus(tc.filter, model.AlertStatusAck).Return(tc.expErr)
 
 		actErr := as.AckAlerts(tc.filter)

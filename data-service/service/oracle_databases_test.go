@@ -937,8 +937,8 @@ func TestSearchAndAckOldMissingDatabasesAlerts(t *testing.T) {
 		return alerts, nil
 	})
 
-	apisc.EXPECT().AckAlerts(dto.AlertsFilter{IDS: []primitive.ObjectID{alerts[1].ID}})
-	apisc.EXPECT().AckAlerts(dto.AlertsFilter{IDS: []primitive.ObjectID{alerts[2].ID}})
+	apisc.EXPECT().AckAlerts(dto.AlertsFilter{IDs: []primitive.ObjectID{alerts[1].ID}})
+	apisc.EXPECT().AckAlerts(dto.AlertsFilter{IDs: []primitive.ObjectID{alerts[2].ID}})
 
 	hds.searchAndAckOldMissingDatabasesAlerts("pippo", newDbs)
 }

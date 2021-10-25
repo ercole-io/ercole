@@ -179,12 +179,14 @@ func (ctrl *APIController) AckAlerts(w http.ResponseWriter, r *http.Request) {
 	if body.Filter != nil {
 		filter = *body.Filter
 	} else {
-		filter.IDS = body.Ids
+		filter.IDs = body.Ids
 	}
 
 	err := ctrl.Service.AckAlerts(filter)
 	if errors.Is(err, utils.ErrAlertNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+	} else if errors.Is(err, utils.ErrInvalidAck) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 	} else if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
