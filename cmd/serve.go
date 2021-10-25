@@ -316,10 +316,11 @@ func serveChartService(config config.Configuration, wg *sync.WaitGroup) {
 	db.Init()
 
 	service := &chartservice_service.ChartService{
-		Config:   config,
-		Database: db,
-		TimeNow:  time.Now,
-		Log:      log,
+		Config:       config,
+		Database:     db,
+		ApiSvcClient: apiservice_client.NewClient(config.APIService),
+		TimeNow:      time.Now,
+		Log:          log,
 	}
 	service.Init()
 
