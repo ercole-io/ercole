@@ -17,9 +17,7 @@
 package service
 
 import (
-	"encoding/json"
 	"errors"
-	"net/http"
 	"time"
 
 	"github.com/ercole-io/ercole/v2/chart-service/dto"
@@ -72,21 +70,9 @@ func (as *ChartService) GetOracleDatabaseChart(metric string, location string, e
 }
 
 func (as *ChartService) getOracleDatabaseLicenseTypes() (map[string]model.OracleDatabaseLicenseType, error) {
-	url := utils.NewAPIUrlNoParams(
-		as.Config.APIService.RemoteEndpoint,
-		as.Config.APIService.AuthenticationProvider.Username,
-		as.Config.APIService.AuthenticationProvider.Password,
-		"/settings/oracle/database/license-types").String()
-	resp, err := http.Get(url)
-	if err != nil || resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return nil, utils.NewError(err, "Can't retrieve from databases")
-	}
-
-	decoder := json.NewDecoder(resp.Body)
-	decoder.DisallowUnknownFields()
-	var licenseTypes []model.OracleDatabaseLicenseType
-	if err := decoder.Decode(&licenseTypes); err != nil {
-		return nil, utils.NewError(err, "Can't decode response body")
+	licenseTypes, err := as.ApiSvcClient.GetOracleDatabaseLicenseTypes()
+	if err != nil {
+		return nil, utils.NewError(err, "Can't retrieve licenseTypes")
 	}
 
 	licenseTypesMap := make(map[string]model.OracleDatabaseLicenseType)
