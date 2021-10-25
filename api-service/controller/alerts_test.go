@@ -656,7 +656,7 @@ func TestAckAlerts_FailNotFound(t *testing.T) {
 	}
 
 	a := dto.AlertsFilter{
-		IDS: []primitive.ObjectID{utils.Str2oid("5dc3f534db7e81a98b726a52")},
+		IDs: []primitive.ObjectID{utils.Str2oid("5dc3f534db7e81a98b726a52")},
 	}
 
 	as.EXPECT().AckAlerts(a).
@@ -693,7 +693,7 @@ func TestAckAlerts_FailInternalServerError(t *testing.T) {
 	}
 
 	a := dto.AlertsFilter{
-		IDS: []primitive.ObjectID{utils.Str2oid("5dc3f534db7e81a98b726a52")},
+		IDs: []primitive.ObjectID{utils.Str2oid("5dc3f534db7e81a98b726a52")},
 	}
 
 	as.EXPECT().AckAlerts(a).
@@ -733,7 +733,7 @@ func TestAckAlerts_Success(t *testing.T) {
 
 		s := model.AlertStatusNew
 		a := dto.AlertsFilter{
-			IDS:         []primitive.ObjectID{utils.Str2oid("000000000000")},
+			IDs:         []primitive.ObjectID{utils.Str2oid("000000000000")},
 			AlertStatus: &s,
 			Date:        time.Time{},
 			OtherInfo: map[string]interface{}{

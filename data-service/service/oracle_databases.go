@@ -405,7 +405,7 @@ alerts:
 		}
 
 		// all dbNames are in newDbs
-		f = dto.AlertsFilter{IDS: []primitive.ObjectID{alerts[i].ID}}
+		f = dto.AlertsFilter{IDs: []primitive.ObjectID{alerts[i].ID}}
 		err = hds.ApiSvcClient.AckAlerts(f)
 		if err != nil {
 			hds.Log.Error(err)

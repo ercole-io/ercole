@@ -172,7 +172,7 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 	return out, nil
 }
 
-func (md *MongoDatabase) GetAlertsNODATA(alertsFilter dto.AlertsFilter) (int64, error) {
+func (md *MongoDatabase) CountAlertsNODATA(alertsFilter dto.AlertsFilter) (int64, error) {
 	data, err := bson.Marshal(alertsFilter)
 	if err != nil {
 		return 0, err
@@ -197,22 +197,12 @@ func (md *MongoDatabase) GetAlertsNODATA(alertsFilter dto.AlertsFilter) (int64, 
 		delete(filter, "otherInfo")
 	}
 
-	ids := alertsFilter.IDS
+	ids := alertsFilter.IDs
 	if len(ids) >= 1 {
 		filter["_id"] = bson.M{"$in": ids}
 	}
 
-	if alertsFilter.AlertCode != nil {
-		alertCode := *alertsFilter.AlertCode
-		if alertCode == "NO_DATA" {
-			return -1, nil
-		} else {
-			return 0, nil
-		}
-
-	} else {
-		filter["alertCode"] = bson.M{"$eq": "NO_DATA"}
-	}
+	filter["alertCode"] = bson.M{"$eq": "NO_DATA"}
 
 	count, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(alertsCollection).
 		CountDocuments(context.TODO(), filter)
@@ -248,7 +238,7 @@ func (md *MongoDatabase) UpdateAlertsStatus(alertsFilter dto.AlertsFilter, newSt
 		delete(filter, "otherInfo")
 	}
 
-	ids := alertsFilter.IDS
+	ids := alertsFilter.IDs
 	if len(ids) >= 1 {
 		filter["_id"] = bson.M{"$in": ids}
 	}

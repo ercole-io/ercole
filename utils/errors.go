@@ -48,3 +48,5 @@ var ErrOracleDatabaseAgreementNotFound = errors.New("Agreement not found")
 var ErrNotInClusterHostNotFound = errors.New("Not in cluster host not found")
 
 var ErrInvalidHostdata = errors.New("Invalid hostdata")
+
+var ErrInvalidAck = errors.New("Alert(s) cannot be acknowledged")

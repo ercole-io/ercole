@@ -17,8 +17,6 @@
 package service
 
 import (
-	"errors"
-	"net/http"
 	"strings"
 	"time"
 
@@ -77,13 +75,23 @@ func (as *APIService) SearchAlertsAsXLSX(from, to time.Time, filter dto.GlobalFi
 }
 
 func (as *APIService) AckAlerts(alertsFilter dto.AlertsFilter) error {
-
-	count, err := as.Database.GetAlertsNODATA(alertsFilter)
-	if err != nil {
-		return err
+	if alertsFilter.AlertCode != nil && *alertsFilter.AlertCode == model.AlertCodeNoData {
+		return utils.NewErrorf("%w: you are trying to ack alerts with code: %s",
+			utils.ErrInvalidAck,
+			model.AlertCodeNoData)
 	}
-	if count != 0 {
-		return utils.NewError(errors.New("Alert cannot have alertCode equals to ACK"), http.StatusText(http.StatusBadRequest))
+
+	if alertsFilter.AlertCode == nil {
+		count, err := as.Database.CountAlertsNODATA(alertsFilter)
+		if err != nil {
+			return err
+		}
+
+		if count != 0 {
+			return utils.NewErrorf("%w: you are trying to ack alerts with code: %s",
+				utils.ErrInvalidAck,
+				model.AlertCodeNoData)
+		}
 	}
 
 	return as.Database.UpdateAlertsStatus(alertsFilter, model.AlertStatusAck)
