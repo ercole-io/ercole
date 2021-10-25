@@ -208,19 +208,47 @@ func (hds *HostDataService) setLicenseTypes(hostdata *model.HostDataBE, licenseT
 }
 
 func setLicenseTypeIDs(licenseTypes []model.OracleDatabaseLicenseType, database *model.OracleDatabase) {
+	lics := database.Licenses
+
+	// remove empty licenses
+	for i := 0; i < len(lics); {
+		if lics[i].Count > 0 {
+			i++
+			continue
+		}
+
+		lics[i] = lics[len(lics)-1]
+		lics = lics[:len(lics)-1]
+	}
+
+	sort.Slice(lics, func(i, j int) bool {
+		return lics[i].Count > lics[j].Count ||
+			lics[i].Name < lics[j].Name
+	})
+
+	licenseTypesAlreadyUsed := make(map[string]bool) // use each LicenseType once per database
+
 licenses:
-	for i := range database.Licenses {
-		license := &database.Licenses[i]
+	for i := range lics {
+		license := &lics[i]
 
 		for _, licenseType := range licenseTypes {
+			if licenseTypesAlreadyUsed[licenseType.ID] {
+				continue
+			}
+
 			for _, alias := range licenseType.Aliases {
 				if alias == license.Name {
 					license.LicenseTypeID = licenseType.ID
+					licenseTypesAlreadyUsed[licenseType.ID] = true
+
 					continue licenses
 				}
 			}
 		}
 	}
+
+	database.Licenses = lics
 }
 
 func (hds *HostDataService) getOracleDatabaseLicenseTypes(environment string) ([]model.OracleDatabaseLicenseType, error) {
