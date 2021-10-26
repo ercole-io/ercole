@@ -67,6 +67,7 @@ func (md *MongoDatabase) updateLicenseComplianceHistoric(license dto.LicenseComp
 			Value: bson.D{
 				{Key: "history.$.consumed", Value: license.Consumed},
 				{Key: "history.$.covered", Value: license.Covered},
+				{Key: "history.$.purchased", Value: license.Purchased},
 			},
 		}}
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(licensesHistoryCollection).
@@ -104,7 +105,9 @@ func (md *MongoDatabase) insertLicenseComplianceHistoric(license dto.LicenseComp
 					Value: bson.D{
 						{Key: "date", Value: today},
 						{Key: "consumed", Value: license.Consumed},
-						{Key: "covered", Value: license.Covered}},
+						{Key: "covered", Value: license.Covered},
+						{Key: "purchased", Value: license.Purchased},
+					},
 				}}}}
 
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(licensesHistoryCollection).

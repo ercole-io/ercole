@@ -139,9 +139,10 @@ func mergeLicenseComplianceHistoricValues(a, b []dto.LicenseComplianceHistoricVa
 		}
 
 		newVal := dto.LicenseComplianceHistoricValue{
-			Date:     valA.Date,
-			Consumed: valA.Consumed + valB.Consumed,
-			Covered:  valA.Covered + valB.Covered,
+			Date:      valA.Date,
+			Consumed:  valA.Consumed + valB.Consumed,
+			Covered:   valA.Covered + valB.Covered,
+			Purchased: valA.Purchased + valB.Purchased,
 		}
 
 		merged = append(merged, newVal)
@@ -160,7 +161,7 @@ licenses:
 		l := &licenses[i]
 
 		for _, x := range l.History {
-			if x.Consumed > 0 || x.Covered > 0 {
+			if x.Consumed > 0 || x.Covered > 0 || x.Purchased > 0 {
 				result = append(result, *l)
 				continue licenses
 			}

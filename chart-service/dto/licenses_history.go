@@ -26,7 +26,8 @@ type LicenseComplianceHistory struct {
 }
 
 type LicenseComplianceHistoricValue struct {
-	Date     time.Time `json:"date" bson:"date"`
-	Consumed float64   `json:"consumed" bson:"consumed"`
-	Covered  float64   `json:"covered" bson:"covered"`
+	Date      time.Time `json:"date" bson:"date"`
+	Consumed  float64   `json:"consumed" bson:"consumed"`
+	Covered   float64   `json:"covered" bson:"covered"`
+	Purchased float64   `json:"purchased" bson:"purchased"`
 }
