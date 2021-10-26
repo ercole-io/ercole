@@ -33,6 +33,7 @@ import (
 type ApiSvcClientInterface interface {
 	GetAlertsByFilter(filter dto.AlertsFilter) ([]model.Alert, error)
 	AckAlerts(filter dto.AlertsFilter) error
+	GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error)
 }
 
 type Client struct {
