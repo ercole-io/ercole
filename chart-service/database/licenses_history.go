@@ -35,12 +35,9 @@ func (md *MongoDatabase) GetLicenseComplianceHistory() ([]dto.LicenseComplianceH
 	}
 
 	var items []dto.LicenseComplianceHistory
-	for cur.Next(context.TODO()) {
-		var item dto.LicenseComplianceHistory
-		if err := cur.Decode(&item); err != nil {
-			return nil, utils.NewError(err, "Decode ERROR")
-		}
-		items = append(items, item)
+	err = cur.All(context.TODO(), &items)
+	if err != nil {
+		return nil, utils.NewError(err, "Decode ERROR")
 	}
 
 	return items, nil
