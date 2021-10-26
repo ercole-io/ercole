@@ -18,13 +18,12 @@ package service
 import (
 	"testing"
 
-	"github.com/ercole-io/ercole/v2/config"
-
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
@@ -139,6 +138,83 @@ func TestAcknowledgeAlerts(t *testing.T) {
 		actErr := as.AckAlerts(tc.filter)
 		assert.Equal(t, tc.expErr, actErr)
 	}
+}
+
+func TestAcknowledgeAlerts_FailAlertCodeNoData(t *testing.T) {
+	a_ack := dto.AlertsFilter{
+		AlertCode: utils.Str2ptr(model.AlertCodeNoData),
+	}
+
+	dataErr := utils.NewErrorf("%w: you are trying to ack alerts with code: %s",
+		utils.ErrInvalidAck,
+		model.AlertCodeNoData)
+
+	testCase := struct {
+		filter dto.AlertsFilter
+	}{
+		filter: a_ack,
+	}
+
+	mockCtrl := gomock.NewController(t)
+	defer func() {
+		mockCtrl.Finish()
+	}()
+
+	as := APIService{}
+
+	actErr := as.AckAlerts(testCase.filter)
+	require.Error(t, actErr, dataErr.Message)
+}
+
+func TestAcknowledgeAlerts_FailCountAlertsNoData(t *testing.T) {
+	testCase := struct {
+		filter dto.AlertsFilter
+	}{
+		filter: dto.AlertsFilter{},
+	}
+
+	var count int64
+
+	mockCtrl := gomock.NewController(t)
+	defer func() {
+		mockCtrl.Finish()
+	}()
+
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
+
+	db.EXPECT().CountAlertsNODATA(testCase.filter).Return(count, aerrMock)
+
+	actErr := as.AckAlerts(testCase.filter)
+	require.Equal(t, aerrMock, actErr)
+}
+
+func TestAcknowledgeAlerts_FailAckAlertsNoData(t *testing.T) {
+	testCase := struct {
+		filter dto.AlertsFilter
+	}{
+		filter: dto.AlertsFilter{},
+	}
+
+	var count int64 = 10
+	var err error
+
+	mockCtrl := gomock.NewController(t)
+	defer func() {
+		mockCtrl.Finish()
+	}()
+
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
+
+	db.EXPECT().CountAlertsNODATA(testCase.filter).Return(count, err)
+
+	actErr := as.AckAlerts(testCase.filter)
+	require.Error(t, actErr)
 }
 
 func TestSearchAlertsAsXLSX_Success(t *testing.T) {
