@@ -44,6 +44,7 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 				Metric:          "Processor Perpetual",
 				Consumed:        0,
 				Covered:         0,
+				Purchased:       0,
 				Compliance:      1,
 				Unlimited:       false,
 			},
@@ -53,6 +54,7 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 				Metric:          "Processor Perpetual",
 				Consumed:        2.5,
 				Covered:         2.5,
+				Purchased:       2.5,
 				Compliance:      1,
 				Unlimited:       false,
 			},
@@ -62,6 +64,7 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 				Metric:          "Processor Perpetual",
 				Consumed:        3,
 				Covered:         3,
+				Purchased:       3,
 				Compliance:      1,
 				Unlimited:       false,
 			},
@@ -71,6 +74,7 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 				Metric:          "",
 				Consumed:        42,
 				Covered:         84,
+				Purchased:       95,
 				Compliance:      0.5,
 				Unlimited:       false,
 			},
@@ -102,10 +106,10 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 		}
 
 		expected := []map[string]interface{}{
-			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": expectedDateDay1}}, "licenseTypeID": "L47247"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": expectedDateDay1}}, "licenseTypeID": "A90611"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay1}}, "licenseTypeID": "A90620"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 42.0, "covered": 84.0, "date": expectedDateDay1}}, "licenseTypeID": "", "itemDescription": "MySQL Enterprise per cluster"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "purchased": 0.0, "date": expectedDateDay1}}, "licenseTypeID": "L47247"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "purchased": 2.5, "date": expectedDateDay1}}, "licenseTypeID": "A90611"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "purchased": 3.0, "date": expectedDateDay1}}, "licenseTypeID": "A90620"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 42.0, "covered": 84.0, "purchased": 95.0, "date": expectedDateDay1}}, "licenseTypeID": "", "itemDescription": "MySQL Enterprise per cluster"},
 		}
 
 		assert.ElementsMatch(m.T(), expected, actual)
@@ -121,6 +125,7 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 				Metric:          "Processor Perpetual",
 				Consumed:        0.5,
 				Covered:         5,
+				Purchased:       5,
 				Compliance:      1,
 				Unlimited:       false,
 			},
@@ -130,6 +135,7 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 				Metric:          "Processor Perpetual",
 				Consumed:        4.5,
 				Covered:         2.5,
+				Purchased:       2.5,
 				Compliance:      0,
 				Unlimited:       false,
 			},
@@ -139,6 +145,7 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 				Metric:          "",
 				Consumed:        3,
 				Covered:         3,
+				Purchased:       3,
 				Compliance:      1,
 				Unlimited:       false,
 			},
@@ -148,6 +155,7 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 				Metric:          "",
 				Consumed:        43,
 				Covered:         86,
+				Purchased:       86,
 				Compliance:      0.5,
 				Unlimited:       false,
 			},
@@ -181,11 +189,11 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 		expectedDateDay2 := utils.PDT("2020-12-06T00:00:00+02:00")
 
 		expected := []map[string]interface{}{
-			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": expectedDateDay1}, map[string]interface{}{"consumed": 0.5, "covered": 5.0, "date": expectedDateDay2}}, "licenseTypeID": "L47247"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": expectedDateDay1}, map[string]interface{}{"consumed": 4.5, "covered": 2.5, "date": expectedDateDay2}}, "licenseTypeID": "A90611"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay1}}, "licenseTypeID": "A90620"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay2}}, "licenseTypeID": "PID001"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 42.0, "covered": 84.0, "date": expectedDateDay1}, map[string]interface{}{"consumed": 43.0, "covered": 86.0, "date": expectedDateDay2}}, "licenseTypeID": "", "itemDescription": "MySQL Enterprise per cluster"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "purchased": 0.0, "date": expectedDateDay1}, map[string]interface{}{"consumed": 0.5, "covered": 5.0, "purchased": 5.0, "date": expectedDateDay2}}, "licenseTypeID": "L47247"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "purchased": 2.5, "date": expectedDateDay1}, map[string]interface{}{"consumed": 4.5, "covered": 2.5, "purchased": 2.5, "date": expectedDateDay2}}, "licenseTypeID": "A90611"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "purchased": 3.0, "date": expectedDateDay1}}, "licenseTypeID": "A90620"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "purchased": 3.0, "date": expectedDateDay2}}, "licenseTypeID": "PID001"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 42.0, "covered": 84.0, "purchased": 95.0, "date": expectedDateDay1}, map[string]interface{}{"consumed": 43.0, "covered": 86.0, "purchased": 86.0, "date": expectedDateDay2}}, "licenseTypeID": "", "itemDescription": "MySQL Enterprise per cluster"},
 		}
 
 		assert.ElementsMatch(m.T(), expected, actual)
@@ -201,6 +209,7 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 				Metric:          "Processor Perpetual",
 				Consumed:        42.52,
 				Covered:         2.5,
+				Purchased:       5,
 				Compliance:      0,
 				Unlimited:       false,
 			},
@@ -234,11 +243,11 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 		expectedDateDay2 := utils.PDT("2020-12-06T00:00:00+02:00")
 
 		expected := []map[string]interface{}{
-			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "date": expectedDateDay1}, map[string]interface{}{"consumed": 0.5, "covered": 5.0, "date": expectedDateDay2}}, "licenseTypeID": "L47247"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "date": expectedDateDay1}, map[string]interface{}{"consumed": 42.52, "covered": 2.5, "date": expectedDateDay2}}, "licenseTypeID": "A90611"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay1}}, "licenseTypeID": "A90620"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "date": expectedDateDay2}}, "licenseTypeID": "PID001"},
-			{"history": primitive.A{map[string]interface{}{"consumed": 42.0, "covered": 84.0, "date": expectedDateDay1}, map[string]interface{}{"consumed": 43.0, "covered": 86.0, "date": expectedDateDay2}}, "licenseTypeID": "", "itemDescription": "MySQL Enterprise per cluster"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 0.0, "covered": 0.0, "purchased": 0.0, "date": expectedDateDay1}, map[string]interface{}{"consumed": 0.5, "covered": 5.0, "purchased": 5.0, "date": expectedDateDay2}}, "licenseTypeID": "L47247"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 2.5, "covered": 2.5, "purchased": 2.5, "date": expectedDateDay1}, map[string]interface{}{"consumed": 42.52, "covered": 2.5, "purchased": 5.0, "date": expectedDateDay2}}, "licenseTypeID": "A90611"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "purchased": 3.0, "date": expectedDateDay1}}, "licenseTypeID": "A90620"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 3.0, "covered": 3.0, "purchased": 3.0, "date": expectedDateDay2}}, "licenseTypeID": "PID001"},
+			{"history": primitive.A{map[string]interface{}{"consumed": 42.0, "covered": 84.0, "purchased": 95.0, "date": expectedDateDay1}, map[string]interface{}{"consumed": 43.0, "covered": 86.0, "purchased": 86.0, "date": expectedDateDay2}}, "licenseTypeID": "", "itemDescription": "MySQL Enterprise per cluster"},
 		}
 
 		assert.ElementsMatch(m.T(), expected, actual)

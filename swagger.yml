@@ -4535,10 +4535,13 @@ paths:
                             type: number
                           covered:
                             type: number
+                          purchased:
+                            type: number  
                         required:
                           - date
                           - consumed
                           - covered
+                          - purchased
                   required:
                     - licenseTypeID
                     - itemDescription
