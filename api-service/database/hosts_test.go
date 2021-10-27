@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ func (m *MongodbSuite) TestSearchHosts() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
+				"createdAt":                "2020-04-15T08:46:58.471+02:00",
 				"coresPerProcessor":        1,
 				"dbInstanceName":           "ERCOLE",
 				"environment":              "TST",
