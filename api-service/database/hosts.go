@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -169,6 +169,7 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 					mu.APUnwind("$database.pdbs"),
 					mu.APProject(bson.M{
 						// "Database":           1,
+						"createdAt":          "$createdAt",
 						"physicalServerName": mu.APOCond("$isVirtualServer", mu.APOIfNull("$cluster", ""), "$hostname"),
 						"virtualServerName":  mu.APOCond("$isVirtualServer", "$hostname", mu.APOIfNull("$cluster", "")),
 						"virtualizationTechnology": bson.M{

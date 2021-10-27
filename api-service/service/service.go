@@ -39,7 +39,7 @@ type APIServiceInterface interface {
 	// SearchHosts search hosts
 	SearchHosts(mode string, filters dto.SearchHostsFilters) ([]map[string]interface{}, error)
 	// SearchHostsAsLMS return LMS template file with the hosts filtered
-	SearchHostsAsLMS(filters dto.SearchHostsFilters) (*excelize.File, error)
+	SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.File, error)
 	SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*excelize.File, error)
 	GetHostDataSummaries(filters dto.SearchHostsFilters) ([]dto.HostDataSummary, error)
 	// GetHost return the host specified in the hostname param

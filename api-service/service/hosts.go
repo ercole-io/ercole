@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -32,11 +33,14 @@ func (as *APIService) SearchHosts(mode string, filters dto.SearchHostsFilters) (
 	return as.Database.SearchHosts(mode, filters)
 }
 
-func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsFilters) (*excelize.File, error) {
-	hosts, err := as.Database.SearchHosts("lms", filters)
+func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.File, error) {
+	hosts, err := as.Database.SearchHosts("lms", filters.SearchHostsFilters)
 	if err != nil {
 		return nil, utils.NewError(err, "")
 	}
+
+	sheetDatabaseEbsDbTier := "Database_&_EBS_DB_Tier"
+	sheetHostAdded := "Hosts_added"
 
 	csiByHostname, err := as.getCSIsByHostname()
 	if err != nil {
@@ -51,37 +55,46 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsFilters) (*exceliz
 
 	for i, val := range hosts {
 		i += 4 // offset for headers
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("B%d", i), val["physicalServerName"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("C%d", i), val["virtualServerName"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("D%d", i), val["virtualizationTechnology"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("E%d", i), val["dbInstanceName"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("F%d", i), val["pluggableDatabaseName"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("G%d", i), val["environment"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("H%d", i), val["options"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("I%d", i), val["usedManagementPacks"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("N%d", i), val["productVersion"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("O%d", i), val["productLicenseAllocated"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("P%d", i), val["licenseMetricAllocated"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("Q%d", i), val["usingLicenseCount"])
-
-		hostname := val["physicalServerName"].(string)
-		if len(hostname) == 0 {
-			hostname = val["virtualServerName"].(string)
+		setCellValueLMS(lms, sheetDatabaseEbsDbTier, i, csiByHostname, val)
+		createdDate := val["createdAt"].(primitive.DateTime).Time().UTC()
+		if createdDate.After(filters.GlobalFilter.OlderThan) &&
+			createdDate.Before(filters.NewerThan) {
+			setCellValueLMS(lms, sheetHostAdded, i, csiByHostname, val)
 		}
-		if csi, ok := csiByHostname[hostname]; ok {
-			lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("R%d", i), strings.Join(csi, ", "))
-		}
-
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AC%d", i), val["processorModel"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AD%d", i), val["processors"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AE%d", i), val["coresPerProcessor"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AF%d", i), val["physicalCores"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AG%d", i), val["threadsPerCore"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AH%d", i), val["processorSpeed"])
-		lms.SetCellValue("Database_&_EBS_DB_Tier", fmt.Sprintf("AJ%d", i), val["operatingSystem"])
 	}
 
 	return lms, nil
+}
+
+func setCellValueLMS(lms *excelize.File, sheetName string, i int, csiByHostname map[string][]string, val map[string]interface{}) {
+	lms.SetCellValue(sheetName, fmt.Sprintf("B%d", i), val["physicalServerName"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("C%d", i), val["virtualServerName"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("D%d", i), val["virtualizationTechnology"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("E%d", i), val["dbInstanceName"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("F%d", i), val["pluggableDatabaseName"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("G%d", i), val["environment"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("H%d", i), val["options"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("I%d", i), val["usedManagementPacks"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("N%d", i), val["productVersion"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("O%d", i), val["productLicenseAllocated"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("P%d", i), val["licenseMetricAllocated"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("Q%d", i), val["usingLicenseCount"])
+
+	hostname := val["physicalServerName"].(string)
+	if len(hostname) == 0 {
+		hostname = val["virtualServerName"].(string)
+	}
+	if csi, ok := csiByHostname[hostname]; ok {
+		lms.SetCellValue(sheetName, fmt.Sprintf("R%d", i), strings.Join(csi, ", "))
+	}
+
+	lms.SetCellValue(sheetName, fmt.Sprintf("AC%d", i), val["processorModel"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("AD%d", i), val["processors"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("AE%d", i), val["coresPerProcessor"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("AF%d", i), val["physicalCores"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("AG%d", i), val["threadsPerCore"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("AH%d", i), val["processorSpeed"])
+	lms.SetCellValue(sheetName, fmt.Sprintf("AJ%d", i), val["operatingSystem"])
 }
 
 func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*excelize.File, error) {
