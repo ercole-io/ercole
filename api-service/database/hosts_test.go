@@ -144,7 +144,7 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 		expectedOut := []dto.HostDataSummary{
 			{
 				ID:           "5eb0222a45d85f4193704944",
-				CreatedAt:    utils.P("2020-05-04T14:09:46.608Z").UTC(),
+				CreatedAt:    utils.P("2020-05-04T14:09:46.608Z").Local(),
 				Hostname:     "test-virt",
 				Location:     "Italy",
 				Environment:  "PROD",
@@ -182,7 +182,7 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 			},
 			{
 				ID:           "5ea2d26d20d55cbdc35022b4",
-				CreatedAt:    utils.P("2020-04-24T13:50:05.46+02:00").UTC(),
+				CreatedAt:    utils.P("2020-04-24T13:50:05.46+02:00").Local(),
 				Hostname:     "test-small",
 				Location:     "Germany",
 				Environment:  "TST",
@@ -218,7 +218,7 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 			},
 			{
 				ID:           "5e96ade270c184faca93fe36",
-				CreatedAt:    utils.P("2020-04-15T08:46:58.471+02:00").UTC(),
+				CreatedAt:    utils.P("2020-04-15T08:46:58.471+02:00").Local(),
 				Hostname:     "test-db",
 				Location:     "Germany",
 				Environment:  "TST",
@@ -284,7 +284,7 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 		expectedOut := []dto.HostDataSummary{
 			{
 				ID:           "5e96ade270c184faca93fe36",
-				CreatedAt:    utils.P("2020-04-15T08:46:58.471+02:00").UTC(),
+				CreatedAt:    utils.P("2020-04-15T08:46:58.471+02:00").Local(),
 				Hostname:     "test-db",
 				Location:     "Germany",
 				Environment:  "TST",
@@ -335,7 +335,7 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 		expectedOut := []dto.HostDataSummary{
 			{
 				ID:           "5eb0222a45d85f4193704944",
-				CreatedAt:    utils.P("2020-05-04T14:09:46.608Z").UTC(),
+				CreatedAt:    utils.P("2020-05-04T14:09:46.608Z").Local(),
 				Hostname:     "test-virt",
 				Location:     "Italy",
 				Environment:  "PROD",
