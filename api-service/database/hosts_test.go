@@ -44,7 +44,7 @@ func (m *MongodbSuite) TestSearchHosts() {
 		m.Require().NoError(err)
 		var expectedOut interface{} = []map[string]interface{}{
 			{
-				"createdAt":                "2020-04-15T08:46:58.471+02:00",
+				"createdAt":                utils.P("2020-04-15T08:46:58.471+02:00").Local(),
 				"coresPerProcessor":        1,
 				"dbInstanceName":           "ERCOLE",
 				"environment":              "TST",
@@ -218,7 +218,7 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 			},
 			{
 				ID:           "5e96ade270c184faca93fe36",
-				CreatedAt:    utils.P("2020-04-15T08:46:58.471+02:00").UTC(),
+				CreatedAt:    utils.P("2020-04-15T06:46:58.471Z").UTC(),
 				Hostname:     "test-db",
 				Location:     "Germany",
 				Environment:  "TST",
@@ -284,7 +284,7 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 		expectedOut := []dto.HostDataSummary{
 			{
 				ID:           "5e96ade270c184faca93fe36",
-				CreatedAt:    utils.P("2020-04-15T08:46:58.471+02:00").UTC(),
+				CreatedAt:    utils.P("2020-04-15T06:46:58.471Z").UTC(),
 				Hostname:     "test-db",
 				Location:     "Germany",
 				Environment:  "TST",
