@@ -194,6 +194,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 			"virtualServerName":        "itl-csllab-112.sorint.localpippo",
 			"virtualizationTechnology": "VMware",
 			"_id":                      utils.Str2oid("5efc38ab79f92e4cbf283b03"),
+			"createdAt":                utils.PDT("2021-12-05T00:00:00+02:00"),
 		},
 		{
 			"coresPerProcessor":        4,
@@ -216,6 +217,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 			"virtualServerName":        "publicitate-36d06ca83eafa454423d2097f4965517",
 			"virtualizationTechnology": "",
 			"_id":                      utils.Str2oid("5efc38ab79f92e4cbf283b04"),
+			"createdAt":                utils.PDT("2020-12-05T00:00:00+02:00"),
 		},
 	}
 
@@ -239,12 +241,18 @@ func TestSearchHostsAsLMS(t *testing.T) {
 		GTECPUThreads:  -1,
 	}
 
+	filterslms := dto.SearchHostsAsLMS{
+		SearchHostsFilters: filters,
+		GlobalFilter:       dto.GlobalFilter{"Italy", "TST", utils.P("2020-06-10T11:54:59Z")},
+		NewerThan:          utils.P("2021-06-10T11:54:59Z"),
+	}
+
 	t.Run("with no agreements", func(t *testing.T) {
 		gomock.InOrder(
 			db.EXPECT().
 				SearchHosts("lms", gomock.Any()).
 				DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
-					assert.EqualValues(t, filters, actual)
+					assert.EqualValues(t, filterslms.SearchHostsFilters, actual)
 
 					return hosts, nil
 				}),
@@ -253,7 +261,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 				Return([]dto.OracleDatabaseAgreementFE{}, nil),
 		)
 
-		sp, err := as.SearchHostsAsLMS(filters)
+		sp, err := as.SearchHostsAsLMS(filterslms)
 		assert.NoError(t, err)
 
 		assert.Equal(t, "erclin7dbx", sp.GetCellValue("Database_&_EBS_DB_Tier", "B4"))
@@ -339,7 +347,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 			db.EXPECT().
 				SearchHosts("lms", gomock.Any()).
 				DoAndReturn(func(_ string, actual dto.SearchHostsFilters) ([]map[string]interface{}, error) {
-					assert.EqualValues(t, filters, actual)
+					assert.EqualValues(t, filterslms.SearchHostsFilters, actual)
 
 					return hosts, nil
 				}),
@@ -348,7 +356,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 				Return(agreements, nil),
 		)
 
-		sp, err := as.SearchHostsAsLMS(filters)
+		sp, err := as.SearchHostsAsLMS(filterslms)
 		assert.NoError(t, err)
 
 		sheet := "Database_&_EBS_DB_Tier"

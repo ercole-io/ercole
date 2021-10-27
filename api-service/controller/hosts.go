@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,12 +29,6 @@ import (
 
 // SearchHosts search hosts data using the filters in the request
 func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
-	filters, err := dto.GetSearchHostFilters(r)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
 	requestContentType := httputil.NegotiateContentType(r,
 		[]string{
 			"application/json",
@@ -46,10 +40,25 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 
 	switch requestContentType {
 	case "application/json":
+		filters, err := dto.GetSearchHostFilters(r)
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+			return
+		}
 		ctrl.searchHostsJSON(w, r, filters)
 	case "application/vnd.oracle.lms+vnd.ms-excel.sheet.macroEnabled.12":
+		filters, err := dto.GetSearchHostsAsLMSFilters(r)
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+			return
+		}
 		ctrl.searchHostsLMS(w, r, filters)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		filters, err := dto.GetSearchHostFilters(r)
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+			return
+		}
 		ctrl.searchHostsXLSX(w, r, filters)
 	}
 }
@@ -106,7 +115,7 @@ func (ctrl *APIController) getHostDataSummaries(w http.ResponseWriter, r *http.R
 }
 
 // searchHostsLMS search hosts data using the filters in the request returning it in LMS+XLSX
-func (ctrl *APIController) searchHostsLMS(w http.ResponseWriter, r *http.Request, filters *dto.SearchHostsFilters) {
+func (ctrl *APIController) searchHostsLMS(w http.ResponseWriter, r *http.Request, filters *dto.SearchHostsAsLMS) {
 	filters.PageNumber, filters.PageSize = -1, -1
 	lms, err := ctrl.Service.SearchHostsAsLMS(*filters)
 	if err != nil {
