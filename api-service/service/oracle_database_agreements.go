@@ -468,21 +468,23 @@ func doAssignAgreementLicensesToAssociatedHost(
 		agreement.CoveredLicenses += coverableLicenses
 		host.LicenseCount -= coverableLicenses
 
-	} else {
-		var coverableLicenses float64
-
-		if agreement.Unlimited {
-			coverableLicenses = host.LicenseCount
-			agreement.AvailableLicensesPerUser = 0
-		} else {
-			coverableLicenses = math.Floor(math.Min(agreement.AvailableLicensesPerUser, host.LicenseCount*25) / 25)
-			agreement.AvailableLicensesPerUser -= coverableLicenses * 25
-		}
-
-		associatedHost.CoveredLicensesCount += coverableLicenses * 25
-		agreement.CoveredLicenses += coverableLicenses * 25
-		host.LicenseCount -= coverableLicenses
+		return
 	}
+
+	var coverableLicenses float64
+	if agreement.Unlimited {
+		coverableLicenses = host.LicenseCount * model.FactorNamedUser
+		agreement.AvailableLicensesPerUser = 0
+	} else {
+		// Named User licenses must be covered in multiple of 25
+		availableInAgreement := math.Floor(agreement.AvailableLicensesPerUser/model.FactorNamedUser) * model.FactorNamedUser
+		coverableLicenses = math.Min(availableInAgreement, host.LicenseCount*model.FactorNamedUser)
+		agreement.AvailableLicensesPerUser -= coverableLicenses
+	}
+
+	associatedHost.CoveredLicensesCount += coverableLicenses
+	agreement.CoveredLicenses += coverableLicenses
+	host.LicenseCount -= math.Floor(coverableLicenses / model.FactorNamedUser)
 }
 
 // If an agreement is basket distributes its licenses to every hosts that use that kind of license

@@ -114,7 +114,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 			consumedLicenses += host.OriginalCount
 		}
 
-		license.Consumed += consumedLicenses
+		license.Consumed += consumedLicenses * model.GetFactorByMetric(license.Metric)
 	}
 
 	availableLicenses := make(map[string]float64)
@@ -141,12 +141,8 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 	}
 
 	result := make([]dto.LicenseCompliance, 0, len(licenses))
+
 	for _, license := range licenses {
-
-		if license.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
-			license.Consumed *= 25
-		}
-
 		license.Consumed = math.Round(license.Consumed)
 		license.Covered = math.Round(license.Covered)
 		license.Purchased = math.Round(license.Purchased)

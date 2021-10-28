@@ -41,3 +41,14 @@ func GetAllLicenseTypeMetrics() []string {
 		LicenseTypeMetricComputerPerpetual,
 	}
 }
+
+// Factor of multiplication from a license PerCore to a license PerUser ("Named User Plus Perpetual")
+const FactorNamedUser float64 = 25
+
+func GetFactorByMetric(metric string) float64 {
+	if metric == LicenseTypeMetricNamedUserPlusPerpetual {
+		return FactorNamedUser
+	}
+
+	return 1
+}
