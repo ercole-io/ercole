@@ -547,8 +547,8 @@ func doAssignLicenseFromBasketAgreement(
 			coverableLicenses = math.Min(agreement.AvailableLicensesPerCore, hostUsingLicenses.LicenseCount)
 			agreement.AvailableLicensesPerCore -= coverableLicenses
 		}
+		agreement.CoveredLicenses += coverableLicenses
 
-		hostUsingLicenses.LicenseCount -= coverableLicenses
 	} else {
 		if agreement.Unlimited {
 			coverableLicenses = hostUsingLicenses.LicenseCount
@@ -557,11 +557,11 @@ func doAssignLicenseFromBasketAgreement(
 			coverableLicenses = math.Floor(math.Min(agreement.AvailableLicensesPerUser, hostUsingLicenses.LicenseCount*25) / 25)
 			agreement.AvailableLicensesPerUser -= coverableLicenses * 25
 		}
+		agreement.CoveredLicenses += coverableLicenses * 25
 
-		hostUsingLicenses.LicenseCount -= coverableLicenses
 	}
 
-	agreement.CoveredLicenses += coverableLicenses
+	hostUsingLicenses.LicenseCount -= coverableLicenses
 }
 
 func calculateTotalCoveredAndConsumedLicenses(

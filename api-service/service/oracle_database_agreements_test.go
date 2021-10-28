@@ -1589,7 +1589,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 			LicensesPerUser:          200,
 			AvailableLicensesPerCore: 0,
 			AvailableLicensesPerUser: 75,
-			CoveredLicenses:          5,
+			CoveredLicenses:          125,
 		},
 	}
 

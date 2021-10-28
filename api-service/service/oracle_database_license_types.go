@@ -138,7 +138,6 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 
 		if license.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
 			license.Consumed *= 25
-			license.Covered *= 25
 		}
 
 		license.Consumed = math.Round(license.Consumed)
