@@ -47,8 +47,11 @@ type OracleDatabaseAgreementFE struct {
 
 	// Value of licenses yet available to be assigned to hosts
 	AvailableLicensesPerCore float64 `json:"availableLicensesPerCore" bson:"availableLicensesPerCore"`
+	// Value of licenses yet available to be assigned to hosts
+	// If Metric is Named User Plus Perpetual, value is PerUser (already multiplied *25)
 	AvailableLicensesPerUser float64 `json:"availableLicensesPerUser" bson:"availableLicensesPerUser"`
 
+	// If Metric is Named User Plus Perpetual, value is PerUser (already multiplied *25)
 	CoveredLicenses float64 `json:"-" bson:"-"`
 }
 
@@ -105,8 +108,12 @@ type HostUsingOracleDatabaseLicenses struct {
 	Name          string `json:"name" bson:"name"`
 	//Type describe if it's an host or a cluster
 	Type string `json:"type" bson:"type"`
-	// TODO Rename in UncoveredLicenses // Licenses to be covered by agreement
+	// Licenses to be covered by agreement
+	// If LicenseType Metric is Named User Plus Perpetual, value isn't PerUser (must be multiplied *25)
+	// TODO Rename in UncoveredLicenses
 	LicenseCount float64 `json:"licenseCount" bson:"licenseCount"`
-	//TODO Rename in ConsumedLicensesCount // Original value of licenseCount (UncoveredLicenses), DO NOT EDIT!
+	// Original value of licenseCount (UncoveredLicenses), DO NOT EDIT!
+	// If LicenseType Metric is Named User Plus Perpetual, value isn't PerUser (must be multiplied *25)
+	//TODO Rename in ConsumedLicensesCount
 	OriginalCount float64 `json:"originalCount" bson:"originalCount"`
 }
