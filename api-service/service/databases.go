@@ -367,10 +367,11 @@ func (as *APIService) GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFil
 		return nil, err
 	}
 
-	sheet := "Licenses Used"
+	sheet := "Licenses Used Per Host"
 	headers := []string{
 		"Hostname",
 		"Databases",
+		"Database Names",
 		"Part Number",
 		"Description",
 		"Metric",
@@ -387,7 +388,7 @@ func (as *APIService) GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFil
 	for _, val := range usedLicenses {
 		nextAxis := axisHelp.NewRow()
 		sheets.SetCellValue(sheet, nextAxis(), val.Hostname)
-		sheets.SetCellValue(sheet, nextAxis(), val.Databases)
+		sheets.SetCellValue(sheet, nextAxis(), strings.Join(val.DatabaseNames, ", "))
 		sheets.SetCellValue(sheet, nextAxis(), val.LicenseTypeID)
 		sheets.SetCellValue(sheet, nextAxis(), val.Description)
 		sheets.SetCellValue(sheet, nextAxis(), val.Metric)
@@ -409,14 +410,14 @@ licenses:
 	for _, v := range licenses {
 		for i, v2 := range licensesPerHost {
 			if v.Hostname == v2.Hostname && v.LicenseTypeID == v2.LicenseTypeID {
-				licensesPerHost[i].Databases++
+				licensesPerHost[i].DatabaseNames = append(licensesPerHost[i].DatabaseNames, v.DbName)
 				continue licenses
 			}
 		}
 
 		licensesPerHost = append(licensesPerHost, dto.DatabaseUsedLicensePerHost{
 			Hostname:        v.Hostname,
-			Databases:       1,
+			DatabaseNames:   []string{v.DbName},
 			LicenseTypeID:   v.LicenseTypeID,
 			Description:     v.Description,
 			Metric:          v.Metric,

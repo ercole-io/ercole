@@ -46,13 +46,13 @@ type DatabaseUsedLicense struct {
 }
 
 type DatabaseUsedLicensePerHost struct {
-	Hostname        string  `json:"hostname" bson:"hostname"`
-	Databases       int     `json:"databases" bson:"databases"`
-	LicenseTypeID   string  `json:"licenseTypeID" bson:"licenseTypeID"`
-	Description     string  `json:"description" bson:"description"`
-	Metric          string  `json:"metric" bson:"metric"`
-	UsedLicenses    float64 `json:"usedLicenses" bson:"usedLicenses"`
-	ClusterLicenses float64 `json:"clusterLicenses" bson:"clusterLicenses"`
+	Hostname        string   `json:"hostname" bson:"hostname"`
+	DatabaseNames   []string `json:"databaseNames" bson:"databaseNames"`
+	LicenseTypeID   string   `json:"licenseTypeID" bson:"licenseTypeID"`
+	Description     string   `json:"description" bson:"description"`
+	Metric          string   `json:"metric" bson:"metric"`
+	UsedLicenses    float64  `json:"usedLicenses" bson:"usedLicenses"`
+	ClusterLicenses float64  `json:"clusterLicenses" bson:"clusterLicenses"`
 }
 
 type DatabaseUsedLicensePerCluster struct {
