@@ -16,6 +16,7 @@
 package service
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -782,6 +783,13 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 			LicenseCount:  10,
 			OriginalCount: 20,
 		},
+		{
+			LicenseTypeID: "M10080",
+			Name:          "sdlmoc100.syssede.systest.sanpaoloimi.com",
+			Type:          "host",
+			LicenseCount:  20,
+			OriginalCount: 50,
+		},
 	}
 
 	var oracleLicenseTypes = []model.OracleDatabaseLicenseType{
@@ -789,25 +797,17 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 			ID:              "L10006",
 			ItemDescription: "Oracle Partitioning",
 			Metric:          "Named User Plus Perpetual",
-			Cost:            230,
+			Cost:            250,
 			Aliases:         []string{"Partitioning"},
 			Option:          true,
 		},
 		{
 			ID:              "M10080",
-			ItemDescription: "Oracle Real Application Testing",
+			ItemDescription: "Application Testing",
 			Metric:          "Processor Perpetual",
 			Cost:            230,
-			Aliases:         []string{},
+			Aliases:         []string{"Application Testing"},
 			Option:          true,
-		},
-		{
-			ID:              "A90611",
-			ItemDescription: "Oracle Database Enterprise Edition",
-			Metric:          "Processor Perpetual",
-			Cost:            47500,
-			Aliases:         []string{"Oracle ENT", "Oracle EXE"},
-			Option:          false,
 		},
 	}
 	usedLicenses := []dto.MySQLUsedLicense{
@@ -869,6 +869,17 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 
 	expected := []dto.LicenseCompliance{
 		{
+			LicenseTypeID:   "M10080",
+			ItemDescription: "Application Testing",
+			Metric:          "Processor Perpetual",
+			Consumed:        50,
+			Covered:         20,
+			Purchased:       50,
+			Compliance:      0.4,
+			Unlimited:       false,
+			Available:       30,
+		},
+		{
 			LicenseTypeID:   "L10006",
 			ItemDescription: "Oracle Partitioning",
 			Metric:          "Named User Plus Perpetual",
@@ -878,17 +889,6 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 			Compliance:      0.5,
 			Unlimited:       false,
 			Available:       200,
-		},
-		{
-			LicenseTypeID:   "M10080",
-			ItemDescription: "Oracle Real Application Testing",
-			Metric:          "Processor Perpetual",
-			Consumed:        0,
-			Covered:         0,
-			Purchased:       50,
-			Compliance:      1,
-			Unlimited:       false,
-			Available:       50,
 		},
 		{
 			LicenseTypeID:   "",
@@ -913,7 +913,6 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 			Available:       0,
 		},
 	}
-
 	assert.Equal(t, expected, actual)
 }
 
@@ -936,12 +935,20 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 	}
 
 	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
-		Content: []dto.OracleDatabaseUsedLicense{{
-			LicenseTypeID: "A90611",
-			DbName:        "ercsoldbx",
-			Hostname:      "ercsoldbx",
-			UsedLicenses:  2,
-		}},
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "A90611",
+				DbName:        "ercsoldbx",
+				Hostname:      "ercsoldbx",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: "A90611",
+				DbName:        "topolino-dbname",
+				Hostname:      "ercsoldbx",
+				UsedLicenses:  44,
+			},
+		},
 	}
 	licenseTypes := []model.OracleDatabaseLicenseType{
 		{
@@ -1018,13 +1025,13 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 	actual, err := as.GetDatabasesUsedLicensesPerHostAsXLSX(filter)
 	require.NoError(t, err)
 
-	assert.Equal(t, "ercsoldbx", actual.GetCellValue("Licenses Used", "A2"))
-	assert.Equal(t, "1", actual.GetCellValue("Licenses Used", "B2"))
-	assert.Equal(t, "A90611", actual.GetCellValue("Licenses Used", "C2"))
-	assert.Equal(t, "Oracle Database Enterprise Edition", actual.GetCellValue("Licenses Used", "D2"))
-	assert.Equal(t, "Processor Perpetual", actual.GetCellValue("Licenses Used", "E2"))
-	assert.Equal(t, "2", actual.GetCellValue("Licenses Used", "F2"))
-	assert.Equal(t, "", actual.GetCellValue("Licenses Used", "H2"))
+	assert.Equal(t, "ercsoldbx", actual.GetCellValue("Licenses Used Per Host", "A2"))
+	assert.Equal(t, strings.Join([]string{"ercsoldbx", "topolino-dbname"}, ", "), actual.GetCellValue("Licenses Used Per Host", "B2"))
+	assert.Equal(t, "A90611", actual.GetCellValue("Licenses Used Per Host", "C2"))
+	assert.Equal(t, "Oracle Database Enterprise Edition", actual.GetCellValue("Licenses Used Per Host", "D2"))
+	assert.Equal(t, "Processor Perpetual", actual.GetCellValue("Licenses Used Per Host", "E2"))
+	assert.Equal(t, "2", actual.GetCellValue("Licenses Used Per Host", "F2"))
+	assert.Equal(t, "0", actual.GetCellValue("Licenses Used Per Host", "G2"))
 }
 
 func TestGetDatabasesUsedLicensesPerCluster_OneVm_Success(t *testing.T) {

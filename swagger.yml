@@ -4931,19 +4931,19 @@ paths:
                   value:
                     usedLicenses:
                       - hostname: ercsoldbxs
-                        databases: '2,'
+                        databaseNames: [SBIP10,TMOIN0,SVBMG0]
                         licenseTypeID: A90611
                         description: Oracle Database Enterprise Edition
                         metric: Processor Perpetual
                         usedLicenses: 2
                       - hostname: ercsoldbx
-                        databases: 1
+                        databaseNames: [SMOIN0,SMOIN1,SMOIN2]
                         licenseTypeID: A90650
                         description: Oracle Tuning Pack
                         metric: Processor Perpetual
                         usedLicenses: 8
                       - hostname: ercsoldbx
-                        databases: 1
+                        databaseNames: [SACDB68,SACDB67,SACDB69]
                         licenseTypeID: A90649
                         description: Oracle Diagnostics Pack
                         metric: Processor Perpetual
