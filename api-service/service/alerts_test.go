@@ -119,7 +119,6 @@ func TestAcknowledgeAlerts(t *testing.T) {
 	}
 
 	var count int64
-	var noDataErr error
 
 	for _, tc := range testCases {
 		mockCtrl := gomock.NewController(t)
@@ -132,7 +131,7 @@ func TestAcknowledgeAlerts(t *testing.T) {
 			Database: db,
 		}
 
-		db.EXPECT().CountAlertsNODATA(tc.filter).Return(count, noDataErr)
+		db.EXPECT().CountAlertsNODATA(tc.filter).Return(count, nil)
 		db.EXPECT().UpdateAlertsStatus(tc.filter, model.AlertStatusAck).Return(tc.expErr)
 
 		actErr := as.AckAlerts(tc.filter)
@@ -149,12 +148,6 @@ func TestAcknowledgeAlerts_FailAlertCodeNoData(t *testing.T) {
 		utils.ErrInvalidAck,
 		model.AlertCodeNoData)
 
-	testCase := struct {
-		filter dto.AlertsFilter
-	}{
-		filter: a_ack,
-	}
-
 	mockCtrl := gomock.NewController(t)
 	defer func() {
 		mockCtrl.Finish()
@@ -162,16 +155,12 @@ func TestAcknowledgeAlerts_FailAlertCodeNoData(t *testing.T) {
 
 	as := APIService{}
 
-	actErr := as.AckAlerts(testCase.filter)
+	actErr := as.AckAlerts(a_ack)
 	require.Error(t, actErr, dataErr.Message)
 }
 
 func TestAcknowledgeAlerts_FailCountAlertsNoData(t *testing.T) {
-	testCase := struct {
-		filter dto.AlertsFilter
-	}{
-		filter: dto.AlertsFilter{},
-	}
+	a_ack := dto.AlertsFilter{}
 
 	var count int64
 
@@ -185,21 +174,15 @@ func TestAcknowledgeAlerts_FailCountAlertsNoData(t *testing.T) {
 		Database: db,
 	}
 
-	db.EXPECT().CountAlertsNODATA(testCase.filter).Return(count, aerrMock)
+	db.EXPECT().CountAlertsNODATA(a_ack).Return(count, aerrMock)
 
-	actErr := as.AckAlerts(testCase.filter)
+	actErr := as.AckAlerts(a_ack)
 	require.Equal(t, aerrMock, actErr)
 }
 
 func TestAcknowledgeAlerts_FailAckAlertsNoData(t *testing.T) {
-	testCase := struct {
-		filter dto.AlertsFilter
-	}{
-		filter: dto.AlertsFilter{},
-	}
-
+	a_ack := dto.AlertsFilter{}
 	var count int64 = 10
-	var err error
 
 	mockCtrl := gomock.NewController(t)
 	defer func() {
@@ -211,9 +194,9 @@ func TestAcknowledgeAlerts_FailAckAlertsNoData(t *testing.T) {
 		Database: db,
 	}
 
-	db.EXPECT().CountAlertsNODATA(testCase.filter).Return(count, err)
+	db.EXPECT().CountAlertsNODATA(a_ack).Return(count, nil)
 
-	actErr := as.AckAlerts(testCase.filter)
+	actErr := as.AckAlerts(a_ack)
 	require.Error(t, actErr)
 }
 
