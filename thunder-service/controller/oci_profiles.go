@@ -40,6 +40,11 @@ func (ctrl *ThunderController) AddOciProfile(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	if profile.PrivateKey == nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("PrivateKey must not be null"))
+		return
+	}
+
 	if !profile.IsValid() {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Profile configuration isn't valid"))
 		return
@@ -74,7 +79,7 @@ func (ctrl *ThunderController) UpdateOciProfile(w http.ResponseWriter, r *http.R
 	}
 
 	if !profile.IsValid() {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Agreement isn't valid"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Some profile fields are not valid"))
 		return
 	}
 

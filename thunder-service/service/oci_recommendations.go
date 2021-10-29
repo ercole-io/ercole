@@ -54,7 +54,7 @@ func (as *ThunderService) GetOciRecommendations(profiles []string) ([]model.Reco
 			continue
 		}
 
-		customConfigProvider := common.NewRawConfigurationProvider(dbProfile.TenancyOCID, dbProfile.UserOCID, dbProfile.Region, dbProfile.KeyFingerprint, dbProfile.PrivateKey, nil)
+		customConfigProvider := common.NewRawConfigurationProvider(dbProfile.TenancyOCID, dbProfile.UserOCID, dbProfile.Region, dbProfile.KeyFingerprint, *dbProfile.PrivateKey, nil)
 		// Create a custom authentication provider that uses the profile passed as parameter
 		// Refer to <see href="https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm#SDK_and_CLI_Configuration_File>the public documentation</see> on how to prepare a configuration file.
 		client, err := optimizer.NewOptimizerClientWithConfigurationProvider(customConfigProvider)
