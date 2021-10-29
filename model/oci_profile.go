@@ -28,10 +28,14 @@ type OciProfile struct {
 	UserOCID       string             `json:"userOCID" bson:"userOCID"`
 	KeyFingerprint string             `json:"keyFingerprint" bson:"keyFingerprint"`
 	Region         string             `json:"region" bson:"region"`
-	PrivateKey     string             `json:"privateKey" bson:"privateKey"`
+	PrivateKey     *string            `json:"privateKey" bson:"privateKey"`
 }
 
 func (pr OciProfile) IsValid() bool {
+
+	if len(pr.TenancyOCID) < 4 || len(pr.UserOCID) < 4 {
+		return false
+	}
 
 	if pr.TenancyOCID[0:4] != "ocid" || pr.UserOCID[0:4] != "ocid" {
 		return false
