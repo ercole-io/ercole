@@ -38,27 +38,20 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 		},
 		"application/json")
 
-	switch requestContentType {
-	case "application/json":
-		filters, err := dto.GetSearchHostFilters(r)
-		if err != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-			return
-		}
+	if requestContentType == "application/vnd.oracle.lms+vnd.ms-excel.sheet.macroEnabled.12" {
+		ctrl.searchHostsLMS(w, r)
+		return
+	}
+
+	filters, err := dto.GetSearchHostFilters(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	if requestContentType == "application/json" {
 		ctrl.searchHostsJSON(w, r, filters)
-	case "application/vnd.oracle.lms+vnd.ms-excel.sheet.macroEnabled.12":
-		filters, err := dto.GetSearchHostsAsLMSFilters(r)
-		if err != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-			return
-		}
-		ctrl.searchHostsLMS(w, r, filters)
-	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-		filters, err := dto.GetSearchHostFilters(r)
-		if err != nil {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
-			return
-		}
+	} else if requestContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
 		ctrl.searchHostsXLSX(w, r, filters)
 	}
 }
@@ -115,7 +108,12 @@ func (ctrl *APIController) getHostDataSummaries(w http.ResponseWriter, r *http.R
 }
 
 // searchHostsLMS search hosts data using the filters in the request returning it in LMS+XLSX
-func (ctrl *APIController) searchHostsLMS(w http.ResponseWriter, r *http.Request, filters *dto.SearchHostsAsLMS) {
+func (ctrl *APIController) searchHostsLMS(w http.ResponseWriter, r *http.Request) {
+	filters, err := dto.GetSearchHostsAsLMSFilters(r)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+		return
+	}
 	filters.PageNumber, filters.PageSize = -1, -1
 	lms, err := ctrl.Service.SearchHostsAsLMS(*filters)
 	if err != nil {
