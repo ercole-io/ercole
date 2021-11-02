@@ -168,6 +168,8 @@ type APIServiceInterface interface {
 	AckAlerts(alertsFilter dto.AlertsFilter) error
 	// ArchiveHost archive the specified host
 	ArchiveHost(hostname string) error
+	// UpdateHostIgnoredField update host ignored field (true/false)
+	UpdateHostIgnoredField(hostname string, dbname string, licenseName string, ignored bool) error
 
 	// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 	GetInfoForFrontendDashboard(location string, environment string, olderThan time.Time) (map[string]interface{}, error)

@@ -17,7 +17,9 @@ package controller
 
 import (
 	"errors"
+	"io/ioutil"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/golang/gddo/httputil"
@@ -261,5 +263,39 @@ func (ctrl *APIController) ArchiveHost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
+}
+
+// UpdateHostIgnoredField update host ignored field (true/false)
+func (ctrl *APIController) UpdateHostIgnoredField(w http.ResponseWriter, r *http.Request) {
+	if ctrl.Config.APIService.ReadOnly {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
+		return
+	}
+
+	hostname := mux.Vars(r)["hostname"]
+	dbname := mux.Vars(r)["dbname"]
+	licensename := mux.Vars(r)["licenseName"]
+
+	raw, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewError(err, "BAD_REQUEST"))
+		return
+	}
+
+	ignored, err := strconv.ParseBool(string(raw))
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(err, "BAD_REQUEST"))
+		return
+	}
+
+	//set the value
+	err = ctrl.Service.UpdateHostIgnoredField(hostname, dbname, licensename, ignored)
+	if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	//Write the data
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
