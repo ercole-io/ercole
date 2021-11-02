@@ -27,4 +27,5 @@ type OracleDatabaseUsedLicense struct {
 	DbName        string  `json:"dbName" bson:"dbName"`
 	Hostname      string  `json:"hostname" bson:"hostname"`
 	UsedLicenses  float64 `json:"usedLicenses" bson:"usedLicenses"`
+	Ignored       bool    `json:"ignored" bson:"ignored"`
 }

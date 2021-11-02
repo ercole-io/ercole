@@ -142,6 +142,7 @@ primaryDbLicensesCycle:
 					LicenseTypeID: primaryDbLicense.LicenseTypeID,
 					Name:          primaryDbLicense.Name,
 					Count:         float64(hostInfo.CPUCores) * coreFactor,
+					Ignored:       primaryDbLicense.Ignored,
 				})
 		}
 	}
