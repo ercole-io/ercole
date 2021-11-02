@@ -46,6 +46,7 @@ func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(sortBy string, sortDes
 					"dbName":        "$features.oracle.database.databases.name",
 					"licenseTypeID": "$features.oracle.database.databases.licenses.licenseTypeID",
 					"usedLicenses":  "$features.oracle.database.databases.licenses.count",
+					"ignored":       "$features.oracle.database.databases.licenses.ignored",
 				},
 			),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
