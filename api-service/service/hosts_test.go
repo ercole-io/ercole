@@ -889,3 +889,21 @@ func TestArchiveHost_Fail(t *testing.T) {
 	err := as.ArchiveHost("foobar")
 	assert.Error(t, err)
 }
+
+func TestUpdateHostIgnoredField_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Config:   config.Configuration{},
+	}
+
+	hostname, dbname, licenseName := "serv123", "TEST123", "ORACLE EXT"
+	ignored := false
+
+	db.EXPECT().UpdateHostIgnoredField(hostname, dbname, licenseName, ignored).Return(nil)
+
+	err := as.UpdateHostIgnoredField(hostname, dbname, licenseName, ignored)
+	require.NoError(t, err)
+}
