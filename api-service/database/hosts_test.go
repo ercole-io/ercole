@@ -1147,3 +1147,17 @@ func (m *MongodbSuite) TestExistNotInClusterHost() {
 		assert.True(t, out)
 	})
 }
+
+func (m *MongodbSuite) TestUpdateHostIgnoredField() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.T().Run("update_ignored", func(t *testing.T) {
+
+		hostname, dbname, licenseName := "serv123", "TEST123", "ORACLE EXT"
+		ignored := false
+
+		err := m.db.UpdateHostIgnoredField(hostname, dbname, licenseName, ignored)
+		require.NoError(t, err)
+
+	})
+}
