@@ -71,8 +71,8 @@ func (m *MongodbSuite) TestSearchOracleDatabaseUsedLicenses() {
 
 		expected := dto.OracleDatabaseUsedLicenseSearchResponse{
 			Content: []dto.OracleDatabaseUsedLicense{
-				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90611", UsedLicenses: 0.5},
-				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90649", UsedLicenses: 0.5},
+				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90611", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90649", UsedLicenses: 0.5, Ignored: false},
 			},
 			Metadata: dto.PagingMetadata{
 				Empty:         false,

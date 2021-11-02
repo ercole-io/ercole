@@ -3486,6 +3486,8 @@ paths:
                           type: string
                         usedLicenses:
                           type: integer
+                        ignored:
+                          type: boolean  
                   - type: object
                     properties:
                       content:
@@ -3515,10 +3517,12 @@ paths:
                       hostname: ercsoldbx
                       licenseTypeID: A90611
                       usedLicenses: 2
+                      ignored: false
                     - dbName: ERCSOL19
                       hostname: ercsoldbx
                       licenseTypeID: A90650
                       usedLicenses: 8
+                      ignored: false
                 With pagination:
                   value:
                     content:
@@ -3526,22 +3530,27 @@ paths:
                         hostname: publicitate-36d06ca83eafa454423d2097f4965517
                         licenseTypeID: A90611
                         usedLicenses: 4
+                        ignored: false
                       - dbName: allstate-9a6a2a820a3f61aeb345a834abf40fba
                         hostname: publicitate-36d06ca83eafa454423d2097f4965517
                         licenseTypeID: A90649
                         usedLicenses: 4
+                        ignored: false
                       - dbName: 4wcqjn-ecf040bdfab7695ab332aef7401f185c
                         hostname: publicitate-36d06ca83eafa454423d2097f4965517
                         licenseTypeID: A90611
                         usedLicenses: 4
+                        ignored: false
                       - dbName: 4wcqjn-ecf040bdfab7695ab332aef7401f185c
                         hostname: publicitate-36d06ca83eafa454423d2097f4965517
                         licenseTypeID: A90649
                         usedLicenses: 4
+                        ignored: false
                       - dbName: ERCOLE
                         hostname: test-db
                         licenseTypeID: A90611
                         usedLicenses: 0.5
+                        ignored: false
                     metadata:
                       empty: false
                       first: false
