@@ -1993,6 +1993,50 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
+  '/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseName}/ignored':
+    parameters:
+      - in: path
+        name: hostname
+        schema:
+          type: string
+        required: true
+        description: hostname of the requested host
+      - in: path
+        name: dbname
+        schema:
+          type: string
+        required: true
+        description: name of the modifying database
+      - in: path
+        name: licenseName
+        schema:
+          type: string
+        required: true
+        description: name of the license
+    put:
+      tags:
+        - api-service
+        - fe-user
+        - write
+      operationId: UpdateHostIgnoredField
+      summary: Update host ignored field (true/false)
+      description: Update host ignored field (true/false)
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: boolean
+      responses:
+        '200':
+          description: The value of the the ignored field was changed successfully
+          content:
+            application/json: {}
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'       
   '/hosts/{hostname}/technologies/oracle/databases/{dbname}/license-modifiers/{licenseName}':
     parameters:
       - in: path

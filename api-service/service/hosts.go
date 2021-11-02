@@ -262,3 +262,12 @@ func (as *APIService) ArchiveHost(hostname string) error {
 
 	return as.Database.ArchiveHost(hostname)
 }
+
+// UpdateHostIgnoredField update host ignored field (true/false)
+func (as *APIService) UpdateHostIgnoredField(hostname string, dbname string, licenseName string, ignored bool) error {
+	if err := as.Database.UpdateHostIgnoredField(hostname, dbname, licenseName, ignored); err != nil {
+		return err
+	}
+
+	return nil
+}

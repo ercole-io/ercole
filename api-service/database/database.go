@@ -149,6 +149,8 @@ type MongoDatabaseInterface interface {
 	ArchiveHost(hostname string) error
 	// DeletePatchingFunction delete the patching function
 	DeletePatchingFunction(hostname string) error
+	// UpdateHostIgnoredField update host ignored field (true/false)
+	UpdateHostIgnoredField(hostname string, dbname string, licenseName string, ignored bool) error
 
 	// FindPatchingFunction find the the patching function associated to the hostname in the database
 	FindPatchingFunction(hostname string) (model.PatchingFunction, error)

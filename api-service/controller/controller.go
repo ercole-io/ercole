@@ -125,6 +125,8 @@ type APIControllerInterface interface {
 	AckAlerts(w http.ResponseWriter, r *http.Request)
 	// ArchiveHost archive the specified host in the request
 	ArchiveHost(w http.ResponseWriter, r *http.Request)
+	// UpdateHostIgnoredField update host ignored field (true/false)
+	UpdateHostIgnoredField(w http.ResponseWriter, r *http.Request)
 
 	// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 	GetInfoForFrontendDashboard(w http.ResponseWriter, r *http.Request)
