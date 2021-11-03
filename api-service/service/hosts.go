@@ -53,13 +53,21 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 		return nil, aerr
 	}
 
+	var j int
 	for i, val := range hosts {
 		i += 4 // offset for headers
 		setCellValueLMS(lms, sheetDatabaseEbsDbTier, i, csiByHostname, val)
 		createdDate := val["createdAt"].(primitive.DateTime).Time().UTC()
-		if createdDate.After(filters.GlobalFilter.OlderThan) &&
-			createdDate.Before(filters.NewerThan) {
-			setCellValueLMS(lms, sheetHostAdded, i, csiByHostname, val)
+		if filters.NewerThan == utils.MIN_TIME && filters.GlobalFilter.OlderThan == utils.MAX_TIME {
+			lms.DeleteSheet(sheetHostAdded)
+			lms.SetActiveSheet(lms.GetSheetIndex(sheetDatabaseEbsDbTier))
+		} else if createdDate.After(filters.NewerThan) &&
+			createdDate.Before(filters.GlobalFilter.OlderThan) {
+			if i == 4 {
+				j = 4 // offset for headers
+			}
+			setCellValueLMS(lms, sheetHostAdded, j, csiByHostname, val)
+			j++
 		}
 	}
 
