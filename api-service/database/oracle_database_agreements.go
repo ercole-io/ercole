@@ -152,6 +152,7 @@ func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingO
 					"archived":                 false,
 					"features.oracle.database": mu.QONotEqual(nil),
 					"$expr":                    mu.APOGreater(mu.APOSize("$features.oracle.database.databases"), 0),
+					"features.oracle.database.databases.licenses.ignored": false,
 				}),
 				mu.APProject(bson.M{
 					"hostname": true,
