@@ -27,7 +27,6 @@ import (
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
-	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
@@ -738,6 +737,7 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "", actual.GetCellValue("Licenses Compliance", "H2"))
 }
 
+<<<<<<< HEAD
 func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -931,6 +931,8 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 	assert.ElementsMatch(t, expected, actual)
 }
 
+=======
+>>>>>>> c0dd970 (Update databases_test.go)
 func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -950,20 +952,12 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 	}
 
 	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
-		Content: []dto.OracleDatabaseUsedLicense{
-			{
-				LicenseTypeID: "A90611",
-				DbName:        "ercsoldbx",
-				Hostname:      "ercsoldbx",
-				UsedLicenses:  2,
-			},
-			{
-				LicenseTypeID: "A90611",
-				DbName:        "topolino-dbname",
-				Hostname:      "ercsoldbx",
-				UsedLicenses:  44,
-			},
-		},
+		Content: []dto.OracleDatabaseUsedLicense{{
+			LicenseTypeID: "A90611",
+			DbName:        "ercsoldbx",
+			Hostname:      "ercsoldbx",
+			UsedLicenses:  2,
+		}},
 	}
 	licenseTypes := []model.OracleDatabaseLicenseType{
 		{
@@ -1040,13 +1034,13 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 	actual, err := as.GetDatabasesUsedLicensesPerHostAsXLSX(filter)
 	require.NoError(t, err)
 
-	assert.Equal(t, "ercsoldbx", actual.GetCellValue("Licenses Used Per Host", "A2"))
-	assert.Equal(t, strings.Join([]string{"ercsoldbx", "topolino-dbname"}, ", "), actual.GetCellValue("Licenses Used Per Host", "B2"))
-	assert.Equal(t, "A90611", actual.GetCellValue("Licenses Used Per Host", "C2"))
-	assert.Equal(t, "Oracle Database Enterprise Edition", actual.GetCellValue("Licenses Used Per Host", "D2"))
-	assert.Equal(t, "Processor Perpetual", actual.GetCellValue("Licenses Used Per Host", "E2"))
-	assert.Equal(t, "2", actual.GetCellValue("Licenses Used Per Host", "F2"))
-	assert.Equal(t, "0", actual.GetCellValue("Licenses Used Per Host", "G2"))
+	assert.Equal(t, "ercsoldbx", actual.GetCellValue("Licenses Used", "A2"))
+	assert.Equal(t, "1", actual.GetCellValue("Licenses Used", "B2"))
+	assert.Equal(t, "A90611", actual.GetCellValue("Licenses Used", "C2"))
+	assert.Equal(t, "Oracle Database Enterprise Edition", actual.GetCellValue("Licenses Used", "D2"))
+	assert.Equal(t, "Processor Perpetual", actual.GetCellValue("Licenses Used", "E2"))
+	assert.Equal(t, "2", actual.GetCellValue("Licenses Used", "F2"))
+	assert.Equal(t, "", actual.GetCellValue("Licenses Used", "H2"))
 }
 
 func TestGetDatabasesUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
