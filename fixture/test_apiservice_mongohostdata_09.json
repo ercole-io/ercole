@@ -161,35 +161,40 @@
                                     "$numberDouble": "0.5"
                                 },
                                 "name": "Oracle ENT",
-                                "licenseTypeID": "A90611"
+                                "licenseTypeID": "A90611",
+                                "ignored": false
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "Oracle STD",
-                                "licenseTypeID": "L103399"
+                                "licenseTypeID": "L103399",
+                                "ignored": false
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
                                 "name": "WebLogic Server Management Pack Enterprise Edition",
-                                "licenseTypeID": "L104095"
+                                "licenseTypeID": "L104095",
+                                "ignored": false
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.5"
                                 },
                                 "name": "Diagnostics Pack",
-                                "licenseTypeID": "A90649"
+                                "licenseTypeID": "A90649",
+                                "ignored": false
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.5"
                                 },
                                 "name": "Real Application Clusters",
-                                "licenseTypeID": "A90619"
+                                "licenseTypeID": "A90619",
+                                "ignored": false
                             }
                         ],
                         "memoryTarget": {
