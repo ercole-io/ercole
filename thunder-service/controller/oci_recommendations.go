@@ -39,6 +39,11 @@ func (ctrl *ThunderController) GetOciRecommendations(w http.ResponseWriter, r *h
 	recommendations, err := ctrl.Service.GetOciRecommendations(profiles)
 
 	if recommendations == nil {
+		if errors.Is(err, utils.ErrInvalidProfileId) {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+			return
+		}
+
 		if errors.Is(err, utils.ErrClusterNotFound) {
 			utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 			return

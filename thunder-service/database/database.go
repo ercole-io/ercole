@@ -33,7 +33,7 @@ type MongoDatabaseInterface interface {
 	Init()
 
 	// Oracle Cloud Configuration
-	GetOciProfiles() ([]model.OciProfile, error)
+	GetOciProfiles(hidePrivateKey bool) ([]model.OciProfile, error)
 	GetMapOciProfiles() (map[primitive.ObjectID]model.OciProfile, error)
 	AddOciProfile(profile model.OciProfile) error
 	DeleteOciProfile(id primitive.ObjectID) error
