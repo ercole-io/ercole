@@ -38,7 +38,7 @@ func (as *ThunderService) UpdateOciProfile(profile model.OciProfile) (*model.Oci
 	return &profile, nil
 }
 func (as *ThunderService) GetOciProfiles() ([]model.OciProfile, error) {
-	oracle_cloud_profile, err := as.Database.GetOciProfiles()
+	oracle_cloud_profile, err := as.Database.GetOciProfiles(true)
 	if err != nil {
 		return nil, err
 	}

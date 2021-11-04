@@ -88,11 +88,13 @@ func (md *MongoDatabase) UpdateOciProfile(profile model.OciProfile) error {
 	return nil
 }
 
-func (md *MongoDatabase) GetOciProfiles() ([]model.OciProfile, error) {
+func (md *MongoDatabase) GetOciProfiles(hidePrivateKey bool) ([]model.OciProfile, error) {
 	ctx := context.TODO()
 
 	opts := options.Find()
-	opts.SetProjection(bson.M{"privateKey": 0})
+	if hidePrivateKey {
+		opts.SetProjection(bson.M{"privateKey": 0})
+	}
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciProfile_collection).Find(ctx, bson.D{}, opts)
 
 	if err != nil {
@@ -109,7 +111,7 @@ func (md *MongoDatabase) GetOciProfiles() ([]model.OciProfile, error) {
 }
 
 func (md *MongoDatabase) GetMapOciProfiles() (map[primitive.ObjectID]model.OciProfile, error) {
-	profiles, err := md.GetOciProfiles()
+	profiles, err := md.GetOciProfiles(false)
 	var retProfiles = make(map[primitive.ObjectID]model.OciProfile)
 
 	if err != nil {
