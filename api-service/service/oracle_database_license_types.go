@@ -232,7 +232,7 @@ func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabase
 	} else if err != nil {
 		return 0, err
 	}
-	consumedLicenses := float64(clusterCores) * 0.5 // core factor
+	consumedLicenses := float64(clusterCores) * hostdata.CoreFactor()
 
 	for _, h := range hostdata.ClusterMembershipStatus.VeritasClusterHostnames {
 		_, found := hostnamesPerLicense[h]

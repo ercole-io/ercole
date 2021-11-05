@@ -209,7 +209,7 @@ func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.D
 		} else if err != nil {
 			return nil, err
 		}
-		consumedLicenses := float64(clusterCores) * 0.5 // core factor
+		consumedLicenses := float64(clusterCores) * hostdata.CoreFactor()
 
 		usedLicenses[i].ClusterLicenses = consumedLicenses
 	}
