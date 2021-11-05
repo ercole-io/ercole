@@ -913,7 +913,7 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 			Available:       0,
 		},
 	}
-	assert.Equal(t, expected, actual)
+	assert.ElementsMatch(t, expected, actual)
 }
 
 func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
