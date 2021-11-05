@@ -203,14 +203,15 @@ func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.D
 			continue
 		}
 
-		clusterLicenses, err := hostdata.GetClusterCores(hostdatasPerHostname)
+		clusterCores, err := hostdata.GetClusterCores(hostdatasPerHostname)
 		if errors.Is(err, utils.ErrHostNotInCluster) {
 			continue
 		} else if err != nil {
 			return nil, err
 		}
+		consumedLicenses := float64(clusterCores) * 0.5 // core factor
 
-		usedLicenses[i].ClusterLicenses = clusterLicenses
+		usedLicenses[i].ClusterLicenses = consumedLicenses
 	}
 
 	return usedLicenses, nil
