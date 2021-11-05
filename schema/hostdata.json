@@ -350,6 +350,22 @@
                     }
                 }
             ]
+        },
+        "cloud": {
+            "type": "object",
+            "required": [
+                "membership"
+            ],
+            "properties": {
+                "membership": {
+                    "type": "string",
+                    "enum": [
+                        "",
+                        "None",
+                        "AWS"
+                    ]
+                }
+            }
         }
     }
 }
