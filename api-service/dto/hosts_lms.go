@@ -24,20 +24,13 @@ import (
 
 type SearchHostsAsLMS struct {
 	SearchHostsFilters
-	GlobalFilter
-	NewerThan time.Time
+	From time.Time
+	To   time.Time
 }
 
 func GetSearchHostsAsLMSFilters(r *http.Request) (*SearchHostsAsLMS, error) {
 	flms := SearchHostsAsLMS{}
 	var err error
-
-	gf, errgf := GetGlobalFilter(r)
-	if errgf != nil {
-		return nil, errgf
-	}
-
-	flms.GlobalFilter = *gf
 
 	hf, errhf := GetSearchHostFilters(r)
 	if errhf != nil {
@@ -46,7 +39,11 @@ func GetSearchHostsAsLMSFilters(r *http.Request) (*SearchHostsAsLMS, error) {
 
 	flms.SearchHostsFilters = *hf
 
-	if flms.NewerThan, err = utils.Str2time(r.URL.Query().Get("newer-than"), utils.MIN_TIME); err != nil {
+	if flms.From, err = utils.Str2time(r.URL.Query().Get("from"), utils.MIN_TIME); err != nil {
+		return nil, err
+	}
+
+	if flms.To, err = utils.Str2time(r.URL.Query().Get("to"), utils.MAX_TIME); err != nil {
 		return nil, err
 	}
 

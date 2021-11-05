@@ -1707,7 +1707,8 @@ paths:
         - $ref: '#/components/parameters/location'
         - $ref: '#/components/parameters/environment'
         - $ref: '#/components/parameters/older-than'
-        - $ref: '#/components/parameters/newer-than'
+        - $ref: '#/components/parameters/from'
+        - $ref: '#/components/parameters/to'
       responses:
         '200':
           description: Result of the search

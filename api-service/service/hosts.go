@@ -58,10 +58,10 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 		i += 4 // offset for headers
 		setCellValueLMS(lms, sheetDatabaseEbsDbTier, i, csiByHostname, val)
 		createdDate := val["createdAt"].(primitive.DateTime).Time().UTC()
-		if (filters.NewerThan != utils.MIN_TIME ||
-			filters.GlobalFilter.OlderThan != utils.MAX_TIME) &&
-			createdDate.After(filters.NewerThan) &&
-			createdDate.Before(filters.GlobalFilter.OlderThan) {
+		if (filters.From != utils.MIN_TIME ||
+			filters.To != utils.MAX_TIME) &&
+			createdDate.After(filters.From) &&
+			createdDate.Before(filters.To) {
 			if j == 0 {
 				j = 4 // offset for headers
 			}

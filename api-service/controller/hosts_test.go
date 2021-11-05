@@ -451,8 +451,8 @@ func TestSearchHosts_LMSSuccess(t *testing.T) {
 	}
 	filterlsm := dto.SearchHostsAsLMS{
 		SearchHostsFilters: filters,
-		GlobalFilter:       dto.GlobalFilter{"Italy", "TST", utils.P("2020-06-10T11:54:59Z")},
-		NewerThan:          utils.P("2021-06-10T11:54:59Z"),
+		From:               utils.MIN_TIME,
+		To:                 utils.MAX_TIME,
 	}
 	as.EXPECT().
 		SearchHostsAsLMS(gomock.Any()).
@@ -557,8 +557,8 @@ func TestSearchHosts_LMSSuccessInternalServerError1(t *testing.T) {
 	}
 	filterlsm := dto.SearchHostsAsLMS{
 		SearchHostsFilters: filters,
-		GlobalFilter:       dto.GlobalFilter{"Italy", "TST", utils.P("2020-06-10T11:54:59Z")},
-		NewerThan:          utils.P("2021-06-10T11:54:59Z"),
+		From:               utils.MIN_TIME,
+		To:                 utils.MAX_TIME,
 	}
 	as.EXPECT().
 		SearchHostsAsLMS(gomock.Any()).

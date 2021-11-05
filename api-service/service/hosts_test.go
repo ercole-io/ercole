@@ -243,8 +243,8 @@ func TestSearchHostsAsLMS(t *testing.T) {
 
 	filterslms := dto.SearchHostsAsLMS{
 		SearchHostsFilters: filters,
-		GlobalFilter:       dto.GlobalFilter{"Italy", "TST", utils.P("2020-06-10T11:54:59Z")},
-		NewerThan:          utils.P("2021-06-10T11:54:59Z"),
+		From:               utils.P("2020-06-10T11:54:59Z"),
+		To:                 utils.P("2021-06-10T11:54:59Z"),
 	}
 
 	t.Run("with no agreements", func(t *testing.T) {
