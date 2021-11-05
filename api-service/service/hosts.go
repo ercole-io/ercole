@@ -62,8 +62,10 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 			filters.GlobalFilter.OlderThan != utils.MAX_TIME) &&
 			createdDate.After(filters.NewerThan) &&
 			createdDate.Before(filters.GlobalFilter.OlderThan) {
-			if i == 4 {
+			if j == 0 {
 				j = 4 // offset for headers
+			}
+			if j == 4 {
 				indexsheetHostAdded := lms.NewSheet(sheetHostAdded)
 				iindexSheetDatabaseEbsDbTier := lms.GetSheetIndex(sheetDatabaseEbsDbTier)
 				errs := lms.CopySheet(iindexSheetDatabaseEbsDbTier, indexsheetHostAdded)
