@@ -70,7 +70,7 @@ func (v *HostDataBE) UnmarshalBSON(data []byte) error {
 	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
-func (v *HostDataBE) GetClusterCores(hostdatasPerHostname map[string]*HostDataBE) (float64, error) {
+func (v *HostDataBE) GetClusterCores(hostdatasPerHostname map[string]*HostDataBE) (int, error) {
 	cms := v.ClusterMembershipStatus
 	if !cms.VeritasClusterServer ||
 		(cms.VeritasClusterServer && len(cms.VeritasClusterHostnames) <= 2) {
@@ -88,7 +88,5 @@ func (v *HostDataBE) GetClusterCores(hostdatasPerHostname map[string]*HostDataBE
 		sumClusterCores += anotherHostdata.Info.CPUCores
 	}
 
-	consumedLicenses := float64(sumClusterCores) * 0.5 // core factor
-
-	return consumedLicenses, nil
+	return sumClusterCores, nil
 }
