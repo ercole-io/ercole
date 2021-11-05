@@ -39,6 +39,7 @@ type HostData struct {
 	Features                Features                `json:"features"`
 	Filesystems             []Filesystem            `json:"filesystems"`
 	Clusters                []ClusterInfo           `json:"clusters"`
+	Cloud                   Cloud                   `json:"cloud"`
 	Errors                  []AgentError            `json:"errors"`
 	OtherInfo               map[string]interface{}  `json:"-"`
 }
