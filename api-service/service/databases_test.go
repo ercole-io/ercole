@@ -16,7 +16,6 @@
 package service
 
 import (
-	"strings"
 	"testing"
 	"time"
 
@@ -27,6 +26,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
@@ -737,7 +737,6 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "", actual.GetCellValue("Licenses Compliance", "H2"))
 }
 
-<<<<<<< HEAD
 func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -931,8 +930,6 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 	assert.ElementsMatch(t, expected, actual)
 }
 
-=======
->>>>>>> c0dd970 (Update databases_test.go)
 func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
