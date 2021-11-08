@@ -17,6 +17,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"sort"
@@ -315,6 +316,7 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 		licenseTypesMap[licenseTypes[i].ID] = &licenseTypes[i]
 	}
 
+	var newOptionAlerts []model.Alert
 	for _, newDb := range newDbs {
 
 		oldDb, ok := previousDbs[newDb.Name]
@@ -342,9 +344,25 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 
 				alreadyEnabledBefore := previousLicenseTypesEnabled[licenseTypeID]
 				if licenseType.Option {
-					if err := hds.throwNewOptionAlert(new.Hostname, newDb.Name, *licenseType, alreadyEnabledBefore); err != nil {
-						hds.Log.Error(err)
+
+					description := fmt.Sprintf("Database %s has enabled new option: %s", newDb.Name, licenseType.ItemDescription)
+					severity := model.AlertSeverityCritical
+
+					if alreadyEnabledBefore {
+						severity = model.AlertSeverityInfo
+						description += " (already enabled before in this host)"
 					}
+
+					newOptionAlerts = append(newOptionAlerts, model.Alert{
+						AlertSeverity: severity,
+						Description:   description,
+						OtherInfo: map[string]interface{}{
+							"hostname":      new.Hostname,
+							"dbname":        newDb.Name,
+							"licenseTypeID": licenseType.ID,
+						},
+					})
+
 				} else {
 					if err := hds.throwNewLicenseAlert(new.Hostname, newDb.Name, *licenseType, alreadyEnabledBefore); err != nil {
 						hds.Log.Error(err)
@@ -352,6 +370,10 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 				}
 			}
 		}
+	}
+
+	if err := hds.throwNewOptionAlerts(newOptionAlerts); err != nil {
+		hds.Log.Error(err)
 	}
 }
 
