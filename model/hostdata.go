@@ -82,3 +82,11 @@ func (v *HostData) AddErrors(errs ...error) {
 		v.Errors = append(v.Errors, NewAgentError(e))
 	}
 }
+
+func (v *HostData) CoreFactor() float64 {
+	if v.Cloud.Membership == CloudMembershipAws {
+		return 1
+	}
+
+	return 0.5
+}
