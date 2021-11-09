@@ -85,12 +85,12 @@ func (hds *HostDataService) checkSecondaryDbs(hostdata *model.HostDataBE) {
 
 		if db.Status == model.OracleDatabaseStatusMounted &&
 			db.Role != model.OracleDatabaseRolePrimary {
-			hds.addLicensesToSecondaryDb(hostdata.Info, db)
+			hds.addLicensesToSecondaryDb(hostdata.Info, hostdata.CoreFactor(), db)
 		}
 	}
 }
 
-func (hds *HostDataService) addLicensesToSecondaryDb(hostInfo model.Host, secondaryDb *model.OracleDatabase) {
+func (hds *HostDataService) addLicensesToSecondaryDb(hostInfo model.Host, hostCoreFactor float64, secondaryDb *model.OracleDatabase) {
 	dbs, err := hds.getPrimaryOpenOracleDatabases()
 	if err != nil {
 		hds.Log.Error("INSERT_HOSTDATA_ORACLE_DATABASE")
@@ -118,7 +118,7 @@ func (hds *HostDataService) addLicensesToSecondaryDb(hostInfo model.Host, second
 		return
 	}
 
-	coreFactor, err := secondaryDb.CoreFactor(hostInfo)
+	coreFactor, err := secondaryDb.CoreFactor(hostInfo, hostCoreFactor)
 	if err != nil {
 		hds.Log.Error(err.Error())
 		return
