@@ -198,6 +198,9 @@ func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.D
 	for i, l := range usedLicenses {
 
 		hostdata, found := hostdatasPerHostname[l.Hostname]
+		if usedLicenses[i].Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
+			usedLicenses[i].UsedLicenses *= model.GetFactorByMetric(usedLicenses[i].Metric)
+		}
 		if !found {
 			as.Log.Errorf("%w: %s", utils.ErrHostNotFound, l.Hostname)
 			continue
@@ -212,6 +215,7 @@ func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.D
 		consumedLicenses := float64(clusterCores) * hostdata.CoreFactor()
 
 		usedLicenses[i].ClusterLicenses = consumedLicenses
+
 	}
 
 	return usedLicenses, nil
