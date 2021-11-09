@@ -101,7 +101,7 @@ func (v OracleDatabase) Edition() (dbEdition string) {
 	return
 }
 
-func (v OracleDatabase) CoreFactor(host Host) (float64, error) {
+func (v OracleDatabase) CoreFactor(host Host, hostCoreFactor float64) (float64, error) {
 	dbEdition := v.Edition()
 
 	if host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyOvm ||
@@ -110,7 +110,7 @@ func (v OracleDatabase) CoreFactor(host Host) (float64, error) {
 		host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyKvm {
 
 		if dbEdition == OracleDatabaseEditionExtreme || dbEdition == OracleDatabaseEditionEnterprise {
-			return 0.5, nil
+			return hostCoreFactor, nil
 		}
 
 		if dbEdition == OracleDatabaseEditionStandard {
