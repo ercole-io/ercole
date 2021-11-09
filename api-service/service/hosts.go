@@ -25,6 +25,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
@@ -212,7 +213,34 @@ func (as *APIService) GetHostDataSummaries(filters dto.SearchHostsFilters) ([]dt
 
 // GetHost return the host specified in the hostname param
 func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, error) {
-	return as.Database.GetHost(hostname, olderThan, raw)
+	host, err := as.Database.GetHost(hostname, olderThan, raw)
+	if err != nil {
+		return nil, err
+	}
+
+	hostData := host.(map[string]interface{})
+
+	if hostData["features"] != nil {
+		dbPath := hostData["features"].(map[string]interface{})["oracle"].(map[string]interface{})["database"].(map[string]interface{})["databases"].(primitive.A)
+		for iDb, resultDb := range hostData["features"].(map[string]interface{})["oracle"].(map[string]interface{})["database"].(map[string]interface{})["databases"].(primitive.A) {
+			for iLic, resultLic := range resultDb.(map[string]interface{})["licenses"].(primitive.A) {
+				licTypeId := resultLic.(map[string]interface{})["licenseTypeID"]
+				if licTypeId.(string) != "" {
+					lic, err := as.GetOracleDatabaseLicenseType(licTypeId.(string))
+					if err != nil {
+						return nil, err
+					}
+					if lic.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
+						count := dbPath[iDb].(map[string]interface{})["licenses"].(primitive.A)[iLic].(map[string]interface{})["count"].(float64)
+						count *= float64(model.GetFactorByMetric(lic.Metric))
+						dbPath[iDb].(map[string]interface{})["licenses"].(primitive.A)[iLic].(map[string]interface{})["count"] = count
+					}
+				}
+			}
+		}
+	}
+
+	return hostData, nil
 }
 
 // ListLocations list locations
