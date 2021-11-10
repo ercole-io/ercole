@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -46,6 +46,9 @@ func (as *APIService) AddOracleDatabaseAgreement(agreement model.OracleDatabaseA
 	}
 
 	agreement.ID = as.NewObjectID()
+	if agreement.Unlimited {
+		agreement.Basket = true
+	}
 	err := as.Database.InsertOracleDatabaseAgreement(agreement)
 	if err != nil {
 		return nil, err
@@ -119,6 +122,10 @@ func (as *APIService) UpdateOracleDatabaseAgreement(agreement model.OracleDataba
 
 	if err := checkLicenseTypeIDExists(as, &agreement); err != nil {
 		return nil, err
+	}
+
+	if agreement.Unlimited {
+		agreement.Basket = true
 	}
 
 	if err := as.Database.UpdateOracleDatabaseAgreement(agreement); err != nil {
