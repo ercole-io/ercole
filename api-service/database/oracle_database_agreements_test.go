@@ -369,17 +369,3 @@ func (m *MongodbSuite) TestListHostUsingOracleDatabaseLicenses() {
 
 	assert.ElementsMatch(m.T(), expected, actual)
 }
-
-func (m *MongodbSuite) TestLicenseHostIgnoredField() {
-	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
-	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
-
-	m.T().Run("update_ignored", func(t *testing.T) {
-
-		hostname, dbname, licenseTypeID := "test-db", "ERCOLE1", "A90611"
-		ignored := false
-
-		err := m.db.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored)
-		require.NoError(t, err)
-	})
-}
