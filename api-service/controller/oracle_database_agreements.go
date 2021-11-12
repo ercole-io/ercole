@@ -53,6 +53,11 @@ func (ctrl *APIController) AddOracleDatabaseAgreement(w http.ResponseWriter, r *
 		return
 	}
 
+	if req.Unlimited && !req.Basket {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewErrorf("Agreement is unlimited so it must be even Basket"))
+		return
+	}
+
 	if err := req.Check(); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
