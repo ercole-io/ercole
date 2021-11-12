@@ -115,8 +115,17 @@ func (hds *HostDataService) throwNewOptionAlerts(alerts []model.Alert) error {
 }
 
 // ThrowUnlistedRunningDatabasesAlert create and insert in the database a new UNLISTED_RUNNING_DATABASE alert
-func (hds *HostDataService) throwUnlistedRunningDatabasesAlert(dbname string, hostname string) error {
-	alr := model.Alert{
+func (hds *HostDataService) throwUnlistedRunningDatabasesAlert(alerts []model.Alert) error {
+	if len(alerts) == 0 {
+		return nil
+	}
+
+	a := alerts[0]
+
+	description := fmt.Sprintf("Some databases on the host %s aren't listed in the oratab: %s",
+		a.OtherInfo["hostname"], a.OtherInfo["dbname"])
+
+	alert := model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(hds.TimeNow()),
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
 		AlertCategory:           model.AlertCategoryEngine,
@@ -124,14 +133,19 @@ func (hds *HostDataService) throwUnlistedRunningDatabasesAlert(dbname string, ho
 		AlertSeverity:           model.AlertSeverityWarning,
 		AlertStatus:             model.AlertStatusNew,
 		Date:                    hds.TimeNow(),
-		Description:             fmt.Sprintf("The database %s is not listed in the oratab of the host %s", dbname, hostname),
+		Description:             description,
 		OtherInfo: map[string]interface{}{
-			"hostname": hostname,
-			"dbname":   dbname,
+			"hostname": a.OtherInfo["hostname"],
+			"dbname":   a.OtherInfo["dbname"],
 		},
 	}
 
-	return hds.AlertSvcClient.ThrowNewAlert(alr)
+	for _, al := range alerts[1:] {
+		alert.Description += ", " + al.OtherInfo["dbname"].(string)
+		alert.OtherInfo["dbname"] = alert.OtherInfo["dbname"].(string) + "," + al.OtherInfo["dbname"].(string)
+	}
+
+	return hds.AlertSvcClient.ThrowNewAlert(alert)
 }
 
 func (hds *HostDataService) throwAugmentedCPUCoresAlert(hostname string, previousCPUCores, newCPUCores int) error {
