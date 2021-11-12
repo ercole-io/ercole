@@ -125,8 +125,6 @@ type APIControllerInterface interface {
 	AckAlerts(w http.ResponseWriter, r *http.Request)
 	// ArchiveHost archive the specified host in the request
 	ArchiveHost(w http.ResponseWriter, r *http.Request)
-	// UpdateHostIgnoredField update host ignored field (true/false)
-	UpdateHostIgnoredField(w http.ResponseWriter, r *http.Request)
 
 	// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 	GetInfoForFrontendDashboard(w http.ResponseWriter, r *http.Request)
@@ -149,6 +147,9 @@ type APIControllerInterface interface {
 
 	AddHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
 	DeleteHostFromOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
+
+	// UpdateLicenseIgnoredField update license ignored field (true/false)
+	UpdateLicenseIgnoredField(w http.ResponseWriter, r *http.Request)
 
 	// ORACLE DATABASE LICENSE TYPES
 

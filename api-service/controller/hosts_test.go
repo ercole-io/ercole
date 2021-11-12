@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -1278,36 +1278,4 @@ func TestArchiveHost_FailInternalServerError(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
-}
-
-func TestUpdateHostIgnoredField_Success(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config: config.Configuration{
-			APIService: config.APIService{
-				ReadOnly: false,
-			},
-		},
-		Log: logger.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.UpdateHostIgnoredField)
-	req, err := http.NewRequest("PUT", "/hosts/serv123/databases/TEST123/licenses/ORACLE%20EXT/ignored/false", &FailingReader{})
-	req = mux.SetURLVars(req, map[string]string{
-		"hostname":    "serv123",
-		"dbname":      "TEST123",
-		"licenseName": "ORACLE EXT",
-		"ignored":     "false",
-	})
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusBadRequest, rr.Code)
-
 }
