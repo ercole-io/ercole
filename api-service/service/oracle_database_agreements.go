@@ -46,9 +46,6 @@ func (as *APIService) AddOracleDatabaseAgreement(agreement model.OracleDatabaseA
 	}
 
 	agreement.ID = as.NewObjectID()
-	if agreement.Unlimited {
-		agreement.Basket = true
-	}
 	err := as.Database.InsertOracleDatabaseAgreement(agreement)
 	if err != nil {
 		return nil, err
@@ -122,10 +119,6 @@ func (as *APIService) UpdateOracleDatabaseAgreement(agreement model.OracleDataba
 
 	if err := checkLicenseTypeIDExists(as, &agreement); err != nil {
 		return nil, err
-	}
-
-	if agreement.Unlimited {
-		agreement.Basket = true
 	}
 
 	if err := as.Database.UpdateOracleDatabaseAgreement(agreement); err != nil {
