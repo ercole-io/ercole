@@ -46,13 +46,25 @@ func (hds *HostDataService) oracleDatabasesChecks(previousHostdata, hostdata *mo
 
 	hds.checkNewLicenses(previousHostdata, hostdata, licenseTypes)
 
+	var unlistedDatabasesAlerts []model.Alert
+
 	for _, dbname := range hostdata.Features.Oracle.Database.UnlistedRunningDatabases {
 		if err := hds.ackOldUnlistedRunningDatabasesAlerts(hostdata.Hostname, dbname); err != nil {
 			hds.Log.Errorf("Can't ack UnlistedRunningDatabases alerts by filter")
 		}
-		if err := hds.throwUnlistedRunningDatabasesAlert(dbname, hostdata.Hostname); err != nil {
-			hds.Log.Error(err)
-		}
+
+		unlistedDatabasesAlerts = append(unlistedDatabasesAlerts,
+			model.Alert{
+				OtherInfo: map[string]interface{}{
+					"hostname": hostdata.Hostname,
+					"dbname":   dbname,
+				},
+			},
+		)
+	}
+
+	if err := hds.throwUnlistedRunningDatabasesAlert(unlistedDatabasesAlerts); err != nil {
+		hds.Log.Error(err)
 	}
 
 	if previousHostdata != nil && previousHostdata.Info.CPUCores < hostdata.Info.CPUCores {
