@@ -1993,7 +1993,7 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  '/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseName}/ignored':
+  '/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseTypeID}/ignored':
     parameters:
       - in: path
         name: hostname
@@ -2008,7 +2008,7 @@ paths:
         required: true
         description: name of the modifying database
       - in: path
-        name: licenseName
+        name: licenseTypeID
         schema:
           type: string
         required: true
@@ -2018,9 +2018,9 @@ paths:
         - api-service
         - fe-user
         - write
-      operationId: UpdateHostIgnoredField
-      summary: Update host ignored field (true/false)
-      description: Update host ignored field (true/false)
+      operationId: UpdateLicenseIgnoredField
+      summary: Update license ignored field (true/false)
+      description: Update license ignored field (true/false)
       requestBody:
         content:
           text/plain:

@@ -26,7 +26,7 @@ import (
 
 func init() {
 	migrate.Register(func(db *mongo.Database) error {
-		if err := migrateHostsAddFieldIgnored(db); err != nil {
+		if err := migrateLicenseAddFieldIgnored(db); err != nil {
 			return err
 		}
 
@@ -37,7 +37,7 @@ func init() {
 	})
 }
 
-func migrateHostsAddFieldIgnored(db *mongo.Database) error {
+func migrateLicenseAddFieldIgnored(db *mongo.Database) error {
 	collection := "hosts"
 	ctx := context.TODO()
 
