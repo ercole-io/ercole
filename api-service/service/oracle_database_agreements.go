@@ -665,12 +665,3 @@ func (as *APIService) DeleteHostFromOracleDatabaseAgreement(id primitive.ObjectI
 
 	return as.Database.UpdateOracleDatabaseAgreement(*agreement)
 }
-
-// UpdateLicenseIgnoredField update license ignored field (true/false)
-func (as *APIService) UpdateLicenseIgnoredField(hostname string, dbname string, licenseTypeID string, ignored bool) error {
-	if err := as.Database.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored); err != nil {
-		return err
-	}
-
-	return nil
-}
