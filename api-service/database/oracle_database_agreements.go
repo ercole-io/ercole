@@ -23,7 +23,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
@@ -238,27 +237,4 @@ func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingO
 	}
 
 	return out, nil
-}
-
-// UpdateLicenseIgnoredField update host ignored field (true/false)
-func (md *MongoDatabase) UpdateLicenseIgnoredField(hostname string, dbname string, licenseTypeID string, ignored bool) error {
-	result, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
-		UpdateOne(context.TODO(),
-			bson.M{
-				"hostname": hostname,
-				"archived": false,
-				"features.oracle.database.databases.instanceName":           dbname,
-				"features.oracle.database.databases.licenses.licenseTypeID": licenseTypeID,
-			},
-			bson.M{"$set": bson.M{"features.oracle.database.databases.$[elemDB].licenses.$[elemLic].ignored": ignored}},
-			options.Update().SetArrayFilters(options.ArrayFilters{Filters: []interface{}{bson.M{"elemDB.instanceName": dbname}, bson.M{"elemLic.licenseTypeID": licenseTypeID}}}),
-		)
-	if err != nil {
-		return utils.NewError(err, "DB ERROR")
-	}
-	if result.MatchedCount != 1 {
-		return utils.ErrLicenseNotFound
-	}
-
-	return nil
 }
