@@ -613,23 +613,3 @@ func (md *MongoDatabase) ExistNotInClusterHost(hostname string) (bool, error) {
 
 	return len(out) > 0, nil
 }
-
-// UpdateHostIgnoredField update host ignored field (true/false)
-func (md *MongoDatabase) UpdateHostIgnoredField(hostname string, dbname string, licenseName string, ignored bool) error {
-	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
-		UpdateOne(context.TODO(),
-			bson.M{
-				"hostname": hostname,
-				"archived": false,
-				"features.oracle.database.databases.name":          dbname,
-				"features.oracle.database.databases.licenses.name": licenseName,
-			},
-			bson.M{"$set": bson.M{"features.oracle.database.databases.$.licenses.$[elem].ignored": ignored}},
-			options.Update().SetArrayFilters(options.ArrayFilters{Filters: []interface{}{bson.M{"elem.name": licenseName}}}),
-		)
-	if err != nil {
-		return utils.NewError(err, "DB ERROR")
-	}
-
-	return nil
-}
