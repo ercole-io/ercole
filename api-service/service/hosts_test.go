@@ -710,6 +710,21 @@ func TestGetHost_Success(t *testing.T) {
 			"VeritasCluster":                false,
 			"HardwareAbstraction":           "VIRT",
 		},
+		"Features": map[string]interface{}{
+			"Oracle": map[string]interface{}{
+				"Database": map[string]interface{}{
+					"Databases": []interface{}{
+						map[string]interface{}{
+							"Licenses": []interface{}{
+								map[string]interface{}{
+									"LicenseTypeID": "A90611",
+									"Count":         2,
+								}},
+						},
+					},
+				},
+			},
+		},
 		"Location":           "Italy",
 		"VirtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402",
 		"SchemaVersion":      1,
