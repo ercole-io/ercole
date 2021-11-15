@@ -24,7 +24,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
-	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 )
@@ -130,38 +129,17 @@ func (m *MongodbSuite) TestLicenseHostIgnoredField_Success() {
 
 	m.T().Run("update_ignored_success", func(t *testing.T) {
 
-		hostdata := []model.HostDataBE{
-			{
-				Hostname: "test-db",
-				Features: model.Features{
-					Oracle: &model.OracleFeature{
-						Database: &model.OracleDatabaseFeature{
-							Databases: []model.OracleDatabase{
-								{
-									InstanceName: "ERCOLE1",
-									Licenses: []model.OracleDatabaseLicense{
-										{
-											LicenseTypeID: "A90611",
-											Ignored:       true,
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		}
-
 		hostname, dbname, licenseTypeID := "test-db", "ERCOLE1", "A90611"
 		ignored := true
 
 		err := m.db.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored)
 		require.NoError(t, err)
 
+		hostData, _ := m.db.FindHostData("test-db")
+
 		var resultIgnored bool
-		for i := range hostdata[0].Features.Oracle.Database.Databases {
-			db := &hostdata[0].Features.Oracle.Database.Databases[i]
+		for i := range hostData.Features.Oracle.Database.Databases {
+			db := &hostData.Features.Oracle.Database.Databases[i]
 			if db.InstanceName == dbname {
 				for j := range db.Licenses {
 					lic := &db.Licenses[j]
@@ -173,9 +151,6 @@ func (m *MongodbSuite) TestLicenseHostIgnoredField_Success() {
 		}
 
 		require.Equal(t, ignored, resultIgnored)
-
-		err = m.db.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, !ignored)
-		require.NoError(t, err)
 	})
 }
 
