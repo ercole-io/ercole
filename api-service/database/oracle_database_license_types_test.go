@@ -21,7 +21,6 @@ import (
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -148,18 +147,4 @@ func (m *MongodbSuite) TestRemoveOracleDatabaseLicenseType() {
 
 	err = m.db.RemoveOracleDatabaseLicenseType("Test")
 	require.Equal(m.T(), utils.ErrOracleDatabaseLicenseTypeIDNotFound, err)
-}
-
-func (m *MongodbSuite) TestLicenseHostIgnoredField() {
-	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
-	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
-
-	m.T().Run("update_ignored", func(t *testing.T) {
-
-		hostname, dbname, licenseTypeID := "test-db", "ERCOLE1", "A90611"
-		ignored := false
-
-		err := m.db.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored)
-		require.NoError(t, err)
-	})
 }
