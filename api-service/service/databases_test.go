@@ -922,17 +922,6 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 			Unlimited:       false,
 			Available:       0,
 		},
-		{
-			LicenseTypeID:   "",
-			ItemDescription: "MySQL Enterprise per host",
-			Metric:          "",
-			Consumed:        0,
-			Covered:         0,
-			Purchased:       0,
-			Compliance:      1,
-			Unlimited:       false,
-			Available:       0,
-		},
 	}
 	assert.ElementsMatch(t, expected, actual)
 }
