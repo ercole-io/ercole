@@ -267,12 +267,3 @@ func (as *APIService) UpdateOracleDatabaseLicenseType(licenseType model.OracleDa
 
 	return &licenseType, nil
 }
-
-// UpdateLicenseIgnoredField update license ignored field (true/false)
-func (as *APIService) UpdateLicenseIgnoredField(hostname string, dbname string, licenseTypeID string, ignored bool) error {
-	if err := as.Database.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored); err != nil {
-		return err
-	}
-
-	return nil
-}

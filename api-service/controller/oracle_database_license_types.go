@@ -18,9 +18,7 @@ package controller
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 
@@ -125,38 +123,4 @@ func (ctrl *APIController) UpdateOracleDatabaseLicenseType(w http.ResponseWriter
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, lt)
-}
-
-// UpdateLicenseIgnoredField update license ignored field (true/false)
-func (ctrl *APIController) UpdateLicenseIgnoredField(w http.ResponseWriter, r *http.Request) {
-	if ctrl.Config.APIService.ReadOnly {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
-		return
-	}
-
-	hostname := mux.Vars(r)["hostname"]
-	dbname := mux.Vars(r)["dbname"]
-	licensetypeid := mux.Vars(r)["licenseTypeID"]
-
-	raw, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewError(err, "BAD_REQUEST"))
-		return
-	}
-
-	ignored, err := strconv.ParseBool(string(raw))
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(err, "BAD_REQUEST"))
-		return
-	}
-
-	//set the value
-	err = ctrl.Service.UpdateLicenseIgnoredField(hostname, dbname, licensetypeid, ignored)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
-
-	//Write the data
-	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
