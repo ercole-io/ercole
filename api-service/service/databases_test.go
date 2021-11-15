@@ -384,8 +384,14 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 			LicenseTypeID: "A12345",
 			DbName:        "topolino-dbname",
 			Hostname:      "topolino-hostname",
-			UsedLicenses:  0,
-		}},
+			UsedLicenses:  2,
+		},
+			{
+				LicenseTypeID: "A98765",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			}},
 	}
 
 	licenseTypes := []model.OracleDatabaseLicenseType{
@@ -397,8 +403,16 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 			Aliases:         []string{},
 			Option:          false,
 		},
+		{
+			ID:              "A98765",
+			ItemDescription: "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
 	}
-	usedLicenses := []dto.MySQLUsedLicense{
+	usedLicensesMySQL := []dto.MySQLUsedLicense{
 		{
 			Hostname:        "pluto",
 			InstanceName:    "pluto-instance",
@@ -449,7 +463,7 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 			Return(licenseTypes, nil),
 
 		db.EXPECT().GetMySQLUsedLicenses(filter).
-			Return(usedLicenses, nil),
+			Return(usedLicensesMySQL, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
 		db.EXPECT().GetMySQLAgreements().
@@ -468,7 +482,15 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 			LicenseTypeID: "A12345",
 			Description:   "ThisDesc",
 			Metric:        "ThisMetric",
-			UsedLicenses:  0,
+			UsedLicenses:  2,
+		},
+		{
+			Hostname:      "topolino-hostname",
+			DbName:        "topolino-dbname",
+			LicenseTypeID: "A98765",
+			Description:   "ThisDesc",
+			Metric:        model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:  50,
 		},
 		{
 			Hostname:      "pluto",
