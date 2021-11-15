@@ -129,6 +129,9 @@ type APIControllerInterface interface {
 	// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 	GetInfoForFrontendDashboard(w http.ResponseWriter, r *http.Request)
 
+	// UpdateLicenseIgnoredField update license ignored field (true/false)
+	UpdateLicenseIgnoredField(w http.ResponseWriter, r *http.Request)
+
 	// ALL TECHNOLOGIES
 
 	SearchDatabases(w http.ResponseWriter, r *http.Request)
@@ -147,9 +150,6 @@ type APIControllerInterface interface {
 
 	AddHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
 	DeleteHostFromOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
-
-	// UpdateLicenseIgnoredField update license ignored field (true/false)
-	UpdateLicenseIgnoredField(w http.ResponseWriter, r *http.Request)
 
 	// ORACLE DATABASE LICENSE TYPES
 
