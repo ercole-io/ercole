@@ -327,6 +327,12 @@ func (as *APIService) GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, 
 	}
 	licenses = append(licenses, mysql...)
 
+	for i, license := range licenses {
+		if license.Covered == 0 && license.Consumed == 0 {
+			licenses = append(licenses[0:i], licenses[i+1:]...)
+		}
+	}
+
 	return licenses, nil
 }
 
