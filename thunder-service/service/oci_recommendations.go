@@ -44,13 +44,13 @@ func (as *ThunderService) GetOciRecommendations(profiles []string) ([]model.Reco
 
 		objId, err := primitive.ObjectIDFromHex(profileId)
 		if err != nil {
-			merr = multierror.Append(merr, utils.NewErrorf("%w %q", utils.ErrInvalidProfileId, profileId))
+			merr = multierror.Append(merr, utils.NewErrorf("%w %q ", utils.ErrInvalidProfileId, profileId))
 			continue
 		}
 
 		dbProfile, found := dbProfiles[objId]
 		if !found {
-			merr = multierror.Append(merr, utils.NewErrorf("profile %q not found", profileId))
+			merr = multierror.Append(merr, utils.NewErrorf("%w: profileId %q", utils.ErrNotFound, profileId))
 			continue
 		}
 

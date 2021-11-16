@@ -13,7 +13,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package controller
+package service
 
-//go:generate mockgen -source ../service/service.go -destination=fake_service_test.go -package=controller
-//go:generate mockgen -source ../../thunder-service/client/client.go -destination=fake_thunder_service_client_test.go -package=service
+import (
+	"errors"
+
+	"github.com/ercole-io/ercole/v2/utils"
+)
+
+//go:generate mockgen -source ../database/database.go -destination=fake_database_test.go -package=service
+
+//Common data
+var errMock error = errors.New("MockError")
+var aerrMock error = utils.NewError(errMock, "mock")

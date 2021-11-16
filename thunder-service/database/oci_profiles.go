@@ -63,20 +63,6 @@ func (md *MongoDatabase) UpdateOciProfile(profile model.OciProfile) error {
 
 	cur, err = md.Client.Database(md.Config.Mongodb.DBName).Collection(OciProfile_collection).UpdateOne(context.TODO(), bson.M{"_id": profile.ID}, bson.M{"$set": p})
 
-	/*
-		if profile.PrivateKey == nil {
-			update := bson.M{"$set": bson.M{"profile": profile.Profile, "tenancyOCID": profile.TenancyOCID, "userOCID": profile.UserOCID, "keyFingerprint": profile.KeyFingerprint, "region": profile.Region}}
-			cur, err = md.Client.Database(md.Config.Mongodb.DBName).Collection(OciProfile_collection).UpdateMany(context.TODO(), bson.M{"_id": profile.ID}, update)
-		} else {
-			cur, err = md.Client.Database(md.Config.Mongodb.DBName).Collection(OciProfile_collection).
-				ReplaceOne(
-					context.TODO(),
-					bson.M{"_id": profile.ID},
-					profile,
-				)
-		}
-	*/
-
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")
 	}
