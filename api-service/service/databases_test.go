@@ -482,7 +482,6 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 			Description:   "ThisDesc",
 			Metric:        "ThisMetric",
 			UsedLicenses:  0,
-			Ignored:       false,
 		},
 		{
 			Hostname:      "pluto",
