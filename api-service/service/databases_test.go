@@ -481,7 +481,15 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 			LicenseTypeID: "A12345",
 			Description:   "ThisDesc",
 			Metric:        "ThisMetric",
-			UsedLicenses:  0,
+			UsedLicenses:  2,
+		},
+		{
+			Hostname:      "topolino-hostname",
+			DbName:        "topolino-dbname",
+			LicenseTypeID: "A98765",
+			Description:   "ThisDesc",
+			Metric:        model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:  50,
 		},
 		{
 			Hostname:      "pluto",
