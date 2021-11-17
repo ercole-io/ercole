@@ -16,4 +16,3 @@
 package controller
 
 //go:generate mockgen -source ../service/service.go -destination=fake_service_test.go -package=controller
-//go:generate mockgen -source ../../thunder-service/client/client.go -destination=fake_thunder_service_client_test.go -package=service
