@@ -166,13 +166,6 @@ func TestGetOciRecommendations_InvalidProfileId(t *testing.T) {
 			Log:     logger.NewLogger("TEST"),
 		}
 
-		expectedRes := map[string]interface{}{
-			"error":          "invalid profile id",
-			"sourceFilename": "c:/Workspace/GitHub/ercole/thunder-service/controller/oci_recommendations.go",
-			"lineNumber":     43,
-			"message":        "Bad Request",
-		}
-
 		var strProfiles = []string{"aaa", "bbb", "ccc"}
 		as.EXPECT().GetOciRecommendations(strProfiles).Return(nil, utils.ErrInvalidProfileId)
 
@@ -186,7 +179,15 @@ func TestGetOciRecommendations_InvalidProfileId(t *testing.T) {
 		handler.ServeHTTP(rr, req)
 
 		require.Equal(t, http.StatusBadRequest, rr.Code)
-		assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+
+		var feErr utils.ErrorResponseFE
+		decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
+		decoder.DisallowUnknownFields()
+		err = decoder.Decode(&feErr)
+		require.NoError(t, err)
+
+		assert.Equal(t, "invalid profile id", feErr.Error)
+		assert.Equal(t, "Bad Request", feErr.Message)
 	})
 }
 
