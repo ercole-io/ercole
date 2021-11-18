@@ -660,7 +660,7 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 	oracleHosts := []dto.HostUsingOracleDatabaseLicenses{
 		{
 			LicenseTypeID: "L47225",
-			Name:          "sdlsts103",
+			Name:          "sdlsts101",
 			Type:          "host",
 			LicenseCount:  6,
 			OriginalCount: 6,
@@ -721,7 +721,7 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 			Times(2),
 		db.EXPECT().GetHostDatas(utils.MAX_TIME).
 			Return([]model.HostDataBE{{
-				Hostname: "sdlsts103",
+				Hostname: "sdlsts101",
 			}}, nil),
 
 		db.EXPECT().GetMySQLUsedLicenses(any).
@@ -739,8 +739,8 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "Oracle Advanced Compression", actual.GetCellValue("Licenses Compliance", "B2"))
 	assert.Equal(t, "Named User Plus Perpetual", actual.GetCellValue("Licenses Compliance", "C2"))
 	assert.Equal(t, "150", actual.GetCellValue("Licenses Compliance", "D2"))
-	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "E2"))
-	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "F2"))
+	assert.Equal(t, "3750", actual.GetCellValue("Licenses Compliance", "E2"))
+	assert.Equal(t, "25", actual.GetCellValue("Licenses Compliance", "F2"))
 	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "G2"))
 	assert.Equal(t, "", actual.GetCellValue("Licenses Compliance", "H2"))
 }
@@ -895,9 +895,9 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 			ItemDescription: "Application Testing",
 			Metric:          "Processor Perpetual",
 			Consumed:        50,
-			Covered:         20,
+			Covered:         0,
 			Purchased:       50,
-			Compliance:      0.4,
+			Compliance:      0,
 			Unlimited:       false,
 			Available:       30,
 		},
@@ -906,9 +906,9 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 			ItemDescription: "Oracle Partitioning",
 			Metric:          "Named User Plus Perpetual",
 			Consumed:        500,
-			Covered:         250,
+			Covered:         0,
 			Purchased:       450,
-			Compliance:      0.5,
+			Compliance:      0,
 			Unlimited:       false,
 			Available:       200,
 		},
