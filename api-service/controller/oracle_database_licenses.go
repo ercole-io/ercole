@@ -17,7 +17,6 @@ package controller
 
 import (
 	"errors"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 
@@ -36,21 +35,16 @@ func (ctrl *APIController) UpdateLicenseIgnoredField(w http.ResponseWriter, r *h
 	hostname := mux.Vars(r)["hostname"]
 	dbname := mux.Vars(r)["dbname"]
 	licensetypeid := mux.Vars(r)["licenseTypeID"]
+	ignored := mux.Vars(r)["ignored"]
 
-	raw, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewError(err, "BAD_REQUEST"))
-		return
-	}
-
-	ignored, err := strconv.ParseBool(string(raw))
+	flagIgnored, err := strconv.ParseBool(ignored)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(err, "BAD_REQUEST"))
 		return
 	}
 
 	//set the value
-	err = ctrl.Service.UpdateLicenseIgnoredField(hostname, dbname, licensetypeid, ignored)
+	err = ctrl.Service.UpdateLicenseIgnoredField(hostname, dbname, licensetypeid, flagIgnored)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
