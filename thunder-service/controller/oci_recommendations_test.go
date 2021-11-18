@@ -203,8 +203,8 @@ func TestGetOciRecommendations_PartialContent(t *testing.T) {
 			Log:     logger.NewLogger("TEST"),
 		}
 
-		var strError = "1 error occurred:\n\t* C:/Workspace/GitHub/ercole/thunder-service/service/oci_recommendations.go:47 : 'invalid profile id aaa"
-		var mockError error = errors.New("1 error occurred:\n\t* C:/Workspace/GitHub/ercole/thunder-service/service/oci_recommendations.go:47 : 'invalid profile id aaa")
+		var strError = "1 error occurred: 'invalid profile id aaa'"
+		var mockError error = errors.New("1 error occurred: 'invalid profile id aaa'")
 
 		var recommendations []model.Recommendation
 		recommendation := model.Recommendation{
