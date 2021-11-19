@@ -216,6 +216,18 @@ func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.D
 
 		usedLicenses[i].ClusterLicenses = consumedLicenses
 
+		if hostdata.Features.Oracle != nil && hostdata.Features.Oracle.Database != nil && hostdata.Features.Oracle.Database.Databases != nil {
+			for x := range hostdata.Features.Oracle.Database.Databases {
+				if hostdata.Features.Oracle.Database.Databases[x].Name == usedLicenses[i].DbName {
+					for j := range hostdata.Features.Oracle.Database.Databases[x].Licenses {
+						if hostdata.Features.Oracle.Database.Databases[x].Licenses[j].LicenseTypeID == usedLicenses[i].LicenseTypeID {
+							usedLicenses[i].Ignored = hostdata.Features.Oracle.Database.Databases[x].Licenses[j].Ignored
+							break
+						}
+					}
+				}
+			}
+		}
 	}
 
 	return usedLicenses, nil
