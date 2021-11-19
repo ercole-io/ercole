@@ -220,7 +220,7 @@ func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (i
 
 	hostData := host.(map[string]interface{})
 
-	if hostData["features"] != nil {
+	if hostData["features"] != nil && hostData["features"].(map[string]interface{})["oracle"] != nil && hostData["features"].(map[string]interface{})["oracle"].(map[string]interface{})["database"].(map[string]interface{})["databases"] != nil {
 		dbPath := hostData["features"].(map[string]interface{})["oracle"].(map[string]interface{})["database"].(map[string]interface{})["databases"].(primitive.A)
 		for iDb, resultDb := range hostData["features"].(map[string]interface{})["oracle"].(map[string]interface{})["database"].(map[string]interface{})["databases"].(primitive.A) {
 			for iLic, resultLic := range resultDb.(map[string]interface{})["licenses"].(primitive.A) {
@@ -238,6 +238,7 @@ func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (i
 				}
 			}
 		}
+
 	}
 
 	return hostData, nil
