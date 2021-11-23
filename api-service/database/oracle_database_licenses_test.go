@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
@@ -71,8 +72,8 @@ func (m *MongodbSuite) TestSearchOracleDatabaseUsedLicenses() {
 
 		expected := dto.OracleDatabaseUsedLicenseSearchResponse{
 			Content: []dto.OracleDatabaseUsedLicense{
-				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90611", UsedLicenses: 0.5},
-				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90649", UsedLicenses: 0.5},
+				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90611", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90649", UsedLicenses: 0.5, Ignored: false},
 			},
 			Metadata: dto.PagingMetadata{
 				Empty:         false,
@@ -120,4 +121,48 @@ func (m *MongodbSuite) TestSearchOracleDatabaseUsedLicenses() {
 
 	//	assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	//})
+}
+
+func (m *MongodbSuite) TestLicenseHostIgnoredField_Success() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
+
+	m.T().Run("update_ignored_success", func(t *testing.T) {
+
+		hostname, dbname, licenseTypeID := "test-db", "ERCOLE1", "A90611"
+		ignored := true
+
+		err := m.db.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored)
+		require.NoError(t, err)
+
+		hostData, _ := m.db.FindHostData("test-db")
+
+		var resultIgnored bool
+		for i := range hostData.Features.Oracle.Database.Databases {
+			db := &hostData.Features.Oracle.Database.Databases[i]
+			if db.InstanceName == dbname {
+				for j := range db.Licenses {
+					lic := &db.Licenses[j]
+					if lic.LicenseTypeID == licenseTypeID {
+						resultIgnored = lic.Ignored
+					}
+				}
+			}
+		}
+
+		require.Equal(t, ignored, resultIgnored)
+	})
+}
+
+func (m *MongodbSuite) TestLicenseHostIgnoredField_Fail() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.T().Run("update_ignored_fail", func(t *testing.T) {
+
+		hostname, dbname, licenseTypeID := "buu", "ERCOLAO", "BBBIIII"
+		ignored := false
+
+		err := m.db.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored)
+		require.Error(t, err)
+	})
 }

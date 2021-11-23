@@ -1398,6 +1398,42 @@ components:
       maxLength: 24
       x-examples:
         example-1: 605dbac5f3923acddba4fac5
+    Recommendation:
+      title: Recommendation
+      type: object
+      properties:
+        tenancyOCID:
+          type: string
+        name:
+          type: string
+        numPending:
+          type: string
+        estimatedCostSaving:
+          type: string
+        status:
+          type: string
+        importance:
+          type: string
+        recommendationId:
+          type: string
+    oci_profile:
+      title: Oci_profile
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ObjectID'
+        profile:
+          type: string
+        tenancyOCID:
+          type: string
+        userOCID:
+          type: string
+        keyFingerprint:
+          type: string
+        region:
+          type: string
+        privateKey:
+          type: string
   parameters:
     search:
       in: query
@@ -1993,6 +2029,50 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
+  '/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseTypeID}/ignored':
+    parameters:
+      - in: path
+        name: hostname
+        schema:
+          type: string
+        required: true
+        description: hostname of the requested host
+      - in: path
+        name: dbname
+        schema:
+          type: string
+        required: true
+        description: name of the modifying database
+      - in: path
+        name: licenseTypeID
+        schema:
+          type: string
+        required: true
+        description: name of the license
+    put:
+      tags:
+        - api-service
+        - fe-user
+        - write
+      operationId: UpdateLicenseIgnoredField
+      summary: Update license ignored field (true/false)
+      description: Update license ignored field (true/false)
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: boolean
+      responses:
+        '200':
+          description: The value of the the ignored field was changed successfully
+          content:
+            application/json: {}
+        '401':
+          $ref: '#/components/responses/error'
+        '422':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'       
   '/hosts/{hostname}/technologies/oracle/databases/{dbname}/license-modifiers/{licenseName}':
     parameters:
       - in: path
@@ -3442,6 +3522,8 @@ paths:
                           type: string
                         usedLicenses:
                           type: integer
+                        ignored:
+                          type: boolean  
                   - type: object
                     properties:
                       content:
@@ -3471,10 +3553,12 @@ paths:
                       hostname: ercsoldbx
                       licenseTypeID: A90611
                       usedLicenses: 2
+                      ignored: false
                     - dbName: ERCSOL19
                       hostname: ercsoldbx
                       licenseTypeID: A90650
                       usedLicenses: 8
+                      ignored: false
                 With pagination:
                   value:
                     content:
@@ -3482,22 +3566,27 @@ paths:
                         hostname: publicitate-36d06ca83eafa454423d2097f4965517
                         licenseTypeID: A90611
                         usedLicenses: 4
+                        ignored: false
                       - dbName: allstate-9a6a2a820a3f61aeb345a834abf40fba
                         hostname: publicitate-36d06ca83eafa454423d2097f4965517
                         licenseTypeID: A90649
                         usedLicenses: 4
+                        ignored: false
                       - dbName: 4wcqjn-ecf040bdfab7695ab332aef7401f185c
                         hostname: publicitate-36d06ca83eafa454423d2097f4965517
                         licenseTypeID: A90611
                         usedLicenses: 4
+                        ignored: false
                       - dbName: 4wcqjn-ecf040bdfab7695ab332aef7401f185c
                         hostname: publicitate-36d06ca83eafa454423d2097f4965517
                         licenseTypeID: A90649
                         usedLicenses: 4
+                        ignored: false
                       - dbName: ERCOLE
                         hostname: test-db
                         licenseTypeID: A90611
                         usedLicenses: 0.5
+                        ignored: false
                     metadata:
                       empty: false
                       first: false
@@ -5047,6 +5136,384 @@ paths:
             examples: {}
       tags:
         - data-service
+  '/oracle-cloud/recommendations/{ids}':
+    parameters:
+      - schema:
+          type: string
+        name: ids
+        in: path
+        required: true
+        description: Comma separated list of profileId
+    get:
+      summary: Retrieve Oracle Cloud Recommendation
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    error: "1 error occurred:\n\t* C:/Workspace/GitHub/ercole/thunder-service/service/oci_recommendations.go:47 : 'encoding/hex: invalid byte: U+0020 ' ' - invalid profileId \" pippo\"'\n\n\n"
+                    recommendations:
+                      - tenancyOCID: ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q
+                        name: cost-management-load-balancer-underutilized-name
+                        numPending: '1'
+                        estimatedCostSaving: '1.85'
+                        status: PENDING
+                        importance: MODERATE
+                        recommendationId: ocid1.optimizerrecommendation.oc1..aaaaaaaanptucivsbo24dkml7exd2fldalykkz52gld3nk3jt5c2e4ydgzjq
+                      - tenancyOCID: ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q
+                        name: cost-management-boot-volume-attachment-name
+                        numPending: '2'
+                        estimatedCostSaving: '1.56'
+                        status: PENDING
+                        importance: MODERATE
+                        recommendationId: ocid1.optimizerrecommendation.oc1..aaaaaaaadtjdkfx7efwea7czmq5apuyr3oholubrjn5k4udaoka6ftf7m65a
+                      - tenancyOCID: ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q
+                        name: cost-management-compute-host-terminated-name
+                        numPending: '1'
+                        estimatedCostSaving: '14.18'
+                        status: PENDING
+                        importance: CRITICAL
+                        recommendationId: ocid1.optimizerrecommendation.oc1..aaaaaaaaw3kvofgg5j4hcswcjdmqryu4rgzwp2ocsput6akakr6vxyyokxnq
+                      - tenancyOCID: ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q
+                        name: cost-management-autonomous-database-underutilized-name
+                        numPending: '0'
+                        estimatedCostSaving: '0.00'
+                        status: PENDING
+                        importance: MODERATE
+                        recommendationId: ocid1.optimizerrecommendation.oc1..aaaaaaaapduyytcacqxvn24xryrce7b3nuxbtulmqbmir47lx3i3rx7x3viq
+                      - tenancyOCID: ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q
+                        name: cost-management-block-volume-attachment-name
+                        numPending: '8'
+                        estimatedCostSaving: '11.42'
+                        status: PENDING
+                        importance: MODERATE
+                        recommendationId: ocid1.optimizerrecommendation.oc1..aaaaaaaa6lifbdmtt55q5rwmmp4nhhvdsohmlj5ezdlv522loc7c2bpcqa2a
+                      - tenancyOCID: ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q
+                        name: cost-management-compute-enable-monitoring-name
+                        numPending: '0'
+                        estimatedCostSaving: '0.00'
+                        status: PENDING
+                        importance: CRITICAL
+                        recommendationId: ocid1.optimizerrecommendation.oc1..aaaaaaaa623kye5cs4d7tkwvicizre3hhgmcu2hnfkpkw6xliniqqqf2xz2a
+                      - tenancyOCID: ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q
+                        name: cost-management-compute-host-underutilized-name
+                        numPending: '0'
+                        estimatedCostSaving: '0.00'
+                        status: PENDING
+                        importance: HIGH
+                        recommendationId: ocid1.optimizerrecommendation.oc1..aaaaaaaavnra3wc236hif2klnr4pumgojeflmcmqn7gn2r5ylb6kivruc25a
+                      - tenancyOCID: ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q
+                        name: cost-management-object-storage-enable-olm-name
+                        numPending: '6'
+                        estimatedCostSaving: '0.00'
+                        status: PENDING
+                        importance: MODERATE
+                        recommendationId: ocid1.optimizerrecommendation.oc1..aaaaaaaa6runlvt3n53d5534mfail3w2lo7nt64ijp5i4sxxhxrn2n2pqmsq
+                properties:
+                  error:
+                    type: string
+                    minLength: 1
+                  recommendations:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        tenancyOCID:
+                          type: string
+                          minLength: 1
+                        name:
+                          type: string
+                          minLength: 1
+                        numPending:
+                          type: string
+                          minLength: 1
+                        estimatedCostSaving:
+                          type: string
+                          minLength: 1
+                        status:
+                          type: string
+                          minLength: 1
+                        importance:
+                          type: string
+                          minLength: 1
+                        recommendationId:
+                          type: string
+                          minLength: 1
+      operationId: GetOciRecommendations
+  /oracle-cloud/configurations:
+    get:
+      summary: Retrieve Oracle Cloud profiles configurations from DB
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ''
+                minItems: 1
+                uniqueItems: true
+                items:
+                  type: object
+                  required:
+                    - id
+                    - profile
+                    - tenancyOCID
+                    - userOCID
+                    - keyFingerprint
+                    - region
+                    - privateKey
+                  properties:
+                    id:
+                      type: string
+                      minLength: 1
+                    profile:
+                      type: string
+                      minLength: 1
+                    tenancyOCID:
+                      type: string
+                      minLength: 1
+                    userOCID:
+                      type: string
+                      minLength: 1
+                    keyFingerprint:
+                      type: string
+                      minLength: 1
+                    region:
+                      type: string
+                      minLength: 1
+                    privateKey:
+                      type: string
+                      minLength: 1
+                x-examples:
+                  example-1:
+                    - id: 6166f51395ebda89d84a80b3
+                      profile: ABRPROVA999
+                      tenancyOCID: ocid1.tenancy.ABRTen444
+                      userOCID: ocid1.user.ABRUsr444
+                      keyFingerprint: ABRFinger1
+                      region: ABRRegion1
+                      privateKey: ABRPrivate
+                    - id: 6167e9c827c621ada11a170b
+                      profile: ABRPROVA1
+                      tenancyOCID: ocid1.tenancy.ABRTen
+                      userOCID: ocid1.user.ABRUsr
+                      keyFingerprint: ABRFinger
+                      region: ABRRegion
+                      privateKey: ABRPrivate
+      operationId: GetOciProfiles
+    post:
+      summary: Add a new Oracle Cloud profile configuration to DB
+      operationId: AddOciProfile
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  id:
+                    type: string
+                    minLength: 1
+                  profile:
+                    type: string
+                    minLength: 1
+                  tenancyOCID:
+                    type: string
+                    minLength: 1
+                  userOCID:
+                    type: string
+                    minLength: 1
+                  keyFingerprint:
+                    type: string
+                    minLength: 1
+                  region:
+                    type: string
+                    minLength: 1
+                  privateKey:
+                    type: string
+                    minLength: 1
+                required:
+                  - id
+                  - profile
+                  - tenancyOCID
+                  - userOCID
+                  - keyFingerprint
+                  - region
+                  - privateKey
+                x-examples:
+                  example-1:
+                    id: 6167e9c827c621ada11a170b
+                    profile: ABRPROVA1
+                    tenancyOCID: ocid1.tenancy.ABRTen
+                    userOCID: ocid1.user.ABRUsr
+                    keyFingerprint: ABRFinger
+                    region: ABRRegion
+                    privateKey: ABRPrivate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                id:
+                  type: string
+                profile:
+                  type: string
+                  minLength: 1
+                tenancyOCID:
+                  type: string
+                  minLength: 1
+                userOCID:
+                  type: string
+                  minLength: 1
+                keyFingerprint:
+                  type: string
+                  minLength: 1
+                region:
+                  type: string
+                  minLength: 1
+                privateKey:
+                  type: string
+                  minLength: 1
+              required:
+                - id
+                - profile
+                - tenancyOCID
+                - userOCID
+                - keyFingerprint
+                - region
+                - privateKey
+              x-examples:
+                example-1:
+                  id: ''
+                  profile: ABRPROVA1
+                  tenancyOCID: ocid1.tenancy.ABRTen
+                  userOCID: ocid1.user.ABRUsr
+                  keyFingerprint: ABRFinger
+                  region: ABRRegion
+                  privateKey: ABRPrivate
+  '/oracle-cloud/configurations/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: ProfileId
+    put:
+      summary: Update an existing Oracle Cloud profile on DB
+      operationId: UpdateOciProfile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  id:
+                    type: string
+                    minLength: 1
+                  profile:
+                    type: string
+                    minLength: 1
+                  tenancyOCID:
+                    type: string
+                    minLength: 1
+                  userOCID:
+                    type: string
+                    minLength: 1
+                  keyFingerprint:
+                    type: string
+                    minLength: 1
+                  region:
+                    type: string
+                    minLength: 1
+                  privateKey:
+                    type: string
+                    minLength: 1
+                required:
+                  - id
+                  - profile
+                  - tenancyOCID
+                  - userOCID
+                  - keyFingerprint
+                  - region
+                  - privateKey
+                x-examples:
+                  example-1:
+                    id: 6166f51395ebda89d84a80b3
+                    profile: ABRPROVA999
+                    tenancyOCID: ocid1.tenancy.ABRTen444
+                    userOCID: ocid1.user.ABRUsr444
+                    keyFingerprint: ABRFinger1
+                    region: ABRRegion1
+                    privateKey: ABRPrivate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                id:
+                  type: string
+                  minLength: 1
+                profile:
+                  type: string
+                  minLength: 1
+                tenancyOCID:
+                  type: string
+                  minLength: 1
+                userOCID:
+                  type: string
+                  minLength: 1
+                keyFingerprint:
+                  type: string
+                  minLength: 1
+                region:
+                  type: string
+                  minLength: 1
+                privateKey:
+                  type: string
+                  minLength: 1
+              required:
+                - id
+                - profile
+                - tenancyOCID
+                - userOCID
+                - keyFingerprint
+                - region
+                - privateKey
+              x-examples:
+                example-1:
+                  id: 6166f51395ebda89d84a80b3
+                  profile: ABRPROVA999
+                  tenancyOCID: ocid1.tenancy.ABRTen444
+                  userOCID: ocid1.user.ABRUsr444
+                  keyFingerprint: ABRFinger1
+                  region: ABRRegion1
+                  privateKey: ABRPrivate
+    delete:
+      summary: Delete an a existing Oracle Cloud profile from DB
+      operationId: DeleteOciProfile
+      responses:
+        '204':
+          description: No Content
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []

@@ -127,6 +127,8 @@ type MongoDatabaseInterface interface {
 
 	// ListOracleDatabaseAgreements lists the Oracle/Database agreements
 	ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgreementFE, error)
+	// UpdateLicenseIgnoredField update license ignored field (true/false)
+	UpdateLicenseIgnoredField(hostname string, dbname string, licenseTypeID string, ignored bool) error
 	// ListHostUsingOracleDatabaseLicenses lists the hosts/clusters that need to be licensed by Oracle/Database agreements
 	ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingOracleDatabaseLicenses, error)
 

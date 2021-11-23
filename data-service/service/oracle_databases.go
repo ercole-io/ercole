@@ -17,6 +17,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"sort"
@@ -45,13 +46,25 @@ func (hds *HostDataService) oracleDatabasesChecks(previousHostdata, hostdata *mo
 
 	hds.checkNewLicenses(previousHostdata, hostdata, licenseTypes)
 
+	var unlistedDatabasesAlerts []model.Alert
+
 	for _, dbname := range hostdata.Features.Oracle.Database.UnlistedRunningDatabases {
 		if err := hds.ackOldUnlistedRunningDatabasesAlerts(hostdata.Hostname, dbname); err != nil {
 			hds.Log.Errorf("Can't ack UnlistedRunningDatabases alerts by filter")
 		}
-		if err := hds.throwUnlistedRunningDatabasesAlert(dbname, hostdata.Hostname); err != nil {
-			hds.Log.Error(err)
-		}
+
+		unlistedDatabasesAlerts = append(unlistedDatabasesAlerts,
+			model.Alert{
+				OtherInfo: map[string]interface{}{
+					"hostname": hostdata.Hostname,
+					"dbname":   dbname,
+				},
+			},
+		)
+	}
+
+	if err := hds.throwUnlistedRunningDatabasesAlert(unlistedDatabasesAlerts); err != nil {
+		hds.Log.Error(err)
 	}
 
 	if previousHostdata != nil && previousHostdata.Info.CPUCores < hostdata.Info.CPUCores {
@@ -142,6 +155,7 @@ primaryDbLicensesCycle:
 					LicenseTypeID: primaryDbLicense.LicenseTypeID,
 					Name:          primaryDbLicense.Name,
 					Count:         float64(hostInfo.CPUCores) * coreFactor,
+					Ignored:       primaryDbLicense.Ignored,
 				})
 		}
 	}
@@ -314,6 +328,7 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 		licenseTypesMap[licenseTypes[i].ID] = &licenseTypes[i]
 	}
 
+	var newOptionAlerts []model.Alert
 	for _, newDb := range newDbs {
 
 		oldDb, ok := previousDbs[newDb.Name]
@@ -341,9 +356,25 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 
 				alreadyEnabledBefore := previousLicenseTypesEnabled[licenseTypeID]
 				if licenseType.Option {
-					if err := hds.throwNewOptionAlert(new.Hostname, newDb.Name, *licenseType, alreadyEnabledBefore); err != nil {
-						hds.Log.Error(err)
+
+					description := fmt.Sprintf("Database %s has enabled new option: %s", newDb.Name, licenseType.ItemDescription)
+					severity := model.AlertSeverityCritical
+
+					if alreadyEnabledBefore {
+						severity = model.AlertSeverityInfo
+						description += " (already enabled before in this host)"
 					}
+
+					newOptionAlerts = append(newOptionAlerts, model.Alert{
+						AlertSeverity: severity,
+						Description:   description,
+						OtherInfo: map[string]interface{}{
+							"hostname":      new.Hostname,
+							"dbname":        newDb.Name,
+							"licenseTypeID": licenseType.ID,
+						},
+					})
+
 				} else {
 					if err := hds.throwNewLicenseAlert(new.Hostname, newDb.Name, *licenseType, alreadyEnabledBefore); err != nil {
 						hds.Log.Error(err)
@@ -351,6 +382,10 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 				}
 			}
 		}
+	}
+
+	if err := hds.throwNewOptionAlerts(newOptionAlerts); err != nil {
+		hds.Log.Error(err)
 	}
 }
 

@@ -44,6 +44,8 @@ type Configuration struct {
 	RepoService RepoService
 	// ChartService contains configuration about the chart service
 	ChartService ChartService
+	// ThunderService contains configuration about the thunder service
+	ThunderService ThunderService
 	// Mongodb contains configuration about database connection, some data logic and migration
 	Mongodb Mongodb
 	// Version contains the version of the server
@@ -146,6 +148,18 @@ type RepoService struct {
 // ChartService contains configuration about the chart service
 type ChartService struct {
 	// RemoteEndpoint contains the endpoint used to connect to the ChartService
+	RemoteEndpoint string
+	// BindIP contains the bind ip
+	BindIP string
+	// Port contains the port of the internal http server
+	Port uint16
+	// LogHTTPRequest enable the logging of the internal http serverl
+	LogHTTPRequest bool
+}
+
+// ThunderService contains configuration about the thunder service
+type ThunderService struct {
+	// RemoteEndpoint contains the endpoint used to connect to the ThunderService
 	RemoteEndpoint string
 	// BindIP contains the bind ip
 	BindIP string
