@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -482,6 +482,7 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 			Description:   "ThisDesc",
 			Metric:        "ThisMetric",
 			UsedLicenses:  2,
+			Ignored:       false,
 		},
 		{
 			Hostname:      "topolino-hostname",
@@ -490,6 +491,7 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 			Description:   "ThisDesc",
 			Metric:        model.LicenseTypeMetricNamedUserPlusPerpetual,
 			UsedLicenses:  50,
+			Ignored:       false,
 		},
 		{
 			Hostname:      "pluto",
@@ -498,6 +500,7 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 			Description:   "MySQL ENTERPRISE",
 			Metric:        "CLUSTER",
 			UsedLicenses:  1,
+			Ignored:       false,
 		},
 	}
 
