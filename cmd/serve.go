@@ -53,6 +53,10 @@ import (
 	chartservice_database "github.com/ercole-io/ercole/v2/chart-service/database"
 	chartservice_service "github.com/ercole-io/ercole/v2/chart-service/service"
 
+	thunderservice_controller "github.com/ercole-io/ercole/v2/thunder-service/controller"
+	thunderservice_database "github.com/ercole-io/ercole/v2/thunder-service/database"
+	thunderservice_service "github.com/ercole-io/ercole/v2/thunder-service/service"
+
 	reposervice_service "github.com/ercole-io/ercole/v2/repo-service/service"
 )
 
@@ -61,6 +65,7 @@ var enableAlertService bool
 var enableAPIService bool
 var enableChartService bool
 var enableRepoService bool
+var enableThunderService bool
 
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
@@ -68,10 +73,10 @@ var serveCmd = &cobra.Command{
 	Short: "Run ercole services",
 	Long:  `Run ercole services`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if !enableDataService && !enableAlertService && !enableAPIService && !enableRepoService && !enableChartService {
-			serve(true, true, true, true, true)
+		if !enableDataService && !enableAlertService && !enableAPIService && !enableRepoService && !enableChartService && !enableThunderService {
+			serve(true, true, true, true, true, true)
 		} else {
-			serve(enableDataService, enableAlertService, enableAPIService, enableChartService, enableRepoService)
+			serve(enableDataService, enableAlertService, enableAPIService, enableChartService, enableRepoService, enableThunderService)
 		}
 	},
 }
@@ -84,11 +89,12 @@ func init() {
 	serveCmd.Flags().BoolVarP(&enableAPIService, "enable-api-service", "u", false, "Enable the api service")
 	serveCmd.Flags().BoolVarP(&enableChartService, "enable-chart-service", "t", false, "Enable the chart service")
 	serveCmd.Flags().BoolVarP(&enableRepoService, "enable-repo-service", "r", false, "Enable the repo service")
+	serveCmd.Flags().BoolVarP(&enableThunderService, "enable-thunder-service", "s", false, "Enable the thunder service")
 }
 
 // serve setup and start the services
 func serve(enableDataService bool,
-	enableAlertService bool, enableAPIService bool, enableChartService bool, enableRepoService bool) {
+	enableAlertService bool, enableAPIService bool, enableChartService bool, enableRepoService bool, enableThunderService bool) {
 	log := logger.NewLogger("SERV", logger.LogVerbosely(verbose))
 
 	if !utils.FileExists(ercoleConfig.RepoService.DistributedFiles) {
@@ -109,7 +115,7 @@ func serve(enableDataService bool,
 		}
 	}
 
-	if enableDataService || enableAlertService || enableAPIService || enableChartService {
+	if enableDataService || enableAlertService || enableAPIService || enableChartService || enableThunderService {
 		check, err := migration.IsAtTheLatestVersion(ercoleConfig.Mongodb)
 		if err != nil {
 			log.Fatalf("Failed checking database version: %s", err)
@@ -138,6 +144,10 @@ func serve(enableDataService bool,
 
 	if enableRepoService {
 		serveRepoService(ercoleConfig, &wg)
+	}
+
+	if enableThunderService {
+		serveThunderService(ercoleConfig, &wg)
 	}
 
 	wg.Wait()
@@ -373,4 +383,50 @@ func serveRepoService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 
 	service.Init(wg)
+}
+
+func serveThunderService(config config.Configuration, wg *sync.WaitGroup) {
+	log := logger.NewLogger("THUN", logger.LogVerbosely(verbose))
+
+	db := &thunderservice_database.MongoDatabase{
+		Config:  config,
+		TimeNow: time.Now,
+		Log:     log,
+	}
+	db.Init()
+
+	service := &thunderservice_service.ThunderService{
+		Config:   config,
+		Database: db,
+		TimeNow:  time.Now,
+		Log:      log,
+	}
+	service.Init()
+
+	router := mux.NewRouter()
+	ctrl := &thunderservice_controller.ThunderController{
+		Config:  config,
+		Service: service,
+		TimeNow: time.Now,
+		Log:     log,
+	}
+	thunderservice_controller.SetupRoutesForThunderController(router, ctrl)
+
+	var logRouter http.Handler
+	if config.ThunderService.LogHTTPRequest {
+		logRouter = utils.CustomLoggingHandler(router, log)
+	} else {
+		logRouter = router
+	}
+
+	wg.Add(1)
+	go func() {
+		log.Info("Start thunder-service: listening at ", config.ThunderService.Port)
+		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.ThunderService.BindIP, config.ThunderService.Port), cors.AllowAll().Handler(logRouter))
+		if err != nil {
+			log.Error("Stopping thunder-service: ", err)
+		}
+
+		wg.Done()
+	}()
 }

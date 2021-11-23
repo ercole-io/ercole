@@ -13,19 +13,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package dto
+package model
 
-// OracleDatabaseUsedLicenseSearchResponse dto
-type OracleDatabaseUsedLicenseSearchResponse struct {
-	Content  []OracleDatabaseUsedLicense `json:"content" bson:"content"`
-	Metadata PagingMetadata              `json:"metadata" bson:"metadata"`
-}
-
-// OracleDatabaseUsedLicense dto
-type OracleDatabaseUsedLicense struct {
-	LicenseTypeID string  `json:"licenseTypeID" bson:"licenseTypeID"`
-	DbName        string  `json:"dbName" bson:"dbName"`
-	Hostname      string  `json:"hostname" bson:"hostname"`
-	UsedLicenses  float64 `json:"usedLicenses" bson:"usedLicenses"`
-	Ignored       bool    `json:"ignored" bson:"ignored"`
+// Recommendation holds informations about a recommendation
+type Recommendation struct {
+	TenancyOCID         string `json:"tenancyOCID"`
+	Name                string `json:"name"`
+	NumPending          string `json:"numPending"`
+	EstimatedCostSaving string `json:"estimatedCostSaving"`
+	Status              string `json:"status"`
+	Importance          string `json:"importance"`
+	RecommendationId    string `json:"recommendationId"`
 }

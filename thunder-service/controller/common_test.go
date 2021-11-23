@@ -13,19 +13,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package dto
+package controller
 
-// OracleDatabaseUsedLicenseSearchResponse dto
-type OracleDatabaseUsedLicenseSearchResponse struct {
-	Content  []OracleDatabaseUsedLicense `json:"content" bson:"content"`
-	Metadata PagingMetadata              `json:"metadata" bson:"metadata"`
-}
-
-// OracleDatabaseUsedLicense dto
-type OracleDatabaseUsedLicense struct {
-	LicenseTypeID string  `json:"licenseTypeID" bson:"licenseTypeID"`
-	DbName        string  `json:"dbName" bson:"dbName"`
-	Hostname      string  `json:"hostname" bson:"hostname"`
-	UsedLicenses  float64 `json:"usedLicenses" bson:"usedLicenses"`
-	Ignored       bool    `json:"ignored" bson:"ignored"`
-}
+//go:generate mockgen -source ../service/service.go -destination=fake_service_test.go -package=controller
