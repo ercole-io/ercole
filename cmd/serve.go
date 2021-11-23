@@ -22,7 +22,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"github.com/spf13/cobra"
 
@@ -182,26 +181,19 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	job.Init()
 
-	router := mux.NewRouter()
 	ctrl := &dataservice_controller.DataController{
 		Config:  config,
 		Service: service,
 		TimeNow: time.Now,
 		Log:     log,
 	}
-	dataservice_controller.SetupRoutesForHostDataController(router, ctrl)
-
-	var logRouter http.Handler
-	if config.DataService.LogHTTPRequest {
-		logRouter = utils.CustomLoggingHandler(router, log)
-	} else {
-		logRouter = router
-	}
+	h := ctrl.GetDataControllerHandler()
+	h = useCommonHandlers(h, config.DataService.LogHTTPRequest, log)
 
 	wg.Add(1)
 	go func() {
 		log.Info("Start data-service: listening at ", config.DataService.Port)
-		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.DataService.BindIP, config.DataService.Port), cors.AllowAll().Handler(logRouter))
+		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.DataService.BindIP, config.DataService.Port), h)
 		if err != nil {
 			log.Error("Stopped data-service: ", err)
 		}
@@ -234,26 +226,19 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 	ctx, cancel := context.WithCancel(context.Background())
 	service.Init(ctx, wg)
 
-	router := mux.NewRouter()
 	ctrl := &alertservice_controller.AlertQueueController{
 		Config:  config,
 		Service: service,
 		TimeNow: time.Now,
 		Log:     log,
 	}
-	alertservice_controller.SetupRoutesForAlertQueueController(router, ctrl)
-
-	var logRouter http.Handler
-	if config.AlertService.LogHTTPRequest {
-		logRouter = utils.CustomLoggingHandler(router, log)
-	} else {
-		logRouter = router
-	}
+	h := ctrl.GetAlertControllerHandler()
+	h = useCommonHandlers(h, config.AlertService.LogHTTPRequest, log)
 
 	wg.Add(1)
 	go func() {
 		log.Info("Start alert-service: listening at ", config.AlertService.Port)
-		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.AlertService.BindIP, config.AlertService.Port), cors.AllowAll().Handler(logRouter))
+		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.AlertService.BindIP, config.AlertService.Port), h)
 		if err != nil {
 			log.Error("Stopping alert-service: ", err)
 		}
@@ -286,7 +271,6 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	auth := apiservice_auth.BuildAuthenticationProvider(config.APIService.AuthenticationProvider, time.Now, log)
 	auth.Init()
 
-	router := mux.NewRouter()
 	ctrl := &apiservice_controller.APIController{
 		Config:        config,
 		Service:       service,
@@ -294,19 +278,13 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 		Log:           log,
 		Authenticator: auth,
 	}
-	apiservice_controller.SetupRoutesForAPIController(router, ctrl, auth)
-
-	var logRouter http.Handler
-	if config.APIService.LogHTTPRequest {
-		logRouter = utils.CustomLoggingHandler(router, log)
-	} else {
-		logRouter = router
-	}
+	h := ctrl.GetApiControllerHandler(auth)
+	h = useCommonHandlers(h, config.APIService.LogHTTPRequest, log)
 
 	wg.Add(1)
 	go func() {
 		log.Info("Start api-service: listening at ", config.APIService.Port)
-		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.APIService.BindIP, config.APIService.Port), cors.AllowAll().Handler(logRouter))
+		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.APIService.BindIP, config.APIService.Port), h)
 		if err != nil {
 			log.Error("Stopping api-service: ", err)
 		}
@@ -337,7 +315,6 @@ func serveChartService(config config.Configuration, wg *sync.WaitGroup) {
 	auth := apiservice_auth.BuildAuthenticationProvider(config.APIService.AuthenticationProvider, time.Now, log)
 	auth.Init()
 
-	router := mux.NewRouter()
 	ctrl := &chartservice_controller.ChartController{
 		Config:        config,
 		Service:       service,
@@ -345,19 +322,14 @@ func serveChartService(config config.Configuration, wg *sync.WaitGroup) {
 		Log:           log,
 		Authenticator: auth,
 	}
-	chartservice_controller.SetupRoutesForChartController(router, ctrl, auth)
 
-	var logRouter http.Handler
-	if config.ChartService.LogHTTPRequest {
-		logRouter = utils.CustomLoggingHandler(router, log)
-	} else {
-		logRouter = router
-	}
+	h := ctrl.GetChartControllerHandler(auth)
+	h = useCommonHandlers(h, config.ChartService.LogHTTPRequest, log)
 
 	wg.Add(1)
 	go func() {
 		log.Info("Start chart-service: listening at ", config.ChartService.Port)
-		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.ChartService.BindIP, config.ChartService.Port), cors.AllowAll().Handler(logRouter))
+		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.ChartService.BindIP, config.ChartService.Port), h)
 		if err != nil {
 			log.Error("Stopping chart-service: ", err)
 		}
@@ -403,30 +375,31 @@ func serveThunderService(config config.Configuration, wg *sync.WaitGroup) {
 	}
 	service.Init()
 
-	router := mux.NewRouter()
 	ctrl := &thunderservice_controller.ThunderController{
 		Config:  config,
 		Service: service,
 		TimeNow: time.Now,
 		Log:     log,
 	}
-	thunderservice_controller.SetupRoutesForThunderController(router, ctrl)
-
-	var logRouter http.Handler
-	if config.ThunderService.LogHTTPRequest {
-		logRouter = utils.CustomLoggingHandler(router, log)
-	} else {
-		logRouter = router
-	}
+	h := ctrl.GetThunderControllerHandler()
+	h = useCommonHandlers(h, config.ThunderService.LogHTTPRequest, log)
 
 	wg.Add(1)
 	go func() {
 		log.Info("Start thunder-service: listening at ", config.ThunderService.Port)
-		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.ThunderService.BindIP, config.ThunderService.Port), cors.AllowAll().Handler(logRouter))
+		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.ThunderService.BindIP, config.ThunderService.Port), h)
 		if err != nil {
 			log.Error("Stopping thunder-service: ", err)
 		}
 
 		wg.Done()
 	}()
+}
+
+func useCommonHandlers(h http.Handler, logHTTPRequest bool, log logger.Logger) http.Handler {
+	if logHTTPRequest {
+		h = utils.CustomLoggingHandler(h, log)
+	}
+
+	return cors.AllowAll().Handler(h)
 }

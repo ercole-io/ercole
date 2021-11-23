@@ -23,8 +23,9 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/auth"
 )
 
-// SetupRoutesForChartController setup the routes of the router using the handler in the controller as http handler
-func SetupRoutesForChartController(router *mux.Router, ctrl ChartControllerInterface, auth auth.AuthenticationProvider) {
+// GetChartControllerHandler setup the routes of the router using the handler in the controller as http handler
+func (ctrl *ChartController) GetChartControllerHandler(auth auth.AuthenticationProvider) http.Handler {
+	router := mux.NewRouter()
 
 	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("Pong"))
@@ -32,12 +33,14 @@ func SetupRoutesForChartController(router *mux.Router, ctrl ChartControllerInter
 
 	router.HandleFunc("/user/login", auth.GetToken).Methods("POST")
 
-	router = router.NewRoute().Subrouter()
-	router.Use(auth.AuthenticateMiddleware)
-	setupProtectedRoutes(router, ctrl)
+	subrouter := router.NewRoute().Subrouter()
+	subrouter.Use(auth.AuthenticateMiddleware)
+	ctrl.setupProtectedRoutes(subrouter)
+
+	return router
 }
 
-func setupProtectedRoutes(router *mux.Router, ctrl ChartControllerInterface) {
+func (ctrl *ChartController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/settings/technologies-metrics", ctrl.GetTechnologiesMetrics).Methods("GET")
 
 	router.HandleFunc("/technologies/all/license-history", ctrl.GetLicenseComplianceHistory).Methods("GET")
