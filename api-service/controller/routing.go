@@ -58,7 +58,7 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/tags", ctrl.AddTagToOracleDatabase).Methods("POST")
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/tags/{tagname}", ctrl.DeleteTagOfOracleDatabase).Methods("DELETE")
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseName}", ctrl.SetOracleDatabaseLicenseModifier).Methods("PUT")
-	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseTypeID}/ignored", ctrl.UpdateLicenseIgnoredField).Methods("PUT")
+	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseTypeID}/ignored/{ignored}", ctrl.UpdateLicenseIgnoredField).Methods("PUT")
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/license-modifiers/{licenseName}", ctrl.DeleteOracleDatabaseLicenseModifier).Methods("DELETE")
 
 	router.HandleFunc("/hosts/technologies", ctrl.ListTechnologies).Methods("GET")
