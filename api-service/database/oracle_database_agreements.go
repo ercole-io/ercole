@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -152,6 +152,7 @@ func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingO
 					"archived":                 false,
 					"features.oracle.database": mu.QONotEqual(nil),
 					"$expr":                    mu.APOGreater(mu.APOSize("$features.oracle.database.databases"), 0),
+					"features.oracle.database.databases.licenses.ignored": false,
 				}),
 				mu.APProject(bson.M{
 					"hostname": true,

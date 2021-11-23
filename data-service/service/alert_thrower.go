@@ -80,40 +80,52 @@ func (hds *HostDataService) throwNewLicenseAlert(hostname, dbname string, licens
 	return hds.AlertSvcClient.ThrowNewAlert(alr)
 }
 
-// ThrowActivatedFeaturesAlert create and insert in the database a new NEW_OPTION alert
-func (hds *HostDataService) throwNewOptionAlert(hostname, dbname string, licenseType model.OracleDatabaseLicenseType,
-	alreadyEnabledBefore bool) error {
-
-	severity := model.AlertSeverityCritical
-	description := fmt.Sprintf("The database %s on %s has enabled new option: %s", dbname, hostname, licenseType.ItemDescription)
-
-	if alreadyEnabledBefore {
-		severity = model.AlertSeverityInfo
-		description += " (already enabled before in this host)"
+func (hds *HostDataService) throwNewOptionAlerts(alerts []model.Alert) error {
+	if len(alerts) == 0 {
+		return nil
 	}
 
-	alr := model.Alert{
+	alertOutput := model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(hds.TimeNow()),
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
 		AlertCategory:           model.AlertCategoryLicense,
 		AlertCode:               model.AlertCodeNewOption,
-		AlertSeverity:           severity,
+		AlertSeverity:           alerts[0].AlertSeverity,
 		AlertStatus:             model.AlertStatusNew,
 		Date:                    hds.TimeNow(),
-		Description:             description,
+		Description:             alerts[0].Description,
 		OtherInfo: map[string]interface{}{
-			"hostname":      hostname,
-			"dbname":        dbname,
-			"licenseTypeID": licenseType.ID,
+			"hostname":      alerts[0].OtherInfo["hostname"],
+			"dbname":        alerts[0].OtherInfo["dbname"],
+			"licenseTypeID": alerts[0].OtherInfo["licenseTypeID"],
 		},
 	}
 
-	return hds.AlertSvcClient.ThrowNewAlert(alr)
+	for _, alert := range alerts[1:] {
+		if alert.AlertSeverity == model.AlertSeverityCritical {
+			alertOutput.AlertSeverity = model.AlertSeverityCritical
+		}
+
+		alertOutput.Description += "\n" + alert.Description
+		alertOutput.OtherInfo["dbname"] = alertOutput.OtherInfo["dbname"].(string) + "," + alert.OtherInfo["dbname"].(string)
+		alertOutput.OtherInfo["licenseTypeID"] = alertOutput.OtherInfo["licenseTypeID"].(string) + "," + alert.OtherInfo["licenseTypeID"].(string)
+	}
+
+	return hds.AlertSvcClient.ThrowNewAlert(alertOutput)
 }
 
 // ThrowUnlistedRunningDatabasesAlert create and insert in the database a new UNLISTED_RUNNING_DATABASE alert
-func (hds *HostDataService) throwUnlistedRunningDatabasesAlert(dbname string, hostname string) error {
-	alr := model.Alert{
+func (hds *HostDataService) throwUnlistedRunningDatabasesAlert(alerts []model.Alert) error {
+	if len(alerts) == 0 {
+		return nil
+	}
+
+	a := alerts[0]
+
+	description := fmt.Sprintf("Some databases on the host %s aren't listed in the oratab: %s",
+		a.OtherInfo["hostname"], a.OtherInfo["dbname"])
+
+	alert := model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(hds.TimeNow()),
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
 		AlertCategory:           model.AlertCategoryEngine,
@@ -121,14 +133,19 @@ func (hds *HostDataService) throwUnlistedRunningDatabasesAlert(dbname string, ho
 		AlertSeverity:           model.AlertSeverityWarning,
 		AlertStatus:             model.AlertStatusNew,
 		Date:                    hds.TimeNow(),
-		Description:             fmt.Sprintf("The database %s is not listed in the oratab of the host %s", dbname, hostname),
+		Description:             description,
 		OtherInfo: map[string]interface{}{
-			"hostname": hostname,
-			"dbname":   dbname,
+			"hostname": a.OtherInfo["hostname"],
+			"dbname":   a.OtherInfo["dbname"],
 		},
 	}
 
-	return hds.AlertSvcClient.ThrowNewAlert(alr)
+	for _, al := range alerts[1:] {
+		alert.Description += ", " + al.OtherInfo["dbname"].(string)
+		alert.OtherInfo["dbname"] = alert.OtherInfo["dbname"].(string) + "," + al.OtherInfo["dbname"].(string)
+	}
+
+	return hds.AlertSvcClient.ThrowNewAlert(alert)
 }
 
 func (hds *HostDataService) throwAugmentedCPUCoresAlert(hostname string, previousCPUCores, newCPUCores int) error {

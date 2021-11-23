@@ -20,7 +20,7 @@ require (
 	github.com/goraz/onion v0.1.3
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
-	github.com/hashicorp/go-multierror v1.0.0
+	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-version v1.2.1
 	github.com/jinzhu/now v1.1.1
 	github.com/jtblin/go-ldap-client v0.0.0-20170223121919-b73f66626b33
@@ -29,6 +29,8 @@ require (
 	github.com/leandro-lugaresi/hub v1.1.1
 	github.com/lucasb-eyer/go-colorful v1.2.0
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
+	github.com/oracle/oci-go-sdk v24.3.0+incompatible // indirect
+	github.com/oracle/oci-go-sdk/v45 v45.2.0
 	github.com/robertkrimen/otto v0.0.0-20200922221731-ef014fd054ac
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/rs/cors v1.7.0
