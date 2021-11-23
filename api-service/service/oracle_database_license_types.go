@@ -89,6 +89,12 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 
 	licenses := make(map[string]*dto.LicenseCompliance)
 
+	hostdatasPerHostname, err := as.getHostdatasPerHostname()
+	if err != nil {
+		as.Log.Error(err)
+		return nil, err
+	}
+
 	// get consumptions value by hosts
 	getLicensesConsumedByHost, err := as.getterLicensesConsumedByHost()
 	if err != nil {
@@ -103,7 +109,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 			licenses[license.LicenseTypeID] = license
 		}
 
-		consumedLicenses, err := getLicensesConsumedByHost(host)
+		consumedLicenses, err := getLicensesConsumedByHost(host, hostdatasPerHostname)
 		if err != nil {
 			if errors.Is(err, utils.ErrHostNotFound) {
 				as.Log.Warn(err)
@@ -117,9 +123,18 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 		license.Consumed += consumedLicenses * model.GetFactorByMetric(license.Metric)
 	}
 
+	// get covered value by hosts
+	getLicensesCoveredByHost, err := as.getterLicensesCoveredByHost()
+	if err != nil {
+		as.Log.Error(err)
+		return nil, err
+	}
+
 	availableLicenses := make(map[string]float64)
 	// get coverage values from agreements
 	for _, agreement := range agreements {
+		var coveredLicenses float64
+		var err error
 		license, ok := licenses[agreement.LicenseTypeID]
 		if !ok {
 			license = getLicenseCompliance(agreement.LicenseTypeID)
@@ -136,7 +151,20 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 			availableLicenses[agreement.LicenseTypeID] += agreement.AvailableLicensesPerCore
 		}
 
-		license.Covered += agreement.CoveredLicenses
+		for _, host := range agreement.Hosts {
+			coveredLicenses, err = getLicensesCoveredByHost(host.Hostname, agreement.LicenseTypeID, agreement.CoveredLicenses, hostdatasPerHostname)
+			if err != nil {
+				if errors.Is(err, utils.ErrHostNotFound) {
+					as.Log.Warn(err)
+				} else {
+					as.Log.Error(err)
+				}
+
+				coveredLicenses += host.CoveredLicensesCount
+			}
+		}
+
+		license.Covered += coveredLicenses * model.GetFactorByMetric(license.Metric)
 		license.Purchased += (agreement.LicensesPerCore + agreement.LicensesPerUser)
 	}
 
@@ -185,11 +213,7 @@ func (as *APIService) getterNewLicenseCompliance() (func(licenseTypeID string) *
 	return getter, nil
 }
 
-func (as *APIService) getterLicensesConsumedByHost() (func(host dto.HostUsingOracleDatabaseLicenses) (float64, error), error) {
-	// map to keep history if a certain host per a certain licence as already be counted
-	// by another host in its veritas cluster
-	hostLicenseAlreadyCounted := make(map[string]map[string]bool)
-
+func (as *APIService) getHostdatasPerHostname() (map[string]*model.HostDataBE, error) {
 	hostdatas, err := as.Database.GetHostDatas(utils.MAX_TIME)
 	if err != nil {
 		return nil, err
@@ -201,7 +225,15 @@ func (as *APIService) getterLicensesConsumedByHost() (func(host dto.HostUsingOra
 		hostdatasPerHostname[hd.Hostname] = hd
 	}
 
-	return func(host dto.HostUsingOracleDatabaseLicenses) (float64, error) {
+	return hostdatasPerHostname, nil
+}
+
+func (as *APIService) getterLicensesConsumedByHost() (func(host dto.HostUsingOracleDatabaseLicenses, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error), error) {
+	// map to keep history if a certain host per a certain licence as already be counted
+	// by another host in its veritas cluster
+	hostLicenseAlreadyCounted := make(map[string]map[string]bool)
+
+	return func(host dto.HostUsingOracleDatabaseLicenses, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error) {
 		return as.getLicensesConsumedByHost(host, hostLicenseAlreadyCounted, hostdatasPerHostname)
 	}, nil
 }
@@ -245,6 +277,65 @@ func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabase
 	hostnamesPerLicense[host.Name][host.LicenseTypeID] = true
 
 	return consumedLicenses, nil
+}
+
+func (as *APIService) getterLicensesCoveredByHost() (func(hostName string, licenseTypeID string, originalCoveredLicenses float64, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error), error) {
+	// map to keep history if a certain host per a certain licence as already be counted
+	// by another host in its veritas cluster
+	hostLicenseAlreadyCounted := make(map[string]map[string]bool)
+
+	return func(hostName string, licenseTypeID string, originalCoveredLicenses float64, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error) {
+		return as.getLicensesCoveredByHost(hostName, licenseTypeID, originalCoveredLicenses, hostLicenseAlreadyCounted, hostdatasPerHostname)
+	}, nil
+}
+
+func (as *APIService) getLicensesCoveredByHost(hostName string, licenseTypeID string, originalCoveredLicenses float64,
+	hostnamesPerLicense map[string]map[string]bool,
+	hostdatasPerHostname map[string]*model.HostDataBE,
+) (float64, error) {
+
+	hostdata, found := hostdatasPerHostname[hostName]
+	if !found {
+		return 0, fmt.Errorf("%w: %s", utils.ErrHostNotFound, hostName)
+	}
+
+	cms := hostdata.ClusterMembershipStatus
+	if !cms.VeritasClusterServer ||
+		(cms.VeritasClusterServer && len(cms.VeritasClusterHostnames) <= 2) {
+		return originalCoveredLicenses, nil
+	}
+
+	_, found = hostnamesPerLicense[hostName]
+	if !found {
+		hostnamesPerLicense[hostName] = make(map[string]bool)
+	}
+
+	alreadyUsed := hostnamesPerLicense[hostName][licenseTypeID]
+	if alreadyUsed {
+		return 0, nil
+	}
+
+	var sumClusterCores int
+	for _, h := range cms.VeritasClusterHostnames {
+		_, found := hostnamesPerLicense[h]
+		if !found {
+			hostnamesPerLicense[h] = make(map[string]bool)
+		}
+		hostnamesPerLicense[h][licenseTypeID] = true
+
+		anotherHostdata, found := hostdatasPerHostname[hostName]
+		if !found {
+			as.Log.Warn(fmt.Errorf("%w: %s", utils.ErrHostNotFound, hostName))
+			continue
+		}
+
+		sumClusterCores += anotherHostdata.Info.CPUCores
+	}
+
+	hostnamesPerLicense[hostName][licenseTypeID] = true
+	coveredLicenses := float64(sumClusterCores) * 0.5 // core factor
+
+	return coveredLicenses, nil
 }
 
 func (as *APIService) DeleteOracleDatabaseLicenseType(id string) error {
