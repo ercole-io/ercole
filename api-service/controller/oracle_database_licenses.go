@@ -35,16 +35,15 @@ func (ctrl *APIController) UpdateLicenseIgnoredField(w http.ResponseWriter, r *h
 	hostname := mux.Vars(r)["hostname"]
 	dbname := mux.Vars(r)["dbname"]
 	licensetypeid := mux.Vars(r)["licenseTypeID"]
-	ignored := mux.Vars(r)["ignored"]
 
-	isIgnored, err := strconv.ParseBool(ignored)
+	ignored, err := strconv.ParseBool(mux.Vars(r)["ignored"])
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(err, "BAD_REQUEST"))
 		return
 	}
 
 	//set the value
-	err = ctrl.Service.UpdateLicenseIgnoredField(hostname, dbname, licensetypeid, isIgnored)
+	err = ctrl.Service.UpdateLicenseIgnoredField(hostname, dbname, licensetypeid, ignored)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
