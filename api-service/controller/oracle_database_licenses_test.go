@@ -44,9 +44,11 @@ func TestUpdateLicenseIgnoredField_Success(t *testing.T) {
 		Log: logger.NewLogger("TEST"),
 	}
 
+	as.EXPECT().UpdateLicenseIgnoredField("serv123", "TEST123", "A90611", false).Return(nil)
+
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.UpdateLicenseIgnoredField)
-	req, err := http.NewRequest("PUT", "/hosts/serv123/databases/TEST123/licenses/A90611/ignored/false", &FailingReader{})
+	req, err := http.NewRequest("PUT", "/hosts/serv123/technologies/oracle/databases/TEST123/licenses/A90611/false", &FailingReader{})
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname":      "serv123",
 		"dbname":        "TEST123",
@@ -57,6 +59,6 @@ func TestUpdateLicenseIgnoredField_Success(t *testing.T) {
 
 	handler.ServeHTTP(rr, req)
 
-	require.Equal(t, http.StatusBadRequest, rr.Code)
+	require.Equal(t, http.StatusOK, rr.Code)
 
 }
