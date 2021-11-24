@@ -212,36 +212,33 @@ func (as *APIService) GetHostDataSummaries(filters dto.SearchHostsFilters) ([]dt
 }
 
 // GetHost return the host specified in the hostname param
-func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, error) {
+func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (*dto.HostData, error) {
 	host, err := as.Database.GetHost(hostname, olderThan, raw)
 	if err != nil {
 		return nil, err
 	}
 
-	hostData := host.(map[string]interface{})
-
-	if hostData["features"] != nil && hostData["features"].(map[string]interface{})["oracle"] != nil && hostData["features"].(map[string]interface{})["oracle"].(map[string]interface{})["database"].(map[string]interface{})["databases"] != nil {
-		dbPath := hostData["features"].(map[string]interface{})["oracle"].(map[string]interface{})["database"].(map[string]interface{})["databases"].(primitive.A)
-		for iDb, resultDb := range hostData["features"].(map[string]interface{})["oracle"].(map[string]interface{})["database"].(map[string]interface{})["databases"].(primitive.A) {
-			for iLic, resultLic := range resultDb.(map[string]interface{})["licenses"].(primitive.A) {
-				licTypeId := resultLic.(map[string]interface{})["licenseTypeID"]
-				if licTypeId.(string) != "" {
-					lic, err := as.GetOracleDatabaseLicenseType(licTypeId.(string))
+	if host.Features.Oracle != nil && host.Features.Oracle.Database != nil && host.Features.Oracle.Database.Databases != nil {
+		for i := range host.Features.Oracle.Database.Databases {
+			db := &host.Features.Oracle.Database.Databases[i]
+			for j := range db.Licenses {
+				lic := db.Licenses[j]
+				if lic.LicenseTypeID != "" {
+					licType, err := as.GetOracleDatabaseLicenseType(lic.LicenseTypeID)
 					if err != nil {
 						return nil, err
 					}
-					if lic.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
-						count := dbPath[iDb].(map[string]interface{})["licenses"].(primitive.A)[iLic].(map[string]interface{})["count"].(float64)
-						count *= float64(model.GetFactorByMetric(lic.Metric))
-						dbPath[iDb].(map[string]interface{})["licenses"].(primitive.A)[iLic].(map[string]interface{})["count"] = count
+					if licType.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
+						count := lic.Count
+						count *= float64(model.GetFactorByMetric(licType.Metric))
+						host.Features.Oracle.Database.Databases[i].Licenses[j].Count = count
 					}
 				}
 			}
 		}
-
 	}
 
-	return hostData, nil
+	return host, nil
 }
 
 // ListLocations list locations
