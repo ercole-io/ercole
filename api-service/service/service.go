@@ -43,7 +43,7 @@ type APIServiceInterface interface {
 	SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*excelize.File, error)
 	GetHostDataSummaries(filters dto.SearchHostsFilters) ([]dto.HostDataSummary, error)
 	// GetHost return the host specified in the hostname param
-	GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, error)
+	GetHost(hostname string, olderThan time.Time, raw bool) (*dto.HostData, error)
 	// ListManagedTechnologies returns the list of technologies with some stats
 	ListManagedTechnologies(sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]model.TechnologyStatus, error)
 	// SearchAlerts search alerts
