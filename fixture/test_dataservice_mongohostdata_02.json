@@ -1,13 +1,21 @@
 {
     "agentVersion": "latest",
+    "alerts": null,
+    "history": null,
     "archived": false,
+    "cluster": "",
+    "errors": null,
     "clusterMembershipStatus": {
         "hacmp": false,
         "oracleClusterware": false,
         "sunCluster": false,
-        "veritasClusterServer": false
+        "veritasClusterServer": false,
+        "veritasClusterHostnames": null
     },
     "clusters": null,
+    "cloud": {
+        "membership": ""
+    },
     "createdAt": {
         "$date": {
             "$numberLong": "1576769938000"
@@ -20,6 +28,7 @@
                 "unlistedRunningDatabases": [],
                 "databases": [
                     {
+                        "changes": [],
                         "addms": [],
                         "asm": false,
                         "allocable": {
@@ -34,6 +43,9 @@
                             "$numberInt": "2"
                         },
                         "charset": "AL32UTF8",
+                        "dbID":{
+                            "$numberLong": "0"
+                        },
                         "dbTime": {
                             "$numberDouble": "184.81"
                         },
@@ -116,199 +128,265 @@
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Oracle EXE"
+                                "name": "Oracle EXE",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.5"
                                 },
-                                "name": "Oracle ENT"
+                                "name": "Oracle ENT",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Oracle STD"
+                                "name": "Oracle STD",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "WebLogic Server Management Pack Enterprise Edition"
+                                "name": "WebLogic Server Management Pack Enterprise Edition",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Tuning Pack"
+                                "name": "Tuning Pack",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Spatial and Graph"
+                                "name": "Spatial and Graph",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Secure Backup"
+                                "name": "Secure Backup",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Real Application Testing"
+                                "name": "Real Application Testing",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Real Application Clusters"
+                                "name": "Real Application Clusters",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Real Application Clusters One Node"
+                                "name": "Real Application Clusters One Node",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "RAC or RAC One Node"
+                                "name": "RAC or RAC One Node",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Provisioning and Patch Automation Pack"
+                                "name": "Provisioning and Patch Automation Pack",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Provisioning and Patch Automation Pack for Database"
+                                "name": "Provisioning and Patch Automation Pack for Database",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Pillar Storage"
+                                "name": "Pillar Storage",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Partitioning"
+                                "name": "Partitioning",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "OLAP"
+                                "name": "OLAP",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Multitenant"
+                                "name": "Multitenant",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Label Security"
+                                "name": "Label Security",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "HW"
+                                "name": "HW",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "GoldenGate"
+                                "name": "GoldenGate",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Exadata"
+                                "name": "Exadata",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.5"
                                 },
-                                "name": "Diagnostics Pack"
+                                "name": "Diagnostics Pack",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Database Vault"
+                                "name": "Database Vault",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Database In-Memory"
+                                "name": "Database In-Memory",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Database Gateway"
+                                "name": "Database Gateway",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Data Masking Pack"
+                                "name": "Data Masking Pack",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Configuration Management Pack for Oracle Database"
+                                "name": "Configuration Management Pack for Oracle Database",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Change Management Pack"
+                                "name": "Change Management Pack",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Advanced Security"
+                                "name": "Advanced Security",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Advanced Compression"
+                                "name": "Advanced Compression",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Advanced Analytics"
+                                "name": "Advanced Analytics",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Active Data Guard"
+                                "name": "Active Data Guard",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             },
                             {
                                 "count": {
                                     "$numberDouble": "0.0"
                                 },
-                                "name": "Active Data Guard or Real Application Clusters"
+                                "name": "Active Data Guard or Real Application Clusters",
+                                "ignored": false, 
+                                "licenseTypeID": ""
                             }
                         ],
                         "memoryTarget": {
@@ -321,6 +399,7 @@
                             "$numberDouble": "0.0"
                         },
                         "psus": [],
+                        "role": "",
                         "patches": [],
                         "platform": "Linux x86 64-bit",
                         "sgaMaxSize": {
@@ -515,8 +594,7 @@
                         }
                     }
                 ]
-            },
-            "exadata": null
+            }
         }
     },
     "filesystems": [
@@ -682,12 +760,13 @@
     },
     "location": "Germany",
     "schemaVersion": {
-        "$numberDouble": "1.0"
+        "$numberInt": "1"
     },
     "serverSchemaVersion": {
         "$numberInt": "1"
     },
     "serverVersion": "latest",
+    "virtualizationNode": "",
     "tags": [],
     "_id": {
         "$oid": "5dfba7a25484d7c669a9ccdc"

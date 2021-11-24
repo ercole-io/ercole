@@ -27,13 +27,13 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 )
 
 //TODO: add SearchHostsFilters tests for SearchHosts!
@@ -737,83 +737,74 @@ func TestGetHost_JSONSuccess(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	expectedRes := map[string]interface{}{
-		"Archived":    false,
-		"Cluster":     "Puzzait",
-		"CreatedAt":   utils.P("2020-04-15T08:46:58.466+02:00"),
-		"Databases":   "",
-		"Environment": "PROD",
-		"Extra": map[string]interface{}{
-			"Clusters": []interface{}{
-				map[string]interface{}{
-					"CPU":     140,
-					"Name":    "Puzzait",
-					"Sockets": 10,
-					"Type":    "vmware",
-					"VMs": []interface{}{
-						map[string]interface{}{
-							"CappedCPU":          false,
-							"ClusterName":        "Puzzait",
-							"Hostname":           "test-virt",
-							"Name":               "test-virt",
-							"VirtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402",
-						},
-						map[string]interface{}{
-							"CappedCPU":          false,
-							"ClusterName":        "Puzzait",
-							"Hostname":           "test-db",
-							"Name":               "test-db",
-							"VirtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402",
-						},
+	expectedRes := dto.HostData{
+		Archived:    false,
+		Cluster:     "Puzzait",
+		CreatedAt:   utils.P("2020-04-15T08:46:58.466Z"),
+		Environment: "PROD",
+		Clusters: []model.ClusterInfo{
+			{
+				CPU:     140,
+				Name:    "Puzzait",
+				Sockets: 10,
+				Type:    "vmware",
+				VMs: []model.VMInfo{
+					{
+						CappedCPU:          false,
+						Hostname:           "test-virt",
+						Name:               "test-virt",
+						VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402",
+					},
+					{
+						CappedCPU:          false,
+						Hostname:           "test-db",
+						Name:               "test-db",
+						VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402",
 					},
 				},
 			},
-			"Databases": []interface{}{},
-			"Filesystems": []interface{}{
-				map[string]interface{}{
-					"Available":  "4.6G",
-					"Filesystem": "/dev/mapper/vg_os-lv_root",
-					"FsType":     "xfs",
-					"MountedOn":  "/",
-					"Size":       "8.0G",
-					"Used":       "3.5G",
-					"UsedPerc":   "43%",
-				},
+		},
+		Filesystems: []model.Filesystem{
+			{
+				AvailableSpace: 4.60000000e+09,
+				Filesystem:     "/dev/mapper/vg_os-lv_root",
+				MountedOn:      "/",
+				Size:           8.00000000e+09,
+				Type:           "xfs",
+				UsedSpace:      3.50000000e+09,
 			},
 		},
-		"HostDataSchemaVersion": 3,
-		"Hostname":              "test-virt",
-		"Info": map[string]interface{}{
-			"AixCluster":                    false,
-			"CPUCores":                      1,
-			"CPUModel":                      "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
-			"CPUThreads":                    2,
-			"Environment":                   "PROD",
-			"Hostname":                      "test-virt",
-			"Kernel":                        "3.10.0-862.9.1.el7.x86_64",
-			"Location":                      "Italy",
-			"MemoryTotal":                   3,
-			"OS":                            "Red Hat Enterprise Linux Server release 7.5 (Maipo)",
-			"OracleCluster":                 false,
-			"Socket":                        2,
-			"SunCluster":                    false,
-			"SwapTotal":                     4,
-			"HardwareAbstractionTechnology": "VMWARE",
-			"VeritasCluster":                false,
-			"HardwareAbstraction":           "VIRT",
+		SchemaVersion: 3,
+		Hostname:      "test-virt",
+		Info: model.Host{
+			CPUCores:                      1,
+			CPUFrequency:                  "2.50GHz",
+			CPUModel:                      "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
+			CPUSockets:                    2,
+			CPUThreads:                    2,
+			CoresPerSocket:                1,
+			HardwareAbstraction:           "VIRT",
+			HardwareAbstractionTechnology: "VMWARE",
+			Hostname:                      "test-virt",
+			Kernel:                        "Linux",
+			KernelVersion:                 "3.10.0-862.9.1.el7.x86_64",
+			MemoryTotal:                   3,
+			OS:                            "Red Hat Enterprise Linux Server release 7.5 (Maipo)",
+			OSVersion:                     "7.5",
+			SwapTotal:                     4,
+			ThreadsPerCore:                2,
 		},
-		"Location":           "Italy",
-		"VirtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402",
-		"SchemaVersion":      1,
-		"Schemas":            "",
-		"ServerVersion":      "latest",
-		"Version":            "1.6.1",
-		"_id":                utils.Str2oid("5e96ade270c184faca93fe34"),
+		Location:            "Italy",
+		VirtualizationNode:  "s157-cb32c10a56c256746c337e21b3f82402",
+		ServerSchemaVersion: 1,
+		ServerVersion:       "latest",
+		AgentVersion:        "1.6.1",
+		ID:                  utils.Str2oid("5e8c234b24f648a08585bd41"),
 	}
 
 	as.EXPECT().
 		GetHost("foobar", utils.P("2020-06-10T11:54:59Z"), false).
-		Return(expectedRes, nil)
+		Return(&expectedRes, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetHost)
@@ -920,13 +911,17 @@ func TestGetHost_MongoJSONSuccess(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	res := mongoutils.LoadFixtureMongoHostDataMap(t, "../../fixture/test_dataservice_mongohostdata_02.json")
+	var res dto.HostData
+	raw, err := ioutil.ReadFile("../../fixture/test_dataservice_mongohostdata_02.json")
+	require.NoError(t, err)
+	err = bson.UnmarshalExtJSON(raw, true, &res)
+	require.NoError(t, err)
 	expectedRes, err := ioutil.ReadFile("../../fixture/test_dataservice_mongohostdata_02.json")
 	require.NoError(t, err)
 
 	as.EXPECT().
 		GetHost("foobar", utils.P("2020-06-10T11:54:59Z"), true).
-		Return(res, nil)
+		Return(&res, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetHost)
