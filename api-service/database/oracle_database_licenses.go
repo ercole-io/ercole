@@ -75,11 +75,11 @@ func (md *MongoDatabase) UpdateLicenseIgnoredField(hostname string, dbname strin
 			bson.M{
 				"hostname": hostname,
 				"archived": false,
-				"features.oracle.database.databases.instanceName":           dbname,
+				"features.oracle.database.databases.name":                   dbname,
 				"features.oracle.database.databases.licenses.licenseTypeID": licenseTypeID,
 			},
 			bson.M{"$set": bson.M{"features.oracle.database.databases.$[elemDB].licenses.$[elemLic].ignored": ignored}},
-			options.Update().SetArrayFilters(options.ArrayFilters{Filters: []interface{}{bson.M{"elemDB.instanceName": dbname}, bson.M{"elemLic.licenseTypeID": licenseTypeID}}}),
+			options.Update().SetArrayFilters(options.ArrayFilters{Filters: []interface{}{bson.M{"elemDB.name": dbname}, bson.M{"elemLic.licenseTypeID": licenseTypeID}}}),
 		)
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")

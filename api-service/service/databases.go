@@ -206,16 +206,6 @@ func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.D
 			continue
 		}
 
-		clusterCores, err := hostdata.GetClusterCores(hostdatasPerHostname)
-		if errors.Is(err, utils.ErrHostNotInCluster) {
-			continue
-		} else if err != nil {
-			return nil, err
-		}
-		consumedLicenses := float64(clusterCores) * hostdata.CoreFactor()
-
-		usedLicenses[i].ClusterLicenses = consumedLicenses
-
 		if hostdata.Features.Oracle != nil && hostdata.Features.Oracle.Database != nil && hostdata.Features.Oracle.Database.Databases != nil {
 			for x := range hostdata.Features.Oracle.Database.Databases {
 				if hostdata.Features.Oracle.Database.Databases[x].Name == usedLicenses[i].DbName {
@@ -228,6 +218,16 @@ func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.D
 				}
 			}
 		}
+		clusterCores, err := hostdata.GetClusterCores(hostdatasPerHostname)
+		if errors.Is(err, utils.ErrHostNotInCluster) {
+			continue
+		} else if err != nil {
+			return nil, err
+		}
+		consumedLicenses := float64(clusterCores) * hostdata.CoreFactor()
+
+		usedLicenses[i].ClusterLicenses = consumedLicenses
+
 	}
 
 	return usedLicenses, nil
