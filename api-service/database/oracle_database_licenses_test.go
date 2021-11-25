@@ -129,7 +129,7 @@ func (m *MongodbSuite) TestLicenseHostIgnoredField_Success() {
 
 	m.T().Run("update_ignored_success", func(t *testing.T) {
 
-		hostname, dbname, licenseTypeID := "test-db", "ERCOLE1", "A90611"
+		hostname, dbname, licenseTypeID := "test-db", "ERCOLE", "A90611"
 		ignored := true
 
 		err := m.db.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored)
@@ -140,7 +140,7 @@ func (m *MongodbSuite) TestLicenseHostIgnoredField_Success() {
 		var resultIgnored bool
 		for i := range hostData.Features.Oracle.Database.Databases {
 			db := &hostData.Features.Oracle.Database.Databases[i]
-			if db.InstanceName == dbname {
+			if db.Name == dbname {
 				for j := range db.Licenses {
 					lic := &db.Licenses[j]
 					if lic.LicenseTypeID == licenseTypeID {
