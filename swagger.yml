@@ -1838,12 +1838,12 @@ paths:
         - api-service
         - fe-user
         - write
-      operationId: ArchiveHost
-      summary: Archive a host
-      description: Archive a host
+      operationId: DismissHost
+      summary: Dismiss a host
+      description: Dismiss a host
       responses:
         '200':
-          description: The host is archived
+          description: The host is dismissed
           content: {}
         '401':
           $ref: '#/components/responses/error'

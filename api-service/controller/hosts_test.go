@@ -737,29 +737,35 @@ func TestGetHost_JSONSuccess(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	expectedRes := dto.HostData{
-		Archived:    false,
-		Cluster:     "Puzzait",
-		CreatedAt:   utils.P("2020-04-15T08:46:58.466Z"),
-		Environment: "PROD",
-		Clusters: []model.ClusterInfo{
-			{
-				CPU:     140,
-				Name:    "Puzzait",
-				Sockets: 10,
-				Type:    "vmware",
-				VMs: []model.VMInfo{
-					{
-						CappedCPU:          false,
-						Hostname:           "test-virt",
-						Name:               "test-virt",
-						VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402",
-					},
-					{
-						CappedCPU:          false,
-						Hostname:           "test-db",
-						Name:               "test-db",
-						VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402",
+	expectedRes := map[string]interface{}{
+		"DismissedAt": nil,
+		"Archived":    false,
+		"Cluster":     "Puzzait",
+		"CreatedAt":   utils.P("2020-04-15T08:46:58.466+02:00"),
+		"Databases":   "",
+		"Environment": "PROD",
+		"Extra": map[string]interface{}{
+			"Clusters": []interface{}{
+				map[string]interface{}{
+					"CPU":     140,
+					"Name":    "Puzzait",
+					"Sockets": 10,
+					"Type":    "vmware",
+					"VMs": []interface{}{
+						map[string]interface{}{
+							"CappedCPU":          false,
+							"ClusterName":        "Puzzait",
+							"Hostname":           "test-virt",
+							"Name":               "test-virt",
+							"VirtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402",
+						},
+						map[string]interface{}{
+							"CappedCPU":          false,
+							"ClusterName":        "Puzzait",
+							"Hostname":           "test-db",
+							"Name":               "test-db",
+							"VirtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402",
+						},
 					},
 				},
 			},
@@ -1169,7 +1175,7 @@ func TestListEnvironments_FailInternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestArchiveHost_Success(t *testing.T) {
+func TestDismissHost_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -1180,10 +1186,10 @@ func TestArchiveHost_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().ArchiveHost("foobar").Return(nil)
+	as.EXPECT().DismissHost("foobar").Return(nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ArchiveHost)
+	handler := http.HandlerFunc(ac.DismissHost)
 	req, err := http.NewRequest("DELETE", "/hosts/foobar", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "foobar",
@@ -1195,7 +1201,7 @@ func TestArchiveHost_Success(t *testing.T) {
 	require.Equal(t, http.StatusOK, rr.Code)
 }
 
-func TestArchiveHost_FailReadOnly(t *testing.T) {
+func TestDismissHost_FailReadOnly(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -1211,7 +1217,7 @@ func TestArchiveHost_FailReadOnly(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ArchiveHost)
+	handler := http.HandlerFunc(ac.DismissHost)
 	req, err := http.NewRequest("DELETE", "/hosts/foobar", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "foobar",
@@ -1223,7 +1229,7 @@ func TestArchiveHost_FailReadOnly(t *testing.T) {
 	require.Equal(t, http.StatusForbidden, rr.Code)
 }
 
-func TestArchiveHost_FailNotFound(t *testing.T) {
+func TestDismissHost_FailNotFound(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -1234,10 +1240,10 @@ func TestArchiveHost_FailNotFound(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().ArchiveHost("foobar").Return(utils.ErrHostNotFound)
+	as.EXPECT().DismissHost("foobar").Return(utils.ErrHostNotFound)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ArchiveHost)
+	handler := http.HandlerFunc(ac.DismissHost)
 	req, err := http.NewRequest("DELETE", "/hosts/foobar", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "foobar",
@@ -1249,7 +1255,7 @@ func TestArchiveHost_FailNotFound(t *testing.T) {
 	require.Equal(t, http.StatusNotFound, rr.Code)
 }
 
-func TestArchiveHost_FailInternalServerError(t *testing.T) {
+func TestDismissHost_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -1260,10 +1266,10 @@ func TestArchiveHost_FailInternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().ArchiveHost("foobar").Return(aerrMock)
+	as.EXPECT().DismissHost("foobar").Return(aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ArchiveHost)
+	handler := http.HandlerFunc(ac.DismissHost)
 	req, err := http.NewRequest("DELETE", "/hosts/foobar", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "foobar",

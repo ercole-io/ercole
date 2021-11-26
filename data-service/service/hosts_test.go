@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ func TestInsertHostData_Success(t *testing.T) {
 			asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
 				assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
 			}).Return(nil),
-			db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil),
+			db.EXPECT().DismissHost("rac1_x").Return(nil, nil),
 			db.EXPECT().InsertHostData(gomock.Any()).
 				Do(func(newHD model.HostDataBE) {
 					assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
@@ -96,7 +96,7 @@ func TestInsertHostData_Success(t *testing.T) {
 			asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
 				assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
 			}).Return(nil),
-			db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil),
+			db.EXPECT().DismissHost("rac1_x").Return(nil, nil),
 			db.EXPECT().InsertHostData(gomock.Any()).
 				Do(func(newHD model.HostDataBE) {
 					assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
@@ -122,7 +122,7 @@ func TestInsertHostData_Success(t *testing.T) {
 			db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{}, nil),
 			db.EXPECT().FindMostRecentHostDataOlderThan(hd.Hostname, utils.P("2019-11-05T14:02:03Z")).
 				Return(previousHostdata, nil),
-			db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil),
+			db.EXPECT().DismissHost("rac1_x").Return(nil, nil),
 			db.EXPECT().InsertHostData(gomock.Any()).
 				Do(func(newHD model.HostDataBE) {
 					assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
@@ -168,7 +168,7 @@ func TestInsertHostData_DatabaseError1(t *testing.T) {
 		asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
 			assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
 		}).Return(nil),
-		db.EXPECT().ArchiveHost("rac1_x").Return(nil, aerrMock),
+		db.EXPECT().DismissHost("rac1_x").Return(nil, aerrMock),
 	)
 
 	err := hds.InsertHostData(hd)
@@ -200,7 +200,7 @@ func TestInsertHostData_DatabaseError2(t *testing.T) {
 		asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
 			assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
 		}).Return(nil),
-		db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil),
+		db.EXPECT().DismissHost("rac1_x").Return(nil, nil),
 		db.EXPECT().InsertHostData(gomock.Any()).Return(nil, aerrMock).Do(func(newHD model.HostDataBE) {
 			assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
 			assert.False(t, newHD.Archived)
@@ -270,7 +270,7 @@ func TestInsertHostData_HttpError(t *testing.T) {
 		asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
 			assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
 		}).Return(nil),
-		db.EXPECT().ArchiveHost("rac1_x").Return(nil, nil),
+		db.EXPECT().DismissHost("rac1_x").Return(nil, nil),
 		db.EXPECT().InsertHostData(gomock.Any()).Return(nil, aerrMock).Do(func(newHD model.HostDataBE) {
 			assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
 			assert.False(t, newHD.Archived)
