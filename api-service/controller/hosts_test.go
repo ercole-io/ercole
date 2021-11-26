@@ -1169,7 +1169,7 @@ func TestListEnvironments_FailInternalServerError(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestArchiveHost_Success(t *testing.T) {
+func TestDismissHost_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -1195,7 +1195,7 @@ func TestArchiveHost_Success(t *testing.T) {
 	require.Equal(t, http.StatusOK, rr.Code)
 }
 
-func TestArchiveHost_FailReadOnly(t *testing.T) {
+func TestDismissHost_FailReadOnly(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -1223,7 +1223,7 @@ func TestArchiveHost_FailReadOnly(t *testing.T) {
 	require.Equal(t, http.StatusForbidden, rr.Code)
 }
 
-func TestArchiveHost_FailNotFound(t *testing.T) {
+func TestDismissHost_FailNotFound(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -1249,7 +1249,7 @@ func TestArchiveHost_FailNotFound(t *testing.T) {
 	require.Equal(t, http.StatusNotFound, rr.Code)
 }
 
-func TestArchiveHost_FailInternalServerError(t *testing.T) {
+func TestDismissHost_FailInternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)

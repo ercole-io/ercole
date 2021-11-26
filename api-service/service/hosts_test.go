@@ -852,7 +852,7 @@ func TestListEnvironments_Fail(t *testing.T) {
 	assert.Equal(t, aerrMock, err)
 }
 
-func TestArchiveHost_Success(t *testing.T) {
+func TestDismissHost_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -871,7 +871,7 @@ func TestArchiveHost_Success(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestArchiveHost_Fail(t *testing.T) {
+func TestDismissHost_Fail(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
