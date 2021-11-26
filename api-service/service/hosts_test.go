@@ -219,6 +219,30 @@ func TestSearchHostsAsLMS(t *testing.T) {
 			"_id":                      utils.Str2oid("5efc38ab79f92e4cbf283b04"),
 			"createdAt":                utils.PDT("2020-12-05T00:00:00+02:00"),
 		},
+		{
+			"coresPerProcessor":        2,
+			"dbInstanceName":           "buu",
+			"environment":              "SVIL",
+			"licenseMetricAllocated":   "processor",
+			"operatingSystem":          "Red Hat Enterprise Linux",
+			"options":                  "",
+			"physicalCores":            4,
+			"physicalServerName":       "",
+			"pluggableDatabaseName":    "",
+			"processorModel":           "Intel(R) Xeon(R) CPU           X5570  @ 2.93GHz",
+			"processorSpeed":           "2.93GHz",
+			"processors":               2,
+			"productLicenseAllocated":  "EE",
+			"productVersion":           "11",
+			"threadsPerCore":           2,
+			"usedManagementPacks":      "",
+			"usingLicenseCount":        4,
+			"virtualServerName":        "itl-csllab-112.sorint.localbuu",
+			"virtualizationTechnology": "",
+			"_id":                      utils.Str2oid("5efc38ab79f92e4cbf283b05"),
+			"createdAt":                utils.PDT("2020-12-05T00:00:00+02:00"),
+			"dismissedAt":              utils.PDT("2021-05-10T00:00:00+02:00"),
+		},
 	}
 
 	filters := dto.SearchHostsFilters{
@@ -303,6 +327,26 @@ func TestSearchHostsAsLMS(t *testing.T) {
 		assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AG5"))
 		assert.Equal(t, "2.93GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AH5"))
 		assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue("Database_&_EBS_DB_Tier", "AJ5"))
+
+		assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "B6"))
+		assert.Equal(t, "itl-csllab-112.sorint.localbuu", sp.GetCellValue("Database_&_EBS_DB_Tier", "C6"))
+		assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "D6"))
+		assert.Equal(t, "buu", sp.GetCellValue("Database_&_EBS_DB_Tier", "E6"))
+		assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "F6"))
+		assert.Equal(t, "SVIL", sp.GetCellValue("Database_&_EBS_DB_Tier", "G6"))
+		assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "H6"))
+		assert.Equal(t, "", sp.GetCellValue("Database_&_EBS_DB_Tier", "I6"))
+		assert.Equal(t, "11", sp.GetCellValue("Database_&_EBS_DB_Tier", "N6"))
+		assert.Equal(t, "EE", sp.GetCellValue("Database_&_EBS_DB_Tier", "O6"))
+		assert.Equal(t, "processor", sp.GetCellValue("Database_&_EBS_DB_Tier", "P6"))
+		assert.Equal(t, "4", sp.GetCellValue("Database_&_EBS_DB_Tier", "Q6"))
+		assert.Equal(t, "Intel(R) Xeon(R) CPU           X5570  @ 2.93GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AC6"))
+		assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AD6"))
+		assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AE6"))
+		assert.Equal(t, "4", sp.GetCellValue("Database_&_EBS_DB_Tier", "AF6"))
+		assert.Equal(t, "2", sp.GetCellValue("Database_&_EBS_DB_Tier", "AG6"))
+		assert.Equal(t, "2.93GHz", sp.GetCellValue("Database_&_EBS_DB_Tier", "AH6"))
+		assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue("Database_&_EBS_DB_Tier", "AJ6"))
 	})
 
 	t.Run("with agreements", func(t *testing.T) {
@@ -401,6 +445,27 @@ func TestSearchHostsAsLMS(t *testing.T) {
 		assert.Equal(t, "2", sp.GetCellValue(sheet, "AG5"))
 		assert.Equal(t, "2.93GHz", sp.GetCellValue(sheet, "AH5"))
 		assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue(sheet, "AJ5"))
+
+		assert.Equal(t, "", sp.GetCellValue(sheet, "B6"))
+		assert.Equal(t, "itl-csllab-112.sorint.localbuu", sp.GetCellValue(sheet, "C6"))
+		assert.Equal(t, "", sp.GetCellValue(sheet, "D6"))
+		assert.Equal(t, "buu", sp.GetCellValue(sheet, "E6"))
+		assert.Equal(t, "", sp.GetCellValue(sheet, "F6"))
+		assert.Equal(t, "SVIL", sp.GetCellValue(sheet, "G6"))
+		assert.Equal(t, "", sp.GetCellValue(sheet, "H6"))
+		assert.Equal(t, "", sp.GetCellValue(sheet, "I6"))
+		assert.Equal(t, "11", sp.GetCellValue(sheet, "N6"))
+		assert.Equal(t, "EE", sp.GetCellValue(sheet, "O6"))
+		assert.Equal(t, "processor", sp.GetCellValue(sheet, "P6"))
+		assert.Equal(t, "4", sp.GetCellValue(sheet, "Q6"))
+		assert.Equal(t, "", sp.GetCellValue(sheet, "R6"))
+		assert.Equal(t, "Intel(R) Xeon(R) CPU           X5570  @ 2.93GHz", sp.GetCellValue(sheet, "AC6"))
+		assert.Equal(t, "2", sp.GetCellValue(sheet, "AD6"))
+		assert.Equal(t, "2", sp.GetCellValue(sheet, "AE6"))
+		assert.Equal(t, "4", sp.GetCellValue(sheet, "AF6"))
+		assert.Equal(t, "2", sp.GetCellValue(sheet, "AG6"))
+		assert.Equal(t, "2.93GHz", sp.GetCellValue(sheet, "AH6"))
+		assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue(sheet, "AJ6"))
 	})
 }
 
