@@ -40,7 +40,8 @@ func FilterByLocationAndEnvironmentSteps(location string, environment string) in
 func FilterByOldnessSteps(olderThan time.Time) bson.A {
 	return mu.MAPipeline(
 		mu.APOptionalStage(olderThan == utils.MAX_TIME, mu.APMatch(bson.M{
-			"archived": false,
+			"dismissedAt": nil,
+			"archived":    false,
 		})),
 		mu.APOptionalStage(olderThan != utils.MAX_TIME, bson.A{
 			mu.APMatch(bson.M{

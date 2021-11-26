@@ -244,8 +244,8 @@ func (ctrl *APIController) ListEnvironments(w http.ResponseWriter, r *http.Reque
 	utils.WriteJSONResponse(w, http.StatusOK, environments)
 }
 
-// ArchiveHost archive the specified host in the request
-func (ctrl *APIController) ArchiveHost(w http.ResponseWriter, r *http.Request) {
+// DismissHost dismiss the specified host in the request
+func (ctrl *APIController) DismissHost(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
 		return
@@ -253,7 +253,7 @@ func (ctrl *APIController) ArchiveHost(w http.ResponseWriter, r *http.Request) {
 
 	hostname := mux.Vars(r)["hostname"]
 
-	err := ctrl.Service.ArchiveHost(hostname)
+	err := ctrl.Service.DismissHost(hostname)
 	if errors.Is(err, utils.ErrHostNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 	} else if err != nil {
