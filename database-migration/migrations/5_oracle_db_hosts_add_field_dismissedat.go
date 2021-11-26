@@ -25,10 +25,13 @@ import (
 
 func init() {
 	migrate.Register(func(db *mongo.Database) error {
-		if err := migrateHostsAddFieldDismissedAt(db); err != nil {
+		if err := migrateHostsAddFieldDismissedAtArchivedFalse(db); err != nil {
 			return err
 		}
-		if err := migrateDismissedHostsWithAddedFieldDismissedAt(db); err != nil {
+		if err := migrateHostsAddFieldDismissedAtArchivedTrueWithFalse(db); err != nil {
+			return err
+		}
+		if err := migrateHostsAddFieldDismissedAtArchivedTrue(db); err != nil {
 			return err
 		}
 
@@ -39,7 +42,7 @@ func init() {
 	})
 }
 
-func migrateHostsAddFieldDismissedAt(db *mongo.Database) error {
+func migrateHostsAddFieldDismissedAtArchivedFalse(db *mongo.Database) error {
 	collection := "hosts"
 	ctx := context.TODO()
 
@@ -54,11 +57,39 @@ func migrateHostsAddFieldDismissedAt(db *mongo.Database) error {
 	return nil
 }
 
-func migrateDismissedHostsWithAddedFieldDismissedAt(db *mongo.Database) error {
+func migrateHostsAddFieldDismissedAtArchivedTrueWithFalse(db *mongo.Database) error {
 	collection := "hosts"
 	ctx := context.TODO()
+	filter := bson.M{"archived": false}
+	update := bson.M{"$set": bson.M{"dismissedAt": nil}}
+	var out map[string]interface{}
 
-	filter := bson.M{"archived": true}
+	cursor, err := db.Collection(collection).Find(
+		ctx,
+		filter,
+	)
+	if err != nil {
+		return utils.NewError(err, "Can't find Hosts", collection)
+	}
+
+	for cursor.Next(context.TODO()) {
+		if err := cursor.Decode(&out); err != nil {
+			return nil
+		}
+		filterUpd := bson.M{"hostname": out["hostname"]}
+
+		if _, err := db.Collection(collection).UpdateMany(ctx, filterUpd, update); err != nil {
+			return utils.NewError(err, "Can't add new field 'dismissedAt' to hosts collection")
+		}
+	}
+
+	return nil
+}
+
+func migrateHostsAddFieldDismissedAtArchivedTrue(db *mongo.Database) error {
+	collection := "hosts"
+	ctx := context.TODO()
+	filter := bson.M{"dismissedAt": bson.M{"$exists": false}}
 	update := bson.M{"$set": bson.M{"dismissedAt": utils.MIN_TIME}}
 
 	_, err := db.Collection(collection).UpdateMany(ctx, filter, update)
