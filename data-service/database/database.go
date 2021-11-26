@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ import (
 
 type MongoDatabaseInterface interface {
 	Init()
-	ArchiveHost(hostname string) (*mongo.UpdateResult, error)
+	DismissHost(hostname string) (*mongo.UpdateResult, error)
 	InsertHostData(hostData model.HostDataBE) (*mongo.InsertOneResult, error)
 	GetCurrentHostnames() ([]string, error)
 	// FindOldCurrentHostnames return the list of current hosts names that haven't sent hostdata after time t
