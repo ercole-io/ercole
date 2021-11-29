@@ -647,102 +647,103 @@ func TestGetHost_Success(t *testing.T) {
 		Database: db,
 	}
 
-	expectedRes := map[string]interface{}{
-		"Alerts": []interface{}{
-			map[string]interface{}{
-				"AlertAffectedTechnology": nil,
-				"AlertCategory":           model.AlertCategoryEngine,
-				"AlertCode":               "NEW_SERVER",
-				"AlertSeverity":           "INFO",
-				"AlertStatus":             "NEW",
-				"Date":                    utils.P("2020-04-07T08:52:59.871+02:00"),
-				"Description":             "The server 'test-virt' was added to ercole",
-				"OtherInfo": map[string]interface{}{
-					"Hostname": "test-virt",
+	expectedRes := dto.HostData{
+		Alerts: []model.Alert{
+			{
+				AlertAffectedTechnology: nil,
+				AlertCategory:           model.AlertCategoryEngine,
+				AlertCode:               "NEW_SERVER",
+				AlertSeverity:           "INFO",
+				AlertStatus:             "NEW",
+				Date:                    utils.P("2020-04-07T08:52:59.871Z"),
+				Description:             "The server 'test-virt' was added to ercole",
+				OtherInfo: map[string]interface{}{
+					"hostname": "test-virt",
 				},
-				"_id": utils.Str2oid("5e8c234b24f648a08585bd42"),
+				ID: utils.Str2oid("5e8c234b24f648a08585bd42"),
 			},
 		},
-		"Archived":    false,
-		"Cluster":     "Puzzait",
-		"CreatedAt":   utils.P("2020-04-07T08:52:59.869+02:00"),
-		"Databases":   "",
-		"Environment": "PROD",
-		"Extra": map[string]interface{}{
-			"Clusters":  []interface{}{},
-			"Databases": []interface{}{},
-			"Filesystems": []interface{}{
-				map[string]interface{}{
-					"Available":  "4.6G",
-					"Filesystem": "/dev/mapper/vg_os-lv_root",
-					"FsType":     "xfs",
-					"MountedOn":  "/",
-					"Size":       "8.0G",
-					"Used":       "3.5G",
-					"UsedPerc":   "43%",
-				},
+		Archived:    false,
+		Cluster:     "Puzzait",
+		CreatedAt:   utils.P("2020-04-07T08:52:59.869Z"),
+		Environment: "PROD",
+		Filesystems: []model.Filesystem{
+			{
+				AvailableSpace: 4.60000000e+09,
+				Filesystem:     "/dev/mapper/vg_os-lv_root",
+				MountedOn:      "/",
+				Size:           8.00000000e+09,
+				Type:           "xfs",
+				UsedSpace:      3.50000000e+09,
 			},
 		},
-		"History": []interface{}{
-			map[string]interface{}{
-				"CreatedAt": utils.P("2020-04-07T08:52:59.869+02:00"),
-				"_id":       utils.Str2oid("5e8c234b24f648a08585bd41"),
+		History: []model.History{
+			{
+				CreatedAt: utils.P("2020-04-07T08:52:59.869Z"),
+				ID:        utils.Str2oid("5e8c234b24f648a08585bd41"),
 			},
 		},
-		"HostDataSchemaVersion": 3,
-		"Hostname":              "test-virt",
-		"Info": map[string]interface{}{
-			"AixCluster":                    false,
-			"CPUCores":                      1,
-			"CPUModel":                      "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
-			"CPUThreads":                    2,
-			"Environment":                   "PROD",
-			"Hostname":                      "test-virt",
-			"Kernel":                        "3.10.0-862.9.1.el7.x86_64",
-			"Location":                      "Italy",
-			"MemoryTotal":                   3,
-			"OS":                            "Red Hat Enterprise Linux Server release 7.5 (Maipo)",
-			"OracleCluster":                 false,
-			"Socket":                        2,
-			"SunCluster":                    false,
-			"SwapTotal":                     4,
-			"HardwareAbstractionTechnology": "VMWARE",
-			"VeritasCluster":                false,
-			"HardwareAbstraction":           "VIRT",
+		SchemaVersion: 3,
+		Hostname:      "test-virt",
+		Info: model.Host{
+			CPUCores:                      1,
+			CPUFrequency:                  "2.50GHz",
+			CPUModel:                      "Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz",
+			CPUSockets:                    2,
+			CPUThreads:                    2,
+			CoresPerSocket:                1,
+			HardwareAbstraction:           "VIRT",
+			HardwareAbstractionTechnology: "VMWARE",
+			Hostname:                      "test-virt",
+			Kernel:                        "Linux",
+			KernelVersion:                 "3.10.0-862.9.1.el7.x86_64",
+			MemoryTotal:                   3,
+			OS:                            "Red Hat Enterprise Linux Server release 7.5 (Maipo)",
+			OSVersion:                     "7.5",
+			SwapTotal:                     4,
+			ThreadsPerCore:                2,
 		},
-		"Features": map[string]interface{}{
-			"Oracle": map[string]interface{}{
-				"Database": map[string]interface{}{
-					"Databases": []interface{}{
-						map[string]interface{}{
-							"Licenses": []interface{}{
-								map[string]interface{}{
-									"LicenseTypeID": "A90611",
-									"Count":         2,
-								}},
+		Features: model.Features{
+			Oracle: &model.OracleFeature{
+				Database: &model.OracleDatabaseFeature{
+					Databases: []model.OracleDatabase{
+						{
+							Licenses: []model.OracleDatabaseLicense{
+								{
+									LicenseTypeID: "A90611",
+									Count:         2,
+								},
+							},
 						},
 					},
 				},
 			},
 		},
-		"Location":           "Italy",
-		"VirtualizationNode": "s157-cb32c10a56c256746c337e21b3f82402",
-		"SchemaVersion":      1,
-		"Schemas":            "",
-		"ServerVersion":      "latest",
-		"Version":            "1.6.1",
-		"_id":                utils.Str2oid("5e8c234b24f648a08585bd41"),
+		Location:            "Italy",
+		VirtualizationNode:  "s157-cb32c10a56c256746c337e21b3f82402",
+		ServerSchemaVersion: 1,
+		ServerVersion:       "latest",
+		AgentVersion:        "1.6.1",
+		ID:                  utils.Str2oid("5e8c234b24f648a08585bd41"),
 	}
+
+	ltRes := []model.OracleDatabaseLicenseType{
+		{
+			ID: "A90611",
+		},
+	}
+
+	db.EXPECT().GetOracleDatabaseLicenseTypes().Return(ltRes, nil)
 
 	db.EXPECT().GetHost(
 		"foobar", utils.P("2019-12-05T14:02:03Z"), false,
-	).Return(expectedRes, nil).Times(1)
+	).Return(&expectedRes, nil).Times(1)
 
 	res, err := as.GetHost(
 		"foobar", utils.P("2019-12-05T14:02:03Z"), false,
 	)
 	require.NoError(t, err)
-	assert.Equal(t, expectedRes, res)
+	assert.Equal(t, &expectedRes, res)
 }
 
 func TestGetHost_Fail(t *testing.T) {
