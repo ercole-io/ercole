@@ -309,9 +309,7 @@ func getIsMemberOfClusterFilterStep(member *bool) interface{} {
 }
 
 // GetHost fetch all informations about a host in the database
-func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool) (interface{}, error) {
-	var out map[string]interface{}
-
+func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool) (*dto.HostData, error) {
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
@@ -368,6 +366,9 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 					"features.oracle.database.databases.changes.name",
 					"history.features",
 				),
+				mu.APSet(bson.M{
+					"features.oracle": mu.APOCond(mu.APOEqual("$features.oracle.database.databases", nil), nil, "$features.oracle"),
+				}),
 			)),
 		),
 	)
@@ -382,11 +383,12 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 	}
 
 	//Decode the document
-	if err := cur.Decode(&out); err != nil {
+	var host dto.HostData
+	if err := cur.Decode(&host); err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	return out, nil
+	return &host, nil
 }
 
 func (md *MongoDatabase) GetHostData(hostname string, olderThan time.Time) (*model.HostDataBE, error) {
