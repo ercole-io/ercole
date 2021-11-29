@@ -22,6 +22,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gorilla/handlers"
 	"github.com/rs/cors"
 	"github.com/spf13/cobra"
 
@@ -401,5 +402,23 @@ func useCommonHandlers(h http.Handler, logHTTPRequest bool, log logger.Logger) h
 		h = utils.CustomLoggingHandler(h, log)
 	}
 
+	rl := recoveryLogger{
+		l: log,
+	}
+	h = handlers.RecoveryHandler(
+		handlers.PrintRecoveryStack(true),
+		handlers.RecoveryLogger(rl),
+	)(h)
+
 	return cors.AllowAll().Handler(h)
+}
+
+type recoveryLogger struct {
+	l logger.Logger
+}
+
+func (rl recoveryLogger) Println(args ...interface{}) {
+	args = append([]interface{}{"Panic:\n"}, args...)
+
+	rl.l.Error(args...)
 }
