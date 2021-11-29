@@ -15,13 +15,10 @@
 
 package model
 
-// Recommendation holds informations about a recommendation
-type Recommendation struct {
-	TenancyOCID         string `json:"tenancyOCID"`
-	Name                string `json:"name"`
-	NumPending          string `json:"numPending"`
-	EstimatedCostSaving string `json:"estimatedCostSaving"`
-	Status              string `json:"status"`
-	Importance          string `json:"importance"`
-	RecommendationId    string `json:"recommendationId"`
+// Compartment holds informations about an Oracle Cloud compartment
+type OciCompartment struct {
+	CompartmentId string `json:"compartmentId"`
+	Name          string `json:"name"`
+	Description   string `json:"description"`
+	TimeCreating  string `json:"timeCreating"`
 }
