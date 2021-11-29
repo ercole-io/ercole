@@ -30,11 +30,13 @@ import (
 
 type ThunderServiceInterface interface {
 	Init()
-	GetOciRecommendations(profiles []string) ([]model.Recommendation, error)
+	GetOciRecommendations(profiles []string) ([]model.OciRecommendation, error)
 	AddOciProfile(profile model.OciProfile) (*model.OciProfile, error)
 	UpdateOciProfile(profile model.OciProfile) (*model.OciProfile, error)
 	GetOciProfiles() ([]model.OciProfile, error)
 	DeleteOciProfile(id primitive.ObjectID) error
+	GetOciCompartments(profiles []string) ([]model.OciCompartment, error)
+	GetOciUnusedLoadBalancers(profiles []string) ([]model.OciErcoleRecommendation, error)
 }
 
 type ThunderService struct {

@@ -44,7 +44,7 @@ func TestGetRecommendation_InvalidProfileId(t *testing.T) {
 
 	t.Run("BadRequest", func(t *testing.T) {
 		var expectedMap = make(map[primitive.ObjectID]model.OciProfile)
-		var expectedRes []model.Recommendation
+		var expectedRes []model.OciRecommendation
 
 		expected := model.OciProfile{
 			ID:             [12]byte{},
@@ -82,7 +82,7 @@ func TestGetRecommendation_ProfileNotFound(t *testing.T) {
 
 	t.Run("BadRequest", func(t *testing.T) {
 		//var err1 error
-		var expectedRes []model.Recommendation
+		var expectedRes []model.OciRecommendation
 		var expectedMap = make(map[primitive.ObjectID]model.OciProfile)
 
 		expected := model.OciProfile{
@@ -120,7 +120,7 @@ func TestGetRecommendation_DBError(t *testing.T) {
 	}
 
 	t.Run("DB Error", func(t *testing.T) {
-		var expectedRes []model.Recommendation
+		var expectedRes []model.OciRecommendation
 
 		db.EXPECT().GetMapOciProfiles().
 			Return(nil, utils.NewError(utils.ErrNotFound, "DB ERROR")).Times(1)

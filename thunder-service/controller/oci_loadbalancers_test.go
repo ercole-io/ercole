@@ -35,10 +35,10 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-var errMock error = errors.New("MockError")
-var aerrMock error = utils.NewError(errMock, "mock")
+//var errMock error = errors.New("MockError")
+//var aerrMock error = utils.NewError(errMock, "mock")
 
-func TestGetOciRecommendations_StatusNotFound(t *testing.T) {
+func TestGetOciLoadbalancers_StatusNotFound(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -52,12 +52,12 @@ func TestGetOciRecommendations_StatusNotFound(t *testing.T) {
 		}
 
 		var strProfiles = []string{"6140c473413cf9de756f9848"}
-		as.EXPECT().GetOciRecommendations(strProfiles).Return(nil, utils.ErrClusterNotFound)
+		as.EXPECT().GetOciUnusedLoadBalancers(strProfiles).Return(nil, utils.ErrClusterNotFound)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciRecommendations)
+		handler := http.HandlerFunc(ac.GetOciUnusedLoadbalancers)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/recommendations", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/loadbalancers", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 
@@ -78,7 +78,7 @@ func TestGetOciRecommendations_StatusNotFound(t *testing.T) {
 	})
 }
 
-func TestGetOciRecommendations_InternalServerError(t *testing.T) {
+func TestGetOciLoadbalancers_InternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -92,12 +92,12 @@ func TestGetOciRecommendations_InternalServerError(t *testing.T) {
 		}
 
 		var strProfiles = []string{"6140c473413cf9de756f9848"}
-		as.EXPECT().GetOciRecommendations(strProfiles).Return(nil, errMock)
+		as.EXPECT().GetOciUnusedLoadBalancers(strProfiles).Return(nil, errMock)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciRecommendations)
+		handler := http.HandlerFunc(ac.GetOciUnusedLoadbalancers)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/recommendations", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/loadbalancers", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 
@@ -118,7 +118,7 @@ func TestGetOciRecommendations_InternalServerError(t *testing.T) {
 	})
 }
 
-func TestGetOciRecommendations_BadRequest(t *testing.T) {
+func TestGetOciLoadbalancers_BadRequest(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -132,9 +132,9 @@ func TestGetOciRecommendations_BadRequest(t *testing.T) {
 		}
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciRecommendations)
+		handler := http.HandlerFunc(ac.GetOciUnusedLoadbalancers)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/recommendations", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/loadbalancers", nil)
 		require.NoError(t, err)
 
 		handler.ServeHTTP(rr, req)
@@ -153,7 +153,7 @@ func TestGetOciRecommendations_BadRequest(t *testing.T) {
 	})
 }
 
-func TestGetOciRecommendations_InvalidProfileId(t *testing.T) {
+func TestGetOciLoadbalancers_InvalidProfileId(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -167,12 +167,12 @@ func TestGetOciRecommendations_InvalidProfileId(t *testing.T) {
 		}
 
 		var strProfiles = []string{"aaa", "bbb", "ccc"}
-		as.EXPECT().GetOciRecommendations(strProfiles).Return(nil, utils.ErrInvalidProfileId)
+		as.EXPECT().GetOciUnusedLoadBalancers(strProfiles).Return(nil, utils.ErrInvalidProfileId)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciRecommendations)
+		handler := http.HandlerFunc(ac.GetOciUnusedLoadbalancers)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/recommendations", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/loadbalancers", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "aaa,bbb,ccc"})
 
@@ -191,7 +191,7 @@ func TestGetOciRecommendations_InvalidProfileId(t *testing.T) {
 	})
 }
 
-func TestGetOciRecommendations_PartialContent(t *testing.T) {
+func TestGetOciLoadbalancers_PartialContent(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -207,15 +207,12 @@ func TestGetOciRecommendations_PartialContent(t *testing.T) {
 		var strError = "1 error occurred: 'invalid profile id aaa'"
 		var mockError error = errors.New("1 error occurred: 'invalid profile id aaa'")
 
-		var recommendations []model.OciRecommendation
-		recommendation := model.OciRecommendation{
-			TenancyOCID:         "ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q",
-			Name:                "cost-management-load-balancer-underutilized-name",
-			NumPending:          "1",
-			EstimatedCostSaving: "1.92",
-			Status:              "PENDING",
-			Importance:          "MODERATE",
-			RecommendationId:    "ocid1.optimizerrecommendation.oc1..aaaaaaaanptucivsbo24dkml7exd2fldalykkz52gld3nk3jt5c2e4ydgzjq",
+		var recommendations []model.OciErcoleRecommendation
+		recommendation := model.OciErcoleRecommendation{
+			Type:          model.RecommendationTypeUnusedResource,
+			CompartmentID: "ocid1.compartment.oc1..aaaaaaaaraxhbi65iyiln4qvwjwtnebheufhpkwfcymkszuvz2zyqmwsaikq",
+			Name:          "41401efc-419f-42a4-8c1b-b12e11d4526f",
+			ResourceID:    "ocid1.loadbalancer.oc1.eu-frankfurt-1.aaaaaaaavglox5gto3l6wrwswsyqux22nsz65fkqyaj3cyq7fbyjmu57sbyq",
 		}
 
 		recommendations = append(recommendations, recommendation)
@@ -226,12 +223,12 @@ func TestGetOciRecommendations_PartialContent(t *testing.T) {
 		}
 
 		var strProfiles = []string{"6140c473413cf9de756f9848", "bbb", "ccc"}
-		as.EXPECT().GetOciRecommendations(strProfiles).Return(recommendations, mockError)
+		as.EXPECT().GetOciUnusedLoadBalancers(strProfiles).Return(recommendations, mockError)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciRecommendations)
+		handler := http.HandlerFunc(ac.GetOciUnusedLoadbalancers)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/recommendations", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/loadbalancers", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848,bbb,ccc"})
 
@@ -242,7 +239,7 @@ func TestGetOciRecommendations_PartialContent(t *testing.T) {
 	})
 }
 
-func TestGetOciRecommendations_Success(t *testing.T) {
+func TestGetOciLoadbalancers_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -255,25 +252,22 @@ func TestGetOciRecommendations_Success(t *testing.T) {
 			Log:     logger.NewLogger("TEST"),
 		}
 
-		recommendation := model.OciRecommendation{
-			TenancyOCID:         "ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q",
-			Name:                "cost-management-load-balancer-underutilized-name",
-			NumPending:          "1",
-			EstimatedCostSaving: "1.92",
-			Status:              "PENDING",
-			Importance:          "MODERATE",
-			RecommendationId:    "ocid1.optimizerrecommendation.oc1..aaaaaaaanptucivsbo24dkml7exd2fldalykkz52gld3nk3jt5c2e4ydgzjq",
+		recommendation := model.OciErcoleRecommendation{
+			Type:          model.RecommendationTypeUnusedResource,
+			CompartmentID: "ocid1.compartment.oc1..aaaaaaaaraxhbi65iyiln4qvwjwtnebheufhpkwfcymkszuvz2zyqmwsaikq",
+			Name:          "41401efc-419f-42a4-8c1b-b12e11d4526f",
+			ResourceID:    "ocid1.loadbalancer.oc1.eu-frankfurt-1.aaaaaaaavglox5gto3l6wrwswsyqux22nsz65fkqyaj3cyq7fbyjmu57sbyq",
 		}
 
-		var expectedRes []model.OciRecommendation
+		var expectedRes []model.OciErcoleRecommendation
 		var strProfiles = []string{"6140c473413cf9de756f9848"}
 		expectedRes = append(expectedRes, recommendation)
-		as.EXPECT().GetOciRecommendations(strProfiles).Return(expectedRes, nil)
+		as.EXPECT().GetOciUnusedLoadBalancers(strProfiles).Return(expectedRes, nil)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciRecommendations)
+		handler := http.HandlerFunc(ac.GetOciUnusedLoadbalancers)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/recommendations", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/loadbalancers", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 
