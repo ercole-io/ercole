@@ -42,6 +42,7 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 
 	sheetDatabaseEbsDbTier := "Database_&_EBS_DB_Tier"
 	sheetHostAdded := "Hosts_added"
+	sheetHostDismissed := "Hosts_dismissed"
 
 	csiByHostname, err := as.getCSIsByHostname()
 	if err != nil {
@@ -54,29 +55,49 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 		return nil, aerr
 	}
 
-	var j int
+	j, z := 4, 4 // offset for headers (HostAdded and HostDismissed)
 	for i, val := range hosts {
 		i += 4 // offset for headers
 		setCellValueLMS(lms, sheetDatabaseEbsDbTier, i, csiByHostname, val)
 		createdDate := val["createdAt"].(primitive.DateTime).Time().UTC()
+		var dismissedAt time.Time
+		if val["dismissedAt"] != nil {
+			dismissedAt = val["dismissedAt"].(primitive.DateTime).Time().UTC()
+		}
+		//HostAdded management
 		if (filters.From != utils.MIN_TIME ||
 			filters.To != utils.MAX_TIME) &&
 			createdDate.After(filters.From) &&
 			createdDate.Before(filters.To) {
-			if j == 0 {
-				j = 4 // offset for headers
-			}
 			if j == 4 {
 				indexsheetHostAdded := lms.NewSheet(sheetHostAdded)
-				iindexSheetDatabaseEbsDbTier := lms.GetSheetIndex(sheetDatabaseEbsDbTier)
-				errs := lms.CopySheet(iindexSheetDatabaseEbsDbTier, indexsheetHostAdded)
+				indexSheetDatabaseEbsDbTier := lms.GetSheetIndex(sheetDatabaseEbsDbTier)
+				errs := lms.CopySheet(indexSheetDatabaseEbsDbTier, indexsheetHostAdded)
 				if errs != nil {
 					return nil, errs
 				}
-				lms.SetActiveSheet(iindexSheetDatabaseEbsDbTier)
+				lms.SetActiveSheet(indexSheetDatabaseEbsDbTier)
 			}
 			setCellValueLMS(lms, sheetHostAdded, j, csiByHostname, val)
 			j++
+		}
+
+		//HostDismissed management
+		if (filters.From != utils.MIN_TIME ||
+			filters.To != utils.MAX_TIME) &&
+			dismissedAt.After(filters.From) &&
+			dismissedAt.Before(filters.To) {
+			if z == 4 {
+				indexsheetHostDismissed := lms.NewSheet(sheetHostDismissed)
+				indexSheetDatabaseEbsDbTier := lms.GetSheetIndex(sheetDatabaseEbsDbTier)
+				errs := lms.CopySheet(indexSheetDatabaseEbsDbTier, indexsheetHostDismissed)
+				if errs != nil {
+					return nil, errs
+				}
+				lms.SetActiveSheet(indexSheetDatabaseEbsDbTier)
+			}
+			setCellValueLMS(lms, sheetHostDismissed, z, csiByHostname, val)
+			z++
 		}
 	}
 
