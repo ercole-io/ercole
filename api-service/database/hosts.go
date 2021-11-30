@@ -170,6 +170,7 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 					mu.APProject(bson.M{
 						// "Database":           1,
 						"createdAt":          "$createdAt",
+						"dismissedAt":        "$dismissedAt",
 						"physicalServerName": mu.APOCond("$isVirtualServer", mu.APOIfNull("$cluster", ""), "$hostname"),
 						"virtualServerName":  mu.APOCond("$isVirtualServer", "$hostname", mu.APOIfNull("$cluster", "")),
 						"virtualizationTechnology": bson.M{
