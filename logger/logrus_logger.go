@@ -121,8 +121,9 @@ func getCaller(entry *logrus.Entry) string {
 	}
 
 	caller := entry.Caller.File
-	if strings.Contains(caller, "ercole-agent/") {
-		caller = caller[strings.Index(caller, "ercole-agent/")+len("ercole-agent/"):]
+	removeFrom := "ercole/"
+	if strings.Contains(caller, removeFrom) {
+		caller = "./" + caller[strings.Index(caller, removeFrom)+len(removeFrom):]
 	}
 
 	return fmt.Sprintf("%s:%d", caller, entry.Caller.Line)
