@@ -22,8 +22,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// SetupRoutesForHostDataController setup the routes of the router using the handler in the controller as http handler
-func SetupRoutesForHostDataController(router *mux.Router, ctrl DataControllerInterface) {
+// GetDataControllerHandler setup the routes of the router using the handler in the controller as http handler
+func (ctrl *DataController) GetDataControllerHandler() http.Handler {
+	router := mux.NewRouter()
+
 	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("Pong"))
 	})
@@ -31,10 +33,12 @@ func SetupRoutesForHostDataController(router *mux.Router, ctrl DataControllerInt
 	router.StrictSlash(true)
 	router.Use(ctrl.AuthenticateMiddleware)
 
-	setupProtectedRoutes(router, ctrl)
+	ctrl.setupProtectedRoutes(router)
+
+	return router
 }
 
-func setupProtectedRoutes(router *mux.Router, ctrl DataControllerInterface) {
+func (ctrl *DataController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/hosts", ctrl.InsertHostData).Methods("POST")
 	router.HandleFunc("/cmdbs", ctrl.CompareCmdbInfo).Methods("POST")
 }
