@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 		hds.clusterInfoChecks(hostdata.Clusters)
 	}
 
-	_, err = hds.Database.ArchiveHost(hostdata.Hostname)
+	_, err = hds.Database.DismissHost(hostdata.Hostname)
 	if err != nil {
 		return err
 	}

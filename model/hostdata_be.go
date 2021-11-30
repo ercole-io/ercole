@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ type HostDataBE struct {
 	ID                  primitive.ObjectID `json:"id" bson:"_id"`
 	Archived            bool               `json:"archived" bson:"archived"`
 	CreatedAt           time.Time          `json:"createdAt" bson:"createdAt"`
+	DismissedAt         time.Time          `json:"dismissedAt" bson:"dismissedAt,omitempty"`
 	ServerVersion       string             `json:"serverVersion" bson:"serverVersion"`
 	ServerSchemaVersion int                `json:"serverSchemaVersion" bson:"serverSchemaVersion"`
 

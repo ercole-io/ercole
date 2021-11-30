@@ -503,8 +503,9 @@ func (md *MongoDatabase) ListEnvironments(location string, environment string, o
 func (md *MongoDatabase) FindHostData(hostname string) (model.HostDataBE, error) {
 	//Find the hostdata
 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").FindOne(context.TODO(), bson.M{
-		"hostname": hostname,
-		"archived": false,
+		"dismissedAt": nil,
+		"hostname":    hostname,
+		"archived":    false,
 	})
 	if res.Err() == mongo.ErrNoDocuments {
 		return model.HostDataBE{}, utils.ErrHostNotFound
@@ -516,11 +517,6 @@ func (md *MongoDatabase) FindHostData(hostname string) (model.HostDataBE, error)
 	var out model.HostDataBE
 	if err := res.Decode(&out); err != nil {
 		return model.HostDataBE{}, utils.NewError(res.Err(), "DB ERROR")
-	}
-
-	var out2 map[string]interface{}
-	if err := res.Decode(&out2); err != nil {
-		// return model.HostDataBE{}, utils.NewAdvancedErrorPtr(res.Err(), "DB ERROR")
 	}
 
 	//Return it!
@@ -541,12 +537,13 @@ func (md *MongoDatabase) ReplaceHostData(hostData model.HostDataBE) error {
 	return nil
 }
 
-// ExistHostdata return true if exist a non-archived hostdata with the hostname equal hostname
+// ExistHostdata return true if exist a non-dismissed hostdata with the hostname equal hostname
 func (md *MongoDatabase) ExistHostdata(hostname string) (bool, error) {
 	//Count the number of new NO_DATA alerts associated to the host
 	val, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").CountDocuments(context.TODO(), bson.M{
-		"archived": false,
-		"hostname": hostname,
+		"dismissedAt": nil,
+		"archived":    false,
+		"hostname":    hostname,
 	}, &options.CountOptions{
 		Limit: utils.Intptr(1),
 	})
@@ -558,13 +555,14 @@ func (md *MongoDatabase) ExistHostdata(hostname string) (bool, error) {
 	return val > 0, nil
 }
 
-// ArchiveHost archive the specified host
-func (md *MongoDatabase) ArchiveHost(hostname string) error {
-	if _, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.M{
-		"hostname": hostname,
-		"archived": false,
+// DismissHost dismiss the specified host
+func (md *MongoDatabase) DismissHost(hostname string) error {
+	if _, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateMany(context.TODO(), bson.M{
+		"hostname":    hostname,
+		"dismissedAt": nil,
 	}, mu.UOSet(bson.M{
-		"archived": true,
+		"dismissedAt": time.Now(),
+		"archived":    true,
 	})); err != nil {
 		return utils.NewError(err, "DB ERROR")
 	}
@@ -582,15 +580,17 @@ func (md *MongoDatabase) ExistNotInClusterHost(hostname string) (bool, error) {
 		context.TODO(),
 		mu.MAPipeline(
 			mu.APMatch(bson.M{
-				"archived": false,
-				"hostname": hostname,
+				"dismissedAt": nil,
+				"archived":    false,
+				"hostname":    hostname,
 			}),
 			mu.APProject(bson.M{
 				"hostname": true,
 			}),
 			mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "cluster", mu.MAPipeline(
 				mu.APMatch(bson.M{
-					"archived": false,
+					"dismissedAt": nil,
+					"archived":    false,
 				}),
 				mu.APUnwind("$clusters"),
 				mu.APReplaceWith("$clusters"),

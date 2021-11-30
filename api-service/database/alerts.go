@@ -66,8 +66,9 @@ func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy str
 					"host",
 					mu.MAPipeline(
 						mu.APMatch(bson.M{
-							"$expr":    bson.M{"$eq": bson.A{"$hostname", "$$hn"}},
-							"archived": false,
+							"$expr":       bson.M{"$eq": bson.A{"$hostname", "$$hn"}},
+							"dismissedAt": nil,
+							"archived":    false,
 						}),
 						mu.APProject(bson.M{
 							"_id":         0,

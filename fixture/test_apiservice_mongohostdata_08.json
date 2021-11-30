@@ -1,5 +1,6 @@
 {
     "agentVersion": "1.6.1",
+    "dismissedAt": null,
     "archived": false,
     "clusterMembershipStatus": {
         "hacmp": false,

@@ -251,12 +251,12 @@ func (as *APIService) ListEnvironments(location string, environment string, olde
 	return as.Database.ListEnvironments(location, environment, olderThan)
 }
 
-// ArchiveHost archive the specified host
-func (as *APIService) ArchiveHost(hostname string) error {
+// DismissHost dismiss the specified host
+func (as *APIService) DismissHost(hostname string) error {
 	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": hostname}}
 	if err := as.AckAlerts(filter); err != nil {
 		as.Log.Errorf("Can't ack hostname %s alerts by filter", hostname)
 	}
 
-	return as.Database.ArchiveHost(hostname)
+	return as.Database.DismissHost(hostname)
 }

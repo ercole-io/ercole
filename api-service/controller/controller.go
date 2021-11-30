@@ -123,8 +123,8 @@ type APIControllerInterface interface {
 	DeleteOracleDatabaseLicenseModifier(w http.ResponseWriter, r *http.Request)
 	// AckAlerts ack the specified alert in the request
 	AckAlerts(w http.ResponseWriter, r *http.Request)
-	// ArchiveHost archive the specified host in the request
-	ArchiveHost(w http.ResponseWriter, r *http.Request)
+	// DismissHost dismiss the specified host in the request
+	DismissHost(w http.ResponseWriter, r *http.Request)
 
 	// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 	GetInfoForFrontendDashboard(w http.ResponseWriter, r *http.Request)
