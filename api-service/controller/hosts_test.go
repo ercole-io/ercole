@@ -1180,10 +1180,10 @@ func TestArchiveHost_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().ArchiveHost("foobar").Return(nil)
+	as.EXPECT().DismissHost("foobar").Return(nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ArchiveHost)
+	handler := http.HandlerFunc(ac.DismissHost)
 	req, err := http.NewRequest("DELETE", "/hosts/foobar", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "foobar",
@@ -1211,7 +1211,7 @@ func TestArchiveHost_FailReadOnly(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ArchiveHost)
+	handler := http.HandlerFunc(ac.DismissHost)
 	req, err := http.NewRequest("DELETE", "/hosts/foobar", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "foobar",
@@ -1234,10 +1234,10 @@ func TestArchiveHost_FailNotFound(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().ArchiveHost("foobar").Return(utils.ErrHostNotFound)
+	as.EXPECT().DismissHost("foobar").Return(utils.ErrHostNotFound)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ArchiveHost)
+	handler := http.HandlerFunc(ac.DismissHost)
 	req, err := http.NewRequest("DELETE", "/hosts/foobar", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "foobar",
@@ -1260,10 +1260,10 @@ func TestArchiveHost_FailInternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().ArchiveHost("foobar").Return(aerrMock)
+	as.EXPECT().DismissHost("foobar").Return(aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.ArchiveHost)
+	handler := http.HandlerFunc(ac.DismissHost)
 	req, err := http.NewRequest("DELETE", "/hosts/foobar", nil)
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "foobar",

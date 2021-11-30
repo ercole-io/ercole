@@ -166,8 +166,8 @@ type APIServiceInterface interface {
 	DeleteOracleDatabaseLicenseModifier(hostname string, dbname string, licenseName string) error
 	// AckAlerts ack the specified alerts
 	AckAlerts(alertsFilter dto.AlertsFilter) error
-	// ArchiveHost archive the specified host
-	ArchiveHost(hostname string) error
+	// DismissHost dismiss the specified host
+	DismissHost(hostname string) error
 
 	// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 	GetInfoForFrontendDashboard(location string, environment string, olderThan time.Time) (map[string]interface{}, error)

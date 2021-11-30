@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ func (job *CurrentHostCleaningJob) Run() {
 	}
 
 	for _, host := range hosts {
-		_, err := job.Database.ArchiveHost(host)
+		_, err := job.Database.DismissHost(host)
 		if err != nil {
 			job.Log.Error(err)
 			return

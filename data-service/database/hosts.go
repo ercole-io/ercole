@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,12 +29,13 @@ import (
 )
 
 // TODO return value, not mongo struct
-func (md *MongoDatabase) ArchiveHost(hostname string) (*mongo.UpdateResult, error) {
+func (md *MongoDatabase) DismissHost(hostname string) (*mongo.UpdateResult, error) {
 	if res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.M{
-		"hostname": hostname,
-		"archived": false,
+		"hostname":    hostname,
+		"dismissedAt": nil,
 	}, mu.UOSet(bson.M{
-		"archived": true,
+		"dismissedAt": time.Now(),
+		"archived":    true,
 	})); err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	} else {
@@ -56,7 +57,8 @@ func (md *MongoDatabase) GetCurrentHostnames() ([]string, error) {
 		context.TODO(),
 		"hostname",
 		bson.M{
-			"archived": false,
+			"dismissedAt": nil,
+			"archived":    false,
 		})
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
@@ -76,8 +78,9 @@ func (md *MongoDatabase) FindOldCurrentHostnames(t time.Time) ([]string, error) 
 		context.TODO(),
 		"hostname",
 		bson.M{
-			"archived":  false,
-			"createdAt": mu.QOLessThan(t),
+			"dismissedAt": nil,
+			"archived":    false,
+			"createdAt":   mu.QOLessThan(t),
 		})
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
@@ -94,8 +97,9 @@ func (md *MongoDatabase) FindOldCurrentHostnames(t time.Time) ([]string, error) 
 // FindOldCurrentHosts return the list of current hosts that haven't sent hostdata after time t
 func (md *MongoDatabase) FindOldCurrentHostdata(t time.Time) ([]model.HostDataBE, error) {
 	filter := bson.M{
-		"archived":  false,
-		"createdAt": mu.QOLessThan(t),
+		"dismissedAt": nil,
+		"archived":    false,
+		"createdAt":   mu.QOLessThan(t),
 	}
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").

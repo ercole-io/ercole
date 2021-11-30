@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ import (
 	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 )
 
-func (m *MongodbSuite) TestArchiveHost() {
+func (m *MongodbSuite) TestDismissHost() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
 
@@ -38,7 +38,7 @@ func (m *MongodbSuite) TestArchiveHost() {
 	require.NoError(m.T(), err)
 	require.Equal(m.T(), []string{"test-small"}, list)
 
-	_, err = m.db.ArchiveHost("test-small")
+	_, err = m.db.DismissHost("test-small")
 	require.NoError(m.T(), err)
 
 	list, err = m.db.FindOldCurrentHostnames(utils.MAX_TIME)

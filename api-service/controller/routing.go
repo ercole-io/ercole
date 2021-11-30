@@ -55,7 +55,7 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/hosts/clusters/{name}", ctrl.GetCluster).Methods("GET")
 
 	router.HandleFunc("/hosts/{hostname}", ctrl.GetHost).Methods("GET")
-	router.HandleFunc("/hosts/{hostname}", ctrl.ArchiveHost).Methods("DELETE")
+	router.HandleFunc("/hosts/{hostname}", ctrl.DismissHost).Methods("DELETE")
 	router.HandleFunc("/hosts/{hostname}/patching-function", ctrl.GetPatchingFunction).Methods("GET")
 	router.HandleFunc("/hosts/{hostname}/patching-function", ctrl.SetPatchingFunction).Methods("PUT")
 	router.HandleFunc("/hosts/{hostname}/patching-function", ctrl.DeletePatchingFunction).Methods("DELETE")
