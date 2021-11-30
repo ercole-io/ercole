@@ -147,8 +147,8 @@ type MongoDatabaseInterface interface {
 	UpdateAlertsStatus(alertsFilter dto.AlertsFilter, newStatus string) error
 	// CountAlertsNODATA gets alert with alertCode equals to "NO_DATA"
 	CountAlertsNODATA(alertsFilter dto.AlertsFilter) (int64, error)
-	// ArchiveHost archive the specified host
-	ArchiveHost(hostname string) error
+	// DismissHost dismiss the specified host
+	DismissHost(hostname string) error
 	// DeletePatchingFunction delete the patching function
 	DeletePatchingFunction(hostname string) error
 

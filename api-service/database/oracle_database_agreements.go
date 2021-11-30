@@ -149,6 +149,7 @@ func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingO
 			context.TODO(),
 			mu.MAPipeline(
 				mu.APMatch(bson.M{
+					"dismissedAt":              nil,
 					"archived":                 false,
 					"features.oracle.database": mu.QONotEqual(nil),
 					"$expr":                    mu.APOGreater(mu.APOSize("$features.oracle.database.databases"), 0),
@@ -161,7 +162,8 @@ func (md *MongoDatabase) ListHostUsingOracleDatabaseLicenses() ([]dto.HostUsingO
 
 				mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname"}, "cluster", mu.MAPipeline(
 					mu.APMatch(bson.M{
-						"archived": false,
+						"dismissedAt": nil,
+						"archived":    false,
 					}),
 					mu.APUnwind("$clusters"),
 					mu.APReplaceWith("$clusters"),

@@ -865,9 +865,9 @@ func TestArchiveHost_Success(t *testing.T) {
 	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": "foobar"}}
 	db.EXPECT().CountAlertsNODATA(filter).Return(count, nil).Times(1)
 	db.EXPECT().UpdateAlertsStatus(filter, model.AlertStatusAck).Return(nil).Times(1)
-	db.EXPECT().ArchiveHost("foobar").Return(nil).Times(1)
+	db.EXPECT().DismissHost("foobar").Return(nil).Times(1)
 
-	err := as.ArchiveHost("foobar")
+	err := as.DismissHost("foobar")
 	require.NoError(t, err)
 }
 
@@ -885,8 +885,8 @@ func TestArchiveHost_Fail(t *testing.T) {
 	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": "foobar"}}
 	db.EXPECT().CountAlertsNODATA(filter).Return(count, nil).Times(1)
 	db.EXPECT().UpdateAlertsStatus(filter, model.AlertStatusAck).Return(aerrMock).Times(1)
-	db.EXPECT().ArchiveHost("foobar").Return(aerrMock).Times(1)
+	db.EXPECT().DismissHost("foobar").Return(aerrMock).Times(1)
 
-	err := as.ArchiveHost("foobar")
+	err := as.DismissHost("foobar")
 	assert.Error(t, err)
 }
