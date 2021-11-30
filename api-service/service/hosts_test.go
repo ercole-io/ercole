@@ -663,25 +663,18 @@ func TestGetHost_Success(t *testing.T) {
 				ID: utils.Str2oid("5e8c234b24f648a08585bd42"),
 			},
 		},
-		"DismissedAt": nil,
-		"Archived":    false,
-		"Cluster":     "Puzzait",
-		"CreatedAt":   utils.P("2020-04-07T08:52:59.869+02:00"),
-		"Databases":   "",
-		"Environment": "PROD",
-		"Extra": map[string]interface{}{
-			"Clusters":  []interface{}{},
-			"Databases": []interface{}{},
-			"Filesystems": []interface{}{
-				map[string]interface{}{
-					"Available":  "4.6G",
-					"Filesystem": "/dev/mapper/vg_os-lv_root",
-					"FsType":     "xfs",
-					"MountedOn":  "/",
-					"Size":       "8.0G",
-					"Used":       "3.5G",
-					"UsedPerc":   "43%",
-				},
+		Archived:    false,
+		Cluster:     "Puzzait",
+		CreatedAt:   utils.P("2020-04-07T08:52:59.869Z"),
+		Environment: "PROD",
+		Filesystems: []model.Filesystem{
+			{
+				AvailableSpace: 4.60000000e+09,
+				Filesystem:     "/dev/mapper/vg_os-lv_root",
+				MountedOn:      "/",
+				Size:           8.00000000e+09,
+				Type:           "xfs",
+				UsedSpace:      3.50000000e+09,
 			},
 		},
 		History: []model.History{
@@ -859,7 +852,7 @@ func TestListEnvironments_Fail(t *testing.T) {
 	assert.Equal(t, aerrMock, err)
 }
 
-func TestDismissHost_Success(t *testing.T) {
+func TestArchiveHost_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -878,7 +871,7 @@ func TestDismissHost_Success(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestDismissHost_Fail(t *testing.T) {
+func TestArchiveHost_Fail(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
