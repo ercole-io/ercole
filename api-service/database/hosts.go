@@ -557,7 +557,7 @@ func (md *MongoDatabase) ExistHostdata(hostname string) (bool, error) {
 
 // DismissHost dismiss the specified host
 func (md *MongoDatabase) DismissHost(hostname string) error {
-	if _, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.M{
+	if _, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateMany(context.TODO(), bson.M{
 		"hostname":    hostname,
 		"dismissedAt": nil,
 	}, mu.UOSet(bson.M{

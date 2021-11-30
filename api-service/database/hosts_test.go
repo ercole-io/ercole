@@ -426,14 +426,13 @@ func (m *MongodbSuite) TestGetHost() {
 					ID: utils.Str2oid("5e96ade270c184faca93fe1b"),
 				},
 			},
-			"dismissedAt": nil,
-			"archived":    false,
-			"cluster":     "Puzzait",
-			"clusterMembershipStatus": map[string]interface{}{
-				"hacmp":                false,
-				"oracleClusterware":    false,
-				"sunCluster":           false,
-				"veritasClusterServer": false,
+			Archived: false,
+			Cluster:  "Puzzait",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				HACMP:                false,
+				OracleClusterware:    false,
+				SunCluster:           false,
+				VeritasClusterServer: false,
 			},
 			Clusters: []model.ClusterInfo{
 				{
@@ -532,7 +531,6 @@ func (m *MongodbSuite) TestGetHost() {
 		out, err := m.db.GetHost("newdb", utils.MAX_TIME, false)
 		require.NoError(t, err)
 
-<<<<<<< HEAD
 		dailyCPUUsage := 3.4
 		dbTime := 184.81
 		elapsed := 12059.18
@@ -548,19 +546,6 @@ func (m *MongodbSuite) TestGetHost() {
 				OracleClusterware:    false,
 				SunCluster:           false,
 				VeritasClusterServer: false,
-=======
-		expectedResult := map[string]interface{}{
-			"agentVersion": "latest",
-			"alerts":       []interface{}{},
-			"dismissedAt":  nil,
-			"archived":     false,
-			"cluster":      nil,
-			"clusterMembershipStatus": map[string]interface{}{
-				"hacmp":                false,
-				"oracleClusterware":    false,
-				"sunCluster":           false,
-				"veritasClusterServer": false,
->>>>>>> d522656 (Add Hostdata DismissedAt field)
 			},
 			Clusters:    nil,
 			CreatedAt:   utils.P("2020-05-21T09:32:54.83Z"),
@@ -706,7 +691,6 @@ func (m *MongodbSuite) TestGetHost() {
 		out, err := m.db.GetHost("newdb", utils.P("2020-05-21T11:31:00.061+02:00"), false)
 		require.NoError(t, err)
 
-<<<<<<< HEAD
 		dailyCPUUsage := 0.7
 		dbTime := 184.81
 		elapsed := 12059.18
@@ -722,19 +706,6 @@ func (m *MongodbSuite) TestGetHost() {
 				OracleClusterware:    false,
 				SunCluster:           false,
 				VeritasClusterServer: false,
-=======
-		expectedResult := map[string]interface{}{
-			"agentVersion": "latest",
-			"alerts":       []interface{}{},
-			"dismissedAt":  utils.P("2020-11-25T12:26:57.000+01:00").Local(),
-			"archived":     true,
-			"cluster":      nil,
-			"clusterMembershipStatus": map[string]interface{}{
-				"hacmp":                false,
-				"oracleClusterware":    false,
-				"sunCluster":           false,
-				"veritasClusterServer": false,
->>>>>>> d522656 (Add Hostdata DismissedAt field)
 			},
 			Clusters:    nil,
 			CreatedAt:   utils.P("2020-05-21T09:30:55.061Z"),
@@ -855,7 +826,6 @@ func (m *MongodbSuite) TestGetHost() {
 		out, err := m.db.GetHost("newdb", utils.MAX_TIME, true)
 		require.NoError(t, err)
 
-<<<<<<< HEAD
 		dailyCPUUsage := 3.4
 		dbTime := 184.81
 		elapsed := 12059.18
@@ -869,17 +839,6 @@ func (m *MongodbSuite) TestGetHost() {
 				OracleClusterware:    false,
 				SunCluster:           false,
 				VeritasClusterServer: false,
-=======
-		expectedResult := map[string]interface{}{
-			"agentVersion": "latest",
-			"dismissedAt":  nil,
-			"archived":     false,
-			"clusterMembershipStatus": map[string]interface{}{
-				"hacmp":                false,
-				"oracleClusterware":    false,
-				"sunCluster":           false,
-				"veritasClusterServer": false,
->>>>>>> d522656 (Add Hostdata DismissedAt field)
 			},
 			Clusters:    nil,
 			CreatedAt:   utils.P("2020-05-21T09:32:54.83Z"),
