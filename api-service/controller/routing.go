@@ -23,8 +23,9 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/auth"
 )
 
-// SetupRoutesForAPIController setup the routes of the router using the handler in the controller as http handler
-func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface, auth auth.AuthenticationProvider) {
+// GetApiControllerHandler setup the routes of the router using the handler in the controller as http handler
+func (ctrl *APIController) GetApiControllerHandler(auth auth.AuthenticationProvider) http.Handler {
+	router := mux.NewRouter()
 
 	//Add the routes
 	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
@@ -32,13 +33,16 @@ func SetupRoutesForAPIController(router *mux.Router, ctrl APIControllerInterface
 	})
 
 	router.HandleFunc("/user/login", auth.GetToken).Methods("POST")
+
 	//Enable authentication using the ctrl
-	router = router.NewRoute().Subrouter()
-	router.Use(auth.AuthenticateMiddleware)
-	setupProtectedRoutes(router, ctrl)
+	subrouter := router.NewRoute().Subrouter()
+	subrouter.Use(auth.AuthenticateMiddleware)
+	ctrl.setupProtectedRoutes(subrouter)
+
+	return router
 }
 
-func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
+func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	// HOSTS
 	router.HandleFunc("/hosts", ctrl.SearchHosts).Methods("GET")
 	router.HandleFunc("/hosts/count", ctrl.GetHostsCountStats).Methods("GET")
@@ -121,11 +125,11 @@ func setupProtectedRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")
 	router.HandleFunc("/alerts/ack", ctrl.AckAlerts).Methods("POST")
 
-	setupSettingsRoutes(router.PathPrefix("/settings").Subrouter(), ctrl)
-	setupFrontendAPIRoutes(router.PathPrefix("/frontend").Subrouter(), ctrl)
+	ctrl.setupSettingsRoutes(router.PathPrefix("/settings").Subrouter())
+	ctrl.setupFrontendAPIRoutes(router.PathPrefix("/frontend").Subrouter())
 }
 
-func setupSettingsRoutes(router *mux.Router, ctrl APIControllerInterface) {
+func (ctrl *APIController) setupSettingsRoutes(router *mux.Router) {
 	router.HandleFunc("/default-database-tag-choices", ctrl.GetDefaultDatabaseTags).Methods("GET")
 	router.HandleFunc("/features", ctrl.GetErcoleFeatures).Methods("GET")
 	router.HandleFunc("/technologies", ctrl.GetTechnologyList).Methods("GET")
@@ -135,6 +139,6 @@ func setupSettingsRoutes(router *mux.Router, ctrl APIControllerInterface) {
 	router.HandleFunc("/oracle/database/license-types/{id}", ctrl.UpdateOracleDatabaseLicenseType).Methods("PUT")
 }
 
-func setupFrontendAPIRoutes(router *mux.Router, ctrl APIControllerInterface) {
+func (ctrl *APIController) setupFrontendAPIRoutes(router *mux.Router) {
 	router.HandleFunc("/dashboard", ctrl.GetInfoForFrontendDashboard).Methods("GET")
 }

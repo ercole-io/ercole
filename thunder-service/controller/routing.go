@@ -21,18 +21,21 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// SetupRoutesForThunderController setup the routes of the router using the handler in the controller as http handler
-func SetupRoutesForThunderController(router *mux.Router, ctrl ThunderControllerInterface) {
+// GetThunderControllerHandler setup the routes of the router using the handler in the controller as http handler
+func (ctrl *ThunderController) GetThunderControllerHandler() http.Handler {
+	router := mux.NewRouter()
+
 	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Pong"))
 	})
 
-	router = router.NewRoute().Subrouter()
+	subrouter := router.NewRoute().Subrouter()
+	ctrl.setupProtectedRoutes(subrouter)
 
-	setupProtectedRoutes(router, ctrl)
+	return router
 }
 
-func setupProtectedRoutes(router *mux.Router, ctrl ThunderControllerInterface) {
+func (ctrl *ThunderController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/oracle-cloud/recommendations/{ids}", ctrl.GetOciRecommendations).Methods("GET")
 	router.HandleFunc("/oracle-cloud/configurations", ctrl.GetOciProfiles).Methods("GET")
 	router.HandleFunc("/oracle-cloud/configurations", ctrl.AddOciProfile).Methods("POST")
