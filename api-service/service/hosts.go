@@ -55,7 +55,7 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 		return nil, aerr
 	}
 
-	var j, z int
+	j, z := 4, 4 // offset for headers (HostAdded and HostDismissed)
 	for i, val := range hosts {
 		i += 4 // offset for headers
 		setCellValueLMS(lms, sheetDatabaseEbsDbTier, i, csiByHostname, val)
@@ -69,9 +69,6 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 			filters.To != utils.MAX_TIME) &&
 			createdDate.After(filters.From) &&
 			createdDate.Before(filters.To) {
-			if j == 0 {
-				j = 4 // offset for headers
-			}
 			if j == 4 {
 				indexsheetHostAdded := lms.NewSheet(sheetHostAdded)
 				indexSheetDatabaseEbsDbTier := lms.GetSheetIndex(sheetDatabaseEbsDbTier)
@@ -90,9 +87,6 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 			filters.To != utils.MAX_TIME) &&
 			dismissedAt.After(filters.From) &&
 			dismissedAt.Before(filters.To) {
-			if z == 0 {
-				z = 4 // offset for headers
-			}
 			if z == 4 {
 				indexsheetHostDismissed := lms.NewSheet(sheetHostDismissed)
 				indexSheetDatabaseEbsDbTier := lms.GetSheetIndex(sheetDatabaseEbsDbTier)
