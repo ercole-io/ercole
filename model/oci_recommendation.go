@@ -16,7 +16,7 @@
 package model
 
 // Recommendation holds informations about a recommendation
-type Recommendation struct {
+type OciRecommendation struct {
 	TenancyOCID         string `json:"tenancyOCID"`
 	Name                string `json:"name"`
 	NumPending          string `json:"numPending"`
@@ -25,3 +25,18 @@ type Recommendation struct {
 	Importance          string `json:"importance"`
 	RecommendationId    string `json:"recommendationId"`
 }
+
+type OciErcoleRecommendation struct {
+	Type          string `json:"type"`
+	CompartmentID string `json:"compartmentID"`
+	Name          string `json:"name"`
+	ResourceID    string `json:"resourceID"`
+}
+
+const (
+	RecommendationTypeBlockStorage        = "Block Storage"
+	RecommendationTypeComputeInstanceIdle = "Compute Instance Idle"
+	RecommendationTypeOldSnapshot         = "Old Snapshot"
+	RecommendationTypeUnusedResource      = "Unused Resource"
+	RecommendationTypeUnusedStorage       = "Unused Storage"
+)
