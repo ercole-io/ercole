@@ -40,10 +40,3 @@ const (
 	RecommendationTypeUnusedResource      = "Unused Resource"
 	RecommendationTypeUnusedStorage       = "Unused Storage"
 )
-
-/*
-	Compute Instance Under-utilized
-Old Snapshot
-Unused resource
-Unused Storage
-*/

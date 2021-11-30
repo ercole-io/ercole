@@ -79,7 +79,6 @@ func (as *ThunderService) GetOciCompartments(profiles []string) ([]model.OciComp
 			compTmp.Name = *s.Name
 			compTmp.Description = *s.Description
 			compTmp.TimeCreating = s.TimeCreated.String()
-			// fmt.Println(i, *s.Id, *s.Name, *s.Description, *s.TimeCreated)
 			listCompartments = append(listCompartments, compTmp)
 		}
 	}
