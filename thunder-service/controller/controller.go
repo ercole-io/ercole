@@ -38,6 +38,8 @@ type ThunderControllerInterface interface {
 	UpdateOciProfile(w http.ResponseWriter, r *http.Request)
 	// Delete an existing Configuration profile for Oracle Cloud Access
 	DeleteOciProfile(w http.ResponseWriter, r *http.Request)
+	// GetOciLoadbalancers get recommendations from Oracle Cloud Infrastructure abuot Load Balancer health
+	GetOciUnusedLoadbalancers(w http.ResponseWriter, r *http.Request)
 }
 
 // ThunderController is the struct used to handle the requests from agents and contains the concrete implementation of ThunderControllerInterface
