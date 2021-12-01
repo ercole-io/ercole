@@ -96,3 +96,7 @@ func (as *APIService) AckAlerts(alertsFilter dto.AlertsFilter) error {
 
 	return as.Database.UpdateAlertsStatus(alertsFilter, model.AlertStatusAck)
 }
+
+func (as *APIService) RemoveAlertsNODATA(alertsFilter dto.AlertsFilter) error {
+	return as.Database.RemoveAlertsNODATA(alertsFilter)
+}

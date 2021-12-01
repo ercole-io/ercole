@@ -928,8 +928,9 @@ func TestDismissHost_Success(t *testing.T) {
 	var count int64
 
 	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": "foobar"}}
+	db.EXPECT().RemoveAlertsNODATA(filter).Return(nil).Times(1)
 	db.EXPECT().CountAlertsNODATA(filter).Return(count, nil).Times(1)
-	db.EXPECT().UpdateAlertsStatus(filter, model.AlertStatusAck).Return(nil).Times(1)
+	db.EXPECT().UpdateAlertsStatus(filter, model.AlertStatusAck).Return(nil)
 	db.EXPECT().DismissHost("foobar").Return(nil).Times(1)
 
 	err := as.DismissHost("foobar")
@@ -948,8 +949,9 @@ func TestDismissHost_Fail(t *testing.T) {
 	var count int64
 
 	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": "foobar"}}
+	db.EXPECT().RemoveAlertsNODATA(filter).Return(nil).Times(1)
 	db.EXPECT().CountAlertsNODATA(filter).Return(count, nil).Times(1)
-	db.EXPECT().UpdateAlertsStatus(filter, model.AlertStatusAck).Return(aerrMock).Times(1)
+	db.EXPECT().UpdateAlertsStatus(filter, model.AlertStatusAck).Return(nil)
 	db.EXPECT().DismissHost("foobar").Return(aerrMock).Times(1)
 
 	err := as.DismissHost("foobar")

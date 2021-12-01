@@ -149,6 +149,8 @@ type MongoDatabaseInterface interface {
 	CountAlertsNODATA(alertsFilter dto.AlertsFilter) (int64, error)
 	// DismissHost dismiss the specified host
 	DismissHost(hostname string) error
+	// RemoveAlertsNODATA delete all alerts with alertCode equals to "NO_DATA"
+	RemoveAlertsNODATA(alertsFilter dto.AlertsFilter) error
 	// DeletePatchingFunction delete the patching function
 	DeletePatchingFunction(hostname string) error
 
