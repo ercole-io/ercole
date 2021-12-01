@@ -23,6 +23,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -252,6 +253,23 @@ func (md *MongoDatabase) UpdateAlertsStatus(alertsFilter dto.AlertsFilter, newSt
 			bson.M{"$set": bson.M{
 				"alertStatus": newStatus,
 			}},
+		)
+	if err != nil {
+		return utils.NewError(err, "DB ERROR")
+	}
+
+	return nil
+}
+
+func (md *MongoDatabase) RemoveAlertsNODATA(alertsFilter dto.AlertsFilter) error {
+
+	filter := bson.D{{Key: "$and", Value: []interface{}{bson.D{{Key: "otherInfo.hostname", Value: alertsFilter.OtherInfo["hostname"]}}, bson.D{{Key: "alertCode", Value: model.AlertCodeNoData}}}}}
+
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).
+		Collection(alertsCollection).
+		DeleteMany(
+			context.TODO(),
+			filter,
 		)
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")
