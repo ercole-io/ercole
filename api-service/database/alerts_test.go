@@ -448,3 +448,92 @@ func (m *MongodbSuite) TestUpdateAlertsStatus() {
 		clean()
 	}
 }
+
+func (m *MongodbSuite) TestRemoveAlertsNODATA() {
+
+	a := model.Alert{
+
+		AlertAffectedTechnology: nil,
+		AlertCategory:           model.AlertCategoryAgent,
+		AlertCode:               model.AlertCodeNoData,
+		AlertSeverity:           model.AlertSeverityCritical,
+		AlertStatus:             model.AlertStatusNew,
+		Date:                    utils.P("2019-11-05T18:02:03Z"),
+		Description:             "No data received from the host myhost in the last 90 days",
+		OtherInfo: map[string]interface{}{
+			"hostname": "foobar",
+		},
+		ID: utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+	}
+
+	b := model.Alert{
+		AlertAffectedTechnology: nil,
+		AlertCategory:           model.AlertCategoryEngine,
+		AlertCode:               model.AlertCodeNewDatabase,
+		AlertSeverity:           model.AlertSeverityCritical,
+		AlertStatus:             model.AlertStatusNew,
+		Date:                    utils.P("2019-11-05T18:02:03Z"),
+		Description:             "No data received from the host myhost in the last 90 days",
+		OtherInfo: map[string]interface{}{
+			"hostname": "foobar",
+			"dbname":   "pippo",
+		},
+		ID: utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
+	}
+
+	testCases := []struct {
+		insert         []model.Alert
+		filter         dto.AlertsFilter
+		expErr         error
+		expectedResult []model.Alert
+	}{
+		{
+			insert:         []model.Alert{},
+			filter:         dto.AlertsFilter{},
+			expErr:         nil,
+			expectedResult: []model.Alert{},
+		},
+		{
+			insert:         []model.Alert{a, b},
+			filter:         dto.AlertsFilter{},
+			expErr:         nil,
+			expectedResult: []model.Alert{b},
+		},
+	}
+
+	defer m.db.Client.Database(m.dbname).Collection(alertsCollection).DeleteMany(context.TODO(), bson.M{})
+
+	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": "foobar"}}
+
+	clean := func() {
+		_, err := m.db.Client.Database(m.dbname).Collection(alertsCollection).
+			DeleteMany(context.TODO(), bson.M{})
+		require.Nil(m.T(), err)
+	}
+
+	for _, tc := range testCases {
+
+		alerts := make([]interface{}, len(tc.insert))
+		for i := range tc.insert {
+			alerts[i] = tc.insert[i]
+		}
+
+		_, _ = m.db.Client.Database(m.dbname).Collection(alertsCollection).
+			InsertMany(context.TODO(), alerts)
+
+		err := m.db.RemoveAlertsNODATA(filter)
+		require.NoError(m.T(), err)
+
+		res, err := m.db.Client.Database(m.dbname).Collection(alertsCollection).
+			Find(context.TODO(), bson.M{})
+		require.Nil(m.T(), err)
+
+		var actualResult []model.Alert
+		err = res.All(context.TODO(), &actualResult)
+		require.Nil(m.T(), err)
+
+		assert.ElementsMatch(m.T(), tc.expectedResult, actualResult)
+
+		clean()
+	}
+}
