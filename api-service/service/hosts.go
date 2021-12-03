@@ -239,6 +239,8 @@ func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (*
 		return nil, err
 	}
 
+	var realApplicationClusters bool
+	var indexList []int
 	if host.Features.Oracle != nil && host.Features.Oracle.Database != nil && host.Features.Oracle.Database.Databases != nil {
 		for i := range host.Features.Oracle.Database.Databases {
 			db := &host.Features.Oracle.Database.Databases[i]
@@ -254,7 +256,23 @@ func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (*
 						count *= float64(model.GetFactorByMetric(licType.Metric))
 						host.Features.Oracle.Database.Databases[i].Licenses[j].Count = count
 					}
+
+					if lic.Name == "Real Application Clusters" && lic.Count > 0 {
+						realApplicationClusters = true
+					}
+
+					if lic.Name == "Real Application Clusters One Node" && lic.Count > 0 {
+						indexList = append(indexList, j)
+					}
 				}
+			}
+
+			if len(indexList) > 0 && realApplicationClusters {
+				for _, k := range indexList {
+					host.Features.Oracle.Database.Databases[i].Licenses[k].Count = 0
+				}
+				realApplicationClusters = false
+				indexList = nil
 			}
 		}
 	}
