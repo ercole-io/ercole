@@ -22,11 +22,12 @@ import (
 	"net/url"
 	"sort"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (hds *HostDataService) oracleDatabasesChecks(previousHostdata, hostdata *model.HostDataBE) {
@@ -436,23 +437,22 @@ func (hds *HostDataService) searchAndAckOldMissingDatabasesAlerts(hostname strin
 
 alerts:
 	for i := range alerts {
-		dbNamesInterf, ok := alerts[i].OtherInfo[dbNamesOtherInfo]
-		if !ok {
+		oldDbNames, err := getDbNamesFromOtherInfo(&alerts[i])
+		if err != nil {
+			return err
+		}
+
+		if len(oldDbNames) == 0 {
 			continue
 		}
 
-		dbNames, ok := dbNamesInterf.([]string)
-		if !ok {
-			return utils.NewErrorf("Can't convert dbNames in []string: %s", dbNamesInterf)
-		}
-
-		for _, dbName := range dbNames {
-			if !newDbs[dbName] {
+		for _, olDbName := range oldDbNames {
+			if !newDbs[olDbName] {
 				continue alerts
 			}
 		}
 
-		// all dbNames are in newDbs
+		// all previously missing dbs are in newDbs
 		f = dto.AlertsFilter{IDs: []primitive.ObjectID{alerts[i].ID}}
 		err = hds.ApiSvcClient.AckAlerts(f)
 		if err != nil {
@@ -461,6 +461,31 @@ alerts:
 	}
 
 	return nil
+}
+
+func getDbNamesFromOtherInfo(alert *model.Alert) ([]string, error) {
+	dbNames := make([]string, 0)
+
+	dbNamesInterf, ok := alert.OtherInfo[dbNamesOtherInfo]
+	if !ok {
+		return dbNames, nil
+	}
+
+	inter, ok := dbNamesInterf.([]interface{})
+	if !ok {
+		return nil, utils.NewErrorf("Can't convert dbNames in []string: %s", dbNamesInterf)
+	}
+
+	for _, n := range inter {
+		s, ok := n.(string)
+		if !ok {
+			return nil, utils.NewErrorf("Can't convert dbName in string: %s", dbNamesInterf)
+		}
+
+		dbNames = append(dbNames, s)
+	}
+
+	return dbNames, nil
 }
 
 func (hds *HostDataService) findMissingDatabasesAndThrowAlerts(hostname string, newDbs, previousDbs map[string]bool) error {
