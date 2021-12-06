@@ -915,13 +915,13 @@ func TestSearchAndAckOldMissingDatabasesAlerts(t *testing.T) {
 		{
 			ID: ids(),
 			OtherInfo: map[string]interface{}{
-				"dbNames": []string{"db1"},
+				"dbNames": []interface{}{"db1"},
 			},
 		},
 		{
 			ID: ids(),
 			OtherInfo: map[string]interface{}{
-				"dbNames": []string{"db1", "db2"},
+				"dbNames": []interface{}{"db1", "db2"},
 			},
 		},
 	}
