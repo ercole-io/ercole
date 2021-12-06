@@ -226,8 +226,8 @@ func TestGetLicensesCompliance(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := []dto.LicenseCompliance{
-		{LicenseTypeID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 10, Covered: 2, Purchased: 10, Compliance: 0.2, Available: 3, Unlimited: false},
-		{LicenseTypeID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 250, Covered: 1875, Purchased: 500, Compliance: 7.5, Available: 250, Unlimited: false},
+		{LicenseTypeID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 10, Covered: 0, Purchased: 10, Compliance: 0, Available: 3, Unlimited: false},
+		{LicenseTypeID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 250, Covered: 0, Purchased: 500, Compliance: 0, Available: 250, Unlimited: false},
 		{LicenseTypeID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Consumed: 11, Covered: 0, Purchased: 0, Compliance: 1, Available: 0, Unlimited: true},
 		{LicenseTypeID: "PID004", ItemDescription: "itemDesc4", Metric: "Computer Perpetual", Consumed: 0.0, Covered: 0.0, Purchased: 40, Compliance: 1, Available: 40, Unlimited: false},
 		{LicenseTypeID: "PID005", ItemDescription: "itemDesc5", Metric: "Computer Perpetual", Consumed: 12, Covered: 0.0, Purchased: 0, Compliance: 0, Available: 0, Unlimited: false},
