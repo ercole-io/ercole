@@ -151,8 +151,8 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 			availableLicenses[agreement.LicenseTypeID] += agreement.AvailableLicensesPerCore
 		}
 
-		for _, host := range agreement.Hosts {
-			coveredLicenses, err = getLicensesCoveredByHost(host.Hostname, agreement.LicenseTypeID, agreement.CoveredLicenses, hostdatasPerHostname)
+		for _, host := range hosts {
+			coveredLicenses, err = getLicensesCoveredByHost(host.Name, agreement.LicenseTypeID, agreement.CoveredLicenses, hostdatasPerHostname)
 			if err != nil {
 				if errors.Is(err, utils.ErrHostNotFound) {
 					as.Log.Warn(err)
@@ -160,7 +160,8 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 					as.Log.Error(err)
 				}
 
-				coveredLicenses += host.CoveredLicensesCount
+				license := licenses[host.LicenseTypeID]
+				coveredLicenses += license.Covered
 			}
 		}
 
