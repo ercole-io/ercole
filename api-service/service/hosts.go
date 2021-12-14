@@ -275,6 +275,10 @@ func (as *APIService) ListEnvironments(location string, environment string, olde
 // DismissHost dismiss the specified host
 func (as *APIService) DismissHost(hostname string) error {
 	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": hostname}}
+	if err := as.RemoveAlertsNODATA(filter); err != nil {
+		as.Log.Errorf("Can't delete alerts by %s", hostname)
+	}
+
 	if err := as.AckAlerts(filter); err != nil {
 		as.Log.Errorf("Can't ack hostname %s alerts by filter", hostname)
 	}
