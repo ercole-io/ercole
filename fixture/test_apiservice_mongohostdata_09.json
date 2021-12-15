@@ -154,7 +154,7 @@
                             "$numberInt": "1"
                         },
                         "instanceName": "pokemons1",
-                        "isCDB": false,
+                        "isCDB": true,
                         "licenses": [
                             {
                                 "count": {
@@ -202,7 +202,11 @@
                         },
                         "nCharset": "AL16UTF16",
                         "name": "pokemons",
-                        "pdbs": [],
+                        "pdbs": [
+                            {
+                                "name":   "PDB1"
+                            }
+                        ],
                         "pgaTarget": {
                             "$numberDouble": "53.45"
                         },
