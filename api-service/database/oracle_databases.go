@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -54,6 +54,12 @@ func (md *MongoDatabase) SearchOracleDatabases(full bool, keywords []string, sor
 					mu.APOEqual("$$lic.name", "Real Application Clusters"),
 					mu.APOGreater("$$lic.count", 0),
 				)),
+				"database.isCDB": "$database.isCDB",
+				"database.pdbs": mu.APOCond("$database.isCDB", bson.M{
+					"$concatArrays": bson.A{
+						mu.APOMap("$database.pdbs", "pdb", "$$pdb.name"),
+					},
+				}, bson.A{}),
 			}),
 			mu.APReplaceWith(mu.APOMergeObjects("$$ROOT", "$database")),
 			mu.APUnset("database"),
@@ -77,6 +83,8 @@ func (md *MongoDatabase) SearchOracleDatabases(full bool, keywords []string, sor
 				"dataguard":    true,
 				"rac":          true,
 				"ha":           true,
+				"isCDB":        true,
+				"pdbs":         true,
 			})),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			mu.APOptionalPagingStage(page, pageSize),
