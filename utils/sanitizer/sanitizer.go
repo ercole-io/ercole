@@ -54,6 +54,10 @@ func (s *Sanitizer) sanitizeRecursive(copy, original reflect.Value) error {
 	case reflect.Interface:
 		originalValue := original.Elem()
 
+		if !originalValue.IsValid() {
+			return nil
+		}
+
 		copyValue := reflect.New(originalValue.Type()).Elem()
 		if err := s.sanitizeRecursive(copyValue, originalValue); err != nil {
 			return err
