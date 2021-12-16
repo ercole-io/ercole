@@ -164,3 +164,30 @@ func TestUpdateHostInfo_InternalServerError(t *testing.T) {
 
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
+
+func TestUpdateHostInfo_SuccessAndSanitized(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockHostDataServiceInterface(mockCtrl)
+	ac := DataController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config:  config.Configuration{},
+		Log:     logger.NewLogger("TEST"),
+	}
+
+	actual, err := ioutil.ReadFile("../../fixture/test_dataservice_hostdata_xss_v1_00.json")
+	require.NoError(t, err)
+
+	expected := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_00.json")
+	as.EXPECT().InsertHostData(expected).Return(nil)
+
+	handler := http.HandlerFunc(ac.InsertHostData)
+	req, err := http.NewRequest("PUT", "/", bytes.NewReader(actual))
+	require.NoError(t, err)
+
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+}
