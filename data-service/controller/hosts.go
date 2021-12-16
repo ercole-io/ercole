@@ -18,18 +18,18 @@ package controller
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/schema"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/utils/sanitizer"
 )
 
 // InsertHostData update the informations about a host using the HostData in the request
 func (ctrl *DataController) InsertHostData(w http.ResponseWriter, r *http.Request) {
-	var hostdata model.HostDataBE
-
 	raw, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewError(err, http.StatusText(http.StatusBadRequest)))
@@ -37,6 +37,19 @@ func (ctrl *DataController) InsertHostData(w http.ResponseWriter, r *http.Reques
 	}
 	defer r.Body.Close()
 
+	if raw, err = ctrl.sanitizeJsonHostdata(raw); err != nil {
+		if errors.Is(err, utils.ErrInvalidHostdata) {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
+			ctrl.Service.AlertInvalidHostData(err, nil)
+			return
+		}
+
+		ctrl.Log.Error(err)
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, nil)
+		return
+	}
+
+	var hostdata model.HostDataBE
 	if validationErr := schema.ValidateHostdata(raw); validationErr != nil {
 		if errors.Is(validationErr, utils.ErrInvalidHostdata) {
 			ctrl.Log.Info(validationErr)
@@ -68,4 +81,25 @@ func (ctrl *DataController) InsertHostData(w http.ResponseWriter, r *http.Reques
 	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
+}
+
+func (ctrl *DataController) sanitizeJsonHostdata(raw []byte) ([]byte, error) {
+	var m map[string]interface{}
+
+	if err := json.Unmarshal(raw, &m); err != nil {
+		return nil, utils.ErrInvalidHostdata
+	}
+
+	sanitizer := sanitizer.NewSanitizer(ctrl.Log)
+
+	sanitizedInt, err := sanitizer.Sanitize(m)
+	if err != nil {
+		return nil, fmt.Errorf("Unable to sanitize: %w", err)
+	}
+
+	if raw, err = json.Marshal(sanitizedInt); err != nil {
+		return nil, fmt.Errorf("Unable to marshal: %w", err)
+	}
+
+	return raw, nil
 }
