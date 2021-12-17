@@ -778,6 +778,16 @@ func TestGetHost_Success(t *testing.T) {
 									LicenseTypeID: "A90611",
 									Count:         2,
 								},
+								{
+									LicenseTypeID: "L76084",
+									Name:          "Real Application Clusters One Node",
+									Count:         2,
+								},
+								{
+									LicenseTypeID: "A90619",
+									Name:          "Real Application Clusters",
+									Count:         1,
+								},
 							},
 						},
 					},
@@ -796,9 +806,23 @@ func TestGetHost_Success(t *testing.T) {
 		{
 			ID: "A90611",
 		},
+		{
+			ID:              "L76084",
+			ItemDescription: "Oracle Real Application Clusters One Node",
+			Metric:          "Named User Plus Perpetual",
+			Cost:            200,
+			Option:          true,
+		},
+		{
+			ID:              "A90619",
+			ItemDescription: "Oracle Real Application Clusters",
+			Metric:          "Processor Perpetual",
+			Cost:            23000,
+			Option:          true,
+		},
 	}
 
-	db.EXPECT().GetOracleDatabaseLicenseTypes().Return(ltRes, nil)
+	db.EXPECT().GetOracleDatabaseLicenseTypes().Return(ltRes, nil).Times(3)
 
 	db.EXPECT().GetHost(
 		"foobar", utils.P("2019-12-05T14:02:03Z"), false,
