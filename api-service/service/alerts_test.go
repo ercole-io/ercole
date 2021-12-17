@@ -275,3 +275,36 @@ func TestSearchAlertsAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "NEW_OPTION", actual.GetCellValue("Alerts", "E3"))
 	assert.Equal(t, "The database ERCSOL19 on ercsoldbx has enabled new features (Diagnostics Pack) on server", actual.GetCellValue("Alerts", "F3"))
 }
+
+func TestUpdateAlertsStatus_Success(t *testing.T) {
+	testCases := []struct {
+		filter dto.AlertsFilter
+		expErr error
+	}{
+		{
+			filter: dto.AlertsFilter{},
+			expErr: nil,
+		},
+		{
+			filter: dto.AlertsFilter{},
+			expErr: aerrMock,
+		},
+	}
+
+	for _, tc := range testCases {
+		mockCtrl := gomock.NewController(t)
+		defer func() {
+			mockCtrl.Finish()
+		}()
+
+		db := NewMockMongoDatabaseInterface(mockCtrl)
+		as := APIService{
+			Database: db,
+		}
+
+		db.EXPECT().UpdateAlertsStatus(tc.filter, model.AlertStatusDismissed).Return(tc.expErr)
+
+		actErr := as.UpdateAlertsStatus(tc.filter, model.AlertStatusDismissed)
+		assert.Equal(t, tc.expErr, actErr)
+	}
+}

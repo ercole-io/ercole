@@ -100,3 +100,7 @@ func (as *APIService) AckAlerts(alertsFilter dto.AlertsFilter) error {
 func (as *APIService) RemoveAlertsNODATA(alertsFilter dto.AlertsFilter) error {
 	return as.Database.RemoveAlertsNODATA(alertsFilter)
 }
+
+func (as *APIService) UpdateAlertsStatus(alertsFilter dto.AlertsFilter, newStatus string) error {
+	return as.Database.UpdateAlertsStatus(alertsFilter, newStatus)
+}

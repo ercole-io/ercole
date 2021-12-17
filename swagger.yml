@@ -2545,7 +2545,7 @@ paths:
               example:
                 value:
                   filter:
-                    id: ['000000000000000000000000']
+                    ids: ['000000000000000000000000']
                     alertCategory: AGENT
                     alertStatus: NEW
   /hosts/clusters:
