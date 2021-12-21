@@ -37,6 +37,8 @@ type ThunderServiceInterface interface {
 	DeleteOciProfile(id primitive.ObjectID) error
 	GetOciCompartments(profiles []string) ([]model.OciCompartment, error)
 	GetOciUnusedLoadBalancers(profiles []string) ([]model.OciErcoleRecommendation, error)
+	GetOciComputeInstancesIdle(profiles []string) ([]model.OciErcoleRecommendation, error)
+	GetOciBlockStorageRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error)
 }
 
 type ThunderService struct {

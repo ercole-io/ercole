@@ -81,8 +81,8 @@ func (md *MongoDatabase) GetOciProfiles(hidePrivateKey bool) ([]model.OciProfile
 	if hidePrivateKey {
 		opts.SetProjection(bson.M{"privateKey": 0})
 	}
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciProfile_collection).Find(ctx, bson.D{}, opts)
 
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciProfile_collection).Find(ctx, bson.D{}, opts)
 	if err != nil {
 		return nil, utils.NewError(cur.Err(), "DB ERROR")
 	}

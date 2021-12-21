@@ -15,10 +15,22 @@
 
 package model
 
-// Compartment holds informations about an Oracle Cloud compartment
-type OciCompartment struct {
-	CompartmentID string `json:"compartmentID"`
-	Name          string `json:"name"`
-	Description   string `json:"description"`
-	TimeCreating  string `json:"timeCreating"`
+// OciVolume holds informations about an Oracle Cloud Volume
+type OciVolume struct {
+	CompartmentID      string `json:"compartmentID"`
+	ResourceID         string `json:"resourceID"`
+	Name               string `json:"name"`
+	Size               string `json:"size"`
+	VpusPerGB          string `json:"vpuPerGB"`
+	AvailabilityDomain string `json:"availabilityDomain"`
+	State              string `json:"availabilityDomain"`
+}
+
+type OciResourcePerformance struct {
+	ResourceID string  `json:"resourceID"`
+	Name       string  `json:"name"`
+	Size       int     `json:"size"`
+	VpusPerGB  int     `json:"vpuPerGB"`
+	Throughput float64 `json:"throughput"`
+	Iops       int     `json:"iops"`
 }
