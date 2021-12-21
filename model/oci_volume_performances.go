@@ -15,10 +15,22 @@
 
 package model
 
-// Compartment holds informations about an Oracle Cloud compartment
-type OciCompartment struct {
-	CompartmentID string `json:"compartmentID"`
-	Name          string `json:"name"`
-	Description   string `json:"description"`
-	TimeCreating  string `json:"timeCreating"`
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+type OciVolumePerformance struct {
+	ID           primitive.ObjectID `json:"id" bson:"_id"`
+	Vpu          int                `json:"vpu" bson:"vpu"`
+	Performances []OciPerformance   `json:"performances" bson:"performances"`
+}
+
+type OciPerformance struct {
+	Size   int           `json:"size" bson:"size"`
+	Values OciPerfValues `json:"values" bson:"values"`
+}
+
+type OciPerfValues struct {
+	MaxThroughput float64 `json:"maxThroughput" bson:"maxThroughput"`
+	MaxIOPS       int     `json:"maxIOPS" bson:"maxIOPS"`
 }
