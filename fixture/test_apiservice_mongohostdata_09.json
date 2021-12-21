@@ -271,7 +271,17 @@
                         "segmentsSize": {
                             "$numberDouble": "3.0"
                         },
-                        "services": [],
+                        "services": [
+                            {
+                                "name": "ECXSERVER",
+                                "creationDate":{
+                                    "$date": {
+                                        "$numberLong": "1561397660000"
+                                    }
+                                },
+                                "enabled": false
+                            }
+                        ],
                         "status": "OPEN",
                         "tablespaces": [
                             {
