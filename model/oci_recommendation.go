@@ -27,14 +27,15 @@ type OciRecommendation struct {
 }
 
 type OciErcoleRecommendation struct {
-	Type          string `json:"type"`
-	CompartmentID string `json:"compartmentID"`
-	Name          string `json:"name"`
-	ResourceID    string `json:"resourceID"`
+	Type            string `json:"type"`
+	CompartmentID   string `json:"compartmentID"`
+	CompartmentName string `json:"compartmentName"`
+	Name            string `json:"name"`
+	ResourceID      string `json:"resourceID"`
 }
 
 const (
-	RecommendationTypeBlockStorage        = "Block Storage"
+	RecommendationTypeBlockStorage        = "Block Storage Performance"
 	RecommendationTypeComputeInstanceIdle = "Compute Instance Idle"
 	RecommendationTypeOldSnapshot         = "Old Snapshot"
 	RecommendationTypeUnusedResource      = "Unused Resource"
