@@ -148,3 +148,15 @@ func (m *MongodbSuite) TestRemoveOracleDatabaseLicenseType() {
 	err = m.db.RemoveOracleDatabaseLicenseType("Test")
 	require.Equal(m.T(), utils.ErrOracleDatabaseLicenseTypeIDNotFound, err)
 }
+
+func (m *MongodbSuite) TestGetOracleDatabaseLicenseType() {
+	defer m.db.Client.Database(m.dbname).Collection(oracleDbLicenseTypesCollection).DeleteMany(context.TODO(), bson.M{})
+
+	err := m.db.InsertOracleDatabaseLicenseType(licenseTypeExample)
+	require.NoError(m.T(), err)
+
+	val, err := m.db.GetOracleDatabaseLicenseType(licenseTypeExample.ID)
+	require.NoError(m.T(), err)
+
+	assert.Equal(m.T(), &licenseTypeExample, val)
+}
