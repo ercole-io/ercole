@@ -23,8 +23,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"go.mongodb.org/mongo-driver/mongo"
-
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
@@ -66,7 +64,7 @@ func TestInsertHostData_Success(t *testing.T) {
 			asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
 				assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
 			}).Return(nil),
-			db.EXPECT().DismissHost("rac1_x").Return(nil, nil),
+			db.EXPECT().DismissHost("rac1_x").Return(nil),
 			db.EXPECT().InsertHostData(gomock.Any()).
 				Do(func(newHD model.HostDataBE) {
 					assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
@@ -78,7 +76,7 @@ func TestInsertHostData_Success(t *testing.T) {
 					assert.Equal(t, hd.Environment, newHD.Environment)
 					//I assume that other fields are correct
 				}).
-				Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil),
+				Return(nil),
 			db.EXPECT().DeleteNoDataAlertByHost(hd.Hostname).Return(nil),
 		)
 
@@ -96,7 +94,7 @@ func TestInsertHostData_Success(t *testing.T) {
 			asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
 				assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
 			}).Return(nil),
-			db.EXPECT().DismissHost("rac1_x").Return(nil, nil),
+			db.EXPECT().DismissHost("rac1_x").Return(nil),
 			db.EXPECT().InsertHostData(gomock.Any()).
 				Do(func(newHD model.HostDataBE) {
 					assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
@@ -108,7 +106,7 @@ func TestInsertHostData_Success(t *testing.T) {
 					assert.Equal(t, hd.Environment, newHD.Environment)
 					//I assume that other fields are correct
 				}).
-				Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil),
+				Return(nil),
 			db.EXPECT().DeleteNoDataAlertByHost(hd.Hostname).Return(nil),
 		)
 
@@ -122,7 +120,7 @@ func TestInsertHostData_Success(t *testing.T) {
 			db.EXPECT().FindPatchingFunction("rac1_x").Return(model.PatchingFunction{}, nil),
 			db.EXPECT().FindMostRecentHostDataOlderThan(hd.Hostname, utils.P("2019-11-05T14:02:03Z")).
 				Return(previousHostdata, nil),
-			db.EXPECT().DismissHost("rac1_x").Return(nil, nil),
+			db.EXPECT().DismissHost("rac1_x").Return(nil),
 			db.EXPECT().InsertHostData(gomock.Any()).
 				Do(func(newHD model.HostDataBE) {
 					assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
@@ -134,7 +132,7 @@ func TestInsertHostData_Success(t *testing.T) {
 					assert.Equal(t, hd.Environment, newHD.Environment)
 					//I assume that other fields are correct
 				}).
-				Return(&mongo.InsertOneResult{InsertedID: utils.Str2oid("5dd3a8db184dbf295f0376f2")}, nil),
+				Return(nil),
 			db.EXPECT().DeleteNoDataAlertByHost(hd.Hostname).Return(nil),
 		)
 
@@ -168,7 +166,7 @@ func TestInsertHostData_DatabaseError1(t *testing.T) {
 		asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
 			assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
 		}).Return(nil),
-		db.EXPECT().DismissHost("rac1_x").Return(nil, aerrMock),
+		db.EXPECT().DismissHost("rac1_x").Return(aerrMock),
 	)
 
 	err := hds.InsertHostData(hd)
@@ -200,8 +198,8 @@ func TestInsertHostData_DatabaseError2(t *testing.T) {
 		asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
 			assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
 		}).Return(nil),
-		db.EXPECT().DismissHost("rac1_x").Return(nil, nil),
-		db.EXPECT().InsertHostData(gomock.Any()).Return(nil, aerrMock).Do(func(newHD model.HostDataBE) {
+		db.EXPECT().DismissHost("rac1_x").Return(nil),
+		db.EXPECT().InsertHostData(gomock.Any()).Return(aerrMock).Do(func(newHD model.HostDataBE) {
 			assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
 			assert.False(t, newHD.Archived)
 			assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
@@ -270,8 +268,8 @@ func TestInsertHostData_HttpError(t *testing.T) {
 		asc.EXPECT().ThrowNewAlert(gomock.Any()).Do(func(a model.Alert) {
 			assert.Equal(t, "The host rac1_x was added to ercole", a.Description)
 		}).Return(nil),
-		db.EXPECT().DismissHost("rac1_x").Return(nil, nil),
-		db.EXPECT().InsertHostData(gomock.Any()).Return(nil, aerrMock).Do(func(newHD model.HostDataBE) {
+		db.EXPECT().DismissHost("rac1_x").Return(nil),
+		db.EXPECT().InsertHostData(gomock.Any()).Return(aerrMock).Do(func(newHD model.HostDataBE) {
 			assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.ID.Timestamp())
 			assert.False(t, newHD.Archived)
 			assert.Equal(t, utils.P("2019-11-05T14:02:03Z"), newHD.CreatedAt)
