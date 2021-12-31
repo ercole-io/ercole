@@ -54,6 +54,24 @@ func (md *MongoDatabase) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabase
 	return licenseTypes, nil
 }
 
+func (md *MongoDatabase) GetOracleDatabaseLicenseType(id string) (*model.OracleDatabaseLicenseType, error) {
+	res := md.Client.Database(md.Config.Mongodb.DBName).
+		Collection(oracleDbLicenseTypesCollection).
+		FindOne(context.TODO(), bson.M{
+			"_id": id,
+		})
+	if res.Err() != nil {
+		return nil, utils.NewError(res.Err(), "DB ERROR")
+	}
+
+	var out *model.OracleDatabaseLicenseType
+	if err := res.Decode(&out); err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	return out, nil
+}
+
 // RemoveOracleDatabaseLicenseType remove a licence type
 func (md *MongoDatabase) RemoveOracleDatabaseLicenseType(id string) error {
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbLicenseTypesCollection).

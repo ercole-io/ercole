@@ -89,38 +89,57 @@ func (m *MongodbSuite) TestSearchOracleDatabaseUsedLicenses() {
 		assert.JSONEq(t, utils.ToJSON(expected), utils.ToJSON(out))
 	})
 
-	//TODO
-	//m.T().Run("should_be_sorted", func(t *testing.T) {
-	//	out, err := m.db.SearchOracleDatabaseUsedLicenses("licenseName", true, -1, -1, "", "", utils.MAX_TIME)
-	//	m.Require().NoError(err)
+	m.T().Run("should_be_sorted", func(t *testing.T) {
+		out, err := m.db.SearchOracleDatabaseUsedLicenses("licenseName", true, -1, -1, "", "", utils.MAX_TIME)
+		m.Require().NoError(err)
 
-	//	var expectedOut interface{} = []interface{}{
-	//		map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Real Application Clusters", "usedLicenses": 1.5},
-	//		map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "usedLicenses": 0.5},
-	//		map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle ENT", "usedLicenses": 0.5},
-	//		map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
-	//		map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
-	//	}
+		expected := dto.OracleDatabaseUsedLicenseSearchResponse{
+			Content: []dto.OracleDatabaseUsedLicense{
+				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90611", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90649", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90611", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90649", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90619", UsedLicenses: 1.5, Ignored: false},
+			},
+			Metadata: dto.PagingMetadata{
+				Empty:         false,
+				First:         true,
+				Last:          true,
+				Number:        0,
+				Size:          5,
+				TotalElements: 5,
+				TotalPages:    0,
+			},
+		}
 
-	//	assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	//})
+		assert.JSONEq(t, utils.ToJSON(expected), utils.ToJSON(out))
+	})
 
-	//m.T().Run("should_not_filter", func(t *testing.T) {
-	//	out, err := m.db.SearchOracleDatabaseUsedLicenses("", false, -1, -1, "", "", utils.MAX_TIME)
-	//	m.Require().NoError(err)
+	m.T().Run("should_not_filter", func(t *testing.T) {
+		out, err := m.db.SearchOracleDatabaseUsedLicenses("", false, -1, -1, "", "", utils.MAX_TIME)
+		m.Require().NoError(err)
 
-	//	var expectedOut []interface{} = []interface{}{
-	//		//foobar3
-	//		map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Oracle ENT", "usedLicenses": 0.5},
-	//		map[string]interface{}{"hostname": "test-db3", "dbName": "foobar3", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
-	//		//foobar4
-	//		map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Oracle ENT", "usedLicenses": 0.5},
-	//		map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Diagnostics Pack", "usedLicenses": 0.5},
-	//		map[string]interface{}{"hostname": "test-db3", "dbName": "foobar4", "licenseName": "Real Application Clusters", "usedLicenses": 1.5},
-	//	}
+		expected := dto.OracleDatabaseUsedLicenseSearchResponse{
+			Content: []dto.OracleDatabaseUsedLicense{
+				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90611", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90649", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90611", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90649", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90619", UsedLicenses: 1.5, Ignored: false},
+			},
+			Metadata: dto.PagingMetadata{
+				Empty:         false,
+				First:         true,
+				Last:          true,
+				Number:        0,
+				Size:          5,
+				TotalElements: 5,
+				TotalPages:    0,
+			},
+		}
 
-	//	assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	//})
+		assert.JSONEq(t, utils.ToJSON(expected), utils.ToJSON(out))
+	})
 }
 
 func (m *MongodbSuite) TestLicenseHostIgnoredField_Success() {

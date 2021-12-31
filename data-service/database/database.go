@@ -32,8 +32,8 @@ import (
 
 type MongoDatabaseInterface interface {
 	Init()
-	DismissHost(hostname string) (*mongo.UpdateResult, error)
-	InsertHostData(hostData model.HostDataBE) (*mongo.InsertOneResult, error)
+	DismissHost(hostname string) error
+	InsertHostData(hostData model.HostDataBE) error
 	GetCurrentHostnames() ([]string, error)
 	// FindOldCurrentHostnames return the list of current hosts names that haven't sent hostdata after time t
 	FindOldCurrentHostnames(t time.Time) ([]string, error)

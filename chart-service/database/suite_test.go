@@ -79,6 +79,11 @@ func (db *MongodbSuite) InsertHostData(hostData model.RawObject) {
 	db.Require().NoError(err)
 }
 
+func (db *MongodbSuite) InsertHostDataHistory(hostData model.RawObject) {
+	_, err := db.db.Client.Database(db.dbname).Collection("oracle_database_licenses_history").InsertOne(context.TODO(), hostData)
+	db.Require().NoError(err)
+}
+
 func (db *MongodbSuite) RunTestQuery(testName string, query bson.A, check func(out []map[string]interface{})) {
 	db.Run(testName, func() {
 		cur, err := db.db.Client.Database(db.db.Config.Mongodb.DBName).Collection("hosts").Aggregate(
