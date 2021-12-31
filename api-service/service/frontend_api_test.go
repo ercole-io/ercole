@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,188 +15,208 @@
 
 package service
 
-//TODO Reenable tests
+import (
+	"testing"
 
-//func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
-//	mockCtrl := gomock.NewController(t)
-//	defer mockCtrl.Finish()
-//	db := NewMockMongoDatabaseInterface(mockCtrl)
-//	as := APIService{
-//		Database: db,
-//	}
+	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
 
-//	expectedRes := map[string]interface{}{
-//		"technologies": map[string]interface{}{
-//			"technologies": []map[string]interface{}{
-//				{
-//					"compliance": 7.0 / 10.0,
-//					"product":    model.TechnologyOracleDatabase,
-//					"hostsCount": 8,
-//					"unpaidDues": 45,
-//				},
-//				{
-//					"compliance": 1.0,
-//					"unpaidDues": 0,
-//					"product":    model.TechnologyMariaDBFoundationMariaDB,
-//					"hostsCount": 0,
-//				},
-//				{
-//					"compliance": 1.0,
-//					"unpaidDues": 0,
-//					"product":    model.TechnologyPostgreSQLPostgreSQL,
-//					"hostsCount": 0,
-//				},
-//				{
-//					"compliance": 1.0,
-//					"unpaidDues": 0,
-//					"product":    model.TechnologyOracleMySQL,
-//					"hostsCount": 0,
-//				},
-//				{
-//					"compliance": 1.0,
-//					"unpaidDues": 0,
-//					"product":    model.TechnologyMicrosoftSQLServer,
-//					"hostsCount": 0,
-//				},
-//			},
-//			"total": map[string]interface{}{
-//				"compliance": 7.0 / 10.0,
-//				"unpaidDues": 45,
-//				"hostsCount": 20,
-//			},
-//		},
-//		"features": map[string]interface{}{
-//			"Oracle/Database": true,
-//			"Oracle/Exadata":  true,
-//		},
-//	}
+func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
 
-//	getTechnologiesUsageRes := map[string]float64{
-//		"Oracle/Database": 8,
-//		"Oracle/Exadata":             0,
-//	}
+	expectedRes := map[string]interface{}{
+		"technologies": map[string]interface{}{
+			"technologies": []map[string]interface{}{
+				{
+					"compliance": 0,
+					"product":    model.TechnologyOracleDatabase,
+					"hostsCount": 8,
+					"unpaidDues": 0,
+				},
+				{
+					"compliance": 0,
+					"unpaidDues": 0,
+					"product":    model.TechnologyOracleMySQL,
+					"hostsCount": 0,
+				},
+				{
+					"compliance": 0,
+					"unpaidDues": 0,
+					"product":    model.TechnologyMariaDBFoundationMariaDB,
+					"hostsCount": 0,
+				},
+				{
+					"compliance": 0,
+					"unpaidDues": 0,
+					"product":    model.TechnologyPostgreSQLPostgreSQL,
+					"hostsCount": 0,
+				},
+				{
+					"compliance": 0,
+					"unpaidDues": 0,
+					"product":    model.TechnologyMicrosoftSQLServer,
+					"hostsCount": 0,
+				},
+			},
+			"total": map[string]interface{}{
+				"compliance": 0,
+				"unpaidDues": 0,
+				"hostsCount": 20,
+			},
+		},
+		"features": map[string]interface{}{
+			"Oracle/Database": true,
+			"Oracle/Exadata":  true,
+		},
+	}
 
-//	db.EXPECT().
-//		GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
-//		Return(getTechnologiesUsageRes, nil).AnyTimes().MinTimes(1)
+	getTechnologiesUsageRes := map[string]float64{
+		"Oracle/Database": 8,
+		"Oracle/Exadata":  0,
+	}
 
-//	db.EXPECT().
-//		GetHostsCountStats("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
-//		Return(20, nil).AnyTimes().MinTimes(1)
+	agreements := []dto.OracleDatabaseAgreementFE{
+		{
+			ItemDescription: "foobar",
+		},
+	}
 
-//	listLicensesRes := []interface{}{
-//		map[string]interface{}{
-//			"compliance":       false,
-//			"count":            4,
-//			"used":             4,
-//			"_id":              "Partitioning",
-//			"totalCost":        40,
-//			"paidCost":         40,
-//			"costPerProcessor": 10,
-//		},
-//		map[string]interface{}{
-//			"compliance":       false,
-//			"count":            3,
-//			"used":             6,
-//			"_id":              "Diagnostics Pack",
-//			"totalCost":        90,
-//			"paidCost":         45,
-//			"costPerProcessor": 15,
-//		},
-//		map[string]interface{}{
-//			"compliance":       true,
-//			"count":            5,
-//			"used":             0,
-//			"_id":              "Advanced Analytics",
-//			"totalCost":        0,
-//			"paidCost":         5,
-//			"costPerProcessor": 1,
-//		},
-//	}
-//	db.EXPECT().
-//		SearchLicenses("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
-//		Return(listLicensesRes, nil).AnyTimes().MinTimes(1)
+	licenses := []dto.HostUsingOracleDatabaseLicenses{
+		{
+			LicenseTypeID: "A90649",
+			Name:          "Puzzait",
+			Type:          "cluster",
+			LicenseCount:  70,
+			OriginalCount: 70,
+		},
+	}
 
-//	getTechnologiesUsageRes2 := map[string]float64{
-//		"Oracle/Database": 8,
-//		"Oracle/Exadata":             2,
-//	}
-//	db.EXPECT().
-//		GetHostsCountUsingTechnologies("", "", utils.MAX_TIME).
-//		Return(getTechnologiesUsageRes2, nil)
+	ltRes := []model.OracleDatabaseLicenseType{
+		{
+			ItemDescription: "foobar",
+		},
+	}
 
-//	res, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
+	db.EXPECT().
+		GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		Return(getTechnologiesUsageRes, nil).AnyTimes().MinTimes(1)
 
-//	require.NoError(t, err)
-//	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
-//}
+	db.EXPECT().
+		GetHostsCountStats("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		Return(20, nil).AnyTimes().MinTimes(1)
 
-//func TestGetInfoForFrontendDashboard_Fail1(t *testing.T) {
-//	mockCtrl := gomock.NewController(t)
-//	defer mockCtrl.Finish()
-//	db := NewMockMongoDatabaseInterface(mockCtrl)
-//	as := APIService{
-//		Database: db,
-//	}
-//
-//	db.EXPECT().
-//		GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
-//		Return(nil, aerrMock).AnyTimes().MinTimes(1)
-//
-//	_, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
-//
-//	require.Equal(t, aerrMock, err)
-//}
+	db.EXPECT().
+		ListOracleDatabaseAgreements().
+		Return(agreements, nil).AnyTimes().MinTimes(1)
 
-//func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
-//	mockCtrl := gomock.NewController(t)
-//	defer mockCtrl.Finish()
-//	db := NewMockMongoDatabaseInterface(mockCtrl)
-//	as := APIService{
-//		Database: db,
-//	}
+	db.EXPECT().
+		ListHostUsingOracleDatabaseLicenses().
+		Return(licenses, nil).AnyTimes().MinTimes(1)
 
-//	getTechnologiesUsageRes := map[string]float64{
-//		"Oracle/Database": 8,
-//		"Oracle/Exadata":  0,
-//	}
+	db.EXPECT().
+		GetOracleDatabaseLicenseTypes().
+		Return(ltRes, nil).AnyTimes().MinTimes(1)
 
-//	db.EXPECT().
-//		GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
-//		Return(getTechnologiesUsageRes, nil).AnyTimes().MinTimes(1)
-//	db.EXPECT().
-//		GetHostsCountStats("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
-//		Return(20, nil).AnyTimes().MinTimes(1)
+	getTechnologiesUsageRes2 := map[string]float64{
+		"Oracle/Database": 8,
+		"Oracle/Exadata":  2,
+	}
+	db.EXPECT().
+		GetHostsCountUsingTechnologies("", "", utils.MAX_TIME).
+		Return(getTechnologiesUsageRes2, nil)
 
-//	listLicensesRes := []interface{}{
-//		map[string]interface{}{
-//			"Compliance": false,
-//			"Count":      4,
-//			"Used":       4,
-//			"_id":        "Partitioning",
-//		},
-//		map[string]interface{}{
-//			"Compliance": false,
-//			"Count":      3,
-//			"Used":       6,
-//			"_id":        "Diagnostics Pack",
-//		},
-//		map[string]interface{}{
-//			"Compliance": true,
-//			"Count":      5,
-//			"Used":       0,
-//			"_id":        "Advanced Analytics",
-//		},
-//	}
-//	db.EXPECT().
-//		SearchLicenses("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
-//		Return(listLicensesRes, nil).AnyTimes().MinTimes(1)
+	res, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
 
-//	db.EXPECT().
-//		GetHostsCountUsingTechnologies("", "", utils.MAX_TIME).
-//		Return(nil, aerrMock)
+	require.NoError(t, err)
+	assert.JSONEq(t, utils.ToJSON(expectedRes), utils.ToJSON(res))
+}
 
-//	_, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
+func TestGetInfoForFrontendDashboard_Fail1(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
 
-//	require.Equal(t, aerrMock, err)
-//}
+	db.EXPECT().
+		GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		Return(nil, aerrMock).AnyTimes().MinTimes(1)
+
+	_, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
+
+	require.Equal(t, aerrMock, err)
+}
+
+func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
+
+	getTechnologiesUsageRes := map[string]float64{
+		"Oracle/Database": 8,
+		"Oracle/Exadata":  0,
+	}
+
+	agreements := []dto.OracleDatabaseAgreementFE{
+		{
+			ItemDescription: "foobar",
+		},
+	}
+
+	licenses := []dto.HostUsingOracleDatabaseLicenses{
+		{
+			LicenseTypeID: "A90649",
+			Name:          "Puzzait",
+			Type:          "cluster",
+			LicenseCount:  70,
+			OriginalCount: 70,
+		},
+	}
+
+	ltRes := []model.OracleDatabaseLicenseType{
+		{
+			ItemDescription: "foobar",
+		},
+	}
+
+	db.EXPECT().
+		GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		Return(getTechnologiesUsageRes, nil).AnyTimes().MinTimes(1)
+	db.EXPECT().
+		GetHostsCountStats("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+		Return(20, nil).AnyTimes().MinTimes(1)
+
+	db.EXPECT().
+		GetHostsCountUsingTechnologies("", "", utils.MAX_TIME).
+		Return(nil, aerrMock)
+
+	db.EXPECT().
+		ListOracleDatabaseAgreements().
+		Return(agreements, nil).AnyTimes().MinTimes(1)
+
+	db.EXPECT().
+		ListHostUsingOracleDatabaseLicenses().
+		Return(licenses, nil).AnyTimes().MinTimes(1)
+
+	db.EXPECT().
+		GetOracleDatabaseLicenseTypes().
+		Return(ltRes, nil).AnyTimes().MinTimes(1)
+
+	_, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
+
+	require.Equal(t, aerrMock, err)
+}

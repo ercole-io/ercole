@@ -36,7 +36,6 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-//TODO: add SearchHostsFilters tests for SearchHosts!
 func TestSearchHosts_JSONPaged(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
