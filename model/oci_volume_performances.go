@@ -15,14 +15,9 @@
 
 package model
 
-import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
-)
-
 type OciVolumePerformance struct {
-	ID           primitive.ObjectID `json:"id" bson:"_id"`
-	Vpu          int                `json:"vpu" bson:"vpu"`
-	Performances []OciPerformance   `json:"performances" bson:"performances"`
+	Vpu          int              `json:"vpu" bson:"vpu"`
+	Performances []OciPerformance `json:"performances" bson:"performances"`
 }
 
 type OciPerformance struct {
