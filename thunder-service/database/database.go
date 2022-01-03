@@ -38,11 +38,6 @@ type MongoDatabaseInterface interface {
 	AddOciProfile(profile model.OciProfile) error
 	DeleteOciProfile(id primitive.ObjectID) error
 	UpdateOciProfile(profile model.OciProfile) error
-	GetOciVolumePerformances() ([]model.OciVolumePerformance, error)
-	AddOciVolumePerformance(profile model.OciVolumePerformance) error
-	DeleteOciVolumePerformance(id primitive.ObjectID) error
-	UpdateOciVolumePerformance(profile model.OciVolumePerformance) error
-	GetOciVolumePerformance(vpu int, size int) (*model.OciVolumePerformance, error)
 }
 
 // MongoDatabase is a implementation

@@ -18,7 +18,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	multierror "github.com/hashicorp/go-multierror"
@@ -323,7 +322,6 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 
 		// retrieve metrics data for each compartment
 		for _, compartment := range listCompartments {
-			fmt.Println("ABR - Compartment ID : ", compartment.CompartmentID)
 
 			var vols = make(map[string]model.OciResourcePerformance)
 
@@ -363,7 +361,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 					continue
 				}
 
-				for i, s := range resp.Items {
+				for _, s := range resp.Items {
 					tempId := s.Dimensions["resourceId"]
 					if resTmp, ok = vols[tempId]; ok {
 						if s.Metadata["unit"] == "bytes" {
@@ -371,10 +369,6 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						}
 						vols[tempId] = resTmp
 					}
-
-					fmt.Println("AB Read Throughput------------Resource Id = ", i, "  ", s.Dimensions["resourceId"])
-					fmt.Println("AB Read Throughput------------Value = ", i, "  ", *s.AggregatedDatapoints[0].Value)
-					fmt.Println("AB Read Throughput------------Unit = ", i, "  ", s.Metadata["unit"])
 				}
 
 				// second query is about Write Throughput
@@ -385,7 +379,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 					continue
 				}
 
-				for i, s := range resp.Items {
+				for _, s := range resp.Items {
 					tempId := s.Dimensions["resourceId"]
 
 					if resTmp, ok = vols[tempId]; ok {
@@ -394,10 +388,6 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						}
 						vols[tempId] = resTmp
 					}
-
-					fmt.Println("AB Write Throughput------------Resource Id = ", i, "  ", s.Dimensions["resourceId"])
-					fmt.Println("AB Write Throughput------------Value = ", i, "  ", *s.AggregatedDatapoints[0].Value)
-					fmt.Println("AB Write Throughput------------Unit = ", i, "  ", s.Metadata["unit"])
 				}
 
 				// third query is about Read Ops
@@ -408,7 +398,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 					continue
 				}
 
-				for i, s := range resp.Items {
+				for _, s := range resp.Items {
 					tempId := s.Dimensions["resourceId"]
 					if resTmp, ok = vols[tempId]; ok {
 						if s.Metadata["unit"] == "operations" {
@@ -416,10 +406,6 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						}
 						vols[tempId] = resTmp
 					}
-
-					fmt.Println("AB Read Ops------------Resource Id = ", i, "  ", s.Dimensions["resourceId"])
-					fmt.Println("AB Read Ops------------Value = ", i, "  ", *s.AggregatedDatapoints[0].Value)
-					fmt.Println("AB Read Ops------------Unit = ", i, "  ", s.Metadata["unit"])
 				}
 
 				// fourth query is about Write Ops
@@ -430,7 +416,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 					continue
 				}
 
-				for i, s := range resp.Items {
+				for _, s := range resp.Items {
 					tempId := s.Dimensions["resourceId"]
 
 					if resTmp, ok = vols[tempId]; ok {
@@ -439,10 +425,6 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						}
 						vols[tempId] = resTmp
 					}
-
-					fmt.Println("AB Write Ops------------Resource Id = ", i, "  ", s.Dimensions["resourceId"])
-					fmt.Println("AB Write Ops------------Value = ", i, "  ", *s.AggregatedDatapoints[0].Value)
-					fmt.Println("AB Write Ops------------Unit = ", i, "  ", s.Metadata["unit"])
 				}
 
 				// N.B devo resettare la mappa ad ogni compartment
@@ -450,13 +432,10 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				if len(vols) != 0 {
 					for _, v := range vols {
 						isOpt, err := as.isOptimizable(v)
-						fmt.Println("")
-						fmt.Println("ABR - OPTimize VALUES --- ", "  Name:", v.Name, "  Vpu:", v.VpusPerGB, "  Size:", v.Size, "  Throughput:", v.Throughput, "  Iops:", v.Iops, "  Optimizable:", isOpt)
 						if err != nil {
 							merr = multierror.Append(merr, err)
 							continue
 						}
-
 						if isOpt {
 							recommendation.Type = model.RecommendationTypeBlockStorage
 							recommendation.CompartmentID = compartment.CompartmentID
@@ -476,19 +455,60 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 
 func (as *ThunderService) isOptimizable(res model.OciResourcePerformance) (bool, error) {
 	var ociPerfs *model.OciVolumePerformance
-	var merr error
 
-	ociPerfs, err := as.Database.GetOciVolumePerformance(res.VpusPerGB, res.Size) //??//
-	if err != nil {
-		merr = multierror.Append(merr, err)
-		return false, merr
+	if res.VpusPerGB == 0 {
+		return false, nil
 	}
+
+	ociPerfs = as.getOciVolumePerformance(res.VpusPerGB, res.Size)
 
 	if res.Throughput < (ociPerfs.Performances[0].Values.MaxThroughput/2.0) && res.Iops < (ociPerfs.Performances[0].Values.MaxIOPS)/2.0 {
 		return true, nil
 	} else {
 		return false, nil
 	}
+}
+
+func (as *ThunderService) getOciVolumePerformance(vpu int, size int) *model.OciVolumePerformance {
+	var baseIopsPerGB float64
+	var maxIops int
+	var baseThroughput float64
+	var maxTroughput float64
+	var retThroughput float64
+	var retIOPS int
+
+	if vpu != 0 {
+		baseIopsPerGB = 1.5*float64(vpu) + 45
+		maxIops = 2500 * vpu
+		baseThroughput = (12*float64(vpu) + 360) / 1000
+		maxTroughput = 20*float64(vpu) + 280
+	} else {
+		baseIopsPerGB = 2
+		maxIops = 3000
+		baseThroughput = 240.0 / 15.0 / 1000.0
+		maxTroughput = 480 / 15
+	}
+
+	var valRet model.OciVolumePerformance
+	var perfTmp model.OciPerformance
+	var valTmp model.OciPerfValues
+
+	valTmp.MaxThroughput = baseThroughput * float64(size)
+	if retThroughput > maxTroughput {
+		valTmp.MaxThroughput = maxTroughput
+	}
+
+	valTmp.MaxIOPS = int(baseIopsPerGB) * size
+	if retIOPS > maxIops {
+		valTmp.MaxIOPS = maxIops
+	}
+
+	valRet.Vpu = vpu
+	perfTmp.Size = size
+	perfTmp.Values = valTmp
+	valRet.Performances = append(valRet.Performances, perfTmp)
+
+	return &valRet
 }
 
 func (as *ThunderService) getOciInstances(customConfigProvider common.ConfigurationProvider, compartmentID string) (map[string]string, error) {
