@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -378,123 +378,70 @@ func TestSearchOracleDatabases_Fail(t *testing.T) {
 	assert.Equal(t, aerrMock, err)
 }
 
-//TODO
-//func TestSearchLicenses_Success(t *testing.T) {
-//	mockCtrl := gomock.NewController(t)
-//	defer mockCtrl.Finish()
-//	db := NewMockMongoDatabaseInterface(mockCtrl)
-//	as := APIService{
-//		Database: db,
-//	}
+func TestSearchOracleDatabaseUsedLicenses_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
 
-//	expectedRes := []interface{}{
-//		map[string]interface{}{
-//			"Compliance": false,
-//			"Count":      0,
-//			"Used":       5,
-//			"_id":        "Oracle ENT",
-//		},
-//		map[string]interface{}{
-//			"Compliance": true,
-//			"Count":      0,
-//			"Used":       0,
-//			"_id":        "Oracle STD",
-//		},
-//	}
+	expectedRes := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "LID001",
+				DbName:        "erclin5dbx",
+				Hostname:      "pippo",
+				UsedLicenses:  3,
+			},
+			{
+				LicenseTypeID: "LID002",
+				DbName:        "erclin6dbx",
+				Hostname:      "pluto",
+				UsedLicenses:  42,
+			},
+		},
+		Metadata: dto.PagingMetadata{
+			Empty: false, First: true, Last: true, Number: 0, Size: 2, TotalElements: 2, TotalPages: 1,
+		},
+	}
 
-//	db.EXPECT().SearchLicenses(
-//		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-//	).Return(expectedRes, nil).Times(1)
+	db.EXPECT().SearchOracleDatabaseUsedLicenses(
+		"Used",
+		true, 1, 1,
+		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+	).Return(&expectedRes, nil).Times(1)
 
-//	res, err := as.SearchLicenses(
-//		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-//	)
+	res, err := as.SearchOracleDatabaseUsedLicenses(
+		"Used",
+		true, 1, 1,
+		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+	)
 
-//	require.NoError(t, err)
-//	assert.Equal(t, expectedRes, res)
-//}
+	require.NoError(t, err)
+	assert.Equal(t, &expectedRes, res)
+}
 
-//func TestSearchLicenses_Fail(t *testing.T) {
-//	mockCtrl := gomock.NewController(t)
-//	defer mockCtrl.Finish()
-//	db := NewMockMongoDatabaseInterface(mockCtrl)
-//	as := APIService{
-//		Database: db,
-//	}
+func TestSearchOracleDatabaseUsedLicenses_Fail(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+	}
 
-//	db.EXPECT().SearchLicenses(
-//		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-//	).Return(nil, aerrMock).Times(1)
+	db.EXPECT().SearchOracleDatabaseUsedLicenses(
+		"Used",
+		true, 1, 1,
+		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+	).Return(nil, aerrMock).Times(1)
 
-//	res, err := as.SearchLicenses(
-//		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-//	)
+	res, err := as.SearchOracleDatabaseUsedLicenses(
+		"Used",
+		true, 1, 1,
+		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
+	)
 
-//	require.Nil(t, res)
-//	assert.Equal(t, aerrMock, err)
-//}
-
-//TODO
-//func TestSearchOracleDatabaseUsedLicenses_Success(t *testing.T) {
-//	mockCtrl := gomock.NewController(t)
-//	defer mockCtrl.Finish()
-//	db := NewMockMongoDatabaseInterface(mockCtrl)
-//	as := APIService{
-//		Database: db,
-//	}
-
-//	expectedRes := []interface{}{
-//		map[string]interface{}{
-//			"Compliance": false,
-//			"Count":      0,
-//			"Used":       5,
-//			"_id":        "Oracle ENT",
-//		},
-//		map[string]interface{}{
-//			"Compliance": true,
-//			"Count":      0,
-//			"Used":       0,
-//			"_id":        "Oracle STD",
-//		},
-//	}
-
-//	db.EXPECT().SearchOracleDatabaseUsedLicenses(
-//		"Used",
-//		true, 1, 1,
-//		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-//	).Return(expectedRes, nil).Times(1)
-
-//	res, err := as.SearchOracleDatabaseUsedLicenses(
-//		"Used",
-//		true, 1, 1,
-//		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-//	)
-
-//	require.NoError(t, err)
-//	assert.Equal(t, expectedRes, res)
-//}
-
-//TODO
-//func TestSearchOracleDatabaseUsedLicenses_Fail(t *testing.T) {
-//	mockCtrl := gomock.NewController(t)
-//	defer mockCtrl.Finish()
-//	db := NewMockMongoDatabaseInterface(mockCtrl)
-//	as := APIService{
-//		Database: db,
-//	}
-
-//	db.EXPECT().SearchOracleDatabaseUsedLicenses(
-//		"Used",
-//		true, 1, 1,
-//		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-//	).Return(nil, aerrMock).Times(1)
-
-//	res, err := as.SearchOracleDatabaseUsedLicenses(
-//		"Used",
-//		true, 1, 1,
-//		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-//	)
-
-//	require.Nil(t, res)
-//	assert.Equal(t, aerrMock, err)
-//}
+	require.Nil(t, res)
+	assert.Equal(t, aerrMock, err)
+}

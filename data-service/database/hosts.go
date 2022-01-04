@@ -22,34 +22,31 @@ import (
 	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-// TODO return value, not mongo struct
-func (md *MongoDatabase) DismissHost(hostname string) (*mongo.UpdateResult, error) {
-	if res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.M{
+func (md *MongoDatabase) DismissHost(hostname string) error {
+	if _, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").UpdateOne(context.TODO(), bson.M{
 		"hostname":    hostname,
 		"dismissedAt": nil,
 	}, mu.UOSet(bson.M{
 		"dismissedAt": time.Now(),
 		"archived":    true,
 	})); err != nil {
-		return nil, utils.NewError(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	} else {
-		return res, nil
+		return nil
 	}
 }
 
-// TODO return value, not mongo struct
-func (md *MongoDatabase) InsertHostData(hostData model.HostDataBE) (*mongo.InsertOneResult, error) {
-	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").InsertOne(context.TODO(), hostData)
+func (md *MongoDatabase) InsertHostData(hostData model.HostDataBE) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").InsertOne(context.TODO(), hostData)
 	if err != nil {
-		return nil, utils.NewError(err, "DB ERROR")
+		return utils.NewError(err, "DB ERROR")
 	}
-	return res, nil
+	return nil
 }
 
 func (md *MongoDatabase) GetCurrentHostnames() ([]string, error) {

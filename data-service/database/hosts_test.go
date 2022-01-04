@@ -38,7 +38,7 @@ func (m *MongodbSuite) TestDismissHost() {
 	require.NoError(m.T(), err)
 	require.Equal(m.T(), []string{"test-small"}, list)
 
-	_, err = m.db.DismissHost("test-small")
+	err = m.db.DismissHost("test-small")
 	require.NoError(m.T(), err)
 
 	list, err = m.db.FindOldCurrentHostnames(utils.MAX_TIME)
@@ -94,7 +94,7 @@ func (m *MongodbSuite) TestInsertHostData() {
 	require.NoError(m.T(), err)
 	assert.Equal(m.T(), []string{}, list)
 
-	_, err = m.db.InsertHostData(hd)
+	err = m.db.InsertHostData(hd)
 	require.NoError(m.T(), err)
 
 	list, err = m.db.FindOldCurrentHostnames(utils.MAX_TIME)

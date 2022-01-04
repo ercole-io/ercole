@@ -48,7 +48,6 @@ func (md *MongoDatabase) FindHostData(id primitive.ObjectID) (model.HostDataBE, 
 	return out, nil
 }
 
-//TODO RM?
 // FindMostRecentHostDataOlderThan return the most recest hostdata that is older than t
 func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time.Time) (model.HostDataBE, error) {
 	var out model.HostDataBE

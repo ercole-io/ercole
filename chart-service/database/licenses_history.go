@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-//TODO Add tests
 func (md *MongoDatabase) GetLicenseComplianceHistory() ([]dto.LicenseComplianceHistory, error) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).
 		Collection("oracle_database_licenses_history").
