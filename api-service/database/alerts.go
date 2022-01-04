@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/amreo/mu"
@@ -243,6 +244,15 @@ func (md *MongoDatabase) UpdateAlertsStatus(alertsFilter dto.AlertsFilter, newSt
 	ids := alertsFilter.IDs
 	if len(ids) >= 1 {
 		filter["_id"] = bson.M{"$in": ids}
+	}
+
+	if alertsFilter.AlertCode != nil {
+		alertCode := *alertsFilter.AlertCode
+		if alertCode == model.AlertStatusDismissed {
+			return utils.NewError(errors.New("Invalid status"), "Invalid status")
+		}
+	} else {
+		filter["alertStatus"] = bson.M{"$ne": model.AlertStatusDismissed}
 	}
 
 	_, err = md.Client.Database(md.Config.Mongodb.DBName).

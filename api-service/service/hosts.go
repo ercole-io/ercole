@@ -301,5 +301,9 @@ func (as *APIService) DismissHost(hostname string) error {
 		as.Log.Errorf("Can't ack hostname %s alerts by filter", hostname)
 	}
 
+	if err := as.UpdateAlertsStatus(filter, model.AlertStatusDismissed); err != nil {
+		as.Log.Errorf("Can't dismiss hostname %s alerts by filter", hostname)
+	}
+
 	return as.Database.DismissHost(hostname)
 }
