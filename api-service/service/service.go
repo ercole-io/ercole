@@ -168,6 +168,8 @@ type APIServiceInterface interface {
 	AckAlerts(alertsFilter dto.AlertsFilter) error
 	// DismissHost dismiss the specified host
 	DismissHost(hostname string) error
+	// UpdateAlertsStatus update alerts status
+	UpdateAlertsStatus(alertsFilter dto.AlertsFilter, newStatus string) error
 
 	// GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 	GetInfoForFrontendDashboard(location string, environment string, olderThan time.Time) (map[string]interface{}, error)
