@@ -38,26 +38,26 @@ import (
 //var errMock error = errors.New("MockError")
 //var aerrMock error = utils.NewError(errMock, "mock")
 
-func TestGetOciLoadbalancers_StatusNotFound(t *testing.T) {
+func TestGetOciBlockStorageRightsizing_StatusNotFound(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("StatusNotFound", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-11-08T12:02:03Z")),
+			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
 		}
 
 		var strProfiles = []string{"6140c473413cf9de756f9848"}
-		as.EXPECT().GetOciUnusedLoadBalancers(strProfiles).Return(nil, utils.ErrClusterNotFound)
+		as.EXPECT().GetOciBlockStorageRightsizing(strProfiles).Return(nil, utils.ErrClusterNotFound)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciUnusedLoadbalancers)
+		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/loadbalancers", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/blockstorage", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 
@@ -78,26 +78,26 @@ func TestGetOciLoadbalancers_StatusNotFound(t *testing.T) {
 	})
 }
 
-func TestGetOciLoadbalancers_InternalServerError(t *testing.T) {
+func TestGetOciBlockStorageRightsizing_InternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("StatusNotFound", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-11-08T12:02:03Z")),
+			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
 		}
 
 		var strProfiles = []string{"6140c473413cf9de756f9848"}
-		as.EXPECT().GetOciUnusedLoadBalancers(strProfiles).Return(nil, errMock)
+		as.EXPECT().GetOciBlockStorageRightsizing(strProfiles).Return(nil, errMock)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciUnusedLoadbalancers)
+		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/loadbalancers", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/blockstorage", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 
@@ -118,23 +118,23 @@ func TestGetOciLoadbalancers_InternalServerError(t *testing.T) {
 	})
 }
 
-func TestGetOciLoadbalancers_BadRequest(t *testing.T) {
+func TestGetOciBlockStorageRightsizing_BadRequest(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("BadRequest", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-11-08T12:02:03Z")),
+			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
 		}
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciUnusedLoadbalancers)
+		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/loadbalancers", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/blockstorage", nil)
 		require.NoError(t, err)
 
 		handler.ServeHTTP(rr, req)
@@ -153,26 +153,26 @@ func TestGetOciLoadbalancers_BadRequest(t *testing.T) {
 	})
 }
 
-func TestGetOciLoadbalancers_InvalidProfileId(t *testing.T) {
+func TestGetOciBlockStorageRightsizing_InvalidProfileId(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("BadRequest", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-11-08T12:02:03Z")),
+			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
 		}
 
 		var strProfiles = []string{"aaa", "bbb", "ccc"}
-		as.EXPECT().GetOciUnusedLoadBalancers(strProfiles).Return(nil, utils.ErrInvalidProfileId)
+		as.EXPECT().GetOciBlockStorageRightsizing(strProfiles).Return(nil, utils.ErrInvalidProfileId)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciUnusedLoadbalancers)
+		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/loadbalancers", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/blockstorage", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "aaa,bbb,ccc"})
 
@@ -191,14 +191,14 @@ func TestGetOciLoadbalancers_InvalidProfileId(t *testing.T) {
 	})
 }
 
-func TestGetOciLoadbalancers_PartialContent(t *testing.T) {
+func TestGetOciBlockStorageRightsizing_PartialContent(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("BadRequest", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-11-08T12:02:03Z")),
+			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
@@ -213,7 +213,7 @@ func TestGetOciLoadbalancers_PartialContent(t *testing.T) {
 			CompartmentID:   "ocid1.compartment.oc1..aaaaaaaaraxhbi65iyiln4qvwjwtnebheufhpkwfcymkszuvz2zyqmwsaikq",
 			CompartmentName: "TEST",
 			Name:            "41401efc-419f-42a4-8c1b-b12e11d4526f",
-			ResourceID:      "ocid1.loadbalancer.oc1.eu-frankfurt-1.aaaaaaaavglox5gto3l6wrwswsyqux22nsz65fkqyaj3cyq7fbyjmu57sbyq",
+			ResourceID:      "ocid1.volume.oc1.eu-frankfurt-1.abtheljryvlumhg6vlqgef3v2v4sjqb4mtuzz3tcmjgi4rgzobg6tnpqob7q",
 		}
 
 		recommendations = append(recommendations, recommendation)
@@ -224,12 +224,12 @@ func TestGetOciLoadbalancers_PartialContent(t *testing.T) {
 		}
 
 		var strProfiles = []string{"6140c473413cf9de756f9848", "bbb", "ccc"}
-		as.EXPECT().GetOciUnusedLoadBalancers(strProfiles).Return(recommendations, mockError)
+		as.EXPECT().GetOciBlockStorageRightsizing(strProfiles).Return(recommendations, mockError)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciUnusedLoadbalancers)
+		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/loadbalancers", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/blockstorage", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848,bbb,ccc"})
 
@@ -240,14 +240,14 @@ func TestGetOciLoadbalancers_PartialContent(t *testing.T) {
 	})
 }
 
-func TestGetOciLoadbalancers_Success(t *testing.T) {
+func TestGetOciBlockStorageRightsizing_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("Success", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-11-08T12:02:03Z")),
+			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
@@ -258,18 +258,18 @@ func TestGetOciLoadbalancers_Success(t *testing.T) {
 			CompartmentID:   "ocid1.compartment.oc1..aaaaaaaaraxhbi65iyiln4qvwjwtnebheufhpkwfcymkszuvz2zyqmwsaikq",
 			CompartmentName: "TEST",
 			Name:            "41401efc-419f-42a4-8c1b-b12e11d4526f",
-			ResourceID:      "ocid1.loadbalancer.oc1.eu-frankfurt-1.aaaaaaaavglox5gto3l6wrwswsyqux22nsz65fkqyaj3cyq7fbyjmu57sbyq",
+			ResourceID:      "ocid1.volume.oc1.eu-frankfurt-1.abtheljryvlumhg6vlqgef3v2v4sjqb4mtuzz3tcmjgi4rgzobg6tnpqob7q",
 		}
 
 		var expectedRes []model.OciErcoleRecommendation
 		var strProfiles = []string{"6140c473413cf9de756f9848"}
 		expectedRes = append(expectedRes, recommendation)
-		as.EXPECT().GetOciUnusedLoadBalancers(strProfiles).Return(expectedRes, nil)
+		as.EXPECT().GetOciBlockStorageRightsizing(strProfiles).Return(expectedRes, nil)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciUnusedLoadbalancers)
+		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/loadbalancers", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/blockstorage", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 

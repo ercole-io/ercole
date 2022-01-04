@@ -75,7 +75,7 @@ func (as *ThunderService) GetOciCompartments(profiles []string) ([]model.OciComp
 
 		var compTmp model.OciCompartment
 		for _, s := range resp.Items {
-			compTmp.CompartmentId = *s.Id
+			compTmp.CompartmentID = *s.Id
 			compTmp.Name = *s.Name
 			compTmp.Description = *s.Description
 			compTmp.TimeCreating = s.TimeCreated.String()
@@ -83,4 +83,62 @@ func (as *ThunderService) GetOciCompartments(profiles []string) ([]model.OciComp
 		}
 	}
 	return listCompartments, merr
+}
+
+func (as *ThunderService) getOciProfileCompartments(tenancyOCID string, customConfigProvider common.ConfigurationProvider) ([]model.OciCompartment, error) {
+	var merr error
+	var listCompartments []model.OciCompartment
+
+	client, err := identity.NewIdentityClientWithConfigurationProvider(customConfigProvider)
+	if err != nil {
+		merr = multierror.Append(merr, err)
+		return nil, merr
+	}
+
+	req := identity.ListCompartmentsRequest{
+		CompartmentId: &tenancyOCID,
+	}
+
+	resp, err := client.ListCompartments(context.Background(), req)
+	if err != nil {
+		merr = multierror.Append(merr, err)
+		return nil, merr
+	}
+
+	var compTmp model.OciCompartment
+	for _, s := range resp.Items {
+		compTmp.CompartmentID = *s.Id
+		compTmp.Name = *s.Name
+		compTmp.Description = *s.Description
+		compTmp.TimeCreating = s.TimeCreated.String()
+		listCompartments = append(listCompartments, compTmp)
+	}
+
+	return listCompartments, merr
+}
+
+func (as *ThunderService) getOciCustomConfigProviderAndTenancy(profileId string) (common.ConfigurationProvider, string, error) {
+	var merr error
+
+	// retrieve data for configurated profiles
+	dbProfiles, err := as.GetMapOciProfiles()
+	if err != nil {
+		return nil, "", err
+	}
+
+	objId, err := primitive.ObjectIDFromHex(profileId)
+	if err != nil {
+		merr = multierror.Append(merr, utils.NewErrorf("%w - invalid profileId %q", err, profileId))
+		return nil, "", merr
+	}
+
+	dbProfile, found := dbProfiles[objId]
+	if !found {
+		merr = multierror.Append(merr, utils.NewErrorf("profile %q not found", profileId))
+		return nil, "", merr
+	}
+
+	customConfigProvider := common.NewRawConfigurationProvider(dbProfile.TenancyOCID, dbProfile.UserOCID, dbProfile.Region, dbProfile.KeyFingerprint, *dbProfile.PrivateKey, nil)
+
+	return customConfigProvider, dbProfile.TenancyOCID, nil
 }
