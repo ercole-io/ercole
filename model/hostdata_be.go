@@ -92,7 +92,6 @@ func (v *HostDataBE) GetClusterCores(hostdatasPerHostname map[string]*HostDataBE
 	return sumClusterCores, nil
 }
 
-//TODO Deduplicate this method with HostData method
 func (v *HostDataBE) CoreFactor() float64 {
 	if v.Cloud.Membership == CloudMembershipAws {
 		return 1

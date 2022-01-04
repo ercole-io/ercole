@@ -1,0 +1,21 @@
+{
+    "licenseTypeID":   "A90649",
+    "itemDescription": "TEST",
+    "metric":          "TEST",
+    "history":[
+        {
+            "date":      {
+                "$numberLong": "1561397660000"
+            },
+            "consumed":  {
+                "$numberDouble": "10"
+            },
+            "covered":   {
+                "$numberDouble": "10"
+            },
+            "purchased": {
+                "$numberDouble": "20"
+            }
+        }   
+    ]
+}

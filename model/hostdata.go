@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2021 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -81,12 +81,4 @@ func (v *HostData) AddErrors(errs ...error) {
 
 		v.Errors = append(v.Errors, NewAgentError(e))
 	}
-}
-
-func (v *HostData) CoreFactor() float64 {
-	if v.Cloud.Membership == CloudMembershipAws {
-		return 1
-	}
-
-	return 0.5
 }

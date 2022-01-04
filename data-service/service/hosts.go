@@ -66,7 +66,7 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 		hds.clusterInfoChecks(hostdata.Clusters)
 	}
 
-	_, err = hds.Database.DismissHost(hostdata.Hostname)
+	err = hds.Database.DismissHost(hostdata.Hostname)
 	if err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 		hds.Log.Info(utils.ToJSON(hostdata))
 	}
 
-	_, err = hds.Database.InsertHostData(hostdata)
+	err = hds.Database.InsertHostData(hostdata)
 	if err != nil {
 		return err
 	}

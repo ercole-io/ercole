@@ -45,7 +45,7 @@ func (job *CurrentHostCleaningJob) Run() {
 	}
 
 	for _, host := range hosts {
-		_, err := job.Database.DismissHost(host)
+		err := job.Database.DismissHost(host)
 		if err != nil {
 			job.Log.Error(err)
 			return
