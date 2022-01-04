@@ -20,7 +20,6 @@ import (
 	"context"
 
 	multierror "github.com/hashicorp/go-multierror"
-	"github.com/oracle/oci-go-sdk/v45/common"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/oracle/oci-go-sdk/v45/loadbalancer"
@@ -29,7 +28,6 @@ import (
 func (as *ThunderService) GetOciUnusedLoadBalancers(profiles []string) ([]model.OciErcoleRecommendation, error) {
 	var listRec []model.OciErcoleRecommendation
 	var merr error
-	var err error
 	var listCompartments []model.OciCompartment
 	var recommendation model.OciErcoleRecommendation
 	var tempListRec map[string]model.OciErcoleRecommendation
@@ -37,56 +35,68 @@ func (as *ThunderService) GetOciUnusedLoadBalancers(profiles []string) ([]model.
 	tempListRec = make(map[string]model.OciErcoleRecommendation)
 	listRec = make([]model.OciErcoleRecommendation, 0)
 
-	listCompartments, err = as.GetOciCompartments(profiles)
-	if err != nil {
-		merr = multierror.Append(merr, err)
-		return nil, merr
-	}
+	for _, profileId := range profiles {
 
-	lbClient, err := loadbalancer.NewLoadBalancerClientWithConfigurationProvider(common.DefaultConfigProvider())
-	if err != nil {
-		merr = multierror.Append(merr, err)
-		return nil, merr
-	}
-
-	// retrieve load balancer data for each compartment
-	for _, compartment := range listCompartments {
-
-		req := loadbalancer.ListLoadBalancerHealthsRequest{
-			CompartmentId: &compartment.CompartmentId,
-		}
-
-		resp, err := lbClient.ListLoadBalancerHealths(context.Background(), req)
+		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
 
 		if err != nil {
 			merr = multierror.Append(merr, err)
 			continue
 		}
-		for _, s := range resp.Items {
-			if s.Status == "CRITICAL" || s.Status == "UNKNOWN" {
-				recommendation.Type = model.RecommendationTypeUnusedResource
-				recommendation.CompartmentID = compartment.CompartmentId
-				recommendation.Name = ""
-				recommendation.ResourceID = *s.LoadBalancerId
-				tempListRec[*s.LoadBalancerId] = recommendation
-				listRec = append(listRec, recommendation)
+
+		listCompartments, err = as.getOciProfileCompartments(tenancyOCID, customConfigProvider)
+
+		if err != nil {
+			merr = multierror.Append(merr, err)
+			continue
+		}
+
+		lbClient, err := loadbalancer.NewLoadBalancerClientWithConfigurationProvider(customConfigProvider)
+		if err != nil {
+			merr = multierror.Append(merr, err)
+			return nil, merr
+		}
+
+		// retrieve load balancer data for each compartment
+		for _, compartment := range listCompartments {
+
+			req := loadbalancer.ListLoadBalancerHealthsRequest{
+				CompartmentId: &compartment.CompartmentID,
 			}
-		}
 
-		req1 := loadbalancer.ListLoadBalancersRequest{
-			CompartmentId: &compartment.CompartmentId,
-		}
+			resp, err := lbClient.ListLoadBalancerHealths(context.Background(), req)
 
-		resp1, err := lbClient.ListLoadBalancers(context.Background(), req1)
+			if err != nil {
+				merr = multierror.Append(merr, err)
+				continue
+			}
+			for _, s := range resp.Items {
+				if s.Status == "CRITICAL" || s.Status == "UNKNOWN" {
+					recommendation.Type = model.RecommendationTypeUnusedResource
+					recommendation.CompartmentID = compartment.CompartmentID
+					recommendation.CompartmentName = compartment.Name
+					recommendation.Name = ""
+					recommendation.ResourceID = *s.LoadBalancerId
+					tempListRec[*s.LoadBalancerId] = recommendation
+					//listRec = append(listRec, recommendation)
+				}
+			}
 
-		if err != nil {
-			merr = multierror.Append(merr, err)
-			continue
-		}
-		for _, r := range resp1.Items {
-			if rec, ok := tempListRec[*r.Id]; ok {
-				rec.Name = *r.DisplayName
-				listRec = append(listRec, rec)
+			req1 := loadbalancer.ListLoadBalancersRequest{
+				CompartmentId: &compartment.CompartmentID,
+			}
+
+			resp1, err := lbClient.ListLoadBalancers(context.Background(), req1)
+
+			if err != nil {
+				merr = multierror.Append(merr, err)
+				continue
+			}
+			for _, r := range resp1.Items {
+				if rec, ok := tempListRec[*r.Id]; ok {
+					rec.Name = *r.DisplayName
+					listRec = append(listRec, rec)
+				}
 			}
 		}
 	}
