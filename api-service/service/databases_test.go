@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -741,8 +741,8 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "Oracle Advanced Compression", actual.GetCellValue("Licenses Compliance", "B2"))
 	assert.Equal(t, "Named User Plus Perpetual", actual.GetCellValue("Licenses Compliance", "C2"))
 	assert.Equal(t, "150", actual.GetCellValue("Licenses Compliance", "D2"))
-	assert.Equal(t, "3750", actual.GetCellValue("Licenses Compliance", "E2"))
-	assert.Equal(t, "25", actual.GetCellValue("Licenses Compliance", "F2"))
+	assert.Equal(t, "150", actual.GetCellValue("Licenses Compliance", "E2"))
+	assert.Equal(t, "1", actual.GetCellValue("Licenses Compliance", "F2"))
 	assert.Equal(t, "0", actual.GetCellValue("Licenses Compliance", "G2"))
 	assert.Equal(t, "", actual.GetCellValue("Licenses Compliance", "H2"))
 }
@@ -908,9 +908,9 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 			ItemDescription: "Oracle Partitioning",
 			Metric:          "Named User Plus Perpetual",
 			Consumed:        500,
-			Covered:         6250,
+			Covered:         500,
 			Purchased:       450,
-			Compliance:      12.5,
+			Compliance:      1,
 			Unlimited:       false,
 			Available:       200,
 		},
