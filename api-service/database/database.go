@@ -114,8 +114,10 @@ type MongoDatabaseInterface interface {
 	GetOracleExadataStorageErrorCountStatusStats(location string, environment string, olderThan time.Time) ([]interface{}, error)
 	// GetOracleExadataPatchStatusStats return a array containing the number of exadata per patch status
 	GetOracleExadataPatchStatusStats(location string, environment string, windowTime time.Time, olderThan time.Time) ([]interface{}, error)
-
+	//GetOracleDatabaseLicenseTypes return an array of OracleDatabaseLicenseType
 	GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error)
+	//GetOracleDatabaseLicenseType return a OracleDatabaseLicenseType
+	GetOracleDatabaseLicenseType(id string) (*model.OracleDatabaseLicenseType, error)
 	// InsertOracleDatabaseAgreement insert an Oracle/Database agreement into the database
 	InsertOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) error
 	// GetOracleDatabaseAgreement return the agreement specified by id

@@ -30,8 +30,6 @@ import (
 	"github.com/ercole-io/ercole/v2/config"
 )
 
-//TODO Order as in routing?
-
 // APIServiceInterface is a interface that wrap methods used to querying data
 type APIServiceInterface interface {
 	// Init initialize the service

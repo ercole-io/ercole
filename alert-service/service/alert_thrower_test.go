@@ -33,7 +33,26 @@ import (
 //ThrowNewDatabaseAlert tests
 
 func TestThrowNewAlert(t *testing.T) {
-	// TODO add test
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := AlertService{
+		Database: db,
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Queue:    hub.New(),
+		Log:      logger.NewLogger("TEST"),
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				LogAlertThrows: true},
+		},
+	}
+
+	alert := model.Alert{}
+
+	db.EXPECT().InsertAlert(gomock.Any()).Return(nil, nil).Do(func(alert model.Alert) {}).Times(1)
+
+	require.NoError(t, as.ThrowNewAlert(alert))
 }
 func TestThrowNewDatabaseAlert_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)

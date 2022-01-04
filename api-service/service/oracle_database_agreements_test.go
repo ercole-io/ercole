@@ -28,25 +28,11 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-var licenseTypesSample = []model.OracleDatabaseLicenseType{
-	{
-		ID:              "PID001",
-		ItemDescription: "itemDesc1",
-		Aliases:         []string{"alias1"},
-		Metric:          "metric1",
-	},
-	{
-		ID:              "PID002",
-		ItemDescription: "itemDesc2",
-		Aliases:         []string{"alias2"},
-		Metric:          "metric2",
-	},
-	{
-		ID:              "PID003",
-		ItemDescription: "itemDesc3",
-		Aliases:         []string{"alias3"},
-		Metric:          "metric3",
-	},
+var lt1 = model.OracleDatabaseLicenseType{
+	ID:              "PID001",
+	ItemDescription: "itemDesc1",
+	Aliases:         []string{"alias1"},
+	Metric:          "metric1",
 }
 
 func TestAddOracleDatabaseAgreement_Success_InsertNew(t *testing.T) {
@@ -97,8 +83,8 @@ func TestAddOracleDatabaseAgreement_Success_InsertNew(t *testing.T) {
 			{"hostname": "foobar"},
 			{"hostname": "ercsoldbx"},
 		}, nil),
-		db.EXPECT().GetOracleDatabaseLicenseTypes().
-			Return(licenseTypesSample, nil),
+		db.EXPECT().GetOracleDatabaseLicenseType("PID001").
+			Return(&lt1, nil),
 		db.EXPECT().InsertOracleDatabaseAgreement(expectedAgr).
 			Return(nil),
 	)
@@ -237,8 +223,8 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 					{"hostname": "test-db"},
 					{"hostname": "ercsoldbx"},
 				}, nil),
-			db.EXPECT().GetOracleDatabaseLicenseTypes().
-				Return(licenseTypesSample, nil),
+			db.EXPECT().GetOracleDatabaseLicenseType("xxxxxx").
+				Return(nil, nil),
 		)
 
 		res, err := as.AddOracleDatabaseAgreement(agreementWrongLicenseType)
@@ -267,7 +253,7 @@ func TestUpdateOracleDatabaseAgreement_Success(t *testing.T) {
 		AgreementID:     "AID001",
 		CSI:             "CSI001",
 		ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-		LicenseTypeID:   licenseTypesSample[0].ID,
+		LicenseTypeID:   lt1.ID,
 		ReferenceNumber: "RF0001",
 		Unlimited:       true,
 		Count:           30,
@@ -297,8 +283,8 @@ func TestUpdateOracleDatabaseAgreement_Success(t *testing.T) {
 				{"hostname": "foobar"},
 				{"hostname": "ercsoldbx"},
 			}, nil),
-		db.EXPECT().GetOracleDatabaseLicenseTypes().
-			Return(licenseTypesSample, nil),
+		db.EXPECT().GetOracleDatabaseLicenseType("PID001").
+			Return(&lt1, nil),
 		db.EXPECT().UpdateOracleDatabaseAgreement(agreement).Return(nil),
 	)
 
@@ -377,8 +363,8 @@ func TestUpdateOracleDatabaseAgreement_Fail_LicenseTypeIdNotValid(t *testing.T) 
 				{"hostname": "foobar"},
 				{"hostname": "ercsoldbx"},
 			}, nil),
-		db.EXPECT().GetOracleDatabaseLicenseTypes().
-			Return(licenseTypesSample, nil),
+		db.EXPECT().GetOracleDatabaseLicenseType("invalidLicenseTypeID").
+			Return(nil, nil),
 	)
 
 	actual, err := as.UpdateOracleDatabaseAgreement(agreement)
@@ -1954,7 +1940,7 @@ func TestDeleteOracleDatabaseAgreement(t *testing.T) {
 			ID:              agreementID,
 			AgreementID:     "AID001",
 			CSI:             "CSI001",
-			LicenseTypeID:   licenseTypesSample[0].ID,
+			LicenseTypeID:   lt1.ID,
 			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			Count:           30,
@@ -2053,7 +2039,7 @@ func TestAddHostToOracleDatabaseAgreement(t *testing.T) {
 			AgreementID:     "AID001",
 			CSI:             "CSI001",
 			ID:              id,
-			LicenseTypeID:   licenseTypesSample[0].ID,
+			LicenseTypeID:   lt1.ID,
 			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			Count:           30,
@@ -2065,7 +2051,7 @@ func TestAddHostToOracleDatabaseAgreement(t *testing.T) {
 			ID:              id,
 			AgreementID:     "AID001",
 			CSI:             "CSI001",
-			LicenseTypeID:   licenseTypesSample[0].ID,
+			LicenseTypeID:   lt1.ID,
 			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			Count:           30,
@@ -2156,7 +2142,7 @@ func TestDeleteHostFromOracleDatabaseAgreement(t *testing.T) {
 			AgreementID:     "AID001",
 			CSI:             "CSI001",
 			ID:              anotherId,
-			LicenseTypeID:   licenseTypesSample[0].ID,
+			LicenseTypeID:   lt1.ID,
 			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			Count:           30,
@@ -2168,7 +2154,7 @@ func TestDeleteHostFromOracleDatabaseAgreement(t *testing.T) {
 			AgreementID:     "AID001",
 			CSI:             "CSI001",
 			ID:              anotherId,
-			LicenseTypeID:   licenseTypesSample[0].ID,
+			LicenseTypeID:   lt1.ID,
 			ReferenceNumber: "RF0001",
 			Unlimited:       true,
 			Count:           30,
@@ -2221,7 +2207,7 @@ func TestGetOracleDatabaseAgreementsAsXLSX_Success(t *testing.T) {
 		AgreementID:     "5051863",
 		CSI:             "13902248",
 		ID:              utils.Str2oid("609ce3072eff5d5540ec4a28"),
-		LicenseTypeID:   licenseTypesSample[0].ID,
+		LicenseTypeID:   lt1.ID,
 		ReferenceNumber: "37255828",
 		Unlimited:       false,
 		Count:           30,
