@@ -24,15 +24,11 @@ import (
 )
 
 func init() {
-	migrate.Register(func(db *mongo.Database) error {
-		if err := create_index_hosts(db); err != nil {
-			return err
-		}
-		return nil
+	err := migrate.Register(create_index_hosts, nil)
 
-	}, func(db *mongo.Database) error {
-		return nil
-	})
+	if err != nil {
+		panic(err)
+	}
 }
 
 func create_index_hosts(db *mongo.Database) error {
