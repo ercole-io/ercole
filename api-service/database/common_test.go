@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -140,7 +140,7 @@ func (m *MongodbSuite) TestFilterByOldnessSteps() {
 				map[string]interface{}{"_id": utils.Str2oid("5ea2dec620d55cbdc35022b9")},
 			}
 
-			assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+			assert.ElementsMatch(m.T(), expectedOut, out)
 		},
 	)
 
@@ -155,7 +155,7 @@ func (m *MongodbSuite) TestFilterByOldnessSteps() {
 		func(out []map[string]interface{}) {
 			var expectedOut interface{} = []interface{}{}
 
-			assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+			assert.ElementsMatch(m.T(), expectedOut, out)
 		},
 	)
 
@@ -169,11 +169,11 @@ func (m *MongodbSuite) TestFilterByOldnessSteps() {
 		),
 		func(out []map[string]interface{}) {
 			var expectedOut interface{} = []interface{}{
-				map[string]interface{}{"_id": utils.Str2oid("5ea2dec620d55cbdc35022b9")},
 				map[string]interface{}{"_id": utils.Str2oid("5ea2d26d20d55cbdc35022b4")},
+				map[string]interface{}{"_id": utils.Str2oid("5ea2dec620d55cbdc35022b9")},
 			}
 
-			assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+			assert.ElementsMatch(m.T(), expectedOut, out)
 		},
 	)
 
@@ -188,7 +188,7 @@ func (m *MongodbSuite) TestFilterByOldnessSteps() {
 		func(out []map[string]interface{}) {
 			var expectedOut interface{} = []interface{}{}
 
-			assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+			assert.ElementsMatch(m.T(), expectedOut, out)
 		},
 	)
 
@@ -205,7 +205,7 @@ func (m *MongodbSuite) TestFilterByOldnessSteps() {
 				map[string]interface{}{"_id": utils.Str2oid("5ea2d26d20d55cbdc35022b4")},
 			}
 
-			assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+			assert.ElementsMatch(m.T(), expectedOut, out)
 		},
 	)
 
@@ -219,11 +219,11 @@ func (m *MongodbSuite) TestFilterByOldnessSteps() {
 		),
 		func(out []map[string]interface{}) {
 			var expectedOut interface{} = []interface{}{
-				map[string]interface{}{"_id": utils.Str2oid("5ea2d3c920d55cbdc35022b7")},
 				map[string]interface{}{"_id": utils.Str2oid("5ea2d26d20d55cbdc35022b4")},
+				map[string]interface{}{"_id": utils.Str2oid("5ea2d3c920d55cbdc35022b7")},
 			}
 
-			assert.JSONEq(m.T(), utils.ToJSON(expectedOut), utils.ToJSON(out))
+			assert.ElementsMatch(m.T(), expectedOut, out)
 		},
 	)
 }
