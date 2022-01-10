@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 	}
 
 	status = r.URL.Query().Get("status")
-	if status != "" && status != model.AlertStatusNew && status != model.AlertStatusAck {
+	if status != "" && status != model.AlertStatusNew && status != model.AlertStatusAck && status != model.AlertStatusDismissed {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(errors.New("invalid status"), "Invalid  status"))
 		return
 	}
