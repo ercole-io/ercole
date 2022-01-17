@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
@@ -1127,6 +1128,37 @@ func (m *MongodbSuite) TestDismissHost() {
 	val, err = m.db.ExistHostdata("test-small")
 	m.Require().NoError(err)
 	m.Assert().False(val)
+}
+
+func (m *MongodbSuite) TestGetHostMinValidCreatedAtDate() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
+
+	createdAt := utils.P("2020-04-24T13:50:05.460+02:00").UTC()
+	createdDateTemp, err := m.db.GetHostMinValidCreatedAtDate("test-small")
+	m.Require().NoError(err)
+	createdDate := createdDateTemp["createdAt"].(primitive.DateTime).Time().UTC()
+	m.Assert().EqualValues(createdAt, createdDate)
+}
+
+func (m *MongodbSuite) TestGetListValidHostsByRangeDates() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
+
+	hosts, err := m.db.GetListValidHostsByRangeDates(utils.P("2020-04-23T13:50:05.460+02:00").UTC(), utils.P("2020-04-25T13:50:05.460+02:00").UTC())
+	m.Require().NoError(err)
+	actual := []string{"test-small"}
+	m.Assert().EqualValues(hosts, actual)
+}
+
+func (m *MongodbSuite) TestGetListDismissedHostsByRangeDates() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_25.json"))
+
+	dismissedHosts, err := m.db.GetListDismissedHostsByRangeDates(utils.P("2020-04-23T13:50:05.460+02:00").UTC(), utils.P("2020-04-25T13:50:05.460+02:00").UTC())
+	m.Require().NoError(err)
+	actual := []string{"test-small"}
+	m.Assert().EqualValues(dismissedHosts, actual)
 }
 
 func (m *MongodbSuite) TestExistNotInClusterHost() {
