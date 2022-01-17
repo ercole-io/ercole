@@ -161,7 +161,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 			}
 		}
 
-		license.Covered += coveredLicenses * model.GetFactorByMetric(license.Metric)
+		license.Covered += coveredLicenses
 		license.Purchased += (agreement.LicensesPerCore + agreement.LicensesPerUser)
 	}
 
@@ -308,7 +308,7 @@ func (as *APIService) getLicensesCoveredByHost(host dto.HostUsingOracleDatabaseL
 
 	clusterCores, err := hostdata.GetClusterCores(hostdatasPerHostname)
 	if errors.Is(err, utils.ErrHostNotInCluster) {
-		return host.OriginalCount, nil
+		return originalCoveredLicenses, nil
 	} else if err != nil {
 		return 0, err
 	}
