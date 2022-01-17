@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -151,6 +151,12 @@ type MongoDatabaseInterface interface {
 	CountAlertsNODATA(alertsFilter dto.AlertsFilter) (int64, error)
 	// DismissHost dismiss the specified host
 	DismissHost(hostname string) error
+	// GetHostMinValidCreatedAtDate get the host's minimun valid CreatedAt date
+	GetHostMinValidCreatedAtDate(hostname string) (map[string]interface{}, error)
+	// GetListValidHostsByRangeDates get list of valid hosts by range dates
+	GetListValidHostsByRangeDates(from time.Time, to time.Time) ([]string, error)
+	// GetListDismissedHostsByRangeDates get list of dismissed hosts by range dates
+	GetListDismissedHostsByRangeDates(from time.Time, to time.Time) ([]string, error)
 	// RemoveAlertsNODATA delete all alerts with alertCode equals to "NO_DATA"
 	RemoveAlertsNODATA(alertsFilter dto.AlertsFilter) error
 	// DeletePatchingFunction delete the patching function
