@@ -17,12 +17,12 @@ package cmd
 
 import (
 	"bytes"
+	"crypto/tls"
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
-
-	"github.com/ercole-io/ercole/v2/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -50,31 +50,48 @@ var fireHostDataCmd = &cobra.Command{
 	},
 }
 
+var insecure bool
+
 func init() {
 	rootCmd.AddCommand(fireHostDataCmd)
 	fireHostDataCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable the verbosity")
+	fireHostDataCmd.Flags().BoolVarP(&insecure, "insecure", "i", false, "Allow insecure server connections when using SSL")
 }
 
 func fireHostdata(filename string, content []byte) {
-	resp, err := http.Post(
-		utils.NewAPIUrlNoParams(ercoleConfig.DataService.RemoteEndpoint,
-			ercoleConfig.DataService.AgentUsername,
-			ercoleConfig.DataService.AgentPassword,
-			"/hosts",
-		).String(),
-		"application/json", bytes.NewReader(content))
+	client := &http.Client{}
+	tr := http.DefaultTransport.(*http.Transport).Clone()
+
+	if insecure {
+		tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	}
+	client.Transport = tr
+
+	req, err := http.NewRequest("POST", ercoleConfig.DataService.RemoteEndpoint+"/hosts", bytes.NewReader(content))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to create request: %s", err)
+		os.Exit(1)
+	}
+
+	src := ercoleConfig.DataService.AgentUsername + ":" + ercoleConfig.DataService.AgentPassword
+	bearer := "Basic " + base64.StdEncoding.EncodeToString([]byte(src))
+	req.Header.Add("Authorization", bearer)
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to send hostdata from %s: %v\n", filename, err)
 		os.Exit(1)
-	} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
+	}
+
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		out, _ := ioutil.ReadAll(resp.Body)
 		defer resp.Body.Close()
 		fmt.Fprintf(os.Stderr, "File: %s Status: %d Cause: %s\n", filename, resp.StatusCode, string(out))
 		os.Exit(1)
-	} else {
-		if verbose {
-			fmt.Printf("File: %s Status: %d\n", filename, resp.StatusCode)
-		}
 	}
 
+	if verbose {
+		fmt.Printf("File: %s Status: %d\n", filename, resp.StatusCode)
+	}
 }
