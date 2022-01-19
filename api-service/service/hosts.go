@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ import (
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
@@ -35,14 +34,15 @@ func (as *APIService) SearchHosts(mode string, filters dto.SearchHostsFilters) (
 }
 
 func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.File, error) {
+	sheetDatabaseEbsDbTier := "Database_&_EBS_DB_Tier"
+	sheetHostAdded := "Hosts_added"
+	sheetHostDismissed := "Hosts_dismissed"
+	j, z := 4, 4 // offset for headers (HostAdded and HostDismissed)
+
 	hosts, err := as.Database.SearchHosts("lms", filters.SearchHostsFilters)
 	if err != nil {
 		return nil, utils.NewError(err, "")
 	}
-
-	sheetDatabaseEbsDbTier := "Database_&_EBS_DB_Tier"
-	sheetHostAdded := "Hosts_added"
-	sheetHostDismissed := "Hosts_dismissed"
 
 	csiByHostname, err := as.getCSIsByHostname()
 	if err != nil {
@@ -55,50 +55,84 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 		return nil, aerr
 	}
 
-	j, z := 4, 4 // offset for headers (HostAdded and HostDismissed)
-	for i, val := range hosts {
-		i += 4 // offset for headers
-		setCellValueLMS(lms, sheetDatabaseEbsDbTier, i, csiByHostname, val)
-		createdDate := val["createdAt"].(primitive.DateTime).Time().UTC()
-		var dismissedAt time.Time
-		if val["dismissedAt"] != nil {
-			dismissedAt = val["dismissedAt"].(primitive.DateTime).Time().UTC()
-		}
+	if filters.From != utils.MIN_TIME || filters.To != utils.MAX_TIME {
 		//HostAdded management
-		if (filters.From != utils.MIN_TIME ||
-			filters.To != utils.MAX_TIME) &&
-			createdDate.After(filters.From) &&
-			createdDate.Before(filters.To) {
-			if j == 4 {
-				indexsheetHostAdded := lms.NewSheet(sheetHostAdded)
-				indexSheetDatabaseEbsDbTier := lms.GetSheetIndex(sheetDatabaseEbsDbTier)
-				errs := lms.CopySheet(indexSheetDatabaseEbsDbTier, indexsheetHostAdded)
-				if errs != nil {
-					return nil, errs
-				}
-				lms.SetActiveSheet(indexSheetDatabaseEbsDbTier)
+		createdHosts, err := as.Database.GetListValidHostsByRangeDates(filters.From, filters.To)
+		if err != nil {
+			return nil, utils.NewError(err, "")
+		}
+		for _, cHostName := range createdHosts {
+			createdDate, err := as.Database.GetHostMinValidCreatedAtDate(cHostName)
+			if err != nil {
+				return nil, utils.NewError(err, "")
 			}
-			setCellValueLMS(lms, sheetHostAdded, j, csiByHostname, val)
-			j++
+			if createdDate.After(filters.From) || createdDate.Equal(filters.From) {
+				cFilters := filters.SearchHostsFilters
+				cFilters.OlderThan = filters.To
+				cFilters.Hostname = cHostName
+
+				cHosts, err := as.Database.SearchHosts("lms", cFilters)
+				if err != nil {
+					return nil, utils.NewError(err, "")
+				}
+
+				for _, valHost := range cHosts {
+					if j == 4 {
+						indexsheetHostAdded := lms.NewSheet(sheetHostAdded)
+						indexSheetDatabaseEbsDbTier := lms.GetSheetIndex(sheetDatabaseEbsDbTier)
+						errs := lms.CopySheet(indexSheetDatabaseEbsDbTier, indexsheetHostAdded)
+						if errs != nil {
+							return nil, errs
+						}
+						lms.SetActiveSheet(indexSheetDatabaseEbsDbTier)
+					}
+					setCellValueLMS(lms, sheetHostAdded, j, csiByHostname, valHost)
+					j++
+				}
+
+			}
 		}
 
 		//HostDismissed management
-		if (filters.From != utils.MIN_TIME ||
-			filters.To != utils.MAX_TIME) &&
-			dismissedAt.After(filters.From) &&
-			dismissedAt.Before(filters.To) {
-			if z == 4 {
-				indexsheetHostDismissed := lms.NewSheet(sheetHostDismissed)
-				indexSheetDatabaseEbsDbTier := lms.GetSheetIndex(sheetDatabaseEbsDbTier)
-				errs := lms.CopySheet(indexSheetDatabaseEbsDbTier, indexsheetHostDismissed)
-				if errs != nil {
-					return nil, errs
-				}
-				lms.SetActiveSheet(indexSheetDatabaseEbsDbTier)
-			}
-			setCellValueLMS(lms, sheetHostDismissed, z, csiByHostname, val)
-			z++
+		dismissedHosts, err := as.Database.GetListDismissedHostsByRangeDates(filters.From, filters.To)
+		if err != nil {
+			return nil, utils.NewError(err, "")
 		}
+		for _, dHostName := range dismissedHosts {
+			existHost, err := as.Database.ExistHostdata(dHostName)
+			if err != nil {
+				return nil, utils.NewError(err, "")
+			}
+			if !existHost {
+				dFilters := filters.SearchHostsFilters
+				dFilters.OlderThan = filters.To
+				dFilters.Hostname = dHostName
+				dHosts, err := as.Database.SearchHosts("lms", dFilters)
+				if err != nil {
+					return nil, utils.NewError(err, "")
+				}
+
+				for _, valCHost := range dHosts {
+					if z == 4 {
+						indexsheetHostDismissed := lms.NewSheet(sheetHostDismissed)
+						indexSheetDatabaseEbsDbTier := lms.GetSheetIndex(sheetDatabaseEbsDbTier)
+						errs := lms.CopySheet(indexSheetDatabaseEbsDbTier, indexsheetHostDismissed)
+						if errs != nil {
+							return nil, errs
+						}
+						lms.SetActiveSheet(indexSheetDatabaseEbsDbTier)
+					}
+					setCellValueLMS(lms, sheetHostDismissed, z, csiByHostname, valCHost)
+					z++
+				}
+			}
+		}
+
+	}
+
+	for i, val := range hosts {
+		i += 4 // offset for headers
+		setCellValueLMS(lms, sheetDatabaseEbsDbTier, i, csiByHostname, val)
 	}
 
 	return lms, nil
