@@ -573,8 +573,8 @@ func (md *MongoDatabase) DismissHost(hostname string) error {
 }
 
 // GetHostMinValidCreatedAtDate get the host's minimun valid CreatedAt date
-func (md *MongoDatabase) GetHostMinValidCreatedAtDate(hostname string) (map[string]interface{}, error) {
-	var out map[string]interface{}
+func (md *MongoDatabase) GetHostMinValidCreatedAtDate(hostname string) (time.Time, error) {
+	var createdAt map[string]interface{}
 
 	findOptions := options.Find()
 	findOptions.SetSort(bson.D{{"createdAt", 1}})
@@ -588,19 +588,19 @@ func (md *MongoDatabase) GetHostMinValidCreatedAtDate(hostname string) (map[stri
 		findOptions,
 	)
 	if err != nil {
-		return nil, utils.NewError(err, "DB ERROR")
+		return time.Time{}, utils.NewError(err, "DB ERROR")
 	}
 
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
-		return nil, utils.NewError(errors.New("Invalid result"), "DB ERROR")
+		return time.Time{}, utils.NewError(errors.New("Invalid result"), "DB ERROR")
 	}
 
-	if err := cur.Decode(&out); err != nil {
-		return nil, utils.NewError(err, "DB ERROR")
+	if err := cur.Decode(&createdAt); err != nil {
+		return time.Time{}, utils.NewError(err, "DB ERROR")
 	}
 
-	return out, nil
+	return createdAt["createdAt"].(primitive.DateTime).Time().UTC(), nil
 }
 
 // GetListValidHostsByRangeDates get list of valid hosts by range dates

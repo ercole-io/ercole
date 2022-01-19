@@ -22,7 +22,6 @@ import (
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
@@ -63,11 +62,10 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 			return nil, utils.NewError(err, "")
 		}
 		for _, cHostName := range createdHosts {
-			createdDateTemp, err := as.Database.GetHostMinValidCreatedAtDate(cHostName)
+			createdDate, err := as.Database.GetHostMinValidCreatedAtDate(cHostName)
 			if err != nil {
 				return nil, utils.NewError(err, "")
 			}
-			createdDate := createdDateTemp["createdAt"].(primitive.DateTime).Time().UTC()
 			if createdDate.After(filters.From) || createdDate.Equal(filters.From) {
 				cFilters := filters.SearchHostsFilters
 				cFilters.OlderThan = filters.To
