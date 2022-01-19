@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"regexp"
 	"time"
@@ -570,6 +571,82 @@ func (md *MongoDatabase) DismissHost(hostname string) error {
 	}
 
 	return nil
+}
+
+// GetHostMinValidCreatedAtDate get the host's minimun valid CreatedAt date
+func (md *MongoDatabase) GetHostMinValidCreatedAtDate(hostname string) (time.Time, error) {
+	var createdAt map[string]interface{}
+
+	findOptions := options.Find()
+	findOptions.SetSort(bson.D{{"createdAt", 1}})
+	findOptions.SetLimit(1)
+	findOptions.SetProjection(bson.M{"_id": 0, "createdAt": 1})
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Find(context.TODO(), bson.M{
+		"hostname":    hostname,
+		"dismissedAt": nil,
+	},
+		findOptions,
+	)
+	if err != nil {
+		return time.Time{}, utils.NewError(err, "DB ERROR")
+	}
+
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return time.Time{}, utils.NewError(errors.New("Invalid result"), "DB ERROR")
+	}
+
+	if err := cur.Decode(&createdAt); err != nil {
+		return time.Time{}, utils.NewError(err, "DB ERROR")
+	}
+
+	return createdAt["createdAt"].(primitive.DateTime).Time().UTC(), nil
+}
+
+// GetListValidHostsByRangeDates get list of valid hosts by range dates
+func (md *MongoDatabase) GetListValidHostsByRangeDates(from time.Time, to time.Time) ([]string, error) {
+	var hosts []string = make([]string, 0)
+
+	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
+		context.TODO(),
+		"hostname",
+		bson.M{
+			"dismissedAt": nil,
+			"createdAt":   bson.M{"$gte": from, "$lte": to},
+		},
+	)
+	if err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	for _, val := range values {
+		hosts = append(hosts, val.(string))
+	}
+
+	return hosts, nil
+}
+
+// GetListDismissedHostsByRangeDates get list of dismissed hosts by range dates
+func (md *MongoDatabase) GetListDismissedHostsByRangeDates(from time.Time, to time.Time) ([]string, error) {
+	var hosts []string = make([]string, 0)
+
+	values, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Distinct(
+		context.TODO(),
+		"hostname",
+		bson.M{
+			"dismissedAt": bson.M{"$gte": from, "$lte": to},
+		},
+	)
+	if err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	for _, val := range values {
+		hosts = append(hosts, val.(string))
+	}
+
+	return hosts, nil
 }
 
 // ExistNotInClusterHost return true if the host specified by hostname exist and it is not in cluster, otherwise false

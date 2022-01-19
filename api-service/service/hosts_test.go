@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -283,6 +283,28 @@ func TestSearchHostsAsLMS(t *testing.T) {
 			db.EXPECT().
 				ListOracleDatabaseAgreements().
 				Return([]dto.OracleDatabaseAgreementFE{}, nil),
+			db.EXPECT().
+				GetListValidHostsByRangeDates(filterslms.From, filterslms.To).
+				DoAndReturn(func(from time.Time, to time.Time) ([]string, error) {
+					return []string{}, nil
+				}).
+				Times(1),
+			db.EXPECT().
+				GetListDismissedHostsByRangeDates(filterslms.From, filterslms.To).
+				DoAndReturn(func(from time.Time, to time.Time) ([]string, error) {
+					return []string{}, nil
+				}).Times(1),
+			db.EXPECT().
+				GetListValidHostsByRangeDates(filterslms.From, filterslms.To).
+				DoAndReturn(func(from time.Time, to time.Time) ([]string, error) {
+					return []string{}, nil
+				}).
+				Times(1),
+			db.EXPECT().
+				GetListDismissedHostsByRangeDates(filterslms.From, filterslms.To).
+				DoAndReturn(func(from time.Time, to time.Time) ([]string, error) {
+					return []string{}, nil
+				}).Times(1),
 		)
 
 		sp, err := as.SearchHostsAsLMS(filterslms)
