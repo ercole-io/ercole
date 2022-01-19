@@ -152,7 +152,7 @@ type MongoDatabaseInterface interface {
 	// DismissHost dismiss the specified host
 	DismissHost(hostname string) error
 	// GetHostMinValidCreatedAtDate get the host's minimun valid CreatedAt date
-	GetHostMinValidCreatedAtDate(hostname string) (map[string]interface{}, error)
+	GetHostMinValidCreatedAtDate(hostname string) (time.Time, error)
 	// GetListValidHostsByRangeDates get list of valid hosts by range dates
 	GetListValidHostsByRangeDates(from time.Time, to time.Time) ([]string, error)
 	// GetListDismissedHostsByRangeDates get list of dismissed hosts by range dates

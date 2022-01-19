@@ -22,7 +22,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
@@ -1135,9 +1134,8 @@ func (m *MongodbSuite) TestGetHostMinValidCreatedAtDate() {
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
 
 	createdAt := utils.P("2020-04-24T13:50:05.460+02:00").UTC()
-	createdDateTemp, err := m.db.GetHostMinValidCreatedAtDate("test-small")
+	createdDate, err := m.db.GetHostMinValidCreatedAtDate("test-small")
 	m.Require().NoError(err)
-	createdDate := createdDateTemp["createdAt"].(primitive.DateTime).Time().UTC()
 	m.Assert().EqualValues(createdAt, createdDate)
 }
 
