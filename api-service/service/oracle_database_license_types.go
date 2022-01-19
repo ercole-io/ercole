@@ -249,7 +249,6 @@ func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabase
 
 	if hostdata.Features.Oracle != nil && hostdata.Features.Oracle.Database != nil && hostdata.Features.Oracle.Database.Databases != nil {
 		for x := range hostdata.Features.Oracle.Database.Databases {
-			//if hostdata.Features.Oracle.Database.Databases[x].Name == "ERC18" {
 			for j := range hostdata.Features.Oracle.Database.Databases[x].Licenses {
 				if hostdata.Features.Oracle.Database.Databases[x].Licenses[j].Ignored {
 					if hostdata.Features.Oracle.Database.Databases[x].Licenses[j].LicenseTypeID == licenseTypeID {
@@ -257,7 +256,6 @@ func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabase
 					}
 				}
 			}
-			//}
 		}
 	}
 
