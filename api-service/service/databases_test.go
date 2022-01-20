@@ -982,6 +982,14 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 				},
 			},
 		},
+		{
+			Hostname: "ercsoldbx-cluster",
+			VMs: []dto.VM{
+				{
+					Hostname: "ercsoldbx",
+				},
+			},
+		},
 	}
 	agreements := []model.MySQLAgreement{
 		{
@@ -1025,6 +1033,8 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 
 		db.EXPECT().GetHostDatas(utils.MAX_TIME).
 			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(filter).
+			Return(clusters, nil),
 	)
 
 	actual, err := as.GetDatabasesUsedLicensesPerHostAsXLSX(filter)
