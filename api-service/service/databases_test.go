@@ -968,6 +968,134 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 	assert.ElementsMatch(t, expected, actual)
 }
 
+func TestGetDatabasesUsedLicensesPerHost_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Database: db,
+		Log:      logger.NewLogger("TEST"),
+	}
+
+	filter := dto.GlobalFilter{
+		Location:    "Dubai",
+		Environment: "TEST",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{{
+			LicenseTypeID: "A90611",
+			DbName:        "ercsoldbx",
+			Hostname:      "ercsoldbx",
+			UsedLicenses:  2,
+		}},
+	}
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "A90611",
+			ItemDescription: "Oracle Database Enterprise Edition",
+			Metric:          "Processor Perpetual",
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+	}
+	usedLicenses := []dto.MySQLUsedLicense{
+		{
+			Hostname:        "pluto",
+			InstanceName:    "pluto-instance",
+			InstanceEdition: model.MySQLEditionEnterprise,
+			AgreementType:   "",
+		},
+	}
+	clusters := []dto.Cluster{
+		{
+			Hostname: "pluto",
+			VMs: []dto.VM{
+				{
+					Hostname: "pluto",
+				},
+			},
+			Name: "PLUTO-CLUSTER-NAME",
+			CPU:  45,
+		},
+	}
+	agreements := []model.MySQLAgreement{
+		{
+			ID:               [12]byte{},
+			Type:             model.MySQLAgreementTypeCluster,
+			NumberOfLicenses: 12,
+			Clusters:         []string{"pippo-cluster", "pluto-cluster"},
+			Hosts:            []string{},
+		},
+	}
+	hostdatas := []model.HostDataBE{
+		{
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+		},
+	}
+	any := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	gomock.InOrder(
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+
+		db.EXPECT().GetMySQLUsedLicenses(filter).
+			Return(usedLicenses, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
+		db.EXPECT().GetMySQLAgreements().
+			Return(agreements, nil),
+
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(filter).
+			Return(clusters, nil),
+	)
+
+	actual, err := as.GetDatabasesUsedLicensesPerHost(filter)
+	require.NoError(t, err)
+
+	expected := []dto.DatabaseUsedLicensePerHost{
+		{
+			Hostname:        "ercsoldbx",
+			DatabaseNames:   []string{"ercsoldbx"},
+			LicenseTypeID:   "A90611",
+			Description:     "Oracle Database Enterprise Edition",
+			Metric:          "Processor Perpetual",
+			UsedLicenses:    2,
+			ClusterLicenses: 0,
+		},
+		{
+			Hostname:        "pluto",
+			DatabaseNames:   []string{"pluto-instance"},
+			LicenseTypeID:   "",
+			Description:     "MySQL ENTERPRISE",
+			Metric:          "HOST",
+			UsedLicenses:    1,
+			ClusterLicenses: 22.5,
+		},
+	}
+	assert.ElementsMatch(t, expected, actual)
+}
+
 func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -1064,6 +1192,8 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 
 		db.EXPECT().GetHostDatas(utils.MAX_TIME).
 			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(filter).
+			Return(clusters, nil),
 	)
 
 	actual, err := as.GetDatabasesUsedLicensesPerHostAsXLSX(filter)
