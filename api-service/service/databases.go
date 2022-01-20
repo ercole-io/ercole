@@ -452,10 +452,25 @@ func (as *APIService) GetDatabasesUsedLicensesPerHost(filter dto.GlobalFilter) (
 		return nil, err
 	}
 
+	clusters, err := as.Database.GetClusters(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	clusterByHostnames := make(map[string]*dto.Cluster)
+	for i := range clusters {
+		for j := range clusters[i].VMs {
+			clusterByHostnames[clusters[i].VMs[j].Hostname] = &clusters[i]
+		}
+	}
+
+	m := make(map[string]map[string]dto.DatabaseUsedLicensePerHost)
+
 	var licensesPerHost []dto.DatabaseUsedLicensePerHost
 
 licenses:
 	for _, v := range licenses {
+
 		for i, v2 := range licensesPerHost {
 			if v.Hostname == v2.Hostname && v.LicenseTypeID == v2.LicenseTypeID {
 				licensesPerHost[i].DatabaseNames = append(licensesPerHost[i].DatabaseNames, v.DbName)
@@ -463,7 +478,7 @@ licenses:
 			}
 		}
 
-		licensesPerHost = append(licensesPerHost, dto.DatabaseUsedLicensePerHost{
+		licensePerHost := dto.DatabaseUsedLicensePerHost{
 			Hostname:        v.Hostname,
 			DatabaseNames:   []string{v.DbName},
 			LicenseTypeID:   v.LicenseTypeID,
@@ -471,7 +486,27 @@ licenses:
 			Metric:          v.Metric,
 			UsedLicenses:    v.UsedLicenses,
 			ClusterLicenses: v.ClusterLicenses,
-		})
+		}
+
+		c, found := clusterByHostnames[v.Hostname]
+		if found {
+			clusterLicenses, ok := m[c.Name]
+			if !ok {
+				clusterLicenses = make(map[string]dto.DatabaseUsedLicensePerHost)
+				m[c.Name] = clusterLicenses
+			}
+
+			_, ok = clusterLicenses[v.LicenseTypeID]
+			if !ok {
+				licensePerHost.ClusterLicenses = float64(c.CPU) * 0.5
+			}
+
+			licensesPerHost = append(licensesPerHost, licensePerHost)
+
+		} else {
+			licensesPerHost = append(licensesPerHost, licensePerHost)
+		}
+
 	}
 
 	return licensesPerHost, nil
