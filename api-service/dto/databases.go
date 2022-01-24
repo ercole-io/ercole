@@ -54,7 +54,6 @@ type DatabaseUsedLicensePerHost struct {
 	Metric          string   `json:"metric" bson:"metric"`
 	UsedLicenses    float64  `json:"usedLicenses" bson:"usedLicenses"`
 	ClusterLicenses float64  `json:"clusterLicenses" bson:"clusterLicenses"`
-	Cluster         *Cluster  `json:"cluster" bson:"cluster"`
 }
 
 type DatabaseUsedLicensePerCluster struct {
