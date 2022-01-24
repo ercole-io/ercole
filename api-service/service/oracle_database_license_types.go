@@ -254,6 +254,10 @@ func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabase
 					if hostdata.Features.Oracle.Database.Databases[x].Licenses[j].LicenseTypeID == licenseTypeID {
 						ignored = hostdata.Features.Oracle.Database.Databases[x].Licenses[j].Count
 					}
+				} else {
+					if hostdata.Features.Oracle.Database.Databases[x].Licenses[j].LicenseTypeID == licenseTypeID {
+						ignored = 0
+					}
 				}
 			}
 		}
