@@ -35,6 +35,7 @@ type Instance struct {
 	Name            string `json:"name"`
 	Shape           string `json:"shape"`
 	Cnt             int    `json:"cnt"`
+	Type            string `json:"type"`
 }
 
 func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model.OciErcoleRecommendation, error) {
@@ -125,112 +126,185 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error) {
 	var listRec []model.OciErcoleRecommendation
 	var merr error
-	var err error
 	var listCompartments []model.OciCompartment
-	var instances map[string]Instance
-
-	instances = make(map[string]Instance)
-
-	listCompartments, err = as.GetOciCompartments(profiles)
-	if err != nil {
-		merr = multierror.Append(merr, err)
-		return nil, merr
-	}
-
-	// retrieve metrics data for each compartment
-	var strNamespace = "oci_computeagent"
+	var instancesNotOptimizable map[string]Instance
+	var allInstancesWithMetrics map[string]Instance
+	var allInstances map[string]Instance
 	var AvgCPUThreshold = 3
 	var PeakCPUThreshold = 180
 	var MemoryThreshold = 1
+	instancesNotOptimizable = make(map[string]Instance)
+	allInstancesWithMetrics = make(map[string]Instance)
+	allInstances = make(map[string]Instance)
 
-	for _, compartment := range listCompartments {
+	listRec = make([]model.OciErcoleRecommendation, 0)
 
-		// first query is about CPU
-		var strQueryAvgCPU = "CpuUtilization[1d].avg()>50" // average CPU utilization in the last  90 days
+	for _, profileId := range profiles {
 
-		sTime := common.SDKTime{time.Now().Local().AddDate(0, 0, -90)}
-		eTime := common.SDKTime{time.Now().Local()}
-
-		monClient, err := monitoring.NewMonitoringClientWithConfigurationProvider(common.DefaultConfigProvider())
+		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
 			merr = multierror.Append(merr, err)
 			continue
 		}
 
-		req := monitoring.SummarizeMetricsDataRequest{
-			CompartmentId: &compartment.CompartmentID,
-			SummarizeMetricsDataDetails: monitoring.SummarizeMetricsDataDetails{
-				StartTime: &sTime,
-				EndTime:   &eTime,
-				Namespace: &strNamespace,
-				Query:     &strQueryAvgCPU,
-			},
-		}
-
-		instances, err = as.CountEventsOccurence(monClient, req, instances, compartment.CompartmentID, AvgCPUThreshold)
+		listCompartments, err = as.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 		if err != nil {
 			merr = multierror.Append(merr, err)
 			continue
 		}
 
-		var strQueryPeakCPU = "CpuUtilization[1m].max()>50" // CPU utilization peak in the last 7 days
-		sTime = common.SDKTime{time.Now().Local().AddDate(0, 0, -7)}
-		eTime = common.SDKTime{time.Now().Local()}
-
-		req = monitoring.SummarizeMetricsDataRequest{
-			CompartmentId: &compartment.CompartmentID,
-			SummarizeMetricsDataDetails: monitoring.SummarizeMetricsDataDetails{
-				StartTime: &sTime,
-				EndTime:   &eTime,
-				Namespace: &strNamespace,
-				Query:     &strQueryPeakCPU,
-			},
-		}
-
-		instances, err = as.CountEventsOccurence(monClient, req, instances, compartment.CompartmentID, PeakCPUThreshold)
+		monClient, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 		if err != nil {
 			merr = multierror.Append(merr, err)
 			continue
 		}
 
-		var strQueryMemory = "MemoryUtilization[1m].max()>90" // memory utilization in the last 7 days
-		sTime = common.SDKTime{time.Now().Local().AddDate(0, 0, -7)}
-		eTime = common.SDKTime{time.Now().Local()}
+		// retrieve metrics data for each compartment
+		for _, compartment := range listCompartments {
 
-		req = monitoring.SummarizeMetricsDataRequest{
-			CompartmentId: &compartment.CompartmentID,
-			SummarizeMetricsDataDetails: monitoring.SummarizeMetricsDataDetails{
-				StartTime: &sTime,
-				EndTime:   &eTime,
-				Namespace: &strNamespace,
-				Query:     &strQueryMemory,
-			},
-		}
+			allInstances, err = as.getOciInstancesWithoutBasicShape(allInstances, compartment, tenancyOCID, customConfigProvider)
+			if err != nil {
+				merr = multierror.Append(merr, err)
+				continue
+			}
 
-		instances, err = as.CountEventsOccurence(monClient, req, instances, compartment.CompartmentID, MemoryThreshold)
-		if err != nil {
-			merr = multierror.Append(merr, err)
-			continue
+			allInstancesWithMetrics, err = as.getOciInstancesWithMetricsWithoutBasicShape(allInstancesWithMetrics, compartment, tenancyOCID, customConfigProvider)
+			if err != nil {
+				merr = multierror.Append(merr, err)
+				continue
+			}
+
+			// first query is about average CPU utilization in the last  90 days
+			var strQueryAvgCPU = "CpuUtilization[1d].avg()>50"
+
+			sTime := common.SDKTime{time.Now().Local().AddDate(0, 0, -89)}
+			eTime := common.SDKTime{time.Now().Local()}
+
+			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, AvgCPUThreshold)
+			if err != nil {
+				merr = multierror.Append(merr, err)
+				continue
+			}
+
+			// second query is about CPU utilization peak in the last 7 days
+			var strQueryPeakCPU = "CpuUtilization[1m].max()>50"
+			sTime = common.SDKTime{time.Now().Local().AddDate(0, 0, -7)}
+			eTime = common.SDKTime{time.Now().Local()}
+
+			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, PeakCPUThreshold)
+			if err != nil {
+				merr = multierror.Append(merr, err)
+				continue
+			}
+
+			// third query is about memory utilization in the last 7 days
+			var strQueryMemory = "MemoryUtilization[1m].max()>90"
+			sTime = common.SDKTime{time.Now().Local().AddDate(0, 0, -7)}
+			eTime = common.SDKTime{time.Now().Local()}
+
+			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, MemoryThreshold)
+			if err != nil {
+				merr = multierror.Append(merr, err)
+				continue
+			}
 		}
 	}
 
-	// if an instance has been counting far all the typologies it can be optimized
 	var recommendation model.OciErcoleRecommendation
 
-	for _, a := range instances {
-		if a.Cnt == 3 {
-			recommendation.CompartmentID = a.CompartmentID
-			recommendation.CompartmentName = a.CompartmentName
-			recommendation.ResourceID = a.ResourceID
-			recommendation.Name = a.Name
-			listRec = append(listRec, recommendation)
+	for _, a := range instancesNotOptimizable {
+		// if an instance is not optimizable I have to remove it from the list
+		if val, ok := allInstancesWithMetrics[a.ResourceID]; ok {
+			delete(allInstancesWithMetrics, val.ResourceID)
 		}
-
 	}
+
+	// build recommendation data for optimizable instances
+	for _, inst := range allInstancesWithMetrics {
+		if allInstances[inst.ResourceID].Type == "kubernetes" {
+			recommendation.Type = model.RecommendationTypeSISRightsizing1
+		} else {
+			recommendation.Type = model.RecommendationTypeInstanceRightsizing
+		}
+		recommendation.CompartmentID = inst.CompartmentID
+		recommendation.CompartmentName = inst.CompartmentName
+		recommendation.ResourceID = inst.ResourceID
+		recommendation.Name = inst.Name
+		listRec = append(listRec, recommendation)
+	}
+
+	for _, b := range allInstancesWithMetrics {
+		if _, ok := allInstances[b.ResourceID]; ok {
+			delete(allInstances, b.ResourceID)
+		}
+	}
+
+	// build recommendation data for instances withoout monitoring
+	for _, in := range allInstances {
+		if in.Type == "kubernetes" {
+			recommendation.Type = model.RecommendationTypeSISRightsizing1
+		} else {
+			recommendation.Type = model.RecommendationTypeInstanceWithoutMonitoring
+		}
+		recommendation.CompartmentID = in.CompartmentID
+		recommendation.CompartmentName = in.CompartmentName
+		recommendation.ResourceID = in.ResourceID
+		recommendation.Name = in.Name
+		listRec = append(listRec, recommendation)
+	}
+
 	return listRec, merr
 }
 
-func (as *ThunderService) CountEventsOccurence(client monitoring.MonitoringClient, req monitoring.SummarizeMetricsDataRequest, instances map[string]Instance, compartmentId string, threshold int) (map[string]Instance, error) {
+func (as *ThunderService) getOciInstancesWithoutBasicShape(allInstances map[string]Instance, compartment model.OciCompartment, tenancyOCID string, customConfigProvider common.ConfigurationProvider) (map[string]Instance, error) {
+	client, err := core.NewComputeClientWithConfigurationProvider(customConfigProvider)
+	if err != nil {
+		return allInstances, err
+	}
+
+	req := core.ListInstancesRequest{
+		CompartmentId: &compartment.CompartmentID,
+	}
+
+	// Send the request using the service client
+	resp, err := client.ListInstances(context.Background(), req)
+	if err != nil {
+		return allInstances, err
+	}
+
+	for _, s := range resp.Items {
+		var tmpInstance Instance
+
+		// we have to exclude the instances with basic shape
+		if *s.Shape != "VM.Standard2.1" && *s.Shape != "VM.StandardE2.1" {
+			tmpInstance.CompartmentID = compartment.CompartmentID
+			tmpInstance.CompartmentName = compartment.Name
+			tmpInstance.ResourceID = *s.Id
+			tmpInstance.Name = *s.DisplayName
+			tmpInstance.Shape = *s.Shape
+			if _, ok := s.Metadata["oke-pool-id"]; ok {
+				tmpInstance.Type = "kubernetes"
+			} else {
+				tmpInstance.Type = "normal"
+			}
+			allInstances[*s.Id] = tmpInstance
+		}
+	}
+
+	return allInstances, nil
+}
+
+func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClient, strQuery string, sTime common.SDKTime, eTime common.SDKTime, instances map[string]Instance, compartment model.OciCompartment, threshold int) (map[string]Instance, error) {
+
+	req := monitoring.SummarizeMetricsDataRequest{
+		CompartmentId: &compartment.CompartmentID,
+		SummarizeMetricsDataDetails: monitoring.SummarizeMetricsDataDetails{
+			StartTime: &sTime,
+			EndTime:   &eTime,
+			Namespace: common.String("oci_computeagent"),
+			Query:     &strQuery,
+		},
+	}
 
 	// Send the request using the service client
 	resp, err := client.SummarizeMetricsData(context.Background(), req)
@@ -241,20 +315,23 @@ func (as *ThunderService) CountEventsOccurence(client monitoring.MonitoringClien
 	var instance Instance
 	var cnt int
 	for _, s := range resp.Items {
+		// reset the counter
+		cnt = 0
 		for _, a := range s.AggregatedDatapoints {
 			if *a.Value == 1.0 {
 				cnt++
 			}
 		}
 		if cnt > threshold {
-			// the instance is eligible for optimization
-			if s.Dimensions["shape"] != "VM.StandardE2.1" {
+			// the instance is not eligible for optimization
+			if s.Dimensions["shape"] != "VM.Standard2.1" && s.Dimensions["shape"] != "VM.StandardE2.1" {
 				if val, ok := instances[s.Dimensions["resourceId"]]; ok {
 					val.Cnt += 1
 					instances[s.Dimensions["resourceId"]] = val
 
 				} else {
-					instance.CompartmentID = compartmentId
+					instance.CompartmentID = compartment.CompartmentID
+					instance.CompartmentName = compartment.Name
 					instance.ResourceID = s.Dimensions["resourceId"]
 					instance.Name = s.Dimensions["resourceDisplayName"]
 					instance.Shape = s.Dimensions["shape"]
@@ -266,24 +343,35 @@ func (as *ThunderService) CountEventsOccurence(client monitoring.MonitoringClien
 	return instances, nil
 }
 
-func (as *ThunderService) GetMetricResponse(client monitoring.MonitoringClient, compartmentId string, namespace string, query string) (*monitoring.SummarizeMetricsDataResponse, error) {
-	var merr error
+func (as *ThunderService) getOciInstancesWithMetricsWithoutBasicShape(instances map[string]Instance, compartment model.OciCompartment, tenancyOCID string, customConfigProvider common.ConfigurationProvider) (map[string]Instance, error) {
 
-	req := monitoring.SummarizeMetricsDataRequest{
-		CompartmentId: &compartmentId,
-		SummarizeMetricsDataDetails: monitoring.SummarizeMetricsDataDetails{
-			Namespace: &namespace,
-			Query:     &query,
-		},
-	}
-
-	resp, err := client.SummarizeMetricsData(context.Background(), req)
+	client, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 	if err != nil {
-		merr = multierror.Append(merr, err)
-		return nil, merr
+		return instances, err
 	}
 
-	return &resp, nil
+	req := monitoring.ListMetricsRequest{
+		CompartmentId:      &compartment.CompartmentID,
+		ListMetricsDetails: monitoring.ListMetricsDetails{Namespace: common.String("oci_computeagent")},
+	}
+
+	// Send the request using the service client
+	resp, err := client.ListMetrics(context.Background(), req)
+	if err != nil {
+		return instances, err
+	}
+
+	for _, s := range resp.Items {
+		if s.Dimensions["shape"] != "VM.StandardE2.1" && s.Dimensions["shape"] != "VM.Standard2.1" {
+			// if the instance is not in the list I have to put it
+			if _, ok := instances[s.Dimensions["resourceId"]]; !ok {
+				tmpInstance := Instance{*s.CompartmentId, compartment.Name, s.Dimensions["resourceId"], s.Dimensions["resourceDisplayName"], s.Dimensions["shape"], 1, ""}
+				instances[s.Dimensions["resourceId"]] = tmpInstance
+			}
+		}
+	}
+
+	return instances, nil
 }
 
 func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error) {
@@ -354,7 +442,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				}
 
 				// first query is about Read Throughput
-				resp, err := as.GetMetricResponse(monClient, compartment.CompartmentID, "oci_blockstore", "VolumeReadThroughput[5d].max()")
+				resp, err := as.getMetricResponse(monClient, compartment.CompartmentID, "oci_blockstore", "VolumeReadThroughput[5d].max()")
 
 				if err != nil {
 					merr = multierror.Append(merr, err)
@@ -372,7 +460,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				}
 
 				// second query is about Write Throughput
-				resp, err = as.GetMetricResponse(monClient, compartment.CompartmentID, "oci_blockstore", "VolumeWriteThroughput[5d].max()")
+				resp, err = as.getMetricResponse(monClient, compartment.CompartmentID, "oci_blockstore", "VolumeWriteThroughput[5d].max()")
 
 				if err != nil {
 					merr = multierror.Append(merr, err)
@@ -391,7 +479,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				}
 
 				// third query is about Read Ops
-				resp, err = as.GetMetricResponse(monClient, compartment.CompartmentID, "oci_blockstore", "VolumeReadOps[5d].max()")
+				resp, err = as.getMetricResponse(monClient, compartment.CompartmentID, "oci_blockstore", "VolumeReadOps[5d].max()")
 
 				if err != nil {
 					merr = multierror.Append(merr, err)
@@ -409,7 +497,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				}
 
 				// fourth query is about Write Ops
-				resp, err = as.GetMetricResponse(monClient, compartment.CompartmentID, "oci_blockstore", "VolumeWriteOps[5d].max()")
+				resp, err = as.getMetricResponse(monClient, compartment.CompartmentID, "oci_blockstore", "VolumeWriteOps[5d].max()")
 
 				if err != nil {
 					merr = multierror.Append(merr, err)
@@ -426,8 +514,6 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						vols[tempId] = resTmp
 					}
 				}
-
-				// N.B devo resettare la mappa ad ogni compartment
 
 				if len(vols) != 0 {
 					for _, v := range vols {
@@ -451,6 +537,26 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 	}
 
 	return listRec, merr
+}
+
+func (as *ThunderService) getMetricResponse(client monitoring.MonitoringClient, compartmentId string, namespace string, query string) (*monitoring.SummarizeMetricsDataResponse, error) {
+	var merr error
+
+	req := monitoring.SummarizeMetricsDataRequest{
+		CompartmentId: &compartmentId,
+		SummarizeMetricsDataDetails: monitoring.SummarizeMetricsDataDetails{
+			Namespace: &namespace,
+			Query:     &query,
+		},
+	}
+
+	resp, err := client.SummarizeMetricsData(context.Background(), req)
+	if err != nil {
+		merr = multierror.Append(merr, err)
+		return nil, merr
+	}
+
+	return &resp, nil
 }
 
 func (as *ThunderService) isOptimizable(res model.OciResourcePerformance) (bool, error) {
