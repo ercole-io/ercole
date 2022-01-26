@@ -149,7 +149,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 		}
 
 		for _, host := range hosts {
-			coveredLicenses, err = getLicensesCoveredByHost(host, agreement.LicenseTypeID, agreement.CoveredLicenses, hostdatasPerHostname)
+			coveredLicenses, err = getLicensesCoveredByHost(host, agreement.CoveredLicenses, hostdatasPerHostname)
 			if err != nil {
 				if errors.Is(err, utils.ErrHostNotFound) {
 					as.Log.Warn(err)
@@ -294,17 +294,17 @@ func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabase
 	return consumedLicenses - ignored, nil
 }
 
-func (as *APIService) getterLicensesCoveredByHost() (func(host dto.HostUsingOracleDatabaseLicenses, licenseTypeID string, originalCoveredLicenses float64, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error), error) {
+func (as *APIService) getterLicensesCoveredByHost() (func(host dto.HostUsingOracleDatabaseLicenses, originalCoveredLicenses float64, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error), error) {
 	// map to keep history if a certain host per a certain licence as already be counted
 	// by another host in its veritas cluster
 	hostLicenseAlreadyCounted := make(map[string]map[string]bool)
 
-	return func(host dto.HostUsingOracleDatabaseLicenses, licenseTypeID string, originalCoveredLicenses float64, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error) {
-		return as.getLicensesCoveredByHost(host, licenseTypeID, originalCoveredLicenses, hostLicenseAlreadyCounted, hostdatasPerHostname)
+	return func(host dto.HostUsingOracleDatabaseLicenses, originalCoveredLicenses float64, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error) {
+		return as.getLicensesCoveredByHost(host, originalCoveredLicenses, hostLicenseAlreadyCounted, hostdatasPerHostname)
 	}, nil
 }
 
-func (as *APIService) getLicensesCoveredByHost(host dto.HostUsingOracleDatabaseLicenses, licenseTypeID string, originalCoveredLicenses float64,
+func (as *APIService) getLicensesCoveredByHost(host dto.HostUsingOracleDatabaseLicenses, originalCoveredLicenses float64,
 	hostnamesPerLicense map[string]map[string]bool,
 	hostdatasPerHostname map[string]*model.HostDataBE,
 ) (float64, error) {
