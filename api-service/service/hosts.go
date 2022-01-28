@@ -76,7 +76,7 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 					return nil, utils.NewError(err, "")
 				}
 
-				for _, valHost := range cHosts {
+				for i := 0; i < len(cHosts); i++ {
 					if j == 4 {
 						indexsheetHostAdded := lms.NewSheet(sheetHostAdded)
 						indexSheetDatabaseEbsDbTier := lms.GetSheetIndex(sheetDatabaseEbsDbTier)
@@ -86,8 +86,10 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 						}
 						lms.SetActiveSheet(indexSheetDatabaseEbsDbTier)
 					}
-					setCellValueLMS(lms, sheetHostAdded, j, csiByHostname, valHost)
-					j++
+					if cHosts[i]["usingLicenseCount"].(float64) != 0 {
+						setCellValueLMS(lms, sheetHostAdded, j, csiByHostname, cHosts[i])
+						j++
+					}
 				}
 
 			}
@@ -112,7 +114,7 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 					return nil, utils.NewError(err, "")
 				}
 
-				for _, valCHost := range dHosts {
+				for i := 0; i < len(dHosts); i++ {
 					if z == 4 {
 						indexsheetHostDismissed := lms.NewSheet(sheetHostDismissed)
 						indexSheetDatabaseEbsDbTier := lms.GetSheetIndex(sheetDatabaseEbsDbTier)
@@ -122,17 +124,22 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 						}
 						lms.SetActiveSheet(indexSheetDatabaseEbsDbTier)
 					}
-					setCellValueLMS(lms, sheetHostDismissed, z, csiByHostname, valCHost)
-					z++
+					if dHosts[i]["usingLicenseCount"].(float64) != 0 {
+						setCellValueLMS(lms, sheetHostDismissed, z, csiByHostname, dHosts[i])
+						z++
+					}
 				}
 			}
 		}
 
 	}
 
-	for i, val := range hosts {
-		i += 4 // offset for headers
-		setCellValueLMS(lms, sheetDatabaseEbsDbTier, i, csiByHostname, val)
+	indexRow := 4 // offset for headers
+	for i := 0; i < len(hosts); i++ {
+		if hosts[i]["usingLicenseCount"].(float64) != 0 {
+			setCellValueLMS(lms, sheetDatabaseEbsDbTier, indexRow, csiByHostname, hosts[i])
+			indexRow++
+		}
 	}
 
 	return lms, nil
