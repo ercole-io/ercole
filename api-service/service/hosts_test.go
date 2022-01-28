@@ -213,7 +213,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 			"productVersion":           "11",
 			"threadsPerCore":           2,
 			"usedManagementPacks":      "",
-			"usingLicenseCount":        4,
+			"usingLicenseCount":        4.0,
 			"virtualServerName":        "publicitate-36d06ca83eafa454423d2097f4965517",
 			"virtualizationTechnology": "",
 			"_id":                      utils.Str2oid("5efc38ab79f92e4cbf283b04"),
@@ -236,7 +236,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 			"productVersion":           "11",
 			"threadsPerCore":           2,
 			"usedManagementPacks":      "",
-			"usingLicenseCount":        4,
+			"usingLicenseCount":        4.0,
 			"virtualServerName":        "itl-csllab-112.sorint.localbuu",
 			"virtualizationTechnology": "",
 			"_id":                      utils.Str2oid("5efc38ab79f92e4cbf283b05"),
@@ -287,8 +287,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 				GetListValidHostsByRangeDates(filterslms.From, filterslms.To).
 				DoAndReturn(func(from time.Time, to time.Time) ([]string, error) {
 					return []string{}, nil
-				}).
-				Times(1),
+				}).Times(1),
 			db.EXPECT().
 				GetListDismissedHostsByRangeDates(filterslms.From, filterslms.To).
 				DoAndReturn(func(from time.Time, to time.Time) ([]string, error) {
@@ -298,8 +297,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 				GetListValidHostsByRangeDates(filterslms.From, filterslms.To).
 				DoAndReturn(func(from time.Time, to time.Time) ([]string, error) {
 					return []string{}, nil
-				}).
-				Times(1),
+				}).Times(1),
 			db.EXPECT().
 				GetListDismissedHostsByRangeDates(filterslms.From, filterslms.To).
 				DoAndReturn(func(from time.Time, to time.Time) ([]string, error) {
