@@ -296,7 +296,8 @@
                                 "type": "string",
                                 "enum": [
                                     "Oracle/VM",
-                                    "VMWare/VMWare"
+                                    "VMWare/VMWare",
+                                    "Oracle/LVM"
                                 ]
                             },
                             "name": {
