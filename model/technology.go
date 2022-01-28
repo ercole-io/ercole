@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ const (
 	TechnologyPostgreSQLPostgreSQL     string = "PostgreSQL/PostgreSQL"
 	TechnologyOracleMySQL              string = "Oracle/MySQL"
 	TechnologyOracleVM                 string = "Oracle/VM"
+	TechnologyOracleLVM                string = "Oracle/LVM"
 	TechnologyVMWare                   string = "VMWare/VMWare"
 	TechnologyUnknownOperatingSystem   string = "Unknown/Unknown"
 )
@@ -39,6 +40,7 @@ var (
 	TechnologyPostgreSQLPostgreSQLPrt     *string = utils.Str2ptr(TechnologyPostgreSQLPostgreSQL)
 	TechnologyOracleMySQLPrt              *string = utils.Str2ptr(TechnologyOracleMySQL)
 	TechnologyOracleVMPrt                 *string = utils.Str2ptr(TechnologyOracleVM)
+	TechnologyOracleLVMPrt                *string = utils.Str2ptr(TechnologyOracleLVM)
 	TechnologyVMWarePrt                   *string = utils.Str2ptr(TechnologyVMWare)
 	TechnologyUnknownOperatingSystemPrt   *string = utils.Str2ptr(TechnologyUnknownOperatingSystem)
 )
