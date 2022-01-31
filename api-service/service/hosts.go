@@ -277,8 +277,11 @@ func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (*
 	var indexList []int
 	if host.Features.Oracle != nil && host.Features.Oracle.Database != nil && host.Features.Oracle.Database.Databases != nil {
 		for i := range host.Features.Oracle.Database.Databases {
+			realApplicationClusters = false
+			indexList = nil
 			db := &host.Features.Oracle.Database.Databases[i]
 			for j := range db.Licenses {
+
 				lic := db.Licenses[j]
 				if lic.LicenseTypeID != "" {
 					licType, err := as.GetOracleDatabaseLicenseType(lic.LicenseTypeID)
@@ -305,8 +308,6 @@ func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (*
 				for _, k := range indexList {
 					host.Features.Oracle.Database.Databases[i].Licenses[k].Count = 0
 				}
-				realApplicationClusters = false
-				indexList = nil
 			}
 		}
 	}
