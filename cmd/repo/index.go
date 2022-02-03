@@ -555,7 +555,12 @@ func (idx *Index) Install(artifact *ArtifactInfo) {
 
 	if strings.HasSuffix(artifact.Filename, ".rpm") {
 		idx.log.Debugf("Executing createrepo %s\n", artifact.DirectoryPath(idx.distributedFiles()))
-		cmd := exec.Command("createrepo", artifact.DirectoryPath(idx.distributedFiles()))
+		dirPath := artifact.DirectoryPath(idx.distributedFiles())
+		cmd := exec.Command("createrepo", dirPath)
+
+		if artifact.OperatingSystem == "rhel5" {
+			cmd = exec.Command("createrepo", "-s", "sha", dirPath)
+		}
 
 		if verbose {
 			cmd.Stdout = os.Stdout
