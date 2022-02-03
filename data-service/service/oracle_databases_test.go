@@ -529,6 +529,14 @@ func TestCheckNewLicenses_ErrOracleDatabaseLicenseTypeIDNotFound(t *testing.T) {
 	hds.checkNewLicenses(&hostData3, &hostData4, []model.OracleDatabaseLicenseType{})
 }
 
+func TestIgnorePreviousLicences_Success(t *testing.T) {
+	hds := HostDataService{
+		Log: logger.NewLogger("TEST"),
+	}
+
+	hds.ignorePreviousLicences(&hostData4, &hostData5)
+}
+
 func TestLicenseTypesSorter(t *testing.T) {
 	testCases := []struct {
 		config       config.DataService
