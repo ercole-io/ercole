@@ -47,6 +47,8 @@ func (hds *HostDataService) oracleDatabasesChecks(previousHostdata, hostdata *mo
 
 	hds.checkNewLicenses(previousHostdata, hostdata, licenseTypes)
 
+	hds.ignorePreviousLicences(previousHostdata, hostdata)
+
 	var unlistedDatabasesAlerts []model.Alert
 
 	for _, dbname := range hostdata.Features.Oracle.Database.UnlistedRunningDatabases {
@@ -387,6 +389,29 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 
 	if err := hds.throwNewOptionAlerts(newOptionAlerts); err != nil {
 		hds.Log.Error(err)
+	}
+}
+
+func (hds *HostDataService) ignorePreviousLicences(previous, new *model.HostDataBE) {
+	ignoredDbLicenses := make(map[uint][]string)
+	for _, db := range previous.Features.Oracle.Database.Databases {
+		licenses := make([]string, 0)
+		for _, license := range db.Licenses {
+			if license.Ignored {
+				licenses = append(licenses, license.LicenseTypeID)
+			}
+		}
+		if len(licenses) > 0 {
+			ignoredDbLicenses[db.DbID] = licenses
+		}
+	}
+
+	for _, db := range new.Features.Oracle.Database.Databases {
+		for i := range db.Licenses {
+			if licenseTypeID, ok := ignoredDbLicenses[db.DbID]; ok {
+				db.Licenses[i].Ignored = utils.Contains(licenseTypeID, db.Licenses[i].LicenseTypeID)
+			}
+		}
 	}
 }
 
