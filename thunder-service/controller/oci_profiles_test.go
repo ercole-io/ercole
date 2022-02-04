@@ -811,7 +811,7 @@ func TestDeleteOciProfile_BadRequest_HasWrongID(t *testing.T) {
 	err = decoder.Decode(&feErr)
 	require.NoError(t, err)
 
-	assert.Equal(t, "Can't decode id: encoding/hex: invalid byte: U+0073 's'", feErr.Error)
+	assert.Equal(t, "Can't decode id: "+primitive.ErrInvalidHex.Error(), feErr.Error)
 	assert.Equal(t, "Unprocessable Entity", feErr.Message)
 }
 
