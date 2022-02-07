@@ -5572,7 +5572,7 @@ paths:
       responses:
         '204':
           description: No Content
-  '/oracle-cloud/loadbalancers/{ids}':
+  '/oracle-cloud/load-balancers/{ids}':
     parameters:
       - schema:
           type: string
@@ -5640,7 +5640,7 @@ paths:
                         resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcu5t5biz4ucpfyne74azf2n4wpqx57rzjrj65hz56dnga
       operationId: GetOciUnusedLoadBalancersers-ids
       description: Get recommendations from Oracle Cloud Infrastructure about Load Balancer health
-  '/oracle-cloud/instancesidle/{ids}':
+  '/oracle-cloud/instances-idle/{ids}':
     parameters:
       - schema:
           type: string
@@ -5708,7 +5708,7 @@ paths:
                         resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcu5t5biz4ucpfyne74azf2n4wpqx57rzjrj65hz56dnga
       operationId: GetOciComputeInstanceIdlee-ids
       description: Get recommendations from Oracle Cloud Infrastructure about Idle Instances
-  '/oracle-cloud/blockstorage/{ids}':
+  '/oracle-cloud/block-storage/{ids}':
     parameters:
       - schema:
           type: string
@@ -5776,7 +5776,7 @@ paths:
                         resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcu5t5biz4ucpfyne74azf2n4wpqx57rzjrj65hz56dnga
       operationId: GetOciBlockStorageRightsizing
       description: Get recommendations from Oracle Cloud Infrastructure about Optimizable Block Storage
-  '/oracle-cloud/unusedstorage/{ids}':
+  '/oracle-cloud/unused-storage/{ids}':
     parameters:
       - schema:
           type: string
@@ -5844,7 +5844,7 @@ paths:
                         resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcu5t5biz4ucpfyne74azf2n4wpqx57rzjrj65hz56dnga
       operationId: GetOciUnusedStorage
       description: Get recommendations from Oracle Cloud Infrastructure about Unused Storage
-  '/oracle-cloud/oldsnapshot/{ids}':
+  '/oracle-cloud/old-snapshot/{ids}':
     parameters:
       - schema:
           type: string
@@ -5912,7 +5912,7 @@ paths:
                         resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcu5t5biz4ucpfyne74azf2n4wpqx57rzjrj65hz56dnga
       operationId: GetOciOldSnapshotDecommissioning
       description: Get recommendations from Oracle Cloud Infrastructure about old snapshot
-  '/oracle-cloud/instancerightsizing/{ids}':
+  '/oracle-cloud/instance-rightsizing/{ids}':
     parameters:
       - schema:
           type: string
