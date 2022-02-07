@@ -313,10 +313,9 @@ func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClien
 	}
 
 	var instance Instance
-	var cnt int
 	for _, s := range resp.Items {
 		// reset the counter
-		cnt = 0
+		cnt := 0
 		for _, a := range s.AggregatedDatapoints {
 			if *a.Value == 1.0 {
 				cnt++
