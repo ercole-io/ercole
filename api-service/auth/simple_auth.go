@@ -99,17 +99,7 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 
 	username := info["Username"].(string)
 
-	now := ap.TimeNow()
-	claims := &jwt.RegisteredClaims{
-		ExpiresAt: jwt.NewNumericDate(now.Add(time.Duration(ap.Config.TokenValidityTimeout) * time.Second)),
-		IssuedAt:  jwt.NewNumericDate(now),
-		NotBefore: jwt.NewNumericDate(now),
-		Issuer:    "ercole",
-		Subject:   username,
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
-	ss, err := token.SignedString(ap.privateKey)
+	ss, err := buildToken(ap.TimeNow(), ap.Config.TokenValidityTimeout, username, ap.privateKey)
 	if err != nil {
 		ap.Log.Errorf("Unable to get signed token: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
