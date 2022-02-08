@@ -27,8 +27,7 @@ import (
 	"strings"
 	"time"
 
-	"gopkg.in/square/go-jose.v2"
-	"gopkg.in/square/go-jose.v2/jwt"
+	jwt "github.com/golang-jwt/jwt/v4"
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
@@ -56,10 +55,13 @@ func (ap *BasicAuthenticationProvider) Init() {
 		ap.Log.Panic(err)
 	}
 
-	ap.privateKey, ap.publicKey, err = utils.ParsePrivateKey(raw)
+	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(raw)
 	if err != nil {
-		ap.Log.Panic(err)
+		ap.Log.Panic(utils.NewErrorf("Unable to parse the private key: %s", err))
 	}
+
+	ap.privateKey = privateKey
+	ap.publicKey = privateKey.PublicKey
 }
 
 // GetUserInfoIfCredentialsAreCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
@@ -80,7 +82,6 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 		Password string `json:"password"`
 	}
 
-	var err error
 	var request LoginRequest
 
 	//Parse the request
@@ -96,43 +97,42 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	sig, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.RS256, Key: ap.privateKey}, (&jose.SignerOptions{}).WithType("JWT"))
-	if err != nil {
-		ap.Log.Panic(err)
+	username := info["Username"].(string)
+
+	now := ap.TimeNow()
+	claims := &jwt.RegisteredClaims{
+		ExpiresAt: jwt.NewNumericDate(now.Add(time.Duration(ap.Config.TokenValidityTimeout) * time.Second)),
+		IssuedAt:  jwt.NewNumericDate(now),
+		NotBefore: jwt.NewNumericDate(now),
+		Issuer:    "ercole",
+		Subject:   username,
 	}
 
-	cl := jwt.Claims{
-		Subject:   info["Username"].(string),
-		Issuer:    "ercole",
-		NotBefore: jwt.NewNumericDate(ap.TimeNow()),
-		Audience:  jwt.Audience{info["Username"].(string)},
-		ID:        info["Username"].(string),
-		Expiry:    jwt.NewNumericDate(ap.TimeNow().Add(time.Duration(ap.Config.TokenValidityTimeout) * time.Second)),
-		IssuedAt:  jwt.NewNumericDate(ap.TimeNow()),
-	}
-	raw, err := jwt.Signed(sig).Claims(cl).CompactSerialize()
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	ss, err := token.SignedString(ap.privateKey)
 	if err != nil {
-		ap.Log.Panic(err)
+		ap.Log.Errorf("Unable to get signed token: %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.WriteAndLogError(ap.Log, w, http.StatusInternalServerError, fmt.Errorf("Unable to get signed token"))
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(raw))
+	w.Write([]byte(ss))
 }
 
 // AuthenticateMiddleware return the middleware used to check if the users are authenticated
 func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//Get the token
-		tokenStr := r.Header.Get("Authorization")
-		if tokenStr == "" {
+		tokenString := r.Header.Get("Authorization")
+		if tokenString == "" {
 			utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("You don't have setted the authorization header"), http.StatusText(http.StatusUnauthorized)))
 			return
 		}
 
-		//Check token type
-		if strings.HasPrefix(tokenStr, "Basic ") {
-			tokenStr = tokenStr[len("Basic "):]
-			val, err := base64.StdEncoding.DecodeString(tokenStr)
+		if strings.HasPrefix(tokenString, "Basic ") {
+			tokenString = tokenString[len("Basic "):]
+			val, err := base64.StdEncoding.DecodeString(tokenString)
 			if err != nil {
 				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(err, http.StatusText(http.StatusUnauthorized)))
 				return
@@ -152,46 +152,33 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 			}
 
 			next.ServeHTTP(w, r)
-		} else if strings.HasPrefix(tokenStr, "Bearer ") {
-			tokenStr = tokenStr[len("Bearer "):]
-			//Parse the token
-			parsed, err := jwt.ParseSigned(tokenStr)
+			return
+		}
+
+		if strings.HasPrefix(tokenString, "Bearer ") {
+			tokenString = tokenString[len("Bearer "):]
+
+			jwt.TimeFunc = ap.TimeNow
+			token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(_ *jwt.Token) (interface{}, error) {
+				return ap.publicKey, nil
+			}, jwt.WithValidMethods([]string{jwt.SigningMethodRS256.Name}))
 			if err != nil {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(err, http.StatusText(http.StatusUnauthorized)))
+				ap.Log.Debugf("Invalid token: %s", err)
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, fmt.Errorf("Invalid token"))
 				return
 			}
 
-			//Validate the token and get the claim
-			claim := jwt.Claims{}
-			err = parsed.Claims(ap.publicKey, &claim)
-			if err != nil {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(err, http.StatusText(http.StatusUnauthorized)))
-				return
-			}
-
-			//Check exp field
-			timeNow := ap.TimeNow()
-			if claim.Expiry.Time().Before(timeNow) {
-				message := fmt.Sprintf("The token is expired at [%v], but now is [%v]!",
-					claim.Expiry.Time().String(), timeNow.String())
-
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized,
-					utils.NewError(errors.New(message), http.StatusText(http.StatusUnauthorized)))
-
-				return
-			}
-
-			//Check issuedat field
-			if claim.IssuedAt.Time().After(ap.TimeNow()) {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("Futuristic tokens (from future) are invalid"), http.StatusText(http.StatusUnauthorized)))
+			_, ok := token.Claims.(*jwt.RegisteredClaims)
+			if !ok || !token.Valid {
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, fmt.Errorf("Invalid token"))
 				return
 			}
 
 			//Serve the request
 			next.ServeHTTP(w, r)
-		} else {
-			utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("The authorization header value doesn't begin with Basic or Bearer"), http.StatusText(http.StatusUnauthorized)))
 			return
 		}
+
+		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewErrorf("The authorization header value doesn't begin with Basic or Bearer"))
 	})
 }
