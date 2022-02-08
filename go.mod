@@ -11,6 +11,7 @@ require (
 	github.com/bamzi/jobrunner v1.0.0
 	github.com/fatih/color v1.13.0
 	github.com/goji/httpauth v0.0.0-20160601135302-2da839ab0f4d
+	github.com/golang-jwt/jwt/v4 v4.2.0
 	github.com/golang/gddo v0.0.0-20210115222349-20d68f94ee1f
 	github.com/golang/mock v1.6.0
 	github.com/google/go-github/v28 v28.1.1
