@@ -16,6 +16,7 @@
 package auth
 
 import (
+	"crypto"
 	"net/http"
 	"time"
 
@@ -73,4 +74,13 @@ func buildToken(now time.Time, tokenValidityTimeout int, username string, privat
 	}
 
 	return ss, nil
+}
+
+func parsePrivateKey(raw []byte) (crypto.PrivateKey, crypto.PublicKey, error) {
+	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(raw)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return privateKey, privateKey.Public(), nil
 }

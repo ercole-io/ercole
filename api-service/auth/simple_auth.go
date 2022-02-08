@@ -99,7 +99,7 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 
 	username := info["Username"].(string)
 
-	ss, err := buildToken(ap.TimeNow(), ap.Config.TokenValidityTimeout, username, ap.privateKey)
+	token, err := buildToken(ap.TimeNow(), ap.Config.TokenValidityTimeout, username, ap.privateKey)
 	if err != nil {
 		ap.Log.Errorf("Unable to get signed token: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -108,7 +108,7 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(ss))
+	w.Write([]byte(token))
 }
 
 // AuthenticateMiddleware return the middleware used to check if the users are authenticated
