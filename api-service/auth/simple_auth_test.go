@@ -217,7 +217,7 @@ func TestGetToken_InvalidRequest(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAPrivateKey))
+	bap.privateKey, bap.publicKey, err = parsePrivateKey([]byte(testRSAPrivateKey))
 	require.NoError(t, err)
 
 	rr := httptest.NewRecorder()
@@ -243,7 +243,7 @@ func TestGetToken_InvalidCredentials(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAPrivateKey))
+	bap.privateKey, bap.publicKey, err = parsePrivateKey([]byte(testRSAPrivateKey))
 	require.NoError(t, err)
 
 	rr := httptest.NewRecorder()
@@ -291,7 +291,7 @@ func TestAuthenticateMiddleware_NoAuthorizationHeader(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAPrivateKey))
+	bap.privateKey, bap.publicKey, err = parsePrivateKey([]byte(testRSAPrivateKey))
 	require.NoError(t, err)
 
 	rr := httptest.NewRecorder()
@@ -319,7 +319,7 @@ func TestAuthenticateMiddleware_WrongAuthorizationHeader(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAPrivateKey))
+	bap.privateKey, bap.publicKey, err = parsePrivateKey([]byte(testRSAPrivateKey))
 	require.NoError(t, err)
 
 	rr := httptest.NewRecorder()
@@ -348,7 +348,7 @@ func TestAuthenticateMiddleware_BasicInvalidBase64(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAPrivateKey))
+	bap.privateKey, bap.publicKey, err = parsePrivateKey([]byte(testRSAPrivateKey))
 	require.NoError(t, err)
 
 	rr := httptest.NewRecorder()
@@ -377,7 +377,7 @@ func TestAuthenticateMiddleware_BasicMissingColon(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAPrivateKey))
+	bap.privateKey, bap.publicKey, err = parsePrivateKey([]byte(testRSAPrivateKey))
 	require.NoError(t, err)
 
 	rr := httptest.NewRecorder()
@@ -406,7 +406,7 @@ func TestAuthenticateMiddleware_BasicInvalidCredentials(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAPrivateKey))
+	bap.privateKey, bap.publicKey, err = parsePrivateKey([]byte(testRSAPrivateKey))
 	require.NoError(t, err)
 
 	rr := httptest.NewRecorder()
@@ -435,7 +435,7 @@ func TestAuthenticateMiddleware_BasicOk(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAPrivateKey))
+	bap.privateKey, bap.publicKey, err = parsePrivateKey([]byte(testRSAPrivateKey))
 	require.NoError(t, err)
 
 	rr := httptest.NewRecorder()
@@ -464,7 +464,7 @@ func TestAuthenticateMiddleware_BearerInvalidToken(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAPrivateKey))
+	bap.privateKey, bap.publicKey, err = parsePrivateKey([]byte(testRSAPrivateKey))
 	require.NoError(t, err)
 
 	rr := httptest.NewRecorder()
@@ -493,7 +493,7 @@ func TestAuthenticateMiddleware_BearerInvalidSignature(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAPrivateKey))
+	bap.privateKey, bap.publicKey, err = parsePrivateKey([]byte(testRSAPrivateKey))
 	require.NoError(t, err)
 
 	rr := httptest.NewRecorder()
@@ -522,7 +522,7 @@ func TestAuthenticateMiddleware_BearerTokenExpired(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAPrivateKey))
+	bap.privateKey, bap.publicKey, err = parsePrivateKey([]byte(testRSAPrivateKey))
 	require.NoError(t, err)
 
 	rr := httptest.NewRecorder()
@@ -551,7 +551,7 @@ func TestAuthenticateMiddleware_BearerTokenFromFuture(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAPrivateKey))
+	bap.privateKey, bap.publicKey, err = parsePrivateKey([]byte(testRSAPrivateKey))
 	require.NoError(t, err)
 
 	rr := httptest.NewRecorder()
@@ -580,7 +580,7 @@ func TestAuthenticateMiddleware_BearerOk(t *testing.T) {
 		Log:     logger.NewLogger("TEST", logger.LogVerbosely(true)),
 	}
 
-	bap.privateKey, bap.publicKey, err = utils.ParsePrivateKey([]byte(testRSAPrivateKey))
+	bap.privateKey, bap.publicKey, err = parsePrivateKey([]byte(testRSAPrivateKey))
 	require.NoError(t, err)
 
 	rr := httptest.NewRecorder()

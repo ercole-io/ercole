@@ -56,7 +56,7 @@ func (ap *LDAPAuthenticationProvider) Init() {
 		ap.Log.Fatal(err)
 	}
 
-	ap.privateKey, ap.publicKey, err = utils.ParsePrivateKey(raw)
+	ap.privateKey, ap.publicKey, err = parsePrivateKey(raw)
 	if err != nil {
 		ap.Log.Panic(err)
 	}
