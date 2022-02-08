@@ -17,6 +17,7 @@ package auth
 
 import (
 	"bytes"
+	"crypto/rsa"
 	"crypto/subtle"
 	"encoding/base64"
 	"encoding/json"
@@ -26,8 +27,6 @@ import (
 	"net/http"
 	"strings"
 	"time"
-
-	jwt "github.com/golang-jwt/jwt/v4"
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
@@ -43,9 +42,9 @@ type BasicAuthenticationProvider struct {
 	// Log contains logger formatted
 	Log logger.Logger
 	// privateKey contains the private key used to sign the JWT tokens
-	privateKey interface{}
+	privateKey *rsa.PrivateKey
 	// publicKey contains the public key used to check the JWT tokens
-	publicKey interface{}
+	publicKey *rsa.PublicKey
 }
 
 // Init initializes the service and database
@@ -55,13 +54,10 @@ func (ap *BasicAuthenticationProvider) Init() {
 		ap.Log.Panic(err)
 	}
 
-	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(raw)
+	ap.privateKey, ap.publicKey, err = parsePrivateKey(raw)
 	if err != nil {
 		ap.Log.Panic(utils.NewErrorf("Unable to parse the private key: %s", err))
 	}
-
-	ap.privateKey = privateKey
-	ap.publicKey = privateKey.PublicKey
 }
 
 // GetUserInfoIfCredentialsAreCorrect return the informations about the user if the provided credentials are correct, otherwise return nil
@@ -146,25 +142,13 @@ func (ap *BasicAuthenticationProvider) AuthenticateMiddleware(next http.Handler)
 		}
 
 		if strings.HasPrefix(tokenString, "Bearer ") {
-			tokenString = tokenString[len("Bearer "):]
-
-			jwt.TimeFunc = ap.TimeNow
-			token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(_ *jwt.Token) (interface{}, error) {
-				return ap.publicKey, nil
-			}, jwt.WithValidMethods([]string{jwt.SigningMethodRS256.Name}))
+			err := validateBearerToken(tokenString, ap.TimeNow, ap.publicKey)
 			if err != nil {
 				ap.Log.Debugf("Invalid token: %s", err)
 				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, fmt.Errorf("Invalid token"))
 				return
 			}
 
-			_, ok := token.Claims.(*jwt.RegisteredClaims)
-			if !ok || !token.Valid {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, fmt.Errorf("Invalid token"))
-				return
-			}
-
-			//Serve the request
 			next.ServeHTTP(w, r)
 			return
 		}
