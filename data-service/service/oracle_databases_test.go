@@ -244,6 +244,36 @@ var hostData5 model.HostDataBE = model.HostDataBE{
 	},
 }
 
+var hostData6 model.HostDataBE = model.HostDataBE{
+	ID:        utils.Str2oid("5dca7a8faebf0b7c2e5daf42"),
+	Hostname:  "superhost1",
+	Archived:  true,
+	CreatedAt: utils.P("2019-11-05T18:02:03Z"),
+	Features: model.Features{
+		Oracle: &model.OracleFeature{
+			Database: &model.OracleDatabaseFeature{
+				UnlistedRunningDatabases: []string{},
+				Databases: []model.OracleDatabase{
+					{
+						Name: "acd",
+						Licenses: []model.OracleDatabaseLicense{
+							{
+								LicenseTypeID: "Oracle ENT",
+								Name:          "Oracle ENT",
+								Count:         10,
+								Ignored:       false,
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	Info: model.Host{
+		CPUCores: 0,
+	},
+}
+
 var licenseTypes = []model.OracleDatabaseLicenseType{
 	{
 		ID:              "Oracle ENT",
@@ -527,6 +557,42 @@ func TestCheckNewLicenses_ErrOracleDatabaseLicenseTypeIDNotFound(t *testing.T) {
 
 	//TODO Add check that error has been logged
 	hds.checkNewLicenses(&hostData3, &hostData4, []model.OracleDatabaseLicenseType{})
+}
+
+func TestIgnorePreviousLicences_SuccessNoPreviousIgnored(t *testing.T) {
+	hds := HostDataService{
+		Log: logger.NewLogger("TEST"),
+	}
+
+	hds.ignorePreviousLicences(&hostData6, &hostData6)
+
+	for _, db := range hostData6.Features.Oracle.Database.Databases {
+		for _, license := range db.Licenses {
+			if license.LicenseTypeID == "Oracle ENT" {
+				if license.Ignored {
+					t.Fatal("unexpected ignored license")
+				}
+			}
+		}
+	}
+}
+
+func TestIgnorePreviousLicences_SuccessWithPreviousIgnored(t *testing.T) {
+	hds := HostDataService{
+		Log: logger.NewLogger("TEST"),
+	}
+
+	hds.ignorePreviousLicences(&hostData4, &hostData6)
+
+	for _, db := range hostData6.Features.Oracle.Database.Databases {
+		for _, license := range db.Licenses {
+			if license.LicenseTypeID == "Oracle ENT" {
+				if !license.Ignored {
+					t.Fatal("expected ignored license")
+				}
+			}
+		}
+	}
 }
 
 func TestLicenseTypesSorter(t *testing.T) {
