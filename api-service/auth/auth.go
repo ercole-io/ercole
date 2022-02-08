@@ -21,6 +21,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
+	jwt "github.com/golang-jwt/jwt/v4"
 )
 
 // AuthenticationProvider is a interface that wrap methods used to authenticate users
@@ -54,4 +55,22 @@ func BuildAuthenticationProvider(conf config.AuthenticationProviderConfig, timeN
 	default:
 		panic("The AuthenticationProvider type wasn't recognized or supported")
 	}
+}
+
+func buildToken(now time.Time, tokenValidityTimeout int, username string, privateKey interface{}) (string, error) {
+	claims := &jwt.RegisteredClaims{
+		ExpiresAt: jwt.NewNumericDate(now.Add(time.Duration(tokenValidityTimeout) * time.Second)),
+		IssuedAt:  jwt.NewNumericDate(now),
+		NotBefore: jwt.NewNumericDate(now),
+		Issuer:    "ercole",
+		Subject:   username,
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	ss, err := token.SignedString(privateKey)
+	if err != nil {
+		return "", err
+	}
+
+	return ss, nil
 }
