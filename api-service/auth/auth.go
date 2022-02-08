@@ -16,7 +16,8 @@
 package auth
 
 import (
-	"crypto"
+	"crypto/rsa"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -76,11 +77,29 @@ func buildToken(now time.Time, tokenValidityTimeout int, username string, privat
 	return ss, nil
 }
 
-func parsePrivateKey(raw []byte) (crypto.PrivateKey, crypto.PublicKey, error) {
+func parsePrivateKey(raw []byte) (*rsa.PrivateKey, *rsa.PublicKey, error) {
 	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(raw)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return privateKey, privateKey.Public(), nil
+	return privateKey, &privateKey.PublicKey, nil
+}
+
+func validateBearerToken(tokenString string, timeNow func() time.Time, publicKey *rsa.PublicKey) error {
+	tokenString = tokenString[len("Bearer "):]
+	jwt.TimeFunc = timeNow
+	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(_ *jwt.Token) (interface{}, error) {
+		return publicKey, nil
+	}, jwt.WithValidMethods([]string{jwt.SigningMethodRS256.Name}))
+	if err != nil {
+		return err
+	}
+
+	_, ok := token.Claims.(*jwt.RegisteredClaims)
+	if !ok || !token.Valid {
+		return fmt.Errorf("Invalid token")
+	}
+
+	return nil
 }
