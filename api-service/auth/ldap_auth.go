@@ -17,17 +17,17 @@ package auth
 
 import (
 	"bytes"
+	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/jtblin/go-ldap-client"
-	"gopkg.in/square/go-jose.v2"
-	"gopkg.in/square/go-jose.v2/jwt"
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
@@ -43,9 +43,9 @@ type LDAPAuthenticationProvider struct {
 	// Log contains logger formatted
 	Log logger.Logger
 	// privateKey contains the private key used to sign the JWT tokens
-	privateKey interface{}
+	privateKey *rsa.PrivateKey
 	// publicKey contains the public key used to check the JWT tokens
-	publicKey interface{}
+	publicKey *rsa.PublicKey
 	Client    *ldap.LDAPClient
 }
 
@@ -56,7 +56,7 @@ func (ap *LDAPAuthenticationProvider) Init() {
 		ap.Log.Fatal(err)
 	}
 
-	ap.privateKey, ap.publicKey, err = utils.ParsePrivateKey(raw)
+	ap.privateKey, ap.publicKey, err = parsePrivateKey(raw)
 	if err != nil {
 		ap.Log.Panic(err)
 	}
@@ -118,43 +118,30 @@ func (ap *LDAPAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.Re
 		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("Failed to login, invalid credentials"), http.StatusText(http.StatusUnauthorized)))
 	}
 
-	sig, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.RS256, Key: ap.privateKey}, (&jose.SignerOptions{}).WithType("JWT"))
+	token, err := buildToken(ap.TimeNow(), ap.Config.TokenValidityTimeout, request.Username, ap.privateKey)
 	if err != nil {
-		ap.Log.Panic(err)
-	}
-
-	cl := jwt.Claims{
-		Subject:   info["Username"].(string),
-		Issuer:    "ercole",
-		NotBefore: jwt.NewNumericDate(ap.TimeNow()),
-		Audience:  jwt.Audience{info["Username"].(string)},
-		ID:        info["Username"].(string),
-		Expiry:    jwt.NewNumericDate(ap.TimeNow().Add(time.Duration(ap.Config.TokenValidityTimeout) * time.Second)),
-		IssuedAt:  jwt.NewNumericDate(ap.TimeNow()),
-	}
-	raw, err := jwt.Signed(sig).Claims(cl).CompactSerialize()
-	if err != nil {
-		ap.Log.Panic(err)
+		ap.Log.Errorf("Unable to get signed token: %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		utils.WriteAndLogError(ap.Log, w, http.StatusInternalServerError, fmt.Errorf("Unable to get signed token"))
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(raw))
+	w.Write([]byte(token))
 }
 
 // AuthenticateMiddleware return the middleware used to check if the users are authenticated
 func (ap *LDAPAuthenticationProvider) AuthenticateMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//Get the token
-		tokenStr := r.Header.Get("Authorization")
-		if tokenStr == "" {
+		tokenString := r.Header.Get("Authorization")
+		if tokenString == "" {
 			utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("You don't have setted the authorization header"), http.StatusText(http.StatusUnauthorized)))
 			return
 		}
 
-		//Check token type
-		if strings.HasPrefix(tokenStr, "Basic ") {
-			tokenStr = tokenStr[len("Basic "):]
-			val, err := base64.StdEncoding.DecodeString(tokenStr)
+		if strings.HasPrefix(tokenString, "Basic ") {
+			tokenString = tokenString[len("Basic "):]
+			val, err := base64.StdEncoding.DecodeString(tokenString)
 			if err != nil {
 				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(err, http.StatusText(http.StatusUnauthorized)))
 				return
@@ -178,40 +165,21 @@ func (ap *LDAPAuthenticationProvider) AuthenticateMiddleware(next http.Handler) 
 			}
 
 			next.ServeHTTP(w, r)
-		} else if strings.HasPrefix(tokenStr, "Bearer ") {
-			tokenStr = tokenStr[len("Bearer "):]
-			//Parse the token
-			parsed, err := jwt.ParseSigned(tokenStr)
-			if err != nil {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(err, http.StatusText(http.StatusUnauthorized)))
-				return
-			}
-
-			//Validate the token and get the claim
-			claim := jwt.Claims{}
-			err = parsed.Claims(ap.publicKey, &claim)
-			if err != nil {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(err, http.StatusText(http.StatusUnauthorized)))
-				return
-			}
-
-			//Check exp field
-			if claim.Expiry.Time().Before(ap.TimeNow()) {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("The token is expired"), http.StatusText(http.StatusUnauthorized)))
-				return
-			}
-
-			//Check issuedat field
-			if claim.IssuedAt.Time().After(ap.TimeNow()) {
-				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("Futuristic tokens (from future) are invalid"), http.StatusText(http.StatusUnauthorized)))
-				return
-			}
-
-			//Serve the request
-			next.ServeHTTP(w, r)
-		} else {
-			utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("The authorization header value doesn't begin with Basic or Bearer"), http.StatusText(http.StatusUnauthorized)))
 			return
 		}
+
+		if strings.HasPrefix(tokenString, "Bearer ") {
+			err := validateBearerToken(tokenString, ap.TimeNow, ap.publicKey)
+			if err != nil {
+				ap.Log.Debugf("Invalid token: %s", err)
+				utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, fmt.Errorf("Invalid token"))
+				return
+			}
+
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("The authorization header value doesn't begin with Basic or Bearer"), http.StatusText(http.StatusUnauthorized)))
 	})
 }
