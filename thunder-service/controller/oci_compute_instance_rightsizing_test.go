@@ -35,26 +35,26 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-func TestGetOciComputeInstancesIdle_StatusNotFound(t *testing.T) {
+func TestGetOciComputeInstanceRightsizing_StatusNotFound(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("StatusNotFound", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
+			TimeNow: utils.Btc(utils.P("2022-01-26T23:59:59Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
 		}
 
 		var strProfiles = []string{"6140c473413cf9de756f9848"}
-		as.EXPECT().GetOciComputeInstancesIdle(strProfiles).Return(nil, utils.ErrClusterNotFound)
+		as.EXPECT().GetOciComputeInstanceRightsizing(strProfiles).Return(nil, utils.ErrClusterNotFound)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciComputeInstancesIdle)
+		handler := http.HandlerFunc(ac.GetOciComputeInstanceRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/instancesidle", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/instancesrightsizing", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 
@@ -75,26 +75,26 @@ func TestGetOciComputeInstancesIdle_StatusNotFound(t *testing.T) {
 	})
 }
 
-func TestGetOciComputeInstancesIdle_InternalServerError(t *testing.T) {
+func TestGetOciComputeInstanceRightsizing_InternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("StatusNotFound", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-11-08T12:02:03Z")),
+			TimeNow: utils.Btc(utils.P("2022-01-26T12:02:03Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
 		}
 
 		var strProfiles = []string{"6140c473413cf9de756f9848"}
-		as.EXPECT().GetOciComputeInstancesIdle(strProfiles).Return(nil, errMock)
+		as.EXPECT().GetOciComputeInstanceRightsizing(strProfiles).Return(nil, errMock)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciComputeInstancesIdle)
+		handler := http.HandlerFunc(ac.GetOciComputeInstanceRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/instancesidle", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/instancesrightsizing", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 
@@ -115,23 +115,23 @@ func TestGetOciComputeInstancesIdle_InternalServerError(t *testing.T) {
 	})
 }
 
-func TestGetOciComputeInstancesIdle_BadRequest(t *testing.T) {
+func TestGetOciComputeInstanceRightsizing_BadRequest(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("BadRequest", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
+			TimeNow: utils.Btc(utils.P("2022-01-26T23:59:59Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
 		}
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciComputeInstancesIdle)
+		handler := http.HandlerFunc(ac.GetOciComputeInstanceRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/instancesidle", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/instancesrightsizing", nil)
 		require.NoError(t, err)
 
 		handler.ServeHTTP(rr, req)
@@ -150,26 +150,26 @@ func TestGetOciComputeInstancesIdle_BadRequest(t *testing.T) {
 	})
 }
 
-func TestGetOciComputeInstancesIdle_InvalidProfileId(t *testing.T) {
+func TestGetOciComputeInstanceRightsizing_InvalidProfileId(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("BadRequest", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
+			TimeNow: utils.Btc(utils.P("2022-01-26T23:59:59Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
 		}
 
 		var strProfiles = []string{"aaa", "bbb", "ccc"}
-		as.EXPECT().GetOciComputeInstancesIdle(strProfiles).Return(nil, utils.ErrInvalidProfileId)
+		as.EXPECT().GetOciComputeInstanceRightsizing(strProfiles).Return(nil, utils.ErrInvalidProfileId)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciComputeInstancesIdle)
+		handler := http.HandlerFunc(ac.GetOciComputeInstanceRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/instancesidle", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/instancesrightsizing", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "aaa,bbb,ccc"})
 
@@ -188,14 +188,14 @@ func TestGetOciComputeInstancesIdle_InvalidProfileId(t *testing.T) {
 	})
 }
 
-func TestGetOciComputeInstancesIdle_PartialContent(t *testing.T) {
+func TestGetOciComputeInstanceRightsizing_PartialContent(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("BadRequest", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
+			TimeNow: utils.Btc(utils.P("2022-01-26T23:59:59Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
@@ -206,7 +206,7 @@ func TestGetOciComputeInstancesIdle_PartialContent(t *testing.T) {
 
 		var recommendations []model.OciErcoleRecommendation
 		recommendation := model.OciErcoleRecommendation{
-			Type:            model.RecommendationTypeUnusedResource,
+			Type:            model.RecommendationTypeInstanceRightsizing,
 			CompartmentID:   "ocid1.compartment.oc1..aaaaaaaaraxhbi65iyiln4qvwjwtnebheufhpkwfcymkszuvz2zyqmwsaikq",
 			CompartmentName: "ERCOLE",
 			Name:            "test-nat",
@@ -221,12 +221,12 @@ func TestGetOciComputeInstancesIdle_PartialContent(t *testing.T) {
 		}
 
 		var strProfiles = []string{"6140c473413cf9de756f9848", "bbb", "ccc"}
-		as.EXPECT().GetOciComputeInstancesIdle(strProfiles).Return(recommendations, mockError)
+		as.EXPECT().GetOciComputeInstanceRightsizing(strProfiles).Return(recommendations, mockError)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciComputeInstancesIdle)
+		handler := http.HandlerFunc(ac.GetOciComputeInstanceRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/instancesidle", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/instancesrightsizing", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848,bbb,ccc"})
 
@@ -237,21 +237,21 @@ func TestGetOciComputeInstancesIdle_PartialContent(t *testing.T) {
 	})
 }
 
-func TestGetOciComputeInstancesIdle_Success(t *testing.T) {
+func TestGetOciComputeInstanceRightsizing_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("Success", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
+			TimeNow: utils.Btc(utils.P("2022-01-26T23:59:59Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
 		}
 
 		recommendation := model.OciErcoleRecommendation{
-			Type:            model.RecommendationTypeUnusedResource,
+			Type:            model.RecommendationTypeInstanceRightsizing,
 			CompartmentID:   "ocid1.compartment.oc1..aaaaaaaaraxhbi65iyiln4qvwjwtnebheufhpkwfcymkszuvz2zyqmwsaikq",
 			CompartmentName: "ERCOLE",
 			Name:            "test-nat",
@@ -261,12 +261,12 @@ func TestGetOciComputeInstancesIdle_Success(t *testing.T) {
 		var expectedRes []model.OciErcoleRecommendation
 		var strProfiles = []string{"6140c473413cf9de756f9848"}
 		expectedRes = append(expectedRes, recommendation)
-		as.EXPECT().GetOciComputeInstancesIdle(strProfiles).Return(expectedRes, nil)
+		as.EXPECT().GetOciComputeInstanceRightsizing(strProfiles).Return(expectedRes, nil)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciComputeInstancesIdle)
+		handler := http.HandlerFunc(ac.GetOciComputeInstanceRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/instancesidle", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/instancesrightsizing", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 
