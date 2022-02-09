@@ -203,7 +203,15 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 						"environment":           "$environment",
 						"options": mu.APOJoin(mu.APOMap(
 							//TODO Replace with lookup with oracle_database_license_types
-							mu.APOFilter("$database.licenses", "lic", mu.APOAnd(mu.APOGreater("$$lic.count", 0), mu.APONotEqual("$$lic.name", "Oracle STD"), mu.APONotEqual("$$lic.name", "Oracle EXE"), mu.APONotEqual("$$lic.name", "Oracle ENT"))),
+							mu.APOFilter("$database.licenses", "lic",
+								mu.APOAnd(
+									mu.APOGreater("$$lic.count", 0),
+									mu.APONotEqual("$$lic.name", "Oracle STD"),
+									mu.APONotEqual("$$lic.name", "Oracle EXE"),
+									mu.APONotEqual("$$lic.name", "Oracle ENT"),
+									mu.APOEqual("$$lic.ignored", false),
+								),
+							),
 							"lic",
 							"$$lic.name",
 						), ", "),
@@ -215,6 +223,7 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 										mu.APOEqual("$$lic.name", "Diagnostics Pack"),
 										mu.APOEqual("$$lic.name", "Tuning Pack"),
 									),
+									mu.APOEqual("$$lic.ignored", false),
 								),
 							),
 							"lic",
