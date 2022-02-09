@@ -35,9 +35,13 @@ type OciErcoleRecommendation struct {
 }
 
 const (
-	RecommendationTypeBlockStorage        = "Block Storage Performance"
-	RecommendationTypeComputeInstanceIdle = "Compute Instance Idle"
-	RecommendationTypeOldSnapshot         = "Old Snapshot"
-	RecommendationTypeUnusedResource      = "Unused Resource"
-	RecommendationTypeUnusedStorage       = "Unused Storage"
+	RecommendationTypeBlockStorage              = "Block Storage Performance"
+	RecommendationTypeComputeInstanceIdle       = "Compute Instance Idle"
+	RecommendationTypeInstanceRightsizing       = "Compute Instance Rightsizing"
+	RecommendationTypeInstanceWithoutMonitoring = "Compute Instance Without Monitoring"
+	RecommendationTypeOldSnapshot               = "Old Snapshot"
+	RecommendationTypeUnusedResource            = "Unused Resource"
+	RecommendationTypeUnusedStorage             = "Unused Storage"
+	RecommendationTypeSISRightsizing            = "Software Infracstructure Service Rightsizing"
+	RecommendationTypeSISRightsizing1           = "Software Infracstructure Service Rightsizing 1"
 )

@@ -41,7 +41,10 @@ func (ctrl *ThunderController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/oracle-cloud/configurations", ctrl.AddOciProfile).Methods("POST")
 	router.HandleFunc("/oracle-cloud/configurations/{id}", ctrl.UpdateOciProfile).Methods("PUT")
 	router.HandleFunc("/oracle-cloud/configurations/{id}", ctrl.DeleteOciProfile).Methods("DELETE")
-	router.HandleFunc("/oracle-cloud/loadbalancers/{ids}", ctrl.GetOciUnusedLoadbalancers).Methods("GET")
-	router.HandleFunc("/oracle-cloud/instancesidle/{ids}", ctrl.GetOciComputeInstancesIdle).Methods("GET")
-	router.HandleFunc("/oracle-cloud/blockstorage/{ids}", ctrl.GetOciBlockStorageRightsizing).Methods("GET")
+	router.HandleFunc("/oracle-cloud/load-balancers/{ids}", ctrl.GetOciUnusedLoadbalancers).Methods("GET")
+	router.HandleFunc("/oracle-cloud/instances-idle/{ids}", ctrl.GetOciComputeInstancesIdle).Methods("GET")
+	router.HandleFunc("/oracle-cloud/block-storage/{ids}", ctrl.GetOciBlockStorageRightsizing).Methods("GET")
+	router.HandleFunc("/oracle-cloud/unused-storage/{ids}", ctrl.GetOciUnusedStorage).Methods("GET")
+	router.HandleFunc("/oracle-cloud/old-snapshot/{ids}", ctrl.GetOciOldSnapshotDecommissioning).Methods("GET")
+	router.HandleFunc("/oracle-cloud/instance-rightsizing/{ids}", ctrl.GetOciComputeInstanceRightsizing).Methods("GET")
 }

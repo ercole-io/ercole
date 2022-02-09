@@ -1070,10 +1070,8 @@ components:
           description: |-
             a metric ranging [0..1] calculated as follows:
             if a ULA exists for a given product, its compliance := 1.
-
             When calculating the total, this product's purchasedLicenses := usedLicenses
             else if usedLicenses <= purchasedLicenses the product's compliance := 1.
-
             When calculating the total, this product's purchasedLicenses := usedLicenses else this product's compliance := purchasedLicenses / usedLicenses.
         unpaidDues:
           type: number
@@ -1398,8 +1396,8 @@ components:
       maxLength: 24
       x-examples:
         example-1: 605dbac5f3923acddba4fac5
-    Recommendation:
-      title: Recommendation
+    OciRecommendation:
+      title: OciRecommendation
       type: object
       properties:
         tenancyOCID:
@@ -1416,8 +1414,8 @@ components:
           type: string
         recommendationId:
           type: string
-    oci_profile:
-      title: Oci_profile
+    OciProfile:
+      title: OciProfile
       type: object
       properties:
         id:
@@ -1434,6 +1432,58 @@ components:
           type: string
         privateKey:
           type: string
+    OciErcoleRecommendation:
+      title: OciErcoleRecommendation
+      type: object
+      properties:
+        type:
+          type: string
+        compartmentID:
+          type: string
+        compartmentName:
+          type: string
+        name:
+          type: string
+        resourceID:
+          type: string
+    OciCompartment:
+      title: OciCompartment
+      type: object
+      properties:
+        compartmentID:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        timeCreating:
+          type: string
+    OciVolumePerformance:
+      title: OciVolumePerformance
+      type: object
+      properties:
+        vpu:
+          type: integer
+        performances:
+          type: array
+          items:
+            $ref: '#/components/schemas/OciPerformance'
+    OciPerfValues:
+      title: OciPerfValues
+      type: object
+      properties:
+        maxThroughput:
+          type: number
+        maxIOPS:
+          type: integer
+    OciPerformance:
+      title: OciPerformance
+      type: object
+      properties:
+        size:
+          type: integer
+        values:
+          $ref: '#/components/schemas/OciPerfValues'
   parameters:
     search:
       in: query
@@ -2072,7 +2122,7 @@ paths:
         '422':
           $ref: '#/components/responses/error'
         '500':
-          $ref: '#/components/responses/error'       
+          $ref: '#/components/responses/error'
   '/hosts/{hostname}/technologies/oracle/databases/{dbname}/license-modifiers/{licenseName}':
     parameters:
       - in: path
@@ -2476,8 +2526,7 @@ paths:
     parameters: []
     post:
       summary: Acknowledge alerts
-      description: |-
-        Update status of specified alerts to set alert status to acknowledged.
+      description: Update status of specified alerts to set alert status to acknowledged.
       tags:
         - api-service
         - fe-user
@@ -2486,7 +2535,7 @@ paths:
         '204':
           description: No Content
         '400':
-          $ref: '#/components/responses/error' 
+          $ref: '#/components/responses/error'
         '401':
           $ref: '#/components/responses/error'
         '403':
@@ -2537,7 +2586,7 @@ paths:
                       minLength: 1
                     otherInfo:
                       type: object
-                  ids:    
+                  ids:
                     type: array
                     items:
                       $ref: '#/components/schemas/ObjectID'
@@ -3523,7 +3572,7 @@ paths:
                         usedLicenses:
                           type: integer
                         ignored:
-                          type: boolean  
+                          type: boolean
                   - type: object
                     properties:
                       content:
@@ -4630,7 +4679,7 @@ paths:
                           covered:
                             type: number
                           purchased:
-                            type: number  
+                            type: number
                         required:
                           - date
                           - consumed
@@ -5022,19 +5071,28 @@ paths:
                   value:
                     usedLicenses:
                       - hostname: ercsoldbxs
-                        databaseNames: [SBIP10,TMOIN0,SVBMG0]
+                        databaseNames:
+                          - SBIP10
+                          - TMOIN0
+                          - SVBMG0
                         licenseTypeID: A90611
                         description: Oracle Database Enterprise Edition
                         metric: Processor Perpetual
                         usedLicenses: 2
                       - hostname: ercsoldbx
-                        databaseNames: [SMOIN0,SMOIN1,SMOIN2]
+                        databaseNames:
+                          - SMOIN0
+                          - SMOIN1
+                          - SMOIN2
                         licenseTypeID: A90650
                         description: Oracle Tuning Pack
                         metric: Processor Perpetual
                         usedLicenses: 8
                       - hostname: ercsoldbx
-                        databaseNames: [SACDB68,SACDB67,SACDB69]
+                        databaseNames:
+                          - SACDB68
+                          - SACDB67
+                          - SACDB69
                         licenseTypeID: A90649
                         description: Oracle Diagnostics Pack
                         metric: Processor Perpetual
@@ -5104,7 +5162,7 @@ paths:
                         covered:
                           type: number
                         purchased:
-                          type: number  
+                          type: number
                         compliance:
                           type: number
                         unlimited:
@@ -5514,6 +5572,414 @@ paths:
       responses:
         '204':
           description: No Content
+  '/oracle-cloud/load-balancers/{ids}':
+    parameters:
+      - schema:
+          type: string
+        name: ids
+        in: path
+        required: true
+    get:
+      summary: Verify Load Balancer health
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  recommendations:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - type
+                        - compartmentID
+                        - compartmentName
+                        - name
+                        - resourceID
+                      properties:
+                        type:
+                          type: string
+                          minLength: 1
+                        compartmentID:
+                          type: string
+                          minLength: 1
+                        compartmentName:
+                          type: string
+                          minLength: 1
+                        name:
+                          type: string
+                          minLength: 1
+                        resourceID:
+                          type: string
+                          minLength: 1
+                required:
+                  - recommendations
+                x-examples:
+                  example-1:
+                    recommendations:
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab-kube
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcmxqqan3m3ysnwfphkkidne3dk2sy6d2y2y2ntgzkmosq
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab01
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqclvot4dtmnbrb4da2j3q2yd6duuddzfwttidhbca7bxsq
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab02
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcu5t5biz4ucpfyne74azf2n4wpqx57rzjrj65hz56dnga
+      operationId: GetOciUnusedLoadBalancersers-ids
+      description: Get recommendations from Oracle Cloud Infrastructure about Load Balancer health
+  '/oracle-cloud/instances-idle/{ids}':
+    parameters:
+      - schema:
+          type: string
+        name: ids
+        in: path
+        required: true
+    get:
+      summary: Verify Idle Instances
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  recommendations:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - type
+                        - compartmentID
+                        - compartmentName
+                        - name
+                        - resourceID
+                      properties:
+                        type:
+                          type: string
+                          minLength: 1
+                        compartmentID:
+                          type: string
+                          minLength: 1
+                        compartmentName:
+                          type: string
+                          minLength: 1
+                        name:
+                          type: string
+                          minLength: 1
+                        resourceID:
+                          type: string
+                          minLength: 1
+                required:
+                  - recommendations
+                x-examples:
+                  example-1:
+                    recommendations:
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab-kube
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcmxqqan3m3ysnwfphkkidne3dk2sy6d2y2y2ntgzkmosq
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab01
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqclvot4dtmnbrb4da2j3q2yd6duuddzfwttidhbca7bxsq
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab02
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcu5t5biz4ucpfyne74azf2n4wpqx57rzjrj65hz56dnga
+      operationId: GetOciComputeInstanceIdlee-ids
+      description: Get recommendations from Oracle Cloud Infrastructure about Idle Instances
+  '/oracle-cloud/block-storage/{ids}':
+    parameters:
+      - schema:
+          type: string
+        name: ids
+        in: path
+        required: true
+    get:
+      summary: Verify Optimizable Block Storage
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  recommendations:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - type
+                        - compartmentID
+                        - compartmentName
+                        - name
+                        - resourceID
+                      properties:
+                        type:
+                          type: string
+                          minLength: 1
+                        compartmentID:
+                          type: string
+                          minLength: 1
+                        compartmentName:
+                          type: string
+                          minLength: 1
+                        name:
+                          type: string
+                          minLength: 1
+                        resourceID:
+                          type: string
+                          minLength: 1
+                required:
+                  - recommendations
+                x-examples:
+                  example-1:
+                    recommendations:
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab-kube
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcmxqqan3m3ysnwfphkkidne3dk2sy6d2y2y2ntgzkmosq
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab01
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqclvot4dtmnbrb4da2j3q2yd6duuddzfwttidhbca7bxsq
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab02
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcu5t5biz4ucpfyne74azf2n4wpqx57rzjrj65hz56dnga
+      operationId: GetOciBlockStorageRightsizing
+      description: Get recommendations from Oracle Cloud Infrastructure about Optimizable Block Storage
+  '/oracle-cloud/unused-storage/{ids}':
+    parameters:
+      - schema:
+          type: string
+        name: ids
+        in: path
+        required: true
+    get:
+      summary: Verify Unused Storage
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  recommendations:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - type
+                        - compartmentID
+                        - compartmentName
+                        - name
+                        - resourceID
+                      properties:
+                        type:
+                          type: string
+                          minLength: 1
+                        compartmentID:
+                          type: string
+                          minLength: 1
+                        compartmentName:
+                          type: string
+                          minLength: 1
+                        name:
+                          type: string
+                          minLength: 1
+                        resourceID:
+                          type: string
+                          minLength: 1
+                required:
+                  - recommendations
+                x-examples:
+                  example-1:
+                    recommendations:
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab-kube
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcmxqqan3m3ysnwfphkkidne3dk2sy6d2y2y2ntgzkmosq
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab01
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqclvot4dtmnbrb4da2j3q2yd6duuddzfwttidhbca7bxsq
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab02
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcu5t5biz4ucpfyne74azf2n4wpqx57rzjrj65hz56dnga
+      operationId: GetOciUnusedStorage
+      description: Get recommendations from Oracle Cloud Infrastructure about Unused Storage
+  '/oracle-cloud/old-snapshot/{ids}':
+    parameters:
+      - schema:
+          type: string
+        name: ids
+        in: path
+        required: true
+    get:
+      summary: Verify Old Snapshot
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  recommendations:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - type
+                        - compartmentID
+                        - compartmentName
+                        - name
+                        - resourceID
+                      properties:
+                        type:
+                          type: string
+                          minLength: 1
+                        compartmentID:
+                          type: string
+                          minLength: 1
+                        compartmentName:
+                          type: string
+                          minLength: 1
+                        name:
+                          type: string
+                          minLength: 1
+                        resourceID:
+                          type: string
+                          minLength: 1
+                required:
+                  - recommendations
+                x-examples:
+                  example-1:
+                    recommendations:
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab-kube
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcmxqqan3m3ysnwfphkkidne3dk2sy6d2y2y2ntgzkmosq
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab01
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqclvot4dtmnbrb4da2j3q2yd6duuddzfwttidhbca7bxsq
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab02
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcu5t5biz4ucpfyne74azf2n4wpqx57rzjrj65hz56dnga
+      operationId: GetOciOldSnapshotDecommissioning
+      description: Get recommendations from Oracle Cloud Infrastructure about old snapshot
+  '/oracle-cloud/instance-rightsizing/{ids}':
+    parameters:
+      - schema:
+          type: string
+        name: ids
+        in: path
+        required: true
+    get:
+      summary: Verify Underutilized Instances
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  recommendations:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - type
+                        - compartmentID
+                        - compartmentName
+                        - name
+                        - resourceID
+                      properties:
+                        type:
+                          type: string
+                          minLength: 1
+                        compartmentID:
+                          type: string
+                          minLength: 1
+                        compartmentName:
+                          type: string
+                          minLength: 1
+                        name:
+                          type: string
+                          minLength: 1
+                        resourceID:
+                          type: string
+                          minLength: 1
+                required:
+                  - recommendations
+                x-examples:
+                  example-1:
+                    recommendations:
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab-kube
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcmxqqan3m3ysnwfphkkidne3dk2sy6d2y2y2ntgzkmosq
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab01
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqclvot4dtmnbrb4da2j3q2yd6duuddzfwttidhbca7bxsq
+                      - type: Compute Instance Idle
+                        compartmentID: ocid1.compartment.oc1..aaaaaaaame4l5y3wyxfevjw3qxun72lgoz5ok57poylsrd2a5et4izu3paaa
+                        compartmentName: NSRE
+                        name: lab02
+                        resourceID: ocid1.instance.oc1.eu-frankfurt-1.antheljscaijloqcu5t5biz4ucpfyne74azf2n4wpqx57rzjrj65hz56dnga
+      operationId: GetOciComputeInstanceRightsizingds
+      description: Get recommendations from Oracle Cloud Infrastructure about Underutilized Instances
 security:
   - basicAuthApiService: []
   - tokenAuthApiService: []

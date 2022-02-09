@@ -18,6 +18,7 @@ package model
 // OciVolume holds informations about an Oracle Cloud Volume
 type OciVolume struct {
 	CompartmentID      string `json:"compartmentID"`
+	CompartmentName    string `json:"compartmentName"`
 	ResourceID         string `json:"resourceID"`
 	Name               string `json:"name"`
 	Size               string `json:"size"`

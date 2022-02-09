@@ -35,9 +35,6 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-//var errMock error = errors.New("MockError")
-//var aerrMock error = utils.NewError(errMock, "mock")
-
 func TestGetOciLoadbalancers_StatusNotFound(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
