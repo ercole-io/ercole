@@ -17,10 +17,7 @@ package utils
 
 import (
 	"context"
-	"crypto/x509"
 	"encoding/json"
-	"encoding/pem"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -236,34 +233,6 @@ func DownloadFile(filepath string, url string) (err error) {
 func FileExists(filename string) bool {
 	_, err := os.Stat(filename)
 	return !os.IsNotExist(err)
-}
-
-// ParsePrivateKey converts a private key expressed as []byte to interface{}
-func ParsePrivateKey(raw []byte) (interface{}, interface{}, error) {
-	block, _ := pem.Decode(raw)
-	if block == nil {
-		return nil, nil, NewError(errors.New("Unable to parse the private key"), "PARSE_PRIVATE_KEY")
-	}
-
-	privatekey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
-	if err != nil {
-		return nil, nil, NewError(err, "PARSE_PRIVATE_KEY")
-	}
-	return privatekey, &privatekey.PublicKey, nil
-}
-
-// ParsePublicKey converts a private key expressed as []byte to interface{}
-func ParsePublicKey(raw []byte) (interface{}, error) {
-	block, _ := pem.Decode(raw)
-	if block == nil {
-		return nil, NewError(errors.New("Unable to parse the public key"), "PARSE_PUBLIC_KEY")
-	}
-
-	publickey, err := x509.ParsePKCS1PublicKey(block.Bytes)
-	if err != nil {
-		return nil, NewError(err, "PARSE_PUBLIC_KEY")
-	}
-	return publickey, nil
 }
 
 // IsVersionLessThan return true if a is a version less than b

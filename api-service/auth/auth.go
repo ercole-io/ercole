@@ -16,11 +16,14 @@
 package auth
 
 import (
+	"crypto/rsa"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
+	jwt "github.com/golang-jwt/jwt/v4"
 )
 
 // AuthenticationProvider is a interface that wrap methods used to authenticate users
@@ -54,4 +57,53 @@ func BuildAuthenticationProvider(conf config.AuthenticationProviderConfig, timeN
 	default:
 		panic("The AuthenticationProvider type wasn't recognized or supported")
 	}
+}
+
+func buildToken(now time.Time, tokenValidityTimeout int, username string, privateKey *rsa.PrivateKey) (string, error) {
+	if privateKey == nil {
+		return "", fmt.Errorf("privateKey is nil")
+	}
+
+	claims := &jwt.RegisteredClaims{
+		ExpiresAt: jwt.NewNumericDate(now.Add(time.Duration(tokenValidityTimeout) * time.Second)),
+		IssuedAt:  jwt.NewNumericDate(now),
+		NotBefore: jwt.NewNumericDate(now),
+		Issuer:    "ercole",
+		Subject:   username,
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	ss, err := token.SignedString(privateKey)
+	if err != nil {
+		return "", err
+	}
+
+	return ss, nil
+}
+
+func parsePrivateKey(raw []byte) (*rsa.PrivateKey, *rsa.PublicKey, error) {
+	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(raw)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return privateKey, &privateKey.PublicKey, nil
+}
+
+func validateBearerToken(tokenString string, timeNow func() time.Time, publicKey *rsa.PublicKey) error {
+	tokenString = tokenString[len("Bearer "):]
+	jwt.TimeFunc = timeNow
+	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(_ *jwt.Token) (interface{}, error) {
+		return publicKey, nil
+	}, jwt.WithValidMethods([]string{jwt.SigningMethodRS256.Name}))
+	if err != nil {
+		return err
+	}
+
+	_, ok := token.Claims.(*jwt.RegisteredClaims)
+	if !ok || !token.Valid {
+		return fmt.Errorf("Invalid token")
+	}
+
+	return nil
 }
