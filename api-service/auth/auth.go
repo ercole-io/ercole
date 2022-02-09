@@ -59,7 +59,11 @@ func BuildAuthenticationProvider(conf config.AuthenticationProviderConfig, timeN
 	}
 }
 
-func buildToken(now time.Time, tokenValidityTimeout int, username string, privateKey interface{}) (string, error) {
+func buildToken(now time.Time, tokenValidityTimeout int, username string, privateKey *rsa.PrivateKey) (string, error) {
+	if privateKey == nil {
+		return "", fmt.Errorf("privateKey is nil")
+	}
+
 	claims := &jwt.RegisteredClaims{
 		ExpiresAt: jwt.NewNumericDate(now.Add(time.Duration(tokenValidityTimeout) * time.Second)),
 		IssuedAt:  jwt.NewNumericDate(now),
