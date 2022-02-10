@@ -98,5 +98,10 @@
         "Product": "Oracle/Exadata",
         "PrettyName": "Oracle Exadata",
         "Color": "#b0b1b3"
+    },
+    {
+        "Product": "Oracle/LVM",
+        "PrettyName": "OLVM",
+        "Color": "#C1181E"
     }
 ]
