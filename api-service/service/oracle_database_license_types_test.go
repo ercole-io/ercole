@@ -154,30 +154,35 @@ func TestGetLicensesCompliance(t *testing.T) {
 		{
 			ID:              "PID001",
 			ItemDescription: "itemDesc1",
+			Cost:            100,
 			Aliases:         []string{"alias1"},
 			Metric:          model.LicenseTypeMetricProcessorPerpetual,
 		},
 		{
 			ID:              "PID002",
 			ItemDescription: "itemDesc2",
+			Cost:            100,
 			Aliases:         []string{"alias2"},
 			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
 		},
 		{
 			ID:              "PID003",
 			ItemDescription: "itemDesc3",
+			Cost:            100,
 			Aliases:         []string{"alias3"},
 			Metric:          model.LicenseTypeMetricComputerPerpetual,
 		},
 		{
 			ID:              "PID004",
 			ItemDescription: "itemDesc4",
+			Cost:            100,
 			Aliases:         []string{"alias4"},
 			Metric:          model.LicenseTypeMetricComputerPerpetual,
 		},
 		{
 			ID:              "PID005",
 			ItemDescription: "itemDesc5",
+			Cost:            0,
 			Aliases:         []string{"alias5"},
 			Metric:          model.LicenseTypeMetricComputerPerpetual,
 		},
@@ -226,11 +231,11 @@ func TestGetLicensesCompliance(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := []dto.LicenseCompliance{
-		{LicenseTypeID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 10, Covered: 7, Purchased: 10, Compliance: 0.7, Available: 3, Unlimited: false},
-		{LicenseTypeID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 250, Covered: 250, Purchased: 500, Compliance: 1, Available: 250, Unlimited: false},
-		{LicenseTypeID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Consumed: 11, Covered: 11, Purchased: 0, Compliance: 1, Available: 0, Unlimited: true},
-		{LicenseTypeID: "PID004", ItemDescription: "itemDesc4", Metric: "Computer Perpetual", Consumed: 0.0, Covered: 0.0, Purchased: 40, Compliance: 1, Available: 40, Unlimited: false},
-		{LicenseTypeID: "PID005", ItemDescription: "itemDesc5", Metric: "Computer Perpetual", Consumed: 12, Covered: 0.0, Purchased: 0, Compliance: 0, Available: 0, Unlimited: false},
+		{LicenseTypeID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Cost: 100, Consumed: 10, Covered: 7, Purchased: 10, Compliance: 0.7, Available: 3, Unlimited: false},
+		{LicenseTypeID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Cost: 100, Consumed: 250, Covered: 250, Purchased: 500, Compliance: 1, Available: 250, Unlimited: false},
+		{LicenseTypeID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Cost: 100, Consumed: 11, Covered: 11, Purchased: 0, Compliance: 1, Available: 0, Unlimited: true},
+		{LicenseTypeID: "PID004", ItemDescription: "itemDesc4", Metric: "Computer Perpetual", Cost: 100, Consumed: 0.0, Covered: 0.0, Purchased: 40, Compliance: 1, Available: 40, Unlimited: false},
+		{LicenseTypeID: "PID005", ItemDescription: "itemDesc5", Metric: "Computer Perpetual", Cost: 0, Consumed: 12, Covered: 0.0, Purchased: 0, Compliance: 1, Available: 0, Unlimited: false},
 	}
 
 	assert.ElementsMatch(t, expected, actual)
@@ -324,30 +329,35 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 		{
 			ID:              "PID001",
 			ItemDescription: "itemDesc1",
+			Cost:            100,
 			Aliases:         []string{"alias1"},
 			Metric:          model.LicenseTypeMetricProcessorPerpetual,
 		},
 		{
 			ID:              "PID002",
 			ItemDescription: "itemDesc2",
+			Cost:            100,
 			Aliases:         []string{"alias2"},
 			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
 		},
 		{
 			ID:              "PID003",
 			ItemDescription: "itemDesc3",
+			Cost:            100,
 			Aliases:         []string{"alias3"},
 			Metric:          model.LicenseTypeMetricComputerPerpetual,
 		},
 		{
 			ID:              "PID004",
 			ItemDescription: "itemDesc4",
+			Cost:            100,
 			Aliases:         []string{"alias4"},
 			Metric:          model.LicenseTypeMetricComputerPerpetual,
 		},
 		{
 			ID:              "PID005",
 			ItemDescription: "itemDesc5",
+			Cost:            100,
 			Aliases:         []string{"alias5"},
 			Metric:          model.LicenseTypeMetricComputerPerpetual,
 		},
@@ -426,10 +436,10 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := []dto.LicenseCompliance{
-		{LicenseTypeID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Consumed: 3, Covered: 0, Purchased: 5, Compliance: 0, Unlimited: false, Available: 50},
-		{LicenseTypeID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Consumed: 75, Covered: 0, Purchased: 100, Compliance: 0, Unlimited: false, Available: 75},
-		{LicenseTypeID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Consumed: 3, Covered: 0, Purchased: 10, Compliance: 1, Unlimited: true, Available: 75},
-		{LicenseTypeID: "PID004", ItemDescription: "itemDesc4", Metric: "Computer Perpetual", Consumed: 3, Covered: 0, Purchased: 5, Compliance: 0, Unlimited: false, Available: 50},
+		{LicenseTypeID: "PID001", ItemDescription: "itemDesc1", Metric: "Processor Perpetual", Cost: 100, Consumed: 3, Covered: 0, Purchased: 5, Compliance: 0, Unlimited: false, Available: 50},
+		{LicenseTypeID: "PID002", ItemDescription: "itemDesc2", Metric: "Named User Plus Perpetual", Cost: 100, Consumed: 75, Covered: 0, Purchased: 100, Compliance: 0, Unlimited: false, Available: 75},
+		{LicenseTypeID: "PID003", ItemDescription: "itemDesc3", Metric: "Computer Perpetual", Cost: 100, Consumed: 3, Covered: 0, Purchased: 10, Compliance: 1, Unlimited: true, Available: 75},
+		{LicenseTypeID: "PID004", ItemDescription: "itemDesc4", Metric: "Computer Perpetual", Cost: 100, Consumed: 3, Covered: 0, Purchased: 5, Compliance: 0, Unlimited: false, Available: 50},
 	}
 
 	assert.ElementsMatch(t, expected, actual)
