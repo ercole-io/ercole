@@ -111,8 +111,3 @@ func (db *MongodbSuite) RunTestQuery(testName string, query bson.A, check func(o
 		check(out)
 	})
 }
-
-func (db *MongodbSuite) InsertPatchingFunction(pf model.PatchingFunction) {
-	_, err := db.db.Client.Database(db.dbname).Collection("patching_functions").InsertOne(context.TODO(), pf)
-	db.Require().NoError(err)
-}

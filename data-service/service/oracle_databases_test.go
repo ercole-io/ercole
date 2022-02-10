@@ -73,7 +73,6 @@ func TestAddLicensesToSecondaryDbs(t *testing.T) {
 	//				RemoteEndpoint:    "http://ercole.example.org",
 	//			},
 	//			DataService: config.DataService{
-	//				EnablePatching:       true,
 	//				LogInsertingHostdata: true,
 	//			},
 	//		},
