@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -180,6 +180,7 @@ func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseComplia
 		LicenseTypeID:   "",
 		ItemDescription: "MySQL Enterprise per cluster",
 		Metric:          "",
+		Cost:            0,
 		Consumed:        0,
 		Covered:         0,
 		Compliance:      0,
@@ -190,6 +191,7 @@ func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseComplia
 		LicenseTypeID:   "",
 		ItemDescription: "MySQL Enterprise per host",
 		Metric:          "",
+		Cost:            0,
 		Consumed:        0,
 		Covered:         0,
 		Compliance:      0,
