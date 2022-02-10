@@ -399,7 +399,6 @@ func (as *APIService) GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFil
 	headers := []string{
 		"Hostname",
 		"Databases",
-		"Database Names",
 		"Part Number",
 		"Description",
 		"Metric",
