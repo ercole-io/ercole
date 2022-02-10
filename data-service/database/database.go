@@ -42,7 +42,6 @@ type MongoDatabaseInterface interface {
 	// FindOldArchivedHosts return the list of archived hosts older than t
 	FindOldArchivedHosts(t time.Time) ([]primitive.ObjectID, error)
 	DeleteHostData(id primitive.ObjectID) error
-	FindPatchingFunction(hostname string) (model.PatchingFunction, error)
 	HistoricizeLicensesCompliance(licenses []dto.LicenseCompliance) error
 
 	DeleteNoDataAlertByHost(hostname string) error

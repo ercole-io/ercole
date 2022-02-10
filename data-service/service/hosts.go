@@ -20,7 +20,6 @@ import (
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	patch_lib "github.com/ercole-io/ercole/v2/utils/patch"
 )
 
 // UpdateHostInfo saves the hostdata
@@ -32,13 +31,6 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 	hostdata.CreatedAt = hds.TimeNow()
 	hostdata.ServerSchemaVersion = model.SchemaVersion
 	hostdata.ID = primitive.NewObjectIDFromTimestamp(hds.TimeNow())
-
-	if hds.Config.DataService.EnablePatching {
-		hostdata, err = hds.patchHostData(hostdata)
-		if err != nil {
-			return err
-		}
-	}
 
 	previousHostdata, err := hds.Database.FindMostRecentHostDataOlderThan(hostdata.Hostname, hostdata.CreatedAt)
 	if err != nil {
@@ -91,24 +83,6 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 	}
 
 	return nil
-}
-
-// patchHostData patch the hostdata using the pf stored in the db
-func (hds *HostDataService) patchHostData(hostdata model.HostDataBE) (model.HostDataBE, error) {
-	patch, err := hds.Database.FindPatchingFunction(hostdata.Hostname)
-	if err != nil {
-		return model.HostDataBE{}, err
-	}
-
-	if patch.Hostname == hostdata.Hostname && patch.Code != "" {
-		if hds.Config.DataService.LogDataPatching {
-			hds.Log.Infof("Patching %s hostdata with the patch %s\n", patch.Hostname, patch.ID)
-		}
-
-		return patch_lib.PatchHostdata(patch, hostdata)
-	}
-
-	return hostdata, nil
 }
 
 func (hds *HostDataService) AlertInvalidHostData(validationErr error, hostdata *model.HostDataBE) {

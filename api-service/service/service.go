@@ -76,11 +76,6 @@ type APIServiceInterface interface {
 	ListLocations(location string, environment string, olderThan time.Time) ([]string, error)
 	// ListEnvironments list environments
 	ListEnvironments(location string, environment string, olderThan time.Time) ([]string, error)
-	// SearchOracleDatabaseLicenseModifiers search license modifiers
-	SearchOracleDatabaseLicenseModifiers(search string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, error)
-
-	// GetPatchingFunction return the patching function specified in the hostname param
-	GetPatchingFunction(hostname string) (interface{}, error)
 
 	// GetHostsCountStats return the number of the non-archived hosts
 	GetHostsCountStats(location string, environment string, olderThan time.Time) (int, error)
@@ -148,20 +143,6 @@ type APIServiceInterface interface {
 	AddOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) (*model.OracleDatabaseLicenseType, error)
 	UpdateOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) (*model.OracleDatabaseLicenseType, error)
 
-	// PATCHING FUNCTIONS
-	// SetPatchingFunction set the patching function of a host
-	SetPatchingFunction(hostname string, pf model.PatchingFunction) (interface{}, error)
-	// DeletePatchingFunction delete the patching function of a host
-	DeletePatchingFunction(hostname string) error
-
-	// AddTagToOracleDatabase add the tag to the database if it hasn't the tag
-	AddTagToOracleDatabase(hostname string, dbname string, tagname string) error
-	// DeleteTagOfOracleDatabase delete the tag from the database if it hasn't the tag
-	DeleteTagOfOracleDatabase(hostname string, dbname string, tagname string) error
-	// SetOracleDatabaseLicenseModifier set the value of certain license to newValue
-	SetOracleDatabaseLicenseModifier(hostname string, dbname string, licenseName string, newValue int) error
-	// DeleteOracleDatabaseLicenseModifier delete the modifier of a certain license
-	DeleteOracleDatabaseLicenseModifier(hostname string, dbname string, licenseName string) error
 	// AckAlerts ack the specified alerts
 	AckAlerts(alertsFilter dto.AlertsFilter) error
 	// DismissHost dismiss the specified host

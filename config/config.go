@@ -66,10 +66,6 @@ type DataService struct {
 	LogHTTPRequest bool
 	// LogInsertingHostdata enable the logging of the inserting hostdata
 	LogInsertingHostdata bool
-	// LogDataPatching enable the logging of the data patching
-	LogDataPatching bool
-	// EnablePatching enable the patching of the arrived hostdata
-	EnablePatching bool
 	// AgentUsername contains the username of the agent
 	AgentUsername string
 	// AgentPassword contains the password of the agent
@@ -123,8 +119,6 @@ type APIService struct {
 	LogHTTPRequest bool
 	// ReadOnly disable modifing APIs
 	ReadOnly bool
-	// EnableInsertingCustomPatchingFunction enable the API for inserting custom patching functions
-	EnableInsertingCustomPatchingFunction bool
 	// DebugOracleDatabaseAgreementsAssignmentAlgorithm enable the debugging of the Oracle/Database agreements assignment algorithm
 	DebugOracleDatabaseAgreementsAssignmentAlgorithm bool
 	// AuthenticationProvider contains info about how the users are authenticated

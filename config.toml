@@ -6,8 +6,6 @@ BindIP = "0.0.0.0"
 Port = 11111
 LogHTTPRequest = true
 LogInsertingHostdata = false
-LogDataPatching = true
-EnablePatching = true
 AgentUsername = "user"
 AgentPassword = "password"
 LicenseTypeMetricsDefault = [ "Processor Perpetual", "Named User Plus Perpetual", "Stream Perpetual", "Computer Perpetual" ]
@@ -47,7 +45,6 @@ BindIP = "0.0.0.0"
 Port = 11113
 LogHTTPRequest = true
 ReadOnly = false
-EnableInsertingCustomPatchingFunction = true
 DebugOracleDatabaseAgreementsAssignmentAlgorithm = false
 DefaultDatabaseTags = [
   "coolest",
