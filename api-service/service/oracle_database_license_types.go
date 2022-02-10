@@ -172,7 +172,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 		license.Covered = math.Round(license.Covered)
 		license.Purchased = math.Round(license.Purchased)
 
-		if license.Unlimited || license.Consumed == 0 {
+		if license.Unlimited || license.Consumed == 0 || license.Cost == 0 {
 			license.Compliance = 1
 		} else {
 			license.Compliance = license.Covered / license.Consumed
@@ -204,6 +204,7 @@ func (as *APIService) getterNewLicenseCompliance() (func(licenseTypeID string) *
 			LicenseTypeID:   l.ID,
 			ItemDescription: l.ItemDescription,
 			Metric:          l.Metric,
+			Cost:            l.Cost,
 		}
 	}
 

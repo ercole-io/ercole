@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,9 +17,10 @@ package dto
 
 // LicenseCompliance contains the information about usage of a license
 type LicenseCompliance struct {
-	LicenseTypeID   string `json:"licenseTypeID" bson:"licenseTypeID"`
-	ItemDescription string `json:"itemDescription" bson:"itemDescription"`
-	Metric          string `json:"metric" bson:"metric"`
+	LicenseTypeID   string  `json:"licenseTypeID" bson:"licenseTypeID"`
+	ItemDescription string  `json:"itemDescription" bson:"itemDescription"`
+	Metric          string  `json:"metric" bson:"metric"`
+	Cost            float64 `json:"cost" bson:"cost"`
 
 	Consumed   float64 `json:"consumed"`
 	Covered    float64 `json:"covered"`
