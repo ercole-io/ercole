@@ -416,6 +416,7 @@ func (as *APIService) GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFil
 	for _, val := range usedLicenses {
 		nextAxis := axisHelp.NewRow()
 		sheets.SetCellValue(sheet, nextAxis(), val.Hostname)
+		sheets.SetCellValue(sheet, nextAxis(), len(val.DatabaseNames))
 		sheets.SetCellValue(sheet, nextAxis(), strings.Join(val.DatabaseNames, ", "))
 		sheets.SetCellValue(sheet, nextAxis(), val.LicenseTypeID)
 		sheets.SetCellValue(sheet, nextAxis(), val.Description)
