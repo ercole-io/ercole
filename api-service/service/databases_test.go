@@ -1034,12 +1034,13 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "ercsoldbx", actual.GetCellValue("Licenses Used Per Host", "A2"))
-	assert.Equal(t, "ercsoldbx", actual.GetCellValue("Licenses Used Per Host", "B2"))
-	assert.Equal(t, "A90611", actual.GetCellValue("Licenses Used Per Host", "C2"))
-	assert.Equal(t, "Oracle Database Enterprise Edition", actual.GetCellValue("Licenses Used Per Host", "D2"))
-	assert.Equal(t, "Processor Perpetual", actual.GetCellValue("Licenses Used Per Host", "E2"))
-	assert.Equal(t, "2", actual.GetCellValue("Licenses Used Per Host", "F2"))
-	assert.Equal(t, "", actual.GetCellValue("Licenses Used Per Host", "H2"))
+	assert.Equal(t, "1", actual.GetCellValue("Licenses Used Per Host", "B2"))
+	assert.Equal(t, "ercsoldbx", actual.GetCellValue("Licenses Used Per Host", "C2"))
+	assert.Equal(t, "A90611", actual.GetCellValue("Licenses Used Per Host", "D2"))
+	assert.Equal(t, "Oracle Database Enterprise Edition", actual.GetCellValue("Licenses Used Per Host", "E2"))
+	assert.Equal(t, "Processor Perpetual", actual.GetCellValue("Licenses Used Per Host", "F2"))
+	assert.Equal(t, "2", actual.GetCellValue("Licenses Used Per Host", "G2"))
+	assert.Equal(t, "0", actual.GetCellValue("Licenses Used Per Host", "H2"))
 }
 
 func TestGetDatabasesUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
