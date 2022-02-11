@@ -61,8 +61,6 @@ type MongoDatabaseInterface interface {
 	SearchOracleExadata(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleExadataResponse, error)
 	// SearchOracleDatabaseUsedLicenses search consumed licenses
 	SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseUsedLicenseSearchResponse, error)
-	// SearchOracleDatabaseLicenseModifiers search license modifiers
-	SearchOracleDatabaseLicenseModifiers(keywords []string, sortBy string, sortDesc bool, page int, pageSize int) ([]map[string]interface{}, error)
 
 	// ListLocations list locations
 	ListLocations(location string, environment string, olderThan time.Time) ([]string, error)
@@ -141,8 +139,6 @@ type MongoDatabaseInterface interface {
 	// RemoveOracleDatabaseLicenseType remove a licence type - Oracle/Database agreement part from the database
 	RemoveOracleDatabaseLicenseType(id string) error
 
-	// SavePatchingFunction saves the patching function
-	SavePatchingFunction(pf model.PatchingFunction) error
 	// ReplaceHostData adds a new hostdata to the database
 	ReplaceHostData(hostData model.HostDataBE) error
 	// UpdateAlertsStatus change the status of the specified alerts
@@ -159,11 +155,7 @@ type MongoDatabaseInterface interface {
 	GetListDismissedHostsByRangeDates(from time.Time, to time.Time) ([]string, error)
 	// RemoveAlertsNODATA delete all alerts with alertCode equals to "NO_DATA"
 	RemoveAlertsNODATA(alertsFilter dto.AlertsFilter) error
-	// DeletePatchingFunction delete the patching function
-	DeletePatchingFunction(hostname string) error
 
-	// FindPatchingFunction find the the patching function associated to the hostname in the database
-	FindPatchingFunction(hostname string) (model.PatchingFunction, error)
 	// FindHostData find the current hostdata with a certain hostname
 	FindHostData(hostname string) (model.HostDataBE, error)
 	// ExistHostdata return true if the host specified by hostname exist, otherwise false
