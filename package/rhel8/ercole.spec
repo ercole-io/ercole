@@ -95,6 +95,7 @@ ercole completion bash > /usr/share/bash-completion/completions/ercole
 /usr/share/ercole/technologies/Oracle/MySQL.png
 /usr/share/ercole/technologies/Oracle/VM.png
 /usr/share/ercole/technologies/Oracle/Exadata.png
+/usr/share/ercole/technologies/Oracle/LVM.png
 /usr/share/ercole/technologies/Microsoft/SQLServer.png
 /usr/share/ercole/technologies/Microsoft/WindowsServer2008.png
 /usr/share/ercole/technologies/Microsoft/WindowsServer2012.png
