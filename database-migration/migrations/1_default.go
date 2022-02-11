@@ -34,9 +34,6 @@ func init() {
 		if err := migrateAlertsSchema(db); err != nil {
 			return err
 		}
-		if err := migratePatchingFunctionsSchema(db); err != nil {
-			return err
-		}
 		if err := migrateOracleDatabaseAgreementsSchema(db); err != nil {
 			return err
 		}
@@ -127,42 +124,6 @@ func migrateAlertsSchema(client *mongo.Database) error {
 		}).Err(); err != nil {
 			return err
 		}
-	}
-
-	return nil
-}
-
-// migratePatchingFunctionsSchema create or update the patching_functions schema
-func migratePatchingFunctionsSchema(client *mongo.Database) error {
-	//Create the collection
-	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
-		return err
-	} else if !utils.Contains(cols, "patching_functions") {
-		if err := client.RunCommand(context.TODO(), bson.D{
-			{"create", "patching_functions"},
-		}).Err(); err != nil {
-			return err
-		}
-	}
-
-	//Set the collection validator
-	if err := client.RunCommand(context.TODO(), bson.D{
-		{"collMod", "patching_functions"},
-		{"validator", bson.D{
-			{"$jsonSchema", bson.M{}},
-		}},
-		{"validationAction", "error"},
-	}).Err(); err != nil {
-		return err
-	}
-
-	//index creations
-	if _, err := client.Collection("patching_functions").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
-		Keys: bson.D{
-			{"hostname", 1},
-		},
-	}); err != nil {
-		return err
 	}
 
 	return nil

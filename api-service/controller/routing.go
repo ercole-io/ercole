@@ -56,14 +56,7 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 
 	router.HandleFunc("/hosts/{hostname}", ctrl.GetHost).Methods("GET")
 	router.HandleFunc("/hosts/{hostname}", ctrl.DismissHost).Methods("DELETE")
-	router.HandleFunc("/hosts/{hostname}/patching-function", ctrl.GetPatchingFunction).Methods("GET")
-	router.HandleFunc("/hosts/{hostname}/patching-function", ctrl.SetPatchingFunction).Methods("PUT")
-	router.HandleFunc("/hosts/{hostname}/patching-function", ctrl.DeletePatchingFunction).Methods("DELETE")
-	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/tags", ctrl.AddTagToOracleDatabase).Methods("POST")
-	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/tags/{tagname}", ctrl.DeleteTagOfOracleDatabase).Methods("DELETE")
-	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseName}", ctrl.SetOracleDatabaseLicenseModifier).Methods("PUT")
 	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseTypeID}/ignored/{ignored}", ctrl.UpdateLicenseIgnoredField).Methods("PUT")
-	router.HandleFunc("/hosts/{hostname}/technologies/oracle/databases/{dbname}/license-modifiers/{licenseName}", ctrl.DeleteOracleDatabaseLicenseModifier).Methods("DELETE")
 
 	router.HandleFunc("/hosts/technologies", ctrl.ListTechnologies).Methods("GET")
 
@@ -77,7 +70,6 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 
 	// ORACLE
 	router.HandleFunc("/hosts/technologies/oracle/databases", ctrl.SearchOracleDatabases).Methods("GET")
-	router.HandleFunc("/hosts/technologies/oracle/databases/license-modifiers", ctrl.SearchOracleDatabaseLicenseModifiers).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/top-unused-instance-resource", ctrl.GetTopUnusedOracleDatabaseInstanceResourceStats).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/environments", ctrl.GetOracleDatabaseEnvironmentStats).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/databases/high-reliability", ctrl.GetOracleDatabaseHighReliabilityStats).Methods("GET")

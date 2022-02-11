@@ -893,25 +893,6 @@ components:
           type: string
         used:
           type: string
-    PatchingFunction:
-      type: object
-      required:
-        - code
-        - vars
-      properties:
-        id:
-          type: string
-          nullable: true
-        hostname:
-          type: string
-          nullable: true
-        createdAt:
-          type: string
-          nullable: true
-        code:
-          type: string
-        vars:
-          type: object
     Alert:
       title: Alert
       type: object
@@ -1203,25 +1184,6 @@ components:
         - costPerProcessor
         - compliance
         - unlimited
-    LicenseModifier:
-      type: object
-      required:
-        - _id
-        - hostname
-        - databaseName
-        - licenseName
-        - newValue
-      properties:
-        _id:
-          type: string
-        hostname:
-          type: string
-        databaseName:
-          type: string
-        licenseName:
-          type: string
-        newValue:
-          type: number
     TechnologyInfo:
       type: object
       required:
@@ -1903,182 +1865,6 @@ paths:
           $ref: '#/components/responses/error'
         '500':
           $ref: '#/components/responses/error'
-  '/hosts/{hostname}/patching-function':
-    parameters:
-      - in: path
-        name: hostname
-        schema:
-          type: string
-        required: true
-        description: hostname of the requested host
-    get:
-      tags:
-        - api-service
-        - developer-user
-        - read
-      operationId: GetPatchingFunction
-      summary: Get a patching function of a host
-      description: Get a patching function of a host
-      responses:
-        '200':
-          description: Patching function of the host
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PatchingFunction'
-        '401':
-          $ref: '#/components/responses/error'
-        '404':
-          description: The host or patching function don"t exist
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
-    put:
-      tags:
-        - api-service
-        - developer-user
-        - write
-      operationId: SetPatchingFunction
-      summary: Set a patching function of a host
-      description: Set the patching function of a host
-      responses:
-        '200':
-          description: Patching function of the host
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PatchingFunction'
-        '401':
-          $ref: '#/components/responses/error'
-        '404':
-          description: The host don"t exist
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
-  '/hosts/{hostname}/technologies/oracle/databases/{dbname}/tags':
-    parameters:
-      - in: path
-        name: hostname
-        schema:
-          type: string
-        required: true
-        description: hostname of the requested host
-      - in: path
-        name: dbname
-        schema:
-          type: string
-        required: true
-        description: name of the modifying database
-    post:
-      tags:
-        - api-service
-        - fe-user
-        - write
-      operationId: AddTagToOracleDatabase
-      summary: Add a tag to a database of a host
-      description: Add a tag to a database of a host
-      requestBody:
-        required: true
-        content:
-          text/plain:
-            schema:
-              type: string
-      responses:
-        '200':
-          description: The tag was successfully attached to the db
-          content:
-            application/json: {}
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
-  '/hosts/{hostname}/technologies/oracle/databases/{dbname}/tags/{tagname}':
-    parameters:
-      - in: path
-        name: hostname
-        schema:
-          type: string
-        required: true
-        description: hostname of the requested host
-      - in: path
-        name: dbname
-        schema:
-          type: string
-        required: true
-        description: name of the modifying database
-      - in: path
-        name: tagname
-        schema:
-          type: string
-        required: true
-        description: name of the tag
-    delete:
-      tags:
-        - api-service
-        - fe-user
-        - write
-      operationId: DeleteTagOfOracleDatabase
-      summary: Delete a tag of a database of a host
-      description: Add a tag of a database of a host
-      responses:
-        '200':
-          description: The tag was successfully deleted from the db
-          content:
-            application/json: {}
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
-  '/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseName}':
-    parameters:
-      - in: path
-        name: hostname
-        schema:
-          type: string
-        required: true
-        description: hostname of the requested host
-      - in: path
-        name: dbname
-        schema:
-          type: string
-        required: true
-        description: name of the modifying database
-      - in: path
-        name: licenseName
-        schema:
-          type: string
-        required: true
-        description: name of the license
-    put:
-      tags:
-        - api-service
-        - fe-user
-        - write
-      operationId: SetOracleDatabaseLicenseModifier
-      summary: Change the value of a license of a database
-      description: Change the value of a license of a database
-      requestBody:
-        content:
-          text/plain:
-            schema:
-              type: number
-      responses:
-        '200':
-          description: The value of the the license was changed successfully
-          content:
-            application/json: {}
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
   '/hosts/{hostname}/technologies/oracle/databases/{dbname}/licenses/{licenseTypeID}/ignored/{ignored}':
     parameters:
       - in: path
@@ -2115,45 +1901,6 @@ paths:
       responses:
         '200':
           description: The value of the the ignored field was changed successfully
-          content:
-            application/json: {}
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
-  '/hosts/{hostname}/technologies/oracle/databases/{dbname}/license-modifiers/{licenseName}':
-    parameters:
-      - in: path
-        name: hostname
-        schema:
-          type: string
-        required: true
-        description: hostname of the requested host
-      - in: path
-        name: dbname
-        schema:
-          type: string
-        required: true
-        description: name of the modifying database
-      - in: path
-        name: licenseName
-        schema:
-          type: string
-        required: true
-        description: name of the license
-    delete:
-      tags:
-        - api-service
-        - fe-user
-        - write
-      operationId: DeleteOracleDatabaseLicenseModifier
-      summary: Delete a license modifier of a database
-      description: Delete a license modifier of a database
-      responses:
-        '200':
-          description: The license modifier was deleted successfully
           content:
             application/json: {}
         '401':
@@ -2594,7 +2341,8 @@ paths:
               example:
                 value:
                   filter:
-                    ids: ['000000000000000000000000']
+                    ids:
+                      - '000000000000000000000000'
                     alertCategory: AGENT
                     alertStatus: NEW
   /hosts/clusters:
@@ -2946,50 +2694,6 @@ paths:
           in: query
           name: full
           description: Whether or not to return all fields
-  /hosts/technologies/oracle/databases/license-modifiers:
-    get:
-      tags:
-        - api-service
-        - fe-user
-        - read
-      operationId: SearchOracleDatabaseLicenseModifiers
-      summary: Search a list of license modifiers
-      description: Get a list of license modifiers using various search terms and various params.
-      parameters:
-        - $ref: '#/components/parameters/search'
-        - $ref: '#/components/parameters/sort-by'
-        - $ref: '#/components/parameters/sort-desc'
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/size'
-      responses:
-        '200':
-          description: Result of the search
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - type: object
-                    description: paged
-                    properties:
-                      content:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/LicenseModifier'
-                      metadata:
-                        $ref: '#/components/schemas/PageMetadata'
-                    required:
-                      - content
-                      - metadata
-                  - type: array
-                    description: non paged
-                    items:
-                      $ref: '#/components/schemas/LicenseModifier'
-        '401':
-          $ref: '#/components/responses/error'
-        '422':
-          $ref: '#/components/responses/error'
-        '500':
-          $ref: '#/components/responses/error'
   /hosts/count:
     get:
       tags:
