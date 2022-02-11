@@ -51,11 +51,7 @@ type APIControllerInterface interface {
 	SearchOracleExadata(w http.ResponseWriter, r *http.Request)
 	// SearchOracleDatabaseUsedLicenses search licenses consumed by the hosts using the filters in the request
 	SearchOracleDatabaseUsedLicenses(w http.ResponseWriter, r *http.Request)
-	// SearchOracleDatabaseLicenseModifiers search a license modifier using the filters in the request
-	SearchOracleDatabaseLicenseModifiers(w http.ResponseWriter, r *http.Request)
 
-	// GetPatchingFunction return all'informations about the patching function of the host requested in the hostnmae path variable
-	GetPatchingFunction(w http.ResponseWriter, r *http.Request)
 	// ListLocations list locations using the filters in the request
 	ListLocations(w http.ResponseWriter, r *http.Request)
 	// ListEnvironments list environments using the filters in the request
@@ -109,18 +105,9 @@ type APIControllerInterface interface {
 	// GetTechnologyList return the list of techonlogies
 	GetTechnologyList(w http.ResponseWriter, r *http.Request)
 
-	// SetPatchingFunction set the patching function of a host specified in the hostname path variable to the content of the request body
-	SetPatchingFunction(w http.ResponseWriter, r *http.Request)
-	// DeletePatchingFunction remove the patching function of a host specified in the hostname path variable
-	DeletePatchingFunction(w http.ResponseWriter, r *http.Request)
-	// AddTagToOracleDatabase add a tag to the database if it hasn't the tag
 	AddTagToOracleDatabase(w http.ResponseWriter, r *http.Request)
 	// DeleteTagOfOracleDatabase remove a certain tag from a database if it has the tag
 	DeleteTagOfOracleDatabase(w http.ResponseWriter, r *http.Request)
-	// SetOracleDatabaseLicenseModifier set the license modifier of specified license/db/host in the request to the value in the body
-	SetOracleDatabaseLicenseModifier(w http.ResponseWriter, r *http.Request)
-	// DeleteOracleDatabaseLicenseModifier delete the license modifier of specified license/db/host in the request
-	DeleteOracleDatabaseLicenseModifier(w http.ResponseWriter, r *http.Request)
 	// AckAlerts ack the specified alert in the request
 	AckAlerts(w http.ResponseWriter, r *http.Request)
 	// DismissHost dismiss the specified host in the request

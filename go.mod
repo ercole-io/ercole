@@ -28,7 +28,6 @@ require (
 	github.com/oracle/oci-go-sdk v24.3.0+incompatible
 	github.com/oracle/oci-go-sdk/v45 v45.2.0
 	github.com/pmezard/go-difflib v1.0.0
-	github.com/robertkrimen/otto v0.0.0-20200922221731-ef014fd054ac
 	github.com/rs/cors v1.8.2
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.3.0
