@@ -678,51 +678,47 @@ func TestSearchOracleDatabasePatchAdvisors_JSONPaged(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	expectedRes := map[string]interface{}{
-		"content": []interface{}{
-			map[string]interface{}{
-				"CreatedAt":   utils.P("2020-04-07T08:52:59.82+02:00"),
-				"Date":        utils.P("2012-04-16T02:00:00+02:00"),
-				"Dbname":      "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-				"Dbver":       "11.2.0.3.0 Enterprise Edition",
-				"Description": "PSU 11.2.0.3.2",
-				"Environment": "SVIL",
-				"Hostname":    "publicitate-36d06ca83eafa454423d2097f4965517",
-				"Location":    "Germany",
-				"Status":      "KO",
-				"_id":         utils.Str2oid("5e8c234b24f648a08585bd32"),
+	expectedRes := &dto.PatchAdvisorResponse{
+		Content: dto.PatchAdvisors{
+			dto.PatchAdvisor{
+				CreatedAt:   utils.PDT("2020-04-07T08:52:59.82+02:00"),
+				Date:        utils.PDT("2012-04-16T02:00:00+02:00"),
+				DbName:      "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+				Dbver:       "11.2.0.3.0 Enterprise Edition",
+				Description: "PSU 11.2.0.3.2",
+				Environment: "SVIL",
+				Hostname:    "publicitate-36d06ca83eafa454423d2097f4965517",
+				Location:    "Germany",
+				Status:      "KO",
+				ID:          utils.Str2oid("5e8c234b24f648a08585bd32"),
 			},
-			map[string]interface{}{
-				"CreatedAt":   utils.P("2020-04-07T08:52:59.872+02:00"),
-				"Date":        utils.P("2012-04-16T02:00:00+02:00"),
-				"Dbname":      "ERCOLE",
-				"Dbver":       "12.2.0.1.0 Enterprise Edition",
-				"Description": "PSU 11.2.0.3.2",
-				"Environment": "TST",
-				"Hostname":    "test-db",
-				"Location":    "Germany",
-				"Status":      "KO",
-				"_id":         utils.Str2oid("5e8c234b24f648a08585bd43"),
+			dto.PatchAdvisor{
+				CreatedAt:   utils.PDT("2020-04-07T08:52:59.872+02:00"),
+				Date:        utils.PDT("2012-04-16T02:00:00+02:00"),
+				DbName:      "ERCOLE",
+				Dbver:       "12.2.0.1.0 Enterprise Edition",
+				Description: "PSU 11.2.0.3.2",
+				Environment: "TST",
+				Hostname:    "test-db",
+				Location:    "Germany",
+				Status:      "KO",
+				ID:          utils.Str2oid("5e8c234b24f648a08585bd43"),
 			},
 		},
-		"Metadata": map[string]interface{}{
-			"Empty":         false,
-			"First":         true,
-			"Last":          true,
-			"Number":        0,
-			"Size":          20,
-			"TotalElements": 25,
-			"TotalPages":    1,
+		Metadata: dto.PagingMetadata{
+			Empty:         false,
+			First:         true,
+			Last:          true,
+			Number:        0,
+			Size:          20,
+			TotalElements: 25,
+			TotalPages:    1,
 		},
-	}
-
-	resFromService := []map[string]interface{}{
-		expectedRes,
 	}
 
 	as.EXPECT().
 		SearchOracleDatabasePatchAdvisors("foobar", "Hostname", true, 2, 3, utils.P("2019-03-05T14:02:03Z"), "Italy", "TST", utils.P("2020-06-10T11:54:59Z"), "KO").
-		Return(resFromService, nil)
+		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabasePatchAdvisors)
@@ -746,31 +742,34 @@ func TestSearchOracleDatabasePatchAdvisors_JSONUnpaged(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	expectedRes := []map[string]interface{}{
-		{
-			"CreatedAt":   utils.P("2020-04-07T08:52:59.82+02:00"),
-			"Date":        utils.P("2012-04-16T02:00:00+02:00"),
-			"Dbname":      "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"Dbver":       "11.2.0.3.0 Enterprise Edition",
-			"Description": "PSU 11.2.0.3.2",
-			"Environment": "SVIL",
-			"Hostname":    "publicitate-36d06ca83eafa454423d2097f4965517",
-			"Location":    "Germany",
-			"Status":      "KO",
-			"_id":         utils.Str2oid("5e8c234b24f648a08585bd32"),
+	expectedRes := &dto.PatchAdvisorResponse{
+		Content: dto.PatchAdvisors{
+			dto.PatchAdvisor{
+				CreatedAt:   utils.PDT("2020-04-07T08:52:59.82+02:00"),
+				Date:        utils.PDT("2012-04-16T02:00:00+02:00"),
+				DbName:      "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+				Dbver:       "11.2.0.3.0 Enterprise Edition",
+				Description: "PSU 11.2.0.3.2",
+				Environment: "SVIL",
+				Hostname:    "publicitate-36d06ca83eafa454423d2097f4965517",
+				Location:    "Germany",
+				Status:      "KO",
+				ID:          utils.Str2oid("5e8c234b24f648a08585bd32"),
+			},
+			dto.PatchAdvisor{
+				CreatedAt:   utils.PDT("2020-04-07T08:52:59.872+02:00"),
+				Date:        utils.PDT("2012-04-16T02:00:00+02:00"),
+				DbName:      "ERCOLE",
+				Dbver:       "12.2.0.1.0 Enterprise Edition",
+				Description: "PSU 11.2.0.3.2",
+				Environment: "TST",
+				Hostname:    "test-db",
+				Location:    "Germany",
+				Status:      "KO",
+				ID:          utils.Str2oid("5e8c234b24f648a08585bd43"),
+			},
 		},
-		{
-			"CreatedAt":   utils.P("2020-04-07T08:52:59.872+02:00"),
-			"Date":        utils.P("2012-04-16T02:00:00+02:00"),
-			"Dbname":      "ERCOLE",
-			"Dbver":       "12.2.0.1.0 Enterprise Edition",
-			"Description": "PSU 11.2.0.3.2",
-			"Environment": "TST",
-			"Hostname":    "test-db",
-			"Location":    "Germany",
-			"Status":      "KO",
-			"_id":         utils.Str2oid("5e8c234b24f648a08585bd43"),
-		},
+		Metadata: dto.PagingMetadata{},
 	}
 
 	as.EXPECT().
