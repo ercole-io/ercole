@@ -459,7 +459,7 @@ licenses:
 }
 
 func (as *APIService) GetDatabasesUsedLicensesPerCluster(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerCluster, error) {
-	licenses, err := as.getOracleDatabasesUsedLicenses(filter)
+	licenses, err := as.GetDatabasesUsedLicenses(filter)
 	if err != nil {
 		return nil, err
 	}

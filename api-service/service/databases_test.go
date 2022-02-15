@@ -1052,6 +1052,7 @@ func TestGetDatabasesUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
 			ResourceFilePath: "../../resources",
 		},
 		Database: db,
+		Log:      logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{
@@ -1111,12 +1112,42 @@ func TestGetDatabasesUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
 			VMsErcoleAgentCount: 0,
 		},
 	}
+	usedLicensesMySQL := []dto.MySQLUsedLicense{}
+	agreements := []model.MySQLAgreement{}
+	hostdatas := []model.HostDataBE{
+		{
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+		},
+	}
+	any := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&usedLicenses, nil),
-		db.EXPECT().GetOracleDatabaseLicenseTypes().Return(licenseTypes, nil),
-		db.EXPECT().GetClusters(filter).Return(clusters, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+
+		db.EXPECT().GetMySQLUsedLicenses(filter).
+			Return(usedLicensesMySQL, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
+		db.EXPECT().GetMySQLAgreements().
+			Return(agreements, nil),
+
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(filter).
+			Return(clusters, nil),
 	)
 
 	actual, actErr := as.GetDatabasesUsedLicensesPerCluster(filter)
@@ -1144,6 +1175,7 @@ func TestGetDatabasesUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
 			ResourceFilePath: "../../resources",
 		},
 		Database: db,
+		Log:      logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{
@@ -1221,12 +1253,42 @@ func TestGetDatabasesUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
 			VMsErcoleAgentCount: 0,
 		},
 	}
+	usedLicensesMySQL := []dto.MySQLUsedLicense{}
+	agreements := []model.MySQLAgreement{}
+	hostdatas := []model.HostDataBE{
+		{
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+		},
+	}
+	any := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&usedLicenses, nil),
-		db.EXPECT().GetOracleDatabaseLicenseTypes().Return(licenseTypes, nil),
-		db.EXPECT().GetClusters(filter).Return(clusters, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+
+		db.EXPECT().GetMySQLUsedLicenses(filter).
+			Return(usedLicensesMySQL, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
+		db.EXPECT().GetMySQLAgreements().
+			Return(agreements, nil),
+
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(filter).
+			Return(clusters, nil),
 	)
 
 	actual, actErr := as.GetDatabasesUsedLicensesPerCluster(filter)
@@ -1254,6 +1316,7 @@ func TestGetDatabasesUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
 			ResourceFilePath: "../../resources",
 		},
 		Database: db,
+		Log:      logger.NewLogger("TEST"),
 	}
 
 	filter := dto.GlobalFilter{
@@ -1313,13 +1376,42 @@ func TestGetDatabasesUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
 			VMsErcoleAgentCount: 0,
 		},
 	}
-
+	usedLicensesMySQL := []dto.MySQLUsedLicense{}
+	agreements := []model.MySQLAgreement{}
+	hostdatas := []model.HostDataBE{
+		{
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+		},
+	}
+	any := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&usedLicenses, nil),
-		db.EXPECT().GetOracleDatabaseLicenseTypes().Return(licenseTypes, nil),
-		db.EXPECT().GetClusters(filter).Return(clusters, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+
+		db.EXPECT().GetMySQLUsedLicenses(filter).
+			Return(usedLicensesMySQL, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
+		db.EXPECT().GetMySQLAgreements().
+			Return(agreements, nil),
+
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(filter).
+			Return(clusters, nil),
 	)
 
 	actual, err := as.GetDatabasesUsedLicensesPerClusterAsXLSX(filter)
