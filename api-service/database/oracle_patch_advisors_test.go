@@ -18,11 +18,11 @@ package database
 import (
 	"context"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 )
@@ -36,7 +36,7 @@ func (m *MongodbSuite) TestSearchOracleDatabasePatchAdvisors() {
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
 		out, err := m.db.SearchOracleDatabasePatchAdvisors([]string{""}, "", false, -1, -1, utils.P("2019-10-10T08:46:58.38+02:00"), "", "PROD", utils.MAX_TIME, "")
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+		expectedOut := &dto.PatchAdvisorResponse{Content: dto.PatchAdvisors{}, Metadata: dto.PagingMetadata{Empty: true, First: true, Last: true}}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
@@ -44,7 +44,7 @@ func (m *MongodbSuite) TestSearchOracleDatabasePatchAdvisors() {
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
 		out, err := m.db.SearchOracleDatabasePatchAdvisors([]string{""}, "", false, -1, -1, utils.P("2019-10-10T08:46:58.38+02:00"), "France", "", utils.MAX_TIME, "")
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+		expectedOut := &dto.PatchAdvisorResponse{Content: dto.PatchAdvisors{}, Metadata: dto.PagingMetadata{Empty: true, First: true, Last: true}}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
@@ -52,7 +52,7 @@ func (m *MongodbSuite) TestSearchOracleDatabasePatchAdvisors() {
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
 		out, err := m.db.SearchOracleDatabasePatchAdvisors([]string{""}, "", false, -1, -1, utils.P("2019-10-10T08:46:58.38+02:00"), "", "", utils.P("1999-05-04T16:09:46.608+02:00"), "")
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+		expectedOut := &dto.PatchAdvisorResponse{Content: dto.PatchAdvisors{}, Metadata: dto.PagingMetadata{Empty: true, First: true, Last: true}}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
@@ -60,31 +60,30 @@ func (m *MongodbSuite) TestSearchOracleDatabasePatchAdvisors() {
 	m.T().Run("should_be_paging", func(t *testing.T) {
 		out, err := m.db.SearchOracleDatabasePatchAdvisors([]string{""}, "", false, 0, 1, utils.P("2019-10-10T08:46:58.38+02:00"), "", "", utils.MAX_TIME, "")
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"content": []interface{}{
-					map[string]interface{}{
-						"_id":         utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
-						"hostname":    "test-db2",
-						"location":    "Germany",
-						"environment": "TST",
-						"date":        utils.P("2012-04-16T02:00:00+02:00").Local(),
-						"createdAt":   utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-						"dbname":      "foobar1",
-						"dbver":       "12.2.0.1.0 Enterprise Edition",
-						"description": "PSU 11.2.0.3.2",
-						"status":      "KO",
-					},
+
+		expectedOut := &dto.PatchAdvisorResponse{
+			Content: dto.PatchAdvisors{
+				dto.PatchAdvisor{
+					ID:          utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
+					Hostname:    "test-db2",
+					Location:    "Germany",
+					Environment: "TST",
+					Date:        utils.PDT("2012-04-16T02:00:00+02:00"),
+					CreatedAt:   utils.PDT("2020-05-13T10:08:23.885+02:00"),
+					DbName:      "foobar1",
+					Dbver:       "12.2.0.1.0 Enterprise Edition",
+					Description: "PSU 11.2.0.3.2",
+					Status:      "KO",
 				},
-				"metadata": map[string]interface{}{
-					"empty":         false,
-					"first":         true,
-					"last":          false,
-					"number":        0,
-					"size":          1,
-					"totalElements": 4,
-					"totalPages":    4,
-				},
+			},
+			Metadata: dto.PagingMetadata{
+				Empty:         false,
+				First:         true,
+				Last:          false,
+				Number:        0,
+				Size:          1,
+				TotalElements: 4,
+				TotalPages:    4,
 			},
 		}
 
@@ -94,54 +93,65 @@ func (m *MongodbSuite) TestSearchOracleDatabasePatchAdvisors() {
 	m.T().Run("should_be_sorting", func(t *testing.T) {
 		out, err := m.db.SearchOracleDatabasePatchAdvisors([]string{}, "dbname", true, -1, -1, utils.P("2019-10-10T08:46:58.38+02:00"), "", "", utils.MAX_TIME, "")
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"_id":         utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
-				"hostname":    "test-db3",
-				"location":    "Germany",
-				"environment": "PRD",
-				"date":        time.Unix(0, 0),
-				"createdAt":   utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":      "foobar4",
-				"dbver":       "18.2.0.1.0 Enterprise Edition",
-				"description": "",
-				"status":      "KO",
+		expectedOut := &dto.PatchAdvisorResponse{
+			Content: dto.PatchAdvisors{
+				dto.PatchAdvisor{
+					ID:          utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
+					Hostname:    "test-db3",
+					Location:    "Germany",
+					Environment: "PRD",
+					Date:        utils.PDT("1970-01-01T01:00:00+01:00"),
+					CreatedAt:   utils.PDT("2020-05-13T10:08:23.885+02:00"),
+					DbName:      "foobar4",
+					Dbver:       "18.2.0.1.0 Enterprise Edition",
+					Description: "",
+					Status:      "KO",
+				},
+				dto.PatchAdvisor{
+					ID:          utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
+					Hostname:    "test-db3",
+					Location:    "Germany",
+					Environment: "PRD",
+					Date:        utils.PDT("2020-04-16T02:00:00+02:00"),
+					CreatedAt:   utils.PDT("2020-05-13T10:08:23.885+02:00"),
+					DbName:      "foobar3",
+					Dbver:       "16.2.0.1.0 Enterprise Edition",
+					Description: "PSU 11.2.0.3.7",
+					Status:      "OK",
+				},
+				dto.PatchAdvisor{
+					ID:          utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
+					Hostname:    "test-db2",
+					Location:    "Germany",
+					Environment: "TST",
+					Date:        utils.PDT("2012-04-16T02:00:00+02:00"),
+					CreatedAt:   utils.PDT("2020-05-13T10:08:23.885+02:00"),
+					DbName:      "foobar2",
+					Dbver:       "12.2.0.1.0 Enterprise Edition",
+					Description: "PSU 11.2.0.3.2",
+					Status:      "KO",
+				},
+				dto.PatchAdvisor{
+					ID:          utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
+					Hostname:    "test-db2",
+					Location:    "Germany",
+					Environment: "TST",
+					Date:        utils.PDT("2012-04-16T02:00:00+02:00"),
+					CreatedAt:   utils.PDT("2020-05-13T10:08:23.885+02:00"),
+					DbName:      "foobar1",
+					Dbver:       "12.2.0.1.0 Enterprise Edition",
+					Description: "PSU 11.2.0.3.2",
+					Status:      "KO",
+				},
 			},
-			map[string]interface{}{
-				"_id":         utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
-				"hostname":    "test-db3",
-				"location":    "Germany",
-				"environment": "PRD",
-				"date":        utils.P("2020-04-16T02:00:00+02:00").Local(),
-				"createdAt":   utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":      "foobar3",
-				"dbver":       "16.2.0.1.0 Enterprise Edition",
-				"description": "PSU 11.2.0.3.7",
-				"status":      "OK",
-			},
-			map[string]interface{}{
-				"_id":         utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
-				"hostname":    "test-db2",
-				"location":    "Germany",
-				"environment": "TST",
-				"date":        utils.P("2012-04-16T02:00:00+02:00").Local(),
-				"createdAt":   utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":      "foobar2",
-				"dbver":       "12.2.0.1.0 Enterprise Edition",
-				"description": "PSU 11.2.0.3.2",
-				"status":      "KO",
-			},
-			map[string]interface{}{
-				"_id":         utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
-				"hostname":    "test-db2",
-				"location":    "Germany",
-				"environment": "TST",
-				"date":        utils.P("2012-04-16T02:00:00+02:00").Local(),
-				"createdAt":   utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":      "foobar1",
-				"dbver":       "12.2.0.1.0 Enterprise Edition",
-				"description": "PSU 11.2.0.3.2",
-				"status":      "KO",
+			Metadata: dto.PagingMetadata{
+				Empty:         false,
+				First:         true,
+				Last:          true,
+				Number:        0,
+				Size:          4,
+				TotalElements: 4,
+				TotalPages:    0,
 			},
 		}
 
@@ -151,7 +161,7 @@ func (m *MongodbSuite) TestSearchOracleDatabasePatchAdvisors() {
 	m.T().Run("should_search_return_anything", func(t *testing.T) {
 		out, err := m.db.SearchOracleDatabasePatchAdvisors([]string{"barfoo"}, "", false, -1, -1, utils.P("2019-10-10T08:46:58.38+02:00"), "", "", utils.MAX_TIME, "")
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+		expectedOut := &dto.PatchAdvisorResponse{Content: dto.PatchAdvisors{}, Metadata: dto.PagingMetadata{Empty: true, First: true, Last: true}}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
@@ -159,18 +169,26 @@ func (m *MongodbSuite) TestSearchOracleDatabasePatchAdvisors() {
 	m.T().Run("should_search_return_found", func(t *testing.T) {
 		out, err := m.db.SearchOracleDatabasePatchAdvisors([]string{"test-db2", "foobar1"}, "", false, -1, -1, utils.P("2019-10-10T08:46:58.38+02:00"), "", "", utils.MAX_TIME, "")
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"_id":         utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
-				"hostname":    "test-db2",
-				"location":    "Germany",
-				"environment": "TST",
-				"date":        utils.P("2012-04-16T02:00:00+02:00").Local(),
-				"createdAt":   utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":      "foobar1",
-				"dbver":       "12.2.0.1.0 Enterprise Edition",
-				"description": "PSU 11.2.0.3.2",
-				"status":      "KO",
+		expectedOut := &dto.PatchAdvisorResponse{
+			Content: dto.PatchAdvisors{
+				dto.PatchAdvisor{
+					ID:          utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
+					Hostname:    "test-db2",
+					Location:    "Germany",
+					Environment: "TST",
+					Date:        utils.PDT("2012-04-16T02:00:00+02:00"),
+					CreatedAt:   utils.PDT("2020-05-13T10:08:23.885+02:00"),
+					DbName:      "foobar1",
+					Dbver:       "12.2.0.1.0 Enterprise Edition",
+					Description: "PSU 11.2.0.3.2",
+					Status:      "KO",
+				},
+			},
+			Metadata: dto.PagingMetadata{
+				First:         true,
+				Last:          true,
+				Size:          1,
+				TotalElements: 1,
 			},
 		}
 
@@ -180,18 +198,26 @@ func (m *MongodbSuite) TestSearchOracleDatabasePatchAdvisors() {
 	m.T().Run("should_filter_by_status", func(t *testing.T) {
 		out, err := m.db.SearchOracleDatabasePatchAdvisors([]string{}, "", false, -1, -1, utils.P("2019-10-10T08:46:58.38+02:00"), "", "", utils.MAX_TIME, "OK")
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"_id":         utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
-				"hostname":    "test-db3",
-				"location":    "Germany",
-				"environment": "PRD",
-				"date":        utils.P("2020-04-16T02:00:00+02:00").Local(),
-				"createdAt":   utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":      "foobar3",
-				"dbver":       "16.2.0.1.0 Enterprise Edition",
-				"description": "PSU 11.2.0.3.7",
-				"status":      "OK",
+		expectedOut := &dto.PatchAdvisorResponse{
+			Content: dto.PatchAdvisors{
+				dto.PatchAdvisor{
+					ID:          utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
+					Hostname:    "test-db3",
+					Location:    "Germany",
+					Environment: "PRD",
+					Date:        utils.PDT("2020-04-16T02:00:00+02:00"),
+					CreatedAt:   utils.PDT("2020-05-13T10:08:23.885+02:00"),
+					DbName:      "foobar3",
+					Dbver:       "16.2.0.1.0 Enterprise Edition",
+					Description: "PSU 11.2.0.3.7",
+					Status:      "OK",
+				},
+			},
+			Metadata: dto.PagingMetadata{
+				First:         true,
+				Last:          true,
+				Size:          1,
+				TotalElements: 1,
 			},
 		}
 
@@ -201,55 +227,59 @@ func (m *MongodbSuite) TestSearchOracleDatabasePatchAdvisors() {
 	m.T().Run("should_return_correct_results", func(t *testing.T) {
 		out, err := m.db.SearchOracleDatabasePatchAdvisors([]string{}, "", false, -1, -1, utils.P("2019-10-10T08:46:58.38+02:00"), "", "", utils.MAX_TIME, "")
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"_id":         utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
-				"hostname":    "test-db2",
-				"location":    "Germany",
-				"environment": "TST",
-				"date":        utils.P("2012-04-16T02:00:00+02:00").Local(),
-				"createdAt":   utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":      "foobar1",
-				"dbver":       "12.2.0.1.0 Enterprise Edition",
-				"description": "PSU 11.2.0.3.2",
-				"status":      "KO",
+
+		expectedOut := &dto.PatchAdvisorResponse{
+			Content: dto.PatchAdvisors{
+				dto.PatchAdvisor{
+					ID:          utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
+					Hostname:    "test-db2",
+					Location:    "Germany",
+					Environment: "TST",
+					Date:        utils.PDT("2012-04-16T02:00:00+02:00"),
+					CreatedAt:   utils.PDT("2020-05-13T10:08:23.885+02:00"),
+					DbName:      "foobar1",
+					Dbver:       "12.2.0.1.0 Enterprise Edition",
+					Description: "PSU 11.2.0.3.2",
+					Status:      "KO",
+				},
+				dto.PatchAdvisor{
+					ID:          utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
+					Hostname:    "test-db2",
+					Location:    "Germany",
+					Environment: "TST",
+					Date:        utils.PDT("2012-04-16T02:00:00+02:00"),
+					CreatedAt:   utils.PDT("2020-05-13T10:08:23.885+02:00"),
+					DbName:      "foobar2",
+					Dbver:       "12.2.0.1.0 Enterprise Edition",
+					Description: "PSU 11.2.0.3.2",
+					Status:      "KO",
+				},
+				dto.PatchAdvisor{
+					ID:          utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
+					Hostname:    "test-db3",
+					Location:    "Germany",
+					Environment: "PRD",
+					Date:        utils.PDT("2020-04-16T02:00:00+02:00"),
+					CreatedAt:   utils.PDT("2020-05-13T10:08:23.885+02:00"),
+					DbName:      "foobar3",
+					Dbver:       "16.2.0.1.0 Enterprise Edition",
+					Description: "PSU 11.2.0.3.7",
+					Status:      "OK",
+				},
+				dto.PatchAdvisor{
+					ID:          utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
+					Hostname:    "test-db3",
+					Location:    "Germany",
+					Environment: "PRD",
+					Date:        utils.PDT("1970-01-01T01:00:00+01:00"),
+					CreatedAt:   utils.PDT("2020-05-13T10:08:23.885+02:00"),
+					DbName:      "foobar4",
+					Dbver:       "18.2.0.1.0 Enterprise Edition",
+					Description: "",
+					Status:      "KO",
+				},
 			},
-			map[string]interface{}{
-				"_id":         utils.Str2oid("5ebbaaf747c3fcf9dc0a1f51"),
-				"hostname":    "test-db2",
-				"location":    "Germany",
-				"environment": "TST",
-				"date":        utils.P("2012-04-16T02:00:00+02:00").Local(),
-				"createdAt":   utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":      "foobar2",
-				"dbver":       "12.2.0.1.0 Enterprise Edition",
-				"description": "PSU 11.2.0.3.2",
-				"status":      "KO",
-			},
-			map[string]interface{}{
-				"_id":         utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
-				"hostname":    "test-db3",
-				"location":    "Germany",
-				"environment": "PRD",
-				"date":        utils.P("2020-04-16T02:00:00+02:00").Local(),
-				"createdAt":   utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":      "foobar3",
-				"dbver":       "16.2.0.1.0 Enterprise Edition",
-				"description": "PSU 11.2.0.3.7",
-				"status":      "OK",
-			},
-			map[string]interface{}{
-				"_id":         utils.Str2oid("5ec2518bbc4991e955e2cb3f"),
-				"hostname":    "test-db3",
-				"location":    "Germany",
-				"environment": "PRD",
-				"date":        time.Unix(0, 0),
-				"createdAt":   utils.P("2020-05-13T10:08:23.885+02:00").Local(),
-				"dbname":      "foobar4",
-				"dbver":       "18.2.0.1.0 Enterprise Edition",
-				"description": "",
-				"status":      "KO",
-			},
+			Metadata: dto.PagingMetadata{First: true, Last: true, Size: 4, TotalElements: 4},
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))

@@ -22,12 +22,12 @@ import (
 	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // SearchOracleDatabasePatchAdvisors search patch advisors
-func (md *MongoDatabase) SearchOracleDatabasePatchAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) ([]map[string]interface{}, error) {
-	var out []map[string]interface{} = make([]map[string]interface{}, 0)
+func (md *MongoDatabase) SearchOracleDatabasePatchAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) (*dto.PatchAdvisorResponse, error) {
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
@@ -65,34 +65,36 @@ func (md *MongoDatabase) SearchOracleDatabasePatchAdvisors(keywords []string, so
 				),
 			}),
 			mu.APProject(bson.M{
-				"hostname":    true,
-				"location":    true,
-				"environment": true,
-				"createdAt":   true,
-				"dbname":      "$database.name",
-				"dbver":       "$database.version",
-				"description": mu.APOCond("$database.psus.description", "$database.psus.description", ""),
-				"date":        mu.APOCond("$database.psus.date", "$database.psus.date", time.Unix(0, 0)),
-				"status":      mu.APOCond(mu.APOGreater("$database.psus.date", windowTime), "OK", "KO"),
+				"hostname":     true,
+				"location":     true,
+				"environment":  true,
+				"createdAt":    true,
+				"dbname":       "$database.name",
+				"dbver":        "$database.version",
+				"description":  mu.APOCond("$database.psus.description", "$database.psus.description", ""),
+				"date":         mu.APOCond("$database.psus.date", "$database.psus.date", time.Unix(0, 0)),
+				"status":       mu.APOCond(mu.APOGreater("$database.psus.date", windowTime), "OK", "KO"),
+				"fourMonths":   mu.APOGreaterOrEqual("$database.psus.date", time.Now().AddDate(0, -4, 0)),
+				"sixMonths":    mu.APOGreaterOrEqual("$database.psus.date", time.Now().AddDate(0, -6, 0)),
+				"twelveMonths": mu.APOGreaterOrEqual("$database.psus.date", time.Now().AddDate(0, -12, 0)),
 			}),
 			mu.APOptionalStage(status != "", mu.APMatch(bson.M{
 				"status": status,
 			})),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
-			mu.APOptionalPagingStage(page, pageSize),
+			PagingMetadataStage(page, pageSize),
 		),
 	)
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	//Decode the documents
-	for cur.Next(context.TODO()) {
-		var item map[string]interface{}
-		if cur.Decode(&item) != nil {
-			return nil, utils.NewError(err, "Decode ERROR")
-		}
-		out = append(out, item)
+	var patchAdvisorResponse dto.PatchAdvisorResponse
+
+	cur.Next(context.TODO())
+	if err := cur.Decode(&patchAdvisorResponse); err != nil {
+		return nil, utils.NewError(err, "Decode ERROR")
 	}
-	return out, nil
+
+	return &patchAdvisorResponse, nil
 }
