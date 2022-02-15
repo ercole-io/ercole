@@ -397,7 +397,7 @@ func TestGetDatabasesStatistics_Success(t *testing.T) {
 	assert.Equal(t, expected, *actual)
 }
 
-func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
+func TestGetUsedLicensesPerDatabases_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -507,7 +507,7 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 		db.EXPECT().GetHostDatas(utils.MAX_TIME).
 			Return(hostdatas, nil),
 	)
-	actual, err := as.GetDatabasesUsedLicenses(filter)
+	actual, err := as.GetUsedLicensesPerDatabases(filter)
 	require.NoError(t, err)
 
 	expected := []dto.DatabaseUsedLicense{
