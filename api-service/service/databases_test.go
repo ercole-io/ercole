@@ -415,18 +415,20 @@ func TestGetUsedLicensesPerDatabases_Success(t *testing.T) {
 	}
 
 	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
-		Content: []dto.OracleDatabaseUsedLicense{{
-			LicenseTypeID: "A12345",
-			DbName:        "topolino-dbname",
-			Hostname:      "topolino-hostname",
-			UsedLicenses:  2,
-		},
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "A12345",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
 			{
 				LicenseTypeID: "A98765",
 				DbName:        "topolino-dbname",
 				Hostname:      "topolino-hostname",
 				UsedLicenses:  2,
-			}},
+			},
+		},
 	}
 
 	licenseTypes := []model.OracleDatabaseLicenseType{
@@ -458,6 +460,7 @@ func TestGetUsedLicensesPerDatabases_Success(t *testing.T) {
 	clusters := []dto.Cluster{
 		{
 			Hostname: "pluto-cluster",
+			CPU:      16,
 			VMs: []dto.VM{
 				{
 					Hostname: "pluto",
@@ -506,37 +509,297 @@ func TestGetUsedLicensesPerDatabases_Success(t *testing.T) {
 
 		db.EXPECT().GetHostDatas(utils.MAX_TIME).
 			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
 	)
 	actual, err := as.GetUsedLicensesPerDatabases(filter)
 	require.NoError(t, err)
 
 	expected := []dto.DatabaseUsedLicense{
 		{
-			Hostname:      "topolino-hostname",
-			DbName:        "topolino-dbname",
-			LicenseTypeID: "A12345",
-			Description:   "ThisDesc",
-			Metric:        "ThisMetric",
-			UsedLicenses:  2,
-			Ignored:       false,
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   "A12345",
+			Description:     "ThisDesc",
+			Metric:          "ThisMetric",
+			UsedLicenses:    2,
+			ClusterLicenses: 0,
+			Ignored:         false,
 		},
 		{
-			Hostname:      "topolino-hostname",
-			DbName:        "topolino-dbname",
-			LicenseTypeID: "A98765",
-			Description:   "ThisDesc",
-			Metric:        model.LicenseTypeMetricNamedUserPlusPerpetual,
-			UsedLicenses:  50,
-			Ignored:       false,
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   "A98765",
+			Description:     "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:    50,
+			ClusterLicenses: 0,
+			Ignored:         false,
 		},
 		{
-			Hostname:      "pluto",
-			DbName:        "pluto-instance",
-			LicenseTypeID: "",
-			Description:   "MySQL ENTERPRISE",
-			Metric:        "CLUSTER",
-			UsedLicenses:  1,
-			Ignored:       false,
+			Hostname:        "pluto",
+			DbName:          "pluto-instance",
+			LicenseTypeID:   "",
+			Description:     "MySQL ENTERPRISE",
+			Metric:          "CLUSTER",
+			UsedLicenses:    1,
+			ClusterLicenses: 0,
+			Ignored:         false,
+		},
+	}
+
+	assert.Equal(t, expected, actual)
+}
+
+func TestGetUsedLicensesPerDatabases_VMWareCluster_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Log:      logger.NewLogger("TEST"),
+	}
+
+	thisMoment := utils.P("2019-11-05T14:02:03+01:00")
+
+	filter := dto.GlobalFilter{
+		Location:    "Dubai",
+		Environment: "TEST",
+		OlderThan:   thisMoment,
+	}
+
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "A12345",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: "A98765",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+		},
+	}
+
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "A12345",
+			ItemDescription: "ThisDesc",
+			Metric:          "ThisMetric",
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              "A98765",
+			ItemDescription: "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+	}
+
+	usedLicensesMySQL := []dto.MySQLUsedLicense{}
+	clusters := []dto.Cluster{
+		{
+			Hostname: "topolino-cluster",
+			CPU:      16,
+			VMs: []dto.VM{
+				{
+					Hostname: "topolino-hostname",
+				},
+			},
+		},
+	}
+	agreements := []model.MySQLAgreement{}
+	hostdatas := []model.HostDataBE{
+		{
+			Hostname: "topolino-hostname",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+		},
+	}
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+	gomock.InOrder(
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+
+		db.EXPECT().GetMySQLUsedLicenses(filter).
+			Return(usedLicensesMySQL, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+		db.EXPECT().GetMySQLAgreements().
+			Return(agreements, nil),
+
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+	)
+	actual, err := as.GetUsedLicensesPerDatabases(filter)
+	require.NoError(t, err)
+
+	expected := []dto.DatabaseUsedLicense{
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   "A12345",
+			Description:     "ThisDesc",
+			Metric:          "ThisMetric",
+			UsedLicenses:    2,
+			ClusterLicenses: 8,
+			Ignored:         false,
+		},
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   "A98765",
+			Description:     "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:    50,
+			ClusterLicenses: 8,
+			Ignored:         false,
+		},
+	}
+
+	assert.Equal(t, expected, actual)
+}
+
+func TestGetUsedLicensesPerDatabases_VeritasCluster_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Log:      logger.NewLogger("TEST"),
+	}
+
+	thisMoment := utils.P("2019-11-05T14:02:03+01:00")
+
+	filter := dto.GlobalFilter{
+		Location:    "Dubai",
+		Environment: "TEST",
+		OlderThan:   thisMoment,
+	}
+
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "A12345",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: "A98765",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+		},
+	}
+
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "A12345",
+			ItemDescription: "ThisDesc",
+			Metric:          "ThisMetric",
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              "A98765",
+			ItemDescription: "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+	}
+
+	usedLicensesMySQL := []dto.MySQLUsedLicense{}
+	clusters := []dto.Cluster{}
+	agreements := []model.MySQLAgreement{}
+	hostdatas := []model.HostDataBE{
+		{
+			Hostname: "topolino-hostname",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    true,
+				VeritasClusterHostnames: []string{"topolino-hostname", "qui", "quo", "qua"},
+			},
+			Info: model.Host{
+				CPUCores: 42,
+			},
+		},
+	}
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+	gomock.InOrder(
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+
+		db.EXPECT().GetMySQLUsedLicenses(filter).
+			Return(usedLicensesMySQL, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+		db.EXPECT().GetMySQLAgreements().
+			Return(agreements, nil),
+
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+	)
+	actual, err := as.GetUsedLicensesPerDatabases(filter)
+	require.NoError(t, err)
+
+	expected := []dto.DatabaseUsedLicense{
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   "A12345",
+			Description:     "ThisDesc",
+			Metric:          "ThisMetric",
+			UsedLicenses:    2,
+			ClusterLicenses: 84,
+			Ignored:         false,
+		},
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   "A98765",
+			Description:     "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:    50,
+			ClusterLicenses: 84,
+			Ignored:         false,
 		},
 	}
 
@@ -642,6 +905,8 @@ func TestGetDatabasesUsedLicensesAsXLSX_Success(t *testing.T) {
 
 		db.EXPECT().GetHostDatas(utils.MAX_TIME).
 			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
 	)
 
 	actual, err := as.GetDatabasesUsedLicensesAsXLSX(filter)
@@ -1035,6 +1300,7 @@ func TestGetDatabasesUsedLicensesPerHost_Success(t *testing.T) {
 	}
 	hostdatas := []model.HostDataBE{
 		{
+			Hostname: "pluto",
 			ClusterMembershipStatus: model.ClusterMembershipStatus{
 				OracleClusterware:       false,
 				SunCluster:              false,
@@ -1066,7 +1332,7 @@ func TestGetDatabasesUsedLicensesPerHost_Success(t *testing.T) {
 
 		db.EXPECT().GetHostDatas(utils.MAX_TIME).
 			Return(hostdatas, nil),
-		db.EXPECT().GetClusters(filter).
+		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
 	)
 
@@ -1192,7 +1458,7 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 
 		db.EXPECT().GetHostDatas(utils.MAX_TIME).
 			Return(hostdatas, nil),
-		db.EXPECT().GetClusters(filter).
+		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
 	)
 
@@ -1282,6 +1548,7 @@ func TestGetDatabasesUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
 	agreements := []model.MySQLAgreement{}
 	hostdatas := []model.HostDataBE{
 		{
+			Hostname: "vm1",
 			ClusterMembershipStatus: model.ClusterMembershipStatus{
 				OracleClusterware:       false,
 				SunCluster:              false,
@@ -1312,6 +1579,8 @@ func TestGetDatabasesUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
 
 		db.EXPECT().GetHostDatas(utils.MAX_TIME).
 			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
 		db.EXPECT().GetClusters(filter).
 			Return(clusters, nil),
 	)
@@ -1423,6 +1692,7 @@ func TestGetDatabasesUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
 	agreements := []model.MySQLAgreement{}
 	hostdatas := []model.HostDataBE{
 		{
+			Hostname: "vm1",
 			ClusterMembershipStatus: model.ClusterMembershipStatus{
 				OracleClusterware:       false,
 				SunCluster:              false,
@@ -1453,6 +1723,8 @@ func TestGetDatabasesUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
 
 		db.EXPECT().GetHostDatas(utils.MAX_TIME).
 			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
 		db.EXPECT().GetClusters(filter).
 			Return(clusters, nil),
 	)
@@ -1546,6 +1818,7 @@ func TestGetDatabasesUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
 	agreements := []model.MySQLAgreement{}
 	hostdatas := []model.HostDataBE{
 		{
+			Hostname: "vm1",
 			ClusterMembershipStatus: model.ClusterMembershipStatus{
 				OracleClusterware:       false,
 				SunCluster:              false,
@@ -1576,6 +1849,8 @@ func TestGetDatabasesUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
 
 		db.EXPECT().GetHostDatas(utils.MAX_TIME).
 			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
 		db.EXPECT().GetClusters(filter).
 			Return(clusters, nil),
 	)
