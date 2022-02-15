@@ -176,7 +176,7 @@ func (as *APIService) GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.Data
 	return stats, nil
 }
 
-func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
+func (as *APIService) GetUsedLicensesPerDatabases(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
 	type getter func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
 
 	getters := []getter{as.getOracleDatabasesUsedLicenses, as.getMySQLUsedLicenses}
@@ -217,12 +217,11 @@ func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.D
 		}
 
 		if hostdata.Features.Oracle != nil && hostdata.Features.Oracle.Database != nil && hostdata.Features.Oracle.Database.Databases != nil {
-			for x := range hostdata.Features.Oracle.Database.Databases {
-				if hostdata.Features.Oracle.Database.Databases[x].Name == usedLicenses[i].DbName {
-					for j := range hostdata.Features.Oracle.Database.Databases[x].Licenses {
-						if hostdata.Features.Oracle.Database.Databases[x].Licenses[j].LicenseTypeID == usedLicenses[i].LicenseTypeID {
-							usedLicenses[i].Ignored = hostdata.Features.Oracle.Database.Databases[x].Licenses[j].Ignored
-							break
+			for _, database := range hostdata.Features.Oracle.Database.Databases {
+				if database.Name == usedLicenses[i].DbName {
+					for _, license := range database.Licenses {
+						if license.LicenseTypeID == usedLicenses[i].LicenseTypeID {
+							usedLicenses[i].Ignored = license.Ignored
 						}
 					}
 				}
@@ -245,7 +244,7 @@ func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.D
 }
 
 func (as *APIService) GetDatabasesUsedLicensesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
-	licenses, err := as.GetDatabasesUsedLicenses(filter)
+	licenses, err := as.GetUsedLicensesPerDatabases(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -447,7 +446,7 @@ func (as *APIService) GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFil
 }
 
 func (as *APIService) GetDatabasesUsedLicensesPerHost(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error) {
-	licenses, err := as.GetDatabasesUsedLicenses(filter)
+	licenses, err := as.GetUsedLicensesPerDatabases(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -498,6 +497,7 @@ licenses:
 
 			_, ok = clusterLicenses[v.LicenseTypeID]
 			if !ok {
+				//BUG --> Veritas Cluster?
 				licensePerHost.ClusterLicenses = float64(c.CPU) * 0.5
 			}
 
@@ -513,7 +513,7 @@ licenses:
 }
 
 func (as *APIService) GetDatabasesUsedLicensesPerCluster(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerCluster, error) {
-	licenses, err := as.GetDatabasesUsedLicenses(filter)
+	licenses, err := as.GetUsedLicensesPerDatabases(filter)
 	if err != nil {
 		return nil, err
 	}
