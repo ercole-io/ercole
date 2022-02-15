@@ -204,6 +204,15 @@ func (as *APIService) GetUsedLicensesPerDatabases(filter dto.GlobalFilter) ([]dt
 		hostdatasPerHostname[hd.Hostname] = hd
 	}
 
+	clusters, err := as.Database.GetClusters(dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	for i, l := range usedLicenses {
 		hostdata, found := hostdatasPerHostname[l.Hostname]
 
@@ -228,19 +237,49 @@ func (as *APIService) GetUsedLicensesPerDatabases(filter dto.GlobalFilter) ([]dt
 			}
 		}
 
-		clusterCores, err := hostdata.GetClusterCores(hostdatasPerHostname)
-		if errors.Is(err, utils.ErrHostNotInCluster) {
-			continue
-		} else if err != nil {
+		consumedLicenses, err := as.clusterLicenses(l, clusters)
+		if err != nil && !errors.Is(err, utils.ErrHostNotInCluster) {
 			return nil, err
+		} else if !errors.Is(err, utils.ErrHostNotInCluster) {
+			usedLicenses[i].ClusterLicenses = consumedLicenses
+			continue
 		}
 
-		consumedLicenses := float64(clusterCores) * hostdata.CoreFactor()
-
-		usedLicenses[i].ClusterLicenses = consumedLicenses
+		consumedLicenses, err = as.veritasClusterLicenses(hostdata, hostdatasPerHostname)
+		if err != nil && !errors.Is(err, utils.ErrHostNotInCluster) {
+			return nil, err
+		} else if !errors.Is(err, utils.ErrHostNotInCluster) {
+			usedLicenses[i].ClusterLicenses = consumedLicenses
+			continue
+		}
 	}
 
 	return usedLicenses, nil
+}
+
+func (as *APIService) clusterLicenses(license dto.DatabaseUsedLicense, clusters []dto.Cluster) (float64, error) {
+	clusterByHostnames := make(map[string]*dto.Cluster)
+	for i := range clusters {
+		for j := range clusters[i].VMs {
+			clusterByHostnames[clusters[i].VMs[j].Hostname] = &clusters[i]
+		}
+	}
+
+	cluster, found := clusterByHostnames[license.Hostname]
+	if !found {
+		return 0, utils.ErrHostNotInCluster
+	}
+
+	return float64(cluster.CPU) * 0.5, nil
+}
+
+func (as *APIService) veritasClusterLicenses(hostdata *model.HostDataBE, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error) {
+	clusterCores, err := hostdata.GetClusterCores(hostdatasPerHostname)
+	if err != nil {
+		return 0, err
+	}
+
+	return float64(clusterCores) * hostdata.CoreFactor(), nil
 }
 
 func (as *APIService) GetDatabasesUsedLicensesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
@@ -451,20 +490,6 @@ func (as *APIService) GetDatabasesUsedLicensesPerHost(filter dto.GlobalFilter) (
 		return nil, err
 	}
 
-	clusters, err := as.Database.GetClusters(filter)
-	if err != nil {
-		return nil, err
-	}
-
-	clusterByHostnames := make(map[string]*dto.Cluster)
-	for i := range clusters {
-		for j := range clusters[i].VMs {
-			clusterByHostnames[clusters[i].VMs[j].Hostname] = &clusters[i]
-		}
-	}
-
-	m := make(map[string]map[string]dto.DatabaseUsedLicensePerHost)
-
 	var licensesPerHost []dto.DatabaseUsedLicensePerHost
 
 licenses:
@@ -477,36 +502,17 @@ licenses:
 			}
 		}
 
-		licensePerHost := dto.DatabaseUsedLicensePerHost{
-			Hostname:        v.Hostname,
-			DatabaseNames:   []string{v.DbName},
-			LicenseTypeID:   v.LicenseTypeID,
-			Description:     v.Description,
-			Metric:          v.Metric,
-			UsedLicenses:    v.UsedLicenses,
-			ClusterLicenses: v.ClusterLicenses,
-		}
-
-		c, found := clusterByHostnames[v.Hostname]
-		if found {
-			clusterLicenses, ok := m[c.Name]
-			if !ok {
-				clusterLicenses = make(map[string]dto.DatabaseUsedLicensePerHost)
-				m[c.Name] = clusterLicenses
-			}
-
-			_, ok = clusterLicenses[v.LicenseTypeID]
-			if !ok {
-				//BUG --> Veritas Cluster?
-				licensePerHost.ClusterLicenses = float64(c.CPU) * 0.5
-			}
-
-			licensesPerHost = append(licensesPerHost, licensePerHost)
-
-		} else {
-			licensesPerHost = append(licensesPerHost, licensePerHost)
-		}
-
+		licensesPerHost = append(licensesPerHost,
+			dto.DatabaseUsedLicensePerHost{
+				Hostname:        v.Hostname,
+				DatabaseNames:   []string{v.DbName},
+				LicenseTypeID:   v.LicenseTypeID,
+				Description:     v.Description,
+				Metric:          v.Metric,
+				UsedLicenses:    v.UsedLicenses,
+				ClusterLicenses: v.ClusterLicenses,
+			},
+		)
 	}
 
 	return licensesPerHost, nil
@@ -555,7 +561,7 @@ licenses:
 				LicenseTypeID: l.LicenseTypeID,
 				Description:   l.Description,
 				Metric:        l.Metric,
-				UsedLicenses:  float64(c.CPU) * 0.5,
+				UsedLicenses:  l.ClusterLicenses,
 			}
 
 			clusterLicenses[l.LicenseTypeID] = ll

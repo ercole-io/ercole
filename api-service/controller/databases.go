@@ -100,7 +100,7 @@ func (ctrl *APIController) GetDatabasesUsedLicenses(w http.ResponseWriter, r *ht
 }
 
 func (ctrl *APIController) GetDatabasesUsedLicensesJSON(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
-	usedLicenses, err := ctrl.Service.GetDatabasesUsedLicenses(filter)
+	usedLicenses, err := ctrl.Service.GetUsedLicensesPerDatabases(filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
