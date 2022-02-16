@@ -246,6 +246,9 @@ func TestSearchOracleDatabasePatchAdvisorsAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "2020-07-23 08:01:13.746 +0000 UTC", actual.GetCellValue("Patch_Advisor", "D2"))
 	assert.Equal(t, "PSU 11.2.0.3.2", actual.GetCellValue("Patch_Advisor", "E2"))
 	assert.Equal(t, "OK", actual.GetCellValue("Patch_Advisor", "F2"))
+	assert.Equal(t, "0", actual.GetCellValue("Patch_Advisor", "G2"))
+	assert.Equal(t, "0", actual.GetCellValue("Patch_Advisor", "H2"))
+	assert.Equal(t, "0", actual.GetCellValue("Patch_Advisor", "I2"))
 
 }
 
