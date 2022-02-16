@@ -21,8 +21,6 @@ import (
 	"strings"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
-
 	"github.com/ercole-io/ercole/v2/utils/exutils"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -87,12 +85,12 @@ func (as *APIService) SearchOracleDatabaseSegmentAdvisorsAsXLSX(filter dto.Globa
 }
 
 // SearchOracleDatabasePatchAdvisors search patch advisors
-func (as *APIService) SearchOracleDatabasePatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) ([]map[string]interface{}, error) {
+func (as *APIService) SearchOracleDatabasePatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) (*dto.PatchAdvisorResponse, error) {
 	return as.Database.SearchOracleDatabasePatchAdvisors(strings.Split(search, " "), sortBy, sortDesc, page, pageSize, windowTime, location, environment, olderThan, status)
 }
 
 func (as *APIService) SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime time.Time, filter dto.GlobalFilter) (*excelize.File, error) {
-	patchAdvisors, err := as.Database.SearchOracleDatabasePatchAdvisors([]string{}, "", false, -1, -1, windowTime, filter.Location, filter.Environment, filter.OlderThan, "")
+	patchAdvisorResponse, err := as.Database.SearchOracleDatabasePatchAdvisors([]string{}, "", false, -1, -1, windowTime, filter.Location, filter.Environment, filter.OlderThan, "")
 	if err != nil {
 		return nil, err
 	}
@@ -113,18 +111,14 @@ func (as *APIService) SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime time.Ti
 	}
 	axisHelp := exutils.NewAxisHelper(1)
 
-	for _, val := range patchAdvisors {
+	for _, val := range patchAdvisorResponse.Content {
 		nextAxis := axisHelp.NewRow()
-		sheets.SetCellValue("Patch_Advisor", nextAxis(), val["hostname"])
-		sheets.SetCellValue("Patch_Advisor", nextAxis(), val["dbname"])
-		sheets.SetCellValue("Patch_Advisor", nextAxis(), val["dbver"])
-		if val["date"] != nil || val["date"] != "" {
-			sheets.SetCellValue("Patch_Advisor", nextAxis(), val["date"].(primitive.DateTime).Time().UTC().String())
-		} else {
-			nextAxis()
-		}
-		sheets.SetCellValue("Patch_Advisor", nextAxis(), val["description"])
-		sheets.SetCellValue("Patch_Advisor", nextAxis(), val["status"])
+		sheets.SetCellValue("Patch_Advisor", nextAxis(), val.Hostname)
+		sheets.SetCellValue("Patch_Advisor", nextAxis(), val.DbName)
+		sheets.SetCellValue("Patch_Advisor", nextAxis(), val.Dbver)
+		sheets.SetCellValue("Patch_Advisor", nextAxis(), val.Date.Time().UTC().String())
+		sheets.SetCellValue("Patch_Advisor", nextAxis(), val.Description)
+		sheets.SetCellValue("Patch_Advisor", nextAxis(), val.Status)
 	}
 
 	return sheets, err
