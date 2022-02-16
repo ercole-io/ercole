@@ -103,6 +103,9 @@ func (as *APIService) SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime time.Ti
 		"Release Date",
 		"PSU",
 		"Status",
+		"4 Months",
+		"6 Months",
+		"12 Months",
 	}
 
 	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
@@ -119,6 +122,9 @@ func (as *APIService) SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime time.Ti
 		sheets.SetCellValue("Patch_Advisor", nextAxis(), val.Date.Time().UTC().String())
 		sheets.SetCellValue("Patch_Advisor", nextAxis(), val.Description)
 		sheets.SetCellValue("Patch_Advisor", nextAxis(), val.Status)
+		sheets.SetCellValue("Patch_Advisor", nextAxis(), val.FourMonths)
+		sheets.SetCellValue("Patch_Advisor", nextAxis(), val.SixMonths)
+		sheets.SetCellValue("Patch_Advisor", nextAxis(), val.TwelveMonths)
 	}
 
 	return sheets, err
