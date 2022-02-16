@@ -268,19 +268,13 @@ func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsJSON(w http.Response
 	}
 
 	//get the data
-	patchAdvisors, err := ctrl.Service.SearchOracleDatabasePatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, ctrl.TimeNow().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
+	patchAdvisorResponse, err := ctrl.Service.SearchOracleDatabasePatchAdvisors(search, sortBy, sortDesc, pageNumber, pageSize, ctrl.TimeNow().AddDate(0, -windowTime, 0), location, environment, olderThan, status)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	if pageNumber == -1 || pageSize == -1 {
-		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, patchAdvisors)
-	} else {
-		//Write the data
-		utils.WriteJSONResponse(w, http.StatusOK, patchAdvisors[0])
-	}
+	utils.WriteJSONResponse(w, http.StatusOK, patchAdvisorResponse)
 }
 
 // SearchOracleDatabasePatchAdvisorsXLSX search patch advisors data using the filters in the request returning it in XLSX format

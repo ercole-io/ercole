@@ -54,7 +54,7 @@ type MongoDatabaseInterface interface {
 	// SearchOracleDatabaseSegmentAdvisors search segment advisors
 	SearchOracleDatabaseSegmentAdvisors(keywords []string, sortBy string, sortDesc bool, location string, environment string, olderThan time.Time) ([]dto.OracleDatabaseSegmentAdvisor, error)
 	// SearchOracleDatabasePatchAdvisors search patch advisors
-	SearchOracleDatabasePatchAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) ([]map[string]interface{}, error)
+	SearchOracleDatabasePatchAdvisors(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) (*dto.PatchAdvisorResponse, error)
 	// SearchOracleDatabases search databases
 	SearchOracleDatabases(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error)
 	// SearchOracleExadata search exadata
