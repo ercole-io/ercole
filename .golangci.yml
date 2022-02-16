@@ -1,0 +1,27 @@
+run:
+  timeout: 5m
+  tests: false
+
+output:
+  format: colored-line-number
+  sort-results: true
+
+linters-settings:
+  errcheck:
+    check-blank: true
+
+linters:
+  enable:
+    - deadcode
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unused
+    - varcheck
+
+severity:
+  default-severity: error
