@@ -3663,9 +3663,6 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - type: array
-                    items:
-                      $ref: '#/components/schemas/PatchAdvisorInfo'
                   - type: object
                     properties:
                       content:

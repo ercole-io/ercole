@@ -90,7 +90,7 @@ func (as *APIService) SearchOracleDatabasePatchAdvisors(search string, sortBy st
 }
 
 func (as *APIService) SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime time.Time, filter dto.GlobalFilter) (*excelize.File, error) {
-	patchAdvisorRespopnse, err := as.Database.SearchOracleDatabasePatchAdvisors([]string{}, "", false, -1, -1, windowTime, filter.Location, filter.Environment, filter.OlderThan, "")
+	patchAdvisorResponse, err := as.Database.SearchOracleDatabasePatchAdvisors([]string{}, "", false, -1, -1, windowTime, filter.Location, filter.Environment, filter.OlderThan, "")
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +111,7 @@ func (as *APIService) SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime time.Ti
 	}
 	axisHelp := exutils.NewAxisHelper(1)
 
-	for _, val := range patchAdvisorRespopnse.Content {
+	for _, val := range patchAdvisorResponse.Content {
 		nextAxis := axisHelp.NewRow()
 		sheets.SetCellValue("Patch_Advisor", nextAxis(), val.Hostname)
 		sheets.SetCellValue("Patch_Advisor", nextAxis(), val.DbName)
