@@ -210,15 +210,18 @@ func TestSearchOracleDatabasePatchAdvisorsAsXLSX_Success(t *testing.T) {
 		Database: db,
 	}
 
-	data := []map[string]interface{}{
-		{
-			"hostname":    "publicitate-36d06ca83eafa454423d2097f4965517",
-			"dbname":      "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"dbver":       "11.2.0.3.0 Enterprise Edition",
-			"date":        utils.PDT("2020-07-23T10:01:13.746+02:00"),
-			"description": "PSU 11.2.0.3.2",
-			"status":      "OK",
+	data := &dto.PatchAdvisorResponse{
+		Content: dto.PatchAdvisors{
+			dto.PatchAdvisor{
+				Hostname:    "publicitate-36d06ca83eafa454423d2097f4965517",
+				DbName:      "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+				Dbver:       "11.2.0.3.0 Enterprise Edition",
+				Date:        utils.PDT("2020-07-23T10:01:13.746+02:00"),
+				Description: "PSU 11.2.0.3.2",
+				Status:      "OK",
+			},
 		},
+		Metadata: dto.PagingMetadata{},
 	}
 	db.EXPECT().SearchOracleDatabasePatchAdvisors(
 		[]string{}, "",
