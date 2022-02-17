@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,10 +16,7 @@
 package service
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
-	"net/url"
 	"sort"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -177,38 +174,24 @@ func (hds *HostDataService) ackOldMissingPrimaryDbAlerts(hostname, dbname string
 	return hds.ApiSvcClient.AckAlerts(f)
 }
 
-func (hds *HostDataService) getPrimaryOpenOracleDatabases() (dbs []model.OracleDatabase, err error) {
-	values := url.Values{}
-	values.Set("full", "true")
-	url := utils.NewAPIUrl(
-		hds.Config.APIService.RemoteEndpoint,
-		hds.Config.APIService.AuthenticationProvider.Username,
-		hds.Config.APIService.AuthenticationProvider.Password,
-		"/hosts/technologies/oracle/databases", values).String()
-
-	resp, err := http.Get(url)
-	if err != nil || resp.StatusCode < 200 || resp.StatusCode > 299 {
+func (hds *HostDataService) getPrimaryOpenOracleDatabases() ([]model.OracleDatabase, error) {
+	databases, err := hds.ApiSvcClient.GetOracleDatabases()
+	if err != nil {
 		return nil, utils.NewError(err, "Can't retrieve databases")
 	}
 
-	decoder := json.NewDecoder(resp.Body)
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&dbs); err != nil {
-		return nil, utils.NewError(err, "Can't decode databases")
-	}
-
-	for i := 0; i < len(dbs); {
-		db := &dbs[i]
+	for i := 0; i < len(databases); {
+		db := &databases[i]
 
 		if db.Role == model.OracleDatabaseRolePrimary && db.Status == model.OracleDatabaseStatusOpen {
 			i += 1
 			continue
 		}
 
-		dbs = removeFromDBs(dbs, i)
+		databases = removeFromDBs(databases, i)
 	}
 
-	return dbs, nil
+	return databases, nil
 }
 
 // Do not mantain order

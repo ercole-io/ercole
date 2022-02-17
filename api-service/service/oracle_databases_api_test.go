@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -288,71 +288,84 @@ func TestSearchOracleDatabases_Success(t *testing.T) {
 		Database: db,
 	}
 
-	expectedRes := []map[string]interface{}{
+	var work float64 = 1
+
+	expectedContent := []dto.OracleDatabase{
 		{
-			"ArchiveLogStatus": false,
-			"BlockSize":        "8192",
-			"CPUCount":         "16",
-			"Charset":          "AL32UTF8",
-			"CreatedAt":        utils.P("2020-04-07T08:52:59.82+02:00"),
-			"DatafileSize":     "61",
-			"Dataguard":        false,
-			"Environment":      "SVIL",
-			"HA":               false,
-			"Hostname":         "publicitate-36d06ca83eafa454423d2097f4965517",
-			"Location":         "Germany",
-			"Memory":           4.199,
-			"Name":             "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"RAC":              false,
-			"SegmentsSize":     "41",
-			"Status":           "OPEN",
-			"UniqueName":       "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"Version":          "11.2.0.3.0 Enterprise Edition",
-			"Work":             "1",
-			"_id":              utils.Str2oid("5e8c234b24f648a08585bd32"),
+			Archivelog:   false,
+			BlockSize:    8192,
+			CPUCount:     16,
+			Charset:      "AL32UTF8",
+			CreatedAt:    utils.P("2020-04-07T08:52:59.82+02:00"),
+			DatafileSize: 61,
+			Dataguard:    false,
+			Environment:  "SVIL",
+			Ha:           false,
+			Hostname:     "publicitate-36d06ca83eafa454423d2097f4965517",
+			Location:     "Germany",
+			Memory:       4.199,
+			Name:         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			Rac:          false,
+			SegmentsSize: 41,
+			Status:       "OPEN",
+			UniqueName:   "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			Version:      "11.2.0.3.0 Enterprise Edition",
+			Work:         &work,
 		},
 		{
-			"ArchiveLogStatus": false,
-			"BlockSize":        "8192",
-			"CPUCount":         "2",
-			"Charset":          "AL32UTF8",
-			"CreatedAt":        utils.P("2020-04-07T08:52:59.872+02:00"),
-			"DatafileSize":     "6",
-			"Dataguard":        false,
-			"Environment":      "TST",
-			"HA":               false,
-			"Hostname":         "test-db",
-			"Location":         "Germany",
-			"Memory":           1.484,
-			"Name":             "ERCOLE",
-			"RAC":              false,
-			"SegmentsSize":     "3",
-			"Status":           "OPEN",
-			"UniqueName":       "ERCOLE",
-			"Version":          "12.2.0.1.0 Enterprise Edition",
-			"Work":             "1",
-			"_id":              utils.Str2oid("5e8c234b24f648a08585bd43"),
+			Archivelog:   false,
+			BlockSize:    8192,
+			CPUCount:     2,
+			Charset:      "AL32UTF8",
+			CreatedAt:    utils.P("2020-04-07T08:52:59.82+02:00"),
+			DatafileSize: 6,
+			Dataguard:    false,
+			Environment:  "TST",
+			Ha:           false,
+			Hostname:     "test-db",
+			Location:     "Germany",
+			Memory:       1.484,
+			Name:         "ERCOLE",
+			Rac:          false,
+			SegmentsSize: 3,
+			Status:       "OPEN",
+			UniqueName:   "ERCOLE",
+			Version:      "12.2.0.1.0 Enterprise Edition",
+			Work:         &work,
+		},
+	}
+
+	var expectedRes = dto.OracleDatabaseResponse{
+		Content: expectedContent,
+		Metadata: dto.PagingMetadata{
+			Empty:         false,
+			First:         true,
+			Last:          true,
+			Number:        0,
+			Size:          1,
+			TotalElements: 1,
+			TotalPages:    0,
 		},
 	}
 
 	db.EXPECT().SearchOracleDatabases(
-		false, []string{"foo", "bar", "foobarx"}, "Memory",
+		[]string{"foo", "bar", "foobarx"}, "Memory",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
-	).Return(expectedRes, nil).Times(1)
+	).Return(&expectedRes, nil).Times(1)
 
 	res, err := as.SearchOracleDatabases(
 		dto.SearchOracleDatabasesFilter{
 			dto.GlobalFilter{
 				"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 			},
-			false, "foo bar foobarx", "Memory",
+			"foo bar foobarx", "Memory",
 			true, 1, 1,
 		},
 	)
 
 	require.NoError(t, err)
-	assert.Equal(t, expectedRes, res)
+	assert.Equal(t, &expectedRes, res)
 }
 
 func TestSearchOracleDatabases_Fail(t *testing.T) {
@@ -364,7 +377,7 @@ func TestSearchOracleDatabases_Fail(t *testing.T) {
 	}
 
 	db.EXPECT().SearchOracleDatabases(
-		false, []string{"foo", "bar", "foobarx"}, "Memory",
+		[]string{"foo", "bar", "foobarx"}, "Memory",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	).Return(nil, aerrMock).Times(1)
@@ -375,7 +388,7 @@ func TestSearchOracleDatabases_Fail(t *testing.T) {
 			dto.GlobalFilter{
 				"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 			},
-			false, "foo bar foobarx", "Memory",
+			"foo bar foobarx", "Memory",
 			true, 1, 1,
 		},
 	)

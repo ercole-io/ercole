@@ -39,27 +39,39 @@ func TestSearchDatabases_Success(t *testing.T) {
 		Database: db,
 	}
 
-	oracleDbs := []map[string]interface{}{
+	oracleDbs := []dto.OracleDatabase{
 		{
-			"name":        "pippo",
-			"version":     "",
-			"hostname":    "",
-			"environment": "",
-			"charset":     "",
+			Name:         "pippo",
+			Version:      "",
+			Hostname:     "",
+			Environment:  "",
+			Charset:      "",
+			Memory:       42.42,
+			DatafileSize: 75.42,
+			SegmentsSize: 99.42,
+			Archivelog:   true,
+			Ha:           false,
+			Dataguard:    true,
+		},
+	}
 
-			"memory":       42.42,
-			"datafileSize": 75.42,
-			"segmentsSize": 99.42,
-			"archivelog":   true,
-			"ha":           false,
-			"dataguard":    true,
+	expectedRes := dto.OracleDatabaseResponse{
+		Content: oracleDbs,
+		Metadata: dto.PagingMetadata{
+			Empty:         false,
+			First:         true,
+			Last:          true,
+			Number:        0,
+			Size:          1,
+			TotalElements: 1,
+			TotalPages:    0,
 		},
 	}
 
 	thisMoment := utils.P("2019-11-05T14:02:03+01:00")
 
-	db.EXPECT().SearchOracleDatabases(false, []string{""}, "", false, -1, -1, "Dubai", "TEST", thisMoment).
-		Return(oracleDbs, nil)
+	db.EXPECT().SearchOracleDatabases([]string{""}, "", false, -1, -1, "Dubai", "TEST", thisMoment).
+		Return(&expectedRes, nil)
 
 	mysqlInstances := []dto.MySQLInstance{
 		{
@@ -153,27 +165,39 @@ func TestSearchDatabasesAsXLSX_Success(t *testing.T) {
 		},
 	}
 
-	oracleDbs := []map[string]interface{}{
+	oracleDbs := []dto.OracleDatabase{
 		{
-			"name":        "pippo",
-			"version":     "",
-			"hostname":    "",
-			"environment": "",
-			"charset":     "",
+			Name:         "pippo",
+			Version:      "",
+			Hostname:     "",
+			Environment:  "",
+			Charset:      "",
+			Memory:       42.42,
+			DatafileSize: 75.42,
+			SegmentsSize: 99.42,
+			Archivelog:   true,
+			Ha:           false,
+			Dataguard:    true,
+		},
+	}
 
-			"memory":       42.42,
-			"datafileSize": 75.42,
-			"segmentsSize": 99.42,
-			"archivelog":   true,
-			"ha":           false,
-			"dataguard":    true,
+	expectedRes := dto.OracleDatabaseResponse{
+		Content: oracleDbs,
+		Metadata: dto.PagingMetadata{
+			Empty:         false,
+			First:         true,
+			Last:          true,
+			Number:        0,
+			Size:          1,
+			TotalElements: 1,
+			TotalPages:    0,
 		},
 	}
 
 	thisMoment := utils.P("2019-11-05T14:02:03+01:00")
 
-	db.EXPECT().SearchOracleDatabases(false, []string{""}, "", false, -1, -1, "Dubai", "TEST", thisMoment).
-		Return(oracleDbs, nil)
+	db.EXPECT().SearchOracleDatabases([]string{""}, "", false, -1, -1, "Dubai", "TEST", thisMoment).
+		Return(&expectedRes, nil)
 
 	mysqlInstances := []dto.MySQLInstance{
 		{
@@ -268,27 +292,39 @@ func TestGetDatabasesStatistics_Success(t *testing.T) {
 		Database: db,
 	}
 
-	oracleDbs := []map[string]interface{}{
+	oracleDbs := []dto.OracleDatabase{
 		{
-			"name":        "pippo",
-			"version":     "",
-			"hostname":    "",
-			"environment": "",
-			"charset":     "",
+			Name:         "pippo",
+			Version:      "",
+			Hostname:     "",
+			Environment:  "",
+			Charset:      "",
+			Memory:       42.42,
+			DatafileSize: 75.42,
+			SegmentsSize: 99.42,
+			Archivelog:   true,
+			Ha:           false,
+			Dataguard:    true,
+		},
+	}
 
-			"memory":       42.42,
-			"datafileSize": 75.42,
-			"segmentsSize": 99.42,
-			"archivelog":   true,
-			"ha":           false,
-			"dataguard":    true,
+	expectedRes := dto.OracleDatabaseResponse{
+		Content: oracleDbs,
+		Metadata: dto.PagingMetadata{
+			Empty:         false,
+			First:         true,
+			Last:          true,
+			Number:        0,
+			Size:          1,
+			TotalElements: 1,
+			TotalPages:    0,
 		},
 	}
 
 	thisMoment := utils.P("2019-11-05T14:02:03+01:00")
 
-	db.EXPECT().SearchOracleDatabases(false, []string{""}, "", false, -1, -1, "Dubai", "TEST", thisMoment).
-		Return(oracleDbs, nil)
+	db.EXPECT().SearchOracleDatabases([]string{""}, "", false, -1, -1, "Dubai", "TEST", thisMoment).
+		Return(&expectedRes, nil)
 
 	mysqlInstances := []dto.MySQLInstance{
 		{

@@ -2010,13 +2010,6 @@ paths:
       summary: Search a list of databases
       description: Get a list of databases filtered using various search terms and various params. Can also generate a XLSX file
       parameters:
-        - in: query
-          name: full
-          description: output mode
-          allowEmptyValue: true
-          schema:
-            type: boolean
-            readOnly: true
         - $ref: '#/components/parameters/search'
         - $ref: '#/components/parameters/sort-by'
         - $ref: '#/components/parameters/sort-desc'
