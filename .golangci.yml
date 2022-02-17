@@ -2,6 +2,9 @@ run:
   timeout: 5m
   tests: false
 
+  skip-dirs:
+  - utils
+
 output:
   format: colored-line-number
   sort-results: true
