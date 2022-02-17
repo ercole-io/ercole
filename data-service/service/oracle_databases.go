@@ -40,6 +40,7 @@ func (hds *HostDataService) oracleDatabasesChecks(previousHostdata, hostdata *mo
 	licenseTypes, err := hds.getOracleDatabaseLicenseTypes(hostdata.Environment)
 	if err != nil {
 		hds.Log.Error(err)
+
 		licenseTypes = make([]model.OracleDatabaseLicenseType, 0)
 	}
 
@@ -92,6 +93,7 @@ func (hds *HostDataService) ackOldUnlistedRunningDatabasesAlerts(hostname, dbnam
 			"dbname":   dbname,
 		},
 	}
+
 	return hds.ApiSvcClient.AckAlerts(f)
 }
 
@@ -114,6 +116,7 @@ func (hds *HostDataService) addLicensesToSecondaryDb(hostInfo model.Host, hostCo
 	}
 
 	var primaryDb *model.OracleDatabase
+
 	for i, db := range dbs {
 		if db.DbID == secondaryDb.DbID && db.Name == secondaryDb.Name {
 			primaryDb = &dbs[i]
@@ -174,6 +177,7 @@ func (hds *HostDataService) ackOldMissingPrimaryDbAlerts(hostname, dbname string
 			"dbname":   dbname,
 		},
 	}
+
 	return hds.ApiSvcClient.AckAlerts(f)
 }
 
@@ -193,6 +197,7 @@ func (hds *HostDataService) getPrimaryOpenOracleDatabases() (dbs []model.OracleD
 
 	decoder := json.NewDecoder(resp.Body)
 	decoder.DisallowUnknownFields()
+
 	if err := decoder.Decode(&dbs); err != nil {
 		return nil, utils.NewError(err, "Can't decode databases")
 	}
@@ -318,6 +323,7 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 	}
 
 	previousLicenseTypesEnabled := make(map[string]bool)
+
 	for _, db := range previousDbs {
 		for _, license := range db.Licenses {
 			if license.Count > 0 {
@@ -332,8 +338,8 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 	}
 
 	var newOptionAlerts []model.Alert
-	for _, newDb := range newDbs {
 
+	for _, newDb := range newDbs {
 		oldDb, ok := previousDbs[newDb.Name]
 
 		if !ok {
@@ -349,7 +355,6 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 		diffs := model.DiffLicenses(oldDb.Licenses, newDb.Licenses)
 
 		for licenseTypeID, diffFeature := range diffs {
-
 			if diffFeature == model.DiffFeatureActivated {
 				licenseType, ok := licenseTypesMap[licenseTypeID]
 				if !ok {
@@ -358,8 +363,8 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 				}
 
 				alreadyEnabledBefore := previousLicenseTypesEnabled[licenseTypeID]
-				if licenseType.Option {
 
+				if licenseType.Option {
 					description := fmt.Sprintf("Database %s has enabled new option: %s", newDb.Name, licenseType.ItemDescription)
 					severity := model.AlertSeverityCritical
 
@@ -377,7 +382,6 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 							"licenseTypeID": licenseType.ID,
 						},
 					})
-
 				} else {
 					if err := hds.throwNewLicenseAlert(new.Hostname, newDb.Name, *licenseType, alreadyEnabledBefore); err != nil {
 						hds.Log.Error(err)
@@ -394,13 +398,16 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 
 func (hds *HostDataService) ignorePreviousLicences(previous, new *model.HostDataBE) {
 	ignoredDbLicenses := make(map[uint][]string)
+
 	for _, db := range previous.Features.Oracle.Database.Databases {
 		licenses := make([]string, 0)
+
 		for _, license := range db.Licenses {
 			if license.Ignored {
 				licenses = append(licenses, license.LicenseTypeID)
 			}
 		}
+
 		if len(licenses) > 0 {
 			ignoredDbLicenses[db.DbID] = licenses
 		}
@@ -455,6 +462,7 @@ func (hds *HostDataService) searchAndAckOldMissingDatabasesAlerts(hostname strin
 			"hostname": hostname,
 		},
 	}
+
 	alerts, err := hds.ApiSvcClient.GetAlertsByFilter(f)
 	if err != nil {
 		return err

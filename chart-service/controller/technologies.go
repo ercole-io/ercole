@@ -25,17 +25,19 @@ import (
 // GetChangeChart return the chart data related to changes
 func (ctrl *ChartController) GetChangeChart(w http.ResponseWriter, r *http.Request) {
 	var err error
-	var from time.Time
-	var location string
-	var environment string
-	var olderThan time.Time
+
+	var from, olderThan time.Time
+
+	var location, environment string
 
 	if from, err = utils.Str2time(r.URL.Query().Get("from"), utils.MAX_TIME); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
+
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -53,12 +55,14 @@ func (ctrl *ChartController) GetChangeChart(w http.ResponseWriter, r *http.Reque
 // GetTechnologyTypes return the types of techonlogies
 func (ctrl *ChartController) GetTechnologyTypes(w http.ResponseWriter, r *http.Request) {
 	var err error
-	var location string
-	var environment string
+
+	var location, environment string
+
 	var olderThan time.Time
 
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
+
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return

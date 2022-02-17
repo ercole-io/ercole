@@ -24,15 +24,16 @@ import (
 
 // ListTechnologies returns the list of Technologies with some stats using the filters in the request
 func (ctrl *APIController) ListTechnologies(w http.ResponseWriter, r *http.Request) {
-	var sortBy string
+	var sortBy, location, environment string
+
 	var sortDesc bool
-	var location string
-	var environment string
+
 	var olderThan time.Time
 
 	var err error
 
 	sortBy = r.URL.Query().Get("sort-by")
+
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return

@@ -27,7 +27,6 @@ import (
 
 // SearchOracleExadata search exadata data using the filters in the request
 func (ctrl *APIController) SearchOracleExadata(w http.ResponseWriter, r *http.Request) {
-
 	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
 	switch choice {
@@ -39,14 +38,12 @@ func (ctrl *APIController) SearchOracleExadata(w http.ResponseWriter, r *http.Re
 }
 
 func (ctrl *APIController) SearchOracleExadataJSON(w http.ResponseWriter, r *http.Request) {
-	var full bool
-	var search string
-	var sortBy string
-	var sortDesc bool
-	var pageNumber int
-	var pageSize int
-	var location string
-	var environment string
+	var full, sortDesc bool
+
+	var search, sortBy, location, environment string
+
+	var pageNumber, pageSize int
+
 	var olderThan time.Time
 
 	var err error
@@ -58,6 +55,7 @@ func (ctrl *APIController) SearchOracleExadataJSON(w http.ResponseWriter, r *htt
 
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
+
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -67,6 +65,7 @@ func (ctrl *APIController) SearchOracleExadataJSON(w http.ResponseWriter, r *htt
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return

@@ -39,6 +39,7 @@ func (as *ChartService) GetChangeChart(from time.Time, location string, environm
 
 	// build the bubbles
 	bubbles := make([]dto.ChangeChartBubble, 0)
+
 	for t, v := range newCounts {
 		if v > 0 {
 			bubbles = append(bubbles, dto.ChangeChartBubble{
@@ -94,6 +95,7 @@ func (as *ChartService) GetTechnologyTypesChart(location string, environment str
 			})
 		}
 	}
+
 	if counts[model.TechnologyUnknownOperatingSystem] > 0 {
 		out.OperatingSystems = append(out.OperatingSystems, dto.TechnologyTypeChartBubble{
 			Name: model.TechnologyUnknownOperatingSystem,

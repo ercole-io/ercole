@@ -53,6 +53,7 @@ func ValidateHostdata(raw []byte) error {
 
 	documentLoader := gojsonschema.NewBytesLoader(raw)
 	result, err := schema.Validate(documentLoader)
+
 	syntaxErr := &json.SyntaxError{}
 	if errors.As(err, &syntaxErr) {
 		return fmt.Errorf("%w: %s", utils.ErrInvalidHostdata, err)
@@ -64,11 +65,11 @@ func ValidateHostdata(raw []byte) error {
 		errorMsg := new(strings.Builder)
 
 		for _, err := range result.Errors() {
-
 			value := fmt.Sprintf("%v", err.Value())
 			if len(value) > 80 {
 				value = value[:78] + ".."
 			}
+
 			errorMsg.WriteString(fmt.Sprintf("\t- %s. Value: [%v]\n", err, value))
 		}
 
@@ -92,6 +93,7 @@ func loadSchema() error {
 	hostdata := gojsonschema.NewStringLoader(hostdataSchema)
 
 	var err error
+
 	schema, err = sl.Compile(hostdata)
 	if err != nil {
 		return utils.NewError(err, "Wrong hostdata schema: can't load or compile it")

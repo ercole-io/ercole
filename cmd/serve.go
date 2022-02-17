@@ -99,8 +99,10 @@ func serve(enableDataService bool,
 
 	if !utils.FileExists(ercoleConfig.RepoService.DistributedFiles) {
 		log.Warnf("The directory %s for RepoService doesn't exist so the RepoService will be disabled\n", ercoleConfig.RepoService.DistributedFiles)
+
 		enableRepoService = false
 	}
+
 	if ercoleConfig.ResourceFilePath == "RESOURCES_NOT_FOUND" {
 		log.Warn("A directory for resources wasn't found so some services may not work as expected")
 	}
@@ -109,6 +111,7 @@ func serve(enableDataService bool,
 
 	if ercoleConfig.Mongodb.Migrate {
 		log.Info("Migrating...")
+
 		err := migration.Migrate(ercoleConfig.Mongodb)
 		if err != nil {
 			log.Fatalf("Failed migrating database: %s", err)
@@ -192,8 +195,10 @@ func serveDataService(config config.Configuration, wg *sync.WaitGroup) {
 	h = useCommonHandlers(h, config.DataService.LogHTTPRequest, log)
 
 	wg.Add(1)
+
 	go func() {
 		log.Info("Start data-service: listening at ", config.DataService.Port)
+
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.DataService.BindIP, config.DataService.Port), h)
 		if err != nil {
 			log.Error("Stopped data-service: ", err)
@@ -237,8 +242,10 @@ func serveAlertService(config config.Configuration, wg *sync.WaitGroup) {
 	h = useCommonHandlers(h, config.AlertService.LogHTTPRequest, log)
 
 	wg.Add(1)
+
 	go func() {
 		log.Info("Start alert-service: listening at ", config.AlertService.Port)
+
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.AlertService.BindIP, config.AlertService.Port), h)
 		if err != nil {
 			log.Error("Stopping alert-service: ", err)
@@ -283,12 +290,15 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	h = useCommonHandlers(h, config.APIService.LogHTTPRequest, log)
 
 	wg.Add(1)
+
 	go func() {
 		log.Info("Start api-service: listening at ", config.APIService.Port)
+
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.APIService.BindIP, config.APIService.Port), h)
 		if err != nil {
 			log.Error("Stopping api-service: ", err)
 		}
+
 		wg.Done()
 	}()
 }
@@ -328,8 +338,10 @@ func serveChartService(config config.Configuration, wg *sync.WaitGroup) {
 	h = useCommonHandlers(h, config.ChartService.LogHTTPRequest, log)
 
 	wg.Add(1)
+
 	go func() {
 		log.Info("Start chart-service: listening at ", config.ChartService.Port)
+
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.ChartService.BindIP, config.ChartService.Port), h)
 		if err != nil {
 			log.Error("Stopping chart-service: ", err)
@@ -386,8 +398,10 @@ func serveThunderService(config config.Configuration, wg *sync.WaitGroup) {
 	h = useCommonHandlers(h, config.ThunderService.LogHTTPRequest, log)
 
 	wg.Add(1)
+
 	go func() {
 		log.Info("Start thunder-service: listening at ", config.ThunderService.Port)
+
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.ThunderService.BindIP, config.ThunderService.Port), h)
 		if err != nil {
 			log.Error("Stopping thunder-service: ", err)

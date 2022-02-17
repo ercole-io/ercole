@@ -88,6 +88,7 @@ func (ctrl *ThunderController) UpdateOciProfile(w http.ResponseWriter, r *http.R
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	}
+
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -122,6 +123,7 @@ func (ctrl *ThunderController) DeleteOciProfile(w http.ResponseWriter, r *http.R
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	}
+
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return

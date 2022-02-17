@@ -38,13 +38,16 @@ func NewAgentError(e error) AgentError {
 	}
 
 	var b strings.Builder
+
 	if len(ae.Message) > 0 {
 		b.WriteString(ae.Message)
 	}
+
 	if ae.Err != nil {
 		if b.Len() > 0 {
 			b.WriteString(": ")
 		}
+
 		b.WriteString(ae.Err.Error())
 	}
 

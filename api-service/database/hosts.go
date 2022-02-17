@@ -45,9 +45,11 @@ func (md *MongoDatabase) SearchHosts(mode string, filters dto.SearchHostsFilters
 func (md *MongoDatabase) GetHostDataSummaries(filters dto.SearchHostsFilters) ([]dto.HostDataSummary, error) {
 	filters.PageNumber, filters.PageSize = -1, -1
 	out := make([]dto.HostDataSummary, 0)
+
 	if err := md.getHosts("summary", filters, &out); err != nil {
 		return nil, err
 	}
+
 	return out, nil
 }
 
@@ -317,6 +319,7 @@ func getIsMemberOfClusterFilterStep(member *bool) interface{} {
 			mu.APOEqual(*member, mu.APOOr("$clusterMembershipStatus.oracleClusterware", "$clusterMembershipStatus.veritasClusterServer", "$clusterMembershipStatus.sunCluster", "$clusterMembershipStatus.hacmp")),
 		))
 	}
+
 	return bson.A{}
 }
 
@@ -476,8 +479,10 @@ func (md *MongoDatabase) ListLocations(location string, environment string, olde
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, item["_id"])
 	}
+
 	return out, nil
 }
 
@@ -506,8 +511,10 @@ func (md *MongoDatabase) ListEnvironments(location string, environment string, o
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, item["_id"])
 	}
+
 	return out, nil
 }
 
@@ -546,6 +553,7 @@ func (md *MongoDatabase) ReplaceHostData(hostData model.HostDataBE) error {
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")
 	}
+
 	return nil
 }
 

@@ -70,6 +70,7 @@ func (md *MongoDatabase) updateLicenseComplianceHistoric(license dto.LicenseComp
 				{Key: "history.$.purchased", Value: license.Purchased},
 			},
 		}}
+
 	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(licensesHistoryCollection).
 		UpdateOne(context.TODO(),
 			filter,
@@ -96,6 +97,7 @@ func (md *MongoDatabase) insertLicenseComplianceHistoric(license dto.LicenseComp
 
 	updateOptions := options.Update()
 	updateOptions.SetUpsert(true)
+
 	update := bson.D{
 		{
 			Key: "$push",

@@ -205,8 +205,10 @@ func (md *MongoDatabase) GetOracleExadataStorageErrorCountStatusStats(location s
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }
 
@@ -245,7 +247,9 @@ func (md *MongoDatabase) GetOracleExadataPatchStatusStats(location string, envir
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }

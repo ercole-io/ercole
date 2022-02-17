@@ -55,9 +55,11 @@ func (md *MongoDatabase) GetOracleDatabaseAgreement(id primitive.ObjectID) (*mod
 	}
 
 	var out model.OracleDatabaseAgreement
+
 	if err := res.Decode(&out); err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
 	}
+
 	return &out, nil
 }
 
@@ -70,6 +72,7 @@ func (md *MongoDatabase) UpdateOracleDatabaseAgreement(agreement model.OracleDat
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")
 	}
+
 	if result.MatchedCount != 1 {
 		return utils.ErrOracleDatabaseAgreementNotFound
 	}
@@ -90,6 +93,7 @@ func (md *MongoDatabase) RemoveOracleDatabaseAgreement(id primitive.ObjectID) er
 	if res.DeletedCount == 0 {
 		return utils.ErrOracleDatabaseAgreementNotFound
 	}
+
 	return nil
 }
 
