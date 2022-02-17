@@ -107,11 +107,11 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write([]byte(token)); err != nil {
 		utils.WriteAndLogError(ap.Log, w, http.StatusInternalServerError, err)
 		return
 	}
+	w.WriteHeader(http.StatusOK)
 }
 
 // AuthenticateMiddleware return the middleware used to check if the users are authenticated

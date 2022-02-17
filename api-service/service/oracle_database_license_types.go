@@ -93,11 +93,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 	}
 
 	// get consumptions value by hosts
-	getLicensesConsumedByHost, err := as.getterLicensesConsumedByHost()
-	if err != nil {
-		as.Log.Error(err)
-		return nil, err
-	}
+	getLicensesConsumedByHost := as.getterLicensesConsumedByHost()
 
 	for _, host := range hosts {
 		license, ok := licenses[host.LicenseTypeID]
@@ -121,11 +117,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 	}
 
 	// get covered value by hosts
-	getLicensesCoveredByHost, err := as.getterLicensesCoveredByHost()
-	if err != nil {
-		as.Log.Error(err)
-		return nil, err
-	}
+	getLicensesCoveredByHost := as.getterLicensesCoveredByHost()
 
 	availableLicenses := make(map[string]float64)
 	// get coverage values from agreements
@@ -226,14 +218,14 @@ func (as *APIService) getHostdatasPerHostname() (map[string]*model.HostDataBE, e
 	return hostdatasPerHostname, nil
 }
 
-func (as *APIService) getterLicensesConsumedByHost() (func(host dto.HostUsingOracleDatabaseLicenses, hostdatasPerHostname map[string]*model.HostDataBE, licenseTypeID string) (float64, error), error) {
+func (as *APIService) getterLicensesConsumedByHost() func(host dto.HostUsingOracleDatabaseLicenses, hostdatasPerHostname map[string]*model.HostDataBE, licenseTypeID string) (float64, error) {
 	// map to keep history if a certain host per a certain licence as already be counted
 	// by another host in its veritas cluster
 	hostLicenseAlreadyCounted := make(map[string]map[string]bool)
 
 	return func(host dto.HostUsingOracleDatabaseLicenses, hostdatasPerHostname map[string]*model.HostDataBE, licenseTypeID string) (float64, error) {
 		return as.getLicensesConsumedByHost(host, hostLicenseAlreadyCounted, hostdatasPerHostname, licenseTypeID)
-	}, nil
+	}
 }
 
 func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabaseLicenses,
@@ -295,14 +287,14 @@ func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabase
 	return consumedLicenses - ignored, nil
 }
 
-func (as *APIService) getterLicensesCoveredByHost() (func(host dto.HostUsingOracleDatabaseLicenses, originalCoveredLicenses float64, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error), error) {
+func (as *APIService) getterLicensesCoveredByHost() func(host dto.HostUsingOracleDatabaseLicenses, originalCoveredLicenses float64, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error) {
 	// map to keep history if a certain host per a certain licence as already be counted
 	// by another host in its veritas cluster
 	hostLicenseAlreadyCounted := make(map[string]map[string]bool)
 
 	return func(host dto.HostUsingOracleDatabaseLicenses, originalCoveredLicenses float64, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error) {
 		return as.getLicensesCoveredByHost(host, originalCoveredLicenses, hostLicenseAlreadyCounted, hostdatasPerHostname)
-	}, nil
+	}
 }
 
 func (as *APIService) getLicensesCoveredByHost(host dto.HostUsingOracleDatabaseLicenses, originalCoveredLicenses float64,

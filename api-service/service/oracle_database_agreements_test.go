@@ -1786,15 +1786,6 @@ func TestSortOracleDatabaseAgreements(t *testing.T) {
 }
 
 func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
-	partsMap := map[string]*model.OracleDatabaseLicenseType{
-		"L10005": {
-			ID:              "L10005",
-			ItemDescription: "Oracle Real Application Clusters",
-			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
-			Aliases:         []string{"Real Application Clusters", "RAC or RAC One Node"},
-		},
-	}
-
 	hostsMap := map[string]map[string]*dto.HostUsingOracleDatabaseLicenses{
 		"L10005": {
 			"test-db1": {
@@ -1829,7 +1820,7 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 		{Hostname: "test-db3"},
 	}
 
-	sortHostsInAgreementByLicenseCount(&agr, hostsMap, partsMap)
+	sortHostsInAgreementByLicenseCount(&agr, hostsMap)
 
 	assert.Equal(t, expected, agr.Hosts)
 }

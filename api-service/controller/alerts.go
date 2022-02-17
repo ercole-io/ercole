@@ -109,12 +109,12 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 		ctrl.searchAlertsXLSX(w, r, from, to)
 
 	default:
-		ctrl.searchAlertsJSON(w, r, mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
+		ctrl.searchAlertsJSON(w, mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
 	}
 }
 
 // searchAlertsJSON search alerts using the filters in the request returning it in JSON format
-func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Request,
+func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter,
 	mode string, search string, sortBy string, sortDesc bool, pageNumber int, pageSize int,
 	location, environment, severity string, status string, from time.Time, to time.Time) {
 

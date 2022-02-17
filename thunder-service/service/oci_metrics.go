@@ -162,13 +162,13 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 		// retrieve metrics data for each compartment
 		for _, compartment := range listCompartments {
 
-			allInstances, err = as.getOciInstancesWithoutBasicShape(allInstances, compartment, tenancyOCID, customConfigProvider)
+			allInstances, err = as.getOciInstancesWithoutBasicShape(allInstances, compartment, customConfigProvider)
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
 			}
 
-			allInstancesWithMetrics, err = as.getOciInstancesWithMetricsWithoutBasicShape(allInstancesWithMetrics, compartment, tenancyOCID, customConfigProvider)
+			allInstancesWithMetrics, err = as.getOciInstancesWithMetricsWithoutBasicShape(allInstancesWithMetrics, compartment, customConfigProvider)
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
@@ -254,7 +254,7 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 	return listRec, merr
 }
 
-func (as *ThunderService) getOciInstancesWithoutBasicShape(allInstances map[string]Instance, compartment model.OciCompartment, tenancyOCID string, customConfigProvider common.ConfigurationProvider) (map[string]Instance, error) {
+func (as *ThunderService) getOciInstancesWithoutBasicShape(allInstances map[string]Instance, compartment model.OciCompartment, customConfigProvider common.ConfigurationProvider) (map[string]Instance, error) {
 	client, err := core.NewComputeClientWithConfigurationProvider(customConfigProvider)
 	if err != nil {
 		return allInstances, err
@@ -340,7 +340,7 @@ func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClien
 	return instances, nil
 }
 
-func (as *ThunderService) getOciInstancesWithMetricsWithoutBasicShape(instances map[string]Instance, compartment model.OciCompartment, tenancyOCID string, customConfigProvider common.ConfigurationProvider) (map[string]Instance, error) {
+func (as *ThunderService) getOciInstancesWithMetricsWithoutBasicShape(instances map[string]Instance, compartment model.OciCompartment, customConfigProvider common.ConfigurationProvider) (map[string]Instance, error) {
 
 	client, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 	if err != nil {
@@ -439,7 +439,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				}
 
 				// first query is about Read Throughput
-				resp, err := as.getMetricResponse(monClient, compartment.CompartmentID, "oci_blockstore", "VolumeReadThroughput[5d].max()")
+				resp, err := as.getBlockStoreMetricResponse(monClient, compartment.CompartmentID, "VolumeReadThroughput[5d].max()")
 
 				if err != nil {
 					merr = multierror.Append(merr, err)
@@ -457,7 +457,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				}
 
 				// second query is about Write Throughput
-				resp, err = as.getMetricResponse(monClient, compartment.CompartmentID, "oci_blockstore", "VolumeWriteThroughput[5d].max()")
+				resp, err = as.getBlockStoreMetricResponse(monClient, compartment.CompartmentID, "VolumeWriteThroughput[5d].max()")
 
 				if err != nil {
 					merr = multierror.Append(merr, err)
@@ -476,7 +476,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				}
 
 				// third query is about Read Ops
-				resp, err = as.getMetricResponse(monClient, compartment.CompartmentID, "oci_blockstore", "VolumeReadOps[5d].max()")
+				resp, err = as.getBlockStoreMetricResponse(monClient, compartment.CompartmentID, "VolumeReadOps[5d].max()")
 
 				if err != nil {
 					merr = multierror.Append(merr, err)
@@ -494,7 +494,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				}
 
 				// fourth query is about Write Ops
-				resp, err = as.getMetricResponse(monClient, compartment.CompartmentID, "oci_blockstore", "VolumeWriteOps[5d].max()")
+				resp, err = as.getBlockStoreMetricResponse(monClient, compartment.CompartmentID, "VolumeWriteOps[5d].max()")
 
 				if err != nil {
 					merr = multierror.Append(merr, err)
@@ -514,12 +514,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 
 				if len(vols) != 0 {
 					for _, v := range vols {
-						isOpt, err := as.isOptimizable(v)
-						if err != nil {
-							merr = multierror.Append(merr, err)
-							continue
-						}
-						if isOpt {
+						if isOpt := as.isOptimizable(v); isOpt {
 							recommendation.Type = model.RecommendationTypeBlockStorage
 							recommendation.CompartmentID = compartment.CompartmentID
 							recommendation.CompartmentName = compartment.Name
@@ -536,13 +531,15 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 	return listRec, merr
 }
 
-func (as *ThunderService) getMetricResponse(client monitoring.MonitoringClient, compartmentId string, namespace string, query string) (*monitoring.SummarizeMetricsDataResponse, error) {
+func (as *ThunderService) getBlockStoreMetricResponse(client monitoring.MonitoringClient, compartmentId string, query string) (*monitoring.SummarizeMetricsDataResponse, error) {
 	var merr error
+
+	namespaceBlockstore := "oci_blockstore"
 
 	req := monitoring.SummarizeMetricsDataRequest{
 		CompartmentId: &compartmentId,
 		SummarizeMetricsDataDetails: monitoring.SummarizeMetricsDataDetails{
-			Namespace: &namespace,
+			Namespace: &namespaceBlockstore,
 			Query:     &query,
 		},
 	}
@@ -556,20 +553,16 @@ func (as *ThunderService) getMetricResponse(client monitoring.MonitoringClient, 
 	return &resp, nil
 }
 
-func (as *ThunderService) isOptimizable(res model.OciResourcePerformance) (bool, error) {
+func (as *ThunderService) isOptimizable(res model.OciResourcePerformance) bool {
 	var ociPerfs *model.OciVolumePerformance
 
 	if res.VpusPerGB == 0 {
-		return false, nil
+		return false
 	}
 
 	ociPerfs = as.getOciVolumePerformance(res.VpusPerGB, res.Size)
 
-	if res.Throughput < (ociPerfs.Performances[0].Values.MaxThroughput/2.0) && res.Iops < (ociPerfs.Performances[0].Values.MaxIOPS)/2.0 {
-		return true, nil
-	} else {
-		return false, nil
-	}
+	return res.Throughput < (ociPerfs.Performances[0].Values.MaxThroughput/2.0) && res.Iops < (ociPerfs.Performances[0].Values.MaxIOPS)/2.0
 }
 
 func (as *ThunderService) getOciVolumePerformance(vpu int, size int) *model.OciVolumePerformance {
