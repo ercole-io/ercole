@@ -45,11 +45,15 @@ func init() {
 				licenseName := args[i+2]
 				newValue := args[i+3]
 
-				req, _ := http.NewRequest("PUT", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
+				req, err := http.NewRequest("PUT", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
 					ercoleConfig.APIService.AuthenticationProvider.Username,
 					ercoleConfig.APIService.AuthenticationProvider.Password,
 					"/hosts/"+hostname+"/technologies/oracle/databases/"+dbname+"/licenses/"+licenseName,
 				).String(), bytes.NewReader([]byte(newValue)))
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "%s\n", err)
+					os.Exit(1)
+				}
 
 				//Make the http request
 				resp, err := http.DefaultClient.Do(req)
@@ -57,7 +61,11 @@ func init() {
 					fmt.Fprintf(os.Stderr, "Failed to change the value of the license %q to \"%s/%s\": %v\n", licenseName, hostname, dbname, err)
 					os.Exit(1)
 				} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
-					out, _ := ioutil.ReadAll(resp.Body)
+					out, err := ioutil.ReadAll(resp.Body)
+					if err != nil {
+						fmt.Fprintf(os.Stderr, "%s\n", err)
+						os.Exit(1)
+					}
 					defer resp.Body.Close()
 					fmt.Fprintf(os.Stderr, "License: %q DB: \"%s/%s\" Status: %d Cause: %s\n", licenseName, hostname, dbname, resp.StatusCode, string(out))
 					os.Exit(1)

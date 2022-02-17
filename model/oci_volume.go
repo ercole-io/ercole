@@ -24,7 +24,7 @@ type OciVolume struct {
 	Size               string `json:"size"`
 	VpusPerGB          string `json:"vpuPerGB"`
 	AvailabilityDomain string `json:"availabilityDomain"`
-	State              string `json:"availabilityDomain"`
+	State              string `json:"state"`
 }
 
 type OciResourcePerformance struct {

@@ -26,14 +26,12 @@ import (
 )
 
 func (as *ThunderService) GetOciUnusedLoadBalancers(profiles []string) ([]model.OciErcoleRecommendation, error) {
-	var listRec []model.OciErcoleRecommendation
 	var merr error
 	var listCompartments []model.OciCompartment
 	var recommendation model.OciErcoleRecommendation
-	var tempListRec map[string]model.OciErcoleRecommendation
 
-	tempListRec = make(map[string]model.OciErcoleRecommendation)
-	listRec = make([]model.OciErcoleRecommendation, 0)
+	tempListRec := make(map[string]model.OciErcoleRecommendation, 0)
+	listRec := make([]model.OciErcoleRecommendation, 0)
 
 	for _, profileId := range profiles {
 

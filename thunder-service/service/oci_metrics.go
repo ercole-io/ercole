@@ -73,8 +73,8 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 			// query for instance status in the last 8 days
 			var strQueryInstanceIdle = "instance_status[5m].mean()==0"
 
-			sTime := common.SDKTime{time.Now().Local().AddDate(0, 0, -8)}
-			eTime := common.SDKTime{time.Now().Local()}
+			sTime := common.SDKTime{Time: time.Now().Local().AddDate(0, 0, -8)}
+			eTime := common.SDKTime{Time: time.Now().Local()}
 
 			monClient, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 			if err != nil {
@@ -177,8 +177,8 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 			// first query is about average CPU utilization in the last  90 days
 			var strQueryAvgCPU = "CpuUtilization[1d].avg()>50"
 
-			sTime := common.SDKTime{time.Now().Local().AddDate(0, 0, -89)}
-			eTime := common.SDKTime{time.Now().Local()}
+			sTime := common.SDKTime{Time: time.Now().Local().AddDate(0, 0, -89)}
+			eTime := common.SDKTime{Time: time.Now().Local()}
 
 			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, AvgCPUThreshold)
 			if err != nil {
@@ -188,8 +188,8 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 
 			// second query is about CPU utilization peak in the last 7 days
 			var strQueryPeakCPU = "CpuUtilization[1m].max()>50"
-			sTime = common.SDKTime{time.Now().Local().AddDate(0, 0, -7)}
-			eTime = common.SDKTime{time.Now().Local()}
+			sTime = common.SDKTime{Time: time.Now().Local().AddDate(0, 0, -7)}
+			eTime = common.SDKTime{Time: time.Now().Local()}
 
 			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, PeakCPUThreshold)
 			if err != nil {
@@ -199,8 +199,8 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 
 			// third query is about memory utilization in the last 7 days
 			var strQueryMemory = "MemoryUtilization[1m].max()>90"
-			sTime = common.SDKTime{time.Now().Local().AddDate(0, 0, -7)}
-			eTime = common.SDKTime{time.Now().Local()}
+			sTime = common.SDKTime{Time: time.Now().Local().AddDate(0, 0, -7)}
+			eTime = common.SDKTime{Time: time.Now().Local()}
 
 			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, MemoryThreshold)
 			if err != nil {
@@ -234,9 +234,7 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 	}
 
 	for _, b := range allInstancesWithMetrics {
-		if _, ok := allInstances[b.ResourceID]; ok {
-			delete(allInstances, b.ResourceID)
-		}
+		delete(allInstances, b.ResourceID)
 	}
 
 	// build recommendation data for instances withoout monitoring
@@ -618,8 +616,7 @@ func (as *ThunderService) getOciVolumePerformance(vpu int, size int) *model.OciV
 
 func (as *ThunderService) getOciInstances(customConfigProvider common.ConfigurationProvider, compartmentID string) (map[string]string, error) {
 	var merr error
-	var retList map[string]string
-	retList = make(map[string]string)
+	retList := make(map[string]string, 0)
 
 	client, err := core.NewComputeClientWithConfigurationProvider(customConfigProvider)
 	if err != nil {

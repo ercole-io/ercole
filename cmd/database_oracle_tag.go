@@ -44,11 +44,15 @@ func init() {
 				dbname := args[i+1]
 				tagname := args[i+2]
 
-				req, _ := http.NewRequest("POST", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
+				req, err := http.NewRequest("POST", utils.NewAPIUrlNoParams(ercoleConfig.APIService.RemoteEndpoint,
 					ercoleConfig.APIService.AuthenticationProvider.Username,
 					ercoleConfig.APIService.AuthenticationProvider.Password,
 					"/hosts/"+hostname+"/technologies/oracle/databases/"+dbname+"/tags",
 				).String(), bytes.NewReader([]byte(tagname)))
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "%s\n", err)
+					os.Exit(1)
+				}
 
 				//Make the http request
 				resp, err := http.DefaultClient.Do(req)
@@ -56,7 +60,11 @@ func init() {
 					fmt.Fprintf(os.Stderr, "Failed to set the tag %q to \"%s/%s\": %v\n", tagname, hostname, dbname, err)
 					os.Exit(1)
 				} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
-					out, _ := ioutil.ReadAll(resp.Body)
+					out, err := ioutil.ReadAll(resp.Body)
+					if err != nil {
+						fmt.Fprintf(os.Stderr, "%s\n", err)
+						os.Exit(1)
+					}
 					defer resp.Body.Close()
 					fmt.Fprintf(os.Stderr, "Tag: %q DB: \"%s/%s\" Status: %d Cause: %s\n", tagname, hostname, dbname, resp.StatusCode, string(out))
 					os.Exit(1)
