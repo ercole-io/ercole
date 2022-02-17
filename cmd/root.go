@@ -46,7 +46,11 @@ var rootCmd = &cobra.Command{
 			log.Fatalf("Configuration file not found: %s", extraConfigFile)
 		}
 
-		ercoleConfig = config.ReadConfig(log, extraConfigFile)
+		ercoleConfig, err := config.ReadConfig(log, extraConfigFile)
+		if err != nil {
+			log.Error(err)
+			return
+		}
 		ercoleConfig.Version = serverVersion
 
 		repo.SetRepoVerbose(verbose)

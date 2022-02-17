@@ -38,25 +38,37 @@ func init() {
 			params := url.Values{}
 			olderThanOptions.addParam(params)
 
-			req, _ := http.NewRequest("GET", utils.NewAPIUrl(
+			req, err := http.NewRequest("GET", utils.NewAPIUrl(
 				ercoleConfig.APIService.RemoteEndpoint,
 				ercoleConfig.APIService.AuthenticationProvider.Username,
 				ercoleConfig.APIService.AuthenticationProvider.Password,
 				"/hosts/clusters/"+args[0],
 				params,
 			).String(), bytes.NewReader([]byte{}))
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				os.Exit(1)
+			}
 
 			resp, err := http.DefaultClient.Do(req)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Failed to get the cluster: %v\n", err)
 				os.Exit(1)
 			} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
-				out, _ := ioutil.ReadAll(resp.Body)
+				out, err := ioutil.ReadAll(resp.Body)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "%s\n", err)
+					os.Exit(1)
+				}
 				defer resp.Body.Close()
 				fmt.Fprintf(os.Stderr, "Failed to get the cluster(Status: %d): %s\n", resp.StatusCode, string(out))
 				os.Exit(1)
 			} else {
-				out, _ := ioutil.ReadAll(resp.Body)
+				out, err := ioutil.ReadAll(resp.Body)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "%s\n", err)
+					os.Exit(1)
+				}
 				defer resp.Body.Close()
 				var res interface{}
 				err = json.Unmarshal(out, &res)
@@ -67,7 +79,10 @@ func init() {
 
 				enc := json.NewEncoder(os.Stdout)
 				enc.SetIndent("", "    ")
-				enc.Encode(res)
+				if err := enc.Encode(res); err != nil {
+					fmt.Fprintf(os.Stderr, "%s\n", err)
+					os.Exit(1)
+				}
 			}
 
 		},
