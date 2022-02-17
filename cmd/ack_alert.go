@@ -34,7 +34,7 @@ func init() {
 		Long:  `Ack an alert`,
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			req, _ := http.NewRequest("POST",
+			req, err := http.NewRequest("POST",
 				utils.NewAPIUrlNoParams(
 					ercoleConfig.APIService.RemoteEndpoint,
 					ercoleConfig.APIService.AuthenticationProvider.Username,
@@ -43,13 +43,21 @@ func init() {
 				).String(),
 				bytes.NewReader([]byte(utils.ToJSON(args))),
 			)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				os.Exit(1)
+			}
 
 			resp, err := http.DefaultClient.Do(req)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Failed to acknowledge alerts %q: %v\n", args, err)
 				os.Exit(1)
 			} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
-				out, _ := ioutil.ReadAll(resp.Body)
+				out, err := ioutil.ReadAll(resp.Body)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "%s\n", err)
+					os.Exit(1)
+				}
 				defer resp.Body.Close()
 				fmt.Fprintf(os.Stderr, "Alerts: %q Status: %d Cause: %s\n", args, resp.StatusCode, string(out))
 				os.Exit(1)

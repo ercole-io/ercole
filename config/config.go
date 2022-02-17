@@ -288,7 +288,7 @@ type AuthenticationProviderConfig struct {
 }
 
 // ReadConfig read, parse and return a Configuration from the configuration file
-func ReadConfig(log logger.Logger, extraConfigFile string) (configuration Configuration) {
+func ReadConfig(log logger.Logger, extraConfigFile string) (configuration Configuration, err error) {
 	layers := make([]onion.Layer, 0)
 
 	layers = addFileLayers(log, layers, "/opt/ercole/config.toml")
@@ -323,9 +323,11 @@ func ReadConfig(log logger.Logger, extraConfigFile string) (configuration Config
 		log.Fatal("something went wrong while reading your configuration files")
 	}
 
-	checkConfiguration(log, &configuration)
+	if err = checkConfiguration(log, &configuration); err != nil {
+		return configuration, err
+	}
 
-	return configuration
+	return configuration, err
 }
 
 func addFileLayers(log logger.Logger, layers []onion.Layer, configFiles ...string) []onion.Layer {
@@ -345,8 +347,11 @@ func addFileLayers(log logger.Logger, layers []onion.Layer, configFiles ...strin
 	return layers
 }
 
-func checkConfiguration(log logger.Logger, config *Configuration) {
-	cwd, _ := os.Readlink("/proc/self/exe")
+func checkConfiguration(log logger.Logger, config *Configuration) error {
+	cwd, err := os.Readlink("/proc/self/exe")
+	if err != nil {
+		return err
+	}
 	cwd = filepath.Dir(cwd)
 
 	if config.RepoService.DistributedFiles == "" {
@@ -370,6 +375,8 @@ func checkConfiguration(log logger.Logger, config *Configuration) {
 	}
 
 	checkOracleDatabaseLicenseTypeMetrics(log, config)
+
+	return nil
 }
 
 func checkOracleDatabaseLicenseTypeMetrics(log logger.Logger, config *Configuration) {

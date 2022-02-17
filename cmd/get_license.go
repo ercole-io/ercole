@@ -49,12 +49,20 @@ var getLicenseCmd = &cobra.Command{
 			fmt.Fprintf(os.Stderr, "Failed to get the license: %v\n", err)
 			os.Exit(1)
 		} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
-			out, _ := ioutil.ReadAll(resp.Body)
+			out, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				os.Exit(1)
+			}
 			defer resp.Body.Close()
 			fmt.Fprintf(os.Stderr, "Failed to get the license(Status: %d): %s\n", resp.StatusCode, string(out))
 			os.Exit(1)
 		} else {
-			out, _ := ioutil.ReadAll(resp.Body)
+			out, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				os.Exit(1)
+			}
 			defer resp.Body.Close()
 			var res interface{}
 			err = json.Unmarshal(out, &res)
@@ -65,7 +73,10 @@ var getLicenseCmd = &cobra.Command{
 
 			enc := json.NewEncoder(os.Stdout)
 			enc.SetIndent("", "    ")
-			enc.Encode(res)
+			if err := enc.Encode(res); err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				os.Exit(1)
+			}
 		}
 
 	},

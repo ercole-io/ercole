@@ -43,7 +43,6 @@ var location string
 var environment string
 var windowTime int
 var limit int
-var severity string
 var alertStatus string
 var alertStatusAll bool
 var from string
@@ -132,15 +131,6 @@ var limitOption apiOption = apiOption{
 	},
 	addParam: func(params url.Values) {
 		params.Set("limit", strconv.Itoa(limit))
-	},
-}
-
-var severityOption apiOption = apiOption{
-	addOption: func(cmd *cobra.Command) {
-		cmd.Flags().StringVar(&severity, "severity", "", "Filter by severity")
-	},
-	addParam: func(params url.Values) {
-		params.Set("severity", severity)
 	},
 }
 
@@ -262,13 +252,17 @@ func simpleAPIRequestCommand(
 			}
 
 			//Make the http request
-			req, _ := http.NewRequest("GET", utils.NewAPIUrl(
+			req, err := http.NewRequest("GET", utils.NewAPIUrl(
 				ercoleConfig.APIService.RemoteEndpoint,
 				ercoleConfig.APIService.AuthenticationProvider.Username,
 				ercoleConfig.APIService.AuthenticationProvider.Password,
 				endpointPath,
 				params,
 			).String(), bytes.NewReader([]byte{}))
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				os.Exit(1)
+			}
 
 			if customResponseTypes {
 				switch outputFormat {
@@ -289,12 +283,21 @@ func simpleAPIRequestCommand(
 				fmt.Fprintf(os.Stderr, errorMessageFormat, err)
 				os.Exit(1)
 			} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
-				out, _ := ioutil.ReadAll(resp.Body)
+				out, err := ioutil.ReadAll(resp.Body)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "%s\n", err)
+					os.Exit(1)
+				}
 				defer resp.Body.Close()
 				fmt.Fprintf(os.Stderr, httpErrorMessageFormat, resp.StatusCode, string(out))
 				os.Exit(1)
 			} else {
-				out, _ := ioutil.ReadAll(resp.Body)
+				out, err := ioutil.ReadAll(resp.Body)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "%s\n", err)
+					os.Exit(1)
+				}
+
 				defer resp.Body.Close()
 
 				if resp.Header.Get("Content-Type") == "application/json" {
@@ -308,7 +311,10 @@ func simpleAPIRequestCommand(
 					for _, item := range res {
 						enc := json.NewEncoder(os.Stdout)
 						enc.SetIndent("", "    ")
-						enc.Encode(item)
+						if err := enc.Encode(item); err != nil {
+							fmt.Fprintf(os.Stderr, "%s\n", err)
+							os.Exit(1)
+						}
 					}
 				} else {
 					os.Stdout.Write(out)
@@ -375,12 +381,20 @@ func simpleSingleValueAPIRequestCommand(
 				fmt.Fprintf(os.Stderr, errorMessageFormat, err)
 				os.Exit(1)
 			} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
-				out, _ := ioutil.ReadAll(resp.Body)
+				out, err := ioutil.ReadAll(resp.Body)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "%s\n", err)
+					os.Exit(1)
+				}
 				defer resp.Body.Close()
 				fmt.Fprintf(os.Stderr, httpErrorMessageFormat, resp.StatusCode, string(out))
 				os.Exit(1)
 			} else {
-				out, _ := ioutil.ReadAll(resp.Body)
+				out, err := ioutil.ReadAll(resp.Body)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "%s\n", err)
+					os.Exit(1)
+				}
 				defer resp.Body.Close()
 				var res interface{}
 				err = json.Unmarshal(out, &res)
@@ -391,7 +405,10 @@ func simpleSingleValueAPIRequestCommand(
 
 				enc := json.NewEncoder(os.Stdout)
 				enc.SetIndent("", "    ")
-				enc.Encode(res)
+				if err := enc.Encode(res); err != nil {
+					fmt.Fprintf(os.Stderr, "%s\n", err)
+					os.Exit(1)
+				}
 			}
 
 		},
@@ -438,13 +455,17 @@ func simpleChartRequestCommandSingleValue(
 			}
 
 			//Make the http request
-			req, _ := http.NewRequest("GET", utils.NewAPIUrl(
+			req, err := http.NewRequest("GET", utils.NewAPIUrl(
 				ercoleConfig.ChartService.RemoteEndpoint,
 				ercoleConfig.APIService.AuthenticationProvider.Username,
 				ercoleConfig.APIService.AuthenticationProvider.Password,
 				endpointPath,
 				params,
 			).String(), bytes.NewReader([]byte{}))
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				os.Exit(1)
+			}
 
 			if customResponseTypes {
 				switch outputFormat {
@@ -459,12 +480,20 @@ func simpleChartRequestCommandSingleValue(
 				fmt.Fprintf(os.Stderr, errorMessageFormat, err)
 				os.Exit(1)
 			} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
-				out, _ := ioutil.ReadAll(resp.Body)
+				out, err := ioutil.ReadAll(resp.Body)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "%s\n", err)
+					os.Exit(1)
+				}
 				defer resp.Body.Close()
 				fmt.Fprintf(os.Stderr, httpErrorMessageFormat, resp.StatusCode, string(out))
 				os.Exit(1)
 			} else {
-				out, _ := ioutil.ReadAll(resp.Body)
+				out, err := ioutil.ReadAll(resp.Body)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "%s\n", err)
+					os.Exit(1)
+				}
 				defer resp.Body.Close()
 
 				if resp.Header.Get("Content-Type") == "application/json" {
@@ -477,7 +506,10 @@ func simpleChartRequestCommandSingleValue(
 
 					enc := json.NewEncoder(os.Stdout)
 					enc.SetIndent("", "    ")
-					enc.Encode(res)
+					if err := enc.Encode(res); err != nil {
+						fmt.Fprintf(os.Stderr, "%s\n", err)
+						os.Exit(1)
+					}
 				} else {
 					os.Stdout.Write(out)
 				}

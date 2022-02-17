@@ -31,7 +31,7 @@ import (
 func (as *ThunderService) GetOciUnusedStorage(profiles []string) ([]model.OciErcoleRecommendation, error) {
 	var merr error
 	var err error
-	var volumeList = make(map[string]model.OciVolume)
+	var volumeList map[string]model.OciVolume
 	var attachedVolumeList []model.OciVolume
 	var listRec []model.OciErcoleRecommendation
 	var recommendation model.OciErcoleRecommendation
@@ -224,7 +224,7 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 				continue
 			}
 
-			nowt := common.SDKTime{time.Now().Local()}
+			nowt := common.SDKTime{Time: time.Now().Local()}
 
 			for _, s := range resp.Items {
 				tDiff := int(nowt.Sub(s.TimeCreated.Time) / 24)
