@@ -90,14 +90,14 @@ func (c *Client) getResponse(ctx context.Context, path, method string, body []by
 	return resp, nil
 }
 
-func (c *Client) getParsedResponse(ctx context.Context, path, method string, body []byte, response interface{}) (*http.Response, error) {
+func (c *Client) getParsedResponse(ctx context.Context, path, method string, body []byte, response interface{}) error {
 	resp, err := c.getResponse(ctx, path, method, body)
 	if err != nil {
-		return resp, err
+		return err
 	}
 	defer resp.Body.Close()
 
 	d := json.NewDecoder(resp.Body)
 
-	return resp, d.Decode(response)
+	return d.Decode(response)
 }

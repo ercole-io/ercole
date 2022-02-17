@@ -52,7 +52,7 @@ func (ctrl *APIController) SearchHosts(w http.ResponseWriter, r *http.Request) {
 	if requestContentType == "application/json" {
 		ctrl.searchHostsJSON(w, r, filters)
 	} else if requestContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {
-		ctrl.searchHostsXLSX(w, r, filters)
+		ctrl.searchHostsXLSX(w, filters)
 	}
 }
 
@@ -69,7 +69,7 @@ func (ctrl *APIController) searchHostsJSON(w http.ResponseWriter, r *http.Reques
 	}
 
 	if mode == "summary" {
-		ctrl.getHostDataSummaries(w, r, filters)
+		ctrl.getHostDataSummaries(w, filters)
 		return
 	}
 
@@ -94,7 +94,7 @@ func (ctrl *APIController) searchHostsJSON(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-func (ctrl *APIController) getHostDataSummaries(w http.ResponseWriter, r *http.Request, filters *dto.SearchHostsFilters) {
+func (ctrl *APIController) getHostDataSummaries(w http.ResponseWriter, filters *dto.SearchHostsFilters) {
 	hosts, err := ctrl.Service.GetHostDataSummaries(*filters)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -125,7 +125,7 @@ func (ctrl *APIController) searchHostsLMS(w http.ResponseWriter, r *http.Request
 }
 
 // searchHostsXLSX search hosts data using the filters in the request returning it in XLSX
-func (ctrl *APIController) searchHostsXLSX(w http.ResponseWriter, r *http.Request, filters *dto.SearchHostsFilters) {
+func (ctrl *APIController) searchHostsXLSX(w http.ResponseWriter, filters *dto.SearchHostsFilters) {
 	filters.PageNumber, filters.PageSize = -1, -1
 	xlsx, err := ctrl.Service.SearchHostsAsXLSX(*filters)
 	if err != nil {

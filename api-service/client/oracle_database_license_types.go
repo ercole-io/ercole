@@ -26,7 +26,7 @@ func (c *Client) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseT
 		LicensesTypes []model.OracleDatabaseLicenseType `json:"license-types"`
 	}
 
-	_, err := c.getParsedResponse(context.TODO(), "/settings/oracle/database/license-types", "GET", nil, &response)
+	err := c.getParsedResponse(context.TODO(), "/settings/oracle/database/license-types", "GET", nil, &response)
 	if err != nil {
 		return nil, err
 	}
