@@ -90,6 +90,7 @@ func migrateHostsSchema(client *mongo.Database) error {
 	}); err != nil {
 		return err
 	}
+
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
 			{Key: "hostname", Value: 1},
@@ -107,6 +108,7 @@ func migrateHostsSchema(client *mongo.Database) error {
 	}); err != nil {
 		return err
 	}
+
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
 			{Key: "archived", Value: 1},

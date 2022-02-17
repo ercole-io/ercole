@@ -27,8 +27,10 @@ import (
 
 func (ctrl *AlertQueueController) ThrowNewAlert(w http.ResponseWriter, r *http.Request) {
 	var alert model.Alert
+
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
+
 	if err := decoder.Decode(&alert); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
 			utils.NewError(err, http.StatusText(http.StatusBadRequest)))

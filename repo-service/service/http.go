@@ -38,10 +38,10 @@ type HTTPSubRepoService struct {
 
 // Init start the service
 func (hs *HTTPSubRepoService) Init(wg *sync.WaitGroup) {
-
 	//Setup the logger
 	router := http.NewServeMux()
 	router.Handle("/", http.FileServer(http.Dir(hs.Config.RepoService.DistributedFiles)))
+
 	var logRouter http.Handler
 
 	if hs.Config.RepoService.HTTP.LogHTTPRequest {
@@ -54,6 +54,7 @@ func (hs *HTTPSubRepoService) Init(wg *sync.WaitGroup) {
 	//Start the repo-service
 	go func() {
 		hs.Log.Info("Start repo-service/http: listening at ", hs.Config.RepoService.HTTP.Port)
+
 		err := http.ListenAndServe(fmt.Sprintf("%s:%d", hs.Config.RepoService.HTTP.BindIP, hs.Config.RepoService.HTTP.Port), cors.AllowAll().Handler(logRouter))
 		if err != nil {
 			hs.Log.Error("Stopping repo-service/http: ", err)

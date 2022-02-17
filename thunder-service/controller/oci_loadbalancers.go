@@ -27,7 +27,6 @@ import (
 
 //GetOciRecommendations get recommendation from Oracle Cloud
 func (ctrl *ThunderController) GetOciUnusedLoadbalancers(w http.ResponseWriter, r *http.Request) {
-
 	profileList := mux.Vars(r)["ids"]
 	if profileList == "" {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Ids not present or malformed"))
@@ -50,6 +49,7 @@ func (ctrl *ThunderController) GetOciUnusedLoadbalancers(w http.ResponseWriter, 
 		}
 
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+
 		return
 	}
 
@@ -58,6 +58,7 @@ func (ctrl *ThunderController) GetOciUnusedLoadbalancers(w http.ResponseWriter, 
 			"recommendations": recommendations,
 		}
 		utils.WriteJSONResponse(w, http.StatusOK, response)
+
 		return
 	}
 

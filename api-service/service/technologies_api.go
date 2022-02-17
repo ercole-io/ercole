@@ -36,6 +36,7 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 	if err != nil {
 		return nil, err
 	}
+
 	statuses = append(statuses, *oracleStatus)
 
 	mysqlStatus := model.TechnologyStatus{
@@ -48,6 +49,7 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 		UnpaidDues:          0,
 		HostsCount:          int(hostsCountByTechnology[model.TechnologyOracleMySQL]),
 	}
+
 	statuses = append(statuses, mysqlStatus)
 
 	for _, technology := range []string{
@@ -55,7 +57,6 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 		model.TechnologyPostgreSQLPostgreSQL,
 		model.TechnologyMicrosoftSQLServer,
 	} {
-
 		statuses = append(statuses, model.TechnologyStatus{
 			Product:             technology,
 			ConsumedByHosts:     0,

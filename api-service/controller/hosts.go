@@ -84,6 +84,7 @@ func (ctrl *APIController) searchHostsJSON(w http.ResponseWriter, r *http.Reques
 		for i, h := range hosts {
 			hostnames[i] = h["hostname"].(string)
 		}
+
 		utils.WriteJSONResponse(w, http.StatusOK, hostnames)
 	} else {
 		if filters.PageNumber == -1 || filters.PageSize == -1 {
@@ -114,7 +115,9 @@ func (ctrl *APIController) searchHostsLMS(w http.ResponseWriter, r *http.Request
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	filters.PageNumber, filters.PageSize = -1, -1
+
 	lms, err := ctrl.Service.SearchHostsAsLMS(*filters)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -127,6 +130,7 @@ func (ctrl *APIController) searchHostsLMS(w http.ResponseWriter, r *http.Request
 // searchHostsXLSX search hosts data using the filters in the request returning it in XLSX
 func (ctrl *APIController) searchHostsXLSX(w http.ResponseWriter, filters *dto.SearchHostsFilters) {
 	filters.PageNumber, filters.PageSize = -1, -1
+
 	xlsx, err := ctrl.Service.SearchHostsAsXLSX(*filters)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -151,6 +155,7 @@ func (ctrl *APIController) GetHost(w http.ResponseWriter, r *http.Request) {
 // GetHostJSON return all'informations about the host requested in the id path variable
 func (ctrl *APIController) GetHostJSON(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
+
 	var err error
 
 	hostname := mux.Vars(r)["hostname"]
@@ -175,6 +180,7 @@ func (ctrl *APIController) GetHostJSON(w http.ResponseWriter, r *http.Request) {
 // GetHostMongoJSON return all'informations about the host requested in the id path variable
 func (ctrl *APIController) GetHostMongoJSON(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
+
 	var err error
 
 	hostname := mux.Vars(r)["hostname"]
@@ -198,11 +204,12 @@ func (ctrl *APIController) GetHostMongoJSON(w http.ResponseWriter, r *http.Reque
 
 // ListLocations list locations using the filters in the request
 func (ctrl *APIController) ListLocations(w http.ResponseWriter, r *http.Request) {
-	var location string
-	var environment string
+	var location, environment string
+
 	var olderThan time.Time
 
 	var err error
+
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 
@@ -222,11 +229,12 @@ func (ctrl *APIController) ListLocations(w http.ResponseWriter, r *http.Request)
 
 // ListEnvironments list the environments using the filters in the request
 func (ctrl *APIController) ListEnvironments(w http.ResponseWriter, r *http.Request) {
-	var location string
-	var environment string
+	var location, environment string
+
 	var olderThan time.Time
 
 	var err error
+
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
 

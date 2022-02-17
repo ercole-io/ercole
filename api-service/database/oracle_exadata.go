@@ -30,7 +30,6 @@ import (
 // SearchOracleExadata search exadata
 func (md *MongoDatabase) SearchOracleExadata(full bool, keywords []string, sortBy string, sortDesc bool,
 	page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleExadataResponse, error) {
-
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
@@ -128,6 +127,7 @@ func (md *MongoDatabase) SearchOracleExadata(full bool, keywords []string, sortB
 	var exadataResponse dto.OracleExadataResponse
 
 	cur.Next(context.TODO())
+
 	if err := cur.Decode(&exadataResponse); err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
 	}

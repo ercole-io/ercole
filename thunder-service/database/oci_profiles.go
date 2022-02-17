@@ -44,7 +44,9 @@ func (md *MongoDatabase) AddOciProfile(profile model.OciProfile) error {
 
 func (md *MongoDatabase) UpdateOciProfile(profile model.OciProfile) error {
 	var err error
+
 	var cur *mongo.UpdateResult
+
 	var p bson.M
 
 	data, err := bson.Marshal(profile)
@@ -95,11 +97,13 @@ func (md *MongoDatabase) GetOciProfiles(hidePrivateKey bool) ([]model.OciProfile
 	if err := cur.Err(); err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
+
 	return profiles, nil
 }
 
 func (md *MongoDatabase) GetMapOciProfiles() (map[primitive.ObjectID]model.OciProfile, error) {
 	profiles, err := md.GetOciProfiles(false)
+
 	var retProfiles = make(map[primitive.ObjectID]model.OciProfile)
 
 	if err != nil {

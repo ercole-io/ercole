@@ -26,7 +26,9 @@ import (
 // GetOracleDatabaseEnvironmentStats return all statistics about the environments of the databases using the filters in the request
 func (ctrl *APIController) GetOracleDatabaseEnvironmentStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
+
 	var location string
+
 	var err error
 
 	//parse the query params
@@ -51,8 +53,8 @@ func (ctrl *APIController) GetOracleDatabaseEnvironmentStats(w http.ResponseWrit
 // GetOracleDatabaseHighReliabilityStats return all statistics about the high-reliability status of the databases using the filters in the request
 func (ctrl *APIController) GetOracleDatabaseHighReliabilityStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
-	var location string
-	var environment string
+
+	var location, environment string
 
 	var err error
 
@@ -79,7 +81,9 @@ func (ctrl *APIController) GetOracleDatabaseHighReliabilityStats(w http.Response
 // GetOracleDatabaseVersionStats return all statistics about the versions of the databases using the filters in the request
 func (ctrl *APIController) GetOracleDatabaseVersionStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
+
 	var location string
+
 	var err error
 
 	//parse the query params
@@ -104,12 +108,16 @@ func (ctrl *APIController) GetOracleDatabaseVersionStats(w http.ResponseWriter, 
 // GetTopReclaimableOracleDatabaseStats return top databases by reclaimable segment advisors using the filters in the request
 func (ctrl *APIController) GetTopReclaimableOracleDatabaseStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
+
 	var location string
+
 	var limit int
+
 	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
+
 	if limit, err = utils.Str2int(r.URL.Query().Get("limit"), 15); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -134,12 +142,16 @@ func (ctrl *APIController) GetTopReclaimableOracleDatabaseStats(w http.ResponseW
 // GetOracleDatabasePatchStatusStats return all statistics about the patch status of the databases using the filters in the request
 func (ctrl *APIController) GetOracleDatabasePatchStatusStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
+
 	var location string
+
 	var windowTime int
+
 	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
+
 	if windowTime, err = utils.Str2int(r.URL.Query().Get("window-time"), 6); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -164,12 +176,16 @@ func (ctrl *APIController) GetOracleDatabasePatchStatusStats(w http.ResponseWrit
 // GetTopWorkloadOracleDatabaseStats return top databases by workload advisors using the filters in the request
 func (ctrl *APIController) GetTopWorkloadOracleDatabaseStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
+
 	var location string
+
 	var limit int
+
 	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
+
 	if limit, err = utils.Str2int(r.URL.Query().Get("limit"), 10); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -194,8 +210,9 @@ func (ctrl *APIController) GetTopWorkloadOracleDatabaseStats(w http.ResponseWrit
 // GetOracleDatabaseDataguardStatusStats return all statistics about the dataguard status of the databases using the filters in the request
 func (ctrl *APIController) GetOracleDatabaseDataguardStatusStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
-	var location string
-	var environment string
+
+	var location, environment string
+
 	var err error
 
 	//parse the query params
@@ -221,8 +238,9 @@ func (ctrl *APIController) GetOracleDatabaseDataguardStatusStats(w http.Response
 // GetOracleDatabaseRACStatusStats return all statistics about the RAC status of the databases using the filters in the request
 func (ctrl *APIController) GetOracleDatabaseRACStatusStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
-	var location string
-	var environment string
+
+	var location, environment string
+
 	var err error
 
 	//parse the query params
@@ -248,8 +266,9 @@ func (ctrl *APIController) GetOracleDatabaseRACStatusStats(w http.ResponseWriter
 // GetOracleDatabaseArchivelogStatusStats return all statistics about the archivelog status of the databases using the filters in the request
 func (ctrl *APIController) GetOracleDatabaseArchivelogStatusStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
-	var location string
-	var environment string
+
+	var location, environment string
+
 	var err error
 
 	//parse the query params
@@ -291,14 +310,17 @@ func (ctrl *APIController) GetOracleDatabasesStatistics(w http.ResponseWriter, r
 // GetTopUnusedOracleDatabaseInstanceResourceStats return top unused instance resource by databases work using the filters in the request
 func (ctrl *APIController) GetTopUnusedOracleDatabaseInstanceResourceStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
-	var location string
-	var environment string
+
+	var location, environment string
+
 	var limit int
+
 	var err error
 
 	//parse the query params
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
+
 	if limit, err = utils.Str2int(r.URL.Query().Get("limit"), 15); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return

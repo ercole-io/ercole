@@ -46,6 +46,7 @@ func (md *MongoDatabase) InsertHostData(hostData model.HostDataBE) error {
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")
 	}
+
 	return nil
 }
 
@@ -115,6 +116,7 @@ func (md *MongoDatabase) FindOldCurrentHostdata(t time.Time) ([]model.HostDataBE
 		if cur.Decode(&host) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		hosts = append(hosts, host)
 	}
 
@@ -177,6 +179,7 @@ func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
+
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
 		return nil, nil
