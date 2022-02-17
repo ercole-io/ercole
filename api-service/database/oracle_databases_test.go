@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,84 +19,287 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/mongoutils"
+	"github.com/stretchr/testify/assert"
 )
 
 func (m *MongodbSuite) TestSearchOracleDatabases() {
+	var work float64 = 1
+	enabled := false
+	name := "ECXSERVER"
+	creationdate := utils.P("2019-06-24T17:34:20Z")
+	dbtime := 184.81
+	dailycpuusage := 0.7
+	elapsed := 12059.18
+
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_09.json"))
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabases(false, []string{""}, "", false, -1, -1, "", "PROD", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabases([]string{""}, "", false, -1, -1, "", "PROD", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+
+		expectedOut := dto.OracleDatabaseResponse{
+			Content: []dto.OracleDatabase{},
+			Metadata: dto.PagingMetadata{
+				Empty:         true,
+				First:         true,
+				Last:          true,
+				Number:        0,
+				Size:          0,
+				TotalElements: 0,
+				TotalPages:    0,
+			},
+		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabases(false, []string{""}, "", false, -1, -1, "France", "", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabases([]string{""}, "", false, -1, -1, "France", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
 
+		expectedOut := dto.OracleDatabaseResponse{
+			Content: []dto.OracleDatabase{},
+			Metadata: dto.PagingMetadata{
+				Empty:         true,
+				First:         true,
+				Last:          true,
+				Number:        0,
+				Size:          0,
+				TotalElements: 0,
+				TotalPages:    0,
+			},
+		}
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabases(false, []string{""}, "", false, -1, -1, "", "", utils.P("1999-05-04T16:09:46.608+02:00"))
+		out, err := m.db.SearchOracleDatabases([]string{""}, "", false, -1, -1, "", "", utils.P("1999-05-04T16:09:46.608+02:00"))
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+
+		expectedOut := dto.OracleDatabaseResponse{
+			Content: []dto.OracleDatabase{},
+			Metadata: dto.PagingMetadata{
+				Empty:         true,
+				First:         true,
+				Last:          true,
+				Number:        0,
+				Size:          0,
+				TotalElements: 0,
+				TotalPages:    0,
+			},
+		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_be_paging", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabases(false, []string{""}, "", false, 0, 1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabases([]string{""}, "", false, 0, 1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"content": []interface{}{
-					map[string]interface{}{
-						"archivelog":   false,
-						"blockSize":    8192,
-						"cpuCount":     2,
-						"charset":      "AL32UTF8",
-						"createdAt":    utils.P("2020-04-15T08:46:58.471+02:00").Local(),
-						"datafileSize": 6,
-						"dataguard":    false,
-						"environment":  "TST",
-						"ha":           false,
-						"hostname":     "test-db",
-						"isCDB":        false,
-						"location":     "Germany",
-						"memory":       1.484,
-						"name":         "ERCOLE",
-						"pdbs":         []interface{}{},
-						"rac":          false,
-						"segmentsSize": 3,
-						"services":     []interface{}{},
-						"status":       "OPEN",
-						"uniqueName":   "ERCOLE",
-						"version":      "12.2.0.1.0 Enterprise Edition",
-						"work":         1,
-						"_id":          utils.Str2oid("5e96ade270c184faca93fe36"),
+
+		var expectedContent []dto.OracleDatabase = []dto.OracleDatabase{
+			{
+				Archivelog:     false,
+				BlockSize:      8192,
+				CPUCount:       2,
+				Charset:        "AL32UTF8",
+				CreatedAt:      utils.P("2020-04-15T06:46:58.471Z"),
+				DatafileSize:   6,
+				Dataguard:      false,
+				Environment:    "TST",
+				Ha:             false,
+				Hostname:       "test-db",
+				IsCDB:          false,
+				Location:       "Germany",
+				Memory:         1.484,
+				Name:           "ERCOLE",
+				PDBs:           []model.OracleDatabasePluggableDatabase{},
+				Rac:            false,
+				SegmentsSize:   3,
+				Services:       []model.OracleDatabaseService{},
+				Status:         "OPEN",
+				UniqueName:     "ERCOLE",
+				Version:        "12.2.0.1.0 Enterprise Edition",
+				Work:           &work,
+				ID:             utils.Str2oid("5e96ade270c184faca93fe36"),
+				InstanceNumber: 1,
+				InstanceName:   "ERCOLE1",
+				DbID:           0,
+				Role:           "",
+				Platform:       "Linux x86 64-bit",
+				NCharset:       "AL16UTF16",
+				SGATarget:      0,
+				PGATarget:      0,
+				MemoryTarget:   1.484,
+				SGAMaxSize:     1.484,
+				Allocable:      129,
+				Elapsed:        &elapsed,
+				DBTime:         &dbtime,
+				DailyCPUUsage:  &dailycpuusage,
+				ASM:            false,
+				Tags:           []string{"foobar"},
+				Patches:        []model.OracleDatabasePatch{},
+				Tablespaces: []model.OracleDatabaseTablespace{
+					{
+						MaxSize:  32767.9844,
+						Name:     "SYSTEM",
+						Status:   "ONLINE",
+						Total:    850,
+						Used:     842.875,
+						UsedPerc: 2.57,
+					},
+					{
+						MaxSize:  32767.9844,
+						Name:     "USERS",
+						Status:   "ONLINE",
+						Total:    1024,
+						Used:     576,
+						UsedPerc: 1.76,
 					},
 				},
-				"metadata": map[string]interface{}{
-					"empty":         false,
-					"first":         true,
-					"last":          false,
-					"number":        0,
-					"size":          1,
-					"totalElements": 2,
-					"totalPages":    2,
+				Schemas: []model.OracleDatabaseSchema{
+					{
+						Indexes: 0,
+						LOB:     0,
+						Tables:  192,
+						Total:   192,
+						User:    "RAF",
+					},
+					{
+						Indexes: 0,
+						LOB:     0,
+						Tables:  0,
+						Total:   0,
+						User:    "REMOTE_SCHEDULER_AGENT",
+					},
 				},
+				Licenses: []model.OracleDatabaseLicense{
+					{
+						Count:         0.5,
+						Name:          "Oracle ENT",
+						LicenseTypeID: "A90611",
+						Ignored:       false,
+					},
+					{
+						Count:         0,
+						Name:          "Oracle STD",
+						LicenseTypeID: "L103399",
+						Ignored:       false,
+					},
+					{
+						Count:         0,
+						Name:          "WebLogic Server Management Pack Enterprise Edition",
+						LicenseTypeID: "L104095",
+						Ignored:       false,
+					},
+					{
+						Count:         0.5,
+						Name:          "Diagnostics Pack",
+						LicenseTypeID: "A90649",
+						Ignored:       false,
+					},
+				},
+				ADDMs: []model.OracleDatabaseAddm{
+					{
+						Action:         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
+						Benefit:        83.34,
+						Finding:        "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
+						Recommendation: "SQL Tuning",
+					},
+					{
+						Action:         "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
+						Benefit:        68.24,
+						Finding:        "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
+						Recommendation: "Segment Tuning",
+					},
+				},
+				SegmentAdvisors: []model.OracleDatabaseSegmentAdvisor{
+					{
+						PartitionName:  "iyyiuyyoy",
+						Reclaimable:    0.5,
+						Recommendation: "32b36a77e7481343ef175483c086859e",
+						SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+						SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+						SegmentType:    "TABLE",
+					},
+				},
+				PSUs: []model.OracleDatabasePSU{
+					{
+						Date:        "2012-04-16",
+						Description: "PSU 11.2.0.3.2",
+					},
+				},
+				Backups: []model.OracleDatabaseBackup{
+					{
+						AvgBckSize: 13,
+						BackupType: "Archivelog",
+						Hour:       "01:30",
+						Retention:  "1 NUMBERS",
+						WeekDays:   []string{"Wednesday"},
+					},
+					{
+						AvgBckSize: 45,
+						BackupType: "Archivelog",
+						Hour:       "03:00",
+						Retention:  "1 NUMBERS",
+						WeekDays: []string{"Tuesday",
+							"Sunday",
+							"Monday",
+							"Saturday",
+							"Wednesday",
+						},
+					},
+				},
+				FeatureUsageStats: []model.OracleDatabaseFeatureUsageStat{
+					{
+						CurrentlyUsed:    false,
+						DetectedUsages:   91,
+						ExtraFeatureInfo: "",
+						Feature:          "ADDM",
+						FirstUsageDate:   utils.P("2019-06-24T17:34:20Z"),
+						LastUsageDate:    utils.P("2019-11-09T04:48:23Z"),
+						Product:          "Diagnostics Pack",
+					},
+					{
+						CurrentlyUsed:    false,
+						DetectedUsages:   90,
+						ExtraFeatureInfo: "",
+						Feature:          "AWR Report",
+						FirstUsageDate:   utils.P("2019-06-27T15:15:44Z"),
+						LastUsageDate:    utils.P("2019-11-09T04:48:23Z"),
+						Product:          "Diagnostics Pack",
+					},
+					{
+						CurrentlyUsed:    false,
+						DetectedUsages:   7,
+						ExtraFeatureInfo: "",
+						Feature:          "Automatic Workload Repository",
+						FirstUsageDate:   utils.P("2019-06-27T17:01:09Z"),
+						LastUsageDate:    utils.P("2019-07-02T05:35:05Z"),
+						Product:          "Diagnostics Pack",
+					},
+				},
+			},
+		}
+
+		expectedOut := dto.OracleDatabaseResponse{
+			Content: expectedContent,
+			Metadata: dto.PagingMetadata{
+				Empty:         false,
+				First:         true,
+				Last:          false,
+				Number:        0,
+				Size:          1,
+				TotalElements: 2,
+				TotalPages:    2,
 			},
 		}
 
@@ -104,199 +307,493 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 	})
 
 	m.T().Run("should_be_sorting", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabases(false, []string{""}, "memory", true, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabases([]string{""}, "memory", true, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"archivelog":   true,
-				"blockSize":    8192,
-				"cpuCount":     2,
-				"charset":      "AL32UTF8",
-				"createdAt":    utils.P("2020-05-06T13:39:23.259+02:00").Local(),
-				"datafileSize": 6,
-				"dataguard":    true,
-				"environment":  "TST",
-				"ha":           true,
-				"hostname":     "test-db2",
-				"isCDB":        true,
-				"location":     "Germany",
-				"memory":       90.254,
-				"name":         "pokemons",
-				"pdbs":         []interface{}{"PDB1"},
-				"rac":          true,
-				"segmentsSize": 3,
-				"services":     []interface{}{map[string]interface{}{"creationDate": utils.P("2019-06-24T19:34:20+02:00").Local(), "enabled": false, "name": "ECXSERVER"}},
-				"status":       "OPEN",
-				"uniqueName":   "pokemons",
-				"version":      "12.2.0.1.0 Enterprise Edition",
-				"work":         1,
-				"_id":          utils.Str2oid("5eb2a1eba77f5e4badf8a2cc"),
-			},
-			map[string]interface{}{
-				"archivelog":   false,
-				"blockSize":    8192,
-				"cpuCount":     2,
-				"charset":      "AL32UTF8",
-				"createdAt":    utils.P("2020-04-15T08:46:58.471+02:00").Local(),
-				"datafileSize": 6,
-				"dataguard":    false,
-				"environment":  "TST",
-				"ha":           false,
-				"hostname":     "test-db",
-				"isCDB":        false,
-				"location":     "Germany",
-				"memory":       1.484,
-				"name":         "ERCOLE",
-				"pdbs":         []interface{}{},
-				"rac":          false,
-				"segmentsSize": 3,
-				"services":     []interface{}{},
-				"status":       "OPEN",
-				"uniqueName":   "ERCOLE",
-				"version":      "12.2.0.1.0 Enterprise Edition",
-				"work":         1,
-				"_id":          utils.Str2oid("5e96ade270c184faca93fe36"),
+		var expectedContent []dto.OracleDatabase = []dto.OracleDatabase{
+			{
+				ADDMs: []model.OracleDatabaseAddm{
+					{
+						Action:         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
+						Benefit:        83.34,
+						Finding:        "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
+						Recommendation: "SQL Tuning",
+					},
+					{
+						Action:         "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
+						Benefit:        68.24,
+						Finding:        "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
+						Recommendation: "Segment Tuning",
+					},
+				},
+				Allocable:  129,
+				Archivelog: true,
+				ASM:        false,
+				Backups: []model.OracleDatabaseBackup{
+					{
+						AvgBckSize: 13,
+						BackupType: "Archivelog",
+						Hour:       "01:30",
+						Retention:  "1 NUMBERS",
+						WeekDays:   []string{"Wednesday"},
+					},
+					{
+						AvgBckSize: 45,
+						BackupType: "Archivelog",
+						Hour:       "03:00",
+						Retention:  "1 NUMBERS",
+						WeekDays:   []string{"Tuesday", "Sunday", "Monday", "Saturday", "Wednesday"},
+					},
+				},
+				BlockSize:     8192,
+				Charset:       "AL32UTF8",
+				CPUCount:      2,
+				CreatedAt:     utils.P("2020-05-06T11:39:23.259Z"),
+				DailyCPUUsage: &dailycpuusage,
+				DatafileSize:  6,
+				Dataguard:     true,
+				DbID:          0,
+				DBTime:        &dbtime,
+				Elapsed:       &elapsed,
+				Environment:   "TST",
+				FeatureUsageStats: []model.OracleDatabaseFeatureUsageStat{
+					{
+						CurrentlyUsed:    false,
+						DetectedUsages:   91,
+						ExtraFeatureInfo: "",
+						Feature:          "ADDM",
+						FirstUsageDate:   utils.P("2019-06-24T17:34:20Z"),
+						LastUsageDate:    utils.P("2019-11-09T04:48:23Z"),
+						Product:          "Diagnostics Pack",
+					},
+					{
+						CurrentlyUsed:    false,
+						DetectedUsages:   90,
+						ExtraFeatureInfo: "",
+						Feature:          "AWR Report",
+						FirstUsageDate:   utils.P("2019-06-27T15:15:44Z"),
+						LastUsageDate:    utils.P("2019-11-09T04:48:23Z"),
+						Product:          "Diagnostics Pack",
+					},
+					{
+						CurrentlyUsed:    false,
+						DetectedUsages:   7,
+						ExtraFeatureInfo: "",
+						Feature:          "Automatic Workload Repository",
+						FirstUsageDate:   utils.P("2019-06-27T17:01:09Z"),
+						LastUsageDate:    utils.P("2019-07-02T05:35:05Z"),
+						Product:          "Diagnostics Pack",
+					},
+				},
+				Ha:             true,
+				Hostname:       "test-db2",
+				ID:             utils.Str2oid("5eb2a1eba77f5e4badf8a2cc"),
+				InstanceName:   "pokemons1",
+				InstanceNumber: 1,
+				IsCDB:          true,
+				Licenses: []model.OracleDatabaseLicense{
+					{
+						Count:         0.5,
+						Ignored:       false,
+						LicenseTypeID: "A90611",
+						Name:          "Oracle ENT",
+					},
+					{
+						Count:         0,
+						Ignored:       false,
+						LicenseTypeID: "L103399",
+						Name:          "Oracle STD",
+					},
+					{
+						Count:         0,
+						Ignored:       false,
+						LicenseTypeID: "L104095",
+						Name:          "WebLogic Server Management Pack Enterprise Edition",
+					},
+					{
+						Count:         0.5,
+						Ignored:       false,
+						LicenseTypeID: "A90649",
+						Name:          "Diagnostics Pack",
+					},
+					{
+						Count:         0.5,
+						Ignored:       false,
+						LicenseTypeID: "A90619",
+						Name:          "Real Application Clusters",
+					},
+				},
+				Location:     "Germany",
+				Memory:       90.254,
+				MemoryTarget: 1.484,
+				NCharset:     "AL16UTF16",
+				Name:         "pokemons",
+				Patches:      []model.OracleDatabasePatch{},
+				PDBs: []model.OracleDatabasePluggableDatabase{
+					{
+						Name: "PDB1",
+					},
+				},
+				PGATarget: 53.45,
+				Platform:  "Linux x86 64-bit",
+				PSUs: []model.OracleDatabasePSU{
+					{
+						Date:        "2012-04-16",
+						Description: "PSU 11.2.0.3.2",
+					},
+				},
+				Rac:  true,
+				Role: "",
+				Schemas: []model.OracleDatabaseSchema{
+					{
+						Indexes: 0,
+						LOB:     0,
+						Tables:  192,
+						Total:   192,
+						User:    "RAF",
+					},
+					{
+						Indexes: 0,
+						LOB:     0,
+						Tables:  0,
+						Total:   0,
+						User:    "REMOTE_SCHEDULER_AGENT",
+					},
+				},
+				SegmentAdvisors: []model.OracleDatabaseSegmentAdvisor{
+					{
+						PartitionName:  "iyyiuyyoy",
+						Reclaimable:    0.5,
+						Recommendation: "32b36a77e7481343ef175483c086859e",
+						SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+						SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+						SegmentType:    "TABLE",
+					},
+				},
+				SegmentsSize: 3,
+				Services: []model.OracleDatabaseService{
+					{
+						CreationDate: &creationdate,
+						Enabled:      &enabled,
+						Name:         &name,
+					},
+				},
+				SGAMaxSize: 1.484,
+				SGATarget:  35.32,
+				Status:     "OPEN",
+				Tablespaces: []model.OracleDatabaseTablespace{
+					{
+						MaxSize:  32767.9844,
+						Name:     "SYSTEM",
+						Status:   "ONLINE",
+						Total:    850,
+						Used:     842.875,
+						UsedPerc: 2.57,
+					},
+					{
+						MaxSize:  32767.9844,
+						Name:     "USERS",
+						Status:   "ONLINE",
+						Total:    1024,
+						Used:     576,
+						UsedPerc: 1.76,
+					},
+				},
+				UniqueName: "pokemons",
+				Version:    "12.2.0.1.0 Enterprise Edition",
+				Work:       &work,
 			},
 		}
-		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
+
+		expectedOut := dto.OracleDatabaseResponse{
+			Content: expectedContent,
+			Metadata: dto.PagingMetadata{
+				Empty:         false,
+				First:         true,
+				Last:          true,
+				Number:        0,
+				Size:          2,
+				TotalElements: 2,
+				TotalPages:    0,
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedOut.Content[0]), utils.ToJSON(out.Content[0]))
 	})
 
 	m.T().Run("should_search_return_anything", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabases(false, []string{"foobar"}, "", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabases([]string{"foobar"}, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{}
+		var expectedContent []dto.OracleDatabase = []dto.OracleDatabase{}
+
+		expectedOut := dto.OracleDatabaseResponse{
+			Content: expectedContent,
+			Metadata: dto.PagingMetadata{
+				Empty:         true,
+				First:         true,
+				Last:          true,
+				Number:        0,
+				Size:          0,
+				TotalElements: 0,
+				TotalPages:    0,
+			},
+		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_search_return_found", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabases(false, []string{"pokemon", "test-db2"}, "", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabases([]string{"pokemon", "test-db2"}, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"archivelog":   true,
-				"blockSize":    8192,
-				"cpuCount":     2,
-				"charset":      "AL32UTF8",
-				"createdAt":    utils.P("2020-05-06T13:39:23.259+02:00").Local(),
-				"datafileSize": 6,
-				"dataguard":    true,
-				"environment":  "TST",
-				"ha":           true,
-				"hostname":     "test-db2",
-				"isCDB":        true,
-				"location":     "Germany",
-				"memory":       90.254,
-				"name":         "pokemons",
-				"pdbs":         []interface{}{"PDB1"},
-				"rac":          true,
-				"segmentsSize": 3,
-				"services":     []interface{}{map[string]interface{}{"creationDate": utils.P("2019-06-24T19:34:20+02:00").Local(), "enabled": false, "name": "ECXSERVER"}},
-				"status":       "OPEN",
-				"uniqueName":   "pokemons",
-				"version":      "12.2.0.1.0 Enterprise Edition",
-				"work":         1,
-				"_id":          utils.Str2oid("5eb2a1eba77f5e4badf8a2cc"),
+		var expectedContent []dto.OracleDatabase = []dto.OracleDatabase{
+			{
+				ADDMs: []model.OracleDatabaseAddm{
+					{
+						Action:         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
+						Benefit:        83.34,
+						Finding:        "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
+						Recommendation: "SQL Tuning",
+					},
+					{
+						Action:         "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
+						Benefit:        68.24,
+						Finding:        "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
+						Recommendation: "Segment Tuning",
+					},
+				},
+				ASM:        false,
+				Allocable:  129,
+				Archivelog: true,
+				Backups: []model.OracleDatabaseBackup{
+					{
+						AvgBckSize: 13,
+						BackupType: "Archivelog",
+						Hour:       "01:30",
+						Retention:  "1 NUMBERS",
+						WeekDays:   []string{"Wednesday"},
+					},
+					{
+						AvgBckSize: 45,
+						BackupType: "Archivelog",
+						Hour:       "03:00",
+						Retention:  "1 NUMBERS",
+						WeekDays: []string{"Tuesday",
+							"Sunday",
+							"Monday",
+							"Saturday",
+							"Wednesday",
+						},
+					},
+				},
+				BlockSize:     8192,
+				CPUCount:      2,
+				Charset:       "AL32UTF8",
+				CreatedAt:     utils.P("2020-05-06T11:39:23.259Z"),
+				DBTime:        &dbtime,
+				DailyCPUUsage: &dailycpuusage,
+				DatafileSize:  6,
+				Dataguard:     true,
+				Elapsed:       &elapsed,
+				Environment:   "TST",
+				FeatureUsageStats: []model.OracleDatabaseFeatureUsageStat{
+					{
+						CurrentlyUsed:    false,
+						DetectedUsages:   91,
+						ExtraFeatureInfo: "",
+						Feature:          "ADDM",
+						FirstUsageDate:   utils.P("2019-06-24T17:34:20Z"),
+						LastUsageDate:    utils.P("2019-11-09T04:48:23Z"),
+						Product:          "Diagnostics Pack",
+					},
+					{
+						CurrentlyUsed:    false,
+						DetectedUsages:   90,
+						ExtraFeatureInfo: "",
+						Feature:          "AWR Report",
+						FirstUsageDate:   utils.P("2019-06-27T15:15:44Z"),
+						LastUsageDate:    utils.P("2019-11-09T04:48:23Z"),
+						Product:          "Diagnostics Pack",
+					},
+					{
+						CurrentlyUsed:    false,
+						DetectedUsages:   7,
+						ExtraFeatureInfo: "",
+						Feature:          "Automatic Workload Repository",
+						FirstUsageDate:   utils.P("2019-06-27T17:01:09Z"),
+						LastUsageDate:    utils.P("2019-07-02T05:35:05Z"),
+						Product:          "Diagnostics Pack",
+					},
+				},
+				Ha:             true,
+				Hostname:       "test-db2",
+				InstanceNumber: 1,
+				InstanceName:   "pokemons1",
+				IsCDB:          true,
+				Licenses: []model.OracleDatabaseLicense{
+					{
+						Count:         0.5,
+						Name:          "Oracle ENT",
+						LicenseTypeID: "A90611",
+						Ignored:       false,
+					},
+					{
+						Count:         0,
+						Name:          "Oracle STD",
+						LicenseTypeID: "L103399",
+						Ignored:       false,
+					},
+					{
+						Count:         0,
+						Name:          "WebLogic Server Management Pack Enterprise Edition",
+						LicenseTypeID: "L104095",
+						Ignored:       false,
+					},
+					{
+						Count:         0.5,
+						Name:          "Diagnostics Pack",
+						LicenseTypeID: "A90649",
+						Ignored:       false,
+					},
+					{
+						Count:         0.5,
+						Name:          "Real Application Clusters",
+						LicenseTypeID: "A90619",
+						Ignored:       false,
+					},
+				},
+				Location:     "Germany",
+				Memory:       90.254,
+				MemoryTarget: 1.484,
+				NCharset:     "AL16UTF16",
+				Name:         "pokemons",
+				PDBs: []model.OracleDatabasePluggableDatabase{
+					{
+						Name: "PDB1",
+					},
+				},
+				PGATarget: 53.45,
+				PSUs: []model.OracleDatabasePSU{
+					{
+						Date:        "2012-04-16",
+						Description: "PSU 11.2.0.3.2",
+					},
+				},
+				Patches:    []model.OracleDatabasePatch{},
+				Platform:   "Linux x86 64-bit",
+				Rac:        true,
+				SGAMaxSize: 1.484,
+				SGATarget:  35.32,
+				Schemas: []model.OracleDatabaseSchema{
+					{
+						Indexes: 0,
+						LOB:     0,
+						Tables:  192,
+						Total:   192,
+						User:    "RAF",
+					},
+					{
+						Indexes: 0,
+						LOB:     0,
+						Tables:  0,
+						Total:   0,
+						User:    "REMOTE_SCHEDULER_AGENT",
+					},
+				},
+				SegmentAdvisors: []model.OracleDatabaseSegmentAdvisor{
+					{
+						PartitionName:  "iyyiuyyoy",
+						Reclaimable:    0.5,
+						Recommendation: "32b36a77e7481343ef175483c086859e",
+						SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+						SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+						SegmentType:    "TABLE",
+					},
+				},
+				SegmentsSize: 3,
+				Services: []model.OracleDatabaseService{
+					{
+						CreationDate: &creationdate,
+						Enabled:      &enabled,
+						Name:         &name,
+					},
+				},
+				Status: "OPEN",
+				Tablespaces: []model.OracleDatabaseTablespace{
+					{
+						MaxSize:  32767.9844,
+						Name:     "SYSTEM",
+						Status:   "ONLINE",
+						Total:    850,
+						Used:     842.875,
+						UsedPerc: 2.57,
+					},
+					{
+						MaxSize:  32767.9844,
+						Name:     "USERS",
+						Status:   "ONLINE",
+						Total:    1024,
+						Used:     576,
+						UsedPerc: 1.76,
+					},
+				},
+				UniqueName: "pokemons",
+				Version:    "12.2.0.1.0 Enterprise Edition",
+				Work:       &work,
+				ID:         utils.Str2oid("5eb2a1eba77f5e4badf8a2cc"),
 			},
 		}
 
-		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
-	})
-
-	m.T().Run("notfullmode", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabases(false, []string{""}, "", false, -1, -1, "", "", utils.MAX_TIME)
-		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"archivelog":   false,
-				"blockSize":    8192,
-				"cpuCount":     2,
-				"charset":      "AL32UTF8",
-				"createdAt":    utils.P("2020-04-15T08:46:58.471+02:00").Local(),
-				"datafileSize": 6,
-				"dataguard":    false,
-				"environment":  "TST",
-				"ha":           false,
-				"hostname":     "test-db",
-				"isCDB":        false,
-				"location":     "Germany",
-				"memory":       1.484,
-				"name":         "ERCOLE",
-				"pdbs":         []interface{}{},
-				"rac":          false,
-				"segmentsSize": 3,
-				"services":     []interface{}{},
-				"status":       "OPEN",
-				"uniqueName":   "ERCOLE",
-				"version":      "12.2.0.1.0 Enterprise Edition",
-				"work":         1,
-				"_id":          utils.Str2oid("5e96ade270c184faca93fe36"),
-			},
-			map[string]interface{}{
-				"archivelog":   true,
-				"blockSize":    8192,
-				"cpuCount":     2,
-				"charset":      "AL32UTF8",
-				"createdAt":    utils.P("2020-05-06T13:39:23.259+02:00").Local(),
-				"datafileSize": 6,
-				"dataguard":    true,
-				"environment":  "TST",
-				"ha":           true,
-				"hostname":     "test-db2",
-				"isCDB":        true,
-				"location":     "Germany",
-				"memory":       90.254,
-				"name":         "pokemons",
-				"pdbs":         []interface{}{"PDB1"},
-				"rac":          true,
-				"segmentsSize": 3,
-				"services":     []interface{}{map[string]interface{}{"creationDate": utils.P("2019-06-24T19:34:20+02:00").Local(), "enabled": false, "name": "ECXSERVER"}},
-				"status":       "OPEN",
-				"uniqueName":   "pokemons",
-				"version":      "12.2.0.1.0 Enterprise Edition",
-				"work":         1,
-				"_id":          utils.Str2oid("5eb2a1eba77f5e4badf8a2cc"),
+		expectedOut := dto.OracleDatabaseResponse{
+			Content: expectedContent,
+			Metadata: dto.PagingMetadata{
+				Empty:         false,
+				First:         true,
+				Last:          true,
+				Number:        0,
+				Size:          1,
+				TotalElements: 1,
+				TotalPages:    0,
 			},
 		}
+
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 
 	m.T().Run("fullmode", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabases(true, []string{""}, "memory", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabases([]string{""}, "memory", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedOut interface{} = []interface{}{
-			map[string]interface{}{
-				"addms": []interface{}{
-					map[string]interface{}{
-						"action":         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
-						"benefit":        83.34,
-						"finding":        "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
-						"recommendation": "SQL Tuning",
+		var expectedContent []dto.OracleDatabase = []dto.OracleDatabase{
+			{
+				ADDMs: []model.OracleDatabaseAddm{
+					{
+						Action:         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
+						Benefit:        83.34,
+						Finding:        "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
+						Recommendation: "SQL Tuning",
 					},
-					map[string]interface{}{
-						"action":         "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
-						"benefit":        68.24,
-						"finding":        "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
-						"recommendation": "Segment Tuning",
+					{
+						Action:         "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
+						Benefit:        68.24,
+						Finding:        "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
+						Recommendation: "Segment Tuning",
 					},
 				},
-				"asm":        false,
-				"allocable":  129,
-				"archivelog": false,
-				"backups": []interface{}{
-					map[string]interface{}{
-						"avgBckSize": 13,
-						"backupType": "Archivelog",
-						"hour":       "01:30",
-						"retention":  "1 NUMBERS",
-						"weekDays":   []interface{}{"Wednesday"},
+				ASM:        false,
+				Allocable:  129,
+				Archivelog: false,
+				Backups: []model.OracleDatabaseBackup{
+					{
+						AvgBckSize: 13,
+						BackupType: "Archivelog",
+						Hour:       "01:30",
+						Retention:  "1 NUMBERS",
+						WeekDays:   []string{"Wednesday"},
 					},
-					map[string]interface{}{
-						"avgBckSize": 45,
-						"backupType": "Archivelog",
-						"hour":       "03:00",
-						"retention":  "1 NUMBERS",
-						"weekDays": []interface{}{"Tuesday",
+					{
+						AvgBckSize: 45,
+						BackupType: "Archivelog",
+						Hour:       "03:00",
+						Retention:  "1 NUMBERS",
+						WeekDays: []string{"Tuesday",
 							"Sunday",
 							"Monday",
 							"Saturday",
@@ -304,179 +801,179 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 						},
 					},
 				},
-				"blockSize":     8192,
-				"cpuCount":      2,
-				"charset":       "AL32UTF8",
-				"createdAt":     utils.P("2020-04-15T08:46:58.471+02:00").Local(),
-				"dbTime":        184.81,
-				"dailyCPUUsage": 0.7,
-				"datafileSize":  6,
-				"dataguard":     false,
-				"elapsed":       12059.18,
-				"environment":   "TST",
-				"featureUsageStats": []interface{}{
-					map[string]interface{}{
-						"currentlyUsed":    false,
-						"detectedUsages":   91,
-						"extraFeatureInfo": "",
-						"feature":          "ADDM",
-						"firstUsageDate":   utils.P("2019-06-24T19:34:20+02:00").Local(),
-						"lastUsageDate":    utils.P("2019-11-09T05:48:23+01:00").Local(),
-						"product":          "Diagnostics Pack",
+				BlockSize:     8192,
+				CPUCount:      2,
+				Charset:       "AL32UTF8",
+				CreatedAt:     utils.P("2020-04-15T06:46:58.471Z"),
+				DBTime:        &dbtime,
+				DailyCPUUsage: &dailycpuusage,
+				DatafileSize:  6,
+				Dataguard:     false,
+				Elapsed:       &elapsed,
+				Environment:   "TST",
+				FeatureUsageStats: []model.OracleDatabaseFeatureUsageStat{
+					{
+						CurrentlyUsed:    false,
+						DetectedUsages:   91,
+						ExtraFeatureInfo: "",
+						Feature:          "ADDM",
+						FirstUsageDate:   utils.P("2019-06-24T17:34:20Z"),
+						LastUsageDate:    utils.P("2019-11-09T04:48:23Z"),
+						Product:          "Diagnostics Pack",
 					},
-					map[string]interface{}{
-						"currentlyUsed":    false,
-						"detectedUsages":   90,
-						"extraFeatureInfo": "",
-						"feature":          "AWR Report",
-						"firstUsageDate":   utils.P("2019-06-27T17:15:44+02:00").Local(),
-						"lastUsageDate":    utils.P("2019-11-09T05:48:23+01:00").Local(),
-						"product":          "Diagnostics Pack",
+					{
+						CurrentlyUsed:    false,
+						DetectedUsages:   90,
+						ExtraFeatureInfo: "",
+						Feature:          "AWR Report",
+						FirstUsageDate:   utils.P("2019-06-27T15:15:44Z"),
+						LastUsageDate:    utils.P("2019-11-09T04:48:23Z"),
+						Product:          "Diagnostics Pack",
 					},
-					map[string]interface{}{
-						"currentlyUsed":    false,
-						"detectedUsages":   7,
-						"extraFeatureInfo": "",
-						"feature":          "Automatic Workload Repository",
-						"firstUsageDate":   utils.P("2019-06-27T19:01:09+02:00").Local(),
-						"lastUsageDate":    utils.P("2019-07-02T07:35:05+02:00").Local(),
-						"product":          "Diagnostics Pack",
-					},
-				},
-				"ha":             false,
-				"hostname":       "test-db",
-				"instanceNumber": 1,
-				"instanceName":   "ERCOLE1",
-				"isCDB":          false,
-				"licenses": []interface{}{
-					map[string]interface{}{
-						"count":         0.5,
-						"name":          "Oracle ENT",
-						"licenseTypeID": "A90611",
-						"ignored":       false,
-					},
-					map[string]interface{}{
-						"count":         0,
-						"name":          "Oracle STD",
-						"licenseTypeID": "L103399",
-						"ignored":       false,
-					},
-					map[string]interface{}{
-						"count":         0,
-						"name":          "WebLogic Server Management Pack Enterprise Edition",
-						"licenseTypeID": "L104095",
-						"ignored":       false,
-					},
-					map[string]interface{}{
-						"count":         0.5,
-						"name":          "Diagnostics Pack",
-						"licenseTypeID": "A90649",
-						"ignored":       false,
+					{
+						CurrentlyUsed:    false,
+						DetectedUsages:   7,
+						ExtraFeatureInfo: "",
+						Feature:          "Automatic Workload Repository",
+						FirstUsageDate:   utils.P("2019-06-27T17:01:09Z"),
+						LastUsageDate:    utils.P("2019-07-02T05:35:05Z"),
+						Product:          "Diagnostics Pack",
 					},
 				},
-				"location":     "Germany",
-				"memory":       1.484,
-				"memoryTarget": 1.484,
-				"nCharset":     "AL16UTF16",
-				"name":         "ERCOLE",
-				"pdbs":         []interface{}{},
-				"pgaTarget":    0,
-				"psus": []interface{}{
-					map[string]interface{}{
-						"date":        "2012-04-16",
-						"description": "PSU 11.2.0.3.2",
+				Ha:             false,
+				Hostname:       "test-db",
+				InstanceNumber: 1,
+				InstanceName:   "ERCOLE1",
+				IsCDB:          false,
+				Licenses: []model.OracleDatabaseLicense{
+					{
+						Count:         0.5,
+						Name:          "Oracle ENT",
+						LicenseTypeID: "A90611",
+						Ignored:       false,
+					},
+					{
+						Count:         0,
+						Name:          "Oracle STD",
+						LicenseTypeID: "L103399",
+						Ignored:       false,
+					},
+					{
+						Count:         0,
+						Name:          "WebLogic Server Management Pack Enterprise Edition",
+						LicenseTypeID: "L104095",
+						Ignored:       false,
+					},
+					{
+						Count:         0.5,
+						Name:          "Diagnostics Pack",
+						LicenseTypeID: "A90649",
+						Ignored:       false,
 					},
 				},
-				"patches":    []interface{}{},
-				"platform":   "Linux x86 64-bit",
-				"rac":        false,
-				"sgaMaxSize": 1.484,
-				"sgaTarget":  0,
-				"schemas": []interface{}{
-					map[string]interface{}{
-						"indexes": 0,
-						"lob":     0,
-						"tables":  192,
-						"total":   192,
-						"user":    "RAF",
-					},
-					map[string]interface{}{
-						"indexes": 0,
-						"lob":     0,
-						"tables":  0,
-						"total":   0,
-						"user":    "REMOTE_SCHEDULER_AGENT",
+				Location:     "Germany",
+				Memory:       1.484,
+				MemoryTarget: 1.484,
+				NCharset:     "AL16UTF16",
+				Name:         "ERCOLE",
+				PDBs:         []model.OracleDatabasePluggableDatabase{},
+				PGATarget:    0,
+				PSUs: []model.OracleDatabasePSU{
+					{
+						Date:        "2012-04-16",
+						Description: "PSU 11.2.0.3.2",
 					},
 				},
-				"segmentAdvisors": []interface{}{
-					map[string]interface{}{
-						"partitionName":  "iyyiuyyoy",
-						"reclaimable":    0.5,
-						"recommendation": "32b36a77e7481343ef175483c086859e",
-						"segmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-						"segmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-						"segmentType":    "TABLE",
+				Patches:    []model.OracleDatabasePatch{},
+				Platform:   "Linux x86 64-bit",
+				Rac:        false,
+				SGAMaxSize: 1.484,
+				SGATarget:  0,
+				Schemas: []model.OracleDatabaseSchema{
+					{
+						Indexes: 0,
+						LOB:     0,
+						Tables:  192,
+						Total:   192,
+						User:    "RAF",
+					},
+					{
+						Indexes: 0,
+						LOB:     0,
+						Tables:  0,
+						Total:   0,
+						User:    "REMOTE_SCHEDULER_AGENT",
 					},
 				},
-				"segmentsSize": 3,
-				"services":     []interface{}{},
-				"status":       "OPEN",
-				"tablespaces": []interface{}{
-					map[string]interface{}{
-						"maxSize":  32767.9844,
-						"name":     "SYSTEM",
-						"status":   "ONLINE",
-						"total":    850,
-						"used":     842.875,
-						"usedPerc": 2.57,
-					},
-					map[string]interface{}{
-						"maxSize":  32767.9844,
-						"name":     "USERS",
-						"status":   "ONLINE",
-						"total":    1024,
-						"used":     576,
-						"usedPerc": 1.76,
+				SegmentAdvisors: []model.OracleDatabaseSegmentAdvisor{
+					{
+						PartitionName:  "iyyiuyyoy",
+						Reclaimable:    0.5,
+						Recommendation: "32b36a77e7481343ef175483c086859e",
+						SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+						SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+						SegmentType:    "TABLE",
 					},
 				},
-				"tags":       []interface{}{"foobar"},
-				"uniqueName": "ERCOLE",
-				"version":    "12.2.0.1.0 Enterprise Edition",
-				"work":       1,
-				"_id":        utils.Str2oid("5e96ade270c184faca93fe36"),
+				SegmentsSize: 3,
+				Services:     []model.OracleDatabaseService{},
+				Status:       "OPEN",
+				Tablespaces: []model.OracleDatabaseTablespace{
+					{
+						MaxSize:  32767.9844,
+						Name:     "SYSTEM",
+						Status:   "ONLINE",
+						Total:    850,
+						Used:     842.875,
+						UsedPerc: 2.57,
+					},
+					{
+						MaxSize:  32767.9844,
+						Name:     "USERS",
+						Status:   "ONLINE",
+						Total:    1024,
+						Used:     576,
+						UsedPerc: 1.76,
+					},
+				},
+				Tags:       []string{"foobar"},
+				UniqueName: "ERCOLE",
+				Version:    "12.2.0.1.0 Enterprise Edition",
+				Work:       &work,
+				ID:         utils.Str2oid("5e96ade270c184faca93fe36"),
 			},
-			map[string]interface{}{
-				"addms": []interface{}{
-					map[string]interface{}{
-						"action":         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
-						"benefit":        83.34,
-						"finding":        "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
-						"recommendation": "SQL Tuning",
+			{
+				ADDMs: []model.OracleDatabaseAddm{
+					{
+						Action:         "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".",
+						Benefit:        83.34,
+						Finding:        "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.",
+						Recommendation: "SQL Tuning",
 					},
-					map[string]interface{}{
-						"action":         "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
-						"benefit":        68.24,
-						"finding":        "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
-						"recommendation": "Segment Tuning",
+					{
+						Action:         "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.",
+						Benefit:        68.24,
+						Finding:        "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.",
+						Recommendation: "Segment Tuning",
 					},
 				},
-				"asm":        false,
-				"allocable":  129,
-				"archivelog": true,
-				"backups": []interface{}{
-					map[string]interface{}{
-						"avgBckSize": 13,
-						"backupType": "Archivelog",
-						"hour":       "01:30",
-						"retention":  "1 NUMBERS",
-						"weekDays":   []interface{}{"Wednesday"},
+				ASM:        false,
+				Allocable:  129,
+				Archivelog: true,
+				Backups: []model.OracleDatabaseBackup{
+					{
+						AvgBckSize: 13,
+						BackupType: "Archivelog",
+						Hour:       "01:30",
+						Retention:  "1 NUMBERS",
+						WeekDays:   []string{"Wednesday"},
 					},
-					map[string]interface{}{
-						"avgBckSize": 45,
-						"backupType": "Archivelog",
-						"hour":       "03:00",
-						"retention":  "1 NUMBERS",
-						"weekDays": []interface{}{"Tuesday",
+					{
+						AvgBckSize: 45,
+						BackupType: "Archivelog",
+						Hour:       "03:00",
+						Retention:  "1 NUMBERS",
+						WeekDays: []string{"Tuesday",
 							"Sunday",
 							"Monday",
 							"Saturday",
@@ -484,153 +981,177 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 						},
 					},
 				},
-				"blockSize":     8192,
-				"cpuCount":      2,
-				"charset":       "AL32UTF8",
-				"createdAt":     utils.P("2020-05-06T13:39:23.259+02:00").Local(),
-				"dbTime":        184.81,
-				"dailyCPUUsage": 0.7,
-				"datafileSize":  6,
-				"dataguard":     true,
-				"elapsed":       12059.18,
-				"environment":   "TST",
-				"featureUsageStats": []interface{}{
-					map[string]interface{}{
-						"currentlyUsed":    false,
-						"detectedUsages":   91,
-						"extraFeatureInfo": "",
-						"feature":          "ADDM",
-						"firstUsageDate":   utils.P("2019-06-24T19:34:20+02:00").Local(),
-						"lastUsageDate":    utils.P("2019-11-09T05:48:23+01:00").Local(),
-						"product":          "Diagnostics Pack",
+				BlockSize:     8192,
+				CPUCount:      2,
+				Charset:       "AL32UTF8",
+				CreatedAt:     utils.P("2020-05-06T11:39:23.259Z"),
+				DBTime:        &dbtime,
+				DailyCPUUsage: &dailycpuusage,
+				DatafileSize:  6,
+				Dataguard:     true,
+				Elapsed:       &elapsed,
+				Environment:   "TST",
+				FeatureUsageStats: []model.OracleDatabaseFeatureUsageStat{
+					{
+						CurrentlyUsed:    false,
+						DetectedUsages:   91,
+						ExtraFeatureInfo: "",
+						Feature:          "ADDM",
+						FirstUsageDate:   utils.P("2019-06-24T17:34:20Z"),
+						LastUsageDate:    utils.P("2019-11-09T04:48:23Z"),
+						Product:          "Diagnostics Pack",
 					},
-					map[string]interface{}{
-						"currentlyUsed":    false,
-						"detectedUsages":   90,
-						"extraFeatureInfo": "",
-						"feature":          "AWR Report",
-						"firstUsageDate":   utils.P("2019-06-27T17:15:44+02:00").Local(),
-						"lastUsageDate":    utils.P("2019-11-09T05:48:23+01:00").Local(),
-						"product":          "Diagnostics Pack",
+					{
+						CurrentlyUsed:    false,
+						DetectedUsages:   90,
+						ExtraFeatureInfo: "",
+						Feature:          "AWR Report",
+						FirstUsageDate:   utils.P("2019-06-27T15:15:44Z"),
+						LastUsageDate:    utils.P("2019-11-09T04:48:23Z"),
+						Product:          "Diagnostics Pack",
 					},
-					map[string]interface{}{
-						"currentlyUsed":    false,
-						"detectedUsages":   7,
-						"extraFeatureInfo": "",
-						"feature":          "Automatic Workload Repository",
-						"firstUsageDate":   utils.P("2019-06-27T19:01:09+02:00").Local(),
-						"lastUsageDate":    utils.P("2019-07-02T07:35:05+02:00").Local(),
-						"product":          "Diagnostics Pack",
-					},
-				},
-				"ha":             true,
-				"hostname":       "test-db2",
-				"instanceNumber": 1,
-				"instanceName":   "pokemons1",
-				"isCDB":          true,
-				"licenses": []interface{}{
-					map[string]interface{}{
-						"count":         0.5,
-						"name":          "Oracle ENT",
-						"licenseTypeID": "A90611",
-						"ignored":       false,
-					},
-					map[string]interface{}{
-						"count":         0,
-						"name":          "Oracle STD",
-						"licenseTypeID": "L103399",
-						"ignored":       false,
-					},
-					map[string]interface{}{
-						"count":         0,
-						"name":          "WebLogic Server Management Pack Enterprise Edition",
-						"licenseTypeID": "L104095",
-						"ignored":       false,
-					},
-					map[string]interface{}{
-						"count":         0.5,
-						"name":          "Diagnostics Pack",
-						"licenseTypeID": "A90649",
-						"ignored":       false,
-					},
-					map[string]interface{}{
-						"count":         0.5,
-						"name":          "Real Application Clusters",
-						"licenseTypeID": "A90619",
-						"ignored":       false,
+					{
+						CurrentlyUsed:    false,
+						DetectedUsages:   7,
+						ExtraFeatureInfo: "",
+						Feature:          "Automatic Workload Repository",
+						FirstUsageDate:   utils.P("2019-06-27T17:01:09Z"),
+						LastUsageDate:    utils.P("2019-07-02T05:35:05Z"),
+						Product:          "Diagnostics Pack",
 					},
 				},
-				"location":     "Germany",
-				"memory":       90.254,
-				"memoryTarget": 1.484,
-				"nCharset":     "AL16UTF16",
-				"name":         "pokemons",
-				"pdbs":         []interface{}{"PDB1"},
-				"pgaTarget":    53.45,
-				"psus": []interface{}{
-					map[string]interface{}{
-						"date":        "2012-04-16",
-						"description": "PSU 11.2.0.3.2",
+				Ha:             true,
+				Hostname:       "test-db2",
+				InstanceNumber: 1,
+				InstanceName:   "pokemons1",
+				IsCDB:          true,
+				Licenses: []model.OracleDatabaseLicense{
+					{
+						Count:         0.5,
+						Name:          "Oracle ENT",
+						LicenseTypeID: "A90611",
+						Ignored:       false,
+					},
+					{
+						Count:         0,
+						Name:          "Oracle STD",
+						LicenseTypeID: "L103399",
+						Ignored:       false,
+					},
+					{
+						Count:         0,
+						Name:          "WebLogic Server Management Pack Enterprise Edition",
+						LicenseTypeID: "L104095",
+						Ignored:       false,
+					},
+					{
+						Count:         0.5,
+						Name:          "Diagnostics Pack",
+						LicenseTypeID: "A90649",
+						Ignored:       false,
+					},
+					{
+						Count:         0.5,
+						Name:          "Real Application Clusters",
+						LicenseTypeID: "A90619",
+						Ignored:       false,
 					},
 				},
-				"patches":    []interface{}{},
-				"platform":   "Linux x86 64-bit",
-				"rac":        true,
-				"sgaMaxSize": 1.484,
-				"sgaTarget":  35.32,
-				"schemas": []interface{}{
-					map[string]interface{}{
-						"indexes": 0,
-						"lob":     0,
-						"tables":  192,
-						"total":   192,
-						"user":    "RAF",
-					},
-					map[string]interface{}{
-						"indexes": 0,
-						"lob":     0,
-						"tables":  0,
-						"total":   0,
-						"user":    "REMOTE_SCHEDULER_AGENT",
+				Location:     "Germany",
+				Memory:       90.254,
+				MemoryTarget: 1.484,
+				NCharset:     "AL16UTF16",
+				Name:         "pokemons",
+				PDBs: []model.OracleDatabasePluggableDatabase{
+					{
+						Name: "PDB1",
 					},
 				},
-				"segmentAdvisors": []interface{}{
-					map[string]interface{}{
-						"partitionName":  "iyyiuyyoy",
-						"reclaimable":    0.5,
-						"recommendation": "32b36a77e7481343ef175483c086859e",
-						"segmentName":    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
-						"segmentOwner":   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
-						"segmentType":    "TABLE",
+				PGATarget: 53.45,
+				PSUs: []model.OracleDatabasePSU{
+					{
+						Date:        "2012-04-16",
+						Description: "PSU 11.2.0.3.2",
 					},
 				},
-				"segmentsSize": 3,
-				"services":     []interface{}{map[string]interface{}{"creationDate": utils.P("2019-06-24T19:34:20+02:00").Local(), "enabled": false, "name": "ECXSERVER"}},
-				"status":       "OPEN",
-				"tablespaces": []interface{}{
-					map[string]interface{}{
-						"maxSize":  32767.9844,
-						"name":     "SYSTEM",
-						"status":   "ONLINE",
-						"total":    850,
-						"used":     842.875,
-						"usedPerc": 2.57,
+				Patches:    []model.OracleDatabasePatch{},
+				Platform:   "Linux x86 64-bit",
+				Rac:        true,
+				SGAMaxSize: 1.484,
+				SGATarget:  35.32,
+				Schemas: []model.OracleDatabaseSchema{
+					{
+						Indexes: 0,
+						LOB:     0,
+						Tables:  192,
+						Total:   192,
+						User:    "RAF",
 					},
-					map[string]interface{}{
-						"maxSize":  32767.9844,
-						"name":     "USERS",
-						"status":   "ONLINE",
-						"total":    1024,
-						"used":     576,
-						"usedPerc": 1.76,
+					{
+						Indexes: 0,
+						LOB:     0,
+						Tables:  0,
+						Total:   0,
+						User:    "REMOTE_SCHEDULER_AGENT",
 					},
 				},
-				"uniqueName": "pokemons",
-				"version":    "12.2.0.1.0 Enterprise Edition",
-				"work":       1,
-				"_id":        utils.Str2oid("5eb2a1eba77f5e4badf8a2cc"),
+				SegmentAdvisors: []model.OracleDatabaseSegmentAdvisor{
+					{
+						PartitionName:  "iyyiuyyoy",
+						Reclaimable:    0.5,
+						Recommendation: "32b36a77e7481343ef175483c086859e",
+						SegmentName:    "pasta-973e4d1f937da4d9bc1b092f934ab0ec",
+						SegmentOwner:   "Brittany-424f6a749eef846fa40a1ad1ee3d3674",
+						SegmentType:    "TABLE",
+					},
+				},
+				SegmentsSize: 3,
+				Services: []model.OracleDatabaseService{
+					{
+						CreationDate: &creationdate,
+						Enabled:      &enabled,
+						Name:         &name,
+					},
+				},
+				Status: "OPEN",
+				Tablespaces: []model.OracleDatabaseTablespace{
+					{
+						MaxSize:  32767.9844,
+						Name:     "SYSTEM",
+						Status:   "ONLINE",
+						Total:    850,
+						Used:     842.875,
+						UsedPerc: 2.57,
+					},
+					{
+						MaxSize:  32767.9844,
+						Name:     "USERS",
+						Status:   "ONLINE",
+						Total:    1024,
+						Used:     576,
+						UsedPerc: 1.76,
+					},
+				},
+				UniqueName: "pokemons",
+				Version:    "12.2.0.1.0 Enterprise Edition",
+				Work:       &work,
+				ID:         utils.Str2oid("5eb2a1eba77f5e4badf8a2cc"),
 			},
 		}
+
+		expectedOut := dto.OracleDatabaseResponse{
+			Content: expectedContent,
+			Metadata: dto.PagingMetadata{
+				Empty:         false,
+				First:         true,
+				Last:          true,
+				Number:        0,
+				Size:          2,
+				TotalElements: 2,
+				TotalPages:    0,
+			},
+		}
+
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))
 	})
 }

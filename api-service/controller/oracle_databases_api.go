@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -327,9 +327,9 @@ func (ctrl *APIController) SearchOracleDatabasesJSON(w http.ResponseWriter, r *h
 	}
 
 	if filter.PageNumber == -1 || filter.PageSize == -1 {
-		utils.WriteJSONResponse(w, http.StatusOK, databases)
+		utils.WriteJSONResponse(w, http.StatusOK, databases.Content)
 	} else {
-		utils.WriteJSONResponse(w, http.StatusOK, databases[0])
+		utils.WriteJSONResponse(w, http.StatusOK, databases)
 	}
 }
 

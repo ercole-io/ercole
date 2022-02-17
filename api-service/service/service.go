@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ type APIServiceInterface interface {
 	SearchOracleDatabasePatchAdvisors(search string, sortBy string, sortDesc bool, page int, pageSize int, windowTime time.Time, location string, environment string, olderThan time.Time, status string) (*dto.PatchAdvisorResponse, error)
 	SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime time.Time, filter dto.GlobalFilter) (*excelize.File, error)
 	// SearchOracleDatabases search databases
-	SearchOracleDatabases(filter dto.SearchOracleDatabasesFilter) ([]map[string]interface{}, error)
+	SearchOracleDatabases(filter dto.SearchOracleDatabasesFilter) (*dto.OracleDatabaseResponse, error)
 	// SearchOracleDatabases search databases
 	SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabasesFilter) (*excelize.File, error)
 	// SearchOracleExadata search exadata

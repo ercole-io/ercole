@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,13 +19,73 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
+type OracleDatabaseResponse struct {
+	Content  []OracleDatabase `json:"content" bson:"content"`
+	Metadata PagingMetadata   `json:"metadata" bson:"metadata"`
+}
+
+// OracleDatabase holds information about an Oracle database.
+type OracleDatabase struct {
+	ID                primitive.ObjectID                      `json:"id" bson:"_id"`
+	Hostname          string                                  `json:"hostname" bson:"hostname"`
+	Environment       string                                  `json:"environment" bson:"environment"`
+	Location          string                                  `json:"location" bson:"location"`
+	InstanceNumber    int                                     `json:"instanceNumber" bson:"instanceNumber"`
+	InstanceName      string                                  `json:"instanceName" bson:"instanceName"`
+	Name              string                                  `json:"name" bson:"name"`
+	UniqueName        string                                  `json:"uniqueName" bson:"uniqueName"`
+	Status            string                                  `json:"status" bson:"status"`
+	DbID              uint                                    `json:"dbID" bson:"dbID"`
+	Role              string                                  `json:"role" bson:"role"`
+	IsCDB             bool                                    `json:"isCDB" bson:"isCDB"`
+	Version           string                                  `json:"version" bson:"version"`
+	Platform          string                                  `json:"platform" bson:"platform"`
+	Archivelog        bool                                    `json:"archivelog" bson:"archivelog"`
+	Charset           string                                  `json:"charset" bson:"charset"`
+	NCharset          string                                  `json:"nCharset" bson:"nCharset"`
+	BlockSize         int                                     `json:"blockSize" bson:"blockSize"`
+	CPUCount          int                                     `json:"cpuCount" bson:"cpuCount"`
+	SGATarget         float64                                 `json:"sgaTarget" bson:"sgaTarget"`
+	PGATarget         float64                                 `json:"pgaTarget" bson:"pgaTarget"`
+	MemoryTarget      float64                                 `json:"memoryTarget" bson:"memoryTarget"`
+	Memory            float64                                 `json:"memory" bson:"memory"`
+	SGAMaxSize        float64                                 `json:"sgaMaxSize" bson:"sgaMaxSize"`
+	SegmentsSize      float64                                 `json:"segmentsSize" bson:"segmentsSize"`
+	DatafileSize      float64                                 `json:"datafileSize" bson:"datafileSize"`
+	Allocable         float64                                 `json:"allocable" bson:"allocable"`
+	Elapsed           *float64                                `json:"elapsed" bson:"elapsed"`
+	DBTime            *float64                                `json:"dbTime" bson:"dbTime"`
+	DailyCPUUsage     *float64                                `json:"dailyCPUUsage" bson:"dailyCPUUsage"`
+	Work              *float64                                `json:"work" bson:"work"`
+	ASM               bool                                    `json:"asm" bson:"asm"`
+	Dataguard         bool                                    `json:"dataguard" bson:"dataguard"`
+	Rac               bool                                    `json:"rac" bson:"rac"`
+	Ha                bool                                    `json:"ha" bson:"ha"`
+	Tags              []string                                `json:"tags" bson:"tags"`
+	CreatedAt         time.Time                               `json:"createdAt" bson:"createdAt"`
+	Patches           []model.OracleDatabasePatch             `json:"patches" bson:"patches"`
+	Tablespaces       []model.OracleDatabaseTablespace        `json:"tablespaces" bson:"tablespaces"`
+	Schemas           []model.OracleDatabaseSchema            `json:"schemas" bson:"schemas"`
+	Licenses          []model.OracleDatabaseLicense           `json:"licenses" bson:"licenses"`
+	ADDMs             []model.OracleDatabaseAddm              `json:"addms" bson:"addms"`
+	SegmentAdvisors   []model.OracleDatabaseSegmentAdvisor    `json:"segmentAdvisors" bson:"segmentAdvisors"`
+	PSUs              []model.OracleDatabasePSU               `json:"psus" bson:"psus"`
+	Backups           []model.OracleDatabaseBackup            `json:"backups" bson:"backups"`
+	FeatureUsageStats []model.OracleDatabaseFeatureUsageStat  `json:"featureUsageStats" bson:"featureUsageStats"`
+	PDBs              []model.OracleDatabasePluggableDatabase `json:"pdbs" bson:"pdbs"`
+	Services          []model.OracleDatabaseService           `json:"services" bson:"services"`
+	Changes           []model.Changes                         `json:"changes" bson:"changes"`
+	OtherInfo         map[string]interface{}                  `json:"-" bson:"-"`
+}
 
 type SearchOracleDatabasesFilter struct {
 	GlobalFilter
 
-	Full       bool
 	Search     string
 	SortBy     string
 	SortDesc   bool
@@ -41,10 +101,6 @@ func GetSearchOracleDatabasesFilter(r *http.Request) (f *SearchOracleDatabasesFi
 		return nil, err
 	}
 	f.GlobalFilter = *gf
-
-	if f.Full, err = utils.Str2bool(r.URL.Query().Get("full"), false); err != nil {
-		return nil, err
-	}
 
 	f.Search = r.URL.Query().Get("search")
 	f.SortBy = r.URL.Query().Get("sort-by")

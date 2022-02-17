@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@ func (as *APIService) SearchDatabases(filter dto.GlobalFilter) ([]dto.Database, 
 func (as *APIService) getOracleDatabases(filter dto.GlobalFilter) ([]dto.Database, error) {
 	sodf := dto.SearchOracleDatabasesFilter{
 		GlobalFilter: filter,
-		Full:         false,
 		PageNumber:   -1,
 		PageSize:     -1,
 	}
@@ -58,20 +57,20 @@ func (as *APIService) getOracleDatabases(filter dto.GlobalFilter) ([]dto.Databas
 	}
 
 	dbs := make([]dto.Database, 0)
-	for _, oracleDb := range oracleDbs {
+	for _, oracleDb := range oracleDbs.Content {
 		db := dto.Database{
-			Name:             oracleDb["name"].(string),
+			Name:             oracleDb.Name,
 			Type:             model.TechnologyOracleDatabase,
-			Version:          oracleDb["version"].(string),
-			Hostname:         oracleDb["hostname"].(string),
-			Environment:      oracleDb["environment"].(string),
-			Charset:          oracleDb["charset"].(string),
-			Memory:           oracleDb["memory"].(float64),
-			DatafileSize:     oracleDb["datafileSize"].(float64),
-			SegmentsSize:     oracleDb["segmentsSize"].(float64),
-			Archivelog:       oracleDb["archivelog"].(bool),
-			HighAvailability: oracleDb["ha"].(bool),
-			DisasterRecovery: oracleDb["dataguard"].(bool),
+			Version:          oracleDb.Version,
+			Hostname:         oracleDb.Hostname,
+			Environment:      oracleDb.Environment,
+			Charset:          oracleDb.Charset,
+			Memory:           oracleDb.Memory,
+			DatafileSize:     oracleDb.DatafileSize,
+			SegmentsSize:     oracleDb.SegmentsSize,
+			Archivelog:       oracleDb.Archivelog,
+			HighAvailability: oracleDb.Ha,
+			DisasterRecovery: oracleDb.Dataguard,
 		}
 
 		dbs = append(dbs, db)
