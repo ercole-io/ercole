@@ -109,7 +109,6 @@ func (v OracleDatabase) CoreFactor(host Host, hostCoreFactor float64) (float64, 
 		host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyVmware ||
 		host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyVmother ||
 		host.HardwareAbstractionTechnology == HardwareAbstractionTechnologyKvm {
-
 		if dbEdition == OracleDatabaseEditionExtreme || dbEdition == OracleDatabaseEditionEnterprise {
 			return hostCoreFactor, nil
 		}
@@ -161,5 +160,6 @@ func DatabaseSliceAsMap(dbs []OracleDatabase) map[string]OracleDatabase {
 	for _, db := range dbs {
 		out[db.Name] = db
 	}
+
 	return out
 }

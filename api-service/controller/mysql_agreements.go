@@ -85,6 +85,7 @@ func (ctrl *APIController) UpdateMySQLAgreement(w http.ResponseWriter, r *http.R
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	}
+
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -139,6 +140,7 @@ func (ctrl *APIController) DeleteMySQLAgreement(w http.ResponseWriter, r *http.R
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	}
+
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return

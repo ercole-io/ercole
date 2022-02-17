@@ -42,19 +42,19 @@ func (ctrl *APIController) SearchOracleDatabaseAddms(w http.ResponseWriter, r *h
 
 // SearchOracleDatabaseAddmsJSON search addms data using the filters in the request returning it in JSON format
 func (ctrl *APIController) SearchOracleDatabaseAddmsJSON(w http.ResponseWriter, r *http.Request) {
-	var search string
-	var sortBy string
+	var search, sortBy, location, environment string
+
 	var sortDesc bool
-	var pageNumber int
-	var pageSize int
-	var location string
-	var environment string
+
+	var pageNumber, pageSize int
+
 	var olderThan time.Time
 
 	var err error
 	//parse the query params
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
+
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -64,6 +64,7 @@ func (ctrl *APIController) SearchOracleDatabaseAddmsJSON(w http.ResponseWriter, 
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -95,9 +96,8 @@ func (ctrl *APIController) SearchOracleDatabaseAddmsJSON(w http.ResponseWriter, 
 
 // SearchOracleDatabaseAddmsXLSX search addms data using the filters in the request returning it in XLSX format
 func (ctrl *APIController) SearchOracleDatabaseAddmsXLSX(w http.ResponseWriter, r *http.Request) {
-	var search string
-	var location string
-	var environment string
+	var search, location, environment string
+
 	var olderThan time.Time
 
 	var err error
@@ -155,17 +155,17 @@ func (ctrl *APIController) SearchOracleDatabaseSegmentAdvisors(w http.ResponseWr
 
 // SearchOracleDatabaseSegmentAdvisorsJSON search segment advisors data using the filters in the request returning it in JSON format
 func (ctrl *APIController) SearchOracleDatabaseSegmentAdvisorsJSON(w http.ResponseWriter, r *http.Request) {
-	var search string
-	var sortBy string
+	var search, sortBy, location, environment string
+
 	var sortDesc bool
-	var location string
-	var environment string
+
 	var olderThan time.Time
 
 	var err error
 
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
+
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -222,20 +222,19 @@ func (ctrl *APIController) SearchOracleDatabasePatchAdvisors(w http.ResponseWrit
 
 // SearchOracleDatabasePatchAdvisorsJSON search patch advisors data using the filters in the request returning it in JSON format
 func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsJSON(w http.ResponseWriter, r *http.Request) {
-	var search string
-	var sortBy string
+	var search, sortBy, location, environment, status string
+
 	var sortDesc bool
-	var pageNumber int
-	var pageSize int
-	var windowTime int
-	var location string
-	var environment string
+
+	var pageNumber, pageSize, windowTime int
+
 	var olderThan time.Time
-	var status string
+
 	var err error
 	//parse the query params
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
+
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -245,14 +244,17 @@ func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsJSON(w http.Response
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	if windowTime, err = utils.Str2int(r.URL.Query().Get("window-time"), 6); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	status = r.URL.Query().Get("status")
 	if status != "" && status != "OK" && status != "KO" {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(errors.New("invalid status"), "Invalid  status"))
@@ -280,6 +282,7 @@ func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsJSON(w http.Response
 // SearchOracleDatabasePatchAdvisorsXLSX search patch advisors data using the filters in the request returning it in XLSX format
 func (ctrl *APIController) SearchOracleDatabasePatchAdvisorsXLSX(w http.ResponseWriter, r *http.Request) {
 	var windowTime int
+
 	filter, err := dto.GetGlobalFilter(r)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
@@ -346,31 +349,36 @@ func (ctrl *APIController) SearchOracleDatabasesXLSX(w http.ResponseWriter, r *h
 
 // SearchOracleDatabaseUsedLicenses search licenses consumed by the hosts using the filters in the request
 func (ctrl *APIController) SearchOracleDatabaseUsedLicenses(w http.ResponseWriter, r *http.Request) {
-	var sortBy string
+	var sortBy, location, environment string
+
 	var sortDesc bool
-	var pageNumber int
-	var pageSize int
-	var location string
-	var environment string
+
+	var pageNumber, pageSize int
+
 	var olderThan time.Time
 
 	var err error
 
 	sortBy = r.URL.Query().Get("sort-by")
+
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	if pageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
+
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return

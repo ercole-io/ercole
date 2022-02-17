@@ -68,6 +68,7 @@ func migrateHostsAddFieldDismissedAtArchivedTrueWithFalse(db *mongo.Database) er
 	ctx := context.TODO()
 	filter := bson.M{"archived": false}
 	update := bson.M{"$set": bson.M{"dismissedAt": nil}}
+
 	var out map[string]interface{}
 
 	cursor, err := db.Collection(collection).Find(
@@ -82,6 +83,7 @@ func migrateHostsAddFieldDismissedAtArchivedTrueWithFalse(db *mongo.Database) er
 		if err := cursor.Decode(&out); err != nil {
 			return nil
 		}
+
 		filterUpd := bson.M{"hostname": out["hostname"]}
 
 		if _, err := db.Collection(collection).UpdateMany(ctx, filterUpd, update); err != nil {

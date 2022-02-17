@@ -23,10 +23,12 @@ import (
 
 func (as *ThunderService) AddOciProfile(profile model.OciProfile) (*model.OciProfile, error) {
 	profile.ID = as.NewObjectID()
+
 	err := as.Database.AddOciProfile(profile)
 	if err != nil {
 		return nil, err
 	}
+
 	return &profile, nil
 }
 
@@ -42,6 +44,7 @@ func (as *ThunderService) GetOciProfiles() ([]model.OciProfile, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return oracle_cloud_profile, nil
 }
 
@@ -50,6 +53,7 @@ func (as *ThunderService) GetMapOciProfiles() (map[primitive.ObjectID]model.OciP
 	if err != nil {
 		return nil, err
 	}
+
 	return oracle_cloud_profile_with_id, nil
 }
 
@@ -57,5 +61,6 @@ func (as *ThunderService) DeleteOciProfile(id primitive.ObjectID) error {
 	if err := as.Database.DeleteOciProfile(id); err != nil {
 		return err
 	}
+
 	return nil
 }

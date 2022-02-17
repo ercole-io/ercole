@@ -26,6 +26,7 @@ linters:
     - unused
     - varcheck
     - unparam
+    - wsl
 
 severity:
   default-severity: error

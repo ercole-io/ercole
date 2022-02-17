@@ -88,6 +88,7 @@ func NewSearchHostsFilters() SearchHostsFilters {
 
 func GetSearchHostFilters(r *http.Request) (*SearchHostsFilters, error) {
 	f := SearchHostsFilters{}
+
 	var err error
 
 	f.Search = strings.Split(r.URL.Query().Get("search"), " ")
@@ -117,27 +118,34 @@ func GetSearchHostFilters(r *http.Request) (*SearchHostsFilters, error) {
 	f.Database = r.URL.Query().Get("database")
 	f.Technology = r.URL.Query().Get("technology")
 	f.HardwareAbstractionTechnology = r.URL.Query().Get("hardware-abstraction-technology")
+
 	if r.URL.Query().Get("cluster") == "NULL" {
 		f.Cluster = nil
 	} else {
 		f.Cluster = new(string)
 		*f.Cluster = r.URL.Query().Get("cluster")
 	}
+
 	f.VirtualizationNode = r.URL.Query().Get("virtualization-node")
 	f.OperatingSystem = r.URL.Query().Get("operating-system")
 	f.Kernel = r.URL.Query().Get("kernel")
+
 	if f.LTEMemoryTotal, err = utils.Str2float64(r.URL.Query().Get("memory-total-lte"), -1); err != nil {
 		return nil, err
 	}
+
 	if f.GTEMemoryTotal, err = utils.Str2float64(r.URL.Query().Get("memory-total-gte"), -1); err != nil {
 		return nil, err
 	}
+
 	if f.LTESwapTotal, err = utils.Str2float64(r.URL.Query().Get("swap-total-lte"), -1); err != nil {
 		return nil, err
 	}
+
 	if f.GTESwapTotal, err = utils.Str2float64(r.URL.Query().Get("swap-total-gte"), -1); err != nil {
 		return nil, err
 	}
+
 	if r.URL.Query().Get("is-member-of-cluster") == "" {
 		f.IsMemberOfCluster = nil
 	} else {
@@ -146,16 +154,21 @@ func GetSearchHostFilters(r *http.Request) (*SearchHostsFilters, error) {
 			return nil, err
 		}
 	}
+
 	f.CPUModel = r.URL.Query().Get("cpu-model")
+
 	if f.LTECPUCores, err = utils.Str2int(r.URL.Query().Get("cpu-cores-lte"), -1); err != nil {
 		return nil, err
 	}
+
 	if f.GTECPUCores, err = utils.Str2int(r.URL.Query().Get("cpu-cores-gte"), -1); err != nil {
 		return nil, err
 	}
+
 	if f.LTECPUThreads, err = utils.Str2int(r.URL.Query().Get("cpu-threads-lte"), -1); err != nil {
 		return nil, err
 	}
+
 	if f.GTECPUThreads, err = utils.Str2int(r.URL.Query().Get("cpu-threads-gte"), -1); err != nil {
 		return nil, err
 	}

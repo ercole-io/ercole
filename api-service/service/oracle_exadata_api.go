@@ -38,22 +38,26 @@ func (as *APIService) SearchOracleExadataAsXLSX(filter dto.GlobalFilter) (*excel
 	}
 
 	var sheets *excelize.File
+
 	templateSheet := "template"
+
 	sheets, err = exutils.NewXLSX(as.Config, templateSheet, "")
 	if err != nil {
 		return nil, err
 	}
 
 	for _, exa := range exadatas.Content {
-
 		indexNewSheet := sheets.NewSheet(exa.Hostname)
+
 		errs := sheets.CopySheet(1, indexNewSheet)
 		if errs != nil {
 			return nil, errs
 		}
 
 		axisHelp := exutils.NewAxisHelper(1)
+
 		axisHelp.FillRow(sheets, exa.Hostname, exa.Hostname)
+
 		headers := []string{
 			"Hostname",
 			"Model",
@@ -62,8 +66,10 @@ func (as *APIService) SearchOracleExadataAsXLSX(filter dto.GlobalFilter) (*excel
 			"Version",
 			"Power/Temp",
 		}
+
 		axisHelp.NewRowAndFill(sheets, exa.Hostname, headers...)
 		axisHelp.NewRowAndFill(sheets, exa.Hostname, "DB Servers")
+
 		for _, server := range exa.DbServers {
 			nextAxis := axisHelp.NewRow()
 			sheets.SetCellValue(exa.Hostname, nextAxis(), server.Hostname)
@@ -73,7 +79,9 @@ func (as *APIService) SearchOracleExadataAsXLSX(filter dto.GlobalFilter) (*excel
 			sheets.SetCellValue(exa.Hostname, nextAxis(), server.SwVersion)
 			sheets.SetCellValue(exa.Hostname, nextAxis(), server.TotalPowerSupply)
 		}
+
 		axisHelp.NewRowAndFill(sheets, exa.Hostname, "IBSwitch")
+
 		for _, ibSwitch := range exa.IbSwitches {
 			nextAxis := axisHelp.NewRow()
 			sheets.SetCellValue(exa.Hostname, nextAxis(), ibSwitch.Hostname)
@@ -83,7 +91,9 @@ func (as *APIService) SearchOracleExadataAsXLSX(filter dto.GlobalFilter) (*excel
 			sheets.SetCellValue(exa.Hostname, nextAxis(), ibSwitch.SwVersion)
 			sheets.SetCellValue(exa.Hostname, nextAxis(), nil)
 		}
+
 		axisHelp.NewRowAndFill(sheets, exa.Hostname, "Storage")
+
 		for _, server := range exa.StorageServers {
 			nextAxis := axisHelp.NewRow()
 			sheets.SetCellValue(exa.Hostname, nextAxis(), server.Hostname)

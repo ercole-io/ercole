@@ -85,6 +85,7 @@ func (ctrl *APIController) AddOracleDatabaseLicenseType(w http.ResponseWriter, r
 
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
+
 	if err := decoder.Decode(&req); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
 			utils.NewError(err, http.StatusText(http.StatusBadRequest)))
@@ -110,6 +111,7 @@ func (ctrl *APIController) UpdateOracleDatabaseLicenseType(w http.ResponseWriter
 
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
+
 	if err := decoder.Decode(&req); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
 			utils.NewError(err, http.StatusText(http.StatusBadRequest)))

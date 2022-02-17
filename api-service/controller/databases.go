@@ -214,7 +214,6 @@ func (ctrl *APIController) GetDatabasesUsedLicensesPerCluster(w http.ResponseWri
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.GetDatabasesUsedLicensesPerClusterXLSX(w, r, *filter)
 	}
-
 }
 
 func (ctrl *APIController) GetDatabasesUsedLicensesPerClusterJSON(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {

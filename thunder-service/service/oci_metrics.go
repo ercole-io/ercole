@@ -40,13 +40,14 @@ type Instance struct {
 
 func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model.OciErcoleRecommendation, error) {
 	var listRec []model.OciErcoleRecommendation
+
 	var merr error
+
 	var listCompartments []model.OciCompartment
 
 	listRec = make([]model.OciErcoleRecommendation, 0)
 
 	for _, profileId := range profiles {
-
 		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
 			merr = multierror.Append(merr, err)
@@ -63,7 +64,6 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 		var strNamespace = "oci_compute_infrastructure_health"
 
 		for _, compartment := range listCompartments {
-
 			instances, err := as.getOciInstances(customConfigProvider, compartment.CompartmentID)
 			if err != nil {
 				merr = multierror.Append(merr, err)
@@ -120,19 +120,25 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 			}
 		}
 	}
+
 	return listRec, merr
 }
 
 func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error) {
 	var listRec []model.OciErcoleRecommendation
+
 	var merr error
+
 	var listCompartments []model.OciCompartment
-	var instancesNotOptimizable map[string]Instance
-	var allInstancesWithMetrics map[string]Instance
-	var allInstances map[string]Instance
+
+	var instancesNotOptimizable, allInstancesWithMetrics, allInstances map[string]Instance
+
 	var AvgCPUThreshold = 3
+
 	var PeakCPUThreshold = 180
+
 	var MemoryThreshold = 1
+
 	instancesNotOptimizable = make(map[string]Instance)
 	allInstancesWithMetrics = make(map[string]Instance)
 	allInstances = make(map[string]Instance)
@@ -140,7 +146,6 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 	listRec = make([]model.OciErcoleRecommendation, 0)
 
 	for _, profileId := range profiles {
-
 		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
 			merr = multierror.Append(merr, err)
@@ -161,7 +166,6 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 
 		// retrieve metrics data for each compartment
 		for _, compartment := range listCompartments {
-
 			allInstances, err = as.getOciInstancesWithoutBasicShape(allInstances, compartment, customConfigProvider)
 			if err != nil {
 				merr = multierror.Append(merr, err)
@@ -188,6 +192,7 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 
 			// second query is about CPU utilization peak in the last 7 days
 			var strQueryPeakCPU = "CpuUtilization[1m].max()>50"
+
 			sTime = common.SDKTime{Time: time.Now().Local().AddDate(0, 0, -7)}
 			eTime = common.SDKTime{Time: time.Now().Local()}
 
@@ -199,6 +204,7 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 
 			// third query is about memory utilization in the last 7 days
 			var strQueryMemory = "MemoryUtilization[1m].max()>90"
+
 			sTime = common.SDKTime{Time: time.Now().Local().AddDate(0, 0, -7)}
 			eTime = common.SDKTime{Time: time.Now().Local()}
 
@@ -226,6 +232,7 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 		} else {
 			recommendation.Type = model.RecommendationTypeInstanceRightsizing
 		}
+
 		recommendation.CompartmentID = inst.CompartmentID
 		recommendation.CompartmentName = inst.CompartmentName
 		recommendation.ResourceID = inst.ResourceID
@@ -244,6 +251,7 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 		} else {
 			recommendation.Type = model.RecommendationTypeInstanceWithoutMonitoring
 		}
+
 		recommendation.CompartmentID = in.CompartmentID
 		recommendation.CompartmentName = in.CompartmentName
 		recommendation.ResourceID = in.ResourceID
@@ -280,11 +288,13 @@ func (as *ThunderService) getOciInstancesWithoutBasicShape(allInstances map[stri
 			tmpInstance.ResourceID = *s.Id
 			tmpInstance.Name = *s.DisplayName
 			tmpInstance.Shape = *s.Shape
+
 			if _, ok := s.Metadata["oke-pool-id"]; ok {
 				tmpInstance.Type = "kubernetes"
 			} else {
 				tmpInstance.Type = "normal"
 			}
+
 			allInstances[*s.Id] = tmpInstance
 		}
 	}
@@ -293,7 +303,6 @@ func (as *ThunderService) getOciInstancesWithoutBasicShape(allInstances map[stri
 }
 
 func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClient, strQuery string, sTime common.SDKTime, eTime common.SDKTime, instances map[string]Instance, compartment model.OciCompartment, threshold int) (map[string]Instance, error) {
-
 	req := monitoring.SummarizeMetricsDataRequest{
 		CompartmentId: &compartment.CompartmentID,
 		SummarizeMetricsDataDetails: monitoring.SummarizeMetricsDataDetails{
@@ -311,21 +320,23 @@ func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClien
 	}
 
 	var instance Instance
+
 	for _, s := range resp.Items {
 		// reset the counter
 		cnt := 0
+
 		for _, a := range s.AggregatedDatapoints {
 			if *a.Value == 1.0 {
 				cnt++
 			}
 		}
+
 		if cnt > threshold {
 			// the instance is not eligible for optimization
 			if s.Dimensions["shape"] != "VM.Standard2.1" && s.Dimensions["shape"] != "VM.StandardE2.1" {
 				if val, ok := instances[s.Dimensions["resourceId"]]; ok {
 					val.Cnt += 1
 					instances[s.Dimensions["resourceId"]] = val
-
 				} else {
 					instance.CompartmentID = compartment.CompartmentID
 					instance.CompartmentName = compartment.Name
@@ -337,11 +348,11 @@ func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClien
 			}
 		}
 	}
+
 	return instances, nil
 }
 
 func (as *ThunderService) getOciInstancesWithMetricsWithoutBasicShape(instances map[string]Instance, compartment model.OciCompartment, customConfigProvider common.ConfigurationProvider) (map[string]Instance, error) {
-
 	client, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 	if err != nil {
 		return instances, err
@@ -373,17 +384,19 @@ func (as *ThunderService) getOciInstancesWithMetricsWithoutBasicShape(instances 
 
 func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error) {
 	var listRec []model.OciErcoleRecommendation
+
 	var merr error
+
 	var listCompartments []model.OciCompartment
+
 	var recommendation model.OciErcoleRecommendation
 
 	var vol model.OciResourcePerformance
+
 	listRec = make([]model.OciErcoleRecommendation, 0)
 
 	for _, profileId := range profiles {
-
 		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
-
 		if err != nil {
 			merr = multierror.Append(merr, err)
 			continue
@@ -397,6 +410,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 		}
 
 		var resTmp model.OciResourcePerformance
+
 		var ok bool
 
 		monClient, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
@@ -407,7 +421,6 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 
 		// retrieve metrics data for each compartment
 		for _, compartment := range listCompartments {
-
 			var vols = make(map[string]model.OciResourcePerformance)
 
 			coreClient, err := core.NewBlockstorageClientWithConfigurationProvider(customConfigProvider)
@@ -415,6 +428,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				merr = multierror.Append(merr, err)
 				continue
 			}
+
 			req := core.ListVolumesRequest{
 				CompartmentId: &compartment.CompartmentID,
 			}
@@ -425,6 +439,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				merr = multierror.Append(merr, err)
 				continue
 			}
+
 			if len(resp1.Items) > 0 {
 				for _, r := range resp1.Items {
 					vol = model.OciResourcePerformance{
@@ -452,6 +467,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						if s.Metadata["unit"] == "bytes" {
 							resTmp.Throughput += *s.AggregatedDatapoints[0].Value / 1024 / 1024
 						}
+
 						vols[tempId] = resTmp
 					}
 				}
@@ -471,6 +487,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						if s.Metadata["unit"] == "bytes" {
 							resTmp.Throughput += *s.AggregatedDatapoints[0].Value / 1024 / 1024
 						}
+
 						vols[tempId] = resTmp
 					}
 				}
@@ -489,6 +506,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						if s.Metadata["unit"] == "operations" {
 							resTmp.Iops += int(*s.AggregatedDatapoints[0].Value)
 						}
+
 						vols[tempId] = resTmp
 					}
 				}
@@ -508,6 +526,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						if s.Metadata["unit"] == "operations" {
 							resTmp.Iops += int(*s.AggregatedDatapoints[0].Value)
 						}
+
 						vols[tempId] = resTmp
 					}
 				}
@@ -566,12 +585,9 @@ func (as *ThunderService) isOptimizable(res model.OciResourcePerformance) bool {
 }
 
 func (as *ThunderService) getOciVolumePerformance(vpu int, size int) *model.OciVolumePerformance {
-	var baseIopsPerGB float64
-	var maxIops int
-	var baseThroughput float64
-	var maxTroughput float64
-	var retThroughput float64
-	var retIOPS int
+	var baseIopsPerGB, baseThroughput, maxTroughput, retThroughput float64
+
+	var maxIops, retIOPS int
 
 	if vpu != 0 {
 		baseIopsPerGB = 1.5*float64(vpu) + 45
@@ -586,7 +602,9 @@ func (as *ThunderService) getOciVolumePerformance(vpu int, size int) *model.OciV
 	}
 
 	var valRet model.OciVolumePerformance
+
 	var perfTmp model.OciPerformance
+
 	var valTmp model.OciPerfValues
 
 	valTmp.MaxThroughput = baseThroughput * float64(size)
@@ -609,6 +627,7 @@ func (as *ThunderService) getOciVolumePerformance(vpu int, size int) *model.OciV
 
 func (as *ThunderService) getOciInstances(customConfigProvider common.ConfigurationProvider, compartmentID string) (map[string]string, error) {
 	var merr error
+
 	retList := make(map[string]string, 0)
 
 	client, err := core.NewComputeClientWithConfigurationProvider(customConfigProvider)
@@ -633,5 +652,4 @@ func (as *ThunderService) getOciInstances(customConfigProvider common.Configurat
 	}
 
 	return retList, nil
-
 }

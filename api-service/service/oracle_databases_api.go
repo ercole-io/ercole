@@ -57,21 +57,25 @@ func (as *APIService) SearchOracleDatabaseSegmentAdvisorsAsXLSX(filter dto.Globa
 		"Partition Name",
 		"Recommendation",
 	}
+
 	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
 	if err != nil {
 		return nil, err
 	}
+
 	axisHelp := exutils.NewAxisHelper(1)
 
 	for _, val := range segmentAdvisors {
 		nextAxis := axisHelp.NewRow()
 		sheets.SetCellValue(sheet, nextAxis(), val.Reclaimable)
 		sheets.SetCellValue(sheet, nextAxis(), val.SegmentsSize)
+
 		if val.SegmentsSize == 0 {
 			nextAxis()
 		} else {
 			sheets.SetCellValue(sheet, nextAxis(), val.Reclaimable/val.SegmentsSize)
 		}
+
 		sheets.SetCellValue(sheet, nextAxis(), val.Hostname)
 		sheets.SetCellValue(sheet, nextAxis(), val.Dbname)
 		sheets.SetCellValue(sheet, nextAxis(), val.SegmentOwner)
@@ -112,6 +116,7 @@ func (as *APIService) SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime time.Ti
 	if err != nil {
 		return nil, err
 	}
+
 	axisHelp := exutils.NewAxisHelper(1)
 
 	for _, val := range patchAdvisorResponse.Content {

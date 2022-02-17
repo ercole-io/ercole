@@ -84,6 +84,7 @@ func (ap *LDAPAuthenticationProvider) GetUserInfoIfCredentialsAreCorrect(usernam
 	if err != nil {
 		return nil, utils.NewError(err, "AUTH")
 	}
+
 	if !ok {
 		return nil, nil
 	}
@@ -114,6 +115,7 @@ func (ap *LDAPAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.Re
 		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, err)
 		return
 	}
+
 	if info == nil {
 		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("Failed to login, invalid credentials"), http.StatusText(http.StatusUnauthorized)))
 	}
@@ -123,6 +125,7 @@ func (ap *LDAPAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.Re
 		ap.Log.Errorf("Unable to get signed token: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		utils.WriteAndLogError(ap.Log, w, http.StatusInternalServerError, fmt.Errorf("Unable to get signed token"))
+
 		return
 	}
 
@@ -130,6 +133,7 @@ func (ap *LDAPAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.Re
 		utils.WriteAndLogError(ap.Log, w, http.StatusInternalServerError, err)
 		return
 	}
+
 	w.WriteHeader(http.StatusOK)
 }
 

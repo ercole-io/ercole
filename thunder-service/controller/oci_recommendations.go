@@ -27,7 +27,6 @@ import (
 
 //GetOciRecommendations get recommendation from Oracle Cloud
 func (ctrl *ThunderController) GetOciRecommendations(w http.ResponseWriter, r *http.Request) {
-
 	profileList := mux.Vars(r)["ids"]
 	if profileList == "" {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Ids not present or malformed"))
@@ -50,6 +49,7 @@ func (ctrl *ThunderController) GetOciRecommendations(w http.ResponseWriter, r *h
 		}
 
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+
 		return
 	}
 
@@ -58,6 +58,7 @@ func (ctrl *ThunderController) GetOciRecommendations(w http.ResponseWriter, r *h
 			"recommendations": recommendations,
 		}
 		utils.WriteJSONResponse(w, http.StatusOK, response)
+
 		return
 	}
 
@@ -65,5 +66,6 @@ func (ctrl *ThunderController) GetOciRecommendations(w http.ResponseWriter, r *h
 		"recommendations": recommendations,
 		"error":           err.Error(),
 	}
+
 	utils.WriteJSONResponse(w, http.StatusPartialContent, response)
 }
