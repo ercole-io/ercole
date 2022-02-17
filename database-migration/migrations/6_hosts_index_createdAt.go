@@ -34,7 +34,7 @@ func init() {
 func create_index_hosts(db *mongo.Database) error {
 	if _, err := db.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
-			{"createdAt", -1},
+			{Key: "createdAt", Value: -1},
 		},
 	}); err != nil {
 		return err

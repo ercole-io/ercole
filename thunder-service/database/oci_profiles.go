@@ -88,7 +88,9 @@ func (md *MongoDatabase) GetOciProfiles(hidePrivateKey bool) ([]model.OciProfile
 	}
 
 	profiles := make([]model.OciProfile, 0)
-	err = cur.All(context.TODO(), &profiles)
+	if err := cur.All(context.TODO(), &profiles); err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
 
 	if err := cur.Err(); err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
