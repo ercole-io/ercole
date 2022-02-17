@@ -25,6 +25,7 @@ linters:
     - typecheck
     - unused
     - varcheck
+    - unparam
 
 severity:
   default-severity: error
