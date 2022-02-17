@@ -31,6 +31,7 @@ import (
 var ercoleConfig config.Configuration
 var serverVersion string = "latest"
 var extraConfigFile string
+var verbose bool
 
 var rootCmd = &cobra.Command{
 	Use:     "ercole",
