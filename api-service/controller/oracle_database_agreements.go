@@ -41,6 +41,7 @@ func (ctrl *APIController) AddOracleDatabaseAgreement(w http.ResponseWriter, r *
 
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
+
 	if err := decoder.Decode(&req); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
 			utils.NewError(err, http.StatusText(http.StatusBadRequest)))
@@ -85,6 +86,7 @@ func (ctrl *APIController) UpdateOracleDatabaseAgreement(w http.ResponseWriter, 
 
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
+
 	if err := decoder.Decode(&req); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
 			utils.NewError(err, http.StatusText(http.StatusBadRequest)))
@@ -156,7 +158,6 @@ func (ctrl *APIController) GetOracleDatabaseAgreementsXLSX(w http.ResponseWriter
 
 func parseGetOracleDatabaseAgreementsFilters(urlValues url.Values) (dto.GetOracleDatabaseAgreementsFilter,
 	error) {
-
 	var err error
 
 	filters := dto.NewGetOracleDatabaseAgreementsFilter()
@@ -222,6 +223,7 @@ func (ctrl *APIController) DeleteOracleDatabaseAgreement(w http.ResponseWriter, 
 	}
 
 	var err error
+
 	var id primitive.ObjectID
 
 	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
@@ -247,6 +249,7 @@ func (ctrl *APIController) AddHostToOracleDatabaseAgreement(w http.ResponseWrite
 	}
 
 	var err error
+
 	var id primitive.ObjectID
 
 	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
@@ -281,13 +284,16 @@ func (ctrl *APIController) DeleteHostFromOracleDatabaseAgreement(w http.Response
 	}
 
 	var err error
+
 	var id primitive.ObjectID
+
 	var hostname string
 
 	if id, err = primitive.ObjectIDFromHex(mux.Vars(r)["id"]); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, utils.NewError(err, http.StatusText(http.StatusUnprocessableEntity)))
 		return
 	}
+
 	hostname = mux.Vars(r)["hostname"]
 
 	if err = ctrl.Service.DeleteHostFromOracleDatabaseAgreement(id, hostname); errors.Is(err, utils.ErrOracleDatabaseAgreementNotFound) {

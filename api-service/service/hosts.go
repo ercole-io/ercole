@@ -61,11 +61,13 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 		if err != nil {
 			return nil, utils.NewError(err, "")
 		}
+
 		for _, cHostName := range createdHosts {
 			createdDate, err := as.Database.GetHostMinValidCreatedAtDate(cHostName)
 			if err != nil {
 				return nil, utils.NewError(err, "")
 			}
+
 			if createdDate.After(filters.From) || createdDate.Equal(filters.From) {
 				cFilters := filters.SearchHostsFilters
 				cFilters.OlderThan = filters.To
@@ -80,18 +82,20 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 					if j == 4 {
 						indexsheetHostAdded := lms.NewSheet(sheetHostAdded)
 						indexSheetDatabaseEbsDbTier := lms.GetSheetIndex(sheetDatabaseEbsDbTier)
+
 						errs := lms.CopySheet(indexSheetDatabaseEbsDbTier, indexsheetHostAdded)
 						if errs != nil {
 							return nil, errs
 						}
+
 						lms.SetActiveSheet(indexSheetDatabaseEbsDbTier)
 					}
+
 					if cHosts[i]["usingLicenseCount"].(float64) != 0 {
 						setCellValueLMS(lms, sheetHostAdded, j, csiByHostname, cHosts[i])
 						j++
 					}
 				}
-
 			}
 		}
 
@@ -100,16 +104,19 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 		if err != nil {
 			return nil, utils.NewError(err, "")
 		}
+
 		for _, dHostName := range dismissedHosts {
 			existHost, err := as.Database.ExistHostdata(dHostName)
 			if err != nil {
 				return nil, utils.NewError(err, "")
 			}
+
 			if !existHost {
 				dFilters := filters.SearchHostsFilters
 				dFilters.OlderThan = filters.To
 				dFilters.Hostname = dHostName
 				dHosts, err := as.Database.SearchHosts("lms", dFilters)
+
 				if err != nil {
 					return nil, utils.NewError(err, "")
 				}
@@ -118,12 +125,15 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 					if z == 4 {
 						indexsheetHostDismissed := lms.NewSheet(sheetHostDismissed)
 						indexSheetDatabaseEbsDbTier := lms.GetSheetIndex(sheetDatabaseEbsDbTier)
+
 						errs := lms.CopySheet(indexSheetDatabaseEbsDbTier, indexsheetHostDismissed)
 						if errs != nil {
 							return nil, errs
 						}
+
 						lms.SetActiveSheet(indexSheetDatabaseEbsDbTier)
 					}
+
 					if dHosts[i]["usingLicenseCount"].(float64) != 0 {
 						setCellValueLMS(lms, sheetHostDismissed, z, csiByHostname, dHosts[i])
 						z++
@@ -131,10 +141,10 @@ func (as *APIService) SearchHostsAsLMS(filters dto.SearchHostsAsLMS) (*excelize.
 				}
 			}
 		}
-
 	}
 
 	indexRow := 4 // offset for headers
+
 	for i := 0; i < len(hosts); i++ {
 		if hosts[i]["usingLicenseCount"].(float64) != 0 {
 			setCellValueLMS(lms, sheetDatabaseEbsDbTier, indexRow, csiByHostname, hosts[i])
@@ -163,6 +173,7 @@ func setCellValueLMS(lms *excelize.File, sheetName string, i int, csiByHostname 
 	if len(hostname) == 0 {
 		hostname = val["virtualServerName"].(string)
 	}
+
 	if csi, ok := csiByHostname[hostname]; ok {
 		lms.SetCellValue(sheetName, fmt.Sprintf("R%d", i), strings.Join(csi, ", "))
 	}
@@ -232,10 +243,12 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 
 		databases := strings.Builder{}
 		technology := strings.Builder{}
+
 		for k, v := range val.Databases {
 			databases.WriteString(strings.Join(v, " "))
 			technology.WriteString(k)
 		}
+
 		file.SetCellValue(sheet, nextAxis(), databases.String())
 		file.SetCellValue(sheet, nextAxis(), technology.String())
 		file.SetCellValue(sheet, nextAxis(), val.Info.OS)
@@ -281,20 +294,24 @@ func (as *APIService) GetHost(hostname string, olderThan time.Time, raw bool) (*
 	}
 
 	var realApplicationClusters bool
+
 	var indexList []int
+
 	if host.Features.Oracle != nil && host.Features.Oracle.Database != nil && host.Features.Oracle.Database.Databases != nil {
 		for i := range host.Features.Oracle.Database.Databases {
 			realApplicationClusters = false
 			indexList = nil
 			db := &host.Features.Oracle.Database.Databases[i]
-			for j := range db.Licenses {
 
+			for j := range db.Licenses {
 				lic := db.Licenses[j]
+
 				if lic.LicenseTypeID != "" {
 					licType, err := as.GetOracleDatabaseLicenseType(lic.LicenseTypeID)
 					if err != nil {
 						return nil, err
 					}
+
 					if licType.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
 						count := lic.Count
 						count *= float64(model.GetFactorByMetric(licType.Metric))

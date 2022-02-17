@@ -27,14 +27,19 @@ import (
 // GetOracleDatabaseChart return the list of techonlogies
 func (ctrl *ChartController) GetOracleDatabaseChart(w http.ResponseWriter, r *http.Request) {
 	var err error
+
 	var metric string
+
 	var location string
+
 	var environment string
+
 	var olderThan time.Time
 
 	metric = r.URL.Query().Get("metric")
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
+
 	if olderThan, err = utils.Str2time(r.URL.Query().Get("older-than"), utils.MAX_TIME); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return

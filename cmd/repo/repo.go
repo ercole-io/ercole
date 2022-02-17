@@ -35,6 +35,7 @@ var repoCmd = &cobra.Command{
 
 func NewRepoCmd(conf *config.Configuration) *cobra.Command {
 	ercoleConfig = conf
+
 	repoCmd.PersistentFlags().StringVarP(&githubToken, "github-token", "g", "", "Github token used to perform requests")
 	repoCmd.PersistentFlags().BoolVar(&rebuildCache, "rebuild-cache", false, "Force the rebuild the cache")
 

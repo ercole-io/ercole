@@ -29,11 +29,14 @@ import (
 )
 
 func (as *ThunderService) GetOciUnusedStorage(profiles []string) ([]model.OciErcoleRecommendation, error) {
-	var merr error
-	var err error
+	var merr, err error
+
 	var volumeList map[string]model.OciVolume
+
 	var attachedVolumeList []model.OciVolume
+
 	var listRec []model.OciErcoleRecommendation
+
 	var recommendation model.OciErcoleRecommendation
 
 	listRec = make([]model.OciErcoleRecommendation, 0)
@@ -69,12 +72,14 @@ func (as *ThunderService) GetOciUnusedStorage(profiles []string) ([]model.OciErc
 
 func (as *ThunderService) GetOciVolumeList(profiles []string) (map[string]model.OciVolume, error) {
 	var merr error
+
 	var listCompartments []model.OciCompartment
+
 	var vol model.OciVolume
+
 	var vols = make(map[string]model.OciVolume)
 
 	for _, profileId := range profiles {
-
 		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
 			merr = multierror.Append(merr, err)
@@ -89,22 +94,22 @@ func (as *ThunderService) GetOciVolumeList(profiles []string) (map[string]model.
 
 		// retrieve volume data for each compartment
 		for _, compartment := range listCompartments {
-
 			coreClient, err := core.NewBlockstorageClientWithConfigurationProvider(customConfigProvider)
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
 			}
+
 			req := core.ListVolumesRequest{
 				CompartmentId: &compartment.CompartmentID,
 			}
 
 			resp, err := coreClient.ListVolumes(context.Background(), req)
-
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
 			}
+
 			for _, r := range resp.Items {
 				vol = model.OciVolume{
 					CompartmentID:      compartment.CompartmentID,
@@ -120,17 +125,20 @@ func (as *ThunderService) GetOciVolumeList(profiles []string) (map[string]model.
 			}
 		}
 	}
+
 	return vols, merr
 }
 
 func (as *ThunderService) GetOciAttachedVolumeList(profiles []string) ([]model.OciVolume, error) {
 	var merr error
+
 	var listCompartments []model.OciCompartment
+
 	var vol model.OciVolume
+
 	var vols []model.OciVolume
 
 	for _, profileId := range profiles {
-
 		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
 			merr = multierror.Append(merr, err)
@@ -145,12 +153,12 @@ func (as *ThunderService) GetOciAttachedVolumeList(profiles []string) ([]model.O
 
 		// retrieve attached volume data for each compartment
 		for _, compartment := range listCompartments {
-
 			coreClient, err := core.NewComputeClientWithConfigurationProvider(customConfigProvider)
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
 			}
+
 			req := core.ListVolumeAttachmentsRequest{
 				CompartmentId: &compartment.CompartmentID,
 			}
@@ -161,6 +169,7 @@ func (as *ThunderService) GetOciAttachedVolumeList(profiles []string) ([]model.O
 				merr = multierror.Append(merr, err)
 				continue
 			}
+
 			for _, r := range resp.Items {
 				if fmt.Sprintf("%v", r.GetLifecycleState()) == "ATTACHED" {
 					vol = model.OciVolume{
@@ -178,19 +187,22 @@ func (as *ThunderService) GetOciAttachedVolumeList(profiles []string) ([]model.O
 			}
 		}
 	}
+
 	return vols, merr
 }
 
 func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([]model.OciErcoleRecommendation, error) {
 	var merr error
+
 	var listCompartments []model.OciCompartment
+
 	var recommendation model.OciErcoleRecommendation
+
 	var listRec []model.OciErcoleRecommendation
 
 	listRec = make([]model.OciErcoleRecommendation, 0)
 
 	for _, profileId := range profiles {
-
 		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
 			merr = multierror.Append(merr, err)
@@ -210,7 +222,6 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 		}
 
 		for _, compartment := range listCompartments {
-
 			// request for list volume backup
 			req := core.ListVolumeBackupsRequest{
 				CompartmentId: &compartment.CompartmentID,
@@ -265,8 +276,7 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 				}
 			}
 		}
-
 	}
-	//	return volumeList, merr
+
 	return listRec, merr
 }

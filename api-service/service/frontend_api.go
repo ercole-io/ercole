@@ -23,13 +23,16 @@ import (
 // GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 func (as *APIService) GetInfoForFrontendDashboard(location string, environment string, olderThan time.Time) (map[string]interface{}, error) {
 	var err error
+
 	out := map[string]interface{}{}
+
 	technologiesObject := map[string]interface{}{}
 
 	technologiesObject["total"], err = as.GetTotalTechnologiesComplianceStats(location, environment, olderThan)
 	if err != nil {
 		return nil, err
 	}
+
 	technologiesObject["technologies"], err = as.ListManagedTechnologies("", false, location, environment, olderThan)
 	if err != nil {
 		return nil, err
@@ -39,6 +42,7 @@ func (as *APIService) GetInfoForFrontendDashboard(location string, environment s
 	if err != nil {
 		return nil, err
 	}
+
 	out["technologies"] = technologiesObject
 
 	return out, nil

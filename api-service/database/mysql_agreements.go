@@ -66,6 +66,7 @@ func (md *MongoDatabase) GetMySQLAgreements() ([]model.MySQLAgreement, error) {
 	}
 
 	agreements := make([]model.MySQLAgreement, 0)
+
 	err = cur.All(context.TODO(), &agreements)
 	if err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")

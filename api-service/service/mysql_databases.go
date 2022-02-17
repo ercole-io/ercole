@@ -62,6 +62,7 @@ func (as *APIService) SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*exce
 		"Databases",
 		"Table Schemas",
 	}
+
 	file, err := exutils.NewXLSX(as.Config, sheet, headers...)
 	if err != nil {
 		return nil, err
@@ -91,12 +92,14 @@ func (as *APIService) SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*exce
 		for i := range val.Databases {
 			databases[i] = val.Databases[i].Name
 		}
+
 		file.SetCellValue(sheet, nextAxis(), strings.Join(databases, ", "))
 
 		tableSchemas := make([]string, len(val.TableSchemas))
 		for i := range val.TableSchemas {
 			tableSchemas[i] = val.TableSchemas[i].Name
 		}
+
 		file.SetCellValue(sheet, nextAxis(), strings.Join(tableSchemas, ", "))
 	}
 
@@ -110,10 +113,12 @@ func (as *APIService) GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQL
 	}
 
 	any := dto.GlobalFilter{Location: "", Environment: "", OlderThan: utils.MAX_TIME}
+
 	clustersList, err := as.Database.GetClusters(any)
 	if err != nil {
 		return nil, err
 	}
+
 	clusters := make(map[string]dto.Cluster, len(clustersList))
 	for _, cluster := range clustersList {
 		clusters[cluster.Hostname] = cluster
@@ -134,6 +139,7 @@ func (as *APIService) GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQL
 					hostCoveredForCluster[vm.Hostname] = true
 				}
 			}
+
 			continue
 		}
 
@@ -141,6 +147,7 @@ func (as *APIService) GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQL
 			for _, host := range agreement.Hosts {
 				hostCoveredAsHost[host] = true
 			}
+
 			continue
 		}
 
@@ -152,6 +159,7 @@ func (as *APIService) GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQL
 		if hostCoveredForCluster[usedLicense.Hostname] {
 			usedLicense.AgreementType = model.MySQLAgreementTypeCluster
 			usedLicense.Covered = true
+
 			continue
 		}
 
@@ -167,6 +175,7 @@ func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseComplia
 		Environment: "",
 		OlderThan:   utils.MAX_TIME,
 	}
+
 	licenses, err := as.GetMySQLUsedLicenses(any)
 	if err != nil {
 		return nil, err
@@ -212,10 +221,12 @@ func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseComplia
 		if license.Covered {
 			lc.Covered += 1
 		}
+
 		lc.Consumed += 1
 	}
 
 	result := make([]dto.LicenseCompliance, 0, 2)
+
 	for _, lc := range []*dto.LicenseCompliance{&perCluster, &perHost} {
 		if lc.Consumed == 0 {
 			lc.Compliance = 1

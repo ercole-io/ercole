@@ -42,7 +42,6 @@ func (as *ThunderService) GetOciRecommendations(profiles []string) ([]model.OciR
 	var merr error
 
 	for _, profileId := range profiles {
-
 		objId, err := primitive.ObjectIDFromHex(profileId)
 		if err != nil {
 			merr = multierror.Append(merr, utils.NewErrorf("%w %q ", utils.ErrInvalidProfileId, profileId))
@@ -86,6 +85,7 @@ func (as *ThunderService) GetOciRecommendations(profiles []string) ([]model.OciR
 		}
 
 		var cnt int
+
 		var recTmp model.OciRecommendation
 
 		if len(resp.Items) != 0 {

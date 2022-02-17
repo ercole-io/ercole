@@ -27,14 +27,15 @@ import (
 
 func (as *ThunderService) GetOciUnusedLoadBalancers(profiles []string) ([]model.OciErcoleRecommendation, error) {
 	var merr error
+
 	var listCompartments []model.OciCompartment
+
 	var recommendation model.OciErcoleRecommendation
 
 	tempListRec := make(map[string]model.OciErcoleRecommendation, 0)
 	listRec := make([]model.OciErcoleRecommendation, 0)
 
 	for _, profileId := range profiles {
-
 		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
 
 		if err != nil {
@@ -57,7 +58,6 @@ func (as *ThunderService) GetOciUnusedLoadBalancers(profiles []string) ([]model.
 
 		// retrieve load balancer data for each compartment
 		for _, compartment := range listCompartments {
-
 			req := loadbalancer.ListLoadBalancerHealthsRequest{
 				CompartmentId: &compartment.CompartmentID,
 			}
@@ -68,6 +68,7 @@ func (as *ThunderService) GetOciUnusedLoadBalancers(profiles []string) ([]model.
 				merr = multierror.Append(merr, err)
 				continue
 			}
+
 			for _, s := range resp.Items {
 				if s.Status == "CRITICAL" || s.Status == "UNKNOWN" {
 					recommendation.Type = model.RecommendationTypeUnusedResource
@@ -76,7 +77,6 @@ func (as *ThunderService) GetOciUnusedLoadBalancers(profiles []string) ([]model.
 					recommendation.Name = ""
 					recommendation.ResourceID = *s.LoadBalancerId
 					tempListRec[*s.LoadBalancerId] = recommendation
-					//listRec = append(listRec, recommendation)
 				}
 			}
 
@@ -90,6 +90,7 @@ func (as *ThunderService) GetOciUnusedLoadBalancers(profiles []string) ([]model.
 				merr = multierror.Append(merr, err)
 				continue
 			}
+
 			for _, r := range resp1.Items {
 				if rec, ok := tempListRec[*r.Id]; ok {
 					rec.Name = *r.DisplayName
@@ -98,5 +99,6 @@ func (as *ThunderService) GetOciUnusedLoadBalancers(profiles []string) ([]model.
 			}
 		}
 	}
+
 	return listRec, merr
 }

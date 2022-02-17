@@ -71,6 +71,7 @@ func (as *APIService) SearchAlertsAsXLSX(from, to time.Time, filter dto.GlobalFi
 		sheets.SetCellValue("Alerts", nextAxis(), val["alertCode"])
 		sheets.SetCellValue("Alerts", nextAxis(), val["description"])
 	}
+
 	return sheets, nil
 }
 

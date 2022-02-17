@@ -48,6 +48,7 @@ func (as *APIService) GetMySQLAgreements() ([]model.MySQLAgreement, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return agreements, nil
 }
 
@@ -55,6 +56,7 @@ func (as *APIService) DeleteMySQLAgreement(id primitive.ObjectID) error {
 	if err := as.Database.DeleteMySQLAgreement(id); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -78,6 +80,7 @@ func (as *APIService) GetMySQLAgreementsAsXLSX() (*excelize.File, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	axisHelp := exutils.NewAxisHelper(1)
 
 	for _, val := range agreements {
@@ -87,6 +90,7 @@ func (as *APIService) GetMySQLAgreementsAsXLSX() (*excelize.File, error) {
 		sheets.SetCellValue(sheet, nextAxis(), val.CSI)
 		sheets.SetCellValue(sheet, nextAxis(), val.NumberOfLicenses)
 		sheets.SetCellValue(sheet, nextAxis(), val.Clusters)
+
 		for _, val2 := range val.Hosts {
 			sheets.DuplicateRow(sheet, axisHelp.GetIndexRow())
 			duplicateRowNextAxis := axisHelp.NewRowSincePreviousColumn()
@@ -94,5 +98,6 @@ func (as *APIService) GetMySQLAgreementsAsXLSX() (*excelize.File, error) {
 			sheets.SetCellValue(sheet, duplicateRowNextAxis(), val2)
 		}
 	}
+
 	return sheets, err
 }
