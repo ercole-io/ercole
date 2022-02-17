@@ -72,7 +72,7 @@ local task_pkg_build(setup) = {
 };
 
 local task_deploy_repository(dist) = {
-  name: 'deploy repository.ercole.io ' + dist,
+  name: 'upload to repository.ercole.io ' + dist,
   runtime: {
     type: 'pod',
     arch: 'amd64',
@@ -90,7 +90,7 @@ local task_deploy_repository(dist) = {
     { type: 'restore_workspace', dest_dir: '.' },
     {
       type: 'run',
-      name: 'curl',
+      name: 'upload to repository.ercole.io',
       command: |||
         cd dist
         for f in *; do
@@ -102,6 +102,48 @@ local task_deploy_repository(dist) = {
           -H "Content-Type: application/json" --request POST --data "{ \"filename\": \"$f\", \"url\": \"$URL\" }" \
           ${REPO_INSTALL_URL} --insecure
         done
+      |||,
+    },
+  ],
+  depends: ['pkg build ' + dist],
+  when: {
+    tag: '#.*#',
+    branch: 'master',
+  },
+};
+
+local task_upload_asset(dist) = {
+ name: 'upload to github.com ' + dist,
+  runtime: {
+    type: 'pod',
+    arch: 'amd64',
+    containers: [
+      { image: 'curlimages/curl' },
+    ],
+  },
+ environment: {
+    GITHUB_USER: { from_variable: 'github-user' },
+    GITHUB_TOKEN: { from_variable: 'github-token' },
+  },
+steps: [
+    { type: 'restore_workspace', dest_dir: '.' },
+    {
+      type: 'run',
+      name: 'upload to github',
+      command: |||
+          cd dist
+          GH_REPO="https://api.github.com/repos/$REPO_USER/ercole/releases"
+          if [ ${AGOLA_GIT_TAG} ];
+          then GH_TAGS="$GH_REPO/latest" ;
+          else
+            GH_TAGS="$GH_REPO/tags/$AGOLA_GIT_TAG" ; fi
+          response=$(curl -sH "Authorization: token $REPO_TOKEN" $GH_TAGS)
+          eval $(echo "$response" | grep -m 1 "id.:" | grep -w id | tr : = | tr -cd '[[:alnum:]]=')
+          for filename in *; do
+            REPO_ASSET="https://uploads.github.com/repos/$REPO_USER/ercole/releases/$id/assets?name=$(basename $filename)"
+            curl -H POST -H "Authorization: token $REPO_TOKEN" -H "Content-Type: application/octet-stream" --data-binary @"$filename" $REPO_ASSET
+            echo $REPO_ASSET
+          done
       |||,
     },
   ],
@@ -207,10 +249,12 @@ local task_build_push_image(push) =
         for setup in [
           { pkg_build_image: 'amreo/rpmbuild-centos7', dist: 'rhel7' },
           { pkg_build_image: 'amreo/rpmbuild-centos8', dist: 'rhel8' },
-        ]
-        //TODO Publish assets to GitHub
-      ] + [
+        ]       
+      ] + [  
         task_deploy_repository(dist)
+        for dist in ['rhel7', 'rhel8']
+      ] + [
+        task_upload_asset(dist)
         for dist in ['rhel7', 'rhel8']
       ] + [
         {
