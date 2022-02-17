@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,12 +22,12 @@ import (
 	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
 
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // SearchOracleDatabases search databases
-func (md *MongoDatabase) SearchOracleDatabases(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error) {
-	var out []map[string]interface{} = make([]map[string]interface{}, 0)
+func (md *MongoDatabase) SearchOracleDatabases(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseResponse, error) {
 	//Find the matching hostdata
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
@@ -54,55 +54,26 @@ func (md *MongoDatabase) SearchOracleDatabases(full bool, keywords []string, sor
 					mu.APOEqual("$$lic.name", "Real Application Clusters"),
 					mu.APOGreater("$$lic.count", 0),
 				)),
-				"database.isCDB": "$database.isCDB",
-				"database.pdbs": mu.APOCond("$database.isCDB", bson.M{
-					"$concatArrays": bson.A{
-						mu.APOMap("$database.pdbs", "pdb", "$$pdb.name"),
-					},
-				}, bson.A{}),
+				"database.isCDB":    "$database.isCDB",
+				"database.pdbs":     "$database.pdbs",
 				"database.services": "$database.services",
 			}),
 			mu.APReplaceWith(mu.APOMergeObjects("$$ROOT", "$database")),
 			mu.APUnset("database"),
-			mu.APOptionalStage(!full, mu.APProject(bson.M{
-				"hostname":     true,
-				"location":     true,
-				"environment":  true,
-				"createdAt":    true,
-				"name":         true,
-				"uniqueName":   true,
-				"version":      true,
-				"status":       true,
-				"charset":      true,
-				"blockSize":    true,
-				"cpuCount":     true,
-				"work":         true,
-				"memory":       true,
-				"datafileSize": true,
-				"segmentsSize": true,
-				"archivelog":   true,
-				"dataguard":    true,
-				"rac":          true,
-				"ha":           true,
-				"isCDB":        true,
-				"pdbs":         true,
-				"services":     true,
-			})),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
-			mu.APOptionalPagingStage(page, pageSize),
+			PagingMetadataStage(page, pageSize),
 		),
 	)
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	//Decode the documents
-	for cur.Next(context.TODO()) {
-		var item map[string]interface{}
-		if cur.Decode(&item) != nil {
-			return nil, utils.NewError(err, "Decode ERROR")
-		}
-		out = append(out, item)
+	var oracleDatabaseResponse dto.OracleDatabaseResponse
+
+	cur.Next(context.TODO())
+	if err := cur.Decode(&oracleDatabaseResponse); err != nil {
+		return nil, utils.NewError(err, "Decode ERROR")
 	}
-	return out, nil
+
+	return &oracleDatabaseResponse, nil
 }

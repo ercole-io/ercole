@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ type ApiSvcClientInterface interface {
 	GetAlertsByFilter(filter dto.AlertsFilter) ([]model.Alert, error)
 	AckAlerts(filter dto.AlertsFilter) error
 	GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error)
+	GetOracleDatabases() ([]model.OracleDatabase, error)
 }
 
 type Client struct {

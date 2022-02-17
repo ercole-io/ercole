@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -131,13 +131,13 @@ func (as *APIService) SearchOracleDatabasePatchAdvisorsAsXLSX(windowTime time.Ti
 }
 
 // SearchOracleDatabases search databases
-func (as *APIService) SearchOracleDatabases(f dto.SearchOracleDatabasesFilter) ([]map[string]interface{}, error) {
-	return as.Database.SearchOracleDatabases(f.Full, strings.Split(f.Search, " "), f.SortBy, f.SortDesc,
+func (as *APIService) SearchOracleDatabases(f dto.SearchOracleDatabasesFilter) (*dto.OracleDatabaseResponse, error) {
+	return as.Database.SearchOracleDatabases(strings.Split(f.Search, " "), f.SortBy, f.SortDesc,
 		f.PageNumber, f.PageSize, f.Location, f.Environment, f.OlderThan)
 }
 
 func (as *APIService) SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabasesFilter) (*excelize.File, error) {
-	databases, err := as.Database.SearchOracleDatabases(false, strings.Split(filter.Search, " "),
+	databases, err := as.Database.SearchOracleDatabases(strings.Split(filter.Search, " "),
 		filter.SortBy, filter.SortDesc,
 		-1, -1,
 		filter.Location, filter.Environment, filter.OlderThan)
@@ -150,26 +150,30 @@ func (as *APIService) SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabas
 		return nil, err
 	}
 
-	for i, val := range databases {
+	for i, val := range databases.Content {
 		i += 2 // offset for headers
-		file.SetCellValue("Databases", fmt.Sprintf("A%d", i), val["name"])
-		file.SetCellValue("Databases", fmt.Sprintf("B%d", i), val["uniqueName"])
-		file.SetCellValue("Databases", fmt.Sprintf("C%d", i), val["hostname"])
-		file.SetCellValue("Databases", fmt.Sprintf("D%d", i), val["version"])
-		file.SetCellValue("Databases", fmt.Sprintf("E%d", i), val["status"])
-		file.SetCellValue("Databases", fmt.Sprintf("F%d", i), val["environment"])
-		file.SetCellValue("Databases", fmt.Sprintf("G%d", i), val["location"])
-		file.SetCellValue("Databases", fmt.Sprintf("H%d", i), val["charset"])
-		file.SetCellValue("Databases", fmt.Sprintf("I%d", i), val["blockSize"])
-		file.SetCellValue("Databases", fmt.Sprintf("J%d", i), val["cpuCount"])
-		file.SetCellValue("Databases", fmt.Sprintf("K%d", i), val["work"])
-		file.SetCellValue("Databases", fmt.Sprintf("L%d", i), val["memory"])
-		file.SetCellValue("Databases", fmt.Sprintf("M%d", i), val["datafileSize"])
-		file.SetCellValue("Databases", fmt.Sprintf("N%d", i), val["segmentsSize"])
-		file.SetCellValue("Databases", fmt.Sprintf("O%d", i), val["archivelog"])
-		file.SetCellValue("Databases", fmt.Sprintf("P%d", i), val["dataguard"])
-		file.SetCellValue("Databases", fmt.Sprintf("Q%d", i), val["rac"])
-		file.SetCellValue("Databases", fmt.Sprintf("R%d", i), val["ha"])
+		file.SetCellValue("Databases", fmt.Sprintf("A%d", i), val.Name)
+		file.SetCellValue("Databases", fmt.Sprintf("B%d", i), val.UniqueName)
+		file.SetCellValue("Databases", fmt.Sprintf("C%d", i), val.Hostname)
+		file.SetCellValue("Databases", fmt.Sprintf("D%d", i), val.Version)
+		file.SetCellValue("Databases", fmt.Sprintf("E%d", i), val.Status)
+		file.SetCellValue("Databases", fmt.Sprintf("F%d", i), val.Environment)
+		file.SetCellValue("Databases", fmt.Sprintf("G%d", i), val.Location)
+		file.SetCellValue("Databases", fmt.Sprintf("H%d", i), val.Charset)
+		file.SetCellValue("Databases", fmt.Sprintf("I%d", i), val.BlockSize)
+		file.SetCellValue("Databases", fmt.Sprintf("J%d", i), val.CPUCount)
+		if val.Work != nil {
+			file.SetCellValue("Databases", fmt.Sprintf("K%d", i), *val.Work)
+		} else {
+			file.SetCellValue("Databases", fmt.Sprintf("K%d", i), "")
+		}
+		file.SetCellValue("Databases", fmt.Sprintf("L%d", i), val.MemoryTarget)
+		file.SetCellValue("Databases", fmt.Sprintf("M%d", i), val.DatafileSize)
+		file.SetCellValue("Databases", fmt.Sprintf("N%d", i), val.SegmentsSize)
+		file.SetCellValue("Databases", fmt.Sprintf("O%d", i), val.Archivelog)
+		file.SetCellValue("Databases", fmt.Sprintf("P%d", i), val.Dataguard)
+		file.SetCellValue("Databases", fmt.Sprintf("Q%d", i), val.Rac)
+		file.SetCellValue("Databases", fmt.Sprintf("R%d", i), val.Ha)
 	}
 
 	return file, nil

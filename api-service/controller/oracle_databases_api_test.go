@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -1047,66 +1047,42 @@ func TestSearchOracleDatabases_JSONPaged(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	expectedRes := map[string]interface{}{
-		"content": []interface{}{
-			map[string]interface{}{
-				"ArchiveLogStatus": false,
-				"BlockSize":        "8192",
-				"CPUCount":         "16",
-				"Charset":          "AL32UTF8",
-				"CreatedAt":        utils.P("2020-04-07T08:52:59.82+02:00"),
-				"DatafileSize":     "61",
-				"Dataguard":        false,
-				"Environment":      "SVIL",
-				"HA":               false,
-				"Hostname":         "publicitate-36d06ca83eafa454423d2097f4965517",
-				"Location":         "Germany",
-				"Memory":           4.199,
-				"Name":             "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-				"RAC":              false,
-				"SegmentsSize":     "41",
-				"Status":           "OPEN",
-				"UniqueName":       "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-				"Version":          "11.2.0.3.0 Enterprise Edition",
-				"Work":             "1",
-				"_id":              utils.Str2oid("5e8c234b24f648a08585bd32"),
-			},
-			map[string]interface{}{
-				"ArchiveLogStatus": false,
-				"BlockSize":        "8192",
-				"CPUCount":         "2",
-				"Charset":          "AL32UTF8",
-				"CreatedAt":        utils.P("2020-04-07T08:52:59.872+02:00"),
-				"DatafileSize":     "6",
-				"Dataguard":        false,
-				"Environment":      "TST",
-				"HA":               false,
-				"Hostname":         "test-db",
-				"Location":         "Germany",
-				"Memory":           1.484,
-				"Name":             "ERCOLE",
-				"RAC":              false,
-				"SegmentsSize":     "3",
-				"Status":           "OPEN",
-				"UniqueName":       "ERCOLE",
-				"Version":          "12.2.0.1.0 Enterprise Edition",
-				"Work":             "1",
-				"_id":              utils.Str2oid("5e8c234b24f648a08585bd43"),
-			},
-		},
-		"Metadata": map[string]interface{}{
-			"Empty":         false,
-			"First":         true,
-			"Last":          true,
-			"Number":        0,
-			"Size":          20,
-			"TotalElements": 25,
-			"TotalPages":    1,
+	var work float64 = 1
+	resContent := []dto.OracleDatabase{
+		{
+			Archivelog:   false,
+			BlockSize:    8162,
+			CPUCount:     16,
+			Charset:      "AL32UTF8",
+			CreatedAt:    utils.P("2020-04-07T08:52:59.82+02:00"),
+			DatafileSize: 61,
+			Dataguard:    false,
+			Environment:  "SVIL",
+			Ha:           false,
+			Hostname:     "publicitate-36d06ca83eafa454423d2097f4965517",
+			Location:     "Germany",
+			Memory:       4.199,
+			Name:         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			Rac:          false,
+			SegmentsSize: 41,
+			Status:       "OPEN",
+			UniqueName:   "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			Version:      "11.2.0.3.0 Enterprise Edition",
+			Work:         &work,
 		},
 	}
 
-	resFromService := []map[string]interface{}{
-		expectedRes,
+	var resFromService = dto.OracleDatabaseResponse{
+		Content: resContent,
+		Metadata: dto.PagingMetadata{
+			Empty:         false,
+			First:         true,
+			Last:          true,
+			Number:        0,
+			Size:          1,
+			TotalElements: 1,
+			TotalPages:    0,
+		},
 	}
 
 	as.EXPECT().
@@ -1115,9 +1091,9 @@ func TestSearchOracleDatabases_JSONPaged(t *testing.T) {
 				dto.GlobalFilter{
 					"Italy", "TST", utils.P("2020-06-10T11:54:59Z"),
 				},
-				true, "foobar", "Hostname", true, 2, 3,
+				"foobar", "Hostname", true, 2, 3,
 			}).
-		Return(resFromService, nil)
+		Return(&resFromService, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabases)
@@ -1127,7 +1103,7 @@ func TestSearchOracleDatabases_JSONPaged(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+	assert.JSONEq(t, utils.ToJSON(&resFromService), rr.Body.String())
 }
 
 func TestSearchOracleDatabases_JSONUnpaged(t *testing.T) {
@@ -1141,51 +1117,55 @@ func TestSearchOracleDatabases_JSONUnpaged(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	expectedRes := []map[string]interface{}{
+	var work float64 = 1
+	resContent := []dto.OracleDatabase{
 		{
-			"ArchiveLogStatus": false,
-			"BlockSize":        "8192",
-			"CPUCount":         "16",
-			"Charset":          "AL32UTF8",
-			"CreatedAt":        utils.P("2020-04-07T08:52:59.82+02:00"),
-			"DatafileSize":     "61",
-			"Dataguard":        false,
-			"Environment":      "SVIL",
-			"HA":               false,
-			"Hostname":         "publicitate-36d06ca83eafa454423d2097f4965517",
-			"Location":         "Germany",
-			"Memory":           4.199,
-			"Name":             "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"RAC":              false,
-			"SegmentsSize":     "41",
-			"Status":           "OPEN",
-			"UniqueName":       "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
-			"Version":          "11.2.0.3.0 Enterprise Edition",
-			"Work":             "1",
-			"_id":              utils.Str2oid("5e8c234b24f648a08585bd32"),
+			Archivelog:   false,
+			BlockSize:    8162,
+			CPUCount:     16,
+			Charset:      "AL32UTF8",
+			CreatedAt:    utils.P("2020-04-07T08:52:59.82+02:00"),
+			DatafileSize: 61,
+			Dataguard:    false,
+			Environment:  "SVIL",
+			Ha:           false,
+			Hostname:     "publicitate-36d06ca83eafa454423d2097f4965517",
+			Location:     "Germany",
+			Memory:       4.199,
+			Name:         "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			Rac:          false,
+			SegmentsSize: 41,
+			Status:       "OPEN",
+			UniqueName:   "4wcqjn-ecf040bdfab7695ab332aef7401f185c",
+			Version:      "11.2.0.3.0 Enterprise Edition",
+			Work:         &work,
 		},
 		{
-			"ArchiveLogStatus": false,
-			"BlockSize":        "8192",
-			"CPUCount":         "2",
-			"Charset":          "AL32UTF8",
-			"CreatedAt":        utils.P("2020-04-07T08:52:59.872+02:00"),
-			"DatafileSize":     "6",
-			"Dataguard":        false,
-			"Environment":      "TST",
-			"HA":               false,
-			"Hostname":         "test-db",
-			"Location":         "Germany",
-			"Memory":           1.484,
-			"Name":             "ERCOLE",
-			"RAC":              false,
-			"SegmentsSize":     "3",
-			"Status":           "OPEN",
-			"UniqueName":       "ERCOLE",
-			"Version":          "12.2.0.1.0 Enterprise Edition",
-			"Work":             "1",
-			"_id":              utils.Str2oid("5e8c234b24f648a08585bd43"),
+			Archivelog:   false,
+			BlockSize:    8162,
+			CPUCount:     2,
+			Charset:      "AL32UTF8",
+			CreatedAt:    utils.P("2020-04-07T08:52:59.82+02:00"),
+			DatafileSize: 6,
+			Dataguard:    false,
+			Environment:  "TST",
+			Ha:           false,
+			Hostname:     "test-db",
+			Location:     "Germany",
+			Memory:       1.484,
+			Name:         "ERCOLE",
+			Rac:          false,
+			SegmentsSize: 3,
+			Status:       "OPEN",
+			UniqueName:   "ERCOLE",
+			Version:      "12.2.0.1.0 Enterprise Edition",
+			Work:         &work,
 		},
+	}
+
+	var resFromService = dto.OracleDatabaseResponse{
+		Content:  resContent,
+		Metadata: dto.PagingMetadata{},
 	}
 
 	as.EXPECT().
@@ -1194,10 +1174,10 @@ func TestSearchOracleDatabases_JSONUnpaged(t *testing.T) {
 				dto.GlobalFilter{
 					"", "", utils.MAX_TIME,
 				},
-				false, "", "", false, -1, -1,
+				"", "", false, -1, -1,
 			},
 		).
-		Return(expectedRes, nil)
+		Return(&resFromService, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabases)
@@ -1207,31 +1187,10 @@ func TestSearchOracleDatabases_JSONUnpaged(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
-	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+	assert.JSONEq(t, utils.ToJSON(&resFromService.Content), rr.Body.String())
 }
 
 func TestSearchOracleDatabases_JSONUnprocessableEntity1(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	as := NewMockAPIServiceInterface(mockCtrl)
-	ac := APIController{
-		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-		Service: as,
-		Config:  config.Configuration{},
-		Log:     logger.NewLogger("TEST"),
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchOracleDatabases)
-	req, err := http.NewRequest("GET", "/databases?full=sasdasd", nil)
-	require.NoError(t, err)
-
-	handler.ServeHTTP(rr, req)
-
-	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
-}
-
-func TestSearchOracleDatabases_JSONUnprocessableEntity2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -1252,7 +1211,7 @@ func TestSearchOracleDatabases_JSONUnprocessableEntity2(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchOracleDatabases_JSONUnprocessableEntity3(t *testing.T) {
+func TestSearchOracleDatabases_JSONUnprocessableEntity2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -1273,7 +1232,7 @@ func TestSearchOracleDatabases_JSONUnprocessableEntity3(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchOracleDatabases_JSONUnprocessableEntity4(t *testing.T) {
+func TestSearchOracleDatabases_JSONUnprocessableEntity3(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -1294,7 +1253,7 @@ func TestSearchOracleDatabases_JSONUnprocessableEntity4(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchOracleDatabases_JSONUnprocessableEntity5(t *testing.T) {
+func TestSearchOracleDatabases_JSONUnprocessableEntity4(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -1332,7 +1291,7 @@ func TestSearchOracleDatabases_JSONInternalServerError1(t *testing.T) {
 				dto.GlobalFilter{
 					"", "", utils.MAX_TIME,
 				},
-				false, "", "", false, -1, -1,
+				"", "", false, -1, -1,
 			},
 		).
 		Return(nil, aerrMock)
@@ -1368,7 +1327,7 @@ func TestSearchOracleDatabases_XLSXSuccess(t *testing.T) {
 				dto.GlobalFilter{
 					"Italy", "TST", utils.P("2020-06-10T11:54:59Z"),
 				},
-				false, "foobar", "Hostname", true, -1, -1,
+				"foobar", "Hostname", true, -1, -1,
 			},
 		).
 		Return(expectedRes, nil)
@@ -1453,7 +1412,7 @@ func TestSearchOracleDatabases_XLSXInternalServerError1(t *testing.T) {
 				dto.GlobalFilter{
 					"", "", utils.MAX_TIME,
 				},
-				false, "", "", false, -1, -1,
+				"", "", false, -1, -1,
 			},
 		).
 		Return(nil, aerrMock)
