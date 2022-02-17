@@ -30,6 +30,7 @@ type SearchHostsAsLMS struct {
 
 func GetSearchHostsAsLMSFilters(r *http.Request) (*SearchHostsAsLMS, error) {
 	flms := SearchHostsAsLMS{}
+
 	var err error
 
 	hf, errhf := GetSearchHostFilters(r)

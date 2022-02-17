@@ -30,6 +30,7 @@ import (
 
 func (as *ThunderService) GetOciCompartments(profiles []string) ([]model.OciCompartment, error) {
 	var merr error
+
 	var listCompartments []model.OciCompartment
 
 	// retrieve data for configurated profiles
@@ -40,7 +41,6 @@ func (as *ThunderService) GetOciCompartments(profiles []string) ([]model.OciComp
 
 	// retrieve compartments list for all selected profiles
 	for _, profileId := range profiles {
-
 		objId, err := primitive.ObjectIDFromHex(profileId)
 		if err != nil {
 			merr = multierror.Append(merr, utils.NewErrorf("%w - invalid profileId %q", err, profileId))
@@ -82,11 +82,13 @@ func (as *ThunderService) GetOciCompartments(profiles []string) ([]model.OciComp
 			listCompartments = append(listCompartments, compTmp)
 		}
 	}
+
 	return listCompartments, merr
 }
 
 func (as *ThunderService) getOciProfileCompartments(tenancyOCID string, customConfigProvider common.ConfigurationProvider) ([]model.OciCompartment, error) {
 	var merr error
+
 	var listCompartments []model.OciCompartment
 
 	client, err := identity.NewIdentityClientWithConfigurationProvider(customConfigProvider)

@@ -69,6 +69,7 @@ func fireHostdata(filename string, content []byte) {
 	if insecure {
 		tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	}
+
 	client.Transport = tr
 
 	req, err := http.NewRequest("POST", ercoleConfig.DataService.RemoteEndpoint+"/hosts", bytes.NewReader(content))

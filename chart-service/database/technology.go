@@ -32,7 +32,9 @@ func (md *MongoDatabase) GetTechnologyCount(location string, environment string,
 	var out map[string]float64
 	//Create the operating system technology detector
 	var technologyDetector bson.M = bson.M{}
+
 	var technologyCounter bson.M = bson.M{}
+
 	var unknownOSMatcher bson.A = bson.A{}
 
 	// operating system
@@ -53,6 +55,7 @@ func (md *MongoDatabase) GetTechnologyCount(location string, environment string,
 			},
 		})
 	}
+
 	technologyDetector[model.TechnologyUnknownOperatingSystem] = mu.APOCond(mu.APOAnd(unknownOSMatcher...), 1, 0)
 	// database
 	technologyDetector[model.TechnologyOracleDatabase] = mu.APOSize(mu.APOIfNull("$features.oracle.database.databases", bson.A{}))

@@ -54,8 +54,10 @@ func (md *MongoDatabase) GetOracleDatabaseChartByVersion(location string, enviro
 		if err := cur.Decode(&item); err != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, item)
 	}
+
 	return out, nil
 }
 
@@ -89,7 +91,9 @@ func (md *MongoDatabase) GetOracleDatabaseChartByWork(location string, environme
 		if err := cur.Decode(&item); err != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, item)
 	}
+
 	return out, nil
 }

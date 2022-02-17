@@ -53,10 +53,12 @@ func (as *AlertService) ThrowNewDatabaseAlert(dbname string, hostname string) er
 			"dbname":   dbname,
 		},
 	}
+
 	_, err := as.Database.InsertAlert(alr)
 	if err != nil {
 		return err
 	}
+
 	if as.Config.AlertService.LogAlertThrows {
 		as.Log.Warnf("Alert NEW_DATABASE of %s/%s was thrown\n", hostname, dbname)
 	}
@@ -80,10 +82,12 @@ func (as *AlertService) ThrowNewServerAlert(hostname string) error {
 			"hostname": hostname,
 		},
 	}
+
 	_, err := as.Database.InsertAlert(alr)
 	if err != nil {
 		return err
 	}
+
 	if as.Config.AlertService.LogAlertThrows {
 		as.Log.Warnf("Alert NEW_SERVER of %s was thrown\n", hostname)
 	}
@@ -107,10 +111,12 @@ func (as *AlertService) ThrowNewEnterpriseLicenseAlert(hostname string) error {
 			"hostname": hostname,
 		},
 	}
+
 	_, err := as.Database.InsertAlert(alr)
 	if err != nil {
 		return err
 	}
+
 	if as.Config.AlertService.LogAlertThrows {
 		as.Log.Warnf("Alert NEW_LICENSE of %s was thrown\n", hostname)
 	}
@@ -136,10 +142,12 @@ func (as *AlertService) ThrowActivatedFeaturesAlert(dbname string, hostname stri
 			"features": activatedFeatures,
 		},
 	}
+
 	_, err := as.Database.InsertAlert(alr)
 	if err != nil {
 		return err
 	}
+
 	if as.Config.AlertService.LogAlertThrows {
 		as.Log.Warnf("Alert NEW_OPTIONS of %s/%s was thrown\n", hostname, dbname)
 	}
@@ -163,10 +171,12 @@ func (as *AlertService) ThrowNoDataAlert(hostname string, freshnessThreshold int
 			"hostname": hostname,
 		},
 	}
+
 	_, err := as.Database.InsertAlert(alr)
 	if err != nil {
 		return err
 	}
+
 	if as.Config.AlertService.LogAlertThrows {
 		as.Log.Infof("Alert NO_DATA of %s was thrown\n", hostname)
 	}
@@ -191,10 +201,12 @@ func (as *AlertService) ThrowUnlistedRunningDatabasesAlert(dbname string, hostna
 			"dbname":   dbname,
 		},
 	}
+
 	_, err := as.Database.InsertAlert(alr)
 	if err != nil {
 		return err
 	}
+
 	if as.Config.AlertService.LogAlertThrows {
 		as.Log.Warnf("Alert UNLISTED_RUNNING_DATABASE of %s/%s was thrown\n", hostname, dbname)
 	}

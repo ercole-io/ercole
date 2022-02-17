@@ -32,14 +32,18 @@ func (md *MongoDatabase) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabase
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).
 		Collection(oracleDbLicenseTypesCollection).
 		Find(ctx, bson.M{})
+
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
 	licenseTypes := make([]model.OracleDatabaseLicenseType, 0)
+
 	defer cur.Close(ctx)
+
 	for cur.Next(ctx) {
 		var licenseType model.OracleDatabaseLicenseType
+
 		err := cur.Decode(&licenseType)
 		if err != nil {
 			log.Fatal(err)
@@ -47,6 +51,7 @@ func (md *MongoDatabase) GetOracleDatabaseLicenseTypes() ([]model.OracleDatabase
 
 		licenseTypes = append(licenseTypes, licenseType)
 	}
+
 	if err := cur.Err(); err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
@@ -85,6 +90,7 @@ func (md *MongoDatabase) RemoveOracleDatabaseLicenseType(id string) error {
 	if res.DeletedCount == 0 {
 		return utils.ErrOracleDatabaseLicenseTypeIDNotFound
 	}
+
 	return nil
 }
 
@@ -108,6 +114,7 @@ func (md *MongoDatabase) UpdateOracleDatabaseLicenseType(licenseType model.Oracl
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")
 	}
+
 	if result.MatchedCount != 1 {
 		return utils.ErrOracleDatabaseLicenseTypeIDNotFound
 	}
