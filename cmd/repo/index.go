@@ -120,7 +120,10 @@ func (idx *Index) getArtifactsFromGithub(upstreamRepo config.UpstreamRepository)
 	if err != nil {
 		return err
 	} else if resp.StatusCode != 200 {
-		bytes, _ := ioutil.ReadAll(resp.Body)
+		bytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
 		return fmt.Errorf("Received %d from github for URL %s (body: %s)", resp.StatusCode, upstreamRepo.URL, string(bytes))
 	}
 
@@ -207,7 +210,10 @@ func (idx *Index) getArtifactsFromErcoleReposervice(upstreamRepo config.Upstream
 	if err != nil {
 		return err
 	} else if resp.StatusCode != 200 {
-		bytes, _ := ioutil.ReadAll(resp.Body)
+		bytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
 		return fmt.Errorf("Received %d from ercole reposervice for URL %s (body: %s)", resp.StatusCode, upstreamRepo.URL+"/all", string(bytes))
 	}
 

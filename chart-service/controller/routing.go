@@ -28,7 +28,10 @@ func (ctrl *ChartController) GetChartControllerHandler(auth auth.AuthenticationP
 	router := mux.NewRouter()
 
 	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte("Pong"))
+		if _, err := w.Write([]byte("Pong")); err != nil {
+			ctrl.Log.Error(err)
+			return
+		}
 	})
 
 	router.HandleFunc("/user/login", auth.GetToken).Methods("POST")

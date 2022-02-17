@@ -587,7 +587,7 @@ func (md *MongoDatabase) GetHostMinValidCreatedAtDate(hostname string) (time.Tim
 	var createdAt map[string]interface{}
 
 	findOptions := options.Find()
-	findOptions.SetSort(bson.D{{"createdAt", 1}})
+	findOptions.SetSort(bson.D{{Key: "createdAt", Value: 1}})
 	findOptions.SetLimit(1)
 	findOptions.SetProjection(bson.M{"_id": 0, "createdAt": 1})
 
