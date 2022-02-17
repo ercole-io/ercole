@@ -252,7 +252,7 @@ func (as *APIService) assignOracleDatabaseAgreementsToHosts(
 
 	fillAgreementsInfo(as, agrs, licenseTypesMap)
 
-	assignAgreementsLicensesToItsAssociatedHosts(as, agrs, hostsMap, licenseTypesMap)
+	assignAgreementsLicensesToItsAssociatedHosts(as, agrs, hostsMap)
 
 	// sort again and rebuild map because the references are updated during the sort
 	sortHostsByLicenses(hosts)
@@ -264,7 +264,7 @@ func (as *APIService) assignOracleDatabaseAgreementsToHosts(
 
 	assignLicensesFromBasketAgreements(as, agrs, hosts)
 
-	calculateTotalCoveredAndConsumedLicenses(as, agrs, hostsMap)
+	calculateTotalCoveredAndConsumedLicenses(agrs, hostsMap)
 
 	return nil
 }
@@ -351,12 +351,11 @@ func fillAgreementsInfo(as *APIService, agrs []dto.OracleDatabaseAgreementFE, li
 func assignAgreementsLicensesToItsAssociatedHosts(
 	as *APIService,
 	agreements []dto.OracleDatabaseAgreementFE,
-	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses,
-	licenseTypes map[string]*model.OracleDatabaseLicenseType) {
+	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses) {
 
 	for i := range agreements {
 		agreement := &agreements[i]
-		sortHostsInAgreementByLicenseCount(agreement, hostsMap, licenseTypes)
+		sortHostsInAgreementByLicenseCount(agreement, hostsMap)
 
 		if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
 			as.Log.Debugf("Distributing licenses of agreement #%d to host. Agreement = %s\n", i, utils.ToJSON(agreement))
@@ -385,7 +384,7 @@ func assignAgreementsLicensesToItsAssociatedHosts(
 				continue
 			}
 
-			doAssignAgreementLicensesToAssociatedHost(as, agreement, hostUsingLicenses, associatedHost)
+			doAssignAgreementLicensesToAssociatedHost(agreement, hostUsingLicenses, associatedHost)
 
 			if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
 				as.Log.Debugf(`Distributing %f licenses to host %s. agr.Metrics=%s \
@@ -425,8 +424,7 @@ func hasAvailableLicenses(agreement *dto.OracleDatabaseAgreementFE) bool {
 
 // sortHostsInAgreementByLicenseCount sort the associated hosts by license count
 func sortHostsInAgreementByLicenseCount(agr *dto.OracleDatabaseAgreementFE,
-	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses,
-	licenseTypes map[string]*model.OracleDatabaseLicenseType) {
+	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses) {
 
 	sort.Slice(agr.Hosts, func(i, j int) bool {
 
@@ -449,7 +447,6 @@ func sortHostsInAgreementByLicenseCount(agr *dto.OracleDatabaseAgreementFE,
 
 // Use all the licenses available in agreement to cover host and associatedHost if provided
 func doAssignAgreementLicensesToAssociatedHost(
-	as *APIService,
 	agreement *dto.OracleDatabaseAgreementFE,
 	host *dto.HostUsingOracleDatabaseLicenses,
 	associatedHost *dto.OracleDatabaseAgreementAssociatedHostFE) {
@@ -515,7 +512,7 @@ func assignLicensesFromBasketAgreements(
 				continue
 			}
 
-			doAssignLicenseFromBasketAgreement(as, agr, host)
+			doAssignLicenseFromBasketAgreement(agr, host)
 
 			if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
 				as.Log.Debugf("Distributing with metric [%s] [ULA? %t] %f licenses to obj %s. objCount=0 licenseTypeID=%s\n",
@@ -535,7 +532,6 @@ func assignLicensesFromBasketAgreements(
 
 // Use all the licenses available in agreement to cover host and associatedHost if provided
 func doAssignLicenseFromBasketAgreement(
-	as *APIService,
 	agreement *dto.OracleDatabaseAgreementFE,
 	hostUsingLicenses *dto.HostUsingOracleDatabaseLicenses) {
 
@@ -567,7 +563,6 @@ func doAssignLicenseFromBasketAgreement(
 }
 
 func calculateTotalCoveredAndConsumedLicenses(
-	as *APIService,
 	agrs []dto.OracleDatabaseAgreementFE,
 	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses) {
 
