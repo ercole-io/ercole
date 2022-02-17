@@ -69,20 +69,24 @@ func (as *APIService) GetOracleDatabaseDataguardStatusStats(location string, env
 
 func (as *APIService) GetOracleDatabasesStatistics(filter dto.GlobalFilter) (*dto.OracleDatabasesStatistics, error) {
 	stats := new(dto.OracleDatabasesStatistics)
+
 	var err error
 
 	stats.TotalMemorySize, err = as.Database.GetTotalOracleDatabaseMemorySizeStats(filter.Location, filter.Environment, filter.OlderThan)
 	if err != nil {
 		return nil, err
 	}
+
 	stats.TotalSegmentsSize, err = as.Database.GetTotalOracleDatabaseSegmentSizeStats(filter.Location, filter.Environment, filter.OlderThan)
 	if err != nil {
 		return nil, err
 	}
+
 	stats.TotalDatafileSize, err = as.Database.GetTotalOracleDatabaseDatafileSizeStats(filter.Location, filter.Environment, filter.OlderThan)
 	if err != nil {
 		return nil, err
 	}
+
 	stats.TotalWork, err = as.Database.GetTotalOracleDatabaseWorkStats(filter.Location, filter.Environment, filter.OlderThan)
 	if err != nil {
 		return nil, err

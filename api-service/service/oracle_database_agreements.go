@@ -46,6 +46,7 @@ func (as *APIService) AddOracleDatabaseAgreement(agreement model.OracleDatabaseA
 	}
 
 	agreement.ID = as.NewObjectID()
+
 	err := as.Database.InsertOracleDatabaseAgreement(agreement)
 	if err != nil {
 		return nil, err
@@ -55,6 +56,7 @@ func (as *APIService) AddOracleDatabaseAgreement(agreement model.OracleDatabaseA
 	if err != nil {
 		return nil, err
 	}
+
 	for _, agr := range agrs {
 		if agr.ID == agreement.ID {
 			return &agr, nil
@@ -129,6 +131,7 @@ func (as *APIService) UpdateOracleDatabaseAgreement(agreement model.OracleDataba
 	if err != nil {
 		return nil, err
 	}
+
 	for _, agr := range agrs {
 		if agr.ID == agreement.ID {
 			return &agr, nil
@@ -158,6 +161,7 @@ func (as *APIService) GetOracleDatabaseAgreements(filter dto.GetOracleDatabaseAg
 	}
 
 	filteredAgrs := make([]dto.OracleDatabaseAgreementFE, 0)
+
 	for _, agr := range agreements {
 		if checkOracleDatabaseAgreementMatchFilter(agr, filter) {
 			filteredAgrs = append(filteredAgrs, agr)
@@ -199,6 +203,7 @@ func (as *APIService) GetOracleDatabaseAgreementsAsXLSX(filter dto.GetOracleData
 	if err != nil {
 		return nil, err
 	}
+
 	axisHelp := exutils.NewAxisHelper(1)
 
 	for _, val := range agreements {
@@ -227,6 +232,7 @@ func (as *APIService) GetOracleDatabaseAgreementsAsXLSX(filter dto.GetOracleData
 			sheets.SetCellValue(sheet, duplicateRowNextAxis(), val2.TotalCoveredLicensesCount)
 		}
 	}
+
 	return sheets, err
 }
 
@@ -234,7 +240,6 @@ func (as *APIService) GetOracleDatabaseAgreementsAsXLSX(filter dto.GetOracleData
 func (as *APIService) assignOracleDatabaseAgreementsToHosts(
 	agrs []dto.OracleDatabaseAgreementFE,
 	hosts []dto.HostUsingOracleDatabaseLicenses) error {
-
 	licenseTypes, err := as.Database.GetOracleDatabaseLicenseTypes()
 	if err != nil {
 		return err
@@ -308,13 +313,13 @@ func sortHostsByLicenses(obj []dto.HostUsingOracleDatabaseLicenses) {
 // Assume that doesn't exist a cluster and a host with the same name
 func buildHostUsingLicensesMap(hosts []dto.HostUsingOracleDatabaseLicenses,
 ) map[string]map[string]*dto.HostUsingOracleDatabaseLicenses {
-
 	res := make(map[string]map[string]*dto.HostUsingOracleDatabaseLicenses)
 
 	for i, host := range hosts {
 		if _, ok := res[host.LicenseTypeID]; !ok {
 			res[host.LicenseTypeID] = make(map[string]*dto.HostUsingOracleDatabaseLicenses)
 		}
+
 		res[host.LicenseTypeID][host.Name] = &hosts[i]
 	}
 
@@ -333,7 +338,6 @@ func buildLicenseTypesMap(licenseTypes []model.OracleDatabaseLicenseType) map[st
 }
 
 func fillAgreementsInfo(as *APIService, agrs []dto.OracleDatabaseAgreementFE, licenseTypes map[string]*model.OracleDatabaseLicenseType) {
-
 	for i := range agrs {
 		agr := &agrs[i]
 
@@ -352,7 +356,6 @@ func assignAgreementsLicensesToItsAssociatedHosts(
 	as *APIService,
 	agreements []dto.OracleDatabaseAgreementFE,
 	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses) {
-
 	for i := range agreements {
 		agreement := &agreements[i]
 		sortHostsInAgreementByLicenseCount(agreement, hostsMap)
@@ -411,7 +414,6 @@ func hasAvailableLicenses(agreement *dto.OracleDatabaseAgreementFE) bool {
 	if agreement.AvailableLicensesPerCore > 0 &&
 		agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual {
 		return true
-
 	}
 
 	if agreement.AvailableLicensesPerUser > 0 &&
@@ -425,9 +427,7 @@ func hasAvailableLicenses(agreement *dto.OracleDatabaseAgreementFE) bool {
 // sortHostsInAgreementByLicenseCount sort the associated hosts by license count
 func sortHostsInAgreementByLicenseCount(agr *dto.OracleDatabaseAgreementFE,
 	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses) {
-
 	sort.Slice(agr.Hosts, func(i, j int) bool {
-
 		ltID := agr.LicenseTypeID
 		mapHostnamesLicenses := hostsMap[ltID]
 
@@ -450,7 +450,6 @@ func doAssignAgreementLicensesToAssociatedHost(
 	agreement *dto.OracleDatabaseAgreementFE,
 	host *dto.HostUsingOracleDatabaseLicenses,
 	associatedHost *dto.OracleDatabaseAgreementAssociatedHostFE) {
-
 	if agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual {
 		var coverableLicenses float64
 		if agreement.Unlimited {
@@ -489,7 +488,6 @@ func assignLicensesFromBasketAgreements(
 	as *APIService,
 	agrs []dto.OracleDatabaseAgreementFE,
 	hosts []dto.HostUsingOracleDatabaseLicenses) {
-
 	for i := range hosts {
 		host := &hosts[i]
 
@@ -534,7 +532,6 @@ func assignLicensesFromBasketAgreements(
 func doAssignLicenseFromBasketAgreement(
 	agreement *dto.OracleDatabaseAgreementFE,
 	hostUsingLicenses *dto.HostUsingOracleDatabaseLicenses) {
-
 	var coverableLicenses float64
 
 	if agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual {
@@ -545,8 +542,8 @@ func doAssignLicenseFromBasketAgreement(
 			coverableLicenses = math.Min(agreement.AvailableLicensesPerCore, hostUsingLicenses.LicenseCount)
 			agreement.AvailableLicensesPerCore -= coverableLicenses
 		}
-		agreement.CoveredLicenses += coverableLicenses
 
+		agreement.CoveredLicenses += coverableLicenses
 	} else {
 		if agreement.Unlimited {
 			coverableLicenses = hostUsingLicenses.LicenseCount
@@ -555,8 +552,8 @@ func doAssignLicenseFromBasketAgreement(
 			coverableLicenses = math.Floor(math.Min(agreement.AvailableLicensesPerUser, hostUsingLicenses.LicenseCount*25) / 25)
 			agreement.AvailableLicensesPerUser -= coverableLicenses * 25
 		}
-		agreement.CoveredLicenses += coverableLicenses * 25
 
+		agreement.CoveredLicenses += coverableLicenses * 25
 	}
 
 	hostUsingLicenses.LicenseCount -= coverableLicenses
@@ -565,7 +562,6 @@ func doAssignLicenseFromBasketAgreement(
 func calculateTotalCoveredAndConsumedLicenses(
 	agrs []dto.OracleDatabaseAgreementFE,
 	hostsMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses) {
-
 	for i := range agrs {
 		agreement := &agrs[i]
 
@@ -573,6 +569,7 @@ func calculateTotalCoveredAndConsumedLicenses(
 
 		for j := range agreement.Hosts {
 			associatedHost := &agreement.Hosts[j]
+
 			if _, ok := hostsMap[ltID]; !ok {
 				continue
 			}
@@ -654,6 +651,7 @@ func (as *APIService) DeleteHostFromOracleDatabaseAgreement(id primitive.ObjectI
 			agreement.Hosts = append(
 				agreement.Hosts[0:i],
 				agreement.Hosts[i+1:len(agreement.Hosts)]...)
+
 			break
 		}
 	}

@@ -48,6 +48,7 @@ func (md *MongoDatabase) SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.My
 	}
 
 	var out []dto.MySQLInstance
+
 	err = cur.All(context.TODO(), &out)
 	if err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
@@ -81,6 +82,7 @@ func (md *MongoDatabase) GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.My
 	}
 
 	var out []dto.MySQLUsedLicense
+
 	err = cur.All(context.TODO(), &out)
 	if err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")

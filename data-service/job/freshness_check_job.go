@@ -84,6 +84,7 @@ func (job *FreshnessCheckJob) Run() {
 				"hostname": host.Hostname,
 			},
 		}
+
 		err := job.AlertSvcClient.ThrowNewAlert(alert)
 		if err != nil {
 			job.Log.Error(err)

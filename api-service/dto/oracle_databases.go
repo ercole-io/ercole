@@ -40,6 +40,7 @@ func GetSearchOracleDatabasesFilter(r *http.Request) (f *SearchOracleDatabasesFi
 	if err != nil {
 		return nil, err
 	}
+
 	f.GlobalFilter = *gf
 
 	if f.Full, err = utils.Str2bool(r.URL.Query().Get("full"), false); err != nil {
@@ -48,6 +49,7 @@ func GetSearchOracleDatabasesFilter(r *http.Request) (f *SearchOracleDatabasesFi
 
 	f.Search = r.URL.Query().Get("search")
 	f.SortBy = r.URL.Query().Get("sort-by")
+
 	if f.SortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
 		return nil, err
 	}
@@ -55,6 +57,7 @@ func GetSearchOracleDatabasesFilter(r *http.Request) (f *SearchOracleDatabasesFi
 	if f.PageNumber, err = utils.Str2int(r.URL.Query().Get("page"), -1); err != nil {
 		return nil, err
 	}
+
 	if f.PageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
 		return nil, err
 	}

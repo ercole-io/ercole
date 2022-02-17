@@ -102,7 +102,9 @@ func (md *MongoDatabase) SearchOracleDatabases(full bool, keywords []string, sor
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, item)
 	}
+
 	return out, nil
 }

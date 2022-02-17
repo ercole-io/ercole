@@ -297,6 +297,7 @@ func ReadConfig(log logger.Logger, extraConfigFile string) (configuration Config
 	for i := 0; i < len(dataDirs); i++ {
 		dataDirs[i] = filepath.Join(dataDirs[i], "ercole/config.toml")
 	}
+
 	layers = addFileLayers(log, layers, dataDirs...)
 
 	layers = addFileLayers(log, layers, "/etc/ercole/ercole.toml")
@@ -304,6 +305,7 @@ func ReadConfig(log logger.Logger, extraConfigFile string) (configuration Config
 	etcErcoleDirectory := "/etc/ercole/conf.d/"
 	log.Debugf("Read folder for conf files: %s", etcErcoleDirectory)
 	directoryLayer, err := directorylayer.NewDirectoryLayer(etcErcoleDirectory, "toml")
+
 	if err == nil {
 		layers = append(layers, directoryLayer)
 	} else if !strings.Contains(err.Error(), "no such file or directory") {
@@ -338,6 +340,7 @@ func addFileLayers(log logger.Logger, layers []onion.Layer, configFiles ...strin
 
 		if err == nil {
 			log.Debugf("Read file for conf: %s", file)
+
 			layers = append(layers, layer)
 		} else if !errors.As(err, &pathErr) {
 			log.Warnf("error reading file [%s]: [%s]", file, err)
@@ -352,6 +355,7 @@ func checkConfiguration(log logger.Logger, config *Configuration) error {
 	if err != nil {
 		return err
 	}
+
 	cwd = filepath.Dir(cwd)
 
 	if config.RepoService.DistributedFiles == "" {
@@ -382,6 +386,7 @@ func checkConfiguration(log logger.Logger, config *Configuration) error {
 func checkOracleDatabaseLicenseTypeMetrics(log logger.Logger, config *Configuration) {
 	metrics := make([]string, 0)
 	metrics = append(metrics, config.DataService.LicenseTypeMetricsDefault...)
+
 	for _, sl := range config.DataService.LicenseTypeMetricsByEnvironment {
 		metrics = append(metrics, sl...)
 	}

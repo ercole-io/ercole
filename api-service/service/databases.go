@@ -31,14 +31,17 @@ import (
 
 func (as *APIService) SearchDatabases(filter dto.GlobalFilter) ([]dto.Database, error) {
 	type getter func(filter dto.GlobalFilter) ([]dto.Database, error)
+
 	getters := []getter{as.getOracleDatabases, as.getMySQLDatabases}
 
 	dbs := make([]dto.Database, 0)
+
 	for _, get := range getters {
 		thisDbs, err := get(filter)
 		if err != nil {
 			return nil, err
 		}
+
 		dbs = append(dbs, thisDbs...)
 	}
 
@@ -52,12 +55,14 @@ func (as *APIService) getOracleDatabases(filter dto.GlobalFilter) ([]dto.Databas
 		PageNumber:   -1,
 		PageSize:     -1,
 	}
+
 	oracleDbs, err := as.SearchOracleDatabases(sodf)
 	if err != nil {
 		return nil, err
 	}
 
 	dbs := make([]dto.Database, 0)
+
 	for _, oracleDb := range oracleDbs {
 		db := dto.Database{
 			Name:             oracleDb["name"].(string),
@@ -87,8 +92,8 @@ func (as *APIService) getMySQLDatabases(filter dto.GlobalFilter) ([]dto.Database
 	}
 
 	dbs := make([]dto.Database, 0)
-	for _, instance := range mysqlInstances {
 
+	for _, instance := range mysqlInstances {
 		segmentsSize := 0.0
 		for _, ts := range instance.TableSchemas {
 			segmentsSize += ts.Allocation
@@ -133,6 +138,7 @@ func (as *APIService) SearchDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.
 		"Datafile Size",
 		"Segments Size",
 	}
+
 	file, err := exutils.NewXLSX(as.Config, sheet, headers...)
 	if err != nil {
 		return nil, err
@@ -173,14 +179,17 @@ func (as *APIService) GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.Data
 
 func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
 	type getter func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
+
 	getters := []getter{as.getOracleDatabasesUsedLicenses, as.getMySQLUsedLicenses}
 
 	usedLicenses := make([]dto.DatabaseUsedLicense, 0)
+
 	for _, get := range getters {
 		thisDbs, err := get(filter)
 		if err != nil {
 			return nil, err
 		}
+
 		usedLicenses = append(usedLicenses, thisDbs...)
 	}
 
@@ -190,17 +199,19 @@ func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.D
 	}
 
 	hostdatasPerHostname := make(map[string]*model.HostDataBE, len(hostdatas))
+
 	for i := range hostdatas {
 		hd := &hostdatas[i]
 		hostdatasPerHostname[hd.Hostname] = hd
 	}
 
 	for i, l := range usedLicenses {
-
 		hostdata, found := hostdatasPerHostname[l.Hostname]
+
 		if usedLicenses[i].Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
 			usedLicenses[i].UsedLicenses *= model.GetFactorByMetric(usedLicenses[i].Metric)
 		}
+
 		if !found {
 			as.Log.Errorf("%w: %s", utils.ErrHostNotFound, l.Hostname)
 			continue
@@ -218,16 +229,17 @@ func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.D
 				}
 			}
 		}
+
 		clusterCores, err := hostdata.GetClusterCores(hostdatasPerHostname)
 		if errors.Is(err, utils.ErrHostNotInCluster) {
 			continue
 		} else if err != nil {
 			return nil, err
 		}
+
 		consumedLicenses := float64(clusterCores) * hostdata.CoreFactor()
 
 		usedLicenses[i].ClusterLicenses = consumedLicenses
-
 	}
 
 	return usedLicenses, nil
@@ -254,6 +266,7 @@ func (as *APIService) GetDatabasesUsedLicensesAsXLSX(filter dto.GlobalFilter) (*
 	if err != nil {
 		return nil, err
 	}
+
 	axisHelp := exutils.NewAxisHelper(1)
 
 	for _, val := range licenses {
@@ -266,6 +279,7 @@ func (as *APIService) GetDatabasesUsedLicensesAsXLSX(filter dto.GlobalFilter) (*
 		sheets.SetCellValue(sheet, nextAxis(), val.UsedLicenses)
 		sheets.SetCellValue(sheet, nextAxis(), val.ClusterLicenses)
 	}
+
 	return sheets, err
 }
 
@@ -281,6 +295,7 @@ func (as *APIService) getOracleDatabasesUsedLicenses(filter dto.GlobalFilter) ([
 	}
 
 	genericLics := make([]dto.DatabaseUsedLicense, 0, len(oracleLics.Content))
+
 	for _, o := range oracleLics.Content {
 		lt := licenseTypes[o.LicenseTypeID]
 
@@ -324,19 +339,20 @@ func (as *APIService) getMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.Datab
 }
 
 func (as *APIService) GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error) {
-
 	licenses := make([]dto.LicenseCompliance, 0)
 
 	oracle, err := as.GetOracleDatabaseLicensesCompliance()
 	if err != nil {
 		return nil, err
 	}
+
 	licenses = append(licenses, oracle...)
 
 	mysql, err := as.GetMySQLDatabaseLicensesCompliance()
 	if err != nil {
 		return nil, err
 	}
+
 	licenses = append(licenses, mysql...)
 
 	for i := 0; i < len(licenses); {
@@ -374,6 +390,7 @@ func (as *APIService) GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, err
 	if err != nil {
 		return nil, err
 	}
+
 	axisHelp := exutils.NewAxisHelper(1)
 
 	for _, val := range licenses {
@@ -386,6 +403,7 @@ func (as *APIService) GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, err
 		sheets.SetCellValue(sheet, nextAxis(), val.Compliance)
 		sheets.SetCellValue(sheet, nextAxis(), val.Unlimited)
 	}
+
 	return sheets, err
 }
 
@@ -411,6 +429,7 @@ func (as *APIService) GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFil
 	if err != nil {
 		return nil, err
 	}
+
 	axisHelp := exutils.NewAxisHelper(1)
 
 	for _, val := range usedLicenses {
@@ -424,6 +443,7 @@ func (as *APIService) GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFil
 		sheets.SetCellValue(sheet, nextAxis(), val.UsedLicenses)
 		sheets.SetCellValue(sheet, nextAxis(), val.ClusterLicenses)
 	}
+
 	return sheets, err
 }
 
@@ -470,6 +490,7 @@ func (as *APIService) GetDatabasesUsedLicensesPerCluster(filter dto.GlobalFilter
 	}
 
 	clusterByHostnames := make(map[string]*dto.Cluster)
+
 	for i := range clusters {
 		for j := range clusters[i].VMs {
 			clusterByHostnames[clusters[i].VMs[j].Hostname] = &clusters[i]
@@ -515,6 +536,7 @@ licenses:
 	}
 
 	result := make([]dto.DatabaseUsedLicensePerCluster, 0)
+
 	for i := range m {
 		for j := range m[i] {
 			result = append(result, *m[i][j])
@@ -544,6 +566,7 @@ func (as *APIService) GetDatabasesUsedLicensesPerClusterAsXLSX(filter dto.Global
 	if err != nil {
 		return nil, err
 	}
+
 	axisHelp := exutils.NewAxisHelper(1)
 
 	for _, val := range usedLicenses {

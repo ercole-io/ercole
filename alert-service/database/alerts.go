@@ -32,6 +32,7 @@ func (md *MongoDatabase) InsertAlert(alert model.Alert) (*mongo.InsertOneResult,
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
+
 	return res, nil
 }
 

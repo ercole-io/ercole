@@ -66,6 +66,7 @@ func (hds *HostDataService) CompareCmdbInfo(cmdbInfo dto.CmdbInfo) error {
 // If a has multiple times on item, which is in b even only once, no occurrences will be returned
 func differenceHostnames(a, b []string) []string {
 	mb := make(map[string]struct{}, len(b))
+
 	for _, x := range b {
 		lcx := strings.ToLower(x)
 		mb[lcx] = struct{}{}
@@ -77,6 +78,7 @@ func differenceHostnames(a, b []string) []string {
 	}
 
 	var diff []string
+
 	for _, x := range a {
 		lcx := strings.ToLower(x)
 		if _, found := mb[lcx]; found {

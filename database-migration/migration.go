@@ -35,6 +35,7 @@ func Migrate(conf config.Mongodb) error {
 	if err != nil {
 		return err
 	}
+
 	migrate.SetDatabase(database)
 
 	if err := migrate.Up(migrate.AllAvailable); err != nil {
@@ -59,6 +60,7 @@ func connectToMongodb(conf config.Mongodb) (*mongo.Database, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
+
 	err = client.Ping(ctx, nil)
 	if err != nil {
 		return nil, utils.NewError(err, "Can't connect to the database!")

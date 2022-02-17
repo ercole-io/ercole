@@ -62,9 +62,11 @@ func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(sortBy string, sortDes
 	var response dto.OracleDatabaseUsedLicenseSearchResponse
 
 	cursor.Next(context.TODO())
+
 	if err := cursor.Decode(&response); err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
 	}
+
 	return &response, nil
 }
 
@@ -84,6 +86,7 @@ func (md *MongoDatabase) UpdateLicenseIgnoredField(hostname string, dbname strin
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")
 	}
+
 	if result.MatchedCount != 1 {
 		return utils.ErrLicenseNotFound
 	}
