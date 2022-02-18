@@ -61,6 +61,7 @@ func (as *APIService) getOracleDatabases(filter dto.GlobalFilter) ([]dto.Databas
 	}
 
 	dbs := make([]dto.Database, 0)
+
 	for _, oracleDb := range oracleDbs.Content {
 		db := dto.Database{
 			Name:             oracleDb.Name,

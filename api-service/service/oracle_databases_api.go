@@ -167,11 +167,13 @@ func (as *APIService) SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabas
 		file.SetCellValue("Databases", fmt.Sprintf("H%d", i), val.Charset)
 		file.SetCellValue("Databases", fmt.Sprintf("I%d", i), val.BlockSize)
 		file.SetCellValue("Databases", fmt.Sprintf("J%d", i), val.CPUCount)
+
 		if val.Work != nil {
 			file.SetCellValue("Databases", fmt.Sprintf("K%d", i), *val.Work)
 		} else {
 			file.SetCellValue("Databases", fmt.Sprintf("K%d", i), "")
 		}
+
 		file.SetCellValue("Databases", fmt.Sprintf("L%d", i), val.MemoryTarget)
 		file.SetCellValue("Databases", fmt.Sprintf("M%d", i), val.DatafileSize)
 		file.SetCellValue("Databases", fmt.Sprintf("N%d", i), val.SegmentsSize)
