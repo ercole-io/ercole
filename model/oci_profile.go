@@ -32,7 +32,6 @@ type OciProfile struct {
 }
 
 func (pr OciProfile) IsValid() bool {
-
 	if len(pr.TenancyOCID) < 4 || len(pr.UserOCID) < 4 {
 		return false
 	}

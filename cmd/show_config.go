@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -30,7 +31,10 @@ var showConfigCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		enc := json.NewEncoder(os.Stdout)
 		enc.SetIndent("", "    ")
-		enc.Encode(ercoleConfig)
+		if err := enc.Encode(ercoleConfig); err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err)
+			os.Exit(1)
+		}
 	},
 }
 

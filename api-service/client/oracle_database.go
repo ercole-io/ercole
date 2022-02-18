@@ -22,9 +22,9 @@ import (
 )
 
 func (c *Client) GetOracleDatabases() ([]model.OracleDatabase, error) {
-
 	var databases []model.OracleDatabase
-	_, err := c.getParsedResponse(context.TODO(), "/hosts/technologies/oracle/databases", "GET", nil, &databases)
+
+	err := c.getParsedResponse(context.TODO(), "/hosts/technologies/oracle/databases", "GET", nil, &databases)
 	if err != nil {
 		return nil, err
 	}

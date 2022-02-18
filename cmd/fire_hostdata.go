@@ -35,7 +35,11 @@ var fireHostDataCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		//Load the data
 		if len(args) == 0 {
-			raw, _ := ioutil.ReadAll(os.Stdin)
+			raw, err := ioutil.ReadAll(os.Stdin)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+				os.Exit(1)
+			}
 			fireHostdata("stdin", raw)
 		} else {
 			for _, arg := range args {
@@ -65,6 +69,7 @@ func fireHostdata(filename string, content []byte) {
 	if insecure {
 		tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	}
+
 	client.Transport = tr
 
 	req, err := http.NewRequest("POST", ercoleConfig.DataService.RemoteEndpoint+"/hosts", bytes.NewReader(content))
@@ -85,7 +90,11 @@ func fireHostdata(filename string, content []byte) {
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		out, _ := ioutil.ReadAll(resp.Body)
+		out, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err)
+			os.Exit(1)
+		}
 		defer resp.Body.Close()
 		fmt.Fprintf(os.Stderr, "File: %s Status: %d Cause: %s\n", filename, resp.StatusCode, string(out))
 		os.Exit(1)

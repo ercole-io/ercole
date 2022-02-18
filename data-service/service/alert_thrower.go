@@ -52,7 +52,6 @@ func (hds *HostDataService) throwNewServerAlert(hostname string) error {
 // ThrowNewEnterpriseLicenseAlert create and insert in the database a new NEW_DATABASE alert
 func (hds *HostDataService) throwNewLicenseAlert(hostname, dbname string, licenseType model.OracleDatabaseLicenseType,
 	alreadyEnabledBefore bool) error {
-
 	severity := model.AlertSeverityCritical
 	description := fmt.Sprintf("The database %s on %s has enabled new license: %s", dbname, hostname, licenseType.ItemDescription)
 
@@ -188,6 +187,7 @@ func (hds *HostDataService) throwMissingPrimaryDatabase(hostname, secondaryDbNam
 func (hds *HostDataService) throwAgentErrorsAlert(hostname string, errs []model.AgentError) error {
 	b := strings.Builder{}
 	prefix := ""
+
 	if len(errs) > 1 {
 		prefix = "- "
 	}

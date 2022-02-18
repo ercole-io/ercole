@@ -47,12 +47,14 @@ func BuildAuthenticationProvider(conf config.AuthenticationProviderConfig, timeN
 		prov.Config = conf
 		prov.Log = log
 		prov.TimeNow = timeNow
+
 		return prov
 	case "ldap":
 		prov := new(LDAPAuthenticationProvider)
 		prov.Config = conf
 		prov.Log = log
 		prov.TimeNow = timeNow
+
 		return prov
 	default:
 		panic("The AuthenticationProvider type wasn't recognized or supported")
@@ -73,6 +75,7 @@ func buildToken(now time.Time, tokenValidityTimeout int, username string, privat
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+
 	ss, err := token.SignedString(privateKey)
 	if err != nil {
 		return "", err
@@ -96,6 +99,7 @@ func validateBearerToken(tokenString string, timeNow func() time.Time, publicKey
 	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(_ *jwt.Token) (interface{}, error) {
 		return publicKey, nil
 	}, jwt.WithValidMethods([]string{jwt.SigningMethodRS256.Name}))
+
 	if err != nil {
 		return err
 	}

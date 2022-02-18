@@ -102,8 +102,10 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, item)
 	}
+
 	return out, nil
 }
 

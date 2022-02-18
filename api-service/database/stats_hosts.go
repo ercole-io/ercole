@@ -81,8 +81,10 @@ func (md *MongoDatabase) GetEnvironmentStats(location string, olderThan time.Tim
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }
 
@@ -111,8 +113,10 @@ func (md *MongoDatabase) GetTypeStats(location string, olderThan time.Time) ([]i
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }
 
@@ -122,6 +126,7 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 
 	//Create the aggregation branches
 	var switchExpr interface{}
+
 	if len(md.OperatingSystemAggregationRules) > 0 {
 		aggregationBranches := []bson.M{}
 		for _, v := range md.OperatingSystemAggregationRules {
@@ -168,7 +173,9 @@ func (md *MongoDatabase) GetOperatingSystemStats(location string, olderThan time
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }

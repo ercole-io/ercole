@@ -26,7 +26,6 @@ import (
 )
 
 func (ctrl *ThunderController) GetOciComputeInstanceRightsizing(w http.ResponseWriter, r *http.Request) {
-
 	profileList := mux.Vars(r)["ids"]
 	if profileList == "" {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Ids not present or malformed"))
@@ -49,6 +48,7 @@ func (ctrl *ThunderController) GetOciComputeInstanceRightsizing(w http.ResponseW
 		}
 
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+
 		return
 	}
 
@@ -57,6 +57,7 @@ func (ctrl *ThunderController) GetOciComputeInstanceRightsizing(w http.ResponseW
 			"recommendations": recommendations,
 		}
 		utils.WriteJSONResponse(w, http.StatusOK, response)
+
 		return
 	}
 
