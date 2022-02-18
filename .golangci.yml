@@ -1,0 +1,32 @@
+run:
+  timeout: 5m
+  tests: false
+
+  skip-dirs:
+  - utils
+
+output:
+  format: colored-line-number
+  sort-results: true
+
+linters-settings:
+  errcheck:
+    check-blank: true
+
+linters:
+  enable:
+    - deadcode
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unused
+    - varcheck
+    - unparam
+    - wsl
+
+severity:
+  default-severity: error

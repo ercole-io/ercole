@@ -32,18 +32,13 @@ import (
 
 // SearchAlerts search alerts using the filters in the request
 func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) {
-	var mode string
-	var search string
-	var sortBy string
+	var mode, search, sortBy, location, environment, severity, status string
+
 	var sortDesc bool
-	var pageNumber int
-	var pageSize int
-	var location string
-	var environment string
-	var severity string
-	var status string
-	var from time.Time
-	var to time.Time
+
+	var pageNumber, pageSize int
+
+	var from, to time.Time
 
 	var err error
 
@@ -109,15 +104,14 @@ func (ctrl *APIController) SearchAlerts(w http.ResponseWriter, r *http.Request) 
 		ctrl.searchAlertsXLSX(w, r, from, to)
 
 	default:
-		ctrl.searchAlertsJSON(w, r, mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
+		ctrl.searchAlertsJSON(w, mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
 	}
 }
 
 // searchAlertsJSON search alerts using the filters in the request returning it in JSON format
-func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Request,
+func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter,
 	mode string, search string, sortBy string, sortDesc bool, pageNumber int, pageSize int,
 	location, environment, severity string, status string, from time.Time, to time.Time) {
-
 	response, err := ctrl.Service.SearchAlerts(mode, search, sortBy, sortDesc, pageNumber, pageSize, location, environment, severity, status, from, to)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -134,12 +128,12 @@ func (ctrl *APIController) searchAlertsJSON(w http.ResponseWriter, r *http.Reque
 
 // searchAlertsXLSX search alerts using the filters in the request returning it in XLSX format
 func (ctrl *APIController) searchAlertsXLSX(w http.ResponseWriter, r *http.Request, from time.Time, to time.Time) {
-
 	filter, err := dto.GetGlobalFilter(r)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	xlsx, err := ctrl.Service.SearchAlertsAsXLSX(from, to, *filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -163,6 +157,7 @@ func (ctrl *APIController) AckAlerts(w http.ResponseWriter, r *http.Request) {
 
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
+
 	if err := decoder.Decode(&body); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
@@ -172,10 +167,12 @@ func (ctrl *APIController) AckAlerts(w http.ResponseWriter, r *http.Request) {
 		(body.Ids == nil && body.Filter == nil) {
 		err := errors.New("you must send ids or filter (but not both: they are mutually exclusive)")
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+
 		return
 	}
 
 	var filter dto.AlertsFilter
+
 	if body.Filter != nil {
 		filter = *body.Filter
 	} else {

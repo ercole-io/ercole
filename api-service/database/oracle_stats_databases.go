@@ -58,8 +58,10 @@ func (md *MongoDatabase) GetOracleDatabaseEnvironmentStats(location string, olde
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }
 
@@ -97,8 +99,10 @@ func (md *MongoDatabase) GetOracleDatabaseHighReliabilityStats(location string, 
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }
 
@@ -132,8 +136,10 @@ func (md *MongoDatabase) GetOracleDatabaseVersionStats(location string, olderTha
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }
 
@@ -173,8 +179,10 @@ func (md *MongoDatabase) GetTopReclaimableOracleDatabaseStats(location string, l
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }
 
@@ -214,8 +222,10 @@ func (md *MongoDatabase) GetTopWorkloadOracleDatabaseStats(location string, limi
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }
 
@@ -268,8 +278,10 @@ func (md *MongoDatabase) GetOracleDatabasePatchStatusStats(location string, wind
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }
 
@@ -303,8 +315,10 @@ func (md *MongoDatabase) GetOracleDatabaseDataguardStatusStats(location string, 
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }
 
@@ -343,8 +357,10 @@ func (md *MongoDatabase) GetOracleDatabaseRACStatusStats(location string, enviro
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }
 
@@ -378,8 +394,10 @@ func (md *MongoDatabase) GetOracleDatabaseArchivelogStatusStats(location string,
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }
 
@@ -587,7 +605,9 @@ func (md *MongoDatabase) GetTopUnusedOracleDatabaseInstanceResourceStats(locatio
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }

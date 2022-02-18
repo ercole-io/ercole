@@ -26,7 +26,10 @@ func (ctrl *AlertQueueController) GetAlertControllerHandler() http.Handler {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Pong"))
+		if _, err := w.Write([]byte("Pong")); err != nil {
+			ctrl.Log.Error(err)
+			return
+		}
 	})
 
 	subrouter := router.NewRoute().Subrouter()

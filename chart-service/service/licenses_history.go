@@ -62,6 +62,7 @@ func sortAndKeepOnlyLastEntryOfEachDay(history []dto.LicenseComplianceHistoricVa
 	newHistory := make([]dto.LicenseComplianceHistoricValue, 0, len(history))
 
 	var nextEntry *dto.LicenseComplianceHistoricValue
+
 	for i := range history {
 		val := &history[i]
 		valDay := time.Date(val.Date.Year(), val.Date.Month(), val.Date.Day(), 0, 0, 0, 0, val.Date.Location())
@@ -69,6 +70,7 @@ func sortAndKeepOnlyLastEntryOfEachDay(history []dto.LicenseComplianceHistoricVa
 		if nextEntry == nil || valDay.Equal(nextEntry.Date) {
 			nextEntry = val
 			nextEntry.Date = valDay
+
 			continue
 		}
 
@@ -88,6 +90,7 @@ func sortAndKeepOnlyLastEntryOfEachDay(history []dto.LicenseComplianceHistoricVa
 
 func mergeMySqlLicensesCompliance(licenses []dto.LicenseComplianceHistory) []dto.LicenseComplianceHistory {
 	var mySql *dto.LicenseComplianceHistory
+
 	mySqlEnterprisePrefix := "MySQL Enterprise"
 
 	for i := len(licenses) - 1; i >= 0; i-- {
@@ -116,12 +119,14 @@ func mergeMySqlLicensesCompliance(licenses []dto.LicenseComplianceHistory) []dto
 
 func mergeLicenseComplianceHistoricValues(a, b []dto.LicenseComplianceHistoricValue) []dto.LicenseComplianceHistoricValue {
 	merged := make([]dto.LicenseComplianceHistoricValue, 0)
+
 	for i, j := 0, 0; i < len(a) || j < len(b); {
 		var valA, valB *dto.LicenseComplianceHistoricValue
 
 		if i < len(a) {
 			valA = &a[i]
 		}
+
 		if j < len(b) {
 			valB = &b[j]
 		}
@@ -129,12 +134,14 @@ func mergeLicenseComplianceHistoricValues(a, b []dto.LicenseComplianceHistoricVa
 		if valA != nil && (valB == nil || valA.Date.Before(valB.Date)) {
 			merged = append(merged, *valA)
 			i += 1
+
 			continue
 		}
 
 		if valA == nil || valB.Date.Before(valA.Date) {
 			merged = append(merged, *valB)
 			j += 1
+
 			continue
 		}
 

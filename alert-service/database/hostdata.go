@@ -69,6 +69,7 @@ func (md *MongoDatabase) FindMostRecentHostDataOlderThan(hostname string, t time
 	if err != nil {
 		return model.HostDataBE{}, utils.NewError(err, "DB ERROR")
 	}
+
 	hasNext := cur.Next(context.TODO())
 	if !hasNext {
 		return model.HostDataBE{}, nil

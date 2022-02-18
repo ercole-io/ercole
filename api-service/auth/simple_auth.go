@@ -87,7 +87,12 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 	}
 
 	//Check if the credentials are valid
-	info, _ := ap.GetUserInfoIfCredentialsAreCorrect(request.Username, request.Password)
+	info, err := ap.GetUserInfoIfCredentialsAreCorrect(request.Username, request.Password)
+	if err != nil {
+		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, err)
+		return
+	}
+
 	if info == nil {
 		utils.WriteAndLogError(ap.Log, w, http.StatusUnauthorized, utils.NewError(errors.New("Failed to login, invalid credentials"), http.StatusText(http.StatusUnauthorized)))
 		return
@@ -100,11 +105,16 @@ func (ap *BasicAuthenticationProvider) GetToken(w http.ResponseWriter, r *http.R
 		ap.Log.Errorf("Unable to get signed token: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		utils.WriteAndLogError(ap.Log, w, http.StatusInternalServerError, fmt.Errorf("Unable to get signed token"))
+
+		return
+	}
+
+	if _, err := w.Write([]byte(token)); err != nil {
+		utils.WriteAndLogError(ap.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(token))
 }
 
 // AuthenticateMiddleware return the middleware used to check if the users are authenticated

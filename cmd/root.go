@@ -31,6 +31,7 @@ import (
 var ercoleConfig config.Configuration
 var serverVersion string = "latest"
 var extraConfigFile string
+var verbose bool
 
 var rootCmd = &cobra.Command{
 	Use:     "ercole",
@@ -46,7 +47,11 @@ var rootCmd = &cobra.Command{
 			log.Fatalf("Configuration file not found: %s", extraConfigFile)
 		}
 
-		ercoleConfig = config.ReadConfig(log, extraConfigFile)
+		ercoleConfig, err := config.ReadConfig(log, extraConfigFile)
+		if err != nil {
+			log.Error(err)
+			return
+		}
 		ercoleConfig.Version = serverVersion
 
 		repo.SetRepoVerbose(verbose)
@@ -58,6 +63,7 @@ func fileExists(filename string) bool {
 	if os.IsNotExist(err) {
 		return false
 	}
+
 	return !info.IsDir()
 }
 

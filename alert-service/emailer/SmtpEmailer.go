@@ -33,6 +33,7 @@ func (this *SMTPEmailer) SendEmail(subject string, text string, to []string) err
 	if !this.Config.AlertService.Emailer.Enabled {
 		return nil
 	}
+
 	m := gomail.NewMessage()
 	m.SetHeader("From", this.Config.AlertService.Emailer.From)
 	m.SetHeader("To", to...)
@@ -43,6 +44,7 @@ func (this *SMTPEmailer) SendEmail(subject string, text string, to []string) err
 		this.Config.AlertService.Emailer.SMTPPort,
 		this.Config.AlertService.Emailer.SMTPUsername,
 		this.Config.AlertService.Emailer.SMTPPassword)
+
 	if this.Config.AlertService.Emailer.DisableSSLCertificateValidation {
 		d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 	}

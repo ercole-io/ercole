@@ -143,7 +143,7 @@ func (md *MongoDatabase) GetAverageOracleExadataStorageUsageStats(location strin
 			mu.APProject(bson.M{
 				"_id": 0,
 				"value": mu.APOCond(
-					bson.D{{"$eq", bson.A{0, "$count"}}},
+					bson.D{{Key: "$eq", Value: bson.A{0, "$count"}}},
 					0,
 					mu.APODivide("$sum", "$count"),
 				),
@@ -205,8 +205,10 @@ func (md *MongoDatabase) GetOracleExadataStorageErrorCountStatusStats(location s
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }
 
@@ -245,7 +247,9 @@ func (md *MongoDatabase) GetOracleExadataPatchStatusStats(location string, envir
 		if cur.Decode(&item) != nil {
 			return nil, utils.NewError(err, "Decode ERROR")
 		}
+
 		out = append(out, &item)
 	}
+
 	return out, nil
 }

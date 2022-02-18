@@ -92,6 +92,7 @@ func (md *MongoDatabase) SearchOracleDatabasePatchAdvisors(keywords []string, so
 	var patchAdvisorResponse dto.PatchAdvisorResponse
 
 	cur.Next(context.TODO())
+
 	if err := cur.Decode(&patchAdvisorResponse); err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
 	}

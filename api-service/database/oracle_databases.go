@@ -71,6 +71,7 @@ func (md *MongoDatabase) SearchOracleDatabases(keywords []string, sortBy string,
 	var oracleDatabaseResponse dto.OracleDatabaseResponse
 
 	cur.Next(context.TODO())
+
 	if err := cur.Decode(&oracleDatabaseResponse); err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
 	}

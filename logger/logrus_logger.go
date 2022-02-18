@@ -83,6 +83,7 @@ type ercoleFormatter struct {
 // Format renders a single log entry
 func (f *ercoleFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	var scolored func(format string, a ...interface{}) string
+
 	if f.isColored {
 		colorSprintFunc := color.New(getColorByLevel(Level(entry.Level))).SprintFunc()
 		scolored = func(format string, a ...interface{}) string {
@@ -121,6 +122,7 @@ func getCaller(entry *logrus.Entry) string {
 	}
 
 	caller := entry.Caller.File
+
 	removeFrom := "ercole/"
 	if strings.Contains(caller, removeFrom) {
 		caller = "./" + caller[strings.Index(caller, removeFrom)+len(removeFrom):]
@@ -140,11 +142,13 @@ func getKeysInOrder(entryData logrus.Fields) []string {
 	}
 
 	var entryDataKeys []string
+
 	for k := range entryData {
 		if !contains(manuallyOrderedKeys, k) {
 			entryDataKeys = append(entryDataKeys, k)
 		}
 	}
+
 	sort.Strings(entryDataKeys)
 
 	return append(manuallyOrderedKeys, entryDataKeys...)
@@ -157,6 +161,7 @@ func contains(a []string, x string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 

@@ -80,9 +80,11 @@ func (as *AlertService) Init(ctx context.Context, wg *sync.WaitGroup) {
 
 	go func(s hub.Subscription) {
 		as.Log.Info("Start alert-service/queue")
+
 		for msg := range s.Receiver {
 			as.ProcessMsg(msg)
 		}
+
 		as.Log.Info("Stop alert-service/queue")
 
 		wg.Done()
@@ -102,6 +104,7 @@ func (as *AlertService) AlertInsertion(alr model.Alert) error {
 			"alert": alr,
 		},
 	})
+
 	return nil
 }
 
@@ -124,8 +127,8 @@ func (as *AlertService) ProcessAlertInsertion(params hub.Fields) {
 	alert := params["alert"].(model.Alert)
 
 	//Create the subject and message
-	var subject string
-	var message string
+	var subject, message string
+
 	if val, ok := alert.OtherInfo["hostname"]; ok {
 		subject = fmt.Sprintf("%s %s on %s", alert.AlertSeverity, alert.Description, val)
 		message = fmt.Sprintf("Date: %s\nSeverity: %s\nHost: %s\nCode: %s\n%s", alert.Date, alert.AlertSeverity, val, alert.AlertCode, alert.Description)
