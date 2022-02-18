@@ -40,13 +40,14 @@ type Instance struct {
 
 func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model.OciErcoleRecommendation, error) {
 	var listRec []model.OciErcoleRecommendation
+
 	var merr error
+
 	var listCompartments []model.OciCompartment
 
 	listRec = make([]model.OciErcoleRecommendation, 0)
 
 	for _, profileId := range profiles {
-
 		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
 			merr = multierror.Append(merr, err)
@@ -63,7 +64,6 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 		var strNamespace = "oci_compute_infrastructure_health"
 
 		for _, compartment := range listCompartments {
-
 			instances, err := as.getOciInstances(customConfigProvider, compartment.CompartmentID)
 			if err != nil {
 				merr = multierror.Append(merr, err)
@@ -73,8 +73,8 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 			// query for instance status in the last 8 days
 			var strQueryInstanceIdle = "instance_status[5m].mean()==0"
 
-			sTime := common.SDKTime{time.Now().Local().AddDate(0, 0, -8)}
-			eTime := common.SDKTime{time.Now().Local()}
+			sTime := common.SDKTime{Time: time.Now().Local().AddDate(0, 0, -8)}
+			eTime := common.SDKTime{Time: time.Now().Local()}
 
 			monClient, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 			if err != nil {
@@ -120,19 +120,25 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 			}
 		}
 	}
+
 	return listRec, merr
 }
 
 func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error) {
 	var listRec []model.OciErcoleRecommendation
+
 	var merr error
+
 	var listCompartments []model.OciCompartment
-	var instancesNotOptimizable map[string]Instance
-	var allInstancesWithMetrics map[string]Instance
-	var allInstances map[string]Instance
+
+	var instancesNotOptimizable, allInstancesWithMetrics, allInstances map[string]Instance
+
 	var AvgCPUThreshold = 3
+
 	var PeakCPUThreshold = 180
+
 	var MemoryThreshold = 1
+
 	instancesNotOptimizable = make(map[string]Instance)
 	allInstancesWithMetrics = make(map[string]Instance)
 	allInstances = make(map[string]Instance)
@@ -140,7 +146,6 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 	listRec = make([]model.OciErcoleRecommendation, 0)
 
 	for _, profileId := range profiles {
-
 		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
 			merr = multierror.Append(merr, err)
@@ -161,14 +166,13 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 
 		// retrieve metrics data for each compartment
 		for _, compartment := range listCompartments {
-
-			allInstances, err = as.getOciInstancesWithoutBasicShape(allInstances, compartment, tenancyOCID, customConfigProvider)
+			allInstances, err = as.getOciInstancesWithoutBasicShape(allInstances, compartment, customConfigProvider)
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
 			}
 
-			allInstancesWithMetrics, err = as.getOciInstancesWithMetricsWithoutBasicShape(allInstancesWithMetrics, compartment, tenancyOCID, customConfigProvider)
+			allInstancesWithMetrics, err = as.getOciInstancesWithMetricsWithoutBasicShape(allInstancesWithMetrics, compartment, customConfigProvider)
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
@@ -177,8 +181,8 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 			// first query is about average CPU utilization in the last  90 days
 			var strQueryAvgCPU = "CpuUtilization[1d].avg()>50"
 
-			sTime := common.SDKTime{time.Now().Local().AddDate(0, 0, -89)}
-			eTime := common.SDKTime{time.Now().Local()}
+			sTime := common.SDKTime{Time: time.Now().Local().AddDate(0, 0, -89)}
+			eTime := common.SDKTime{Time: time.Now().Local()}
 
 			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, AvgCPUThreshold)
 			if err != nil {
@@ -188,8 +192,9 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 
 			// second query is about CPU utilization peak in the last 7 days
 			var strQueryPeakCPU = "CpuUtilization[1m].max()>50"
-			sTime = common.SDKTime{time.Now().Local().AddDate(0, 0, -7)}
-			eTime = common.SDKTime{time.Now().Local()}
+
+			sTime = common.SDKTime{Time: time.Now().Local().AddDate(0, 0, -7)}
+			eTime = common.SDKTime{Time: time.Now().Local()}
 
 			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, PeakCPUThreshold)
 			if err != nil {
@@ -199,8 +204,9 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 
 			// third query is about memory utilization in the last 7 days
 			var strQueryMemory = "MemoryUtilization[1m].max()>90"
-			sTime = common.SDKTime{time.Now().Local().AddDate(0, 0, -7)}
-			eTime = common.SDKTime{time.Now().Local()}
+
+			sTime = common.SDKTime{Time: time.Now().Local().AddDate(0, 0, -7)}
+			eTime = common.SDKTime{Time: time.Now().Local()}
 
 			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, MemoryThreshold)
 			if err != nil {
@@ -226,6 +232,7 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 		} else {
 			recommendation.Type = model.RecommendationTypeInstanceRightsizing
 		}
+
 		recommendation.CompartmentID = inst.CompartmentID
 		recommendation.CompartmentName = inst.CompartmentName
 		recommendation.ResourceID = inst.ResourceID
@@ -234,9 +241,7 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 	}
 
 	for _, b := range allInstancesWithMetrics {
-		if _, ok := allInstances[b.ResourceID]; ok {
-			delete(allInstances, b.ResourceID)
-		}
+		delete(allInstances, b.ResourceID)
 	}
 
 	// build recommendation data for instances withoout monitoring
@@ -246,6 +251,7 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 		} else {
 			recommendation.Type = model.RecommendationTypeInstanceWithoutMonitoring
 		}
+
 		recommendation.CompartmentID = in.CompartmentID
 		recommendation.CompartmentName = in.CompartmentName
 		recommendation.ResourceID = in.ResourceID
@@ -256,7 +262,7 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 	return listRec, merr
 }
 
-func (as *ThunderService) getOciInstancesWithoutBasicShape(allInstances map[string]Instance, compartment model.OciCompartment, tenancyOCID string, customConfigProvider common.ConfigurationProvider) (map[string]Instance, error) {
+func (as *ThunderService) getOciInstancesWithoutBasicShape(allInstances map[string]Instance, compartment model.OciCompartment, customConfigProvider common.ConfigurationProvider) (map[string]Instance, error) {
 	client, err := core.NewComputeClientWithConfigurationProvider(customConfigProvider)
 	if err != nil {
 		return allInstances, err
@@ -282,11 +288,13 @@ func (as *ThunderService) getOciInstancesWithoutBasicShape(allInstances map[stri
 			tmpInstance.ResourceID = *s.Id
 			tmpInstance.Name = *s.DisplayName
 			tmpInstance.Shape = *s.Shape
+
 			if _, ok := s.Metadata["oke-pool-id"]; ok {
 				tmpInstance.Type = "kubernetes"
 			} else {
 				tmpInstance.Type = "normal"
 			}
+
 			allInstances[*s.Id] = tmpInstance
 		}
 	}
@@ -295,7 +303,6 @@ func (as *ThunderService) getOciInstancesWithoutBasicShape(allInstances map[stri
 }
 
 func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClient, strQuery string, sTime common.SDKTime, eTime common.SDKTime, instances map[string]Instance, compartment model.OciCompartment, threshold int) (map[string]Instance, error) {
-
 	req := monitoring.SummarizeMetricsDataRequest{
 		CompartmentId: &compartment.CompartmentID,
 		SummarizeMetricsDataDetails: monitoring.SummarizeMetricsDataDetails{
@@ -313,21 +320,23 @@ func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClien
 	}
 
 	var instance Instance
+
 	for _, s := range resp.Items {
 		// reset the counter
 		cnt := 0
+
 		for _, a := range s.AggregatedDatapoints {
 			if *a.Value == 1.0 {
 				cnt++
 			}
 		}
+
 		if cnt > threshold {
 			// the instance is not eligible for optimization
 			if s.Dimensions["shape"] != "VM.Standard2.1" && s.Dimensions["shape"] != "VM.StandardE2.1" {
 				if val, ok := instances[s.Dimensions["resourceId"]]; ok {
 					val.Cnt += 1
 					instances[s.Dimensions["resourceId"]] = val
-
 				} else {
 					instance.CompartmentID = compartment.CompartmentID
 					instance.CompartmentName = compartment.Name
@@ -339,11 +348,11 @@ func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClien
 			}
 		}
 	}
+
 	return instances, nil
 }
 
-func (as *ThunderService) getOciInstancesWithMetricsWithoutBasicShape(instances map[string]Instance, compartment model.OciCompartment, tenancyOCID string, customConfigProvider common.ConfigurationProvider) (map[string]Instance, error) {
-
+func (as *ThunderService) getOciInstancesWithMetricsWithoutBasicShape(instances map[string]Instance, compartment model.OciCompartment, customConfigProvider common.ConfigurationProvider) (map[string]Instance, error) {
 	client, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 	if err != nil {
 		return instances, err
@@ -375,17 +384,19 @@ func (as *ThunderService) getOciInstancesWithMetricsWithoutBasicShape(instances 
 
 func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error) {
 	var listRec []model.OciErcoleRecommendation
+
 	var merr error
+
 	var listCompartments []model.OciCompartment
+
 	var recommendation model.OciErcoleRecommendation
 
 	var vol model.OciResourcePerformance
+
 	listRec = make([]model.OciErcoleRecommendation, 0)
 
 	for _, profileId := range profiles {
-
 		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
-
 		if err != nil {
 			merr = multierror.Append(merr, err)
 			continue
@@ -399,6 +410,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 		}
 
 		var resTmp model.OciResourcePerformance
+
 		var ok bool
 
 		monClient, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
@@ -409,7 +421,6 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 
 		// retrieve metrics data for each compartment
 		for _, compartment := range listCompartments {
-
 			var vols = make(map[string]model.OciResourcePerformance)
 
 			coreClient, err := core.NewBlockstorageClientWithConfigurationProvider(customConfigProvider)
@@ -417,6 +428,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				merr = multierror.Append(merr, err)
 				continue
 			}
+
 			req := core.ListVolumesRequest{
 				CompartmentId: &compartment.CompartmentID,
 			}
@@ -427,6 +439,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				merr = multierror.Append(merr, err)
 				continue
 			}
+
 			if len(resp1.Items) > 0 {
 				for _, r := range resp1.Items {
 					vol = model.OciResourcePerformance{
@@ -441,7 +454,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				}
 
 				// first query is about Read Throughput
-				resp, err := as.getMetricResponse(monClient, compartment.CompartmentID, "oci_blockstore", "VolumeReadThroughput[5d].max()")
+				resp, err := as.getBlockStoreMetricResponse(monClient, compartment.CompartmentID, "VolumeReadThroughput[5d].max()")
 
 				if err != nil {
 					merr = multierror.Append(merr, err)
@@ -454,12 +467,13 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						if s.Metadata["unit"] == "bytes" {
 							resTmp.Throughput += *s.AggregatedDatapoints[0].Value / 1024 / 1024
 						}
+
 						vols[tempId] = resTmp
 					}
 				}
 
 				// second query is about Write Throughput
-				resp, err = as.getMetricResponse(monClient, compartment.CompartmentID, "oci_blockstore", "VolumeWriteThroughput[5d].max()")
+				resp, err = as.getBlockStoreMetricResponse(monClient, compartment.CompartmentID, "VolumeWriteThroughput[5d].max()")
 
 				if err != nil {
 					merr = multierror.Append(merr, err)
@@ -473,12 +487,13 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						if s.Metadata["unit"] == "bytes" {
 							resTmp.Throughput += *s.AggregatedDatapoints[0].Value / 1024 / 1024
 						}
+
 						vols[tempId] = resTmp
 					}
 				}
 
 				// third query is about Read Ops
-				resp, err = as.getMetricResponse(monClient, compartment.CompartmentID, "oci_blockstore", "VolumeReadOps[5d].max()")
+				resp, err = as.getBlockStoreMetricResponse(monClient, compartment.CompartmentID, "VolumeReadOps[5d].max()")
 
 				if err != nil {
 					merr = multierror.Append(merr, err)
@@ -491,12 +506,13 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						if s.Metadata["unit"] == "operations" {
 							resTmp.Iops += int(*s.AggregatedDatapoints[0].Value)
 						}
+
 						vols[tempId] = resTmp
 					}
 				}
 
 				// fourth query is about Write Ops
-				resp, err = as.getMetricResponse(monClient, compartment.CompartmentID, "oci_blockstore", "VolumeWriteOps[5d].max()")
+				resp, err = as.getBlockStoreMetricResponse(monClient, compartment.CompartmentID, "VolumeWriteOps[5d].max()")
 
 				if err != nil {
 					merr = multierror.Append(merr, err)
@@ -510,18 +526,14 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						if s.Metadata["unit"] == "operations" {
 							resTmp.Iops += int(*s.AggregatedDatapoints[0].Value)
 						}
+
 						vols[tempId] = resTmp
 					}
 				}
 
 				if len(vols) != 0 {
 					for _, v := range vols {
-						isOpt, err := as.isOptimizable(v)
-						if err != nil {
-							merr = multierror.Append(merr, err)
-							continue
-						}
-						if isOpt {
+						if isOpt := as.isOptimizable(v); isOpt {
 							recommendation.Type = model.RecommendationTypeBlockStorage
 							recommendation.CompartmentID = compartment.CompartmentID
 							recommendation.CompartmentName = compartment.Name
@@ -538,13 +550,15 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 	return listRec, merr
 }
 
-func (as *ThunderService) getMetricResponse(client monitoring.MonitoringClient, compartmentId string, namespace string, query string) (*monitoring.SummarizeMetricsDataResponse, error) {
+func (as *ThunderService) getBlockStoreMetricResponse(client monitoring.MonitoringClient, compartmentId string, query string) (*monitoring.SummarizeMetricsDataResponse, error) {
 	var merr error
+
+	namespaceBlockstore := "oci_blockstore"
 
 	req := monitoring.SummarizeMetricsDataRequest{
 		CompartmentId: &compartmentId,
 		SummarizeMetricsDataDetails: monitoring.SummarizeMetricsDataDetails{
-			Namespace: &namespace,
+			Namespace: &namespaceBlockstore,
 			Query:     &query,
 		},
 	}
@@ -558,29 +572,22 @@ func (as *ThunderService) getMetricResponse(client monitoring.MonitoringClient, 
 	return &resp, nil
 }
 
-func (as *ThunderService) isOptimizable(res model.OciResourcePerformance) (bool, error) {
+func (as *ThunderService) isOptimizable(res model.OciResourcePerformance) bool {
 	var ociPerfs *model.OciVolumePerformance
 
 	if res.VpusPerGB == 0 {
-		return false, nil
+		return false
 	}
 
 	ociPerfs = as.getOciVolumePerformance(res.VpusPerGB, res.Size)
 
-	if res.Throughput < (ociPerfs.Performances[0].Values.MaxThroughput/2.0) && res.Iops < (ociPerfs.Performances[0].Values.MaxIOPS)/2.0 {
-		return true, nil
-	} else {
-		return false, nil
-	}
+	return res.Throughput < (ociPerfs.Performances[0].Values.MaxThroughput/2.0) && res.Iops < (ociPerfs.Performances[0].Values.MaxIOPS)/2.0
 }
 
 func (as *ThunderService) getOciVolumePerformance(vpu int, size int) *model.OciVolumePerformance {
-	var baseIopsPerGB float64
-	var maxIops int
-	var baseThroughput float64
-	var maxTroughput float64
-	var retThroughput float64
-	var retIOPS int
+	var baseIopsPerGB, baseThroughput, maxTroughput, retThroughput float64
+
+	var maxIops, retIOPS int
 
 	if vpu != 0 {
 		baseIopsPerGB = 1.5*float64(vpu) + 45
@@ -595,7 +602,9 @@ func (as *ThunderService) getOciVolumePerformance(vpu int, size int) *model.OciV
 	}
 
 	var valRet model.OciVolumePerformance
+
 	var perfTmp model.OciPerformance
+
 	var valTmp model.OciPerfValues
 
 	valTmp.MaxThroughput = baseThroughput * float64(size)
@@ -618,8 +627,8 @@ func (as *ThunderService) getOciVolumePerformance(vpu int, size int) *model.OciV
 
 func (as *ThunderService) getOciInstances(customConfigProvider common.ConfigurationProvider, compartmentID string) (map[string]string, error) {
 	var merr error
-	var retList map[string]string
-	retList = make(map[string]string)
+
+	retList := make(map[string]string, 0)
 
 	client, err := core.NewComputeClientWithConfigurationProvider(customConfigProvider)
 	if err != nil {
@@ -643,5 +652,4 @@ func (as *ThunderService) getOciInstances(customConfigProvider common.Configurat
 	}
 
 	return retList, nil
-
 }

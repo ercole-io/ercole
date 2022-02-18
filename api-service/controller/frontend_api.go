@@ -24,9 +24,10 @@ import (
 
 // GetInfoForFrontendDashboard return all informations needed for the frontend dashboard page
 func (ctrl *APIController) GetInfoForFrontendDashboard(w http.ResponseWriter, r *http.Request) {
-	var location string
-	var environment string
+	var location, environment string
+
 	var olderThan time.Time
+
 	var err error
 
 	location = r.URL.Query().Get("location")

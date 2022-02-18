@@ -62,7 +62,6 @@ func readOrUpdateIndex(log logger.Logger) Index {
 		index.getArtifactsFromUpstreamRepositories()
 
 		index.log.Debug("Writing the index...")
-
 	} else {
 		log.Debug("Read index.json...")
 		if index.artifacts, err = readArtifactsFromFile(index.distributedFiles()); err != nil {
@@ -120,7 +119,10 @@ func (idx *Index) getArtifactsFromGithub(upstreamRepo config.UpstreamRepository)
 	if err != nil {
 		return err
 	} else if resp.StatusCode != 200 {
-		bytes, _ := ioutil.ReadAll(resp.Body)
+		bytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
 		return fmt.Errorf("Received %d from github for URL %s (body: %s)", resp.StatusCode, upstreamRepo.URL, string(bytes))
 	}
 
@@ -132,6 +134,7 @@ func (idx *Index) getArtifactsFromGithub(upstreamRepo config.UpstreamRepository)
 	}
 
 	var artifacts []*ArtifactInfo
+
 	for _, release := range releases {
 		for _, asset := range release.Assets {
 			artifactInfo := new(ArtifactInfo)
@@ -160,6 +163,7 @@ func (idx *Index) getArtifactsFromGithub(upstreamRepo config.UpstreamRepository)
 	}
 
 	idx.artifacts = append(idx.artifacts, artifacts...)
+
 	return nil
 }
 
@@ -170,6 +174,7 @@ func (idx *Index) getArtifactsFromDirectory(upstreamRepo config.UpstreamReposito
 	}
 
 	var artifacts []*ArtifactInfo
+
 	for _, file := range files {
 		artifactInfo := new(ArtifactInfo)
 
@@ -194,6 +199,7 @@ func (idx *Index) getArtifactsFromDirectory(upstreamRepo config.UpstreamReposito
 	}
 
 	idx.artifacts = append(idx.artifacts, artifacts...)
+
 	return nil
 }
 
@@ -207,7 +213,10 @@ func (idx *Index) getArtifactsFromErcoleReposervice(upstreamRepo config.Upstream
 	if err != nil {
 		return err
 	} else if resp.StatusCode != 200 {
-		bytes, _ := ioutil.ReadAll(resp.Body)
+		bytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
 		return fmt.Errorf("Received %d from ercole reposervice for URL %s (body: %s)", resp.StatusCode, upstreamRepo.URL+"/all", string(bytes))
 	}
 
@@ -221,6 +230,7 @@ func (idx *Index) getArtifactsFromErcoleReposervice(upstreamRepo config.Upstream
 	regex := regexp.MustCompile(`<a href="([^"]*)">`)
 
 	var artifacts []*ArtifactInfo
+
 	installedNames := make([]string, 0)
 
 	for _, fn := range regex.FindAllStringSubmatch(string(data), -1) {
@@ -252,6 +262,7 @@ func (idx *Index) getArtifactsFromErcoleReposervice(upstreamRepo config.Upstream
 	}
 
 	idx.artifacts = append(idx.artifacts, artifacts...)
+
 	return nil
 }
 
@@ -333,7 +344,9 @@ func (idx *Index) searchArtifactByArg(arg string) *ArtifactInfo {
 	submatches := utils.FindNamedMatches(artifactNameRegex, arg)
 
 	var repository string = submatches["repository"]
+
 	var name string = submatches["name"]
+
 	var version string = submatches["version"]
 
 	var foundArtifact *ArtifactInfo
@@ -397,6 +410,7 @@ func (idx *Index) searchArtifactByName(name string) *ArtifactInfo {
 			idx.log.Warnf("Invalid version comparing %q with %q", foundArtifact.Version, f.Version)
 			continue
 		}
+
 		if foundVersionIsLess {
 			foundArtifact = f
 		}
@@ -467,6 +481,7 @@ func (idx *Index) searchLatestArtifactByRepositoryAndName(repo string, name stri
 			idx.log.Warnf("Invalid version comparing %q with %q", foundArtifact.Version, f.Version)
 			continue
 		}
+
 		if foundVersionIsLess {
 			foundArtifact = f
 		}
@@ -524,6 +539,7 @@ func (idx *Index) saveArtifactsToFile() {
 
 	enc := json.NewEncoder(file)
 	enc.SetIndent("", "  ")
+
 	if err := enc.Encode(idx.artifacts); err != nil {
 		log.Fatalf("Can't encode artifacts: %s", err)
 	}
@@ -544,11 +560,13 @@ func (idx *Index) Install(artifact *ArtifactInfo) {
 	}
 
 	idx.log.Debugf("Downloading the artifact %s to %s\n", artifact.Filename, artifact.FilePath(idx.distributedFiles()))
+
 	if err := idx.Download(artifact); err != nil {
 		log.Fatalf("Unable to download artifact: %s", err)
 	}
 
 	idx.log.Debugf("Linking the artifact to %s\n", filepath.Join(idx.distributedFiles(), "all", artifact.Filename))
+
 	if err := os.Link(artifact.FilePath(idx.distributedFiles()), filepath.Join(idx.distributedFiles(), "all", artifact.Filename)); err != nil {
 		log.Fatalf("Unable to link artifact to \"all\" folder: %s", err)
 	}
@@ -565,7 +583,9 @@ func (idx *Index) Install(artifact *ArtifactInfo) {
 		if verbose {
 			cmd.Stdout = os.Stdout
 		}
+
 		cmd.Stderr = os.Stderr
+
 		if err := cmd.Run(); err != nil {
 			fmt.Printf("Error running createrepo: %s\n", err.Error())
 		}
@@ -594,9 +614,11 @@ func (idx *Index) Remove(artifact *ArtifactInfo) {
 	if strings.HasSuffix(artifact.Filename, ".rpm") {
 		idx.log.Debugf("Executing createrepo %s\n", artifact.DirectoryPath(idx.distributedFiles()))
 		cmd := exec.Command("createrepo", artifact.DirectoryPath(idx.distributedFiles())) //TODO Refactor
+
 		if verbose {
 			cmd.Stdout = os.Stdout
 		}
+
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
 			panic(err)
@@ -620,10 +642,12 @@ func (idx *Index) Download(artifact *ArtifactInfo) error {
 		if verbose {
 			fmt.Printf("Copying file from %s to %s\n", artifact.UpstreamRepository.Filepath, dest)
 		}
+
 		err := yos.CopyFile(artifact.UpstreamRepository.Filepath, dest)
 		if err != nil {
 			panic(err)
 		}
+
 		err = os.Chmod(dest, 0755)
 		if err != nil {
 			panic(err)

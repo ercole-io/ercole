@@ -42,14 +42,12 @@ func (ctrl *APIController) SearchClusters(w http.ResponseWriter, r *http.Request
 
 // SearchClustersJSON search clusters data using the filters in the request returning it in JSON format
 func (ctrl *APIController) SearchClustersJSON(w http.ResponseWriter, r *http.Request) {
-	var full bool
-	var search string
-	var sortBy string
-	var sortDesc bool
-	var pageNumber int
-	var pageSize int
-	var location string
-	var environment string
+	var full, sortDesc bool
+
+	var search, sortBy, location, environment string
+
+	var pageNumber, pageSize int
+
 	var olderThan time.Time
 
 	var err error
@@ -61,6 +59,7 @@ func (ctrl *APIController) SearchClustersJSON(w http.ResponseWriter, r *http.Req
 
 	search = r.URL.Query().Get("search")
 	sortBy = r.URL.Query().Get("sort-by")
+
 	if sortDesc, err = utils.Str2bool(r.URL.Query().Get("sort-desc"), false); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
@@ -70,6 +69,7 @@ func (ctrl *APIController) SearchClustersJSON(w http.ResponseWriter, r *http.Req
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	if pageSize, err = utils.Str2int(r.URL.Query().Get("size"), -1); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return

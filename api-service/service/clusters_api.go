@@ -84,6 +84,7 @@ func (as *APIService) SearchClustersAsXLSX(filter dto.GlobalFilter) (*excelize.F
 	if err != nil {
 		return nil, err
 	}
+
 	axisHelp := exutils.NewAxisHelper(1)
 
 	for _, val := range clusters {
@@ -96,5 +97,6 @@ func (as *APIService) SearchClustersAsXLSX(filter dto.GlobalFilter) (*excelize.F
 		sheets.SetCellValue(sheet, nextAxis(), val["vmsCount"])
 		sheets.SetCellValue(sheet, nextAxis(), val["vmsErcoleAgentCount"])
 	}
+
 	return sheets, nil
 }

@@ -79,6 +79,7 @@ func (v *HostDataBE) GetClusterCores(hostdatasPerHostname map[string]*HostDataBE
 	}
 
 	var sumClusterCores int
+
 	for _, h := range cms.VeritasClusterHostnames {
 		anotherHostdata, found := hostdatasPerHostname[h]
 		if !found {

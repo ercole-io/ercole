@@ -52,6 +52,7 @@ func (job *ArchivedHostCleaningJob) Run() {
 			job.Log.Error(err)
 			return
 		}
+
 		job.Log.Infof("%s has been deleted because it have passed more than %d hours from the host data insertion", id, job.Config.DataService.ArchivedHostCleaningJob.HourThreshold)
 	}
 }

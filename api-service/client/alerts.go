@@ -30,13 +30,15 @@ func (c *Client) GetAlertsByFilter(filter dto.AlertsFilter) ([]model.Alert, erro
 	}{
 		Filter: filter,
 	}
+
 	body, err := json.Marshal(b)
 	if err != nil {
 		return nil, utils.NewError(err, "Can't marshal")
 	}
 
 	var alerts []model.Alert
-	_, err = c.getParsedResponse(context.TODO(), "/alerts", "GET", body, &alerts)
+
+	err = c.getParsedResponse(context.TODO(), "/alerts", "GET", body, &alerts)
 	if err != nil {
 		return nil, err
 	}
@@ -50,6 +52,7 @@ func (c *Client) AckAlerts(filter dto.AlertsFilter) error {
 	}{
 		Filter: filter,
 	}
+
 	body, err := json.Marshal(b)
 	if err != nil {
 		return utils.NewError(err, "Can't marshal")

@@ -17,6 +17,7 @@ package migrations
 
 import (
 	"context"
+	"fmt"
 
 	migrate "github.com/xakep666/mongo-migrate"
 	"go.mongodb.org/mongo-driver/bson"
@@ -27,7 +28,7 @@ import (
 )
 
 func init() {
-	migrate.Register(func(db *mongo.Database) error {
+	err := migrate.Register(func(db *mongo.Database) error {
 		if err := migrateHostsSchema(db); err != nil {
 			return err
 		}
@@ -46,6 +47,11 @@ func init() {
 	}, func(db *mongo.Database) error {
 		return nil
 	})
+
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		return
+	}
 }
 
 // migrateHostsSchema create or update the hosts schema
@@ -55,7 +61,7 @@ func migrateHostsSchema(client *mongo.Database) error {
 		return err
 	} else if !utils.Contains(cols, "hosts") {
 		if err := client.RunCommand(context.TODO(), bson.D{
-			{"create", "hosts"},
+			{Key: "create", Value: "hosts"},
 		}).Err(); err != nil {
 			return err
 		}
@@ -63,11 +69,11 @@ func migrateHostsSchema(client *mongo.Database) error {
 
 	//Set the collection validator
 	if err := client.RunCommand(context.TODO(), bson.D{
-		{"collMod", "hosts"},
-		{"validator", bson.D{
-			{"$jsonSchema", bson.M{}},
+		{Key: "collMod", Value: "hosts"},
+		{Key: "validator", Value: bson.D{
+			{Key: "$jsonSchema", Value: bson.M{}},
 		}},
-		{"validationAction", "error"},
+		{Key: "validationAction", Value: "error"},
 	}).Err(); err != nil {
 		return err
 	}
@@ -75,19 +81,20 @@ func migrateHostsSchema(client *mongo.Database) error {
 	//index creations
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
-			{"archived", 1},
-			{"hostname", 1},
+			{Key: "archived", Value: 1},
+			{Key: "hostname", Value: 1},
 		},
 		Options: (&options.IndexOptions{
-			PartialFilterExpression: bson.D{{"archived", false}},
+			PartialFilterExpression: bson.D{{Key: "archived", Value: false}},
 		}).SetUnique(true),
 	}); err != nil {
 		return err
 	}
+
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
-			{"hostname", 1},
-			{"createdAt", -1},
+			{Key: "hostname", Value: 1},
+			{Key: "createdAt", Value: -1},
 		},
 	}); err != nil {
 		return err
@@ -95,16 +102,17 @@ func migrateHostsSchema(client *mongo.Database) error {
 
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
-			{"archived", 1},
-			{"clusters.name", 1},
+			{Key: "archived", Value: 1},
+			{Key: "clusters.name", Value: 1},
 		},
 	}); err != nil {
 		return err
 	}
+
 	if _, err := client.Collection("hosts").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys: bson.D{
-			{"archived", 1},
-			{"clusters.vms.hostname", 1},
+			{Key: "archived", Value: 1},
+			{Key: "clusters.vms.hostname", Value: 1},
 		},
 	}); err != nil {
 		return err
@@ -120,7 +128,7 @@ func migrateAlertsSchema(client *mongo.Database) error {
 		return err
 	} else if !utils.Contains(cols, "alerts") {
 		if err := client.RunCommand(context.TODO(), bson.D{
-			{"create", "alerts"},
+			{Key: "create", Value: "alerts"},
 		}).Err(); err != nil {
 			return err
 		}
@@ -137,7 +145,7 @@ func migrateOracleDatabaseAgreementsSchema(client *mongo.Database) error {
 		return err
 	} else if !utils.Contains(cols, collection) {
 		if err := client.RunCommand(context.TODO(), bson.D{
-			{"create", collection},
+			{Key: "create", Value: collection},
 		}).Err(); err != nil {
 			return err
 		}
@@ -150,13 +158,13 @@ func migrateOracleDatabaseAgreementsSchema(client *mongo.Database) error {
 				{
 
 					Keys: bson.D{
-						{"agreementID", 1},
+						{Key: "agreementID", Value: 1},
 					},
 					Options: options.Index().SetUnique(true),
 				},
 				{
 					Keys: bson.D{
-						{"licenseTypes._id", 1},
+						{Key: "licenseTypes._id", Value: 1},
 					},
 					Options: options.Index().SetUnique(true),
 				}},
@@ -175,7 +183,7 @@ func migrateOracleDatabaseLicenseTypes(client *mongo.Database) error {
 		return err
 	} else if !utils.Contains(cols, collection) {
 		if err := client.RunCommand(context.TODO(), bson.D{
-			{"create", collection},
+			{Key: "create", Value: collection},
 		}).Err(); err != nil {
 			return err
 		}

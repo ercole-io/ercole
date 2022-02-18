@@ -136,6 +136,7 @@ func (artifact *ArtifactInfo) SetInfoFromFileName(filename string) error {
 		artifact.Name = "ercole-agent-perl-" + data["dist"] + "-rpm"
 		artifact.Version = data["version"]
 		artifact.Arch = data["arch"]
+
 		switch data["dist"] {
 		case "aix6.1":
 			artifact.OperatingSystemFamily = "aix"

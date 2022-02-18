@@ -90,26 +90,4 @@ func unwind_oracle_agreements(db *mongo.Database) error {
 
 func group_oracle_agreementy_by_license_type_id(db *mongo.Database) error {
 	return utils.NewError(errors.New("Not yet implemented"))
-	// collection := "oracle_database_agreements"
-	// if _, err := db.Collection(collection).
-	// 	Indexes().
-	// 	CreateMany(context.TODO(),
-	// 		[]mongo.IndexModel{
-	// 			{
-
-	// 				Keys: bson.D{
-	// 					{Key: "agreementID", Value: 1},
-	// 				},
-	// 				Options: options.Index().SetUnique(true),
-	// 			},
-	// 			{
-	// 				Keys: bson.D{
-	// 					{Key: "licenseTypes._id", Value: 1},
-	// 				},
-	// 				Options: options.Index().SetUnique(true),
-	// 			}},
-	// 	); err != nil {
-	// 	return err
-	// }
-	// return nil
 }

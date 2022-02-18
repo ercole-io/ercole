@@ -33,7 +33,6 @@ const alertsCollection = "alerts"
 func (md *MongoDatabase) SearchAlerts(mode string, keywords []string, sortBy string, sortDesc bool,
 	page, pageSize int, location, environment, severity, status string, from, to time.Time,
 ) ([]map[string]interface{}, error) {
-
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(alertsCollection).Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -182,10 +181,12 @@ func (md *MongoDatabase) CountAlertsNODATA(alertsFilter dto.AlertsFilter) (int64
 	}
 
 	var filter map[string]interface{}
+
 	err = bson.Unmarshal(data, &filter)
 	if err != nil {
 		return 0, err
 	}
+
 	if len(filter) < 1 {
 		return 0, nil //Do not acknowledge anything
 	}
@@ -223,10 +224,12 @@ func (md *MongoDatabase) UpdateAlertsStatus(alertsFilter dto.AlertsFilter, newSt
 	}
 
 	var filter map[string]interface{}
+
 	err = bson.Unmarshal(data, &filter)
 	if err != nil {
 		return err
 	}
+
 	if len(filter) < 1 {
 		return nil //Do not acknowledge anything
 	}
@@ -272,7 +275,6 @@ func (md *MongoDatabase) UpdateAlertsStatus(alertsFilter dto.AlertsFilter, newSt
 }
 
 func (md *MongoDatabase) RemoveAlertsNODATA(alertsFilter dto.AlertsFilter) error {
-
 	filter := bson.D{{Key: "$and", Value: []interface{}{bson.D{{Key: "otherInfo.hostname", Value: alertsFilter.OtherInfo["hostname"]}}, bson.D{{Key: "alertCode", Value: model.AlertCodeNoData}}}}}
 
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).

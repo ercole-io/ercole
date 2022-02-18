@@ -16,6 +16,7 @@ package migrations
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ercole-io/ercole/v2/utils"
 	migrate "github.com/xakep666/mongo-migrate"
@@ -24,7 +25,7 @@ import (
 )
 
 func init() {
-	migrate.Register(func(db *mongo.Database) error {
+	err := migrate.Register(func(db *mongo.Database) error {
 		if err := migrateHostsAddFieldDismissedAtArchivedFalse(db); err != nil {
 			return err
 		}
@@ -40,6 +41,11 @@ func init() {
 	}, func(db *mongo.Database) error {
 		return nil
 	})
+
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		return
+	}
 }
 
 func migrateHostsAddFieldDismissedAtArchivedFalse(db *mongo.Database) error {
@@ -62,6 +68,7 @@ func migrateHostsAddFieldDismissedAtArchivedTrueWithFalse(db *mongo.Database) er
 	ctx := context.TODO()
 	filter := bson.M{"archived": false}
 	update := bson.M{"$set": bson.M{"dismissedAt": nil}}
+
 	var out map[string]interface{}
 
 	cursor, err := db.Collection(collection).Find(
@@ -76,6 +83,7 @@ func migrateHostsAddFieldDismissedAtArchivedTrueWithFalse(db *mongo.Database) er
 		if err := cursor.Decode(&out); err != nil {
 			return nil
 		}
+
 		filterUpd := bson.M{"hostname": out["hostname"]}
 
 		if _, err := db.Collection(collection).UpdateMany(ctx, filterUpd, update); err != nil {

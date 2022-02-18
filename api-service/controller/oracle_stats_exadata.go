@@ -25,8 +25,9 @@ import (
 // GetTotalOracleExadataMemorySizeStats return the total size of memory of exadata using the filters in the request
 func (ctrl *APIController) GetTotalOracleExadataMemorySizeStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
-	var location string
-	var environment string
+
+	var location, environment string
+
 	var err error
 
 	//parse the query params
@@ -52,8 +53,9 @@ func (ctrl *APIController) GetTotalOracleExadataMemorySizeStats(w http.ResponseW
 // GetTotalOracleExadataCPUStats return the total cpu of exadata using the filters in the request
 func (ctrl *APIController) GetTotalOracleExadataCPUStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
-	var location string
-	var environment string
+
+	var location, environment string
+
 	var err error
 
 	//parse the query params
@@ -79,8 +81,9 @@ func (ctrl *APIController) GetTotalOracleExadataCPUStats(w http.ResponseWriter, 
 // GetAverageOracleExadataStorageUsageStats return the average usage of cell disks of exadata using the filters in the request
 func (ctrl *APIController) GetAverageOracleExadataStorageUsageStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
-	var location string
-	var environment string
+
+	var location, environment string
+
 	var err error
 
 	//parse the query params
@@ -106,8 +109,9 @@ func (ctrl *APIController) GetAverageOracleExadataStorageUsageStats(w http.Respo
 // GetOracleExadataStorageErrorCountStatusStats return all statistics about the ErrorCount status of the storage of the exadata using the filters in the request
 func (ctrl *APIController) GetOracleExadataStorageErrorCountStatusStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
-	var location string
-	var environment string
+
+	var location, environment string
+
 	var err error
 
 	//parse the query params
@@ -133,8 +137,9 @@ func (ctrl *APIController) GetOracleExadataStorageErrorCountStatusStats(w http.R
 // GetOracleExadataPatchStatusStats return all statistics about the patch status of the exadata using the filters in the request
 func (ctrl *APIController) GetOracleExadataPatchStatusStats(w http.ResponseWriter, r *http.Request) {
 	var olderThan time.Time
-	var location string
-	var environment string
+
+	var location, environment string
+
 	var windowTime int
 
 	var err error
@@ -142,6 +147,7 @@ func (ctrl *APIController) GetOracleExadataPatchStatusStats(w http.ResponseWrite
 	//parse the query params
 	location = r.URL.Query().Get("location")
 	environment = r.URL.Query().Get("environment")
+
 	if windowTime, err = utils.Str2int(r.URL.Query().Get("window-time"), 6); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 		return

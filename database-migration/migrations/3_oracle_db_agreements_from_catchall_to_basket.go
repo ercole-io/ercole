@@ -17,6 +17,7 @@ package migrations
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ercole-io/ercole/v2/utils"
 	migrate "github.com/xakep666/mongo-migrate"
@@ -25,7 +26,7 @@ import (
 )
 
 func init() {
-	migrate.Register(func(db *mongo.Database) error {
+	err := migrate.Register(func(db *mongo.Database) error {
 		if err := migrateFromCatchAllToBasket(db); err != nil {
 			return err
 		}
@@ -38,6 +39,11 @@ func init() {
 	}, func(db *mongo.Database) error {
 		return nil
 	})
+
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		return
+	}
 }
 
 func migrateFromCatchAllToBasket(db *mongo.Database) error {
