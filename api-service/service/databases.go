@@ -231,6 +231,7 @@ func (as *APIService) GetUsedLicensesPerDatabases(filter dto.GlobalFilter) ([]dt
 					for _, license := range database.Licenses {
 						if license.LicenseTypeID == usedLicenses[i].LicenseTypeID {
 							usedLicenses[i].Ignored = license.Ignored
+							usedLicenses[i].Count = license.Count
 						}
 					}
 				}
@@ -275,7 +276,9 @@ func (as *APIService) clusterLicenses(license dto.DatabaseUsedLicense, clusters 
 
 func (as *APIService) veritasClusterLicenses(hostdata *model.HostDataBE, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error) {
 	clusterCores, err := hostdata.GetClusterCores(hostdatasPerHostname)
-	if err != nil {
+	if errors.Is(err, utils.ErrHostNotInCluster) {
+		return 0, utils.ErrHostNotInCluster
+	} else if err != nil {
 		return 0, err
 	}
 
