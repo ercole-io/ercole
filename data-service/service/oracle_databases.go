@@ -108,7 +108,7 @@ func (hds *HostDataService) checkSecondaryDbs(hostdata *model.HostDataBE) {
 func (hds *HostDataService) addLicensesToSecondaryDb(hostInfo model.Host, hostCoreFactor float64, secondaryDb *model.OracleDatabase) {
 	dbs, err := hds.getPrimaryOpenOracleDatabases()
 	if err != nil {
-		hds.Log.Error("INSERT_HOSTDATA_ORACLE_DATABASE")
+		hds.Log.Errorf("Can't get primary open oracle databases: %s", err)
 		return
 	}
 
@@ -123,7 +123,7 @@ func (hds *HostDataService) addLicensesToSecondaryDb(hostInfo model.Host, hostCo
 
 	if primaryDb == nil {
 		if err := hds.ackOldMissingPrimaryDbAlerts(hostInfo.Hostname, secondaryDb.Name); err != nil {
-			hds.Log.Errorf("Can't ack MissingPrimaryDatabase alerts by filter")
+			hds.Log.Errorf("Can't ack MissingPrimaryDatabase alerts by filter: %s", err)
 		}
 
 		if err := hds.throwMissingPrimaryDatabase(hostInfo.Hostname, secondaryDb.Name); err != nil {
