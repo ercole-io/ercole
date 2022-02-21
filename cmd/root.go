@@ -47,7 +47,8 @@ var rootCmd = &cobra.Command{
 			log.Fatalf("Configuration file not found: %s", extraConfigFile)
 		}
 
-		ercoleConfig, err := config.ReadConfig(log, extraConfigFile)
+		var err error
+		ercoleConfig, err = config.ReadConfig(log, extraConfigFile)
 		if err != nil {
 			log.Error(err)
 			return
