@@ -93,7 +93,10 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 	}
 
 	// get consumptions value by hosts
-	getLicensesConsumedByHost := as.getterLicensesConsumedByHost()
+	getLicensesConsumedByHost, err := as.getterLicensesConsumedByHost()
+	if err != nil {
+		return nil, err
+	}
 
 	for _, host := range hosts {
 		license, ok := licenses[host.LicenseTypeID]
@@ -221,34 +224,20 @@ func (as *APIService) getHostdatasPerHostname() (map[string]*model.HostDataBE, e
 	return hostdatasPerHostname, nil
 }
 
-<<<<<<< HEAD
-func (as *APIService) getterLicensesConsumedByHost() func(host dto.HostUsingOracleDatabaseLicenses, hostdatasPerHostname map[string]*model.HostDataBE, licenseTypeID string) (float64, error) {
-=======
 func (as *APIService) getterLicensesConsumedByHost() (func(host dto.HostUsingOracleDatabaseLicenses, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error), error) {
->>>>>>> af28eee (Changed compliance management)
 	// map to keep history if a certain host per a certain licence as already be counted
 	// by another host in its cluster
 	hostLicenseAlreadyCounted := make(map[string]map[string]bool)
 
-<<<<<<< HEAD
-	return func(host dto.HostUsingOracleDatabaseLicenses, hostdatasPerHostname map[string]*model.HostDataBE, licenseTypeID string) (float64, error) {
-		return as.getLicensesConsumedByHost(host, hostLicenseAlreadyCounted, hostdatasPerHostname, licenseTypeID)
-	}
-=======
 	return func(host dto.HostUsingOracleDatabaseLicenses, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error) {
 		return as.getLicensesConsumedByHost(host, hostLicenseAlreadyCounted, hostdatasPerHostname)
 	}, nil
->>>>>>> af28eee (Changed compliance management)
 }
 
 func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabaseLicenses,
 	hostnamesPerLicense map[string]map[string]bool,
 	hostdatasPerHostname map[string]*model.HostDataBE,
 ) (float64, error) {
-<<<<<<< HEAD
-	var ignored float64
-=======
->>>>>>> af28eee (Changed compliance management)
 
 	hostdata, found := hostdatasPerHostname[host.Name]
 	if !found {
