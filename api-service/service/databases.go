@@ -286,7 +286,7 @@ func (as *APIService) veritasClusterLicenses(hostdata *model.HostDataBE, hostdat
 	return float64(clusterCores) * hostdata.CoreFactor(), nil
 }
 
-func (as *APIService) GetDatabasesUsedLicensesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+func (as *APIService) GetUsedLicensesPerDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
 	licenses, err := as.GetUsedLicensesPerDatabases(filter)
 	if err != nil {
 		return nil, err
@@ -448,8 +448,8 @@ func (as *APIService) GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, err
 	return sheets, err
 }
 
-func (as *APIService) GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
-	usedLicenses, err := as.GetDatabasesUsedLicensesPerHost(filter)
+func (as *APIService) GetUsedLicensesPerHostAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	usedLicenses, err := as.GetUsedLicensesPerHost(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -488,7 +488,7 @@ func (as *APIService) GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFil
 	return sheets, err
 }
 
-func (as *APIService) GetDatabasesUsedLicensesPerHost(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error) {
+func (as *APIService) GetUsedLicensesPerHost(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error) {
 	licenses, err := as.GetUsedLicensesPerDatabases(filter)
 	if err != nil {
 		return nil, err
@@ -522,7 +522,7 @@ licenses:
 	return licensesPerHost, nil
 }
 
-func (as *APIService) GetDatabasesUsedLicensesPerCluster(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerCluster, error) {
+func (as *APIService) GetUsedLicensesPerCluster(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerCluster, error) {
 	licenses, err := as.GetUsedLicensesPerDatabases(filter)
 	if err != nil {
 		return nil, err
@@ -590,8 +590,8 @@ licenses:
 	return result, nil
 }
 
-func (as *APIService) GetDatabasesUsedLicensesPerClusterAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
-	usedLicenses, err := as.GetDatabasesUsedLicensesPerCluster(filter)
+func (as *APIService) GetUsedLicensesPerClusterAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	usedLicenses, err := as.GetUsedLicensesPerCluster(filter)
 	if err != nil {
 		return nil, err
 	}
