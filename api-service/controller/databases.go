@@ -82,7 +82,7 @@ func (ctrl *APIController) GetDatabasesStatistics(w http.ResponseWriter, r *http
 	utils.WriteJSONResponse(w, http.StatusOK, stats)
 }
 
-func (ctrl *APIController) GetDatabasesUsedLicenses(w http.ResponseWriter, r *http.Request) {
+func (ctrl *APIController) GetUsedLicensesPerDatabases(w http.ResponseWriter, r *http.Request) {
 	filter, err := dto.GetGlobalFilter(r)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
@@ -93,13 +93,13 @@ func (ctrl *APIController) GetDatabasesUsedLicenses(w http.ResponseWriter, r *ht
 
 	switch choice {
 	case "application/json":
-		ctrl.GetDatabasesUsedLicensesJSON(w, r, *filter)
+		ctrl.GetUsedLicensesPerDatabasesJSON(w, r, *filter)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-		ctrl.GetDatabasesUsedLicensesXLSX(w, r, *filter)
+		ctrl.GetUsedLicensesPerDatabasesAsXLSX(w, r, *filter)
 	}
 }
 
-func (ctrl *APIController) GetDatabasesUsedLicensesJSON(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
+func (ctrl *APIController) GetUsedLicensesPerDatabasesJSON(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
 	usedLicenses, err := ctrl.Service.GetUsedLicensesPerDatabases(filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -112,7 +112,7 @@ func (ctrl *APIController) GetDatabasesUsedLicensesJSON(w http.ResponseWriter, r
 	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
 
-func (ctrl *APIController) GetDatabasesUsedLicensesXLSX(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
+func (ctrl *APIController) GetUsedLicensesPerDatabasesAsXLSX(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
 	xlsx, err := ctrl.Service.GetUsedLicensesPerDatabasesAsXLSX(filter)
 
 	if err != nil {
@@ -158,7 +158,7 @@ func (ctrl *APIController) GetDatabaseLicensesComplianceXLSX(w http.ResponseWrit
 	utils.WriteXLSXResponse(w, xlsx)
 }
 
-func (ctrl *APIController) GetDatabasesUsedLicensesPerHost(w http.ResponseWriter, r *http.Request) {
+func (ctrl *APIController) GetUsedLicensesPerHost(w http.ResponseWriter, r *http.Request) {
 	filter, err := dto.GetGlobalFilter(r)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
@@ -169,13 +169,13 @@ func (ctrl *APIController) GetDatabasesUsedLicensesPerHost(w http.ResponseWriter
 
 	switch choice {
 	case "application/json":
-		ctrl.GetDatabasesUsedLicensesPerHostJSON(w, r, *filter)
+		ctrl.GetUsedLicensesPerHostJSON(w, r, *filter)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-		ctrl.GetDatabasesUsedLicensesPerHostAsXLSX(w, r, *filter)
+		ctrl.GetUsedLicensesPerHostAsXLSX(w, r, *filter)
 	}
 }
 
-func (ctrl *APIController) GetDatabasesUsedLicensesPerHostJSON(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
+func (ctrl *APIController) GetUsedLicensesPerHostJSON(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
 	usedLicenses, err := ctrl.Service.GetUsedLicensesPerHost(filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -188,7 +188,7 @@ func (ctrl *APIController) GetDatabasesUsedLicensesPerHostJSON(w http.ResponseWr
 	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
 
-func (ctrl *APIController) GetDatabasesUsedLicensesPerHostAsXLSX(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
+func (ctrl *APIController) GetUsedLicensesPerHostAsXLSX(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
 	xlsx, err := ctrl.Service.GetUsedLicensesPerHostAsXLSX(filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -198,7 +198,7 @@ func (ctrl *APIController) GetDatabasesUsedLicensesPerHostAsXLSX(w http.Response
 	utils.WriteXLSXResponse(w, xlsx)
 }
 
-func (ctrl *APIController) GetDatabasesUsedLicensesPerCluster(w http.ResponseWriter, r *http.Request) {
+func (ctrl *APIController) GetUsedLicensesPerCluster(w http.ResponseWriter, r *http.Request) {
 	filter, err := dto.GetGlobalFilter(r)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
@@ -210,13 +210,13 @@ func (ctrl *APIController) GetDatabasesUsedLicensesPerCluster(w http.ResponseWri
 
 	switch choice {
 	case "application/json":
-		ctrl.GetDatabasesUsedLicensesPerClusterJSON(w, r, *filter)
+		ctrl.GetUsedLicensesPerClusterJSON(w, r, *filter)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-		ctrl.GetDatabasesUsedLicensesPerClusterXLSX(w, r, *filter)
+		ctrl.GetUsedLicensesPerClusterAsXLSX(w, r, *filter)
 	}
 }
 
-func (ctrl *APIController) GetDatabasesUsedLicensesPerClusterJSON(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
+func (ctrl *APIController) GetUsedLicensesPerClusterJSON(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
 	usedLicenses, err := ctrl.Service.GetUsedLicensesPerCluster(filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -229,7 +229,7 @@ func (ctrl *APIController) GetDatabasesUsedLicensesPerClusterJSON(w http.Respons
 	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
 
-func (ctrl *APIController) GetDatabasesUsedLicensesPerClusterXLSX(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
+func (ctrl *APIController) GetUsedLicensesPerClusterAsXLSX(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
 	xlsx, err := ctrl.Service.GetUsedLicensesPerClusterAsXLSX(filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
