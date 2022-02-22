@@ -260,6 +260,7 @@ func (as *APIService) GetUsedLicensesPerDatabases(filter dto.GlobalFilter) ([]dt
 
 func (as *APIService) clusterLicenses(license dto.DatabaseUsedLicense, clusters []dto.Cluster) (float64, error) {
 	clusterByHostnames := make(map[string]*dto.Cluster)
+
 	for i := range clusters {
 		for j := range clusters[i].VMs {
 			clusterByHostnames[clusters[i].VMs[j].Hostname] = &clusters[i]
