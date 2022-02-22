@@ -93,10 +93,7 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 	}
 
 	// get consumptions value by hosts
-	getLicensesConsumedByHost, err := as.getterLicensesConsumedByHost()
-	if err != nil {
-		return nil, err
-	}
+	getLicensesConsumedByHost := as.getterLicensesConsumedByHost()
 
 	for _, host := range hosts {
 		license, ok := licenses[host.LicenseTypeID]
@@ -224,21 +221,20 @@ func (as *APIService) getHostdatasPerHostname() (map[string]*model.HostDataBE, e
 	return hostdatasPerHostname, nil
 }
 
-func (as *APIService) getterLicensesConsumedByHost() (func(host dto.HostUsingOracleDatabaseLicenses, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error), error) {
+func (as *APIService) getterLicensesConsumedByHost() func(host dto.HostUsingOracleDatabaseLicenses, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error) {
 	// map to keep history if a certain host per a certain licence as already be counted
 	// by another host in its cluster
 	hostLicenseAlreadyCounted := make(map[string]map[string]bool)
 
 	return func(host dto.HostUsingOracleDatabaseLicenses, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error) {
 		return as.getLicensesConsumedByHost(host, hostLicenseAlreadyCounted, hostdatasPerHostname)
-	}, nil
+	}
 }
 
 func (as *APIService) getLicensesConsumedByHost(host dto.HostUsingOracleDatabaseLicenses,
 	hostnamesPerLicense map[string]map[string]bool,
 	hostdatasPerHostname map[string]*model.HostDataBE,
 ) (float64, error) {
-
 	hostdata, found := hostdatasPerHostname[host.Name]
 	if !found {
 		return 0, fmt.Errorf("%w: %s", utils.ErrHostNotFound, host.Name)
