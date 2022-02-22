@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -123,9 +123,9 @@ type APIControllerInterface interface {
 
 	SearchDatabases(w http.ResponseWriter, r *http.Request)
 	GetDatabasesStatistics(w http.ResponseWriter, r *http.Request)
-	GetDatabasesUsedLicenses(w http.ResponseWriter, r *http.Request)
-	GetDatabasesUsedLicensesPerHost(w http.ResponseWriter, r *http.Request)
-	GetDatabasesUsedLicensesPerCluster(w http.ResponseWriter, r *http.Request)
+	GetUsedLicensesPerDatabases(w http.ResponseWriter, r *http.Request)
+	GetUsedLicensesPerHost(w http.ResponseWriter, r *http.Request)
+	GetUsedLicensesPerCluster(w http.ResponseWriter, r *http.Request)
 	GetDatabaseLicensesCompliance(w http.ResponseWriter, r *http.Request)
 
 	// ORACLE DATABASE AGREEMENTS
