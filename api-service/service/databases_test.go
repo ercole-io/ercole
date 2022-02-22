@@ -806,7 +806,7 @@ func TestGetUsedLicensesPerDatabases_VeritasCluster_Success(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestGetDatabasesUsedLicensesAsXLSX_Success(t *testing.T) {
+func TestGetUsedLicensesPerDatabasesAsXLSX_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -909,7 +909,7 @@ func TestGetDatabasesUsedLicensesAsXLSX_Success(t *testing.T) {
 			Return(clusters, nil),
 	)
 
-	actual, err := as.GetDatabasesUsedLicensesAsXLSX(filter)
+	actual, err := as.GetUsedLicensesPerDatabasesAsXLSX(filter)
 	require.NoError(t, err)
 
 	assert.Equal(t, "topolino-hostname", actual.GetCellValue("Licenses Used", "A2"))
@@ -1233,7 +1233,7 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 	assert.ElementsMatch(t, expected, actual)
 }
 
-func TestGetDatabasesUsedLicensesPerHost_Success(t *testing.T) {
+func TestGetUsedLicensesPerHost_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -1336,7 +1336,7 @@ func TestGetDatabasesUsedLicensesPerHost_Success(t *testing.T) {
 			Return(clusters, nil),
 	)
 
-	actual, err := as.GetDatabasesUsedLicensesPerHost(filter)
+	actual, err := as.GetUsedLicensesPerHost(filter)
 	require.NoError(t, err)
 
 	expected := []dto.DatabaseUsedLicensePerHost{
@@ -1362,7 +1362,7 @@ func TestGetDatabasesUsedLicensesPerHost_Success(t *testing.T) {
 	assert.ElementsMatch(t, expected, actual)
 }
 
-func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
+func TestGetUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -1462,7 +1462,7 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 			Return(clusters, nil),
 	)
 
-	actual, err := as.GetDatabasesUsedLicensesPerHostAsXLSX(filter)
+	actual, err := as.GetUsedLicensesPerHostAsXLSX(filter)
 	require.NoError(t, err)
 
 	assert.Equal(t, "ercsoldbx", actual.GetCellValue("Licenses Used Per Host", "A2"))
@@ -1475,7 +1475,7 @@ func TestGetDatabasesUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "0", actual.GetCellValue("Licenses Used Per Host", "H2"))
 }
 
-func TestGetDatabasesUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
+func TestGetUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -1585,7 +1585,7 @@ func TestGetDatabasesUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
 			Return(clusters, nil),
 	)
 
-	actual, actErr := as.GetDatabasesUsedLicensesPerCluster(filter)
+	actual, actErr := as.GetUsedLicensesPerCluster(filter)
 	require.NoError(t, actErr)
 
 	expected := []dto.DatabaseUsedLicensePerCluster{
@@ -1601,7 +1601,7 @@ func TestGetDatabasesUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
 	assert.ElementsMatch(t, expected, actual)
 }
 
-func TestGetDatabasesUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
+func TestGetUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -1729,7 +1729,7 @@ func TestGetDatabasesUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
 			Return(clusters, nil),
 	)
 
-	actual, actErr := as.GetDatabasesUsedLicensesPerCluster(filter)
+	actual, actErr := as.GetUsedLicensesPerCluster(filter)
 	require.NoError(t, actErr)
 
 	expected := []dto.DatabaseUsedLicensePerCluster{
@@ -1745,7 +1745,7 @@ func TestGetDatabasesUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
 	assert.ElementsMatch(t, expected, actual)
 }
 
-func TestGetDatabasesUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
+func TestGetUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -1855,7 +1855,7 @@ func TestGetDatabasesUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
 			Return(clusters, nil),
 	)
 
-	actual, err := as.GetDatabasesUsedLicensesPerClusterAsXLSX(filter)
+	actual, err := as.GetUsedLicensesPerClusterAsXLSX(filter)
 	require.NoError(t, err)
 
 	assert.Equal(t, "name1", actual.GetCellValue("Licenses Used Per Cluster", "A2"))

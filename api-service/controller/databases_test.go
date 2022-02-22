@@ -270,7 +270,7 @@ func TestGetDatabasesUsedLicensesXLSX_Success(t *testing.T) {
 	xlsx := excelize.File{}
 
 	as.EXPECT().
-		GetDatabasesUsedLicensesAsXLSX(filter).
+		GetUsedLicensesPerDatabasesAsXLSX(filter).
 		Return(&xlsx, nil)
 
 	rr := httptest.NewRecorder()
@@ -329,7 +329,7 @@ func TestGetDatabasesUsedLicensesXLSX_InternalServerError1(t *testing.T) {
 	}
 
 	as.EXPECT().
-		GetDatabasesUsedLicensesAsXLSX(filter).
+		GetUsedLicensesPerDatabasesAsXLSX(filter).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
@@ -446,7 +446,7 @@ func TestGetHostUsedLicensesXLSX_Success(t *testing.T) {
 	xlsx := excelize.File{}
 
 	as.EXPECT().
-		GetDatabasesUsedLicensesPerHostAsXLSX(filter).
+		GetUsedLicensesPerHostAsXLSX(filter).
 		Return(&xlsx, nil)
 
 	rr := httptest.NewRecorder()
@@ -481,7 +481,7 @@ func TestGetHostUsedLicensesXLSX_InternalServerError1(t *testing.T) {
 	}
 
 	as.EXPECT().
-		GetDatabasesUsedLicensesPerHostAsXLSX(filter).
+		GetUsedLicensesPerHostAsXLSX(filter).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
@@ -513,7 +513,7 @@ func TestGetDatabasesUsedLicensesPerCluster_Success(t *testing.T) {
 	}
 
 	usedLicenses := []dto.DatabaseUsedLicensePerCluster{}
-	as.EXPECT().GetDatabasesUsedLicensesPerCluster(filter).
+	as.EXPECT().GetUsedLicensesPerCluster(filter).
 		Return(usedLicenses, nil)
 
 	rr := httptest.NewRecorder()
@@ -552,7 +552,7 @@ func TestGetDatabasesUsedLicensesPerClusterXLSX_Success(t *testing.T) {
 	xlsx := excelize.File{}
 
 	as.EXPECT().
-		GetDatabasesUsedLicensesPerClusterAsXLSX(filter).
+		GetUsedLicensesPerClusterAsXLSX(filter).
 		Return(&xlsx, nil)
 
 	rr := httptest.NewRecorder()
@@ -587,7 +587,7 @@ func TestGetDatabasesUsedLicensesPerClusterXLSX_InternalServerError1(t *testing.
 	}
 
 	as.EXPECT().
-		GetDatabasesUsedLicensesPerClusterAsXLSX(filter).
+		GetUsedLicensesPerClusterAsXLSX(filter).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()

@@ -162,10 +162,10 @@ type APIServiceInterface interface {
 	SearchDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.DatabasesStatistics, error)
 	GetUsedLicensesPerDatabases(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
-	GetDatabasesUsedLicensesPerHost(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error)
-	GetDatabasesUsedLicensesPerCluster(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerCluster, error)
-	GetDatabasesUsedLicensesPerClusterAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
-	GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
+	GetUsedLicensesPerHost(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error)
+	GetUsedLicensesPerHostAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
+	GetUsedLicensesPerCluster(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerCluster, error)
+	GetUsedLicensesPerClusterAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error)
 	GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, error)
 
@@ -174,7 +174,7 @@ type APIServiceInterface interface {
 	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
 	SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error)
-	GetDatabasesUsedLicensesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
+	GetUsedLicensesPerDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	// MYSQL AGREEMENTS
 
 	AddMySQLAgreement(agreement model.MySQLAgreement) (*model.MySQLAgreement, error)

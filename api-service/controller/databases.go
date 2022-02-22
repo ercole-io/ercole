@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -113,7 +113,7 @@ func (ctrl *APIController) GetDatabasesUsedLicensesJSON(w http.ResponseWriter, r
 }
 
 func (ctrl *APIController) GetDatabasesUsedLicensesXLSX(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
-	xlsx, err := ctrl.Service.GetDatabasesUsedLicensesAsXLSX(filter)
+	xlsx, err := ctrl.Service.GetUsedLicensesPerDatabasesAsXLSX(filter)
 
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
@@ -176,7 +176,7 @@ func (ctrl *APIController) GetDatabasesUsedLicensesPerHost(w http.ResponseWriter
 }
 
 func (ctrl *APIController) GetDatabasesUsedLicensesPerHostJSON(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
-	usedLicenses, err := ctrl.Service.GetDatabasesUsedLicensesPerHost(filter)
+	usedLicenses, err := ctrl.Service.GetUsedLicensesPerHost(filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -189,7 +189,7 @@ func (ctrl *APIController) GetDatabasesUsedLicensesPerHostJSON(w http.ResponseWr
 }
 
 func (ctrl *APIController) GetDatabasesUsedLicensesPerHostAsXLSX(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
-	xlsx, err := ctrl.Service.GetDatabasesUsedLicensesPerHostAsXLSX(filter)
+	xlsx, err := ctrl.Service.GetUsedLicensesPerHostAsXLSX(filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -217,7 +217,7 @@ func (ctrl *APIController) GetDatabasesUsedLicensesPerCluster(w http.ResponseWri
 }
 
 func (ctrl *APIController) GetDatabasesUsedLicensesPerClusterJSON(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
-	usedLicenses, err := ctrl.Service.GetDatabasesUsedLicensesPerCluster(filter)
+	usedLicenses, err := ctrl.Service.GetUsedLicensesPerCluster(filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -230,7 +230,7 @@ func (ctrl *APIController) GetDatabasesUsedLicensesPerClusterJSON(w http.Respons
 }
 
 func (ctrl *APIController) GetDatabasesUsedLicensesPerClusterXLSX(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
-	xlsx, err := ctrl.Service.GetDatabasesUsedLicensesPerClusterAsXLSX(filter)
+	xlsx, err := ctrl.Service.GetUsedLicensesPerClusterAsXLSX(filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
