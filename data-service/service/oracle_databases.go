@@ -379,6 +379,10 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 }
 
 func (hds *HostDataService) ignorePreviousLicences(previous, new *model.HostDataBE) {
+	if previous == nil || previous.Features.Oracle == nil {
+		return
+	}
+
 	ignoredDbLicenses := make(map[uint][]string)
 
 	for _, db := range previous.Features.Oracle.Database.Databases {
