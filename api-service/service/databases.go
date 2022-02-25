@@ -231,7 +231,6 @@ func (as *APIService) GetUsedLicensesPerDatabases(filter dto.GlobalFilter) ([]dt
 					for _, license := range database.Licenses {
 						if license.LicenseTypeID == usedLicenses[i].LicenseTypeID {
 							usedLicenses[i].Ignored = license.Ignored
-							usedLicenses[i].Count = license.Count
 						}
 					}
 				}
