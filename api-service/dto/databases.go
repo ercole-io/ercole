@@ -41,7 +41,6 @@ type DatabaseUsedLicense struct {
 	LicenseTypeID   string  `json:"licenseTypeID" bson:"licenseTypeID"`
 	Description     string  `json:"description" bson:"description"`
 	Metric          string  `json:"metric" bson:"metric"`
-	Count           float64 `json:"count" bson:"count"`
 	UsedLicenses    float64 `json:"usedLicenses" bson:"usedLicenses"`
 	ClusterLicenses float64 `json:"clusterLicenses" bson:"clusterLicenses"`
 	Ignored         bool    `json:"ignored" bson:"ignored"`
