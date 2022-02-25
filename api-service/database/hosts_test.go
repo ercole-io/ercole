@@ -437,7 +437,7 @@ func (m *MongodbSuite) TestGetHost() {
 			Clusters: []model.ClusterInfo{
 				{
 					CPU:           140,
-					FetchEndpoint: "???",
+					FetchEndpoint: "olvmmgr",
 					Name:          "Puzzait",
 					Sockets:       10,
 					Type:          "vmware",
@@ -458,7 +458,7 @@ func (m *MongodbSuite) TestGetHost() {
 				},
 				{
 					CPU:           130,
-					FetchEndpoint: "???",
+					FetchEndpoint: "endpoint",
 					Name:          "Puzzait2",
 					Sockets:       13,
 					Type:          "vmware",
