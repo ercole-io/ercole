@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -80,6 +80,7 @@ func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy str
 				"location":                    true,
 				"hostnameAgentVirtualization": true,
 				"hostname":                    true,
+				"fetchEndpoint":               true,
 				"name":                        true,
 				"type":                        true,
 				"cpu":                         true,
