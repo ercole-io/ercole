@@ -13,7 +13,7 @@
             "cpu": {
                 "$numberInt": "140"
             },
-            "fetchEndpoint": "???",
+            "fetchEndpoint": "olvmmgr",
             "name": "Puzzait",
             "sockets": {
                 "$numberInt": "10"
@@ -38,7 +38,7 @@
             "cpu": {
                 "$numberInt": "130"
             },
-            "fetchEndpoint": "???",
+            "fetchEndpoint": "endpoint",
             "name": "Puzzait2",
             "sockets": {
                 "$numberInt": "13"
