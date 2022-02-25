@@ -4662,7 +4662,7 @@ paths:
       summary: Get Databases Used Licenses
       tags: []
       responses: {}
-      operationId: GetDatabasesUsedLicenses
+      operationId: GetUsedLicensesPerDatabases
       parameters:
         - schema:
             type: string
@@ -4680,7 +4680,7 @@ paths:
     get:
       summary: Get Databases Used Licenses Per Cluster
       tags: []
-      operationId: GetDatabasesUsedLicensesPerCluster
+      operationId: GetUsedLicensesPerCluster
       parameters:
         - schema:
             type: string
@@ -4741,7 +4741,7 @@ paths:
     get:
       summary: Get Databases Used Licenses Per Host
       tags: []
-      operationId: GetDatabasesUsedLicensesPerHost
+      operationId: GetUsedLicensesPerHost
       parameters:
         - schema:
             type: string

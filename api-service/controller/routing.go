@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -66,9 +66,9 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	// ALL TECHNOLOGIES
 	router.HandleFunc("/hosts/technologies/all/databases", ctrl.SearchDatabases).Methods("GET")
 	router.HandleFunc("/hosts/technologies/all/databases/statistics", ctrl.GetDatabasesStatistics).Methods("GET")
-	router.HandleFunc("/hosts/technologies/all/databases/licenses-used", ctrl.GetDatabasesUsedLicenses).Methods("GET")
-	router.HandleFunc("/hosts/technologies/all/databases/licenses-used-per-host", ctrl.GetDatabasesUsedLicensesPerHost).Methods("GET")
-	router.HandleFunc("/hosts/technologies/all/databases/licenses-used-per-cluster", ctrl.GetDatabasesUsedLicensesPerCluster).Methods("GET")
+	router.HandleFunc("/hosts/technologies/all/databases/licenses-used", ctrl.GetUsedLicensesPerDatabases).Methods("GET")
+	router.HandleFunc("/hosts/technologies/all/databases/licenses-used-per-host", ctrl.GetUsedLicensesPerHost).Methods("GET")
+	router.HandleFunc("/hosts/technologies/all/databases/licenses-used-per-cluster", ctrl.GetUsedLicensesPerCluster).Methods("GET")
 	router.HandleFunc("/hosts/technologies/all/databases/licenses-compliance", ctrl.GetDatabaseLicensesCompliance).Methods("GET")
 
 	// ORACLE
