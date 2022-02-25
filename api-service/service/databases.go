@@ -176,7 +176,7 @@ func (as *APIService) GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.Data
 	return stats, nil
 }
 
-func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
+func (as *APIService) GetUsedLicensesPerDatabases(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
 	type getter func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
 
 	getters := []getter{as.getOracleDatabasesUsedLicenses, as.getMySQLUsedLicenses}
@@ -204,6 +204,15 @@ func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.D
 		hostdatasPerHostname[hd.Hostname] = hd
 	}
 
+	clusters, err := as.Database.GetClusters(dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	for i, l := range usedLicenses {
 		hostdata, found := hostdatasPerHostname[l.Hostname]
 
@@ -217,35 +226,67 @@ func (as *APIService) GetDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.D
 		}
 
 		if hostdata.Features.Oracle != nil && hostdata.Features.Oracle.Database != nil && hostdata.Features.Oracle.Database.Databases != nil {
-			for x := range hostdata.Features.Oracle.Database.Databases {
-				if hostdata.Features.Oracle.Database.Databases[x].Name == usedLicenses[i].DbName {
-					for j := range hostdata.Features.Oracle.Database.Databases[x].Licenses {
-						if hostdata.Features.Oracle.Database.Databases[x].Licenses[j].LicenseTypeID == usedLicenses[i].LicenseTypeID {
-							usedLicenses[i].Ignored = hostdata.Features.Oracle.Database.Databases[x].Licenses[j].Ignored
-							break
+			for _, database := range hostdata.Features.Oracle.Database.Databases {
+				if database.Name == usedLicenses[i].DbName {
+					for _, license := range database.Licenses {
+						if license.LicenseTypeID == usedLicenses[i].LicenseTypeID {
+							usedLicenses[i].Ignored = license.Ignored
 						}
 					}
 				}
 			}
 		}
 
-		clusterCores, err := hostdata.GetClusterCores(hostdatasPerHostname)
-		if errors.Is(err, utils.ErrHostNotInCluster) {
-			continue
-		} else if err != nil {
+		consumedLicenses, err := as.clusterLicenses(l, clusters)
+		if err != nil && !errors.Is(err, utils.ErrHostNotInCluster) {
 			return nil, err
+		} else if !errors.Is(err, utils.ErrHostNotInCluster) {
+			usedLicenses[i].ClusterLicenses = consumedLicenses
+			continue
 		}
 
-		consumedLicenses := float64(clusterCores) * hostdata.CoreFactor()
-
-		usedLicenses[i].ClusterLicenses = consumedLicenses
+		consumedLicenses, err = as.veritasClusterLicenses(hostdata, hostdatasPerHostname)
+		if err != nil && !errors.Is(err, utils.ErrHostNotInCluster) {
+			return nil, err
+		} else if !errors.Is(err, utils.ErrHostNotInCluster) {
+			usedLicenses[i].ClusterLicenses = consumedLicenses
+			continue
+		}
 	}
 
 	return usedLicenses, nil
 }
 
-func (as *APIService) GetDatabasesUsedLicensesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
-	licenses, err := as.GetDatabasesUsedLicenses(filter)
+func (as *APIService) clusterLicenses(license dto.DatabaseUsedLicense, clusters []dto.Cluster) (float64, error) {
+	clusterByHostnames := make(map[string]*dto.Cluster)
+
+	for i := range clusters {
+		for j := range clusters[i].VMs {
+			clusterByHostnames[clusters[i].VMs[j].Hostname] = &clusters[i]
+		}
+	}
+
+	cluster, found := clusterByHostnames[license.Hostname]
+	if !found {
+		return 0, utils.ErrHostNotInCluster
+	}
+
+	return float64(cluster.CPU) * 0.5, nil
+}
+
+func (as *APIService) veritasClusterLicenses(hostdata *model.HostDataBE, hostdatasPerHostname map[string]*model.HostDataBE) (float64, error) {
+	clusterCores, err := hostdata.GetClusterCores(hostdatasPerHostname)
+	if errors.Is(err, utils.ErrHostNotInCluster) {
+		return 0, utils.ErrHostNotInCluster
+	} else if err != nil {
+		return 0, err
+	}
+
+	return float64(clusterCores) * hostdata.CoreFactor(), nil
+}
+
+func (as *APIService) GetUsedLicensesPerDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	licenses, err := as.GetUsedLicensesPerDatabases(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -406,8 +447,8 @@ func (as *APIService) GetDatabaseLicensesComplianceAsXLSX() (*excelize.File, err
 	return sheets, err
 }
 
-func (as *APIService) GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
-	usedLicenses, err := as.GetDatabasesUsedLicensesPerHost(filter)
+func (as *APIService) GetUsedLicensesPerHostAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	usedLicenses, err := as.GetUsedLicensesPerHost(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -446,8 +487,8 @@ func (as *APIService) GetDatabasesUsedLicensesPerHostAsXLSX(filter dto.GlobalFil
 	return sheets, err
 }
 
-func (as *APIService) GetDatabasesUsedLicensesPerHost(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error) {
-	licenses, err := as.GetDatabasesUsedLicenses(filter)
+func (as *APIService) GetUsedLicensesPerHost(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error) {
+	licenses, err := as.GetUsedLicensesPerDatabases(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -456,6 +497,7 @@ func (as *APIService) GetDatabasesUsedLicensesPerHost(filter dto.GlobalFilter) (
 
 licenses:
 	for _, v := range licenses {
+
 		for i, v2 := range licensesPerHost {
 			if v.Hostname == v2.Hostname && v.LicenseTypeID == v2.LicenseTypeID {
 				licensesPerHost[i].DatabaseNames = append(licensesPerHost[i].DatabaseNames, v.DbName)
@@ -463,22 +505,24 @@ licenses:
 			}
 		}
 
-		licensesPerHost = append(licensesPerHost, dto.DatabaseUsedLicensePerHost{
-			Hostname:        v.Hostname,
-			DatabaseNames:   []string{v.DbName},
-			LicenseTypeID:   v.LicenseTypeID,
-			Description:     v.Description,
-			Metric:          v.Metric,
-			UsedLicenses:    v.UsedLicenses,
-			ClusterLicenses: v.ClusterLicenses,
-		})
+		licensesPerHost = append(licensesPerHost,
+			dto.DatabaseUsedLicensePerHost{
+				Hostname:        v.Hostname,
+				DatabaseNames:   []string{v.DbName},
+				LicenseTypeID:   v.LicenseTypeID,
+				Description:     v.Description,
+				Metric:          v.Metric,
+				UsedLicenses:    v.UsedLicenses,
+				ClusterLicenses: v.ClusterLicenses,
+			},
+		)
 	}
 
 	return licensesPerHost, nil
 }
 
-func (as *APIService) GetDatabasesUsedLicensesPerCluster(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerCluster, error) {
-	licenses, err := as.GetDatabasesUsedLicenses(filter)
+func (as *APIService) GetUsedLicensesPerCluster(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerCluster, error) {
+	licenses, err := as.GetUsedLicensesPerDatabases(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -520,7 +564,7 @@ licenses:
 				LicenseTypeID: l.LicenseTypeID,
 				Description:   l.Description,
 				Metric:        l.Metric,
-				UsedLicenses:  float64(c.CPU) * 0.5,
+				UsedLicenses:  l.ClusterLicenses,
 			}
 
 			clusterLicenses[l.LicenseTypeID] = ll
@@ -545,8 +589,8 @@ licenses:
 	return result, nil
 }
 
-func (as *APIService) GetDatabasesUsedLicensesPerClusterAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
-	usedLicenses, err := as.GetDatabasesUsedLicensesPerCluster(filter)
+func (as *APIService) GetUsedLicensesPerClusterAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
+	usedLicenses, err := as.GetUsedLicensesPerCluster(filter)
 	if err != nil {
 		return nil, err
 	}
