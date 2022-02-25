@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -213,7 +213,7 @@ func TestGetDatabasesStats_Service_Error(t *testing.T) {
 	assert.Equal(t, "Internal Server Error", feErr.Message)
 }
 
-func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
+func TestGetUsedLicensesPerDatabases_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -231,11 +231,11 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 	}
 
 	usedLicenses := []dto.DatabaseUsedLicense{}
-	as.EXPECT().GetDatabasesUsedLicenses(filter).
+	as.EXPECT().GetUsedLicensesPerDatabases(filter).
 		Return(usedLicenses, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetDatabasesUsedLicenses)
+	handler := http.HandlerFunc(ac.GetUsedLicensesPerDatabases)
 	req, err := http.NewRequest("GET", "/stats?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
@@ -249,7 +249,7 @@ func TestGetDatabasesUsedLicenses_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expected), rr.Body.String())
 }
 
-func TestGetDatabasesUsedLicensesXLSX_Success(t *testing.T) {
+func TestGetUsedLicensesPerDatabasesAsXLSX_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -270,11 +270,11 @@ func TestGetDatabasesUsedLicensesXLSX_Success(t *testing.T) {
 	xlsx := excelize.File{}
 
 	as.EXPECT().
-		GetDatabasesUsedLicensesAsXLSX(filter).
+		GetUsedLicensesPerDatabasesAsXLSX(filter).
 		Return(&xlsx, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetDatabasesUsedLicenses)
+	handler := http.HandlerFunc(ac.GetUsedLicensesPerDatabases)
 	req, err := http.NewRequest("GET", "/stats?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)
@@ -286,7 +286,7 @@ func TestGetDatabasesUsedLicensesXLSX_Success(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestGetDatabasesUsedLicensesXLSX_StatusBadRequest(t *testing.T) {
+func TestGetUsedLicensesPerDatabasesAsXLSX_StatusBadRequest(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -299,7 +299,7 @@ func TestGetDatabasesUsedLicensesXLSX_StatusBadRequest(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetDatabasesUsedLicenses)
+	handler := http.HandlerFunc(ac.GetUsedLicensesPerDatabases)
 	req, err := http.NewRequest("GET", "/licenses-used?older-than=dasd", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
@@ -310,7 +310,7 @@ func TestGetDatabasesUsedLicensesXLSX_StatusBadRequest(t *testing.T) {
 	require.Equal(t, http.StatusBadRequest, rr.Code)
 }
 
-func TestGetDatabasesUsedLicensesXLSX_InternalServerError1(t *testing.T) {
+func TestGetUsedLicensesPerDatabasesAsXLSX_InternalServerError1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -329,11 +329,11 @@ func TestGetDatabasesUsedLicensesXLSX_InternalServerError1(t *testing.T) {
 	}
 
 	as.EXPECT().
-		GetDatabasesUsedLicensesAsXLSX(filter).
+		GetUsedLicensesPerDatabasesAsXLSX(filter).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetDatabasesUsedLicenses)
+	handler := http.HandlerFunc(ac.GetUsedLicensesPerDatabases)
 	req, err := http.NewRequest("GET", "/", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)
@@ -401,7 +401,7 @@ func TestGetDatabaseLicensesComplianceXLSX_InternalServerError1(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestGetHostUsedLicensesXLSX_StatusBadRequest(t *testing.T) {
+func TestGetUsedLicensesPerHostAsXLSX_StatusBadRequest(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -414,7 +414,7 @@ func TestGetHostUsedLicensesXLSX_StatusBadRequest(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetDatabasesUsedLicensesPerHost)
+	handler := http.HandlerFunc(ac.GetUsedLicensesPerHost)
 	req, err := http.NewRequest("GET", "/?location=Italy&environment=TST&older-than=sdaaadsd", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
@@ -425,7 +425,7 @@ func TestGetHostUsedLicensesXLSX_StatusBadRequest(t *testing.T) {
 	require.Equal(t, http.StatusBadRequest, rr.Code)
 }
 
-func TestGetHostUsedLicensesXLSX_Success(t *testing.T) {
+func TestGetUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -446,11 +446,11 @@ func TestGetHostUsedLicensesXLSX_Success(t *testing.T) {
 	xlsx := excelize.File{}
 
 	as.EXPECT().
-		GetDatabasesUsedLicensesPerHostAsXLSX(filter).
+		GetUsedLicensesPerHostAsXLSX(filter).
 		Return(&xlsx, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetDatabasesUsedLicensesPerHost)
+	handler := http.HandlerFunc(ac.GetUsedLicensesPerHost)
 	req, err := http.NewRequest("GET", "/?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)
@@ -462,7 +462,7 @@ func TestGetHostUsedLicensesXLSX_Success(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestGetHostUsedLicensesXLSX_InternalServerError1(t *testing.T) {
+func TestGetUsedLicensesPerHostAsXLSX_InternalServerError1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -481,11 +481,11 @@ func TestGetHostUsedLicensesXLSX_InternalServerError1(t *testing.T) {
 	}
 
 	as.EXPECT().
-		GetDatabasesUsedLicensesPerHostAsXLSX(filter).
+		GetUsedLicensesPerHostAsXLSX(filter).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetDatabasesUsedLicensesPerHost)
+	handler := http.HandlerFunc(ac.GetUsedLicensesPerHost)
 	req, err := http.NewRequest("GET", "/", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)
@@ -495,7 +495,7 @@ func TestGetHostUsedLicensesXLSX_InternalServerError1(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestGetDatabasesUsedLicensesPerCluster_Success(t *testing.T) {
+func TestGetUsedLicensesPerCluster_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -513,11 +513,11 @@ func TestGetDatabasesUsedLicensesPerCluster_Success(t *testing.T) {
 	}
 
 	usedLicenses := []dto.DatabaseUsedLicensePerCluster{}
-	as.EXPECT().GetDatabasesUsedLicensesPerCluster(filter).
+	as.EXPECT().GetUsedLicensesPerCluster(filter).
 		Return(usedLicenses, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetDatabasesUsedLicensesPerCluster)
+	handler := http.HandlerFunc(ac.GetUsedLicensesPerCluster)
 	req, err := http.NewRequest("GET", "/stats?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
@@ -531,7 +531,7 @@ func TestGetDatabasesUsedLicensesPerCluster_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(expected), rr.Body.String())
 }
 
-func TestGetDatabasesUsedLicensesPerClusterXLSX_Success(t *testing.T) {
+func TestGetUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -552,11 +552,11 @@ func TestGetDatabasesUsedLicensesPerClusterXLSX_Success(t *testing.T) {
 	xlsx := excelize.File{}
 
 	as.EXPECT().
-		GetDatabasesUsedLicensesPerClusterAsXLSX(filter).
+		GetUsedLicensesPerClusterAsXLSX(filter).
 		Return(&xlsx, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetDatabasesUsedLicensesPerCluster)
+	handler := http.HandlerFunc(ac.GetUsedLicensesPerCluster)
 	req, err := http.NewRequest("GET", "/?location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)
@@ -568,7 +568,7 @@ func TestGetDatabasesUsedLicensesPerClusterXLSX_Success(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestGetDatabasesUsedLicensesPerClusterXLSX_InternalServerError1(t *testing.T) {
+func TestGetUsedLicensesPerClusterAsXLSX_InternalServerError1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -587,11 +587,11 @@ func TestGetDatabasesUsedLicensesPerClusterXLSX_InternalServerError1(t *testing.
 	}
 
 	as.EXPECT().
-		GetDatabasesUsedLicensesPerClusterAsXLSX(filter).
+		GetUsedLicensesPerClusterAsXLSX(filter).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetDatabasesUsedLicensesPerCluster)
+	handler := http.HandlerFunc(ac.GetUsedLicensesPerCluster)
 	req, err := http.NewRequest("GET", "/", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)
