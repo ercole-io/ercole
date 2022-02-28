@@ -495,12 +495,12 @@ func TestGetUsedLicensesPerDatabases_Success(t *testing.T) {
 	}
 	gomock.InOrder(
 		db.EXPECT().
-			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&oracleLics, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
-		db.EXPECT().GetMySQLUsedLicenses(filter).
+		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicensesMySQL, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
@@ -512,7 +512,7 @@ func TestGetUsedLicensesPerDatabases_Success(t *testing.T) {
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
 	)
-	actual, err := as.GetUsedLicensesPerDatabases(filter)
+	actual, err := as.GetUsedLicensesPerDatabases("", filter)
 	require.NoError(t, err)
 
 	expected := []dto.DatabaseUsedLicense{
@@ -636,12 +636,12 @@ func TestGetUsedLicensesPerDatabases_VMWareCluster_Success(t *testing.T) {
 	}
 	gomock.InOrder(
 		db.EXPECT().
-			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&oracleLics, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
-		db.EXPECT().GetMySQLUsedLicenses(filter).
+		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicensesMySQL, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
@@ -653,7 +653,7 @@ func TestGetUsedLicensesPerDatabases_VMWareCluster_Success(t *testing.T) {
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
 	)
-	actual, err := as.GetUsedLicensesPerDatabases(filter)
+	actual, err := as.GetUsedLicensesPerDatabases("", filter)
 	require.NoError(t, err)
 
 	expected := []dto.DatabaseUsedLicense{
@@ -760,12 +760,12 @@ func TestGetUsedLicensesPerDatabases_VeritasCluster_Success(t *testing.T) {
 	}
 	gomock.InOrder(
 		db.EXPECT().
-			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&oracleLics, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
-		db.EXPECT().GetMySQLUsedLicenses(filter).
+		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicensesMySQL, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
@@ -777,7 +777,7 @@ func TestGetUsedLicensesPerDatabases_VeritasCluster_Success(t *testing.T) {
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
 	)
-	actual, err := as.GetUsedLicensesPerDatabases(filter)
+	actual, err := as.GetUsedLicensesPerDatabases("", filter)
 	require.NoError(t, err)
 
 	expected := []dto.DatabaseUsedLicense{
@@ -891,12 +891,12 @@ func TestGetUsedLicensesPerDatabasesAsXLSX_Success(t *testing.T) {
 
 	gomock.InOrder(
 		db.EXPECT().
-			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&oracleLics, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
-		db.EXPECT().GetMySQLUsedLicenses(filter).
+		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicenses, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
@@ -1027,7 +1027,7 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 				Hostname: "sdlsts101",
 			}}, nil),
 
-		db.EXPECT().GetMySQLUsedLicenses(any).
+		db.EXPECT().GetMySQLUsedLicenses("", any).
 			Return(usedLicenses, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
@@ -1181,7 +1181,7 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 				Hostname: "sdlmoc100.syssede.systest.sanpaoloimi.com",
 			}}, nil),
 
-		db.EXPECT().GetMySQLUsedLicenses(any).
+		db.EXPECT().GetMySQLUsedLicenses("", any).
 			Return(usedLicenses, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
@@ -1318,12 +1318,12 @@ func TestGetUsedLicensesPerHost_Success(t *testing.T) {
 
 	gomock.InOrder(
 		db.EXPECT().
-			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&oracleLics, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
-		db.EXPECT().GetMySQLUsedLicenses(filter).
+		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicenses, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
@@ -1444,12 +1444,12 @@ func TestGetUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 
 	gomock.InOrder(
 		db.EXPECT().
-			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&oracleLics, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
-		db.EXPECT().GetMySQLUsedLicenses(filter).
+		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicenses, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
@@ -1565,12 +1565,12 @@ func TestGetUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
 	}
 	gomock.InOrder(
 		db.EXPECT().
-			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&usedLicenses, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
-		db.EXPECT().GetMySQLUsedLicenses(filter).
+		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicensesMySQL, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
@@ -1709,12 +1709,12 @@ func TestGetUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
 	}
 	gomock.InOrder(
 		db.EXPECT().
-			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&usedLicenses, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
-		db.EXPECT().GetMySQLUsedLicenses(filter).
+		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicensesMySQL, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
@@ -1835,12 +1835,12 @@ func TestGetUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
 	}
 	gomock.InOrder(
 		db.EXPECT().
-			SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
 			Return(&usedLicenses, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
-		db.EXPECT().GetMySQLUsedLicenses(filter).
+		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicensesMySQL, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),

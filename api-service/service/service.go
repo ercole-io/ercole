@@ -70,7 +70,7 @@ type APIServiceInterface interface {
 	SearchOracleExadata(full bool, search string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleExadataResponse, error)
 	SearchOracleExadataAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	// SearchOracleDatabaseUsedLicenses return the list of consumed licenses
-	SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseUsedLicenseSearchResponse, error)
+	SearchOracleDatabaseUsedLicenses(hostname string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseUsedLicenseSearchResponse, error)
 
 	// ListLocations list locations
 	ListLocations(location string, environment string, olderThan time.Time) ([]string, error)
@@ -161,7 +161,7 @@ type APIServiceInterface interface {
 	SearchDatabases(filter dto.GlobalFilter) ([]dto.Database, error)
 	SearchDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.DatabasesStatistics, error)
-	GetUsedLicensesPerDatabases(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
+	GetUsedLicensesPerDatabases(hostname string, filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
 	GetUsedLicensesPerHost(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error)
 	GetUsedLicensesPerHostAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetUsedLicensesPerCluster(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerCluster, error)
@@ -173,7 +173,7 @@ type APIServiceInterface interface {
 
 	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
 	SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
-	GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error)
+	GetMySQLUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error)
 	GetUsedLicensesPerDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	// MYSQL AGREEMENTS
 

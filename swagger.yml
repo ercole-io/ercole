@@ -1316,6 +1316,27 @@ components:
         - itemDescription
         - metric
         - cost
+    LicenseUsed:
+      type: array
+      items:
+        type: object
+        properties:
+          hostname: 
+            type: string
+          dbname: 
+            type: string
+          licenseTypeID: 
+            type: string
+          description":
+            type: string
+          metric:
+            type: string
+          usedLicenses:
+            type: integer
+          clusterLicenses:
+            type: integer
+          ignored:
+            type: boolean
     MySQLAgreement:
       description: ''
       type: object
@@ -4664,6 +4685,36 @@ paths:
       responses: {}
       operationId: GetUsedLicensesPerDatabases
       parameters:
+        - schema:
+            type: string
+          in: query
+          name: location
+        - schema:
+            type: string
+          in: query
+          name: environment
+        - schema:
+            type: string
+          in: query
+          name: older-than
+  '/hosts/{hostname}/technologies/all/databases/licenses-used':
+    get:
+      summary: Get Databases Used Licenses per hostname
+      tags: []
+      responses: 
+        '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/LicenseUsed'
+      operationId: GetUsedLicensesPerDatabases
+      parameters:
+        - schema: 
+            type: string
+          name: hostname
+          in: path
+          required: true
         - schema:
             type: string
           in: query

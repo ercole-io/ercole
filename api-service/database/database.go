@@ -60,7 +60,7 @@ type MongoDatabaseInterface interface {
 	// SearchOracleExadata search exadata
 	SearchOracleExadata(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleExadataResponse, error)
 	// SearchOracleDatabaseUsedLicenses search consumed licenses
-	SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseUsedLicenseSearchResponse, error)
+	SearchOracleDatabaseUsedLicenses(hostname string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseUsedLicenseSearchResponse, error)
 
 	// ListLocations list locations
 	ListLocations(location string, environment string, olderThan time.Time) ([]string, error)
@@ -170,7 +170,7 @@ type MongoDatabaseInterface interface {
 	SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.MySQLInstance, error)
 	//GetMySQLUsedLicenses return MySQL used licenses.
 	// Only ENTERPRISE MySQL db are considered as licenses
-	GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error)
+	GetMySQLUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error)
 
 	// MYSQL AGREEMENTS
 

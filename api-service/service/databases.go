@@ -176,15 +176,15 @@ func (as *APIService) GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.Data
 	return stats, nil
 }
 
-func (as *APIService) GetUsedLicensesPerDatabases(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
-	type getter func(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
+func (as *APIService) GetUsedLicensesPerDatabases(hostname string, filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
+	type getter func(hostname string, filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
 
 	getters := []getter{as.getOracleDatabasesUsedLicenses, as.getMySQLUsedLicenses}
 
 	usedLicenses := make([]dto.DatabaseUsedLicense, 0)
 
 	for _, get := range getters {
-		thisDbs, err := get(filter)
+		thisDbs, err := get(hostname, filter)
 		if err != nil {
 			return nil, err
 		}
@@ -286,7 +286,7 @@ func (as *APIService) veritasClusterLicenses(hostdata *model.HostDataBE, hostdat
 }
 
 func (as *APIService) GetUsedLicensesPerDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
-	licenses, err := as.GetUsedLicensesPerDatabases(filter)
+	licenses, err := as.GetUsedLicensesPerDatabases("", filter)
 	if err != nil {
 		return nil, err
 	}
@@ -323,8 +323,8 @@ func (as *APIService) GetUsedLicensesPerDatabasesAsXLSX(filter dto.GlobalFilter)
 	return sheets, err
 }
 
-func (as *APIService) getOracleDatabasesUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
-	oracleLics, err := as.Database.SearchOracleDatabaseUsedLicenses("", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan)
+func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
+	oracleLics, err := as.Database.SearchOracleDatabaseUsedLicenses(hostname, "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan)
 	if err != nil {
 		return nil, err
 	}
@@ -354,8 +354,8 @@ func (as *APIService) getOracleDatabasesUsedLicenses(filter dto.GlobalFilter) ([
 	return genericLics, nil
 }
 
-func (as *APIService) getMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
-	mysqlLics, err := as.GetMySQLUsedLicenses(filter)
+func (as *APIService) getMySQLUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
+	mysqlLics, err := as.GetMySQLUsedLicenses(hostname, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -488,7 +488,7 @@ func (as *APIService) GetUsedLicensesPerHostAsXLSX(filter dto.GlobalFilter) (*ex
 }
 
 func (as *APIService) GetUsedLicensesPerHost(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerHost, error) {
-	licenses, err := as.GetUsedLicensesPerDatabases(filter)
+	licenses, err := as.GetUsedLicensesPerDatabases("", filter)
 	if err != nil {
 		return nil, err
 	}
@@ -522,7 +522,7 @@ licenses:
 }
 
 func (as *APIService) GetUsedLicensesPerCluster(filter dto.GlobalFilter) ([]dto.DatabaseUsedLicensePerCluster, error) {
-	licenses, err := as.GetUsedLicensesPerDatabases(filter)
+	licenses, err := as.GetUsedLicensesPerDatabases("", filter)
 	if err != nil {
 		return nil, err
 	}

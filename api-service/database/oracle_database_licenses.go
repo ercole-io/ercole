@@ -19,22 +19,22 @@ import (
 	"context"
 	"time"
 
-	"github.com/amreo/mu"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
+	"github.com/amreo/mu"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
 // SearchOracleDatabaseUsedLicenses search used licenses
-func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int,
+func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(hostname string, sortBy string, sortDesc bool, page int, pageSize int,
 	location string, environment string, olderThan time.Time,
 ) (*dto.OracleDatabaseUsedLicenseSearchResponse, error) {
 	cursor, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FindByHostname(hostname),
 			FilterByOldnessSteps(olderThan),
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APUnwind("$features.oracle.database.databases"),
