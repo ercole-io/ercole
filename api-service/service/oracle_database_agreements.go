@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -657,4 +657,38 @@ func (as *APIService) DeleteHostFromOracleDatabaseAgreement(id primitive.ObjectI
 	}
 
 	return as.Database.UpdateOracleDatabaseAgreement(*agreement)
+}
+
+func (as *APIService) DeleteHostFromOracleDatabaseAgreements(hostname string) error {
+	if err := checkHosts(as, []string{hostname}); err != nil {
+		return err
+	}
+
+	listAgreements, err := as.Database.ListOracleDatabaseAgreements()
+	if err != nil {
+		return err
+	}
+
+	for _, la := range listAgreements {
+		for i := range la.Hosts {
+			host := la.Hosts[i]
+			if host.Hostname == hostname {
+				agreement, err := as.Database.GetOracleDatabaseAgreement(la.ID)
+				if err != nil {
+					return err
+				}
+
+				agreement.Hosts = append(
+					agreement.Hosts[0:i],
+					agreement.Hosts[i+1:len(agreement.Hosts)]...)
+
+				errAgreement := as.Database.UpdateOracleDatabaseAgreement(*agreement)
+				if errAgreement != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	return nil
 }

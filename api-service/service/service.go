@@ -134,6 +134,7 @@ type APIServiceInterface interface {
 	DeleteOracleDatabaseAgreement(id primitive.ObjectID) error
 	AddHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) error
 	DeleteHostFromOracleDatabaseAgreement(id primitive.ObjectID, hostname string) error
+	DeleteHostFromOracleDatabaseAgreements(hostname string) error
 
 	// ORACLE DATABASE LICENSES
 
