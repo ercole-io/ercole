@@ -369,4 +369,17 @@ func (m *MongodbSuite) TestGetMySQLUsedLicenses() {
 		expected := []dto.MySQLUsedLicense{second}
 		assert.Equal(t, expected, actual)
 	})
+
+	m.T().Run("should_filter_by_hostname", func(t *testing.T) {
+		filter := dto.GlobalFilter{
+			Location:    "",
+			Environment: "",
+			OlderThan:   utils.MAX_TIME,
+		}
+		actual, err := m.db.GetMySQLUsedLicenses("erc-mysql-2", filter)
+		m.Require().NoError(err)
+
+		expected := []dto.MySQLUsedLicense{first}
+		assert.Equal(t, expected, actual)
+	})
 }
