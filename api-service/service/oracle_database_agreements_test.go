@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -2179,6 +2179,81 @@ func TestDeleteHostFromOracleDatabaseAgreement(t *testing.T) {
 		)
 
 		err := as.DeleteHostFromOracleDatabaseAgreement(anotherId, "ercsoldbx")
+		assert.Nil(t, err)
+	})
+}
+
+func TestDeleteHostFromOracleDatabaseAgreements(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+
+	as := APIService{
+		Database: db,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		TimeNow:     utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		NewObjectID: utils.NewObjectIDForTests(),
+	}
+
+	anotherId := utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")
+
+	t.Run("Success", func(t *testing.T) {
+		listAgreement := []dto.OracleDatabaseAgreementFE{}
+
+		agreement := model.OracleDatabaseAgreement{
+			AgreementID:     "AID001",
+			CSI:             "CSI001",
+			ID:              anotherId,
+			LicenseTypeID:   lt1.ID,
+			ReferenceNumber: "RF0001",
+			Unlimited:       true,
+			Count:           30,
+			Basket:          true,
+			Hosts:           []string{"test-db", "ercsoldbx"},
+		}
+
+		agreementPostAdd := model.OracleDatabaseAgreement{
+			AgreementID:     "AID001",
+			CSI:             "CSI001",
+			ID:              anotherId,
+			LicenseTypeID:   lt1.ID,
+			ReferenceNumber: "RF0001",
+			Unlimited:       true,
+			Count:           30,
+			Basket:          true,
+			Hosts:           []string{"test-db"},
+		}
+
+		gomock.InOrder(
+			db.EXPECT().SearchHosts("hostnames",
+				dto.SearchHostsFilters{
+					Search:         []string{""},
+					OlderThan:      utils.MAX_TIME,
+					PageNumber:     -1,
+					PageSize:       -1,
+					LTEMemoryTotal: -1,
+					GTEMemoryTotal: -1,
+					LTESwapTotal:   -1,
+					GTESwapTotal:   -1,
+					LTECPUCores:    -1,
+					GTECPUCores:    -1,
+					LTECPUThreads:  -1,
+					GTECPUThreads:  -1,
+				}).
+				Return([]map[string]interface{}{
+					{"hostname": "ercsoldbx"},
+				}, nil),
+			db.EXPECT().ListOracleDatabaseAgreements().
+				Return(listAgreement, nil),
+			db.EXPECT().GetOracleDatabaseAgreement(anotherId).
+				Return(&agreement, nil).AnyTimes(),
+			db.EXPECT().UpdateOracleDatabaseAgreement(agreementPostAdd).
+				Return(nil).AnyTimes(),
+		)
+
+		err := as.DeleteHostFromOracleDatabaseAgreements("ercsoldbx")
 		assert.Nil(t, err)
 	})
 }

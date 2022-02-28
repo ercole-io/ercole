@@ -364,5 +364,9 @@ func (as *APIService) DismissHost(hostname string) error {
 		as.Log.Errorf("Can't dismiss hostname %s alerts by filter", hostname)
 	}
 
+	if err := as.DeleteHostFromOracleDatabaseAgreements(hostname); err != nil {
+		as.Log.Errorf("Can't remove hostname %s agreements", hostname)
+	}
+
 	return as.Database.DismissHost(hostname)
 }
