@@ -187,8 +187,8 @@ func (as *APIService) SearchOracleDatabasesAsXLSX(filter dto.SearchOracleDatabas
 }
 
 // SearchOracleDatabaseUsedLicenses return the list of used licenses
-func (as *APIService) SearchOracleDatabaseUsedLicenses(sortBy string, sortDesc bool, page int, pageSize int,
+func (as *APIService) SearchOracleDatabaseUsedLicenses(hostname string, sortBy string, sortDesc bool, page int, pageSize int,
 	location string, environment string, olderThan time.Time,
 ) (*dto.OracleDatabaseUsedLicenseSearchResponse, error) {
-	return as.Database.SearchOracleDatabaseUsedLicenses(sortBy, sortDesc, page, pageSize, location, environment, olderThan)
+	return as.Database.SearchOracleDatabaseUsedLicenses(hostname, sortBy, sortDesc, page, pageSize, location, environment, olderThan)
 }

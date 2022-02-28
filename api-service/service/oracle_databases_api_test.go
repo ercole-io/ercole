@@ -425,13 +425,13 @@ func TestSearchOracleDatabaseUsedLicenses_Success(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().SearchOracleDatabaseUsedLicenses(
+	db.EXPECT().SearchOracleDatabaseUsedLicenses("",
 		"Used",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	).Return(&expectedRes, nil).Times(1)
 
-	res, err := as.SearchOracleDatabaseUsedLicenses(
+	res, err := as.SearchOracleDatabaseUsedLicenses("",
 		"Used",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
@@ -449,13 +449,13 @@ func TestSearchOracleDatabaseUsedLicenses_Fail(t *testing.T) {
 		Database: db,
 	}
 
-	db.EXPECT().SearchOracleDatabaseUsedLicenses(
+	db.EXPECT().SearchOracleDatabaseUsedLicenses("",
 		"Used",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),
 	).Return(nil, aerrMock).Times(1)
 
-	res, err := as.SearchOracleDatabaseUsedLicenses(
+	res, err := as.SearchOracleDatabaseUsedLicenses("",
 		"Used",
 		true, 1, 1,
 		"Italy", "PROD", utils.P("2019-12-05T14:02:03Z"),

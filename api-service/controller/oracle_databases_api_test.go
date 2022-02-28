@@ -1461,7 +1461,7 @@ func TestSearchOracleDatabaseUsedLicenses_JSONPaged(t *testing.T) {
 
 	t.Run("JSON paged", func(t *testing.T) {
 		as.EXPECT().
-			SearchOracleDatabaseUsedLicenses("Benefit", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+			SearchOracleDatabaseUsedLicenses("", "Benefit", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 			Return(&resFromService, nil)
 
 		rr := httptest.NewRecorder()
@@ -1478,7 +1478,7 @@ func TestSearchOracleDatabaseUsedLicenses_JSONPaged(t *testing.T) {
 	t.Run("JSON unpaged", func(t *testing.T) {
 
 		as.EXPECT().
-			SearchOracleDatabaseUsedLicenses("", false, -1, -1, "", "", utils.MAX_TIME).
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&resFromService, nil)
 
 		rr := httptest.NewRecorder()
@@ -1589,7 +1589,7 @@ func TestSearchOracleDatabaseUsedLicenses_JSONInternalServerError(t *testing.T) 
 	}
 
 	as.EXPECT().
-		SearchOracleDatabaseUsedLicenses("", false, -1, -1, "", "", utils.MAX_TIME).
+		SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()

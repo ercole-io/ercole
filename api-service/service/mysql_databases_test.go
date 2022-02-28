@@ -285,7 +285,7 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 		}
 
 		gomock.InOrder(
-			db.EXPECT().GetMySQLUsedLicenses(filter).
+			db.EXPECT().GetMySQLUsedLicenses("", filter).
 				Return(tc.usedLicenses, nil),
 			db.EXPECT().GetClusters(any).
 				Return(tc.clusters, nil),
@@ -293,7 +293,7 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 				Return(tc.agreements, nil),
 		)
 
-		actual, err := as.GetMySQLUsedLicenses(filter)
+		actual, err := as.GetMySQLUsedLicenses("", filter)
 		require.NoError(t, err)
 
 		assert.Equal(t, tc.expected, actual)
@@ -440,7 +440,7 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 		}
 
 		gomock.InOrder(
-			db.EXPECT().GetMySQLUsedLicenses(filter).
+			db.EXPECT().GetMySQLUsedLicenses("", filter).
 				Return(tc.usedLicenses, nil),
 			db.EXPECT().GetClusters(any).
 				Return(tc.clusters, nil),

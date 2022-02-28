@@ -57,10 +57,11 @@ func (md *MongoDatabase) SearchMySQLInstances(filter dto.GlobalFilter) ([]dto.My
 	return out, nil
 }
 
-func (md *MongoDatabase) GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error) {
+func (md *MongoDatabase) GetMySQLUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error) {
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
+			FindByHostname(hostname),
 			FilterByOldnessSteps(filter.OlderThan),
 			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
 			mu.APUnwind("$features.mysql.instances"),
