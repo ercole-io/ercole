@@ -19,6 +19,7 @@ import (
 	"net/http"
 
 	"github.com/golang/gddo/httputil"
+	"github.com/gorilla/mux"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -89,18 +90,25 @@ func (ctrl *APIController) GetUsedLicensesPerDatabases(w http.ResponseWriter, r 
 		return
 	}
 
+	hostname := ""
+
+	vars := mux.Vars(r)
+	if v, ok := vars["hostname"]; ok {
+		hostname = v
+	}
+
 	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
 	switch choice {
 	case "application/json":
-		ctrl.GetUsedLicensesPerDatabasesJSON(w, r, *filter)
+		ctrl.GetUsedLicensesPerDatabasesJSON(w, r, hostname, *filter)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 		ctrl.GetUsedLicensesPerDatabasesAsXLSX(w, r, *filter)
 	}
 }
 
-func (ctrl *APIController) GetUsedLicensesPerDatabasesJSON(w http.ResponseWriter, r *http.Request, filter dto.GlobalFilter) {
-	usedLicenses, err := ctrl.Service.GetUsedLicensesPerDatabases(filter)
+func (ctrl *APIController) GetUsedLicensesPerDatabasesJSON(w http.ResponseWriter, r *http.Request, hostname string, filter dto.GlobalFilter) {
+	usedLicenses, err := ctrl.Service.GetUsedLicensesPerDatabases(hostname, filter)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
