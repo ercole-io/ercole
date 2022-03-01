@@ -166,7 +166,6 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 					OSVersion:                     "7.5",
 					MemoryTotal:                   3,
 					SwapTotal:                     4,
-					OtherInfo:                     map[string]interface{}{},
 				},
 				ClusterMembershipStatus: model.ClusterMembershipStatus{
 					OracleClusterware:       false,
@@ -174,7 +173,6 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 					HACMP:                   false,
 					VeritasClusterServer:    false,
 					VeritasClusterHostnames: []string(nil),
-					OtherInfo:               map[string]interface{}{},
 				},
 				VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402",
 				Cluster:            "Puzzait",
@@ -204,16 +202,14 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 					OSVersion:                     "7.6",
 					MemoryTotal:                   3,
 					SwapTotal:                     1,
-					OtherInfo: map[string]interface {
-					}{}},
+				},
 				ClusterMembershipStatus: model.ClusterMembershipStatus{
 					OracleClusterware:       false,
 					SunCluster:              false,
 					HACMP:                   false,
 					VeritasClusterServer:    false,
 					VeritasClusterHostnames: []string(nil),
-					OtherInfo: map[string]interface {
-					}{}},
+				},
 				Databases: map[string][]string{},
 			},
 			{
@@ -240,8 +236,6 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 					OSVersion:                     "7.6",
 					MemoryTotal:                   3,
 					SwapTotal:                     1,
-					OtherInfo: map[string]interface {
-					}{},
 				},
 				ClusterMembershipStatus: model.ClusterMembershipStatus{
 					OracleClusterware:       false,
@@ -249,8 +243,6 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 					HACMP:                   false,
 					VeritasClusterServer:    false,
 					VeritasClusterHostnames: []string(nil),
-					OtherInfo: map[string]interface {
-					}{},
 				},
 				VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402",
 				Cluster:            "Puzzait",
@@ -306,16 +298,14 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 					OSVersion:                     "7.6",
 					MemoryTotal:                   3,
 					SwapTotal:                     1,
-					OtherInfo: map[string]interface {
-					}{}},
+				},
 				ClusterMembershipStatus: model.ClusterMembershipStatus{
 					OracleClusterware:       false,
 					SunCluster:              false,
 					HACMP:                   false,
 					VeritasClusterServer:    false,
 					VeritasClusterHostnames: []string(nil),
-					OtherInfo: map[string]interface {
-					}{}},
+				},
 				VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402",
 				Cluster:            "Puzzait",
 				Databases: map[string][]string{
@@ -357,14 +347,13 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 					OSVersion:                     "7.5",
 					MemoryTotal:                   3,
 					SwapTotal:                     4,
-					OtherInfo:                     map[string]interface{}{}},
+				},
 				ClusterMembershipStatus: model.ClusterMembershipStatus{
 					OracleClusterware:       false,
 					SunCluster:              false,
 					HACMP:                   false,
 					VeritasClusterServer:    false,
 					VeritasClusterHostnames: []string(nil),
-					OtherInfo:               map[string]interface{}{},
 				},
 				VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402",
 				Cluster:            "Puzzait",
@@ -1076,7 +1065,6 @@ func (m *MongodbSuite) TestReplaceHostData() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json"))
 	newHostdata := mongoutils.LoadFixtureMongoHostDataMapAsHostData(m.T(), "../../fixture/test_apiservice_mongohostdata_03.json")
-	newHostdata.OtherInfo["foo"] = "bar"
 	newHostdata.CreatedAt = utils.P("2020-04-28T13:50:05.46Z").Local()
 	err := m.db.ReplaceHostData(newHostdata)
 	m.Require().NoError(err)
@@ -1084,8 +1072,6 @@ func (m *MongodbSuite) TestReplaceHostData() {
 	hs, err := m.db.FindHostData("test-small")
 	m.Require().NoError(err)
 	m.Require().NotNil(hs)
-
-	m.Assert().Equal("bar", hs.OtherInfo["foo"])
 }
 
 func (m *MongodbSuite) TestExistHostData() {

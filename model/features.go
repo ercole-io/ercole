@@ -15,36 +15,9 @@
 
 package model
 
-import (
-	"reflect"
-
-	godynstruct "github.com/amreo/go-dyn-struct"
-)
-
 // Features holds various informations about the features of the host.
 type Features struct {
-	Oracle    *OracleFeature         `json:"oracle,omitempty" bson:"oracle,omitempty"`
-	Microsoft *MicrosoftFeature      `json:"microsoft,omitempty" bson:"microsoft,omitempty"`
-	MySQL     *MySQLFeature          `json:"mysql,omitempty" bson:"mysql,omitempty"`
-	OtherInfo map[string]interface{} `json:"-" bson:"-"`
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v Features) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *Features) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v Features) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *Features) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+	Oracle    *OracleFeature    `json:"oracle,omitempty" bson:"oracle,omitempty"`
+	Microsoft *MicrosoftFeature `json:"microsoft,omitempty" bson:"microsoft,omitempty"`
+	MySQL     *MySQLFeature     `json:"mysql,omitempty" bson:"mysql,omitempty"`
 }

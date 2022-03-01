@@ -15,35 +15,8 @@
 
 package model
 
-import (
-	"reflect"
-
-	godynstruct "github.com/amreo/go-dyn-struct"
-)
-
 type MicrosoftSQLServerFeature struct {
 	Instances []MicrosoftSQLServerInstance       `json:"instances" bson:"instances"`
 	Features  []MicrosoftSQLServerProductFeature `json:"features" bson:"features"`
 	Patches   []MicrosoftSQLServerPatch          `json:"patches" bson:"patches"`
-	OtherInfo map[string]interface{}             `json:"-" bson:"-"`
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v MicrosoftSQLServerFeature) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *MicrosoftSQLServerFeature) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v MicrosoftSQLServerFeature) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *MicrosoftSQLServerFeature) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }

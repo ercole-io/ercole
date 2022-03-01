@@ -15,38 +15,11 @@
 
 package model
 
-import (
-	"reflect"
-
-	godynstruct "github.com/amreo/go-dyn-struct"
-)
-
 // OracleDatabaseSchema holds information about Oracle database schema.
 type OracleDatabaseSchema struct {
-	Indexes   int                    `json:"indexes" bson:"indexes"`
-	LOB       int                    `json:"lob" bson:"lob"`
-	Tables    int                    `json:"tables" bson:"tables"`
-	Total     int                    `json:"total" bson:"total"`
-	User      string                 `json:"user" bson:"user"`
-	OtherInfo map[string]interface{} `json:"-" bson:"-"`
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v OracleDatabaseSchema) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *OracleDatabaseSchema) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v OracleDatabaseSchema) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *OracleDatabaseSchema) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+	Indexes int    `json:"indexes" bson:"indexes"`
+	LOB     int    `json:"lob" bson:"lob"`
+	Tables  int    `json:"tables" bson:"tables"`
+	Total   int    `json:"total" bson:"total"`
+	User    string `json:"user" bson:"user"`
 }

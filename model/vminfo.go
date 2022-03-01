@@ -15,37 +15,10 @@
 
 package model
 
-import (
-	"reflect"
-
-	godynstruct "github.com/amreo/go-dyn-struct"
-)
-
 // VMInfo holds info about the vm
 type VMInfo struct {
-	Name               string                 `json:"name" bson:"name"`
-	Hostname           string                 `json:"hostname" bson:"hostname"` //Hostname or IP address
-	CappedCPU          bool                   `json:"cappedCPU" bson:"cappedCPU"`
-	VirtualizationNode string                 `json:"virtualizationNode" bson:"virtualizationNode"`
-	OtherInfo          map[string]interface{} `json:"-" bson:"-"`
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v VMInfo) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *VMInfo) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v VMInfo) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *VMInfo) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+	Name               string `json:"name" bson:"name"`
+	Hostname           string `json:"hostname" bson:"hostname"` //Hostname or IP address
+	CappedCPU          bool   `json:"cappedCPU" bson:"cappedCPU"`
+	VirtualizationNode string `json:"virtualizationNode" bson:"virtualizationNode"`
 }

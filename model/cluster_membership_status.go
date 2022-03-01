@@ -15,12 +15,6 @@
 
 package model
 
-import (
-	"reflect"
-
-	godynstruct "github.com/amreo/go-dyn-struct"
-)
-
 //ClusterMembershipStatus hold informations about the physical cluster membership
 type ClusterMembershipStatus struct {
 	OracleClusterware bool `json:"oracleClusterware" bson:"oracleClusterware"`
@@ -29,26 +23,4 @@ type ClusterMembershipStatus struct {
 
 	VeritasClusterServer    bool     `json:"veritasClusterServer" bson:"veritasClusterServer"`
 	VeritasClusterHostnames []string `json:"veritasClusterHostnames" bson:"veritasClusterHostnames"`
-
-	OtherInfo map[string]interface{} `json:"-" bson:"-"`
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v ClusterMembershipStatus) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *ClusterMembershipStatus) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v ClusterMembershipStatus) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *ClusterMembershipStatus) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
