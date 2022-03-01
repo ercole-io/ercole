@@ -73,8 +73,8 @@ func (ap *LDAPAuthenticationProvider) Init() {
 		Attributes:   []string{"givenName", "sn", "mail", "uid"},
 	}
 
-	if ap.Client.Connect() != nil {
-		ap.Log.Fatalf("Error connecting LDAP %v", err)
+	if err := ap.Client.Connect(); err != nil {
+		ap.Log.Fatalf("Error connecting LDAP: %v", err)
 	}
 }
 
