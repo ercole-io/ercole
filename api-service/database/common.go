@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -47,18 +47,30 @@ func FilterByOldnessSteps(olderThan time.Time) bson.A {
 			mu.APMatch(bson.M{
 				"createdAt": mu.QOLessThanOrEqual(olderThan),
 			}),
-			mu.APLookupPipeline("hosts", bson.M{"hn": "$hostname", "ca": "$createdAt"}, "check", mu.MAPipeline(
-				mu.APProject(bson.M{
-					"hostname":  1,
-					"createdAt": 1,
-				}),
-				mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$hostname", "$$hn"), mu.APOGreater("$createdAt", "$$ca"), mu.APOGreaterOrEqual(olderThan, "$createdAt")))),
-				mu.APLimit(1),
-			)),
-			mu.APMatch(bson.M{
-				"check": mu.QOSize(0),
-			}),
-			mu.APUnset("check"),
+
+			bson.M{
+				"$sort": bson.M{"createdAt": 1},
+			},
+			bson.M{
+				"$group": bson.M{
+					"_id": "$hostname",
+					"hostdata": bson.M{
+						"$max": bson.M{
+							"$mergeObjects": bson.A{
+								bson.M{"createdAt": "$createdAt"},
+								"$$ROOT",
+							},
+						},
+					},
+				},
+			},
+
+			bson.M{
+				"$replaceRoot": bson.M{
+
+					"newRoot": "$hostdata",
+				},
+			},
 		}),
 	)
 }
