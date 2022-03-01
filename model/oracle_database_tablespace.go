@@ -15,39 +15,12 @@
 
 package model
 
-import (
-	"reflect"
-
-	godynstruct "github.com/amreo/go-dyn-struct"
-)
-
 // OracleDatabaseTablespace holds the informations about a tablespace.
 type OracleDatabaseTablespace struct {
-	Name      string                 `json:"name" bson:"name"`
-	MaxSize   float64                `json:"maxSize" bson:"maxSize"`
-	Total     float64                `json:"total" bson:"total"`
-	Used      float64                `json:"used" bson:"used"`
-	UsedPerc  float64                `json:"usedPerc" bson:"usedPerc"`
-	Status    string                 `json:"status" bson:"status"`
-	OtherInfo map[string]interface{} `json:"-" bson:"-"`
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v OracleDatabaseTablespace) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *OracleDatabaseTablespace) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v OracleDatabaseTablespace) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *OracleDatabaseTablespace) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+	Name     string  `json:"name" bson:"name"`
+	MaxSize  float64 `json:"maxSize" bson:"maxSize"`
+	Total    float64 `json:"total" bson:"total"`
+	Used     float64 `json:"used" bson:"used"`
+	UsedPerc float64 `json:"usedPerc" bson:"usedPerc"`
+	Status   string  `json:"status" bson:"status"`
 }

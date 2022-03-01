@@ -15,12 +15,6 @@
 
 package model
 
-import (
-	"reflect"
-
-	godynstruct "github.com/amreo/go-dyn-struct"
-)
-
 // OracleExadataComponent holds informations about a device in a exadata
 type OracleExadataComponent struct {
 	Hostname             string                   `json:"hostname" bson:"hostname"`
@@ -45,25 +39,4 @@ type OracleExadataComponent struct {
 	RsServiceStatus      *string                  `json:"rsServiceStatus" bson:"rsServiceStatus"`
 	FlashcacheMode       *string                  `json:"flashcacheMode" bson:"flashcacheMode"`
 	CellDisks            *[]OracleExadataCellDisk `json:"cellDisks" bson:"cellDisks"`
-	OtherInfo            map[string]interface{}   `json:"-" bson:"-"`
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v OracleExadataComponent) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *OracleExadataComponent) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v OracleExadataComponent) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *OracleExadataComponent) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }

@@ -15,39 +15,12 @@
 
 package model
 
-import (
-	"reflect"
-
-	godynstruct "github.com/amreo/go-dyn-struct"
-)
-
 // OracleDatabaseSegmentAdvisor holds information about a segment advisor
 type OracleDatabaseSegmentAdvisor struct {
-	SegmentOwner   string                 `json:"segmentOwner" bson:"segmentOwner"`
-	SegmentName    string                 `json:"segmentName" bson:"segmentName"`
-	SegmentType    string                 `json:"segmentType" bson:"segmentType"`
-	PartitionName  string                 `json:"partitionName" bson:"partitionName"`
-	Reclaimable    float64                `json:"reclaimable" bson:"reclaimable"`
-	Recommendation string                 `json:"recommendation" bson:"recommendation"`
-	OtherInfo      map[string]interface{} `json:"-" bson:"-"`
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v OracleDatabaseSegmentAdvisor) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *OracleDatabaseSegmentAdvisor) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v OracleDatabaseSegmentAdvisor) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *OracleDatabaseSegmentAdvisor) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+	SegmentOwner   string  `json:"segmentOwner" bson:"segmentOwner"`
+	SegmentName    string  `json:"segmentName" bson:"segmentName"`
+	SegmentType    string  `json:"segmentType" bson:"segmentType"`
+	PartitionName  string  `json:"partitionName" bson:"partitionName"`
+	Reclaimable    float64 `json:"reclaimable" bson:"reclaimable"`
+	Recommendation string  `json:"recommendation" bson:"recommendation"`
 }
