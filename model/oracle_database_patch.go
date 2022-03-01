@@ -15,38 +15,11 @@
 
 package model
 
-import (
-	"reflect"
-
-	godynstruct "github.com/amreo/go-dyn-struct"
-)
-
 // OracleDatabasePatch holds information about an Oracle database patch
 type OracleDatabasePatch struct {
-	Version     string                 `json:"version" bson:"version"`
-	PatchID     int                    `json:"patchID" bson:"patchID"`
-	Action      string                 `json:"action" bson:"action"`
-	Description string                 `json:"description" bson:"description"`
-	Date        string                 `json:"date" bson:"date"`
-	OtherInfo   map[string]interface{} `json:"-" bson:"-"`
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v OracleDatabasePatch) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *OracleDatabasePatch) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v OracleDatabasePatch) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *OracleDatabasePatch) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+	Version     string `json:"version" bson:"version"`
+	PatchID     int    `json:"patchID" bson:"patchID"`
+	Action      string `json:"action" bson:"action"`
+	Description string `json:"description" bson:"description"`
+	Date        string `json:"date" bson:"date"`
 }
