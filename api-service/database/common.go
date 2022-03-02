@@ -114,3 +114,7 @@ func PagingMetadataStage(page int, size int) interface{} {
 
 	return mu.APOptionalPagingStage(0, math.MaxInt64)
 }
+
+func FindByHostname(hostname string) bson.A {
+	return mu.MAPipeline(mu.APOptionalStage(hostname != "", mu.APMatch(bson.M{"hostname": hostname})))
+}
