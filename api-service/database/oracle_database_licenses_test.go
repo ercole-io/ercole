@@ -46,28 +46,28 @@ func (m *MongodbSuite) TestSearchOracleDatabaseUsedLicenses() {
 	}
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabaseUsedLicenses("", false, -1, -1, "Italy", "", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "Italy", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
 		assert.JSONEq(t, utils.ToJSON(emptyResponse), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabaseUsedLicenses("", false, -1, -1, "", "TEST", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "TEST", utils.MAX_TIME)
 		m.Require().NoError(err)
 
 		assert.JSONEq(t, utils.ToJSON(emptyResponse), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabaseUsedLicenses("", false, -1, -1, "", "", utils.MIN_TIME)
+		out, err := m.db.SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MIN_TIME)
 		m.Require().NoError(err)
 
 		assert.JSONEq(t, utils.ToJSON(emptyResponse), utils.ToJSON(out))
 	})
 
 	m.T().Run("should_do_pagination", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabaseUsedLicenses("", false, 0, 2, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabaseUsedLicenses("", "", false, 0, 2, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
 		expected := dto.OracleDatabaseUsedLicenseSearchResponse{
@@ -90,7 +90,7 @@ func (m *MongodbSuite) TestSearchOracleDatabaseUsedLicenses() {
 	})
 
 	m.T().Run("should_be_sorted", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabaseUsedLicenses("licenseName", true, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabaseUsedLicenses("", "licenseName", true, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
 		expected := dto.OracleDatabaseUsedLicenseSearchResponse{
@@ -116,7 +116,7 @@ func (m *MongodbSuite) TestSearchOracleDatabaseUsedLicenses() {
 	})
 
 	m.T().Run("should_not_filter", func(t *testing.T) {
-		out, err := m.db.SearchOracleDatabaseUsedLicenses("", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
 		expected := dto.OracleDatabaseUsedLicenseSearchResponse{
@@ -134,6 +134,26 @@ func (m *MongodbSuite) TestSearchOracleDatabaseUsedLicenses() {
 				Number:        0,
 				Size:          5,
 				TotalElements: 5,
+				TotalPages:    0,
+			},
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expected), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_filter_by_hostname", func(t *testing.T) {
+		out, err := m.db.SearchOracleDatabaseUsedLicenses("test-db2", "", false, -1, -1, "", "", utils.MAX_TIME)
+		m.Require().NoError(err)
+
+		expected := dto.OracleDatabaseUsedLicenseSearchResponse{
+			Content: []dto.OracleDatabaseUsedLicense{},
+			Metadata: dto.PagingMetadata{
+				Empty:         true,
+				First:         true,
+				Last:          true,
+				Number:        0,
+				Size:          0,
+				TotalElements: 0,
 				TotalPages:    0,
 			},
 		}

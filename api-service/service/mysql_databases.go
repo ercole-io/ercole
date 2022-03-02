@@ -106,8 +106,8 @@ func (as *APIService) SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*exce
 	return file, nil
 }
 
-func (as *APIService) GetMySQLUsedLicenses(filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error) {
-	usedLicenses, err := as.Database.GetMySQLUsedLicenses(filter)
+func (as *APIService) GetMySQLUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error) {
+	usedLicenses, err := as.Database.GetMySQLUsedLicenses(hostname, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -176,7 +176,7 @@ func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseComplia
 		OlderThan:   utils.MAX_TIME,
 	}
 
-	licenses, err := as.GetMySQLUsedLicenses(any)
+	licenses, err := as.GetMySQLUsedLicenses("", any)
 	if err != nil {
 		return nil, err
 	}

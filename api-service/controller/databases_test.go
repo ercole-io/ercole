@@ -231,7 +231,7 @@ func TestGetUsedLicensesPerDatabases_Success(t *testing.T) {
 	}
 
 	usedLicenses := []dto.DatabaseUsedLicense{}
-	as.EXPECT().GetUsedLicensesPerDatabases(filter).
+	as.EXPECT().GetUsedLicensesPerDatabases("", filter).
 		Return(usedLicenses, nil)
 
 	rr := httptest.NewRecorder()

@@ -324,7 +324,7 @@ func (m *MongodbSuite) TestGetMySQLUsedLicenses() {
 			Environment: "",
 			OlderThan:   utils.MAX_TIME,
 		}
-		actual, err := m.db.GetMySQLUsedLicenses(filter)
+		actual, err := m.db.GetMySQLUsedLicenses("", filter)
 		m.Require().NoError(err)
 
 		expected := []dto.MySQLUsedLicense{first, second}
@@ -337,7 +337,7 @@ func (m *MongodbSuite) TestGetMySQLUsedLicenses() {
 			Environment: "",
 			OlderThan:   utils.MAX_TIME,
 		}
-		actual, err := m.db.GetMySQLUsedLicenses(filter)
+		actual, err := m.db.GetMySQLUsedLicenses("", filter)
 		m.Require().NoError(err)
 
 		expected := []dto.MySQLUsedLicense{second}
@@ -350,7 +350,7 @@ func (m *MongodbSuite) TestGetMySQLUsedLicenses() {
 			Environment: "TST",
 			OlderThan:   utils.MAX_TIME,
 		}
-		actual, err := m.db.GetMySQLUsedLicenses(filter)
+		actual, err := m.db.GetMySQLUsedLicenses("", filter)
 		m.Require().NoError(err)
 
 		expected := []dto.MySQLUsedLicense{first}
@@ -363,10 +363,23 @@ func (m *MongodbSuite) TestGetMySQLUsedLicenses() {
 			Environment: "",
 			OlderThan:   utils.P("2021-03-03T09:00:32.981Z"),
 		}
-		actual, err := m.db.GetMySQLUsedLicenses(filter)
+		actual, err := m.db.GetMySQLUsedLicenses("", filter)
 		m.Require().NoError(err)
 
 		expected := []dto.MySQLUsedLicense{second}
+		assert.Equal(t, expected, actual)
+	})
+
+	m.T().Run("should_filter_by_hostname", func(t *testing.T) {
+		filter := dto.GlobalFilter{
+			Location:    "",
+			Environment: "",
+			OlderThan:   utils.MAX_TIME,
+		}
+		actual, err := m.db.GetMySQLUsedLicenses("erc-mysql-2", filter)
+		m.Require().NoError(err)
+
+		expected := []dto.MySQLUsedLicense{first}
 		assert.Equal(t, expected, actual)
 	})
 }

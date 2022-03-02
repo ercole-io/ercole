@@ -384,7 +384,7 @@ func (ctrl *APIController) SearchOracleDatabaseUsedLicenses(w http.ResponseWrite
 		return
 	}
 
-	response, err := ctrl.Service.SearchOracleDatabaseUsedLicenses(sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
+	response, err := ctrl.Service.SearchOracleDatabaseUsedLicenses("", sortBy, sortDesc, pageNumber, pageSize, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
