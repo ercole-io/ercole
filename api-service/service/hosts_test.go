@@ -527,7 +527,6 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 				OSVersion:                     "",
 				MemoryTotal:                   376,
 				SwapTotal:                     23,
-				OtherInfo:                     map[string]interface{}{},
 			},
 			ClusterMembershipStatus: model.ClusterMembershipStatus{
 				OracleClusterware:       true,
@@ -535,7 +534,6 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 				HACMP:                   false,
 				VeritasClusterServer:    false,
 				VeritasClusterHostnames: []string{},
-				OtherInfo:               map[string]interface{}{},
 			},
 			VirtualizationNode: "",
 			Cluster:            "",
@@ -566,7 +564,6 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 				OSVersion:                     "",
 				MemoryTotal:                   3,
 				SwapTotal:                     1,
-				OtherInfo:                     map[string]interface{}{},
 			},
 			ClusterMembershipStatus: model.ClusterMembershipStatus{
 				OracleClusterware:       false,
@@ -574,7 +571,6 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 				HACMP:                   false,
 				VeritasClusterServer:    false,
 				VeritasClusterHostnames: []string{},
-				OtherInfo:               map[string]interface{}{},
 			},
 			VirtualizationNode: "s157-cb32c10a56c256746c337e21b3f82402",
 			Cluster:            "Puzzait",

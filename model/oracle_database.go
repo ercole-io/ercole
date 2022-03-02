@@ -16,10 +16,8 @@
 package model
 
 import (
-	"reflect"
 	"strings"
 
-	godynstruct "github.com/amreo/go-dyn-struct"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -65,7 +63,6 @@ type OracleDatabase struct {
 	PDBs              []OracleDatabasePluggableDatabase `json:"pdbs" bson:"pdbs"`
 	Services          []OracleDatabaseService           `json:"services" bson:"services"`
 	Changes           []Changes                         `json:"changes" bson:"changes"`
-	OtherInfo         map[string]interface{}            `json:"-" bson:"-"`
 }
 
 var (
@@ -131,26 +128,6 @@ func (v OracleDatabase) CoreFactor(host Host, hostCoreFactor float64) (float64, 
 
 	return 0, utils.NewErrorf("%q db: hardwareAbstractionTechnology %q unknown",
 		v.Name, host.HardwareAbstractionTechnology)
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v OracleDatabase) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *OracleDatabase) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v OracleDatabase) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *OracleDatabase) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 // DatabaseSliceAsMap return the equivalent map of the database slice with Database.Name as Key

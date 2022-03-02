@@ -16,40 +16,16 @@
 package model
 
 import (
-	"reflect"
 	"time"
-
-	godynstruct "github.com/amreo/go-dyn-struct"
 )
 
 // OracleDatabaseFeatureUsageStat holds information about an Oracle database feature usage stat.
 type OracleDatabaseFeatureUsageStat struct {
-	Product          string                 `json:"product" bson:"product"`
-	Feature          string                 `json:"feature" bson:"feature"`
-	DetectedUsages   int64                  `json:"detectedUsages" bson:"detectedUsages"`
-	CurrentlyUsed    bool                   `json:"currentlyUsed" bson:"currentlyUsed"`
-	FirstUsageDate   time.Time              `json:"firstUsageDate" bson:"firstUsageDate"`
-	LastUsageDate    time.Time              `json:"lastUsageDate" bson:"lastUsageDate"`
-	ExtraFeatureInfo string                 `json:"extraFeatureInfo" bson:"extraFeatureInfo"`
-	OtherInfo        map[string]interface{} `json:"-" bson:"-"`
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v OracleDatabaseFeatureUsageStat) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *OracleDatabaseFeatureUsageStat) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v OracleDatabaseFeatureUsageStat) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *OracleDatabaseFeatureUsageStat) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+	Product          string    `json:"product" bson:"product"`
+	Feature          string    `json:"feature" bson:"feature"`
+	DetectedUsages   int64     `json:"detectedUsages" bson:"detectedUsages"`
+	CurrentlyUsed    bool      `json:"currentlyUsed" bson:"currentlyUsed"`
+	FirstUsageDate   time.Time `json:"firstUsageDate" bson:"firstUsageDate"`
+	LastUsageDate    time.Time `json:"lastUsageDate" bson:"lastUsageDate"`
+	ExtraFeatureInfo string    `json:"extraFeatureInfo" bson:"extraFeatureInfo"`
 }
