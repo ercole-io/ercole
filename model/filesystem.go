@@ -15,39 +15,12 @@
 
 package model
 
-import (
-	"reflect"
-
-	godynstruct "github.com/amreo/go-dyn-struct"
-)
-
 // Filesystem holds information about mounted filesystem and used space
 type Filesystem struct {
-	Filesystem     string                 `json:"filesystem" bson:"filesystem"`
-	Type           string                 `json:"type" bson:"type"`
-	Size           int64                  `json:"size" bson:"size"`                     // in kilobytes
-	UsedSpace      int64                  `json:"usedSpace" bson:"usedSpace"`           // in kilobytes
-	AvailableSpace int64                  `json:"availableSpace" bson:"availableSpace"` // in kilobytes
-	MountedOn      string                 `json:"mountedOn" bson:"mountedOn"`
-	OtherInfo      map[string]interface{} `json:"-" bson:"-"`
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v Filesystem) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *Filesystem) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v Filesystem) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *Filesystem) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+	Filesystem     string `json:"filesystem" bson:"filesystem"`
+	Type           string `json:"type" bson:"type"`
+	Size           int64  `json:"size" bson:"size"`                     // in kilobytes
+	UsedSpace      int64  `json:"usedSpace" bson:"usedSpace"`           // in kilobytes
+	AvailableSpace int64  `json:"availableSpace" bson:"availableSpace"` // in kilobytes
+	MountedOn      string `json:"mountedOn" bson:"mountedOn"`
 }

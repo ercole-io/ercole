@@ -15,35 +15,8 @@
 
 package model
 
-import (
-	"reflect"
-
-	godynstruct "github.com/amreo/go-dyn-struct"
-)
-
 type MicrosoftSQLServerPatch struct {
-	DisplayName    string                 `json:"displayName" bson:"displayName"`
-	DisplayVersion string                 `json:"displayVersion" bson:"displayVersion"`
-	InstallDate    string                 `json:"installDate" bson:"installDate"`
-	OtherInfo      map[string]interface{} `json:"-" bson:"-"`
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v MicrosoftSQLServerPatch) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *MicrosoftSQLServerPatch) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v MicrosoftSQLServerPatch) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *MicrosoftSQLServerPatch) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+	DisplayName    string `json:"displayName" bson:"displayName"`
+	DisplayVersion string `json:"displayVersion" bson:"displayVersion"`
+	InstallDate    string `json:"installDate" bson:"installDate"`
 }

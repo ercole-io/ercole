@@ -17,9 +17,7 @@ package model
 
 import (
 	"errors"
-	"reflect"
 
-	godynstruct "github.com/amreo/go-dyn-struct"
 	"github.com/hashicorp/go-multierror"
 )
 
@@ -41,27 +39,6 @@ type HostData struct {
 	Clusters                []ClusterInfo           `json:"clusters"`
 	Cloud                   Cloud                   `json:"cloud"`
 	Errors                  []AgentError            `json:"errors"`
-	OtherInfo               map[string]interface{}  `json:"-"`
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v HostData) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *HostData) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v HostData) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *HostData) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
 }
 
 func (v *HostData) AddErrors(errs ...error) {

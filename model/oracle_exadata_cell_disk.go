@@ -15,37 +15,10 @@
 
 package model
 
-import (
-	"reflect"
-
-	godynstruct "github.com/amreo/go-dyn-struct"
-)
-
 // OracleExadataCellDisk holds info about a exadata cell disk
 type OracleExadataCellDisk struct {
-	ErrCount  int                    `json:"errCount" bson:"errCount"`
-	Name      string                 `json:"name" bson:"name"`
-	Status    string                 `json:"status" bson:"status"`
-	UsedPerc  int                    `json:"usedPerc" bson:"usedPerc"`
-	OtherInfo map[string]interface{} `json:"-" bson:"-"`
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v OracleExadataCellDisk) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *OracleExadataCellDisk) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v OracleExadataCellDisk) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *OracleExadataCellDisk) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+	ErrCount int    `json:"errCount" bson:"errCount"`
+	Name     string `json:"name" bson:"name"`
+	Status   string `json:"status" bson:"status"`
+	UsedPerc int    `json:"usedPerc" bson:"usedPerc"`
 }
