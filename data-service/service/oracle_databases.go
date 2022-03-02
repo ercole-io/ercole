@@ -321,6 +321,8 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 
 	var newOptionAlerts []model.Alert
 
+	newLicenseAlerts := make([]model.Alert, 0)
+
 	for _, newDb := range newDbs {
 		oldDb, ok := previousDbs[newDb.Name]
 
@@ -365,12 +367,14 @@ func (hds *HostDataService) checkNewLicenses(previous, new *model.HostDataBE, li
 						},
 					})
 				} else {
-					if err := hds.throwNewLicenseAlert(new.Hostname, newDb.Name, *licenseType, alreadyEnabledBefore); err != nil {
-						hds.Log.Error(err)
-					}
+					newLicenseAlerts = append(newLicenseAlerts, hds.createNewLicenseAlert(new.Hostname, newDb.Name, *licenseType, alreadyEnabledBefore))
 				}
 			}
 		}
+	}
+
+	if err := hds.throwNewLicenseAlert(newLicenseAlerts); err != nil {
+		hds.Log.Error(err)
 	}
 
 	if err := hds.throwNewOptionAlerts(newOptionAlerts); err != nil {
