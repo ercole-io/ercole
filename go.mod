@@ -6,7 +6,6 @@ require (
 	github.com/1set/gut v0.0.0-20201117175203-a82363231997
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/OpenPeeDeeP/xdg v1.0.0
-	github.com/amreo/go-dyn-struct v1.2.0
 	github.com/amreo/mu v0.0.0-20200710133257-efe27ae7258a
 	github.com/bamzi/jobrunner v1.0.0
 	github.com/fatih/color v1.13.0

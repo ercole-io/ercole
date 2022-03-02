@@ -15,39 +15,12 @@
 
 package model
 
-import (
-	"reflect"
-
-	godynstruct "github.com/amreo/go-dyn-struct"
-)
-
 type MicrosoftSQLServerProductFeature struct {
-	Product    string                 `json:"product" bson:"product"`
-	Feature    string                 `json:"feature" bson:"feature"`
-	Language   string                 `json:"language" bson:"language"`
-	Edition    string                 `json:"edition" bson:"edition"`
-	Version    string                 `json:"version" bson:"version"`
-	Clustered  bool                   `json:"clustered" bson:"clustered"`
-	Configured bool                   `json:"configured" bson:"configured"`
-	OtherInfo  map[string]interface{} `json:"-" bson:"-"`
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v MicrosoftSQLServerProductFeature) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *MicrosoftSQLServerProductFeature) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v MicrosoftSQLServerProductFeature) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *MicrosoftSQLServerProductFeature) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+	Product    string `json:"product" bson:"product"`
+	Feature    string `json:"feature" bson:"feature"`
+	Language   string `json:"language" bson:"language"`
+	Edition    string `json:"edition" bson:"edition"`
+	Version    string `json:"version" bson:"version"`
+	Clustered  bool   `json:"clustered" bson:"clustered"`
+	Configured bool   `json:"configured" bson:"configured"`
 }

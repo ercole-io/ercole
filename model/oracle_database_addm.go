@@ -15,37 +15,10 @@
 
 package model
 
-import (
-	"reflect"
-
-	godynstruct "github.com/amreo/go-dyn-struct"
-)
-
 // OracleDatabaseAddm contains info about a addm
 type OracleDatabaseAddm struct {
-	Finding        string                 `json:"finding" bson:"finding"`
-	Recommendation string                 `json:"recommendation" bson:"recommendation"`
-	Action         string                 `json:"action" bson:"action"`
-	Benefit        float64                `json:"benefit" bson:"benefit"`
-	OtherInfo      map[string]interface{} `json:"-" bson:"-"`
-}
-
-// MarshalJSON return the JSON rappresentation of this
-func (v OracleDatabaseAddm) MarshalJSON() ([]byte, error) {
-	return godynstruct.DynMarshalJSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalJSON parse the JSON content in data and set the fields in v appropriately
-func (v *OracleDatabaseAddm) UnmarshalJSON(data []byte) error {
-	return godynstruct.DynUnmarshalJSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
-}
-
-// MarshalBSON return the BSON rappresentation of this
-func (v OracleDatabaseAddm) MarshalBSON() ([]byte, error) {
-	return godynstruct.DynMarshalBSON(reflect.ValueOf(v), v.OtherInfo, "OtherInfo")
-}
-
-// UnmarshalBSON parse the BSON content in data and set the fields in v appropriately
-func (v *OracleDatabaseAddm) UnmarshalBSON(data []byte) error {
-	return godynstruct.DynUnmarshalBSON(data, reflect.ValueOf(v), &v.OtherInfo, "OtherInfo")
+	Finding        string  `json:"finding" bson:"finding"`
+	Recommendation string  `json:"recommendation" bson:"recommendation"`
+	Action         string  `json:"action" bson:"action"`
+	Benefit        float64 `json:"benefit" bson:"benefit"`
 }
