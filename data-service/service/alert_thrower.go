@@ -49,9 +49,8 @@ func (hds *HostDataService) throwNewServerAlert(hostname string) error {
 	return hds.AlertSvcClient.ThrowNewAlert(alr)
 }
 
-// ThrowNewEnterpriseLicenseAlert create and insert in the database a new NEW_DATABASE alert
-func (hds *HostDataService) throwNewLicenseAlert(hostname, dbname string, licenseType model.OracleDatabaseLicenseType,
-	alreadyEnabledBefore bool) error {
+func (hds *HostDataService) createNewLicenseAlert(hostname, dbname string, licenseType model.OracleDatabaseLicenseType,
+	alreadyEnabledBefore bool) model.Alert {
 	severity := model.AlertSeverityCritical
 	description := fmt.Sprintf("The database %s on %s has enabled new license: %s", dbname, hostname, licenseType.ItemDescription)
 
@@ -60,7 +59,7 @@ func (hds *HostDataService) throwNewLicenseAlert(hostname, dbname string, licens
 		description += " (already enabled before in this host)"
 	}
 
-	alr := model.Alert{
+	return model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(hds.TimeNow()),
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
 		AlertCategory:           model.AlertCategoryLicense,
@@ -75,8 +74,41 @@ func (hds *HostDataService) throwNewLicenseAlert(hostname, dbname string, licens
 			"licenseTypeID": licenseType.ID,
 		},
 	}
+}
 
-	return hds.AlertSvcClient.ThrowNewAlert(alr)
+// ThrowNewEnterpriseLicenseAlert create and insert in the database a new NEW_LICENSE alert
+func (hds *HostDataService) throwNewLicenseAlert(alerts []model.Alert) error {
+	if len(alerts) == 0 {
+		return nil
+	}
+
+	alertOutput := model.Alert{
+		ID:                      primitive.NewObjectIDFromTimestamp(hds.TimeNow()),
+		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+		AlertCategory:           model.AlertCategoryLicense,
+		AlertCode:               model.AlertCodeNewLicense,
+		AlertSeverity:           alerts[0].AlertSeverity,
+		AlertStatus:             model.AlertStatusNew,
+		Date:                    hds.TimeNow(),
+		Description:             alerts[0].Description,
+		OtherInfo: map[string]interface{}{
+			"hostname":      alerts[0].OtherInfo["hostname"],
+			"dbname":        alerts[0].OtherInfo["dbname"],
+			"licenseTypeID": alerts[0].OtherInfo["licenseTypeID"],
+		},
+	}
+
+	for _, alert := range alerts[1:] {
+		if alert.AlertSeverity == model.AlertSeverityCritical {
+			alertOutput.AlertSeverity = model.AlertSeverityCritical
+		}
+
+		alertOutput.Description += "\n" + alert.Description
+		alertOutput.OtherInfo["dbname"] = alertOutput.OtherInfo["dbname"].(string) + "," + alert.OtherInfo["dbname"].(string)
+		alertOutput.OtherInfo["licenseTypeID"] = alertOutput.OtherInfo["licenseTypeID"].(string) + "," + alert.OtherInfo["licenseTypeID"].(string)
+	}
+
+	return hds.AlertSvcClient.ThrowNewAlert(alertOutput)
 }
 
 func (hds *HostDataService) throwNewOptionAlerts(alerts []model.Alert) error {
