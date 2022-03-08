@@ -128,13 +128,13 @@ func (ctrl *APIController) SearchOracleDatabaseAddmsXLSX(w http.ResponseWriter, 
 
 	//Add the data to the sheet
 	for i, val := range addms {
-		sheets.SetCellValue("Addm", fmt.Sprintf("A%d", i+2), val["action"])         //Action column
-		sheets.SetCellValue("Addm", fmt.Sprintf("B%d", i+2), val["benefit"])        //Benefit column
+		sheets.SetCellValue("Addm", fmt.Sprintf("A%d", i+2), val["benefit"])        //Benefit column
+		sheets.SetCellValue("Addm", fmt.Sprintf("B%d", i+2), val["hostname"])       //Hostname column
 		sheets.SetCellValue("Addm", fmt.Sprintf("C%d", i+2), val["dbname"])         //Dbname column
-		sheets.SetCellValue("Addm", fmt.Sprintf("D%d", i+2), val["environment"])    //Environment column
-		sheets.SetCellValue("Addm", fmt.Sprintf("E%d", i+2), val["finding"])        //Finding column
-		sheets.SetCellValue("Addm", fmt.Sprintf("F%d", i+2), val["hostname"])       //Hostname column
-		sheets.SetCellValue("Addm", fmt.Sprintf("G%d", i+2), val["recommendation"]) //Recommendation column
+		sheets.SetCellValue("Addm", fmt.Sprintf("D%d", i+2), val["finding"])        //Finding column
+		sheets.SetCellValue("Addm", fmt.Sprintf("E%d", i+2), val["recommendation"]) //Recommendation column
+		sheets.SetCellValue("Addm", fmt.Sprintf("F%d", i+2), val["action"])         //Action column
+		sheets.SetCellValue("Addm", fmt.Sprintf("G%d", i+2), val["environment"])    //Environment column
 	}
 
 	//Write it to the response
