@@ -318,21 +318,21 @@ func TestSearchOracleDatabaseAddms_XLSXSuccess(t *testing.T) {
 	sp, err := excelize.OpenReader(rr.Body)
 	require.NoError(t, err)
 
-	assert.Equal(t, "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".", sp.GetCellValue("Addm", "A2"))
-	assert.Equal(t, "83.34", sp.GetCellValue("Addm", "B2"))
+	assert.Equal(t, "83.34", sp.GetCellValue("Addm", "A2"))
+	assert.Equal(t, "test-db", sp.GetCellValue("Addm", "B2"))
 	assert.Equal(t, "ERCOLE", sp.GetCellValue("Addm", "C2"))
-	assert.Equal(t, "TST", sp.GetCellValue("Addm", "D2"))
-	assert.Equal(t, "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.", sp.GetCellValue("Addm", "E2"))
-	assert.Equal(t, "test-db", sp.GetCellValue("Addm", "F2"))
-	assert.Equal(t, "SQL Tuning", sp.GetCellValue("Addm", "G2"))
+	assert.Equal(t, "SQL statements consuming significant database time were found. These statements offer a good opportunity for performance improvement.", sp.GetCellValue("Addm", "D2"))
+	assert.Equal(t, "SQL Tuning", sp.GetCellValue("Addm", "E2"))
+	assert.Equal(t, "Run SQL Tuning Advisor on the SELECT statement with SQL_ID \"4ztz048yfq32s\".", sp.GetCellValue("Addm", "F2"))
+	assert.Equal(t, "TST", sp.GetCellValue("Addm", "G2"))
 
-	assert.Equal(t, "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.", sp.GetCellValue("Addm", "A3"))
-	assert.Equal(t, "68.24", sp.GetCellValue("Addm", "B3"))
+	assert.Equal(t, "68.24", sp.GetCellValue("Addm", "A3"))
+	assert.Equal(t, "test-db", sp.GetCellValue("Addm", "B3"))
 	assert.Equal(t, "ERCOLE", sp.GetCellValue("Addm", "C3"))
-	assert.Equal(t, "TST", sp.GetCellValue("Addm", "D3"))
-	assert.Equal(t, "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.", sp.GetCellValue("Addm", "E3"))
-	assert.Equal(t, "test-db", sp.GetCellValue("Addm", "F3"))
-	assert.Equal(t, "Segment Tuning", sp.GetCellValue("Addm", "G3"))
+	assert.Equal(t, "Individual database segments responsible for significant \"User I/O\" and \"Cluster\" waits were found.", sp.GetCellValue("Addm", "D3"))
+	assert.Equal(t, "Segment Tuning", sp.GetCellValue("Addm", "E3"))
+	assert.Equal(t, "Look at the \"Top SQL Statements\" finding for SQL statements consuming significant I/O on this segment. For example, the SELECT statement with SQL_ID \"4ztz048yfq32s\" is responsible for 100% of \"User I/O\" and \"Cluster\" waits for this segment.", sp.GetCellValue("Addm", "F3"))
+	assert.Equal(t, "TST", sp.GetCellValue("Addm", "G3"))
 }
 
 func TestSearchOracleDatabaseAddms_XLSXUnprocessableEntity1(t *testing.T) {
