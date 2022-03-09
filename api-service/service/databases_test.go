@@ -500,17 +500,17 @@ func TestGetUsedLicensesPerDatabases_Success(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
+
 		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicensesMySQL, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
 		db.EXPECT().GetMySQLAgreements().
 			Return(agreements, nil),
-
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Return(hostdatas, nil),
-		db.EXPECT().GetClusters(any).
-			Return(clusters, nil),
 	)
 	actual, err := as.GetUsedLicensesPerDatabases("", filter)
 	require.NoError(t, err)
@@ -641,17 +641,17 @@ func TestGetUsedLicensesPerDatabases_VMWareCluster_Success(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+
 		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicensesMySQL, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
 		db.EXPECT().GetMySQLAgreements().
 			Return(agreements, nil),
-
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Return(hostdatas, nil),
-		db.EXPECT().GetClusters(globalFilterAny).
-			Return(clusters, nil),
 	)
 	actual, err := as.GetUsedLicensesPerDatabases("", filter)
 	require.NoError(t, err)
@@ -674,7 +674,7 @@ func TestGetUsedLicensesPerDatabases_VMWareCluster_Success(t *testing.T) {
 			Description:     "ThisDesc",
 			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
 			UsedLicenses:    50,
-			ClusterLicenses: 8,
+			ClusterLicenses: 200,
 			Ignored:         false,
 		},
 	}
@@ -765,17 +765,17 @@ func TestGetUsedLicensesPerDatabases_VeritasCluster_Success(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+
 		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicensesMySQL, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
 		db.EXPECT().GetMySQLAgreements().
 			Return(agreements, nil),
-
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Return(hostdatas, nil),
-		db.EXPECT().GetClusters(globalFilterAny).
-			Return(clusters, nil),
 	)
 	actual, err := as.GetUsedLicensesPerDatabases("", filter)
 	require.NoError(t, err)
@@ -798,7 +798,7 @@ func TestGetUsedLicensesPerDatabases_VeritasCluster_Success(t *testing.T) {
 			Description:     "ThisDesc",
 			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
 			UsedLicenses:    50,
-			ClusterLicenses: 84,
+			ClusterLicenses: 2100,
 			Ignored:         false,
 		},
 	}
@@ -896,17 +896,17 @@ func TestGetUsedLicensesPerDatabasesAsXLSX_Success(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
+
 		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicenses, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
 		db.EXPECT().GetMySQLAgreements().
 			Return(agreements, nil),
-
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Return(hostdatas, nil),
-		db.EXPECT().GetClusters(any).
-			Return(clusters, nil),
 	)
 
 	actual, err := as.GetUsedLicensesPerDatabasesAsXLSX(filter)
@@ -918,6 +918,822 @@ func TestGetUsedLicensesPerDatabasesAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "ThisDesc", actual.GetCellValue("Licenses Used", "D2"))
 	assert.Equal(t, "ThisMetric", actual.GetCellValue("Licenses Used", "E2"))
 	assert.Equal(t, "0", actual.GetCellValue("Licenses Used", "F2"))
+}
+
+func TestGetOracleDatabasesUsedLicenses_Host_WithActiveDataguardAndGoldenGate_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Log:      logger.NewLogger("TEST"),
+	}
+
+	thisMoment := utils.P("2019-11-05T14:02:03+01:00")
+
+	filter := dto.GlobalFilter{
+		Location:    "Dubai",
+		Environment: "TEST",
+		OlderThan:   thisMoment,
+	}
+
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "A12345",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: "A98765",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: goldenGateIds[0],
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: activeDataguardIds[1],
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+		},
+	}
+
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "A12345",
+			ItemDescription: "ThisDesc",
+			Metric:          "ThisMetric",
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              "A98765",
+			ItemDescription: "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              goldenGateIds[0],
+			ItemDescription: "golden gate",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              activeDataguardIds[1],
+			ItemDescription: "active dataguard",
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+	}
+
+	clusters := []dto.Cluster{}
+	hostdatas := []model.HostDataBE{
+		{
+			Hostname: "topolino-hostname",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+			Info: model.Host{
+				CPUCores: 42,
+			},
+		},
+	}
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	gomock.InOrder(
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+	)
+	actual, err := as.getOracleDatabasesUsedLicenses("", filter)
+	require.NoError(t, err)
+
+	expected := []dto.DatabaseUsedLicense{
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   "A12345",
+			Description:     "ThisDesc",
+			Metric:          "ThisMetric",
+			UsedLicenses:    2,
+			ClusterLicenses: 0,
+			Ignored:         false,
+		},
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   "A98765",
+			Description:     "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:    50,
+			ClusterLicenses: 0,
+			Ignored:         false,
+		},
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   goldenGateIds[0],
+			Description:     "golden gate",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:    50,
+			ClusterLicenses: 0,
+			Ignored:         false,
+		},
+	}
+
+	assert.ElementsMatch(t, expected, actual)
+}
+
+func TestGetOracleDatabasesUsedLicenses_VeritasCluster_WithActiveDataguardAndGoldenGate_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Log:      logger.NewLogger("TEST"),
+	}
+
+	thisMoment := utils.P("2019-11-05T14:02:03+01:00")
+
+	filter := dto.GlobalFilter{
+		Location:    "Dubai",
+		Environment: "TEST",
+		OlderThan:   thisMoment,
+	}
+
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "A12345",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: "A98765",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: goldenGateIds[0],
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: activeDataguardIds[1],
+				DbName:        "topolino-dbname",
+				Hostname:      "qui",
+				UsedLicenses:  2,
+			},
+		},
+	}
+
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "A12345",
+			ItemDescription: "ThisDesc",
+			Metric:          "ThisMetric",
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              "A98765",
+			ItemDescription: "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              goldenGateIds[0],
+			ItemDescription: "golden gate",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              activeDataguardIds[1],
+			ItemDescription: "active dataguard",
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+	}
+
+	clusters := []dto.Cluster{}
+	hostdatas := []model.HostDataBE{
+		{
+			Hostname: "topolino-hostname",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    true,
+				VeritasClusterHostnames: []string{"topolino-hostname", "qui", "quo", "qua"},
+			},
+			Info: model.Host{
+				CPUCores: 42,
+			},
+		},
+	}
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	gomock.InOrder(
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+	)
+	actual, err := as.getOracleDatabasesUsedLicenses("", filter)
+	require.NoError(t, err)
+
+	expected := []dto.DatabaseUsedLicense{
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   "A12345",
+			Description:     "ThisDesc",
+			Metric:          "ThisMetric",
+			UsedLicenses:    2,
+			ClusterLicenses: 84,
+			Ignored:         false,
+		},
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   "A98765",
+			Description:     "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:    50,
+			ClusterLicenses: 2100,
+			Ignored:         false,
+		},
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   goldenGateIds[0],
+			Description:     "golden gate",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:    50,
+			ClusterLicenses: 2100,
+			Ignored:         false,
+		},
+	}
+
+	assert.ElementsMatch(t, expected, actual)
+}
+
+func TestGetOracleDatabasesUsedLicenses_Host_WithRacAndRacOneNode_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Log:      logger.NewLogger("TEST"),
+	}
+
+	thisMoment := utils.P("2019-11-05T14:02:03+01:00")
+
+	filter := dto.GlobalFilter{
+		Location:    "Dubai",
+		Environment: "TEST",
+		OlderThan:   thisMoment,
+	}
+
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "A12345",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: "A98765",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: racIds[1],
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: racOneNodeIds[0],
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+		},
+	}
+
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "A12345",
+			ItemDescription: "ThisDesc",
+			Metric:          "ThisMetric",
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              "A98765",
+			ItemDescription: "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              racIds[1],
+			ItemDescription: "rac",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              racOneNodeIds[0],
+			ItemDescription: "rac one node",
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+	}
+
+	clusters := []dto.Cluster{}
+	hostdatas := []model.HostDataBE{
+		{
+			Hostname: "topolino-hostname",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+			Info: model.Host{
+				CPUCores: 42,
+			},
+		},
+	}
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	gomock.InOrder(
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+	)
+	actual, err := as.getOracleDatabasesUsedLicenses("", filter)
+	require.NoError(t, err)
+
+	expected := []dto.DatabaseUsedLicense{
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   "A12345",
+			Description:     "ThisDesc",
+			Metric:          "ThisMetric",
+			UsedLicenses:    2,
+			ClusterLicenses: 0,
+			Ignored:         false,
+		},
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   "A98765",
+			Description:     "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:    50,
+			ClusterLicenses: 0,
+			Ignored:         false,
+		},
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   racIds[1],
+			Description:     "rac",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:    50,
+			ClusterLicenses: 0,
+			Ignored:         false,
+		},
+	}
+
+	assert.ElementsMatch(t, expected, actual)
+}
+
+func TestGetOracleDatabasesUsedLicenses_VeritasCluster_WithRacAndRacOneNode_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Log:      logger.NewLogger("TEST"),
+	}
+
+	thisMoment := utils.P("2019-11-05T14:02:03+01:00")
+
+	filter := dto.GlobalFilter{
+		Location:    "Dubai",
+		Environment: "TEST",
+		OlderThan:   thisMoment,
+	}
+
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "A12345",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: "A98765",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: racIds[1],
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: racOneNodeIds[0],
+				DbName:        "topolino-dbname",
+				Hostname:      "qui",
+				UsedLicenses:  2,
+			},
+		},
+	}
+
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "A12345",
+			ItemDescription: "ThisDesc",
+			Metric:          "ThisMetric",
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              "A98765",
+			ItemDescription: "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              racIds[1],
+			ItemDescription: "rac",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              racOneNodeIds[0],
+			ItemDescription: "rac one node",
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+	}
+
+	clusters := []dto.Cluster{}
+	hostdatas := []model.HostDataBE{
+		{
+			Hostname: "topolino-hostname",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    true,
+				VeritasClusterHostnames: []string{"topolino-hostname", "qui", "quo", "qua"},
+			},
+			Info: model.Host{
+				CPUCores: 42,
+			},
+		},
+	}
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	gomock.InOrder(
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+	)
+	actual, err := as.getOracleDatabasesUsedLicenses("", filter)
+	require.NoError(t, err)
+
+	expected := []dto.DatabaseUsedLicense{
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   "A12345",
+			Description:     "ThisDesc",
+			Metric:          "ThisMetric",
+			UsedLicenses:    2,
+			ClusterLicenses: 84,
+			Ignored:         false,
+		},
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   "A98765",
+			Description:     "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:    50,
+			ClusterLicenses: 2100,
+			Ignored:         false,
+		},
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   racIds[1],
+			Description:     "rac",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:    50,
+			ClusterLicenses: 2100,
+			Ignored:         false,
+		},
+	}
+
+	assert.ElementsMatch(t, expected, actual)
+}
+
+func TestGetOracleDatabasesUsedLicenses_VmwareCluster_WithRacAndRacOneNode_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database: db,
+		Log:      logger.NewLogger("TEST"),
+	}
+
+	thisMoment := utils.P("2019-11-05T14:02:03+01:00")
+
+	filter := dto.GlobalFilter{
+		Location:    "Dubai",
+		Environment: "TEST",
+		OlderThan:   thisMoment,
+	}
+
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "A12345",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: "A98765",
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: racIds[1],
+				DbName:        "topolino-dbname",
+				Hostname:      "topolino-hostname",
+				UsedLicenses:  2,
+			},
+			{
+				LicenseTypeID: racOneNodeIds[0],
+				DbName:        "qui-dbname",
+				Hostname:      "qui",
+				UsedLicenses:  2,
+			},
+		},
+	}
+
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "A12345",
+			ItemDescription: "ThisDesc",
+			Metric:          "ThisMetric",
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              "A98765",
+			ItemDescription: "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              racIds[1],
+			ItemDescription: "rac",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+		{
+			ID:              racOneNodeIds[0],
+			ItemDescription: "rac one node",
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+			Cost:            0,
+			Aliases:         []string{},
+			Option:          false,
+		},
+	}
+
+	clusters := []dto.Cluster{
+		{
+			ID:                          [12]byte{},
+			CreatedAt:                   time.Time{},
+			Hostname:                    "cluster1",
+			HostnameAgentVirtualization: "",
+			Name:                        "",
+			Environment:                 "",
+			Location:                    "",
+			FetchEndpoint:               "",
+			CPU:                         64,
+			Sockets:                     0,
+			Type:                        "",
+			VirtualizationNodes:         []string{},
+			VirtualizationNodesCount:    0,
+			VirtualizationNodesStats:    []dto.VirtualizationNodesStat{},
+			VMs: []dto.VM{
+				{
+					CappedCPU:          false,
+					Hostname:           "qui",
+					Name:               "",
+					VirtualizationNode: "",
+				},
+				{
+					CappedCPU:          false,
+					Hostname:           "topolino-hostname",
+					Name:               "",
+					VirtualizationNode: "",
+				},
+			},
+			VMsCount:            1,
+			VMsErcoleAgentCount: 1,
+		},
+	}
+	hostdatas := []model.HostDataBE{
+		{
+			Hostname: "topolino-hostname",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+			Info: model.Host{
+				CPUCores: 42,
+			},
+		},
+		{
+			Hostname: "qui",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+			Info: model.Host{
+				CPUCores: 12,
+			},
+		},
+	}
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	gomock.InOrder(
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+	)
+	actual, err := as.getOracleDatabasesUsedLicenses("", filter)
+	require.NoError(t, err)
+
+	expected := []dto.DatabaseUsedLicense{
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   "A12345",
+			Description:     "ThisDesc",
+			Metric:          "ThisMetric",
+			UsedLicenses:    2,
+			ClusterLicenses: 32,
+			Ignored:         false,
+		},
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   "A98765",
+			Description:     "ThisDesc",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:    50,
+			ClusterLicenses: 800,
+			Ignored:         false,
+		},
+		{
+			Hostname:        "topolino-hostname",
+			DbName:          "topolino-dbname",
+			LicenseTypeID:   racIds[1],
+			Description:     "rac",
+			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
+			UsedLicenses:    50,
+			ClusterLicenses: 800,
+			Ignored:         false,
+		},
+	}
+
+	assert.ElementsMatch(t, expected, actual)
 }
 
 func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
@@ -1323,17 +2139,17 @@ func TestGetUsedLicensesPerHost_Success(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
+
 		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicenses, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
 		db.EXPECT().GetMySQLAgreements().
 			Return(agreements, nil),
-
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Return(hostdatas, nil),
-		db.EXPECT().GetClusters(any).
-			Return(clusters, nil),
 	)
 
 	actual, err := as.GetUsedLicensesPerHost(filter)
@@ -1356,7 +2172,7 @@ func TestGetUsedLicensesPerHost_Success(t *testing.T) {
 			Description:     "MySQL ENTERPRISE",
 			Metric:          "HOST",
 			UsedLicenses:    1,
-			ClusterLicenses: 22.5,
+			ClusterLicenses: 0,
 		},
 	}
 	assert.ElementsMatch(t, expected, actual)
@@ -1449,17 +2265,17 @@ func TestGetUsedLicensesPerHostAsXLSX_Success(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
+
 		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicenses, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
 		db.EXPECT().GetMySQLAgreements().
 			Return(agreements, nil),
-
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Return(hostdatas, nil),
-		db.EXPECT().GetClusters(any).
-			Return(clusters, nil),
 	)
 
 	actual, err := as.GetUsedLicensesPerHostAsXLSX(filter)
@@ -1570,17 +2386,17 @@ func TestGetUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
+
 		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicensesMySQL, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
 		db.EXPECT().GetMySQLAgreements().
 			Return(agreements, nil),
-
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Return(hostdatas, nil),
-		db.EXPECT().GetClusters(any).
-			Return(clusters, nil),
 		db.EXPECT().GetClusters(filter).
 			Return(clusters, nil),
 	)
@@ -1595,7 +2411,7 @@ func TestGetUsedLicensesPerCluster_OneVm_Success(t *testing.T) {
 			LicenseTypeID: "id1",
 			Description:   "desc1",
 			Metric:        model.LicenseTypeMetricNamedUserPlusPerpetual,
-			UsedLicenses:  6,
+			UsedLicenses:  150,
 		},
 	}
 	assert.ElementsMatch(t, expected, actual)
@@ -1714,17 +2530,17 @@ func TestGetUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
+
 		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicensesMySQL, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
 		db.EXPECT().GetMySQLAgreements().
 			Return(agreements, nil),
-
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Return(hostdatas, nil),
-		db.EXPECT().GetClusters(any).
-			Return(clusters, nil),
 		db.EXPECT().GetClusters(filter).
 			Return(clusters, nil),
 	)
@@ -1739,7 +2555,7 @@ func TestGetUsedLicensesPerCluster_MultipleVms_Success(t *testing.T) {
 			LicenseTypeID: "id1",
 			Description:   "desc1",
 			Metric:        model.LicenseTypeMetricNamedUserPlusPerpetual,
-			UsedLicenses:  6,
+			UsedLicenses:  150,
 		},
 	}
 	assert.ElementsMatch(t, expected, actual)
@@ -1840,17 +2656,17 @@ func TestGetUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(any).
+			Return(clusters, nil),
+
 		db.EXPECT().GetMySQLUsedLicenses("", filter).
 			Return(usedLicensesMySQL, nil),
 		db.EXPECT().GetClusters(any).
 			Return(clusters, nil),
 		db.EXPECT().GetMySQLAgreements().
 			Return(agreements, nil),
-
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Return(hostdatas, nil),
-		db.EXPECT().GetClusters(any).
-			Return(clusters, nil),
 		db.EXPECT().GetClusters(filter).
 			Return(clusters, nil),
 	)
@@ -1863,5 +2679,5 @@ func TestGetUsedLicensesPerClusterAsXLSX_Success(t *testing.T) {
 	assert.Equal(t, "desc1", actual.GetCellValue("Licenses Used Per Cluster", "C2"))
 	assert.Equal(t, "Named User Plus Perpetual", actual.GetCellValue("Licenses Used Per Cluster", "D2"))
 	assert.Equal(t, "vm1", actual.GetCellValue("Licenses Used Per Cluster", "E2"))
-	assert.Equal(t, "6", actual.GetCellValue("Licenses Used Per Cluster", "F2"))
+	assert.Equal(t, "150", actual.GetCellValue("Licenses Used Per Cluster", "F2"))
 }

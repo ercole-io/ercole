@@ -192,68 +192,6 @@ func (as *APIService) GetUsedLicensesPerDatabases(hostname string, filter dto.Gl
 		usedLicenses = append(usedLicenses, thisDbs...)
 	}
 
-	hostdatas, err := as.Database.GetHostDatas(utils.MAX_TIME)
-	if err != nil {
-		return nil, err
-	}
-
-	hostdatasPerHostname := make(map[string]*model.HostDataBE, len(hostdatas))
-
-	for i := range hostdatas {
-		hd := &hostdatas[i]
-		hostdatasPerHostname[hd.Hostname] = hd
-	}
-
-	clusters, err := as.Database.GetClusters(dto.GlobalFilter{
-		Location:    "",
-		Environment: "",
-		OlderThan:   utils.MAX_TIME,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	for i, l := range usedLicenses {
-		hostdata, found := hostdatasPerHostname[l.Hostname]
-
-		if usedLicenses[i].Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
-			usedLicenses[i].UsedLicenses *= model.GetFactorByMetric(usedLicenses[i].Metric)
-		}
-
-		if !found {
-			as.Log.Errorf("%w: %s", utils.ErrHostNotFound, l.Hostname)
-			continue
-		}
-
-		if hostdata.Features.Oracle != nil && hostdata.Features.Oracle.Database != nil && hostdata.Features.Oracle.Database.Databases != nil {
-			for _, database := range hostdata.Features.Oracle.Database.Databases {
-				if database.Name == usedLicenses[i].DbName {
-					for _, license := range database.Licenses {
-						if license.LicenseTypeID == usedLicenses[i].LicenseTypeID {
-							usedLicenses[i].Ignored = license.Ignored
-						}
-					}
-				}
-			}
-		}
-
-		consumedLicenses, err := as.clusterLicenses(l, clusters)
-		if err != nil && !errors.Is(err, utils.ErrHostNotInCluster) {
-			return nil, err
-		} else if !errors.Is(err, utils.ErrHostNotInCluster) {
-			usedLicenses[i].ClusterLicenses = consumedLicenses
-			continue
-		}
-
-		consumedLicenses, err = as.veritasClusterLicenses(hostdata, hostdatasPerHostname)
-		if err != nil && !errors.Is(err, utils.ErrHostNotInCluster) {
-			return nil, err
-		} else if !errors.Is(err, utils.ErrHostNotInCluster) {
-			usedLicenses[i].ClusterLicenses = consumedLicenses
-			continue
-		}
-	}
-
 	return usedLicenses, nil
 }
 
@@ -334,7 +272,7 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 		return nil, err
 	}
 
-	genericLics := make([]dto.DatabaseUsedLicense, 0, len(oracleLics.Content))
+	usedLicenses := make([]dto.DatabaseUsedLicense, 0, len(oracleLics.Content))
 
 	for _, o := range oracleLics.Content {
 		lt := licenseTypes[o.LicenseTypeID]
@@ -348,10 +286,157 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 			UsedLicenses:  o.UsedLicenses,
 		}
 
-		genericLics = append(genericLics, g)
+		usedLicenses = append(usedLicenses, g)
 	}
 
-	return genericLics, nil
+	hostdatas, err := as.Database.GetHostDatas(utils.MAX_TIME)
+	if err != nil {
+		return nil, err
+	}
+
+	hostdatasPerHostname := make(map[string]*model.HostDataBE, len(hostdatas))
+
+	for i := range hostdatas {
+		hd := &hostdatas[i]
+		hostdatasPerHostname[hd.Hostname] = hd
+	}
+
+	clusters, err := as.Database.GetClusters(dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for i, l := range usedLicenses {
+		hostdata, found := hostdatasPerHostname[l.Hostname]
+
+		if usedLicenses[i].Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
+			usedLicenses[i].UsedLicenses *= model.GetFactorByMetric(usedLicenses[i].Metric)
+		}
+
+		if !found {
+			as.Log.Errorf("%v: %s", utils.ErrHostNotFound, l.Hostname)
+			continue
+		}
+
+		if hostdata.Features.Oracle != nil && hostdata.Features.Oracle.Database != nil && hostdata.Features.Oracle.Database.Databases != nil {
+			for _, database := range hostdata.Features.Oracle.Database.Databases {
+				if database.Name == usedLicenses[i].DbName {
+					for _, license := range database.Licenses {
+						if license.LicenseTypeID == usedLicenses[i].LicenseTypeID {
+							usedLicenses[i].Ignored = license.Ignored
+						}
+					}
+				}
+			}
+		}
+
+		consumedLicenses, err := as.clusterLicenses(l, clusters)
+		if err != nil && !errors.Is(err, utils.ErrHostNotInCluster) {
+			return nil, err
+		} else if !errors.Is(err, utils.ErrHostNotInCluster) {
+			usedLicenses[i].ClusterLicenses = consumedLicenses * model.GetFactorByMetric(usedLicenses[i].Metric)
+			continue
+		}
+
+		consumedLicenses, err = as.veritasClusterLicenses(hostdata, hostdatasPerHostname)
+		if err != nil && !errors.Is(err, utils.ErrHostNotInCluster) {
+			return nil, err
+		} else if !errors.Is(err, utils.ErrHostNotInCluster) {
+			usedLicenses[i].ClusterLicenses = consumedLicenses * model.GetFactorByMetric(usedLicenses[i].Metric)
+			continue
+		}
+	}
+
+	usedLicenses = as.removeLicensesByDependencies(usedLicenses, hostdatasPerHostname, clusters)
+
+	return usedLicenses, nil
+}
+
+var goldenGateIds []string = []string{"L75978", "L75967"}
+var activeDataguardIds []string = []string{"L47210", "L47217"}
+
+var racIds []string = []string{"L10005", "A90619"}
+var racOneNodeIds []string = []string{"L76084", "L76094"}
+
+func (as *APIService) removeLicensesByDependencies(usedLicenses []dto.DatabaseUsedLicense, hostdatasPerHostname map[string]*model.HostDataBE, clusters []dto.Cluster) []dto.DatabaseUsedLicense {
+	dependencies := []struct {
+		given  []string // If a "given" licenseTypeID is found
+		remove []string // Remove any "remove" licenseTypeID from host and cluster
+	}{
+		{
+			given:  goldenGateIds,
+			remove: activeDataguardIds,
+		},
+		{
+			given:  racIds,
+			remove: racOneNodeIds,
+		},
+	}
+
+	for _, d := range dependencies {
+		indexHosts := make(map[string]bool)
+
+		for i := range usedLicenses {
+			for _, givenId := range d.given {
+				if usedLicenses[i].LicenseTypeID == givenId {
+					indexHosts[usedLicenses[i].Hostname] = true
+				}
+			}
+		}
+
+		for hostname := range indexHosts {
+		clusters:
+			for _, cluster := range clusters {
+				for _, vm := range cluster.VMs {
+					if vm.Hostname == hostname {
+						for _, x := range cluster.VMs {
+							indexHosts[x.Hostname] = true
+						}
+						break clusters
+					}
+				}
+			}
+		}
+
+		for hostname := range indexHosts {
+			hostdata, ok := hostdatasPerHostname[hostname]
+
+			if !ok || hostdata == nil {
+				continue
+			}
+
+			if hostdata.ClusterMembershipStatus.VeritasClusterServer {
+				for _, hostVeritasCluster := range hostdata.ClusterMembershipStatus.VeritasClusterHostnames {
+					indexHosts[hostVeritasCluster] = true
+				}
+			}
+		}
+
+	licenses:
+		for i := 0; i < len(usedLicenses); {
+			l := &usedLicenses[i]
+
+			if _, ok := indexHosts[l.Hostname]; !ok {
+				i++
+				continue
+			}
+
+			for _, r := range d.remove {
+				if l.LicenseTypeID == r {
+					usedLicenses = append(usedLicenses[:i], usedLicenses[i+1:]...)
+					continue licenses
+				}
+			}
+
+			i++
+		}
+	}
+
+	return usedLicenses
 }
 
 func (as *APIService) getMySQLUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
