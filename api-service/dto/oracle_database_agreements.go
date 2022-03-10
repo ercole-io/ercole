@@ -65,6 +65,7 @@ type OracleDatabaseAgreementAssociatedHostFE struct {
 	TotalCoveredLicensesCount float64 `json:"totalCoveredLicensesCount" bson:"totalCoveredLicensesCount"`
 	// Licenses consumed (used) by this hostname, data from agents
 	ConsumedLicensesCount float64 `json:"consumedLicensesCount" bson:"consumedLicensesCount"`
+	//TODO Add Cluster Info?
 }
 
 // GetOracleDatabaseAgreementsFilter contains the filter used to get the list of Oracle/Database agreements
