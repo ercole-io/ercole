@@ -115,7 +115,9 @@ func (idx *Index) getArtifactsFromGithub(upstreamRepo config.UpstreamRepository)
 		req.Header.Add("Authorization", "token "+githubToken)
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	client := http.Client{Timeout: 1 * time.Minute}
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	} else if resp.StatusCode != 200 {
@@ -209,7 +211,9 @@ func (idx *Index) getArtifactsFromErcoleReposervice(upstreamRepo config.Upstream
 		return err
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	client := http.Client{Timeout: 1 * time.Minute}
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	} else if resp.StatusCode != 200 {
