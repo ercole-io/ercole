@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -87,19 +87,100 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 		},
 	}
 
-	var sampleHostUsingOracleDbLicenses []dto.HostUsingOracleDatabaseLicenses = []dto.HostUsingOracleDatabaseLicenses{
-		{LicenseTypeID: "PID001", Name: "test1", Type: "host", LicenseCount: 3, OriginalCount: 3},
-		{LicenseTypeID: "PID001", Name: "pluto", Type: "host", LicenseCount: 1.5, OriginalCount: 1.5},
-		{LicenseTypeID: "PID001", Name: "pippo", Type: "host", LicenseCount: 5.5, OriginalCount: 5.5},
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "PID001",
+				DbName:        "",
+				Hostname:      "test1",
+				UsedLicenses:  3,
+			},
+			{
+				LicenseTypeID: "PID001",
+				DbName:        "",
+				Hostname:      "pluto",
+				UsedLicenses:  1.5,
+			},
+			{
+				LicenseTypeID: "PID001",
+				DbName:        "",
+				Hostname:      "pippo",
+				UsedLicenses:  5.5,
+			},
 
-		{LicenseTypeID: "PID002", Name: "topolino", Type: "cluster", LicenseCount: 7, OriginalCount: 7},
-		{LicenseTypeID: "PID002", Name: "minnie", Type: "host", LicenseCount: 4, OriginalCount: 4},
-		{LicenseTypeID: "PID002", Name: "minnie", Type: "host", LicenseCount: 8, OriginalCount: 8},
+			{
+				LicenseTypeID: "PID002",
+				DbName:        "",
+				Hostname:      "topolino",
+				UsedLicenses:  7,
+			},
+			{
+				LicenseTypeID: "PID002",
+				DbName:        "",
+				Hostname:      "minnie",
+				UsedLicenses:  4,
+			},
+			{
+				LicenseTypeID: "PID002",
+				DbName:        "",
+				Hostname:      "minnie",
+				UsedLicenses:  8,
+			},
 
-		{LicenseTypeID: "PID003", Name: "minnie", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
-		{LicenseTypeID: "PID003", Name: "pippo", Type: "host", LicenseCount: 0.5, OriginalCount: 0.5},
-		{LicenseTypeID: "PID003", Name: "test2", Type: "host", LicenseCount: 4, OriginalCount: 4},
-		{LicenseTypeID: "PID003", Name: "test3", Type: "cluster", LicenseCount: 6, OriginalCount: 6},
+			{
+				LicenseTypeID: "PID003",
+				DbName:        "",
+				Hostname:      "minnie",
+				UsedLicenses:  0.5,
+			},
+			{
+				LicenseTypeID: "PID003",
+				DbName:        "",
+				Hostname:      "pippo",
+				UsedLicenses:  0.5,
+			},
+			{
+				LicenseTypeID: "PID003",
+				DbName:        "",
+				Hostname:      "test2",
+				UsedLicenses:  4,
+			},
+			{
+				LicenseTypeID: "PID003",
+				DbName:        "",
+				Hostname:      "test3",
+				UsedLicenses:  6,
+			},
+		},
+	}
+	clusters := []dto.Cluster{}
+	hostdatas := []model.HostDataBE{
+		{
+			Hostname: "test-db",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+			Info: model.Host{
+				CPUCores: 42,
+			},
+		},
+	}
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "PID002",
+			Aliases:         []string{"Partitioning"},
+			ItemDescription: "Oracle Partitioning",
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+		},
 	}
 
 	mockCtrl := gomock.NewController(t)
@@ -121,9 +202,17 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 		db.EXPECT().
 			ListOracleDatabaseAgreements().
 			Return(sampleListOracleDatabaseAgreements, nil),
+
 		db.EXPECT().
-			ListHostUsingOracleDatabaseLicenses().
-			Return(sampleHostUsingOracleDbLicenses, nil),
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(sampleLicenseTypes, nil),
 	)
@@ -135,7 +224,7 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := []model.TechnologyStatus{
-		{Product: "Oracle/Database", ConsumedByHosts: 40, CoveredByAgreements: 10, TotalCost: 0, PaidCost: 0, Compliance: 0.25, UnpaidDues: 0, HostsCount: 42},
+		{Product: "Oracle/Database", ConsumedByHosts: 32, CoveredByAgreements: 18, TotalCost: 0, PaidCost: 0, Compliance: 0.5625, UnpaidDues: 0, HostsCount: 42},
 		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 44},
 		{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 		{Product: "PostgreSQL/PostgreSQL", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
@@ -173,13 +262,43 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 			AvailableLicensesPerUser: 0,
 		},
 	}
-	returnedHosts := []dto.HostUsingOracleDatabaseLicenses{
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "PID002",
+				DbName:        "test-dbname",
+				Hostname:      "test-db",
+				UsedLicenses:  100,
+			},
+		},
+	}
+	clusters := []dto.Cluster{}
+	hostdatas := []model.HostDataBE{
 		{
-			Name:          "test-db",
-			LicenseCount:  100,
-			LicenseTypeID: "PID002",
-			OriginalCount: 100,
-			Type:          "host",
+			Hostname: "test-db",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+			Info: model.Host{
+				CPUCores: 42,
+			},
+		},
+	}
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "PID002",
+			Aliases:         []string{"Partitioning"},
+			ItemDescription: "Oracle Partitioning",
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
 		},
 	}
 
@@ -213,9 +332,17 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 		db.EXPECT().
 			ListOracleDatabaseAgreements().
 			Return(returnedAgreements, nil),
+
 		db.EXPECT().
-			ListHostUsingOracleDatabaseLicenses().
-			Return(returnedHosts, nil),
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(sampleLicenseTypes, nil),
 	)
@@ -326,8 +453,7 @@ func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
 			db.EXPECT().
 				ListOracleDatabaseAgreements().
 				Return(sampleListOracleDatabaseAgreements, nil),
-			db.EXPECT().
-				ListHostUsingOracleDatabaseLicenses().
+			db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 				Return(nil, aerrMock),
 		)
 

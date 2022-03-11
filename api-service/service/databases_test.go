@@ -784,7 +784,7 @@ func TestGetUsedLicensesPerDatabases_VeritasCluster_Success(t *testing.T) {
 		{
 			Hostname:        "topolino-hostname",
 			DbName:          "topolino-dbname",
-			ClusterName:     "topolino-hostnamequiquoqua",
+			ClusterName:     "qua,qui,quo,topolino-hostname",
 			LicenseTypeID:   "A12345",
 			Description:     "ThisDesc",
 			Metric:          "ThisMetric",
@@ -795,7 +795,7 @@ func TestGetUsedLicensesPerDatabases_VeritasCluster_Success(t *testing.T) {
 		{
 			Hostname:        "topolino-hostname",
 			DbName:          "topolino-dbname",
-			ClusterName:     "topolino-hostnamequiquoqua",
+			ClusterName:     "qua,qui,quo,topolino-hostname",
 			LicenseTypeID:   "A98765",
 			Description:     "ThisDesc",
 			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
@@ -1198,7 +1198,7 @@ func TestGetOracleDatabasesUsedLicenses_VeritasCluster_WithActiveDataguardAndGol
 		{
 			Hostname:        "topolino-hostname",
 			DbName:          "topolino-dbname",
-			ClusterName:     "topolino-hostnamequiquoqua",
+			ClusterName:     "qua,qui,quo,topolino-hostname",
 			LicenseTypeID:   "A12345",
 			Description:     "ThisDesc",
 			Metric:          "ThisMetric",
@@ -1209,7 +1209,7 @@ func TestGetOracleDatabasesUsedLicenses_VeritasCluster_WithActiveDataguardAndGol
 		{
 			Hostname:        "topolino-hostname",
 			DbName:          "topolino-dbname",
-			ClusterName:     "topolino-hostnamequiquoqua",
+			ClusterName:     "qua,qui,quo,topolino-hostname",
 			LicenseTypeID:   "A98765",
 			Description:     "ThisDesc",
 			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
@@ -1220,7 +1220,7 @@ func TestGetOracleDatabasesUsedLicenses_VeritasCluster_WithActiveDataguardAndGol
 		{
 			Hostname:        "topolino-hostname",
 			DbName:          "topolino-dbname",
-			ClusterName:     "topolino-hostnamequiquoqua",
+			ClusterName:     "qua,qui,quo,topolino-hostname",
 			LicenseTypeID:   goldenGateIds[0],
 			Description:     "golden gate",
 			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
@@ -1509,7 +1509,7 @@ func TestGetOracleDatabasesUsedLicenses_VeritasCluster_WithRacAndRacOneNode_Succ
 		{
 			Hostname:        "topolino-hostname",
 			DbName:          "topolino-dbname",
-			ClusterName:     "topolino-hostnamequiquoqua",
+			ClusterName:     "qua,qui,quo,topolino-hostname",
 			LicenseTypeID:   "A12345",
 			Description:     "ThisDesc",
 			Metric:          "ThisMetric",
@@ -1520,7 +1520,7 @@ func TestGetOracleDatabasesUsedLicenses_VeritasCluster_WithRacAndRacOneNode_Succ
 		{
 			Hostname:        "topolino-hostname",
 			DbName:          "topolino-dbname",
-			ClusterName:     "topolino-hostnamequiquoqua",
+			ClusterName:     "qua,qui,quo,topolino-hostname",
 			LicenseTypeID:   "A98765",
 			Description:     "ThisDesc",
 			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
@@ -1531,7 +1531,7 @@ func TestGetOracleDatabasesUsedLicenses_VeritasCluster_WithRacAndRacOneNode_Succ
 		{
 			Hostname:        "topolino-hostname",
 			DbName:          "topolino-dbname",
-			ClusterName:     "topolino-hostnamequiquoqua",
+			ClusterName:     "qua,qui,quo,topolino-hostname",
 			LicenseTypeID:   racIds[1],
 			Description:     "rac",
 			Metric:          model.LicenseTypeMetricNamedUserPlusPerpetual,
@@ -1864,10 +1864,6 @@ func TestGetDatabaseLicensesComplianceAsXLSX_Success(t *testing.T) {
 			GetOracleDatabaseLicenseTypes().
 			Times(1).
 			Return(oracleLicenseTypes, nil),
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Return([]model.HostDataBE{{
-				Hostname: "sdlsts101",
-			}}, nil),
 
 		db.EXPECT().GetMySQLUsedLicenses("", any).
 			Return(usedLicenses, nil),
@@ -2036,10 +2032,6 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 			GetOracleDatabaseLicenseTypes().
 			Times(1).
 			Return(oracleLicenseTypes, nil),
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Return([]model.HostDataBE{{
-				Hostname: "homer",
-			}}, nil),
 
 		db.EXPECT().GetMySQLUsedLicenses("", any).
 			Return(usedLicenses, nil),
@@ -2071,11 +2063,11 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 			Metric:          "Named User Plus Perpetual",
 			Cost:            250,
 			Consumed:        250,
-			Covered:         450,
+			Covered:         250,
 			Purchased:       450,
-			Compliance:      1.8,
+			Compliance:      1,
 			Unlimited:       false,
-			Available:       0,
+			Available:       200,
 		},
 		{
 			LicenseTypeID:   "",

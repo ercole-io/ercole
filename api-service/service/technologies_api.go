@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -78,12 +78,12 @@ func createOracleTechnologyStatus(as *APIService, hostsCount float64) (*model.Te
 		return nil, err
 	}
 
-	hosts, err := as.Database.ListHostUsingOracleDatabaseLicenses()
+	usages, err := as.getLicensesUsage()
 	if err != nil {
 		return nil, err
 	}
 
-	err2 := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+	err2 := as.assignOracleDatabaseAgreementsToHosts(agreements, usages)
 	if err2 != nil {
 		return nil, utils.NewError(err2, "DB ERROR")
 	}
@@ -93,9 +93,9 @@ func createOracleTechnologyStatus(as *APIService, hostsCount float64) (*model.Te
 		HostsCount: int(hostsCount),
 	}
 
-	for _, host := range hosts {
-		status.ConsumedByHosts += host.OriginalCount
-		status.CoveredByAgreements += (host.OriginalCount - host.LicenseCount)
+	for _, usage := range usages {
+		status.ConsumedByHosts += usage.OriginalCount
+		status.CoveredByAgreements += (usage.OriginalCount - usage.LicenseCount)
 	}
 
 	if status.ConsumedByHosts == 0 {
