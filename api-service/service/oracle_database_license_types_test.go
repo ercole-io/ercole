@@ -256,9 +256,6 @@ func TestGetLicensesCompliance(t *testing.T) {
 			GetOracleDatabaseLicenseTypes().
 			Times(1).
 			Return(expectedLicenseTypes, nil),
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Times(1).
-			Return(hostdatas, nil),
 	)
 
 	actual, err := as.GetOracleDatabaseLicensesCompliance()
@@ -498,9 +495,6 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 			GetOracleDatabaseLicenseTypes().
 			Times(1).
 			Return(expectedLicenseTypes, nil),
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Times(1).
-			Return(hostdatas, nil),
 	)
 
 	actual, err := as.GetOracleDatabaseLicensesCompliance()
