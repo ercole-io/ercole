@@ -2067,7 +2067,7 @@ func TestGetDatabaseLicensesCompliance_Success(t *testing.T) {
 			Purchased:       450,
 			Compliance:      1,
 			Unlimited:       false,
-			Available:       0,
+			Available:       200,
 		},
 		{
 			LicenseTypeID:   "",
