@@ -18,6 +18,7 @@ package service
 
 import (
 	"errors"
+	"sort"
 	"strings"
 
 	"github.com/ercole-io/ercole/v2/utils"
@@ -213,8 +214,6 @@ func (as *APIService) clusterLicenses(license dto.DatabaseUsedLicense, clusters 
 }
 
 func (as *APIService) veritasClusterLicenses(hostdata *model.HostDataBE, hostdatasPerHostname map[string]*model.HostDataBE) (float64, string, error) {
-	var clusterName string
-
 	clusterCores, err := hostdata.GetClusterCores(hostdatasPerHostname)
 
 	if errors.Is(err, utils.ErrHostNotInCluster) {
@@ -223,9 +222,12 @@ func (as *APIService) veritasClusterLicenses(hostdata *model.HostDataBE, hostdat
 		return 0, "", err
 	}
 
-	for _, clusterHostname := range hostdata.ClusterMembershipStatus.VeritasClusterHostnames {
-		clusterName += clusterHostname
-	}
+	hostnames := hostdata.ClusterMembershipStatus.VeritasClusterHostnames
+	sort.Slice(hostnames, func(i, j int) bool {
+		return hostnames[i] < hostnames[j]
+	})
+
+	clusterName := strings.Join(hostnames, ",")
 
 	return float64(clusterCores) * hostdata.CoreFactor(), clusterName, nil
 }

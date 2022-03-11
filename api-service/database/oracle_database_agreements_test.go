@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 )
 
 var licenseTypeSample = model.OracleDatabaseLicenseType{
@@ -318,54 +317,4 @@ func (m *MongodbSuite) TestListOracleDatabaseAgreements() {
 
 			out)
 	})
-}
-
-func (m *MongodbSuite) TestListHostUsingOracleDatabaseLicenses() {
-	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
-	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_07.json"))
-	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
-	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_17.json"))
-
-	actual, err := m.db.ListHostUsingOracleDatabaseLicenses()
-	m.Require().NoError(err)
-
-	expected := []dto.HostUsingOracleDatabaseLicenses{
-		{
-			LicenseTypeID: "A90649",
-			Name:          "Puzzait",
-			Type:          "cluster",
-			LicenseCount:  70,
-			OriginalCount: 70,
-		},
-		{
-			LicenseTypeID: "A90619",
-			Name:          "test-db3",
-			Type:          "host",
-			LicenseCount:  1.5,
-			OriginalCount: 1.5,
-		},
-		{
-			LicenseTypeID: "A90649",
-			Name:          "test-db3",
-			Type:          "host",
-			LicenseCount:  0.5,
-			OriginalCount: 0.5,
-		},
-		{
-			LicenseTypeID: "A90611",
-			Name:          "test-db3",
-			Type:          "host",
-			LicenseCount:  0.5,
-			OriginalCount: 0.5,
-		},
-		{
-			LicenseTypeID: "A90611",
-			Name:          "Puzzait",
-			Type:          "cluster",
-			LicenseCount:  70,
-			OriginalCount: 70,
-		},
-	}
-
-	assert.ElementsMatch(m.T(), expected, actual)
 }
