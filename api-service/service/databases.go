@@ -293,6 +293,7 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 			Description:   lt.ItemDescription,
 			Metric:        lt.Metric,
 			UsedLicenses:  o.UsedLicenses,
+			Ignored:       o.Ignored,
 		}
 
 		usedLicenses = append(usedLicenses, g)
@@ -320,27 +321,14 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 	}
 
 	for i, l := range usedLicenses {
-		hostdata, found := hostdatasPerHostname[l.Hostname]
-
 		if usedLicenses[i].Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
 			usedLicenses[i].UsedLicenses *= model.GetFactorByMetric(usedLicenses[i].Metric)
 		}
 
+		hostdata, found := hostdatasPerHostname[l.Hostname]
 		if !found {
 			as.Log.Errorf("%v: %s", utils.ErrHostNotFound, l.Hostname)
 			continue
-		}
-
-		if hostdata.Features.Oracle != nil && hostdata.Features.Oracle.Database != nil && hostdata.Features.Oracle.Database.Databases != nil {
-			for _, database := range hostdata.Features.Oracle.Database.Databases {
-				if database.Name == usedLicenses[i].DbName {
-					for _, license := range database.Licenses {
-						if license.LicenseTypeID == usedLicenses[i].LicenseTypeID {
-							usedLicenses[i].Ignored = license.Ignored
-						}
-					}
-				}
-			}
 		}
 
 		consumedLicenses, clusterName, err := as.clusterLicenses(l, clusters)
