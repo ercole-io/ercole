@@ -208,7 +208,8 @@ func DownloadFile(filepath string, url string) (err error) {
 	defer out.Close()
 
 	// Get the data
-	resp, err := http.Get(url)
+	client := http.Client{Timeout: 1 * time.Minute}
+	resp, err := client.Get(url)
 	if err != nil {
 		return err
 	}
