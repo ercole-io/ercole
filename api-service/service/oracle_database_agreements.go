@@ -257,7 +257,10 @@ func (as *APIService) assignOracleDatabaseAgreementsToHosts(
 
 	fillAgreementsInfo(as, agrs, licenseTypesMap)
 
-	assignAgreementsLicensesToItsAssociatedHosts(as, agrs, usagesMap)
+	err = assignAgreementsLicensesToItsAssociatedHosts(as, agrs, usagesMap)
+	if err != nil {
+		return err
+	}
 
 	// sort again and rebuild map because the references are updated during the sort
 	sortHostsByLicenses(usages)
@@ -355,7 +358,9 @@ func fillAgreementsInfo(as *APIService, agrs []dto.OracleDatabaseAgreementFE, li
 func assignAgreementsLicensesToItsAssociatedHosts(
 	as *APIService,
 	agreements []dto.OracleDatabaseAgreementFE,
-	usagesMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses) {
+	usagesMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses) error {
+	hostnamesPerLicense := make(map[string]map[string]bool)
+
 	for i := range agreements {
 		agreement := &agreements[i]
 		sortHostsInAgreementByLicenseCount(agreement, usagesMap)
@@ -371,19 +376,31 @@ func assignAgreementsLicensesToItsAssociatedHosts(
 				break
 			}
 
+			var hostUsingLicenses *dto.HostUsingOracleDatabaseLicenses
+
+			var usages map[string]*dto.HostUsingOracleDatabaseLicenses
+
+			var ok bool
+
 			ltID := agreement.LicenseTypeID
-			if _, ok := usagesMap[ltID]; !ok {
+
+			if usages, ok = usagesMap[ltID]; !ok {
 				// no host use this license
 				continue
 			}
 
-			hostUsingLicenses, ok := usagesMap[ltID][associatedHost.Hostname]
+			err := as.assignAgreementsLicensesToHostBelongToCluster(usages, agreement, associatedHost, hostnamesPerLicense)
+			if err != nil {
+				return err
+			}
+
+			hostUsingLicenses, ok = usagesMap[ltID][associatedHost.Hostname]
 			if !ok {
 				// host doesn't use this license
 				continue
 			}
 
-			if hostUsingLicenses.LicenseCount <= 0 {
+			if hostUsingLicenses == nil || hostUsingLicenses.LicenseCount <= 0 {
 				continue
 			}
 
@@ -404,6 +421,46 @@ func assignAgreementsLicensesToItsAssociatedHosts(
 			}
 		}
 	}
+
+	return nil
+}
+
+func (as *APIService) assignAgreementsLicensesToHostBelongToCluster(
+	usages map[string]*dto.HostUsingOracleDatabaseLicenses,
+	agreement *dto.OracleDatabaseAgreementFE,
+	associatedHost *dto.OracleDatabaseAgreementAssociatedHostFE,
+	hostnamesPerLicense map[string]map[string]bool) error {
+	for _, usage := range usages {
+		if usage == nil || usage.Type != "cluster" || agreement.Restricted {
+			continue
+		}
+
+		cluster, err := as.GetCluster(usage.Name, utils.MAX_TIME)
+		if err != nil {
+			return err
+		}
+
+		for _, hostNameVM := range cluster.VMs {
+			if hostNameVM.Hostname == associatedHost.Hostname {
+				_, found := hostnamesPerLicense[usage.LicenseTypeID]
+				if !found {
+					hostnamesPerLicense[usage.LicenseTypeID] = make(map[string]bool)
+				}
+
+				alreadyUsed := hostnamesPerLicense[usage.LicenseTypeID][usage.Name]
+				if alreadyUsed {
+					continue
+				}
+
+				hostnamesPerLicense[usage.LicenseTypeID][usage.Name] = true
+				agreement.CoveredLicenses += usage.LicenseCount
+
+				break
+			}
+		}
+	}
+
+	return nil
 }
 
 func hasAvailableLicenses(agreement *dto.OracleDatabaseAgreementFE) bool {
