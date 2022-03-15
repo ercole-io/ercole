@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -77,16 +77,49 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 	}
 	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
 
-	returnedHosts := []dto.HostUsingOracleDatabaseLicenses{
-		{
-			Name:          "test-db",
-			LicenseCount:  100,
-			LicenseTypeID: "PID002",
-			OriginalCount: 100,
-			Type:          "host",
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "PID002",
+				DbName:        "test-dbname",
+				Hostname:      "test-db",
+				UsedLicenses:  100,
+			},
 		},
 	}
-	db.EXPECT().ListHostUsingOracleDatabaseLicenses().Return(returnedHosts, nil)
+	clusters := []dto.Cluster{}
+	hostdatas := []model.HostDataBE{
+		{
+			Hostname: "test-db",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+			Info: model.Host{
+				CPUCores: 42,
+			},
+		},
+	}
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+	gomock.InOrder(
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&oracleLics, nil),
+
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+	)
 
 	res, err := as.GetTotalTechnologiesComplianceStats(
 		"Italy", "PROD", utils.P("2020-12-05T14:02:03Z"),

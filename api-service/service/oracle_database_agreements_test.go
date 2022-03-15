@@ -411,14 +411,36 @@ func TestGetOracleDatabaseAgreements_Success(t *testing.T) {
 			AvailableLicensesPerUser: 0,
 		},
 	}
-	returnedHosts := []dto.HostUsingOracleDatabaseLicenses{
-		{
-			Name:          "test-db",
-			LicenseCount:  3,
-			LicenseTypeID: "PID002",
-			OriginalCount: 3,
-			Type:          "host",
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "PID002",
+				DbName:        "test-dbname",
+				Hostname:      "test-db",
+				UsedLicenses:  3,
+			},
 		},
+	}
+	clusters := []dto.Cluster{}
+	hostdatas := []model.HostDataBE{
+		{
+			Hostname: "test-db",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+			Info: model.Host{
+				CPUCores: 42,
+			},
+		},
+	}
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
 	}
 
 	expectedAgreements := []dto.OracleDatabaseAgreementFE{
@@ -445,8 +467,17 @@ func TestGetOracleDatabaseAgreements_Success(t *testing.T) {
 	gomock.InOrder(
 		db.EXPECT().ListOracleDatabaseAgreements().
 			Return(returnedAgreements, nil),
-		db.EXPECT().ListHostUsingOracleDatabaseLicenses().
-			Return(returnedHosts, nil),
+
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 	)
@@ -494,21 +525,59 @@ func TestGetOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 			AvailableLicensesPerUser: 0,
 		},
 	}
-	returnedHosts := []dto.HostUsingOracleDatabaseLicenses{
+
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "PID002",
+				DbName:        "test-dbname",
+				Hostname:      "test-db",
+				UsedLicenses:  3,
+			},
+		},
+	}
+	clusters := []dto.Cluster{}
+	hostdatas := []model.HostDataBE{
 		{
-			Name:          "test-db",
-			LicenseCount:  3,
-			LicenseTypeID: "ID Partioning",
-			OriginalCount: 3,
-			Type:          "host",
+			Hostname: "test-db",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+			Info: model.Host{
+				CPUCores: 42,
+			},
+		},
+	}
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "PID002",
+			Aliases:         []string{"Partitioning"},
+			ItemDescription: "Oracle Partitioning",
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
 		},
 	}
 
 	gomock.InOrder(
 		db.EXPECT().ListOracleDatabaseAgreements().
 			Return(returnedAgreements, nil),
-		db.EXPECT().ListHostUsingOracleDatabaseLicenses().
-			Return(returnedHosts, nil),
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(parts, nil),
 	)
@@ -530,8 +599,17 @@ func TestGetOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 	gomock.InOrder(
 		db.EXPECT().ListOracleDatabaseAgreements().
 			Return(returnedAgreements, nil),
-		db.EXPECT().ListHostUsingOracleDatabaseLicenses().
-			Return(returnedHosts, nil),
+
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(parts, nil),
 	)
@@ -553,8 +631,17 @@ func TestGetOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 	gomock.InOrder(
 		db.EXPECT().ListOracleDatabaseAgreements().
 			Return(returnedAgreements, nil),
-		db.EXPECT().ListHostUsingOracleDatabaseLicenses().
-			Return(returnedHosts, nil),
+
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(parts, nil),
 	)
@@ -608,7 +695,7 @@ func TestGetOracleDatabaseAgreements_Failed2(t *testing.T) {
 	gomock.InOrder(
 		db.EXPECT().ListOracleDatabaseAgreements().
 			Return(returnedAgreements, nil),
-		db.EXPECT().ListHostUsingOracleDatabaseLicenses().
+		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(nil, aerrMock),
 	)
 
@@ -1144,12 +1231,12 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 125, Hostname: "test-db", TotalCoveredLicensesCount: 125, ConsumedLicensesCount: 125}},
+			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 5, Hostname: "test-db", TotalCoveredLicensesCount: 5, ConsumedLicensesCount: 5}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          250,
 			AvailableLicensesPerCore: 0,
-			AvailableLicensesPerUser: 125,
-			CoveredLicenses:          125,
+			AvailableLicensesPerUser: 245,
+			CoveredLicenses:          5,
 		},
 	}
 
@@ -1574,8 +1661,8 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 			LicensesPerCore:          0,
 			LicensesPerUser:          200,
 			AvailableLicensesPerCore: 0,
-			AvailableLicensesPerUser: 75,
-			CoveredLicenses:          125,
+			AvailableLicensesPerUser: 200,
+			CoveredLicenses:          0,
 		},
 	}
 
