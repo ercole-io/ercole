@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/golang/mock/gomock"
@@ -32,6 +33,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 	as := APIService{
 		Database: db,
+		Log:      logger.NewLogger("TEST"),
 	}
 
 	expectedRes := map[string]interface{}{
@@ -76,7 +78,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		},
 		"features": map[string]interface{}{
 			"Oracle/Database": true,
-			"Oracle/Exadata":  true,
+			"Oracle/Exadata":  false,
 		},
 	}
 
@@ -87,53 +89,106 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 
 	agreements := []dto.OracleDatabaseAgreementFE{
 		{
+			LicenseTypeID:   "PID002",
 			ItemDescription: "foobar",
 		},
 	}
 
-	licenses := []dto.HostUsingOracleDatabaseLicenses{
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "PID002",
+				Hostname:      "test-db",
+				DbName:        "",
+				UsedLicenses:  70,
+			},
+		},
+	}
+	clusters := []dto.Cluster{}
+	hostdatas := []model.HostDataBE{
 		{
-			LicenseTypeID: "A90649",
-			Name:          "Puzzait",
-			Type:          "cluster",
-			LicenseCount:  70,
-			OriginalCount: 70,
+			Hostname: "test-db",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+			Info: model.Host{
+				CPUCores: 42,
+			},
 		},
 	}
 
-	ltRes := []model.OracleDatabaseLicenseType{
-		{
-			ItemDescription: "foobar",
-		},
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
 	}
 
-	db.EXPECT().
-		GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
-		Return(getTechnologiesUsageRes, nil).AnyTimes().MinTimes(1)
-
-	db.EXPECT().
-		GetHostsCountStats("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
-		Return(20, nil).AnyTimes().MinTimes(1)
-
-	db.EXPECT().
-		ListOracleDatabaseAgreements().
-		Return(agreements, nil).AnyTimes().MinTimes(1)
-
-	db.EXPECT().
-		ListHostUsingOracleDatabaseLicenses().
-		Return(licenses, nil).AnyTimes().MinTimes(1)
-
-	db.EXPECT().
-		GetOracleDatabaseLicenseTypes().
-		Return(ltRes, nil).AnyTimes().MinTimes(1)
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "PID002",
+			Aliases:         []string{"Partitioning"},
+			ItemDescription: "Oracle Partitioning",
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+		},
+	}
 
 	getTechnologiesUsageRes2 := map[string]float64{
 		"Oracle/Database": 8,
 		"Oracle/Exadata":  2,
 	}
-	db.EXPECT().
-		GetHostsCountUsingTechnologies("", "", utils.MAX_TIME).
-		Return(getTechnologiesUsageRes2, nil)
+
+	gomock.InOrder(
+		db.EXPECT().
+			GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+			Return(getTechnologiesUsageRes, nil),
+
+		db.EXPECT().
+			ListOracleDatabaseAgreements().
+			Return(agreements, nil),
+		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&oracleLics, nil),
+		db.EXPECT().
+			GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+		db.EXPECT().
+			GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+
+		db.EXPECT().
+			GetHostsCountStats("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+			Return(20, nil),
+		db.EXPECT().
+			GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+			Return(getTechnologiesUsageRes2, nil),
+
+		db.EXPECT().
+			ListOracleDatabaseAgreements().
+			Return(agreements, nil),
+		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&oracleLics, nil),
+		db.EXPECT().
+			GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+		db.EXPECT().
+			GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+
+		db.EXPECT().
+			GetHostsCountUsingTechnologies("", "", utils.MAX_TIME).
+			Return(getTechnologiesUsageRes, nil),
+	)
 
 	res, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
 
@@ -177,44 +232,82 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 		},
 	}
 
-	licenses := []dto.HostUsingOracleDatabaseLicenses{
-		{
-			LicenseTypeID: "A90649",
-			Name:          "Puzzait",
-			Type:          "cluster",
-			LicenseCount:  70,
-			OriginalCount: 70,
-		},
-	}
-
 	ltRes := []model.OracleDatabaseLicenseType{
 		{
 			ItemDescription: "foobar",
 		},
 	}
 
-	db.EXPECT().
-		GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
-		Return(getTechnologiesUsageRes, nil).AnyTimes().MinTimes(1)
-	db.EXPECT().
-		GetHostsCountStats("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
-		Return(20, nil).AnyTimes().MinTimes(1)
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "A90649",
+				Hostname:      "test-db",
+				DbName:        "",
+				UsedLicenses:  70,
+			},
+		},
+	}
 
-	db.EXPECT().
-		GetHostsCountUsingTechnologies("", "", utils.MAX_TIME).
-		Return(nil, aerrMock)
+	clusters := []dto.Cluster{}
+	hostdatas := []model.HostDataBE{
+		{
+			Hostname: "test-db",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+			Info: model.Host{
+				CPUCores: 42,
+			},
+		},
+	}
 
-	db.EXPECT().
-		ListOracleDatabaseAgreements().
-		Return(agreements, nil).AnyTimes().MinTimes(1)
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
 
-	db.EXPECT().
-		ListHostUsingOracleDatabaseLicenses().
-		Return(licenses, nil).AnyTimes().MinTimes(1)
+	gomock.InOrder(
 
-	db.EXPECT().
-		GetOracleDatabaseLicenseTypes().
-		Return(ltRes, nil).AnyTimes().MinTimes(1)
+		db.EXPECT().
+			GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+			Return(getTechnologiesUsageRes, nil).AnyTimes().MinTimes(1),
+
+		db.EXPECT().
+			ListOracleDatabaseAgreements().
+			Return(agreements, nil).AnyTimes().MinTimes(1),
+
+		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&oracleLics, nil),
+
+		db.EXPECT().
+			GetOracleDatabaseLicenseTypes().
+			Return(ltRes, nil),
+
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Times(1).
+			Return(hostdatas, nil),
+
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+
+		db.EXPECT().
+			GetOracleDatabaseLicenseTypes().
+			Return(ltRes, nil),
+
+		db.EXPECT().
+			GetHostsCountStats("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+			Return(20, nil).AnyTimes().MinTimes(1),
+
+		db.EXPECT().
+			GetHostsCountUsingTechnologies("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
+			Return(nil, aerrMock),
+	)
 
 	_, err := as.GetInfoForFrontendDashboard("Italy", "PRD", utils.P("2019-12-05T14:02:03Z"))
 
