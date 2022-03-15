@@ -154,44 +154,46 @@ func (as *APIService) getLicensesUsage() ([]dto.HostUsingOracleDatabaseLicenses,
 	usages := make([]dto.HostUsingOracleDatabaseLicenses, 0, len(usedLicenses))
 	hostnamesPerLicense := make(map[string]map[string]bool)
 
-	for _, singleUsedLicense := range usedLicenses {
-		if !singleUsedLicense.Ignored {
-			var typeClusterHost, name string
+	for _, usedLicense := range usedLicenses {
+		if usedLicense.Ignored {
+			continue
+		}
 
-			var licensesCount float64
+		var typeClusterHost, name string
 
-			if singleUsedLicense.ClusterName != "" {
-				typeClusterHost = "cluster"
-				name = singleUsedLicense.ClusterName
-				licensesCount = singleUsedLicense.ClusterLicenses
-			} else {
-				typeClusterHost = "host"
-				name = singleUsedLicense.Hostname
-				licensesCount = singleUsedLicense.UsedLicenses
-			}
+		var licensesCount float64
 
+		if usedLicense.ClusterName != "" {
 			_, found := hostnamesPerLicense[name]
 			if !found {
 				hostnamesPerLicense[name] = make(map[string]bool)
 			}
 
-			alreadyUsed := hostnamesPerLicense[name][singleUsedLicense.LicenseTypeID]
+			alreadyUsed := hostnamesPerLicense[name][usedLicense.LicenseTypeID]
 			if alreadyUsed {
 				continue
 			}
 
-			hostnamesPerLicense[name][singleUsedLicense.LicenseTypeID] = true
+			hostnamesPerLicense[name][usedLicense.LicenseTypeID] = true
 
-			g := dto.HostUsingOracleDatabaseLicenses{
-				LicenseTypeID: singleUsedLicense.LicenseTypeID,
-				Name:          name,
-				Type:          typeClusterHost,
-				LicenseCount:  licensesCount,
-				OriginalCount: licensesCount,
-			}
-
-			usages = append(usages, g)
+			typeClusterHost = "cluster"
+			name = usedLicense.ClusterName
+			licensesCount = usedLicense.ClusterLicenses
+		} else {
+			typeClusterHost = "host"
+			name = usedLicense.Hostname
+			licensesCount = usedLicense.UsedLicenses
 		}
+
+		g := dto.HostUsingOracleDatabaseLicenses{
+			LicenseTypeID: usedLicense.LicenseTypeID,
+			Name:          name,
+			Type:          typeClusterHost,
+			LicenseCount:  licensesCount,
+			OriginalCount: licensesCount,
+		}
+
+		usages = append(usages, g)
 	}
 
 	return usages, nil

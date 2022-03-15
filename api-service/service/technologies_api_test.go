@@ -121,13 +121,6 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 				UsedLicenses:  4,
 			},
 			{
-				LicenseTypeID: "PID002",
-				DbName:        "",
-				Hostname:      "minnie",
-				UsedLicenses:  8,
-			},
-
-			{
 				LicenseTypeID: "PID003",
 				DbName:        "",
 				Hostname:      "minnie",
