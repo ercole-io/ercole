@@ -44,7 +44,9 @@ func (job *HistoricizeLicensesComplianceJob) Run() {
 		job.Config.APIService.AuthenticationProvider.Password,
 		"/hosts/technologies/all/databases/licenses-compliance").String()
 
-	resp, err := http.Get(url)
+	client := http.Client{Timeout: 1 * time.Minute}
+
+	resp, err := client.Get(url)
 	if err != nil || resp == nil {
 		err = fmt.Errorf("Error while retrieving licenses compliance: [%w], response: [%v]", err, resp)
 		job.Log.Error(err)
