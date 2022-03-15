@@ -17,6 +17,7 @@ package service
 
 import (
 	"testing"
+	"time"
 
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -480,6 +481,176 @@ func TestGetOracleDatabaseAgreements_Success(t *testing.T) {
 
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
+	)
+
+	res, err := as.GetOracleDatabaseAgreements(dto.NewGetOracleDatabaseAgreementsFilter())
+	require.NoError(t, err)
+	assert.Equal(t, expectedAgreements, res)
+}
+
+func TestGetOracleDatabaseAgreementsCluster_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	as := APIService{
+		Database:    db,
+		Config:      config.Configuration{},
+		NewObjectID: utils.NewObjectIDForTests(),
+	}
+
+	licenseTypes := []model.OracleDatabaseLicenseType{
+		{
+			ID:              "PID002",
+			Aliases:         []string{"Partitioning"},
+			ItemDescription: "Oracle Partitioning",
+			Metric:          model.LicenseTypeMetricProcessorPerpetual,
+		},
+	}
+
+	returnedAgreements := []dto.OracleDatabaseAgreementFE{
+		{
+			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			AgreementID:              "AID001",
+			CSI:                      "CSI001",
+			LicenseTypeID:            "PID002",
+			ItemDescription:          "Oracle Partitioning",
+			Metric:                   model.LicenseTypeMetricProcessorPerpetual,
+			ReferenceNumber:          "RF0001",
+			Unlimited:                true,
+			Basket:                   false,
+			Restricted:               false,
+			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3}},
+			LicensesPerCore:          0,
+			LicensesPerUser:          0,
+			AvailableLicensesPerCore: 0,
+			AvailableLicensesPerUser: 0,
+		},
+	}
+	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
+		Content: []dto.OracleDatabaseUsedLicense{
+			{
+				LicenseTypeID: "PID002",
+				DbName:        "test-dbname",
+				Hostname:      "test-db",
+				UsedLicenses:  3,
+			},
+		},
+	}
+	clusters := []dto.Cluster{
+		{
+			ID:                          [12]byte{},
+			CreatedAt:                   time.Time{},
+			Hostname:                    "bart",
+			HostnameAgentVirtualization: "",
+			Name:                        "bart",
+			Environment:                 "",
+			Location:                    "",
+			FetchEndpoint:               "",
+			CPU:                         0,
+			Sockets:                     0,
+			Type:                        "vmware",
+			VirtualizationNodes:         []string{},
+			VirtualizationNodesCount:    0,
+			VirtualizationNodesStats:    []dto.VirtualizationNodesStat{},
+			VMs: []dto.VM{
+				{
+					CappedCPU:          false,
+					Hostname:           "test-db",
+					Name:               "test-db",
+					VirtualizationNode: "",
+				},
+			},
+			VMsCount:            0,
+			VMsErcoleAgentCount: 0,
+		},
+	}
+	hostdatas := []model.HostDataBE{
+		{
+			Hostname: "test-db",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				OracleClusterware:       false,
+				SunCluster:              false,
+				HACMP:                   false,
+				VeritasClusterServer:    false,
+				VeritasClusterHostnames: []string{},
+			},
+			Info: model.Host{
+				CPUCores: 42,
+			},
+		},
+	}
+	globalFilterAny := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	expectedAgreements := []dto.OracleDatabaseAgreementFE{
+		{
+			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
+			AgreementID:              "AID001",
+			CSI:                      "CSI001",
+			LicenseTypeID:            "PID002",
+			ItemDescription:          "Oracle Partitioning",
+			Metric:                   model.LicenseTypeMetricProcessorPerpetual,
+			ReferenceNumber:          "RF0001",
+			Unlimited:                true,
+			Basket:                   false,
+			Restricted:               false,
+			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 0}},
+			LicensesPerCore:          0,
+			LicensesPerUser:          0,
+			AvailableLicensesPerCore: 0,
+			AvailableLicensesPerUser: 0,
+			CoveredLicenses:          0,
+		},
+	}
+
+	cluster := dto.Cluster{
+		ID:                          [12]byte{},
+		CreatedAt:                   time.Time{},
+		Hostname:                    "bart",
+		HostnameAgentVirtualization: "",
+		Name:                        "bart",
+		Environment:                 "",
+		Location:                    "",
+		FetchEndpoint:               "",
+		CPU:                         0,
+		Sockets:                     0,
+		Type:                        "vmware",
+		VirtualizationNodes:         []string{},
+		VirtualizationNodesCount:    0,
+		VirtualizationNodesStats:    []dto.VirtualizationNodesStat{},
+		VMs: []dto.VM{
+			{
+				CappedCPU:          false,
+				Hostname:           "test-db",
+				Name:               "test-db",
+				VirtualizationNode: "",
+			},
+		},
+		VMsCount:            0,
+		VMsErcoleAgentCount: 0,
+	}
+
+	gomock.InOrder(
+		db.EXPECT().ListOracleDatabaseAgreements().
+			Return(returnedAgreements, nil),
+
+		db.EXPECT().
+			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&oracleLics, nil),
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+		db.EXPECT().GetHostDatas(utils.MAX_TIME).
+			Return(hostdatas, nil),
+		db.EXPECT().GetClusters(globalFilterAny).
+			Return(clusters, nil),
+
+		db.EXPECT().GetOracleDatabaseLicenseTypes().
+			Return(licenseTypes, nil),
+
+		db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil),
 	)
 
 	res, err := as.GetOracleDatabaseAgreements(dto.NewGetOracleDatabaseAgreementsFilter())
@@ -1692,6 +1863,27 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 	}
 	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
+
+	cluster := dto.Cluster{
+		ID:                          [12]byte{},
+		CreatedAt:                   time.Time{},
+		Hostname:                    "dbclust",
+		HostnameAgentVirtualization: "",
+		Name:                        "dbclust",
+		Environment:                 "",
+		Location:                    "",
+		FetchEndpoint:               "",
+		CPU:                         0,
+		Sockets:                     0,
+		Type:                        "",
+		VirtualizationNodes:         []string{},
+		VirtualizationNodesCount:    0,
+		VirtualizationNodesStats:    []dto.VirtualizationNodesStat{},
+		VMs:                         []dto.VM{},
+		VMsCount:                    0,
+		VMsErcoleAgentCount:         0,
+	}
+	db.EXPECT().GetCluster("dbclust", utils.MAX_TIME).Return(&cluster, nil)
 
 	agreements := []dto.OracleDatabaseAgreementFE{
 		{
