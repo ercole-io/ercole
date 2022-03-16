@@ -23,6 +23,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/config"
@@ -46,7 +47,7 @@ type Client struct {
 func NewClient(config config.APIService) *Client {
 	return &Client{
 		remoteEndpoint: strings.TrimSuffix(config.RemoteEndpoint, "/"),
-		client:         &http.Client{},
+		client:         &http.Client{Timeout: 1 * time.Minute},
 		config:         config,
 	}
 }
