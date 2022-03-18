@@ -38,6 +38,8 @@ type MongoDatabaseInterface interface {
 	AddOciProfile(profile model.OciProfile) error
 	DeleteOciProfile(id primitive.ObjectID) error
 	UpdateOciProfile(profile model.OciProfile) error
+	GetErcoleDatabases() ([]model.ErcoleDatabase, error)
+	GetErcoleActiveDatabases() ([]model.ErcoleDatabase, error)
 }
 
 // MongoDatabase is a implementation

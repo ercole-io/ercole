@@ -60,10 +60,12 @@ func (as *ThunderService) GetOciUnusedStorage(profiles []string) ([]model.OciErc
 	}
 
 	for _, vl := range volumeList {
+		recommendation.Type = model.RecommendationTypeUnusedStorage
 		recommendation.CompartmentID = vl.CompartmentID
 		recommendation.CompartmentName = vl.CompartmentName
 		recommendation.ResourceID = vl.ResourceID
 		recommendation.Name = vl.Name
+		recommendation.ObjectType = model.ObjectTypeBlockStorage
 		listRec = append(listRec, recommendation)
 	}
 
@@ -245,6 +247,7 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 					recommendation.CompartmentName = compartment.Name
 					recommendation.ResourceID = *s.Id
 					recommendation.Name = *s.DisplayName
+					recommendation.ObjectType = model.ObjectTypeSnapshot
 
 					listRec = append(listRec, recommendation)
 				}
@@ -271,6 +274,7 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 					recommendation.CompartmentName = compartment.Name
 					recommendation.ResourceID = *s.Id
 					recommendation.Name = *s.DisplayName
+					recommendation.ObjectType = model.ObjectTypeSnapshot
 
 					listRec = append(listRec, recommendation)
 				}

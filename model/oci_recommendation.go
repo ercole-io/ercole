@@ -32,16 +32,28 @@ type OciErcoleRecommendation struct {
 	CompartmentName string `json:"compartmentName"`
 	Name            string `json:"name"`
 	ResourceID      string `json:"resourceID"`
+	ObjectType      string `json:"objectType"`
 }
 
 const (
-	RecommendationTypeBlockStorage              = "Block Storage Performance"
-	RecommendationTypeComputeInstanceIdle       = "Compute Instance Idle"
-	RecommendationTypeInstanceRightsizing       = "Compute Instance Rightsizing"
-	RecommendationTypeInstanceWithoutMonitoring = "Compute Instance Without Monitoring"
-	RecommendationTypeOldSnapshot               = "Old Snapshot"
-	RecommendationTypeUnusedResource            = "Unused Resource"
-	RecommendationTypeUnusedStorage             = "Unused Storage"
-	RecommendationTypeSISRightsizing            = "Software Infracstructure Service Rightsizing"
-	RecommendationTypeSISRightsizing1           = "Software Infracstructure Service Rightsizing 1"
+	RecommendationTypeBlockStorage                = "Block Storage Performance"
+	RecommendationTypeComputeInstanceIdle         = "Compute Instance Idle"
+	RecommendationTypeInstanceRightsizing         = "Compute Instance Rightsizing"
+	RecommendationTypeInstanceWithoutMonitoring   = "Compute Instance Without Monitoring"
+	RecommendationTypeOldSnapshot                 = "Old Snapshot"
+	RecommendationTypeUnusedResource              = "Unused Resource"
+	RecommendationTypeUnusedStorage               = "Unused Storage"
+	RecommendationTypeSISRightsizing              = "Software Infracstructure Service Rightsizing"
+	RecommendationTypeSISRightsizing1             = "Software Infracstructure Service Rightsizing 1"
+	RecommendationTypeObjectStorageOptimization   = "Object Storage Optimization"
+	RecommendationTypeUnusedServiceDecommisioning = "Unused Service Decommisioning"
+)
+
+const (
+	ObjectTypeBlockStorage      = "Block Storage"
+	ObjectTypeComputeInstance   = "Compute Instance"
+	ObjectTypeDatabase          = "Database"
+	ObjectTypeLoadBalancer      = "Load Balancer"
+	ObjectTypeSnapshot          = "Snapshot"
+	ObjectTypeClusterKubernetes = "Cluster Kubernetes"
 )

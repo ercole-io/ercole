@@ -76,6 +76,7 @@ func (as *ThunderService) GetOciUnusedLoadBalancers(profiles []string) ([]model.
 					recommendation.CompartmentName = compartment.Name
 					recommendation.Name = ""
 					recommendation.ResourceID = *s.LoadBalancerId
+					recommendation.ObjectType = model.ObjectTypeLoadBalancer
 					tempListRec[*s.LoadBalancerId] = recommendation
 				}
 			}
