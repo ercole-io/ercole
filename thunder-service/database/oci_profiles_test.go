@@ -84,8 +84,8 @@ var profile1UpdWithoutKeyResult model.OciProfile = model.OciProfile{
 func (m *MongodbSuite) TestInsertOciProfile_Success() {
 	err := m.db.AddOciProfile(profile1)
 	require.NoError(m.T(), err)
-	defer m.db.Client.Database(m.dbname).Collection("oci_configuration").DeleteMany(context.TODO(), bson.M{})
-	val := m.db.Client.Database(m.dbname).Collection("oci_configuration").FindOne(context.TODO(), bson.M{
+	defer m.db.Client.Database(m.dbname).Collection("oci_profiles").DeleteMany(context.TODO(), bson.M{})
+	val := m.db.Client.Database(m.dbname).Collection("oci_profiles").FindOne(context.TODO(), bson.M{
 		"_id": profile1.ID,
 	})
 	require.NoError(m.T(), val.Err())
@@ -103,7 +103,7 @@ func (m *MongodbSuite) TestGetOciProfilesWithPrivateKey_Success() {
 	require.NoError(m.T(), err)
 	err = m.db.AddOciProfile(profile2)
 	require.NoError(m.T(), err)
-	defer m.db.Client.Database(m.dbname).Collection("oci_configuration").DeleteMany(context.TODO(), bson.M{})
+	defer m.db.Client.Database(m.dbname).Collection("oci_profiles").DeleteMany(context.TODO(), bson.M{})
 	profiles, err = m.db.GetOciProfiles(false)
 	require.NoError(m.T(), err)
 
@@ -137,7 +137,7 @@ func (m *MongodbSuite) TestGetOciProfilesWithoutPrivateKey_Success() {
 	require.NoError(m.T(), err)
 	err = m.db.AddOciProfile(profile2)
 	require.NoError(m.T(), err)
-	defer m.db.Client.Database(m.dbname).Collection("oci_configuration").DeleteMany(context.TODO(), bson.M{})
+	defer m.db.Client.Database(m.dbname).Collection("oci_profiles").DeleteMany(context.TODO(), bson.M{})
 	profiles, err = m.db.GetOciProfiles(true)
 	require.NoError(m.T(), err)
 
@@ -168,8 +168,8 @@ func (m *MongodbSuite) TestUpdateOciProfileWithPrivateKey_Success() {
 	var expected map[primitive.ObjectID]model.OciProfile
 	err := m.db.AddOciProfile(profile1)
 	require.NoError(m.T(), err)
-	defer m.db.Client.Database(m.dbname).Collection("oci_configuration").DeleteMany(context.TODO(), bson.M{})
-	val := m.db.Client.Database(m.dbname).Collection("oci_configuration").FindOne(context.TODO(), bson.M{
+	defer m.db.Client.Database(m.dbname).Collection("oci_profiles").DeleteMany(context.TODO(), bson.M{})
+	val := m.db.Client.Database(m.dbname).Collection("oci_profiles").FindOne(context.TODO(), bson.M{
 		"_id": profile1.ID,
 	})
 	require.NoError(m.T(), val.Err())
@@ -187,8 +187,8 @@ func (m *MongodbSuite) TestUpdateOciProfileWithoutPrivateKey_Success() {
 	var expected map[primitive.ObjectID]model.OciProfile
 	err := m.db.AddOciProfile(profile1)
 	require.NoError(m.T(), err)
-	defer m.db.Client.Database(m.dbname).Collection("oci_configuration").DeleteMany(context.TODO(), bson.M{})
-	val := m.db.Client.Database(m.dbname).Collection("oci_configuration").FindOne(context.TODO(), bson.M{
+	defer m.db.Client.Database(m.dbname).Collection("oci_profiles").DeleteMany(context.TODO(), bson.M{})
+	val := m.db.Client.Database(m.dbname).Collection("oci_profiles").FindOne(context.TODO(), bson.M{
 		"_id": profile1.ID,
 	})
 	require.NoError(m.T(), val.Err())
@@ -205,8 +205,8 @@ func (m *MongodbSuite) TestUpdateOciProfileWithoutPrivateKey_Success() {
 func (m *MongodbSuite) TestdeleteOciProfile_Success() {
 	err := m.db.AddOciProfile(profile1)
 	require.NoError(m.T(), err)
-	defer m.db.Client.Database(m.dbname).Collection("oci_configuration").DeleteMany(context.TODO(), bson.M{})
-	val := m.db.Client.Database(m.dbname).Collection("oci_configuration").FindOne(context.TODO(), bson.M{
+	defer m.db.Client.Database(m.dbname).Collection("oci_profiles").DeleteMany(context.TODO(), bson.M{})
+	val := m.db.Client.Database(m.dbname).Collection("oci_profiles").FindOne(context.TODO(), bson.M{
 		"_id": profile1.ID,
 	})
 	require.NoError(m.T(), val.Err())
@@ -214,7 +214,7 @@ func (m *MongodbSuite) TestdeleteOciProfile_Success() {
 	err = m.db.DeleteOciProfile(profile1.ID)
 	require.NoError(m.T(), err)
 
-	val = m.db.Client.Database(m.dbname).Collection("oci_configuration").FindOne(context.TODO(), bson.M{
+	val = m.db.Client.Database(m.dbname).Collection("oci_profiles").FindOne(context.TODO(), bson.M{
 		"_id": profile1.ID,
 	})
 	require.Error(m.T(), val.Err())

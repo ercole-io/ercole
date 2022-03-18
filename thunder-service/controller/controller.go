@@ -50,6 +50,8 @@ type ThunderControllerInterface interface {
 	GetOciOldSnapshotDecommissioning(w http.ResponseWriter, r *http.Request)
 	// GetOciComputeInstanceRightsizing get recommendations from Oracle Cloud Infrastructure about Underutilized Instances
 	GetOciComputeInstanceRightsizing(w http.ResponseWriter, r *http.Request)
+	// GetOciSISRightsizing get recommendations from Oracle Cloud Infrastructure about Software Infracstructure Services
+	GetOciSISRightsizing(w http.ResponseWriter, r *http.Request)
 }
 
 // ThunderController is the struct used to handle the requests from agents and contains the concrete implementation of ThunderControllerInterface
