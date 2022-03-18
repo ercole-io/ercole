@@ -42,6 +42,7 @@ type ThunderServiceInterface interface {
 	GetOciUnusedStorage(profiles []string) ([]model.OciErcoleRecommendation, error)
 	GetOciOldSnapshotDecommissioning(profiles []string) ([]model.OciErcoleRecommendation, error)
 	GetOciComputeInstanceRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error)
+	GetOciSISRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error)
 }
 
 type ThunderService struct {

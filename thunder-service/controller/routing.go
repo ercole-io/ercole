@@ -50,4 +50,5 @@ func (ctrl *ThunderController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/oracle-cloud/unused-storage/{ids}", ctrl.GetOciUnusedStorage).Methods("GET")
 	router.HandleFunc("/oracle-cloud/old-snapshot/{ids}", ctrl.GetOciOldSnapshotDecommissioning).Methods("GET")
 	router.HandleFunc("/oracle-cloud/instance-rightsizing/{ids}", ctrl.GetOciComputeInstanceRightsizing).Methods("GET")
+	router.HandleFunc("/oracle-cloud/sis-rightsizing/{ids}", ctrl.GetOciSISRightsizing).Methods("GET")
 }

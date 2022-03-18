@@ -27,7 +27,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-const OciProfile_collection = "oci_configuration"
+const OciProfile_collection = "oci_profiles"
 
 func (md *MongoDatabase) AddOciProfile(profile model.OciProfile) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciProfile_collection).
