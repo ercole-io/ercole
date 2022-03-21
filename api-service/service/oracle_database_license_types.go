@@ -164,6 +164,10 @@ func (as *APIService) getLicensesUsage() ([]dto.HostUsingOracleDatabaseLicenses,
 		var licensesCount float64
 
 		if usedLicense.ClusterName != "" {
+			typeClusterHost = "cluster"
+			name = usedLicense.ClusterName
+			licensesCount = usedLicense.ClusterLicenses
+
 			_, found := hostnamesPerLicense[name]
 			if !found {
 				hostnamesPerLicense[name] = make(map[string]bool)
@@ -175,14 +179,22 @@ func (as *APIService) getLicensesUsage() ([]dto.HostUsingOracleDatabaseLicenses,
 			}
 
 			hostnamesPerLicense[name][usedLicense.LicenseTypeID] = true
-
-			typeClusterHost = "cluster"
-			name = usedLicense.ClusterName
-			licensesCount = usedLicense.ClusterLicenses
 		} else {
 			typeClusterHost = "host"
 			name = usedLicense.Hostname
 			licensesCount = usedLicense.UsedLicenses
+
+			_, found := hostnamesPerLicense[name]
+			if !found {
+				hostnamesPerLicense[name] = make(map[string]bool)
+			}
+
+			alreadyUsed := hostnamesPerLicense[name][usedLicense.LicenseTypeID]
+			if alreadyUsed {
+				continue
+			}
+
+			hostnamesPerLicense[name][usedLicense.LicenseTypeID] = true
 		}
 
 		g := dto.HostUsingOracleDatabaseLicenses{
