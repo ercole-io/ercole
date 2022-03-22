@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"math"
 	"time"
 
 	"github.com/amreo/mu"
@@ -29,6 +30,20 @@ import (
 // SearchOracleDatabases search databases
 func (md *MongoDatabase) SearchOracleDatabases(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.OracleDatabaseResponse, error) {
 	//Find the matching hostdata
+	var oracleDatabaseResponse dto.OracleDatabaseResponse
+
+	var pagePaging, pagePagingSize int
+
+	if pageSize > 0 {
+		pagePagingSize = pageSize
+	} else {
+		pagePagingSize = math.MaxInt64
+	}
+
+	if !(page >= 0) {
+		pagePaging = 0
+	}
+
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		context.TODO(),
 		mu.MAPipeline(
@@ -61,18 +76,73 @@ func (md *MongoDatabase) SearchOracleDatabases(keywords []string, sortBy string,
 			mu.APReplaceWith(mu.APOMergeObjects("$$ROOT", "$database")),
 			mu.APUnset("database"),
 			mu.APOptionalSortingStage(sortBy, sortDesc),
-			PagingMetadataStage(page, pageSize),
+			mu.APLimit(pagePagingSize),
 		),
 	)
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	var oracleDatabaseResponse dto.OracleDatabaseResponse
+	err = cur.All(context.TODO(), &oracleDatabaseResponse.Content)
+	if err != nil {
+		return nil, utils.NewError(err, "Decode ERROR")
+	}
 
-	cur.Next(context.TODO())
+	if oracleDatabaseResponse.Content == nil {
+		oracleDatabaseResponse.Content = []dto.OracleDatabase{}
+	}
 
-	if err := cur.Decode(&oracleDatabaseResponse); err != nil {
+	md.Client.Database(md.Config.Mongodb.DBName)
+	cur1, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+
+		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
+			FilterByLocationAndEnvironmentSteps(location, environment),
+			mu.APUnwind("$features.oracle.database.databases"),
+			mu.APProject(bson.M{
+				"hostname":    1,
+				"environment": 1,
+				"location":    1,
+				"createdAt":   1,
+				"database":    "$features.oracle.database.databases",
+			}),
+			mu.APSearchFilterStage([]interface{}{"$hostname", "$database.name"}, keywords),
+			mu.APFacet(bson.M{
+				"metadata": mu.MAPipeline(
+					mu.APCount("totalElements"),
+				),
+			},
+			),
+			mu.APSet(bson.M{
+				"metadata": mu.APOIfNull(mu.APOArrayElemAt("$metadata", 0), bson.M{
+					"totalElements": 0,
+				}),
+			}),
+
+			mu.APSet(bson.M{
+				"metadata.totalPages": "$metadata",
+			}),
+			mu.APAddFields(bson.M{
+				"metadata.totalPages": mu.APOFloor(mu.APODivide("$metadata.totalElements", pagePagingSize)),
+				"metadata.size":       mu.APOMin(pagePagingSize, mu.APOSubtract("$metadata.totalElements", pagePagingSize*pagePaging)),
+				"metadata.number":     pagePaging,
+			}),
+			mu.APAddFields(bson.M{
+				"metadata.empty": mu.APOEqual("$metadata.size", 0),
+				"metadata.first": pagePaging == 0,
+				"metadata.last":  mu.APOGreaterOrEqual(pagePaging, mu.APOSubtract("$metadata.totalPages", 1)),
+			}),
+		),
+	)
+
+	if err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	cur1.Next(context.TODO())
+
+	if err := cur1.Decode(&oracleDatabaseResponse); err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
 	}
 
