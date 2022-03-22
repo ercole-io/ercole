@@ -455,6 +455,12 @@ func (as *APIService) assignAgreementsLicensesToHostBelongToCluster(
 				hostnamesPerLicense[usage.LicenseTypeID][usage.Name] = true
 				agreement.CoveredLicenses += usage.LicenseCount
 
+				if agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
+					agreement.AvailableLicensesPerUser -= usage.LicenseCount
+				} else {
+					agreement.AvailableLicensesPerCore -= usage.LicenseCount
+				}
+
 				break
 			}
 		}
