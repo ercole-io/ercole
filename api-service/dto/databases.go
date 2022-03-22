@@ -39,6 +39,7 @@ type DatabaseUsedLicense struct {
 	Hostname        string  `json:"hostname" bson:"hostname"`
 	DbName          string  `json:"dbName" bson:"dbName"`
 	ClusterName     string  `json:"clusterName" bson:"clusterName"`
+	ClusterType     string  `json:"clusterType" bson:"clusterType"`
 	LicenseTypeID   string  `json:"licenseTypeID" bson:"licenseTypeID"`
 	Description     string  `json:"description" bson:"description"`
 	Metric          string  `json:"metric" bson:"metric"`
