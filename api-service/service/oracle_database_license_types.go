@@ -168,6 +168,61 @@ func (as *APIService) getLicensesUsage() ([]dto.HostUsingOracleDatabaseLicenses,
 			name = usedLicense.ClusterName
 			licensesCount = usedLicense.ClusterLicenses
 
+			if usedLicense.ClusterType != "VeritasCluster" {
+				cluster, err := as.GetCluster(usedLicense.ClusterName, utils.MAX_TIME)
+				if err != nil {
+					return nil, err
+				}
+
+				var capped, licenseCapped, notlicenseCapped bool
+
+				vms := make(map[string]bool)
+
+				for _, hostNameVM := range cluster.VMs {
+					if !hostNameVM.CappedCPU {
+						if _, ok := vms[hostNameVM.Hostname]; !ok {
+							vms[hostNameVM.Hostname] = false
+						}
+
+						continue
+					} else {
+						if _, ok := vms[hostNameVM.Hostname]; !ok {
+							vms[hostNameVM.Hostname] = true
+						}
+						capped = true
+					}
+				}
+
+				if capped {
+					for vm, cap := range vms {
+						host, err := as.GetHost(vm, utils.MAX_TIME, false)
+						if err != nil {
+							continue
+						}
+
+						if host != nil && host.Features.Oracle != nil && host.Features.Oracle.Database != nil && host.Features.Oracle.Database.Databases != nil {
+							databases := host.Features.Oracle.Database.Databases
+
+							for _, database := range databases {
+								for _, license := range database.Licenses {
+									if license.LicenseTypeID == usedLicense.LicenseTypeID && cap {
+										licenseCapped = true
+									} else if license.LicenseTypeID == usedLicense.LicenseTypeID && !cap {
+										notlicenseCapped = true
+									}
+								}
+							}
+						}
+					}
+				}
+
+				if !notlicenseCapped && licenseCapped {
+					typeClusterHost = "host"
+					name = usedLicense.Hostname
+					licensesCount = usedLicense.UsedLicenses
+				}
+			}
+
 			_, found := hostnamesPerLicense[name]
 			if !found {
 				hostnamesPerLicense[name] = make(map[string]bool)
