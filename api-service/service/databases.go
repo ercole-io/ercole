@@ -196,7 +196,7 @@ func (as *APIService) GetUsedLicensesPerDatabases(hostname string, filter dto.Gl
 	return usedLicenses, nil
 }
 
-func (as *APIService) clusterLicenses(license dto.DatabaseUsedLicense, clusters []dto.Cluster) (float64, string, error) {
+func (as *APIService) clusterLicenses(license dto.DatabaseUsedLicense, clusters []dto.Cluster) (float64, string, string, error) {
 	clusterByHostnames := make(map[string]*dto.Cluster)
 
 	for i := range clusters {
@@ -207,19 +207,19 @@ func (as *APIService) clusterLicenses(license dto.DatabaseUsedLicense, clusters 
 
 	cluster, found := clusterByHostnames[license.Hostname]
 	if !found {
-		return 0, "", utils.ErrHostNotInCluster
+		return 0, "", "", utils.ErrHostNotInCluster
 	}
 
-	return float64(cluster.CPU) * 0.5, cluster.Name, nil
+	return float64(cluster.CPU) * 0.5, cluster.Name, cluster.Type, nil
 }
 
-func (as *APIService) veritasClusterLicenses(hostdata *model.HostDataBE, hostdatasPerHostname map[string]*model.HostDataBE) (float64, string, error) {
+func (as *APIService) veritasClusterLicenses(hostdata *model.HostDataBE, hostdatasPerHostname map[string]*model.HostDataBE) (float64, string, string, error) {
 	clusterCores, err := hostdata.GetClusterCores(hostdatasPerHostname)
 
 	if errors.Is(err, utils.ErrHostNotInCluster) {
-		return 0, "", utils.ErrHostNotInCluster
+		return 0, "", "", utils.ErrHostNotInCluster
 	} else if err != nil {
-		return 0, "", err
+		return 0, "", "", err
 	}
 
 	hostnames := hostdata.ClusterMembershipStatus.VeritasClusterHostnames
@@ -229,7 +229,7 @@ func (as *APIService) veritasClusterLicenses(hostdata *model.HostDataBE, hostdat
 
 	clusterName := strings.Join(hostnames, ",")
 
-	return float64(clusterCores) * hostdata.CoreFactor(), clusterName, nil
+	return float64(clusterCores) * hostdata.CoreFactor(), clusterName, "VeritasCluster", nil
 }
 
 func (as *APIService) GetUsedLicensesPerDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error) {
@@ -331,21 +331,23 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 			continue
 		}
 
-		consumedLicenses, clusterName, err := as.clusterLicenses(l, clusters)
+		consumedLicenses, clusterName, clusterType, err := as.clusterLicenses(l, clusters)
 		if err != nil && !errors.Is(err, utils.ErrHostNotInCluster) {
 			return nil, err
 		} else if !errors.Is(err, utils.ErrHostNotInCluster) {
 			usedLicenses[i].ClusterLicenses = consumedLicenses * model.GetFactorByMetric(usedLicenses[i].Metric)
 			usedLicenses[i].ClusterName = clusterName
+			usedLicenses[i].ClusterType = clusterType
 			continue
 		}
 
-		consumedLicenses, clusterName, err = as.veritasClusterLicenses(hostdata, hostdatasPerHostname)
+		consumedLicenses, clusterName, clusterType, err = as.veritasClusterLicenses(hostdata, hostdatasPerHostname)
 		if err != nil && !errors.Is(err, utils.ErrHostNotInCluster) {
 			return nil, err
 		} else if !errors.Is(err, utils.ErrHostNotInCluster) {
 			usedLicenses[i].ClusterLicenses = consumedLicenses * model.GetFactorByMetric(usedLicenses[i].Metric)
 			usedLicenses[i].ClusterName = clusterName
+			usedLicenses[i].ClusterType = clusterType
 			continue
 		}
 	}
