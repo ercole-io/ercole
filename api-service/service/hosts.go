@@ -256,7 +256,16 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 
 		file.SetCellValue(sheet, nextAxis(), databases.String())
 		file.SetCellValue(sheet, nextAxis(), technology.String())
-		file.SetCellValue(sheet, nextAxis(), val.Info.OS)
+
+		var os string
+
+		if strings.Contains(val.Info.OS, "Red Hat") {
+			os = val.Info.OS + " - " + val.Info.OSVersion
+		} else {
+			os = val.Info.OS
+		}
+
+		file.SetCellValue(sheet, nextAxis(), os)
 		file.SetCellValue(sheet, nextAxis(), val.ClusterMembershipStatus.OracleClusterware)
 		file.SetCellValue(sheet, nextAxis(), val.Info.KernelVersion)
 		file.SetCellValue(sheet, nextAxis(), val.Info.MemoryTotal)
