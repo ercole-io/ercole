@@ -113,7 +113,7 @@ func (ctrl *APIController) SearchOracleDatabaseAddmsXLSX(w http.ResponseWriter, 
 	}
 
 	//get the data
-	addms, err := ctrl.Service.SearchOracleDatabaseAddms(search, "Benefit", true, -1, -1, location, environment, olderThan)
+	addms, err := ctrl.Service.SearchOracleDatabaseAddms(search, "benefit", true, -1, -1, location, environment, olderThan)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
