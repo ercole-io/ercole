@@ -86,12 +86,12 @@ func TestSearchOracleDatabaseAddms_JSONPaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchOracleDatabaseAddms("foobar", "Benefit", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+		SearchOracleDatabaseAddms("foobar", "benefit", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(resFromService, nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.SearchOracleDatabaseAddms)
-	req, err := http.NewRequest("GET", "/addms?search=foobar&sort-by=Benefit&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+	req, err := http.NewRequest("GET", "/addms?search=foobar&sort-by=benefit&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
 	handler.ServeHTTP(rr, req)
@@ -303,7 +303,7 @@ func TestSearchOracleDatabaseAddms_XLSXSuccess(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchOracleDatabaseAddms("foobar", "Benefit", true, -1, -1, "Germany", "TST", utils.P("2020-06-10T11:54:59Z")).
+		SearchOracleDatabaseAddms("foobar", "benefit", true, -1, -1, "Germany", "TST", utils.P("2020-06-10T11:54:59Z")).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
@@ -373,7 +373,7 @@ func TestSearchOracleDatabaseAddms_XLSXInternalServerError1(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchOracleDatabaseAddms("", "Benefit", true, -1, -1, "", "", utils.MAX_TIME).
+		SearchOracleDatabaseAddms("", "benefit", true, -1, -1, "", "", utils.MAX_TIME).
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
@@ -405,7 +405,7 @@ func TestSearchOracleDatabaseAddms_XLSXInternalServerError2(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchOracleDatabaseAddms("", "Benefit", true, -1, -1, "", "", utils.MAX_TIME).
+		SearchOracleDatabaseAddms("", "benefit", true, -1, -1, "", "", utils.MAX_TIME).
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
@@ -1461,12 +1461,12 @@ func TestSearchOracleDatabaseUsedLicenses_JSONPaged(t *testing.T) {
 
 	t.Run("JSON paged", func(t *testing.T) {
 		as.EXPECT().
-			SearchOracleDatabaseUsedLicenses("", "Benefit", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
+			SearchOracleDatabaseUsedLicenses("", "benefit", true, 2, 3, "Italy", "TST", utils.P("2020-06-10T11:54:59Z")).
 			Return(&resFromService, nil)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.SearchOracleDatabaseUsedLicenses)
-		req, err := http.NewRequest("GET", "/licenses?sort-by=Benefit&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
+		req, err := http.NewRequest("GET", "/licenses?sort-by=benefit&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 		require.NoError(t, err)
 
 		handler.ServeHTTP(rr, req)
