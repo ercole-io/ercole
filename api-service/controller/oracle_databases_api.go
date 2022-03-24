@@ -21,11 +21,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/golang/gddo/httputil"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
 // SearchOracleDatabaseAddms search addms data using the filters in the request
@@ -101,7 +101,7 @@ func (ctrl *APIController) SearchOracleDatabaseAddmsXLSX(w http.ResponseWriter, 
 	var olderThan time.Time
 
 	var err error
-	//parse the query params
+
 	search = r.URL.Query().Get("search")
 
 	location = r.URL.Query().Get("location")
@@ -119,26 +119,35 @@ func (ctrl *APIController) SearchOracleDatabaseAddmsXLSX(w http.ResponseWriter, 
 		return
 	}
 
-	//Open the sheet
-	sheets, err := excelize.OpenFile(ctrl.Config.ResourceFilePath + "/templates/template_addm.xlsx")
+	sheet := "Addm"
+	headers := []string{
+		"Performance Impact",
+		"Hostname",
+		"Database",
+		"Finding",
+		"Recommendation",
+		"Action",
+		"Environment",
+	}
+
+	file, err := exutils.NewXLSX(ctrl.Config, sheet, headers...)
 	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, utils.NewError(err, "READ_TEMPLATE"))
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError,
+			utils.NewError(err, "Can't create new xlsx"))
 		return
 	}
 
-	//Add the data to the sheet
 	for i, val := range addms {
-		sheets.SetCellValue("Addm", fmt.Sprintf("A%d", i+2), val["benefit"])        //Benefit column
-		sheets.SetCellValue("Addm", fmt.Sprintf("B%d", i+2), val["hostname"])       //Hostname column
-		sheets.SetCellValue("Addm", fmt.Sprintf("C%d", i+2), val["dbname"])         //Dbname column
-		sheets.SetCellValue("Addm", fmt.Sprintf("D%d", i+2), val["finding"])        //Finding column
-		sheets.SetCellValue("Addm", fmt.Sprintf("E%d", i+2), val["recommendation"]) //Recommendation column
-		sheets.SetCellValue("Addm", fmt.Sprintf("F%d", i+2), val["action"])         //Action column
-		sheets.SetCellValue("Addm", fmt.Sprintf("G%d", i+2), val["environment"])    //Environment column
+		file.SetCellValue(sheet, fmt.Sprintf("A%d", i+2), val["benefit"])        //Benefit column
+		file.SetCellValue(sheet, fmt.Sprintf("B%d", i+2), val["hostname"])       //Hostname column
+		file.SetCellValue(sheet, fmt.Sprintf("C%d", i+2), val["dbname"])         //Dbname column
+		file.SetCellValue(sheet, fmt.Sprintf("D%d", i+2), val["finding"])        //Finding column
+		file.SetCellValue(sheet, fmt.Sprintf("E%d", i+2), val["recommendation"]) //Recommendation column
+		file.SetCellValue(sheet, fmt.Sprintf("F%d", i+2), val["action"])         //Action column
+		file.SetCellValue(sheet, fmt.Sprintf("G%d", i+2), val["environment"])    //Environment column
 	}
 
-	//Write it to the response
-	utils.WriteXLSXResponse(w, sheets)
+	utils.WriteXLSXResponse(w, file)
 }
 
 // SearchOracleDatabaseSegmentAdvisors search segment advisors data using the filters in the request
