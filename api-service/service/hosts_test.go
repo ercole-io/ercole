@@ -523,8 +523,8 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 				HardwareAbstractionTechnology: "PH",
 				Kernel:                        "Linux 4.1.12-124.26.12.el7uek.x86_64",
 				KernelVersion:                 "",
-				OS:                            "Red Hat Enterprise Linux 7.6",
-				OSVersion:                     "",
+				OS:                            "Red Hat Enterprise Linux",
+				OSVersion:                     "7.6",
 				MemoryTotal:                   376,
 				SwapTotal:                     23,
 			},
@@ -560,8 +560,8 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 				HardwareAbstractionTechnology: "VMWARE",
 				Kernel:                        "Linux 3.10.0-514.el7.x86_64",
 				KernelVersion:                 "",
-				OS:                            "Red Hat Enterprise Linux 7.6",
-				OSVersion:                     "",
+				OS:                            "Red Hat Enterprise Linux",
+				OSVersion:                     "7.6",
 				MemoryTotal:                   3,
 				SwapTotal:                     1,
 			},
@@ -619,7 +619,7 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 		assert.Equal(t, "PROD", sp.GetCellValue("Hosts", "K2"))
 		assert.Equal(t, "", sp.GetCellValue("Hosts", "L2"))
 		assert.Equal(t, "", sp.GetCellValue("Hosts", "M2"))
-		assert.Equal(t, "Red Hat Enterprise Linux 7.6", sp.GetCellValue("Hosts", "N2"))
+		assert.Equal(t, "Red Hat Enterprise Linux - 7.6", sp.GetCellValue("Hosts", "N2"))
 		assert.Equal(t, "1", sp.GetCellValue("Hosts", "O2"))
 		assert.Equal(t, "", sp.GetCellValue("Hosts", "P2"))
 		assert.Equal(t, "376", sp.GetCellValue("Hosts", "Q2"))
@@ -640,7 +640,7 @@ func TestSearchHostsAsXLSX(t *testing.T) {
 		assert.Equal(t, "TST", sp.GetCellValue("Hosts", "K3"))
 		assert.Equal(t, "", sp.GetCellValue("Hosts", "L3"))
 		assert.Equal(t, "", sp.GetCellValue("Hosts", "M3"))
-		assert.Equal(t, "Red Hat Enterprise Linux 7.6", sp.GetCellValue("Hosts", "N3"))
+		assert.Equal(t, "Red Hat Enterprise Linux - 7.6", sp.GetCellValue("Hosts", "N3"))
 		assert.Equal(t, "0", sp.GetCellValue("Hosts", "O3"))
 		assert.Equal(t, "", sp.GetCellValue("Hosts", "P3"))
 		assert.Equal(t, "3", sp.GetCellValue("Hosts", "Q3"))
