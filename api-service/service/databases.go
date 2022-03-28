@@ -591,6 +591,28 @@ licenses:
 			}
 		}
 
+		var isCapped bool
+		var clusterLicenses float64
+
+		if v.ClusterName != "" && v.ClusterType != "VeritasCluster" {
+			cluster, err := as.GetCluster(v.ClusterName, utils.MAX_TIME)
+			if err != nil {
+				return nil, err
+			}
+
+			for _, hostNameVM := range cluster.VMs {
+				if hostNameVM.CappedCPU {
+					isCapped = true
+				}
+			}
+		}
+
+		if isCapped {
+			clusterLicenses = 0
+		} else {
+			clusterLicenses = v.ClusterLicenses
+		}
+
 		licensesPerHost = append(licensesPerHost,
 			dto.DatabaseUsedLicensePerHost{
 				Hostname:        v.Hostname,
@@ -599,7 +621,7 @@ licenses:
 				Description:     v.Description,
 				Metric:          v.Metric,
 				UsedLicenses:    v.UsedLicenses,
-				ClusterLicenses: v.ClusterLicenses,
+				ClusterLicenses: clusterLicenses,
 			},
 		)
 	}
