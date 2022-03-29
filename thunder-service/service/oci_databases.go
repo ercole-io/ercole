@@ -21,6 +21,7 @@ import (
 	"fmt"
 
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/thunder-service/dto"
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/oracle/oci-go-sdk/database"
 	"github.com/oracle/oci-go-sdk/v45/common"
@@ -143,6 +144,11 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 							recommendation.ResourceID = val.nodeId
 							recommendation.Name = val.hostname
 							recommendation.ObjectType = model.ObjectTypeDatabase
+							detail1 := model.RecDetail{Name: "Hostname", Value: val.hostname}
+							detail2 := model.RecDetail{Name: "CPU Core Count", Value: ""}
+
+							recommendation.Details = append(recommendation.Details, detail1, detail2)
+
 							listRec = append(listRec, recommendation)
 						} else {
 							dbVal.Hostname = append(dbVal.Hostname, val.hostname)
@@ -211,7 +217,7 @@ func getHostamesAndStatus(dbClient database.DatabaseClient, compartmentId string
 	return hostnamesAndStatus, nil
 }
 
-func manageErcoleDatabases(ercoleDatabases []model.ErcoleDatabase, reorderedDBList map[string]OciCompartmnentAndDB, listRec []model.OciErcoleRecommendation) []model.OciErcoleRecommendation { //([]string, error)
+func manageErcoleDatabases(ercoleDatabases []dto.ErcoleDatabase, reorderedDBList map[string]OciCompartmnentAndDB, listRec []model.OciErcoleRecommendation) []model.OciErcoleRecommendation { //([]string, error)
 	var recommendation model.OciErcoleRecommendation
 
 	eDBWorkList := make(map[string]DBWorks)
@@ -260,6 +266,19 @@ func manageErcoleDatabases(ercoleDatabases []model.ErcoleDatabase, reorderedDBLi
 			recommendation.Name = dbWork.hostname + "-" + dbWork.uniqueName
 			recommendation.ResourceID = ""
 			recommendation.ObjectType = model.ObjectTypeDatabase
+			detail1 := model.RecDetail{Name: "Instance Name", Value: recommendation.Name}
+			detail2 := model.RecDetail{Name: "Ercole Installed", Value: "YES"}
+			detail4 := model.RecDetail{Name: "Ercole Host Cpu Thread", Value: fmt.Sprintf("%d", dbWork.cpuThreads)}
+
+			var detail3 model.RecDetail
+			if cnt > 5 {
+				detail3 = model.RecDetail{Name: "AWR Enabled", Value: "NO"}
+			} else {
+				detail3 = model.RecDetail{Name: "AWR Enabled", Value: "YES"}
+			}
+
+			recommendation.Details = append(recommendation.Details, detail1, detail2, detail3, detail4)
+
 			listRec = append(listRec, recommendation)
 		}
 	}
@@ -267,7 +286,7 @@ func manageErcoleDatabases(ercoleDatabases []model.ErcoleDatabase, reorderedDBLi
 	return listRec
 }
 
-func verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []model.ErcoleDatabase, reorderedDBList map[string]OciCompartmnentAndDB, listRec []model.OciErcoleRecommendation) []model.OciErcoleRecommendation {
+func verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []dto.ErcoleDatabase, reorderedDBList map[string]OciCompartmnentAndDB, listRec []model.OciErcoleRecommendation) []model.OciErcoleRecommendation {
 	var listDBTmp []string
 
 	var recommendation model.OciErcoleRecommendation
@@ -300,6 +319,12 @@ func verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []model.ErcoleData
 						recommendation.Name = eDBlist.Hostname + "-" + fList.UniqueName
 						recommendation.ResourceID = ""
 						recommendation.ObjectType = model.ObjectTypeDatabase
+						detail1 := model.RecDetail{Name: "Instance Name", Value: recommendation.Name}
+						detail2 := model.RecDetail{Name: "Ercole Installed", Value: "NO"}
+						detail3 := model.RecDetail{Name: "AWR Enabled", Value: "NO"}
+
+						recommendation.Details = append(recommendation.Details, detail1, detail2, detail3)
+
 						listRec = append(listRec, recommendation)
 					}
 				}
@@ -316,6 +341,12 @@ func verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []model.ErcoleData
 			recommendation.Name = k
 			recommendation.ResourceID = ""
 			recommendation.ObjectType = model.ObjectTypeDatabase
+			detail1 := model.RecDetail{Name: "Instance Name", Value: recommendation.Name}
+			detail2 := model.RecDetail{Name: "Ercole Installed", Value: "NO"}
+			detail3 := model.RecDetail{Name: "AWR Enabled", Value: "NO"}
+
+			recommendation.Details = append(recommendation.Details, detail1, detail2, detail3)
+
 			listRec = append(listRec, recommendation)
 		}
 	}

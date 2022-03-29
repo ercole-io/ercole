@@ -19,7 +19,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/thunder-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -27,7 +27,7 @@ import (
 
 const hosts_collection = "hosts"
 
-func (md *MongoDatabase) GetErcoleDatabases() ([]model.ErcoleDatabase, error) {
+func (md *MongoDatabase) GetErcoleDatabases() ([]dto.ErcoleDatabase, error) {
 	ctx := context.TODO()
 
 	opts := options.Find()
@@ -43,7 +43,7 @@ func (md *MongoDatabase) GetErcoleDatabases() ([]model.ErcoleDatabase, error) {
 		return nil, utils.NewError(cur.Err(), "DB ERROR")
 	}
 
-	databases := make([]model.ErcoleDatabase, 0)
+	databases := make([]dto.ErcoleDatabase, 0)
 	err = cur.All(context.TODO(), &databases)
 
 	if err != nil {
@@ -53,7 +53,7 @@ func (md *MongoDatabase) GetErcoleDatabases() ([]model.ErcoleDatabase, error) {
 	return databases, nil
 }
 
-func (md *MongoDatabase) GetErcoleActiveDatabases() ([]model.ErcoleDatabase, error) {
+func (md *MongoDatabase) GetErcoleActiveDatabases() ([]dto.ErcoleDatabase, error) {
 	ctx := context.TODO()
 
 	opts := options.Find()
@@ -65,7 +65,7 @@ func (md *MongoDatabase) GetErcoleActiveDatabases() ([]model.ErcoleDatabase, err
 		return nil, utils.NewError(cur.Err(), "DB ERROR")
 	}
 
-	databases := make([]model.ErcoleDatabase, 0)
+	databases := make([]dto.ErcoleDatabase, 0)
 	err = cur.All(context.TODO(), &databases)
 
 	if err != nil {

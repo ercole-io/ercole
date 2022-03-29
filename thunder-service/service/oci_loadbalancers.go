@@ -18,6 +18,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	multierror "github.com/hashicorp/go-multierror"
 
@@ -77,6 +78,12 @@ func (as *ThunderService) GetOciUnusedLoadBalancers(profiles []string) ([]model.
 					recommendation.Name = ""
 					recommendation.ResourceID = *s.LoadBalancerId
 					recommendation.ObjectType = model.ObjectTypeLoadBalancer
+					detail1 := model.RecDetail{Name: "Resource Id", Value: *s.LoadBalancerId}
+					detail2 := model.RecDetail{Name: "Resource Type", Value: "Load Balancer"}
+					detail3 := model.RecDetail{Name: "Resource Status", Value: fmt.Sprintf("%v", s.Status)}
+
+					recommendation.Details = append(recommendation.Details, detail1, detail2, detail3)
+
 					tempListRec[*s.LoadBalancerId] = recommendation
 				}
 			}
