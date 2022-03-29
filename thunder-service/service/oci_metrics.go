@@ -19,6 +19,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	multierror "github.com/hashicorp/go-multierror"
@@ -30,14 +31,16 @@ import (
 )
 
 type Instance struct {
-	CompartmentID   string `json:"compartmentID"`
-	CompartmentName string `json:"compartmentName"`
-	ResourceID      string `json:"resourceID"`
-	Name            string `json:"name"`
-	Shape           string `json:"shape"`
-	Cnt             int    `json:"cnt"`
-	Type            string `json:"type"`
-	Status          string `json:"status"`
+	CompartmentID   string  `json:"compartmentID"`
+	CompartmentName string  `json:"compartmentName"`
+	ResourceID      string  `json:"resourceID"`
+	Name            string  `json:"name"`
+	ClusterName     string  `json:"clusterName"`
+	Shape           string  `json:"shape"`
+	Cnt             int     `json:"cnt"`
+	Type            string  `json:"type"`
+	Status          string  `json:"status"`
+	OCPUs           float32 `json:"ocpus"`
 }
 
 func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model.OciErcoleRecommendation, error) {
@@ -129,6 +132,17 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 				recommendation.CompartmentName = compartment.Name
 				recommendation.Name = value.Name
 				recommendation.ResourceID = id
+				detail1 := model.RecDetail{Name: "Instance Name", Value: value.Name}
+				detail2 := model.RecDetail{Name: "Instance Shape", Value: value.Shape}
+
+				recommendation.Details = append(recommendation.Details, detail1, detail2)
+
+				if value.Type == "kubernetes" {
+					detail3 := model.RecDetail{Name: "Oke Cluster Name", Value: value.ClusterName}
+
+					recommendation.Details = append(recommendation.Details, detail3)
+				}
+
 				listRec = append(listRec, recommendation)
 			}
 		}
@@ -138,17 +152,19 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 }
 
 func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error) {
+	return as.getOciDataForCoumputeInstanceAndServiceDecommisioning(profiles, 50, 50, 90, true, "rightsizing")
+}
+
+func (as *ThunderService) GetOciUnusedServiceDecommisioning(profiles []string) ([]model.OciErcoleRecommendation, error) {
+	return as.getOciDataForCoumputeInstanceAndServiceDecommisioning(profiles, 5, 5, 40, false, "decommisioning")
+}
+
+func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(profiles []string, percAvgCPU int, percPeakCPU int, percMemoryUtilization int, verifyShape bool, recommType string) ([]model.OciErcoleRecommendation, error) {
 	var listRec []model.OciErcoleRecommendation
 
 	var merr error
 
 	var listCompartments []model.OciCompartment
-
-	var instancesNotOptimizable map[string]Instance
-
-	var allInstancesWithMetrics map[string]Instance
-
-	var allInstances map[string]Instance
 
 	var AvgCPUThreshold = 3
 
@@ -156,9 +172,9 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 
 	var MemoryThreshold = 1
 
-	instancesNotOptimizable = make(map[string]Instance)
-	allInstancesWithMetrics = make(map[string]Instance)
-	allInstances = make(map[string]Instance)
+	instancesNotOptimizable := make(map[string]Instance)
+	allInstancesWithMetrics := make(map[string]Instance)
+	allInstances := make(map[string]Instance)
 
 	listRec = make([]model.OciErcoleRecommendation, 0)
 
@@ -183,20 +199,20 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 
 		// retrieve metrics data for each compartment
 		for _, compartment := range listCompartments {
-			allInstances, err = as.getOciInstancesWithoutBasicShape(allInstances, compartment, customConfigProvider)
+			allInstances, err = as.getOciInstancesList(allInstances, compartment, customConfigProvider, verifyShape)
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
 			}
 
-			allInstancesWithMetrics, err = as.getOciInstancesWithMetricsWithoutBasicShape(allInstancesWithMetrics, compartment, customConfigProvider)
+			allInstancesWithMetrics, err = as.getOciInstancesWithMetrics(allInstancesWithMetrics, compartment, customConfigProvider, verifyShape)
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
 			}
 
 			// first query is about average CPU utilization in the last  90 days
-			var strQueryAvgCPU = "CpuUtilization[1d].avg()>50"
+			var strQueryAvgCPU = "CpuUtilization[1d].avg()>" + strconv.Itoa(percAvgCPU)
 
 			var sTime common.SDKTime
 
@@ -205,31 +221,31 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 			sTime.Time = time.Now().Local().AddDate(0, 0, -89)
 			eTime.Time = time.Now().Local()
 
-			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, AvgCPUThreshold)
+			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, AvgCPUThreshold, verifyShape)
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
 			}
 
 			// second query is about CPU utilization peak in the last 7 days
-			var strQueryPeakCPU = "CpuUtilization[1m].max()>50"
+			var strQueryPeakCPU = "CpuUtilization[1m].max()>" + strconv.Itoa(percPeakCPU)
 
 			sTime.Time = time.Now().Local().AddDate(0, 0, -7)
 			eTime.Time = time.Now().Local()
 
-			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, PeakCPUThreshold)
+			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, PeakCPUThreshold, verifyShape)
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
 			}
 
 			// third query is about memory utilization in the last 7 days
-			var strQueryMemory = "MemoryUtilization[1m].max()>90"
+			var strQueryMemory = "MemoryUtilization[1m].max()>" + strconv.Itoa(percMemoryUtilization)
 
 			sTime.Time = time.Now().Local().AddDate(0, 0, -7)
 			eTime.Time = time.Now().Local()
 
-			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, MemoryThreshold)
+			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, MemoryThreshold, verifyShape)
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
@@ -238,6 +254,12 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 	}
 
 	var recommendation model.OciErcoleRecommendation
+
+	allInstancesWithoutMetrics := allInstances
+
+	for _, b := range allInstancesWithMetrics {
+		delete(allInstancesWithoutMetrics, b.ResourceID)
+	}
 
 	for _, a := range instancesNotOptimizable {
 		// if an instance is not optimizable I have to remove it from the list
@@ -250,10 +272,20 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 	for _, inst := range allInstancesWithMetrics {
 		if allInstances[inst.ResourceID].Status != "STOPPED" {
 			if allInstances[inst.ResourceID].Type == "kubernetes" {
-				recommendation.Type = model.RecommendationTypeSISRightsizing1
+				if recommType == "rightsizing" {
+					recommendation.Type = model.RecommendationTypeSISRightsizing1
+				} else {
+					recommendation.Type = model.RecommendationTypeUnusedServiceDecommisioning
+				}
+
 				recommendation.ObjectType = model.ObjectTypeClusterKubernetes
 			} else {
-				recommendation.Type = model.RecommendationTypeInstanceRightsizing
+				if recommType == "rightsizing" {
+					recommendation.Type = model.RecommendationTypeInstanceRightsizing
+				} else {
+					recommendation.Type = model.RecommendationTypeComputeInstanceDecommisioning
+				}
+
 				recommendation.ObjectType = model.ObjectTypeComputeInstance
 			}
 
@@ -265,33 +297,32 @@ func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([
 		}
 	}
 
-	for _, b := range allInstancesWithMetrics {
-		delete(allInstances, b.ResourceID)
-	}
+	// build recommendation data for instances without monitoring
+	// only if recommType is "rightsizing"
+	if recommType == "rightsizing" {
+		for _, in := range allInstancesWithoutMetrics {
+			if in.Status != "STOPPED" {
+				if in.Type == "kubernetes" {
+					recommendation.Type = model.RecommendationTypeSISRightsizing1
+					recommendation.ObjectType = model.ObjectTypeClusterKubernetes
+				} else {
+					recommendation.Type = model.RecommendationTypeInstanceWithoutMonitoring
+					recommendation.ObjectType = model.ObjectTypeComputeInstance
+				}
 
-	// build recommendation data for instances withoout monitoring
-	for _, in := range allInstances {
-		if in.Status != "STOPPED" {
-			if in.Type == "kubernetes" {
-				recommendation.Type = model.RecommendationTypeSISRightsizing1
-				recommendation.ObjectType = model.ObjectTypeClusterKubernetes
-			} else {
-				recommendation.Type = model.RecommendationTypeInstanceWithoutMonitoring
-				recommendation.ObjectType = model.ObjectTypeComputeInstance
+				recommendation.CompartmentID = in.CompartmentID
+				recommendation.CompartmentName = in.CompartmentName
+				recommendation.ResourceID = in.ResourceID
+				recommendation.Name = in.Name
+				listRec = append(listRec, recommendation)
 			}
-
-			recommendation.CompartmentID = in.CompartmentID
-			recommendation.CompartmentName = in.CompartmentName
-			recommendation.ResourceID = in.ResourceID
-			recommendation.Name = in.Name
-			listRec = append(listRec, recommendation)
 		}
 	}
 
 	return listRec, merr
 }
 
-func (as *ThunderService) getOciInstancesWithoutBasicShape(allInstances map[string]Instance, compartment model.OciCompartment, customConfigProvider common.ConfigurationProvider) (map[string]Instance, error) {
+func (as *ThunderService) getOciInstancesList(allInstances map[string]Instance, compartment model.OciCompartment, customConfigProvider common.ConfigurationProvider, verifyShape bool) (map[string]Instance, error) {
 	client, err := core.NewComputeClientWithConfigurationProvider(customConfigProvider)
 	if err != nil {
 		return allInstances, err
@@ -310,9 +341,7 @@ func (as *ThunderService) getOciInstancesWithoutBasicShape(allInstances map[stri
 	for _, s := range resp.Items {
 		var tmpInstance Instance
 
-		// we have to exclude the instances with basic shape and STOPPED status
-		//if *s.Shape != "VM.Standard2.1" && *s.Shape != "VM.StandardE2.1" && s.LifecycleState != "STOPPED" {
-		if *s.Shape != "VM.Standard2.1" && *s.Shape != "VM.StandardE2.1" {
+		if !verifyShape || (*s.Shape != "VM.Standard2.1" && *s.Shape != "VM.StandardE2.1") {
 			tmpInstance.CompartmentID = compartment.CompartmentID
 			tmpInstance.CompartmentName = compartment.Name
 			tmpInstance.ResourceID = *s.Id
@@ -326,6 +355,7 @@ func (as *ThunderService) getOciInstancesWithoutBasicShape(allInstances map[stri
 			}
 
 			tmpInstance.Status = fmt.Sprintf("%v", s.LifecycleState)
+			tmpInstance.OCPUs = *s.ShapeConfig.Ocpus
 			allInstances[*s.Id] = tmpInstance
 		}
 	}
@@ -333,7 +363,7 @@ func (as *ThunderService) getOciInstancesWithoutBasicShape(allInstances map[stri
 	return allInstances, nil
 }
 
-func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClient, strQuery string, sTime common.SDKTime, eTime common.SDKTime, instances map[string]Instance, compartment model.OciCompartment, threshold int) (map[string]Instance, error) {
+func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClient, strQuery string, sTime common.SDKTime, eTime common.SDKTime, instances map[string]Instance, compartment model.OciCompartment, threshold int, verifyShape bool) (map[string]Instance, error) {
 	req := monitoring.SummarizeMetricsDataRequest{
 		CompartmentId: &compartment.CompartmentID,
 		SummarizeMetricsDataDetails: monitoring.SummarizeMetricsDataDetails{
@@ -364,7 +394,7 @@ func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClien
 
 		if cnt > threshold {
 			// the instance is not eligible for optimization
-			if s.Dimensions["shape"] != "VM.Standard2.1" && s.Dimensions["shape"] != "VM.StandardE2.1" {
+			if !verifyShape || (s.Dimensions["shape"] != "VM.Standard2.1" && s.Dimensions["shape"] != "VM.StandardE2.1") {
 				if val, ok := instances[s.Dimensions["resourceId"]]; ok {
 					val.Cnt += 1
 					instances[s.Dimensions["resourceId"]] = val
@@ -383,7 +413,7 @@ func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClien
 	return instances, nil
 }
 
-func (as *ThunderService) getOciInstancesWithMetricsWithoutBasicShape(instances map[string]Instance, compartment model.OciCompartment, customConfigProvider common.ConfigurationProvider) (map[string]Instance, error) {
+func (as *ThunderService) getOciInstancesWithMetrics(instances map[string]Instance, compartment model.OciCompartment, customConfigProvider common.ConfigurationProvider, verifyShape bool) (map[string]Instance, error) {
 	client, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 
 	if err != nil {
@@ -403,10 +433,10 @@ func (as *ThunderService) getOciInstancesWithMetricsWithoutBasicShape(instances 
 	}
 
 	for _, s := range resp.Items {
-		if s.Dimensions["shape"] != "VM.StandardE2.1" && s.Dimensions["shape"] != "VM.Standard2.1" {
+		if !verifyShape || (s.Dimensions["shape"] != "VM.StandardE2.1" && s.Dimensions["shape"] != "VM.Standard2.1") {
 			// if the instance is not in the list I have to put it
 			if _, ok := instances[s.Dimensions["resourceId"]]; !ok {
-				tmpInstance := Instance{*s.CompartmentId, compartment.Name, s.Dimensions["resourceId"], s.Dimensions["resourceDisplayName"], s.Dimensions["shape"], 1, "", ""}
+				tmpInstance := Instance{*s.CompartmentId, compartment.Name, s.Dimensions["resourceId"], s.Dimensions["resourceDisplayName"], "", s.Dimensions["shape"], 1, "", "", 0.0}
 				instances[s.Dimensions["resourceId"]] = tmpInstance
 			}
 		}
@@ -571,7 +601,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 
 				if len(vols) != 0 {
 					for _, v := range vols {
-						isOpt := as.isOptimizable(v)
+						isOpt, ociPerfs := as.isOptimizable(v)
 						if isOpt {
 							recommendation.Type = model.RecommendationTypeBlockStorage
 							recommendation.CompartmentID = compartment.CompartmentID
@@ -579,6 +609,13 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 							recommendation.ResourceID = v.ResourceID
 							recommendation.Name = v.Name
 							recommendation.ObjectType = model.ObjectTypeBlockStorage
+
+							detail1 := model.RecDetail{Name: "VPU Target", Value: fmt.Sprintf("%f%s%d", ociPerfs.Performances[0].Values.MaxThroughput, " / ", ociPerfs.Performances[0].Values.MaxIOPS)}
+							detail2 := model.RecDetail{Name: "Throughput R/W Max 5dd", Value: fmt.Sprintf("%f%s%f", v.Throughput, " / ", ociPerfs.Performances[0].Values.MaxThroughput)}
+							detail3 := model.RecDetail{Name: "Iops Max 5dd", Value: fmt.Sprintf("%d%s%d", v.VpusPerGB, " / ", ociPerfs.Performances[0].Values.MaxIOPS)}
+
+							recommendation.Details = append(recommendation.Details, detail1, detail2, detail3)
+
 							listRec = append(listRec, recommendation)
 						}
 					}
@@ -611,19 +648,19 @@ func (as *ThunderService) getMetricResponse(client monitoring.MonitoringClient, 
 	return &resp, nil
 }
 
-func (as *ThunderService) isOptimizable(res model.OciResourcePerformance) bool {
+func (as *ThunderService) isOptimizable(res model.OciResourcePerformance) (bool, *model.OciVolumePerformance) {
 	var ociPerfs *model.OciVolumePerformance
 
 	if res.VpusPerGB == 0 {
-		return false
+		return false, nil
 	}
 
 	ociPerfs = as.getOciVolumePerformance(res.VpusPerGB, res.Size)
 
 	if res.Throughput < (ociPerfs.Performances[0].Values.MaxThroughput/2.0) && res.Iops < (ociPerfs.Performances[0].Values.MaxIOPS)/2.0 {
-		return true
+		return true, ociPerfs
 	} else {
-		return false
+		return false, nil
 	}
 }
 
@@ -712,11 +749,14 @@ func (as *ThunderService) getOciInstances(customConfigProvider common.Configurat
 
 		if _, ok := s.Metadata["oke-pool-id"]; ok {
 			tmpInstance.Type = "kubernetes"
+			tmpInstance.ClusterName = s.Metadata["oke-cluster-display-name"]
 		} else {
 			tmpInstance.Type = "normal"
+			tmpInstance.ClusterName = ""
 		}
 
 		tmpInstance.Status = fmt.Sprintf("%v", s.LifecycleState)
+		tmpInstance.OCPUs = *s.ShapeConfig.Ocpus
 		retList[*s.Id] = tmpInstance
 	}
 

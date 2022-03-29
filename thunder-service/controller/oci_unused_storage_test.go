@@ -54,7 +54,7 @@ func TestGetOciUnusedStorage_StatusNotFound(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciUnusedStorage)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/unusedstorage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/unused-storage", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 
@@ -94,7 +94,7 @@ func TestGetOciUnusedStorage_InternalServerError(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciUnusedStorage)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/unusedstorage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/unused-storage", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 
@@ -131,7 +131,7 @@ func TestGetOciUnusedStorage_BadRequest(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciUnusedStorage)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/unusedstorage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/unused-storage", nil)
 		require.NoError(t, err)
 
 		handler.ServeHTTP(rr, req)
@@ -169,7 +169,7 @@ func TestGetOciUnusedStorage_InvalidProfileId(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciUnusedStorage)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/unusedstorage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/unused-storage", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "aaa,bbb,ccc"})
 
@@ -226,7 +226,7 @@ func TestGetOciUnusedStorage_PartialContent(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciUnusedStorage)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/unusedstorage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/unused-storage", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848,bbb,ccc"})
 
@@ -266,7 +266,7 @@ func TestGetOciUnusedStorage_Success(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciUnusedStorage)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/unusedstorage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/unused-storage", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 

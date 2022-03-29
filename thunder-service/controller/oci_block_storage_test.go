@@ -54,7 +54,7 @@ func TestGetOciBlockStorageRightsizing_StatusNotFound(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/blockstorage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/block-storage", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 
@@ -94,7 +94,7 @@ func TestGetOciBlockStorageRightsizing_InternalServerError(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/blockstorage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/block-storage", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 
@@ -131,7 +131,7 @@ func TestGetOciBlockStorageRightsizing_BadRequest(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/blockstorage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/block-storage", nil)
 		require.NoError(t, err)
 
 		handler.ServeHTTP(rr, req)
@@ -169,7 +169,7 @@ func TestGetOciBlockStorageRightsizing_InvalidProfileId(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/blockstorage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/block-storage", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "aaa,bbb,ccc"})
 
@@ -226,7 +226,7 @@ func TestGetOciBlockStorageRightsizing_PartialContent(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/blockstorage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/block-storage", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848,bbb,ccc"})
 
@@ -266,7 +266,7 @@ func TestGetOciBlockStorageRightsizing_Success(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/blockstorage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/block-storage", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 

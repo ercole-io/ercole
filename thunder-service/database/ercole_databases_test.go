@@ -19,7 +19,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/thunder-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 	"github.com/stretchr/testify/assert"
@@ -40,16 +40,16 @@ func (m *MongodbSuite) TestGetErcoleDatabases_Success() {
 	out, err := m.db.GetErcoleDatabases()
 	m.Require().NoError(err)
 
-	expectedOut := []model.ErcoleDatabase{
+	expectedOut := []dto.ErcoleDatabase{
 		{
 			Hostname: "test-db",
-			Info: model.Info{
+			Info: dto.Info{
 				CpuThreads: 2,
 			},
-			Features: model.Feature{
-				Oracle: model.Oracle{
-					Database: model.Database{
-						Databases: []model.Object{
+			Features: dto.Feature{
+				Oracle: dto.Oracle{
+					Database: dto.Database{
+						Databases: []dto.Object{
 							{
 								Name:       "ERCOLE",
 								UniqueName: "ERCOLE",
@@ -63,13 +63,13 @@ func (m *MongodbSuite) TestGetErcoleDatabases_Success() {
 		},
 		{
 			Hostname: "test-db",
-			Info: model.Info{
+			Info: dto.Info{
 				CpuThreads: 2,
 			},
-			Features: model.Feature{
-				Oracle: model.Oracle{
-					Database: model.Database{
-						Databases: []model.Object{
+			Features: dto.Feature{
+				Oracle: dto.Oracle{
+					Database: dto.Database{
+						Databases: []dto.Object{
 							{
 								Name:       "ERCOLE",
 								UniqueName: "ERCOLE",
@@ -83,13 +83,13 @@ func (m *MongodbSuite) TestGetErcoleDatabases_Success() {
 		},
 		{
 			Hostname: "test-db",
-			Info: model.Info{
+			Info: dto.Info{
 				CpuThreads: 2,
 			},
-			Features: model.Feature{
-				Oracle: model.Oracle{
-					Database: model.Database{
-						Databases: []model.Object{
+			Features: dto.Feature{
+				Oracle: dto.Oracle{
+					Database: dto.Database{
+						Databases: []dto.Object{
 							{
 								Name:       "ERCOLE",
 								UniqueName: "ERCOLE",
@@ -117,16 +117,16 @@ func (m *MongodbSuite) TestGetErcoleActiveDatabases_Success() {
 	out, err := m.db.GetErcoleActiveDatabases()
 	m.Require().NoError(err)
 
-	expectedOut := []model.ErcoleDatabase{
+	expectedOut := []dto.ErcoleDatabase{
 		{
 			Hostname: "test-db",
-			Info: model.Info{
+			Info: dto.Info{
 				CpuThreads: 2,
 			},
-			Features: model.Feature{
-				Oracle: model.Oracle{
-					Database: model.Database{
-						Databases: []model.Object{
+			Features: dto.Feature{
+				Oracle: dto.Oracle{
+					Database: dto.Database{
+						Databases: []dto.Object{
 							{
 								Name:       "ERCOLE",
 								UniqueName: "ERCOLE",
@@ -140,14 +140,14 @@ func (m *MongodbSuite) TestGetErcoleActiveDatabases_Success() {
 		},
 		{
 			Hostname: "test-small",
-			Info: model.Info{
+			Info: dto.Info{
 				CpuThreads: 2,
 			},
 			Archived: false,
 		},
 		{
 			Hostname: "test-small2",
-			Info: model.Info{
+			Info: dto.Info{
 				CpuThreads: 2,
 			},
 			Archived: false,

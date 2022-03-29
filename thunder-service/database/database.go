@@ -23,6 +23,7 @@ import (
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/thunder-service/dto"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -38,8 +39,8 @@ type MongoDatabaseInterface interface {
 	AddOciProfile(profile model.OciProfile) error
 	DeleteOciProfile(id primitive.ObjectID) error
 	UpdateOciProfile(profile model.OciProfile) error
-	GetErcoleDatabases() ([]model.ErcoleDatabase, error)
-	GetErcoleActiveDatabases() ([]model.ErcoleDatabase, error)
+	GetErcoleDatabases() ([]dto.ErcoleDatabase, error)
+	GetErcoleActiveDatabases() ([]dto.ErcoleDatabase, error)
 }
 
 // MongoDatabase is a implementation

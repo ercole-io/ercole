@@ -54,7 +54,7 @@ func TestGetOciOldSnapshotDecommissioning_StatusNotFound(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciOldSnapshotDecommissioning)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/oldsnapshot", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/old-snapshot", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 
@@ -94,7 +94,7 @@ func TestGetOciOldSnapshotDecommissioning_InternalServerError(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciOldSnapshotDecommissioning)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/oldsnapshot", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/old-snapshot", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 
@@ -131,7 +131,7 @@ func TestGetOciOldSnapshotDecommissioning_BadRequest(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciOldSnapshotDecommissioning)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/oldsnapshot", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/old-snapshot", nil)
 		require.NoError(t, err)
 
 		handler.ServeHTTP(rr, req)
@@ -169,7 +169,7 @@ func TestGetOciOldSnapshotDecommissioning_InvalidProfileId(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciOldSnapshotDecommissioning)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/oldsnapshot", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/old-snapshot", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "aaa,bbb,ccc"})
 
@@ -226,7 +226,7 @@ func TestGetOciOldSnapshotDecommissioning_PartialContent(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciOldSnapshotDecommissioning)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/oldsnapshot", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/old-snapshot", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848,bbb,ccc"})
 
@@ -266,7 +266,7 @@ func TestGetOciOldSnapshotDecommissioning_Success(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.GetOciOldSnapshotDecommissioning)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/oldsnapshot", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/old-snapshot", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 

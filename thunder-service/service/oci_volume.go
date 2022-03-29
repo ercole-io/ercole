@@ -66,6 +66,13 @@ func (as *ThunderService) GetOciUnusedStorage(profiles []string) ([]model.OciErc
 		recommendation.ResourceID = vl.ResourceID
 		recommendation.Name = vl.Name
 		recommendation.ObjectType = model.ObjectTypeBlockStorage
+		detail1 := model.RecDetail{Name: "Block Storage Name", Value: vl.Name}
+		detail2 := model.RecDetail{Name: "Size", Value: vl.Size}
+		detail3 := model.RecDetail{Name: "Vpu", Value: vl.VpusPerGB}
+		detail4 := model.RecDetail{Name: "Attached", Value: "No"}
+
+		recommendation.Details = append(recommendation.Details, detail1, detail2, detail3, detail4)
+
 		listRec = append(listRec, recommendation)
 	}
 
@@ -248,6 +255,13 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 					recommendation.ResourceID = *s.Id
 					recommendation.Name = *s.DisplayName
 					recommendation.ObjectType = model.ObjectTypeSnapshot
+					detail1 := model.RecDetail{Name: "Snapshot Name", Value: *s.DisplayName}
+					detail2 := model.RecDetail{Name: "Compartment Name", Value: compartment.Name}
+					detail3 := model.RecDetail{Name: "Size", Value: fmt.Sprintf("%d", *s.SizeInGBs)}
+					detail4 := model.RecDetail{Name: "Creation Date", Value: s.TimeCreated.String()}
+					detail5 := model.RecDetail{Name: "Source Type", Value: "Manual"}
+
+					recommendation.Details = append(recommendation.Details, detail1, detail2, detail3, detail4, detail5)
 
 					listRec = append(listRec, recommendation)
 				}
@@ -275,6 +289,13 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 					recommendation.ResourceID = *s.Id
 					recommendation.Name = *s.DisplayName
 					recommendation.ObjectType = model.ObjectTypeSnapshot
+					detail1 := model.RecDetail{Name: "Snapshot Name", Value: *s.DisplayName}
+					detail2 := model.RecDetail{Name: "Compartment Name", Value: compartment.Name}
+					detail3 := model.RecDetail{Name: "Size", Value: fmt.Sprintf("%d", *s.SizeInGBs)}
+					detail4 := model.RecDetail{Name: "Creation Date", Value: s.TimeCreated.String()}
+					detail5 := model.RecDetail{Name: "Source Type", Value: "Manual"}
+
+					recommendation.Details = append(recommendation.Details, detail1, detail2, detail3, detail4, detail5)
 
 					listRec = append(listRec, recommendation)
 				}
