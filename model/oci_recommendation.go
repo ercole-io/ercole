@@ -27,26 +27,33 @@ type OciRecommendation struct {
 }
 
 type OciErcoleRecommendation struct {
-	Type            string `json:"type"`
-	CompartmentID   string `json:"compartmentID"`
-	CompartmentName string `json:"compartmentName"`
-	Name            string `json:"name"`
-	ResourceID      string `json:"resourceID"`
-	ObjectType      string `json:"objectType"`
+	Type            string      `json:"type"`
+	CompartmentID   string      `json:"compartmentID"`
+	CompartmentName string      `json:"compartmentName"`
+	Name            string      `json:"name"`
+	ResourceID      string      `json:"resourceID"`
+	ObjectType      string      `json:"objectType"`
+	Details         []RecDetail `json:"details"`
+}
+
+type RecDetail struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
 }
 
 const (
-	RecommendationTypeBlockStorage                = "Block Storage Performance"
-	RecommendationTypeComputeInstanceIdle         = "Compute Instance Idle"
-	RecommendationTypeInstanceRightsizing         = "Compute Instance Rightsizing"
-	RecommendationTypeInstanceWithoutMonitoring   = "Compute Instance Without Monitoring"
-	RecommendationTypeOldSnapshot                 = "Old Snapshot"
-	RecommendationTypeUnusedResource              = "Unused Resource"
-	RecommendationTypeUnusedStorage               = "Unused Storage"
-	RecommendationTypeSISRightsizing              = "Software Infracstructure Service Rightsizing"
-	RecommendationTypeSISRightsizing1             = "Software Infracstructure Service Rightsizing 1"
-	RecommendationTypeObjectStorageOptimization   = "Object Storage Optimization"
-	RecommendationTypeUnusedServiceDecommisioning = "Unused Service Decommisioning"
+	RecommendationTypeBlockStorage                  = "Block Storage Performance"
+	RecommendationTypeComputeInstanceIdle           = "Compute Instance Idle"
+	RecommendationTypeInstanceRightsizing           = "Compute Instance Rightsizing"
+	RecommendationTypeInstanceWithoutMonitoring     = "Compute Instance Without Monitoring"
+	RecommendationTypeOldSnapshot                   = "Old Snapshot"
+	RecommendationTypeUnusedResource                = "Unused Resource"
+	RecommendationTypeUnusedStorage                 = "Unused Storage"
+	RecommendationTypeSISRightsizing                = "Software Infracstructure Service Rightsizing"
+	RecommendationTypeSISRightsizing1               = "Software Infracstructure Service Rightsizing 1"
+	RecommendationTypeObjectStorageOptimization     = "Object Storage Optimization"
+	RecommendationTypeUnusedServiceDecommisioning   = "Unused Service Decommisioning"
+	RecommendationTypeComputeInstanceDecommisioning = "Compute Instance Decommisioning"
 )
 
 const (
