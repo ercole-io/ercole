@@ -268,11 +268,12 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	db.Init()
 
 	service := &apiservice_service.APIService{
-		Config:   config,
-		Version:  serverVersion,
-		Database: db,
-		TimeNow:  time.Now,
-		Log:      log,
+		Config:         config,
+		Version:        serverVersion,
+		Database:       db,
+		TimeNow:        time.Now,
+		Log:            log,
+		AlertSvcClient: alertservice_client.NewClient(config.AlertService),
 	}
 	service.Init()
 

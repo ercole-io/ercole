@@ -939,8 +939,15 @@ func TestDismissHost_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
+	asc := NewMockAlertSvcClientInterface(mockCtrl)
+
+	alwaysTheSameMoment := func() time.Time {
+		return time.Date(1994, 11, 19, 0, 3, 3, 0, time.Local)
+	}
 	as := APIService{
-		Database: db,
+		Database:       db,
+		AlertSvcClient: asc,
+		TimeNow:        alwaysTheSameMoment,
 	}
 
 	var count int64
@@ -976,6 +983,17 @@ func TestDismissHost_Success(t *testing.T) {
 		},
 	).Return(expectedRes, nil)
 	db.EXPECT().ListOracleDatabaseContracts().Return(listContracts, nil)
+
+	asc.EXPECT().ThrowNewAlert(gomock.Any()).Return(nil).Do(func(alert model.Alert) {
+		assert.Equal(t, model.TechnologyOracleDatabasePtr, alert.AlertAffectedTechnology)
+		assert.Equal(t, model.AlertCategoryEngine, alert.AlertCategory)
+		assert.Equal(t, model.AlertCodeUnlistedRunningDatabase, alert.AlertCode)
+		assert.Equal(t, model.AlertSeverityInfo, alert.AlertSeverity)
+		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)
+		assert.Equal(t, as.TimeNow(), alert.Date)
+		assert.Equal(t, "Host foobar was dismissed", alert.Description)
+	})
+
 	db.EXPECT().DismissHost("foobar").Return(nil).Times(1)
 
 	err := as.DismissHost("foobar")
