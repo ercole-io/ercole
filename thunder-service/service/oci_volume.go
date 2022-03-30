@@ -44,13 +44,13 @@ func (as *ThunderService) GetOciUnusedStorage(profiles []string) ([]model.OciErc
 	volumeList, err = as.GetOciVolumeList(profiles)
 	if err != nil {
 		merr = multierror.Append(merr, err)
-		return nil, merr
+		return listRec, merr
 	}
 
 	attachedVolumeList, err = as.GetOciAttachedVolumeList(profiles)
 	if err != nil {
 		merr = multierror.Append(merr, err)
-		return nil, merr
+		return listRec, merr
 	}
 
 	for _, avl := range attachedVolumeList {
@@ -221,7 +221,7 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 		coreClient, err := core.NewBlockstorageClientWithConfigurationProvider(customConfigProvider)
 		if err != nil {
 			merr = multierror.Append(merr, err)
-			return nil, merr
+			continue
 		}
 
 		listCompartments, err = as.getOciProfileCompartments(tenancyOCID, customConfigProvider)
