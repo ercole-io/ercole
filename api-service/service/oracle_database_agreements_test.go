@@ -1122,36 +1122,34 @@ func TestGetOracleDatabaseAgreementsClusterCappedCPU2_Success(t *testing.T) {
 		History:     []model.History{},
 	}
 
-	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseAgreements().
-			Return(returnedAgreements, nil),
+	db.EXPECT().ListOracleDatabaseAgreements().
+		Return(returnedAgreements, nil)
 
-		db.EXPECT().
-			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
-			Return(&oracleLics, nil),
-		db.EXPECT().GetOracleDatabaseLicenseTypes().
-			Return(licenseTypes, nil),
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Return(hostdatas, nil),
-		db.EXPECT().GetClusters(globalFilterAny).
-			Return(clusters, nil),
+	db.EXPECT().
+		SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+		Return(&oracleLics, nil)
+	db.EXPECT().GetOracleDatabaseLicenseTypes().
+		Return(licenseTypes, nil)
+	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+		Return(hostdatas, nil)
+	db.EXPECT().GetClusters(globalFilterAny).
+		Return(clusters, nil)
 
-		db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil),
+	db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil)
 
-		db.EXPECT().GetHost("test-db", utils.MAX_TIME, false).Return(&host, nil),
-		db.EXPECT().GetHost("test-db2", utils.MAX_TIME, false).Return(&host2, nil),
+	db.EXPECT().GetHost("test-db", utils.MAX_TIME, false).Return(&host, nil)
+	db.EXPECT().GetHost("test-db2", utils.MAX_TIME, false).Return(&host2, nil)
 
-		db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil),
+	db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil)
 
-		db.EXPECT().GetHost("test-db", utils.MAX_TIME, false).Return(&host, nil),
-		db.EXPECT().GetHost("test-db2", utils.MAX_TIME, false).Return(&host2, nil),
+	db.EXPECT().GetHost("test-db", utils.MAX_TIME, false).Return(&host, nil)
+	db.EXPECT().GetHost("test-db2", utils.MAX_TIME, false).Return(&host2, nil)
 
-		db.EXPECT().GetOracleDatabaseLicenseTypes().
-			Return(licenseTypes, nil),
+	db.EXPECT().GetOracleDatabaseLicenseTypes().
+		Return(licenseTypes, nil)
 
-		db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil),
-		db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil),
-	)
+	db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil)
+	db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil)
 
 	res, err := as.GetOracleDatabaseAgreements(dto.NewGetOracleDatabaseAgreementsFilter())
 	require.NoError(t, err)
