@@ -91,6 +91,7 @@ func (as *ThunderService) GetOciObjectStorageOptimization(profiles []string) ([]
 				}
 
 				if resp3.AutoTiering == "Disabled" {
+					recommendation.Details = make([]model.RecDetail, 0)
 					recommendation.Type = "Object Storage Optimization"
 					recommendation.CompartmentID = compartment.CompartmentID
 					recommendation.CompartmentName = compartment.Name
