@@ -17,12 +17,13 @@ API_SERVICE_AUTH_PROVIDER_PRIVATE_KEY=$(grep "APIService.AuthenticationProvider.
 API_SERVICE_AUTH_PROVIDER_PUBLIC_KEY=$(grep "APIService.AuthenticationProvider.PublicKey" /etc/ercole/conf.d/20-ercolesetup.toml | cut -d'=' -f2 | sed -e 's/[[:space:]]*"//' | sed -e 's/"[[:space:]]*//')
 CHART_SERVICE_REMOTE_ENDPOINT=$(grep "ChartService.RemoteEndpoint" /etc/ercole/conf.d/20-ercolesetup.toml | cut -d'=' -f2 | sed -e 's/[[:space:]]*"//' | sed -e 's/"[[:space:]]*//')
 REPO_SERVICE_HTTP_REMOTE_ENDPOINT=$(grep "RepoService.HTTP.RemoteEndpoint" /etc/ercole/conf.d/20-ercolesetup.toml | cut -d'=' -f2 | sed -e 's/[[:space:]]*"//' | sed -e 's/"[[:space:]]*//')
+THUNDER_SERVICE_REMOTE_ENDPOINT=$(grep "ThunderService.RemoteEndpoint" /etc/ercole/conf.d/20-ercolesetup.toml | cut -d'=' -f2 | sed -e 's/[[:space:]]*"//' | sed -e 's/"[[:space:]]*//')
 
 echo "Getting/choosing ip address..."
 
-# Get actual IP Addres
+# Get actual IP Address
 CURRENT_IP_ADDRESS=""
-if [ -z $DATA_SERVICE_REMOTE_ENDPOINT ] || [ -z $API_SERVICE_REMOTE_ENDPOINT ] || [ -z $CHART_SERVICE_REMOTE_ENDPOINT ] || [ -z $REPO_SERVICE_HTTP_REMOTE_ENDPOINT ]; then
+if [ -z $DATA_SERVICE_REMOTE_ENDPOINT ] || [ -z $API_SERVICE_REMOTE_ENDPOINT ] || [ -z $CHART_SERVICE_REMOTE_ENDPOINT ] || [ -z $REPO_SERVICE_HTTP_REMOTE_ENDPOINT ] || [ -z $THUNDER_SERVICE_REMOTE_ENDPOINT ]; then
 	CURRENT_IP_ADDRESS=$(hostname -I | cut -d' ' -f1)
 	if [ -z $NOINTERACTIVE ]; then
 		read -p "IP address($CURRENT_IP_ADDRESS): " INPUT
@@ -50,6 +51,10 @@ fi
 if [ -z $REPO_SERVICE_HTTP_REMOTE_ENDPOINT ]; then
 	REPO_SERVICE_HTTP_REMOTE_ENDPOINT="http://$CURRENT_IP_ADDRESS:11114"
 	echo "RepoService.HTTP.RemoteEndpoint = \"$REPO_SERVICE_HTTP_REMOTE_ENDPOINT\"" >> /etc/ercole/conf.d/20-ercolesetup.toml
+fi
+if [ -z $THUNDER_SERVICE_REMOTE_ENDPOINT ]; then
+	THUNDER_SERVICE_REMOTE_ENDPOINT="http://$CURRENT_IP_ADDRESS:11117"
+	echo "ThunderService.RemoteEndpoint = \"$THUNDER_SERVICE_REMOTE_ENDPOINT\"" >> /etc/ercole/conf.d/20-ercolesetup.toml
 fi
 
 echo "Setting publisher password..."
