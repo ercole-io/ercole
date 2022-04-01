@@ -138,6 +138,7 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 
 					for _, val := range hostnamesAndStatus {
 						if val.status == "STOPPED" {
+							recommendation.Details = make([]model.RecDetail, 0)
 							recommendation.Type = model.RecommendationTypeUnusedServiceDecommisioning //TYPE 3
 							recommendation.CompartmentID = compartment.CompartmentID
 							recommendation.CompartmentName = compartment.Name
@@ -262,6 +263,7 @@ func manageErcoleDatabases(ercoleDatabases []dto.ErcoleDatabase, reorderedDBList
 		}
 
 		if cnt > 5 || opt {
+			recommendation.Details = make([]model.RecDetail, 0)
 			recommendation.Type = model.RecommendationTypeSISRightsizing
 			recommendation.Name = dbWork.hostname + "-" + dbWork.uniqueName
 			recommendation.ResourceID = ""
@@ -313,6 +315,7 @@ func verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []dto.ErcoleDataba
 						listDBTmp = dbNotFound[eDBlist.Hostname]
 						listDBTmp = append(listDBTmp, fList.UniqueName)
 						dbNotFound[eDBlist.Hostname] = listDBTmp
+						recommendation.Details = make([]model.RecDetail, 0)
 						recommendation.Type = model.RecommendationTypeSISRightsizing
 						recommendation.CompartmentID = v.CompartmentID
 						recommendation.CompartmentName = v.CompartmentName
@@ -335,6 +338,7 @@ func verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []dto.ErcoleDataba
 			listDBTmp = dbNotFound[k]
 			listDBTmp = append(listDBTmp, "placeholder")
 			dbNotFound[k] = listDBTmp
+			recommendation.Details = make([]model.RecDetail, 0)
 			recommendation.Type = model.RecommendationTypeSISRightsizing
 			recommendation.CompartmentID = v.CompartmentID
 			recommendation.CompartmentName = v.CompartmentName

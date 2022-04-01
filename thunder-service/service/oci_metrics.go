@@ -120,6 +120,7 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 			}
 
 			for id, value := range instances {
+				recommendation.Details = make([]model.RecDetail, 0)
 				if value.Type == "kubernetes" {
 					recommendation.Type = model.RecommendationTypeUnusedServiceDecommisioning
 					recommendation.ObjectType = model.ObjectTypeClusterKubernetes
@@ -272,6 +273,7 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 	for _, inst := range allInstancesWithMetrics {
 		if allInstances[inst.ResourceID].Status != "STOPPED" {
 			if allInstances[inst.ResourceID].Type == "kubernetes" {
+				recommendation.Details = make([]model.RecDetail, 0)
 				if recommType == "rightsizing" {
 					recommendation.Type = model.RecommendationTypeSISRightsizing1
 				} else {
@@ -302,6 +304,7 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 	if recommType == "rightsizing" {
 		for _, in := range allInstancesWithoutMetrics {
 			if in.Status != "STOPPED" {
+				recommendation.Details = make([]model.RecDetail, 0)
 				if in.Type == "kubernetes" {
 					recommendation.Type = model.RecommendationTypeSISRightsizing1
 					recommendation.ObjectType = model.ObjectTypeClusterKubernetes
@@ -603,6 +606,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 					for _, v := range vols {
 						isOpt, ociPerfs := as.isOptimizable(v)
 						if isOpt {
+							recommendation.Details = make([]model.RecDetail, 0)
 							recommendation.Type = model.RecommendationTypeBlockStorage
 							recommendation.CompartmentID = compartment.CompartmentID
 							recommendation.CompartmentName = compartment.Name
