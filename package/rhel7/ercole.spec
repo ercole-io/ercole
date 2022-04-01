@@ -59,11 +59,13 @@ echo "Running systemctl commands"
 /usr/bin/systemctl preset %{name}-chartservice.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-reposervice.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl preset %{name}-dataservice.service >/dev/null 2>&1 ||:
+/usr/bin/systemctl preset %{name}-thunderservice.service >/dev/null 2>&1 ||:
 /usr/bin/systemctl is-active --quiet %{name}-alertservice.service && /usr/bin/systemctl restart %{name}-alertservice.service
 /usr/bin/systemctl is-active --quiet %{name}-apiservice.service && /usr/bin/systemctl restart %{name}-apiservice.service
 /usr/bin/systemctl is-active --quiet %{name}-chartservice.service && /usr/bin/systemctl restart %{name}-chartservice.service
 /usr/bin/systemctl is-active --quiet %{name}-reposervice.service && /usr/bin/systemctl restart %{name}-reposervice.service
 /usr/bin/systemctl is-active --quiet %{name}-dataservice.service && /usr/bin/systemctl restart %{name}-dataservice.service
+/usr/bin/systemctl is-active --quiet %{name}-thunderservice.service && /usr/bin/systemctl restart %{name}-thunderservice.service
 echo "Running NOINTERACTIVE=1 /usr/bin/ercole-setup"
 /bin/sh -c "NOINTERACTIVE=1 /usr/bin/ercole-setup"
 echo "Running ercole completion bash"
