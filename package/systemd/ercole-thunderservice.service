@@ -4,7 +4,7 @@ PartOf=ercole.service
 After=ercole.service syslog.target network.target
 
 [Service]
-ExecStart=/usr/bin/ercole serve --enable-api-service
+ExecStart=/usr/bin/ercole serve --enable-thunder-service
 User=ercole
 
 [Install]
