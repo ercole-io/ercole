@@ -119,7 +119,7 @@ DistributedFiles = "distributed_files/"
   
 [ThunderService]
 RemoteEndpoint = "http://127.0.0.1:11117"
-BindIP = "127.0.0.1"
+BindIP = "0.0.0.0"
 Port = 11117
 LogHTTPRequest = true
 LogMessages = true
