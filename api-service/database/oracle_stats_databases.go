@@ -496,8 +496,15 @@ func (md *MongoDatabase) GetTotalOracleDatabaseDatafileSizeStats(location string
 				"database": "$features.oracle.database.databases",
 			}),
 			mu.APGroup(bson.M{
+				"_id": bson.M{
+					"name":       "$database.name",
+					"uniqueName": "$database.uniqueName",
+					"value":      "$database.datafileSize",
+				},
+			}),
+			mu.APGroup(bson.M{
 				"_id":   0,
-				"value": mu.APOSum("$database.datafileSize"),
+				"value": mu.APOSum("$_id.value"),
 			}),
 			mu.APProject(bson.M{
 				"value": bson.M{
@@ -537,8 +544,15 @@ func (md *MongoDatabase) GetTotalOracleDatabaseSegmentSizeStats(location string,
 				"database": "$features.oracle.database.databases",
 			}),
 			mu.APGroup(bson.M{
+				"_id": bson.M{
+					"name":       "$database.name",
+					"uniqueName": "$database.uniqueName",
+					"value":      "$database.segmentsSize",
+				},
+			}),
+			mu.APGroup(bson.M{
 				"_id":   0,
-				"value": mu.APOSum(mu.APOConvertToDoubleOrZero("$database.segmentsSize")),
+				"value": mu.APOSum("$_id.value"),
 			}),
 			mu.APProject(bson.M{
 				"value": bson.M{
