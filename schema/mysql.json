@@ -100,8 +100,7 @@
                         "type": "boolean"
                     },
                     "uuid": {
-                        "type": "string",
-                        "minLength": 1
+                        "type": "string"
                     },
                     "isMaster": {
                         "type": "boolean"
