@@ -23,6 +23,7 @@ import (
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -195,7 +196,8 @@ type MongoDatabase struct {
 // Init initializes the connection to the database
 func (md *MongoDatabase) Init() {
 	md.ConnectToMongodb()
-	md.Log.Debug("MongoDatabase is connected to MongoDB! ", md.Config.Mongodb.URI)
+
+	md.Log.Debug("MongoDatabase is connected to MongoDB! ", utils.HideMongoDBPassword(md.Config.Mongodb.URI))
 }
 
 // ConnectToMongodb connects to the MongoDB and return the connection

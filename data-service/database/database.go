@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ import (
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
+	"github.com/ercole-io/ercole/v2/utils"
 )
 
 type MongoDatabaseInterface interface {
@@ -60,7 +61,8 @@ type MongoDatabase struct {
 
 func (md *MongoDatabase) Init() {
 	md.ConnectToMongodb()
-	md.Log.Debug("MongoDatabase is connected to MongoDB! ", md.Config.Mongodb.URI)
+
+	md.Log.Debug("MongoDatabase is connected to MongoDB! ", utils.HideMongoDBPassword(md.Config.Mongodb.URI))
 }
 
 func (md *MongoDatabase) ConnectToMongodb() {
