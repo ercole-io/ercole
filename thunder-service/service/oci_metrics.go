@@ -19,6 +19,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"math"
 	"strconv"
 	"time"
 
@@ -41,6 +42,13 @@ type Instance struct {
 	Type            string  `json:"type"`
 	Status          string  `json:"status"`
 	OCPUs           float32 `json:"ocpus"`
+}
+
+type MetricData map[string]ValThresh
+
+type ValThresh struct {
+	Value     string
+	Threshold string
 }
 
 func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model.OciErcoleRecommendation, error) {
@@ -173,9 +181,13 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 
 	var MemoryThreshold = 1
 
+	var recClusterName model.RecDetail
+
 	instancesNotOptimizable := make(map[string]Instance)
 	allInstancesWithMetrics := make(map[string]Instance)
 	allInstances := make(map[string]Instance)
+
+	allInstanceMetrics := make(map[string]MetricData)
 
 	listRec = make([]model.OciErcoleRecommendation, 0)
 
@@ -222,7 +234,7 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 			sTime.Time = time.Now().Local().AddDate(0, 0, -89)
 			eTime.Time = time.Now().Local()
 
-			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, AvgCPUThreshold, verifyShape)
+			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, AvgCPUThreshold, verifyShape, allInstanceMetrics, "AvgCPU")
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
@@ -234,7 +246,7 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 			sTime.Time = time.Now().Local().AddDate(0, 0, -7)
 			eTime.Time = time.Now().Local()
 
-			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, PeakCPUThreshold, verifyShape)
+			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, PeakCPUThreshold, verifyShape, allInstanceMetrics, "PeakCPU")
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
@@ -246,7 +258,7 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 			sTime.Time = time.Now().Local().AddDate(0, 0, -7)
 			eTime.Time = time.Now().Local()
 
-			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, MemoryThreshold, verifyShape)
+			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, MemoryThreshold, verifyShape, allInstanceMetrics, "AvgMemory")
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
@@ -256,7 +268,11 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 
 	var recommendation model.OciErcoleRecommendation
 
-	allInstancesWithoutMetrics := allInstances
+	//allInstancesWithoutMetrics := allInstances
+	allInstancesWithoutMetrics := make(map[string]Instance)
+	for key, value := range allInstances {
+		allInstancesWithoutMetrics[key] = value
+	}
 
 	for _, b := range allInstancesWithMetrics {
 		delete(allInstancesWithoutMetrics, b.ResourceID)
@@ -273,6 +289,7 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 	for _, inst := range allInstancesWithMetrics {
 		if allInstances[inst.ResourceID].Status != "STOPPED" {
 			if allInstances[inst.ResourceID].Type == "kubernetes" {
+				recClusterName = model.RecDetail{Name: "Oke Cluster Name", Value: allInstances[inst.ResourceID].ClusterName}
 				recommendation.Details = make([]model.RecDetail, 0)
 				if recommType == "rightsizing" {
 					recommendation.Type = model.RecommendationTypeSISRightsizing1
@@ -295,6 +312,18 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 			recommendation.CompartmentName = inst.CompartmentName
 			recommendation.ResourceID = inst.ResourceID
 			recommendation.Name = inst.Name
+			detail1 := model.RecDetail{Name: "Instance Name", Value: inst.Name}
+			detail2 := model.RecDetail{Name: "Cpu Core Count", Value: fmt.Sprintf("%.2f", allInstances[inst.ResourceID].OCPUs)}
+			detail3 := model.RecDetail{Name: fmt.Sprintf("%%Cpu Average 90dd - Number of Threshold Reached (>%d%%)", percAvgCPU), Value: fmt.Sprintf("%s/%s", allInstanceMetrics[inst.ResourceID]["AvgCPU"].Value, allInstanceMetrics[inst.ResourceID]["AvgCPU"].Threshold)}
+			detail4 := model.RecDetail{Name: fmt.Sprintf("%%Cpu Average 7dd - Number of Threshold Reached (>%d%%)", percPeakCPU), Value: fmt.Sprintf("%s/%s", allInstanceMetrics[inst.ResourceID]["PeakCPU"].Value, allInstanceMetrics[inst.ResourceID]["PeakCPU"].Threshold)}
+			detail5 := model.RecDetail{Name: fmt.Sprintf("%%memory Average 7dd - Number of Threshold Reached (>%d%%)", percMemoryUtilization), Value: fmt.Sprintf("%s/%s", allInstanceMetrics[inst.ResourceID]["AvgMemory"].Value, allInstanceMetrics[inst.ResourceID]["AvgMemory"].Threshold)}
+
+			if recClusterName.Name != "" && recClusterName.Value != "" {
+				recommendation.Details = append(recommendation.Details, detail1, detail2, recClusterName, detail3, detail4, detail5)
+			} else {
+				recommendation.Details = append(recommendation.Details, detail1, detail2, detail3, detail4, detail5)
+			}
+
 			listRec = append(listRec, recommendation)
 		}
 	}
@@ -306,6 +335,7 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 			if in.Status != "STOPPED" {
 				recommendation.Details = make([]model.RecDetail, 0)
 				if in.Type == "kubernetes" {
+					recClusterName = model.RecDetail{Name: "Oke Cluster Name", Value: allInstances[in.ResourceID].ClusterName}
 					recommendation.Type = model.RecommendationTypeSISRightsizing1
 					recommendation.ObjectType = model.ObjectTypeClusterKubernetes
 				} else {
@@ -317,6 +347,16 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 				recommendation.CompartmentName = in.CompartmentName
 				recommendation.ResourceID = in.ResourceID
 				recommendation.Name = in.Name
+
+				detail1 := model.RecDetail{Name: "Instance Name", Value: in.Name}
+				detail2 := model.RecDetail{Name: "Cpu Core Count", Value: fmt.Sprintf("%.2f", allInstances[in.ResourceID].OCPUs)}
+
+				if recClusterName.Name != "" && recClusterName.Value != "" {
+					recommendation.Details = append(recommendation.Details, detail1, detail2, recClusterName)
+				} else {
+					recommendation.Details = append(recommendation.Details, detail1, detail2)
+				}
+
 				listRec = append(listRec, recommendation)
 			}
 		}
@@ -366,7 +406,11 @@ func (as *ThunderService) getOciInstancesList(allInstances map[string]Instance, 
 	return allInstances, nil
 }
 
-func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClient, strQuery string, sTime common.SDKTime, eTime common.SDKTime, instances map[string]Instance, compartment model.OciCompartment, threshold int, verifyShape bool) (map[string]Instance, error) {
+func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClient, strQuery string, sTime common.SDKTime, eTime common.SDKTime, instances map[string]Instance, compartment model.OciCompartment, threshold int, verifyShape bool, allInstanceMetrics map[string]MetricData, sType string) (map[string]Instance, error) {
+	var metricData map[string]ValThresh
+
+	var valThresh ValThresh
+
 	req := monitoring.SummarizeMetricsDataRequest{
 		CompartmentId: &compartment.CompartmentID,
 		SummarizeMetricsDataDetails: monitoring.SummarizeMetricsDataDetails{
@@ -394,6 +438,16 @@ func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClien
 				cnt++
 			}
 		}
+
+		metricData = allInstanceMetrics[s.Dimensions["resourceId"]]
+		if metricData == nil {
+			metricData = make(map[string]ValThresh)
+		}
+
+		valThresh.Value = fmt.Sprintf("%d", cnt)
+		valThresh.Threshold = fmt.Sprintf("%d", threshold)
+		metricData[sType] = valThresh
+		allInstanceMetrics[s.Dimensions["resourceId"]] = metricData
 
 		if cnt > threshold {
 			// the instance is not eligible for optimization
@@ -607,18 +661,21 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						isOpt, ociPerfs := as.isOptimizable(v)
 						if isOpt {
 							recommendation.Details = make([]model.RecDetail, 0)
-							recommendation.Type = model.RecommendationTypeBlockStorage
+							recommendation.Type = model.RecommendationTypeBlockStorageRightsizing
 							recommendation.CompartmentID = compartment.CompartmentID
 							recommendation.CompartmentName = compartment.Name
 							recommendation.ResourceID = v.ResourceID
 							recommendation.Name = v.Name
 							recommendation.ObjectType = model.ObjectTypeBlockStorage
 
-							detail1 := model.RecDetail{Name: "VPU Target", Value: fmt.Sprintf("%f%s%d", ociPerfs.Performances[0].Values.MaxThroughput, " / ", ociPerfs.Performances[0].Values.MaxIOPS)}
-							detail2 := model.RecDetail{Name: "Throughput R/W Max 5dd", Value: fmt.Sprintf("%f%s%f", v.Throughput, " / ", ociPerfs.Performances[0].Values.MaxThroughput)}
-							detail3 := model.RecDetail{Name: "Iops Max 5dd", Value: fmt.Sprintf("%d%s%d", v.VpusPerGB, " / ", ociPerfs.Performances[0].Values.MaxIOPS)}
+							detail1 := model.RecDetail{Name: "Block Storage Name", Value: v.Name}
+							detail2 := model.RecDetail{Name: "VPU", Value: fmt.Sprintf("%d", v.VpusPerGB)}
+							detail3 := model.RecDetail{Name: "Size", Value: fmt.Sprintf("%d GB", v.Size)}
+							detail4 := model.RecDetail{Name: "VPU Target", Value: fmt.Sprintf("%.0f MB/s %s%d iops", math.Round(ociPerfs.Performances[0].Values.MaxThroughput), " - ", ociPerfs.Performances[0].Values.MaxIOPS)}
+							detail5 := model.RecDetail{Name: "Throughput R/W Max 5dd", Value: fmt.Sprintf("%.0f MB/s %s%.0f MB/s", math.Round(v.Throughput), " - ", math.Round(ociPerfs.Performances[0].Values.MaxThroughput))}
+							detail6 := model.RecDetail{Name: "Iops Max 5dd", Value: fmt.Sprintf("%d%s%d", v.VpusPerGB, " / ", ociPerfs.Performances[0].Values.MaxIOPS)}
 
-							recommendation.Details = append(recommendation.Details, detail1, detail2, detail3)
+							recommendation.Details = append(recommendation.Details, detail1, detail2, detail3, detail4, detail5, detail6)
 
 							listRec = append(listRec, recommendation)
 						}
