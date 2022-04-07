@@ -99,7 +99,7 @@ func (as *ThunderService) GetOciObjectStorageOptimization(profiles []string) ([]
 					recommendation.Name = *resp3.Name
 					recommendation.ObjectType = "Object Storage"
 					detail1 := model.RecDetail{Name: "Bucket Name", Value: *resp3.Name}
-					detail2 := model.RecDetail{Name: "Size", Value: fmt.Sprintf("%d", *resp3.ApproximateSize)}
+					detail2 := model.RecDetail{Name: "Size", Value: as.getBuckeSize(*resp3.ApproximateSize)}
 					detail3 := model.RecDetail{Name: "Optimization", Value: "Enable auto-tiering"}
 
 					recommendation.Details = append(recommendation.Details, detail1, detail2, detail3)
@@ -110,4 +110,45 @@ func (as *ThunderService) GetOciObjectStorageOptimization(profiles []string) ([]
 	}
 
 	return listRec, nil
+}
+
+func (as *ThunderService) getBuckeSize(sizeVal int64) string {
+	var valRet string
+
+	var newVal float64
+
+	var valTmp float64
+
+	cnt := 0
+	newVal = float64(sizeVal)
+
+	for {
+		valTmp = newVal
+		newVal = newVal / 1024.0
+		cnt = cnt + 1
+
+		if newVal <= 1 {
+			switch cnt {
+			case 1:
+				valRet = fmt.Sprintf("%d bytes", sizeVal)
+			case 2:
+				valRet = fmt.Sprintf("%.2f KB", valTmp)
+			case 3:
+				valRet = fmt.Sprintf("%.2f MB", valTmp)
+			case 4:
+				valRet = fmt.Sprintf("%.2f GB", valTmp)
+			case 5:
+				valRet = fmt.Sprintf("%.2f TB", valTmp)
+			case 6:
+				valRet = fmt.Sprintf("%.2f PB", valTmp)
+			default:
+				valRet = fmt.Sprintf("%d bytes", sizeVal)
+
+			}
+
+			break
+		}
+	}
+
+	return valRet
 }

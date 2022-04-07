@@ -42,8 +42,8 @@ type RecDetail struct {
 }
 
 const (
-	RecommendationTypeBlockStorage                  = "Block Storage Performance"
-	RecommendationTypeComputeInstanceIdle           = "Compute Instance Idle"
+	RecommendationTypeBlockStorageRightsizing       = "Block Storage Rightsizing"
+	RecommendationTypeComputeInstanceIdle           = "Compute Instance Rightsizing"
 	RecommendationTypeInstanceRightsizing           = "Compute Instance Rightsizing"
 	RecommendationTypeInstanceWithoutMonitoring     = "Compute Instance Without Monitoring"
 	RecommendationTypeOldSnapshot                   = "Old Snapshot"
