@@ -36,7 +36,7 @@ var lt1 = model.OracleDatabaseLicenseType{
 	Metric:          "metric1",
 }
 
-func TestAddOracleDatabaseAgreement_Success_InsertNew(t *testing.T) {
+func TestAddOracleDatabaseContract_Success_InsertNew(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -49,8 +49,8 @@ func TestAddOracleDatabaseAgreement_Success_InsertNew(t *testing.T) {
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	agreement := model.OracleDatabaseAgreement{
-		AgreementID:     "AID001",
+	contract := model.OracleDatabaseContract{
+		ContractID:      "AID001",
 		LicenseTypeID:   "PID001",
 		CSI:             "CSI001",
 		ReferenceNumber: "RF0001",
@@ -61,7 +61,7 @@ func TestAddOracleDatabaseAgreement_Success_InsertNew(t *testing.T) {
 		Hosts:           []string{"test-db", "ercsoldbx"},
 	}
 
-	expectedAgr := agreement
+	expectedAgr := contract
 	expectedAgr.ID = utils.Str2oid("000000000000000000000001")
 
 	gomock.InOrder(
@@ -86,39 +86,39 @@ func TestAddOracleDatabaseAgreement_Success_InsertNew(t *testing.T) {
 		}, nil),
 		db.EXPECT().GetOracleDatabaseLicenseType("PID001").
 			Return(&lt1, nil),
-		db.EXPECT().InsertOracleDatabaseAgreement(expectedAgr).
+		db.EXPECT().InsertOracleDatabaseContract(expectedAgr).
 			Return(nil),
 	)
 
-	searchedAgreementItem := dto.OracleDatabaseAgreementFE{
+	searchedContractItem := dto.OracleDatabaseContractFE{
 		ID:                       expectedAgr.ID,
-		AgreementID:              agreement.AgreementID,
-		CSI:                      agreement.CSI,
-		LicenseTypeID:            agreement.LicenseTypeID,
+		ContractID:               contract.ContractID,
+		CSI:                      contract.CSI,
+		LicenseTypeID:            contract.LicenseTypeID,
 		ItemDescription:          "",
 		Metric:                   "",
 		ReferenceNumber:          "",
 		Unlimited:                false,
 		Basket:                   false,
 		Restricted:               false,
-		Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{},
+		Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{},
 		LicensesPerCore:          0,
 		LicensesPerUser:          0,
 		AvailableLicensesPerCore: 0,
 		AvailableLicensesPerUser: 0,
 	}
-	as.mockGetOracleDatabaseAgreements = func(filters dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error) {
-		return []dto.OracleDatabaseAgreementFE{searchedAgreementItem}, nil
+	as.mockGetOracleDatabaseContracts = func(filters dto.GetOracleDatabaseContractsFilter) ([]dto.OracleDatabaseContractFE, error) {
+		return []dto.OracleDatabaseContractFE{searchedContractItem}, nil
 	}
 
-	res, err := as.AddOracleDatabaseAgreement(agreement)
+	res, err := as.AddOracleDatabaseContract(contract)
 	require.NoError(t, err)
 	assert.Equal(t,
-		searchedAgreementItem,
+		searchedContractItem,
 		*res)
 }
 
-func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
+func TestAddOracleDatabaseContracts_Fail(t *testing.T) {
 	t.Run("Fail: can't find host", func(t *testing.T) {
 		mockCtrl := gomock.NewController(t)
 		defer mockCtrl.Finish()
@@ -133,8 +133,8 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 			NewObjectID: utils.NewObjectIDForTests(),
 		}
 
-		addRequest := model.OracleDatabaseAgreement{
-			AgreementID:     "AID001",
+		addRequest := model.OracleDatabaseContract{
+			ContractID:      "AID001",
 			LicenseTypeID:   "PID001",
 			CSI:             "CSI001",
 			ReferenceNumber: "RF0001",
@@ -171,7 +171,7 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 				}, nil),
 		)
 
-		res, err := as.AddOracleDatabaseAgreement(addRequest)
+		res, err := as.AddOracleDatabaseContract(addRequest)
 		assert.EqualError(t, err, utils.ErrHostNotFound.Error())
 		assert.Nil(t, res)
 	})
@@ -190,8 +190,8 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 			NewObjectID: utils.NewObjectIDForTests(),
 		}
 
-		agreementWrongLicenseType := model.OracleDatabaseAgreement{
-			AgreementID:     "AID001",
+		contractWrongLicenseType := model.OracleDatabaseContract{
+			ContractID:      "AID001",
 			LicenseTypeID:   "xxxxxx",
 			CSI:             "CSI001",
 			ReferenceNumber: "RF0001",
@@ -228,14 +228,14 @@ func TestAddOracleDatabaseAgreements_Fail(t *testing.T) {
 				Return(nil, nil),
 		)
 
-		res, err := as.AddOracleDatabaseAgreement(agreementWrongLicenseType)
+		res, err := as.AddOracleDatabaseContract(contractWrongLicenseType)
 
 		assert.EqualError(t, err, utils.ErrOracleDatabaseLicenseTypeIDNotFound.Error())
 		assert.Nil(t, res)
 	})
 }
 
-func TestUpdateOracleDatabaseAgreement_Success(t *testing.T) {
+func TestUpdateOracleDatabaseContract_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -250,8 +250,8 @@ func TestUpdateOracleDatabaseAgreement_Success(t *testing.T) {
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	agreement := model.OracleDatabaseAgreement{
-		AgreementID:     "AID001",
+	contract := model.OracleDatabaseContract{
+		ContractID:      "AID001",
 		CSI:             "CSI001",
 		ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 		LicenseTypeID:   lt1.ID,
@@ -286,36 +286,36 @@ func TestUpdateOracleDatabaseAgreement_Success(t *testing.T) {
 			}, nil),
 		db.EXPECT().GetOracleDatabaseLicenseType("PID001").
 			Return(&lt1, nil),
-		db.EXPECT().UpdateOracleDatabaseAgreement(agreement).Return(nil),
+		db.EXPECT().UpdateOracleDatabaseContract(contract).Return(nil),
 	)
 
-	searchedAgreementItem := dto.OracleDatabaseAgreementFE{
-		ID:                       agreement.ID,
-		AgreementID:              agreement.AgreementID,
-		CSI:                      agreement.CSI,
-		LicenseTypeID:            agreement.LicenseTypeID,
+	searchedContractItem := dto.OracleDatabaseContractFE{
+		ID:                       contract.ID,
+		ContractID:               contract.ContractID,
+		CSI:                      contract.CSI,
+		LicenseTypeID:            contract.LicenseTypeID,
 		ItemDescription:          "",
 		Metric:                   "",
 		ReferenceNumber:          "",
 		Unlimited:                false,
 		Basket:                   false,
 		Restricted:               false,
-		Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{},
+		Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{},
 		LicensesPerCore:          0,
 		LicensesPerUser:          0,
 		AvailableLicensesPerCore: 0,
 		AvailableLicensesPerUser: 0,
 	}
-	as.mockGetOracleDatabaseAgreements = func(filters dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error) {
-		return []dto.OracleDatabaseAgreementFE{searchedAgreementItem}, nil
+	as.mockGetOracleDatabaseContracts = func(filters dto.GetOracleDatabaseContractsFilter) ([]dto.OracleDatabaseContractFE, error) {
+		return []dto.OracleDatabaseContractFE{searchedContractItem}, nil
 	}
 
-	actualAgreement, err := as.UpdateOracleDatabaseAgreement(agreement)
+	actualContract, err := as.UpdateOracleDatabaseContract(contract)
 	require.NoError(t, err)
-	assert.Equal(t, searchedAgreementItem, *actualAgreement)
+	assert.Equal(t, searchedContractItem, *actualContract)
 }
 
-func TestUpdateOracleDatabaseAgreement_Fail_LicenseTypeIdNotValid(t *testing.T) {
+func TestUpdateOracleDatabaseContract_Fail_LicenseTypeIdNotValid(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -330,8 +330,8 @@ func TestUpdateOracleDatabaseAgreement_Fail_LicenseTypeIdNotValid(t *testing.T) 
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	agreement := model.OracleDatabaseAgreement{
-		AgreementID:     "AID001",
+	contract := model.OracleDatabaseContract{
+		ContractID:      "AID001",
 		CSI:             "CSI001",
 		ID:              utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 		LicenseTypeID:   "invalidLicenseTypeID",
@@ -368,13 +368,13 @@ func TestUpdateOracleDatabaseAgreement_Fail_LicenseTypeIdNotValid(t *testing.T) 
 			Return(nil, nil),
 	)
 
-	actual, err := as.UpdateOracleDatabaseAgreement(agreement)
+	actual, err := as.UpdateOracleDatabaseContract(contract)
 
 	assert.EqualError(t, err, utils.ErrOracleDatabaseLicenseTypeIDNotFound.Error())
 	assert.Nil(t, actual)
 }
 
-func TestGetOracleDatabaseAgreements_Success(t *testing.T) {
+func TestGetOracleDatabaseContracts_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -393,10 +393,10 @@ func TestGetOracleDatabaseAgreements_Success(t *testing.T) {
 		},
 	}
 
-	returnedAgreements := []dto.OracleDatabaseAgreementFE{
+	returnedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "AID001",
+			ContractID:               "AID001",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -405,7 +405,7 @@ func TestGetOracleDatabaseAgreements_Success(t *testing.T) {
 			Unlimited:                true,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
@@ -444,10 +444,10 @@ func TestGetOracleDatabaseAgreements_Success(t *testing.T) {
 		OlderThan:   utils.MAX_TIME,
 	}
 
-	expectedAgreements := []dto.OracleDatabaseAgreementFE{
+	expectedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "AID001",
+			ContractID:               "AID001",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -456,7 +456,7 @@ func TestGetOracleDatabaseAgreements_Success(t *testing.T) {
 			Unlimited:                true,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 3}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 3}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
@@ -466,8 +466,8 @@ func TestGetOracleDatabaseAgreements_Success(t *testing.T) {
 	}
 
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseAgreements().
-			Return(returnedAgreements, nil),
+		db.EXPECT().ListOracleDatabaseContracts().
+			Return(returnedContracts, nil),
 
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
@@ -483,12 +483,12 @@ func TestGetOracleDatabaseAgreements_Success(t *testing.T) {
 			Return(licenseTypes, nil),
 	)
 
-	res, err := as.GetOracleDatabaseAgreements(dto.NewGetOracleDatabaseAgreementsFilter())
+	res, err := as.GetOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter())
 	require.NoError(t, err)
-	assert.Equal(t, expectedAgreements, res)
+	assert.Equal(t, expectedContracts, res)
 }
 
-func TestGetOracleDatabaseAgreementsCluster_Success(t *testing.T) {
+func TestGetOracleDatabaseContractsCluster_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -507,10 +507,10 @@ func TestGetOracleDatabaseAgreementsCluster_Success(t *testing.T) {
 		},
 	}
 
-	returnedAgreements := []dto.OracleDatabaseAgreementFE{
+	returnedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "AID001",
+			ContractID:               "AID001",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -519,7 +519,7 @@ func TestGetOracleDatabaseAgreementsCluster_Success(t *testing.T) {
 			Unlimited:                true,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
@@ -585,10 +585,10 @@ func TestGetOracleDatabaseAgreementsCluster_Success(t *testing.T) {
 		OlderThan:   utils.MAX_TIME,
 	}
 
-	expectedAgreements := []dto.OracleDatabaseAgreementFE{
+	expectedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "AID001",
+			ContractID:               "AID001",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -597,7 +597,7 @@ func TestGetOracleDatabaseAgreementsCluster_Success(t *testing.T) {
 			Unlimited:                true,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 0}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 0}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
@@ -634,8 +634,8 @@ func TestGetOracleDatabaseAgreementsCluster_Success(t *testing.T) {
 	}
 
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseAgreements().
-			Return(returnedAgreements, nil),
+		db.EXPECT().ListOracleDatabaseContracts().
+			Return(returnedContracts, nil),
 
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
@@ -655,12 +655,12 @@ func TestGetOracleDatabaseAgreementsCluster_Success(t *testing.T) {
 		db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil),
 	)
 
-	res, err := as.GetOracleDatabaseAgreements(dto.NewGetOracleDatabaseAgreementsFilter())
+	res, err := as.GetOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter())
 	require.NoError(t, err)
-	assert.Equal(t, expectedAgreements, res)
+	assert.Equal(t, expectedContracts, res)
 }
 
-func TestGetOracleDatabaseAgreementsClusterCappedCPU_Success(t *testing.T) {
+func TestGetOracleDatabaseContractsClusterCappedCPU_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -679,10 +679,10 @@ func TestGetOracleDatabaseAgreementsClusterCappedCPU_Success(t *testing.T) {
 		},
 	}
 
-	returnedAgreements := []dto.OracleDatabaseAgreementFE{
+	returnedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "AID001",
+			ContractID:               "AID001",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -691,7 +691,7 @@ func TestGetOracleDatabaseAgreementsClusterCappedCPU_Success(t *testing.T) {
 			Unlimited:                true,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
@@ -757,10 +757,10 @@ func TestGetOracleDatabaseAgreementsClusterCappedCPU_Success(t *testing.T) {
 		OlderThan:   utils.MAX_TIME,
 	}
 
-	expectedAgreements := []dto.OracleDatabaseAgreementFE{
+	expectedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "AID001",
+			ContractID:               "AID001",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -769,7 +769,7 @@ func TestGetOracleDatabaseAgreementsClusterCappedCPU_Success(t *testing.T) {
 			Unlimited:                true,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 0}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 0}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
@@ -832,8 +832,8 @@ func TestGetOracleDatabaseAgreementsClusterCappedCPU_Success(t *testing.T) {
 	}
 
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseAgreements().
-			Return(returnedAgreements, nil),
+		db.EXPECT().ListOracleDatabaseContracts().
+			Return(returnedContracts, nil),
 
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
@@ -855,12 +855,12 @@ func TestGetOracleDatabaseAgreementsClusterCappedCPU_Success(t *testing.T) {
 		db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil),
 	)
 
-	res, err := as.GetOracleDatabaseAgreements(dto.NewGetOracleDatabaseAgreementsFilter())
+	res, err := as.GetOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter())
 	require.NoError(t, err)
-	assert.Equal(t, expectedAgreements, res)
+	assert.Equal(t, expectedContracts, res)
 }
 
-func TestGetOracleDatabaseAgreementsClusterCappedCPU2_Success(t *testing.T) {
+func TestGetOracleDatabaseContractsClusterCappedCPU2_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -879,10 +879,10 @@ func TestGetOracleDatabaseAgreementsClusterCappedCPU2_Success(t *testing.T) {
 		},
 	}
 
-	returnedAgreements := []dto.OracleDatabaseAgreementFE{
+	returnedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:     "AID001",
+			ContractID:      "AID001",
 			CSI:             "CSI001",
 			LicenseTypeID:   "PID002",
 			ItemDescription: "Oracle Partitioning",
@@ -891,7 +891,7 @@ func TestGetOracleDatabaseAgreementsClusterCappedCPU2_Success(t *testing.T) {
 			Unlimited:       true,
 			Basket:          false,
 			Restricted:      false,
-			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+			Hosts: []dto.OracleDatabaseContractAssociatedHostFE{
 				{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3},
 				{CoveredLicensesCount: 5, Hostname: "test-db2", TotalCoveredLicensesCount: 5},
 			},
@@ -985,10 +985,10 @@ func TestGetOracleDatabaseAgreementsClusterCappedCPU2_Success(t *testing.T) {
 		OlderThan:   utils.MAX_TIME,
 	}
 
-	expectedAgreements := []dto.OracleDatabaseAgreementFE{
+	expectedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:              utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:     "AID001",
+			ContractID:      "AID001",
 			CSI:             "CSI001",
 			LicenseTypeID:   "PID002",
 			ItemDescription: "Oracle Partitioning",
@@ -997,7 +997,7 @@ func TestGetOracleDatabaseAgreementsClusterCappedCPU2_Success(t *testing.T) {
 			Unlimited:       true,
 			Basket:          false,
 			Restricted:      false,
-			Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+			Hosts: []dto.OracleDatabaseContractAssociatedHostFE{
 				{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 0},
 				{CoveredLicensesCount: 5, Hostname: "test-db2", TotalCoveredLicensesCount: 5, ConsumedLicensesCount: 0},
 			},
@@ -1122,8 +1122,8 @@ func TestGetOracleDatabaseAgreementsClusterCappedCPU2_Success(t *testing.T) {
 		History:     []model.History{},
 	}
 
-	db.EXPECT().ListOracleDatabaseAgreements().
-		Return(returnedAgreements, nil)
+	db.EXPECT().ListOracleDatabaseContracts().
+		Return(returnedContracts, nil)
 
 	db.EXPECT().
 		SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
@@ -1151,12 +1151,12 @@ func TestGetOracleDatabaseAgreementsClusterCappedCPU2_Success(t *testing.T) {
 	db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil)
 	db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil)
 
-	res, err := as.GetOracleDatabaseAgreements(dto.NewGetOracleDatabaseAgreementsFilter())
+	res, err := as.GetOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter())
 	require.NoError(t, err)
-	assert.Equal(t, expectedAgreements, res)
+	assert.Equal(t, expectedContracts, res)
 }
 
-func TestGetOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
+func TestGetOracleDatabaseContracts_SuccessFilter1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -1175,10 +1175,10 @@ func TestGetOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 		},
 	}
 
-	returnedAgreements := []dto.OracleDatabaseAgreementFE{
+	returnedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "AID001",
+			ContractID:               "AID001",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -1187,7 +1187,7 @@ func TestGetOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 			Unlimited:                true,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 7,
@@ -1236,8 +1236,8 @@ func TestGetOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 	}
 
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseAgreements().
-			Return(returnedAgreements, nil),
+		db.EXPECT().ListOracleDatabaseContracts().
+			Return(returnedContracts, nil),
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&oracleLics, nil),
@@ -1251,8 +1251,8 @@ func TestGetOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 			Return(parts, nil),
 	)
 
-	res, err := as.GetOracleDatabaseAgreements(dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "asddfa",
+	res, err := as.GetOracleDatabaseContracts(dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "asddfa",
 		Unlimited:                   "",
 		Basket:                      "",
 		AvailableLicensesPerCoreGTE: -1,
@@ -1266,8 +1266,8 @@ func TestGetOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 	assert.Empty(t, res)
 
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseAgreements().
-			Return(returnedAgreements, nil),
+		db.EXPECT().ListOracleDatabaseContracts().
+			Return(returnedContracts, nil),
 
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
@@ -1283,8 +1283,8 @@ func TestGetOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 			Return(parts, nil),
 	)
 
-	res, err = as.GetOracleDatabaseAgreements(dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "asddfa",
+	res, err = as.GetOracleDatabaseContracts(dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "asddfa",
 		Unlimited:                   "",
 		Basket:                      "",
 		AvailableLicensesPerCoreGTE: -1,
@@ -1298,8 +1298,8 @@ func TestGetOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 	assert.Empty(t, res)
 
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseAgreements().
-			Return(returnedAgreements, nil),
+		db.EXPECT().ListOracleDatabaseContracts().
+			Return(returnedContracts, nil),
 
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
@@ -1315,8 +1315,8 @@ func TestGetOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 			Return(parts, nil),
 	)
 
-	res, err = as.GetOracleDatabaseAgreements(dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "asddfa",
+	res, err = as.GetOracleDatabaseContracts(dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "asddfa",
 		Unlimited:                   "",
 		Basket:                      "",
 		AvailableLicensesPerCoreGTE: -1,
@@ -1331,7 +1331,7 @@ func TestGetOracleDatabaseAgreements_SuccessFilter1(t *testing.T) {
 	assert.Empty(t, res)
 }
 
-func TestGetOracleDatabaseAgreements_Failed2(t *testing.T) {
+func TestGetOracleDatabaseContracts_Failed2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -1341,10 +1341,10 @@ func TestGetOracleDatabaseAgreements_Failed2(t *testing.T) {
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	returnedAgreements := []dto.OracleDatabaseAgreementFE{
+	returnedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "AID001",
+			ContractID:               "AID001",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -1353,7 +1353,7 @@ func TestGetOracleDatabaseAgreements_Failed2(t *testing.T) {
 			Unlimited:                true,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 7,
@@ -1362,20 +1362,20 @@ func TestGetOracleDatabaseAgreements_Failed2(t *testing.T) {
 	}
 
 	gomock.InOrder(
-		db.EXPECT().ListOracleDatabaseAgreements().
-			Return(returnedAgreements, nil),
+		db.EXPECT().ListOracleDatabaseContracts().
+			Return(returnedContracts, nil),
 		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(nil, aerrMock),
 	)
 
-	_, err := as.GetOracleDatabaseAgreements(dto.NewGetOracleDatabaseAgreementsFilter())
+	_, err := as.GetOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter())
 	require.Equal(t, aerrMock, err)
 }
 
-func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
-	agg1 := dto.OracleDatabaseAgreementFE{
+func TestCheckOracleDatabaseContractMatchFilter(t *testing.T) {
+	agg1 := dto.OracleDatabaseContractFE{
 		ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-		AgreementID:              "5051863",
+		ContractID:               "5051863",
 		CSI:                      "6871235",
 		LicenseTypeID:            "A90620",
 		ItemDescription:          "Oracle Partitioning",
@@ -1384,17 +1384,17 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		Unlimited:                false,
 		Basket:                   true,
 		Restricted:               false,
-		Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: -1, Hostname: "test-db", TotalCoveredLicensesCount: -1}, {CoveredLicensesCount: -1, Hostname: "ercsoldbx", TotalCoveredLicensesCount: -1}},
+		Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: -1, Hostname: "test-db", TotalCoveredLicensesCount: -1}, {CoveredLicensesCount: -1, Hostname: "ercsoldbx", TotalCoveredLicensesCount: -1}},
 		LicensesPerCore:          30,
 		LicensesPerUser:          5,
 		AvailableLicensesPerCore: 7,
 		AvailableLicensesPerUser: 0,
 	}
 
-	assert.True(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.NewGetOracleDatabaseAgreementsFilter()))
+	assert.True(t, checkOracleDatabaseContractMatchFilter(agg1, dto.NewGetOracleDatabaseContractsFilter()))
 
-	assert.True(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "5051",
+	assert.True(t, checkOracleDatabaseContractMatchFilter(agg1, dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "5051",
 		LicenseTypeID:               "A9062",
 		ItemDescription:             "Partitioning",
 		CSI:                         "6871",
@@ -1411,8 +1411,8 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
 	}))
-	assert.True(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "",
+	assert.True(t, checkOracleDatabaseContractMatchFilter(agg1, dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "",
 		LicenseTypeID:               "",
 		ItemDescription:             "",
 		CSI:                         "",
@@ -1430,8 +1430,8 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		AvailableLicensesPerUserGTE: -1,
 	}))
 
-	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "fdgdfgsdsfg",
+	assert.False(t, checkOracleDatabaseContractMatchFilter(agg1, dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "fdgdfgsdsfg",
 		LicenseTypeID:               "",
 		ItemDescription:             "",
 		CSI:                         "",
@@ -1448,8 +1448,8 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
 	}))
-	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "",
+	assert.False(t, checkOracleDatabaseContractMatchFilter(agg1, dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "",
 		LicenseTypeID:               "fdgdfgsdsfg",
 		ItemDescription:             "",
 		CSI:                         "",
@@ -1466,8 +1466,8 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
 	}))
-	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "",
+	assert.False(t, checkOracleDatabaseContractMatchFilter(agg1, dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "",
 		LicenseTypeID:               "",
 		ItemDescription:             "fdgdfgsdsfg",
 		CSI:                         "",
@@ -1484,8 +1484,8 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
 	}))
-	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "",
+	assert.False(t, checkOracleDatabaseContractMatchFilter(agg1, dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "",
 		LicenseTypeID:               "",
 		ItemDescription:             "",
 		CSI:                         "fdgdfgsdsfg",
@@ -1502,8 +1502,8 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
 	}))
-	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "",
+	assert.False(t, checkOracleDatabaseContractMatchFilter(agg1, dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "",
 		LicenseTypeID:               "",
 		ItemDescription:             "",
 		CSI:                         "",
@@ -1520,8 +1520,8 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
 	}))
-	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "",
+	assert.False(t, checkOracleDatabaseContractMatchFilter(agg1, dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "",
 		LicenseTypeID:               "",
 		ItemDescription:             "",
 		CSI:                         "",
@@ -1538,8 +1538,8 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
 	}))
-	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "",
+	assert.False(t, checkOracleDatabaseContractMatchFilter(agg1, dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "",
 		LicenseTypeID:               "",
 		ItemDescription:             "",
 		CSI:                         "",
@@ -1556,8 +1556,8 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
 	}))
-	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "",
+	assert.False(t, checkOracleDatabaseContractMatchFilter(agg1, dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "",
 		LicenseTypeID:               "",
 		ItemDescription:             "",
 		CSI:                         "",
@@ -1574,8 +1574,8 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
 	}))
-	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "",
+	assert.False(t, checkOracleDatabaseContractMatchFilter(agg1, dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "",
 		LicenseTypeID:               "",
 		ItemDescription:             "",
 		CSI:                         "",
@@ -1592,8 +1592,8 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
 	}))
-	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "",
+	assert.False(t, checkOracleDatabaseContractMatchFilter(agg1, dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "",
 		LicenseTypeID:               "",
 		ItemDescription:             "",
 		CSI:                         "",
@@ -1610,8 +1610,8 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
 	}))
-	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "",
+	assert.False(t, checkOracleDatabaseContractMatchFilter(agg1, dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "",
 		LicenseTypeID:               "",
 		ItemDescription:             "",
 		CSI:                         "",
@@ -1628,8 +1628,8 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
 	}))
-	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "",
+	assert.False(t, checkOracleDatabaseContractMatchFilter(agg1, dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "",
 		LicenseTypeID:               "",
 		ItemDescription:             "",
 		CSI:                         "",
@@ -1646,8 +1646,8 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
 	}))
-	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "",
+	assert.False(t, checkOracleDatabaseContractMatchFilter(agg1, dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "",
 		LicenseTypeID:               "",
 		ItemDescription:             "",
 		CSI:                         "",
@@ -1664,8 +1664,8 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 		AvailableLicensesPerUserLTE: -1,
 		AvailableLicensesPerUserGTE: -1,
 	}))
-	assert.False(t, checkOracleDatabaseAgreementMatchFilter(agg1, dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "",
+	assert.False(t, checkOracleDatabaseContractMatchFilter(agg1, dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "",
 		LicenseTypeID:               "",
 		ItemDescription:             "",
 		CSI:                         "",
@@ -1684,7 +1684,7 @@ func TestCheckOracleDatabaseAgreementMatchFilter(t *testing.T) {
 	}))
 }
 
-func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCase(t *testing.T) {
+func TestAssignOracleDatabaseContractsToHosts_SimpleUnlimitedCase(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -1705,10 +1705,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCase(t *testing.T)
 	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
-	agreements := []dto.OracleDatabaseAgreementFE{
+	contracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "AID001",
+			ContractID:               "AID001",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -1717,7 +1717,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCase(t *testing.T)
 			Unlimited:                true,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "test-db", CoveredLicensesCount: 0, TotalCoveredLicensesCount: 0}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{Hostname: "test-db", CoveredLicensesCount: 0, TotalCoveredLicensesCount: 0}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 7,
@@ -1734,10 +1734,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCase(t *testing.T)
 		},
 	}
 
-	expectedAgreements := []dto.OracleDatabaseAgreementFE{
+	expectedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "AID001",
+			ContractID:               "AID001",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -1746,7 +1746,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCase(t *testing.T)
 			Unlimited:                true,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 3}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 3}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
@@ -1755,13 +1755,13 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCase(t *testing.T)
 		},
 	}
 
-	err := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+	err := as.assignOracleDatabaseContractsToHosts(contracts, hosts)
 	assert.NoError(t, err)
 
-	assert.Equal(t, expectedAgreements, agreements)
+	assert.Equal(t, expectedContracts, contracts)
 }
 
-func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *testing.T) {
+func TestAssignOracleDatabaseContractsToHosts_SimpleProcessorPerpetualCase(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -1782,10 +1782,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *t
 	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
-	agreements := []dto.OracleDatabaseAgreementFE{
+	contracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "AID001",
+			ContractID:               "AID001",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -1794,7 +1794,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *t
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
 			LicensesPerCore:          5,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 5,
@@ -1811,10 +1811,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *t
 		},
 	}
 
-	expectedAgreements := []dto.OracleDatabaseAgreementFE{
+	expectedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "AID001",
+			ContractID:               "AID001",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -1823,7 +1823,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *t
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 3}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 3, Hostname: "test-db", TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 3}},
 			LicensesPerCore:          5,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 2,
@@ -1832,13 +1832,13 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCase(t *t
 		},
 	}
 
-	err := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+	err := as.assignOracleDatabaseContractsToHosts(contracts, hosts)
 	assert.NoError(t, err)
 
-	assert.Equal(t, expectedAgreements, agreements)
+	assert.Equal(t, expectedContracts, contracts)
 }
 
-func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testing.T) {
+func TestAssignOracleDatabaseContractsToHosts_SimpleNamedUserPlusCase(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -1859,10 +1859,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
-	agreements := []dto.OracleDatabaseAgreementFE{
+	contracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "5051863",
+			ContractID:               "5051863",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -1871,7 +1871,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          250,
 			AvailableLicensesPerCore: 0,
@@ -1888,10 +1888,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 		},
 	}
 
-	expectedAgreements := []dto.OracleDatabaseAgreementFE{
+	expectedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "5051863",
+			ContractID:               "5051863",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -1900,7 +1900,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 5, Hostname: "test-db", TotalCoveredLicensesCount: 5, ConsumedLicensesCount: 5}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 5, Hostname: "test-db", TotalCoveredLicensesCount: 5, ConsumedLicensesCount: 5}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          250,
 			AvailableLicensesPerCore: 0,
@@ -1909,13 +1909,13 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCase(t *testin
 		},
 	}
 
-	err := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+	err := as.assignOracleDatabaseContractsToHosts(contracts, hosts)
 	assert.NoError(t, err)
 
-	assert.Equal(t, expectedAgreements, agreements)
+	assert.Equal(t, expectedContracts, contracts)
 }
 
-func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
+func TestAssignOracleDatabaseContractsToHosts_SharedContract(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -1936,10 +1936,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
-	agreements := []dto.OracleDatabaseAgreementFE{
+	contracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "5051863",
+			ContractID:               "5051863",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -1948,7 +1948,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}, {CoveredLicensesCount: 0, Hostname: "test-db2", TotalCoveredLicensesCount: 0}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}, {CoveredLicensesCount: 0, Hostname: "test-db2", TotalCoveredLicensesCount: 0}},
 			LicensesPerCore:          5,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 5,
@@ -1972,10 +1972,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 		},
 	}
 
-	expectedAgreements := []dto.OracleDatabaseAgreementFE{
+	expectedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "5051863",
+			ContractID:               "5051863",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -1984,7 +1984,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 4, Hostname: "test-db2", TotalCoveredLicensesCount: 4, ConsumedLicensesCount: 4}, {CoveredLicensesCount: 1, Hostname: "test-db", TotalCoveredLicensesCount: 1, ConsumedLicensesCount: 3}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 4, Hostname: "test-db2", TotalCoveredLicensesCount: 4, ConsumedLicensesCount: 4}, {CoveredLicensesCount: 1, Hostname: "test-db", TotalCoveredLicensesCount: 1, ConsumedLicensesCount: 3}},
 			LicensesPerCore:          5,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
@@ -1993,13 +1993,13 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedAgreement(t *testing.T) {
 		},
 	}
 
-	err := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+	err := as.assignOracleDatabaseContractsToHosts(contracts, hosts)
 	assert.NoError(t, err)
 
-	assert.Equal(t, expectedAgreements, agreements)
+	assert.Equal(t, expectedContracts, contracts)
 }
 
-func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
+func TestAssignOracleDatabaseContractsToHosts_SharedHost(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -2020,10 +2020,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
-	agreements := []dto.OracleDatabaseAgreementFE{
+	contracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "5051863",
+			ContractID:               "5051863",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -2032,7 +2032,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
 			LicensesPerCore:          5,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 5,
@@ -2040,7 +2040,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 		},
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "5051863",
+			ContractID:               "5051863",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -2049,7 +2049,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
 			LicensesPerCore:          10,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 10,
@@ -2066,10 +2066,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 		},
 	}
 
-	expectedAgreements := []dto.OracleDatabaseAgreementFE{
+	expectedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "5051863",
+			ContractID:               "5051863",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -2078,7 +2078,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 10, Hostname: "test-db", TotalCoveredLicensesCount: 15, ConsumedLicensesCount: 20}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 10, Hostname: "test-db", TotalCoveredLicensesCount: 15, ConsumedLicensesCount: 20}},
 			LicensesPerCore:          10,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
@@ -2087,7 +2087,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 		},
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "5051863",
+			ContractID:               "5051863",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -2096,7 +2096,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 5, Hostname: "test-db", TotalCoveredLicensesCount: 15, ConsumedLicensesCount: 20}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 5, Hostname: "test-db", TotalCoveredLicensesCount: 15, ConsumedLicensesCount: 20}},
 			LicensesPerCore:          5,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
@@ -2105,13 +2105,13 @@ func TestAssignOracleDatabaseAgreementsToHosts_SharedHost(t *testing.T) {
 		},
 	}
 
-	err := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+	err := as.assignOracleDatabaseContractsToHosts(contracts, hosts)
 	assert.NoError(t, err)
 
-	assert.Equal(t, expectedAgreements, agreements)
+	assert.Equal(t, expectedContracts, contracts)
 }
 
-func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCaseNoAssociatedHost(t *testing.T) {
+func TestAssignOracleDatabaseContractsToHosts_SimpleUnlimitedCaseNoAssociatedHost(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -2132,10 +2132,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCaseNoAssociatedHo
 	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
-	agreements := []dto.OracleDatabaseAgreementFE{
+	contracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "5051863",
+			ContractID:               "5051863",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -2144,7 +2144,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCaseNoAssociatedHo
 			Unlimited:                true,
 			Basket:                   true,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{},
 			LicensesPerCore:          0,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
@@ -2161,10 +2161,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCaseNoAssociatedHo
 		},
 	}
 
-	expectedAgreements := []dto.OracleDatabaseAgreementFE{
+	expectedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "5051863",
+			ContractID:               "5051863",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -2173,7 +2173,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCaseNoAssociatedHo
 			Unlimited:                true,
 			Basket:                   true,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{},
 			LicensesPerCore:          0,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
@@ -2181,13 +2181,13 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleUnlimitedCaseNoAssociatedHo
 		},
 	}
 
-	err := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+	err := as.assignOracleDatabaseContractsToHosts(contracts, hosts)
 	assert.NoError(t, err)
 
-	assert.Equal(t, expectedAgreements, agreements)
+	assert.Equal(t, expectedContracts, contracts)
 }
 
-func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAssociatedHost(t *testing.T) {
+func TestAssignOracleDatabaseContractsToHosts_SimpleProcessorPerpetualCaseNoAssociatedHost(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -2208,10 +2208,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAss
 	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
-	agreements := []dto.OracleDatabaseAgreementFE{
+	contracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "5051863",
+			ContractID:               "5051863",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -2220,7 +2220,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAss
 			Unlimited:                false,
 			Basket:                   true,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{},
 			LicensesPerCore:          5,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 5,
@@ -2237,10 +2237,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAss
 		},
 	}
 
-	expectedAgreements := []dto.OracleDatabaseAgreementFE{
+	expectedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "5051863",
+			ContractID:               "5051863",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -2249,7 +2249,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAss
 			Unlimited:                false,
 			Basket:                   true,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{},
 			LicensesPerCore:          5,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 2,
@@ -2258,13 +2258,13 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleProcessorPerpetualCaseNoAss
 		},
 	}
 
-	err := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+	err := as.assignOracleDatabaseContractsToHosts(contracts, hosts)
 	assert.NoError(t, err)
 
-	assert.Equal(t, expectedAgreements, agreements)
+	assert.Equal(t, expectedContracts, contracts)
 }
 
-func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociatedHost(t *testing.T) {
+func TestAssignOracleDatabaseContractsToHosts_SimpleNamedUserPlusCaseNoAssociatedHost(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -2285,10 +2285,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 	db.EXPECT().GetOracleDatabaseLicenseTypes().
 		Return(parts, nil)
 
-	agreements := []dto.OracleDatabaseAgreementFE{
+	contracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "5051863",
+			ContractID:               "5051863",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -2297,7 +2297,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 			Unlimited:                false,
 			Basket:                   true,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{},
 			LicensesPerCore:          0,
 			LicensesPerUser:          200,
 			AvailableLicensesPerCore: 0,
@@ -2314,10 +2314,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 		},
 	}
 
-	expectedAgreements := []dto.OracleDatabaseAgreementFE{
+	expectedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "5051863",
+			ContractID:               "5051863",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -2326,7 +2326,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 			Unlimited:                false,
 			Basket:                   true,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{},
 			LicensesPerCore:          0,
 			LicensesPerUser:          200,
 			AvailableLicensesPerCore: 0,
@@ -2335,13 +2335,13 @@ func TestAssignOracleDatabaseAgreementsToHosts_SimpleNamedUserPlusCaseNoAssociat
 		},
 	}
 
-	err := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+	err := as.assignOracleDatabaseContractsToHosts(contracts, hosts)
 	assert.NoError(t, err)
 
-	assert.Equal(t, expectedAgreements, agreements)
+	assert.Equal(t, expectedContracts, contracts)
 }
 
-func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
+func TestAssignOracleDatabaseContractsToHosts_CompleCase1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -2383,10 +2383,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 	}
 	db.EXPECT().GetCluster("dbclust", utils.MAX_TIME).Return(&cluster, nil)
 
-	agreements := []dto.OracleDatabaseAgreementFE{
+	contracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "5051863",
+			ContractID:               "5051863",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -2395,7 +2395,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   true,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "test-db"}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{Hostname: "test-db"}},
 			LicensesPerCore:          10,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 10,
@@ -2419,10 +2419,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 		},
 	}
 
-	expectedAgreements := []dto.OracleDatabaseAgreementFE{
+	expectedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "5051863",
+			ContractID:               "5051863",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -2431,7 +2431,7 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   true,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "test-db", CoveredLicensesCount: 3, TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 3}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{Hostname: "test-db", CoveredLicensesCount: 3, TotalCoveredLicensesCount: 3, ConsumedLicensesCount: 3}},
 			LicensesPerCore:          10,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
@@ -2440,10 +2440,10 @@ func TestAssignOracleDatabaseAgreementsToHosts_CompleCase1(t *testing.T) {
 		},
 	}
 
-	err := as.assignOracleDatabaseAgreementsToHosts(agreements, hosts)
+	err := as.assignOracleDatabaseContractsToHosts(contracts, hosts)
 	assert.NoError(t, err)
 
-	assert.Equal(t, expectedAgreements, agreements)
+	assert.Equal(t, expectedContracts, contracts)
 }
 
 func TestSortHostsUsingLicenses(t *testing.T) {
@@ -2518,8 +2518,8 @@ func TestSortHostsUsingLicenses(t *testing.T) {
 	assert.Equal(t, expected, list)
 }
 
-func TestSortOracleDatabaseAgreements(t *testing.T) {
-	list := []dto.OracleDatabaseAgreementFE{
+func TestSortOracleDatabaseContracts(t *testing.T) {
+	list := []dto.OracleDatabaseContractFE{
 		{Basket: true, Unlimited: false, LicensesPerUser: 10},
 		{Basket: true, Unlimited: false, LicensesPerCore: 10},
 		{Basket: true, Unlimited: true, LicensesPerUser: 20},
@@ -2538,7 +2538,7 @@ func TestSortOracleDatabaseAgreements(t *testing.T) {
 		{Basket: true, Unlimited: false, LicensesPerUser: 20},
 	}
 
-	expected := []dto.OracleDatabaseAgreementFE{
+	expected := []dto.OracleDatabaseContractFE{
 		{Basket: false, Unlimited: false, LicensesPerUser: 20},
 		{Basket: false, Unlimited: false, LicensesPerUser: 10},
 		{Basket: false, Unlimited: false, LicensesPerCore: 20},
@@ -2557,12 +2557,12 @@ func TestSortOracleDatabaseAgreements(t *testing.T) {
 		{Basket: true, Unlimited: true, LicensesPerCore: 10},
 	}
 
-	sortOracleDatabaseAgreements(list)
+	sortOracleDatabaseContracts(list)
 
 	assert.Equal(t, expected, list)
 }
 
-func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
+func TestSortAssociatedHostsInOracleDatabaseContract(t *testing.T) {
 	hostsMap := map[string]map[string]*dto.HostUsingOracleDatabaseLicenses{
 		"L10005": {
 			"test-db1": {
@@ -2580,9 +2580,9 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 		},
 	}
 
-	agr := dto.OracleDatabaseAgreementFE{
+	agr := dto.OracleDatabaseContractFE{
 		LicenseTypeID: "L10005",
-		Hosts: []dto.OracleDatabaseAgreementAssociatedHostFE{
+		Hosts: []dto.OracleDatabaseContractAssociatedHostFE{
 			{Hostname: "test-db2"},
 			{Hostname: "test-db1"},
 			{Hostname: "test-db4"},
@@ -2590,14 +2590,14 @@ func TestSortAssociatedHostsInOracleDatabaseAgreement(t *testing.T) {
 		},
 	}
 
-	expected := []dto.OracleDatabaseAgreementAssociatedHostFE{
+	expected := []dto.OracleDatabaseContractAssociatedHostFE{
 		{Hostname: "test-db4"},
 		{Hostname: "test-db2"},
 		{Hostname: "test-db1"},
 		{Hostname: "test-db3"},
 	}
 
-	sortHostsInAgreementByLicenseCount(&agr, hostsMap)
+	sortHostsInContractByLicenseCount(&agr, hostsMap)
 
 	assert.Equal(t, expected, agr.Hosts)
 }
@@ -2653,7 +2653,7 @@ func TestBuildHostUsingLicensesMap(t *testing.T) {
 	assert.Equal(t, expected, buildHostUsingLicensesMap(list))
 }
 
-func TestBuildAgreementPartMap(t *testing.T) {
+func TestBuildContractPartMap(t *testing.T) {
 	list := []model.OracleDatabaseLicenseType{
 		{
 			ItemDescription: "itemDesc1",
@@ -2677,7 +2677,7 @@ func TestBuildAgreementPartMap(t *testing.T) {
 	assert.Equal(t, expected, buildLicenseTypesMap(list))
 }
 
-func TestDeleteOracleDatabaseAgreement(t *testing.T) {
+func TestDeleteOracleDatabaseContract(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -2691,22 +2691,22 @@ func TestDeleteOracleDatabaseAgreement(t *testing.T) {
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
-	agreementID := utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")
+	contractID := utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")
 
-	t.Run("Fail: can't find agreement", func(t *testing.T) {
+	t.Run("Fail: can't find contract", func(t *testing.T) {
 		gomock.InOrder(
-			db.EXPECT().RemoveOracleDatabaseAgreement(agreementID).
-				Return(utils.ErrOracleDatabaseAgreementNotFound),
+			db.EXPECT().RemoveOracleDatabaseContract(contractID).
+				Return(utils.ErrOracleDatabaseContractNotFound),
 		)
 
-		err := as.DeleteOracleDatabaseAgreement(agreementID)
-		require.EqualError(t, err, utils.ErrOracleDatabaseAgreementNotFound.Error())
+		err := as.DeleteOracleDatabaseContract(contractID)
+		require.EqualError(t, err, utils.ErrOracleDatabaseContractNotFound.Error())
 	})
 
 	t.Run("Success", func(t *testing.T) {
-		agreement := model.OracleDatabaseAgreement{
-			ID:              agreementID,
-			AgreementID:     "AID001",
+		contract := model.OracleDatabaseContract{
+			ID:              contractID,
+			ContractID:      "AID001",
 			CSI:             "CSI001",
 			LicenseTypeID:   lt1.ID,
 			ReferenceNumber: "RF0001",
@@ -2717,17 +2717,17 @@ func TestDeleteOracleDatabaseAgreement(t *testing.T) {
 		}
 
 		gomock.InOrder(
-			db.EXPECT().RemoveOracleDatabaseAgreement(agreement.ID).
+			db.EXPECT().RemoveOracleDatabaseContract(contract.ID).
 				Return(nil),
 		)
 
-		err := as.DeleteOracleDatabaseAgreement(agreementID)
+		err := as.DeleteOracleDatabaseContract(contractID)
 		assert.Nil(t, err)
 	})
 
 }
 
-func TestAddHostToOracleDatabaseAgreement(t *testing.T) {
+func TestAddHostToOracleDatabaseContract(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -2766,13 +2766,13 @@ func TestAddHostToOracleDatabaseAgreement(t *testing.T) {
 			}, nil),
 		)
 
-		err := as.AddHostToOracleDatabaseAgreement(anotherAssociatedPartID, "pippo")
+		err := as.AddHostToOracleDatabaseContract(anotherAssociatedPartID, "pippo")
 		assert.EqualError(t, err, utils.ErrHostNotFound.Error())
 	})
 
 	id := utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")
 
-	t.Run("Fail: can't find agreement", func(t *testing.T) {
+	t.Run("Fail: can't find contract", func(t *testing.T) {
 		gomock.InOrder(
 			db.EXPECT().SearchHosts("hostnames",
 				dto.SearchHostsFilters{
@@ -2794,17 +2794,17 @@ func TestAddHostToOracleDatabaseAgreement(t *testing.T) {
 					{"hostname": "foobar"},
 					{"hostname": "ercsoldbx"},
 				}, nil),
-			db.EXPECT().GetOracleDatabaseAgreement(id).
-				Return(nil, utils.ErrOracleDatabaseAgreementNotFound),
+			db.EXPECT().GetOracleDatabaseContract(id).
+				Return(nil, utils.ErrOracleDatabaseContractNotFound),
 		)
 
-		err := as.AddHostToOracleDatabaseAgreement(id, "foobar")
-		assert.EqualError(t, err, utils.ErrOracleDatabaseAgreementNotFound.Error())
+		err := as.AddHostToOracleDatabaseContract(id, "foobar")
+		assert.EqualError(t, err, utils.ErrOracleDatabaseContractNotFound.Error())
 	})
 
 	t.Run("Success", func(t *testing.T) {
-		agreement := model.OracleDatabaseAgreement{
-			AgreementID:     "AID001",
+		contract := model.OracleDatabaseContract{
+			ContractID:      "AID001",
 			CSI:             "CSI001",
 			ID:              id,
 			LicenseTypeID:   lt1.ID,
@@ -2815,9 +2815,9 @@ func TestAddHostToOracleDatabaseAgreement(t *testing.T) {
 			Hosts:           []string{"test-db", "ercsoldbx"},
 		}
 
-		agreementPostAdd := model.OracleDatabaseAgreement{
+		contractPostAdd := model.OracleDatabaseContract{
 			ID:              id,
-			AgreementID:     "AID001",
+			ContractID:      "AID001",
 			CSI:             "CSI001",
 			LicenseTypeID:   lt1.ID,
 			ReferenceNumber: "RF0001",
@@ -2848,18 +2848,18 @@ func TestAddHostToOracleDatabaseAgreement(t *testing.T) {
 					{"hostname": "foobar"},
 					{"hostname": "ercsoldbx"},
 				}, nil),
-			db.EXPECT().GetOracleDatabaseAgreement(id).
-				Return(&agreement, nil),
-			db.EXPECT().UpdateOracleDatabaseAgreement(agreementPostAdd).
+			db.EXPECT().GetOracleDatabaseContract(id).
+				Return(&contract, nil),
+			db.EXPECT().UpdateOracleDatabaseContract(contractPostAdd).
 				Return(nil),
 		)
 
-		err := as.AddHostToOracleDatabaseAgreement(id, "foobar")
+		err := as.AddHostToOracleDatabaseContract(id, "foobar")
 		assert.Nil(t, err)
 	})
 }
 
-func TestDeleteHostFromOracleDatabaseAgreement(t *testing.T) {
+func TestDeleteHostFromOracleDatabaseContract(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -2875,7 +2875,7 @@ func TestDeleteHostFromOracleDatabaseAgreement(t *testing.T) {
 
 	id := utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb")
 
-	t.Run("Fail: can't get agreement", func(t *testing.T) {
+	t.Run("Fail: can't get contract", func(t *testing.T) {
 		gomock.InOrder(
 			db.EXPECT().SearchHosts("hostnames",
 				dto.SearchHostsFilters{
@@ -2895,19 +2895,19 @@ func TestDeleteHostFromOracleDatabaseAgreement(t *testing.T) {
 				Return([]map[string]interface{}{
 					{"hostname": "pippo"},
 				}, nil),
-			db.EXPECT().GetOracleDatabaseAgreement(id).
-				Return(nil, utils.ErrOracleDatabaseAgreementNotFound),
+			db.EXPECT().GetOracleDatabaseContract(id).
+				Return(nil, utils.ErrOracleDatabaseContractNotFound),
 		)
 
-		err := as.DeleteHostFromOracleDatabaseAgreement(id, "pippo")
-		require.EqualError(t, err, utils.ErrOracleDatabaseAgreementNotFound.Error())
+		err := as.DeleteHostFromOracleDatabaseContract(id, "pippo")
+		require.EqualError(t, err, utils.ErrOracleDatabaseContractNotFound.Error())
 	})
 
 	anotherId := utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")
 
 	t.Run("Success", func(t *testing.T) {
-		agreement := model.OracleDatabaseAgreement{
-			AgreementID:     "AID001",
+		contract := model.OracleDatabaseContract{
+			ContractID:      "AID001",
 			CSI:             "CSI001",
 			ID:              anotherId,
 			LicenseTypeID:   lt1.ID,
@@ -2918,8 +2918,8 @@ func TestDeleteHostFromOracleDatabaseAgreement(t *testing.T) {
 			Hosts:           []string{"test-db", "ercsoldbx"},
 		}
 
-		agreementPostAdd := model.OracleDatabaseAgreement{
-			AgreementID:     "AID001",
+		contractPostAdd := model.OracleDatabaseContract{
+			ContractID:      "AID001",
 			CSI:             "CSI001",
 			ID:              anotherId,
 			LicenseTypeID:   lt1.ID,
@@ -2949,18 +2949,18 @@ func TestDeleteHostFromOracleDatabaseAgreement(t *testing.T) {
 				Return([]map[string]interface{}{
 					{"hostname": "ercsoldbx"},
 				}, nil),
-			db.EXPECT().GetOracleDatabaseAgreement(anotherId).
-				Return(&agreement, nil),
-			db.EXPECT().UpdateOracleDatabaseAgreement(agreementPostAdd).
+			db.EXPECT().GetOracleDatabaseContract(anotherId).
+				Return(&contract, nil),
+			db.EXPECT().UpdateOracleDatabaseContract(contractPostAdd).
 				Return(nil),
 		)
 
-		err := as.DeleteHostFromOracleDatabaseAgreement(anotherId, "ercsoldbx")
+		err := as.DeleteHostFromOracleDatabaseContract(anotherId, "ercsoldbx")
 		assert.Nil(t, err)
 	})
 }
 
-func TestDeleteHostFromOracleDatabaseAgreements(t *testing.T) {
+func TestDeleteHostFromOracleDatabaseContracts(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -2977,10 +2977,10 @@ func TestDeleteHostFromOracleDatabaseAgreements(t *testing.T) {
 	anotherId := utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")
 
 	t.Run("Success", func(t *testing.T) {
-		listAgreement := []dto.OracleDatabaseAgreementFE{}
+		listContract := []dto.OracleDatabaseContractFE{}
 
-		agreement := model.OracleDatabaseAgreement{
-			AgreementID:     "AID001",
+		contract := model.OracleDatabaseContract{
+			ContractID:      "AID001",
 			CSI:             "CSI001",
 			ID:              anotherId,
 			LicenseTypeID:   lt1.ID,
@@ -2991,8 +2991,8 @@ func TestDeleteHostFromOracleDatabaseAgreements(t *testing.T) {
 			Hosts:           []string{"test-db", "ercsoldbx"},
 		}
 
-		agreementPostAdd := model.OracleDatabaseAgreement{
-			AgreementID:     "AID001",
+		contractPostAdd := model.OracleDatabaseContract{
+			ContractID:      "AID001",
 			CSI:             "CSI001",
 			ID:              anotherId,
 			LicenseTypeID:   lt1.ID,
@@ -3022,20 +3022,20 @@ func TestDeleteHostFromOracleDatabaseAgreements(t *testing.T) {
 				Return([]map[string]interface{}{
 					{"hostname": "ercsoldbx"},
 				}, nil),
-			db.EXPECT().ListOracleDatabaseAgreements().
-				Return(listAgreement, nil),
-			db.EXPECT().GetOracleDatabaseAgreement(anotherId).
-				Return(&agreement, nil).AnyTimes(),
-			db.EXPECT().UpdateOracleDatabaseAgreement(agreementPostAdd).
+			db.EXPECT().ListOracleDatabaseContracts().
+				Return(listContract, nil),
+			db.EXPECT().GetOracleDatabaseContract(anotherId).
+				Return(&contract, nil).AnyTimes(),
+			db.EXPECT().UpdateOracleDatabaseContract(contractPostAdd).
 				Return(nil).AnyTimes(),
 		)
 
-		err := as.DeleteHostFromOracleDatabaseAgreements("ercsoldbx")
+		err := as.DeleteHostFromOracleDatabaseContracts("ercsoldbx")
 		assert.Nil(t, err)
 	})
 }
 
-func TestGetOracleDatabaseAgreementsAsXLSX_Success(t *testing.T) {
+func TestGetOracleDatabaseContractsAsXLSX_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -3046,8 +3046,8 @@ func TestGetOracleDatabaseAgreementsAsXLSX_Success(t *testing.T) {
 		Database: db,
 	}
 
-	agreement := model.OracleDatabaseAgreement{
-		AgreementID:     "5051863",
+	contract := model.OracleDatabaseContract{
+		ContractID:      "5051863",
 		CSI:             "13902248",
 		ID:              utils.Str2oid("609ce3072eff5d5540ec4a28"),
 		LicenseTypeID:   lt1.ID,
@@ -3059,29 +3059,29 @@ func TestGetOracleDatabaseAgreementsAsXLSX_Success(t *testing.T) {
 		Hosts:           []string{"test-db", "ercsoldbx"},
 	}
 
-	searchedAgreementItem := dto.OracleDatabaseAgreementFE{
-		ID:                       agreement.ID,
-		AgreementID:              agreement.AgreementID,
-		CSI:                      agreement.CSI,
-		LicenseTypeID:            agreement.LicenseTypeID,
+	searchedContractItem := dto.OracleDatabaseContractFE{
+		ID:                       contract.ID,
+		ContractID:               contract.ContractID,
+		CSI:                      contract.CSI,
+		LicenseTypeID:            contract.LicenseTypeID,
 		ItemDescription:          "Oracle Database Enterprise Edition",
 		Metric:                   "Named User Plus Perpetual",
-		ReferenceNumber:          agreement.ReferenceNumber,
+		ReferenceNumber:          contract.ReferenceNumber,
 		Unlimited:                false,
 		Basket:                   false,
 		Restricted:               false,
-		Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{},
+		Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{},
 		LicensesPerCore:          0,
 		LicensesPerUser:          350,
 		AvailableLicensesPerCore: 0,
 		AvailableLicensesPerUser: 0,
 	}
-	as.mockGetOracleDatabaseAgreements = func(filters dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error) {
-		return []dto.OracleDatabaseAgreementFE{searchedAgreementItem}, nil
+	as.mockGetOracleDatabaseContracts = func(filters dto.GetOracleDatabaseContractsFilter) ([]dto.OracleDatabaseContractFE, error) {
+		return []dto.OracleDatabaseContractFE{searchedContractItem}, nil
 	}
 
-	filter := dto.GetOracleDatabaseAgreementsFilter{
-		AgreementID:                 "",
+	filter := dto.GetOracleDatabaseContractsFilter{
+		ContractID:                  "",
 		LicenseTypeID:               "",
 		ItemDescription:             "",
 		CSI:                         "",
@@ -3099,17 +3099,17 @@ func TestGetOracleDatabaseAgreementsAsXLSX_Success(t *testing.T) {
 		AvailableLicensesPerUserGTE: -1,
 	}
 
-	actual, err := as.GetOracleDatabaseAgreementsAsXLSX(filter)
+	actual, err := as.GetOracleDatabaseContractsAsXLSX(filter)
 	require.NoError(t, err)
 
-	assert.Equal(t, "5051863", actual.GetCellValue("Agreements", "A2"))
-	assert.Equal(t, "PID001", actual.GetCellValue("Agreements", "B2"))
-	assert.Equal(t, "Oracle Database Enterprise Edition", actual.GetCellValue("Agreements", "C2"))
-	assert.Equal(t, "Named User Plus Perpetual", actual.GetCellValue("Agreements", "D2"))
-	assert.Equal(t, "13902248", actual.GetCellValue("Agreements", "E2"))
-	assert.Equal(t, "37255828", actual.GetCellValue("Agreements", "F2"))
-	assert.Equal(t, "0", actual.GetCellValue("Agreements", "H2"))
-	assert.Equal(t, "350", actual.GetCellValue("Agreements", "I2"))
-	assert.Equal(t, "0", actual.GetCellValue("Agreements", "J2"))
-	assert.Equal(t, "0", actual.GetCellValue("Agreements", "K2"))
+	assert.Equal(t, "5051863", actual.GetCellValue("Contracts", "A2"))
+	assert.Equal(t, "PID001", actual.GetCellValue("Contracts", "B2"))
+	assert.Equal(t, "Oracle Database Enterprise Edition", actual.GetCellValue("Contracts", "C2"))
+	assert.Equal(t, "Named User Plus Perpetual", actual.GetCellValue("Contracts", "D2"))
+	assert.Equal(t, "13902248", actual.GetCellValue("Contracts", "E2"))
+	assert.Equal(t, "37255828", actual.GetCellValue("Contracts", "F2"))
+	assert.Equal(t, "0", actual.GetCellValue("Contracts", "H2"))
+	assert.Equal(t, "350", actual.GetCellValue("Contracts", "I2"))
+	assert.Equal(t, "0", actual.GetCellValue("Contracts", "J2"))
+	assert.Equal(t, "0", actual.GetCellValue("Contracts", "K2"))
 }

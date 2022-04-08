@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,35 +29,35 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-func (ctrl *APIController) AddMySQLAgreement(w http.ResponseWriter, r *http.Request) {
-	var agreement model.MySQLAgreement
+func (ctrl *APIController) AddMySQLContract(w http.ResponseWriter, r *http.Request) {
+	var contract model.MySQLContract
 
-	if err := utils.Decode(r.Body, &agreement); err != nil {
+	if err := utils.Decode(r.Body, &contract); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
 	}
 
-	if agreement.ID != primitive.NilObjectID {
+	if contract.ID != primitive.NilObjectID {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("ID must be empty"))
 		return
 	}
 
-	if !agreement.IsValid() {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Agreement isn't valid"))
+	if !contract.IsValid() {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Contract isn't valid"))
 		return
 	}
 
-	agreementAdded, err := ctrl.Service.AddMySQLAgreement(agreement)
+	contractAdded, err := ctrl.Service.AddMySQLContract(contract)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusCreated, agreementAdded)
+	utils.WriteJSONResponse(w, http.StatusCreated, contractAdded)
 }
 
-func (ctrl *APIController) UpdateMySQLAgreement(w http.ResponseWriter, r *http.Request) {
-	var agreement model.MySQLAgreement
+func (ctrl *APIController) UpdateMySQLContract(w http.ResponseWriter, r *http.Request) {
+	var contract model.MySQLContract
 
 	id, err := primitive.ObjectIDFromHex(mux.Vars(r)["id"])
 	if err != nil {
@@ -65,22 +65,22 @@ func (ctrl *APIController) UpdateMySQLAgreement(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	if err := utils.Decode(r.Body, &agreement); err != nil {
+	if err := utils.Decode(r.Body, &contract); err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
 		return
 	}
 
-	if agreement.ID != id {
+	if contract.ID != id {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Object ID does not correspond"))
 		return
 	}
 
-	if !agreement.IsValid() {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Agreement isn't valid"))
+	if !contract.IsValid() {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Contract isn't valid"))
 		return
 	}
 
-	agreementUpdated, err := ctrl.Service.UpdateMySQLAgreement(agreement)
+	contractUpdated, err := ctrl.Service.UpdateMySQLContract(contract)
 	if errors.Is(err, utils.ErrNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
@@ -91,35 +91,35 @@ func (ctrl *APIController) UpdateMySQLAgreement(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	utils.WriteJSONResponse(w, http.StatusOK, agreementUpdated)
+	utils.WriteJSONResponse(w, http.StatusOK, contractUpdated)
 }
 
-func (ctrl *APIController) GetMySQLAgreements(w http.ResponseWriter, r *http.Request) {
+func (ctrl *APIController) GetMySQLContracts(w http.ResponseWriter, r *http.Request) {
 	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
 	switch choice {
 	case "application/json":
-		ctrl.GetMySQLAgreementsJSON(w, r)
+		ctrl.GetMySQLContractsJSON(w, r)
 	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-		ctrl.GetMySQLAgreementsXLSX(w, r)
+		ctrl.GetMySQLContractsXLSX(w, r)
 	}
 }
 
-func (ctrl *APIController) GetMySQLAgreementsJSON(w http.ResponseWriter, r *http.Request) {
-	agreements, err := ctrl.Service.GetMySQLAgreements()
+func (ctrl *APIController) GetMySQLContractsJSON(w http.ResponseWriter, r *http.Request) {
+	contracts, err := ctrl.Service.GetMySQLContracts()
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
 	}
 
 	response := map[string]interface{}{
-		"agreements": agreements,
+		"contracts": contracts,
 	}
 	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
 
-func (ctrl *APIController) GetMySQLAgreementsXLSX(w http.ResponseWriter, r *http.Request) {
-	xlsx, err := ctrl.Service.GetMySQLAgreementsAsXLSX()
+func (ctrl *APIController) GetMySQLContractsXLSX(w http.ResponseWriter, r *http.Request) {
+	xlsx, err := ctrl.Service.GetMySQLContractsAsXLSX()
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
@@ -128,14 +128,14 @@ func (ctrl *APIController) GetMySQLAgreementsXLSX(w http.ResponseWriter, r *http
 	utils.WriteXLSXResponse(w, xlsx)
 }
 
-func (ctrl *APIController) DeleteMySQLAgreement(w http.ResponseWriter, r *http.Request) {
+func (ctrl *APIController) DeleteMySQLContract(w http.ResponseWriter, r *http.Request) {
 	id, err := primitive.ObjectIDFromHex(mux.Vars(r)["id"])
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, fmt.Errorf("Can't decode id: %w", err))
 		return
 	}
 
-	err = ctrl.Service.DeleteMySQLAgreement(id)
+	err = ctrl.Service.DeleteMySQLContract(id)
 	if errors.Is(err, utils.ErrNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return

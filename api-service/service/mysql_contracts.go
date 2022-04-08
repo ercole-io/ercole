@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,52 +24,52 @@ import (
 	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
-func (as *APIService) AddMySQLAgreement(agreement model.MySQLAgreement) (*model.MySQLAgreement, error) {
-	agreement.ID = as.NewObjectID()
+func (as *APIService) AddMySQLContract(contract model.MySQLContract) (*model.MySQLContract, error) {
+	contract.ID = as.NewObjectID()
 
-	err := as.Database.AddMySQLAgreement(agreement)
+	err := as.Database.AddMySQLContract(contract)
 	if err != nil {
 		return nil, err
 	}
 
-	return &agreement, nil
+	return &contract, nil
 }
 
-func (as *APIService) UpdateMySQLAgreement(agreement model.MySQLAgreement) (*model.MySQLAgreement, error) {
-	if err := as.Database.UpdateMySQLAgreement(agreement); err != nil {
+func (as *APIService) UpdateMySQLContract(contract model.MySQLContract) (*model.MySQLContract, error) {
+	if err := as.Database.UpdateMySQLContract(contract); err != nil {
 		return nil, err
 	}
 
-	return &agreement, nil
+	return &contract, nil
 }
 
-func (as *APIService) GetMySQLAgreements() ([]model.MySQLAgreement, error) {
-	agreements, err := as.Database.GetMySQLAgreements()
+func (as *APIService) GetMySQLContracts() ([]model.MySQLContract, error) {
+	contracts, err := as.Database.GetMySQLContracts()
 	if err != nil {
 		return nil, err
 	}
 
-	return agreements, nil
+	return contracts, nil
 }
 
-func (as *APIService) DeleteMySQLAgreement(id primitive.ObjectID) error {
-	if err := as.Database.DeleteMySQLAgreement(id); err != nil {
+func (as *APIService) DeleteMySQLContract(id primitive.ObjectID) error {
+	if err := as.Database.DeleteMySQLContract(id); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (as *APIService) GetMySQLAgreementsAsXLSX() (*excelize.File, error) {
-	agreements, err := as.GetMySQLAgreements()
+func (as *APIService) GetMySQLContractsAsXLSX() (*excelize.File, error) {
+	contracts, err := as.GetMySQLContracts()
 	if err != nil {
 		return nil, err
 	}
 
-	sheet := "Agreements"
+	sheet := "Contracts"
 	headers := []string{
 		"Type",
-		"Agreement Number",
+		"Contract Number",
 		"CSI",
 		"Number of licenses",
 		"Clusters",
@@ -83,10 +83,10 @@ func (as *APIService) GetMySQLAgreementsAsXLSX() (*excelize.File, error) {
 
 	axisHelp := exutils.NewAxisHelper(1)
 
-	for _, val := range agreements {
+	for _, val := range contracts {
 		nextAxis := axisHelp.NewRow()
 		sheets.SetCellValue(sheet, nextAxis(), val.Type)
-		sheets.SetCellValue(sheet, nextAxis(), val.AgreementID)
+		sheets.SetCellValue(sheet, nextAxis(), val.ContractID)
 		sheets.SetCellValue(sheet, nextAxis(), val.CSI)
 		sheets.SetCellValue(sheet, nextAxis(), val.NumberOfLicenses)
 		sheets.SetCellValue(sheet, nextAxis(), val.Clusters)

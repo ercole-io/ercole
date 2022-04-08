@@ -117,17 +117,17 @@ type MongoDatabaseInterface interface {
 	GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error)
 	//GetOracleDatabaseLicenseType return a OracleDatabaseLicenseType
 	GetOracleDatabaseLicenseType(id string) (*model.OracleDatabaseLicenseType, error)
-	// InsertOracleDatabaseAgreement insert an Oracle/Database agreement into the database
-	InsertOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) error
-	// GetOracleDatabaseAgreement return the agreement specified by id
-	GetOracleDatabaseAgreement(id primitive.ObjectID) (*model.OracleDatabaseAgreement, error)
-	// UpdateOracleDatabaseAgreement update an Oracle/Database agreement in the database
-	UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) error
-	// RemoveOracleDatabaseAgreement remove an Oracle/Database agreement from the database
-	RemoveOracleDatabaseAgreement(id primitive.ObjectID) error
+	// InsertOracleDatabaseContract insert an Oracle/Database contract into the database
+	InsertOracleDatabaseContract(contract model.OracleDatabaseContract) error
+	// GetOracleDatabaseContract return the contract specified by id
+	GetOracleDatabaseContract(id primitive.ObjectID) (*model.OracleDatabaseContract, error)
+	// UpdateOracleDatabaseContract update an Oracle/Database contract in the database
+	UpdateOracleDatabaseContract(contract model.OracleDatabaseContract) error
+	// RemoveOracleDatabaseContract remove an Oracle/Database contract from the database
+	RemoveOracleDatabaseContract(id primitive.ObjectID) error
 
-	// ListOracleDatabaseAgreements lists the Oracle/Database agreements
-	ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgreementFE, error)
+	// ListOracleDatabasContracts lists the Oracle/Database contracts
+	ListOracleDatabaseContracts() ([]dto.OracleDatabaseContractFE, error)
 	// UpdateLicenseIgnoredField update license ignored field (true/false)
 	UpdateLicenseIgnoredField(hostname string, dbname string, licenseTypeID string, ignored bool) error
 
@@ -135,7 +135,7 @@ type MongoDatabaseInterface interface {
 	InsertOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) error
 	// UpdateOracleDatabaseLicenseType update an Oracle/Database license type in the database
 	UpdateOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) error
-	// RemoveOracleDatabaseLicenseType remove a licence type - Oracle/Database agreement part from the database
+	// RemoveOracleDatabaseLicenseType remove a licence type - Oracle/Database contract part from the database
 	RemoveOracleDatabaseLicenseType(id string) error
 
 	// ReplaceHostData adds a new hostdata to the database
@@ -171,12 +171,12 @@ type MongoDatabaseInterface interface {
 	// Only ENTERPRISE MySQL db are considered as licenses
 	GetMySQLUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error)
 
-	// MYSQL AGREEMENTS
+	// MYSQL CONTRACTS
 
-	AddMySQLAgreement(agreement model.MySQLAgreement) error
-	UpdateMySQLAgreement(agreement model.MySQLAgreement) error
-	GetMySQLAgreements() ([]model.MySQLAgreement, error)
-	DeleteMySQLAgreement(id primitive.ObjectID) error
+	AddMySQLContract(contract model.MySQLContract) error
+	UpdateMySQLContract(contract model.MySQLContract) error
+	GetMySQLContracts() ([]model.MySQLContract, error)
+	DeleteMySQLContract(id primitive.ObjectID) error
 }
 
 // MongoDatabase is a implementation

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ func init() {
 		if err := migrateAlertsSchema(db); err != nil {
 			return err
 		}
-		if err := migrateOracleDatabaseAgreementsSchema(db); err != nil {
+		if err := migrateOracleDatabaseContractsSchema(db); err != nil {
 			return err
 		}
 		if err := migrateOracleDatabaseLicenseTypes(db); err != nil {
@@ -137,9 +137,9 @@ func migrateAlertsSchema(client *mongo.Database) error {
 	return nil
 }
 
-// migrateOracleDatabaseAgreementsSchema create or update the oracle_database_agreements schema
-func migrateOracleDatabaseAgreementsSchema(client *mongo.Database) error {
-	collection := "oracle_database_agreements"
+// migrateOracleDatabaseContractsSchema create or update the oracle_database_contracts schema
+func migrateOracleDatabaseContractsSchema(client *mongo.Database) error {
+	collection := "oracle_database_contracts"
 
 	if cols, err := client.ListCollectionNames(context.TODO(), bson.D{}); err != nil {
 		return err
@@ -158,7 +158,7 @@ func migrateOracleDatabaseAgreementsSchema(client *mongo.Database) error {
 				{
 
 					Keys: bson.D{
-						{Key: "agreementID", Value: 1},
+						{Key: "contractID", Value: 1},
 					},
 					Options: options.Index().SetUnique(true),
 				},
@@ -175,7 +175,7 @@ func migrateOracleDatabaseAgreementsSchema(client *mongo.Database) error {
 	return nil
 }
 
-// MigrateOracleDatabaseAgreementsSchema create or update the oracle_database_agreements schema
+// MigrateOracleDatabaseContractsSchema create or update the oracle_database_contracts schema
 func migrateOracleDatabaseLicenseTypes(client *mongo.Database) error {
 	collection := "oracle_database_license_types"
 

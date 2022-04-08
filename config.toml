@@ -45,7 +45,7 @@ BindIP = "0.0.0.0"
 Port = 11113
 LogHTTPRequest = true
 ReadOnly = false
-DebugOracleDatabaseAgreementsAssignmentAlgorithm = false
+DebugOracleDatabaseContractsAssignmentAlgorithm = false
 DefaultDatabaseTags = [
   "coolest",
   "very important",

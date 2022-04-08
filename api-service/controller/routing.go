@@ -99,23 +99,23 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/hosts/technologies/oracle/exadata/storage-error-count-status", ctrl.GetOracleExadataStorageErrorCountStatusStats).Methods("GET")
 	router.HandleFunc("/hosts/technologies/oracle/exadata/patch-status", ctrl.GetOracleExadataPatchStatusStats).Methods("GET")
 
-	// ORACLE AGREEMENTS
-	router.HandleFunc("/agreements/oracle/database", ctrl.AddOracleDatabaseAgreement).Methods("POST")
-	router.HandleFunc("/agreements/oracle/database", ctrl.UpdateOracleDatabaseAgreement).Methods("PUT")
-	router.HandleFunc("/agreements/oracle/database", ctrl.GetOracleDatabaseAgreements).Methods("GET")
-	router.HandleFunc("/agreements/oracle/database/{id}", ctrl.DeleteOracleDatabaseAgreement).Methods("DELETE")
+	// ORACLE CONTRACTS
+	router.HandleFunc("/contracts/oracle/database", ctrl.AddOracleDatabaseContract).Methods("POST")
+	router.HandleFunc("/contracts/oracle/database", ctrl.UpdateOracleDatabaseContract).Methods("PUT")
+	router.HandleFunc("/contracts/oracle/database", ctrl.GetOracleDatabaseContracts).Methods("GET")
+	router.HandleFunc("/contracts/oracle/database/{id}", ctrl.DeleteOracleDatabaseContract).Methods("DELETE")
 
-	router.HandleFunc("/agreements/oracle/database/{id}/hosts", ctrl.AddHostToOracleDatabaseAgreement).Methods("POST")                   //TODO Swagger
-	router.HandleFunc("/agreements/oracle/database/{id}/hosts/{hostname}", ctrl.DeleteHostFromOracleDatabaseAgreement).Methods("DELETE") //TODO Swagger
+	router.HandleFunc("/contracts/oracle/database/{id}/hosts", ctrl.AddHostToOracleDatabaseContract).Methods("POST")
+	router.HandleFunc("/contracts/oracle/database/{id}/hosts/{hostname}", ctrl.DeleteHostFromOracleDatabaseContract).Methods("DELETE")
 
 	// MYSQL
 	router.HandleFunc("/hosts/technologies/mysql/databases", ctrl.SearchMySQLInstances).Methods("GET")
 
-	// MYSQL AGREEMENTS
-	router.HandleFunc("/agreements/mysql/database", ctrl.AddMySQLAgreement).Methods("POST")
-	router.HandleFunc("/agreements/mysql/database/{id}", ctrl.UpdateMySQLAgreement).Methods("PUT")
-	router.HandleFunc("/agreements/mysql/database", ctrl.GetMySQLAgreements).Methods("GET")
-	router.HandleFunc("/agreements/mysql/database/{id}", ctrl.DeleteMySQLAgreement).Methods("DELETE")
+	// MYSQL CONTRACTS
+	router.HandleFunc("/contracts/mysql/database", ctrl.AddMySQLContract).Methods("POST")
+	router.HandleFunc("/contracts/mysql/database/{id}", ctrl.UpdateMySQLContract).Methods("PUT")
+	router.HandleFunc("/contracts/mysql/database", ctrl.GetMySQLContracts).Methods("GET")
+	router.HandleFunc("/contracts/mysql/database/{id}", ctrl.DeleteMySQLContract).Methods("DELETE")
 
 	// ALERTS
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")

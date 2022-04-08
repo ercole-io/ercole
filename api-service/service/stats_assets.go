@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ func (as *APIService) GetTotalTechnologiesComplianceStats(location string, envir
 
 	for _, technology := range technologies {
 		totalConsumed += technology.ConsumedByHosts
-		totalCovered += technology.CoveredByAgreements
+		totalCovered += technology.CoveredByContracts
 
 		totalTotalCost += technology.TotalCost
 		totalPaidCost += technology.PaidCost

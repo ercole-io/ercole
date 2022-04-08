@@ -63,10 +63,10 @@ func TestGetOracleDatabaseLicenseTypes_Success(t *testing.T) {
 }
 
 func TestGetLicensesCompliance(t *testing.T) {
-	var sampleAgreements []dto.OracleDatabaseAgreementFE = []dto.OracleDatabaseAgreementFE{
+	var sampleContracts []dto.OracleDatabaseContractFE = []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-			AgreementID:              "",
+			ContractID:               "",
 			CSI:                      "",
 			LicenseTypeID:            "PID001",
 			ItemDescription:          "",
@@ -75,7 +75,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "pippo"}, {Hostname: "pluto"}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{Hostname: "pippo"}, {Hostname: "pluto"}},
 			LicensesPerCore:          10,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 10,
@@ -83,7 +83,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 		},
 		{
 			ID:                       utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
-			AgreementID:              "",
+			ContractID:               "",
 			CSI:                      "",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "",
@@ -92,7 +92,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "topolino"}, {Hostname: "minnie"}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{Hostname: "topolino"}, {Hostname: "minnie"}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          500,
 			AvailableLicensesPerCore: 0,
@@ -100,7 +100,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 		},
 		{
 			ID:                       utils.Str2oid("cccccccccccccccccccccccc"),
-			AgreementID:              "",
+			ContractID:               "",
 			CSI:                      "",
 			LicenseTypeID:            "PID003",
 			ItemDescription:          "",
@@ -109,7 +109,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 			Unlimited:                true,
 			Basket:                   true,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{},
 			LicensesPerCore:          0,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
@@ -117,7 +117,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 		},
 		{
 			ID:                       utils.Str2oid("dddddddddddddddddddddddd"),
-			AgreementID:              "",
+			ContractID:               "",
 			CSI:                      "",
 			LicenseTypeID:            "PID004",
 			ItemDescription:          "",
@@ -126,7 +126,7 @@ func TestGetLicensesCompliance(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{},
 			LicensesPerCore:          40,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 40,
@@ -235,8 +235,8 @@ func TestGetLicensesCompliance(t *testing.T) {
 
 	gomock.InOrder(
 		db.EXPECT().
-			ListOracleDatabaseAgreements().
-			Return(sampleAgreements, nil),
+			ListOracleDatabaseContracts().
+			Return(sampleContracts, nil),
 		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&searchResponse, nil),
 		db.EXPECT().
@@ -272,10 +272,10 @@ func TestGetLicensesCompliance(t *testing.T) {
 }
 
 func TestGetLicensesCompliance_Veritas(t *testing.T) {
-	var sampleAgreements []dto.OracleDatabaseAgreementFE = []dto.OracleDatabaseAgreementFE{
+	var sampleContracts []dto.OracleDatabaseContractFE = []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-			AgreementID:              "",
+			ContractID:               "",
 			CSI:                      "",
 			LicenseTypeID:            "PID001",
 			ItemDescription:          "",
@@ -284,7 +284,7 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "pippo"}, {Hostname: "pluto"}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{Hostname: "pippo"}, {Hostname: "pluto"}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          5,
 			AvailableLicensesPerCore: 50,
@@ -292,7 +292,7 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 		},
 		{
 			ID:                       utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
-			AgreementID:              "",
+			ContractID:               "",
 			CSI:                      "",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "",
@@ -301,7 +301,7 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "topolino"}, {Hostname: "minnie"}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{Hostname: "topolino"}, {Hostname: "minnie"}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          100,
 			AvailableLicensesPerCore: 0,
@@ -309,7 +309,7 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 		},
 		{
 			ID:                       utils.Str2oid("cccccccccccccccccccccccc"),
-			AgreementID:              "",
+			ContractID:               "",
 			CSI:                      "",
 			LicenseTypeID:            "PID003",
 			ItemDescription:          "",
@@ -318,7 +318,7 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 			Unlimited:                true,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "topolino"}, {Hostname: "minnie"}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{Hostname: "topolino"}, {Hostname: "minnie"}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          10,
 			AvailableLicensesPerCore: 75,
@@ -326,7 +326,7 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 		},
 		{
 			ID:                       utils.Str2oid("dddddddddddddddddddddddd"),
-			AgreementID:              "",
+			ContractID:               "",
 			CSI:                      "",
 			LicenseTypeID:            "PID004",
 			ItemDescription:          "",
@@ -335,7 +335,7 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{},
 			LicensesPerCore:          0,
 			LicensesPerUser:          5,
 			AvailableLicensesPerCore: 50,
@@ -474,8 +474,8 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 
 	gomock.InOrder(
 		db.EXPECT().
-			ListOracleDatabaseAgreements().
-			Return(sampleAgreements, nil),
+			ListOracleDatabaseContracts().
+			Return(sampleContracts, nil),
 		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&searchResponse, nil),
 		db.EXPECT().

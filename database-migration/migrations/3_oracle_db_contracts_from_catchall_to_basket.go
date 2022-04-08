@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ func init() {
 		if err := migrateFromCatchAllToBasket(db); err != nil {
 			return err
 		}
-		if err := migrateOracleLicensesAgreement(db); err != nil {
+		if err := migrateOracleLicensesContract(db); err != nil {
 			return err
 		}
 
@@ -47,7 +47,7 @@ func init() {
 }
 
 func migrateFromCatchAllToBasket(db *mongo.Database) error {
-	collection := "oracle_database_agreements"
+	collection := "oracle_database_contracts"
 	ctx := context.TODO()
 
 	filter := bson.M{}
@@ -61,8 +61,8 @@ func migrateFromCatchAllToBasket(db *mongo.Database) error {
 	return nil
 }
 
-func migrateOracleLicensesAgreement(db *mongo.Database) error {
-	collection := "oracle_database_agreements"
+func migrateOracleLicensesContract(db *mongo.Database) error {
+	collection := "oracle_database_contracts"
 	ctx := context.TODO()
 
 	filter := bson.M{"unlimited": true}

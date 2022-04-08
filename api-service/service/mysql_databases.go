@@ -124,17 +124,17 @@ func (as *APIService) GetMySQLUsedLicenses(hostname string, filter dto.GlobalFil
 		clusters[cluster.Hostname] = cluster
 	}
 
-	agreements, err := as.Database.GetMySQLAgreements()
+	contracts, err := as.Database.GetMySQLContracts()
 	if err != nil {
 		return nil, err
 	}
 
-	hostCoveredForCluster := make(map[string]bool, len(agreements))
-	hostCoveredAsHost := make(map[string]bool, len(agreements))
+	hostCoveredForCluster := make(map[string]bool, len(contracts))
+	hostCoveredAsHost := make(map[string]bool, len(contracts))
 
-	for _, agreement := range agreements {
-		if agreement.Type == model.MySQLAgreementTypeCluster {
-			for _, cluster := range agreement.Clusters {
+	for _, contract := range contracts {
+		if contract.Type == model.MySQLContractTypeCluster {
+			for _, cluster := range contract.Clusters {
 				for _, vm := range clusters[cluster].VMs {
 					hostCoveredForCluster[vm.Hostname] = true
 				}
@@ -143,27 +143,27 @@ func (as *APIService) GetMySQLUsedLicenses(hostname string, filter dto.GlobalFil
 			continue
 		}
 
-		if agreement.Type == model.MySQLAgreementTypeHost {
-			for _, host := range agreement.Hosts {
+		if contract.Type == model.MySQLContractTypeHost {
+			for _, host := range contract.Hosts {
 				hostCoveredAsHost[host] = true
 			}
 
 			continue
 		}
 
-		as.Log.Errorf("Unknown MySQLAgreementType: %s", agreement.Type)
+		as.Log.Errorf("Unknown MySQLContractType: %s", contract.Type)
 	}
 
 	for i := range usedLicenses {
 		usedLicense := &usedLicenses[i]
 		if hostCoveredForCluster[usedLicense.Hostname] {
-			usedLicense.AgreementType = model.MySQLAgreementTypeCluster
+			usedLicense.ContractType = model.MySQLContractTypeCluster
 			usedLicense.Covered = true
 
 			continue
 		}
 
-		usedLicense.AgreementType = model.MySQLAgreementTypeHost
+		usedLicense.ContractType = model.MySQLContractTypeHost
 	}
 
 	return usedLicenses, nil
@@ -209,12 +209,12 @@ func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseComplia
 
 	for _, license := range licenses {
 		var lc *dto.LicenseCompliance
-		if license.AgreementType == model.MySQLAgreementTypeHost {
+		if license.ContractType == model.MySQLContractTypeHost {
 			lc = &perHost
-		} else if license.AgreementType == model.MySQLAgreementTypeCluster {
+		} else if license.ContractType == model.MySQLContractTypeCluster {
 			lc = &perCluster
 		} else {
-			as.Log.Errorf("Unknown MySQLAgreementType: %s", license.AgreementType)
+			as.Log.Errorf("Unknown MySQLContractType: %s", license.ContractType)
 			continue
 		}
 

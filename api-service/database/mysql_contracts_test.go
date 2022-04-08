@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,10 +27,10 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-func (m *MongodbSuite) TestAddMySQLAgreement() {
-	defer m.db.Client.Database(m.dbname).Collection(mySQLAgreementCollection).DeleteMany(context.TODO(), bson.M{})
+func (m *MongodbSuite) TestAddMySQLContract() {
+	defer m.db.Client.Database(m.dbname).Collection(mySQLContractCollection).DeleteMany(context.TODO(), bson.M{})
 
-	agreement := model.MySQLAgreement{
+	contract := model.MySQLContract{
 		ID:               utils.Str2oid("000000000000000000000001"),
 		Type:             "type",
 		NumberOfLicenses: 43,
@@ -39,15 +39,15 @@ func (m *MongodbSuite) TestAddMySQLAgreement() {
 	}
 
 	m.T().Run("should_insert", func(t *testing.T) {
-		err := m.db.AddMySQLAgreement(agreement)
+		err := m.db.AddMySQLContract(contract)
 		m.Require().NoError(err)
 	})
 }
 
-func (m *MongodbSuite) TestUpdateMySQLAgreement() {
-	defer m.db.Client.Database(m.dbname).Collection(mySQLAgreementCollection).DeleteMany(context.TODO(), bson.M{})
+func (m *MongodbSuite) TestUpdateMySQLContract() {
+	defer m.db.Client.Database(m.dbname).Collection(mySQLContractCollection).DeleteMany(context.TODO(), bson.M{})
 
-	agreement := model.MySQLAgreement{
+	contract := model.MySQLContract{
 		ID:               utils.Str2oid("000000000000000000000001"),
 		Type:             "type",
 		NumberOfLicenses: 43,
@@ -56,30 +56,30 @@ func (m *MongodbSuite) TestUpdateMySQLAgreement() {
 	}
 
 	m.T().Run("error not found", func(t *testing.T) {
-		err := m.db.UpdateMySQLAgreement(agreement)
+		err := m.db.UpdateMySQLContract(contract)
 		var aerr *utils.AdvancedError
 		assert.ErrorAs(t, err, &aerr)
 		assert.ErrorIs(t, aerr.Err, utils.ErrNotFound)
 	})
 
 	m.T().Run("should_update", func(t *testing.T) {
-		_, err := m.db.Client.Database(m.dbname).Collection(mySQLAgreementCollection).
+		_, err := m.db.Client.Database(m.dbname).Collection(mySQLContractCollection).
 			InsertOne(
 				context.TODO(),
-				agreement,
+				contract,
 			)
 		require.NoError(t, err)
 
-		err = m.db.UpdateMySQLAgreement(agreement)
+		err = m.db.UpdateMySQLContract(contract)
 		assert.NoError(t, err)
 	})
 }
 
-func (m *MongodbSuite) TestGetMySQLAgreements() {
+func (m *MongodbSuite) TestGetMySQLContracts() {
 	m.T().Run("should_load_all", func(t *testing.T) {
-		defer m.db.Client.Database(m.dbname).Collection(mySQLAgreementCollection).DeleteMany(context.TODO(), bson.M{})
+		defer m.db.Client.Database(m.dbname).Collection(mySQLContractCollection).DeleteMany(context.TODO(), bson.M{})
 
-		agreements := []model.MySQLAgreement{
+		contracts := []model.MySQLContract{
 			{
 				ID:               utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 				Type:             "",
@@ -95,56 +95,56 @@ func (m *MongodbSuite) TestGetMySQLAgreements() {
 				Hosts:            []string{},
 			},
 		}
-		agreementsInt := []interface{}{
-			agreements[0],
-			agreements[1],
+		contractsInt := []interface{}{
+			contracts[0],
+			contracts[1],
 		}
-		_, err := m.db.Client.Database(m.dbname).Collection(mySQLAgreementCollection).InsertMany(context.TODO(), agreementsInt)
+		_, err := m.db.Client.Database(m.dbname).Collection(mySQLContractCollection).InsertMany(context.TODO(), contractsInt)
 		require.Nil(m.T(), err)
 
-		actual, err := m.db.GetMySQLAgreements()
+		actual, err := m.db.GetMySQLContracts()
 		m.Require().NoError(err)
 
-		assert.Equal(t, agreements, actual)
+		assert.Equal(t, contracts, actual)
 	})
 
 	m.T().Run("should_load_empty", func(t *testing.T) {
-		actual, err := m.db.GetMySQLAgreements()
+		actual, err := m.db.GetMySQLContracts()
 		m.Require().NoError(err)
 
-		agreements := make([]model.MySQLAgreement, 0)
-		assert.Equal(t, agreements, actual)
+		contracts := make([]model.MySQLContract, 0)
+		assert.Equal(t, contracts, actual)
 	})
 }
 
-func (m *MongodbSuite) TestDeleteMySQLAgreement() {
-	defer m.db.Client.Database(m.dbname).Collection(mySQLAgreementCollection).DeleteMany(context.TODO(), bson.M{})
+func (m *MongodbSuite) TestDeleteMySQLContract() {
+	defer m.db.Client.Database(m.dbname).Collection(mySQLContractCollection).DeleteMany(context.TODO(), bson.M{})
 
 	id := utils.Str2oid("000000000000000000000001")
 
 	m.T().Run("error not found", func(t *testing.T) {
-		err := m.db.DeleteMySQLAgreement(id)
+		err := m.db.DeleteMySQLContract(id)
 		var aerr *utils.AdvancedError
 		assert.ErrorAs(t, err, &aerr)
 		assert.ErrorIs(t, aerr.Err, utils.ErrNotFound)
 	})
 
 	m.T().Run("should_delete", func(t *testing.T) {
-		agreement := model.MySQLAgreement{
+		contract := model.MySQLContract{
 			ID:               utils.Str2oid("000000000000000000000001"),
 			Type:             "type",
 			NumberOfLicenses: 43,
 			Clusters:         []string{},
 			Hosts:            []string{},
 		}
-		_, err := m.db.Client.Database(m.dbname).Collection(mySQLAgreementCollection).
+		_, err := m.db.Client.Database(m.dbname).Collection(mySQLContractCollection).
 			InsertOne(
 				context.TODO(),
-				agreement,
+				contract,
 			)
 		require.NoError(t, err)
 
-		err = m.db.DeleteMySQLAgreement(agreement.ID)
+		err = m.db.DeleteMySQLContract(contract.ID)
 		assert.NoError(t, err)
 	})
 }
