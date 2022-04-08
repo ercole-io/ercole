@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,13 +25,13 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-const mySQLAgreementCollection = "mysql_agreements"
+const mySQLContractCollection = "mysql_contracts"
 
-func (md *MongoDatabase) AddMySQLAgreement(agreement model.MySQLAgreement) error {
-	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(mySQLAgreementCollection).
+func (md *MongoDatabase) AddMySQLContract(contract model.MySQLContract) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(mySQLContractCollection).
 		InsertOne(
 			context.TODO(),
-			agreement,
+			contract,
 		)
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")
@@ -40,12 +40,12 @@ func (md *MongoDatabase) AddMySQLAgreement(agreement model.MySQLAgreement) error
 	return nil
 }
 
-func (md *MongoDatabase) UpdateMySQLAgreement(agreement model.MySQLAgreement) error {
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(mySQLAgreementCollection).
+func (md *MongoDatabase) UpdateMySQLContract(contract model.MySQLContract) error {
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(mySQLContractCollection).
 		ReplaceOne(
 			context.TODO(),
-			bson.M{"_id": agreement.ID},
-			agreement,
+			bson.M{"_id": contract.ID},
+			contract,
 		)
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")
@@ -58,25 +58,25 @@ func (md *MongoDatabase) UpdateMySQLAgreement(agreement model.MySQLAgreement) er
 	return nil
 }
 
-func (md *MongoDatabase) GetMySQLAgreements() ([]model.MySQLAgreement, error) {
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(mySQLAgreementCollection).
+func (md *MongoDatabase) GetMySQLContracts() ([]model.MySQLContract, error) {
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(mySQLContractCollection).
 		Find(context.TODO(), bson.D{})
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	agreements := make([]model.MySQLAgreement, 0)
+	contracts := make([]model.MySQLContract, 0)
 
-	err = cur.All(context.TODO(), &agreements)
+	err = cur.All(context.TODO(), &contracts)
 	if err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
 	}
 
-	return agreements, nil
+	return contracts, nil
 }
 
-func (md *MongoDatabase) DeleteMySQLAgreement(id primitive.ObjectID) error {
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(mySQLAgreementCollection).
+func (md *MongoDatabase) DeleteMySQLContract(id primitive.ObjectID) error {
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(mySQLContractCollection).
 		DeleteOne(
 			context.TODO(),
 			bson.M{"_id": id},

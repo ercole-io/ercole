@@ -56,10 +56,10 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 		GetOracleDatabaseLicenseTypes().
 		Return(licenseTypes, nil)
 
-	returnedAgreements := []dto.OracleDatabaseAgreementFE{
+	returnedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "AID001",
+			ContractID:               "AID001",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -68,14 +68,14 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
 			LicensesPerCore:          55,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 55,
 			AvailableLicensesPerUser: 0,
 		},
 	}
-	db.EXPECT().ListOracleDatabaseAgreements().Return(returnedAgreements, nil)
+	db.EXPECT().ListOracleDatabaseContracts().Return(returnedContracts, nil)
 
 	oracleLics := dto.OracleDatabaseUsedLicenseSearchResponse{
 		Content: []dto.OracleDatabaseUsedLicense{

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,18 +27,18 @@ import (
 )
 
 func init() {
-	err := migrate.Register(unwind_oracle_agreements, group_oracle_agreementy_by_license_type_id)
+	err := migrate.Register(unwind_oracle_contracts, group_oracle_contract_by_license_type_id)
 
 	if err != nil {
 		panic(err)
 	}
 }
 
-func unwind_oracle_agreements(db *mongo.Database) error {
-	collection := "oracle_database_agreements"
+func unwind_oracle_contracts(db *mongo.Database) error {
+	collection := "oracle_database_contracts"
 	ctx := context.TODO()
 
-	for _, index := range []string{"agreementID_1", "licenseTypes._id_1"} {
+	for _, index := range []string{"contractID_1", "licenseTypes._id_1"} {
 		_, err := db.Collection(collection).
 			Indexes().DropOne(ctx, index)
 		if err != nil {
@@ -57,8 +57,8 @@ func unwind_oracle_agreements(db *mongo.Database) error {
 						"newRoot": bson.M{
 							"$mergeObjects": bson.A{
 								bson.M{
-									"agreementID": "$agreementID",
-									"csi":         "$csi",
+									"contractID": "$contractID",
+									"csi":        "$csi",
 								},
 								"$licenseTypes",
 							},
@@ -81,13 +81,13 @@ func unwind_oracle_agreements(db *mongo.Database) error {
 		}
 
 		if _, err := db.Collection(collection).InsertMany(ctx, agrs); err != nil {
-			return utils.NewError(err, "Can't insert all agreements")
+			return utils.NewError(err, "Can't insert all contracts")
 		}
 	}
 
 	return nil
 }
 
-func group_oracle_agreementy_by_license_type_id(db *mongo.Database) error {
+func group_oracle_contract_by_license_type_id(db *mongo.Database) error {
 	return utils.NewError(errors.New("Not yet implemented"))
 }

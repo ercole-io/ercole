@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2020 Sorint.lab S.p.A.2
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -119,8 +119,8 @@ type APIService struct {
 	LogHTTPRequest bool
 	// ReadOnly disable modifing APIs
 	ReadOnly bool
-	// DebugOracleDatabaseAgreementsAssignmentAlgorithm enable the debugging of the Oracle/Database agreements assignment algorithm
-	DebugOracleDatabaseAgreementsAssignmentAlgorithm bool
+	// DebugOracleDatabaseContractsAssignmentAlgorithm enable the debugging of the Oracle/Database contracts assignment algorithm
+	DebugOracleDatabaseContractsAssignmentAlgorithm bool
 	// AuthenticationProvider contains info about how the users are authenticated
 	AuthenticationProvider AuthenticationProviderConfig
 	// OperatingSystemAggregationRules contains rules used to aggregate various operating systems

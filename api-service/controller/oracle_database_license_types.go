@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ func (ctrl *APIController) GetOracleDatabaseLicenseTypes(w http.ResponseWriter, 
 	utils.WriteJSONResponse(w, http.StatusOK, response)
 }
 
-// DeleteOracleDatabaseLicenseType remove a licence type - Oracle/Database agreement part
+// DeleteOracleDatabaseLicenseType remove a licence type - Oracle/Database contract part
 func (ctrl *APIController) DeleteOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))
@@ -74,7 +74,7 @@ func (ctrl *APIController) DeleteOracleDatabaseLicenseType(w http.ResponseWriter
 	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
 
-// AddOracleDatabaseLicenseType add a licence type - Oracle/Database agreement part to the database if it hasn't a licence type
+// AddOracleDatabaseLicenseType add a licence type - Oracle/Database contract part to the database if it hasn't a licence type
 func (ctrl *APIController) AddOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request) {
 	if ctrl.Config.APIService.ReadOnly {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusForbidden, utils.NewError(errors.New("The API is disabled because the service is put in read-only mode"), "FORBIDDEN_REQUEST"))

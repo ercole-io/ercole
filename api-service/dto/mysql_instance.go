@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ type MySQLUsedLicense struct {
 	Hostname        string `json:"hostname" bson:"hostname"`
 	InstanceName    string `json:"instanceName" bson:"instanceName"`
 	InstanceEdition string `json:"instanceEdition" bson:"instanceEdition"`
-	AgreementType   string `json:"agreementType" bson:"agreementType"`
+	ContractType    string `json:"contractType" bson:"contractType"`
 
 	Covered bool `json:"-"`
 }

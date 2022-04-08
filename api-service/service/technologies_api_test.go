@@ -50,10 +50,10 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 		},
 	}
 
-	var sampleListOracleDatabaseAgreements []dto.OracleDatabaseAgreementFE = []dto.OracleDatabaseAgreementFE{
+	var sampleListOracleDatabaseContracts []dto.OracleDatabaseContractFE = []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-			AgreementID:              "",
+			ContractID:               "",
 			CSI:                      "",
 			LicenseTypeID:            "PID001",
 			ItemDescription:          "",
@@ -62,7 +62,7 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "pippo"}, {Hostname: "pluto"}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{Hostname: "pippo"}, {Hostname: "pluto"}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 50,
@@ -70,7 +70,7 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 		},
 		{
 			ID:                       utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
-			AgreementID:              "",
+			ContractID:               "",
 			CSI:                      "",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "",
@@ -79,7 +79,7 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "topolino"}, {Hostname: "minnie"}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{Hostname: "topolino"}, {Hostname: "minnie"}},
 			LicensesPerCore:          0,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
@@ -193,8 +193,8 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 				model.TechnologyOracleMySQL:    44,
 			}, nil),
 		db.EXPECT().
-			ListOracleDatabaseAgreements().
-			Return(sampleListOracleDatabaseAgreements, nil),
+			ListOracleDatabaseContracts().
+			Return(sampleListOracleDatabaseContracts, nil),
 
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
@@ -217,11 +217,11 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := []model.TechnologyStatus{
-		{Product: "Oracle/Database", ConsumedByHosts: 32, CoveredByAgreements: 18, TotalCost: 0, PaidCost: 0, Compliance: 0.5625, UnpaidDues: 0, HostsCount: 42},
-		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 44},
-		{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
-		{Product: "PostgreSQL/PostgreSQL", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
-		{Product: "Microsoft/SQLServer", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
+		{Product: "Oracle/Database", ConsumedByHosts: 32, CoveredByContracts: 18, TotalCost: 0, PaidCost: 0, Compliance: 0.5625, UnpaidDues: 0, HostsCount: 42},
+		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 44},
+		{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
+		{Product: "PostgreSQL/PostgreSQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
+		{Product: "Microsoft/SQLServer", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 	}
 
 	assert.Equal(t, expected, actual)
@@ -236,10 +236,10 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 		Log:      logger.NewLogger("TEST"),
 	}
 
-	returnedAgreements := []dto.OracleDatabaseAgreementFE{
+	returnedContracts := []dto.OracleDatabaseContractFE{
 		{
 			ID:                       utils.Str2oid("5f4d0ab1c6bc19e711bbcce6"),
-			AgreementID:              "AID001",
+			ContractID:               "AID001",
 			CSI:                      "CSI001",
 			LicenseTypeID:            "PID002",
 			ItemDescription:          "Oracle Partitioning",
@@ -248,7 +248,7 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 			Unlimited:                false,
 			Basket:                   false,
 			Restricted:               false,
-			Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
+			Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{CoveredLicensesCount: 0, Hostname: "test-db", TotalCoveredLicensesCount: 0}},
 			LicensesPerCore:          55,
 			LicensesPerUser:          0,
 			AvailableLicensesPerCore: 0,
@@ -323,8 +323,8 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 				model.TechnologyOracleExadata:  43,
 			}, nil),
 		db.EXPECT().
-			ListOracleDatabaseAgreements().
-			Return(returnedAgreements, nil),
+			ListOracleDatabaseContracts().
+			Return(returnedContracts, nil),
 
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
@@ -346,11 +346,11 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 	)
 
 	expected := []model.TechnologyStatus{
-		{Product: "Oracle/Database", ConsumedByHosts: 100, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 42},
-		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
-		{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
-		{Product: "PostgreSQL/PostgreSQL", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
-		{Product: "Microsoft/SQLServer", ConsumedByHosts: 0, CoveredByAgreements: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
+		{Product: "Oracle/Database", ConsumedByHosts: 100, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 42},
+		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
+		{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
+		{Product: "PostgreSQL/PostgreSQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
+		{Product: "Microsoft/SQLServer", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 	}
 
 	require.NoError(t, err)
@@ -378,7 +378,7 @@ func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
 		require.Equal(t, aerrMock, err)
 	})
 
-	t.Run("Fail ListOracleDatabaseAgreements", func(t *testing.T) {
+	t.Run("Fail ListOracleDatabaseContracts", func(t *testing.T) {
 		gomock.InOrder(
 			db.EXPECT().
 				GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
@@ -387,7 +387,7 @@ func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
 					model.TechnologyMicrosoftSQLServer:       43,
 				}, nil),
 			db.EXPECT().
-				ListOracleDatabaseAgreements().
+				ListOracleDatabaseContracts().
 				Return(nil, aerrMock),
 		)
 
@@ -399,10 +399,10 @@ func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
 		require.Equal(t, aerrMock, err)
 	})
 	t.Run("Fail ListHostUsingOracleDatabaseLicenses", func(t *testing.T) {
-		var sampleListOracleDatabaseAgreements []dto.OracleDatabaseAgreementFE = []dto.OracleDatabaseAgreementFE{
+		var sampleListOracleDatabaseContracts []dto.OracleDatabaseContractFE = []dto.OracleDatabaseContractFE{
 			{
 				ID:                       utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-				AgreementID:              "",
+				ContractID:               "",
 				CSI:                      "",
 				LicenseTypeID:            "PID001",
 				ItemDescription:          "",
@@ -411,7 +411,7 @@ func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
 				Unlimited:                false,
 				Basket:                   false,
 				Restricted:               false,
-				Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "pippo"}, {Hostname: "pluto"}},
+				Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{Hostname: "pippo"}, {Hostname: "pluto"}},
 				LicensesPerCore:          0,
 				LicensesPerUser:          0,
 				AvailableLicensesPerCore: 50,
@@ -419,7 +419,7 @@ func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
 			},
 			{
 				ID:                       utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb"),
-				AgreementID:              "",
+				ContractID:               "",
 				CSI:                      "",
 				LicenseTypeID:            "PID002",
 				ItemDescription:          "",
@@ -428,7 +428,7 @@ func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
 				Unlimited:                false,
 				Basket:                   false,
 				Restricted:               false,
-				Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "topolino"}, {Hostname: "minnie"}},
+				Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{Hostname: "topolino"}, {Hostname: "minnie"}},
 				LicensesPerCore:          0,
 				LicensesPerUser:          0,
 				AvailableLicensesPerCore: 0,
@@ -444,8 +444,8 @@ func TestListManagedTechnologies_FailInternalServerErrors(t *testing.T) {
 					model.TechnologyMicrosoftSQLServer:       43,
 				}, nil),
 			db.EXPECT().
-				ListOracleDatabaseAgreements().
-				Return(sampleListOracleDatabaseAgreements, nil),
+				ListOracleDatabaseContracts().
+				Return(sampleListOracleDatabaseContracts, nil),
 			db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 				Return(nil, aerrMock),
 		)
