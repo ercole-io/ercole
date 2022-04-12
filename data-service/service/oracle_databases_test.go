@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ import (
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 )
 
 type alertSimilarTo struct{ al model.Alert }
@@ -58,35 +59,58 @@ func (sa *alertSimilarTo) String() string {
 }
 
 func TestAddLicensesToSecondaryDbs(t *testing.T) {
-	//TODO Add test
-	//	mockCtrl := gomock.NewController(t)
-	//	defer mockCtrl.Finish()
-	//	mongoDb := NewMockMongoDatabaseInterface(mockCtrl)
-	//
-	//	hds := HostDataService{
-	//		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
-	//		Database: mongoDb,
-	//		Config: config.Configuration{
-	//			AlertService: config.AlertService{
-	//				PublisherUsername: "publ1sh3r",
-	//				PublisherPassword: "M0stS3cretP4ssw0rd",
-	//				RemoteEndpoint:    "http://ercole.example.org",
-	//			},
-	//			DataService: config.DataService{
-	//				LogInsertingHostdata: true,
-	//			},
-	//		},
-	//		Version: "1.6.6",
-	//		Log:     logger.NewLoggerOrFail("TEST"),
-	//	}
-	//
-	//	hdPrimary := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_22.json")
-	//	hdSecondary := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_23.json")
-	//
-	//	db := hdSecondary.Features.Oracle.Database.Databases[0]
-	//	assert.True(t, db.Status == model.OracleDatabaseStatusMounted && db.Role != model.OracleDatabaseRolePrimary)
-	//
-	//	hds.addLicensesToSecondaryDbs(hdSecondary.Info, &db)
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	db := NewMockMongoDatabaseInterface(mockCtrl)
+	alertsc := NewMockAlertSvcClientInterface(mockCtrl)
+	apisc := NewMockApiSvcClientInterface(mockCtrl)
+	hds := HostDataService{
+		TimeNow:  utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Database: db,
+		Config: config.Configuration{
+			AlertService: config.AlertService{
+				PublisherUsername: "publ1sh3r",
+				PublisherPassword: "M0stS3cretP4ssw0rd",
+				RemoteEndpoint:    "http://ercole.example.org",
+			},
+			DataService: config.DataService{
+				LogInsertingHostdata: true,
+			},
+		},
+		AlertSvcClient: alertsc,
+		ApiSvcClient:   apisc,
+		ServerVersion:  "",
+		Log:            logger.NewLogger("TEST"),
+	}
+
+	hdPrimary := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_22.json")
+	hdSecondary := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_23.json")
+
+	primaryDB := hdSecondary.Features.Oracle.Database.Databases[0]
+	assert.True(t, primaryDB.Status == model.OracleDatabaseStatusMounted && primaryDB.Role != model.OracleDatabaseRolePrimary)
+
+	apisc.EXPECT().GetOracleDatabases()
+	apisc.EXPECT().AckAlerts(dto.AlertsFilter{
+		AlertCategory: utils.Str2ptr(model.AlertCategoryEngine),
+		AlertCode:     utils.Str2ptr(model.AlertCodeMissingPrimaryDatabase),
+		AlertSeverity: utils.Str2ptr(model.AlertSeverityWarning),
+		OtherInfo: map[string]interface{}{
+			"hostname": "itl-csllab-112.sorint.localpippo",
+			"dbname":   "ERCOLE",
+		},
+	})
+	alertsc.EXPECT().ThrowNewAlert(&alertSimilarTo{
+		al: model.Alert{
+			AlertCategory: model.AlertCategoryEngine,
+			AlertCode:     model.AlertCodeMissingPrimaryDatabase,
+			AlertSeverity: model.AlertSeverityWarning,
+			OtherInfo: map[string]interface{}{
+				"hostname": "itl-csllab-112.sorint.localpippo",
+				"dbname":   "ERCOLE",
+			},
+		}}).Return(nil)
+
+	hds.addLicensesToSecondaryDb(hdPrimary.Info, 2, &primaryDB)
 }
 
 var hostData1 model.HostDataBE = model.HostDataBE{
