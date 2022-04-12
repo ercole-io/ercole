@@ -40,14 +40,14 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 	statuses = append(statuses, *oracleStatus)
 
 	mysqlStatus := model.TechnologyStatus{
-		Product:             model.TechnologyOracleMySQL,
-		ConsumedByHosts:     0,
-		CoveredByAgreements: 0,
-		TotalCost:           0,
-		PaidCost:            0,
-		Compliance:          0,
-		UnpaidDues:          0,
-		HostsCount:          int(hostsCountByTechnology[model.TechnologyOracleMySQL]),
+		Product:            model.TechnologyOracleMySQL,
+		ConsumedByHosts:    0,
+		CoveredByContracts: 0,
+		TotalCost:          0,
+		PaidCost:           0,
+		Compliance:         0,
+		UnpaidDues:         0,
+		HostsCount:         int(hostsCountByTechnology[model.TechnologyOracleMySQL]),
 	}
 
 	statuses = append(statuses, mysqlStatus)
@@ -58,14 +58,14 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 		model.TechnologyMicrosoftSQLServer,
 	} {
 		statuses = append(statuses, model.TechnologyStatus{
-			Product:             technology,
-			ConsumedByHosts:     0,
-			CoveredByAgreements: 0,
-			TotalCost:           0.0,
-			PaidCost:            0.0,
-			HostsCount:          0.0,
-			Compliance:          0.0,
-			UnpaidDues:          0.0,
+			Product:            technology,
+			ConsumedByHosts:    0,
+			CoveredByContracts: 0,
+			TotalCost:          0.0,
+			PaidCost:           0.0,
+			HostsCount:         0.0,
+			Compliance:         0.0,
+			UnpaidDues:         0.0,
 		})
 	}
 
@@ -73,7 +73,7 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 }
 
 func createOracleTechnologyStatus(as *APIService, hostsCount float64) (*model.TechnologyStatus, error) {
-	agreements, err := as.Database.ListOracleDatabaseAgreements()
+	contracts, err := as.Database.ListOracleDatabaseContracts()
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func createOracleTechnologyStatus(as *APIService, hostsCount float64) (*model.Te
 		return nil, err
 	}
 
-	err2 := as.assignOracleDatabaseAgreementsToHosts(agreements, usages)
+	err2 := as.assignOracleDatabaseContractsToHosts(contracts, usages)
 	if err2 != nil {
 		return nil, utils.NewError(err2, "DB ERROR")
 	}
@@ -95,13 +95,13 @@ func createOracleTechnologyStatus(as *APIService, hostsCount float64) (*model.Te
 
 	for _, usage := range usages {
 		status.ConsumedByHosts += usage.OriginalCount
-		status.CoveredByAgreements += (usage.OriginalCount - usage.LicenseCount)
+		status.CoveredByContracts += (usage.OriginalCount - usage.LicenseCount)
 	}
 
 	if status.ConsumedByHosts == 0 {
 		status.Compliance = 1
 	} else {
-		status.Compliance = status.CoveredByAgreements / status.ConsumedByHosts
+		status.Compliance = status.CoveredByContracts / status.ConsumedByHosts
 	}
 
 	return &status, nil

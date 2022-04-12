@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,11 +19,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// OracleDatabaseAgreementFE contains the informations about an AssociatedLicenseType in an Agreement for the frontend
-type OracleDatabaseAgreementFE struct {
-	ID          primitive.ObjectID `json:"id" bson:"_id"` // ID of agreement - licenseType couple
-	AgreementID string             `json:"agreementID" bson:"agreementID"`
-	CSI         string             `json:"csi" bson:"csi"`
+// OracleDatabaseContractFE contains the informations about an AssociatedLicenseType in an Contract for the frontend
+type OracleDatabaseContractFE struct {
+	ID         primitive.ObjectID `json:"id" bson:"_id"` // ID of contract - licenseType couple
+	ContractID string             `json:"contractID" bson:"contractID"`
+	CSI        string             `json:"csi" bson:"csi"`
 
 	// LicenseType
 
@@ -34,11 +34,11 @@ type OracleDatabaseAgreementFE struct {
 	// Associated LicenseType
 
 	ReferenceNumber string `json:"referenceNumber" bson:"referenceNumber"`
-	Unlimited       bool   `json:"unlimited" bson:"unlimited"` // Or "ULA", "Unlimited License Agreement"
+	Unlimited       bool   `json:"unlimited" bson:"unlimited"` // Or "ULA", "Unlimited License Contract"
 
-	Basket     bool                                      `json:"basket" bson:"basket"`
-	Restricted bool                                      `json:"restricted" bson:"restricted"`
-	Hosts      []OracleDatabaseAgreementAssociatedHostFE `json:"hosts" bson:"hosts"`
+	Basket     bool                                     `json:"basket" bson:"basket"`
+	Restricted bool                                     `json:"restricted" bson:"restricted"`
+	Hosts      []OracleDatabaseContractAssociatedHostFE `json:"hosts" bson:"hosts"`
 
 	LicensesPerCore float64 `json:"licensesPerCore" bson:"licensesPerCore"`
 	LicensesPerUser float64 `json:"licensesPerUser" bson:"licensesPerUser"`
@@ -53,24 +53,24 @@ type OracleDatabaseAgreementFE struct {
 	CoveredLicenses float64 `json:"-" bson:"-"`
 }
 
-// OracleDatabaseAgreementAssociatedHostFE contains the informations about an associated host in agreement
-// If agreement is Named User, counts are in users
+// OracleDatabaseContractAssociatedHostFE contains the informations about an associated host in contract
+// If contract is Named User, counts are in users
 // TODO Rename: remove Count at the end of each name
-type OracleDatabaseAgreementAssociatedHostFE struct {
+type OracleDatabaseContractAssociatedHostFE struct {
 	Hostname string `json:"hostname" bson:"hostname"`
-	// Licenses which have been covered by agreement associated
+	// Licenses which have been covered by contract associated
 	CoveredLicensesCount float64 `json:"coveredLicensesCount" bson:"coveredLicensesCount"`
 
-	// Licenses covered by all agreements
+	// Licenses covered by all contracts
 	TotalCoveredLicensesCount float64 `json:"totalCoveredLicensesCount" bson:"totalCoveredLicensesCount"`
 	// Licenses consumed (used) by this hostname, data from agents
 	ConsumedLicensesCount float64 `json:"consumedLicensesCount" bson:"consumedLicensesCount"`
 	//TODO Add Cluster Info?
 }
 
-// GetOracleDatabaseAgreementsFilter contains the filter used to get the list of Oracle/Database agreements
-type GetOracleDatabaseAgreementsFilter struct {
-	AgreementID                 string
+// GetOracleDatabaseContractsFilter contains the filter used to get the list of Oracle/Database contracts
+type GetOracleDatabaseContractsFilter struct {
+	ContractID                  string
 	LicenseTypeID               string
 	ItemDescription             string
 	CSI                         string
@@ -88,8 +88,8 @@ type GetOracleDatabaseAgreementsFilter struct {
 	AvailableLicensesPerUserGTE int
 }
 
-func NewGetOracleDatabaseAgreementsFilter() GetOracleDatabaseAgreementsFilter {
-	return GetOracleDatabaseAgreementsFilter{
+func NewGetOracleDatabaseContractsFilter() GetOracleDatabaseContractsFilter {
+	return GetOracleDatabaseContractsFilter{
 		LicensesPerCoreLTE:          -1,
 		LicensesPerCoreGTE:          -1,
 		LicensesPerUserLTE:          -1,
@@ -107,7 +107,7 @@ type HostUsingOracleDatabaseLicenses struct {
 	Name          string `json:"name" bson:"name"`
 	//Type describe if it's an host or a cluster
 	Type string `json:"type" bson:"type"`
-	// Licenses to be covered by agreement
+	// Licenses to be covered by contract
 	// If LicenseType Metric is Named User Plus Perpetual, value isn't PerUser (must be multiplied *25)
 	// TODO Rename in UncoveredLicenses
 	LicenseCount float64 `json:"licenseCount" bson:"licenseCount"`

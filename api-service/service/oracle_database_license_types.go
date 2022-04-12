@@ -63,7 +63,7 @@ func (as *APIService) GetOracleDatabaseLicenseType(id string) (*model.OracleData
 }
 
 func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error) {
-	agreements, err := as.Database.ListOracleDatabaseAgreements()
+	contracts, err := as.Database.ListOracleDatabaseContracts()
 	if err != nil {
 		return nil, err
 	}
@@ -73,8 +73,8 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 		return nil, err
 	}
 
-	if err := as.assignOracleDatabaseAgreementsToHosts(agreements, usages); err != nil {
-		return nil, utils.NewError(err, "can't assign agreements to hosts")
+	if err := as.assignOracleDatabaseContractsToHosts(contracts, usages); err != nil {
+		return nil, utils.NewError(err, "can't assign contracts to hosts")
 	}
 
 	getLicenseCompliance, err := as.getterNewLicenseCompliance()
@@ -96,26 +96,26 @@ func (as *APIService) GetOracleDatabaseLicensesCompliance() ([]dto.LicenseCompli
 	}
 
 	availableLicenses := make(map[string]float64)
-	// get coverage values from agreements
-	for _, agreement := range agreements {
-		license, ok := licenses[agreement.LicenseTypeID]
+	// get coverage values from contracts
+	for _, contract := range contracts {
+		license, ok := licenses[contract.LicenseTypeID]
 		if !ok {
-			license = getLicenseCompliance(agreement.LicenseTypeID)
+			license = getLicenseCompliance(contract.LicenseTypeID)
 			licenses[license.LicenseTypeID] = license
 		}
 
-		if agreement.Unlimited {
+		if contract.Unlimited {
 			license.Unlimited = true
 		}
 
-		if agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
-			availableLicenses[agreement.LicenseTypeID] += agreement.AvailableLicensesPerUser
+		if contract.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
+			availableLicenses[contract.LicenseTypeID] += contract.AvailableLicensesPerUser
 		} else {
-			availableLicenses[agreement.LicenseTypeID] += agreement.AvailableLicensesPerCore
+			availableLicenses[contract.LicenseTypeID] += contract.AvailableLicensesPerCore
 		}
 
-		license.Covered += agreement.CoveredLicenses
-		license.Purchased += (agreement.LicensesPerCore + agreement.LicensesPerUser)
+		license.Covered += contract.CoveredLicenses
+		license.Purchased += (contract.LicensesPerCore + contract.LicensesPerUser)
 	}
 
 	result := make([]dto.LicenseCompliance, 0, len(licenses))

@@ -125,16 +125,16 @@ type APIServiceInterface interface {
 	GetTechnologyList() ([]model.TechnologyInfo, error)
 	GetOracleDatabasesStatistics(filter dto.GlobalFilter) (*dto.OracleDatabasesStatistics, error)
 
-	// ORACLE DATABASE AGREEMENTS
+	// ORACLE DATABASE CONTRACTS
 
-	AddOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*dto.OracleDatabaseAgreementFE, error)
-	UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*dto.OracleDatabaseAgreementFE, error)
-	GetOracleDatabaseAgreements(filter dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
-	GetOracleDatabaseAgreementsAsXLSX(filter dto.GetOracleDatabaseAgreementsFilter) (*excelize.File, error)
-	DeleteOracleDatabaseAgreement(id primitive.ObjectID) error
-	AddHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) error
-	DeleteHostFromOracleDatabaseAgreement(id primitive.ObjectID, hostname string) error
-	DeleteHostFromOracleDatabaseAgreements(hostname string) error
+	AddOracleDatabaseContract(contract model.OracleDatabaseContract) (*dto.OracleDatabaseContractFE, error)
+	UpdateOracleDatabaseContract(contract model.OracleDatabaseContract) (*dto.OracleDatabaseContractFE, error)
+	GetOracleDatabaseContracts(filter dto.GetOracleDatabaseContractsFilter) ([]dto.OracleDatabaseContractFE, error)
+	GetOracleDatabaseContractsAsXLSX(filter dto.GetOracleDatabaseContractsFilter) (*excelize.File, error)
+	DeleteOracleDatabaseContract(id primitive.ObjectID) error
+	AddHostToOracleDatabaseContract(id primitive.ObjectID, hostname string) error
+	DeleteHostFromOracleDatabaseContract(id primitive.ObjectID, hostname string) error
+	DeleteHostFromOracleDatabaseContracts(hostname string) error
 
 	// ORACLE DATABASE LICENSES
 
@@ -176,13 +176,13 @@ type APIServiceInterface interface {
 	SearchMySQLInstancesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
 	GetMySQLUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error)
 	GetUsedLicensesPerDatabasesAsXLSX(filter dto.GlobalFilter) (*excelize.File, error)
-	// MYSQL AGREEMENTS
+	// MYSQL CONTRACTS
 
-	AddMySQLAgreement(agreement model.MySQLAgreement) (*model.MySQLAgreement, error)
-	UpdateMySQLAgreement(agreement model.MySQLAgreement) (*model.MySQLAgreement, error)
-	GetMySQLAgreements() ([]model.MySQLAgreement, error)
-	GetMySQLAgreementsAsXLSX() (*excelize.File, error)
-	DeleteMySQLAgreement(id primitive.ObjectID) error
+	AddMySQLContract(contract model.MySQLContract) (*model.MySQLContract, error)
+	UpdateMySQLContract(contract model.MySQLContract) (*model.MySQLContract, error)
+	GetMySQLContracts() ([]model.MySQLContract, error)
+	GetMySQLContractsAsXLSX() (*excelize.File, error)
+	DeleteMySQLContract(id primitive.ObjectID) error
 }
 
 // APIService is the concrete implementation of APIServiceInterface.
@@ -202,7 +202,7 @@ type APIService struct {
 	// NewObjectID return a new ObjectID
 	NewObjectID func() primitive.ObjectID
 
-	mockGetOracleDatabaseAgreements func(filters dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error)
+	mockGetOracleDatabaseContracts func(filters dto.GetOracleDatabaseContractsFilter) ([]dto.OracleDatabaseContractFE, error)
 }
 
 // Init initializes the service and database

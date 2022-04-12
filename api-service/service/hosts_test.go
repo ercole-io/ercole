@@ -271,7 +271,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 		To:                 utils.P("2021-06-10T11:54:59Z"),
 	}
 
-	t.Run("with no agreements", func(t *testing.T) {
+	t.Run("with no contracts", func(t *testing.T) {
 		gomock.InOrder(
 			db.EXPECT().
 				SearchHosts("lms", gomock.Any()).
@@ -281,8 +281,8 @@ func TestSearchHostsAsLMS(t *testing.T) {
 					return hosts, nil
 				}),
 			db.EXPECT().
-				ListOracleDatabaseAgreements().
-				Return([]dto.OracleDatabaseAgreementFE{}, nil),
+				ListOracleDatabaseContracts().
+				Return([]dto.OracleDatabaseContractFE{}, nil),
 			db.EXPECT().
 				GetListValidHostsByRangeDates(filterslms.From, filterslms.To).
 				DoAndReturn(func(from time.Time, to time.Time) ([]string, error) {
@@ -369,11 +369,11 @@ func TestSearchHostsAsLMS(t *testing.T) {
 		assert.Equal(t, "Red Hat Enterprise Linux", sp.GetCellValue("Database_&_EBS_DB_Tier", "AJ6"))
 	})
 
-	t.Run("with agreements", func(t *testing.T) {
-		agreements := []dto.OracleDatabaseAgreementFE{
+	t.Run("with contracts", func(t *testing.T) {
+		contracts := []dto.OracleDatabaseContractFE{
 			{
 				ID:                       utils.Str2oid("aaaaaaaaaaaa"),
-				AgreementID:              "",
+				ContractID:               "",
 				CSI:                      "csi001",
 				LicenseTypeID:            "",
 				ItemDescription:          "",
@@ -382,7 +382,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 				Unlimited:                false,
 				Basket:                   false,
 				Restricted:               false,
-				Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "publicitate-36d06ca83eafa454423d2097f4965517"}},
+				Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{Hostname: "publicitate-36d06ca83eafa454423d2097f4965517"}},
 				LicensesPerCore:          0,
 				LicensesPerUser:          0,
 				AvailableLicensesPerCore: 0,
@@ -390,7 +390,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 			},
 			{
 				ID:                       utils.Str2oid("aaaaaaaaaaaa"),
-				AgreementID:              "",
+				ContractID:               "",
 				CSI:                      "csi002",
 				LicenseTypeID:            "",
 				ItemDescription:          "",
@@ -399,7 +399,7 @@ func TestSearchHostsAsLMS(t *testing.T) {
 				Unlimited:                false,
 				Basket:                   false,
 				Restricted:               false,
-				Hosts:                    []dto.OracleDatabaseAgreementAssociatedHostFE{{Hostname: "publicitate-36d06ca83eafa454423d2097f4965517"}},
+				Hosts:                    []dto.OracleDatabaseContractAssociatedHostFE{{Hostname: "publicitate-36d06ca83eafa454423d2097f4965517"}},
 				LicensesPerCore:          0,
 				LicensesPerUser:          0,
 				AvailableLicensesPerCore: 0,
@@ -416,8 +416,8 @@ func TestSearchHostsAsLMS(t *testing.T) {
 					return hosts, nil
 				}),
 			db.EXPECT().
-				ListOracleDatabaseAgreements().
-				Return(agreements, nil),
+				ListOracleDatabaseContracts().
+				Return(contracts, nil),
 		)
 
 		sp, err := as.SearchHostsAsLMS(filterslms)
@@ -951,7 +951,7 @@ func TestDismissHost_Success(t *testing.T) {
 		},
 	}
 
-	listAgreements := []dto.OracleDatabaseAgreementFE{}
+	listContracts := []dto.OracleDatabaseContractFE{}
 
 	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": "foobar"}}
 	db.EXPECT().RemoveAlertsNODATA(filter).Return(nil).Times(1)
@@ -975,7 +975,7 @@ func TestDismissHost_Success(t *testing.T) {
 			GTECPUThreads:  -1,
 		},
 	).Return(expectedRes, nil)
-	db.EXPECT().ListOracleDatabaseAgreements().Return(listAgreements, nil)
+	db.EXPECT().ListOracleDatabaseContracts().Return(listContracts, nil)
 	db.EXPECT().DismissHost("foobar").Return(nil).Times(1)
 
 	err := as.DismissHost("foobar")
@@ -999,7 +999,7 @@ func TestDismissHost_Fail(t *testing.T) {
 		},
 	}
 
-	listAgreements := []dto.OracleDatabaseAgreementFE{}
+	listContracts := []dto.OracleDatabaseContractFE{}
 
 	filter := dto.AlertsFilter{OtherInfo: map[string]interface{}{"hostname": "foobar"}}
 	db.EXPECT().RemoveAlertsNODATA(filter).Return(nil).Times(1)
@@ -1023,7 +1023,7 @@ func TestDismissHost_Fail(t *testing.T) {
 			GTECPUThreads:  -1,
 		},
 	).Return(expectedRes, nil)
-	db.EXPECT().ListOracleDatabaseAgreements().Return(listAgreements, nil)
+	db.EXPECT().ListOracleDatabaseContracts().Return(listContracts, nil)
 	db.EXPECT().DismissHost("foobar").Return(aerrMock).Times(1)
 
 	err := as.DismissHost("foobar")

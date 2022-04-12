@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -186,13 +186,13 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 	testCases := []struct {
 		usedLicenses []dto.MySQLUsedLicense
 		clusters     []dto.Cluster
-		agreements   []model.MySQLAgreement
+		contracts    []model.MySQLContract
 		expected     []dto.MySQLUsedLicense
 	}{
 		{
 			usedLicenses: []dto.MySQLUsedLicense{},
 			clusters:     []dto.Cluster{},
-			agreements:   []model.MySQLAgreement{},
+			contracts:    []model.MySQLContract{},
 			expected:     []dto.MySQLUsedLicense{},
 		},
 		{
@@ -201,7 +201,7 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 					Hostname:        "pippo",
 					InstanceName:    "pippo-instance",
 					InstanceEdition: model.MySQLEditionEnterprise,
-					AgreementType:   "",
+					ContractType:    "",
 				},
 			},
 			clusters: []dto.Cluster{
@@ -214,10 +214,10 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 					},
 				},
 			},
-			agreements: []model.MySQLAgreement{
+			contracts: []model.MySQLContract{
 				{
 					ID:               [12]byte{},
-					Type:             model.MySQLAgreementTypeHost,
+					Type:             model.MySQLContractTypeHost,
 					NumberOfLicenses: 12,
 					Clusters:         []string{},
 					Hosts:            []string{"pippo", "topolino"},
@@ -228,7 +228,7 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 					Hostname:        "pippo",
 					InstanceName:    "pippo-instance",
 					InstanceEdition: model.MySQLEditionEnterprise,
-					AgreementType:   model.MySQLAgreementTypeHost,
+					ContractType:    model.MySQLContractTypeHost,
 				},
 			},
 		},
@@ -238,7 +238,7 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 					Hostname:        "pluto",
 					InstanceName:    "pluto-instance",
 					InstanceEdition: model.MySQLEditionEnterprise,
-					AgreementType:   "",
+					ContractType:    "",
 				},
 			},
 			clusters: []dto.Cluster{
@@ -251,10 +251,10 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 					},
 				},
 			},
-			agreements: []model.MySQLAgreement{
+			contracts: []model.MySQLContract{
 				{
 					ID:               [12]byte{},
-					Type:             model.MySQLAgreementTypeCluster,
+					Type:             model.MySQLContractTypeCluster,
 					NumberOfLicenses: 12,
 					Clusters:         []string{"pippo-cluster", "pluto-cluster"},
 					Hosts:            []string{},
@@ -265,7 +265,7 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 					Hostname:        "pluto",
 					InstanceName:    "pluto-instance",
 					InstanceEdition: model.MySQLEditionEnterprise,
-					AgreementType:   model.MySQLAgreementTypeCluster,
+					ContractType:    model.MySQLContractTypeCluster,
 					Covered:         true,
 				},
 			},
@@ -289,8 +289,8 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 				Return(tc.usedLicenses, nil),
 			db.EXPECT().GetClusters(any).
 				Return(tc.clusters, nil),
-			db.EXPECT().GetMySQLAgreements().
-				Return(tc.agreements, nil),
+			db.EXPECT().GetMySQLContracts().
+				Return(tc.contracts, nil),
 		)
 
 		actual, err := as.GetMySQLUsedLicenses("", filter)
@@ -311,13 +311,13 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 	testCases := []struct {
 		usedLicenses []dto.MySQLUsedLicense
 		clusters     []dto.Cluster
-		agreements   []model.MySQLAgreement
+		contracts    []model.MySQLContract
 		expected     []dto.LicenseCompliance
 	}{
 		{
 			usedLicenses: []dto.MySQLUsedLicense{},
 			clusters:     []dto.Cluster{},
-			agreements:   []model.MySQLAgreement{},
+			contracts:    []model.MySQLContract{},
 			expected:     []dto.LicenseCompliance{},
 		},
 		{
@@ -326,7 +326,7 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 					Hostname:        "pluto",
 					InstanceName:    "pluto-instance",
 					InstanceEdition: model.MySQLEditionEnterprise,
-					AgreementType:   "",
+					ContractType:    "",
 					Covered:         true,
 				},
 			},
@@ -340,10 +340,10 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 					},
 				},
 			},
-			agreements: []model.MySQLAgreement{
+			contracts: []model.MySQLContract{
 				{
 					ID:               [12]byte{},
-					Type:             model.MySQLAgreementTypeHost,
+					Type:             model.MySQLContractTypeHost,
 					NumberOfLicenses: 12,
 					Clusters:         []string{},
 					Hosts:            []string{"pippo", "topolino", "pluto"},
@@ -376,13 +376,13 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 					Hostname:        "pluto",
 					InstanceName:    "pluto-instance",
 					InstanceEdition: model.MySQLEditionEnterprise,
-					AgreementType:   "",
+					ContractType:    "",
 				},
 				{
 					Hostname:        "pippo",
 					InstanceName:    "pippo-instance",
 					InstanceEdition: model.MySQLEditionEnterprise,
-					AgreementType:   "",
+					ContractType:    "",
 				},
 			},
 			clusters: []dto.Cluster{
@@ -395,10 +395,10 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 					},
 				},
 			},
-			agreements: []model.MySQLAgreement{
+			contracts: []model.MySQLContract{
 				{
 					ID:               [12]byte{},
-					Type:             model.MySQLAgreementTypeCluster,
+					Type:             model.MySQLContractTypeCluster,
 					NumberOfLicenses: 12,
 					Clusters:         []string{"pippo-cluster", "pluto-cluster"},
 					Hosts:            []string{},
@@ -444,8 +444,8 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 				Return(tc.usedLicenses, nil),
 			db.EXPECT().GetClusters(any).
 				Return(tc.clusters, nil),
-			db.EXPECT().GetMySQLAgreements().
-				Return(tc.agreements, nil),
+			db.EXPECT().GetMySQLContracts().
+				Return(tc.contracts, nil),
 		)
 
 		actual, err := as.GetMySQLDatabaseLicensesCompliance()

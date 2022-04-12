@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-func TestAddMySQLAgreement(t *testing.T) {
+func TestAddMySQLContract(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -38,43 +38,43 @@ func TestAddMySQLAgreement(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		expected := model.MySQLAgreement{
+		expected := model.MySQLContract{
 			ID:               utils.Str2oid("000000000000000000000001"),
 			Type:             "server",
 			NumberOfLicenses: 42,
 			Clusters:         []string{"pippo"},
 			Hosts:            []string{"pluto"},
 		}
-		db.EXPECT().AddMySQLAgreement(expected).
+		db.EXPECT().AddMySQLContract(expected).
 			Return(nil).Times(1)
 
-		agreement := model.MySQLAgreement{
+		contract := model.MySQLContract{
 			Type:             "server",
 			NumberOfLicenses: 42,
 			Clusters:         []string{"pippo"},
 			Hosts:            []string{"pluto"},
 		}
-		actual, err := as.AddMySQLAgreement(agreement)
+		actual, err := as.AddMySQLContract(contract)
 		require.NoError(t, err)
 
 		assert.Equal(t, &expected, actual)
 	})
 
 	t.Run("Error", func(t *testing.T) {
-		agreement := model.MySQLAgreement{
+		contract := model.MySQLContract{
 			ID: utils.Str2oid("000000000000000000000002"),
 		}
-		db.EXPECT().AddMySQLAgreement(agreement).
+		db.EXPECT().AddMySQLContract(contract).
 			Return(errMock).Times(1)
 
-		actual, err := as.AddMySQLAgreement(agreement)
+		actual, err := as.AddMySQLContract(contract)
 		assert.EqualError(t, err, "MockError")
 
 		assert.Nil(t, actual)
 	})
 }
 
-func TestUpdateMySQLAgreement(t *testing.T) {
+func TestUpdateMySQLContract(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -83,27 +83,27 @@ func TestUpdateMySQLAgreement(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		agreement := model.MySQLAgreement{}
-		db.EXPECT().UpdateMySQLAgreement(agreement).
+		contract := model.MySQLContract{}
+		db.EXPECT().UpdateMySQLContract(contract).
 			Return(nil).Times(1)
 
-		actual, err := as.UpdateMySQLAgreement(agreement)
+		actual, err := as.UpdateMySQLContract(contract)
 		require.NoError(t, err)
-		assert.Equal(t, agreement, *actual)
+		assert.Equal(t, contract, *actual)
 	})
 
 	t.Run("Error", func(t *testing.T) {
-		agreement := model.MySQLAgreement{}
-		db.EXPECT().UpdateMySQLAgreement(agreement).
+		contract := model.MySQLContract{}
+		db.EXPECT().UpdateMySQLContract(contract).
 			Return(errMock).Times(1)
 
-		actual, err := as.UpdateMySQLAgreement(agreement)
+		actual, err := as.UpdateMySQLContract(contract)
 		require.EqualError(t, err, "MockError")
 		assert.Nil(t, actual)
 	})
 }
 
-func TestGetMySQLAgreements(t *testing.T) {
+func TestGetMySQLContracts(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -112,7 +112,7 @@ func TestGetMySQLAgreements(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		expected := []model.MySQLAgreement{
+		expected := []model.MySQLContract{
 			{
 				ID:               [12]byte{},
 				Type:             "",
@@ -121,27 +121,27 @@ func TestGetMySQLAgreements(t *testing.T) {
 				Hosts:            []string{},
 			},
 		}
-		db.EXPECT().GetMySQLAgreements().
+		db.EXPECT().GetMySQLContracts().
 			Return(expected, nil).Times(1)
 
-		actual, err := as.GetMySQLAgreements()
+		actual, err := as.GetMySQLContracts()
 		require.NoError(t, err)
 
 		assert.Equal(t, expected, actual)
 	})
 
 	t.Run("Error", func(t *testing.T) {
-		db.EXPECT().GetMySQLAgreements().
+		db.EXPECT().GetMySQLContracts().
 			Return(nil, errMock).Times(1)
 
-		actual, err := as.GetMySQLAgreements()
+		actual, err := as.GetMySQLContracts()
 		require.EqualError(t, err, "MockError")
 
 		assert.Nil(t, actual)
 	})
 }
 
-func TestGetMySQLAgreementsAsXLSX_Success(t *testing.T) {
+func TestGetMySQLContractsAsXLSX_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -152,10 +152,10 @@ func TestGetMySQLAgreementsAsXLSX_Success(t *testing.T) {
 		Database: db,
 	}
 
-	data := []model.MySQLAgreement{
+	data := []model.MySQLContract{
 		{
 			Type:             "server",
-			AgreementID:      "",
+			ContractID:       "",
 			CSI:              "",
 			NumberOfLicenses: 42,
 			Clusters:         []string{"pippo"},
@@ -163,20 +163,20 @@ func TestGetMySQLAgreementsAsXLSX_Success(t *testing.T) {
 		},
 	}
 
-	db.EXPECT().GetMySQLAgreements().
+	db.EXPECT().GetMySQLContracts().
 		Return(data, nil).Times(1)
 
-	actual, err := as.GetMySQLAgreementsAsXLSX()
+	actual, err := as.GetMySQLContractsAsXLSX()
 	require.NoError(t, err)
-	assert.Equal(t, "server", actual.GetCellValue("Agreements", "A2"))
-	assert.Equal(t, "", actual.GetCellValue("Agreements", "B2"))
-	assert.Equal(t, "", actual.GetCellValue("Agreements", "C2"))
-	assert.Equal(t, "42", actual.GetCellValue("Agreements", "D2"))
-	assert.Equal(t, "[pippo]", actual.GetCellValue("Agreements", "E2"))
-	assert.Equal(t, "pluto", actual.GetCellValue("Agreements", "F3"))
+	assert.Equal(t, "server", actual.GetCellValue("Contracts", "A2"))
+	assert.Equal(t, "", actual.GetCellValue("Contracts", "B2"))
+	assert.Equal(t, "", actual.GetCellValue("Contracts", "C2"))
+	assert.Equal(t, "42", actual.GetCellValue("Contracts", "D2"))
+	assert.Equal(t, "[pippo]", actual.GetCellValue("Contracts", "E2"))
+	assert.Equal(t, "pluto", actual.GetCellValue("Contracts", "F3"))
 }
 
-func TestDeleteMySQLAgreement(t *testing.T) {
+func TestDeleteMySQLContract(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -186,19 +186,19 @@ func TestDeleteMySQLAgreement(t *testing.T) {
 
 	t.Run("Success", func(t *testing.T) {
 		id := utils.Str2oid("iiiiiiiiiiiiiiiiiiiiiiii")
-		db.EXPECT().DeleteMySQLAgreement(id).
+		db.EXPECT().DeleteMySQLContract(id).
 			Return(nil).Times(1)
 
-		err := as.DeleteMySQLAgreement(id)
+		err := as.DeleteMySQLContract(id)
 		require.NoError(t, err)
 	})
 
 	t.Run("Error", func(t *testing.T) {
 		id := utils.Str2oid("iiiiiiiiiiiiiiiiiiiiiiii")
-		db.EXPECT().DeleteMySQLAgreement(id).
+		db.EXPECT().DeleteMySQLContract(id).
 			Return(errMock).Times(1)
 
-		err := as.DeleteMySQLAgreement(id)
+		err := as.DeleteMySQLContract(id)
 		require.EqualError(t, err, "MockError")
 	})
 }
