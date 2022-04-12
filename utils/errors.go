@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,8 +40,8 @@ var ErrClusterNotFound = errors.New("Cluster not found")
 // ErrOracleDatabaseLicenseTypeIDNotFound contains "LicenseTypeID Not Found" error
 var ErrOracleDatabaseLicenseTypeIDNotFound = errors.New("Oracle Database LicenseTypeID not found")
 
-// ErrOracleDatabaseAgreementNotFound contains "Agreement not found" error
-var ErrOracleDatabaseAgreementNotFound = errors.New("Agreement not found")
+// ErrOracleDatabaseContractNotFound contains "Contract not found" error
+var ErrOracleDatabaseContractNotFound = errors.New("Contract not found")
 
 // ErrNotInClusterHostNotFound contains "Baremetal host not found" error
 var ErrNotInClusterHostNotFound = errors.New("Not in cluster host not found")

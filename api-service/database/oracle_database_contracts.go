@@ -29,12 +29,12 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-const oracleDbAgreementsCollection = "oracle_database_agreements"
+const oracleDbContractsCollection = "oracle_database_contracts"
 
-// InsertOracleDatabaseAgreement insert an Oracle/Database agreement into the database
-func (md *MongoDatabase) InsertOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) error {
-	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsCollection).
-		InsertOne(context.TODO(), agreement)
+// InsertOracleDatabaseContract insert an Oracle/Database contract into the database
+func (md *MongoDatabase) InsertOracleDatabaseContract(contract model.OracleDatabaseContract) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbContractsCollection).
+		InsertOne(context.TODO(), contract)
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")
 	}
@@ -42,19 +42,19 @@ func (md *MongoDatabase) InsertOracleDatabaseAgreement(agreement model.OracleDat
 	return nil
 }
 
-// GetOracleDatabaseAgreement return the agreement specified by id
-func (md *MongoDatabase) GetOracleDatabaseAgreement(id primitive.ObjectID) (*model.OracleDatabaseAgreement, error) {
-	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsCollection).
+// GetOracleDatabaseContract return the contract specified by id
+func (md *MongoDatabase) GetOracleDatabaseContract(id primitive.ObjectID) (*model.OracleDatabaseContract, error) {
+	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbContractsCollection).
 		FindOne(context.TODO(), bson.M{
 			"_id": id,
 		})
 	if res.Err() == mongo.ErrNoDocuments {
-		return nil, utils.ErrOracleDatabaseAgreementNotFound
+		return nil, utils.ErrOracleDatabaseContractNotFound
 	} else if res.Err() != nil {
 		return nil, utils.NewError(res.Err(), "DB ERROR")
 	}
 
-	var out model.OracleDatabaseAgreement
+	var out model.OracleDatabaseContract
 
 	if err := res.Decode(&out); err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
@@ -63,26 +63,26 @@ func (md *MongoDatabase) GetOracleDatabaseAgreement(id primitive.ObjectID) (*mod
 	return &out, nil
 }
 
-// UpdateOracleDatabaseAgreement update an Oracle/Database agreement in the database
-func (md *MongoDatabase) UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) error {
-	result, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsCollection).
+// UpdateOracleDatabaseContract update an Oracle/Database contract in the database
+func (md *MongoDatabase) UpdateOracleDatabaseContract(contract model.OracleDatabaseContract) error {
+	result, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbContractsCollection).
 		ReplaceOne(context.TODO(), bson.M{
-			"_id": agreement.ID,
-		}, agreement)
+			"_id": contract.ID,
+		}, contract)
 	if err != nil {
 		return utils.NewError(err, "DB ERROR")
 	}
 
 	if result.MatchedCount != 1 {
-		return utils.ErrOracleDatabaseAgreementNotFound
+		return utils.ErrOracleDatabaseContractNotFound
 	}
 
 	return nil
 }
 
-// RemoveOracleDatabaseAgreement remove an Oracle/Database agreement from the database
-func (md *MongoDatabase) RemoveOracleDatabaseAgreement(id primitive.ObjectID) error {
-	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsCollection).
+// RemoveOracleDatabaseContract remove an Oracle/Database contract from the database
+func (md *MongoDatabase) RemoveOracleDatabaseContract(id primitive.ObjectID) error {
+	res, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbContractsCollection).
 		DeleteOne(context.TODO(), bson.M{
 			"_id": id,
 		})
@@ -91,17 +91,17 @@ func (md *MongoDatabase) RemoveOracleDatabaseAgreement(id primitive.ObjectID) er
 	}
 
 	if res.DeletedCount == 0 {
-		return utils.ErrOracleDatabaseAgreementNotFound
+		return utils.ErrOracleDatabaseContractNotFound
 	}
 
 	return nil
 }
 
-// ListOracleDatabaseAgreements lists the Oracle/Database agreements
-func (md *MongoDatabase) ListOracleDatabaseAgreements() ([]dto.OracleDatabaseAgreementFE, error) {
-	var out []dto.OracleDatabaseAgreementFE = make([]dto.OracleDatabaseAgreementFE, 0)
+// ListOracleDatabaseContracts lists the Oracle/Database contracts
+func (md *MongoDatabase) ListOracleDatabaseContracts() ([]dto.OracleDatabaseContractFE, error) {
+	var out []dto.OracleDatabaseContractFE = make([]dto.OracleDatabaseContractFE, 0)
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbAgreementsCollection).
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbContractsCollection).
 		Aggregate(
 			context.TODO(),
 			mu.MAPipeline(

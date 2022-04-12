@@ -36,34 +36,34 @@ import (
 
 // TODO When insert or update unlimited agr, set count == 0
 
-func (as *APIService) AddOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*dto.OracleDatabaseAgreementFE, error) {
-	if err := checkHosts(as, agreement.Hosts); err != nil {
+func (as *APIService) AddOracleDatabaseContract(contract model.OracleDatabaseContract) (*dto.OracleDatabaseContractFE, error) {
+	if err := checkHosts(as, contract.Hosts); err != nil {
 		return nil, err
 	}
 
-	if err := checkLicenseTypeIDExists(as, &agreement); err != nil {
+	if err := checkLicenseTypeIDExists(as, &contract); err != nil {
 		return nil, err
 	}
 
-	agreement.ID = as.NewObjectID()
+	contract.ID = as.NewObjectID()
 
-	err := as.Database.InsertOracleDatabaseAgreement(agreement)
+	err := as.Database.InsertOracleDatabaseContract(contract)
 	if err != nil {
 		return nil, err
 	}
 
-	agrs, err := as.GetOracleDatabaseAgreements(dto.NewGetOracleDatabaseAgreementsFilter())
+	agrs, err := as.GetOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter())
 	if err != nil {
 		return nil, err
 	}
 
 	for _, agr := range agrs {
-		if agr.ID == agreement.ID {
+		if agr.ID == contract.ID {
 			return &agr, nil
 		}
 	}
 
-	return nil, utils.NewError(errors.New("Can't find agreement which has just been saved"))
+	return nil, utils.NewError(errors.New("Can't find contract which has just been saved"))
 }
 
 func checkHosts(as *APIService, hosts []string) error {
@@ -105,8 +105,8 @@ hosts_loop:
 	return nil
 }
 
-func checkLicenseTypeIDExists(as *APIService, agreement *model.OracleDatabaseAgreement) error {
-	_, err := as.GetOracleDatabaseLicenseType(agreement.LicenseTypeID)
+func checkLicenseTypeIDExists(as *APIService, contract *model.OracleDatabaseContract) error {
+	_, err := as.GetOracleDatabaseLicenseType(contract.LicenseTypeID)
 	if err != nil {
 		return err
 	}
@@ -114,39 +114,39 @@ func checkLicenseTypeIDExists(as *APIService, agreement *model.OracleDatabaseAgr
 	return nil
 }
 
-func (as *APIService) UpdateOracleDatabaseAgreement(agreement model.OracleDatabaseAgreement) (*dto.OracleDatabaseAgreementFE, error) {
-	if err := checkHosts(as, agreement.Hosts); err != nil {
+func (as *APIService) UpdateOracleDatabaseContract(contract model.OracleDatabaseContract) (*dto.OracleDatabaseContractFE, error) {
+	if err := checkHosts(as, contract.Hosts); err != nil {
 		return nil, err
 	}
 
-	if err := checkLicenseTypeIDExists(as, &agreement); err != nil {
+	if err := checkLicenseTypeIDExists(as, &contract); err != nil {
 		return nil, err
 	}
 
-	if err := as.Database.UpdateOracleDatabaseAgreement(agreement); err != nil {
+	if err := as.Database.UpdateOracleDatabaseContract(contract); err != nil {
 		return nil, err
 	}
 
-	agrs, err := as.GetOracleDatabaseAgreements(dto.NewGetOracleDatabaseAgreementsFilter())
+	agrs, err := as.GetOracleDatabaseContracts(dto.NewGetOracleDatabaseContractsFilter())
 	if err != nil {
 		return nil, err
 	}
 
 	for _, agr := range agrs {
-		if agr.ID == agreement.ID {
+		if agr.ID == contract.ID {
 			return &agr, nil
 		}
 	}
 
-	return nil, utils.NewError(errors.New("Can't find agreement which has just been saved"))
+	return nil, utils.NewError(errors.New("Can't find contract which has just been saved"))
 }
 
-func (as *APIService) GetOracleDatabaseAgreements(filter dto.GetOracleDatabaseAgreementsFilter) ([]dto.OracleDatabaseAgreementFE, error) {
-	if as.mockGetOracleDatabaseAgreements != nil {
-		return as.mockGetOracleDatabaseAgreements(filter)
+func (as *APIService) GetOracleDatabaseContracts(filter dto.GetOracleDatabaseContractsFilter) ([]dto.OracleDatabaseContractFE, error) {
+	if as.mockGetOracleDatabaseContracts != nil {
+		return as.mockGetOracleDatabaseContracts(filter)
 	}
 
-	agreements, err := as.Database.ListOracleDatabaseAgreements()
+	contracts, err := as.Database.ListOracleDatabaseContracts()
 	if err != nil {
 		return nil, err
 	}
@@ -156,14 +156,14 @@ func (as *APIService) GetOracleDatabaseAgreements(filter dto.GetOracleDatabaseAg
 		return nil, err
 	}
 
-	if err := as.assignOracleDatabaseAgreementsToHosts(agreements, usages); err != nil {
+	if err := as.assignOracleDatabaseContractsToHosts(contracts, usages); err != nil {
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	filteredAgrs := make([]dto.OracleDatabaseAgreementFE, 0)
+	filteredAgrs := make([]dto.OracleDatabaseContractFE, 0)
 
-	for _, agr := range agreements {
-		if checkOracleDatabaseAgreementMatchFilter(agr, filter) {
+	for _, agr := range contracts {
+		if checkOracleDatabaseContractMatchFilter(agr, filter) {
 			filteredAgrs = append(filteredAgrs, agr)
 		}
 	}
@@ -171,15 +171,15 @@ func (as *APIService) GetOracleDatabaseAgreements(filter dto.GetOracleDatabaseAg
 	return filteredAgrs, nil
 }
 
-func (as *APIService) GetOracleDatabaseAgreementsAsXLSX(filter dto.GetOracleDatabaseAgreementsFilter) (*excelize.File, error) {
-	agreements, err := as.GetOracleDatabaseAgreements(filter)
+func (as *APIService) GetOracleDatabaseContractsAsXLSX(filter dto.GetOracleDatabaseContractsFilter) (*excelize.File, error) {
+	contracts, err := as.GetOracleDatabaseContracts(filter)
 	if err != nil {
 		return nil, err
 	}
 
-	sheet := "Agreements"
+	sheet := "Contracts"
 	headers := []string{
-		"Agreement Number",
+		"Contract Number",
 		"Part Number",
 		"Description",
 		"Metric",
@@ -195,8 +195,8 @@ func (as *APIService) GetOracleDatabaseAgreementsAsXLSX(filter dto.GetOracleData
 
 		"Hostname",
 		"Used Licenses",
-		"Covered by this agreement",
-		"Covered by all agreements",
+		"Covered by this contract",
+		"Covered by all contracts",
 	}
 
 	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
@@ -206,9 +206,9 @@ func (as *APIService) GetOracleDatabaseAgreementsAsXLSX(filter dto.GetOracleData
 
 	axisHelp := exutils.NewAxisHelper(1)
 
-	for _, val := range agreements {
+	for _, val := range contracts {
 		nextAxis := axisHelp.NewRow()
-		sheets.SetCellValue(sheet, nextAxis(), val.AgreementID)
+		sheets.SetCellValue(sheet, nextAxis(), val.ContractID)
 		sheets.SetCellValue(sheet, nextAxis(), val.LicenseTypeID)
 		sheets.SetCellValue(sheet, nextAxis(), val.ItemDescription)
 		sheets.SetCellValue(sheet, nextAxis(), val.Metric)
@@ -236,28 +236,28 @@ func (as *APIService) GetOracleDatabaseAgreementsAsXLSX(filter dto.GetOracleData
 	return sheets, err
 }
 
-// assignOracleDatabaseAgreementsToHosts assign available licenses in each agreements to hosts using licenses
-func (as *APIService) assignOracleDatabaseAgreementsToHosts(
-	agrs []dto.OracleDatabaseAgreementFE,
+// assignOracleDatabaseContractsToHosts assign available licenses in each contracts to hosts using licenses
+func (as *APIService) assignOracleDatabaseContractsToHosts(
+	agrs []dto.OracleDatabaseContractFE,
 	usages []dto.HostUsingOracleDatabaseLicenses) error {
 	licenseTypes, err := as.Database.GetOracleDatabaseLicenseTypes()
 	if err != nil {
 		return err
 	}
 
-	sortOracleDatabaseAgreements(agrs)
+	sortOracleDatabaseContracts(agrs)
 	sortHostsByLicenses(usages)
 
-	if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
-		as.Log.Debugf("Agreements = %s\nHosts= %s\n", utils.ToJSON(agrs), utils.ToJSON(usages))
+	if as.Config.APIService.DebugOracleDatabaseContractsAssignmentAlgorithm {
+		as.Log.Debugf("Contracts = %s\nHosts= %s\n", utils.ToJSON(agrs), utils.ToJSON(usages))
 	}
 
 	usagesMap := buildHostUsingLicensesMap(usages)
 	licenseTypesMap := buildLicenseTypesMap(licenseTypes)
 
-	fillAgreementsInfo(as, agrs, licenseTypesMap)
+	fillContractsInfo(as, agrs, licenseTypesMap)
 
-	err = assignAgreementsLicensesToItsAssociatedHosts(as, agrs, usagesMap)
+	err = assignContractsLicensesToItsAssociatedHosts(as, agrs, usagesMap)
 	if err != nil {
 		return err
 	}
@@ -266,20 +266,20 @@ func (as *APIService) assignOracleDatabaseAgreementsToHosts(
 	sortHostsByLicenses(usages)
 	usagesMap = buildHostUsingLicensesMap(usages)
 
-	if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
+	if as.Config.APIService.DebugOracleDatabaseContractsAssignmentAlgorithm {
 		as.Log.Debugf("Resorted LicensingObjects: %#v\n", usages)
 	}
 
-	assignLicensesFromBasketAgreements(as, agrs, usages)
+	assignLicensesFromBasketContracts(as, agrs, usages)
 
 	calculateTotalCoveredAndConsumedLicenses(agrs, usagesMap)
 
 	return nil
 }
 
-// sortOracleDatabaseAgreements sort the list of dto.OracleDatabaseAgreementsFE
+// sortOracleDatabaseContracts sort the list of dto.OracleDatabaseContractsFE
 // by Basket (falses first), Unlimited (falses first), decreasing UsersCount, decreasing LicensesCount
-func sortOracleDatabaseAgreements(obj []dto.OracleDatabaseAgreementFE) {
+func sortOracleDatabaseContracts(obj []dto.OracleDatabaseContractFE) {
 	sort.Slice(obj, func(i, j int) bool {
 
 		if obj[i].Basket != obj[j].Basket {
@@ -329,7 +329,7 @@ func buildHostUsingLicensesMap(usages []dto.HostUsingOracleDatabaseLicenses,
 	return res
 }
 
-//TODO  use GetOracleDatabaseAgreementPartsMap ?
+//TODO  use GetOracleDatabaseContractPartsMap ?
 func buildLicenseTypesMap(licenseTypes []model.OracleDatabaseLicenseType) map[string]*model.OracleDatabaseLicenseType {
 	ltMap := make(map[string]*model.OracleDatabaseLicenseType)
 
@@ -340,7 +340,7 @@ func buildLicenseTypesMap(licenseTypes []model.OracleDatabaseLicenseType) map[st
 	return ltMap
 }
 
-func fillAgreementsInfo(as *APIService, agrs []dto.OracleDatabaseAgreementFE, licenseTypes map[string]*model.OracleDatabaseLicenseType) {
+func fillContractsInfo(as *APIService, agrs []dto.OracleDatabaseContractFE, licenseTypes map[string]*model.OracleDatabaseLicenseType) {
 	for i := range agrs {
 		agr := &agrs[i]
 
@@ -348,31 +348,31 @@ func fillAgreementsInfo(as *APIService, agrs []dto.OracleDatabaseAgreementFE, li
 			agr.ItemDescription = licenseType.ItemDescription
 			agr.Metric = licenseType.Metric
 		} else {
-			as.Log.Errorf("Unknown PartID: [%s] in agreement: [%#v]", agr.LicenseTypeID, agr)
+			as.Log.Errorf("Unknown PartID: [%s] in contract: [%#v]", agr.LicenseTypeID, agr)
 		}
 	}
 }
 
-// Assign available licenses in each agreement to each host associated in each agreement
+// Assign available licenses in each contract to each host associated in each contract
 // if this host is using that kind of license.
-func assignAgreementsLicensesToItsAssociatedHosts(
+func assignContractsLicensesToItsAssociatedHosts(
 	as *APIService,
-	agreements []dto.OracleDatabaseAgreementFE,
+	contracts []dto.OracleDatabaseContractFE,
 	usagesMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses) error {
 	hostnamesPerLicense := make(map[string]map[string]bool)
 
-	for i := range agreements {
-		agreement := &agreements[i]
-		sortHostsInAgreementByLicenseCount(agreement, usagesMap)
+	for i := range contracts {
+		contract := &contracts[i]
+		sortHostsInContractByLicenseCount(contract, usagesMap)
 
-		if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
-			as.Log.Debugf("Distributing licenses of agreement #%d to host. Agreement = %s\n", i, utils.ToJSON(agreement))
+		if as.Config.APIService.DebugOracleDatabaseContractsAssignmentAlgorithm {
+			as.Log.Debugf("Distributing licenses of contract #%d to host. Contract = %s\n", i, utils.ToJSON(contract))
 		}
 
-		for j := range agreement.Hosts {
-			associatedHost := &agreement.Hosts[j]
+		for j := range contract.Hosts {
+			associatedHost := &contract.Hosts[j]
 
-			if !hasAvailableLicenses(agreement) {
+			if !hasAvailableLicenses(contract) {
 				break
 			}
 
@@ -382,14 +382,14 @@ func assignAgreementsLicensesToItsAssociatedHosts(
 
 			var ok bool
 
-			ltID := agreement.LicenseTypeID
+			ltID := contract.LicenseTypeID
 
 			if usages, ok = usagesMap[ltID]; !ok {
 				// no host use this license
 				continue
 			}
 
-			err := as.assignAgreementsLicensesToHostBelongToCluster(usages, agreement, associatedHost, hostnamesPerLicense)
+			err := as.assignContractsLicensesToHostBelongToCluster(usages, contract, associatedHost, hostnamesPerLicense)
 			if err != nil {
 				return err
 			}
@@ -404,17 +404,17 @@ func assignAgreementsLicensesToItsAssociatedHosts(
 				continue
 			}
 
-			doAssignAgreementLicensesToAssociatedHost(agreement, hostUsingLicenses, associatedHost)
+			doAssignContractLicensesToAssociatedHost(contract, hostUsingLicenses, associatedHost)
 
-			if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
+			if as.Config.APIService.DebugOracleDatabaseContractsAssignmentAlgorithm {
 				as.Log.Debugf(`Distributing %f licenses to host %s. agr.Metrics=%s \
 					agr.AvailableLicensesPerCore=%f agr.AvailableLicensesPerUser=%f \
 					hostInAgr.CoveredLicensesCount=%f hostUsingLicenses.LicenseCount=%f licenseName=%s\n`,
 					hostUsingLicenses.LicenseCount,
 					associatedHost.Hostname,
-					agreement.Metric,
-					agreement.AvailableLicensesPerCore,
-					agreement.AvailableLicensesPerUser,
+					contract.Metric,
+					contract.AvailableLicensesPerCore,
+					contract.AvailableLicensesPerUser,
 					associatedHost.CoveredLicensesCount,
 					hostUsingLicenses.LicenseCount,
 					ltID)
@@ -425,13 +425,13 @@ func assignAgreementsLicensesToItsAssociatedHosts(
 	return nil
 }
 
-func (as *APIService) assignAgreementsLicensesToHostBelongToCluster(
+func (as *APIService) assignContractsLicensesToHostBelongToCluster(
 	usages map[string]*dto.HostUsingOracleDatabaseLicenses,
-	agreement *dto.OracleDatabaseAgreementFE,
-	associatedHost *dto.OracleDatabaseAgreementAssociatedHostFE,
+	contract *dto.OracleDatabaseContractFE,
+	associatedHost *dto.OracleDatabaseContractAssociatedHostFE,
 	hostnamesPerLicense map[string]map[string]bool) error {
 	for _, usage := range usages {
-		if usage == nil || usage.Type != "cluster" || agreement.Restricted {
+		if usage == nil || usage.Type != "cluster" || contract.Restricted {
 			continue
 		}
 
@@ -453,12 +453,12 @@ func (as *APIService) assignAgreementsLicensesToHostBelongToCluster(
 				}
 
 				hostnamesPerLicense[usage.LicenseTypeID][usage.Name] = true
-				agreement.CoveredLicenses += usage.LicenseCount
+				contract.CoveredLicenses += usage.LicenseCount
 
-				if agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
-					agreement.AvailableLicensesPerUser -= usage.LicenseCount
+				if contract.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
+					contract.AvailableLicensesPerUser -= usage.LicenseCount
 				} else {
-					agreement.AvailableLicensesPerCore -= usage.LicenseCount
+					contract.AvailableLicensesPerCore -= usage.LicenseCount
 				}
 
 				break
@@ -469,26 +469,26 @@ func (as *APIService) assignAgreementsLicensesToHostBelongToCluster(
 	return nil
 }
 
-func hasAvailableLicenses(agreement *dto.OracleDatabaseAgreementFE) bool {
-	if agreement.Unlimited {
+func hasAvailableLicenses(contract *dto.OracleDatabaseContractFE) bool {
+	if contract.Unlimited {
 		return true
 	}
 
-	if agreement.AvailableLicensesPerCore > 0 &&
-		agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual {
+	if contract.AvailableLicensesPerCore > 0 &&
+		contract.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual {
 		return true
 	}
 
-	if agreement.AvailableLicensesPerUser > 0 &&
-		agreement.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
+	if contract.AvailableLicensesPerUser > 0 &&
+		contract.Metric == model.LicenseTypeMetricNamedUserPlusPerpetual {
 		return true
 	}
 
 	return false
 }
 
-// sortHostsInAgreementByLicenseCount sort the associated hosts by license count
-func sortHostsInAgreementByLicenseCount(agr *dto.OracleDatabaseAgreementFE,
+// sortHostsInContractByLicenseCount sort the associated hosts by license count
+func sortHostsInContractByLicenseCount(agr *dto.OracleDatabaseContractFE,
 	usagesMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses) {
 	sort.Slice(agr.Hosts, func(i, j int) bool {
 		ltID := agr.LicenseTypeID
@@ -508,48 +508,48 @@ func sortHostsInAgreementByLicenseCount(agr *dto.OracleDatabaseAgreementFE,
 	})
 }
 
-// Use all the licenses available in agreement to cover host and associatedHost if provided
-func doAssignAgreementLicensesToAssociatedHost(
-	agreement *dto.OracleDatabaseAgreementFE,
+// Use all the licenses available in contract to cover host and associatedHost if provided
+func doAssignContractLicensesToAssociatedHost(
+	contract *dto.OracleDatabaseContractFE,
 	host *dto.HostUsingOracleDatabaseLicenses,
-	associatedHost *dto.OracleDatabaseAgreementAssociatedHostFE) {
-	if agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual {
+	associatedHost *dto.OracleDatabaseContractAssociatedHostFE) {
+	if contract.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual {
 		var coverableLicenses float64
-		if agreement.Unlimited {
+		if contract.Unlimited {
 			coverableLicenses = host.LicenseCount
-			agreement.AvailableLicensesPerCore = 0
+			contract.AvailableLicensesPerCore = 0
 		} else {
-			coverableLicenses = math.Min(agreement.AvailableLicensesPerCore, host.LicenseCount)
-			agreement.AvailableLicensesPerCore -= coverableLicenses
+			coverableLicenses = math.Min(contract.AvailableLicensesPerCore, host.LicenseCount)
+			contract.AvailableLicensesPerCore -= coverableLicenses
 		}
 
 		associatedHost.CoveredLicensesCount += coverableLicenses
-		agreement.CoveredLicenses += coverableLicenses
+		contract.CoveredLicenses += coverableLicenses
 		host.LicenseCount -= coverableLicenses
 
 		return
 	}
 
 	var coverableLicenses float64
-	if agreement.Unlimited {
+	if contract.Unlimited {
 		coverableLicenses = host.LicenseCount
-		agreement.AvailableLicensesPerUser = 0
+		contract.AvailableLicensesPerUser = 0
 	} else {
 		// Named User licenses must be covered in multiple of 25
-		availableInAgreement := math.Floor(agreement.AvailableLicensesPerUser/model.FactorNamedUser) * model.FactorNamedUser
-		coverableLicenses = math.Min(availableInAgreement, host.LicenseCount)
-		agreement.AvailableLicensesPerUser -= coverableLicenses
+		availableInContract := math.Floor(contract.AvailableLicensesPerUser/model.FactorNamedUser) * model.FactorNamedUser
+		coverableLicenses = math.Min(availableInContract, host.LicenseCount)
+		contract.AvailableLicensesPerUser -= coverableLicenses
 	}
 
 	associatedHost.CoveredLicensesCount += coverableLicenses
-	agreement.CoveredLicenses += coverableLicenses
+	contract.CoveredLicenses += coverableLicenses
 	host.LicenseCount -= coverableLicenses
 }
 
-// If an agreement is basket distributes its licenses to every hosts that use that kind of license
-func assignLicensesFromBasketAgreements(
+// If an contract is basket distributes its licenses to every hosts that use that kind of license
+func assignLicensesFromBasketContracts(
 	as *APIService,
-	agrs []dto.OracleDatabaseAgreementFE,
+	agrs []dto.OracleDatabaseContractFE,
 	usages []dto.HostUsingOracleDatabaseLicenses) {
 	for i := range usages {
 		usage := &usages[i]
@@ -573,9 +573,9 @@ func assignLicensesFromBasketAgreements(
 				continue
 			}
 
-			doAssignLicenseFromBasketAgreement(agr, usage)
+			doAssignLicenseFromBasketContract(agr, usage)
 
-			if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
+			if as.Config.APIService.DebugOracleDatabaseContractsAssignmentAlgorithm {
 				as.Log.Debugf("Distributing with metric [%s] [ULA? %t] %f licenses to obj %s. objCount=0 licenseTypeID=%s\n",
 					agr.Metric,
 					agr.Unlimited,
@@ -586,49 +586,49 @@ func assignLicensesFromBasketAgreements(
 		}
 	}
 
-	if as.Config.APIService.DebugOracleDatabaseAgreementsAssignmentAlgorithm {
+	if as.Config.APIService.DebugOracleDatabaseContractsAssignmentAlgorithm {
 		as.Log.Debugf("Associations finished. LicensingObjects: %#v\n", usages)
 	}
 }
 
-// Use all the licenses available in agreement to cover host and associatedHost if provided
-func doAssignLicenseFromBasketAgreement(
-	agreement *dto.OracleDatabaseAgreementFE,
+// Use all the licenses available in contract to cover host and associatedHost if provided
+func doAssignLicenseFromBasketContract(
+	contract *dto.OracleDatabaseContractFE,
 	usage *dto.HostUsingOracleDatabaseLicenses) {
 	var coverableLicenses float64
 
-	if agreement.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual {
-		if agreement.Unlimited {
+	if contract.Metric != model.LicenseTypeMetricNamedUserPlusPerpetual {
+		if contract.Unlimited {
 			coverableLicenses = usage.LicenseCount
-			agreement.AvailableLicensesPerCore = 0
+			contract.AvailableLicensesPerCore = 0
 		} else {
-			coverableLicenses = math.Min(agreement.AvailableLicensesPerCore, usage.LicenseCount)
-			agreement.AvailableLicensesPerCore -= coverableLicenses
+			coverableLicenses = math.Min(contract.AvailableLicensesPerCore, usage.LicenseCount)
+			contract.AvailableLicensesPerCore -= coverableLicenses
 		}
 	} else {
-		if agreement.Unlimited {
+		if contract.Unlimited {
 			coverableLicenses = usage.LicenseCount
-			agreement.AvailableLicensesPerUser = 0
+			contract.AvailableLicensesPerUser = 0
 		} else {
-			coverableLicenses = math.Floor(math.Min(agreement.AvailableLicensesPerUser, usage.LicenseCount)/25) * 25
-			agreement.AvailableLicensesPerUser -= coverableLicenses
+			coverableLicenses = math.Floor(math.Min(contract.AvailableLicensesPerUser, usage.LicenseCount)/25) * 25
+			contract.AvailableLicensesPerUser -= coverableLicenses
 		}
 	}
 
-	agreement.CoveredLicenses += coverableLicenses
+	contract.CoveredLicenses += coverableLicenses
 	usage.LicenseCount -= coverableLicenses
 }
 
 func calculateTotalCoveredAndConsumedLicenses(
-	agrs []dto.OracleDatabaseAgreementFE,
+	agrs []dto.OracleDatabaseContractFE,
 	usagesMap map[string]map[string]*dto.HostUsingOracleDatabaseLicenses) {
 	for i := range agrs {
-		agreement := &agrs[i]
+		contract := &agrs[i]
 
-		ltID := agreement.LicenseTypeID
+		ltID := contract.LicenseTypeID
 
-		for j := range agreement.Hosts {
-			associatedHost := &agreement.Hosts[j]
+		for j := range contract.Hosts {
+			associatedHost := &contract.Hosts[j]
 
 			if _, ok := usagesMap[ltID]; !ok {
 				continue
@@ -645,9 +645,9 @@ func calculateTotalCoveredAndConsumedLicenses(
 	}
 }
 
-// checkOracleDatabaseAgreementMatchFilter check that agr match the filters
-func checkOracleDatabaseAgreementMatchFilter(agr dto.OracleDatabaseAgreementFE, filters dto.GetOracleDatabaseAgreementsFilter) bool {
-	return strings.Contains(strings.ToLower(agr.AgreementID), strings.ToLower(filters.AgreementID)) &&
+// checkOracleDatabaseContractMatchFilter check that agr match the filters
+func checkOracleDatabaseContractMatchFilter(agr dto.OracleDatabaseContractFE, filters dto.GetOracleDatabaseContractsFilter) bool {
+	return strings.Contains(strings.ToLower(agr.ContractID), strings.ToLower(filters.ContractID)) &&
 		strings.Contains(strings.ToLower(agr.LicenseTypeID), strings.ToLower(filters.LicenseTypeID)) &&
 		strings.Contains(strings.ToLower(agr.ItemDescription), strings.ToLower(filters.ItemDescription)) &&
 		strings.Contains(strings.ToLower(agr.CSI), strings.ToLower(filters.CSI)) &&
@@ -665,80 +665,80 @@ func checkOracleDatabaseAgreementMatchFilter(agr dto.OracleDatabaseAgreementFE, 
 		(filters.AvailableLicensesPerUserGTE == -1 || agr.AvailableLicensesPerUser >= float64(filters.AvailableLicensesPerCoreGTE))
 }
 
-func (as *APIService) DeleteOracleDatabaseAgreement(id primitive.ObjectID) error {
-	return as.Database.RemoveOracleDatabaseAgreement(id)
+func (as *APIService) DeleteOracleDatabaseContract(id primitive.ObjectID) error {
+	return as.Database.RemoveOracleDatabaseContract(id)
 }
 
-func (as *APIService) AddHostToOracleDatabaseAgreement(id primitive.ObjectID, hostname string) error {
+func (as *APIService) AddHostToOracleDatabaseContract(id primitive.ObjectID, hostname string) error {
 	if err := checkHosts(as, []string{hostname}); err != nil {
 		return err
 	}
 
-	agreement, err := as.Database.GetOracleDatabaseAgreement(id)
+	contract, err := as.Database.GetOracleDatabaseContract(id)
 	if err != nil {
 		return err
 	}
 
-	for _, host := range agreement.Hosts {
+	for _, host := range contract.Hosts {
 		if host == hostname {
 			return nil
 		}
 	}
 
-	agreement.Hosts = append(agreement.Hosts, hostname)
+	contract.Hosts = append(contract.Hosts, hostname)
 
-	return as.Database.UpdateOracleDatabaseAgreement(*agreement)
+	return as.Database.UpdateOracleDatabaseContract(*contract)
 }
 
-func (as *APIService) DeleteHostFromOracleDatabaseAgreement(id primitive.ObjectID, hostname string) error {
+func (as *APIService) DeleteHostFromOracleDatabaseContract(id primitive.ObjectID, hostname string) error {
 	if err := checkHosts(as, []string{hostname}); err != nil {
 		return err
 	}
 
-	agreement, err := as.Database.GetOracleDatabaseAgreement(id)
+	contract, err := as.Database.GetOracleDatabaseContract(id)
 	if err != nil {
 		return err
 	}
 
-	for i := range agreement.Hosts {
-		host := agreement.Hosts[i]
+	for i := range contract.Hosts {
+		host := contract.Hosts[i]
 		if host == hostname {
-			agreement.Hosts = append(
-				agreement.Hosts[0:i],
-				agreement.Hosts[i+1:len(agreement.Hosts)]...)
+			contract.Hosts = append(
+				contract.Hosts[0:i],
+				contract.Hosts[i+1:len(contract.Hosts)]...)
 
 			break
 		}
 	}
 
-	return as.Database.UpdateOracleDatabaseAgreement(*agreement)
+	return as.Database.UpdateOracleDatabaseContract(*contract)
 }
 
-func (as *APIService) DeleteHostFromOracleDatabaseAgreements(hostname string) error {
+func (as *APIService) DeleteHostFromOracleDatabaseContracts(hostname string) error {
 	if err := checkHosts(as, []string{hostname}); err != nil {
 		return err
 	}
 
-	listAgreements, err := as.Database.ListOracleDatabaseAgreements()
+	listContracts, err := as.Database.ListOracleDatabaseContracts()
 	if err != nil {
 		return err
 	}
 
-	for _, la := range listAgreements {
+	for _, la := range listContracts {
 		for i := range la.Hosts {
 			host := la.Hosts[i]
 			if host.Hostname == hostname {
-				agreement, err := as.Database.GetOracleDatabaseAgreement(la.ID)
+				contract, err := as.Database.GetOracleDatabaseContract(la.ID)
 				if err != nil {
 					return err
 				}
 
-				agreement.Hosts = append(
-					agreement.Hosts[0:i],
-					agreement.Hosts[i+1:len(agreement.Hosts)]...)
+				contract.Hosts = append(
+					contract.Hosts[0:i],
+					contract.Hosts[i+1:len(contract.Hosts)]...)
 
-				errAgreement := as.Database.UpdateOracleDatabaseAgreement(*agreement)
-				if errAgreement != nil {
+				errContract := as.Database.UpdateOracleDatabaseContract(*contract)
+				if errContract != nil {
 					return err
 				}
 			}

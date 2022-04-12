@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,10 +17,10 @@ package model
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
-type MySQLAgreement struct {
+type MySQLContract struct {
 	ID               primitive.ObjectID `json:"id" bson:"_id"`
 	Type             string             `json:"type" bson:"type"`
-	AgreementID      string             `json:"agreementID" bson:"agreementID"`
+	ContractID       string             `json:"contractID" bson:"contractID"`
 	CSI              string             `json:"csi" bson:"csi"`
 	NumberOfLicenses uint               `json:"numberOfLicenses" bson:"numberOfLicenses"`
 	Clusters         []string           `json:"clusters" bson:"clusters"`
@@ -28,21 +28,21 @@ type MySQLAgreement struct {
 }
 
 const (
-	MySQLAgreementTypeHost    string = "HOST"
-	MySQLAgreementTypeCluster string = "CLUSTER"
+	MySQLContractTypeHost    string = "HOST"
+	MySQLContractTypeCluster string = "CLUSTER"
 )
 
-func getMySQLAgreementTypes() []string {
-	return []string{MySQLAgreementTypeHost, MySQLAgreementTypeCluster}
+func getMySQLContractTypes() []string {
+	return []string{MySQLContractTypeHost, MySQLContractTypeCluster}
 }
 
-func (agr MySQLAgreement) IsValid() bool {
-	if agr.AgreementID == "" || agr.CSI == "" || agr.NumberOfLicenses == 0 {
+func (agr MySQLContract) IsValid() bool {
+	if agr.ContractID == "" || agr.CSI == "" || agr.NumberOfLicenses == 0 {
 		return false
 	}
 
 	fields := make(map[string][]string)
-	fields[agr.Type] = getMySQLAgreementTypes()
+	fields[agr.Type] = getMySQLContractTypes()
 
 fields:
 	for thisValue, allValidValues := range fields {

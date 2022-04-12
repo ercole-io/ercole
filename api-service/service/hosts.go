@@ -276,16 +276,16 @@ func (as *APIService) SearchHostsAsXLSX(filters dto.SearchHostsFilters) (*exceli
 }
 
 func (as *APIService) getCSIsByHostname() (res map[string][]string, err error) {
-	agreements, aerr := as.Database.ListOracleDatabaseAgreements()
+	contracts, aerr := as.Database.ListOracleDatabaseContracts()
 	if aerr != nil {
 		return nil, aerr
 	}
 
 	res = make(map[string][]string)
 
-	for i, a := range agreements {
+	for i, a := range contracts {
 		for _, h := range a.Hosts {
-			this := &agreements[i].CSI
+			this := &contracts[i].CSI
 
 			if this != nil && len(*this) > 0 {
 				res[h.Hostname] = append(res[h.Hostname], *this)
@@ -335,8 +335,8 @@ func (as *APIService) DismissHost(hostname string) error {
 		as.Log.Errorf("Can't dismiss hostname %s alerts by filter", hostname)
 	}
 
-	if err := as.DeleteHostFromOracleDatabaseAgreements(hostname); err != nil {
-		as.Log.Errorf("Can't remove hostname %s agreements", hostname)
+	if err := as.DeleteHostFromOracleDatabaseContracts(hostname); err != nil {
+		as.Log.Errorf("Can't remove hostname %s contracts", hostname)
 	}
 
 	return as.Database.DismissHost(hostname)

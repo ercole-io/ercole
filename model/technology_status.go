@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,12 +17,12 @@ package model
 
 // TechnologyStatus represent usage status of a technology
 type TechnologyStatus struct {
-	Product             string  `json:"product"`
-	ConsumedByHosts     float64 `json:"-"`
-	CoveredByAgreements float64 `json:"-"`
-	TotalCost           float64 `json:"-"`
-	PaidCost            float64 `json:"-"`
-	Compliance          float64 `json:"compliance"`
-	UnpaidDues          float64 `json:"unpaidDues"`
-	HostsCount          int     `json:"hostsCount"`
+	Product            string  `json:"product"`
+	ConsumedByHosts    float64 `json:"-"`
+	CoveredByContracts float64 `json:"-"`
+	TotalCost          float64 `json:"-"`
+	PaidCost           float64 `json:"-"`
+	Compliance         float64 `json:"compliance"`
+	UnpaidDues         float64 `json:"unpaidDues"`
+	HostsCount         int     `json:"hostsCount"`
 }

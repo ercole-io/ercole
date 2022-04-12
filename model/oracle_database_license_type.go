@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ type OracleDatabaseLicenseType struct {
 	Option          bool     `json:"option" bson:"option"`
 }
 
-// OracleDatabaseAgreementPart known metrics
+// OracleDatabaseContractPart known metrics
 const (
 	LicenseTypeMetricProcessorPerpetual     = "Processor Perpetual"
 	LicenseTypeMetricNamedUserPlusPerpetual = "Named User Plus Perpetual"

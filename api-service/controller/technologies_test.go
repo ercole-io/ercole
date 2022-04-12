@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -43,22 +43,22 @@ func TestListTechnologies_Success(t *testing.T) {
 
 	expectedRes := []model.TechnologyStatus{
 		{
-			Compliance:          0.0,
-			TotalCost:           100,
-			PaidCost:            20,
-			CoveredByAgreements: 0,
-			Product:             model.TechnologyOracleDatabase,
-			ConsumedByHosts:     8,
-			HostsCount:          10,
+			Compliance:         0.0,
+			TotalCost:          100,
+			PaidCost:           20,
+			CoveredByContracts: 0,
+			Product:            model.TechnologyOracleDatabase,
+			ConsumedByHosts:    8,
+			HostsCount:         10,
 		},
 		{
-			Compliance:          1.0,
-			TotalCost:           15,
-			PaidCost:            3,
-			CoveredByAgreements: 2,
-			Product:             model.TechnologyOracleExadata,
-			ConsumedByHosts:     2,
-			HostsCount:          1,
+			Compliance:         1.0,
+			TotalCost:          15,
+			PaidCost:           3,
+			CoveredByContracts: 2,
+			Product:            model.TechnologyOracleExadata,
+			ConsumedByHosts:    2,
+			HostsCount:         1,
 		},
 	}
 

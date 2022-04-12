@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-func TestAddMySQLAgreement_Success(t *testing.T) {
+func TestAddMySQLContract_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -47,31 +47,31 @@ func TestAddMySQLAgreement_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	agreement := model.MySQLAgreement{
-		Type:             model.MySQLAgreementTypeCluster,
-		AgreementID:      "agr01",
+	contract := model.MySQLContract{
+		Type:             model.MySQLContractTypeCluster,
+		ContractID:       "agr01",
 		CSI:              "csi01",
 		NumberOfLicenses: 42,
 		Clusters:         []string{"pippo", "pluto"},
 		Hosts:            []string{"topolino", "minnie"},
 	}
 
-	returnAgr := agreement
+	returnAgr := contract
 	var err error
 	returnAgr.ID, err = primitive.ObjectIDFromHex("aaaaaaaaaaaaaaaaaaaaaaaa")
 	require.Nil(t, err)
 
-	as.EXPECT().AddMySQLAgreement(agreement).
+	as.EXPECT().AddMySQLContract(contract).
 		Return(&returnAgr, nil)
 
-	agrBytes, err := json.Marshal(agreement)
+	agrBytes, err := json.Marshal(contract)
 	require.NoError(t, err)
 
 	reader := bytes.NewReader(agrBytes)
 	req, err := http.NewRequest("GET", "", reader)
 	require.NoError(t, err)
 
-	handler := http.HandlerFunc(ac.AddMySQLAgreement)
+	handler := http.HandlerFunc(ac.AddMySQLContract)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
@@ -79,7 +79,7 @@ func TestAddMySQLAgreement_Success(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(returnAgr), rr.Body.String())
 }
 
-func TestAddMySQLAgreement_BadRequest_CantDecode(t *testing.T) {
+func TestAddMySQLContract_BadRequest_CantDecode(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -105,7 +105,7 @@ func TestAddMySQLAgreement_BadRequest_CantDecode(t *testing.T) {
 	req, err := http.NewRequest("GET", "", reader)
 	require.NoError(t, err)
 
-	handler := http.HandlerFunc(ac.AddMySQLAgreement)
+	handler := http.HandlerFunc(ac.AddMySQLContract)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
@@ -121,7 +121,7 @@ func TestAddMySQLAgreement_BadRequest_CantDecode(t *testing.T) {
 	assert.Equal(t, "Bad Request", feErr.Message)
 }
 
-func TestAddMySQLAgreement_BadRequest_HasID(t *testing.T) {
+func TestAddMySQLContract_BadRequest_HasID(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -132,10 +132,10 @@ func TestAddMySQLAgreement_BadRequest_HasID(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	wrongAgr := model.MySQLAgreement{
+	wrongAgr := model.MySQLContract{
 		ID:               utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 		Type:             "",
-		AgreementID:      "agr01",
+		ContractID:       "agr01",
 		CSI:              "csi01",
 		NumberOfLicenses: 0,
 		Clusters:         []string{},
@@ -149,7 +149,7 @@ func TestAddMySQLAgreement_BadRequest_HasID(t *testing.T) {
 	req, err := http.NewRequest("GET", "", reader)
 	require.NoError(t, err)
 
-	handler := http.HandlerFunc(ac.AddMySQLAgreement)
+	handler := http.HandlerFunc(ac.AddMySQLContract)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
@@ -165,7 +165,7 @@ func TestAddMySQLAgreement_BadRequest_HasID(t *testing.T) {
 	assert.Equal(t, "Bad Request", feErr.Message)
 }
 
-func TestAddMySQLAgreement_BadRequest(t *testing.T) {
+func TestAddMySQLContract_BadRequest(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -176,9 +176,9 @@ func TestAddMySQLAgreement_BadRequest(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	wrongAgr := model.MySQLAgreement{
+	wrongAgr := model.MySQLContract{
 		Type: "",
-		// AgreementID:      "agr01",
+		// ContractID:      "agr01",
 		CSI:              "csi01",
 		NumberOfLicenses: 0,
 		Clusters:         []string{},
@@ -192,7 +192,7 @@ func TestAddMySQLAgreement_BadRequest(t *testing.T) {
 	req, err := http.NewRequest("GET", "", reader)
 	require.NoError(t, err)
 
-	handler := http.HandlerFunc(ac.AddMySQLAgreement)
+	handler := http.HandlerFunc(ac.AddMySQLContract)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
@@ -204,11 +204,11 @@ func TestAddMySQLAgreement_BadRequest(t *testing.T) {
 	err = decoder.Decode(&feErr)
 	require.NoError(t, err)
 
-	assert.Equal(t, "Agreement isn't valid", feErr.Error)
+	assert.Equal(t, "Contract isn't valid", feErr.Error)
 	assert.Equal(t, "Bad Request", feErr.Message)
 }
 
-func TestAddMySQLAgreement_InternalServerError(t *testing.T) {
+func TestAddMySQLContract_InternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -219,26 +219,26 @@ func TestAddMySQLAgreement_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	agreement := model.MySQLAgreement{
-		Type:             model.MySQLAgreementTypeCluster,
-		AgreementID:      "agr01",
+	contract := model.MySQLContract{
+		Type:             model.MySQLContractTypeCluster,
+		ContractID:       "agr01",
 		CSI:              "csi01",
 		NumberOfLicenses: 42,
 		Clusters:         []string{},
 		Hosts:            []string{},
 	}
 
-	as.EXPECT().AddMySQLAgreement(agreement).
+	as.EXPECT().AddMySQLContract(contract).
 		Return(nil, errMock)
 
-	agrBytes, err := json.Marshal(agreement)
+	agrBytes, err := json.Marshal(contract)
 	require.NoError(t, err)
 
 	reader := bytes.NewReader(agrBytes)
 	req, err := http.NewRequest("GET", "", reader)
 	require.NoError(t, err)
 
-	handler := http.HandlerFunc(ac.AddMySQLAgreement)
+	handler := http.HandlerFunc(ac.AddMySQLContract)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
@@ -254,7 +254,7 @@ func TestAddMySQLAgreement_InternalServerError(t *testing.T) {
 	assert.Equal(t, "Internal Server Error", feErr.Message)
 }
 
-func TestUpdateMySQLAgreement_Success(t *testing.T) {
+func TestUpdateMySQLContract_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -265,20 +265,20 @@ func TestUpdateMySQLAgreement_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	agreement := model.MySQLAgreement{
+	contract := model.MySQLContract{
 		ID:               utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-		Type:             model.MySQLAgreementTypeCluster,
-		AgreementID:      "agr01",
+		Type:             model.MySQLContractTypeCluster,
+		ContractID:       "agr01",
 		CSI:              "csi01",
 		NumberOfLicenses: 42,
 		Clusters:         []string{},
 		Hosts:            []string{},
 	}
 
-	as.EXPECT().UpdateMySQLAgreement(agreement).
-		Return(&agreement, nil)
+	as.EXPECT().UpdateMySQLContract(contract).
+		Return(&contract, nil)
 
-	agrBytes, err := json.Marshal(agreement)
+	agrBytes, err := json.Marshal(contract)
 	require.NoError(t, err)
 
 	reader := bytes.NewReader(agrBytes)
@@ -288,16 +288,16 @@ func TestUpdateMySQLAgreement_Success(t *testing.T) {
 		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
 	})
 
-	handler := http.HandlerFunc(ac.UpdateMySQLAgreement)
+	handler := http.HandlerFunc(ac.UpdateMySQLContract)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
 
-	assert.JSONEq(t, utils.ToJSON(agreement), rr.Body.String())
+	assert.JSONEq(t, utils.ToJSON(contract), rr.Body.String())
 }
 
-func TestUpdateMySQLAgreement_BadRequest_CantDecode(t *testing.T) {
+func TestUpdateMySQLContract_BadRequest_CantDecode(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -326,7 +326,7 @@ func TestUpdateMySQLAgreement_BadRequest_CantDecode(t *testing.T) {
 		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
 	})
 
-	handler := http.HandlerFunc(ac.UpdateMySQLAgreement)
+	handler := http.HandlerFunc(ac.UpdateMySQLContract)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
@@ -342,7 +342,7 @@ func TestUpdateMySQLAgreement_BadRequest_CantDecode(t *testing.T) {
 	assert.Equal(t, "Bad Request", feErr.Message)
 }
 
-func TestUpdateMySQLAgreement_BadRequest_HasWrongID(t *testing.T) {
+func TestUpdateMySQLContract_BadRequest_HasWrongID(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -353,7 +353,7 @@ func TestUpdateMySQLAgreement_BadRequest_HasWrongID(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	wrongAgr := model.MySQLAgreement{
+	wrongAgr := model.MySQLContract{
 		Type:             "",
 		NumberOfLicenses: 0,
 		Clusters:         []string{},
@@ -370,7 +370,7 @@ func TestUpdateMySQLAgreement_BadRequest_HasWrongID(t *testing.T) {
 		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
 	})
 
-	handler := http.HandlerFunc(ac.UpdateMySQLAgreement)
+	handler := http.HandlerFunc(ac.UpdateMySQLContract)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
@@ -386,7 +386,7 @@ func TestUpdateMySQLAgreement_BadRequest_HasWrongID(t *testing.T) {
 	assert.Equal(t, "Bad Request", feErr.Message)
 }
 
-func TestUpdateMySQLAgreement_NotFoundError(t *testing.T) {
+func TestUpdateMySQLContract_NotFoundError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -397,10 +397,10 @@ func TestUpdateMySQLAgreement_NotFoundError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	agreement := model.MySQLAgreement{
+	contract := model.MySQLContract{
 		ID:               utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-		Type:             model.MySQLAgreementTypeCluster,
-		AgreementID:      "agr01",
+		Type:             model.MySQLContractTypeCluster,
+		ContractID:       "agr01",
 		CSI:              "csi01",
 		NumberOfLicenses: 42,
 		Clusters:         []string{},
@@ -408,10 +408,10 @@ func TestUpdateMySQLAgreement_NotFoundError(t *testing.T) {
 	}
 
 	aerr := utils.NewError(utils.ErrNotFound, "test")
-	as.EXPECT().UpdateMySQLAgreement(agreement).
+	as.EXPECT().UpdateMySQLContract(contract).
 		Return(nil, aerr)
 
-	agrBytes, err := json.Marshal(agreement)
+	agrBytes, err := json.Marshal(contract)
 	require.NoError(t, err)
 
 	reader := bytes.NewReader(agrBytes)
@@ -421,7 +421,7 @@ func TestUpdateMySQLAgreement_NotFoundError(t *testing.T) {
 		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
 	})
 
-	handler := http.HandlerFunc(ac.UpdateMySQLAgreement)
+	handler := http.HandlerFunc(ac.UpdateMySQLContract)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
@@ -437,7 +437,7 @@ func TestUpdateMySQLAgreement_NotFoundError(t *testing.T) {
 	assert.Equal(t, "test", feErr.Message)
 }
 
-func TestUpdateMySQLAgreement_InternalServerError(t *testing.T) {
+func TestUpdateMySQLContract_InternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -448,20 +448,20 @@ func TestUpdateMySQLAgreement_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	agreement := model.MySQLAgreement{
+	contract := model.MySQLContract{
 		ID:               utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-		Type:             model.MySQLAgreementTypeCluster,
-		AgreementID:      "agr01",
+		Type:             model.MySQLContractTypeCluster,
+		ContractID:       "agr01",
 		CSI:              "csi01",
 		NumberOfLicenses: 42,
 		Clusters:         []string{},
 		Hosts:            []string{},
 	}
 
-	as.EXPECT().UpdateMySQLAgreement(agreement).
+	as.EXPECT().UpdateMySQLContract(contract).
 		Return(nil, errMock)
 
-	agrBytes, err := json.Marshal(agreement)
+	agrBytes, err := json.Marshal(contract)
 	require.NoError(t, err)
 
 	reader := bytes.NewReader(agrBytes)
@@ -471,7 +471,7 @@ func TestUpdateMySQLAgreement_InternalServerError(t *testing.T) {
 		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
 	})
 
-	handler := http.HandlerFunc(ac.UpdateMySQLAgreement)
+	handler := http.HandlerFunc(ac.UpdateMySQLContract)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
@@ -487,7 +487,7 @@ func TestUpdateMySQLAgreement_InternalServerError(t *testing.T) {
 	assert.Equal(t, "Internal Server Error", feErr.Message)
 }
 
-func TestGetMySQLAgreements_Success(t *testing.T) {
+func TestGetMySQLContracts_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -498,7 +498,7 @@ func TestGetMySQLAgreements_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	agreements := []model.MySQLAgreement{
+	contracts := []model.MySQLContract{
 		{
 			ID:               utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 			Type:             "hosts",
@@ -508,29 +508,29 @@ func TestGetMySQLAgreements_Success(t *testing.T) {
 		},
 	}
 
-	as.EXPECT().GetMySQLAgreements().
-		Return(agreements, nil)
+	as.EXPECT().GetMySQLContracts().
+		Return(contracts, nil)
 
-	expBytes, err := json.Marshal(agreements)
+	expBytes, err := json.Marshal(contracts)
 	require.NoError(t, err)
 
 	reader := bytes.NewReader(expBytes)
 	req, err := http.NewRequest("GET", "/?location=Italy", reader)
 	require.NoError(t, err)
 
-	handler := http.HandlerFunc(ac.GetMySQLAgreements)
+	handler := http.HandlerFunc(ac.GetMySQLContracts)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusOK, rr.Code)
 
 	expected := map[string]interface{}{
-		"agreements": agreements,
+		"contracts": contracts,
 	}
 	assert.JSONEq(t, utils.ToJSON(expected), rr.Body.String())
 }
 
-func TestGetMySQLAgreements_InternalServerError(t *testing.T) {
+func TestGetMySQLContracts_InternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -541,13 +541,13 @@ func TestGetMySQLAgreements_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().GetMySQLAgreements().
+	as.EXPECT().GetMySQLContracts().
 		Return(nil, errMock)
 
 	req, err := http.NewRequest("GET", "/?environment=TEST", nil)
 	require.NoError(t, err)
 
-	handler := http.HandlerFunc(ac.GetMySQLAgreements)
+	handler := http.HandlerFunc(ac.GetMySQLContracts)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
@@ -563,7 +563,7 @@ func TestGetMySQLAgreements_InternalServerError(t *testing.T) {
 	assert.Equal(t, "Internal Server Error", feErr.Message)
 }
 
-func TestGetMySQLAgreementsXLSX_Success(t *testing.T) {
+func TestGetMySQLContractsXLSX_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -578,11 +578,11 @@ func TestGetMySQLAgreementsXLSX_Success(t *testing.T) {
 	xlsx := excelize.File{}
 
 	as.EXPECT().
-		GetMySQLAgreementsAsXLSX().
+		GetMySQLContractsAsXLSX().
 		Return(&xlsx, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetMySQLAgreements)
+	handler := http.HandlerFunc(ac.GetMySQLContracts)
 	req, err := http.NewRequest("GET", "/", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)
@@ -594,7 +594,7 @@ func TestGetMySQLAgreementsXLSX_Success(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestGetMySQLAgreementsXLSX_InternalServerError1(t *testing.T) {
+func TestGetMySQLContractsXLSX_InternalServerError1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -607,11 +607,11 @@ func TestGetMySQLAgreementsXLSX_InternalServerError1(t *testing.T) {
 	}
 
 	as.EXPECT().
-		GetMySQLAgreementsAsXLSX().
+		GetMySQLContractsAsXLSX().
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.GetMySQLAgreements)
+	handler := http.HandlerFunc(ac.GetMySQLContracts)
 	req, err := http.NewRequest("GET", "/", nil)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	require.NoError(t, err)
@@ -621,7 +621,7 @@ func TestGetMySQLAgreementsXLSX_InternalServerError1(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestDeleteMySQLAgreement_Success(t *testing.T) {
+func TestDeleteMySQLContract_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -632,7 +632,7 @@ func TestDeleteMySQLAgreement_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DeleteMySQLAgreement(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
+	as.EXPECT().DeleteMySQLContract(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
 		Return(nil)
 
 	req, err := http.NewRequest("DELETE", "/", nil)
@@ -641,14 +641,14 @@ func TestDeleteMySQLAgreement_Success(t *testing.T) {
 		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
 	})
 
-	handler := http.HandlerFunc(ac.DeleteMySQLAgreement)
+	handler := http.HandlerFunc(ac.DeleteMySQLContract)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
 	require.Equal(t, http.StatusNoContent, rr.Code)
 }
 
-func TestDeleteMySQLAgreement_BadRequest_HasWrongID(t *testing.T) {
+func TestDeleteMySQLContract_BadRequest_HasWrongID(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -665,7 +665,7 @@ func TestDeleteMySQLAgreement_BadRequest_HasWrongID(t *testing.T) {
 		"id": "asdf",
 	})
 
-	handler := http.HandlerFunc(ac.DeleteMySQLAgreement)
+	handler := http.HandlerFunc(ac.DeleteMySQLContract)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
@@ -681,7 +681,7 @@ func TestDeleteMySQLAgreement_BadRequest_HasWrongID(t *testing.T) {
 	assert.Equal(t, "Unprocessable Entity", feErr.Message)
 }
 
-func TestDeleteMySQLAgreement_NotFoundError(t *testing.T) {
+func TestDeleteMySQLContract_NotFoundError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -693,7 +693,7 @@ func TestDeleteMySQLAgreement_NotFoundError(t *testing.T) {
 	}
 
 	aerr := utils.NewError(utils.ErrNotFound, "test")
-	as.EXPECT().DeleteMySQLAgreement(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
+	as.EXPECT().DeleteMySQLContract(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
 		Return(aerr)
 
 	req, err := http.NewRequest("DELETE", "", nil)
@@ -702,7 +702,7 @@ func TestDeleteMySQLAgreement_NotFoundError(t *testing.T) {
 		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
 	})
 
-	handler := http.HandlerFunc(ac.DeleteMySQLAgreement)
+	handler := http.HandlerFunc(ac.DeleteMySQLContract)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 
@@ -718,7 +718,7 @@ func TestDeleteMySQLAgreement_NotFoundError(t *testing.T) {
 	assert.Equal(t, "test", feErr.Message)
 }
 
-func TestDeleteMySQLAgreement_InternalServerError(t *testing.T) {
+func TestDeleteMySQLContract_InternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -729,7 +729,7 @@ func TestDeleteMySQLAgreement_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DeleteMySQLAgreement(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
+	as.EXPECT().DeleteMySQLContract(utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")).
 		Return(errMock)
 
 	req, err := http.NewRequest("DELETE", "", nil)
@@ -738,7 +738,7 @@ func TestDeleteMySQLAgreement_InternalServerError(t *testing.T) {
 		"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
 	})
 
-	handler := http.HandlerFunc(ac.DeleteMySQLAgreement)
+	handler := http.HandlerFunc(ac.DeleteMySQLContract)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
 

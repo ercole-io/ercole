@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,10 +21,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// OracleDatabaseAgreement holds informations about a sigle OracleDatabaseAgreement
-type OracleDatabaseAgreement struct {
+// OracleDatabaseContract holds informations about a sigle OracleDatabaseContract
+type OracleDatabaseContract struct {
 	ID              primitive.ObjectID `json:"id" bson:"_id"`
-	AgreementID     string             `json:"agreementID" bson:"agreementID"`
+	ContractID      string             `json:"contractID" bson:"contractID"`
 	CSI             string             `json:"csi" bson:"csi"`
 	LicenseTypeID   string             `json:"licenseTypeID" bson:"licenseTypeID"`
 	ReferenceNumber string             `json:"referenceNumber" bson:"referenceNumber"`
@@ -35,8 +35,8 @@ type OracleDatabaseAgreement struct {
 	Hosts           []string           `json:"hosts" bson:"hosts"`
 }
 
-func (agreement OracleDatabaseAgreement) Check() error {
-	if agreement.Restricted && agreement.Basket {
+func (contract OracleDatabaseContract) Check() error {
+	if contract.Restricted && contract.Basket {
 		return errors.New("If it's restricted it can't be basket")
 	}
 

@@ -128,36 +128,36 @@ type APIControllerInterface interface {
 	GetUsedLicensesPerCluster(w http.ResponseWriter, r *http.Request)
 	GetDatabaseLicensesCompliance(w http.ResponseWriter, r *http.Request)
 
-	// ORACLE DATABASE AGREEMENTS
+	// ORACLE DATABASE CONTRACTS
 
-	AddOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
-	UpdateOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
-	GetOracleDatabaseAgreements(w http.ResponseWriter, r *http.Request)
-	DeleteOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
+	AddOracleDatabaseContract(w http.ResponseWriter, r *http.Request)
+	UpdateOracleDatabaseContract(w http.ResponseWriter, r *http.Request)
+	GetOracleDatabaseContracts(w http.ResponseWriter, r *http.Request)
+	DeleteOracleDatabaseContract(w http.ResponseWriter, r *http.Request)
 
-	AddHostToOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
-	DeleteHostFromOracleDatabaseAgreement(w http.ResponseWriter, r *http.Request)
+	AddHostToOracleDatabaseContract(w http.ResponseWriter, r *http.Request)
+	DeleteHostFromOracleDatabaseContract(w http.ResponseWriter, r *http.Request)
 
 	// ORACLE DATABASE LICENSE TYPES
 
-	// GetOracleDatabaseLicenseTypes return the list of Oracle/Database agreement parts
+	// GetOracleDatabaseLicenseTypes return the list of Oracle/Database contract parts
 	GetOracleDatabaseLicenseTypes(w http.ResponseWriter, r *http.Request)
-	// DeleteOracleDatabaseLicenseType remove a licence type - Oracle/Database agreement part
+	// DeleteOracleDatabaseLicenseType remove a licence type - Oracle/Database contract part
 	DeleteOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request)
-	// AddOracleDatabaseLicenseType add a licence type - Oracle/Database agreement part to the database if it hasn't a licence type
+	// AddOracleDatabaseLicenseType add a licence type - Oracle/Database contract part to the database if it hasn't a licence type
 	AddOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request)
-	// UpdateOracleDatabaseLicenseType update a licence type - Oracle/Database agreement part
+	// UpdateOracleDatabaseLicenseType update a licence type - Oracle/Database contract part
 	UpdateOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request)
 
 	// MYSQL
 
 	SearchMySQLInstances(w http.ResponseWriter, r *http.Request)
 
-	// MYSQL AGREEMENTS
-	AddMySQLAgreement(w http.ResponseWriter, r *http.Request)
-	UpdateMySQLAgreement(w http.ResponseWriter, r *http.Request)
-	GetMySQLAgreements(w http.ResponseWriter, r *http.Request)
-	DeleteMySQLAgreement(w http.ResponseWriter, r *http.Request)
+	// MYSQL CONTRACTS
+	AddMySQLContract(w http.ResponseWriter, r *http.Request)
+	UpdateMySQLContract(w http.ResponseWriter, r *http.Request)
+	GetMySQLContracts(w http.ResponseWriter, r *http.Request)
+	DeleteMySQLContract(w http.ResponseWriter, r *http.Request)
 }
 
 // APIController is the struct used to handle the requests from agents and contains the concrete implementation of APIControllerInterface

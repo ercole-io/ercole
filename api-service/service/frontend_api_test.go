@@ -87,7 +87,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		"Oracle/Exadata":  0,
 	}
 
-	agreements := []dto.OracleDatabaseAgreementFE{
+	contracts := []dto.OracleDatabaseContractFE{
 		{
 			LicenseTypeID:   "PID002",
 			ItemDescription: "foobar",
@@ -147,8 +147,8 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 			Return(getTechnologiesUsageRes, nil),
 
 		db.EXPECT().
-			ListOracleDatabaseAgreements().
-			Return(agreements, nil),
+			ListOracleDatabaseContracts().
+			Return(contracts, nil),
 		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&oracleLics, nil),
 		db.EXPECT().
@@ -170,8 +170,8 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 			Return(getTechnologiesUsageRes2, nil),
 
 		db.EXPECT().
-			ListOracleDatabaseAgreements().
-			Return(agreements, nil),
+			ListOracleDatabaseContracts().
+			Return(contracts, nil),
 		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&oracleLics, nil),
 		db.EXPECT().
@@ -226,7 +226,7 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 		"Oracle/Exadata":  0,
 	}
 
-	agreements := []dto.OracleDatabaseAgreementFE{
+	contracts := []dto.OracleDatabaseContractFE{
 		{
 			ItemDescription: "foobar",
 		},
@@ -279,8 +279,8 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 			Return(getTechnologiesUsageRes, nil).AnyTimes().MinTimes(1),
 
 		db.EXPECT().
-			ListOracleDatabaseAgreements().
-			Return(agreements, nil).AnyTimes().MinTimes(1),
+			ListOracleDatabaseContracts().
+			Return(contracts, nil).AnyTimes().MinTimes(1),
 
 		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&oracleLics, nil),
