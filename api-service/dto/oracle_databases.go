@@ -50,6 +50,8 @@ type OracleDatabase struct {
 	Dataguard    bool                          `json:"dataguard" bson:"dataguard"`
 	Rac          bool                          `json:"rac" bson:"rac"`
 	Ha           bool                          `json:"ha" bson:"ha"`
+	DbID         uint                          `json:"dbID" bson:"dbID"`
+	Role         string                        `json:"role" bson:"role"`
 	Services     []model.OracleDatabaseService `json:"services" bson:"services"`
 }
 
