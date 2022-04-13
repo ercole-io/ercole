@@ -558,6 +558,7 @@ func TestGetOracleDatabaseContractsCluster_Success(t *testing.T) {
 					Hostname:           "test-db",
 					Name:               "test-db",
 					VirtualizationNode: "",
+					IsErcoleInstalled:  false,
 				},
 			},
 			VMsCount:            0,
@@ -627,11 +628,14 @@ func TestGetOracleDatabaseContractsCluster_Success(t *testing.T) {
 				Hostname:           "test-db",
 				Name:               "test-db",
 				VirtualizationNode: "",
+				IsErcoleInstalled:  false,
 			},
 		},
 		VMsCount:            0,
 		VMsErcoleAgentCount: 0,
 	}
+
+	db.EXPECT().ExistHostdata(gomock.Any()).Return(false, nil).AnyTimes()
 
 	gomock.InOrder(
 		db.EXPECT().ListOracleDatabaseContracts().
@@ -730,6 +734,7 @@ func TestGetOracleDatabaseContractsClusterCappedCPU_Success(t *testing.T) {
 					Hostname:           "test-db",
 					Name:               "test-db",
 					VirtualizationNode: "",
+					IsErcoleInstalled:  false,
 				},
 			},
 			VMsCount:            0,
@@ -799,6 +804,7 @@ func TestGetOracleDatabaseContractsClusterCappedCPU_Success(t *testing.T) {
 				Hostname:           "test-db",
 				Name:               "test-db",
 				VirtualizationNode: "",
+				IsErcoleInstalled:  false,
 			},
 		},
 		VMsCount:            0,
@@ -830,6 +836,8 @@ func TestGetOracleDatabaseContractsClusterCappedCPU_Success(t *testing.T) {
 		Alerts:                  []model.Alert{},
 		History:                 []model.History{},
 	}
+
+	db.EXPECT().ExistHostdata(gomock.Any()).Return(false, nil).AnyTimes()
 
 	gomock.InOrder(
 		db.EXPECT().ListOracleDatabaseContracts().
@@ -939,12 +947,14 @@ func TestGetOracleDatabaseContractsClusterCappedCPU2_Success(t *testing.T) {
 					Hostname:           "test-db",
 					Name:               "test-db",
 					VirtualizationNode: "",
+					IsErcoleInstalled:  false,
 				},
 				{
 					CappedCPU:          false,
 					Hostname:           "test-db2",
 					Name:               "test-db2",
 					VirtualizationNode: "",
+					IsErcoleInstalled:  false,
 				},
 			},
 			VMsCount:            0,
@@ -1030,12 +1040,14 @@ func TestGetOracleDatabaseContractsClusterCappedCPU2_Success(t *testing.T) {
 				Hostname:           "test-db",
 				Name:               "test-db",
 				VirtualizationNode: "",
+				IsErcoleInstalled:  false,
 			},
 			{
 				CappedCPU:          false,
 				Hostname:           "test-db2",
 				Name:               "test-db2",
 				VirtualizationNode: "",
+				IsErcoleInstalled:  false,
 			},
 		},
 		VMsCount:            0,
@@ -1122,6 +1134,7 @@ func TestGetOracleDatabaseContractsClusterCappedCPU2_Success(t *testing.T) {
 		History:     []model.History{},
 	}
 
+	db.EXPECT().ExistHostdata(gomock.Any()).Return(false, nil).AnyTimes()
 	db.EXPECT().ListOracleDatabaseContracts().
 		Return(returnedContracts, nil)
 

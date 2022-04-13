@@ -53,4 +53,5 @@ type VM struct {
 	Hostname           string `json:"hostname" bson:"hostname"`
 	Name               string `json:"name" bson:"name"`
 	VirtualizationNode string `json:"virtualizationNode" bson:"virtualizationNode"`
+	IsErcoleInstalled  bool   `json:"isErcoleInstalled" bson:"isErcoleInstalled"`
 }
