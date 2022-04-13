@@ -36,7 +36,21 @@ func (as *APIService) SearchClusters(full bool, search string, sortBy string, so
 
 // GetCluster return the cluster specified in the clusterName param
 func (as *APIService) GetCluster(clusterName string, olderThan time.Time) (*dto.Cluster, error) {
-	return as.Database.GetCluster(clusterName, olderThan)
+	cluster, err := as.Database.GetCluster(clusterName, olderThan)
+	if err != nil {
+		return cluster, err
+	}
+
+	for i, vm := range cluster.VMs {
+		exist, err := as.Database.ExistHostdata(vm.Hostname)
+		if err != nil {
+			return cluster, err
+		}
+
+		cluster.VMs[i].IsErcoleInstalled = exist
+	}
+
+	return cluster, err
 }
 
 // GetClusterXLSX return  cluster vms as xlxs file
