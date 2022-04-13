@@ -120,11 +120,37 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				Name:         "ERCOLE",
 				Rac:          false,
 				SegmentsSize: 3,
-				Services:     []model.OracleDatabaseService{},
-				Status:       "OPEN",
-				UniqueName:   "ERCOLE",
-				Version:      "12.2.0.1.0 Enterprise Edition",
-				Work:         &work,
+				Licenses: []model.OracleDatabaseLicense{
+					{
+						Count:         0.5,
+						Ignored:       false,
+						LicenseTypeID: "A90611",
+						Name:          "Oracle ENT",
+					},
+					{
+						Count:         0,
+						Ignored:       false,
+						LicenseTypeID: "L103399",
+						Name:          "Oracle STD",
+					},
+					{
+						Count:         0,
+						Ignored:       false,
+						LicenseTypeID: "L104095",
+						Name:          "WebLogic Server Management Pack Enterprise Edition",
+					},
+					{
+						Count:         0.5,
+						Ignored:       false,
+						LicenseTypeID: "A90649",
+						Name:          "Diagnostics Pack",
+					},
+				},
+				Services:   []model.OracleDatabaseService{},
+				Status:     "OPEN",
+				UniqueName: "ERCOLE",
+				Version:    "12.2.0.1.0 Enterprise Edition",
+				Work:       &work,
 			},
 		}
 
@@ -165,6 +191,38 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				Name:         "pokemons",
 				Rac:          true,
 				SegmentsSize: 3,
+				Licenses: []model.OracleDatabaseLicense{
+					{
+						Count:         0.5,
+						Ignored:       false,
+						LicenseTypeID: "A90611",
+						Name:          "Oracle ENT",
+					},
+					{
+						Count:         0,
+						Ignored:       false,
+						LicenseTypeID: "L103399",
+						Name:          "Oracle STD",
+					},
+					{
+						Count:         0,
+						Ignored:       false,
+						LicenseTypeID: "L104095",
+						Name:          "WebLogic Server Management Pack Enterprise Edition",
+					},
+					{
+						Count:         0.5,
+						Ignored:       false,
+						LicenseTypeID: "A90649",
+						Name:          "Diagnostics Pack",
+					},
+					{
+						Count:         0.5,
+						Ignored:       false,
+						LicenseTypeID: "A90619",
+						Name:          "Real Application Clusters",
+					},
+				},
 				Services: []model.OracleDatabaseService{
 					{
 						CreationDate: &creationdate,
@@ -237,6 +295,38 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				Name:         "pokemons",
 				Rac:          true,
 				SegmentsSize: 3,
+				Licenses: []model.OracleDatabaseLicense{
+					{
+						Count:         0.5,
+						Ignored:       false,
+						LicenseTypeID: "A90611",
+						Name:          "Oracle ENT",
+					},
+					{
+						Count:         0,
+						Ignored:       false,
+						LicenseTypeID: "L103399",
+						Name:          "Oracle STD",
+					},
+					{
+						Count:         0,
+						Ignored:       false,
+						LicenseTypeID: "L104095",
+						Name:          "WebLogic Server Management Pack Enterprise Edition",
+					},
+					{
+						Count:         0.5,
+						Ignored:       false,
+						LicenseTypeID: "A90649",
+						Name:          "Diagnostics Pack",
+					},
+					{
+						Count:         0.5,
+						Ignored:       false,
+						LicenseTypeID: "A90619",
+						Name:          "Real Application Clusters",
+					},
+				},
 				Services: []model.OracleDatabaseService{
 					{
 						CreationDate: &creationdate,
@@ -288,11 +378,37 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				Name:         "ERCOLE",
 				Rac:          false,
 				SegmentsSize: 3,
-				Services:     []model.OracleDatabaseService{},
-				Status:       "OPEN",
-				UniqueName:   "ERCOLE",
-				Version:      "12.2.0.1.0 Enterprise Edition",
-				Work:         &work,
+				Licenses: []model.OracleDatabaseLicense{
+					{
+						Count:         0.5,
+						Name:          "Oracle ENT",
+						LicenseTypeID: "A90611",
+						Ignored:       false,
+					},
+					{
+						Count:         0,
+						Name:          "Oracle STD",
+						LicenseTypeID: "L103399",
+						Ignored:       false,
+					},
+					{
+						Count:         0,
+						Name:          "WebLogic Server Management Pack Enterprise Edition",
+						LicenseTypeID: "L104095",
+						Ignored:       false,
+					},
+					{
+						Count:         0.5,
+						Name:          "Diagnostics Pack",
+						LicenseTypeID: "A90649",
+						Ignored:       false,
+					},
+				},
+				Services:   []model.OracleDatabaseService{},
+				Status:     "OPEN",
+				UniqueName: "ERCOLE",
+				Version:    "12.2.0.1.0 Enterprise Edition",
+				Work:       &work,
 			},
 			{
 				Archivelog:   true,
@@ -311,6 +427,38 @@ func (m *MongodbSuite) TestSearchOracleDatabases() {
 				Name:         "pokemons",
 				Rac:          true,
 				SegmentsSize: 3,
+				Licenses: []model.OracleDatabaseLicense{
+					{
+						Count:         0.5,
+						Name:          "Oracle ENT",
+						LicenseTypeID: "A90611",
+						Ignored:       false,
+					},
+					{
+						Count:         0,
+						Name:          "Oracle STD",
+						LicenseTypeID: "L103399",
+						Ignored:       false,
+					},
+					{
+						Count:         0,
+						Name:          "WebLogic Server Management Pack Enterprise Edition",
+						LicenseTypeID: "L104095",
+						Ignored:       false,
+					},
+					{
+						Count:         0.5,
+						Name:          "Diagnostics Pack",
+						LicenseTypeID: "A90649",
+						Ignored:       false,
+					},
+					{
+						Count:         0.5,
+						Name:          "Real Application Clusters",
+						LicenseTypeID: "A90619",
+						Ignored:       false,
+					},
+				},
 				Services: []model.OracleDatabaseService{
 					{
 						CreationDate: &creationdate,

@@ -52,6 +52,7 @@ type OracleDatabase struct {
 	Ha           bool                          `json:"ha" bson:"ha"`
 	DbID         uint                          `json:"dbID" bson:"dbID"`
 	Role         string                        `json:"role" bson:"role"`
+	Licenses     []model.OracleDatabaseLicense `json:"licenses" bson:"licenses"`
 	Services     []model.OracleDatabaseService `json:"services" bson:"services"`
 }
 
