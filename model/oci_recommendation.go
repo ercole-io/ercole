@@ -27,7 +27,8 @@ type OciRecommendation struct {
 }
 
 type OciErcoleRecommendation struct {
-	Type            string      `json:"type"`
+	Category        string      `json:"category"`
+	Suggestion      string      `json:"suggestion"`
 	CompartmentID   string      `json:"compartmentID"`
 	CompartmentName string      `json:"compartmentName"`
 	Name            string      `json:"name"`
@@ -63,4 +64,20 @@ const (
 	ObjectTypeLoadBalancer      = "Load Balancer"
 	ObjectTypeSnapshot          = "Snapshot"
 	ObjectTypeClusterKubernetes = "Cluster Kubernetes"
+)
+
+const (
+	ResizeOversizedBlockStorage = "Resize oversized Block Storage"
+	DeleteComputeInstanceNotActive = "Delete Compute Instance not active"
+	DeleteComputeInstanceNotUsed = "Delete Compute Instance not used"
+	ResizeOversizedComputeInstance = "Resize oversized compute instance"
+	EnableBucketAutoTiering = "Enable bucket auto tiering"
+	DeleteSnapshotOlder = "Delete snapshot older than 30 days"
+	ResizeOversizedDatabaseInstance = "Resize oversized Database instance"
+	ResizeOversizedKubernetesCluster = "Resize oversized Kubernetes Cluster"
+	DeleteLoadBalancerNotActive = "Delete Load balancer not active"
+	DeleteKubernetesNodeNotActive = "Delete kubernetes node not active"
+	DeleteKubernetesNodeNotUsed = "Delete Kubernetes node not used"
+	DeleteDatabaseInstanceNotActive = "Delete Database instance not active"
+	DeleteBlockStorageNotUsed = "Delete Block Storage not used"
 )
