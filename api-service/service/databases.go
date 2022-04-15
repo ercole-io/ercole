@@ -354,6 +354,11 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 
 	usedLicenses = as.removeLicensesByDependencies(usedLicenses, hostdatasPerHostname, clusters)
 
+	usedLicenses, err = as.manageStandardDBVersionLicenses(usedLicenses)
+	if err != nil {
+		return nil, err
+	}
+
 	return usedLicenses, nil
 }
 
@@ -438,6 +443,39 @@ func (as *APIService) removeLicensesByDependencies(usedLicenses []dto.DatabaseUs
 	}
 
 	return usedLicenses
+}
+
+func (as *APIService) manageStandardDBVersionLicenses(usedLicenses []dto.DatabaseUsedLicense) ([]dto.DatabaseUsedLicense, error) {
+	for i, usedlicense := range usedLicenses {
+		host, err := as.GetHost(usedlicense.Hostname, utils.MAX_TIME, false)
+		if err != nil {
+			return nil, err
+		}
+
+		if host != nil &&
+			host.Cluster != "" &&
+			host.Features.Oracle != nil &&
+			host.Features.Oracle.Database != nil &&
+			host.Features.Oracle.Database.Databases != nil {
+			cluster, err := as.GetCluster(usedlicense.ClusterName, utils.MAX_TIME)
+			if err != nil {
+				return nil, err
+			}
+
+			databases := host.Features.Oracle.Database.Databases
+			for _, database := range databases {
+				for _, license := range database.Licenses {
+					if license.LicenseTypeID == usedlicense.LicenseTypeID &&
+						database.Name == usedlicense.DbName &&
+						database.Edition() == model.OracleDatabaseEditionStandard {
+						usedLicenses[i].ClusterLicenses = float64(cluster.Sockets) * model.GetFactorByMetric(usedlicense.Metric)
+					}
+				}
+			}
+		}
+	}
+
+	return usedLicenses, nil
 }
 
 func (as *APIService) getMySQLUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
