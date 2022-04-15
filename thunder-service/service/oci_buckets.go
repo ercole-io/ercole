@@ -92,7 +92,8 @@ func (as *ThunderService) GetOciObjectStorageOptimization(profiles []string) ([]
 
 				if resp3.AutoTiering == "Disabled" {
 					recommendation.Details = make([]model.RecDetail, 0)
-					recommendation.Type = "Object Storage Optimization"
+					recommendation.Category = model.RecommendationTypeObjectStorageOptimization
+					recommendation.Suggestion = model.EnableBucketAutoTiering
 					recommendation.CompartmentID = compartment.CompartmentID
 					recommendation.CompartmentName = compartment.Name
 					recommendation.ResourceID = *resp3.Id
@@ -132,18 +133,17 @@ func (as *ThunderService) getBuckeSize(sizeVal int64) string {
 			case 1:
 				valRet = fmt.Sprintf("%d bytes", sizeVal)
 			case 2:
-				valRet = fmt.Sprintf("%.2f KB", valTmp)
+				valRet = fmt.Sprintf("%.2f KiB", valTmp)
 			case 3:
-				valRet = fmt.Sprintf("%.2f MB", valTmp)
+				valRet = fmt.Sprintf("%.2f MiB", valTmp)
 			case 4:
-				valRet = fmt.Sprintf("%.2f GB", valTmp)
+				valRet = fmt.Sprintf("%.2f GiB", valTmp)
 			case 5:
-				valRet = fmt.Sprintf("%.2f TB", valTmp)
+				valRet = fmt.Sprintf("%.2f TiB", valTmp)
 			case 6:
-				valRet = fmt.Sprintf("%.2f PB", valTmp)
+				valRet = fmt.Sprintf("%.2f PiB", valTmp)
 			default:
 				valRet = fmt.Sprintf("%d bytes", sizeVal)
-
 			}
 
 			break
