@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
@@ -339,5 +340,27 @@ func (as *APIService) DismissHost(hostname string) error {
 		as.Log.Errorf("Can't remove hostname %s contracts", hostname)
 	}
 
-	return as.Database.DismissHost(hostname)
+	if err := as.Database.DismissHost(hostname); err != nil {
+		return err
+	}
+
+	alr := model.Alert{
+		ID:                      primitive.NewObjectIDFromTimestamp(as.TimeNow()),
+		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
+		AlertCategory:           model.AlertCategoryEngine,
+		AlertCode:               model.AlertCodeUnlistedRunningDatabase,
+		AlertSeverity:           model.AlertSeverityInfo,
+		AlertStatus:             model.AlertStatusNew,
+		Date:                    as.TimeNow(),
+		Description:             fmt.Sprintf("Host %s was dismissed", hostname),
+		OtherInfo: map[string]interface{}{
+			"hostname": hostname,
+		},
+	}
+
+	if err := as.AlertSvcClient.ThrowNewAlert(alr); err != nil {
+		as.Log.Errorf("Dismiss alert was not added: %s", err)
+	}
+
+	return nil
 }
