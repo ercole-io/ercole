@@ -206,7 +206,7 @@ func TestGetOciComputeInstancesIdle_PartialContent(t *testing.T) {
 
 		var recommendations []model.OciErcoleRecommendation
 		recommendation := model.OciErcoleRecommendation{
-			Category:        model.RecommendationTypeUnusedResource,
+			Category:        model.UnusedResource,
 			CompartmentID:   "ocid1.compartment.oc1..aaaaaaaaraxhbi65iyiln4qvwjwtnebheufhpkwfcymkszuvz2zyqmwsaikq",
 			CompartmentName: "ERCOLE",
 			Name:            "test-nat",
@@ -251,7 +251,7 @@ func TestGetOciComputeInstancesIdle_Success(t *testing.T) {
 		}
 
 		recommendation := model.OciErcoleRecommendation{
-			Category:        model.RecommendationTypeUnusedResource,
+			Category:        model.UnusedResource,
 			CompartmentID:   "ocid1.compartment.oc1..aaaaaaaaraxhbi65iyiln4qvwjwtnebheufhpkwfcymkszuvz2zyqmwsaikq",
 			CompartmentName: "ERCOLE",
 			Name:            "test-nat",

@@ -61,7 +61,7 @@ func (as *ThunderService) GetOciUnusedStorage(profiles []string) ([]model.OciErc
 
 	for _, vl := range volumeList {
 		recommendation.Details = make([]model.RecDetail, 0)
-		recommendation.Category = model.RecommendationTypeUnusedStorage
+		recommendation.Category = model.UnusedStorage
 		recommendation.Suggestion = model.DeleteBlockStorageNotUsed
 		recommendation.CompartmentID = vl.CompartmentID
 		recommendation.CompartmentName = vl.CompartmentName
@@ -252,7 +252,7 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 				tDiff := int(nowt.Sub(s.TimeCreated.Time).Hours() / 24)
 				if s.SourceType == "MANUAL" && tDiff > 30 {
 					recommendation.Details = make([]model.RecDetail, 0)
-					recommendation.Category = model.RecommendationTypeOldSnapshot
+					recommendation.Category = model.OldSnapshot
 					recommendation.Suggestion = model.DeleteSnapshotOlder
 					recommendation.CompartmentID = compartment.CompartmentID
 					recommendation.CompartmentName = compartment.Name
@@ -288,7 +288,7 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 				tDiff := int(nowt.Sub(s.TimeCreated.Time).Hours() / 24)
 				if s.SourceType == "MANUAL" && tDiff > 30 {
 					recommendation.Details = make([]model.RecDetail, 0)
-					recommendation.Category = model.RecommendationTypeOldSnapshot
+					recommendation.Category = model.OldSnapshot
 					recommendation.Suggestion = model.DeleteSnapshotOlder
 					recommendation.CompartmentID = compartment.CompartmentID
 					recommendation.CompartmentName = compartment.Name

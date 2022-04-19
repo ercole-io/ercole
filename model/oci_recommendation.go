@@ -43,18 +43,18 @@ type RecDetail struct {
 }
 
 const (
-	RecommendationTypeBlockStorageRightsizing       = "Block Storage Rightsizing"
-	RecommendationTypeComputeInstanceIdle           = "Compute Instance Rightsizing"
-	RecommendationTypeInstanceRightsizing           = "Compute Instance Rightsizing"
-	RecommendationTypeInstanceWithoutMonitoring     = "Compute Instance Without Monitoring"
-	RecommendationTypeOldSnapshot                   = "Old Snapshot"
-	RecommendationTypeUnusedResource                = "Unused Resource"
-	RecommendationTypeUnusedStorage                 = "Unused Storage"
-	RecommendationTypeSISRightsizing                = "Software Infracstructure Service Rightsizing"
-	RecommendationTypeSISRightsizing1               = "Software Infracstructure Service Rightsizing 1"
-	RecommendationTypeObjectStorageOptimization     = "Object Storage Optimization"
-	RecommendationTypeUnusedServiceDecommisioning   = "Unused Service Decommisioning"
-	RecommendationTypeComputeInstanceDecommisioning = "Compute Instance Decommisioning"
+	BlockStorageRightsizing       = "Block Storage Rightsizing"
+	ComputeInstanceIdle           = "Compute Instance Rightsizing"
+	InstanceRightsizing           = "Compute Instance Rightsizing"
+	InstanceWithoutMonitoring     = "Compute Instance Without Monitoring"
+	OldSnapshot                   = "Old Snapshot"
+	UnusedResource                = "Unused Resource"
+	UnusedStorage                 = "Unused Storage"
+	SISRightsizing                = "Software Infracstructure Service Rightsizing"
+	SISRightsizing1               = "Software Infracstructure Service Rightsizing 1"
+	ObjectStorageOptimization     = "Object Storage Optimization"
+	UnusedServiceDecommisioning   = "Unused Service Decommisioning"
+	ComputeInstanceDecommisioning = "Compute Instance Decommisioning"
 )
 
 const (
@@ -67,17 +67,17 @@ const (
 )
 
 const (
-	ResizeOversizedBlockStorage = "Resize oversized Block Storage"
-	DeleteComputeInstanceNotActive = "Delete Compute Instance not active"
-	DeleteComputeInstanceNotUsed = "Delete Compute Instance not used"
-	ResizeOversizedComputeInstance = "Resize oversized compute instance"
-	EnableBucketAutoTiering = "Enable bucket auto tiering"
-	DeleteSnapshotOlder = "Delete snapshot older than 30 days"
-	ResizeOversizedDatabaseInstance = "Resize oversized Database instance"
+	ResizeOversizedBlockStorage      = "Resize oversized Block Storage"
+	DeleteComputeInstanceNotActive   = "Delete Compute Instance not active"
+	DeleteComputeInstanceNotUsed     = "Delete Compute Instance not used"
+	ResizeOversizedComputeInstance   = "Resize oversized compute instance"
+	EnableBucketAutoTiering          = "Enable bucket auto tiering"
+	DeleteSnapshotOlder              = "Delete snapshot older than 30 days"
+	ResizeOversizedDatabaseInstance  = "Resize oversized Database instance"
 	ResizeOversizedKubernetesCluster = "Resize oversized Kubernetes Cluster"
-	DeleteLoadBalancerNotActive = "Delete Load balancer not active"
-	DeleteKubernetesNodeNotActive = "Delete kubernetes node not active"
-	DeleteKubernetesNodeNotUsed = "Delete Kubernetes node not used"
-	DeleteDatabaseInstanceNotActive = "Delete Database instance not active"
-	DeleteBlockStorageNotUsed = "Delete Block Storage not used"
+	DeleteLoadBalancerNotActive      = "Delete Load balancer not active"
+	DeleteKubernetesNodeNotActive    = "Delete kubernetes node not active"
+	DeleteKubernetesNodeNotUsed      = "Delete Kubernetes node not used"
+	DeleteDatabaseInstanceNotActive  = "Delete Database instance not active"
+	DeleteBlockStorageNotUsed        = "Delete Block Storage not used"
 )

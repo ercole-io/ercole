@@ -92,7 +92,7 @@ func (as *ThunderService) GetOciObjectStorageOptimization(profiles []string) ([]
 
 				if resp3.AutoTiering == "Disabled" {
 					recommendation.Details = make([]model.RecDetail, 0)
-					recommendation.Category = model.RecommendationTypeObjectStorageOptimization
+					recommendation.Category = model.ObjectStorageOptimization
 					recommendation.Suggestion = model.EnableBucketAutoTiering
 					recommendation.CompartmentID = compartment.CompartmentID
 					recommendation.CompartmentName = compartment.Name
@@ -100,7 +100,7 @@ func (as *ThunderService) GetOciObjectStorageOptimization(profiles []string) ([]
 					recommendation.Name = *resp3.Name
 					recommendation.ObjectType = "Object Storage"
 					detail1 := model.RecDetail{Name: "Bucket Name", Value: *resp3.Name}
-					detail2 := model.RecDetail{Name: "Size", Value: as.getBuckeSize(*resp3.ApproximateSize)}
+					detail2 := model.RecDetail{Name: "Size", Value: as.getBucketSize(*resp3.ApproximateSize)}
 					detail3 := model.RecDetail{Name: "Optimization", Value: "Enable auto-tiering"}
 
 					recommendation.Details = append(recommendation.Details, detail1, detail2, detail3)
@@ -113,7 +113,7 @@ func (as *ThunderService) GetOciObjectStorageOptimization(profiles []string) ([]
 	return listRec, nil
 }
 
-func (as *ThunderService) getBuckeSize(sizeVal int64) string {
+func (as *ThunderService) getBucketSize(sizeVal int64) string {
 	var valRet string
 
 	var newVal float64

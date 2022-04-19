@@ -139,7 +139,7 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 					for _, val := range hostnamesAndStatus {
 						if val.status == "STOPPED" {
 							recommendation.Details = make([]model.RecDetail, 0)
-							recommendation.Category = model.RecommendationTypeUnusedServiceDecommisioning //TYPE 3
+							recommendation.Category = model.UnusedServiceDecommisioning //TYPE 3
 							recommendation.Suggestion = model.DeleteDatabaseInstanceNotActive
 							recommendation.CompartmentID = compartment.CompartmentID
 							recommendation.CompartmentName = compartment.Name
@@ -265,7 +265,7 @@ func manageErcoleDatabases(ercoleDatabases []dto.ErcoleDatabase, reorderedDBList
 
 		if cnt > 5 || opt {
 			recommendation.Details = make([]model.RecDetail, 0)
-			recommendation.Category = model.RecommendationTypeSISRightsizing
+			recommendation.Category = model.SISRightsizing
 			recommendation.Suggestion = model.ResizeOversizedDatabaseInstance
 			recommendation.Name = dbWork.hostname + "-" + dbWork.uniqueName
 			recommendation.ResourceID = ""
@@ -318,7 +318,7 @@ func verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []dto.ErcoleDataba
 						listDBTmp = append(listDBTmp, fList.UniqueName)
 						dbNotFound[eDBlist.Hostname] = listDBTmp
 						recommendation.Details = make([]model.RecDetail, 0)
-						recommendation.Category = model.RecommendationTypeSISRightsizing
+						recommendation.Category = model.SISRightsizing
 						recommendation.Suggestion = model.ResizeOversizedDatabaseInstance
 						recommendation.CompartmentID = v.CompartmentID
 						recommendation.CompartmentName = v.CompartmentName
@@ -342,7 +342,7 @@ func verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []dto.ErcoleDataba
 			listDBTmp = append(listDBTmp, "placeholder")
 			dbNotFound[k] = listDBTmp
 			recommendation.Details = make([]model.RecDetail, 0)
-			recommendation.Category = model.RecommendationTypeSISRightsizing
+			recommendation.Category = model.SISRightsizing
 			recommendation.Suggestion = model.ResizeOversizedDatabaseInstance
 			recommendation.CompartmentID = v.CompartmentID
 			recommendation.CompartmentName = v.CompartmentName
