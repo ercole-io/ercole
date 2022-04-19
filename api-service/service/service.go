@@ -22,12 +22,12 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
+	alertServiceClient "github.com/ercole-io/ercole/v2/alert-service/client"
 	"github.com/ercole-io/ercole/v2/api-service/database"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
-
-	"github.com/ercole-io/ercole/v2/config"
 )
 
 // APIServiceInterface is a interface that wrap methods used to querying data
@@ -203,6 +203,8 @@ type APIService struct {
 	NewObjectID func() primitive.ObjectID
 
 	mockGetOracleDatabaseContracts func(filters dto.GetOracleDatabaseContractsFilter) ([]dto.OracleDatabaseContractFE, error)
+
+	AlertSvcClient alertServiceClient.AlertSvcClientInterface
 }
 
 // Init initializes the service and database

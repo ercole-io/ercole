@@ -22,6 +22,7 @@ import (
 )
 
 //go:generate mockgen -source ../database/database.go -destination=fake_database_test.go -package=service
+//go:generate mockgen -source ../../alert-service/client/client.go -destination=fake_alert_svc_client_test.go -package=service
 
 //Common data
 var errMock error = errors.New("MockError")
