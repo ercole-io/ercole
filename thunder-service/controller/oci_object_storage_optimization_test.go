@@ -206,7 +206,7 @@ func TestGetOciObjectStorageOptimization_PartialContent(t *testing.T) {
 
 		var recommendations []model.OciErcoleRecommendation
 		recommendation := model.OciErcoleRecommendation{
-			Type:            model.RecommendationTypeUnusedResource,
+			Category:        model.UnusedResource,
 			CompartmentID:   "ocid1.compartment.oc1..aaaaaaaaraxhbi65iyiln4qvwjwtnebheufhpkwfcymkszuvz2zyqmwsaikq",
 			CompartmentName: "TEST",
 			Name:            "41401efc-419f-42a4-8c1b-b12e11d4526f",
@@ -251,7 +251,7 @@ func TestGetOciObjectStorageOptimization_Success(t *testing.T) {
 		}
 
 		recommendation := model.OciErcoleRecommendation{
-			Type:            model.RecommendationTypeUnusedResource,
+			Category:        model.UnusedResource,
 			CompartmentID:   "ocid1.compartment.oc1..aaaaaaaaraxhbi65iyiln4qvwjwtnebheufhpkwfcymkszuvz2zyqmwsaikq",
 			CompartmentName: "TEST",
 			Name:            "41401efc-419f-42a4-8c1b-b12e11d4526f",

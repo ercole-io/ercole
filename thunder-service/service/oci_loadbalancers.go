@@ -73,7 +73,8 @@ func (as *ThunderService) GetOciUnusedLoadBalancers(profiles []string) ([]model.
 			for _, s := range resp.Items {
 				if s.Status == "CRITICAL" || s.Status == "UNKNOWN" {
 					recommendation.Details = make([]model.RecDetail, 0)
-					recommendation.Type = model.RecommendationTypeUnusedResource
+					recommendation.Category = model.UnusedResource
+					recommendation.Suggestion = model.DeleteLoadBalancerNotActive
 					recommendation.CompartmentID = compartment.CompartmentID
 					recommendation.CompartmentName = compartment.Name
 					recommendation.Name = ""

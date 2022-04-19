@@ -206,7 +206,7 @@ func TestGetOciComputeInstanceRightsizing_PartialContent(t *testing.T) {
 
 		var recommendations []model.OciErcoleRecommendation
 		recommendation := model.OciErcoleRecommendation{
-			Type:            model.RecommendationTypeInstanceRightsizing,
+			Category:        model.InstanceRightsizing,
 			CompartmentID:   "ocid1.compartment.oc1..aaaaaaaaraxhbi65iyiln4qvwjwtnebheufhpkwfcymkszuvz2zyqmwsaikq",
 			CompartmentName: "ERCOLE",
 			Name:            "test-nat",
@@ -251,7 +251,7 @@ func TestGetOciComputeInstanceRightsizing_Success(t *testing.T) {
 		}
 
 		recommendation := model.OciErcoleRecommendation{
-			Type:            model.RecommendationTypeInstanceRightsizing,
+			Category:        model.InstanceRightsizing,
 			CompartmentID:   "ocid1.compartment.oc1..aaaaaaaaraxhbi65iyiln4qvwjwtnebheufhpkwfcymkszuvz2zyqmwsaikq",
 			CompartmentName: "ERCOLE",
 			Name:            "test-nat",
