@@ -131,11 +131,11 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 			for id, value := range instances {
 				recommendation.Details = make([]model.RecDetail, 0)
 				if value.Type == "kubernetes" {
-					recommendation.Category = model.RecommendationTypeUnusedServiceDecommisioning
+					recommendation.Category = model.UnusedServiceDecommisioning
 					recommendation.Suggestion = model.DeleteKubernetesNodeNotActive
 					recommendation.ObjectType = model.ObjectTypeClusterKubernetes
 				} else {
-					recommendation.Category = model.RecommendationTypeComputeInstanceIdle
+					recommendation.Category = model.ComputeInstanceIdle
 					recommendation.Suggestion = model.DeleteComputeInstanceNotActive
 					recommendation.ObjectType = model.ObjectTypeComputeInstance
 				}
@@ -295,20 +295,20 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 				recClusterName = model.RecDetail{Name: "Oke Cluster Name", Value: allInstances[inst.ResourceID].ClusterName}
 
 				if recommType == "rightsizing" {
-					recommendation.Category = model.RecommendationTypeSISRightsizing1
+					recommendation.Category = model.SISRightsizing1
 					recommendation.Suggestion = model.ResizeOversizedKubernetesCluster
 				} else {
-					recommendation.Category = model.RecommendationTypeUnusedServiceDecommisioning
+					recommendation.Category = model.UnusedServiceDecommisioning
 					recommendation.Suggestion = model.DeleteKubernetesNodeNotUsed
 				}
 
 				recommendation.ObjectType = model.ObjectTypeClusterKubernetes
 			} else {
 				if recommType == "rightsizing" {
-					recommendation.Category = model.RecommendationTypeInstanceRightsizing
+					recommendation.Category = model.InstanceRightsizing
 					recommendation.Suggestion = model.ResizeOversizedComputeInstance
 				} else {
-					recommendation.Category = model.RecommendationTypeComputeInstanceDecommisioning
+					recommendation.Category = model.ComputeInstanceDecommisioning
 					recommendation.Suggestion = model.DeleteComputeInstanceNotUsed
 				}
 
@@ -323,14 +323,14 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 			detail2 := model.RecDetail{Name: "Cpu Core Count", Value: fmt.Sprintf("%.2f", allInstances[inst.ResourceID].OCPUs)}
 			detail3 := model.RecDetail{Name: "%Cpu Average 90dd(daily)", Value: allInstanceMetrics[inst.ResourceID]["AvgCPU"].Perc}
 			detail4 := model.RecDetail{Name: fmt.Sprintf("%%Cpu Average 90dd - Number of Threshold Reached (>%d%%)", percAvgCPU), Value: fmt.Sprintf("%s/%s", allInstanceMetrics[inst.ResourceID]["AvgCPU"].Value, allInstanceMetrics[inst.ResourceID]["AvgCPU"].Threshold)}
-			
+
 			var detail5, detail6 model.RecDetail
 			if valPeak, ok := allInstanceMetrics[inst.ResourceID]["PeakCPU"]; ok {
 				detail5 = model.RecDetail{Name: fmt.Sprintf("%%Cpu Average 7dd - Number of Threshold Reached (>%d%%)", percPeakCPU), Value: fmt.Sprintf("%s/%s", valPeak.Value, valPeak.Threshold)}
 			} else {
 				detail5 = model.RecDetail{Name: fmt.Sprintf("%%Cpu Average 7dd - Number of Threshold Reached (>%d%%)", percPeakCPU), Value: "NO DATA"}
 			}
-			
+
 			if valMem, ok := allInstanceMetrics[inst.ResourceID]["AvgMemory"]; ok {
 				detail6 = model.RecDetail{Name: fmt.Sprintf("%%memory Average 7dd - Number of Threshold Reached (>%d%%)", percMemoryUtilization), Value: fmt.Sprintf("%s/%s", valMem.Value, valMem.Threshold)}
 			} else {
@@ -356,11 +356,11 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 
 				if in.Type == "kubernetes" {
 					recClusterName = model.RecDetail{Name: "Oke Cluster Name", Value: allInstances[in.ResourceID].ClusterName}
-					recommendation.Category = model.RecommendationTypeSISRightsizing1
+					recommendation.Category = model.SISRightsizing1
 					recommendation.Suggestion = model.ResizeOversizedKubernetesCluster
 					recommendation.ObjectType = model.ObjectTypeClusterKubernetes
 				} else {
-					recommendation.Category = model.RecommendationTypeInstanceWithoutMonitoring
+					recommendation.Category = model.InstanceWithoutMonitoring
 					recommendation.Suggestion = model.ResizeOversizedComputeInstance
 					recommendation.ObjectType = model.ObjectTypeComputeInstance
 				}
@@ -696,7 +696,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						isOpt, ociPerfs := as.isOptimizable(v)
 						if isOpt {
 							recommendation.Details = make([]model.RecDetail, 0)
-							recommendation.Category = model.RecommendationTypeBlockStorageRightsizing
+							recommendation.Category = model.BlockStorageRightsizing
 							recommendation.Suggestion = model.ResizeOversizedBlockStorage
 							recommendation.CompartmentID = compartment.CompartmentID
 							recommendation.CompartmentName = compartment.Name
@@ -859,4 +859,3 @@ func (as *ThunderService) getOciInstances(customConfigProvider common.Configurat
 
 	return retList, nil
 }
-
