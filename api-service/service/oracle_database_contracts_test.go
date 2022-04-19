@@ -465,6 +465,32 @@ func TestGetOracleDatabaseContracts_Success(t *testing.T) {
 		},
 	}
 
+	host := dto.HostData{
+		ID:                      [12]byte{},
+		Archived:                false,
+		CreatedAt:               time.Time{},
+		ServerVersion:           "",
+		SchemaVersion:           0,
+		ServerSchemaVersion:     0,
+		Hostname:                "test-db",
+		Location:                "",
+		Environment:             "",
+		AgentVersion:            "",
+		Cluster:                 "",
+		VirtualizationNode:      "",
+		Tags:                    []string{},
+		Info:                    model.Host{},
+		ClusterMembershipStatus: model.ClusterMembershipStatus{},
+		Features:                model.Features{},
+		Filesystems:             []model.Filesystem{},
+		Clusters:                []model.ClusterInfo{},
+		Cloud:                   model.Cloud{},
+		Errors:                  []model.AgentError{},
+		OtherInfo:               map[string]interface{}{},
+		Alerts:                  []model.Alert{},
+		History:                 []model.History{},
+	}
+
 	gomock.InOrder(
 		db.EXPECT().ListOracleDatabaseContracts().
 			Return(returnedContracts, nil),
@@ -478,6 +504,8 @@ func TestGetOracleDatabaseContracts_Success(t *testing.T) {
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
+		db.EXPECT().GetHost("test-db", utils.MAX_TIME, false).
+			Return(&host, nil).Times(1),
 
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
@@ -635,6 +663,32 @@ func TestGetOracleDatabaseContractsCluster_Success(t *testing.T) {
 		VMsErcoleAgentCount: 0,
 	}
 
+	host := dto.HostData{
+		ID:                      [12]byte{},
+		Archived:                false,
+		CreatedAt:               time.Time{},
+		ServerVersion:           "",
+		SchemaVersion:           0,
+		ServerSchemaVersion:     0,
+		Hostname:                "test-db",
+		Location:                "",
+		Environment:             "",
+		AgentVersion:            "",
+		Cluster:                 "",
+		VirtualizationNode:      "",
+		Tags:                    []string{},
+		Info:                    model.Host{},
+		ClusterMembershipStatus: model.ClusterMembershipStatus{},
+		Features:                model.Features{},
+		Filesystems:             []model.Filesystem{},
+		Clusters:                []model.ClusterInfo{},
+		Cloud:                   model.Cloud{},
+		Errors:                  []model.AgentError{},
+		OtherInfo:               map[string]interface{}{},
+		Alerts:                  []model.Alert{},
+		History:                 []model.History{},
+	}
+
 	db.EXPECT().ExistHostdata(gomock.Any()).Return(false, nil).AnyTimes()
 
 	gomock.InOrder(
@@ -650,6 +704,8 @@ func TestGetOracleDatabaseContractsCluster_Success(t *testing.T) {
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
+		db.EXPECT().GetHost("test-db", utils.MAX_TIME, false).
+			Return(&host, nil).Times(1),
 
 		db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil),
 
@@ -852,6 +908,8 @@ func TestGetOracleDatabaseContractsClusterCappedCPU_Success(t *testing.T) {
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
+		db.EXPECT().GetHost("test-db", utils.MAX_TIME, false).
+			Return(&host, nil).Times(1),
 
 		db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil),
 
@@ -1148,6 +1206,11 @@ func TestGetOracleDatabaseContractsClusterCappedCPU2_Success(t *testing.T) {
 	db.EXPECT().GetClusters(globalFilterAny).
 		Return(clusters, nil)
 
+	db.EXPECT().GetHost("test-db", utils.MAX_TIME, false).
+		Return(&host, nil).Times(1)
+	db.EXPECT().GetHost("test-db2", utils.MAX_TIME, false).
+		Return(&host, nil).Times(1)
+
 	db.EXPECT().GetCluster("bart", utils.MAX_TIME).Return(&cluster, nil)
 
 	db.EXPECT().GetHost("test-db", utils.MAX_TIME, false).Return(&host, nil)
@@ -1248,6 +1311,32 @@ func TestGetOracleDatabaseContracts_SuccessFilter1(t *testing.T) {
 		},
 	}
 
+	host := dto.HostData{
+		ID:                      [12]byte{},
+		Archived:                false,
+		CreatedAt:               time.Time{},
+		ServerVersion:           "",
+		SchemaVersion:           0,
+		ServerSchemaVersion:     0,
+		Hostname:                "test-db",
+		Location:                "",
+		Environment:             "",
+		AgentVersion:            "",
+		Cluster:                 "",
+		VirtualizationNode:      "",
+		Tags:                    []string{},
+		Info:                    model.Host{},
+		ClusterMembershipStatus: model.ClusterMembershipStatus{},
+		Features:                model.Features{},
+		Filesystems:             []model.Filesystem{},
+		Clusters:                []model.ClusterInfo{},
+		Cloud:                   model.Cloud{},
+		Errors:                  []model.AgentError{},
+		OtherInfo:               map[string]interface{}{},
+		Alerts:                  []model.Alert{},
+		History:                 []model.History{},
+	}
+
 	gomock.InOrder(
 		db.EXPECT().ListOracleDatabaseContracts().
 			Return(returnedContracts, nil),
@@ -1260,6 +1349,8 @@ func TestGetOracleDatabaseContracts_SuccessFilter1(t *testing.T) {
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
+		db.EXPECT().GetHost("test-db", utils.MAX_TIME, false).
+			Return(&host, nil).Times(1),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(parts, nil),
 	)
@@ -1291,6 +1382,8 @@ func TestGetOracleDatabaseContracts_SuccessFilter1(t *testing.T) {
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
+		db.EXPECT().GetHost("test-db", utils.MAX_TIME, false).
+			Return(&host, nil).Times(1),
 
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(parts, nil),
@@ -1323,6 +1416,8 @@ func TestGetOracleDatabaseContracts_SuccessFilter1(t *testing.T) {
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(globalFilterAny).
 			Return(clusters, nil),
+		db.EXPECT().GetHost("test-db", utils.MAX_TIME, false).
+			Return(&host, nil).Times(1),
 
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(parts, nil),

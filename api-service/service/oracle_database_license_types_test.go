@@ -17,6 +17,7 @@ package service
 
 import (
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -233,6 +234,32 @@ func TestGetLicensesCompliance(t *testing.T) {
 
 	var clusters []dto.Cluster
 
+	host := dto.HostData{
+		ID:                      [12]byte{},
+		Archived:                false,
+		CreatedAt:               time.Time{},
+		ServerVersion:           "",
+		SchemaVersion:           0,
+		ServerSchemaVersion:     0,
+		Hostname:                "paperone",
+		Location:                "",
+		Environment:             "",
+		AgentVersion:            "",
+		Cluster:                 "",
+		VirtualizationNode:      "",
+		Tags:                    []string{},
+		Info:                    model.Host{},
+		ClusterMembershipStatus: model.ClusterMembershipStatus{},
+		Features:                model.Features{},
+		Filesystems:             []model.Filesystem{},
+		Clusters:                []model.ClusterInfo{},
+		Cloud:                   model.Cloud{},
+		Errors:                  []model.AgentError{},
+		OtherInfo:               map[string]interface{}{},
+		Alerts:                  []model.Alert{},
+		History:                 []model.History{},
+	}
+
 	gomock.InOrder(
 		db.EXPECT().
 			ListOracleDatabaseContracts().
@@ -248,6 +275,8 @@ func TestGetLicensesCompliance(t *testing.T) {
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(filter).
 			Return(clusters, nil),
+		db.EXPECT().GetHost("paperone", utils.MAX_TIME, false).
+			Return(&host, nil).Times(4),
 		db.EXPECT().
 			GetOracleDatabaseLicenseTypes().
 			Times(1).
@@ -472,6 +501,32 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 
 	var clusters []dto.Cluster
 
+	host := dto.HostData{
+		ID:                      [12]byte{},
+		Archived:                false,
+		CreatedAt:               time.Time{},
+		ServerVersion:           "",
+		SchemaVersion:           0,
+		ServerSchemaVersion:     0,
+		Hostname:                "paperone",
+		Location:                "",
+		Environment:             "",
+		AgentVersion:            "",
+		Cluster:                 "",
+		VirtualizationNode:      "",
+		Tags:                    []string{},
+		Info:                    model.Host{},
+		ClusterMembershipStatus: model.ClusterMembershipStatus{},
+		Features:                model.Features{},
+		Filesystems:             []model.Filesystem{},
+		Clusters:                []model.ClusterInfo{},
+		Cloud:                   model.Cloud{},
+		Errors:                  []model.AgentError{},
+		OtherInfo:               map[string]interface{}{},
+		Alerts:                  []model.Alert{},
+		History:                 []model.History{},
+	}
+
 	gomock.InOrder(
 		db.EXPECT().
 			ListOracleDatabaseContracts().
@@ -487,6 +542,8 @@ func TestGetLicensesCompliance_Veritas(t *testing.T) {
 			Return(hostdatas, nil),
 		db.EXPECT().GetClusters(filter).
 			Return(clusters, nil),
+		db.EXPECT().GetHost("paperone", utils.MAX_TIME, false).
+			Return(&host, nil).Times(4),
 		db.EXPECT().
 			GetOracleDatabaseLicenseTypes().
 			Times(1).
