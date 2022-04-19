@@ -19,7 +19,7 @@ package service
 import (
 	"context"
 	"fmt"
-	"strconv"
+	"math"
 	"time"
 
 	multierror "github.com/hashicorp/go-multierror"
@@ -41,6 +41,15 @@ type Instance struct {
 	Type            string  `json:"type"`
 	Status          string  `json:"status"`
 	OCPUs           float32 `json:"ocpus"`
+}
+
+type MetricData map[string]ValThresh
+
+type ValThresh struct {
+	Perc      string
+	Max       string
+	Value     string
+	Threshold string
 }
 
 func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model.OciErcoleRecommendation, error) {
@@ -122,10 +131,12 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 			for id, value := range instances {
 				recommendation.Details = make([]model.RecDetail, 0)
 				if value.Type == "kubernetes" {
-					recommendation.Type = model.RecommendationTypeUnusedServiceDecommisioning
+					recommendation.Category = model.UnusedServiceDecommisioning
+					recommendation.Suggestion = model.DeleteKubernetesNodeNotActive
 					recommendation.ObjectType = model.ObjectTypeClusterKubernetes
 				} else {
-					recommendation.Type = model.RecommendationTypeComputeInstanceIdle
+					recommendation.Category = model.ComputeInstanceIdle
+					recommendation.Suggestion = model.DeleteComputeInstanceNotActive
 					recommendation.ObjectType = model.ObjectTypeComputeInstance
 				}
 
@@ -173,9 +184,13 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 
 	var MemoryThreshold = 1
 
+	var recClusterName model.RecDetail
+
 	instancesNotOptimizable := make(map[string]Instance)
 	allInstancesWithMetrics := make(map[string]Instance)
 	allInstances := make(map[string]Instance)
+
+	allInstanceMetrics := make(map[string]MetricData)
 
 	listRec = make([]model.OciErcoleRecommendation, 0)
 
@@ -213,7 +228,7 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 			}
 
 			// first query is about average CPU utilization in the last  90 days
-			var strQueryAvgCPU = "CpuUtilization[1d].avg()>" + strconv.Itoa(percAvgCPU)
+			var strQueryAvgCPU = "CpuUtilization[1d].avg()"
 
 			var sTime common.SDKTime
 
@@ -222,41 +237,43 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 			sTime.Time = time.Now().Local().AddDate(0, 0, -89)
 			eTime.Time = time.Now().Local()
 
-			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, AvgCPUThreshold, verifyShape)
+			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, AvgCPUThreshold, percAvgCPU, verifyShape, allInstanceMetrics, "AvgCPU")
 			if err != nil {
 				merr = multierror.Append(merr, err)
-				continue
 			}
 
 			// second query is about CPU utilization peak in the last 7 days
-			var strQueryPeakCPU = "CpuUtilization[1m].max()>" + strconv.Itoa(percPeakCPU)
+			var strQueryPeakCPU = "CpuUtilization[1m].max()"
 
 			sTime.Time = time.Now().Local().AddDate(0, 0, -7)
+			sTime.Time = sTime.Add(time.Hour * 1)
 			eTime.Time = time.Now().Local()
 
-			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, PeakCPUThreshold, verifyShape)
+			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, PeakCPUThreshold, percPeakCPU, verifyShape, allInstanceMetrics, "PeakCPU")
 			if err != nil {
 				merr = multierror.Append(merr, err)
-				continue
 			}
 
 			// third query is about memory utilization in the last 7 days
-			var strQueryMemory = "MemoryUtilization[1m].max()>" + strconv.Itoa(percMemoryUtilization)
+			var strQueryMemory = "MemoryUtilization[1m].max()"
 
 			sTime.Time = time.Now().Local().AddDate(0, 0, -7)
 			eTime.Time = time.Now().Local()
 
-			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, MemoryThreshold, verifyShape)
+			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, MemoryThreshold, percMemoryUtilization, verifyShape, allInstanceMetrics, "AvgMemory")
 			if err != nil {
 				merr = multierror.Append(merr, err)
-				continue
 			}
 		}
 	}
 
 	var recommendation model.OciErcoleRecommendation
 
-	allInstancesWithoutMetrics := allInstances
+	//allInstancesWithoutMetrics := allInstances
+	allInstancesWithoutMetrics := make(map[string]Instance)
+	for key, value := range allInstances {
+		allInstancesWithoutMetrics[key] = value
+	}
 
 	for _, b := range allInstancesWithMetrics {
 		delete(allInstancesWithoutMetrics, b.ResourceID)
@@ -272,20 +289,27 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 	// build recommendation data for optimizable instances
 	for _, inst := range allInstancesWithMetrics {
 		if allInstances[inst.ResourceID].Status != "STOPPED" {
+			recommendation.Details = make([]model.RecDetail, 0)
+
 			if allInstances[inst.ResourceID].Type == "kubernetes" {
-				recommendation.Details = make([]model.RecDetail, 0)
+				recClusterName = model.RecDetail{Name: "Oke Cluster Name", Value: allInstances[inst.ResourceID].ClusterName}
+
 				if recommType == "rightsizing" {
-					recommendation.Type = model.RecommendationTypeSISRightsizing1
+					recommendation.Category = model.SISRightsizing1
+					recommendation.Suggestion = model.ResizeOversizedKubernetesCluster
 				} else {
-					recommendation.Type = model.RecommendationTypeUnusedServiceDecommisioning
+					recommendation.Category = model.UnusedServiceDecommisioning
+					recommendation.Suggestion = model.DeleteKubernetesNodeNotUsed
 				}
 
 				recommendation.ObjectType = model.ObjectTypeClusterKubernetes
 			} else {
 				if recommType == "rightsizing" {
-					recommendation.Type = model.RecommendationTypeInstanceRightsizing
+					recommendation.Category = model.InstanceRightsizing
+					recommendation.Suggestion = model.ResizeOversizedComputeInstance
 				} else {
-					recommendation.Type = model.RecommendationTypeComputeInstanceDecommisioning
+					recommendation.Category = model.ComputeInstanceDecommisioning
+					recommendation.Suggestion = model.DeleteComputeInstanceNotUsed
 				}
 
 				recommendation.ObjectType = model.ObjectTypeComputeInstance
@@ -295,6 +319,30 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 			recommendation.CompartmentName = inst.CompartmentName
 			recommendation.ResourceID = inst.ResourceID
 			recommendation.Name = inst.Name
+			detail1 := model.RecDetail{Name: "Instance Name", Value: inst.Name}
+			detail2 := model.RecDetail{Name: "Cpu Core Count", Value: fmt.Sprintf("%.2f", allInstances[inst.ResourceID].OCPUs)}
+			detail3 := model.RecDetail{Name: "%Cpu Average 90dd(daily)", Value: allInstanceMetrics[inst.ResourceID]["AvgCPU"].Perc}
+			detail4 := model.RecDetail{Name: fmt.Sprintf("%%Cpu Average 90dd - Number of Threshold Reached (>%d%%)", percAvgCPU), Value: fmt.Sprintf("%s/%s", allInstanceMetrics[inst.ResourceID]["AvgCPU"].Value, allInstanceMetrics[inst.ResourceID]["AvgCPU"].Threshold)}
+
+			var detail5, detail6 model.RecDetail
+			if valPeak, ok := allInstanceMetrics[inst.ResourceID]["PeakCPU"]; ok {
+				detail5 = model.RecDetail{Name: fmt.Sprintf("%%Cpu Average 7dd - Number of Threshold Reached (>%d%%)", percPeakCPU), Value: fmt.Sprintf("%s/%s", valPeak.Value, valPeak.Threshold)}
+			} else {
+				detail5 = model.RecDetail{Name: fmt.Sprintf("%%Cpu Average 7dd - Number of Threshold Reached (>%d%%)", percPeakCPU), Value: "NO DATA"}
+			}
+
+			if valMem, ok := allInstanceMetrics[inst.ResourceID]["AvgMemory"]; ok {
+				detail6 = model.RecDetail{Name: fmt.Sprintf("%%memory Average 7dd - Number of Threshold Reached (>%d%%)", percMemoryUtilization), Value: fmt.Sprintf("%s/%s", valMem.Value, valMem.Threshold)}
+			} else {
+				detail6 = model.RecDetail{Name: fmt.Sprintf("%%memory Average 7dd - Number of Threshold Reached (>%d%%)", percMemoryUtilization), Value: "NO DATA"}
+			}
+
+			if recClusterName.Name != "" && recClusterName.Value != "" {
+				recommendation.Details = append(recommendation.Details, detail1, detail2, recClusterName, detail3, detail4, detail5, detail6)
+			} else {
+				recommendation.Details = append(recommendation.Details, detail1, detail2, detail3, detail4, detail5, detail6)
+			}
+
 			listRec = append(listRec, recommendation)
 		}
 	}
@@ -305,11 +353,15 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 		for _, in := range allInstancesWithoutMetrics {
 			if in.Status != "STOPPED" {
 				recommendation.Details = make([]model.RecDetail, 0)
+
 				if in.Type == "kubernetes" {
-					recommendation.Type = model.RecommendationTypeSISRightsizing1
+					recClusterName = model.RecDetail{Name: "Oke Cluster Name", Value: allInstances[in.ResourceID].ClusterName}
+					recommendation.Category = model.SISRightsizing1
+					recommendation.Suggestion = model.ResizeOversizedKubernetesCluster
 					recommendation.ObjectType = model.ObjectTypeClusterKubernetes
 				} else {
-					recommendation.Type = model.RecommendationTypeInstanceWithoutMonitoring
+					recommendation.Category = model.InstanceWithoutMonitoring
+					recommendation.Suggestion = model.ResizeOversizedComputeInstance
 					recommendation.ObjectType = model.ObjectTypeComputeInstance
 				}
 
@@ -317,12 +369,99 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 				recommendation.CompartmentName = in.CompartmentName
 				recommendation.ResourceID = in.ResourceID
 				recommendation.Name = in.Name
+
+				detail1 := model.RecDetail{Name: "Instance Name", Value: in.Name}
+				detail2 := model.RecDetail{Name: "Cpu Core Count", Value: fmt.Sprintf("%.2f", allInstances[in.ResourceID].OCPUs)}
+
+				if recClusterName.Name != "" && recClusterName.Value != "" {
+					recommendation.Details = append(recommendation.Details, detail1, detail2, recClusterName)
+				} else {
+					recommendation.Details = append(recommendation.Details, detail1, detail2)
+				}
+
 				listRec = append(listRec, recommendation)
 			}
 		}
 	}
 
 	return listRec, merr
+}
+
+func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClient, strQuery string, sTime common.SDKTime, eTime common.SDKTime, instances map[string]Instance, compartment model.OciCompartment, threshold int, percThreshold int, verifyShape bool, allInstanceMetrics map[string]MetricData, sType string) (map[string]Instance, error) {
+	var metricData map[string]ValThresh
+
+	var valThresh ValThresh
+
+	req := monitoring.SummarizeMetricsDataRequest{
+		CompartmentId: &compartment.CompartmentID,
+		SummarizeMetricsDataDetails: monitoring.SummarizeMetricsDataDetails{
+			StartTime: &sTime,
+			EndTime:   &eTime,
+			Namespace: common.String("oci_computeagent"),
+			Query:     &strQuery,
+		},
+	}
+
+	// Send the request using the service client
+	resp, err := client.SummarizeMetricsData(context.Background(), req)
+	if err != nil {
+		return instances, err
+	}
+
+	var instance Instance
+
+	for _, s := range resp.Items {
+		// reset the counter
+		cnt := 0
+		totValue := 0.0
+		maxValue := 0.0
+
+		for _, a := range s.AggregatedDatapoints {
+			totValue = totValue + *a.Value
+
+			if maxValue > *a.Value {
+				maxValue = *a.Value
+			}
+
+			if *a.Value > float64(percThreshold) {
+				cnt++
+			}
+		}
+
+		avgValue := totValue / float64(len(s.AggregatedDatapoints))
+		valThresh.Perc = fmt.Sprintf("%.2f", avgValue)
+		valThresh.Max = fmt.Sprintf("%.2f", maxValue)
+
+		metricData = allInstanceMetrics[s.Dimensions["resourceId"]]
+
+		if metricData == nil {
+			metricData = make(map[string]ValThresh)
+		}
+
+		valThresh.Value = fmt.Sprintf("%d", cnt)
+		valThresh.Threshold = fmt.Sprintf("%d", threshold)
+		metricData[sType] = valThresh
+		allInstanceMetrics[s.Dimensions["resourceId"]] = metricData
+
+		if cnt > threshold {
+			// the instance is not eligible for optimization
+			if !verifyShape || (s.Dimensions["shape"] != "VM.Standard2.1" && s.Dimensions["shape"] != "VM.StandardE2.1") {
+				if val, ok := instances[s.Dimensions["resourceId"]]; ok {
+					val.Cnt += 1
+					instances[s.Dimensions["resourceId"]] = val
+				} else {
+					instance.CompartmentID = compartment.CompartmentID
+					instance.CompartmentName = compartment.Name
+					instance.ResourceID = s.Dimensions["resourceId"]
+					instance.Name = s.Dimensions["resourceDisplayName"]
+					instance.Shape = s.Dimensions["shape"]
+					instances[s.Dimensions["resourceId"]] = instance
+				}
+			}
+		}
+	}
+
+	return instances, nil
 }
 
 func (as *ThunderService) getOciInstancesList(allInstances map[string]Instance, compartment model.OciCompartment, customConfigProvider common.ConfigurationProvider, verifyShape bool) (map[string]Instance, error) {
@@ -364,56 +503,6 @@ func (as *ThunderService) getOciInstancesList(allInstances map[string]Instance, 
 	}
 
 	return allInstances, nil
-}
-
-func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClient, strQuery string, sTime common.SDKTime, eTime common.SDKTime, instances map[string]Instance, compartment model.OciCompartment, threshold int, verifyShape bool) (map[string]Instance, error) {
-	req := monitoring.SummarizeMetricsDataRequest{
-		CompartmentId: &compartment.CompartmentID,
-		SummarizeMetricsDataDetails: monitoring.SummarizeMetricsDataDetails{
-			StartTime: &sTime,
-			EndTime:   &eTime,
-			Namespace: common.String("oci_computeagent"),
-			Query:     &strQuery,
-		},
-	}
-
-	// Send the request using the service client
-	resp, err := client.SummarizeMetricsData(context.Background(), req)
-	if err != nil {
-		return instances, err
-	}
-
-	var instance Instance
-
-	for _, s := range resp.Items {
-		// reset the counter
-		cnt := 0
-
-		for _, a := range s.AggregatedDatapoints {
-			if *a.Value == 1.0 {
-				cnt++
-			}
-		}
-
-		if cnt > threshold {
-			// the instance is not eligible for optimization
-			if !verifyShape || (s.Dimensions["shape"] != "VM.Standard2.1" && s.Dimensions["shape"] != "VM.StandardE2.1") {
-				if val, ok := instances[s.Dimensions["resourceId"]]; ok {
-					val.Cnt += 1
-					instances[s.Dimensions["resourceId"]] = val
-				} else {
-					instance.CompartmentID = compartment.CompartmentID
-					instance.CompartmentName = compartment.Name
-					instance.ResourceID = s.Dimensions["resourceId"]
-					instance.Name = s.Dimensions["resourceDisplayName"]
-					instance.Shape = s.Dimensions["shape"]
-					instances[s.Dimensions["resourceId"]] = instance
-				}
-			}
-		}
-	}
-
-	return instances, nil
 }
 
 func (as *ThunderService) getOciInstancesWithMetrics(instances map[string]Instance, compartment model.OciCompartment, customConfigProvider common.ConfigurationProvider, verifyShape bool) (map[string]Instance, error) {
@@ -607,18 +696,22 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						isOpt, ociPerfs := as.isOptimizable(v)
 						if isOpt {
 							recommendation.Details = make([]model.RecDetail, 0)
-							recommendation.Type = model.RecommendationTypeBlockStorage
+							recommendation.Category = model.BlockStorageRightsizing
+							recommendation.Suggestion = model.ResizeOversizedBlockStorage
 							recommendation.CompartmentID = compartment.CompartmentID
 							recommendation.CompartmentName = compartment.Name
 							recommendation.ResourceID = v.ResourceID
 							recommendation.Name = v.Name
 							recommendation.ObjectType = model.ObjectTypeBlockStorage
 
-							detail1 := model.RecDetail{Name: "VPU Target", Value: fmt.Sprintf("%f%s%d", ociPerfs.Performances[0].Values.MaxThroughput, " / ", ociPerfs.Performances[0].Values.MaxIOPS)}
-							detail2 := model.RecDetail{Name: "Throughput R/W Max 5dd", Value: fmt.Sprintf("%f%s%f", v.Throughput, " / ", ociPerfs.Performances[0].Values.MaxThroughput)}
-							detail3 := model.RecDetail{Name: "Iops Max 5dd", Value: fmt.Sprintf("%d%s%d", v.VpusPerGB, " / ", ociPerfs.Performances[0].Values.MaxIOPS)}
+							detail1 := model.RecDetail{Name: "Block Storage Name", Value: v.Name}
+							detail2 := model.RecDetail{Name: "VPU", Value: fmt.Sprintf("%d", v.VpusPerGB)}
+							detail3 := model.RecDetail{Name: "Size", Value: fmt.Sprintf("%d GB", v.Size)}
+							detail4 := model.RecDetail{Name: "VPU Target", Value: fmt.Sprintf("%.0f MB/s %s%d iops", math.Round(ociPerfs.Performances[0].Values.MaxThroughput), " - ", ociPerfs.Performances[0].Values.MaxIOPS)}
+							detail5 := model.RecDetail{Name: "Throughput R/W Max 5dd", Value: fmt.Sprintf("%.0f MB/s %s%.0f MB/s", math.Round(v.Throughput), " - ", math.Round(ociPerfs.Performances[0].Values.MaxThroughput))}
+							detail6 := model.RecDetail{Name: "Iops Max 5dd", Value: fmt.Sprintf("%d%s%d", v.VpusPerGB, " / ", ociPerfs.Performances[0].Values.MaxIOPS)}
 
-							recommendation.Details = append(recommendation.Details, detail1, detail2, detail3)
+							recommendation.Details = append(recommendation.Details, detail1, detail2, detail3, detail4, detail5, detail6)
 
 							listRec = append(listRec, recommendation)
 						}
