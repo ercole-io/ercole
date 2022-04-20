@@ -66,8 +66,15 @@ type OracleDatabase struct {
 }
 
 var (
-	OracleDatabaseStatusOpen    = "OPEN"
-	OracleDatabaseStatusMounted = "MOUNTED"
+	OracleDatabaseStatusOpen = []string{
+		"READ WRITE",
+		"READ ONLY",
+		"OPEN",
+	}
+	OracleDatabaseStatusMounted = []string{
+		"MOUNTED",
+		"READ ONLY WITH APPLY",
+	}
 )
 
 var (
