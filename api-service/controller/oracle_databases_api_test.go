@@ -1442,13 +1442,13 @@ func TestSearchOracleDatabaseUsedLicenses_JSONPaged(t *testing.T) {
 				LicenseTypeID: "LID001",
 				DbName:        "erclin5dbx",
 				Hostname:      "pippo",
-				UsedLicenses:  3,
+				UsedLicenses:  1,
 			},
 			{
 				LicenseTypeID: "LID002",
 				DbName:        "erclin6dbx",
 				Hostname:      "pluto",
-				UsedLicenses:  42,
+				UsedLicenses:  1,
 			},
 		},
 		Metadata: dto.PagingMetadata{
