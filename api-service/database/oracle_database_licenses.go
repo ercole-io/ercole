@@ -40,16 +40,19 @@ func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(hostname string, sortB
 			mu.APUnwind("$features.oracle.database.databases"),
 			mu.APUnwind("$features.oracle.database.databases.licenses"),
 			mu.APMatch(bson.M{"features.oracle.database.databases.licenses.count": bson.M{"$gt": 0}}),
+			mu.APLookupSimple("oracle_database_license_types", "features.oracle.database.databases.licenses.licenseTypeID", "_id", "licenseType"),
+			bson.M{"$unwind": bson.M{"path": "$licenseType", "preserveNullAndEmptyArrays": true}},
 			mu.APProject(
 				bson.M{
 					"_id":           0,
 					"hostname":      1,
 					"dbName":        "$features.oracle.database.databases.name",
 					"licenseTypeID": "$features.oracle.database.databases.licenses.licenseTypeID",
-					"usedLicenses":  mu.APOCond(mu.APOGreater("$features.oracle.database.databases.licenses.count", 0), 1, 0),
+					"usedLicenses":  mu.APOCond(mu.APOEqual("$licenseType.metric", "Computer Perpetual"), 1, "$features.oracle.database.databases.licenses.count"),
 					"ignored":       "$features.oracle.database.databases.licenses.ignored",
 				},
 			),
+
 			mu.APOptionalSortingStage(sortBy, sortDesc),
 			PagingMetadataStage(page, pageSize),
 		),
