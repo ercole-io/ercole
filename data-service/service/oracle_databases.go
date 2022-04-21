@@ -98,7 +98,7 @@ func (hds *HostDataService) checkSecondaryDbs(hostdata *model.HostDataBE) {
 	for i := range hostdata.Features.Oracle.Database.Databases {
 		db := &hostdata.Features.Oracle.Database.Databases[i]
 
-		if db.Status == model.OracleDatabaseStatusMounted &&
+		if utils.Contains(model.OracleDatabaseStatusMounted, db.Status) &&
 			db.Role != model.OracleDatabaseRolePrimary {
 			hds.addLicensesToSecondaryDb(hostdata.Info, hostdata.CoreFactor(), db)
 		}
@@ -187,7 +187,7 @@ func (hds *HostDataService) getPrimaryOpenOracleDatabases() ([]model.OracleDatab
 	for i := 0; i < len(databases); {
 		db := &databases[i]
 
-		if db.Role == model.OracleDatabaseRolePrimary && db.Status == model.OracleDatabaseStatusOpen {
+		if db.Role == model.OracleDatabaseRolePrimary && utils.Contains(model.OracleDatabaseStatusOpen, db.Status) {
 			i += 1
 			continue
 		}

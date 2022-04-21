@@ -84,7 +84,10 @@
                                         "type": "string",
                                         "enum": [
                                             "OPEN",
-                                            "MOUNTED"
+                                            "READ WRITE",
+                                            "READ ONLY",
+                                            "MOUNTED",
+                                            "READ ONLY WITH APPLY"
                                         ]
                                     },
                                     "dbID": {
@@ -552,10 +555,10 @@
                                                 "status": {
                                                     "type": "string",
                                                     "enum": [
-                                                        "OPEN",
                                                         "READ WRITE",
                                                         "READ ONLY",
-                                                        "MOUNTED"
+                                                        "MOUNTED",
+                                                        "READ ONLY WITH APPLY"
                                                     ]
                                                 },
                                                 "tablespaces": {
