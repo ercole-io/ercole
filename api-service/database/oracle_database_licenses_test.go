@@ -24,13 +24,24 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/mongoutils"
 )
 
 func (m *MongodbSuite) TestSearchOracleDatabaseUsedLicenses() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
-	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_17.json"))
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_26.json"))
+
+	defer m.db.Client.Database(m.dbname).Collection("oracle_database_license_types").DeleteMany(context.TODO(), bson.M{})
+	m.db.InsertOracleDatabaseLicenseType(model.OracleDatabaseLicenseType{
+		ID:              "L47837",
+		ItemDescription: "Computer Perpetual",
+		Metric:          "Computer Perpetual",
+		Cost:            0,
+		Aliases:         []string{},
+		Option:          false,
+	})
 
 	emptyResponse := dto.OracleDatabaseUsedLicenseSearchResponse{
 		Content: []dto.OracleDatabaseUsedLicense{},
@@ -72,8 +83,8 @@ func (m *MongodbSuite) TestSearchOracleDatabaseUsedLicenses() {
 
 		expected := dto.OracleDatabaseUsedLicenseSearchResponse{
 			Content: []dto.OracleDatabaseUsedLicense{
-				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90611", UsedLicenses: 1, Ignored: false},
-				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90649", UsedLicenses: 1, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90611", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90649", UsedLicenses: 0.5, Ignored: false},
 			},
 			Metadata: dto.PagingMetadata{
 				Empty:         false,
@@ -81,8 +92,8 @@ func (m *MongodbSuite) TestSearchOracleDatabaseUsedLicenses() {
 				Last:          false,
 				Number:        0,
 				Size:          2,
-				TotalElements: 5,
-				TotalPages:    2,
+				TotalElements: 6,
+				TotalPages:    3,
 			},
 		}
 
@@ -95,19 +106,20 @@ func (m *MongodbSuite) TestSearchOracleDatabaseUsedLicenses() {
 
 		expected := dto.OracleDatabaseUsedLicenseSearchResponse{
 			Content: []dto.OracleDatabaseUsedLicense{
-				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90611", UsedLicenses: 1, Ignored: false},
-				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90649", UsedLicenses: 1, Ignored: false},
-				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90611", UsedLicenses: 1, Ignored: false},
-				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90649", UsedLicenses: 1, Ignored: false},
-				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90619", UsedLicenses: 1, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90611", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90649", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90611", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90649", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90619", UsedLicenses: 1.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "L47837", UsedLicenses: 1, Ignored: false},
 			},
 			Metadata: dto.PagingMetadata{
 				Empty:         false,
 				First:         true,
 				Last:          true,
 				Number:        0,
-				Size:          5,
-				TotalElements: 5,
+				Size:          6,
+				TotalElements: 6,
 				TotalPages:    0,
 			},
 		}
@@ -121,19 +133,20 @@ func (m *MongodbSuite) TestSearchOracleDatabaseUsedLicenses() {
 
 		expected := dto.OracleDatabaseUsedLicenseSearchResponse{
 			Content: []dto.OracleDatabaseUsedLicense{
-				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90611", UsedLicenses: 1, Ignored: false},
-				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90649", UsedLicenses: 1, Ignored: false},
-				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90611", UsedLicenses: 1, Ignored: false},
-				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90649", UsedLicenses: 1, Ignored: false},
-				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90619", UsedLicenses: 1, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90611", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar3", LicenseTypeID: "A90649", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90611", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90649", UsedLicenses: 0.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "A90619", UsedLicenses: 1.5, Ignored: false},
+				{Hostname: "test-db3", DbName: "foobar4", LicenseTypeID: "L47837", UsedLicenses: 1, Ignored: false},
 			},
 			Metadata: dto.PagingMetadata{
 				Empty:         false,
 				First:         true,
 				Last:          true,
 				Number:        0,
-				Size:          5,
-				TotalElements: 5,
+				Size:          6,
+				TotalElements: 6,
 				TotalPages:    0,
 			},
 		}
