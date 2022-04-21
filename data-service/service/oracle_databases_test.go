@@ -87,7 +87,7 @@ func TestAddLicensesToSecondaryDbs(t *testing.T) {
 	hdSecondary := mongoutils.LoadFixtureHostData(t, "../../fixture/test_dataservice_hostdata_v1_23.json")
 
 	primaryDB := hdSecondary.Features.Oracle.Database.Databases[0]
-	assert.True(t, primaryDB.Status == model.OracleDatabaseStatusMounted && primaryDB.Role != model.OracleDatabaseRolePrimary)
+	assert.True(t, utils.Contains(model.OracleDatabaseStatusMounted, primaryDB.Status) && primaryDB.Role != model.OracleDatabaseRolePrimary)
 
 	apisc.EXPECT().GetOracleDatabases()
 	apisc.EXPECT().AckAlerts(dto.AlertsFilter{
