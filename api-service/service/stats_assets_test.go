@@ -17,7 +17,6 @@ package service
 
 import (
 	"testing"
-	"time"
 
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -110,43 +109,14 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 		OlderThan:   utils.MAX_TIME,
 	}
 
-	host := dto.HostData{
-		ID:                      [12]byte{},
-		Archived:                false,
-		CreatedAt:               time.Time{},
-		ServerVersion:           "",
-		SchemaVersion:           0,
-		ServerSchemaVersion:     0,
-		Hostname:                "test-db",
-		Location:                "",
-		Environment:             "",
-		AgentVersion:            "",
-		Cluster:                 "",
-		VirtualizationNode:      "",
-		Tags:                    []string{},
-		Info:                    model.Host{},
-		ClusterMembershipStatus: model.ClusterMembershipStatus{},
-		Features:                model.Features{},
-		Filesystems:             []model.Filesystem{},
-		Clusters:                []model.ClusterInfo{},
-		Cloud:                   model.Cloud{},
-		Errors:                  []model.AgentError{},
-		OtherInfo:               map[string]interface{}{},
-		Alerts:                  []model.Alert{},
-		History:                 []model.History{},
-	}
-
+	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+		Return(hostdatas, nil).AnyTimes()
+	db.EXPECT().GetClusters(globalFilterAny).
+		Return(clusters, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().
 			SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&oracleLics, nil),
-
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Return(hostdatas, nil),
-		db.EXPECT().GetClusters(globalFilterAny).
-			Return(clusters, nil),
-		db.EXPECT().GetHost("test-db", utils.MAX_TIME, false).
-			Return(&host, nil).Times(1),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 	)
