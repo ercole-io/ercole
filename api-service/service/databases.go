@@ -354,7 +354,7 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 
 	usedLicenses = as.removeLicensesByDependencies(usedLicenses, hostdatasPerHostname, clusters)
 
-	usedLicenses, err = as.manageStandardDBVersionLicenses(usedLicenses)
+	usedLicenses, err = as.manageStandardDBVersionLicenses(usedLicenses, clusters, hostdatasPerHostname)
 	if err != nil {
 		return nil, err
 	}
@@ -445,21 +445,29 @@ func (as *APIService) removeLicensesByDependencies(usedLicenses []dto.DatabaseUs
 	return usedLicenses
 }
 
-func (as *APIService) manageStandardDBVersionLicenses(usedLicenses []dto.DatabaseUsedLicense) ([]dto.DatabaseUsedLicense, error) {
+func (as *APIService) manageStandardDBVersionLicenses(usedLicenses []dto.DatabaseUsedLicense, clusters []dto.Cluster, hostdatas map[string]*model.HostDataBE) ([]dto.DatabaseUsedLicense, error) {
+	clustersMap := make(map[string]dto.Cluster, len(clusters))
+	for _, cluster := range clusters {
+		clustersMap[cluster.Name] = cluster
+	}
+
 	for i, usedlicense := range usedLicenses {
-		host, err := as.GetHost(usedlicense.Hostname, utils.MAX_TIME, false)
-		if err != nil {
-			return nil, err
+		if usedlicense.ClusterName == "" {
+			continue
+		}
+
+		host, ok := hostdatas[usedlicense.Hostname]
+		if !ok {
+			return nil, utils.ErrHostNotFound
 		}
 
 		if host != nil &&
-			host.Cluster != "" &&
 			host.Features.Oracle != nil &&
 			host.Features.Oracle.Database != nil &&
 			host.Features.Oracle.Database.Databases != nil {
-			cluster, err := as.GetCluster(usedlicense.ClusterName, utils.MAX_TIME)
-			if err != nil {
-				return nil, err
+			cluster, ok := clustersMap[usedlicense.ClusterName]
+			if !ok {
+				return nil, utils.ErrClusterNotFound
 			}
 
 			databases := host.Features.Oracle.Database.Databases

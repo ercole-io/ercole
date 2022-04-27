@@ -154,6 +154,30 @@ func (as *APIService) getLicensesUsage() ([]dto.HostUsingOracleDatabaseLicenses,
 	usages := make([]dto.HostUsingOracleDatabaseLicenses, 0, len(usedLicenses))
 	hostnamesPerLicense := make(map[string]map[string]bool)
 
+	hostdatas, err := as.Database.GetHostDatas(utils.MAX_TIME)
+	if err != nil {
+		return nil, err
+	}
+
+	clusters, err := as.Database.GetClusters(dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	hostdatasMap := make(map[string]model.HostDataBE, len(hostdatas))
+	for _, hostdata := range hostdatas {
+		hostdatasMap[hostdata.Hostname] = hostdata
+	}
+
+	clustersMap := make(map[string]dto.Cluster, len(clusters))
+	for _, cluster := range clusters {
+		clustersMap[cluster.Name] = cluster
+	}
+
 	for _, usedLicense := range usedLicenses {
 		if usedLicense.Ignored {
 			continue
@@ -168,7 +192,7 @@ func (as *APIService) getLicensesUsage() ([]dto.HostUsingOracleDatabaseLicenses,
 			name = usedLicense.ClusterName
 			licensesCount = usedLicense.ClusterLicenses
 
-			isCapped, err := as.manageLicenseWithCappedCPU(usedLicense)
+			isCapped, err := as.manageLicenseWithCappedCPU(usedLicense, clustersMap, hostdatasMap)
 			if err != nil {
 				return nil, err
 			}
@@ -222,11 +246,11 @@ func (as *APIService) getLicensesUsage() ([]dto.HostUsingOracleDatabaseLicenses,
 	return usages, nil
 }
 
-func (as *APIService) manageLicenseWithCappedCPU(usedLicense dto.DatabaseUsedLicense) (bool, error) {
-	if usedLicense.ClusterType != "VeritasCluster" {
-		cluster, err := as.GetCluster(usedLicense.ClusterName, utils.MAX_TIME)
-		if err != nil {
-			return false, err
+func (as *APIService) manageLicenseWithCappedCPU(usedLicense dto.DatabaseUsedLicense, clustersMap map[string]dto.Cluster, hostadatasMap map[string]model.HostDataBE) (bool, error) {
+	if usedLicense.ClusterType != "VeritasCluster" && usedLicense.ClusterName != "" {
+		cluster, ok := clustersMap[usedLicense.ClusterName]
+		if !ok {
+			return false, utils.ErrClusterNotFound
 		}
 
 		var capped, licenseCapped, notlicenseCapped bool
@@ -250,12 +274,12 @@ func (as *APIService) manageLicenseWithCappedCPU(usedLicense dto.DatabaseUsedLic
 
 		if capped {
 			for vm, cap := range vms {
-				host, err := as.GetHost(vm, utils.MAX_TIME, false)
-				if err != nil {
+				host, ok := hostadatasMap[vm]
+				if !ok {
 					continue
 				}
 
-				if host != nil && host.Features.Oracle != nil && host.Features.Oracle.Database != nil && host.Features.Oracle.Database.Databases != nil {
+				if host.Features.Oracle != nil && host.Features.Oracle.Database != nil && host.Features.Oracle.Database.Databases != nil {
 					databases := host.Features.Oracle.Database.Databases
 
 					for _, database := range databases {

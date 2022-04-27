@@ -17,7 +17,6 @@ package service
 
 import (
 	"testing"
-	"time"
 
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -177,188 +176,6 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 		},
 	}
 
-	host1 := dto.HostData{
-		ID:                      [12]byte{},
-		Archived:                false,
-		CreatedAt:               time.Time{},
-		ServerVersion:           "",
-		SchemaVersion:           0,
-		ServerSchemaVersion:     0,
-		Hostname:                "test1",
-		Location:                "",
-		Environment:             "",
-		AgentVersion:            "",
-		Cluster:                 "",
-		VirtualizationNode:      "",
-		Tags:                    []string{},
-		Info:                    model.Host{},
-		ClusterMembershipStatus: model.ClusterMembershipStatus{},
-		Features:                model.Features{},
-		Filesystems:             []model.Filesystem{},
-		Clusters:                []model.ClusterInfo{},
-		Cloud:                   model.Cloud{},
-		Errors:                  []model.AgentError{},
-		OtherInfo:               map[string]interface{}{},
-		Alerts:                  []model.Alert{},
-		History:                 []model.History{},
-	}
-
-	host2 := dto.HostData{
-		ID:                      [12]byte{},
-		Archived:                false,
-		CreatedAt:               time.Time{},
-		ServerVersion:           "",
-		SchemaVersion:           0,
-		ServerSchemaVersion:     0,
-		Hostname:                "pluto",
-		Location:                "",
-		Environment:             "",
-		AgentVersion:            "",
-		Cluster:                 "",
-		VirtualizationNode:      "",
-		Tags:                    []string{},
-		Info:                    model.Host{},
-		ClusterMembershipStatus: model.ClusterMembershipStatus{},
-		Features:                model.Features{},
-		Filesystems:             []model.Filesystem{},
-		Clusters:                []model.ClusterInfo{},
-		Cloud:                   model.Cloud{},
-		Errors:                  []model.AgentError{},
-		OtherInfo:               map[string]interface{}{},
-		Alerts:                  []model.Alert{},
-		History:                 []model.History{},
-	}
-
-	host3 := dto.HostData{
-		ID:                      [12]byte{},
-		Archived:                false,
-		CreatedAt:               time.Time{},
-		ServerVersion:           "",
-		SchemaVersion:           0,
-		ServerSchemaVersion:     0,
-		Hostname:                "pippo",
-		Location:                "",
-		Environment:             "",
-		AgentVersion:            "",
-		Cluster:                 "",
-		VirtualizationNode:      "",
-		Tags:                    []string{},
-		Info:                    model.Host{},
-		ClusterMembershipStatus: model.ClusterMembershipStatus{},
-		Features:                model.Features{},
-		Filesystems:             []model.Filesystem{},
-		Clusters:                []model.ClusterInfo{},
-		Cloud:                   model.Cloud{},
-		Errors:                  []model.AgentError{},
-		OtherInfo:               map[string]interface{}{},
-		Alerts:                  []model.Alert{},
-		History:                 []model.History{},
-	}
-
-	host4 := dto.HostData{
-		ID:                      [12]byte{},
-		Archived:                false,
-		CreatedAt:               time.Time{},
-		ServerVersion:           "",
-		SchemaVersion:           0,
-		ServerSchemaVersion:     0,
-		Hostname:                "topolino",
-		Location:                "",
-		Environment:             "",
-		AgentVersion:            "",
-		Cluster:                 "",
-		VirtualizationNode:      "",
-		Tags:                    []string{},
-		Info:                    model.Host{},
-		ClusterMembershipStatus: model.ClusterMembershipStatus{},
-		Features:                model.Features{},
-		Filesystems:             []model.Filesystem{},
-		Clusters:                []model.ClusterInfo{},
-		Cloud:                   model.Cloud{},
-		Errors:                  []model.AgentError{},
-		OtherInfo:               map[string]interface{}{},
-		Alerts:                  []model.Alert{},
-		History:                 []model.History{},
-	}
-
-	host5 := dto.HostData{
-		ID:                      [12]byte{},
-		Archived:                false,
-		CreatedAt:               time.Time{},
-		ServerVersion:           "",
-		SchemaVersion:           0,
-		ServerSchemaVersion:     0,
-		Hostname:                "minnie",
-		Location:                "",
-		Environment:             "",
-		AgentVersion:            "",
-		Cluster:                 "",
-		VirtualizationNode:      "",
-		Tags:                    []string{},
-		Info:                    model.Host{},
-		ClusterMembershipStatus: model.ClusterMembershipStatus{},
-		Features:                model.Features{},
-		Filesystems:             []model.Filesystem{},
-		Clusters:                []model.ClusterInfo{},
-		Cloud:                   model.Cloud{},
-		Errors:                  []model.AgentError{},
-		OtherInfo:               map[string]interface{}{},
-		Alerts:                  []model.Alert{},
-		History:                 []model.History{},
-	}
-
-	host6 := dto.HostData{
-		ID:                      [12]byte{},
-		Archived:                false,
-		CreatedAt:               time.Time{},
-		ServerVersion:           "test2",
-		SchemaVersion:           0,
-		ServerSchemaVersion:     0,
-		Hostname:                "test-db",
-		Location:                "",
-		Environment:             "",
-		AgentVersion:            "",
-		Cluster:                 "",
-		VirtualizationNode:      "",
-		Tags:                    []string{},
-		Info:                    model.Host{},
-		ClusterMembershipStatus: model.ClusterMembershipStatus{},
-		Features:                model.Features{},
-		Filesystems:             []model.Filesystem{},
-		Clusters:                []model.ClusterInfo{},
-		Cloud:                   model.Cloud{},
-		Errors:                  []model.AgentError{},
-		OtherInfo:               map[string]interface{}{},
-		Alerts:                  []model.Alert{},
-		History:                 []model.History{},
-	}
-
-	host7 := dto.HostData{
-		ID:                      [12]byte{},
-		Archived:                false,
-		CreatedAt:               time.Time{},
-		ServerVersion:           "",
-		SchemaVersion:           0,
-		ServerSchemaVersion:     0,
-		Hostname:                "test3",
-		Location:                "",
-		Environment:             "",
-		AgentVersion:            "",
-		Cluster:                 "",
-		VirtualizationNode:      "",
-		Tags:                    []string{},
-		Info:                    model.Host{},
-		ClusterMembershipStatus: model.ClusterMembershipStatus{},
-		Features:                model.Features{},
-		Filesystems:             []model.Filesystem{},
-		Clusters:                []model.ClusterInfo{},
-		Cloud:                   model.Cloud{},
-		Errors:                  []model.AgentError{},
-		OtherInfo:               map[string]interface{}{},
-		Alerts:                  []model.Alert{},
-		History:                 []model.History{},
-	}
-
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -367,6 +184,10 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 		Log:      logger.NewLogger("TEST"),
 	}
 
+	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+		Return(hostdatas, nil).AnyTimes()
+	db.EXPECT().GetClusters(globalFilterAny).
+		Return(clusters, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().
 			GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
@@ -384,29 +205,6 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 			Return(&oracleLics, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Return(hostdatas, nil),
-		db.EXPECT().GetClusters(globalFilterAny).
-			Return(clusters, nil),
-		db.EXPECT().GetHost("test1", utils.MAX_TIME, false).
-			Return(&host1, nil).Times(1),
-		db.EXPECT().GetHost("pluto", utils.MAX_TIME, false).
-			Return(&host2, nil).Times(1),
-		db.EXPECT().GetHost("pippo", utils.MAX_TIME, false).
-			Return(&host3, nil).Times(1),
-		db.EXPECT().GetHost("topolino", utils.MAX_TIME, false).
-			Return(&host4, nil).Times(1),
-		db.EXPECT().GetHost("minnie", utils.MAX_TIME, false).
-			Return(&host5, nil).Times(1),
-		db.EXPECT().GetHost("minnie", utils.MAX_TIME, false).
-			Return(&host5, nil).Times(1),
-		db.EXPECT().GetHost("pippo", utils.MAX_TIME, false).
-			Return(&host5, nil).Times(1),
-		db.EXPECT().GetHost("test2", utils.MAX_TIME, false).
-			Return(&host6, nil).Times(1),
-		db.EXPECT().GetHost("test3", utils.MAX_TIME, false).
-			Return(&host7, nil).Times(1),
-
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(sampleLicenseTypes, nil),
 	)
@@ -517,32 +315,10 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 		},
 	}
 
-	host := dto.HostData{
-		ID:                      [12]byte{},
-		Archived:                false,
-		CreatedAt:               time.Time{},
-		ServerVersion:           "",
-		SchemaVersion:           0,
-		ServerSchemaVersion:     0,
-		Hostname:                "test-db",
-		Location:                "",
-		Environment:             "",
-		AgentVersion:            "",
-		Cluster:                 "",
-		VirtualizationNode:      "",
-		Tags:                    []string{},
-		Info:                    model.Host{},
-		ClusterMembershipStatus: model.ClusterMembershipStatus{},
-		Features:                model.Features{},
-		Filesystems:             []model.Filesystem{},
-		Clusters:                []model.ClusterInfo{},
-		Cloud:                   model.Cloud{},
-		Errors:                  []model.AgentError{},
-		OtherInfo:               map[string]interface{}{},
-		Alerts:                  []model.Alert{},
-		History:                 []model.History{},
-	}
-
+	db.EXPECT().GetHostDatas(utils.MAX_TIME).
+		Return(hostdatas, nil).AnyTimes()
+	db.EXPECT().GetClusters(globalFilterAny).
+		Return(clusters, nil).AnyTimes()
 	gomock.InOrder(
 		db.EXPECT().
 			GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
@@ -559,12 +335,6 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 			Return(&oracleLics, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
-		db.EXPECT().GetHostDatas(utils.MAX_TIME).
-			Return(hostdatas, nil),
-		db.EXPECT().GetClusters(globalFilterAny).
-			Return(clusters, nil),
-		db.EXPECT().GetHost("test-db", utils.MAX_TIME, false).
-			Return(&host, nil).Times(1),
 
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(sampleLicenseTypes, nil),
