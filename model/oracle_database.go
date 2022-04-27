@@ -117,7 +117,7 @@ func (v OracleDatabase) CoreFactor(host Host, hostCoreFactor float64) (float64, 
 		}
 
 		if dbEdition == OracleDatabaseEditionStandard {
-			return 0, nil
+			return 1, nil
 		}
 
 		return 0, utils.NewErrorf("%q db: dbEdition %q unknown", v.Name, dbEdition)
