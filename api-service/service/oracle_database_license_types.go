@@ -197,10 +197,33 @@ func (as *APIService) getLicensesUsage() ([]dto.HostUsingOracleDatabaseLicenses,
 				return nil, err
 			}
 
-			if isCapped {
+			host, ok := hostdatasMap[usedLicense.Hostname]
+			if !ok {
+				continue
+			}
+
+			if isCapped &&
+				host.Features.Oracle != nil &&
+				host.Features.Oracle.Database != nil &&
+				host.Features.Oracle.Database.Databases != nil {
+				databases := host.Features.Oracle.Database.Databases
+
+				for _, database := range databases {
+					for _, license := range database.Licenses {
+						if license.LicenseTypeID == usedLicense.LicenseTypeID &&
+							database.Name == usedLicense.DbName {
+							if database.Edition() == model.OracleDatabaseEditionStandard {
+								licensesCount = usedLicense.ClusterLicenses
+							} else {
+								licensesCount = usedLicense.UsedLicenses
+							}
+						}
+
+					}
+				}
+
 				typeClusterHost = "host"
 				name = usedLicense.Hostname
-				licensesCount = usedLicense.UsedLicenses
 			}
 
 			_, found := hostnamesPerLicense[name]
