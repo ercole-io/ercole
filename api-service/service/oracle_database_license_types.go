@@ -218,7 +218,6 @@ func (as *APIService) getLicensesUsage() ([]dto.HostUsingOracleDatabaseLicenses,
 								licensesCount = usedLicense.UsedLicenses
 							}
 						}
-
 					}
 				}
 
