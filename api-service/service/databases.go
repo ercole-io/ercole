@@ -647,13 +647,31 @@ licenses:
 
 			for _, hostVM := range cluster.VMs {
 				if hostVM.CappedCPU {
-					exist, err := as.Database.ExistHostdata(hostVM.Hostname)
+					host, err := as.GetHost(hostVM.Hostname, utils.MAX_TIME, false)
 					if err != nil {
-						return nil, err
+						return nil, utils.ErrHostNotFound
 					}
-					if exist {
-						clusterLicenses = 0
+					if host != nil &&
+						host.Features.Oracle != nil &&
+						host.Features.Oracle.Database != nil &&
+						host.Features.Oracle.Database.Databases != nil {
+
+						databases := host.Features.Oracle.Database.Databases
+						for _, database := range databases {
+							for _, license := range database.Licenses {
+								if license.LicenseTypeID == v.LicenseTypeID &&
+									database.Name == v.DbName {
+									if database.Edition() == model.OracleDatabaseEditionStandard {
+										clusterLicenses = float64(cluster.Sockets) * model.GetFactorByMetric(v.Metric)
+									} else {
+										clusterLicenses = 0
+									}
+
+								}
+							}
+						}
 					}
+
 				} else {
 					clusterLicenses = v.ClusterLicenses
 					break
