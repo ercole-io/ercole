@@ -352,8 +352,8 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 			expected: []dto.LicenseCompliance{
 				{
 					LicenseTypeID:   "",
-					ItemDescription: "MySQL Enterprise per host",
-					Metric:          "",
+					ItemDescription: "MySQL ENTERPRISE",
+					Metric:          "HOST",
 					Consumed:        1,
 					Covered:         1,
 					Compliance:      1,
@@ -361,8 +361,8 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 				},
 				{
 					LicenseTypeID:   "",
-					ItemDescription: "MySQL Enterprise per cluster",
-					Metric:          "",
+					ItemDescription: "MySQL ENTERPRISE",
+					Metric:          "CLUSTER",
 					Consumed:        0,
 					Covered:         0,
 					Compliance:      1,
@@ -407,8 +407,8 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 			expected: []dto.LicenseCompliance{
 				{
 					LicenseTypeID:   "",
-					ItemDescription: "MySQL Enterprise per host",
-					Metric:          "",
+					ItemDescription: "MySQL ENTERPRISE",
+					Metric:          "HOST",
 					Consumed:        1,
 					Covered:         0,
 					Compliance:      0,
@@ -416,8 +416,8 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 				},
 				{
 					LicenseTypeID:   "",
-					ItemDescription: "MySQL Enterprise per cluster",
-					Metric:          "",
+					ItemDescription: "MySQL ENTERPRISE",
+					Metric:          "CLUSTER",
 					Consumed:        1,
 					Covered:         1,
 					Compliance:      1,

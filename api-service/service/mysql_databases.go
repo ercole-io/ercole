@@ -187,8 +187,8 @@ func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseComplia
 
 	perCluster := dto.LicenseCompliance{
 		LicenseTypeID:   "",
-		ItemDescription: "MySQL Enterprise per cluster",
-		Metric:          "",
+		ItemDescription: "MySQL " + model.MySQLEditionEnterprise,
+		Metric:          model.MySQLContractTypeCluster,
 		Cost:            0,
 		Consumed:        0,
 		Covered:         0,
@@ -198,8 +198,8 @@ func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseComplia
 
 	perHost := dto.LicenseCompliance{
 		LicenseTypeID:   "",
-		ItemDescription: "MySQL Enterprise per host",
-		Metric:          "",
+		ItemDescription: "MySQL " + model.MySQLEditionEnterprise,
+		Metric:          model.MySQLContractTypeHost,
 		Cost:            0,
 		Consumed:        0,
 		Covered:         0,
