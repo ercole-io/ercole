@@ -12,14 +12,7 @@
                 "type": "object",
                 "required": [
                     "name",
-                    "version",
                     "edition",
-                    "platform",
-                    "architecture",
-                    "engine",
-                    "redoLogEnabled",
-                    "charsetServer",
-                    "charsetSystem",
                     "pageSize",
                     "threadsConcurrency",
                     "bufferPoolSize",
@@ -36,8 +29,7 @@
                         "minLength": 1
                     },
                     "version": {
-                        "type": "string",
-                        "minLength": 1
+                        "type": "string"
                     },
                     "edition": {
                         "type": "string",
@@ -47,28 +39,22 @@
                         ]
                     },
                     "platform": {
-                        "type": "string",
-                        "minLength": 1
+                        "type": "string"
                     },
                     "architecture": {
-                        "type": "string",
-                        "minLength": 1
+                        "type": "string"
                     },
                     "engine": {
-                        "type": "string",
-                        "minLength": 1
+                        "type": "string"
                     },
                     "redoLogEnabled": {
-                        "type": "string",
-                        "minLength": 1
+                        "type": "string"
                     },
                     "charsetServer": {
-                        "type": "string",
-                        "minLength": 1
+                        "type": "string"
                     },
                     "charsetSystem": {
-                        "type": "string",
-                        "minLength": 1
+                        "type": "string"
                     },
                     "pageSize": {
                         "type": "number",
