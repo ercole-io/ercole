@@ -144,6 +144,9 @@ type APIServiceInterface interface {
 	AddOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) (*model.OracleDatabaseLicenseType, error)
 	UpdateOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) (*model.OracleDatabaseLicenseType, error)
 
+	// SQL SERVER DATABASE LICENSES
+	GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
+
 	// AckAlerts ack the specified alerts
 	AckAlerts(alertsFilter dto.AlertsFilter) error
 	// DismissHost dismiss the specified host
