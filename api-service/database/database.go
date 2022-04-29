@@ -177,6 +177,10 @@ type MongoDatabaseInterface interface {
 	UpdateMySQLContract(contract model.MySQLContract) error
 	GetMySQLContracts() ([]model.MySQLContract, error)
 	DeleteMySQLContract(id primitive.ObjectID) error
+
+	// SQL SERVER
+
+	GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
 }
 
 // MongoDatabase is a implementation
