@@ -147,6 +147,11 @@ type APIServiceInterface interface {
 	// SQL SERVER DATABASE LICENSES
 	GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
 
+	// SearchSqlServerInstances search databases
+	SearchSqlServerInstances(filter dto.SearchSqlServerInstancesFilter) (*dto.SqlServerInstanceResponse, error)
+	// SearchOracleDatabases search databases
+	SearchSqlServerInstancesAsXLSX(filter dto.SearchSqlServerInstancesFilter) (*excelize.File, error)
+
 	// AckAlerts ack the specified alerts
 	AckAlerts(alertsFilter dto.AlertsFilter) error
 	// DismissHost dismiss the specified host
