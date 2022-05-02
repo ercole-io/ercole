@@ -181,6 +181,7 @@ type MongoDatabaseInterface interface {
 	// SQL SERVER
 
 	GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
+	SearchSqlServerInstances(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.SqlServerInstanceResponse, error)
 }
 
 // MongoDatabase is a implementation
