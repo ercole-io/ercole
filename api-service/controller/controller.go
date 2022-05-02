@@ -153,6 +153,10 @@ type APIControllerInterface interface {
 
 	SearchMySQLInstances(w http.ResponseWriter, r *http.Request)
 
+	// SQL SERVER
+	// SearchSqlServerInstances search instances data using the filters in the request
+	SearchSqlServerInstances(w http.ResponseWriter, r *http.Request)
+
 	// MYSQL CONTRACTS
 	AddMySQLContract(w http.ResponseWriter, r *http.Request)
 	UpdateMySQLContract(w http.ResponseWriter, r *http.Request)
