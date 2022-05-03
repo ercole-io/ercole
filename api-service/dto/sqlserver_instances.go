@@ -28,6 +28,7 @@ type SqlServerInstanceResponse struct {
 
 type SqlServerInstance struct {
 	Hostname      string `json:"hostname" bson:"hostname"`
+	Environment   string `json:"environment" bson:"environment"`
 	Name          string `json:"name" bson:"name"`
 	Status        string `json:"stateDesc" bson:"stateDesc"`
 	Edition       string `json:"edition" bson:"edition"`

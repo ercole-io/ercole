@@ -33,7 +33,7 @@ import (
 func (as *APIService) SearchDatabases(filter dto.GlobalFilter) ([]dto.Database, error) {
 	type getter func(filter dto.GlobalFilter) ([]dto.Database, error)
 
-	getters := []getter{as.getOracleDatabases, as.getMySQLDatabases}
+	getters := []getter{as.getOracleDatabases, as.getMySQLDatabases, as.getSqlServerDatabases}
 
 	dbs := make([]dto.Database, 0)
 
@@ -114,6 +114,35 @@ func (as *APIService) getMySQLDatabases(filter dto.GlobalFilter) ([]dto.Database
 			DisasterRecovery: instance.IsMaster || instance.IsSlave,
 		}
 
+		dbs = append(dbs, db)
+	}
+
+	return dbs, nil
+}
+
+func (as *APIService) getSqlServerDatabases(filter dto.GlobalFilter) ([]dto.Database, error) {
+	sodf := dto.SearchSqlServerInstancesFilter{
+		GlobalFilter: filter,
+		PageNumber:   -1,
+		PageSize:     -1,
+	}
+
+	sqlServerInstances, err := as.SearchSqlServerInstances(sodf)
+	if err != nil {
+		return nil, err
+	}
+
+	dbs := make([]dto.Database, 0)
+
+	for _, instance := range sqlServerInstances.Content {
+		db := dto.Database{
+			Name:        instance.Name,
+			Type:        model.TechnologyMicrosoftSQLServer,
+			Version:     instance.Version,
+			Hostname:    instance.Hostname,
+			Environment: instance.Environment,
+			Charset:     instance.CollationName,
+		}
 		dbs = append(dbs, db)
 	}
 
