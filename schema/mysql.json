@@ -200,20 +200,16 @@
                                     "minLength": 1
                                 },
                                 "allocation": {
-                                    "type": "number",
-                                    "minimum": 0
+                                    "type": "number"
                                 },
                                 "data": {
-                                    "type": "number",
-                                    "minimum": 0
+                                    "type": "number"
                                 },
                                 "index": {
-                                    "type": "number",
-                                    "minimum": 0
+                                    "type": "number"
                                 },
                                 "free": {
-                                    "type": "number",
-                                    "minimum": 0
+                                    "type": "number"
                                 }
                             }
                         }
