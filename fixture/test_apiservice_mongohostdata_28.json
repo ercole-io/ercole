@@ -13,7 +13,7 @@
             "$numberLong": "1588765163259"
         }
     },
-    "environment": "TST",
+    "environment": "PRD",
     "features": {
         "microsoft": {
             "sqlServer": {

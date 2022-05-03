@@ -98,6 +98,7 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 		var expectedContent []dto.SqlServerInstance = []dto.SqlServerInstance{
 			{
 				Hostname:      "test-db",
+				Environment:   "TST",
 				Name:          "MSSQLSERVER",
 				Status:        "ONLINE",
 				Edition:       "ENT",
@@ -128,6 +129,7 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 		var expectedContent []dto.SqlServerInstance = []dto.SqlServerInstance{
 			{
 				Hostname:      "test-db2",
+				Environment:   "PRD",
 				Name:          "MSSQLSERVER",
 				Status:        "ONLINE",
 				Edition:       "STD",
@@ -179,6 +181,7 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 		var expectedContent []dto.SqlServerInstance = []dto.SqlServerInstance{
 			{
 				Hostname:      "test-db2",
+				Environment:   "PRD",
 				Name:          "MSSQLSERVER",
 				Status:        "ONLINE",
 				Edition:       "STD",
@@ -209,6 +212,7 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 		var expectedContent []dto.SqlServerInstance = []dto.SqlServerInstance{
 			{
 				Hostname:      "test-db",
+				Environment:   "TST",
 				Name:          "MSSQLSERVER",
 				Status:        "ONLINE",
 				Edition:       "ENT",
@@ -217,6 +221,7 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 			},
 			{
 				Hostname:      "test-db2",
+				Environment:   "PRD",
 				Name:          "MSSQLSERVER",
 				Status:        "ONLINE",
 				Edition:       "STD",
