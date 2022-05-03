@@ -48,8 +48,9 @@ func (md *MongoDatabase) SearchSqlServerInstances(keywords []string, sortBy stri
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APUnwind("$features.microsoft.sqlServer.instances"),
 			mu.APProject(bson.M{
-				"hostname": 1,
-				"instance": "$features.microsoft.sqlServer.instances",
+				"hostname":    1,
+				"environment": 1,
+				"instance":    "$features.microsoft.sqlServer.instances",
 			}),
 			mu.APSearchFilterStage([]interface{}{"$hostname", "$sqlserver.name"}, keywords),
 			mu.APAddFields(bson.M{
@@ -88,8 +89,9 @@ func (md *MongoDatabase) SearchSqlServerInstances(keywords []string, sortBy stri
 			FilterByLocationAndEnvironmentSteps(location, environment),
 			mu.APUnwind("$features.microsoft.sqlServer.instances"),
 			mu.APProject(bson.M{
-				"hostname": 1,
-				"database": "$features.microsoft.sqlServer.instances",
+				"hostname":    1,
+				"environment": 1,
+				"database":    "$features.microsoft.sqlServer.instances",
 			}),
 			mu.APSearchFilterStage([]interface{}{"$hostname", "$sqlserver.name"}, keywords),
 			mu.APFacet(bson.M{
