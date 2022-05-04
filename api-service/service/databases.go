@@ -678,7 +678,7 @@ licenses:
 				if hostVM.CappedCPU {
 					host, err := as.GetHost(hostVM.Hostname, utils.MAX_TIME, false)
 					if err != nil {
-						return nil, utils.ErrHostNotFound
+						continue
 					}
 					if host != nil &&
 						host.Features.Oracle != nil &&
