@@ -35,6 +35,7 @@ type ApiSvcClientInterface interface {
 	GetAlertsByFilter(filter dto.AlertsFilter) ([]model.Alert, error)
 	AckAlerts(filter dto.AlertsFilter) error
 	GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error)
+	GetSQLServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
 	GetOracleDatabases() ([]model.OracleDatabase, error)
 }
 
@@ -91,8 +92,8 @@ func (c *Client) getResponse(ctx context.Context, path, method string, body []by
 	return resp, nil
 }
 
-func (c *Client) getParsedResponse(ctx context.Context, path, method string, body []byte, response interface{}) error {
-	resp, err := c.getResponse(ctx, path, method, body)
+func (c *Client) getParsedResponse(ctx context.Context, path string, body []byte, response interface{}) error {
+	resp, err := c.getResponse(ctx, path, "GET", body)
 	if err != nil {
 		return err
 	}
