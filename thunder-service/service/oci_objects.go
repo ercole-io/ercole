@@ -22,6 +22,7 @@ import (
 
 func (as *ThunderService) GetOciObjects() ([]model.OciObjects, error) {
 	oracle_cloud_objects, err := as.Database.GetOciObjects()
+
 	if err != nil {
 		return nil, err
 	}

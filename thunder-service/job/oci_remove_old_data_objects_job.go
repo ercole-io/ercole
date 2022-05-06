@@ -37,7 +37,6 @@ type OciRemoveOldDataObjectsJob struct {
 
 // Run job that remove data object older than 5 days
 func (job *OciRemoveOldDataObjectsJob) Run() {
-
 	currentTime := time.Now().UTC()
 	dateFrom := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day()-5, 0, 0, 0, 0, currentTime.Location())
 
