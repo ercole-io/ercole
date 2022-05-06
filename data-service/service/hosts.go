@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -52,6 +52,10 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 
 	if hostdata.Features.Oracle != nil {
 		hds.oracleDatabasesChecks(previousHostdata, &hostdata)
+	}
+
+	if hostdata.Features.Microsoft != nil {
+		hds.sqlServerDatabasesChecks(previousHostdata, &hostdata)
 	}
 
 	if hostdata.Clusters != nil {
