@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,4 +30,12 @@ type MicrosoftSQLServerInstance struct {
 	ProductCode   string                       `json:"productCode" bson:"productCode"`
 	LicensingInfo string                       `json:"licensingInfo" bson:"licensingInfo"`
 	Databases     []MicrosoftSQLServerDatabase `json:"databases" bson:"databases"`
+	License       MicrosoftSQLServerLicense    `json:"license" bson:"license"`
+}
+
+type MicrosoftSQLServerLicense struct {
+	LicenseTypeID string  `json:"licenseTypeID" bson:"licenseTypeID"`
+	Name          string  `json:"name" bson:"name"`
+	Count         float64 `json:"count" bson:"count"`
+	Ignored       bool    `json:"ignored" bson:"ignored"`
 }

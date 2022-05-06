@@ -21,13 +21,15 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 )
 
-func (c *Client) GetOracleDatabases() ([]model.OracleDatabase, error) {
-	var databases []model.OracleDatabase
+func (c *Client) GetSQLServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error) {
+	var response struct {
+		LicensesTypes []model.SqlServerDatabaseLicenseType `json:"license-types"`
+	}
 
-	err := c.getParsedResponse(context.TODO(), "/hosts/technologies/oracle/databases", nil, &databases)
+	err := c.getParsedResponse(context.TODO(), "/settings/microsoft/database/license-types", nil, &response)
 	if err != nil {
 		return nil, err
 	}
 
-	return databases, nil
+	return response.LicensesTypes, nil
 }
