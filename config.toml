@@ -45,7 +45,7 @@ BindIP = "0.0.0.0"
 Port = 11113
 LogHTTPRequest = true
 ReadOnly = false
-DebugOracleDatabaseContractsAssignmentAlgorithm = false
+DebugOracleDatabaseAgreementsAssignmentAlgorithm = false
 DefaultDatabaseTags = [
   "coolest",
   "very important",
@@ -123,6 +123,17 @@ BindIP = "0.0.0.0"
 Port = 11117
 LogHTTPRequest = true
 LogMessages = true
+
+[ThunderService.OciRemoveOldDataObjectsJob]
+Crontab = "@daily"
+DaysThreshold = 1
+RunAtStartup = true
+
+[ThunderService.OciDataRetrieveJob]
+Crontab = "@daily"
+DaysThreshold = 1
+RunAtStartup = false
+
 
 [Mongodb]
 URI = "mongodb://localhost:27017/ercole"

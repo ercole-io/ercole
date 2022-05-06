@@ -55,6 +55,7 @@ import (
 
 	thunderservice_controller "github.com/ercole-io/ercole/v2/thunder-service/controller"
 	thunderservice_database "github.com/ercole-io/ercole/v2/thunder-service/database"
+	thunderservice_job "github.com/ercole-io/ercole/v2/thunder-service/job"
 	thunderservice_service "github.com/ercole-io/ercole/v2/thunder-service/service"
 
 	reposervice_service "github.com/ercole-io/ercole/v2/repo-service/service"
@@ -268,12 +269,11 @@ func serveAPIService(config config.Configuration, wg *sync.WaitGroup) {
 	db.Init()
 
 	service := &apiservice_service.APIService{
-		Config:         config,
-		Version:        serverVersion,
-		Database:       db,
-		TimeNow:        time.Now,
-		Log:            log,
-		AlertSvcClient: alertservice_client.NewClient(config.AlertService),
+		Config:   config,
+		Version:  serverVersion,
+		Database: db,
+		TimeNow:  time.Now,
+		Log:      log,
 	}
 	service.Init()
 
@@ -388,6 +388,15 @@ func serveThunderService(config config.Configuration, wg *sync.WaitGroup) {
 		Log:      log,
 	}
 	service.Init()
+
+	job := &thunderservice_job.Job{
+		Config:        config,
+		ServerVersion: config.Version,
+		Database:      db,
+		TimeNow:       time.Now,
+		Log:           log,
+	}
+	job.Init()
 
 	ctrl := &thunderservice_controller.ThunderController{
 		Config:  config,
