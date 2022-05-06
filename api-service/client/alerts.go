@@ -38,7 +38,7 @@ func (c *Client) GetAlertsByFilter(filter dto.AlertsFilter) ([]model.Alert, erro
 
 	var alerts []model.Alert
 
-	err = c.getParsedResponse(context.TODO(), "/alerts", "GET", body, &alerts)
+	err = c.getParsedResponse(context.TODO(), "/alerts", body, &alerts)
 	if err != nil {
 		return nil, err
 	}
