@@ -28,7 +28,6 @@ import (
 const OciObject_collection = "oci_objects"
 
 func (md *MongoDatabase) AddOciObjects(objects model.OciObjects) error {
-
 	filter := bson.M{"profileID": objects.ProfileID}
 	update := bson.M{"$set": bson.M{"archived": true}}
 
