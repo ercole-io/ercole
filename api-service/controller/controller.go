@@ -124,6 +124,7 @@ type APIControllerInterface interface {
 	SearchDatabases(w http.ResponseWriter, r *http.Request)
 	GetDatabasesStatistics(w http.ResponseWriter, r *http.Request)
 	GetUsedLicensesPerDatabases(w http.ResponseWriter, r *http.Request)
+	GetUsedLicensesPerDatabasesByHost(w http.ResponseWriter, r *http.Request)
 	GetUsedLicensesPerHost(w http.ResponseWriter, r *http.Request)
 	GetUsedLicensesPerCluster(w http.ResponseWriter, r *http.Request)
 	GetDatabaseLicensesCompliance(w http.ResponseWriter, r *http.Request)
