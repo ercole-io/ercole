@@ -181,7 +181,10 @@ type MongoDatabaseInterface interface {
 	// SQL SERVER
 
 	GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
+	InsertSqlServerDatabaseLicenseType(licenseType model.SqlServerDatabaseLicenseType) error
 	SearchSqlServerInstances(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.SqlServerInstanceResponse, error)
+	SearchSqlServerDatabaseUsedLicenses(hostname string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.SqlServerDatabaseUsedLicenseSearchResponse, error)
+	UpdateSqlServerLicenseIgnoredField(hostname string, instancename string, ignored bool) error
 }
 
 // MongoDatabase is a implementation

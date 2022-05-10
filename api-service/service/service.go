@@ -165,6 +165,9 @@ type APIServiceInterface interface {
 	// UpdateLicenseIgnoredField update license ignored field (true/false)
 	UpdateLicenseIgnoredField(hostname string, dbname string, licensetypeid string, ignored bool) error
 
+	// UpdateSqlServerLicenseIgnoredField update license ignored field (true/false)
+	UpdateSqlServerLicenseIgnoredField(hostname string, instancename string, ignored bool) error
+
 	// ALL
 
 	SearchDatabases(filter dto.GlobalFilter) ([]dto.Database, error)

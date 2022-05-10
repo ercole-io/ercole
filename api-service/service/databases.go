@@ -209,7 +209,7 @@ func (as *APIService) GetDatabasesStatistics(filter dto.GlobalFilter) (*dto.Data
 func (as *APIService) GetUsedLicensesPerDatabases(hostname string, filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
 	type getter func(hostname string, filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error)
 
-	getters := []getter{as.getOracleDatabasesUsedLicenses, as.getMySQLUsedLicenses}
+	getters := []getter{as.getOracleDatabasesUsedLicenses, as.getMySQLUsedLicenses, as.getSqlServerDatabasesUsedLicenses}
 
 	usedLicenses := make([]dto.DatabaseUsedLicense, 0)
 
@@ -297,6 +297,59 @@ func (as *APIService) GetUsedLicensesPerDatabasesAsXLSX(filter dto.GlobalFilter)
 	}
 
 	return sheets, err
+}
+
+func (as *APIService) getSqlServerDatabasesUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
+	sqlServerLics, err := as.Database.SearchSqlServerDatabaseUsedLicenses(hostname, "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan)
+	if err != nil {
+		return nil, err
+	}
+
+	licenseTypes, err := as.GetSqlServerDatabaseLicenseTypesAsMap()
+	if err != nil {
+		return nil, err
+	}
+
+	usedLicenses := make([]dto.DatabaseUsedLicense, 0, len(sqlServerLics.Content))
+
+	for _, o := range sqlServerLics.Content {
+		lt := licenseTypes[o.LicenseTypeID]
+
+		g := dto.DatabaseUsedLicense{
+			Hostname:      o.Hostname,
+			DbName:        o.DbName,
+			LicenseTypeID: o.LicenseTypeID,
+			Description:   lt.ItemDescription,
+			Metric:        "HOST",
+			UsedLicenses:  o.UsedLicenses,
+			Ignored:       o.Ignored,
+		}
+
+		usedLicenses = append(usedLicenses, g)
+	}
+
+	clusters, err := as.Database.GetClusters(dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for i, l := range usedLicenses {
+		_, _, _, err := as.clusterLicenses(l, clusters)
+
+		if err != nil && !errors.Is(err, utils.ErrHostNotInCluster) {
+			return nil, err
+		} else if !errors.Is(err, utils.ErrHostNotInCluster) {
+			usedLicenses[i].Metric = "CLUSTER"
+			usedLicenses[i].ClusterLicenses = usedLicenses[i].UsedLicenses
+			continue
+		}
+	}
+
+	return usedLicenses, nil
 }
 
 func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {

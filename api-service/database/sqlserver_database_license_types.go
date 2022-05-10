@@ -58,3 +58,14 @@ func (md *MongoDatabase) GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDa
 
 	return licenseTypes, nil
 }
+
+// InsertSqlServerDatabaseLicenseType insert an SqlServer/Database license type into the database
+func (md *MongoDatabase) InsertSqlServerDatabaseLicenseType(licenseType model.SqlServerDatabaseLicenseType) error {
+	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(sqlServerDbLicenseTypesCollection).
+		InsertOne(context.TODO(), licenseType)
+	if err != nil {
+		return utils.NewError(err, "DB ERROR")
+	}
+
+	return nil
+}
