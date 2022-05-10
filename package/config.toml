@@ -116,7 +116,7 @@ LogMessages = true
 [ThunderService.OciRemoveOldDataObjectsJob]
 Crontab = "@daily"
 DaysThreshold = 1
-RunAtStartup = true
+RunAtStartup = false
 
 [ThunderService.OciDataRetrieveJob]
 Crontab = "@daily"
