@@ -20,10 +20,18 @@
                 "instances": [
                     {
                         "name":          "MSSQLSERVER",
-                        "stateDesc":        "ONLINE",
+                        "stateDesc":     "ONLINE",
                         "edition":       "STD",
                         "collationName": "Latin1_General_CI_AS",
-                        "version":       "15.0.2000.5"
+                        "version":       "15.0.2000.5",
+                        "license": {
+                            "licenseTypeID": "123-45678",        
+                            "name": "test",
+                            "count": {
+                                "$numberDouble": "2.0"
+                            },
+                            "ignored": false
+                        }
                     }
                 ]
             }

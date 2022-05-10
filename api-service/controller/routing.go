@@ -119,6 +119,7 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 
 	// SQL SERVER
 	router.HandleFunc("/hosts/technologies/microsoft/databases", ctrl.SearchSqlServerInstances).Methods("GET")
+	router.HandleFunc("/hosts/{hostname}/technologies/microsoft/databases/{dbname}/ignored/{ignored}", ctrl.UpdateSqlServerLicenseIgnoredField).Methods("PUT")
 
 	// ALERTS
 	router.HandleFunc("/alerts", ctrl.SearchAlerts).Methods("GET")
