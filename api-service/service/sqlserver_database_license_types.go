@@ -29,3 +29,18 @@ func (as *APIService) GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatab
 
 	return parts, nil
 }
+
+// GetSqlServerDatabaseLicenseTypesAsMap return the list of SqlServerDatabaseLicenseType as map by ID
+func (as *APIService) GetSqlServerDatabaseLicenseTypesAsMap() (map[string]model.SqlServerDatabaseLicenseType, error) {
+	parts, err := as.GetSqlServerDatabaseLicenseTypes()
+	if err != nil {
+		return nil, err
+	}
+
+	partsMap := make(map[string]model.SqlServerDatabaseLicenseType)
+	for _, part := range parts {
+		partsMap[part.ID] = part
+	}
+
+	return partsMap, nil
+}
