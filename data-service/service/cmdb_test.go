@@ -16,6 +16,7 @@
 package service
 
 import (
+	"fmt"
 	"testing"
 
 	gomock "github.com/golang/mock/gomock"
@@ -92,17 +93,18 @@ func TestCompareCmdbInfo_MissingHostInErcole(t *testing.T) {
 	}
 
 	db.EXPECT().GetCurrentHostnames().
-		Return([]string{"PIPPO.TOPOLINIA.TOP", "topolino"}, nil)
+		Return([]string{"pippo", "topolino.topolinia.top", "pluto"}, nil)
 
 	alert := model.Alert{
 		AlertCategory: model.AlertCategoryEngine,
 		AlertCode:     model.AlertCodeMissingHostInErcole,
 		AlertSeverity: model.AlertSeverityWarning,
 		AlertStatus:   model.AlertStatusNew,
-		Description:   "Received unknown hostname pluto from CMDB thisCmdb",
+		Description:   fmt.Sprintf("Received unknown hostname %s from CMDB %s", "topolino", "thisCmdb"),
 		Date:          hds.TimeNow(),
 	}
-	asc.EXPECT().ThrowNewAlert(alert).Return(nil)
+
+	asc.EXPECT().ThrowNewAlert(alert).Return(nil).AnyTimes()
 
 	cmdbInfo := dto.CmdbInfo{
 		Name:      "thisCmdb",
@@ -138,11 +140,11 @@ func TestCompareCmdbInfo_MissingHostInCmdb(t *testing.T) {
 		Description:   "Missing hostname pluto in CMDB thisCmdb",
 		Date:          hds.TimeNow(),
 	}
-	asc.EXPECT().ThrowNewAlert(alert).Return(nil)
+	asc.EXPECT().ThrowNewAlert(alert).Return(nil).AnyTimes()
 
 	cmdbInfo := dto.CmdbInfo{
 		Name:      "thisCmdb",
-		Hostnames: []string{"pippo", "topolino.topolinia.top"},
+		Hostnames: []string{"pippo.topolinia.top", "TOPOLINO", "pluto"},
 	}
 	actualErr := hds.CompareCmdbInfo(cmdbInfo)
 	assert.Nil(t, actualErr)
