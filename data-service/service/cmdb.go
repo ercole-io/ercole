@@ -28,7 +28,9 @@ func (hds *HostDataService) CompareCmdbInfo(cmdbInfo dto.CmdbInfo) error {
 	if err != nil {
 		return err
 	}
-	
+
+	missingAlerts := make([]model.Alert, 0)
+
 	for _, h := range differenceHostnames(cmdbInfo.Hostnames, hostnames) {
 		alert := model.Alert{
 			AlertCategory: model.AlertCategoryEngine,
@@ -39,9 +41,7 @@ func (hds *HostDataService) CompareCmdbInfo(cmdbInfo dto.CmdbInfo) error {
 			Date:          hds.TimeNow(),
 		}
 
-		if err := hds.AlertSvcClient.ThrowNewAlert(alert); err != nil {
-			hds.Log.Errorf("Can't create a new alert: %s", err)
-		}
+		missingAlerts = append(missingAlerts, alert)
 	}
 
 	for _, h := range differenceHostnames(hostnames, cmdbInfo.Hostnames) {
@@ -54,9 +54,11 @@ func (hds *HostDataService) CompareCmdbInfo(cmdbInfo dto.CmdbInfo) error {
 			Date:          hds.TimeNow(),
 		}
 
-		if err := hds.AlertSvcClient.ThrowNewAlert(alert); err != nil {
-			hds.Log.Errorf("Can't create a new alert: %s", err)
-		}
+		missingAlerts = append(missingAlerts, alert)
+	}
+
+	if err := hds.throwNewOptionAlerts(missingAlerts); err != nil {
+		hds.Log.Errorf("Can't create a new alert: %s", err)
 	}
 
 	return nil
