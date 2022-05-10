@@ -28,6 +28,7 @@ func (hds *HostDataService) CompareCmdbInfo(cmdbInfo dto.CmdbInfo) error {
 	if err != nil {
 		return err
 	}
+	
 	for _, h := range differenceHostnames(cmdbInfo.Hostnames, hostnames) {
 		alert := model.Alert{
 			AlertCategory: model.AlertCategoryEngine,
