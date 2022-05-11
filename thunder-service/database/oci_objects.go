@@ -61,7 +61,7 @@ func (md *MongoDatabase) GetOciObjects() ([]model.OciObjects, error) {
 
 	pipeline := []bson.M{ABSort, ABGroup, APprojection}
 
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciObject_collection).Aggregate(ctx, pipeline) // Find(ctx, filter, opts)
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciObject_collection).Aggregate(ctx, pipeline)
 
 	if err != nil {
 		return nil, utils.NewError(err, "DB ERROR")

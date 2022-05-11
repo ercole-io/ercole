@@ -62,9 +62,6 @@ func (md *MongoDatabase) AddErcoleRecommendations(ercoleRecommendations []model.
 func (md *MongoDatabase) GetErcoleRecommendations() ([]model.OciErcoleRecommendation, error) {
 	ctx := context.TODO()
 
-	//opts := options.Find()
-
-	//cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(ErcoleRecommendation_collection).Find(ctx, bson.D{}, opts)
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(ErcoleRecommendation_collection).Find(ctx, bson.D{})
 	if err != nil {
 		return nil, utils.NewError(cur.Err(), "DB ERROR")

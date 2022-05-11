@@ -180,7 +180,6 @@ func (job *OciDataRetrieveJob) Run() {
 				for _, d := range respDbHomes.Items {
 					// Create a request and dependent object(s).
 					reqDatabases := database.ListDatabasesRequest{
-						//SystemId:      common.String("ocid1.dbsystem.oc1.eu-frankfurt-1.abtheljsnloyfeoefvmw3mfraftfocrwhifjxuyu25gadsulfgdr2vcschia"),
 						CompartmentId: &compartment.CompartmentID,
 						DbHomeId:      common.String(*d.Id),
 					}
@@ -284,16 +283,12 @@ func (job *OciDataRetrieveJob) Run() {
 					continue
 				}
 
-				//fmt.Println("----------------- AVAILABILITY DOMAIN -----------------")
-				//fmt.Println(resp1)
-
 				for _, f := range respAvailabilityDomain.Items {
 					// Create a request and dependent object(s).
 					reqFileSystem := filestorage.ListFileSystemsRequest{
 						AvailabilityDomain: common.String(*f.Name),
 						CompartmentId:      common.String(compartment.CompartmentID),
 					}
-					//	fmt.Println("Availability Domain: ", *f.Name)
 
 					// Send the request using the service client
 					resp2, err := fileStorageClient.ListFileSystems(context.Background(), reqFileSystem)
@@ -301,7 +296,6 @@ func (job *OciDataRetrieveJob) Run() {
 						merr = multierror.Append(merr, err)
 						continue
 					}
-					//fmt.Println("len: ", len(resp2.Items))
 
 					cntNFSs = cntNFSs + len(resp2.Items)
 				}
