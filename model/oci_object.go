@@ -26,8 +26,7 @@ type OciObjects struct {
 	ProfileID string             `json:"profileID" bson:"profileID"`
 	Objects   []OciObject        `json:"objects" bson:"objects"`
 	CreatedAt time.Time          `json:"createdAt" bson:"createdAt"`
-	//Archived  bool               `json:"archived" bson:"archived"`
-	Error string `json:"error" bson:"error"`
+	Error     string             `json:"error" bson:"error"`
 }
 
 type OciObject struct {
