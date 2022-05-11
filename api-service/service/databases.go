@@ -724,7 +724,7 @@ licenses:
 		if v.ClusterName != "" && v.ClusterType != "VeritasCluster" {
 			cluster, err := as.GetCluster(v.ClusterName, utils.MAX_TIME)
 			if err != nil {
-				return nil, err
+				continue licenses
 			}
 
 			for _, hostVM := range cluster.VMs {
