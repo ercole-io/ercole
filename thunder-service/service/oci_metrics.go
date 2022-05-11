@@ -227,42 +227,44 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 				continue
 			}
 
-			// first query is about average CPU utilization in the last  90 days
-			var strQueryAvgCPU = "CpuUtilization[1d].avg()"
+			for _, inst := range allInstancesWithMetrics {
+				// first query is about average CPU utilization in the last  90 days
+				var strQueryAvgCPU = fmt.Sprintf("CpuUtilization[1d]{resourceId=\"%s\"}.avg()", inst.ResourceID)
 
-			var sTime common.SDKTime
+				var sTime common.SDKTime
 
-			var eTime common.SDKTime
+				var eTime common.SDKTime
 
-			sTime.Time = time.Now().Local().AddDate(0, 0, -89)
-			eTime.Time = time.Now().Local()
+				sTime.Time = time.Now().Local().AddDate(0, 0, -89)
+				eTime.Time = time.Now().Local()
 
-			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, AvgCPUThreshold, percAvgCPU, verifyShape, allInstanceMetrics, "AvgCPU")
-			if err != nil {
-				merr = multierror.Append(merr, err)
-			}
+				instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, AvgCPUThreshold, percAvgCPU, verifyShape, allInstanceMetrics, "AvgCPU")
+				if err != nil {
+					merr = multierror.Append(merr, err)
+				}
 
-			// second query is about CPU utilization peak in the last 7 days
-			var strQueryPeakCPU = "CpuUtilization[1m].max()"
+				// second query is about CPU utilization peak in the last 7 days
+				var strQueryPeakCPU = fmt.Sprintf("CpuUtilization[1m]{resourceId=\"%s\"}.max()", inst.ResourceID)
 
-			sTime.Time = time.Now().Local().AddDate(0, 0, -7)
-			sTime.Time = sTime.Add(time.Hour * 1)
-			eTime.Time = time.Now().Local()
+				sTime.Time = time.Now().Local().AddDate(0, 0, -7)
+				sTime.Time = sTime.Add(time.Hour * 1)
+				eTime.Time = time.Now().Local()
 
-			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, PeakCPUThreshold, percPeakCPU, verifyShape, allInstanceMetrics, "PeakCPU")
-			if err != nil {
-				merr = multierror.Append(merr, err)
-			}
+				instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, PeakCPUThreshold, percPeakCPU, verifyShape, allInstanceMetrics, "PeakCPU")
+				if err != nil {
+					merr = multierror.Append(merr, err)
+				}
 
-			// third query is about memory utilization in the last 7 days
-			var strQueryMemory = "MemoryUtilization[1m].max()"
+				// third query is about memory utilization in the last 7 days
+				var strQueryMemory = fmt.Sprintf("MemoryUtilization[1m]{resourceId=\"%s\"}.max()", inst.ResourceID)
 
-			sTime.Time = time.Now().Local().AddDate(0, 0, -7)
-			eTime.Time = time.Now().Local()
+				sTime.Time = time.Now().Local().AddDate(0, 0, -7)
+				eTime.Time = time.Now().Local()
 
-			instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, MemoryThreshold, percMemoryUtilization, verifyShape, allInstanceMetrics, "AvgMemory")
-			if err != nil {
-				merr = multierror.Append(merr, err)
+				instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, MemoryThreshold, percMemoryUtilization, verifyShape, allInstanceMetrics, "AvgMemory")
+				if err != nil {
+					merr = multierror.Append(merr, err)
+				}
 			}
 		}
 	}

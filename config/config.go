@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.2
+// Copyright (c) 2020 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -161,6 +161,10 @@ type ThunderService struct {
 	Port uint16
 	// LogHTTPRequest enable the logging of the internal http serverl
 	LogHTTPRequest bool
+	// OciDataRetrieveJob contains the parameters of the oci data retrieve
+	OciDataRetrieveJob OciDataRetrieveJob
+	// OciRemoveOldDataObjectsJob job to remove old data objects
+	OciRemoveOldDataObjectsJob OciRemoveOldDataObjectsJob
 }
 
 // Mongodb contains configuration about the database connection, some data logic and migration
@@ -199,6 +203,26 @@ type ArchivedHostCleaningJob struct {
 	Crontab string
 	// DaysThreshold contains the threshdold of the archived host cleaning
 	HourThreshold int
+	// RunAtStartup contains true if the job should run when the service start, otherwise false
+	RunAtStartup bool
+}
+
+// OciDataRetrieveJob contains parameters for the archived host cleaning
+type OciDataRetrieveJob struct {
+	// Crontab contains the crontab string used to schedule the cleaning
+	Crontab string
+	// DaysThreshold contains the threshdold of the archived host cleaning
+	DaysThreshold int
+	// RunAtStartup contains true if the job should run when the service start, otherwise false
+	RunAtStartup bool
+}
+
+// OciDataRetrieveJob contains parameters for the data objects cleaning
+type OciRemoveOldDataObjectsJob struct {
+	// Crontab contains the crontab string used to schedule the cleaning
+	Crontab string
+	// DaysThreshold contains the threshdold of the archived host cleaning
+	DaysThreshold int
 	// RunAtStartup contains true if the job should run when the service start, otherwise false
 	RunAtStartup bool
 }
