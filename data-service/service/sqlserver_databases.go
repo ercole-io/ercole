@@ -38,7 +38,7 @@ func (hds *HostDataService) sqlServerDatabasesChecks(previousHostdata, hostdata 
 
 	hds.setSqlServerLicenseTypes(hostdataWithVersion, licenseTypes)
 
-	hds.ignoreSqlServerPreviousLicences(previousHostdata, hostdata)
+	hds.ignoreSqlServerPreviousLicences(previousHostdata, hostdataWithVersion)
 }
 
 func (hds *HostDataService) getSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error) {
@@ -154,9 +154,9 @@ func (hds *HostDataService) ignoreSqlServerPreviousLicences(previous, new *model
 		}
 	}
 
-	for _, db := range new.Features.Microsoft.SQLServer.Instances {
+	for i, db := range new.Features.Microsoft.SQLServer.Instances {
 		if licenseTypeID, ok := ignoredDbLicenses[db.DatabaseID]; ok {
-			db.License.Ignored = utils.Contains(licenseTypeID, db.License.LicenseTypeID)
+			new.Features.Microsoft.SQLServer.Instances[i].License.Ignored = utils.Contains(licenseTypeID, db.License.LicenseTypeID)
 		}
 	}
 }
