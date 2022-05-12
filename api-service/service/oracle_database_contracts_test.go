@@ -2567,11 +2567,11 @@ func TestDeleteOracleDatabaseContract(t *testing.T) {
 	t.Run("Fail: can't find contract", func(t *testing.T) {
 		gomock.InOrder(
 			db.EXPECT().RemoveOracleDatabaseContract(contractID).
-				Return(utils.ErrOracleDatabaseContractNotFound),
+				Return(utils.ErrContractNotFound),
 		)
 
 		err := as.DeleteOracleDatabaseContract(contractID)
-		require.EqualError(t, err, utils.ErrOracleDatabaseContractNotFound.Error())
+		require.EqualError(t, err, utils.ErrContractNotFound.Error())
 	})
 
 	t.Run("Success", func(t *testing.T) {
@@ -2666,11 +2666,11 @@ func TestAddHostToOracleDatabaseContract(t *testing.T) {
 					{"hostname": "ercsoldbx"},
 				}, nil),
 			db.EXPECT().GetOracleDatabaseContract(id).
-				Return(nil, utils.ErrOracleDatabaseContractNotFound),
+				Return(nil, utils.ErrContractNotFound),
 		)
 
 		err := as.AddHostToOracleDatabaseContract(id, "foobar")
-		assert.EqualError(t, err, utils.ErrOracleDatabaseContractNotFound.Error())
+		assert.EqualError(t, err, utils.ErrContractNotFound.Error())
 	})
 
 	t.Run("Success", func(t *testing.T) {
@@ -2767,11 +2767,11 @@ func TestDeleteHostFromOracleDatabaseContract(t *testing.T) {
 					{"hostname": "pippo"},
 				}, nil),
 			db.EXPECT().GetOracleDatabaseContract(id).
-				Return(nil, utils.ErrOracleDatabaseContractNotFound),
+				Return(nil, utils.ErrContractNotFound),
 		)
 
 		err := as.DeleteHostFromOracleDatabaseContract(id, "pippo")
-		require.EqualError(t, err, utils.ErrOracleDatabaseContractNotFound.Error())
+		require.EqualError(t, err, utils.ErrContractNotFound.Error())
 	})
 
 	anotherId := utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")

@@ -44,3 +44,12 @@ func (as *APIService) GetSqlServerDatabaseLicenseTypesAsMap() (map[string]model.
 
 	return partsMap, nil
 }
+
+func (as *APIService) GetSqlServerDatabaseLicenseType(id string) (*model.SqlServerDatabaseLicenseType, error) {
+	licenseType, err := as.Database.GetSqlServerDatabaseLicenseType(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return licenseType, nil
+}

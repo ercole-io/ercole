@@ -91,7 +91,7 @@ func (m *MongodbSuite) TestGetOracleDatabaseContract() {
 	m.T().Run("id_not_exist", func(t *testing.T) {
 		out, err := m.db.GetOracleDatabaseContract(utils.Str2oid("xxxxxxxxxxxxxxxxxxxxxxxx"))
 		require.Nil(t, out)
-		require.Equal(t, utils.ErrOracleDatabaseContractNotFound, err)
+		require.Equal(t, utils.ErrContractNotFound, err)
 	})
 }
 
@@ -136,7 +136,7 @@ func (m *MongodbSuite) TestUpdateOracleDatabaseContract() {
 		}
 		err := m.db.UpdateOracleDatabaseContract(contractSampleUpdated)
 
-		require.Equal(t, utils.ErrOracleDatabaseContractNotFound, err)
+		require.Equal(t, utils.ErrContractNotFound, err)
 	})
 }
 
@@ -150,7 +150,7 @@ func (m *MongodbSuite) TestRemoveOracleDatabaseContract() {
 	require.NoError(m.T(), err)
 
 	err = m.db.RemoveOracleDatabaseContract(utils.Str2oid("5dcad8933b243f80e2ed8538"))
-	require.Equal(m.T(), utils.ErrOracleDatabaseContractNotFound, err)
+	require.Equal(m.T(), utils.ErrContractNotFound, err)
 }
 
 func (m *MongodbSuite) TestListOracleDatabaseContracts() {

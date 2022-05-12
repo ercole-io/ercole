@@ -108,6 +108,12 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/contracts/oracle/database/{id}/hosts", ctrl.AddHostToOracleDatabaseContract).Methods("POST")
 	router.HandleFunc("/contracts/oracle/database/{id}/hosts/{hostname}", ctrl.DeleteHostFromOracleDatabaseContract).Methods("DELETE")
 
+	// SQL SERVER CONTRACTS
+	router.HandleFunc("/contracts/microsoft/database", ctrl.AddSqlServerDatabaseContract).Methods("POST")
+	router.HandleFunc("/contracts/microsoft/database", ctrl.UpdateSqlServerDatabaseContract).Methods("PUT")
+	router.HandleFunc("/contracts/microsoft/database", ctrl.GetSqlServerDatabaseContracts).Methods("GET")
+	router.HandleFunc("/contracts/microsoft/database/{id}", ctrl.DeleteSqlServerDatabaseContract).Methods("DELETE")
+
 	// MYSQL
 	router.HandleFunc("/hosts/technologies/mysql/databases", ctrl.SearchMySQLInstances).Methods("GET")
 
