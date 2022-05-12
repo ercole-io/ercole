@@ -436,10 +436,7 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 
 	usedLicenses = as.removeLicensesByDependencies(usedLicenses, hostdatasPerHostname, clusters)
 
-	usedLicenses, err = as.manageStandardDBVersionLicenses(usedLicenses, clusters, hostdatasPerHostname)
-	if err != nil {
-		return nil, err
-	}
+	usedLicenses = as.manageStandardDBVersionLicenses(usedLicenses, clusters, hostdatasPerHostname)
 
 	return usedLicenses, nil
 }
@@ -527,7 +524,7 @@ func (as *APIService) removeLicensesByDependencies(usedLicenses []dto.DatabaseUs
 	return usedLicenses
 }
 
-func (as *APIService) manageStandardDBVersionLicenses(usedLicenses []dto.DatabaseUsedLicense, clusters []dto.Cluster, hostdatas map[string]*model.HostDataBE) ([]dto.DatabaseUsedLicense, error) {
+func (as *APIService) manageStandardDBVersionLicenses(usedLicenses []dto.DatabaseUsedLicense, clusters []dto.Cluster, hostdatas map[string]*model.HostDataBE) []dto.DatabaseUsedLicense {
 	clustersMap := make(map[string]dto.Cluster, len(clusters))
 	for _, cluster := range clusters {
 		clustersMap[cluster.Name] = cluster
@@ -540,7 +537,8 @@ func (as *APIService) manageStandardDBVersionLicenses(usedLicenses []dto.Databas
 
 		host, ok := hostdatas[usedlicense.Hostname]
 		if !ok {
-			return nil, utils.ErrHostNotFound
+			as.Log.Warnf("%s : %s", utils.ErrHostNotFound, usedlicense.Hostname)
+			continue
 		}
 
 		if host != nil &&
@@ -549,7 +547,8 @@ func (as *APIService) manageStandardDBVersionLicenses(usedLicenses []dto.Databas
 			host.Features.Oracle.Database.Databases != nil {
 			cluster, ok := clustersMap[usedlicense.ClusterName]
 			if !ok {
-				return nil, utils.ErrClusterNotFound
+				as.Log.Warnf("%s : %s", utils.ErrClusterNotFound, usedlicense.ClusterName)
+				continue
 			}
 
 			databases := host.Features.Oracle.Database.Databases
@@ -565,7 +564,7 @@ func (as *APIService) manageStandardDBVersionLicenses(usedLicenses []dto.Databas
 		}
 	}
 
-	return usedLicenses, nil
+	return usedLicenses
 }
 
 func (as *APIService) getMySQLUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
