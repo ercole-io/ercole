@@ -152,6 +152,13 @@ type APIServiceInterface interface {
 	// SearchOracleDatabases search databases
 	SearchSqlServerInstancesAsXLSX(filter dto.SearchSqlServerInstancesFilter) (*excelize.File, error)
 
+	// SQL SERVER DATABASE CONTRACTS
+	AddSqlServerDatabaseContract(contract model.SqlServerDatabaseContract) (*model.SqlServerDatabaseContract, error)
+	GetSqlServerDatabaseContracts() ([]model.SqlServerDatabaseContract, error)
+	GetSqlServerDatabaseContractsAsXLSX() (*excelize.File, error)
+	DeleteSqlServerDatabaseContract(id primitive.ObjectID) error
+	UpdateSqlServerDatabaseContract(contract model.SqlServerDatabaseContract) (*model.SqlServerDatabaseContract, error)
+
 	// AckAlerts ack the specified alerts
 	AckAlerts(alertsFilter dto.AlertsFilter) error
 	// DismissHost dismiss the specified host

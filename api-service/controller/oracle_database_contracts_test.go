@@ -351,7 +351,7 @@ func TestUpdateOracleDatabaseContract_InternalServerError(t *testing.T) {
 	})
 	t.Run("Contract not found", func(t *testing.T) {
 		as.EXPECT().UpdateOracleDatabaseContract(request).
-			Return(nil, utils.ErrOracleDatabaseContractNotFound)
+			Return(nil, utils.ErrContractNotFound)
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(ac.UpdateOracleDatabaseContract)
@@ -717,7 +717,7 @@ func TestAddHostToAssociatedPart_FailedContractNotFound(t *testing.T) {
 		Log: logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AddHostToOracleDatabaseContract(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrOracleDatabaseContractNotFound)
+	as.EXPECT().AddHostToOracleDatabaseContract(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrContractNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.AddHostToOracleDatabaseContract)
@@ -777,7 +777,7 @@ func TestAddHostToAssociatedPart_FailedAerrOracleDatabaseContractNotFound(t *tes
 		Log: logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().AddHostToOracleDatabaseContract(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrOracleDatabaseContractNotFound)
+	as.EXPECT().AddHostToOracleDatabaseContract(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrContractNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.AddHostToOracleDatabaseContract)
@@ -926,7 +926,7 @@ func TestRemoveHostFromAssociatedPart_FailedContractNotFound(t *testing.T) {
 		Log: logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DeleteHostFromOracleDatabaseContract(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrOracleDatabaseContractNotFound)
+	as.EXPECT().DeleteHostFromOracleDatabaseContract(utils.Str2oid("5f50a98611959b1baa17525e"), "foohost").Return(utils.ErrContractNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.DeleteHostFromOracleDatabaseContract)
@@ -1074,7 +1074,7 @@ func TestDeleteAssociatedPartFromOracleDatabaseContract_FailedContractNotFound(t
 		Log: logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().DeleteOracleDatabaseContract(utils.Str2oid("5f50a98611959b1baa17525e")).Return(utils.ErrOracleDatabaseContractNotFound)
+	as.EXPECT().DeleteOracleDatabaseContract(utils.Str2oid("5f50a98611959b1baa17525e")).Return(utils.ErrContractNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.DeleteOracleDatabaseContract)

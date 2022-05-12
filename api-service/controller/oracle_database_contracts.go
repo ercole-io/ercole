@@ -65,7 +65,7 @@ func (ctrl *APIController) AddOracleDatabaseContract(w http.ResponseWriter, r *h
 	}
 
 	agr, err := ctrl.Service.AddOracleDatabaseContract(req)
-	if errors.Is(err, utils.ErrOracleDatabaseContractNotFound) ||
+	if errors.Is(err, utils.ErrContractNotFound) ||
 		errors.Is(err, utils.ErrOracleDatabaseLicenseTypeIDNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 	} else if err != nil {
@@ -104,7 +104,7 @@ func (ctrl *APIController) UpdateOracleDatabaseContract(w http.ResponseWriter, r
 	}
 
 	agr, err := ctrl.Service.UpdateOracleDatabaseContract(req)
-	if errors.Is(err, utils.ErrOracleDatabaseContractNotFound) ||
+	if errors.Is(err, utils.ErrContractNotFound) ||
 		errors.Is(err, utils.ErrOracleDatabaseLicenseTypeIDNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusUnprocessableEntity, err)
 	} else if err != nil {
@@ -231,7 +231,7 @@ func (ctrl *APIController) DeleteOracleDatabaseContract(w http.ResponseWriter, r
 		return
 	}
 
-	if err = ctrl.Service.DeleteOracleDatabaseContract(id); errors.Is(err, utils.ErrOracleDatabaseContractNotFound) {
+	if err = ctrl.Service.DeleteOracleDatabaseContract(id); errors.Is(err, utils.ErrContractNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
@@ -265,7 +265,7 @@ func (ctrl *APIController) AddHostToOracleDatabaseContract(w http.ResponseWriter
 	}
 	defer r.Body.Close()
 
-	if err = ctrl.Service.AddHostToOracleDatabaseContract(id, string(raw)); errors.Is(err, utils.ErrOracleDatabaseContractNotFound) ||
+	if err = ctrl.Service.AddHostToOracleDatabaseContract(id, string(raw)); errors.Is(err, utils.ErrContractNotFound) ||
 		errors.Is(err, utils.ErrNotInClusterHostNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
@@ -296,7 +296,7 @@ func (ctrl *APIController) DeleteHostFromOracleDatabaseContract(w http.ResponseW
 
 	hostname = mux.Vars(r)["hostname"]
 
-	if err = ctrl.Service.DeleteHostFromOracleDatabaseContract(id, hostname); errors.Is(err, utils.ErrOracleDatabaseContractNotFound) {
+	if err = ctrl.Service.DeleteHostFromOracleDatabaseContract(id, hostname); errors.Is(err, utils.ErrContractNotFound) {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
 		return
 	} else if err != nil {
