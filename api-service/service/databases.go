@@ -540,7 +540,8 @@ func (as *APIService) manageStandardDBVersionLicenses(usedLicenses []dto.Databas
 
 		host, ok := hostdatas[usedlicense.Hostname]
 		if !ok {
-			return nil, utils.ErrHostNotFound
+			as.Log.Warnf("%s : %s", utils.ErrHostNotFound, usedlicense.Hostname)
+			continue
 		}
 
 		if host != nil &&
@@ -549,7 +550,8 @@ func (as *APIService) manageStandardDBVersionLicenses(usedLicenses []dto.Databas
 			host.Features.Oracle.Database.Databases != nil {
 			cluster, ok := clustersMap[usedlicense.ClusterName]
 			if !ok {
-				return nil, utils.ErrClusterNotFound
+				as.Log.Warnf("%s : %s", utils.ErrClusterNotFound, usedlicense.ClusterName)
+				continue
 			}
 
 			databases := host.Features.Oracle.Database.Databases
