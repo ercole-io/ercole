@@ -26,7 +26,6 @@ import (
 
 const sqlServerDbContractsCollection = "sql_server_database_contracts"
 
-// InsertSqlServerDatabaseContract insert an SqlServer/Database contract into the database
 func (md *MongoDatabase) InsertSqlServerDatabaseContract(contract model.SqlServerDatabaseContract) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(sqlServerDbContractsCollection).
 		InsertOne(context.TODO(), contract)
@@ -36,27 +35,6 @@ func (md *MongoDatabase) InsertSqlServerDatabaseContract(contract model.SqlServe
 
 	return nil
 }
-
-// // GetOracleDatabaseContract return the contract specified by id
-// func (md *MongoDatabase) GetOracleDatabaseContract(id primitive.ObjectID) (*model.OracleDatabaseContract, error) {
-// 	res := md.Client.Database(md.Config.Mongodb.DBName).Collection(oracleDbContractsCollection).
-// 		FindOne(context.TODO(), bson.M{
-// 			"_id": id,
-// 		})
-// 	if res.Err() == mongo.ErrNoDocuments {
-// 		return nil, utils.ErrOracleDatabaseContractNotFound
-// 	} else if res.Err() != nil {
-// 		return nil, utils.NewError(res.Err(), "DB ERROR")
-// 	}
-
-// 	var out model.OracleDatabaseContract
-
-// 	if err := res.Decode(&out); err != nil {
-// 		return nil, utils.NewError(err, "Decode ERROR")
-// 	}
-
-// 	return &out, nil
-// }
 
 func (md *MongoDatabase) UpdateSqlServerDatabaseContract(contract model.SqlServerDatabaseContract) error {
 	result, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(sqlServerDbContractsCollection).
