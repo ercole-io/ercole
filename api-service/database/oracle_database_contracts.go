@@ -49,7 +49,7 @@ func (md *MongoDatabase) GetOracleDatabaseContract(id primitive.ObjectID) (*mode
 			"_id": id,
 		})
 	if res.Err() == mongo.ErrNoDocuments {
-		return nil, utils.ErrOracleDatabaseContractNotFound
+		return nil, utils.ErrContractNotFound
 	} else if res.Err() != nil {
 		return nil, utils.NewError(res.Err(), "DB ERROR")
 	}
@@ -74,7 +74,7 @@ func (md *MongoDatabase) UpdateOracleDatabaseContract(contract model.OracleDatab
 	}
 
 	if result.MatchedCount != 1 {
-		return utils.ErrOracleDatabaseContractNotFound
+		return utils.ErrContractNotFound
 	}
 
 	return nil
@@ -91,7 +91,7 @@ func (md *MongoDatabase) RemoveOracleDatabaseContract(id primitive.ObjectID) err
 	}
 
 	if res.DeletedCount == 0 {
-		return utils.ErrOracleDatabaseContractNotFound
+		return utils.ErrContractNotFound
 	}
 
 	return nil

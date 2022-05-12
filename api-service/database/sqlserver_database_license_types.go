@@ -20,6 +20,7 @@ import (
 	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
@@ -68,4 +69,24 @@ func (md *MongoDatabase) InsertSqlServerDatabaseLicenseType(licenseType model.Sq
 	}
 
 	return nil
+}
+
+func (md *MongoDatabase) GetSqlServerDatabaseLicenseType(id string) (*model.SqlServerDatabaseLicenseType, error) {
+	ctx := context.TODO()
+	res := md.Client.Database(md.Config.Mongodb.DBName).
+		Collection(sqlServerDbLicenseTypesCollection).
+		FindOne(ctx, bson.M{"_id": id})
+
+	if res.Err() == mongo.ErrNoDocuments {
+		return nil, utils.ErrContractNotFound
+	} else if res.Err() != nil {
+		return nil, utils.NewError(res.Err(), "DB ERROR")
+	}
+
+	var licenseType model.SqlServerDatabaseLicenseType
+	if err := res.Decode(&licenseType); err != nil {
+		return nil, utils.ErrLicenseNotFound
+	}
+
+	return &licenseType, nil
 }
