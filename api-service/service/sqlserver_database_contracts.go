@@ -30,7 +30,7 @@ func (as *APIService) AddSqlServerDatabaseContract(contract model.SqlServerDatab
 		return nil, err
 	}
 
-	if err := as.sqlServerLicenseTypeIDExists(contract.Type); err != nil {
+	if err := as.sqlServerLicenseTypeIDExists(contract.LicenseTypeID); err != nil {
 		return nil, err
 	}
 
@@ -128,7 +128,7 @@ func (as *APIService) UpdateSqlServerDatabaseContract(contract model.SqlServerDa
 		return nil, err
 	}
 
-	if err := as.sqlServerLicenseTypeIDExists(contract.Type); err != nil {
+	if err := as.sqlServerLicenseTypeIDExists(contract.LicenseTypeID); err != nil {
 		return nil, err
 	}
 
