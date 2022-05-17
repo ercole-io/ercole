@@ -47,7 +47,8 @@ func TestAddOSqlServerDatabaseContract_Success(t *testing.T) {
 	}
 
 	request := model.SqlServerDatabaseContract{
-		Type:           "359-06320",
+		Type:           "Host",
+		LicenseTypeID:  "359-06320",
 		ContractID:     "contractID test",
 		LicensesNumber: 9999,
 		Hosts: []string{
