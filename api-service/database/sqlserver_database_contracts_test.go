@@ -28,7 +28,7 @@ import (
 )
 
 var sqlServerLicenseTypeSample = model.SqlServerDatabaseLicenseType{
-	ID:              "ID00001",
+	ID:              "359-06320",
 	ItemDescription: "ItemDesc 1",
 	Edition:         "ED00001",
 	Version:         "V 0.0.1",
@@ -37,6 +37,7 @@ var sqlServerLicenseTypeSample = model.SqlServerDatabaseLicenseType{
 var msContractSample = model.SqlServerDatabaseContract{
 	ID:             utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 	ContractID:     "AID001",
+	LicenseTypeID:  "359-06320",
 	Type:           "TYPE001",
 	LicensesNumber: 1,
 	Clusters:       []string{"foo", "bar"},
@@ -78,9 +79,10 @@ func (m *MongodbSuite) TestUpdateSqlServerDatabaseContract() {
 
 	m.T().Run("id_exist", func(t *testing.T) {
 		contractSampleUpdated := model.SqlServerDatabaseContract{
-			ID:         utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
-			ContractID: "AID001",
-			Hosts:      []string{"foo", "bar"},
+			ID:            utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
+			ContractID:    "AID001",
+			LicenseTypeID: "359-06320",
+			Hosts:         []string{"foo", "bar"},
 		}
 
 		err := m.db.UpdateSqlServerDatabaseContract(contractSampleUpdated)
@@ -124,7 +126,7 @@ func (m *MongodbSuite) TestRemoveSqlServerDatabaseContract() {
 func (m *MongodbSuite) TestListSqlServerDatabaseContracts() {
 	defer m.db.Client.Database(m.dbname).Collection(sqlServerDbLicenseTypesCollection).DeleteMany(context.TODO(), bson.M{})
 	licenseTypeSample1 := model.SqlServerDatabaseLicenseType{
-		ID:              "ID00001",
+		ID:              "359-06320",
 		ItemDescription: "ItemDesc 1",
 		Edition:         "ED00001",
 		Version:         "V 0.0.1",
@@ -142,6 +144,7 @@ func (m *MongodbSuite) TestListSqlServerDatabaseContracts() {
 	contractSample := model.SqlServerDatabaseContract{
 		ID:             utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 		ContractID:     "AID001",
+		LicenseTypeID:  "359-06320",
 		Type:           "TYPE001",
 		LicensesNumber: 1,
 		Clusters:       []string{"foo", "bar"},
@@ -169,6 +172,7 @@ func (m *MongodbSuite) TestListSqlServerDatabaseContracts() {
 			{
 				ID:             utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa"),
 				ContractID:     "AID001",
+				LicenseTypeID:  "359-06320",
 				Type:           "TYPE001",
 				LicensesNumber: 1,
 				Clusters:       []string{"foo", "bar"},
