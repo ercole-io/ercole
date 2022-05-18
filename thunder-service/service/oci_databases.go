@@ -69,12 +69,15 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 
 	var recommendation model.OciErcoleRecommendation
 
+	fmt.Println("STEP 1")
+
 	ercoleDatabases, err := as.Database.GetErcoleDatabases()
 	if err != nil {
 		merr = multierror.Append(merr, err)
 		return nil, merr
 	}
 
+	fmt.Println("STEP 2")
 	ercoleActiveDatabases, err := as.Database.GetErcoleActiveDatabases()
 	if err != nil {
 		merr = multierror.Append(merr, err)
@@ -83,6 +86,7 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 
 	var reorderedDBList map[string]OciCompartmnentAndDB
 
+	fmt.Println("STEP 3 - CICLO FOR")
 	for _, profileId := range profiles {
 		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
@@ -90,12 +94,14 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 			continue
 		}
 
+		fmt.Println("STEP 4")
 		listCompartments, err = as.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 		if err != nil {
 			merr = multierror.Append(merr, err)
 			continue
 		}
 
+		fmt.Println("STEP 5")
 		dbClient, err := database.NewDatabaseClientWithConfigurationProvider(customConfigProvider)
 		if err != nil {
 			merr = multierror.Append(merr, err)
@@ -108,6 +114,7 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 			req := database.ListDbHomesRequest{
 				CompartmentId: &compartment.CompartmentID,
 			}
+			fmt.Println("STEP 6")
 			resp, err := dbClient.ListDbHomes(context.Background(), req)
 
 			if err != nil {
@@ -120,6 +127,7 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 			var dbIdType string
 
 			if len(resp.Items) != 0 {
+				fmt.Println("STEP 7")
 				for _, dbHome := range resp.Items {
 					if dbHome.VmClusterId != nil {
 						dbRefId = *dbHome.VmClusterId
@@ -153,6 +161,7 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 					for _, val := range hostnamesAndStatus {
 						if val.status == "STOPPED" {
 							recommendation.Details = make([]model.RecDetail, 0)
+							recommendation.ProfileID = profileId
 							recommendation.Category = model.UnusedServiceDecommisioning //TYPE 3
 							recommendation.Suggestion = model.DeleteDatabaseInstanceNotActive
 							recommendation.CompartmentID = compartment.CompartmentID
@@ -176,9 +185,14 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 		}
 	}
 
-	reorderedDBList = getOciReorderedDBList(dbList)
-	listRec = verifyErcoleAndOciDatabasesConfiguration(ercoleActiveDatabases, reorderedDBList, listRec)
-	listRec = manageErcoleDatabases(ercoleDatabases, reorderedDBList, listRec)
+	if len(dbList) != 0 {
+		fmt.Println("POTA POTA")
+		reorderedDBList = getOciReorderedDBList(dbList)
+		listRec = verifyErcoleAndOciDatabasesConfiguration(ercoleActiveDatabases, reorderedDBList, listRec)
+		listRec = manageErcoleDatabases(ercoleDatabases, reorderedDBList, listRec)
+	} else {
+		fmt.Println("E CHE CAZZO!!")
+	}
 
 	return listRec, merr
 }
@@ -198,7 +212,6 @@ func getDatabaseName(dbClient database.DatabaseClient, compartmentId string, hom
 	}
 
 	var DbRefId string
-
 	for _, dbVal := range resp.Items {
 		if dbVal.VmClusterId != nil {
 			DbRefId = *dbVal.VmClusterId
@@ -298,6 +311,7 @@ func manageErcoleDatabases(ercoleDatabases []dto.ErcoleDatabase, reorderedDBList
 
 		if cnt > 5 || opt {
 			recommendation.Details = make([]model.RecDetail, 0)
+			recommendation.ProfileID = ""
 			recommendation.Category = model.SISRightsizing
 			recommendation.Suggestion = model.ResizeOversizedDatabaseInstance
 			recommendation.Name = dbWork.hostname + "-" + dbWork.uniqueName
@@ -351,6 +365,7 @@ func verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []dto.ErcoleDataba
 						listDBTmp = append(listDBTmp, fList.UniqueName)
 						dbNotFound[eDBlist.Hostname] = listDBTmp
 						recommendation.Details = make([]model.RecDetail, 0)
+						recommendation.ProfileID = ""
 						recommendation.Category = model.SISRightsizing
 						recommendation.Suggestion = model.ResizeOversizedDatabaseInstance
 						recommendation.CompartmentID = v.CompartmentID
@@ -375,6 +390,7 @@ func verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []dto.ErcoleDataba
 			listDBTmp = append(listDBTmp, "placeholder")
 			dbNotFound[k] = listDBTmp
 			recommendation.Details = make([]model.RecDetail, 0)
+			recommendation.ProfileID = ""
 			recommendation.Category = model.SISRightsizing
 			recommendation.Suggestion = model.ResizeOversizedDatabaseInstance
 			recommendation.CompartmentID = v.CompartmentID

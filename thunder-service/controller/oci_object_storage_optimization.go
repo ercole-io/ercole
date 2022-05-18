@@ -16,15 +16,7 @@
 // Package controller contains structs and methods used to provide endpoints for storing hostdata informations
 package controller
 
-import (
-	"errors"
-	"net/http"
-	"strings"
-
-	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/gorilla/mux"
-)
-
+/*
 //GetOciRecommendations get recommendation from Oracle Cloud
 func (ctrl *ThunderController) GetOciObjectStorageOptimization(w http.ResponseWriter, r *http.Request) {
 	profileList := mux.Vars(r)["ids"]
@@ -68,3 +60,4 @@ func (ctrl *ThunderController) GetOciObjectStorageOptimization(w http.ResponseWr
 	}
 	utils.WriteJSONResponse(w, http.StatusPartialContent, response)
 }
+*/

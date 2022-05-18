@@ -15,6 +15,8 @@
 
 package model
 
+import "time"
+
 // Recommendation holds informations about a recommendation
 type OciRecommendation struct {
 	TenancyOCID         string `json:"tenancyOCID"`
@@ -27,6 +29,7 @@ type OciRecommendation struct {
 }
 
 type OciErcoleRecommendation struct {
+	ProfileID       string      `json:"profileID"`
 	Category        string      `json:"category"`
 	Suggestion      string      `json:"suggestion"`
 	CompartmentID   string      `json:"compartmentID"`
@@ -35,6 +38,8 @@ type OciErcoleRecommendation struct {
 	ResourceID      string      `json:"resourceID"`
 	ObjectType      string      `json:"objectType"`
 	Details         []RecDetail `json:"details"`
+	CreatedAt       time.Time   `json:"createdAt"`
+	Error           string      `json:"error"`
 }
 
 type RecDetail struct {

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,9 +16,17 @@
 // Package controller contains structs and methods used to provide endpoints for storing hostdata informations
 package controller
 
-/*
-//GetOciRecommendations get recommendation from Oracle Cloud
-func (ctrl *ThunderController) GetOciUnusedLoadbalancers(w http.ResponseWriter, r *http.Request) {
+import (
+	"errors"
+	"net/http"
+	"strings"
+
+	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/gorilla/mux"
+)
+
+//GetErcoleRecommendations get recommendation related to cloud from Ercole
+func (ctrl *ThunderController) GetErcoleRecommendations(w http.ResponseWriter, r *http.Request) {
 	profileList := mux.Vars(r)["ids"]
 	if profileList == "" {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Ids not present or malformed"))
@@ -27,7 +35,7 @@ func (ctrl *ThunderController) GetOciUnusedLoadbalancers(w http.ResponseWriter, 
 
 	var profiles []string = strings.Split(profileList, ",")
 
-	recommendations, err := ctrl.Service.GetOciUnusedLoadBalancers(profiles)
+	recommendations, err := ctrl.Service.GetErcoleRecommendations(profiles)
 
 	if recommendations == nil {
 		if errors.Is(err, utils.ErrInvalidProfileId) {
@@ -58,6 +66,6 @@ func (ctrl *ThunderController) GetOciUnusedLoadbalancers(w http.ResponseWriter, 
 		"recommendations": recommendations,
 		"error":           err.Error(),
 	}
+
 	utils.WriteJSONResponse(w, http.StatusPartialContent, response)
 }
-*/

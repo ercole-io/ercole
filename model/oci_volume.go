@@ -19,6 +19,7 @@ package model
 type OciVolume struct {
 	CompartmentID      string `json:"compartmentID"`
 	CompartmentName    string `json:"compartmentName"`
+	ProfileID          string `json:"profileID"`
 	ResourceID         string `json:"resourceID"`
 	Name               string `json:"name"`
 	Size               string `json:"size"`
