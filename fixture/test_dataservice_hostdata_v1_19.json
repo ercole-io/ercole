@@ -1088,5 +1088,6 @@
             "type": "zfs"
         }
     ],
-    "hostname": "ercsoldbx"
+    "hostname": "ercsoldbx",
+    "grantDba": null
 }

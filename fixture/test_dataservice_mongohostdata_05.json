@@ -1,0 +1,786 @@
+{
+    "agentVersion": "latest",
+    "alerts": null,
+    "history": null,
+    "archived": false,
+    "cluster": "",
+    "errors": null,
+    "clusterMembershipStatus": {
+        "hacmp": false,
+        "oracleClusterware": false,
+        "sunCluster": false,
+        "veritasClusterServer": false,
+        "veritasClusterHostnames": null
+    },
+    "clusters": null,
+    "cloud": {
+        "membership": ""
+    },
+    "createdAt": {
+        "$date": {
+            "$numberLong": "1576769938000"
+        }
+    },
+    "environment": "TST",
+    "features": {
+        "oracle": {
+            "database": {
+                "unlistedRunningDatabases": [],
+                "databases": [
+                    {
+                        "changes": [],
+                        "addms": [],
+                        "asm": false,
+                        "allocable": {
+                            "$numberDouble": "129.0"
+                        },
+                        "archivelog": false,
+                        "backups": [],
+                        "blockSize": {
+                            "$numberInt": "8192"
+                        },
+                        "cpuCount": {
+                            "$numberInt": "2"
+                        },
+                        "charset": "AL32UTF8",
+                        "dbID":{
+                            "$numberLong": "0"
+                        },
+                        "dbTime": {
+                            "$numberDouble": "184.81"
+                        },
+                        "dailyCPUUsage": {
+                            "$numberDouble": "1.3"
+                        },
+                        "datafileSize": {
+                            "$numberDouble": "6.0"
+                        },
+                        "dataguard": false,
+                        "elapsed": {
+                            "$numberDouble": "12059.18"
+                        },
+                        "featureUsageStats": [
+                            {
+                                "currentlyUsed": false,
+                                "detectedUsages": {
+                                    "$numberLong": "91"
+                                },
+                                "extraFeatureInfo": "",
+                                "feature": "ADDM",
+                                "firstUsageDate": {
+                                    "$date": {
+                                        "$numberLong": "1561397660000"
+                                    }
+                                },
+                                "lastUsageDate": {
+                                    "$date": {
+                                        "$numberLong": "1573274903000"
+                                    }
+                                },
+                                "product": "Diagnostics Pack"
+                            },
+                            {
+                                "currentlyUsed": false,
+                                "detectedUsages": {
+                                    "$numberLong": "90"
+                                },
+                                "extraFeatureInfo": "",
+                                "feature": "AWR Report",
+                                "firstUsageDate": {
+                                    "$date": {
+                                        "$numberLong": "1561648544000"
+                                    }
+                                },
+                                "lastUsageDate": {
+                                    "$date": {
+                                        "$numberLong": "1573274903000"
+                                    }
+                                },
+                                "product": "Diagnostics Pack"
+                            },
+                            {
+                                "currentlyUsed": false,
+                                "detectedUsages": {
+                                    "$numberLong": "7"
+                                },
+                                "extraFeatureInfo": "",
+                                "feature": "Automatic Workload Repository",
+                                "firstUsageDate": {
+                                    "$date": {
+                                        "$numberLong": "1561654869000"
+                                    }
+                                },
+                                "lastUsageDate": {
+                                    "$date": {
+                                        "$numberLong": "1562045705000"
+                                    }
+                                },
+                                "product": "Diagnostics Pack"
+                            }
+                        ],
+                        "instanceNumber": {
+                            "$numberInt": "1"
+                        },
+                        "instanceName": "ERCOLE1",
+                        "isCDB": false,
+                        "grantDba": [
+                            {
+                                "grantee": "test#001",
+                                "adminOption": "yes",
+                                "defaultRole": "no"
+                            },
+                            {
+                                "grantee": "test#002",
+                                "adminOption": "no",
+                                "defaultRole": "yes"
+                            }
+                        ],
+                        "licenses": [
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Oracle EXE",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.5"
+                                },
+                                "name": "Oracle ENT",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Oracle STD",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "WebLogic Server Management Pack Enterprise Edition",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Tuning Pack",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Spatial and Graph",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Secure Backup",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Real Application Testing",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Real Application Clusters",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Real Application Clusters One Node",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "RAC or RAC One Node",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Provisioning and Patch Automation Pack",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Provisioning and Patch Automation Pack for Database",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Pillar Storage",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Partitioning",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "OLAP",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Multitenant",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Label Security",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "HW",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "GoldenGate",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Exadata",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.5"
+                                },
+                                "name": "Diagnostics Pack",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Database Vault",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Database In-Memory",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Database Gateway",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Data Masking Pack",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Configuration Management Pack for Oracle Database",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Change Management Pack",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Advanced Security",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Advanced Compression",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Advanced Analytics",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Active Data Guard",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            },
+                            {
+                                "count": {
+                                    "$numberDouble": "0.0"
+                                },
+                                "name": "Active Data Guard or Real Application Clusters",
+                                "ignored": false, 
+                                "licenseTypeID": ""
+                            }
+                        ],
+                        "memoryTarget": {
+                            "$numberDouble": "1.484"
+                        },
+                        "nCharset": "AL16UTF16",
+                        "name": "ERCOLE",
+                        "pdbs": [],
+                        "pgaTarget": {
+                            "$numberDouble": "0.0"
+                        },
+                        "psus": [],
+                        "role": "",
+                        "patches": [],
+                        "platform": "Linux x86 64-bit",
+                        "sgaMaxSize": {
+                            "$numberDouble": "1.484"
+                        },
+                        "sgaTarget": {
+                            "$numberDouble": "0.0"
+                        },
+                        "schemas": [
+                            {
+                                "indexes": {
+                                    "$numberInt": "0"
+                                },
+                                "lob": {
+                                    "$numberInt": "0"
+                                },
+                                "tables": {
+                                    "$numberInt": "192"
+                                },
+                                "total": {
+                                    "$numberInt": "192"
+                                },
+                                "user": "RAF"
+                            },
+                            {
+                                "indexes": {
+                                    "$numberInt": "0"
+                                },
+                                "lob": {
+                                    "$numberInt": "0"
+                                },
+                                "tables": {
+                                    "$numberInt": "0"
+                                },
+                                "total": {
+                                    "$numberInt": "0"
+                                },
+                                "user": "REMOTE_SCHEDULER_AGENT"
+                            },
+                            {
+                                "indexes": {
+                                    "$numberInt": "0"
+                                },
+                                "lob": {
+                                    "$numberInt": "0"
+                                },
+                                "tables": {
+                                    "$numberInt": "0"
+                                },
+                                "total": {
+                                    "$numberInt": "0"
+                                },
+                                "user": "SYS$UMF"
+                            },
+                            {
+                                "indexes": {
+                                    "$numberInt": "0"
+                                },
+                                "lob": {
+                                    "$numberInt": "0"
+                                },
+                                "tables": {
+                                    "$numberInt": "0"
+                                },
+                                "total": {
+                                    "$numberInt": "0"
+                                },
+                                "user": "GGSYS"
+                            },
+                            {
+                                "indexes": {
+                                    "$numberInt": "0"
+                                },
+                                "lob": {
+                                    "$numberInt": "0"
+                                },
+                                "tables": {
+                                    "$numberInt": "0"
+                                },
+                                "total": {
+                                    "$numberInt": "0"
+                                },
+                                "user": "DBSFWUSER"
+                            },
+                            {
+                                "indexes": {
+                                    "$numberInt": "0"
+                                },
+                                "lob": {
+                                    "$numberInt": "0"
+                                },
+                                "tables": {
+                                    "$numberInt": "384"
+                                },
+                                "total": {
+                                    "$numberInt": "384"
+                                },
+                                "user": "ERCOLE"
+                            },
+                            {
+                                "indexes": {
+                                    "$numberInt": "0"
+                                },
+                                "lob": {
+                                    "$numberInt": "0"
+                                },
+                                "tables": {
+                                    "$numberInt": "0"
+                                },
+                                "total": {
+                                    "$numberInt": "0"
+                                },
+                                "user": "SYSRAC"
+                            }
+                        ],
+                        "segmentAdvisors": [],
+                        "segmentsSize": {
+                            "$numberDouble": "3.0"
+                        },
+                        "services": [],
+                        "status": "OPEN",
+                        "tablespaces": [
+                            {
+                                "maxSize": {
+                                    "$numberDouble": "32767.9844"
+                                },
+                                "name": "SYSTEM",
+                                "status": "ONLINE",
+                                "total": {
+                                    "$numberDouble": "850.0"
+                                },
+                                "used": {
+                                    "$numberDouble": "842.875"
+                                },
+                                "usedPerc": {
+                                    "$numberDouble": "2.57"
+                                }
+                            },
+                            {
+                                "maxSize": {
+                                    "$numberDouble": "32767.9844"
+                                },
+                                "name": "USERS",
+                                "status": "ONLINE",
+                                "total": {
+                                    "$numberDouble": "1024.0"
+                                },
+                                "used": {
+                                    "$numberDouble": "576.0"
+                                },
+                                "usedPerc": {
+                                    "$numberDouble": "1.76"
+                                }
+                            },
+                            {
+                                "maxSize": {
+                                    "$numberDouble": "32767.9844"
+                                },
+                                "name": "UNDOTBS1",
+                                "status": "ONLINE",
+                                "total": {
+                                    "$numberDouble": "895.0"
+                                },
+                                "used": {
+                                    "$numberDouble": "41.25"
+                                },
+                                "usedPerc": {
+                                    "$numberDouble": "0.13"
+                                }
+                            },
+                            {
+                                "maxSize": {
+                                    "$numberDouble": "32767.9844"
+                                },
+                                "name": "SYSAUX",
+                                "status": "ONLINE",
+                                "total": {
+                                    "$numberDouble": "1870.0"
+                                },
+                                "used": {
+                                    "$numberDouble": "1749.625"
+                                },
+                                "usedPerc": {
+                                    "$numberDouble": "5.34"
+                                }
+                            }
+                        ],
+                        "uniqueName": "ERCOLE",
+                        "version": "12.2.0.1.0 Enterprise Edition",
+                        "work": {
+                            "$numberDouble": "1.0"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "filesystems": [
+        {
+            "availableSpace": {
+                "$numberLong": "5798205849"
+            },
+            "filesystem": "/dev/mapper/cl_itl--csllab--112-root",
+            "mountedOn": "/",
+            "size": {
+                "$numberLong": "13958643712"
+            },
+            "type": "ext4",
+            "usedSpace": {
+                "$numberLong": "7194070220"
+            }
+        },
+        {
+            "availableSpace": {
+                "$numberLong": "335544320"
+            },
+            "filesystem": "/dev/sda1",
+            "mountedOn": "/boot",
+            "size": {
+                "$numberLong": "511705088"
+            },
+            "type": "ext4",
+            "usedSpace": {
+                "$numberLong": "139460608"
+            }
+        },
+        {
+            "availableSpace": {
+                "$numberLong": "23622320128"
+            },
+            "filesystem": "/dev/mapper/cl_itl--csllab--112-data",
+            "mountedOn": "/data",
+            "size": {
+                "$numberLong": "42949672960"
+            },
+            "type": "ext4",
+            "usedSpace": {
+                "$numberLong": "18253611008"
+            }
+        },
+        {
+            "availableSpace": {
+                "$numberLong": "2040109465"
+            },
+            "filesystem": "devtmpfs",
+            "mountedOn": "/dev",
+            "size": {
+                "$numberLong": "2040109465"
+            },
+            "type": "devtmpfs",
+            "usedSpace": {
+                "$numberLong": "0"
+            }
+        },
+        {
+            "availableSpace": {
+                "$numberLong": "931135488"
+            },
+            "filesystem": "tmpfs",
+            "mountedOn": "/dev/shm",
+            "size": {
+                "$numberLong": "2040109465"
+            },
+            "type": "tmpfs",
+            "usedSpace": {
+                "$numberLong": "1056964608"
+            }
+        },
+        {
+            "availableSpace": {
+                "$numberLong": "1932735283"
+            },
+            "filesystem": "tmpfs",
+            "mountedOn": "/run",
+            "size": {
+                "$numberLong": "2040109465"
+            },
+            "type": "tmpfs",
+            "usedSpace": {
+                "$numberLong": "143654912"
+            }
+        },
+        {
+            "availableSpace": {
+                "$numberLong": "398458880"
+            },
+            "filesystem": "tmpfs",
+            "mountedOn": "/run/user/0",
+            "size": {
+                "$numberLong": "398458880"
+            },
+            "type": "tmpfs",
+            "usedSpace": {
+                "$numberLong": "0"
+            }
+        },
+        {
+            "availableSpace": {
+                "$numberLong": "398458880"
+            },
+            "filesystem": "tmpfs",
+            "mountedOn": "/run/user/54321",
+            "size": {
+                "$numberLong": "398458880"
+            },
+            "type": "tmpfs",
+            "usedSpace": {
+                "$numberLong": "0"
+            }
+        },
+        {
+            "availableSpace": {
+                "$numberLong": "2040109465"
+            },
+            "filesystem": "tmpfs",
+            "mountedOn": "/sys/fs/cgroup",
+            "size": {
+                "$numberLong": "2040109465"
+            },
+            "type": "tmpfs",
+            "usedSpace": {
+                "$numberLong": "0"
+            }
+        }
+    ],
+    "hostname": "itl-csllab-112.sorint.localpippo",
+    "info": {
+        "cpuCores": {
+            "$numberInt": "1"
+        },
+        "cpuFrequency": "2.53GHz",
+        "cpuModel": "Intel(R) Xeon(R) CPU           E5630  @ 2.53GHz",
+        "cpuSockets": {
+            "$numberInt": "2"
+        },
+        "cpuThreads": {
+            "$numberInt": "2"
+        },
+        "coresPerSocket": {
+            "$numberInt": "1"
+        },
+        "hardwareAbstraction": "VIRT",
+        "hardwareAbstractionTechnology": "VMWARE",
+        "hostname": "itl-csllab-112.sorint.localpippo",
+        "kernel": "3.10.0-514.el7.x86_64",
+        "kernelVersion": "3.10.0-514.el7.x86_64",
+        "memoryTotal": {
+            "$numberDouble": "3.0"
+        },
+        "os": "Red Hat Enterprise Linux",
+        "osVersion": "7.6",
+        "swapTotal": {
+            "$numberDouble": "1.0"
+        },
+        "threadsPerCore": {
+            "$numberInt": "2"
+        }
+    },
+    "location": "Germany",
+    "schemaVersion": {
+        "$numberInt": "1"
+    },
+    "serverSchemaVersion": {
+        "$numberInt": "1"
+    },
+    "serverVersion": "latest",
+    "virtualizationNode": "",
+    "tags": [],
+    "_id": {
+        "$oid": "5dfba7a25484d7c669a9ccdc"
+    }
+}

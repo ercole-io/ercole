@@ -63,6 +63,7 @@ type OracleDatabase struct {
 	PDBs              []OracleDatabasePluggableDatabase `json:"pdbs" bson:"pdbs"`
 	Services          []OracleDatabaseService           `json:"services" bson:"services"`
 	Changes           []Changes                         `json:"changes" bson:"changes"`
+	GrantDba          []OracleGrantDba                  `json:"grantDba" bson:"grantDba"`
 }
 
 var (

@@ -553,5 +553,6 @@
         "oracleClusterware": false,
         "hacmp": false
     },
-    "location": "Germany"
+    "location": "Germany",
+    "grantDba": null
 }
