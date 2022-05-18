@@ -59,10 +59,33 @@ func (md *MongoDatabase) AddErcoleRecommendations(ercoleRecommendations []model.
 	return nil
 }
 
-func (md *MongoDatabase) GetErcoleRecommendations() ([]model.OciErcoleRecommendation, error) {
+func (md *MongoDatabase) GetAllErcoleRecommendations() ([]model.OciErcoleRecommendation, error) {
 	ctx := context.TODO()
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(ErcoleRecommendation_collection).Find(ctx, bson.D{})
+	if err != nil {
+		return nil, utils.NewError(cur.Err(), "DB ERROR")
+	}
+
+	ercoleRecommendations := make([]model.OciErcoleRecommendation, 0)
+	if err := cur.All(context.TODO(), &ercoleRecommendations); err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	if err := cur.Err(); err != nil {
+		return nil, utils.NewError(err, "DB ERROR")
+	}
+
+	return ercoleRecommendations, nil
+}
+
+func (md *MongoDatabase) GetErcoleRecommendations(profileIDs []string) ([]model.OciErcoleRecommendation, error) {
+	ctx := context.TODO()
+
+	inCondition := bson.M{"$in": profileIDs}
+	filter := bson.M{"profileID": inCondition}
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(ErcoleRecommendation_collection).Find(ctx, filter)
 	if err != nil {
 		return nil, utils.NewError(cur.Err(), "DB ERROR")
 	}

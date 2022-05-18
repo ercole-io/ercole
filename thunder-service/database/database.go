@@ -45,6 +45,8 @@ type MongoDatabaseInterface interface {
 	AddOciObjects(objects model.OciObjects) error
 	GetOciObjects() ([]model.OciObjects, error)
 	DeleteOldOciObjects(dateFrom time.Time) error
+	GetErcoleRecommendations(profileIDs []string) ([]model.OciErcoleRecommendation, error)
+	AddErcoleRecommendations(ercoleRecommendations []model.OciErcoleRecommendation) error
 }
 
 // MongoDatabase is a implementation

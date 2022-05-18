@@ -33,6 +33,7 @@ import (
 type Instance struct {
 	CompartmentID   string  `json:"compartmentID"`
 	CompartmentName string  `json:"compartmentName"`
+	ProfileID       string  `json:"profileID"`
 	ResourceID      string  `json:"resourceID"`
 	Name            string  `json:"name"`
 	ClusterName     string  `json:"clusterName"`
@@ -78,7 +79,7 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 		var strNamespace = "oci_compute_infrastructure_health"
 
 		for _, compartment := range listCompartments {
-			instances, err := as.getOciInstances(customConfigProvider, compartment.CompartmentID)
+			instances, err := as.getOciInstances(customConfigProvider, compartment.CompartmentID, profileId)
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
@@ -130,6 +131,7 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 
 			for id, value := range instances {
 				recommendation.Details = make([]model.RecDetail, 0)
+				recommendation.ProfileID = profileId
 				if value.Type == "kubernetes" {
 					recommendation.Category = model.UnusedServiceDecommisioning
 					recommendation.Suggestion = model.DeleteKubernetesNodeNotActive
@@ -215,13 +217,13 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 
 		// retrieve metrics data for each compartment
 		for _, compartment := range listCompartments {
-			allInstances, err = as.getOciInstancesList(allInstances, compartment, customConfigProvider, verifyShape)
+			allInstances, err = as.getOciInstancesList(allInstances, compartment, profileId, customConfigProvider, verifyShape)
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
 			}
 
-			allInstancesWithMetrics, err = as.getOciInstancesWithMetrics(allInstancesWithMetrics, compartment, customConfigProvider, verifyShape)
+			allInstancesWithMetrics, err = as.getOciInstancesWithMetrics(allInstancesWithMetrics, compartment, profileId, customConfigProvider, verifyShape)
 			if err != nil {
 				merr = multierror.Append(merr, err)
 				continue
@@ -238,7 +240,7 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 				sTime.Time = time.Now().Local().AddDate(0, 0, -89)
 				eTime.Time = time.Now().Local()
 
-				instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, AvgCPUThreshold, percAvgCPU, verifyShape, allInstanceMetrics, "AvgCPU")
+				instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, profileId, AvgCPUThreshold, percAvgCPU, verifyShape, allInstanceMetrics, "AvgCPU")
 				if err != nil {
 					merr = multierror.Append(merr, err)
 				}
@@ -250,7 +252,7 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 				sTime.Time = sTime.Add(time.Hour * 1)
 				eTime.Time = time.Now().Local()
 
-				instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, PeakCPUThreshold, percPeakCPU, verifyShape, allInstanceMetrics, "PeakCPU")
+				instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, profileId, PeakCPUThreshold, percPeakCPU, verifyShape, allInstanceMetrics, "PeakCPU")
 				if err != nil {
 					merr = multierror.Append(merr, err)
 				}
@@ -261,7 +263,7 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 				sTime.Time = time.Now().Local().AddDate(0, 0, -7)
 				eTime.Time = time.Now().Local()
 
-				instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, MemoryThreshold, percMemoryUtilization, verifyShape, allInstanceMetrics, "AvgMemory")
+				instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, profileId, MemoryThreshold, percMemoryUtilization, verifyShape, allInstanceMetrics, "AvgMemory")
 				if err != nil {
 					merr = multierror.Append(merr, err)
 				}
@@ -292,6 +294,8 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 	for _, inst := range allInstancesWithMetrics {
 		if allInstances[inst.ResourceID].Status != "STOPPED" {
 			recommendation.Details = make([]model.RecDetail, 0)
+
+			recommendation.ProfileID = inst.ProfileID
 
 			if allInstances[inst.ResourceID].Type == "kubernetes" {
 				recClusterName = model.RecDetail{Name: "Oke Cluster Name", Value: allInstances[inst.ResourceID].ClusterName}
@@ -356,6 +360,8 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 			if in.Status != "STOPPED" {
 				recommendation.Details = make([]model.RecDetail, 0)
 
+				recommendation.ProfileID = in.ProfileID
+
 				if in.Type == "kubernetes" {
 					recClusterName = model.RecDetail{Name: "Oke Cluster Name", Value: allInstances[in.ResourceID].ClusterName}
 					recommendation.Category = model.SISRightsizing1
@@ -389,7 +395,7 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 	return listRec, merr
 }
 
-func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClient, strQuery string, sTime common.SDKTime, eTime common.SDKTime, instances map[string]Instance, compartment model.OciCompartment, threshold int, percThreshold int, verifyShape bool, allInstanceMetrics map[string]MetricData, sType string) (map[string]Instance, error) {
+func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClient, strQuery string, sTime common.SDKTime, eTime common.SDKTime, instances map[string]Instance, compartment model.OciCompartment, profileId string, threshold int, percThreshold int, verifyShape bool, allInstanceMetrics map[string]MetricData, sType string) (map[string]Instance, error) {
 	var metricData map[string]ValThresh
 
 	var valThresh ValThresh
@@ -454,6 +460,7 @@ func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClien
 				} else {
 					instance.CompartmentID = compartment.CompartmentID
 					instance.CompartmentName = compartment.Name
+					instance.ProfileID = profileId
 					instance.ResourceID = s.Dimensions["resourceId"]
 					instance.Name = s.Dimensions["resourceDisplayName"]
 					instance.Shape = s.Dimensions["shape"]
@@ -466,7 +473,7 @@ func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClien
 	return instances, nil
 }
 
-func (as *ThunderService) getOciInstancesList(allInstances map[string]Instance, compartment model.OciCompartment, customConfigProvider common.ConfigurationProvider, verifyShape bool) (map[string]Instance, error) {
+func (as *ThunderService) getOciInstancesList(allInstances map[string]Instance, compartment model.OciCompartment, profileId string, customConfigProvider common.ConfigurationProvider, verifyShape bool) (map[string]Instance, error) {
 	client, err := core.NewComputeClientWithConfigurationProvider(customConfigProvider)
 	if err != nil {
 		return allInstances, err
@@ -488,6 +495,7 @@ func (as *ThunderService) getOciInstancesList(allInstances map[string]Instance, 
 		if !verifyShape || (*s.Shape != "VM.Standard2.1" && *s.Shape != "VM.StandardE2.1") {
 			tmpInstance.CompartmentID = compartment.CompartmentID
 			tmpInstance.CompartmentName = compartment.Name
+			tmpInstance.ProfileID = profileId
 			tmpInstance.ResourceID = *s.Id
 			tmpInstance.Name = *s.DisplayName
 			tmpInstance.Shape = *s.Shape
@@ -507,7 +515,7 @@ func (as *ThunderService) getOciInstancesList(allInstances map[string]Instance, 
 	return allInstances, nil
 }
 
-func (as *ThunderService) getOciInstancesWithMetrics(instances map[string]Instance, compartment model.OciCompartment, customConfigProvider common.ConfigurationProvider, verifyShape bool) (map[string]Instance, error) {
+func (as *ThunderService) getOciInstancesWithMetrics(instances map[string]Instance, compartment model.OciCompartment, profileId string, customConfigProvider common.ConfigurationProvider, verifyShape bool) (map[string]Instance, error) {
 	client, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 
 	if err != nil {
@@ -530,7 +538,7 @@ func (as *ThunderService) getOciInstancesWithMetrics(instances map[string]Instan
 		if !verifyShape || (s.Dimensions["shape"] != "VM.StandardE2.1" && s.Dimensions["shape"] != "VM.Standard2.1") {
 			// if the instance is not in the list I have to put it
 			if _, ok := instances[s.Dimensions["resourceId"]]; !ok {
-				tmpInstance := Instance{*s.CompartmentId, compartment.Name, s.Dimensions["resourceId"], s.Dimensions["resourceDisplayName"], "", s.Dimensions["shape"], 1, "", "", 0.0}
+				tmpInstance := Instance{*s.CompartmentId, compartment.Name, profileId, s.Dimensions["resourceId"], s.Dimensions["resourceDisplayName"], "", s.Dimensions["shape"], 1, "", "", 0.0}
 				instances[s.Dimensions["resourceId"]] = tmpInstance
 			}
 		}
@@ -698,6 +706,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 						isOpt, ociPerfs := as.isOptimizable(v)
 						if isOpt {
 							recommendation.Details = make([]model.RecDetail, 0)
+							recommendation.ProfileID = profileId
 							recommendation.Category = model.BlockStorageRightsizing
 							recommendation.Suggestion = model.ResizeOversizedBlockStorage
 							recommendation.CompartmentID = compartment.CompartmentID
@@ -814,7 +823,7 @@ func (as *ThunderService) getOciVolumePerformance(vpu int, size int) *model.OciV
 	return &valRet
 }
 
-func (as *ThunderService) getOciInstances(customConfigProvider common.ConfigurationProvider, compartmentID string) (map[string]Instance, error) {
+func (as *ThunderService) getOciInstances(customConfigProvider common.ConfigurationProvider, compartmentID string, profileId string) (map[string]Instance, error) {
 	var merr error
 
 	retList := make(map[string]Instance)
@@ -840,8 +849,9 @@ func (as *ThunderService) getOciInstances(customConfigProvider common.Configurat
 	for _, s := range resp.Items {
 		var tmpInstance Instance
 
-		tmpInstance.CompartmentID = ""
+		tmpInstance.CompartmentID = compartmentID
 		tmpInstance.CompartmentName = ""
+		tmpInstance.ProfileID = profileId
 		tmpInstance.ResourceID = *s.Id
 		tmpInstance.Name = *s.DisplayName
 		tmpInstance.Shape = *s.Shape

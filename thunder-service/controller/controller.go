@@ -56,6 +56,8 @@ type ThunderControllerInterface interface {
 	GetOciObjectStorageOptimization(w http.ResponseWriter, r *http.Request)
 	// GetOciUnusedServiceDecommisioning get recommendations from Oracle Cloud Infrastructure about Unused Service Decommisioning
 	GetOciUnusedServiceDecommisioning(w http.ResponseWriter, r *http.Request)
+	// GetErcoleRecommendations get recommendations related to Cloud Infrastructure from Ercole
+	GetErcoleRecommendations(w http.ResponseWriter, r *http.Request)
 }
 
 // ThunderController is the struct used to handle the requests from agents and contains the concrete implementation of ThunderControllerInterface

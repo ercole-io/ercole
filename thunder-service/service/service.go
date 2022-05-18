@@ -36,16 +36,17 @@ type ThunderServiceInterface interface {
 	GetOciProfiles() ([]model.OciProfile, error)
 	DeleteOciProfile(id primitive.ObjectID) error
 	GetOciCompartments(profiles []string) ([]model.OciCompartment, error)
-	GetOciUnusedLoadBalancers(profiles []string) ([]model.OciErcoleRecommendation, error)
+	//GetOciUnusedLoadBalancers(profiles []string) ([]model.OciErcoleRecommendation, error)
 	GetOciComputeInstancesIdle(profiles []string) ([]model.OciErcoleRecommendation, error)
 	GetOciBlockStorageRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error)
 	GetOciUnusedStorage(profiles []string) ([]model.OciErcoleRecommendation, error)
 	GetOciOldSnapshotDecommissioning(profiles []string) ([]model.OciErcoleRecommendation, error)
 	GetOciComputeInstanceRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error)
 	GetOciSISRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error)
-	GetOciObjectStorageOptimization(profiles []string) ([]model.OciErcoleRecommendation, error)
+	//GetOciObjectStorageOptimization(profiles []string) ([]model.OciErcoleRecommendation, error)
 	GetOciUnusedServiceDecommisioning(profiles []string) ([]model.OciErcoleRecommendation, error)
 	GetOciObjects() ([]model.OciObjects, error)
+	GetErcoleRecommendations(profiles []string) ([]model.OciErcoleRecommendation, error)
 }
 
 type ThunderService struct {

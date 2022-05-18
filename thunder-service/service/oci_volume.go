@@ -61,6 +61,7 @@ func (as *ThunderService) GetOciUnusedStorage(profiles []string) ([]model.OciErc
 
 	for _, vl := range volumeList {
 		recommendation.Details = make([]model.RecDetail, 0)
+		recommendation.ProfileID = vl.ProfileID
 		recommendation.Category = model.UnusedStorage
 		recommendation.Suggestion = model.DeleteBlockStorageNotUsed
 		recommendation.CompartmentID = vl.CompartmentID
@@ -125,6 +126,7 @@ func (as *ThunderService) GetOciVolumeList(profiles []string) (map[string]model.
 				vol = model.OciVolume{
 					CompartmentID:      compartment.CompartmentID,
 					CompartmentName:    compartment.Name,
+					ProfileID:          profileId,
 					ResourceID:         *r.Id,
 					Name:               *r.DisplayName,
 					Size:               fmt.Sprintf("%d", *r.SizeInGBs),
@@ -186,6 +188,7 @@ func (as *ThunderService) GetOciAttachedVolumeList(profiles []string) ([]model.O
 					vol = model.OciVolume{
 						CompartmentID:      compartment.CompartmentID,
 						CompartmentName:    compartment.Name,
+						ProfileID:          profileId,
 						ResourceID:         *r.GetVolumeId(),
 						Name:               *r.GetDisplayName(),
 						Size:               "",
@@ -252,6 +255,7 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 				tDiff := int(nowt.Sub(s.TimeCreated.Time).Hours() / 24)
 				if s.SourceType == "MANUAL" && tDiff > 30 {
 					recommendation.Details = make([]model.RecDetail, 0)
+					recommendation.ProfileID = profileId
 					recommendation.Category = model.OldSnapshot
 					recommendation.Suggestion = model.DeleteSnapshotOlder
 					recommendation.CompartmentID = compartment.CompartmentID
@@ -288,6 +292,7 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 				tDiff := int(nowt.Sub(s.TimeCreated.Time).Hours() / 24)
 				if s.SourceType == "MANUAL" && tDiff > 30 {
 					recommendation.Details = make([]model.RecDetail, 0)
+					recommendation.ProfileID = profileId
 					recommendation.Category = model.OldSnapshot
 					recommendation.Suggestion = model.DeleteSnapshotOlder
 					recommendation.CompartmentID = compartment.CompartmentID

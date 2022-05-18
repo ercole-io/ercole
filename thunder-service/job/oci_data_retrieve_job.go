@@ -46,8 +46,11 @@ type OciDataRetrieveJob struct {
 	Log logger.Logger
 }
 
-// Run archive every hostdata that is older than a amount
 func (job *OciDataRetrieveJob) Run() {
+	job.getOciObjectsNumber()
+}
+
+func (job *OciDataRetrieveJob) getOciObjectsNumber() {
 	var merr error
 
 	var listCompartments []model.OciCompartment

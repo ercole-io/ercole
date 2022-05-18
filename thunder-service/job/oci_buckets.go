@@ -14,11 +14,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Package service is a package that provides methods for querying data
-package service
+package job
 
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/ercole-io/ercole/v2/model"
 	multierror "github.com/hashicorp/go-multierror"
@@ -26,7 +27,7 @@ import (
 	"github.com/oracle/oci-go-sdk/v45/objectstorage"
 )
 
-func (as *ThunderService) GetOciObjectStorageOptimization(profiles []string) ([]model.OciErcoleRecommendation, error) {
+func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string) ([]model.OciErcoleRecommendation, error) {
 	var merr error
 
 	var listCompartments []model.OciCompartment
@@ -36,13 +37,13 @@ func (as *ThunderService) GetOciObjectStorageOptimization(profiles []string) ([]
 	listRec := make([]model.OciErcoleRecommendation, 0)
 
 	for _, profileId := range profiles {
-		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
+		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
 			merr = multierror.Append(merr, err)
 			continue
 		}
 
-		listCompartments, err = as.getOciProfileCompartments(tenancyOCID, customConfigProvider)
+		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 		if err != nil {
 			merr = multierror.Append(merr, err)
 			continue
@@ -92,6 +93,7 @@ func (as *ThunderService) GetOciObjectStorageOptimization(profiles []string) ([]
 
 				if resp3.AutoTiering == "Disabled" {
 					recommendation.Details = make([]model.RecDetail, 0)
+					recommendation.ProfileID = profileId
 					recommendation.Category = model.ObjectStorageOptimization
 					recommendation.Suggestion = model.EnableBucketAutoTiering
 					recommendation.CompartmentID = compartment.CompartmentID
@@ -100,20 +102,28 @@ func (as *ThunderService) GetOciObjectStorageOptimization(profiles []string) ([]
 					recommendation.Name = *resp3.Name
 					recommendation.ObjectType = "Object Storage"
 					detail1 := model.RecDetail{Name: "Bucket Name", Value: *resp3.Name}
-					detail2 := model.RecDetail{Name: "Size", Value: as.getBucketSize(*resp3.ApproximateSize)}
+					detail2 := model.RecDetail{Name: "Size", Value: job.getBucketSize(*resp3.ApproximateSize)}
 					detail3 := model.RecDetail{Name: "Optimization", Value: "Enable auto-tiering"}
 
 					recommendation.Details = append(recommendation.Details, detail1, detail2, detail3)
+					recommendation.CreatedAt = time.Now().UTC()
 					listRec = append(listRec, recommendation)
 				}
 			}
+		}
+	}
+	if len(listRec) > 0 {
+		errDb := job.Database.AddErcoleRecommendations(listRec)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
 		}
 	}
 
 	return listRec, nil
 }
 
-func (as *ThunderService) getBucketSize(sizeVal int64) string {
+func (job *OciDataRetrieveJob) getBucketSize(sizeVal int64) string {
 	var valRet string
 
 	var newVal float64
