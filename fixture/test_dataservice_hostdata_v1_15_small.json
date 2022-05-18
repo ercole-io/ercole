@@ -40,5 +40,6 @@
         }
     ],
     "features": {},
-    "clusters": null
+    "clusters": null,
+    "grantDba": null
 }

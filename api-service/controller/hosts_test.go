@@ -911,11 +911,11 @@ func TestGetHost_MongoJSONSuccess(t *testing.T) {
 	}
 
 	var res dto.HostData
-	raw, err := ioutil.ReadFile("../../fixture/test_dataservice_mongohostdata_02.json")
+	raw, err := ioutil.ReadFile("../../fixture/test_dataservice_mongohostdata_05.json")
 	require.NoError(t, err)
 	err = bson.UnmarshalExtJSON(raw, true, &res)
 	require.NoError(t, err)
-	expectedRes, err := ioutil.ReadFile("../../fixture/test_dataservice_mongohostdata_02.json")
+	expectedRes, err := ioutil.ReadFile("../../fixture/test_dataservice_mongohostdata_05.json")
 	require.NoError(t, err)
 
 	as.EXPECT().
