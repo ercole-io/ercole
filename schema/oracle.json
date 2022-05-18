@@ -654,6 +654,26 @@
                                                 }
                                             }
                                         }
+                                    },
+                                    "grantDba": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "grantee": {
+                                                    "type": "string",
+                                                    "maxLength": 30
+                                                },
+                                                "adminOption": {
+                                                    "type": "string",
+                                                    "maxLength": 3
+                                                },
+                                                "defaultRole": {
+                                                    "type": "string",
+                                                    "maxLength": 3
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
