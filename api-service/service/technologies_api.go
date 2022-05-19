@@ -114,7 +114,6 @@ func createOracleTechnologyStatus(as *APIService, hostsCount float64) (*model.Te
 }
 
 func createSqlServerTechnologyStatus(as *APIService, hostsCount float64) (*model.TechnologyStatus, error) {
-
 	licensesCompliance, err := as.GetSqlServerDatabaseLicensesCompliance()
 	if err != nil {
 		return nil, err
