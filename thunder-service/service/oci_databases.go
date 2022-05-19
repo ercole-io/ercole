@@ -115,24 +115,37 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 				continue
 			}
 
+			var dbRefId string
+			var dbIdType string
+
 			if len(resp.Items) != 0 {
 				for _, dbHome := range resp.Items {
+					if dbHome.VmClusterId != nil {
+						dbRefId = *dbHome.VmClusterId
+						dbIdType = "CLUSTER"
+					}
+
+					if dbHome.DbSystemId != nil {
+						dbRefId = *dbHome.DbSystemId
+						dbIdType = "SYSTEM_ID"
+					}
+
 					var dbTmp OciDatabase
 					dbTmp.HomeID = *dbHome.Id
 					dbTmp.CompartmentID = compartment.CompartmentID
 					dbTmp.CompartmentName = compartment.Name
-					dbList[*dbHome.DbSystemId] = dbTmp
+					dbList[dbRefId] = dbTmp
 					dbVal, err1 := getDatabaseName(dbClient, compartment.CompartmentID, *dbHome.Id)
 
 					if err1 != nil {
-						merr = multierror.Append(merr, err)
+						merr = multierror.Append(merr, err1)
 						continue
 					}
 
-					hostnamesAndStatus, err2 := getHostamesAndStatus(dbClient, compartment.CompartmentID, dbVal.DBSystemID)
+					hostnamesAndStatus, err2 := getHostamesAndStatus(dbClient, compartment.CompartmentID, dbVal.DBSystemID, dbIdType)
 
 					if err2 != nil {
-						merr = multierror.Append(merr, err)
+						merr = multierror.Append(merr, err2)
 						continue
 					}
 
@@ -154,7 +167,7 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 							listRec = append(listRec, recommendation)
 						} else {
 							dbVal.Hostname = append(dbVal.Hostname, val.hostname)
-							dbList[*dbHome.DbSystemId] = dbVal
+							dbList[dbRefId] = dbVal
 						}
 					}
 				}
@@ -166,7 +179,7 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 	listRec = verifyErcoleAndOciDatabasesConfiguration(ercoleActiveDatabases, reorderedDBList, listRec)
 	listRec = manageErcoleDatabases(ercoleDatabases, reorderedDBList, listRec)
 
-	return listRec, nil
+	return listRec, merr
 }
 
 func getDatabaseName(dbClient database.DatabaseClient, compartmentId string, homeId string) (OciDatabase, error) {
@@ -183,8 +196,18 @@ func getDatabaseName(dbClient database.DatabaseClient, compartmentId string, hom
 		return retDB, err
 	}
 
+	var DbRefId string
+
 	for _, dbVal := range resp.Items {
-		retDB.DBSystemID = *dbVal.DbSystemId
+		if dbVal.VmClusterId != nil {
+			DbRefId = *dbVal.VmClusterId
+		}
+
+		if dbVal.DbSystemId != nil {
+			DbRefId = *dbVal.DbSystemId
+		}
+
+		retDB.DBSystemID = DbRefId
 		retDB.HomeID = homeId
 		retDB.Name = *dbVal.DbName
 		retDB.UniqueName = *dbVal.DbUniqueName
@@ -193,14 +216,22 @@ func getDatabaseName(dbClient database.DatabaseClient, compartmentId string, hom
 	return retDB, nil
 }
 
-func getHostamesAndStatus(dbClient database.DatabaseClient, compartmentId string, dbSystemId string) ([]HostnameAndStatus, error) {
+func getHostamesAndStatus(dbClient database.DatabaseClient, compartmentId string, dbRefId string, dbIdType string) ([]HostnameAndStatus, error) {
 	var hostnamesAndStatus []HostnameAndStatus
 
 	var tmpHostAndSt HostnameAndStatus
+	var req database.ListDbNodesRequest
 
-	req := database.ListDbNodesRequest{
-		DbSystemId:    common.String(dbSystemId),
-		CompartmentId: common.String(compartmentId),
+	if dbIdType == "SYSTEM_ID" {
+		req = database.ListDbNodesRequest{
+			DbSystemId:    common.String(dbRefId),
+			CompartmentId: common.String(compartmentId),
+		}
+	} else {
+		req = database.ListDbNodesRequest{
+			VmClusterId:   common.String(dbRefId),
+			CompartmentId: common.String(compartmentId),
+		}
 	}
 
 	// Send the request using the service client
