@@ -109,6 +109,47 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 		OlderThan:   utils.MAX_TIME,
 	}
 
+	sqlServerLics := dto.SqlServerDatabaseUsedLicenseSearchResponse{
+		Content: []dto.SqlServerDatabaseUsedLicense{
+			{
+				LicenseTypeID: "359-06320",
+				DbName:        "topolino-dbname",
+				Hostname:      "plutohost",
+				UsedLicenses:  8,
+			},
+		},
+	}
+
+	sqlServerContracts := []model.SqlServerDatabaseContract{
+		{
+			ID:             [12]byte{},
+			Type:           model.SqlServerContractTypeCluster,
+			LicensesNumber: 12,
+			ContractID:     "abc",
+			LicenseTypeID:  "359-06320",
+			Clusters:       []string{},
+			Hosts:          []string{},
+		},
+		{
+			ID:             [12]byte{},
+			Type:           model.SqlServerContractTypeHost,
+			LicensesNumber: 12,
+			ContractID:     "abc",
+			LicenseTypeID:  "359-06320",
+			Clusters:       []string{},
+			Hosts:          []string{},
+		},
+	}
+
+	sqlServerLicenseTypes := []model.SqlServerDatabaseLicenseType{
+		{
+			ID:              "359-06320",
+			ItemDescription: "SQL Server Standard Edition",
+			Edition:         "STD",
+			Version:         "2019",
+		},
+	}
+
 	db.EXPECT().GetHostDatas(utils.MAX_TIME).
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
@@ -119,6 +160,21 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 			Return(&oracleLics, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
+
+		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&sqlServerLics, nil),
+		db.EXPECT().ListSqlServerDatabaseContracts().
+			Times(1).
+			Return(sqlServerContracts, nil),
+		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
+			Times(1).
+			Return(sqlServerLicenseTypes, nil),
+		db.EXPECT().ListSqlServerDatabaseContracts().
+			Times(1).
+			Return(sqlServerContracts, nil),
+		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
+			Times(1).
+			Return(sqlServerLicenseTypes, nil),
 	)
 
 	res, err := as.GetTotalTechnologiesComplianceStats(
@@ -128,7 +184,7 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 	require.NoError(t, err)
 
 	expectedRes := map[string]interface{}{
-		"compliance": 0.55,
+		"compliance": 0.5833333333333334,
 		"unpaidDues": 0,
 		"hostsCount": 20,
 	}

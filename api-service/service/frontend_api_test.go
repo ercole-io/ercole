@@ -52,6 +52,12 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 					"hostsCount": 0,
 				},
 				{
+					"compliance": 1,
+					"unpaidDues": 0,
+					"product":    model.TechnologyMicrosoftSQLServer,
+					"hostsCount": 8,
+				},
+				{
 					"compliance": 0,
 					"unpaidDues": 0,
 					"product":    model.TechnologyMariaDBFoundationMariaDB,
@@ -63,15 +69,9 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 					"product":    model.TechnologyPostgreSQLPostgreSQL,
 					"hostsCount": 0,
 				},
-				{
-					"compliance": 0,
-					"unpaidDues": 0,
-					"product":    model.TechnologyMicrosoftSQLServer,
-					"hostsCount": 0,
-				},
 			},
 			"total": map[string]interface{}{
-				"compliance": 0,
+				"compliance": 0.10256410256410256,
 				"unpaidDues": 0,
 				"hostsCount": 20,
 			},
@@ -141,6 +141,47 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		"Oracle/Exadata":  2,
 	}
 
+	sqlServerLics := dto.SqlServerDatabaseUsedLicenseSearchResponse{
+		Content: []dto.SqlServerDatabaseUsedLicense{
+			{
+				LicenseTypeID: "359-06320",
+				DbName:        "topolino-dbname",
+				Hostname:      "plutohost",
+				UsedLicenses:  8,
+			},
+		},
+	}
+
+	sqlServerContracts := []model.SqlServerDatabaseContract{
+		{
+			ID:             [12]byte{},
+			Type:           model.SqlServerContractTypeCluster,
+			LicensesNumber: 12,
+			ContractID:     "abc",
+			LicenseTypeID:  "359-06320",
+			Clusters:       []string{},
+			Hosts:          []string{},
+		},
+		{
+			ID:             [12]byte{},
+			Type:           model.SqlServerContractTypeHost,
+			LicensesNumber: 12,
+			ContractID:     "abc",
+			LicenseTypeID:  "359-06320",
+			Clusters:       []string{},
+			Hosts:          []string{},
+		},
+	}
+
+	sqlServerLicenseTypes := []model.SqlServerDatabaseLicenseType{
+		{
+			ID:              "359-06320",
+			ItemDescription: "SQL Server Standard Edition",
+			Edition:         "STD",
+			Version:         "2019",
+		},
+	}
+
 	db.EXPECT().GetHostDatas(utils.MAX_TIME).
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
@@ -164,6 +205,21 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 			GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
 
+		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&sqlServerLics, nil),
+		db.EXPECT().ListSqlServerDatabaseContracts().
+			Times(1).
+			Return(sqlServerContracts, nil),
+		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
+			Times(1).
+			Return(sqlServerLicenseTypes, nil),
+		db.EXPECT().ListSqlServerDatabaseContracts().
+			Times(1).
+			Return(sqlServerContracts, nil),
+		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
+			Times(1).
+			Return(sqlServerLicenseTypes, nil),
+
 		db.EXPECT().
 			GetHostsCountStats("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
 			Return(20, nil),
@@ -182,6 +238,21 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		db.EXPECT().
 			GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
+
+		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&sqlServerLics, nil),
+		db.EXPECT().ListSqlServerDatabaseContracts().
+			Times(1).
+			Return(sqlServerContracts, nil),
+		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
+			Times(1).
+			Return(sqlServerLicenseTypes, nil),
+		db.EXPECT().ListSqlServerDatabaseContracts().
+			Times(1).
+			Return(sqlServerContracts, nil),
+		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
+			Times(1).
+			Return(sqlServerLicenseTypes, nil),
 
 		db.EXPECT().
 			GetHostsCountUsingTechnologies("", "", utils.MAX_TIME).
@@ -270,6 +341,47 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 		OlderThan:   utils.MAX_TIME,
 	}
 
+	sqlServerLics := dto.SqlServerDatabaseUsedLicenseSearchResponse{
+		Content: []dto.SqlServerDatabaseUsedLicense{
+			{
+				LicenseTypeID: "359-06320",
+				DbName:        "topolino-dbname",
+				Hostname:      "plutohost",
+				UsedLicenses:  8,
+			},
+		},
+	}
+
+	sqlServerContracts := []model.SqlServerDatabaseContract{
+		{
+			ID:             [12]byte{},
+			Type:           model.SqlServerContractTypeCluster,
+			LicensesNumber: 12,
+			ContractID:     "abc",
+			LicenseTypeID:  "359-06320",
+			Clusters:       []string{},
+			Hosts:          []string{},
+		},
+		{
+			ID:             [12]byte{},
+			Type:           model.SqlServerContractTypeHost,
+			LicensesNumber: 12,
+			ContractID:     "abc",
+			LicenseTypeID:  "359-06320",
+			Clusters:       []string{},
+			Hosts:          []string{},
+		},
+	}
+
+	sqlServerLicenseTypes := []model.SqlServerDatabaseLicenseType{
+		{
+			ID:              "359-06320",
+			ItemDescription: "SQL Server Standard Edition",
+			Edition:         "STD",
+			Version:         "2019",
+		},
+	}
+
 	db.EXPECT().GetHostDatas(utils.MAX_TIME).
 		Times(1).
 		Return(hostdatas, nil).AnyTimes()
@@ -296,6 +408,21 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 		db.EXPECT().
 			GetOracleDatabaseLicenseTypes().
 			Return(ltRes, nil),
+
+		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&sqlServerLics, nil),
+		db.EXPECT().ListSqlServerDatabaseContracts().
+			Times(1).
+			Return(sqlServerContracts, nil),
+		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
+			Times(1).
+			Return(sqlServerLicenseTypes, nil),
+		db.EXPECT().ListSqlServerDatabaseContracts().
+			Times(1).
+			Return(sqlServerContracts, nil),
+		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
+			Times(1).
+			Return(sqlServerLicenseTypes, nil),
 
 		db.EXPECT().
 			GetHostsCountStats("Italy", "PRD", utils.P("2019-12-05T14:02:03Z")).
