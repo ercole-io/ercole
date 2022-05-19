@@ -24,7 +24,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-const sqlServerDbContractsCollection = "sql_server_database_contracts"
+const sqlServerDbContractsCollection = "ms_sqlserver_database_contracts"
 
 func (md *MongoDatabase) InsertSqlServerDatabaseContract(contract model.SqlServerDatabaseContract) error {
 	_, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(sqlServerDbContractsCollection).
