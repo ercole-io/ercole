@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -60,9 +60,10 @@ func (m *MongodbSuite) TestGetHostsCountUsingTechnologies() {
 		out, err := m.db.GetHostsCountUsingTechnologies("", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = map[string]interface{}{
-			model.TechnologyOracleExadata:  1,
-			model.TechnologyOracleDatabase: 2,
-			model.TechnologyOracleMySQL:    1,
+			model.TechnologyOracleExadata:      1,
+			model.TechnologyOracleDatabase:     2,
+			model.TechnologyOracleMySQL:        1,
+			model.TechnologyMicrosoftSQLServer: 0,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))

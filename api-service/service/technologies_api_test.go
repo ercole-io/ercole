@@ -175,6 +175,46 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 			Metric:          model.LicenseTypeMetricProcessorPerpetual,
 		},
 	}
+	sqlServerLics := dto.SqlServerDatabaseUsedLicenseSearchResponse{
+		Content: []dto.SqlServerDatabaseUsedLicense{
+			{
+				LicenseTypeID: "359-06320",
+				DbName:        "topolino-dbname",
+				Hostname:      "plutohost",
+				UsedLicenses:  8,
+			},
+		},
+	}
+
+	sqlServerContracts := []model.SqlServerDatabaseContract{
+		{
+			ID:             [12]byte{},
+			Type:           model.SqlServerContractTypeCluster,
+			LicensesNumber: 12,
+			ContractID:     "abc",
+			LicenseTypeID:  "359-06320",
+			Clusters:       []string{},
+			Hosts:          []string{},
+		},
+		{
+			ID:             [12]byte{},
+			Type:           model.SqlServerContractTypeHost,
+			LicensesNumber: 12,
+			ContractID:     "abc",
+			LicenseTypeID:  "359-06320",
+			Clusters:       []string{},
+			Hosts:          []string{},
+		},
+	}
+
+	sqlServerLicenseTypes := []model.SqlServerDatabaseLicenseType{
+		{
+			ID:              "359-06320",
+			ItemDescription: "SQL Server Standard Edition",
+			Edition:         "STD",
+			Version:         "2019",
+		},
+	}
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -207,6 +247,21 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 			Return(licenseTypes, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(sampleLicenseTypes, nil),
+
+		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&sqlServerLics, nil),
+		db.EXPECT().ListSqlServerDatabaseContracts().
+			Times(1).
+			Return(sqlServerContracts, nil),
+		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
+			Times(1).
+			Return(sqlServerLicenseTypes, nil),
+		db.EXPECT().ListSqlServerDatabaseContracts().
+			Times(1).
+			Return(sqlServerContracts, nil),
+		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
+			Times(1).
+			Return(sqlServerLicenseTypes, nil),
 	)
 
 	actual, err := as.ListManagedTechnologies(
@@ -218,9 +273,9 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 	expected := []model.TechnologyStatus{
 		{Product: "Oracle/Database", ConsumedByHosts: 32, CoveredByContracts: 18, TotalCost: 0, PaidCost: 0, Compliance: 0.5625, UnpaidDues: 0, HostsCount: 42},
 		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 44},
+		{Product: "Microsoft/SQLServer", ConsumedByHosts: 8, CoveredByContracts: 8, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 42},
 		{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 		{Product: "PostgreSQL/PostgreSQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
-		{Product: "Microsoft/SQLServer", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 	}
 
 	assert.Equal(t, expected, actual)
@@ -314,6 +369,46 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 			Metric:          model.LicenseTypeMetricComputerPerpetual,
 		},
 	}
+	sqlServerLics := dto.SqlServerDatabaseUsedLicenseSearchResponse{
+		Content: []dto.SqlServerDatabaseUsedLicense{
+			{
+				LicenseTypeID: "359-06320",
+				DbName:        "topolino-dbname",
+				Hostname:      "plutohost",
+				UsedLicenses:  8,
+			},
+		},
+	}
+
+	sqlServerContracts := []model.SqlServerDatabaseContract{
+		{
+			ID:             [12]byte{},
+			Type:           model.SqlServerContractTypeCluster,
+			LicensesNumber: 12,
+			ContractID:     "abc",
+			LicenseTypeID:  "359-06320",
+			Clusters:       []string{},
+			Hosts:          []string{},
+		},
+		{
+			ID:             [12]byte{},
+			Type:           model.SqlServerContractTypeHost,
+			LicensesNumber: 12,
+			ContractID:     "abc",
+			LicenseTypeID:  "359-06320",
+			Clusters:       []string{},
+			Hosts:          []string{},
+		},
+	}
+
+	sqlServerLicenseTypes := []model.SqlServerDatabaseLicenseType{
+		{
+			ID:              "359-06320",
+			ItemDescription: "SQL Server Standard Edition",
+			Edition:         "STD",
+			Version:         "2019",
+		},
+	}
 
 	db.EXPECT().GetHostDatas(utils.MAX_TIME).
 		Return(hostdatas, nil).AnyTimes()
@@ -338,6 +433,21 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(sampleLicenseTypes, nil),
+
+		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
+			Return(&sqlServerLics, nil),
+		db.EXPECT().ListSqlServerDatabaseContracts().
+			Times(1).
+			Return(sqlServerContracts, nil),
+		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
+			Times(1).
+			Return(sqlServerLicenseTypes, nil),
+		db.EXPECT().ListSqlServerDatabaseContracts().
+			Times(1).
+			Return(sqlServerContracts, nil),
+		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
+			Times(1).
+			Return(sqlServerLicenseTypes, nil),
 	)
 
 	actual, err := as.ListManagedTechnologies(
@@ -348,9 +458,9 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 	expected := []model.TechnologyStatus{
 		{Product: "Oracle/Database", ConsumedByHosts: 100, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 42},
 		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
+		{Product: "Microsoft/SQLServer", ConsumedByHosts: 8, CoveredByContracts: 8, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 42},
 		{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 		{Product: "PostgreSQL/PostgreSQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
-		{Product: "Microsoft/SQLServer", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 	}
 
 	require.NoError(t, err)
