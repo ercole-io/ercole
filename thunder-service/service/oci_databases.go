@@ -116,6 +116,7 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 			}
 
 			var dbRefId string
+
 			var dbIdType string
 
 			if len(resp.Items) != 0 {
@@ -220,6 +221,7 @@ func getHostamesAndStatus(dbClient database.DatabaseClient, compartmentId string
 	var hostnamesAndStatus []HostnameAndStatus
 
 	var tmpHostAndSt HostnameAndStatus
+
 	var req database.ListDbNodesRequest
 
 	if dbIdType == "SYSTEM_ID" {
