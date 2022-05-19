@@ -29,3 +29,8 @@ type SqlServerDatabaseContract struct {
 	Hosts          []string           `json:"hosts" bson:"hosts"`
 	Clusters       []string           `json:"clusters" bson:"clusters"`
 }
+
+const (
+	SqlServerContractTypeHost    string = "HOST"
+	SqlServerContractTypeCluster string = "CLUSTER"
+)

@@ -300,7 +300,7 @@ func (as *APIService) GetUsedLicensesPerDatabasesAsXLSX(filter dto.GlobalFilter)
 }
 
 func (as *APIService) getSqlServerDatabasesUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
-	sqlServerLics, err := as.Database.SearchSqlServerDatabaseUsedLicenses(hostname, "", false, -1, -1, filter.Location, filter.Environment, filter.OlderThan)
+	sqlServerLics, err := as.GetSqlServerUsedLicenses(hostname, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -310,46 +310,25 @@ func (as *APIService) getSqlServerDatabasesUsedLicenses(hostname string, filter 
 		return nil, err
 	}
 
-	usedLicenses := make([]dto.DatabaseUsedLicense, 0, len(sqlServerLics.Content))
+	genericLics := make([]dto.DatabaseUsedLicense, 0, len(sqlServerLics.Content))
 
-	for _, o := range sqlServerLics.Content {
-		lt := licenseTypes[o.LicenseTypeID]
+	for _, lic := range sqlServerLics.Content {
+		lt := licenseTypes[lic.LicenseTypeID]
 
 		g := dto.DatabaseUsedLicense{
-			Hostname:      o.Hostname,
-			DbName:        o.DbName,
-			LicenseTypeID: o.LicenseTypeID,
+			Hostname:      lic.Hostname,
+			DbName:        lic.DbName,
+			LicenseTypeID: lic.LicenseTypeID,
 			Description:   lt.ItemDescription,
-			Metric:        "HOST",
-			UsedLicenses:  o.UsedLicenses,
-			Ignored:       o.Ignored,
+			Metric:        lic.ContractType,
+			UsedLicenses:  lic.UsedLicenses,
+			Ignored:       lic.Ignored,
 		}
 
-		usedLicenses = append(usedLicenses, g)
+		genericLics = append(genericLics, g)
 	}
 
-	clusters, err := as.Database.GetClusters(dto.GlobalFilter{
-		Location:    "",
-		Environment: "",
-		OlderThan:   utils.MAX_TIME,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	for i, l := range usedLicenses {
-		_, _, _, err := as.clusterLicenses(l, clusters)
-
-		if err != nil && !errors.Is(err, utils.ErrHostNotInCluster) {
-			return nil, err
-		} else if !errors.Is(err, utils.ErrHostNotInCluster) {
-			usedLicenses[i].Metric = "CLUSTER"
-			usedLicenses[i].ClusterLicenses = usedLicenses[i].UsedLicenses
-			continue
-		}
-	}
-
-	return usedLicenses, nil
+	return genericLics, nil
 }
 
 func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.DatabaseUsedLicense, error) {
@@ -607,6 +586,13 @@ func (as *APIService) GetDatabaseLicensesCompliance() ([]dto.LicenseCompliance, 
 	}
 
 	licenses = append(licenses, mysql...)
+
+	sqlServer, err := as.GetSqlServerDatabaseLicensesCompliance()
+	if err != nil {
+		return nil, err
+	}
+
+	licenses = append(licenses, sqlServer...)
 
 	for i := 0; i < len(licenses); {
 		l := licenses[i]
