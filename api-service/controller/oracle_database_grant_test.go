@@ -49,11 +49,15 @@ func TestListOracleGrantDbaByHostname_Success(t *testing.T) {
 		OlderThan:   utils.MAX_TIME,
 	}
 
-	gdRes := []model.OracleGrantDba{
+	gdRes := []dto.OracleGrantDbaDto{
 		{
-			Grantee:     "test#001",
-			AdminOption: "yes",
-			DefaultRole: "no",
+			Hostname:     "hostname",
+			Databasename: "databasename",
+			OracleGrantDba: model.OracleGrantDba{
+				Grantee:     "test#001",
+				AdminOption: "yes",
+				DefaultRole: "no",
+			},
 		},
 	}
 

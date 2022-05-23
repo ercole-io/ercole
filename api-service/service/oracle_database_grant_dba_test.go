@@ -27,11 +27,15 @@ func TestListOracleGrantDbaByHostname_Success(t *testing.T) {
 		OlderThan:   utils.MAX_TIME,
 	}
 
-	expected := []model.OracleGrantDba{
+	expected := []dto.OracleGrantDbaDto{
 		{
-			Grantee:     "test#001",
-			AdminOption: "yes",
-			DefaultRole: "no",
+			Hostname:     "hostname",
+			Databasename: "databasename",
+			OracleGrantDba: model.OracleGrantDba{
+				Grantee:     "test#001",
+				AdminOption: "yes",
+				DefaultRole: "no",
+			},
 		},
 	}
 	db.EXPECT().FindGrantDbaByHostname("hostname", filter).Return(expected, nil)
