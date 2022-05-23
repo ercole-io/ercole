@@ -17,10 +17,9 @@ package service
 
 import (
 	"github.com/ercole-io/ercole/v2/api-service/dto"
-	"github.com/ercole-io/ercole/v2/model"
 )
 
-func (as *APIService) ListOracleGrantDbaByHostname(hostname string, filter dto.GlobalFilter) ([]model.OracleGrantDba, error) {
+func (as *APIService) ListOracleGrantDbaByHostname(hostname string, filter dto.GlobalFilter) ([]dto.OracleGrantDbaDto, error) {
 	result, err := as.Database.FindGrantDbaByHostname(hostname, filter)
 	if err != nil {
 		return nil, err

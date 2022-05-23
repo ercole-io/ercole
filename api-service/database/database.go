@@ -138,7 +138,7 @@ type MongoDatabaseInterface interface {
 	// RemoveOracleDatabaseLicenseType remove a licence type - Oracle/Database contract part from the database
 	RemoveOracleDatabaseLicenseType(id string) error
 
-	FindGrantDbaByHostname(hostname string, filter dto.GlobalFilter) ([]model.OracleGrantDba, error)
+	FindGrantDbaByHostname(hostname string, filter dto.GlobalFilter) ([]dto.OracleGrantDbaDto, error)
 
 	// ReplaceHostData adds a new hostdata to the database
 	ReplaceHostData(hostData model.HostDataBE) error

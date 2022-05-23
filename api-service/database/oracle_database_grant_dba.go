@@ -22,11 +22,10 @@ import (
 
 	"github.com/amreo/mu"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
-	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-func (md *MongoDatabase) FindGrantDbaByHostname(hostname string, filter dto.GlobalFilter) ([]model.OracleGrantDba, error) {
+func (md *MongoDatabase) FindGrantDbaByHostname(hostname string, filter dto.GlobalFilter) ([]dto.OracleGrantDbaDto, error) {
 	ctx := context.TODO()
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 		ctx,
@@ -38,9 +37,11 @@ func (md *MongoDatabase) FindGrantDbaByHostname(hostname string, filter dto.Glob
 			mu.APUnwind("$features.oracle.database.databases.grantDba"),
 			mu.APProject(
 				bson.M{
-					"grantee":     "$features.oracle.database.databases.grantDba.grantee",
-					"adminOption": "$features.oracle.database.databases.grantDba.adminOption",
-					"defaultRole": "$features.oracle.database.databases.grantDba.defaultRole",
+					"oracleGrantDba.grantee":     "$features.oracle.database.databases.grantDba.grantee",
+					"oracleGrantDba.adminOption": "$features.oracle.database.databases.grantDba.adminOption",
+					"oracleGrantDba.defaultRole": "$features.oracle.database.databases.grantDba.defaultRole",
+					"hostname":                   "$hostname",
+					"databasename":               "$features.oracle.database.databases.name",
 				},
 			),
 		),
@@ -50,7 +51,7 @@ func (md *MongoDatabase) FindGrantDbaByHostname(hostname string, filter dto.Glob
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	out := make([]model.OracleGrantDba, 0)
+	out := make([]dto.OracleGrantDbaDto, 0)
 	if err = cur.All(ctx, &out); err != nil {
 		return nil, utils.NewError(err, "Decode ERROR")
 	}
