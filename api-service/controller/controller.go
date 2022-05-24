@@ -155,6 +155,7 @@ type APIControllerInterface interface {
 	// MYSQL
 
 	SearchMySQLInstances(w http.ResponseWriter, r *http.Request)
+	GetMySqlLicenseTypes(w http.ResponseWriter, r *http.Request)
 
 	// SQL SERVER
 	// SearchSqlServerInstances search instances data using the filters in the request
