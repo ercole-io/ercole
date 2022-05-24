@@ -149,6 +149,9 @@ type APIServiceInterface interface {
 	// SQL SERVER DATABASE LICENSES
 	GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
 
+	// MySQL DATABASE LICENSES
+	GetMySqlLicenseTypes() ([]model.MySqlLicenseType, error)
+
 	// SearchSqlServerInstances search databases
 	SearchSqlServerInstances(filter dto.SearchSqlServerInstancesFilter) (*dto.SqlServerInstanceResponse, error)
 	// SearchOracleDatabases search databases
