@@ -144,7 +144,7 @@ type APIServiceInterface interface {
 	AddOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) (*model.OracleDatabaseLicenseType, error)
 	UpdateOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) (*model.OracleDatabaseLicenseType, error)
 
-	ListOracleGrantDbaByHostname(hostname string, filter dto.GlobalFilter) ([]model.OracleGrantDba, error)
+	ListOracleGrantDbaByHostname(hostname string, filter dto.GlobalFilter) ([]dto.OracleGrantDbaDto, error)
 
 	// SQL SERVER DATABASE LICENSES
 	GetSqlServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
