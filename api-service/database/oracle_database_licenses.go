@@ -50,6 +50,7 @@ func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(hostname string, sortB
 					"licenseTypeID": "$features.oracle.database.databases.licenses.licenseTypeID",
 					"usedLicenses":  mu.APOCond(mu.APOEqual("$licenseType.metric", "Computer Perpetual"), 1, "$features.oracle.database.databases.licenses.count"),
 					"ignored":       "$features.oracle.database.databases.licenses.ignored",
+					"ignoredComment": "$features.oracle.database.databases.licenses.ignoredComment",
 				},
 			),
 
@@ -74,7 +75,7 @@ func (md *MongoDatabase) SearchOracleDatabaseUsedLicenses(hostname string, sortB
 }
 
 // UpdateLicenseIgnoredField update host ignored field (true/false)
-func (md *MongoDatabase) UpdateLicenseIgnoredField(hostname string, dbname string, licenseTypeID string, ignored bool) error {
+func (md *MongoDatabase) UpdateLicenseIgnoredField(hostname string, dbname string, licenseTypeID string, ignored bool, ignoredComment string) error {
 	result, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
 		UpdateOne(context.TODO(),
 			bson.M{
@@ -83,7 +84,10 @@ func (md *MongoDatabase) UpdateLicenseIgnoredField(hostname string, dbname strin
 				"features.oracle.database.databases.name":                   dbname,
 				"features.oracle.database.databases.licenses.licenseTypeID": licenseTypeID,
 			},
-			bson.M{"$set": bson.M{"features.oracle.database.databases.$[elemDB].licenses.$[elemLic].ignored": ignored}},
+			bson.M{"$set": bson.M{
+				"features.oracle.database.databases.$[elemDB].licenses.$[elemLic].ignored":        ignored,
+				"features.oracle.database.databases.$[elemDB].licenses.$[elemLic].ignoredComment": ignoredComment,
+			}},
 			options.Update().SetArrayFilters(options.ArrayFilters{Filters: []interface{}{bson.M{"elemDB.name": dbname}, bson.M{"elemLic.licenseTypeID": licenseTypeID}}}),
 		)
 	if err != nil {

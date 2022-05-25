@@ -65,9 +65,9 @@ func TestUpdateSqlServerLicenseIgnoredField_Success(t *testing.T) {
 		hostname, instancename := "foobar", "TEST123"
 		ignored := true
 
-		db.EXPECT().UpdateSqlServerLicenseIgnoredField(hostname, instancename, ignored).Return(nil)
+		db.EXPECT().UpdateSqlServerLicenseIgnoredField(hostname, instancename, ignored, "").Return(nil)
 
-		err := as.UpdateSqlServerLicenseIgnoredField(hostname, instancename, ignored)
+		err := as.UpdateSqlServerLicenseIgnoredField(hostname, instancename, ignored, "")
 		require.NoError(t, err)
 
 		var resultIgnored bool
@@ -81,9 +81,9 @@ func TestUpdateSqlServerLicenseIgnoredField_Success(t *testing.T) {
 
 		require.Equal(t, ignored, resultIgnored)
 
-		db.EXPECT().UpdateSqlServerLicenseIgnoredField(hostname, instancename, !ignored).Return(nil)
+		db.EXPECT().UpdateSqlServerLicenseIgnoredField(hostname, instancename, !ignored, "").Return(nil)
 
-		err = as.UpdateSqlServerLicenseIgnoredField(hostname, instancename, !ignored)
+		err = as.UpdateSqlServerLicenseIgnoredField(hostname, instancename, !ignored, "")
 		require.NoError(t, err)
 	})
 }
@@ -104,7 +104,7 @@ func TestUpdateSqlServerLicenseIgnoredField_Fail(t *testing.T) {
 
 	errUpd := utils.ErrLicenseNotFound
 
-	db.EXPECT().UpdateSqlServerLicenseIgnoredField(hostname, instancename, ignored).Return(errUpd)
-	err := as.UpdateSqlServerLicenseIgnoredField(hostname, instancename, ignored)
+	db.EXPECT().UpdateSqlServerLicenseIgnoredField(hostname, instancename, ignored, "").Return(errUpd)
+	err := as.UpdateSqlServerLicenseIgnoredField(hostname, instancename, ignored, "")
 	assert.EqualError(t, err, utils.ErrLicenseNotFound.Error())
 }

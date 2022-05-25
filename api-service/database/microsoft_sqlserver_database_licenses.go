@@ -72,7 +72,7 @@ func (md *MongoDatabase) SearchSqlServerDatabaseUsedLicenses(hostname string, so
 	return &response, nil
 }
 
-func (md *MongoDatabase) UpdateSqlServerLicenseIgnoredField(hostname string, instancename string, ignored bool) error {
+func (md *MongoDatabase) UpdateSqlServerLicenseIgnoredField(hostname string, instancename string, ignored bool, ignoredComment string) error {
 	result, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
 		UpdateOne(context.TODO(),
 			bson.M{
@@ -80,7 +80,10 @@ func (md *MongoDatabase) UpdateSqlServerLicenseIgnoredField(hostname string, ins
 				"archived": false,
 				"features.microsoft.sqlServer.instances.name": instancename,
 			},
-			bson.M{"$set": bson.M{"features.microsoft.sqlServer.instances.$[elemDB].license.ignored": ignored}},
+			bson.M{"$set": bson.M{
+				"features.microsoft.sqlServer.instances.$[elemDB].license.ignored":        ignored,
+				"features.microsoft.sqlServer.instances.$[elemDB].license.ignoredComment": ignoredComment,
+			}},
 			options.Update().SetArrayFilters(options.ArrayFilters{Filters: []interface{}{bson.M{"elemDB.name": instancename}}}),
 		)
 	if err != nil {

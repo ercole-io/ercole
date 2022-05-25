@@ -142,7 +142,8 @@
                                 },
                                 "name": "Oracle EXE",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -150,7 +151,8 @@
                                 },
                                 "name": "Oracle ENT",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -158,7 +160,8 @@
                                 },
                                 "name": "Oracle STD",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -166,7 +169,8 @@
                                 },
                                 "name": "WebLogic Server Management Pack Enterprise Edition",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -174,7 +178,8 @@
                                 },
                                 "name": "Tuning Pack",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -182,7 +187,8 @@
                                 },
                                 "name": "Spatial and Graph",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -190,7 +196,8 @@
                                 },
                                 "name": "Secure Backup",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -198,7 +205,8 @@
                                 },
                                 "name": "Real Application Testing",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -206,7 +214,8 @@
                                 },
                                 "name": "Real Application Clusters",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -214,7 +223,8 @@
                                 },
                                 "name": "Real Application Clusters One Node",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -222,7 +232,8 @@
                                 },
                                 "name": "RAC or RAC One Node",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -230,7 +241,8 @@
                                 },
                                 "name": "Provisioning and Patch Automation Pack",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -238,7 +250,8 @@
                                 },
                                 "name": "Provisioning and Patch Automation Pack for Database",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -246,7 +259,8 @@
                                 },
                                 "name": "Pillar Storage",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -254,7 +268,8 @@
                                 },
                                 "name": "Partitioning",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -262,7 +277,8 @@
                                 },
                                 "name": "OLAP",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -270,7 +286,8 @@
                                 },
                                 "name": "Multitenant",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -278,7 +295,8 @@
                                 },
                                 "name": "Label Security",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -286,7 +304,8 @@
                                 },
                                 "name": "HW",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -294,7 +313,8 @@
                                 },
                                 "name": "GoldenGate",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -302,7 +322,8 @@
                                 },
                                 "name": "Exadata",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -310,7 +331,8 @@
                                 },
                                 "name": "Diagnostics Pack",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -318,7 +340,8 @@
                                 },
                                 "name": "Database Vault",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -326,7 +349,8 @@
                                 },
                                 "name": "Database In-Memory",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -334,7 +358,8 @@
                                 },
                                 "name": "Database Gateway",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -342,7 +367,8 @@
                                 },
                                 "name": "Data Masking Pack",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -350,7 +376,8 @@
                                 },
                                 "name": "Configuration Management Pack for Oracle Database",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -358,7 +385,8 @@
                                 },
                                 "name": "Change Management Pack",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -366,7 +394,8 @@
                                 },
                                 "name": "Advanced Security",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -374,7 +403,8 @@
                                 },
                                 "name": "Advanced Compression",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -382,7 +412,8 @@
                                 },
                                 "name": "Advanced Analytics",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -390,7 +421,8 @@
                                 },
                                 "name": "Active Data Guard",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             },
                             {
                                 "count": {
@@ -398,7 +430,8 @@
                                 },
                                 "name": "Active Data Guard or Real Application Clusters",
                                 "ignored": false, 
-                                "licenseTypeID": ""
+                                "licenseTypeID": "",
+                                "ignoredComment": ""
                             }
                         ],
                         "memoryTarget": {

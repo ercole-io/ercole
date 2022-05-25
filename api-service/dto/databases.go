@@ -46,6 +46,7 @@ type DatabaseUsedLicense struct {
 	UsedLicenses    float64 `json:"usedLicenses" bson:"usedLicenses"`
 	ClusterLicenses float64 `json:"clusterLicenses" bson:"clusterLicenses"`
 	Ignored         bool    `json:"ignored" bson:"ignored"`
+	IgnoredComment  string  `json:"ignoredComment" bson:"ignoredComment"`
 }
 
 type DatabaseUsedLicensePerHost struct {

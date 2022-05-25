@@ -16,12 +16,15 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -41,8 +44,19 @@ func (ctrl *APIController) UpdateSqlServerLicenseIgnoredField(w http.ResponseWri
 		return
 	}
 
+	req := model.MicrosoftSQLServerLicense{}
+
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(&req); err != nil && !errors.Is(err, io.EOF) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest,
+			utils.NewError(err, http.StatusText(http.StatusBadRequest)))
+		return
+	}
+
 	//set the value
-	err = ctrl.Service.UpdateSqlServerLicenseIgnoredField(hostname, dbname, ignored)
+	err = ctrl.Service.UpdateSqlServerLicenseIgnoredField(hostname, dbname, ignored, req.IgnoredComment)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
