@@ -52,7 +52,8 @@ func TestUpdateSqlServerLicenseIgnoredField_Success(t *testing.T) {
 								{
 									Name: "TEST123",
 									License: model.MicrosoftSQLServerLicense{
-										Ignored: true,
+										Ignored:        true,
+										IgnoredComment: "test comment",
 									},
 								},
 							},
@@ -65,9 +66,9 @@ func TestUpdateSqlServerLicenseIgnoredField_Success(t *testing.T) {
 		hostname, instancename := "foobar", "TEST123"
 		ignored := true
 
-		db.EXPECT().UpdateSqlServerLicenseIgnoredField(hostname, instancename, ignored, "").Return(nil)
+		db.EXPECT().UpdateSqlServerLicenseIgnoredField(hostname, instancename, ignored, "test comment").Return(nil)
 
-		err := as.UpdateSqlServerLicenseIgnoredField(hostname, instancename, ignored, "")
+		err := as.UpdateSqlServerLicenseIgnoredField(hostname, instancename, ignored, "test comment")
 		require.NoError(t, err)
 
 		var resultIgnored bool
