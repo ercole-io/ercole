@@ -170,7 +170,7 @@ func (m *MongodbSuite) TestSqlServerLicenseHostIgnoredField_Success() {
 		hostname, instancename := "test-db2", "MSSQLSERVER"
 		ignored := true
 
-		err := m.db.UpdateSqlServerLicenseIgnoredField(hostname, instancename, ignored, "")
+		err := m.db.UpdateSqlServerLicenseIgnoredField(hostname, instancename, ignored, "test comment")
 		require.NoError(t, err)
 
 		hostData, _ := m.db.FindHostData("test-db2")
