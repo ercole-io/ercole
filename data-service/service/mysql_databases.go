@@ -47,7 +47,6 @@ func (hds *HostDataService) getMySqlDatabaseLicenseTypes() ([]model.MySqlLicense
 }
 
 func (hds *HostDataService) setMySqlLicenseTypes(hostdata *model.HostDataBE, licenseTypes []model.MySqlLicenseType) {
-
 	for i, instance := range hostdata.Features.MySQL.Instances {
 		license := &hostdata.Features.MySQL.Instances[i].License
 
