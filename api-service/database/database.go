@@ -172,6 +172,7 @@ type MongoDatabaseInterface interface {
 	//GetMySQLUsedLicenses return MySQL used licenses.
 	// Only ENTERPRISE MySQL db are considered as licenses
 	GetMySQLUsedLicenses(hostname string, filter dto.GlobalFilter) ([]dto.MySQLUsedLicense, error)
+	UpdateMySqlLicenseIgnoredField(hostname string, instancename string, ignored bool, ignoredComment string) error
 
 	// MYSQL CONTRACTS
 

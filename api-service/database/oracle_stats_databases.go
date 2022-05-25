@@ -243,7 +243,6 @@ func (md *MongoDatabase) GetOracleDatabasePatchStatusStats(location string, wind
 			mu.APProject(bson.M{
 				"database": "$features.oracle.database.databases",
 			}),
-			//TODO: we can map directly PSU to date instead of mapping indirectly using a object that contain the Date field
 			mu.APProject(bson.M{
 				"database.psus": mu.APOReduce(
 					mu.APOMap("$database.psus", "psu", mu.APOMergeObjects(

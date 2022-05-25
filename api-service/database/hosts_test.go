@@ -37,8 +37,6 @@ func (m *MongodbSuite) TestSearchHosts() {
 
 	commonFilters := dto.NewSearchHostsFilters()
 
-	//TODO: add search hosts filter tests!
-
 	m.T().Run("lms_mode", func(t *testing.T) {
 		out, err := m.db.SearchHosts("lms", commonFilters)
 		m.Require().NoError(err)
@@ -97,9 +95,6 @@ func (m *MongodbSuite) TestGetHostDataSummaries() {
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_08.json"))
 
 	commonFilters := dto.NewSearchHostsFilters()
-	// asdf := dto.SearchHostsFilters{Search: []string{""}, SortBy: "", SortDesc: false, Location: "", Environment: "", OlderThan: time.Time{wall: 0x1f52f60d, ext: 95316340478, loc: (*time.Location)(0x1a63ec0)}, PageNumber: -1, PageSize: -1, Hostname: "", Database: "", Technology: "", HardwareAbstractionTechnology: "", Cluster: (*string)(0xc001940280), VirtualizationNode: "", OperatingSystem: "", Kernel: "", LTEMemoryTotal: -1, GTEMemoryTotal: -1, LTESwapTotal: -1, GTESwapTotal: -1, IsMemberOfCluster: (*bool)(nil), CPUModel: "", LTECPUCores: -1, GTECPUCores: -1, LTECPUThreads: -1, GTECPUThreads: -1}
-
-	//TODO: add search hosts filter tests!
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
 		thisFilter := commonFilters

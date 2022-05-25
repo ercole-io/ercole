@@ -58,6 +58,10 @@ func (hds *HostDataService) InsertHostData(hostdata model.HostDataBE) error {
 		hds.sqlServerDatabasesChecks(previousHostdata, &hostdata)
 	}
 
+	if hostdata.Features.MySQL != nil {
+		hds.mySqlDatabasesChecks(previousHostdata, &hostdata)
+	}
+
 	if hostdata.Clusters != nil {
 		hds.clusterInfoChecks(hostdata.Clusters)
 	}

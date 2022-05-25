@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
@@ -381,5 +382,45 @@ func (m *MongodbSuite) TestGetMySQLUsedLicenses() {
 
 		expected := []dto.MySQLUsedLicense{first}
 		assert.Equal(t, expected, actual)
+	})
+}
+
+func (m *MongodbSuite) UpdateMySqlLicenseIgnoredField_Success() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_29.json"))
+
+	m.T().Run("update_ignored_success", func(t *testing.T) {
+
+		hostname, instancename := "test-db2", "MYSQLSERVER"
+		ignored := true
+
+		err := m.db.UpdateMySqlLicenseIgnoredField(hostname, instancename, ignored, "")
+		require.NoError(t, err)
+
+		hostData, _ := m.db.FindHostData("test-db2")
+
+		var resultIgnored bool
+		for i := range hostData.Features.MySQL.Instances {
+			db := &hostData.Features.MySQL.Instances[i]
+			if db.Name == instancename {
+				lic := &db.License
+				resultIgnored = lic.Ignored
+			}
+		}
+
+		require.Equal(t, ignored, resultIgnored)
+	})
+}
+
+func (m *MongodbSuite) UpdateMySqlLicenseIgnoredField_Fail() {
+	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
+
+	m.T().Run("update_ignored_fail", func(t *testing.T) {
+
+		hostname, instancename := "buu", "ERCOLAO"
+		ignored := false
+
+		err := m.db.UpdateMySqlLicenseIgnoredField(hostname, instancename, ignored, "")
+		require.Error(t, err)
 	})
 }
