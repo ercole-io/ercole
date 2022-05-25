@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ import (
 
 	"github.com/amreo/mu"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
@@ -90,4 +91,29 @@ func (md *MongoDatabase) GetMySQLUsedLicenses(hostname string, filter dto.Global
 	}
 
 	return out, nil
+}
+
+func (md *MongoDatabase) UpdateMySqlLicenseIgnoredField(hostname string, instancename string, ignored bool, ignoredComment string) error {
+	result, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").
+		UpdateOne(context.TODO(),
+			bson.M{
+				"hostname":                      hostname,
+				"archived":                      false,
+				"features.mysql.instances.name": instancename,
+			},
+			bson.M{"$set": bson.M{
+				"features.mysql.instances.$[elemDB].license.ignored":        ignored,
+				"features.mysql.instances.$[elemDB].license.ignoredComment": ignoredComment,
+			}},
+			options.Update().SetArrayFilters(options.ArrayFilters{Filters: []interface{}{bson.M{"elemDB.name": instancename}}}),
+		)
+	if err != nil {
+		return utils.NewError(err, "DB ERROR")
+	}
+
+	if result.MatchedCount != 1 {
+		return utils.ErrLicenseNotFound
+	}
+
+	return nil
 }

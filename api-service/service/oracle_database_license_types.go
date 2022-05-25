@@ -337,7 +337,7 @@ func (as *APIService) getterNewLicenseCompliance() (func(licenseTypeID string) *
 		l, ok := licenseTypes[licenseTypeID]
 		if !ok {
 			return &dto.LicenseCompliance{
-				LicenseTypeID: l.ID, //TODO
+				LicenseTypeID: l.ID,
 			}
 		}
 

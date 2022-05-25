@@ -316,49 +316,6 @@ var licenseTypes = []model.OracleDatabaseLicenseType{
 	},
 }
 
-//TODO Create client for api and mock it
-//func TestOracleDatabasesChecks(t *testing.T) {
-//	mockCtrl := gomock.NewController(t)
-//	defer mockCtrl.Finish()
-//	db := NewMockMongoDatabaseInterface(mockCtrl)
-//	asc := NewMockAlertSvcClientInterface(mockCtrl)
-//	hds := HostDataService{
-//		Config:         config.Configuration{},
-//		ServerVersion:  "",
-//		Database:       db,
-//		AlertSvcClient: asc,
-//		TimeNow:        utils.Btc(utils.P("2019-11-05T16:02:03Z")),
-//		Log:            logger.NewLoggerOrFail("TEST"),
-//	}
-//
-//	gomock.InOrder(
-//		asc.EXPECT().ThrowNewAlert(&alertSimilarTo{
-//			al: model.Alert{
-//				AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
-//				AlertCategory:           model.AlertCategoryLicense,
-//				AlertCode:               model.AlertCodeNewDatabase,
-//				OtherInfo: map[string]interface{}{
-//					"hostname": "superhost1",
-//					"dbname":   "acd",
-//				},
-//			}}).Return(nil),
-//
-//		asc.EXPECT().ThrowNewAlert(&alertSimilarTo{
-//			al: model.Alert{
-//				AlertAffectedTechnology: nil,
-//				AlertCategory:           model.AlertCategoryLicense,
-//				AlertCode:               model.AlertCodeIncreasedCPUCores,
-//				AlertSeverity:           model.AlertSeverityCritical,
-//				AlertStatus:             model.AlertStatusNew,
-//				OtherInfo: map[string]interface{}{
-//					"hostname": "superhost1",
-//				},
-//			}}).Return(nil),
-//	)
-//
-//	hds.oracleDatabasesChecks(&hostData1, &hostData3)
-//}
-
 func TestCheckNewLicenses_SuccessNoDifferences(t *testing.T) {
 	hds := HostDataService{
 		Log: logger.NewLogger("TEST"),
@@ -507,7 +464,6 @@ func TestCheckNewLicenses_CantThrowNewAlert(t *testing.T) {
 			},
 		}}).Return(aerrMock)
 
-		//TODO Add check that error has been logged
 		hds.checkNewLicenses(&hostData1, &hostData3, licenseTypes)
 	})
 
@@ -533,7 +489,6 @@ func TestCheckNewLicenses_CantThrowNewAlert(t *testing.T) {
 			},
 		}}).Return(nil)
 
-		//TODO Add check that error has been logged
 		hds.checkNewLicenses(&hostData3, &hostData4, licenseTypes)
 	})
 
@@ -559,7 +514,6 @@ func TestCheckNewLicenses_CantThrowNewAlert(t *testing.T) {
 			},
 		}}).Return(aerrMock)
 
-		//TODO Add check that error has been logged
 		hds.checkNewLicenses(&hostData3, &hostData4, licenseTypes)
 	})
 }
@@ -578,7 +532,6 @@ func TestCheckNewLicenses_ErrOracleDatabaseLicenseTypeIDNotFound(t *testing.T) {
 		Log:            logger.NewLogger("TEST"),
 	}
 
-	//TODO Add check that error has been logged
 	hds.checkNewLicenses(&hostData3, &hostData4, []model.OracleDatabaseLicenseType{})
 }
 

@@ -32,10 +32,6 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-//TODO Instead of use 25 everywhere for NamedUserPlus licenses, use const
-
-// TODO When insert or update unlimited agr, set count == 0
-
 func (as *APIService) AddOracleDatabaseContract(contract model.OracleDatabaseContract) (*dto.OracleDatabaseContractFE, error) {
 	if err := checkHosts(as, contract.Hosts); err != nil {
 		return nil, err
@@ -67,7 +63,7 @@ func (as *APIService) AddOracleDatabaseContract(contract model.OracleDatabaseCon
 }
 
 func checkHosts(as *APIService, hosts []string) error {
-	notInClusterHosts, err := as.SearchHosts("hostnames", //TODO Why not in cluster hosts?
+	notInClusterHosts, err := as.SearchHosts("hostnames",
 		dto.SearchHostsFilters{
 			Search:         []string{""},
 			OlderThan:      utils.MAX_TIME,
@@ -329,7 +325,6 @@ func buildHostUsingLicensesMap(usages []dto.HostUsingOracleDatabaseLicenses,
 	return res
 }
 
-//TODO  use GetOracleDatabaseContractPartsMap ?
 func buildLicenseTypesMap(licenseTypes []model.OracleDatabaseLicenseType) map[string]*model.OracleDatabaseLicenseType {
 	ltMap := make(map[string]*model.OracleDatabaseLicenseType)
 
@@ -535,7 +530,6 @@ func doAssignContractLicensesToAssociatedHost(
 		coverableLicenses = host.LicenseCount
 		contract.AvailableLicensesPerUser = 0
 	} else {
-		// Named User licenses must be covered in multiple of 25
 		availableInContract := math.Floor(contract.AvailableLicensesPerUser/model.FactorNamedUser) * model.FactorNamedUser
 		coverableLicenses = math.Min(availableInContract, host.LicenseCount)
 		contract.AvailableLicensesPerUser -= coverableLicenses
@@ -610,7 +604,7 @@ func doAssignLicenseFromBasketContract(
 			coverableLicenses = usage.LicenseCount
 			contract.AvailableLicensesPerUser = 0
 		} else {
-			coverableLicenses = math.Floor(math.Min(contract.AvailableLicensesPerUser, usage.LicenseCount)/25) * 25
+			coverableLicenses = math.Floor(math.Min(contract.AvailableLicensesPerUser, usage.LicenseCount)/model.FactorNamedUser) * model.FactorNamedUser
 			contract.AvailableLicensesPerUser -= coverableLicenses
 		}
 	}

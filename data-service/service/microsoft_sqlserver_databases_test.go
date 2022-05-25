@@ -96,7 +96,7 @@ func TestSqlServerIgnorePreviousLicences_SuccessNoPreviousIgnored(t *testing.T) 
 		Log: logger.NewLogger("TEST"),
 	}
 
-	hds.ignorePreviousLicences(&hostData6, &hostData6)
+	hds.ignoreSqlServerPreviousLicences(&hostData1, &hostData2)
 
 	for _, db := range hostDataSql1.Features.Microsoft.SQLServer.Instances {
 		if db.License.LicenseTypeID == "SqlServer ENT" {
@@ -112,7 +112,7 @@ func TestSqlServerIgnorePreviousLicences_SuccessWithPreviousIgnored(t *testing.T
 		Log: logger.NewLogger("TEST"),
 	}
 
-	hds.ignorePreviousLicences(&hostDataSql2, &hostDataSql1)
+	hds.ignoreSqlServerPreviousLicences(&hostDataSql1, &hostDataSql2)
 
 	for _, db := range hostDataSql1.Features.Microsoft.SQLServer.Instances {
 		if db.License.LicenseTypeID == "SqlServer ENT" {

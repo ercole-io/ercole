@@ -36,6 +36,7 @@ type ApiSvcClientInterface interface {
 	AckAlerts(filter dto.AlertsFilter) error
 	GetOracleDatabaseLicenseTypes() ([]model.OracleDatabaseLicenseType, error)
 	GetSQLServerDatabaseLicenseTypes() ([]model.SqlServerDatabaseLicenseType, error)
+	GetMySqlDatabaseLicenseTypes() ([]model.MySqlLicenseType, error)
 	GetOracleDatabases() ([]model.OracleDatabase, error)
 }
 
