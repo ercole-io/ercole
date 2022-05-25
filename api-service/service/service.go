@@ -175,10 +175,10 @@ type APIServiceInterface interface {
 	GetInfoForFrontendDashboard(location string, environment string, olderThan time.Time) (map[string]interface{}, error)
 
 	// UpdateLicenseIgnoredField update license ignored field (true/false)
-	UpdateLicenseIgnoredField(hostname string, dbname string, licensetypeid string, ignored bool) error
+	UpdateLicenseIgnoredField(hostname string, dbname string, licensetypeid string, ignored bool, ignoredComment string) error
 
 	// UpdateSqlServerLicenseIgnoredField update license ignored field (true/false)
-	UpdateSqlServerLicenseIgnoredField(hostname string, instancename string, ignored bool) error
+	UpdateSqlServerLicenseIgnoredField(hostname string, instancename string, ignored bool, ignoredComment string) error
 
 	// ALL
 

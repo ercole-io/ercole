@@ -184,7 +184,7 @@ func (m *MongodbSuite) TestLicenseHostIgnoredField_Success() {
 		hostname, dbname, licenseTypeID := "test-db", "ERCOLE", "A90611"
 		ignored := true
 
-		err := m.db.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored)
+		err := m.db.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored, "")
 		require.NoError(t, err)
 
 		hostData, _ := m.db.FindHostData("test-db")
@@ -214,7 +214,7 @@ func (m *MongodbSuite) TestLicenseHostIgnoredField_Fail() {
 		hostname, dbname, licenseTypeID := "buu", "ERCOLAO", "BBBIIII"
 		ignored := false
 
-		err := m.db.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored)
+		err := m.db.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored, "")
 		require.Error(t, err)
 	})
 }

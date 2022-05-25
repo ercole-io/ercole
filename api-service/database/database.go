@@ -129,7 +129,7 @@ type MongoDatabaseInterface interface {
 	// ListOracleDatabasContracts lists the Oracle/Database contracts
 	ListOracleDatabaseContracts() ([]dto.OracleDatabaseContractFE, error)
 	// UpdateLicenseIgnoredField update license ignored field (true/false)
-	UpdateLicenseIgnoredField(hostname string, dbname string, licenseTypeID string, ignored bool) error
+	UpdateLicenseIgnoredField(hostname string, dbname string, licenseTypeID string, ignored bool, ignoredComment string) error
 
 	// InsertOracleDatabaseLicenseType insert an Oracle/Database license type into the database
 	InsertOracleDatabaseLicenseType(licenseType model.OracleDatabaseLicenseType) error
@@ -186,7 +186,7 @@ type MongoDatabaseInterface interface {
 	InsertSqlServerDatabaseLicenseType(licenseType model.SqlServerDatabaseLicenseType) error
 	SearchSqlServerInstances(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.SqlServerInstanceResponse, error)
 	SearchSqlServerDatabaseUsedLicenses(hostname string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.SqlServerDatabaseUsedLicenseSearchResponse, error)
-	UpdateSqlServerLicenseIgnoredField(hostname string, instancename string, ignored bool) error
+	UpdateSqlServerLicenseIgnoredField(hostname string, instancename string, ignored bool, ignoredComment string) error
 
 	InsertSqlServerDatabaseContract(contract model.SqlServerDatabaseContract) error
 	GetSqlServerDatabaseLicenseType(id string) (*model.SqlServerDatabaseLicenseType, error)

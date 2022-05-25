@@ -68,9 +68,9 @@ func TestUpdateLicenseIgnoredField_Success(t *testing.T) {
 		hostname, dbname, licenseTypeID := "foobar", "TEST123", "A90611"
 		ignored := true
 
-		db.EXPECT().UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored).Return(nil)
+		db.EXPECT().UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored, "").Return(nil)
 
-		err := as.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored)
+		err := as.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored, "")
 		require.NoError(t, err)
 
 		var resultIgnored bool
@@ -88,9 +88,9 @@ func TestUpdateLicenseIgnoredField_Success(t *testing.T) {
 
 		require.Equal(t, ignored, resultIgnored)
 
-		db.EXPECT().UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, !ignored).Return(nil)
+		db.EXPECT().UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, !ignored, "").Return(nil)
 
-		err = as.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, !ignored)
+		err = as.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, !ignored, "")
 		require.NoError(t, err)
 	})
 }
@@ -110,8 +110,8 @@ func TestUpdateLicenseIgnoredField_Fail(t *testing.T) {
 	ignored := false
 
 	errUpd := utils.ErrLicenseNotFound
-
-	db.EXPECT().UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored).Return(errUpd)
-	err := as.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored)
+// 
+	db.EXPECT().UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored, "").Return(errUpd)
+	err := as.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored, "")
 	assert.EqualError(t, err, utils.ErrLicenseNotFound.Error())
 }
