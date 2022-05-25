@@ -29,14 +29,13 @@ type ArtifactInfo struct {
 	Repository            string
 	Installed             bool
 	Version               string
-	ReleaseDate           string //TODO modify in time
+	ReleaseDate           string
 	Filename              string
 	Name                  string
 	OperatingSystemFamily string
 	OperatingSystem       string
 	Arch                  string
 	UpstreamRepository    upstreamRepository
-	//TODO Add md5sum
 }
 
 type upstreamRepository struct {

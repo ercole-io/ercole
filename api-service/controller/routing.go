@@ -119,6 +119,7 @@ func (ctrl *APIController) setupProtectedRoutes(router *mux.Router) {
 
 	// MYSQL
 	router.HandleFunc("/hosts/technologies/mysql/databases", ctrl.SearchMySQLInstances).Methods("GET")
+	router.HandleFunc("/hosts/{hostname}/technologies/mysql/databases/{dbname}/ignored/{ignored}", ctrl.UpdateMySqlLicenseIgnoredField).Methods("PUT")
 
 	// MYSQL CONTRACTS
 	router.HandleFunc("/contracts/mysql/database", ctrl.AddMySQLContract).Methods("POST")

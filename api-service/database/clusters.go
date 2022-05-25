@@ -27,7 +27,6 @@ import (
 )
 
 // SearchClusters search clusters
-//TODO Remove and use GetClusters ? convert map[s]i{} in dto?
 func (md *MongoDatabase) SearchClusters(full bool, keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) ([]map[string]interface{}, error) {
 	var out []map[string]interface{} = make([]map[string]interface{}, 0)
 
