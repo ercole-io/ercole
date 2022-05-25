@@ -16,8 +16,8 @@
 package service
 
 // UpdateLicenseIgnoredField update license ignored field (true/false)
-func (as *APIService) UpdateLicenseIgnoredField(hostname string, dbname string, licenseTypeID string, ignored bool) error {
-	if err := as.Database.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored); err != nil {
+func (as *APIService) UpdateLicenseIgnoredField(hostname string, dbname string, licenseTypeID string, ignored bool, ignoredComment string) error {
+	if err := as.Database.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored, ignoredComment); err != nil {
 		return err
 	}
 

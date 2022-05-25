@@ -140,13 +140,20 @@ func (hds *HostDataService) ignoreSqlServerPreviousLicences(previous, new *model
 		return
 	}
 
-	ignoredDbLicenses := make(map[int][]string)
+	type ignoredLicense struct {
+		licenseTypeID string
+		ignored       bool
+		comment       string
+	}
+
+	ignoredDbLicenses := make(map[int][]ignoredLicense)
 
 	for _, db := range previous.Features.Microsoft.SQLServer.Instances {
-		licenses := make([]string, 0)
+		licenses := make([]ignoredLicense, 0)
 
 		if db.License.Ignored {
-			licenses = append(licenses, db.License.LicenseTypeID)
+			ignored := ignoredLicense{ignored: true, licenseTypeID: db.License.LicenseTypeID, comment: db.License.IgnoredComment}
+			licenses = append(licenses, ignored)
 		}
 
 		if len(licenses) > 0 {
@@ -155,8 +162,13 @@ func (hds *HostDataService) ignoreSqlServerPreviousLicences(previous, new *model
 	}
 
 	for i, db := range new.Features.Microsoft.SQLServer.Instances {
-		if licenseTypeID, ok := ignoredDbLicenses[db.DatabaseID]; ok {
-			new.Features.Microsoft.SQLServer.Instances[i].License.Ignored = utils.Contains(licenseTypeID, db.License.LicenseTypeID)
+		if ignoredDbLicense, ok := ignoredDbLicenses[db.DatabaseID]; ok {
+			for _, v := range ignoredDbLicense {
+				if db.License.LicenseTypeID == v.licenseTypeID {
+					new.Features.Microsoft.SQLServer.Instances[i].License.Ignored = v.ignored
+					new.Features.Microsoft.SQLServer.Instances[i].License.IgnoredComment = v.comment
+				}
+			}
 		}
 	}
 }

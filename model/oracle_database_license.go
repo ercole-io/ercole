@@ -17,10 +17,11 @@ package model
 
 // OracleDatabaseLicense holds information about an Oracle database license
 type OracleDatabaseLicense struct {
-	LicenseTypeID string  `json:"licenseTypeID" bson:"licenseTypeID"`
-	Name          string  `json:"name" bson:"name"`
-	Count         float64 `json:"count" bson:"count"`
-	Ignored       bool    `json:"ignored" bson:"ignored"`
+	LicenseTypeID  string  `json:"licenseTypeID" bson:"licenseTypeID"`
+	Name           string  `json:"name" bson:"name"`
+	Count          float64 `json:"count" bson:"count"`
+	Ignored        bool    `json:"ignored" bson:"ignored"`
+	IgnoredComment string  `json:"ignoredComment" bson:"ignoredComment"`
 }
 
 // DiffFeature status of each feature

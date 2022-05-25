@@ -348,13 +348,14 @@ func (as *APIService) getOracleDatabasesUsedLicenses(hostname string, filter dto
 		lt := licenseTypes[o.LicenseTypeID]
 
 		g := dto.DatabaseUsedLicense{
-			Hostname:      o.Hostname,
-			DbName:        o.DbName,
-			LicenseTypeID: o.LicenseTypeID,
-			Description:   lt.ItemDescription,
-			Metric:        lt.Metric,
-			UsedLicenses:  o.UsedLicenses,
-			Ignored:       o.Ignored,
+			Hostname:       o.Hostname,
+			DbName:         o.DbName,
+			LicenseTypeID:  o.LicenseTypeID,
+			Description:    lt.ItemDescription,
+			Metric:         lt.Metric,
+			UsedLicenses:   o.UsedLicenses,
+			Ignored:        o.Ignored,
+			IgnoredComment: o.IgnoredComment,
 		}
 
 		usedLicenses = append(usedLicenses, g)
