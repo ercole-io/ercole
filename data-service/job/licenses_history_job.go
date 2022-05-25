@@ -36,7 +36,6 @@ type HistoricizeLicensesComplianceJob struct {
 	Log      logger.Logger
 }
 
-//TODO Add tests
 func (job *HistoricizeLicensesComplianceJob) Run() {
 	url := utils.NewAPIUrlNoParams(
 		job.Config.APIService.RemoteEndpoint,

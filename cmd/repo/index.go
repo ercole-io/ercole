@@ -617,7 +617,7 @@ func (idx *Index) Remove(artifact *ArtifactInfo) {
 
 	if strings.HasSuffix(artifact.Filename, ".rpm") {
 		idx.log.Debugf("Executing createrepo %s\n", artifact.DirectoryPath(idx.distributedFiles()))
-		cmd := exec.Command("createrepo", artifact.DirectoryPath(idx.distributedFiles())) //TODO Refactor
+		cmd := exec.Command("createrepo", artifact.DirectoryPath(idx.distributedFiles()))
 
 		if verbose {
 			cmd.Stdout = os.Stdout

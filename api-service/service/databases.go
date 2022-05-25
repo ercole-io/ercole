@@ -559,7 +559,7 @@ func (as *APIService) getMySQLUsedLicenses(hostname string, filter dto.GlobalFil
 		g := dto.DatabaseUsedLicense{
 			Hostname:      lic.Hostname,
 			DbName:        lic.InstanceName,
-			LicenseTypeID: "",
+			LicenseTypeID: "B64911",
 			Description:   "MySQL " + lic.InstanceEdition,
 			Metric:        lic.ContractType,
 			UsedLicenses:  1,

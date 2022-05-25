@@ -204,7 +204,6 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 						"pluggableDatabaseName": "$database.pdbs",
 						"environment":           "$environment",
 						"options": mu.APOJoin(mu.APOMap(
-							//TODO Replace with lookup with oracle_database_license_types
 							mu.APOFilter("$database.licenses", "lic",
 								mu.APOAnd(
 									mu.APOGreater("$$lic.count", 0),
@@ -253,7 +252,6 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 									mu.APOAnd(
 										mu.APOGreater("$$lic.count", 0),
 										mu.APOOr(
-											//TODO Replace with lookup with oracle_database_license_types
 											mu.APOEqual("$$lic.name", "Oracle STD"),
 											mu.APOEqual("$$lic.name", "Oracle EXE"),
 											mu.APOEqual("$$lic.name", "Oracle ENT"),

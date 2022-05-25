@@ -43,9 +43,18 @@ type MySQLInstance struct {
 	Databases       []MySQLDatabase       `json:"databases" bson:"databases"`
 	TableSchemas    []MySQLTableSchema    `json:"tableSchemas" bson:"tableSchemas"`
 	SegmentAdvisors []MySQLSegmentAdvisor `json:"segmentAdvisors" bson:"segmentAdvisors"`
+	License         MySQLLicense          `json:"license" bson:"license"`
 }
 
 const (
 	MySQLEditionCommunity  = "COMMUNITY"
 	MySQLEditionEnterprise = "ENTERPRISE"
 )
+
+type MySQLLicense struct {
+	LicenseTypeID  string  `json:"licenseTypeID" bson:"licenseTypeID"`
+	Name           string  `json:"name" bson:"name"`
+	Count          float64 `json:"count" bson:"count"`
+	Ignored        bool    `json:"ignored" bson:"ignored"`
+	IgnoredComment string  `json:"ignoredComment" bson:"ignoredComment"`
+}

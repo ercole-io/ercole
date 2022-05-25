@@ -24,10 +24,6 @@ import (
 	"github.com/ercole-io/ercole/v2/chart-service/dto"
 )
 
-func TestGetLicenseComplianceHistory(t *testing.T) {
-	// TODO
-}
-
 func TestSortAndKeepOnlyLastEntryOfEachDay(t *testing.T) {
 	testCases := []struct {
 		input    []dto.LicenseComplianceHistoricValue

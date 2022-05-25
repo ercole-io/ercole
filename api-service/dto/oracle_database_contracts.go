@@ -55,7 +55,6 @@ type OracleDatabaseContractFE struct {
 
 // OracleDatabaseContractAssociatedHostFE contains the informations about an associated host in contract
 // If contract is Named User, counts are in users
-// TODO Rename: remove Count at the end of each name
 type OracleDatabaseContractAssociatedHostFE struct {
 	Hostname string `json:"hostname" bson:"hostname"`
 	// Licenses which have been covered by contract associated
@@ -65,7 +64,6 @@ type OracleDatabaseContractAssociatedHostFE struct {
 	TotalCoveredLicensesCount float64 `json:"totalCoveredLicensesCount" bson:"totalCoveredLicensesCount"`
 	// Licenses consumed (used) by this hostname, data from agents
 	ConsumedLicensesCount float64 `json:"consumedLicensesCount" bson:"consumedLicensesCount"`
-	//TODO Add Cluster Info?
 }
 
 // GetOracleDatabaseContractsFilter contains the filter used to get the list of Oracle/Database contracts
@@ -109,10 +107,8 @@ type HostUsingOracleDatabaseLicenses struct {
 	Type string `json:"type" bson:"type"`
 	// Licenses to be covered by contract
 	// If LicenseType Metric is Named User Plus Perpetual, value isn't PerUser (must be multiplied *25)
-	// TODO Rename in UncoveredLicenses
 	LicenseCount float64 `json:"licenseCount" bson:"licenseCount"`
 	// Original value of licenseCount (UncoveredLicenses), DO NOT EDIT!
 	// If LicenseType Metric is Named User Plus Perpetual, value isn't PerUser (must be multiplied *25)
-	//TODO Rename in ConsumedLicensesCount
 	OriginalCount float64 `json:"originalCount" bson:"originalCount"`
 }

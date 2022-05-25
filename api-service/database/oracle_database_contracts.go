@@ -114,7 +114,6 @@ func (md *MongoDatabase) ListOracleDatabaseContracts() ([]dto.OracleDatabaseCont
 						"hostname": "$$hn",
 					}),
 
-					//TODO And other licenses types?
 					"licensesPerCore": mu.APOCond(
 						mu.APOOr(
 							mu.APOEqual("$licenseType.metric", model.LicenseTypeMetricProcessorPerpetual),

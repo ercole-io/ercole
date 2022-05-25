@@ -27,7 +27,6 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-//TODO rename this collection with a more generic name
 const licensesHistoryCollection = "oracle_database_licenses_history"
 
 func (md *MongoDatabase) HistoricizeLicensesCompliance(licenses []dto.LicenseCompliance) error {
