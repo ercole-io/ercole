@@ -16,6 +16,7 @@
 package controller
 
 import (
+	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -26,6 +27,7 @@ import (
 
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -44,11 +46,12 @@ func TestUpdateSqlServerLicenseIgnoredField_Success(t *testing.T) {
 		Log: logger.NewLogger("TEST"),
 	}
 
-	as.EXPECT().UpdateSqlServerLicenseIgnoredField("serv123", "TEST123", false).Return(nil)
+	as.EXPECT().UpdateSqlServerLicenseIgnoredField("serv123", "TEST123", false, "").Return(nil)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.UpdateSqlServerLicenseIgnoredField)
-	req, err := http.NewRequest("PUT", "/hosts/serv123/technologies/microsoft/databases/TEST123/false", &FailingReader{})
+	body := model.MicrosoftSQLServerLicense{IgnoredComment: ""}
+	req, err := http.NewRequest("PUT", "/hosts/serv123/technologies/microsoft/databases/TEST123/false", bytes.NewReader([]byte(utils.ToJSON(body))))
 	req = mux.SetURLVars(req, map[string]string{
 		"hostname": "serv123",
 		"dbname":   "TEST123",

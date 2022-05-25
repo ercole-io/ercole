@@ -53,8 +53,9 @@ func TestUpdateLicenseIgnoredField_Success(t *testing.T) {
 									InstanceName: "TEST123",
 									Licenses: []model.OracleDatabaseLicense{
 										{
-											LicenseTypeID: "A90611",
-											Ignored:       true,
+											LicenseTypeID:  "A90611",
+											Ignored:        true,
+											IgnoredComment: "test comment",
 										},
 									},
 								},
@@ -68,9 +69,9 @@ func TestUpdateLicenseIgnoredField_Success(t *testing.T) {
 		hostname, dbname, licenseTypeID := "foobar", "TEST123", "A90611"
 		ignored := true
 
-		db.EXPECT().UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored).Return(nil)
+		db.EXPECT().UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored, "test comment").Return(nil)
 
-		err := as.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored)
+		err := as.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored, "test comment")
 		require.NoError(t, err)
 
 		var resultIgnored bool
@@ -88,9 +89,9 @@ func TestUpdateLicenseIgnoredField_Success(t *testing.T) {
 
 		require.Equal(t, ignored, resultIgnored)
 
-		db.EXPECT().UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, !ignored).Return(nil)
+		db.EXPECT().UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, !ignored, "").Return(nil)
 
-		err = as.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, !ignored)
+		err = as.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, !ignored, "")
 		require.NoError(t, err)
 	})
 }
@@ -111,7 +112,7 @@ func TestUpdateLicenseIgnoredField_Fail(t *testing.T) {
 
 	errUpd := utils.ErrLicenseNotFound
 
-	db.EXPECT().UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored).Return(errUpd)
-	err := as.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored)
+	db.EXPECT().UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored, "").Return(errUpd)
+	err := as.UpdateLicenseIgnoredField(hostname, dbname, licenseTypeID, ignored, "")
 	assert.EqualError(t, err, utils.ErrLicenseNotFound.Error())
 }

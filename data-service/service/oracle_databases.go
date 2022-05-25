@@ -388,14 +388,21 @@ func (hds *HostDataService) ignorePreviousLicences(previous, new *model.HostData
 		return
 	}
 
-	ignoredDbLicenses := make(map[uint][]string)
+	type ignoredLicense struct {
+		licenseTypeID string
+		ignored       bool
+		comment       string
+	}
+
+	ignoredDbLicenses := make(map[uint][]ignoredLicense)
 
 	for _, db := range previous.Features.Oracle.Database.Databases {
-		licenses := make([]string, 0)
+		licenses := make([]ignoredLicense, 0)
 
 		for _, license := range db.Licenses {
 			if license.Ignored {
-				licenses = append(licenses, license.LicenseTypeID)
+				ignored := ignoredLicense{ignored: true, licenseTypeID: license.LicenseTypeID, comment: license.IgnoredComment}
+				licenses = append(licenses, ignored)
 			}
 		}
 
@@ -406,8 +413,13 @@ func (hds *HostDataService) ignorePreviousLicences(previous, new *model.HostData
 
 	for _, db := range new.Features.Oracle.Database.Databases {
 		for i := range db.Licenses {
-			if licenseTypeID, ok := ignoredDbLicenses[db.DbID]; ok {
-				db.Licenses[i].Ignored = utils.Contains(licenseTypeID, db.Licenses[i].LicenseTypeID)
+			if ignoredDbLicense, ok := ignoredDbLicenses[db.DbID]; ok {
+				for _, v := range ignoredDbLicense {
+					if db.Licenses[i].LicenseTypeID == v.licenseTypeID {
+						db.Licenses[i].Ignored = v.ignored
+						db.Licenses[i].IgnoredComment = v.comment
+					}
+				}
 			}
 		}
 	}

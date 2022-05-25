@@ -16,12 +16,15 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 
+	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
@@ -42,8 +45,18 @@ func (ctrl *APIController) UpdateLicenseIgnoredField(w http.ResponseWriter, r *h
 		return
 	}
 
+	req := model.OracleDatabaseLicense{}
+
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(&req); err != nil && !errors.Is(err, io.EOF) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, utils.NewError(err, http.StatusText(http.StatusBadRequest)))
+		return
+	}
+
 	//set the value
-	err = ctrl.Service.UpdateLicenseIgnoredField(hostname, dbname, licensetypeid, ignored)
+	err = ctrl.Service.UpdateLicenseIgnoredField(hostname, dbname, licensetypeid, ignored, req.IgnoredComment)
 	if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
 		return
