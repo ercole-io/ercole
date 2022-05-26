@@ -8,7 +8,7 @@ local go_runtime(version, arch) = {
 
 local task_build_go() = {
   name: 'build go',
-  runtime: go_runtime('1.17', 'amd64'),
+  runtime: go_runtime('1.18.2', 'amd64'),
   steps: [
     { type: 'clone' },
     { type: 'restore_cache', keys: ['cache-sum-{{ md5sum "go.sum" }}', 'cache-date-'], dest_dir: '/go/pkg/mod/cache' },
