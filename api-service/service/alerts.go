@@ -25,8 +25,6 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 	"github.com/ercole-io/ercole/v2/utils/exutils"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
-
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/model"
 )
