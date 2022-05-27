@@ -52,7 +52,7 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 
 	statuses = append(statuses, mysqlStatus)
 
-	sqlServerStatus, err := createSqlServerTechnologyStatus(as, hostsCountByTechnology[model.TechnologyOracleDatabase])
+	sqlServerStatus, err := createSqlServerTechnologyStatus(as, hostsCountByTechnology[model.TechnologyMicrosoftSQLServer])
 	if err != nil {
 		return nil, err
 	}
