@@ -1,4 +1,5 @@
 run:
+  go: '1.18'
   timeout: 5m
   tests: false
 
@@ -21,11 +22,9 @@ linters:
     - govet
     - ineffassign
     - staticcheck
-    - structcheck
     - typecheck
     - unused
     - varcheck
-    - unparam
     - wsl
 
 severity:
