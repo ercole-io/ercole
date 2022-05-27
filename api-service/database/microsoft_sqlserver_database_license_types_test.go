@@ -35,35 +35,21 @@ var sqlServerLicenseTypeExample = model.SqlServerDatabaseLicenseType{
 func (m *MongodbSuite) TestGetSqlServerDatabaseLicenseTypes() {
 	defer m.db.Client.Database(m.dbname).Collection("ms_sqlserver_database_license_types").DeleteMany(context.TODO(), bson.M{})
 
-	m.T().Run("success with empty table", func(t *testing.T) {
-		actual, err := m.db.GetSqlServerDatabaseLicenseTypes()
-		m.Require().NoError(err)
-
-		expected := make([]model.SqlServerDatabaseLicenseType, 0)
-		assert.ElementsMatch(m.T(), expected, actual)
-	})
-
 	m.T().Run("success with some values", func(t *testing.T) {
 		expected := []interface{}{
 			model.SqlServerDatabaseLicenseType{
-				ID:              "test01",
-				ItemDescription: "desc001",
-				Edition:         "Standard",
-				Version:         "test",
+				ID:              "DG7GMGF0FLR2-0002",
+				ItemDescription: "SQL Server 2019 Standard Core - 2 Core License Pack",
+				Edition:         "STD",
+				Version:         "2019",
 			},
 			model.SqlServerDatabaseLicenseType{
-				ID:              "test02",
-				ItemDescription: "desc002",
-				Edition:         "Standard",
-				Version:         "test",
+				ID:              "DG7GMGF0FKZV-0001",
+				ItemDescription: "SQL Server 2019 Enterprise Core - 2 Core License Pack",
+				Edition:         "ENT",
+				Version:         "2019",
 			},
 		}
-
-		ctx := context.TODO()
-		_, err := m.db.Client.Database(m.dbname).
-			Collection("ms_sqlserver_database_license_types").
-			InsertMany(ctx, expected)
-		m.Require().NoError(err)
 
 		actual, err := m.db.GetSqlServerDatabaseLicenseTypes()
 		m.Require().NoError(err)
