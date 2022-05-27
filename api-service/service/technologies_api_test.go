@@ -232,9 +232,10 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 		db.EXPECT().
 			GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 			Return(map[string]float64{
-				model.TechnologyOracleDatabase: 42,
-				model.TechnologyOracleExadata:  43,
-				model.TechnologyOracleMySQL:    44,
+				model.TechnologyOracleDatabase:     42,
+				model.TechnologyOracleExadata:      43,
+				model.TechnologyOracleMySQL:        44,
+				model.TechnologyMicrosoftSQLServer: 42,
 			}, nil),
 		db.EXPECT().
 			ListOracleDatabaseContracts().
@@ -418,8 +419,9 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 		db.EXPECT().
 			GetHostsCountUsingTechnologies("Italy", "PROD", utils.P("2020-12-05T14:02:03Z")).
 			Return(map[string]float64{
-				model.TechnologyOracleDatabase: 42,
-				model.TechnologyOracleExadata:  43,
+				model.TechnologyOracleDatabase:     42,
+				model.TechnologyOracleExadata:      43,
+				model.TechnologyMicrosoftSQLServer: 42,
 			}, nil),
 		db.EXPECT().
 			ListOracleDatabaseContracts().
