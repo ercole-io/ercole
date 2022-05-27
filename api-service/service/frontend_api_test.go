@@ -83,8 +83,9 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 	}
 
 	getTechnologiesUsageRes := map[string]float64{
-		"Oracle/Database": 8,
-		"Oracle/Exadata":  0,
+		"Oracle/Database":     8,
+		"Oracle/Exadata":      0,
+		"Microsoft/SQLServer": 8,
 	}
 
 	contracts := []dto.OracleDatabaseContractFE{
@@ -137,8 +138,9 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 	}
 
 	getTechnologiesUsageRes2 := map[string]float64{
-		"Oracle/Database": 8,
-		"Oracle/Exadata":  2,
+		"Oracle/Database":     8,
+		"Oracle/Exadata":      2,
+		"Microsoft/SQLServer": 8,
 	}
 
 	sqlServerLics := dto.SqlServerDatabaseUsedLicenseSearchResponse{
