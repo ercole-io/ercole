@@ -16,7 +16,9 @@
 package service
 
 import (
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
 func (as *APIService) ListOracleGrantDbaByHostname(hostname string, filter dto.GlobalFilter) ([]dto.OracleGrantDbaDto, error) {
@@ -26,4 +28,38 @@ func (as *APIService) ListOracleGrantDbaByHostname(hostname string, filter dto.G
 	}
 
 	return result, nil
+}
+
+func (as *APIService) CreateOracleGrantDbaXlsx(hostname string, filter dto.GlobalFilter) (*excelize.File, error) {
+	grants, err := as.Database.FindGrantDbaByHostname(hostname, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "DBA Roles"
+	headers := []string{
+		"Hostname",
+		"DB Name",
+		"Grantee",
+		"Admin Option",
+		"Default Role",
+	}
+
+	sheets, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+
+	axisHelp := exutils.NewAxisHelper(1)
+
+	for _, val := range grants {
+		nextAxis := axisHelp.NewRow()
+		sheets.SetCellValue(sheet, nextAxis(), val.Hostname)
+		sheets.SetCellValue(sheet, nextAxis(), val.Databasename)
+		sheets.SetCellValue(sheet, nextAxis(), val.OracleGrantDba.Grantee)
+		sheets.SetCellValue(sheet, nextAxis(), val.OracleGrantDba.AdminOption)
+		sheets.SetCellValue(sheet, nextAxis(), val.OracleGrantDba.DefaultRole)
+	}
+
+	return sheets, err
 }

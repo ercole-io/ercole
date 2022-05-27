@@ -19,7 +19,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/auth"
+	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/api-service/service"
 	"github.com/ercole-io/ercole/v2/config"
 	"github.com/ercole-io/ercole/v2/logger"
@@ -153,6 +155,10 @@ type APIControllerInterface interface {
 	AddOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request)
 	// UpdateOracleDatabaseLicenseType update a licence type - Oracle/Database contract part
 	UpdateOracleDatabaseLicenseType(w http.ResponseWriter, r *http.Request)
+
+	ListOracleGrantDbaByHostname(w http.ResponseWriter, r *http.Request)
+	GetOracleGrantDbaJSON(hostname string, filters *dto.GlobalFilter) ([]dto.OracleGrantDbaDto, error)
+	GetOracleGrantDbaXLSX(hostname string, filters *dto.GlobalFilter) (*excelize.File, error)
 
 	// MYSQL
 
