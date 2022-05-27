@@ -43,7 +43,16 @@ func TestGetSqlServerDatabaseLicenseTypes_Success(t *testing.T) {
 
 	ltRes := []model.SqlServerDatabaseLicenseType{
 		{
-			ItemDescription: "foobar",
+			ID:              "DG7GMGF0FLR2-0002",
+			ItemDescription: "SQL Server 2019 Standard Core - 2 Core License Pack",
+			Edition:         "STD",
+			Version:         "2019",
+		},
+		{
+			ID:              "DG7GMGF0FKZV-0001",
+			ItemDescription: "SQL Server 2019 Enterprise Core - 2 Core License Pack",
+			Edition:         "ENT",
+			Version:         "2019",
 		},
 	}
 
