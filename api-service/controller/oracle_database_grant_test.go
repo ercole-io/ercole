@@ -20,6 +20,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	gomock "github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
@@ -30,6 +31,7 @@ import (
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
 func TestListOracleGrantDbaByHostname_Success(t *testing.T) {
@@ -78,4 +80,55 @@ func TestListOracleGrantDbaByHostname_Success(t *testing.T) {
 	expectedRes := gdRes
 	require.Equal(t, http.StatusOK, rr.Code)
 	assert.JSONEq(t, utils.ToJSON(expectedRes), rr.Body.String())
+}
+
+func TestGetOracleGrantDbaXLSX_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	as := NewMockAPIServiceInterface(mockCtrl)
+	ac := APIController{
+		TimeNow: utils.Btc(utils.P("2019-11-05T14:02:03Z")),
+		Service: as,
+		Config: config.Configuration{
+			ResourceFilePath: "../../resources",
+		},
+		Log: logger.NewLogger("TEST"),
+	}
+
+	filter := dto.GlobalFilter{
+		Location:    "",
+		Environment: "",
+		OlderThan:   utils.MAX_TIME,
+	}
+
+	sheet := "DBA Roles"
+	headers := []string{
+		"Hostname",
+		"DB Name",
+		"Grantee",
+		"Admin Option",
+		"Default Role",
+	}
+
+	expectedRes, _ := exutils.NewXLSX(ac.Config, sheet, headers...)
+
+	as.EXPECT().CreateOracleGrantDbaXlsx("", filter).Return(expectedRes, nil)
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(ac.ListOracleGrantDbaByHostname)
+	req, err := http.NewRequest("GET", "/grant-dba", nil)
+	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	require.NoError(t, err)
+
+	handler.ServeHTTP(rr, req)
+
+	require.Equal(t, http.StatusOK, rr.Code)
+	sp, err := excelize.OpenReader(rr.Body)
+	require.NoError(t, err)
+
+	assert.Equal(t, "Hostname", sp.GetCellValue("DBA Roles", "A1"))
+	assert.Equal(t, "DB Name", sp.GetCellValue("DBA Roles", "B1"))
+	assert.Equal(t, "Grantee", sp.GetCellValue("DBA Roles", "C1"))
+	assert.Equal(t, "Admin Option", sp.GetCellValue("DBA Roles", "D1"))
+	assert.Equal(t, "Default Role", sp.GetCellValue("DBA Roles", "E1"))
 }

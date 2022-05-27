@@ -18,8 +18,10 @@ package controller
 import (
 	"net/http"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
 	"github.com/ercole-io/ercole/v2/utils"
+	"github.com/golang/gddo/httputil"
 	"github.com/gorilla/mux"
 )
 
@@ -37,11 +39,32 @@ func (ctrl *APIController) ListOracleGrantDbaByHostname(w http.ResponseWriter, r
 		hostname = v
 	}
 
-	dbaGrants, err := ctrl.Service.ListOracleGrantDbaByHostname(hostname, *filter)
-	if err != nil {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-		return
-	}
+	choice := httputil.NegotiateContentType(r, []string{"application/json", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}, "application/json")
 
-	utils.WriteJSONResponse(w, http.StatusOK, dbaGrants)
+	switch choice {
+	case "application/json":
+		result, err := ctrl.GetOracleGrantDbaJSON(hostname, filter)
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+			return
+		}
+
+		utils.WriteJSONResponse(w, http.StatusOK, result)
+	case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+		result, err := ctrl.GetOracleGrantDbaXLSX(hostname, filter)
+		if err != nil {
+			utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+			return
+		}
+
+		utils.WriteXLSXResponse(w, result)
+	}
+}
+
+func (ctrl *APIController) GetOracleGrantDbaJSON(hostname string, filters *dto.GlobalFilter) ([]dto.OracleGrantDbaDto, error) {
+	return ctrl.Service.ListOracleGrantDbaByHostname(hostname, *filters)
+}
+
+func (ctrl *APIController) GetOracleGrantDbaXLSX(hostname string, filters *dto.GlobalFilter) (*excelize.File, error) {
+	return ctrl.Service.CreateOracleGrantDbaXlsx(hostname, *filters)
 }
