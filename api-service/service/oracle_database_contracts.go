@@ -63,21 +63,10 @@ func (as *APIService) AddOracleDatabaseContract(contract model.OracleDatabaseCon
 }
 
 func checkHosts(as *APIService, hosts []string) error {
+	commonFilters := dto.NewSearchHostsFilters()
 	notInClusterHosts, err := as.SearchHosts("hostnames",
-		dto.SearchHostsFilters{
-			Search:         []string{""},
-			OlderThan:      utils.MAX_TIME,
-			PageNumber:     -1,
-			PageSize:       -1,
-			LTEMemoryTotal: -1,
-			GTEMemoryTotal: -1,
-			LTESwapTotal:   -1,
-			GTESwapTotal:   -1,
-			LTECPUCores:    -1,
-			GTECPUCores:    -1,
-			LTECPUThreads:  -1,
-			GTECPUThreads:  -1,
-		})
+		commonFilters)
+
 	if err != nil {
 		return utils.NewError(err, "")
 	}
