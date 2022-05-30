@@ -63,23 +63,11 @@ func TestAddOracleDatabaseContract_Success_InsertNew(t *testing.T) {
 
 	expectedAgr := contract
 	expectedAgr.ID = utils.Str2oid("000000000000000000000001")
+	commonFilters := dto.NewSearchHostsFilters()
 
 	gomock.InOrder(
 		db.EXPECT().SearchHosts("hostnames",
-			dto.SearchHostsFilters{
-				Search:         []string{""},
-				OlderThan:      utils.MAX_TIME,
-				PageNumber:     -1,
-				PageSize:       -1,
-				LTEMemoryTotal: -1,
-				GTEMemoryTotal: -1,
-				LTESwapTotal:   -1,
-				GTESwapTotal:   -1,
-				LTECPUCores:    -1,
-				GTECPUCores:    -1,
-				LTECPUThreads:  -1,
-				GTECPUThreads:  -1,
-			}).Return([]map[string]interface{}{
+			commonFilters).Return([]map[string]interface{}{
 			{"hostname": "test-db"},
 			{"hostname": "foobar"},
 			{"hostname": "ercsoldbx"},
@@ -119,6 +107,7 @@ func TestAddOracleDatabaseContract_Success_InsertNew(t *testing.T) {
 }
 
 func TestAddOracleDatabaseContracts_Fail(t *testing.T) {
+	commonFilters := dto.NewSearchHostsFilters()
 	t.Run("Fail: can't find host", func(t *testing.T) {
 		mockCtrl := gomock.NewController(t)
 		defer mockCtrl.Finish()
@@ -150,20 +139,7 @@ func TestAddOracleDatabaseContracts_Fail(t *testing.T) {
 
 		gomock.InOrder(
 			db.EXPECT().SearchHosts("hostnames",
-				dto.SearchHostsFilters{
-					Search:         []string{""},
-					OlderThan:      utils.MAX_TIME,
-					PageNumber:     -1,
-					PageSize:       -1,
-					LTEMemoryTotal: -1,
-					GTEMemoryTotal: -1,
-					LTESwapTotal:   -1,
-					GTESwapTotal:   -1,
-					LTECPUCores:    -1,
-					GTECPUCores:    -1,
-					LTECPUThreads:  -1,
-					GTECPUThreads:  -1,
-				}).
+				commonFilters).
 				Return([]map[string]interface{}{
 					{"hostname": "paperino"},
 					{"hostname": "pippo"},
@@ -206,20 +182,7 @@ func TestAddOracleDatabaseContracts_Fail(t *testing.T) {
 		}
 		gomock.InOrder(
 			db.EXPECT().SearchHosts("hostnames",
-				dto.SearchHostsFilters{
-					Search:         []string{""},
-					OlderThan:      utils.MAX_TIME,
-					PageNumber:     -1,
-					PageSize:       -1,
-					LTEMemoryTotal: -1,
-					GTEMemoryTotal: -1,
-					LTESwapTotal:   -1,
-					GTESwapTotal:   -1,
-					LTECPUCores:    -1,
-					GTECPUCores:    -1,
-					LTECPUThreads:  -1,
-					GTECPUThreads:  -1,
-				}).
+				commonFilters).
 				Return([]map[string]interface{}{
 					{"hostname": "test-db"},
 					{"hostname": "ercsoldbx"},
@@ -240,6 +203,8 @@ func TestUpdateOracleDatabaseContract_Success(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	db := NewMockMongoDatabaseInterface(mockCtrl)
+
+	commonFilters := dto.NewSearchHostsFilters()
 
 	as := APIService{
 		Database: db,
@@ -265,20 +230,7 @@ func TestUpdateOracleDatabaseContract_Success(t *testing.T) {
 
 	gomock.InOrder(
 		db.EXPECT().SearchHosts("hostnames",
-			dto.SearchHostsFilters{
-				Search:         []string{""},
-				OlderThan:      utils.MAX_TIME,
-				PageNumber:     -1,
-				PageSize:       -1,
-				LTEMemoryTotal: -1,
-				GTEMemoryTotal: -1,
-				LTESwapTotal:   -1,
-				GTESwapTotal:   -1,
-				LTECPUCores:    -1,
-				GTECPUCores:    -1,
-				LTECPUThreads:  -1,
-				GTECPUThreads:  -1,
-			}).
+			commonFilters).
 			Return([]map[string]interface{}{
 				{"hostname": "test-db"},
 				{"hostname": "foobar"},
@@ -321,6 +273,8 @@ func TestUpdateOracleDatabaseContract_Fail_LicenseTypeIdNotValid(t *testing.T) {
 
 	db := NewMockMongoDatabaseInterface(mockCtrl)
 
+	commonFilters := dto.NewSearchHostsFilters()
+
 	as := APIService{
 		Database: db,
 		Config: config.Configuration{
@@ -345,20 +299,7 @@ func TestUpdateOracleDatabaseContract_Fail_LicenseTypeIdNotValid(t *testing.T) {
 
 	gomock.InOrder(
 		db.EXPECT().SearchHosts("hostnames",
-			dto.SearchHostsFilters{
-				Search:         []string{""},
-				OlderThan:      utils.MAX_TIME,
-				PageNumber:     -1,
-				PageSize:       -1,
-				LTEMemoryTotal: -1,
-				GTEMemoryTotal: -1,
-				LTESwapTotal:   -1,
-				GTESwapTotal:   -1,
-				LTECPUCores:    -1,
-				GTECPUCores:    -1,
-				LTECPUThreads:  -1,
-				GTECPUThreads:  -1,
-			}).
+			commonFilters).
 			Return([]map[string]interface{}{
 				{"hostname": "test-db"},
 				{"hostname": "foobar"},
@@ -2612,25 +2553,13 @@ func TestAddHostToOracleDatabaseContract(t *testing.T) {
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
+	commonFilters := dto.NewSearchHostsFilters()
 	anotherAssociatedPartID := utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb")
 	t.Run("Fail: can't find host", func(t *testing.T) {
 
 		gomock.InOrder(
 			db.EXPECT().SearchHosts("hostnames",
-				dto.SearchHostsFilters{
-					Search:         []string{""},
-					OlderThan:      utils.MAX_TIME,
-					PageNumber:     -1,
-					PageSize:       -1,
-					LTEMemoryTotal: -1,
-					GTEMemoryTotal: -1,
-					LTESwapTotal:   -1,
-					GTESwapTotal:   -1,
-					LTECPUCores:    -1,
-					GTECPUCores:    -1,
-					LTECPUThreads:  -1,
-					GTECPUThreads:  -1,
-				}).Return([]map[string]interface{}{
+				commonFilters).Return([]map[string]interface{}{
 				{"hostname": "test-db"},
 				{"hostname": "foobar"},
 				{"hostname": "ercsoldbx"},
@@ -2646,20 +2575,7 @@ func TestAddHostToOracleDatabaseContract(t *testing.T) {
 	t.Run("Fail: can't find contract", func(t *testing.T) {
 		gomock.InOrder(
 			db.EXPECT().SearchHosts("hostnames",
-				dto.SearchHostsFilters{
-					Search:         []string{""},
-					OlderThan:      utils.MAX_TIME,
-					PageNumber:     -1,
-					PageSize:       -1,
-					LTEMemoryTotal: -1,
-					GTEMemoryTotal: -1,
-					LTESwapTotal:   -1,
-					GTESwapTotal:   -1,
-					LTECPUCores:    -1,
-					GTECPUCores:    -1,
-					LTECPUThreads:  -1,
-					GTECPUThreads:  -1,
-				}).
+				commonFilters).
 				Return([]map[string]interface{}{
 					{"hostname": "test-db"},
 					{"hostname": "foobar"},
@@ -2700,20 +2616,7 @@ func TestAddHostToOracleDatabaseContract(t *testing.T) {
 
 		gomock.InOrder(
 			db.EXPECT().SearchHosts("hostnames",
-				dto.SearchHostsFilters{
-					Search:         []string{""},
-					OlderThan:      utils.MAX_TIME,
-					PageNumber:     -1,
-					PageSize:       -1,
-					LTEMemoryTotal: -1,
-					GTEMemoryTotal: -1,
-					LTESwapTotal:   -1,
-					GTESwapTotal:   -1,
-					LTECPUCores:    -1,
-					GTECPUCores:    -1,
-					LTECPUThreads:  -1,
-					GTECPUThreads:  -1,
-				}).
+				commonFilters).
 				Return([]map[string]interface{}{
 					{"hostname": "test-db"},
 					{"hostname": "foobar"},
@@ -2744,25 +2647,12 @@ func TestDeleteHostFromOracleDatabaseContract(t *testing.T) {
 		NewObjectID: utils.NewObjectIDForTests(),
 	}
 
+	commonFilters := dto.NewSearchHostsFilters()
 	id := utils.Str2oid("bbbbbbbbbbbbbbbbbbbbbbbb")
 
 	t.Run("Fail: can't get contract", func(t *testing.T) {
 		gomock.InOrder(
-			db.EXPECT().SearchHosts("hostnames",
-				dto.SearchHostsFilters{
-					Search:         []string{""},
-					OlderThan:      utils.MAX_TIME,
-					PageNumber:     -1,
-					PageSize:       -1,
-					LTEMemoryTotal: -1,
-					GTEMemoryTotal: -1,
-					LTESwapTotal:   -1,
-					GTESwapTotal:   -1,
-					LTECPUCores:    -1,
-					GTECPUCores:    -1,
-					LTECPUThreads:  -1,
-					GTECPUThreads:  -1,
-				}).
+			db.EXPECT().SearchHosts("hostnames", commonFilters).
 				Return([]map[string]interface{}{
 					{"hostname": "pippo"},
 				}, nil),
@@ -2803,20 +2693,7 @@ func TestDeleteHostFromOracleDatabaseContract(t *testing.T) {
 
 		gomock.InOrder(
 			db.EXPECT().SearchHosts("hostnames",
-				dto.SearchHostsFilters{
-					Search:         []string{""},
-					OlderThan:      utils.MAX_TIME,
-					PageNumber:     -1,
-					PageSize:       -1,
-					LTEMemoryTotal: -1,
-					GTEMemoryTotal: -1,
-					LTESwapTotal:   -1,
-					GTESwapTotal:   -1,
-					LTECPUCores:    -1,
-					GTECPUCores:    -1,
-					LTECPUThreads:  -1,
-					GTECPUThreads:  -1,
-				}).
+				commonFilters).
 				Return([]map[string]interface{}{
 					{"hostname": "ercsoldbx"},
 				}, nil),
@@ -2846,6 +2723,7 @@ func TestDeleteHostFromOracleDatabaseContracts(t *testing.T) {
 	}
 
 	anotherId := utils.Str2oid("aaaaaaaaaaaaaaaaaaaaaaaa")
+	commonFilters := dto.NewSearchHostsFilters()
 
 	t.Run("Success", func(t *testing.T) {
 		listContract := []dto.OracleDatabaseContractFE{}
@@ -2876,20 +2754,7 @@ func TestDeleteHostFromOracleDatabaseContracts(t *testing.T) {
 
 		gomock.InOrder(
 			db.EXPECT().SearchHosts("hostnames",
-				dto.SearchHostsFilters{
-					Search:         []string{""},
-					OlderThan:      utils.MAX_TIME,
-					PageNumber:     -1,
-					PageSize:       -1,
-					LTEMemoryTotal: -1,
-					GTEMemoryTotal: -1,
-					LTESwapTotal:   -1,
-					GTESwapTotal:   -1,
-					LTECPUCores:    -1,
-					GTECPUCores:    -1,
-					LTECPUThreads:  -1,
-					GTECPUThreads:  -1,
-				}).
+				commonFilters).
 				Return([]map[string]interface{}{
 					{"hostname": "ercsoldbx"},
 				}, nil),
