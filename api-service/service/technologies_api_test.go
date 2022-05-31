@@ -215,6 +215,15 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 			Version:         "2019",
 		},
 	}
+	contracts := []model.MySQLContract{
+		{
+			ID:               [12]byte{},
+			Type:             model.MySQLContractTypeCluster,
+			NumberOfLicenses: 12,
+			Clusters:         []string{"plutocluster"},
+			Hosts:            []string{},
+		},
+	}
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -249,14 +258,14 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(sampleLicenseTypes, nil),
 
+		db.EXPECT().GetMySQLContracts().
+			Return(contracts, nil).AnyTimes(),
+
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
 		db.EXPECT().ListSqlServerDatabaseContracts().
 			Times(1).
 			Return(sqlServerContracts, nil),
-		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
-			Times(1).
-			Return(sqlServerLicenseTypes, nil),
 		db.EXPECT().ListSqlServerDatabaseContracts().
 			Times(1).
 			Return(sqlServerContracts, nil),
@@ -411,6 +420,16 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 		},
 	}
 
+	contracts := []model.MySQLContract{
+		{
+			ID:               [12]byte{},
+			Type:             model.MySQLContractTypeCluster,
+			NumberOfLicenses: 12,
+			Clusters:         []string{"plutocluster"},
+			Hosts:            []string{},
+		},
+	}
+
 	db.EXPECT().GetHostDatas(utils.MAX_TIME).
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
@@ -421,6 +440,7 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 			Return(map[string]float64{
 				model.TechnologyOracleDatabase:     42,
 				model.TechnologyOracleExadata:      43,
+				model.TechnologyOracleMySQL:        44,
 				model.TechnologyMicrosoftSQLServer: 42,
 			}, nil),
 		db.EXPECT().
@@ -432,18 +452,17 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 			Return(&oracleLics, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
-
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(sampleLicenseTypes, nil),
+
+		db.EXPECT().GetMySQLContracts().
+			Return(contracts, nil).AnyTimes(),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
 		db.EXPECT().ListSqlServerDatabaseContracts().
 			Times(1).
 			Return(sqlServerContracts, nil),
-		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
-			Times(1).
-			Return(sqlServerLicenseTypes, nil),
 		db.EXPECT().ListSqlServerDatabaseContracts().
 			Times(1).
 			Return(sqlServerContracts, nil),
@@ -459,7 +478,7 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 
 	expected := []model.TechnologyStatus{
 		{Product: "Oracle/Database", ConsumedByHosts: 100, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 42},
-		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
+		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 44},
 		{Product: "Microsoft/SQLServer", ConsumedByHosts: 8, CoveredByContracts: 8, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 42},
 		{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 		{Product: "PostgreSQL/PostgreSQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},

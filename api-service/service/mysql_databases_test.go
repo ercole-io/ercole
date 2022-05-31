@@ -17,6 +17,7 @@ package service
 
 import (
 	"testing"
+	"time"
 
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -201,7 +202,7 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 					Hostname:        "pippo",
 					InstanceName:    "pippo-instance",
 					InstanceEdition: model.MySQLEditionEnterprise,
-					ContractType:    "",
+					ContractType:    model.MySQLContractTypeHost,
 				},
 			},
 			clusters: []dto.Cluster{
@@ -238,11 +239,12 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 					Hostname:        "pluto",
 					InstanceName:    "pluto-instance",
 					InstanceEdition: model.MySQLEditionEnterprise,
-					ContractType:    "",
+					ContractType:    model.MySQLContractTypeHost,
 				},
 			},
 			clusters: []dto.Cluster{
 				{
+					Name:     "plutocluster",
 					Hostname: "pluto-cluster",
 					VMs: []dto.VM{
 						{
@@ -254,9 +256,9 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 			contracts: []model.MySQLContract{
 				{
 					ID:               [12]byte{},
-					Type:             model.MySQLContractTypeCluster,
+					Type:             model.MySQLContractTypeHost,
 					NumberOfLicenses: 12,
-					Clusters:         []string{"pippo-cluster", "pluto-cluster"},
+					Clusters:         []string{"plutocluster"},
 					Hosts:            []string{},
 				},
 			},
@@ -265,11 +267,38 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 					Hostname:        "pluto",
 					InstanceName:    "pluto-instance",
 					InstanceEdition: model.MySQLEditionEnterprise,
-					ContractType:    model.MySQLContractTypeCluster,
-					Covered:         true,
+					ContractType:    model.MySQLContractTypeHost,
 				},
 			},
 		},
+	}
+
+	cluster := dto.Cluster{
+		ID:                          [12]byte{},
+		CreatedAt:                   time.Time{},
+		Hostname:                    "pluto-cluster",
+		HostnameAgentVirtualization: "",
+		Name:                        "plutocluster",
+		Environment:                 "",
+		Location:                    "",
+		FetchEndpoint:               "",
+		CPU:                         0,
+		Sockets:                     0,
+		Type:                        "",
+		VirtualizationNodes:         []string{},
+		VirtualizationNodesCount:    0,
+		VirtualizationNodesStats:    []dto.VirtualizationNodesStat{},
+		VMs: []dto.VM{
+			{
+				CappedCPU:          false,
+				Hostname:           "pluto",
+				Name:               "",
+				VirtualizationNode: "",
+				IsErcoleInstalled:  false,
+			},
+		},
+		VMsCount:            0,
+		VMsErcoleAgentCount: 0,
 	}
 
 	for _, tc := range testCases {
@@ -291,6 +320,8 @@ func TestGetMySQLUsedLicenses(t *testing.T) {
 				Return(tc.clusters, nil),
 			db.EXPECT().GetMySQLContracts().
 				Return(tc.contracts, nil),
+			db.EXPECT().GetCluster("plutocluster", utils.MAX_TIME).
+				Return(&cluster, nil).AnyTimes(),
 		)
 
 		actual, err := as.GetMySQLUsedLicenses("", filter)
@@ -326,8 +357,7 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 					Hostname:        "pluto",
 					InstanceName:    "pluto-instance",
 					InstanceEdition: model.MySQLEditionEnterprise,
-					ContractType:    "",
-					Covered:         true,
+					ContractType:    model.MySQLContractTypeHost,
 				},
 			},
 			clusters: []dto.Cluster{
@@ -345,28 +375,22 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 					ID:               [12]byte{},
 					Type:             model.MySQLContractTypeHost,
 					NumberOfLicenses: 12,
+					LicenseTypeID:    model.MySqlPartNumber,
 					Clusters:         []string{},
 					Hosts:            []string{"pippo", "topolino", "pluto"},
 				},
 			},
 			expected: []dto.LicenseCompliance{
 				{
-					LicenseTypeID:   "",
-					ItemDescription: "MySQL ENTERPRISE",
-					Metric:          "HOST",
-					Consumed:        1,
-					Covered:         1,
-					Compliance:      1,
-					Unlimited:       false,
-				},
-				{
-					LicenseTypeID:   "",
-					ItemDescription: "MySQL ENTERPRISE",
-					Metric:          "CLUSTER",
+					LicenseTypeID:   model.MySqlPartNumber,
+					ItemDescription: model.MySqlItemDescription,
+					Metric:          model.MySQLContractTypeHost,
 					Consumed:        0,
 					Covered:         0,
 					Compliance:      1,
 					Unlimited:       false,
+					Purchased:       0,
+					Available:       0,
 				},
 			},
 		},
@@ -376,13 +400,15 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 					Hostname:        "pluto",
 					InstanceName:    "pluto-instance",
 					InstanceEdition: model.MySQLEditionEnterprise,
-					ContractType:    "",
+					ContractType:    model.MySQLContractTypeHost,
+					LicenseTypeID:   model.MySqlPartNumber,
 				},
 				{
 					Hostname:        "pippo",
 					InstanceName:    "pippo-instance",
 					InstanceEdition: model.MySQLEditionEnterprise,
-					ContractType:    "",
+					ContractType:    model.MySQLContractTypeHost,
+					LicenseTypeID:   model.MySqlPartNumber,
 				},
 			},
 			clusters: []dto.Cluster{
@@ -406,20 +432,11 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 			},
 			expected: []dto.LicenseCompliance{
 				{
-					LicenseTypeID:   "",
-					ItemDescription: "MySQL ENTERPRISE",
-					Metric:          "HOST",
-					Consumed:        1,
+					LicenseTypeID:   model.MySqlPartNumber,
+					ItemDescription: model.MySqlItemDescription,
+					Metric:          model.MySQLContractTypeHost,
+					Consumed:        0,
 					Covered:         0,
-					Compliance:      0,
-					Unlimited:       false,
-				},
-				{
-					LicenseTypeID:   "",
-					ItemDescription: "MySQL ENTERPRISE",
-					Metric:          "CLUSTER",
-					Consumed:        1,
-					Covered:         1,
 					Compliance:      1,
 					Unlimited:       false,
 				},
@@ -433,19 +450,14 @@ func TestGetMySQLDatabaseLicensesCompliance(t *testing.T) {
 			Environment: "",
 			OlderThan:   utils.MAX_TIME,
 		}
-		any := dto.GlobalFilter{
-			Location:    "",
-			Environment: "",
-			OlderThan:   utils.MAX_TIME,
-		}
 
 		gomock.InOrder(
 			db.EXPECT().GetMySQLUsedLicenses("", filter).
 				Return(tc.usedLicenses, nil),
-			db.EXPECT().GetClusters(any).
+			db.EXPECT().GetClusters(filter).
 				Return(tc.clusters, nil),
 			db.EXPECT().GetMySQLContracts().
-				Return(tc.contracts, nil),
+				Return(tc.contracts, nil).AnyTimes(),
 		)
 
 		actual, err := as.GetMySQLDatabaseLicensesCompliance()
