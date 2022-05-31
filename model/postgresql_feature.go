@@ -15,10 +15,6 @@
 
 package model
 
-// Features holds various informations about the features of the host.
-type Features struct {
-	Oracle     *OracleFeature     `json:"oracle,omitempty" bson:"oracle,omitempty"`
-	Microsoft  *MicrosoftFeature  `json:"microsoft,omitempty" bson:"microsoft,omitempty"`
-	MySQL      *MySQLFeature      `json:"mysql,omitempty" bson:"mysql,omitempty"`
-	PostgreSQL *PostgreSQLFeature `json:"postgresql,omitempty" bson:"postgresql,omitempty"`
+type PostgreSQLFeature struct {
+	Instances []PostgreSQLInstance `json:"instances" bson:"instances"`
 }
