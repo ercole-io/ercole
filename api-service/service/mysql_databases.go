@@ -226,7 +226,6 @@ func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseComplia
 						if usedLicense.Clustername != "" {
 							for _, clusterContract := range contract.Clusters {
 								if clusterContract == cluster.Name {
-
 									isInCluster = true
 
 									break
