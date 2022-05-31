@@ -66,14 +66,20 @@ func (md *MongoDatabase) GetMySQLUsedLicenses(hostname string, filter dto.Global
 			FilterByOldnessSteps(filter.OlderThan),
 			FilterByLocationAndEnvironmentSteps(filter.Location, filter.Environment),
 			mu.APUnwind("$features.mysql.instances"),
+			mu.APUnwind("$features.mysql.instances.license"),
 			mu.APMatch(bson.M{
 				// Only ENTERPRISE MySQL db are considered as licenses
-				"features.mysql.instances.edition": model.MySQLEditionEnterprise,
+				"features.mysql.instances.edition":       model.MySQLEditionEnterprise,
+				"features.mysql.instances.license.count": bson.M{"$gt": 0},
 			}),
 			mu.APProject(bson.M{
 				"hostname":        1,
 				"instanceName":    "$features.mysql.instances.name",
-				"instanceEdition": "$features.mysql.instances.edition",
+				"instanceEdition": "$features.mysql.instances.license.name",
+				"licenseTypeID":   "$features.mysql.instances.license.licenseTypeID",
+				"usedLicenses":    "$features.mysql.instances.license.count",
+				"ignored":         "$features.mysql.instances.license.ignored",
+				"ignoredComment":  "$features.mysql.instances.license.ignoredComment",
 			}),
 			mu.APReplaceWith(mu.APOMergeObjects("$$ROOT", "$instance")),
 			mu.APUnset("instance"),

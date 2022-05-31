@@ -17,6 +17,7 @@
 package service
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -129,36 +130,31 @@ func (as *APIService) GetMySQLUsedLicenses(hostname string, filter dto.GlobalFil
 		return nil, err
 	}
 
-	hostCoveredForCluster := make(map[string]bool, len(contracts))
-	hostCoveredAsHost := make(map[string]bool, len(contracts))
+	hostWithCluster := make(map[string]string, len(contracts))
 
 	for _, contract := range contracts {
 		if contract.Type == model.MySQLContractTypeCluster {
-			for _, cluster := range contract.Clusters {
-				for _, vm := range clusters[cluster].VMs {
-					hostCoveredForCluster[vm.Hostname] = true
+			for _, clusterName := range contract.Clusters {
+				cluster, err := as.Database.GetCluster(clusterName, utils.MAX_TIME)
+				if err != nil {
+					continue
+				}
+
+				hostWithCluster[cluster.Hostname] = clusterName
+				for _, vm := range clusters[clusterName].VMs {
+					hostWithCluster[vm.Hostname] = clusterName
 				}
 			}
-
-			continue
 		}
-
-		if contract.Type == model.MySQLContractTypeHost {
-			for _, host := range contract.Hosts {
-				hostCoveredAsHost[host] = true
-			}
-
-			continue
-		}
-
-		as.Log.Errorf("Unknown MySQLContractType: %s", contract.Type)
 	}
 
 	for i := range usedLicenses {
 		usedLicense := &usedLicenses[i]
-		if hostCoveredForCluster[usedLicense.Hostname] {
+		_, ok := hostWithCluster[usedLicense.Hostname]
+
+		if ok {
 			usedLicense.ContractType = model.MySQLContractTypeCluster
-			usedLicense.Covered = true
+			usedLicense.Clustername = hostWithCluster[usedLicense.Hostname]
 
 			continue
 		}
@@ -170,72 +166,128 @@ func (as *APIService) GetMySQLUsedLicenses(hostname string, filter dto.GlobalFil
 }
 
 func (as *APIService) GetMySQLDatabaseLicensesCompliance() ([]dto.LicenseCompliance, error) {
+	licenses := make(map[string]*dto.LicenseCompliance)
+	purchasedContracts := make(map[string]int)
+
 	any := dto.GlobalFilter{
 		Location:    "",
 		Environment: "",
 		OlderThan:   utils.MAX_TIME,
 	}
 
-	licenses, err := as.GetMySQLUsedLicenses("", any)
+	usedLicenses, err := as.GetMySQLUsedLicenses("", any)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(licenses) == 0 {
+	if len(usedLicenses) == 0 {
 		return []dto.LicenseCompliance{}, nil
 	}
 
-	perCluster := dto.LicenseCompliance{
-		LicenseTypeID:   "",
-		ItemDescription: "MySQL " + model.MySQLEditionEnterprise,
-		Metric:          model.MySQLContractTypeCluster,
-		Cost:            0,
-		Consumed:        0,
-		Covered:         0,
-		Compliance:      0,
-		Unlimited:       false,
+	contracts, err := as.Database.GetMySQLContracts()
+	if err != nil {
+		return nil, err
 	}
 
-	perHost := dto.LicenseCompliance{
-		LicenseTypeID:   "",
-		ItemDescription: "MySQL " + model.MySQLEditionEnterprise,
-		Metric:          model.MySQLContractTypeHost,
-		Cost:            0,
-		Consumed:        0,
-		Covered:         0,
-		Compliance:      0,
-		Unlimited:       false,
+	for _, usedLicense := range usedLicenses {
+		license, ok := licenses[usedLicense.LicenseTypeID]
+
+		var errC error
+
+		if !ok {
+			license, errC = getNewMySqlLicenseCompliance(usedLicense)
+			if errC != nil {
+				as.Log.Errorf(errC.Error())
+				continue
+			}
+
+			licenses[usedLicense.LicenseTypeID] = license
+		}
+
+		var isContract bool
+
+		var isInCluster bool
+
+		for _, contract := range contracts {
+			if contract.LicenseTypeID == usedLicense.LicenseTypeID && contract.Type == usedLicense.ContractType {
+				isContract = true
+				_, ok := purchasedContracts[contract.ContractID]
+
+				if !ok {
+					purchasedContracts[contract.ContractID] = int(contract.NumberOfLicenses)
+					license.Purchased = float64(contract.NumberOfLicenses)
+
+					if contract.Type == model.MySQLContractTypeCluster {
+						cluster, err := as.GetCluster(usedLicense.Clustername, utils.MAX_TIME)
+						if err != nil {
+							continue
+						}
+
+						if usedLicense.Clustername != "" {
+							for _, clusterContract := range contract.Clusters {
+								if clusterContract == cluster.Name {
+									isInCluster = true
+
+									break
+								}
+							}
+						}
+
+						license.Consumed = float64(cluster.CPU)
+					}
+				}
+
+				if contract.Type == model.MySQLContractTypeHost {
+					if !isInCluster {
+						license.Consumed += usedLicense.UsedLicenses
+					}
+				}
+			}
+		}
+
+		if usedLicense.ContractType == model.MySQLContractTypeHost && !isContract {
+			license.Consumed += usedLicense.UsedLicenses
+		}
 	}
+
+	result := make([]dto.LicenseCompliance, 0, len(licenses))
 
 	for _, license := range licenses {
-		var lc *dto.LicenseCompliance
-		if license.ContractType == model.MySQLContractTypeHost {
-			lc = &perHost
-		} else if license.ContractType == model.MySQLContractTypeCluster {
-			lc = &perCluster
+		if license.Purchased != 0 {
+			if license.Purchased >= license.Consumed {
+				license.Covered = license.Consumed
+			} else {
+				license.Covered = license.Purchased
+			}
+
+			license.Available = license.Purchased - license.Covered
+		}
+
+		if license.Consumed == 0 {
+			license.Compliance = 1
 		} else {
-			as.Log.Errorf("Unknown MySQLContractType: %s", license.ContractType)
-			continue
+			license.Compliance = license.Covered / license.Consumed
 		}
 
-		if license.Covered {
-			lc.Covered += 1
-		}
-
-		lc.Consumed += 1
-	}
-
-	result := make([]dto.LicenseCompliance, 0, 2)
-
-	for _, lc := range []*dto.LicenseCompliance{&perCluster, &perHost} {
-		if lc.Consumed == 0 {
-			lc.Compliance = 1
-		} else {
-			lc.Compliance = lc.Covered / lc.Consumed
-		}
-
-		result = append(result, *lc)
+		result = append(result, *license)
 	}
 
 	return result, nil
+}
+
+func getNewMySqlLicenseCompliance(usedLicense dto.MySQLUsedLicense) (*dto.LicenseCompliance, error) {
+	var licenseCompliance dto.LicenseCompliance
+
+	licenseCompliance.LicenseTypeID = model.MySqlPartNumber
+	licenseCompliance.ItemDescription = model.MySqlItemDescription
+
+	if usedLicense.ContractType == model.MySQLContractTypeHost {
+		licenseCompliance.Metric = model.MySQLContractTypeHost
+	} else if usedLicense.ContractType == model.MySQLContractTypeCluster {
+		licenseCompliance.Metric = model.MySQLContractTypeCluster
+	} else {
+		return nil, errors.New("Unknown MySqlContractType: " + usedLicense.ContractType)
+	}
+
+	return &licenseCompliance, nil
 }

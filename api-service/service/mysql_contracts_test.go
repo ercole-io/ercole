@@ -42,6 +42,7 @@ func TestAddMySQLContract(t *testing.T) {
 			ID:               utils.Str2oid("000000000000000000000001"),
 			Type:             "server",
 			NumberOfLicenses: 42,
+			LicenseTypeID:    model.MySqlPartNumber,
 			Clusters:         []string{"pippo"},
 			Hosts:            []string{"pluto"},
 		}
@@ -51,6 +52,7 @@ func TestAddMySQLContract(t *testing.T) {
 		contract := model.MySQLContract{
 			Type:             "server",
 			NumberOfLicenses: 42,
+			LicenseTypeID:    model.MySqlPartNumber,
 			Clusters:         []string{"pippo"},
 			Hosts:            []string{"pluto"},
 		}
@@ -62,7 +64,8 @@ func TestAddMySQLContract(t *testing.T) {
 
 	t.Run("Error", func(t *testing.T) {
 		contract := model.MySQLContract{
-			ID: utils.Str2oid("000000000000000000000002"),
+			ID:            utils.Str2oid("000000000000000000000002"),
+			LicenseTypeID: model.MySqlPartNumber,
 		}
 		db.EXPECT().AddMySQLContract(contract).
 			Return(errMock).Times(1)

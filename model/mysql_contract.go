@@ -22,6 +22,7 @@ type MySQLContract struct {
 	Type             string             `json:"type" bson:"type"`
 	ContractID       string             `json:"contractID" bson:"contractID"`
 	CSI              string             `json:"csi" bson:"csi"`
+	LicenseTypeID    string             `json:"licenseTypeID" bson:"licenseTypeID"`
 	NumberOfLicenses uint               `json:"numberOfLicenses" bson:"numberOfLicenses"`
 	Clusters         []string           `json:"clusters" bson:"clusters"`
 	Hosts            []string           `json:"hosts" bson:"hosts"`
@@ -31,6 +32,10 @@ const (
 	MySQLContractTypeHost    string = "HOST"
 	MySQLContractTypeCluster string = "CLUSTER"
 )
+
+const MySqlPartNumber = "B64911"
+
+const MySqlItemDescription = "MySQL Enterprise Edition"
 
 func getMySQLContractTypes() []string {
 	return []string{MySQLContractTypeHost, MySQLContractTypeCluster}
