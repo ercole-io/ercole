@@ -220,8 +220,16 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 			ID:               [12]byte{},
 			Type:             model.MySQLContractTypeCluster,
 			NumberOfLicenses: 12,
-			Clusters:         []string{"plutocluster"},
+			Clusters:         []string{},
 			Hosts:            []string{},
+		},
+	}
+	usedLicenses := []dto.MySQLUsedLicense{
+		{
+			Hostname:        "pluto",
+			InstanceName:    "pluto-instance",
+			InstanceEdition: model.MySQLEditionEnterprise,
+			ContractType:    "",
 		},
 	}
 
@@ -258,8 +266,12 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(sampleLicenseTypes, nil),
 
+		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
+			Return(usedLicenses, nil),
 		db.EXPECT().GetMySQLContracts().
-			Return(contracts, nil).AnyTimes(),
+			Return(contracts, nil),
+		db.EXPECT().GetMySQLContracts().
+			Return(contracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
@@ -282,7 +294,7 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 
 	expected := []model.TechnologyStatus{
 		{Product: "Oracle/Database", ConsumedByHosts: 32, CoveredByContracts: 18, TotalCost: 0, PaidCost: 0, Compliance: 0.5625, UnpaidDues: 0, HostsCount: 42},
-		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 44},
+		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 44},
 		{Product: "Microsoft/SQLServer", ConsumedByHosts: 8, CoveredByContracts: 8, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 42},
 		{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 		{Product: "PostgreSQL/PostgreSQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
@@ -425,8 +437,17 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 			ID:               [12]byte{},
 			Type:             model.MySQLContractTypeCluster,
 			NumberOfLicenses: 12,
-			Clusters:         []string{"plutocluster"},
+			Clusters:         []string{},
 			Hosts:            []string{},
+		},
+	}
+
+	usedLicenses := []dto.MySQLUsedLicense{
+		{
+			Hostname:        "pluto",
+			InstanceName:    "pluto-instance",
+			InstanceEdition: model.MySQLEditionEnterprise,
+			ContractType:    "",
 		},
 	}
 
@@ -455,8 +476,12 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(sampleLicenseTypes, nil),
 
+		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
+			Return(usedLicenses, nil),
 		db.EXPECT().GetMySQLContracts().
-			Return(contracts, nil).AnyTimes(),
+			Return(contracts, nil),
+		db.EXPECT().GetMySQLContracts().
+			Return(contracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
@@ -478,7 +503,7 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 
 	expected := []model.TechnologyStatus{
 		{Product: "Oracle/Database", ConsumedByHosts: 100, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 42},
-		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 44},
+		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 44},
 		{Product: "Microsoft/SQLServer", ConsumedByHosts: 8, CoveredByContracts: 8, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 42},
 		{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 		{Product: "PostgreSQL/PostgreSQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
