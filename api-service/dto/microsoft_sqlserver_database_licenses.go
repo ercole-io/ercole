@@ -23,11 +23,12 @@ type SqlServerDatabaseUsedLicenseSearchResponse struct {
 
 // OracleDatabaseUsedLicense dto
 type SqlServerDatabaseUsedLicense struct {
-	LicenseTypeID string  `json:"licenseTypeID" bson:"licenseTypeID"`
-	DbName        string  `json:"dbName" bson:"dbName"`
-	Hostname      string  `json:"hostname" bson:"hostname"`
-	Clustername   string  `json:"clustername" bson:"clustername"`
-	UsedLicenses  float64 `json:"usedLicenses" bson:"usedLicenses"`
-	Ignored       bool    `json:"ignored" bson:"ignored"`
-	ContractType  string  `json:"contractType" bson:"contractType"`
+	LicenseTypeID  string  `json:"licenseTypeID" bson:"licenseTypeID"`
+	DbName         string  `json:"dbName" bson:"dbName"`
+	Hostname       string  `json:"hostname" bson:"hostname"`
+	Clustername    string  `json:"clustername" bson:"clustername"`
+	UsedLicenses   float64 `json:"usedLicenses" bson:"usedLicenses"`
+	Ignored        bool    `json:"ignored" bson:"ignored"`
+	IgnoredComment string  `json:"ignoredComment" bson:"ignoredComment"`
+	ContractType   string  `json:"contractType" bson:"contractType"`
 }
