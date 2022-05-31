@@ -147,6 +147,13 @@
                             "encrypted": false
                         }
                     ],
+                    "license" :{
+                        "licenseTypeID": "B64911",
+                        "name": "MySQL Enterprise Edition",
+                        "count": 1,
+                        "ignored": false,
+                        "ignoredComment": ""
+                    },
                     "platform": "Linux",
                     "architecture": "x86_64",
                     "redoLogEnabled": "ON",

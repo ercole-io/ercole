@@ -13,20 +13,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package service
+package dto
 
-import (
-	"github.com/ercole-io/ercole/v2/model"
-)
-
-// GetMySqlDatabaseLicenseTypes return the list of MySqlDatabaseLicenseTypes
-func (as *APIService) GetMySqlLicenseTypes() ([]model.MySqlLicenseType, error) {
-	parts := []model.MySqlLicenseType{
-		{
-			ID:              model.MySqlPartNumber,
-			ItemDescription: model.MySqlItemDescription,
-		},
-	}
-
-	return parts, nil
+type MySQLUsedLicense struct {
+	LicenseTypeID   string  `json:"licenseTypeID" bson:"licenseTypeID"`
+	Hostname        string  `json:"hostname" bson:"hostname"`
+	InstanceName    string  `json:"instanceName" bson:"instanceName"`
+	InstanceEdition string  `json:"instanceEdition" bson:"instanceEdition"`
+	Clustername     string  `json:"clustername" bson:"clustername"`
+	UsedLicenses    float64 `json:"usedLicenses" bson:"usedLicenses"`
+	Ignored         bool    `json:"ignored" bson:"ignored"`
+	IgnoredComment  string  `json:"ignoredComment" bson:"ignoredComment"`
+	ContractType    string  `json:"contractType" bson:"contractType"`
 }

@@ -166,9 +166,6 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 		db.EXPECT().ListSqlServerDatabaseContracts().
 			Times(1).
 			Return(sqlServerContracts, nil),
-		db.EXPECT().GetSqlServerDatabaseLicenseTypes().
-			Times(1).
-			Return(sqlServerLicenseTypes, nil),
 		db.EXPECT().ListSqlServerDatabaseContracts().
 			Times(1).
 			Return(sqlServerContracts, nil),

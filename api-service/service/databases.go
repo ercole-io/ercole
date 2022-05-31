@@ -557,12 +557,14 @@ func (as *APIService) getMySQLUsedLicenses(hostname string, filter dto.GlobalFil
 
 	for _, lic := range mysqlLics {
 		g := dto.DatabaseUsedLicense{
-			Hostname:      lic.Hostname,
-			DbName:        lic.InstanceName,
-			LicenseTypeID: "B64911",
-			Description:   "MySQL " + lic.InstanceEdition,
-			Metric:        lic.ContractType,
-			UsedLicenses:  1,
+			Hostname:       lic.Hostname,
+			DbName:         lic.InstanceName,
+			LicenseTypeID:  lic.LicenseTypeID,
+			Description:    lic.InstanceEdition,
+			Metric:         lic.ContractType,
+			UsedLicenses:   lic.UsedLicenses,
+			Ignored:        lic.Ignored,
+			IgnoredComment: lic.IgnoredComment,
 		}
 
 		genericLics = append(genericLics, g)
