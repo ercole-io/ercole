@@ -149,11 +149,6 @@ func (as *APIService) GetSqlServerDatabaseLicensesCompliance() ([]dto.LicenseCom
 		return []dto.LicenseCompliance{}, nil
 	}
 
-	licenseTypes, err := as.GetSqlServerDatabaseLicenseTypesAsMap()
-	if err != nil {
-		return nil, err
-	}
-
 	contracts, err := as.Database.ListSqlServerDatabaseContracts()
 	if err != nil {
 		return nil, err
@@ -170,7 +165,7 @@ func (as *APIService) GetSqlServerDatabaseLicensesCompliance() ([]dto.LicenseCom
 		var errC error
 
 		if !ok {
-			license, errC = getNewLicenseCompliance(licenseTypes, usedLicense)
+			license, errC = getNewSqlServerLicenseCompliance(lts, usedLicense)
 			if errC != nil {
 				as.Log.Errorf(errC.Error())
 				continue
@@ -257,7 +252,7 @@ func (as *APIService) GetSqlServerDatabaseLicensesCompliance() ([]dto.LicenseCom
 	return result, nil
 }
 
-func getNewLicenseCompliance(licenseTypes map[string]model.SqlServerDatabaseLicenseType, usedLicense dto.SqlServerDatabaseUsedLicense) (*dto.LicenseCompliance, error) {
+func getNewSqlServerLicenseCompliance(licenseTypes map[string]model.SqlServerDatabaseLicenseType, usedLicense dto.SqlServerDatabaseUsedLicense) (*dto.LicenseCompliance, error) {
 	lt := licenseTypes[usedLicense.LicenseTypeID]
 
 	var licenseCompliance dto.LicenseCompliance

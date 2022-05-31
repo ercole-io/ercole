@@ -26,6 +26,7 @@ import (
 
 func (as *APIService) AddMySQLContract(contract model.MySQLContract) (*model.MySQLContract, error) {
 	contract.ID = as.NewObjectID()
+	contract.LicenseTypeID = model.MySqlPartNumber
 
 	err := as.Database.AddMySQLContract(contract)
 	if err != nil {
