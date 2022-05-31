@@ -43,12 +43,13 @@ func (md *MongoDatabase) SearchSqlServerDatabaseUsedLicenses(hostname string, so
 			bson.M{"$unwind": bson.M{"path": "$licenseType", "preserveNullAndEmptyArrays": true}},
 			mu.APProject(
 				bson.M{
-					"_id":           0,
-					"hostname":      1,
-					"dbName":        "$features.microsoft.sqlServer.instances.name",
-					"licenseTypeID": "$features.microsoft.sqlServer.instances.license.licenseTypeID",
-					"usedLicenses":  "$features.microsoft.sqlServer.instances.license.count",
-					"ignored":       "$features.microsoft.sqlServer.instances.license.ignored",
+					"_id":            0,
+					"hostname":       1,
+					"dbName":         "$features.microsoft.sqlServer.instances.name",
+					"licenseTypeID":  "$features.microsoft.sqlServer.instances.license.licenseTypeID",
+					"usedLicenses":   "$features.microsoft.sqlServer.instances.license.count",
+					"ignored":        "$features.microsoft.sqlServer.instances.license.ignored",
+					"ignoredComment": "$features.microsoft.sqlServer.instances.license.ignoredComment",
 				},
 			),
 

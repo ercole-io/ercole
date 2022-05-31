@@ -316,13 +316,14 @@ func (as *APIService) getSqlServerDatabasesUsedLicenses(hostname string, filter 
 		lt := licenseTypes[lic.LicenseTypeID]
 
 		g := dto.DatabaseUsedLicense{
-			Hostname:      lic.Hostname,
-			DbName:        lic.DbName,
-			LicenseTypeID: lic.LicenseTypeID,
-			Description:   lt.ItemDescription,
-			Metric:        lic.ContractType,
-			UsedLicenses:  lic.UsedLicenses,
-			Ignored:       lic.Ignored,
+			Hostname:       lic.Hostname,
+			DbName:         lic.DbName,
+			LicenseTypeID:  lic.LicenseTypeID,
+			Description:    lt.ItemDescription,
+			Metric:         lic.ContractType,
+			UsedLicenses:   lic.UsedLicenses,
+			Ignored:        lic.Ignored,
+			IgnoredComment: lic.IgnoredComment,
 		}
 
 		genericLics = append(genericLics, g)
