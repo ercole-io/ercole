@@ -86,7 +86,9 @@ func TestUpdateMySQLContract(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		contract := model.MySQLContract{}
+		contract := model.MySQLContract{
+			LicenseTypeID: model.MySqlPartNumber,
+		}
 		db.EXPECT().UpdateMySQLContract(contract).
 			Return(nil).Times(1)
 
@@ -96,7 +98,9 @@ func TestUpdateMySQLContract(t *testing.T) {
 	})
 
 	t.Run("Error", func(t *testing.T) {
-		contract := model.MySQLContract{}
+		contract := model.MySQLContract{
+			LicenseTypeID: model.MySqlPartNumber,
+		}
 		db.EXPECT().UpdateMySQLContract(contract).
 			Return(errMock).Times(1)
 

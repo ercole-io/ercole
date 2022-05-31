@@ -46,7 +46,7 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 					"unpaidDues": 0,
 				},
 				{
-					"compliance": 0,
+					"compliance": 1,
 					"unpaidDues": 0,
 					"product":    model.TechnologyOracleMySQL,
 					"hostsCount": 0,
@@ -184,6 +184,25 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		},
 	}
 
+	usedLicenses := []dto.MySQLUsedLicense{
+		{
+			Hostname:        "pluto",
+			InstanceName:    "pluto-instance",
+			InstanceEdition: model.MySQLEditionEnterprise,
+			ContractType:    "",
+		},
+	}
+
+	mySqlcontracts := []model.MySQLContract{
+		{
+			ID:               [12]byte{},
+			Type:             model.MySQLContractTypeCluster,
+			NumberOfLicenses: 12,
+			Clusters:         []string{},
+			Hosts:            []string{},
+		},
+	}
+
 	db.EXPECT().GetHostDatas(utils.MAX_TIME).
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
@@ -202,10 +221,16 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		db.EXPECT().
 			GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
-
 		db.EXPECT().
 			GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
+
+		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
+			Return(usedLicenses, nil),
+		db.EXPECT().GetMySQLContracts().
+			Return(mySqlcontracts, nil),
+		db.EXPECT().GetMySQLContracts().
+			Return(mySqlcontracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
@@ -237,6 +262,13 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 		db.EXPECT().
 			GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
+
+		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
+			Return(usedLicenses, nil),
+		db.EXPECT().GetMySQLContracts().
+			Return(mySqlcontracts, nil),
+		db.EXPECT().GetMySQLContracts().
+			Return(mySqlcontracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
@@ -378,6 +410,25 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 		},
 	}
 
+	usedLicenses := []dto.MySQLUsedLicense{
+		{
+			Hostname:        "pluto",
+			InstanceName:    "pluto-instance",
+			InstanceEdition: model.MySQLEditionEnterprise,
+			ContractType:    "",
+		},
+	}
+
+	mySqlcontracts := []model.MySQLContract{
+		{
+			ID:               [12]byte{},
+			Type:             model.MySQLContractTypeCluster,
+			NumberOfLicenses: 12,
+			Clusters:         []string{},
+			Hosts:            []string{},
+		},
+	}
+
 	db.EXPECT().GetHostDatas(utils.MAX_TIME).
 		Times(1).
 		Return(hostdatas, nil).AnyTimes()
@@ -393,17 +444,21 @@ func TestGetInfoForFrontendDashboard_Fail2(t *testing.T) {
 		db.EXPECT().
 			ListOracleDatabaseContracts().
 			Return(contracts, nil).AnyTimes().MinTimes(1),
-
 		db.EXPECT().SearchOracleDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&oracleLics, nil),
-
+		db.EXPECT().
+			GetOracleDatabaseLicenseTypes().
+			Return(ltRes, nil),
 		db.EXPECT().
 			GetOracleDatabaseLicenseTypes().
 			Return(ltRes, nil),
 
-		db.EXPECT().
-			GetOracleDatabaseLicenseTypes().
-			Return(ltRes, nil),
+		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
+			Return(usedLicenses, nil),
+		db.EXPECT().GetMySQLContracts().
+			Return(mySqlcontracts, nil),
+		db.EXPECT().GetMySQLContracts().
+			Return(mySqlcontracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
