@@ -364,3 +364,31 @@ func (as *APIService) DismissHost(hostname string) error {
 
 	return nil
 }
+
+func checkHosts(as *APIService, hosts []string) error {
+	commonFilters := dto.NewSearchHostsFilters()
+	notInClusterHosts, err := as.SearchHosts("hostnames",
+		commonFilters)
+
+	if err != nil {
+		return utils.NewError(err, "")
+	}
+
+	notInClusterHostnames := make([]string, len(notInClusterHosts))
+	for i, h := range notInClusterHosts {
+		notInClusterHostnames[i] = h["hostname"].(string)
+	}
+
+hosts_loop:
+	for _, host := range hosts {
+		for _, notInClusterHostname := range notInClusterHostnames {
+			if host == notInClusterHostname {
+				continue hosts_loop
+			}
+		}
+
+		return utils.ErrHostNotFound
+	}
+
+	return nil
+}

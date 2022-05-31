@@ -62,34 +62,6 @@ func (as *APIService) AddOracleDatabaseContract(contract model.OracleDatabaseCon
 	return nil, utils.NewError(errors.New("Can't find contract which has just been saved"))
 }
 
-func checkHosts(as *APIService, hosts []string) error {
-	commonFilters := dto.NewSearchHostsFilters()
-	notInClusterHosts, err := as.SearchHosts("hostnames",
-		commonFilters)
-
-	if err != nil {
-		return utils.NewError(err, "")
-	}
-
-	notInClusterHostnames := make([]string, len(notInClusterHosts))
-	for i, h := range notInClusterHosts {
-		notInClusterHostnames[i] = h["hostname"].(string)
-	}
-
-hosts_loop:
-	for _, host := range hosts {
-		for _, notInClusterHostname := range notInClusterHostnames {
-			if host == notInClusterHostname {
-				continue hosts_loop
-			}
-		}
-
-		return utils.ErrHostNotFound
-	}
-
-	return nil
-}
-
 func checkLicenseTypeIDExists(as *APIService, contract *model.OracleDatabaseContract) error {
 	_, err := as.GetOracleDatabaseLicenseType(contract.LicenseTypeID)
 	if err != nil {
