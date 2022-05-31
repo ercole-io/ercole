@@ -39,18 +39,12 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 
 	statuses = append(statuses, *oracleStatus)
 
-	mysqlStatus := model.TechnologyStatus{
-		Product:            model.TechnologyOracleMySQL,
-		ConsumedByHosts:    0,
-		CoveredByContracts: 0,
-		TotalCost:          0,
-		PaidCost:           0,
-		Compliance:         0,
-		UnpaidDues:         0,
-		HostsCount:         int(hostsCountByTechnology[model.TechnologyOracleMySQL]),
+	mysqlStatus, err := createMySqlTechnologyStatus(as, hostsCountByTechnology[model.TechnologyOracleMySQL])
+	if err != nil {
+		return nil, err
 	}
 
-	statuses = append(statuses, mysqlStatus)
+	statuses = append(statuses, *mysqlStatus)
 
 	sqlServerStatus, err := createSqlServerTechnologyStatus(as, hostsCountByTechnology[model.TechnologyMicrosoftSQLServer])
 	if err != nil {
@@ -121,6 +115,31 @@ func createSqlServerTechnologyStatus(as *APIService, hostsCount float64) (*model
 
 	status := model.TechnologyStatus{
 		Product:    model.TechnologyMicrosoftSQLServer,
+		HostsCount: int(hostsCount),
+	}
+
+	for _, licenseCompliance := range licensesCompliance {
+		status.ConsumedByHosts += licenseCompliance.Consumed
+		status.CoveredByContracts += licenseCompliance.Covered
+	}
+
+	if status.ConsumedByHosts == 0 {
+		status.Compliance = 1
+	} else {
+		status.Compliance = status.CoveredByContracts / status.ConsumedByHosts
+	}
+
+	return &status, nil
+}
+
+func createMySqlTechnologyStatus(as *APIService, hostsCount float64) (*model.TechnologyStatus, error) {
+	licensesCompliance, err := as.GetMySQLDatabaseLicensesCompliance()
+	if err != nil {
+		return nil, err
+	}
+
+	status := model.TechnologyStatus{
+		Product:    model.TechnologyOracleMySQL,
 		HostsCount: int(hostsCount),
 	}
 

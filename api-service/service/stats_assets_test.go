@@ -150,6 +150,24 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 		},
 	}
 
+	contracts := []model.MySQLContract{
+		{
+			ID:               [12]byte{},
+			Type:             model.MySQLContractTypeCluster,
+			NumberOfLicenses: 12,
+			Clusters:         []string{},
+			Hosts:            []string{},
+		},
+	}
+	usedLicenses := []dto.MySQLUsedLicense{
+		{
+			Hostname:        "pluto",
+			InstanceName:    "pluto-instance",
+			InstanceEdition: model.MySQLEditionEnterprise,
+			ContractType:    "",
+		},
+	}
+
 	db.EXPECT().GetHostDatas(utils.MAX_TIME).
 		Return(hostdatas, nil).AnyTimes()
 	db.EXPECT().GetClusters(globalFilterAny).
@@ -160,6 +178,13 @@ func TestGetTotalTechnologiesComplianceStats_Success(t *testing.T) {
 			Return(&oracleLics, nil),
 		db.EXPECT().GetOracleDatabaseLicenseTypes().
 			Return(licenseTypes, nil),
+
+		db.EXPECT().GetMySQLUsedLicenses("", globalFilterAny).
+			Return(usedLicenses, nil),
+		db.EXPECT().GetMySQLContracts().
+			Return(contracts, nil),
+		db.EXPECT().GetMySQLContracts().
+			Return(contracts, nil),
 
 		db.EXPECT().SearchSqlServerDatabaseUsedLicenses("", "", false, -1, -1, "", "", utils.MAX_TIME).
 			Return(&sqlServerLics, nil),
