@@ -140,11 +140,14 @@ func (hds *HostDataService) throwNewOptionAlerts(alerts []model.Alert) error {
 		AlertStatus:             model.AlertStatusNew,
 		Date:                    hds.TimeNow(),
 		Description:             alerts[0].Description,
-		OtherInfo: map[string]interface{}{
+	}
+
+	if len(alerts[0].OtherInfo) > 0 {
+		alertOutput.OtherInfo = map[string]interface{}{
 			"hostname":      alerts[0].OtherInfo["hostname"],
 			"dbname":        alerts[0].OtherInfo["dbname"],
 			"licenseTypeID": alerts[0].OtherInfo["licenseTypeID"],
-		},
+		}
 	}
 
 	for _, alert := range alerts[1:] {
@@ -153,8 +156,11 @@ func (hds *HostDataService) throwNewOptionAlerts(alerts []model.Alert) error {
 		}
 
 		alertOutput.Description += "\n" + alert.Description
-		alertOutput.OtherInfo["dbname"] = alertOutput.OtherInfo["dbname"].(string) + "," + alert.OtherInfo["dbname"].(string)
-		alertOutput.OtherInfo["licenseTypeID"] = alertOutput.OtherInfo["licenseTypeID"].(string) + "," + alert.OtherInfo["licenseTypeID"].(string)
+
+		if len(alertOutput.OtherInfo) > 0 {
+			alertOutput.OtherInfo["dbname"] = alertOutput.OtherInfo["dbname"].(string) + "," + alert.OtherInfo["dbname"].(string)
+			alertOutput.OtherInfo["licenseTypeID"] = alertOutput.OtherInfo["licenseTypeID"].(string) + "," + alert.OtherInfo["licenseTypeID"].(string)
+		}
 	}
 
 	return hds.AlertSvcClient.ThrowNewAlert(alertOutput)
