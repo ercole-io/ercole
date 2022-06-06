@@ -16,21 +16,21 @@
 package model
 
 type PostgreSQLSetting struct {
-	DbVersion                  string `json:"dbVersion" bson:"dbVersion"`
-	DataDirectory              string `json:"dataDirectory" bson:"dataDirectory"`
-	WorkMem                    int    `json:"workMem" bson:"workMem"`
-	ArchiveMode                bool   `json:"archiveMode" bson:"archiveMode"`
-	ArchiveCommand             string `json:"archiveCommand" bson:"archiveCommand"`
-	MinWalSize                 int    `json:"minWalSize" bson:"minWalSize"`
-	MaxWalSize                 int    `json:"maxWalSize" bson:"maxWalSize"`
-	MaxConnections             int    `json:"maxConnections" bson:"maxConnections"`
-	CheckpointCompletionTarget string `json:"checkpointCompletionTarget" bson:"checkpointCompletionTarget"`
-	DefaultStatisticsTarget    int    `json:"defaultStatisticsTarget" bson:"defaultStatisticsTarget"`
-	RandomPageCost             int    `json:"randomPageCost" bson:"randomPageCost"`
-	MaintenanceWorkMem         int    `json:"maintenanceWorkMem" bson:"maintenanceWorkMem"`
-	SharedBuffers              int    `json:"sharedBuffers" bson:"sharedBuffers"`
-	EffectiveCacheSize         int    `json:"effectiveCacheSize" bson:"effectiveCacheSize"`
-	EffectiveIoConcurrency     int    `json:"effectiveIoConcurrency" bson:"effectiveIoConcurrency"`
-	MaxWorkerProcesses         int    `json:"maxWorkerProcesses" bson:"maxWorkerProcesses"`
-	MaxParallelWorkers         int    `json:"maxParallelWorkers" bson:"maxParallelWorkers"`
+	DbVersion                  string  `json:"dbVersion" bson:"dbVersion"`
+	DataDirectory              string  `json:"dataDirectory" bson:"dataDirectory"`
+	WorkMem                    int     `json:"workMem" bson:"workMem"`
+	ArchiveMode                bool    `json:"archiveMode" bson:"archiveMode"`
+	ArchiveCommand             string  `json:"archiveCommand" bson:"archiveCommand"`
+	MinWalSize                 int     `json:"minWalSize" bson:"minWalSize"`
+	MaxWalSize                 int     `json:"maxWalSize" bson:"maxWalSize"`
+	MaxConnections             int     `json:"maxConnections" bson:"maxConnections"`
+	CheckpointCompletionTarget string  `json:"checkpointCompletionTarget" bson:"checkpointCompletionTarget"`
+	DefaultStatisticsTarget    int     `json:"defaultStatisticsTarget" bson:"defaultStatisticsTarget"`
+	RandomPageCost             float64 `json:"randomPageCost" bson:"randomPageCost"`
+	MaintenanceWorkMem         int     `json:"maintenanceWorkMem" bson:"maintenanceWorkMem"`
+	SharedBuffers              int     `json:"sharedBuffers" bson:"sharedBuffers"`
+	EffectiveCacheSize         int     `json:"effectiveCacheSize" bson:"effectiveCacheSize"`
+	EffectiveIoConcurrency     int     `json:"effectiveIoConcurrency" bson:"effectiveIoConcurrency"`
+	MaxWorkerProcesses         int     `json:"maxWorkerProcesses" bson:"maxWorkerProcesses"`
+	MaxParallelWorkers         int     `json:"maxParallelWorkers" bson:"maxParallelWorkers"`
 }

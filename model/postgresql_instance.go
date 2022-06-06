@@ -16,18 +16,18 @@
 package model
 
 type PostgreSQLInstance struct {
-	CurrentConnections string               `json:"currentConnections" bson:"currentConnections"`
-	ManualConnections  int                  `json:"manualConnections" bson:"manualConnections"`
-	InstanceSize       string               `json:"instanceSize" bson:"instanceSize"`
-	Charset            string               `json:"charset" bson:"charset"`
-	IsInreplica        bool                 `isinreplica:"isinreplica" bson:"currentConnections"`
-	IsMaster           bool                 `json:"isMaster" bson:"isMaster"`
-	IsSlave            bool                 `json:"isSlave" bson:"isSlave"`
-	SlavesNum          int                  `json:"slavesNum" bson:"slavesNum"`
-	UsersNum           int                  `json:"usersNum" bson:"usersNum"`
-	DbNum              int                  `json:"dbNum" bson:"dbNum"`
-	TblspNum           int                  `json:"tblspNum" bson:"tblspNum"`
-	TrustHbaEntries    int                  `json:"trustHbaEntries" bson:"trustHbaEntries"`
-	Databases          []PostgreSQLDatabase `json:"databases" bson:"databases"`
-	Settings           []PostgreSQLSetting  `json:"settings" bson:"settings"`
+	MaxConnections  int                  `json:"maxConnections" bson:"maxConnections"`
+	InstanceSize    int                  `json:"instanceSize" bson:"instanceSize"`
+	Charset         string               `json:"charset" bson:"charset"`
+	Isinreplica     bool                 `json:"isinreplica" bson:"isinreplica"`
+	Ismaster        bool                 `json:"ismaster" bson:"ismaster"`
+	Isslave         bool                 `json:"isslave" bson:"isslave"`
+	ArchiverWorking bool                 `json:"archiverWorking" bson:"archiverWorking"`
+	SlavesNum       int                  `json:"slavesNum" bson:"slavesNum"`
+	UsersNum        int                  `json:"usersNum" bson:"usersNum"`
+	DbNum           int                  `json:"dbNum" bson:"dbNum"`
+	TblspNum        int                  `json:"tblspNum" bson:"tblspNum"`
+	TrustHbaEntries int                  `json:"trustHbaEntries" bson:"trustHbaEntries"`
+	Databases       []PostgreSQLDatabase `json:"databases" bson:"databases"`
+	Settings        []PostgreSQLSetting  `json:"settings" bson:"settings"`
 }
