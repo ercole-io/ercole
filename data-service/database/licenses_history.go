@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-const licensesHistoryCollection = "oracle_database_licenses_history"
+const licensesHistoryCollection = "database_licenses_history"
 
 func (md *MongoDatabase) HistoricizeLicensesCompliance(licenses []dto.LicenseCompliance) error {
 	now := md.TimeNow()
