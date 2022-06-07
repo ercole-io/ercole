@@ -17,6 +17,7 @@ package database
 
 import (
 	"context"
+	"math"
 	"time"
 
 	"github.com/ercole-io/ercole/v2/model"
@@ -140,16 +141,16 @@ func (md *MongoDatabase) GetLastOciSeqValue() (uint64, error) {
 
 	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciRecommendation_collection).Find(ctx, bson.D{}, findOptions)
 	if err != nil {
-		return 999999, utils.NewError(err, "DB ERROR")
+		return math.MaxUint64, utils.NewError(err, "DB ERROR")
 	}
 
 	ociRecommendations := make([]model.OciRecommendation, 0)
 	if err := cur.All(context.TODO(), &ociRecommendations); err != nil {
-		return 999999, utils.NewError(err, "DB ERROR")
+		return math.MaxUint64, utils.NewError(err, "DB ERROR")
 	}
 
 	if err := cur.Err(); err != nil {
-		return 999999, utils.NewError(err, "DB ERROR")
+		return math.MaxUint64, utils.NewError(err, "DB ERROR")
 	}
 
 	var retVal uint64
