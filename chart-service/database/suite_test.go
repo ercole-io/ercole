@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ func (db *MongodbSuite) InsertHostData(hostData model.RawObject) {
 }
 
 func (db *MongodbSuite) InsertHostDataHistory(hostData model.RawObject) {
-	_, err := db.db.Client.Database(db.dbname).Collection("oracle_database_licenses_history").InsertOne(context.TODO(), hostData)
+	_, err := db.db.Client.Database(db.dbname).Collection("database_licenses_history").InsertOne(context.TODO(), hostData)
 	db.Require().NoError(err)
 }
 
