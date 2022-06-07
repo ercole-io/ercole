@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ import (
 )
 
 func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
-	defer m.db.Client.Database(m.dbname).Collection("oracle_database_licenses_history").DeleteMany(context.TODO(), bson.M{})
+	defer m.db.Client.Database(m.dbname).Collection("database_licenses_history").DeleteMany(context.TODO(), bson.M{})
 
 	m.db.TimeNow = func() time.Time { return utils.P("2020-12-05T14:02:03+02:00") }
 
@@ -83,7 +83,7 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 		require.NoError(m.T(), err)
 
 		cur, err := m.db.Client.Database(m.db.Config.Mongodb.DBName).
-			Collection("oracle_database_licenses_history").
+			Collection("database_licenses_history").
 			Find(context.TODO(), bson.D{})
 		require.NoError(m.T(), err)
 
@@ -164,7 +164,7 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 		require.NoError(m.T(), err)
 
 		cur, err := m.db.Client.Database(m.db.Config.Mongodb.DBName).
-			Collection("oracle_database_licenses_history").
+			Collection("database_licenses_history").
 			Find(context.TODO(), bson.D{})
 		require.NoError(m.T(), err)
 
@@ -218,7 +218,7 @@ func (m *MongodbSuite) TestHistoricizeLicensesCompliance() {
 		require.NoError(m.T(), err)
 
 		cur, err := m.db.Client.Database(m.db.Config.Mongodb.DBName).
-			Collection("oracle_database_licenses_history").
+			Collection("database_licenses_history").
 			Find(context.TODO(), bson.D{})
 		require.NoError(m.T(), err)
 
