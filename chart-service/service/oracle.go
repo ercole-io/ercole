@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ func (as *ChartService) GetOracleDatabaseChart(metric string, location string, e
 func (as *ChartService) getOracleDatabaseLicenseTypes() (map[string]model.OracleDatabaseLicenseType, error) {
 	licenseTypes, err := as.ApiSvcClient.GetOracleDatabaseLicenseTypes()
 	if err != nil {
-		return nil, utils.NewError(err, "Can't retrieve licenseTypes")
+		return nil, utils.NewError(err, "Can't retrieve Oracle licenseTypes")
 	}
 
 	licenseTypesMap := make(map[string]model.OracleDatabaseLicenseType)
