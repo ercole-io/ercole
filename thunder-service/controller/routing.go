@@ -44,6 +44,7 @@ func (ctrl *ThunderController) setupProtectedRoutes(router *mux.Router) {
 	router.HandleFunc("/oracle-cloud/configurations", ctrl.AddOciProfile).Methods("POST")
 	router.HandleFunc("/oracle-cloud/configurations/{id}", ctrl.UpdateOciProfile).Methods("PUT")
 	router.HandleFunc("/oracle-cloud/configurations/{id}", ctrl.DeleteOciProfile).Methods("DELETE")
+	router.HandleFunc("/oracle-cloud/oci-objects", ctrl.GetOciObjects).Methods("GET")
 	router.HandleFunc("/oracle-cloud/oci-recommendations/{ids}", ctrl.GetOciRecommendations).Methods("GET")
 	router.HandleFunc("/oracle-cloud/oci-recommendation-errors/{ids}", ctrl.GetOciRecommendationErrors).Methods("GET")
 	router.HandleFunc("/oracle-cloud/retrieve-last-oci-recommendations", ctrl.ForceGetOciRecommendations).Methods("POST")
