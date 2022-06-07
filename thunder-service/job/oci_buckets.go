@@ -41,7 +41,6 @@ func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string
 		if err != nil {
 			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
-
 			continue
 		}
 
@@ -49,7 +48,6 @@ func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string
 		if err != nil {
 			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
-
 			continue
 		}
 
@@ -57,7 +55,6 @@ func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string
 		if err != nil {
 			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
-
 			continue
 		}
 
