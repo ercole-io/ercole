@@ -26,7 +26,6 @@ import (
 
 func (as *APIService) AddMySQLContract(contract model.MySQLContract) (*model.MySQLContract, error) {
 	contract.ID = as.NewObjectID()
-	contract.LicenseTypeID = model.MySqlPartNumber
 
 	err := as.Database.AddMySQLContract(contract)
 	if err != nil {
@@ -37,7 +36,6 @@ func (as *APIService) AddMySQLContract(contract model.MySQLContract) (*model.MyS
 }
 
 func (as *APIService) UpdateMySQLContract(contract model.MySQLContract) (*model.MySQLContract, error) {
-	contract.LicenseTypeID = model.MySqlPartNumber
 	if err := as.Database.UpdateMySQLContract(contract); err != nil {
 		return nil, err
 	}
