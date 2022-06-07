@@ -244,6 +244,7 @@ func (job *OciDataRetrieveJob) GetOciOldSnapshotDecommissioning(profiles []strin
 		if err != nil {
 			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
+
 			continue
 		}
 
@@ -251,6 +252,7 @@ func (job *OciDataRetrieveJob) GetOciOldSnapshotDecommissioning(profiles []strin
 		if err != nil {
 			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
+
 			continue
 		}
 
@@ -258,6 +260,7 @@ func (job *OciDataRetrieveJob) GetOciOldSnapshotDecommissioning(profiles []strin
 		if err != nil {
 			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
+
 			continue
 		}
 
@@ -273,6 +276,7 @@ func (job *OciDataRetrieveJob) GetOciOldSnapshotDecommissioning(profiles []strin
 			if err != nil {
 				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
+
 				continue
 			}
 
@@ -314,6 +318,7 @@ func (job *OciDataRetrieveJob) GetOciOldSnapshotDecommissioning(profiles []strin
 			if err != nil {
 				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
+
 				continue
 			}
 

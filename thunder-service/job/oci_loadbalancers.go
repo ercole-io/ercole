@@ -42,6 +42,7 @@ func (job *OciDataRetrieveJob) GetOciUnusedLoadBalancers(profiles []string, seqV
 		if err != nil {
 			recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
+
 			continue
 		}
 
@@ -50,6 +51,7 @@ func (job *OciDataRetrieveJob) GetOciUnusedLoadBalancers(profiles []string, seqV
 		if err != nil {
 			recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
+
 			continue
 		}
 
@@ -57,6 +59,7 @@ func (job *OciDataRetrieveJob) GetOciUnusedLoadBalancers(profiles []string, seqV
 		if err != nil {
 			recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
+
 			continue
 		}
 
@@ -71,6 +74,7 @@ func (job *OciDataRetrieveJob) GetOciUnusedLoadBalancers(profiles []string, seqV
 			if err != nil {
 				recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
+
 				continue
 			}
 
@@ -105,6 +109,7 @@ func (job *OciDataRetrieveJob) GetOciUnusedLoadBalancers(profiles []string, seqV
 			if err != nil {
 				recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
+
 				continue
 			}
 
