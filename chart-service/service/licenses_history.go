@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,10 +18,10 @@ package service
 
 import (
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/ercole-io/ercole/v2/chart-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 )
 
 func (as *ChartService) GetLicenseComplianceHistory() ([]dto.LicenseComplianceHistory, error) {
@@ -30,7 +30,17 @@ func (as *ChartService) GetLicenseComplianceHistory() ([]dto.LicenseComplianceHi
 		return nil, err
 	}
 
-	types, err := as.getOracleDatabaseLicenseTypes()
+	oracleTypes, err := as.getOracleDatabaseLicenseTypes()
+	if err != nil {
+		return nil, err
+	}
+
+	sqlServerTypes, err := as.getSqlServerDatabaseLicenseTypes()
+	if err != nil {
+		return nil, err
+	}
+
+	mySqlTypes, err := as.getMySqlDatabaseLicenseTypes()
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +49,7 @@ func (as *ChartService) GetLicenseComplianceHistory() ([]dto.LicenseComplianceHi
 		license := &licenses[i]
 
 		if len(license.LicenseTypeID) > 0 {
-			if licenseType, ok := types[license.LicenseTypeID]; ok {
+			if licenseType, ok := oracleTypes[license.LicenseTypeID]; ok {
 				license.ItemDescription = licenseType.ItemDescription
 				license.Metric = licenseType.Metric
 			}
@@ -48,7 +58,8 @@ func (as *ChartService) GetLicenseComplianceHistory() ([]dto.LicenseComplianceHi
 		license.History = sortAndKeepOnlyLastEntryOfEachDay(license.History)
 	}
 
-	licenses = mergeMySqlLicensesCompliance(licenses)
+	licenses = mergeMySqlLicensesCompliance(licenses, mySqlTypes)
+	licenses = mergeSqlServerLicensesCompliance(licenses, sqlServerTypes)
 	licenses = removeEmptyLicensesCompliance(licenses)
 
 	return licenses, nil
@@ -88,21 +99,24 @@ func sortAndKeepOnlyLastEntryOfEachDay(history []dto.LicenseComplianceHistoricVa
 	return newHistory
 }
 
-func mergeMySqlLicensesCompliance(licenses []dto.LicenseComplianceHistory) []dto.LicenseComplianceHistory {
+func mergeMySqlLicensesCompliance(licenses []dto.LicenseComplianceHistory, mySqlTypes map[string]model.MySqlLicenseType) []dto.LicenseComplianceHistory {
 	var mySql *dto.LicenseComplianceHistory
 
-	mySqlEnterprisePrefix := "MySQL Enterprise"
+	var licenseType model.MySqlLicenseType
+
+	var ok bool
 
 	for i := len(licenses) - 1; i >= 0; i-- {
 		l := licenses[i]
 
-		if len(l.LicenseTypeID) > 0 || !strings.HasPrefix(l.ItemDescription, mySqlEnterprisePrefix) {
+		if licenseType, ok = mySqlTypes[l.LicenseTypeID]; !ok {
 			continue
 		}
 
 		if mySql == nil {
 			mySql = new(dto.LicenseComplianceHistory)
-			mySql.ItemDescription = mySqlEnterprisePrefix
+			mySql.LicenseTypeID = licenseType.ID
+			mySql.ItemDescription = licenseType.ItemDescription
 		}
 
 		mySql.History = mergeLicenseComplianceHistoricValues(mySql.History, l.History)
@@ -115,6 +129,38 @@ func mergeMySqlLicensesCompliance(licenses []dto.LicenseComplianceHistory) []dto
 	}
 
 	return append(licenses, *mySql)
+}
+
+func mergeSqlServerLicensesCompliance(licenses []dto.LicenseComplianceHistory, sqlServerTypes map[string]model.SqlServerDatabaseLicenseType) []dto.LicenseComplianceHistory {
+	var sqlServer *dto.LicenseComplianceHistory
+
+	var licenseType model.SqlServerDatabaseLicenseType
+
+	var ok bool
+
+	for i := len(licenses) - 1; i >= 0; i-- {
+		l := licenses[i]
+
+		if licenseType, ok = sqlServerTypes[l.LicenseTypeID]; !ok {
+			continue
+		}
+
+		if sqlServer == nil {
+			sqlServer = new(dto.LicenseComplianceHistory)
+			sqlServer.LicenseTypeID = licenseType.ID
+			sqlServer.ItemDescription = licenseType.ItemDescription
+		}
+
+		sqlServer.History = mergeLicenseComplianceHistoricValues(sqlServer.History, l.History)
+
+		licenses = append(licenses[:i], licenses[i+1:]...)
+	}
+
+	if sqlServer == nil {
+		return licenses
+	}
+
+	return append(licenses, *sqlServer)
 }
 
 func mergeLicenseComplianceHistoricValues(a, b []dto.LicenseComplianceHistoricValue) []dto.LicenseComplianceHistoricValue {
