@@ -62,7 +62,7 @@ type OracleDatabase struct {
 	FeatureUsageStats []OracleDatabaseFeatureUsageStat  `json:"featureUsageStats" bson:"featureUsageStats"`
 	PDBs              []OracleDatabasePluggableDatabase `json:"pdbs" bson:"pdbs"`
 	Services          []OracleDatabaseService           `json:"services" bson:"services"`
-	Changes           []Changes                         `json:"changes" bson:"changes"`
+	Changes           []OracleChanges                   `json:"changes" bson:"changes"`
 	GrantDba          []OracleGrantDba                  `json:"grantDba" bson:"grantDba"`
 }
 

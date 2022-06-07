@@ -323,70 +323,158 @@ func getIsMemberOfClusterFilterStep(member *bool) interface{} {
 
 // GetHost fetch all informations about a host in the database
 func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool) (*dto.HostData, error) {
+	var cur *mongo.Cursor
+
+	var err error
+
+	//Get host technology
+	technology, errTech := md.getHostTechnology(hostname, olderThan)
+	if errTech != nil {
+		return nil, utils.NewError(errTech, "DB ERROR")
+	}
+
 	//Find the matching hostdata
-	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
-		context.TODO(),
-		mu.MAPipeline(
-			FilterByOldnessSteps(olderThan),
-			mu.APMatch(bson.M{
-				"hostname": hostname,
-			}),
-			mu.APOptionalStage(!raw, mu.MAPipeline(
-				mu.APLookupPipeline("alerts", bson.M{"hn": "$hostname"}, "alerts", mu.MAPipeline(
-					mu.APMatch(mu.QOExpr(mu.APOEqual("$otherInfo.hostname", "$$hn"))),
-				)),
-				AddAssociatedClusterNameAndVirtualizationNode(olderThan),
-				mu.APLookupPipeline(
-					"hosts",
-					bson.M{
-						"hn": "$hostname",
-						"ca": "$createdAt",
-					},
-					"history",
-					mu.MAPipeline(
-						mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$hostname", "$$hn"), mu.APOGreaterOrEqual("$$ca", "$createdAt")))),
-						mu.APProject(bson.M{
-							"createdAt": 1,
-							"features.oracle.database.databases.name":          1,
-							"features.oracle.database.databases.datafileSize":  1,
-							"features.oracle.database.databases.segmentsSize":  1,
-							"features.oracle.database.databases.allocable":     1,
-							"features.oracle.database.databases.dailyCPUUsage": 1,
-							"totalDailyCPUUsage":                               mu.APOSumReducer("$features.oracle.database.databases", mu.APOConvertToDoubleOrZero("$$this.dailyCPUUsage")),
-						}),
-					),
-				),
-				mu.APSet(bson.M{
-					"features.oracle.database.databases": mu.APOMap(
-						"$features.oracle.database.databases",
-						"db",
-						mu.APOMergeObjects(
-							"$$db",
-							bson.M{
-								"changes": mu.APOFilter(
-									mu.APOMap("$history", "hh", mu.APOMergeObjects(
-										bson.M{"updated": "$$hh.createdAt"},
-										mu.APOArrayElemAt(mu.APOFilter("$$hh.features.oracle.database.databases", "hdb", mu.APOEqual("$$hdb.name", "$$db.name")), 0),
-									)),
-									"time_frame",
-									"$$time_frame.segmentsSize",
-								),
-							},
+	switch technology {
+	case model.TechnologyOracleDatabase, model.TechnologyOracleExadata:
+		cur, err = md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+			context.TODO(),
+			mu.MAPipeline(
+				getBaseHost(hostname, olderThan, raw),
+				mu.APOptionalStage(!raw, mu.MAPipeline(
+					mu.APLookupPipeline(
+						"hosts",
+						bson.M{
+							"hn": "$hostname",
+							"ca": "$createdAt",
+						},
+						"history",
+						mu.MAPipeline(
+							mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$hostname", "$$hn"), mu.APOGreaterOrEqual("$$ca", "$createdAt")))),
+							mu.APProject(bson.M{
+								"createdAt": 1,
+								"features.oracle.database.databases.name":          1,
+								"features.oracle.database.databases.datafileSize":  1,
+								"features.oracle.database.databases.segmentsSize":  1,
+								"features.oracle.database.databases.allocable":     1,
+								"features.oracle.database.databases.dailyCPUUsage": 1,
+								"totalDailyCPUUsage":                               mu.APOSumReducer("$features.oracle.database.databases", mu.APOConvertToDoubleOrZero("$$this.dailyCPUUsage")),
+							}),
 						),
 					),
-				}),
-				mu.APUnset(
-					"features.oracle.database.databases.changes.name",
-					"history.features",
-				),
-				mu.APSet(bson.M{
-					"features.oracle": mu.APOCond(mu.APOEqual("$features.oracle.database.databases", nil), nil, "$features.oracle"),
-				}),
-			)),
-		),
-	)
-	if err != nil {
-		return nil, utils.NewError(err, "DB ERROR")
+					mu.APSet(bson.M{
+						"features.oracle.database.databases": mu.APOMap(
+							"$features.oracle.database.databases",
+							"db",
+							mu.APOMergeObjects(
+								"$$db",
+								bson.M{
+									"changes": mu.APOFilter(
+										mu.APOMap("$history", "hh", mu.APOMergeObjects(
+											bson.M{"updated": "$$hh.createdAt"},
+											mu.APOArrayElemAt(mu.APOFilter("$$hh.features.oracle.database.databases", "hdb", mu.APOEqual("$$hdb.name", "$$db.name")), 0),
+										)),
+										"time_frame",
+										"$$time_frame.segmentsSize",
+									),
+								},
+							),
+						),
+					}),
+					mu.APUnset(
+						"features.oracle.database.databases.changes.name",
+						"history.features",
+					),
+					mu.APSet(bson.M{
+						"features.oracle": mu.APOCond(mu.APOEqual("$features.oracle.database.databases", nil), nil, "$features.oracle"),
+					}),
+				)),
+			),
+		)
+		if err != nil {
+			return nil, utils.NewError(err, "DB ERROR")
+		}
+	case model.TechnologyMicrosoftSQLServer:
+		cur, err = md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+			context.TODO(),
+			mu.MAPipeline(
+				getBaseHost(hostname, olderThan, raw),
+			),
+		)
+		if err != nil {
+			return nil, utils.NewError(err, "DB ERROR")
+		}
+	case model.TechnologyOracleMySQL:
+		cur, err = md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+			context.TODO(),
+			mu.MAPipeline(
+				FilterByOldnessSteps(olderThan),
+				getBaseHost(hostname, olderThan, raw),
+				mu.APOptionalStage(!raw, mu.MAPipeline(
+					mu.APLookupPipeline(
+						"hosts",
+						bson.M{
+							"hn": "$hostname",
+							"ca": "$createdAt",
+						},
+						"history",
+						mu.MAPipeline(
+							mu.APMatch(mu.QOExpr(mu.APOAnd(mu.APOEqual("$hostname", "$$hn"), mu.APOGreaterOrEqual("$$ca", "$createdAt")))),
+							mu.APUnwind("$features.mysql.instances"),
+							mu.APProject(bson.M{
+								"createdAt":                1,
+								"features.mysql.instances": bson.A{"$features.mysql.instances"},
+								"totalAllocation":          mu.APOSum("$features.mysql.instances.tableSchemas.allocation"),
+							}),
+							mu.APProject(bson.M{
+								"createdAt":                     1,
+								"features.mysql.instances.name": 1,
+								"totalAllocation":               1,
+							}),
+						),
+					),
+					mu.APSet(bson.M{
+						"features.mysql.instances": mu.APOMap(
+							"$features.mysql.instances",
+							"db",
+							mu.APOMergeObjects(
+								"$$db",
+								bson.M{
+									"changes": mu.APOFilter(
+										mu.APOMap("$history", "hh", mu.APOMergeObjects(
+											bson.M{"updated": "$$hh.createdAt"},
+											bson.M{"allocation": "$$hh.totalAllocation"},
+											mu.APOArrayElemAt(mu.APOFilter("$$hh.features.mysql.instances", "hdb", mu.APOEqual("$$hdb.name", "$$db.name")), 0),
+										)),
+										"time_frame",
+										"$$time_frame.name",
+									),
+								},
+							),
+						),
+					}),
+					mu.APUnset(
+						"features.mysql.instances.changes.name",
+						"history.features",
+					),
+					mu.APSet(bson.M{
+						"features.mysql": mu.APOCond(mu.APOEqual("$features.mysql.instances", nil), nil, "$features.mysql"),
+					}),
+				)),
+			),
+		)
+		if err != nil {
+			return nil, utils.NewError(err, "DB ERROR")
+		}
+	default:
+		cur, err = md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+			context.TODO(),
+			mu.MAPipeline(
+				getBaseHost(hostname, olderThan, raw),
+			),
+		)
+		if err != nil {
+			return nil, utils.NewError(err, "DB ERROR")
+		}
 	}
 
 	//Next the cursor. If there is no document return a empty document
@@ -402,6 +490,21 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 	}
 
 	return &host, nil
+}
+
+func getBaseHost(hostname string, olderThan time.Time, raw bool) bson.A {
+	return mu.MAPipeline(
+		FilterByOldnessSteps(olderThan),
+		mu.APMatch(bson.M{
+			"hostname": hostname,
+		}),
+		mu.APOptionalStage(!raw, mu.MAPipeline(
+			mu.APLookupPipeline("alerts", bson.M{"hn": "$hostname"}, "alerts", mu.MAPipeline(
+				mu.APMatch(mu.QOExpr(mu.APOEqual("$otherInfo.hostname", "$$hn"))),
+			)),
+			AddAssociatedClusterNameAndVirtualizationNode(olderThan),
+		)),
+	)
 }
 
 func (md *MongoDatabase) GetHostData(hostname string, olderThan time.Time) (*model.HostDataBE, error) {
@@ -708,4 +811,57 @@ func (md *MongoDatabase) ExistNotInClusterHost(hostname string) (bool, error) {
 	}
 
 	return len(out) > 0, nil
+}
+
+func (md *MongoDatabase) getHostTechnology(hostname string, olderThan time.Time) (string, error) {
+	var result map[string]float64 = make(map[string]float64)
+
+	var out string
+
+	cur, err := md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+		context.TODO(),
+		mu.MAPipeline(
+			FilterByOldnessSteps(olderThan),
+			mu.APMatch(bson.M{
+				"hostname": hostname,
+			}),
+			mu.APGroup(bson.M{
+				"_id": 1,
+				model.TechnologyOracleDatabase: mu.APOSum(
+					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.oracle.database.databases", bson.A{})), 0), 1, 0),
+				),
+				model.TechnologyOracleExadata: mu.APOSum(
+					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.oracle.exadata.components", bson.A{})), 0), 1, 0),
+				),
+				model.TechnologyOracleMySQL: mu.APOSum(
+					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.mysql.instances", bson.A{})), 0), 1, 0),
+				),
+				model.TechnologyMicrosoftSQLServer: mu.APOSum(
+					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.microsoft.sqlServer.instances", bson.A{})), 0), 1, 0),
+				),
+			}),
+			mu.APUnset("_id"),
+		),
+	)
+	if err != nil {
+		return "", utils.NewError(err, "DB ERROR")
+	}
+
+	hasNext := cur.Next(context.TODO())
+	if !hasNext {
+		return out, nil
+	}
+
+	if err := cur.Decode(&result); err != nil {
+		return "", utils.NewError(err, "DB ERROR")
+	}
+
+	for technology, count := range result {
+		if count > 0 {
+			out = technology
+			break
+		}
+	}
+
+	return out, nil
 }

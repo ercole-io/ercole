@@ -1,8 +1,8 @@
 {
-    "archived": false,
+    "archived": true,
     "createdAt": {
         "$date": {
-            "$numberLong": "1614934832000"
+            "$numberLong": "1612425631000"
         }
     },
     "serverVersion": "latest",
@@ -41,11 +41,6 @@
             "instances": [
                 {
                     "tableSchemas": [
-                        {
-                            "engine": "InnoDB",
-                            "allocation": 12,
-                            "name": "innodb_temporary"
-                        },
                         {
                             "name": "innodb_undo_001",
                             "engine": "InnoDB",
@@ -262,6 +257,6 @@
     "clusters": null,
     "schemaVersion": 1,
     "_id": {
-        "$oid": "5ec64ac640c089c5aff44e9c"
+        "$oid": "5ec64ac640c089c5aff4444c"
     }
 }
