@@ -22,6 +22,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/ercole-io/ercole/v2/chart-service/dto"
+	"github.com/ercole-io/ercole/v2/model"
 )
 
 func TestSortAndKeepOnlyLastEntryOfEachDay(t *testing.T) {
@@ -201,7 +202,7 @@ func TestMergeMySqlLicensesCompliance(t *testing.T) {
 				},
 				{
 					LicenseTypeID:   "",
-					ItemDescription: "MySQL Enterprise per cluster",
+					ItemDescription: "MySQL Enterprise",
 					Metric:          "",
 					History:         []dto.LicenseComplianceHistoricValue{},
 				},
@@ -243,13 +244,7 @@ func TestMergeMySqlLicensesCompliance(t *testing.T) {
 				},
 				{
 					LicenseTypeID:   "",
-					ItemDescription: "MySQL Enterprise per cluster",
-					Metric:          "",
-					History:         []dto.LicenseComplianceHistoricValue{},
-				},
-				{
-					LicenseTypeID:   "",
-					ItemDescription: "MySQL Enterprise per host",
+					ItemDescription: "MySQL Enterprise",
 					Metric:          "",
 					History:         []dto.LicenseComplianceHistoricValue{},
 				},
@@ -277,8 +272,153 @@ func TestMergeMySqlLicensesCompliance(t *testing.T) {
 		},
 	}
 
+	mySqlTypes := make(map[string]model.MySqlLicenseType)
+
+	mySqlTypes["B64911"] = model.MySqlLicenseType{
+		ID:              "B64911",
+		ItemDescription: "MySQL Enterprise Edition",
+	}
+
 	for _, testCase := range testCases {
-		actual := mergeMySqlLicensesCompliance(testCase.input)
+		actual := mergeMySqlLicensesCompliance(testCase.input, mySqlTypes)
+		assert.Equal(t, testCase.expected, actual)
+	}
+}
+
+func TestMergeSqlServerLicensesCompliance(t *testing.T) {
+	testCases := []struct {
+		input    []dto.LicenseComplianceHistory
+		expected []dto.LicenseComplianceHistory
+	}{
+		{
+			input:    []dto.LicenseComplianceHistory{},
+			expected: []dto.LicenseComplianceHistory{},
+		},
+		{
+			input: []dto.LicenseComplianceHistory{
+				{
+					LicenseTypeID:   "A00001",
+					ItemDescription: "Something",
+					Metric:          "",
+					History:         []dto.LicenseComplianceHistoricValue{},
+				},
+				{
+					LicenseTypeID:   "",
+					ItemDescription: "pippo",
+					Metric:          "",
+					History:         []dto.LicenseComplianceHistoricValue{},
+				},
+			},
+			expected: []dto.LicenseComplianceHistory{
+				{
+					LicenseTypeID:   "A00001",
+					ItemDescription: "Something",
+					Metric:          "",
+					History:         []dto.LicenseComplianceHistoricValue{},
+				},
+				{
+					LicenseTypeID:   "",
+					ItemDescription: "pippo",
+					Metric:          "",
+					History:         []dto.LicenseComplianceHistoricValue{},
+				},
+			},
+		},
+		{
+			input: []dto.LicenseComplianceHistory{
+				{
+					LicenseTypeID:   "A00001",
+					ItemDescription: "Something",
+					Metric:          "",
+					History:         []dto.LicenseComplianceHistoricValue{},
+				},
+				{
+					LicenseTypeID:   "",
+					ItemDescription: "pippo",
+					Metric:          "",
+					History:         []dto.LicenseComplianceHistoricValue{},
+				},
+				{
+					LicenseTypeID:   "",
+					ItemDescription: "MySQL Enterprise",
+					Metric:          "",
+					History:         []dto.LicenseComplianceHistoricValue{},
+				},
+			},
+			expected: []dto.LicenseComplianceHistory{
+				{
+					LicenseTypeID:   "A00001",
+					ItemDescription: "Something",
+					Metric:          "",
+					History:         []dto.LicenseComplianceHistoricValue{},
+				},
+				{
+					LicenseTypeID:   "",
+					ItemDescription: "pippo",
+					Metric:          "",
+					History:         []dto.LicenseComplianceHistoricValue{},
+				},
+				{
+					LicenseTypeID:   "",
+					ItemDescription: "MySQL Enterprise",
+					Metric:          "",
+					History:         []dto.LicenseComplianceHistoricValue{},
+				},
+			},
+		},
+		{
+			input: []dto.LicenseComplianceHistory{
+				{
+					LicenseTypeID:   "A00001",
+					ItemDescription: "Something",
+					Metric:          "",
+					History:         []dto.LicenseComplianceHistoricValue{},
+				},
+				{
+					LicenseTypeID:   "",
+					ItemDescription: "pippo",
+					Metric:          "",
+					History:         []dto.LicenseComplianceHistoricValue{},
+				},
+				{
+					LicenseTypeID:   "",
+					ItemDescription: "MySQL Enterprise",
+					Metric:          "",
+					History:         []dto.LicenseComplianceHistoricValue{},
+				},
+			},
+			expected: []dto.LicenseComplianceHistory{
+				{
+					LicenseTypeID:   "A00001",
+					ItemDescription: "Something",
+					Metric:          "",
+					History:         []dto.LicenseComplianceHistoricValue{},
+				},
+				{
+					LicenseTypeID:   "",
+					ItemDescription: "pippo",
+					Metric:          "",
+					History:         []dto.LicenseComplianceHistoricValue{},
+				},
+				{
+					LicenseTypeID:   "",
+					ItemDescription: "MySQL Enterprise",
+					Metric:          "",
+					History:         []dto.LicenseComplianceHistoricValue{},
+				},
+			},
+		},
+	}
+
+	sqlServerTypes := make(map[string]model.SqlServerDatabaseLicenseType)
+
+	sqlServerTypes["DG7GMGF0FKZV-0001"] = model.SqlServerDatabaseLicenseType{
+		ID:              "DG7GMGF0FKZV-0001",
+		ItemDescription: "SQL Server 2019 Enterprise",
+	}
+
+	for _, testCase := range testCases {
+		actual := mergeSqlServerLicensesCompliance(testCase.input, sqlServerTypes)
 		assert.Equal(t, testCase.expected, actual)
 	}
 }
