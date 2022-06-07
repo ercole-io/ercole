@@ -26,7 +26,6 @@ type OciRecommendationError struct {
 }
 
 func (ore OciRecommendationError) SetOciRecommendationError(seqValue uint64, profileID string, category string, createdAt time.Time, strError string) OciRecommendationError {
-
 	recError := OciRecommendationError{
 		SeqValue:  seqValue,
 		ProfileID: profileID,

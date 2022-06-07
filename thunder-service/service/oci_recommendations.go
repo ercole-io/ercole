@@ -35,10 +35,7 @@ func (as *ThunderService) GetOciRecommendations(profiles []string) ([]model.OciR
 }
 
 func (as *ThunderService) ForceGetOciRecommendations() error {
-
 	log := logger.NewLogger("THUN", logger.LogVerbosely(true))
-
-	//db := as.Database
 
 	j := &job.OciDataRetrieveJob{
 		Database: as.Database,
