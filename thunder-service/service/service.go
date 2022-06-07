@@ -23,6 +23,7 @@ import (
 	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/thunder-service/database"
+	"github.com/ercole-io/ercole/v2/thunder-service/job"
 
 	"github.com/ercole-io/ercole/v2/config"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -30,23 +31,15 @@ import (
 
 type ThunderServiceInterface interface {
 	Init()
-	GetOciRecommendations(profiles []string) ([]model.OciRecommendation, error)
+	GetOciNativeRecommendations(profiles []string) ([]model.OciNativeRecommendation, error)
 	AddOciProfile(profile model.OciProfile) (*model.OciProfile, error)
 	UpdateOciProfile(profile model.OciProfile) (*model.OciProfile, error)
 	GetOciProfiles() ([]model.OciProfile, error)
 	DeleteOciProfile(id primitive.ObjectID) error
-	GetOciCompartments(profiles []string) ([]model.OciCompartment, error)
-	//GetOciUnusedLoadBalancers(profiles []string) ([]model.OciErcoleRecommendation, error)
-	GetOciComputeInstancesIdle(profiles []string) ([]model.OciErcoleRecommendation, error)
-	GetOciBlockStorageRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error)
-	GetOciUnusedStorage(profiles []string) ([]model.OciErcoleRecommendation, error)
-	GetOciOldSnapshotDecommissioning(profiles []string) ([]model.OciErcoleRecommendation, error)
-	GetOciComputeInstanceRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error)
-	GetOciSISRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error)
-	//GetOciObjectStorageOptimization(profiles []string) ([]model.OciErcoleRecommendation, error)
-	GetOciUnusedServiceDecommisioning(profiles []string) ([]model.OciErcoleRecommendation, error)
 	GetOciObjects() ([]model.OciObjects, error)
-	GetErcoleRecommendations(profiles []string) ([]model.OciErcoleRecommendation, error)
+	GetOciRecommendations(profiles []string) ([]model.OciRecommendation, error)
+	ForceGetOciRecommendations() error
+	GetOciRecommendationErrors(profiles []string) ([]model.OciRecommendationError, error)
 }
 
 type ThunderService struct {
@@ -56,6 +49,7 @@ type ThunderService struct {
 	Log         logger.Logger
 	Random      *rand.Rand
 	NewObjectID func() primitive.ObjectID
+	Job         job.OciDataRetrieveJob
 }
 
 func (as *ThunderService) Init() {

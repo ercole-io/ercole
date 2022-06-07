@@ -25,8 +25,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-//GetOciRecommendations get recommendation from Oracle Cloud
-func (ctrl *ThunderController) GetOciOldSnapshotDecommissioning(w http.ResponseWriter, r *http.Request) {
+//GetOciNativeRecommendations get recommendation from Oracle Cloud
+func (ctrl *ThunderController) GetOciNativeRecommendations(w http.ResponseWriter, r *http.Request) {
 	profileList := mux.Vars(r)["ids"]
 	if profileList == "" {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Ids not present or malformed"))
@@ -35,7 +35,7 @@ func (ctrl *ThunderController) GetOciOldSnapshotDecommissioning(w http.ResponseW
 
 	var profiles []string = strings.Split(profileList, ",")
 
-	recommendations, err := ctrl.Service.GetOciOldSnapshotDecommissioning(profiles)
+	recommendations, err := ctrl.Service.GetOciNativeRecommendations(profiles)
 
 	if recommendations == nil {
 		if errors.Is(err, utils.ErrInvalidProfileId) {
@@ -57,7 +57,6 @@ func (ctrl *ThunderController) GetOciOldSnapshotDecommissioning(w http.ResponseW
 		response := map[string]interface{}{
 			"recommendations": recommendations,
 		}
-
 		utils.WriteJSONResponse(w, http.StatusOK, response)
 
 		return
@@ -67,5 +66,6 @@ func (ctrl *ThunderController) GetOciOldSnapshotDecommissioning(w http.ResponseW
 		"recommendations": recommendations,
 		"error":           err.Error(),
 	}
+
 	utils.WriteJSONResponse(w, http.StatusPartialContent, response)
 }

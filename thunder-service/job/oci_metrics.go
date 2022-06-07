@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Package service is a package that provides methods for querying data
-package service
+package job
 
 import (
 	"context"
@@ -22,7 +22,6 @@ import (
 	"math"
 	"time"
 
-	multierror "github.com/hashicorp/go-multierror"
 	"github.com/oracle/oci-go-sdk/v45/common"
 	"github.com/oracle/oci-go-sdk/v45/core"
 	"github.com/oracle/oci-go-sdk/v45/monitoring"
@@ -53,25 +52,28 @@ type ValThresh struct {
 	Threshold string
 }
 
-func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model.OciErcoleRecommendation, error) {
-	var listRec []model.OciErcoleRecommendation
+func (job *OciDataRetrieveJob) GetOciComputeInstancesIdle(profiles []string, seqValue uint64) {
+	var listRec []model.OciRecommendation
 
-	var merr error
+	var ore model.OciRecommendationError
 
 	var listCompartments []model.OciCompartment
 
-	listRec = make([]model.OciErcoleRecommendation, 0)
+	listRec = make([]model.OciRecommendation, 0)
+	errors := make([]model.OciRecommendationError, 0)
 
 	for _, profileId := range profiles {
-		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
+		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
 			continue
 		}
 
-		listCompartments, err = as.getOciProfileCompartments(tenancyOCID, customConfigProvider)
+		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
 			continue
 		}
 
@@ -79,9 +81,10 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 		var strNamespace = "oci_compute_infrastructure_health"
 
 		for _, compartment := range listCompartments {
-			instances, err := as.getOciInstances(customConfigProvider, compartment.CompartmentID, profileId)
+			instances, err := job.getOciInstances(customConfigProvider, compartment.CompartmentID, profileId)
 			if err != nil {
-				merr = multierror.Append(merr, err)
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				errors = append(errors, recError)
 				continue
 			}
 
@@ -97,7 +100,8 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 
 			monClient, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 			if err != nil {
-				merr = multierror.Append(merr, err)
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				errors = append(errors, recError)
 				continue
 			}
 
@@ -113,11 +117,12 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 
 			resp, err := monClient.SummarizeMetricsData(context.Background(), req)
 			if err != nil {
-				merr = multierror.Append(merr, err)
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				errors = append(errors, recError)
 				continue
 			}
 
-			var recommendation model.OciErcoleRecommendation
+			var recommendation model.OciRecommendation
 
 		items:
 			for _, s := range resp.Items {
@@ -132,6 +137,8 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 			for id, value := range instances {
 				recommendation.Details = make([]model.RecDetail, 0)
 				recommendation.ProfileID = profileId
+				recommendation.SeqValue = seqValue
+
 				if value.Type == "kubernetes" {
 					recommendation.Category = model.UnusedServiceDecommisioning
 					recommendation.Suggestion = model.DeleteKubernetesNodeNotActive
@@ -157,26 +164,42 @@ func (as *ThunderService) GetOciComputeInstancesIdle(profiles []string) ([]model
 					recommendation.Details = append(recommendation.Details, detail3)
 				}
 
+				recommendation.CreatedAt = time.Now().UTC()
+
 				listRec = append(listRec, recommendation)
 			}
 		}
 	}
 
-	return listRec, merr
+	if len(listRec) > 0 {
+		errDb := job.Database.AddOciRecommendations(listRec)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
+	}
+
+	if len(errors) > 0 {
+		errDb := job.Database.AddOciRecommendationErrors(errors)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
+	}
 }
 
-func (as *ThunderService) GetOciComputeInstanceRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error) {
-	return as.getOciDataForCoumputeInstanceAndServiceDecommisioning(profiles, 50, 50, 90, true, "rightsizing")
+func (job *OciDataRetrieveJob) GetOciComputeInstanceRightsizing(profiles []string, seqValue uint64) {
+	job.getOciDataForCoumputeInstanceAndServiceDecommisioning(profiles, 50, 50, 90, true, "rightsizing", seqValue)
 }
 
-func (as *ThunderService) GetOciUnusedServiceDecommisioning(profiles []string) ([]model.OciErcoleRecommendation, error) {
-	return as.getOciDataForCoumputeInstanceAndServiceDecommisioning(profiles, 5, 5, 40, false, "decommisioning")
+func (job *OciDataRetrieveJob) GetOciUnusedServiceDecommisioning(profiles []string, seqValue uint64) {
+	job.getOciDataForCoumputeInstanceAndServiceDecommisioning(profiles, 5, 5, 40, false, "decommisioning", seqValue)
 }
 
-func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(profiles []string, percAvgCPU int, percPeakCPU int, percMemoryUtilization int, verifyShape bool, recommType string) ([]model.OciErcoleRecommendation, error) {
-	var listRec []model.OciErcoleRecommendation
+func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisioning(profiles []string, percAvgCPU int, percPeakCPU int, percMemoryUtilization int, verifyShape bool, recommType string, seqValue uint64) {
+	var listRec []model.OciRecommendation
 
-	var merr error
+	var ore model.OciRecommendationError
 
 	var listCompartments []model.OciCompartment
 
@@ -194,38 +217,44 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 
 	allInstanceMetrics := make(map[string]MetricData)
 
-	listRec = make([]model.OciErcoleRecommendation, 0)
+	listRec = make([]model.OciRecommendation, 0)
+	errors := make([]model.OciRecommendationError, 0)
 
 	for _, profileId := range profiles {
-		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
+		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
 			continue
 		}
 
-		listCompartments, err = as.getOciProfileCompartments(tenancyOCID, customConfigProvider)
+		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
 			continue
 		}
 
 		monClient, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
 			continue
 		}
 
 		// retrieve metrics data for each compartment
 		for _, compartment := range listCompartments {
-			allInstances, err = as.getOciInstancesList(allInstances, compartment, profileId, customConfigProvider, verifyShape)
+			allInstances, err = job.getOciInstancesList(allInstances, compartment, profileId, customConfigProvider, verifyShape)
 			if err != nil {
-				merr = multierror.Append(merr, err)
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				errors = append(errors, recError)
 				continue
 			}
 
-			allInstancesWithMetrics, err = as.getOciInstancesWithMetrics(allInstancesWithMetrics, compartment, profileId, customConfigProvider, verifyShape)
+			allInstancesWithMetrics, err = job.getOciInstancesWithMetrics(allInstancesWithMetrics, compartment, profileId, customConfigProvider, verifyShape)
 			if err != nil {
-				merr = multierror.Append(merr, err)
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				errors = append(errors, recError)
 				continue
 			}
 
@@ -240,9 +269,10 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 				sTime.Time = time.Now().Local().AddDate(0, 0, -89)
 				eTime.Time = time.Now().Local()
 
-				instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, profileId, AvgCPUThreshold, percAvgCPU, verifyShape, allInstanceMetrics, "AvgCPU")
+				instancesNotOptimizable, err = job.countEventsOccurence(monClient, strQueryAvgCPU, sTime, eTime, instancesNotOptimizable, compartment, profileId, AvgCPUThreshold, percAvgCPU, verifyShape, allInstanceMetrics, "AvgCPU")
 				if err != nil {
-					merr = multierror.Append(merr, err)
+					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+					errors = append(errors, recError)
 				}
 
 				// second query is about CPU utilization peak in the last 7 days
@@ -252,9 +282,10 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 				sTime.Time = sTime.Add(time.Hour * 1)
 				eTime.Time = time.Now().Local()
 
-				instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, profileId, PeakCPUThreshold, percPeakCPU, verifyShape, allInstanceMetrics, "PeakCPU")
+				instancesNotOptimizable, err = job.countEventsOccurence(monClient, strQueryPeakCPU, sTime, eTime, instancesNotOptimizable, compartment, profileId, PeakCPUThreshold, percPeakCPU, verifyShape, allInstanceMetrics, "PeakCPU")
 				if err != nil {
-					merr = multierror.Append(merr, err)
+					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+					errors = append(errors, recError)
 				}
 
 				// third query is about memory utilization in the last 7 days
@@ -263,15 +294,16 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 				sTime.Time = time.Now().Local().AddDate(0, 0, -7)
 				eTime.Time = time.Now().Local()
 
-				instancesNotOptimizable, err = as.countEventsOccurence(monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, profileId, MemoryThreshold, percMemoryUtilization, verifyShape, allInstanceMetrics, "AvgMemory")
+				instancesNotOptimizable, err = job.countEventsOccurence(monClient, strQueryMemory, sTime, eTime, instancesNotOptimizable, compartment, profileId, MemoryThreshold, percMemoryUtilization, verifyShape, allInstanceMetrics, "AvgMemory")
 				if err != nil {
-					merr = multierror.Append(merr, err)
+					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+					errors = append(errors, recError)
 				}
 			}
 		}
 	}
 
-	var recommendation model.OciErcoleRecommendation
+	var recommendation model.OciRecommendation
 
 	//allInstancesWithoutMetrics := allInstances
 	allInstancesWithoutMetrics := make(map[string]Instance)
@@ -296,6 +328,7 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 			recommendation.Details = make([]model.RecDetail, 0)
 
 			recommendation.ProfileID = inst.ProfileID
+			recommendation.SeqValue = seqValue
 
 			if allInstances[inst.ResourceID].Type == "kubernetes" {
 				recClusterName = model.RecDetail{Name: "Oke Cluster Name", Value: allInstances[inst.ResourceID].ClusterName}
@@ -349,6 +382,8 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 				recommendation.Details = append(recommendation.Details, detail1, detail2, detail3, detail4, detail5, detail6)
 			}
 
+			recommendation.CreatedAt = time.Now().UTC()
+
 			listRec = append(listRec, recommendation)
 		}
 	}
@@ -361,6 +396,7 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 				recommendation.Details = make([]model.RecDetail, 0)
 
 				recommendation.ProfileID = in.ProfileID
+				recommendation.SeqValue = seqValue
 
 				if in.Type == "kubernetes" {
 					recClusterName = model.RecDetail{Name: "Oke Cluster Name", Value: allInstances[in.ResourceID].ClusterName}
@@ -387,15 +423,31 @@ func (as *ThunderService) getOciDataForCoumputeInstanceAndServiceDecommisioning(
 					recommendation.Details = append(recommendation.Details, detail1, detail2)
 				}
 
+				recommendation.CreatedAt = time.Now().UTC()
+
 				listRec = append(listRec, recommendation)
 			}
 		}
 	}
 
-	return listRec, merr
+	if len(listRec) > 0 {
+		errDb := job.Database.AddOciRecommendations(listRec)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
+	}
+
+	if len(errors) > 0 {
+		errDb := job.Database.AddOciRecommendationErrors(errors)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
+	}
 }
 
-func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClient, strQuery string, sTime common.SDKTime, eTime common.SDKTime, instances map[string]Instance, compartment model.OciCompartment, profileId string, threshold int, percThreshold int, verifyShape bool, allInstanceMetrics map[string]MetricData, sType string) (map[string]Instance, error) {
+func (job *OciDataRetrieveJob) countEventsOccurence(client monitoring.MonitoringClient, strQuery string, sTime common.SDKTime, eTime common.SDKTime, instances map[string]Instance, compartment model.OciCompartment, profileId string, threshold int, percThreshold int, verifyShape bool, allInstanceMetrics map[string]MetricData, sType string) (map[string]Instance, error) {
 	var metricData map[string]ValThresh
 
 	var valThresh ValThresh
@@ -473,7 +525,7 @@ func (as *ThunderService) countEventsOccurence(client monitoring.MonitoringClien
 	return instances, nil
 }
 
-func (as *ThunderService) getOciInstancesList(allInstances map[string]Instance, compartment model.OciCompartment, profileId string, customConfigProvider common.ConfigurationProvider, verifyShape bool) (map[string]Instance, error) {
+func (job *OciDataRetrieveJob) getOciInstancesList(allInstances map[string]Instance, compartment model.OciCompartment, profileId string, customConfigProvider common.ConfigurationProvider, verifyShape bool) (map[string]Instance, error) {
 	client, err := core.NewComputeClientWithConfigurationProvider(customConfigProvider)
 	if err != nil {
 		return allInstances, err
@@ -515,7 +567,7 @@ func (as *ThunderService) getOciInstancesList(allInstances map[string]Instance, 
 	return allInstances, nil
 }
 
-func (as *ThunderService) getOciInstancesWithMetrics(instances map[string]Instance, compartment model.OciCompartment, profileId string, customConfigProvider common.ConfigurationProvider, verifyShape bool) (map[string]Instance, error) {
+func (job *OciDataRetrieveJob) getOciInstancesWithMetrics(instances map[string]Instance, compartment model.OciCompartment, profileId string, customConfigProvider common.ConfigurationProvider, verifyShape bool) (map[string]Instance, error) {
 	client, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 
 	if err != nil {
@@ -547,31 +599,34 @@ func (as *ThunderService) getOciInstancesWithMetrics(instances map[string]Instan
 	return instances, nil
 }
 
-func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error) {
-	var listRec []model.OciErcoleRecommendation
+func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, seqValue uint64) {
+	var listRec []model.OciRecommendation
 
-	var merr error
+	var ore model.OciRecommendationError
 
 	var listCompartments []model.OciCompartment
 
-	var recommendation model.OciErcoleRecommendation
+	var recommendation model.OciRecommendation
 
 	var vol model.OciResourcePerformance
 
-	listRec = make([]model.OciErcoleRecommendation, 0)
+	listRec = make([]model.OciRecommendation, 0)
+	errors := make([]model.OciRecommendationError, 0)
 
 	for _, profileId := range profiles {
-		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
+		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
 			continue
 		}
 
-		listCompartments, err = as.getOciProfileCompartments(tenancyOCID, customConfigProvider)
+		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
 			continue
 		}
 
@@ -582,8 +637,15 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 		monClient, err := monitoring.NewMonitoringClientWithConfigurationProvider(customConfigProvider)
 
 		if err != nil {
-			merr = multierror.Append(merr, err)
-			return nil, merr
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
+			errDb := job.Database.AddOciRecommendationErrors(errors)
+
+			if errDb != nil {
+				job.Log.Error(errDb)
+			}
+
+			return
 		}
 
 		// retrieve metrics data for each compartment
@@ -593,7 +655,8 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 			coreClient, err := core.NewBlockstorageClientWithConfigurationProvider(customConfigProvider)
 
 			if err != nil {
-				merr = multierror.Append(merr, err)
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				errors = append(errors, recError)
 				continue
 			}
 
@@ -604,7 +667,8 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 			resp1, err := coreClient.ListVolumes(context.Background(), req)
 
 			if err != nil {
-				merr = multierror.Append(merr, err)
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				errors = append(errors, recError)
 				continue
 			}
 
@@ -622,10 +686,11 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				}
 
 				// first query is about Read Throughput
-				resp, err := as.getMetricResponse(monClient, compartment.CompartmentID, "VolumeReadThroughput[5d].max()")
+				resp, err := job.getMetricResponse(monClient, compartment.CompartmentID, "VolumeReadThroughput[5d].max()")
 
 				if err != nil {
-					merr = multierror.Append(merr, err)
+					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+					errors = append(errors, recError)
 					continue
 				}
 
@@ -642,10 +707,11 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				}
 
 				// second query is about Write Throughput
-				resp, err = as.getMetricResponse(monClient, compartment.CompartmentID, "VolumeWriteThroughput[5d].max()")
+				resp, err = job.getMetricResponse(monClient, compartment.CompartmentID, "VolumeWriteThroughput[5d].max()")
 
 				if err != nil {
-					merr = multierror.Append(merr, err)
+					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+					errors = append(errors, recError)
 					continue
 				}
 
@@ -662,10 +728,11 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				}
 
 				// third query is about Read Ops
-				resp, err = as.getMetricResponse(monClient, compartment.CompartmentID, "VolumeReadOps[5d].max()")
+				resp, err = job.getMetricResponse(monClient, compartment.CompartmentID, "VolumeReadOps[5d].max()")
 
 				if err != nil {
-					merr = multierror.Append(merr, err)
+					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+					errors = append(errors, recError)
 					continue
 				}
 
@@ -682,10 +749,11 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 				}
 
 				// fourth query is about Write Ops
-				resp, err = as.getMetricResponse(monClient, compartment.CompartmentID, "VolumeWriteOps[5d].max()")
+				resp, err = job.getMetricResponse(monClient, compartment.CompartmentID, "VolumeWriteOps[5d].max()")
 
 				if err != nil {
-					merr = multierror.Append(merr, err)
+					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+					errors = append(errors, recError)
 					continue
 				}
 
@@ -703,9 +771,10 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 
 				if len(vols) != 0 {
 					for _, v := range vols {
-						isOpt, ociPerfs := as.isOptimizable(v)
+						isOpt, ociPerfs := job.isOptimizable(v)
 						if isOpt {
 							recommendation.Details = make([]model.RecDetail, 0)
+							recommendation.SeqValue = seqValue
 							recommendation.ProfileID = profileId
 							recommendation.Category = model.BlockStorageRightsizing
 							recommendation.Suggestion = model.ResizeOversizedBlockStorage
@@ -723,6 +792,7 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 							detail6 := model.RecDetail{Name: "Iops Max 5dd", Value: fmt.Sprintf("%d%s%d", v.VpusPerGB, " / ", ociPerfs.Performances[0].Values.MaxIOPS)}
 
 							recommendation.Details = append(recommendation.Details, detail1, detail2, detail3, detail4, detail5, detail6)
+							recommendation.CreatedAt = time.Now().UTC()
 
 							listRec = append(listRec, recommendation)
 						}
@@ -732,12 +802,24 @@ func (as *ThunderService) GetOciBlockStorageRightsizing(profiles []string) ([]mo
 		}
 	}
 
-	return listRec, merr
+	if len(listRec) > 0 {
+		errDb := job.Database.AddOciRecommendations(listRec)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
+	}
+
+	if len(errors) > 0 {
+		errDb := job.Database.AddOciRecommendationErrors(errors)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
+	}
 }
 
-func (as *ThunderService) getMetricResponse(client monitoring.MonitoringClient, compartmentId string, query string) (*monitoring.SummarizeMetricsDataResponse, error) {
-	var merr error
-
+func (job *OciDataRetrieveJob) getMetricResponse(client monitoring.MonitoringClient, compartmentId string, query string) (*monitoring.SummarizeMetricsDataResponse, error) {
 	req := monitoring.SummarizeMetricsDataRequest{
 		CompartmentId: &compartmentId,
 		SummarizeMetricsDataDetails: monitoring.SummarizeMetricsDataDetails{
@@ -749,21 +831,20 @@ func (as *ThunderService) getMetricResponse(client monitoring.MonitoringClient, 
 	resp, err := client.SummarizeMetricsData(context.Background(), req)
 
 	if err != nil {
-		merr = multierror.Append(merr, err)
-		return nil, merr
+		return nil, err
 	}
 
 	return &resp, nil
 }
 
-func (as *ThunderService) isOptimizable(res model.OciResourcePerformance) (bool, *model.OciVolumePerformance) {
+func (job *OciDataRetrieveJob) isOptimizable(res model.OciResourcePerformance) (bool, *model.OciVolumePerformance) {
 	var ociPerfs *model.OciVolumePerformance
 
 	if res.VpusPerGB == 0 {
 		return false, nil
 	}
 
-	ociPerfs = as.getOciVolumePerformance(res.VpusPerGB, res.Size)
+	ociPerfs = job.getOciVolumePerformance(res.VpusPerGB, res.Size)
 
 	if res.Throughput < (ociPerfs.Performances[0].Values.MaxThroughput/2.0) && res.Iops < (ociPerfs.Performances[0].Values.MaxIOPS)/2.0 {
 		return true, ociPerfs
@@ -772,7 +853,7 @@ func (as *ThunderService) isOptimizable(res model.OciResourcePerformance) (bool,
 	}
 }
 
-func (as *ThunderService) getOciVolumePerformance(vpu int, size int) *model.OciVolumePerformance {
+func (job *OciDataRetrieveJob) getOciVolumePerformance(vpu int, size int) *model.OciVolumePerformance {
 	var baseIopsPerGB float64
 
 	var maxIops int
@@ -823,16 +904,13 @@ func (as *ThunderService) getOciVolumePerformance(vpu int, size int) *model.OciV
 	return &valRet
 }
 
-func (as *ThunderService) getOciInstances(customConfigProvider common.ConfigurationProvider, compartmentID string, profileId string) (map[string]Instance, error) {
-	var merr error
-
+func (job *OciDataRetrieveJob) getOciInstances(customConfigProvider common.ConfigurationProvider, compartmentID string, profileId string) (map[string]Instance, error) {
 	retList := make(map[string]Instance)
 
 	client, err := core.NewComputeClientWithConfigurationProvider(customConfigProvider)
 
 	if err != nil {
-		merr = multierror.Append(merr, err)
-		return nil, merr
+		return nil, err
 	}
 
 	req := core.ListInstancesRequest{
@@ -842,8 +920,7 @@ func (as *ThunderService) getOciInstances(customConfigProvider common.Configurat
 	resp, err := client.ListInstances(context.Background(), req)
 
 	if err != nil {
-		merr = multierror.Append(merr, err)
-		return nil, merr
+		return nil, err
 	}
 
 	for _, s := range resp.Items {

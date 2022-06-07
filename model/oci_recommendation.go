@@ -18,7 +18,7 @@ package model
 import "time"
 
 // Recommendation holds informations about a recommendation
-type OciRecommendation struct {
+type OciNativeRecommendation struct {
 	TenancyOCID         string `json:"tenancyOCID"`
 	Name                string `json:"name"`
 	NumPending          string `json:"numPending"`
@@ -28,23 +28,23 @@ type OciRecommendation struct {
 	RecommendationId    string `json:"recommendationId"`
 }
 
-type OciErcoleRecommendation struct {
-	ProfileID       string      `json:"profileID"`
-	Category        string      `json:"category"`
-	Suggestion      string      `json:"suggestion"`
-	CompartmentID   string      `json:"compartmentID"`
-	CompartmentName string      `json:"compartmentName"`
-	Name            string      `json:"name"`
-	ResourceID      string      `json:"resourceID"`
-	ObjectType      string      `json:"objectType"`
-	Details         []RecDetail `json:"details"`
-	CreatedAt       time.Time   `json:"createdAt"`
-	Error           string      `json:"error"`
+type OciRecommendation struct {
+	SeqValue        uint64      `json:"seqValue" bson:"seqValue"`
+	ProfileID       string      `json:"profileID" bson:"profileID"`
+	Category        string      `json:"category" bson:"category"`
+	Suggestion      string      `json:"suggestion" bson:"suggestion"`
+	CompartmentID   string      `json:"compartmentID" bson:"compartmentID"`
+	CompartmentName string      `json:"compartmentName" bson:"compartmentName"`
+	Name            string      `json:"name" bson:"name"`
+	ResourceID      string      `json:"resourceID" bson:"resourceID"`
+	ObjectType      string      `json:"objectType" bson:"objectType"`
+	Details         []RecDetail `json:"details" bson:"details"`
+	CreatedAt       time.Time   `json:"createdAt" bson:"createdAt"`
 }
 
 type RecDetail struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	Name  string `json:"name" bson:"name"`
+	Value string `json:"value" bson:"value"`
 }
 
 const (
