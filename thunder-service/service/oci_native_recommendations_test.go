@@ -30,7 +30,7 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-func TestGetRecommendation_InvalidProfileId(t *testing.T) {
+func TestGetOciNativeRecommendation_InvalidProfileId(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -44,8 +44,8 @@ func TestGetRecommendation_InvalidProfileId(t *testing.T) {
 
 	t.Run("BadRequest", func(t *testing.T) {
 		var expectedMap = make(map[primitive.ObjectID]model.OciProfile)
-		var expectedRes []model.OciRecommendation
-		expectedRes = make([]model.OciRecommendation, 0)
+		var expectedRes []model.OciNativeRecommendation
+		expectedRes = make([]model.OciNativeRecommendation, 0)
 
 		expected := model.OciProfile{
 			ID:             [12]byte{},
@@ -61,7 +61,7 @@ func TestGetRecommendation_InvalidProfileId(t *testing.T) {
 			Return(expectedMap, nil).Times(1)
 
 		profiles := []string{"pippo"}
-		actual, err := as.GetOciRecommendations(profiles)
+		actual, err := as.GetOciNativeRecommendations(profiles)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, utils.ErrInvalidProfileId)
 
@@ -69,7 +69,7 @@ func TestGetRecommendation_InvalidProfileId(t *testing.T) {
 	})
 }
 
-func TestGetRecommendation_ProfileNotFound(t *testing.T) {
+func TestGetOciNativeRecommendations_ProfileNotFound(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -83,7 +83,7 @@ func TestGetRecommendation_ProfileNotFound(t *testing.T) {
 
 	t.Run("BadRequest", func(t *testing.T) {
 		//var err1 error
-		var expectedRes = make([]model.OciRecommendation, 0)
+		var expectedRes = make([]model.OciNativeRecommendation, 0)
 		var expectedMap = make(map[primitive.ObjectID]model.OciProfile)
 
 		expected := model.OciProfile{
@@ -100,7 +100,7 @@ func TestGetRecommendation_ProfileNotFound(t *testing.T) {
 			Return(expectedMap, nil).Times(1)
 
 		profiles := []string{"0000000000000000000000ab"}
-		actual, err := as.GetOciRecommendations(profiles)
+		actual, err := as.GetOciNativeRecommendations(profiles)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, utils.ErrNotFound)
 
@@ -108,7 +108,7 @@ func TestGetRecommendation_ProfileNotFound(t *testing.T) {
 	})
 }
 
-func TestGetRecommendation_DBError(t *testing.T) {
+func TestGetOciNativeRecommendations_DBError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	db := NewMockMongoDatabaseInterface(mockCtrl)
@@ -121,13 +121,13 @@ func TestGetRecommendation_DBError(t *testing.T) {
 	}
 
 	t.Run("DB Error", func(t *testing.T) {
-		var expectedRes []model.OciRecommendation
+		var expectedRes []model.OciNativeRecommendation
 
 		db.EXPECT().GetMapOciProfiles().
 			Return(nil, utils.NewError(utils.ErrNotFound, "DB ERROR")).Times(1)
 
 		profiles := []string{"pippo"}
-		actual, err := as.GetOciRecommendations(profiles)
+		actual, err := as.GetOciNativeRecommendations(profiles)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, utils.ErrNotFound)
 

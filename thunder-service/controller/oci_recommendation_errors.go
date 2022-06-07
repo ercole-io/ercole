@@ -25,8 +25,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-//GetOciRecommendations get recommendation from Oracle Cloud
-func (ctrl *ThunderController) GetOciObjectStorageOptimization(w http.ResponseWriter, r *http.Request) {
+func (ctrl *ThunderController) GetOciRecommendationErrors(w http.ResponseWriter, r *http.Request) {
 	profileList := mux.Vars(r)["ids"]
 	if profileList == "" {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Ids not present or malformed"))
@@ -35,36 +34,18 @@ func (ctrl *ThunderController) GetOciObjectStorageOptimization(w http.ResponseWr
 
 	var profiles []string = strings.Split(profileList, ",")
 
-	recommendations, err := ctrl.Service.GetOciObjectStorageOptimization(profiles)
+	data, err := ctrl.Service.GetOciRecommendationErrors(profiles)
 
-	if recommendations == nil {
-		if errors.Is(err, utils.ErrInvalidProfileId) {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
-			return
-		}
-
-		if errors.Is(err, utils.ErrClusterNotFound) {
-			utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
-			return
-		}
-
+	if errors.Is(err, utils.ErrInvalidProfileId) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, err)
+		return
+	} else if errors.Is(err, utils.ErrClusterNotFound) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+		return
+	} else if err != nil {
 		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
-
 		return
 	}
 
-	if err == nil {
-		response := map[string]interface{}{
-			"recommendations": recommendations,
-		}
-		utils.WriteJSONResponse(w, http.StatusOK, response)
-
-		return
-	}
-
-	response := map[string]interface{}{
-		"recommendations": recommendations,
-		"error":           err.Error(),
-	}
-	utils.WriteJSONResponse(w, http.StatusPartialContent, response)
+	utils.WriteJSONResponse(w, http.StatusOK, data)
 }
