@@ -305,7 +305,6 @@ func (m *MongodbSuite) TestSearchMySQLInstances() {
 func (m *MongodbSuite) TestGetMySQLUsedLicenses() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	//m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_20.json"))
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_23.json"))
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_24.json"))
 	first := dto.MySQLUsedLicense{

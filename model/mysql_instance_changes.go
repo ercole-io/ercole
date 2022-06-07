@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,14 +15,9 @@
 
 package model
 
-import (
-	"time"
-)
+import "time"
 
-type Changes struct {
-	DailyCPUUsage float64   `json:"dailyCPUUsage" bson:"dailyCPUUsage"`
-	SegmentsSize  float64   `json:"segmentsSize" bson:"segmentsSize"`
-	Updated       time.Time `json:"updated" bson:"updated"`
-	DatafileSize  float64   `json:"datafileSize" bson:"datafileSize"`
-	Allocable     float64   `json:"allocable" bson:"allocable"`
+type MySqlChanges struct {
+	Updated    time.Time `json:"updated" bson:"updated"`
+	Allocation float64   `json:"allocation" bson:"allocation"`
 }
