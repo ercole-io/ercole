@@ -48,6 +48,44 @@ type OciDataRetrieveJob struct {
 
 func (job *OciDataRetrieveJob) Run() {
 	job.getOciObjectsNumber()
+
+	var profiles []string
+
+	var seqValue uint64
+
+	var newSeqValue uint64
+
+	ociProfiles, err := job.Database.GetOciProfiles(true)
+	if err != nil {
+		job.Log.Error(err)
+		return
+	}
+
+	for _, val := range ociProfiles {
+		profiles = append(profiles, val.ID.Hex())
+	}
+
+	seqValue, err = job.Database.GetLastOciSeqValue()
+
+	if err != nil {
+		job.Log.Error(err)
+		return
+	}
+
+	newSeqValue = seqValue + 1
+	job.GetOciUnusedLoadBalancers(profiles, newSeqValue)
+	job.GetOciOldSnapshotDecommissioning(profiles, newSeqValue)
+	job.GetOciComputeInstancesIdle(profiles, newSeqValue)
+	job.GetOciBlockStorageRightsizing(profiles, newSeqValue)
+	job.GetOciUnusedStorage(profiles, newSeqValue)
+	job.GetOciComputeInstanceRightsizing(profiles, newSeqValue)
+	job.GetOciSISRightsizing(profiles, newSeqValue)
+	job.GetOciObjectStorageOptimization(profiles, newSeqValue)
+	job.GetOciUnusedServiceDecommisioning(profiles, newSeqValue)
+}
+
+func (job *OciDataRetrieveJob) ForceRun() {
+
 }
 
 func (job *OciDataRetrieveJob) getOciObjectsNumber() {

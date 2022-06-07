@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,18 +17,15 @@
 package service
 
 import (
-	"fmt"
-
 	"github.com/ercole-io/ercole/v2/model"
 )
 
-func (as *ThunderService) GetErcoleRecommendations(profiles []string) ([]model.OciErcoleRecommendation, error) {
+func (as *ThunderService) GetOciRecommendationErrors(profiles []string) ([]model.OciRecommendationError, error) {
+	oci_recommendation_errors, err := as.Database.GetOciRecommendationErrors(profiles)
 
-	fmt.Println("IT WORKS!!!!")
-	ercoleRecommendations, err := as.Database.GetErcoleRecommendations(profiles)
 	if err != nil {
 		return nil, err
 	}
 
-	return ercoleRecommendations, err
+	return oci_recommendation_errors, nil
 }

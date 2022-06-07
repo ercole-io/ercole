@@ -35,26 +35,29 @@ import (
 	"github.com/ercole-io/ercole/v2/utils"
 )
 
-func TestGetOciBlockStorageRightsizing_StatusNotFound(t *testing.T) {
+var errMock error = errors.New("MockError")
+var aerrMock error = utils.NewError(errMock, "mock")
+
+func TestGetOciNativeRecommendations_StatusNotFound(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("StatusNotFound", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
+			TimeNow: utils.Btc(utils.P("2021-11-08T12:02:03Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
 		}
 
 		var strProfiles = []string{"6140c473413cf9de756f9848"}
-		as.EXPECT().GetOciBlockStorageRightsizing(strProfiles).Return(nil, utils.ErrClusterNotFound)
+		as.EXPECT().GetOciNativeRecommendations(strProfiles).Return(nil, utils.ErrClusterNotFound)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
+		handler := http.HandlerFunc(ac.GetOciNativeRecommendations)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/block-storage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/recommendations", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 
@@ -75,26 +78,26 @@ func TestGetOciBlockStorageRightsizing_StatusNotFound(t *testing.T) {
 	})
 }
 
-func TestGetOciBlockStorageRightsizing_InternalServerError(t *testing.T) {
+func TestGetOciNativeRecommendations_InternalServerError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("StatusNotFound", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
+			TimeNow: utils.Btc(utils.P("2021-11-08T12:02:03Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
 		}
 
 		var strProfiles = []string{"6140c473413cf9de756f9848"}
-		as.EXPECT().GetOciBlockStorageRightsizing(strProfiles).Return(nil, errMock)
+		as.EXPECT().GetOciNativeRecommendations(strProfiles).Return(nil, errMock)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
+		handler := http.HandlerFunc(ac.GetOciNativeRecommendations)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/block-storage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/recommendations", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 
@@ -115,23 +118,23 @@ func TestGetOciBlockStorageRightsizing_InternalServerError(t *testing.T) {
 	})
 }
 
-func TestGetOciBlockStorageRightsizing_BadRequest(t *testing.T) {
+func TestGetOciNativeRecommendations_BadRequest(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("BadRequest", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
+			TimeNow: utils.Btc(utils.P("2021-11-08T12:02:03Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
 		}
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
+		handler := http.HandlerFunc(ac.GetOciNativeRecommendations)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/block-storage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/recommendations", nil)
 		require.NoError(t, err)
 
 		handler.ServeHTTP(rr, req)
@@ -150,26 +153,26 @@ func TestGetOciBlockStorageRightsizing_BadRequest(t *testing.T) {
 	})
 }
 
-func TestGetOciBlockStorageRightsizing_InvalidProfileId(t *testing.T) {
+func TestGetOciNativeRecommendations_InvalidProfileId(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("BadRequest", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
+			TimeNow: utils.Btc(utils.P("2021-11-08T12:02:03Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
 		}
 
 		var strProfiles = []string{"aaa", "bbb", "ccc"}
-		as.EXPECT().GetOciBlockStorageRightsizing(strProfiles).Return(nil, utils.ErrInvalidProfileId)
+		as.EXPECT().GetOciNativeRecommendations(strProfiles).Return(nil, utils.ErrInvalidProfileId)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
+		handler := http.HandlerFunc(ac.GetOciNativeRecommendations)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/block-storage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/recommendations", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "aaa,bbb,ccc"})
 
@@ -188,14 +191,14 @@ func TestGetOciBlockStorageRightsizing_InvalidProfileId(t *testing.T) {
 	})
 }
 
-func TestGetOciBlockStorageRightsizing_PartialContent(t *testing.T) {
+func TestGetOciNativeRecommendations_PartialContent(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	t.Run("BadRequest", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
+			TimeNow: utils.Btc(utils.P("2021-11-08T12:02:03Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
@@ -204,13 +207,15 @@ func TestGetOciBlockStorageRightsizing_PartialContent(t *testing.T) {
 		var strError = "1 error occurred: 'invalid profile id aaa'"
 		var mockError error = errors.New("1 error occurred: 'invalid profile id aaa'")
 
-		var recommendations []model.OciErcoleRecommendation
-		recommendation := model.OciErcoleRecommendation{
-			Category:        model.UnusedResource,
-			CompartmentID:   "ocid1.compartment.oc1..aaaaaaaaraxhbi65iyiln4qvwjwtnebheufhpkwfcymkszuvz2zyqmwsaikq",
-			CompartmentName: "TEST",
-			Name:            "41401efc-419f-42a4-8c1b-b12e11d4526f",
-			ResourceID:      "ocid1.volume.oc1.eu-frankfurt-1.abtheljryvlumhg6vlqgef3v2v4sjqb4mtuzz3tcmjgi4rgzobg6tnpqob7q",
+		var recommendations []model.OciNativeRecommendation
+		recommendation := model.OciNativeRecommendation{
+			TenancyOCID:         "ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q",
+			Name:                "cost-management-load-balancer-underutilized-name",
+			NumPending:          "1",
+			EstimatedCostSaving: "1.92",
+			Status:              "PENDING",
+			Importance:          "MODERATE",
+			RecommendationId:    "ocid1.optimizerrecommendation.oc1..aaaaaaaanptucivsbo24dkml7exd2fldalykkz52gld3nk3jt5c2e4ydgzjq",
 		}
 
 		recommendations = append(recommendations, recommendation)
@@ -221,12 +226,12 @@ func TestGetOciBlockStorageRightsizing_PartialContent(t *testing.T) {
 		}
 
 		var strProfiles = []string{"6140c473413cf9de756f9848", "bbb", "ccc"}
-		as.EXPECT().GetOciBlockStorageRightsizing(strProfiles).Return(recommendations, mockError)
+		as.EXPECT().GetOciNativeRecommendations(strProfiles).Return(recommendations, mockError)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
+		handler := http.HandlerFunc(ac.GetOciNativeRecommendations)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/block-storage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/recommendations", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848,bbb,ccc"})
 
@@ -237,36 +242,38 @@ func TestGetOciBlockStorageRightsizing_PartialContent(t *testing.T) {
 	})
 }
 
-func TestGetOciBlockStorageRightsizing_Success(t *testing.T) {
+func TestGetOciNativeRecommendations_Success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	t.Run("Success", func(t *testing.T) {
+	t.Run("Success_NoContent", func(t *testing.T) {
 		as := NewMockThunderServiceInterface(mockCtrl)
 		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2021-12-24T23:59:59Z")),
+			TimeNow: utils.Btc(utils.P("2021-11-08T12:02:03Z")),
 			Service: as,
 			Config:  config.Configuration{},
 			Log:     logger.NewLogger("TEST"),
 		}
 
-		recommendation := model.OciErcoleRecommendation{
-			Category:        model.UnusedResource,
-			CompartmentID:   "ocid1.compartment.oc1..aaaaaaaaraxhbi65iyiln4qvwjwtnebheufhpkwfcymkszuvz2zyqmwsaikq",
-			CompartmentName: "TEST",
-			Name:            "41401efc-419f-42a4-8c1b-b12e11d4526f",
-			ResourceID:      "ocid1.volume.oc1.eu-frankfurt-1.abtheljryvlumhg6vlqgef3v2v4sjqb4mtuzz3tcmjgi4rgzobg6tnpqob7q",
+		recommendation := model.OciNativeRecommendation{
+			TenancyOCID:         "ocid1.tenancy.oc1..aaaaaaaazizzbqqbjv2se3y3fvm5osfumnorh32nznanirqoju3uks4buh4q",
+			Name:                "cost-management-load-balancer-underutilized-name",
+			NumPending:          "1",
+			EstimatedCostSaving: "1.92",
+			Status:              "PENDING",
+			Importance:          "MODERATE",
+			RecommendationId:    "ocid1.optimizerrecommendation.oc1..aaaaaaaanptucivsbo24dkml7exd2fldalykkz52gld3nk3jt5c2e4ydgzjq",
 		}
 
-		var expectedRes []model.OciErcoleRecommendation
+		var expectedRes []model.OciNativeRecommendation
 		var strProfiles = []string{"6140c473413cf9de756f9848"}
 		expectedRes = append(expectedRes, recommendation)
-		as.EXPECT().GetOciBlockStorageRightsizing(strProfiles).Return(expectedRes, nil)
+		as.EXPECT().GetOciNativeRecommendations(strProfiles).Return(expectedRes, nil)
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciBlockStorageRightsizing)
+		handler := http.HandlerFunc(ac.GetOciNativeRecommendations)
 
-		req, err := http.NewRequest("GET", "/oracle-cloud/block-storage", nil)
+		req, err := http.NewRequest("GET", "/oracle-cloud/recommendations", nil)
 		require.NoError(t, err)
 		req = mux.SetURLVars(req, map[string]string{"ids": "6140c473413cf9de756f9848"})
 

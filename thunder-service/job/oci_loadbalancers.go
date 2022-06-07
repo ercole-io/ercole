@@ -21,41 +21,43 @@ import (
 	"fmt"
 	"time"
 
-	multierror "github.com/hashicorp/go-multierror"
-
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/oracle/oci-go-sdk/v45/loadbalancer"
 )
 
-func (job *OciDataRetrieveJob) GetOciUnusedLoadBalancers(profiles []string) ([]model.OciErcoleRecommendation, error) {
-	var merr error
+func (job *OciDataRetrieveJob) GetOciUnusedLoadBalancers(profiles []string, seqValue uint64) {
+	var ore model.OciRecommendationError
 
 	var listCompartments []model.OciCompartment
 
-	var recommendation model.OciErcoleRecommendation
+	var recommendation model.OciRecommendation
 
-	tempListRec := make(map[string]model.OciErcoleRecommendation, 0)
-	listRec := make([]model.OciErcoleRecommendation, 0)
+	tempListRec := make(map[string]model.OciRecommendation, 0)
+	listRec := make([]model.OciRecommendation, 0)
+	errors := make([]model.OciRecommendationError, 0)
 
 	for _, profileId := range profiles {
 		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
 			continue
 		}
 
 		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
 			continue
 		}
 
 		lbClient, err := loadbalancer.NewLoadBalancerClientWithConfigurationProvider(customConfigProvider)
 		if err != nil {
-			merr = multierror.Append(merr, err)
-			return nil, merr
+			recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
+			continue
 		}
 
 		// retrieve load balancer data for each compartment
@@ -67,13 +69,15 @@ func (job *OciDataRetrieveJob) GetOciUnusedLoadBalancers(profiles []string) ([]m
 			resp, err := lbClient.ListLoadBalancerHealths(context.Background(), req)
 
 			if err != nil {
-				merr = multierror.Append(merr, err)
+				recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				errors = append(errors, recError)
 				continue
 			}
 
 			for _, s := range resp.Items {
 				if s.Status == "CRITICAL" || s.Status == "UNKNOWN" {
 					recommendation.Details = make([]model.RecDetail, 0)
+					recommendation.SeqValue = seqValue
 					recommendation.ProfileID = profileId
 					recommendation.Category = model.UnusedResource
 					recommendation.Suggestion = model.DeleteLoadBalancerNotActive
@@ -99,7 +103,8 @@ func (job *OciDataRetrieveJob) GetOciUnusedLoadBalancers(profiles []string) ([]m
 			resp1, err := lbClient.ListLoadBalancers(context.Background(), req1)
 
 			if err != nil {
-				merr = multierror.Append(merr, err)
+				recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				errors = append(errors, recError)
 				continue
 			}
 
@@ -111,14 +116,20 @@ func (job *OciDataRetrieveJob) GetOciUnusedLoadBalancers(profiles []string) ([]m
 			}
 		}
 	}
+
 	if len(listRec) > 0 {
-		errDb := job.Database.AddErcoleRecommendations(listRec)
+		errDb := job.Database.AddOciRecommendations(listRec)
 
 		if errDb != nil {
 			job.Log.Error(errDb)
 		}
-
 	}
 
-	return listRec, merr
+	if len(errors) > 0 {
+		errDb := job.Database.AddOciRecommendationErrors(errors)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
+	}
 }

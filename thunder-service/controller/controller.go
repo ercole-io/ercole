@@ -28,8 +28,8 @@ import (
 // ThunderControllerInterface is a interface that wrap methods used to inserting events in the queue
 type ThunderControllerInterface interface {
 
-	// GetOciRecommendations get recommendations from Oracle Cloud Infrastructure
-	GetOciRecommendations(w http.ResponseWriter, r *http.Request)
+	// GetOciNativeRecommendations get recommendations from Oracle Cloud Infrastructure
+	GetOciNativeRecommendations(w http.ResponseWriter, r *http.Request)
 	// Get Configuration profiles for Oracle Cloud Access
 	GetOciProfiles(w http.ResponseWriter, r *http.Request)
 	// Add a new Configuration profile for Oracle Cloud Access
@@ -38,26 +38,12 @@ type ThunderControllerInterface interface {
 	UpdateOciProfile(w http.ResponseWriter, r *http.Request)
 	// Delete an existing Configuration profile for Oracle Cloud Access
 	DeleteOciProfile(w http.ResponseWriter, r *http.Request)
-	// GetOciUnusedLoadbalancers get recommendations from Oracle Cloud Infrastructure about Load Balancer health
-	GetOciUnusedLoadbalancers(w http.ResponseWriter, r *http.Request)
-	// GetOciComputeInstancesIdle get recommendations from Oracle Cloud Infrastructure about Idle Instances
-	GetOciComputeInstancesIdle(w http.ResponseWriter, r *http.Request)
-	// GetOciBlockStorageRightsizing get recommendations from Oracle Cloud Infrastructure about Optimizable Block Storage
-	GetOciBlockStorageRightsizing(w http.ResponseWriter, r *http.Request)
-	// GetOciUnusedStorage get recommendations from Oracle Cloud Infrastructure about Unused Storage
-	GetOciUnusedStorage(w http.ResponseWriter, r *http.Request)
-	// GetOciOldSnapshotDecommissioning get recommendations from Oracle Cloud Infrastructure about old snapshot
-	GetOciOldSnapshotDecommissioning(w http.ResponseWriter, r *http.Request)
-	// GetOciComputeInstanceRightsizing get recommendations from Oracle Cloud Infrastructure about Underutilized Instances
-	GetOciComputeInstanceRightsizing(w http.ResponseWriter, r *http.Request)
-	// GetOciSISRightsizing get recommendations from Oracle Cloud Infrastructure about Software Infracstructure Services
-	GetOciSISRightsizing(w http.ResponseWriter, r *http.Request)
-	// GetOciObjectStorageOptimization get recommendations from Oracle Cloud Infrastructure about Object Storage Optimization
-	GetOciObjectStorageOptimization(w http.ResponseWriter, r *http.Request)
-	// GetOciUnusedServiceDecommisioning get recommendations from Oracle Cloud Infrastructure about Unused Service Decommisioning
-	GetOciUnusedServiceDecommisioning(w http.ResponseWriter, r *http.Request)
-	// GetErcoleRecommendations get recommendations related to Cloud Infrastructure from Ercole
-	GetErcoleRecommendations(w http.ResponseWriter, r *http.Request)
+	// GetOciRecommendations get recommendations saved from Oracle Cloud Infrastructure
+	GetOciRecommendations(w http.ResponseWriter, r *http.Request)
+	// GetOciRecommendationErrors get recommendation errors saved from Oracle Cloud Infrastructure
+	GetOciRecommendationErrors(w http.ResponseWriter, r *http.Request)
+	// ForceGetOciRecommendations force retrieving recommendations from Oracle Cloud Infrastructure
+	ForceGetOciRecommendations(w http.ResponseWriter, r *http.Request)
 }
 
 // ThunderController is the struct used to handle the requests from agents and contains the concrete implementation of ThunderControllerInterface

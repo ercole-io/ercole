@@ -39,20 +39,12 @@ func (ctrl *ThunderController) GetThunderControllerHandler() http.Handler {
 }
 
 func (ctrl *ThunderController) setupProtectedRoutes(router *mux.Router) {
-	router.HandleFunc("/oracle-cloud/recommendations/{ids}", ctrl.GetOciRecommendations).Methods("GET")
+	router.HandleFunc("/oracle-cloud/recommendations/{ids}", ctrl.GetOciNativeRecommendations).Methods("GET")
 	router.HandleFunc("/oracle-cloud/configurations", ctrl.GetOciProfiles).Methods("GET")
 	router.HandleFunc("/oracle-cloud/configurations", ctrl.AddOciProfile).Methods("POST")
 	router.HandleFunc("/oracle-cloud/configurations/{id}", ctrl.UpdateOciProfile).Methods("PUT")
 	router.HandleFunc("/oracle-cloud/configurations/{id}", ctrl.DeleteOciProfile).Methods("DELETE")
-	//router.HandleFunc("/oracle-cloud/load-balancers/{ids}", ctrl.GetOciUnusedLoadbalancers).Methods("GET")
-	router.HandleFunc("/oracle-cloud/instances-idle/{ids}", ctrl.GetOciComputeInstancesIdle).Methods("GET")
-	router.HandleFunc("/oracle-cloud/block-storage/{ids}", ctrl.GetOciBlockStorageRightsizing).Methods("GET")
-	router.HandleFunc("/oracle-cloud/unused-storage/{ids}", ctrl.GetOciUnusedStorage).Methods("GET")
-	router.HandleFunc("/oracle-cloud/old-snapshot/{ids}", ctrl.GetOciOldSnapshotDecommissioning).Methods("GET")
-	router.HandleFunc("/oracle-cloud/instance-rightsizing/{ids}", ctrl.GetOciComputeInstanceRightsizing).Methods("GET")
-	router.HandleFunc("/oracle-cloud/sis-rightsizing/{ids}", ctrl.GetOciSISRightsizing).Methods("GET")
-	//router.HandleFunc("/oracle-cloud/object-storage-optimization/{ids}", ctrl.GetOciObjectStorageOptimization).Methods("GET")
-	router.HandleFunc("/oracle-cloud/unused-service-decommisioning/{ids}", ctrl.GetOciUnusedServiceDecommisioning).Methods("GET")
-	router.HandleFunc("/oracle-cloud/oci-objects", ctrl.GetOciObjects).Methods("GET")
-	router.HandleFunc("/oracle-cloud/ercole-recommendations/{ids}", ctrl.GetErcoleRecommendations).Methods("GET")
+	router.HandleFunc("/oracle-cloud/oci-recommendations/{ids}", ctrl.GetOciRecommendations).Methods("GET")
+	router.HandleFunc("/oracle-cloud/oci-recommendation-errors/{ids}", ctrl.GetOciRecommendationErrors).Methods("GET")
+	router.HandleFunc("/oracle-cloud/retrieve-last-oci-recommendations", ctrl.ForceGetOciRecommendations).Methods("POST")
 }

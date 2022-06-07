@@ -22,36 +22,42 @@ import (
 	"time"
 
 	"github.com/ercole-io/ercole/v2/model"
-	multierror "github.com/hashicorp/go-multierror"
 	"github.com/oracle/oci-go-sdk/v45/common"
 	"github.com/oracle/oci-go-sdk/v45/objectstorage"
 )
 
-func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string) ([]model.OciErcoleRecommendation, error) {
-	var merr error
+func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string, seqValue uint64) {
+	var ore model.OciRecommendationError
 
 	var listCompartments []model.OciCompartment
 
-	var recommendation model.OciErcoleRecommendation
+	var recommendation model.OciRecommendation
 
-	listRec := make([]model.OciErcoleRecommendation, 0)
+	listRec := make([]model.OciRecommendation, 0)
+	errors := make([]model.OciRecommendationError, 0)
 
 	for _, profileId := range profiles {
 		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
+
 			continue
 		}
 
 		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
+
 			continue
 		}
 
 		osClient, err := objectstorage.NewObjectStorageClientWithConfigurationProvider(customConfigProvider)
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
+
 			continue
 		}
 
@@ -63,7 +69,8 @@ func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string
 			resp1, err := osClient.GetNamespace(context.Background(), req1)
 
 			if err != nil {
-				merr = multierror.Append(merr, err)
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				errors = append(errors, recError)
 				continue
 			}
 
@@ -74,7 +81,8 @@ func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string
 			resp2, err := osClient.ListBuckets(context.Background(), req2)
 
 			if err != nil {
-				merr = multierror.Append(merr, err)
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				errors = append(errors, recError)
 				continue
 			}
 
@@ -87,12 +95,14 @@ func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string
 				resp3, err := osClient.GetBucket(context.Background(), req3)
 
 				if err != nil {
-					merr = multierror.Append(merr, err)
+					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+					errors = append(errors, recError)
 					continue
 				}
 
 				if resp3.AutoTiering == "Disabled" {
 					recommendation.Details = make([]model.RecDetail, 0)
+					recommendation.SeqValue = seqValue
 					recommendation.ProfileID = profileId
 					recommendation.Category = model.ObjectStorageOptimization
 					recommendation.Suggestion = model.EnableBucketAutoTiering
@@ -112,15 +122,22 @@ func (job *OciDataRetrieveJob) GetOciObjectStorageOptimization(profiles []string
 			}
 		}
 	}
+
 	if len(listRec) > 0 {
-		errDb := job.Database.AddErcoleRecommendations(listRec)
+		errDb := job.Database.AddOciRecommendations(listRec)
 
 		if errDb != nil {
 			job.Log.Error(errDb)
 		}
 	}
 
-	return listRec, nil
+	if len(errors) > 0 {
+		errDb := job.Database.AddOciRecommendationErrors(errors)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
+	}
 }
 
 func (job *OciDataRetrieveJob) getBucketSize(sizeVal int64) string {

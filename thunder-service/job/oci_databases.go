@@ -14,15 +14,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Package service is a package that provides methods for querying data
-package service
+package job
 
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/ercole-io/ercole/v2/model"
 	"github.com/ercole-io/ercole/v2/thunder-service/dto"
-	multierror "github.com/hashicorp/go-multierror"
 	"github.com/oracle/oci-go-sdk/database"
 	"github.com/oracle/oci-go-sdk/v45/common"
 )
@@ -34,12 +34,14 @@ type OciDatabase struct {
 	HomeID          string
 	Name            string
 	UniqueName      string
+	ProfileID       string
 	Hostname        []string
 }
 
 type OciCompartmnentAndDB struct {
 	CompartmentID   string
 	CompartmentName string
+	ProfileID       string
 	Databases       []string
 }
 
@@ -54,57 +56,70 @@ type DBWorks struct {
 	uniqueName string
 	cpuThreads int
 	archived   bool
+	profileID  string
 	work       []int
 }
 
-func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciErcoleRecommendation, error) {
-	var listRec []model.OciErcoleRecommendation
-	listRec = make([]model.OciErcoleRecommendation, 0)
+func (job *OciDataRetrieveJob) GetOciSISRightsizing(profiles []string, seqValue uint64) {
+	var listRec []model.OciRecommendation
+	listRec = make([]model.OciRecommendation, 0)
+	errors := make([]model.OciRecommendationError, 0)
 
-	var merr error
+	var ore model.OciRecommendationError
 
 	var listCompartments []model.OciCompartment
 
 	dbList := make(map[string]OciDatabase)
 
-	var recommendation model.OciErcoleRecommendation
+	var recommendation model.OciRecommendation
 
-	fmt.Println("STEP 1")
-
-	ercoleDatabases, err := as.Database.GetErcoleDatabases()
+	ercoleDatabases, err := job.Database.GetErcoleDatabases()
 	if err != nil {
-		merr = multierror.Append(merr, err)
-		return nil, merr
+		recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+		errors = append(errors, recError)
+		errDb := job.Database.AddOciRecommendationErrors(errors)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
+
+		return
 	}
 
-	fmt.Println("STEP 2")
-	ercoleActiveDatabases, err := as.Database.GetErcoleActiveDatabases()
+	ercoleActiveDatabases, err := job.Database.GetErcoleActiveDatabases()
 	if err != nil {
-		merr = multierror.Append(merr, err)
-		return nil, merr
+		recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+		errors = append(errors, recError)
+		errDb := job.Database.AddOciRecommendationErrors(errors)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
+
+		return
 	}
 
 	var reorderedDBList map[string]OciCompartmnentAndDB
 
-	fmt.Println("STEP 3 - CICLO FOR")
 	for _, profileId := range profiles {
-		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
+		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
 			continue
 		}
 
-		fmt.Println("STEP 4")
-		listCompartments, err = as.getOciProfileCompartments(tenancyOCID, customConfigProvider)
+		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
 			continue
 		}
 
-		fmt.Println("STEP 5")
 		dbClient, err := database.NewDatabaseClientWithConfigurationProvider(customConfigProvider)
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
 			continue
 		}
 
@@ -114,11 +129,11 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 			req := database.ListDbHomesRequest{
 				CompartmentId: &compartment.CompartmentID,
 			}
-			fmt.Println("STEP 6")
 			resp, err := dbClient.ListDbHomes(context.Background(), req)
 
 			if err != nil {
-				merr = multierror.Append(merr, err)
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				errors = append(errors, recError)
 				continue
 			}
 
@@ -127,7 +142,6 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 			var dbIdType string
 
 			if len(resp.Items) != 0 {
-				fmt.Println("STEP 7")
 				for _, dbHome := range resp.Items {
 					if dbHome.VmClusterId != nil {
 						dbRefId = *dbHome.VmClusterId
@@ -143,24 +157,34 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 					dbTmp.HomeID = *dbHome.Id
 					dbTmp.CompartmentID = compartment.CompartmentID
 					dbTmp.CompartmentName = compartment.Name
+					dbTmp.ProfileID = profileId
+					dbVal, err1 := job.getDatabaseName(dbClient, compartment.CompartmentID, *dbHome.Id)
+
+					dbTmp.DBSystemID = dbVal.DBSystemID
+					dbTmp.HomeID = dbVal.HomeID
+					dbTmp.Name = dbVal.Name
+					dbTmp.UniqueName = dbVal.UniqueName
+
 					dbList[dbRefId] = dbTmp
-					dbVal, err1 := getDatabaseName(dbClient, compartment.CompartmentID, *dbHome.Id)
 
 					if err1 != nil {
-						merr = multierror.Append(merr, err1)
+						recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+						errors = append(errors, recError)
 						continue
 					}
 
-					hostnamesAndStatus, err2 := getHostamesAndStatus(dbClient, compartment.CompartmentID, dbVal.DBSystemID, dbIdType)
+					hostnamesAndStatus, err2 := job.getHostamesAndStatus(dbClient, compartment.CompartmentID, dbVal.DBSystemID, dbIdType)
 
 					if err2 != nil {
-						merr = multierror.Append(merr, err2)
+						recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+						errors = append(errors, recError)
 						continue
 					}
 
 					for _, val := range hostnamesAndStatus {
 						if val.status == "STOPPED" {
 							recommendation.Details = make([]model.RecDetail, 0)
+							recommendation.SeqValue = seqValue
 							recommendation.ProfileID = profileId
 							recommendation.Category = model.UnusedServiceDecommisioning //TYPE 3
 							recommendation.Suggestion = model.DeleteDatabaseInstanceNotActive
@@ -173,11 +197,18 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 							detail2 := model.RecDetail{Name: "CPU Core Count", Value: ""}
 
 							recommendation.Details = append(recommendation.Details, detail1, detail2)
+							recommendation.CreatedAt = time.Now().UTC()
 
 							listRec = append(listRec, recommendation)
 						} else {
-							dbVal.Hostname = append(dbVal.Hostname, val.hostname)
-							dbList[dbRefId] = dbVal
+							var dbTmp OciDatabase
+							var hosts []string
+							dbTmp = dbList[dbRefId]
+							hosts = dbTmp.Hostname
+
+							hosts = append(hosts, val.hostname)
+							dbTmp.Hostname = hosts
+							dbList[dbRefId] = dbTmp
 						}
 					}
 				}
@@ -185,19 +216,28 @@ func (as *ThunderService) GetOciSISRightsizing(profiles []string) ([]model.OciEr
 		}
 	}
 
-	if len(dbList) != 0 {
-		fmt.Println("POTA POTA")
-		reorderedDBList = getOciReorderedDBList(dbList)
-		listRec = verifyErcoleAndOciDatabasesConfiguration(ercoleActiveDatabases, reorderedDBList, listRec)
-		listRec = manageErcoleDatabases(ercoleDatabases, reorderedDBList, listRec)
-	} else {
-		fmt.Println("E CHE CAZZO!!")
+	reorderedDBList = job.getOciReorderedDBList(dbList)
+	listRec = job.verifyErcoleAndOciDatabasesConfiguration(ercoleActiveDatabases, reorderedDBList, listRec, seqValue)
+	listRec = job.manageErcoleDatabases(ercoleDatabases, reorderedDBList, listRec, seqValue)
+
+	if len(listRec) > 0 {
+		errDb := job.Database.AddOciRecommendations(listRec)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
 	}
 
-	return listRec, merr
+	if len(errors) > 0 {
+		errDb := job.Database.AddOciRecommendationErrors(errors)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
+	}
 }
 
-func getDatabaseName(dbClient database.DatabaseClient, compartmentId string, homeId string) (OciDatabase, error) {
+func (job *OciDataRetrieveJob) getDatabaseName(dbClient database.DatabaseClient, compartmentId string, homeId string) (OciDatabase, error) {
 	var retDB OciDatabase
 
 	req := database.ListDatabasesRequest{
@@ -212,6 +252,7 @@ func getDatabaseName(dbClient database.DatabaseClient, compartmentId string, hom
 	}
 
 	var DbRefId string
+
 	for _, dbVal := range resp.Items {
 		if dbVal.VmClusterId != nil {
 			DbRefId = *dbVal.VmClusterId
@@ -230,7 +271,7 @@ func getDatabaseName(dbClient database.DatabaseClient, compartmentId string, hom
 	return retDB, nil
 }
 
-func getHostamesAndStatus(dbClient database.DatabaseClient, compartmentId string, dbRefId string, dbIdType string) ([]HostnameAndStatus, error) {
+func (job *OciDataRetrieveJob) getHostamesAndStatus(dbClient database.DatabaseClient, compartmentId string, dbRefId string, dbIdType string) ([]HostnameAndStatus, error) {
 	var hostnamesAndStatus []HostnameAndStatus
 
 	var tmpHostAndSt HostnameAndStatus
@@ -265,8 +306,8 @@ func getHostamesAndStatus(dbClient database.DatabaseClient, compartmentId string
 	return hostnamesAndStatus, nil
 }
 
-func manageErcoleDatabases(ercoleDatabases []dto.ErcoleDatabase, reorderedDBList map[string]OciCompartmnentAndDB, listRec []model.OciErcoleRecommendation) []model.OciErcoleRecommendation { //([]string, error)
-	var recommendation model.OciErcoleRecommendation
+func (job *OciDataRetrieveJob) manageErcoleDatabases(ercoleDatabases []dto.ErcoleDatabase, reorderedDBList map[string]OciCompartmnentAndDB, listRec []model.OciRecommendation, seqValue uint64) []model.OciRecommendation { //([]string, error)
+	var recommendation model.OciRecommendation
 
 	eDBWorkList := make(map[string]DBWorks)
 
@@ -282,6 +323,7 @@ func manageErcoleDatabases(ercoleDatabases []dto.ErcoleDatabase, reorderedDBList
 				wkDB.hostname = eDB.Hostname
 				wkDB.uniqueName = sDB.UniqueName
 				wkDB.cpuThreads = eDB.Info.CpuThreads
+				wkDB.profileID = reorderedDBList[eDB.Hostname].ProfileID
 
 				if !eDB.Archived {
 					wkDB.archived = false
@@ -311,7 +353,8 @@ func manageErcoleDatabases(ercoleDatabases []dto.ErcoleDatabase, reorderedDBList
 
 		if cnt > 5 || opt {
 			recommendation.Details = make([]model.RecDetail, 0)
-			recommendation.ProfileID = ""
+			recommendation.SeqValue = seqValue
+			recommendation.ProfileID = dbWork.profileID
 			recommendation.Category = model.SISRightsizing
 			recommendation.Suggestion = model.ResizeOversizedDatabaseInstance
 			recommendation.Name = dbWork.hostname + "-" + dbWork.uniqueName
@@ -329,6 +372,7 @@ func manageErcoleDatabases(ercoleDatabases []dto.ErcoleDatabase, reorderedDBList
 			}
 
 			recommendation.Details = append(recommendation.Details, detail1, detail2, detail3, detail4)
+			recommendation.CreatedAt = time.Now().UTC()
 
 			listRec = append(listRec, recommendation)
 		}
@@ -337,10 +381,10 @@ func manageErcoleDatabases(ercoleDatabases []dto.ErcoleDatabase, reorderedDBList
 	return listRec
 }
 
-func verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []dto.ErcoleDatabase, reorderedDBList map[string]OciCompartmnentAndDB, listRec []model.OciErcoleRecommendation) []model.OciErcoleRecommendation {
+func (job *OciDataRetrieveJob) verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []dto.ErcoleDatabase, reorderedDBList map[string]OciCompartmnentAndDB, listRec []model.OciRecommendation, seqValue uint64) []model.OciRecommendation {
 	var listDBTmp []string
 
-	var recommendation model.OciErcoleRecommendation
+	var recommendation model.OciRecommendation
 
 	dbNotFound := make(map[string][]string)
 
@@ -365,7 +409,8 @@ func verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []dto.ErcoleDataba
 						listDBTmp = append(listDBTmp, fList.UniqueName)
 						dbNotFound[eDBlist.Hostname] = listDBTmp
 						recommendation.Details = make([]model.RecDetail, 0)
-						recommendation.ProfileID = ""
+						recommendation.SeqValue = seqValue
+						recommendation.ProfileID = v.ProfileID
 						recommendation.Category = model.SISRightsizing
 						recommendation.Suggestion = model.ResizeOversizedDatabaseInstance
 						recommendation.CompartmentID = v.CompartmentID
@@ -378,6 +423,7 @@ func verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []dto.ErcoleDataba
 						detail3 := model.RecDetail{Name: "AWR Enabled", Value: "NO"}
 
 						recommendation.Details = append(recommendation.Details, detail1, detail2, detail3)
+						recommendation.CreatedAt = time.Now().UTC()
 
 						listRec = append(listRec, recommendation)
 					}
@@ -390,7 +436,8 @@ func verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []dto.ErcoleDataba
 			listDBTmp = append(listDBTmp, "placeholder")
 			dbNotFound[k] = listDBTmp
 			recommendation.Details = make([]model.RecDetail, 0)
-			recommendation.ProfileID = ""
+			recommendation.SeqValue = seqValue
+			recommendation.ProfileID = v.ProfileID
 			recommendation.Category = model.SISRightsizing
 			recommendation.Suggestion = model.ResizeOversizedDatabaseInstance
 			recommendation.CompartmentID = v.CompartmentID
@@ -403,6 +450,7 @@ func verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []dto.ErcoleDataba
 			detail3 := model.RecDetail{Name: "AWR Enabled", Value: "NO"}
 
 			recommendation.Details = append(recommendation.Details, detail1, detail2, detail3)
+			recommendation.CreatedAt = time.Now().UTC()
 
 			listRec = append(listRec, recommendation)
 		}
@@ -411,7 +459,7 @@ func verifyErcoleAndOciDatabasesConfiguration(ercoleDatabases []dto.ErcoleDataba
 	return listRec
 }
 
-func getOciReorderedDBList(ociDBList map[string]OciDatabase) map[string]OciCompartmnentAndDB {
+func (job *OciDataRetrieveJob) getOciReorderedDBList(ociDBList map[string]OciDatabase) map[string]OciCompartmnentAndDB {
 	var listDBTmp []string
 
 	var ociCompDBTmp OciCompartmnentAndDB
@@ -423,6 +471,7 @@ func getOciReorderedDBList(ociDBList map[string]OciDatabase) map[string]OciCompa
 			ociCompDBTmp = reorderedDBList[host]
 			ociCompDBTmp.CompartmentID = db.CompartmentID
 			ociCompDBTmp.CompartmentName = db.CompartmentName
+			ociCompDBTmp.ProfileID = db.ProfileID
 			listDBTmp = ociCompDBTmp.Databases
 			listDBTmp = append(listDBTmp, db.UniqueName)
 			ociCompDBTmp.Databases = listDBTmp
