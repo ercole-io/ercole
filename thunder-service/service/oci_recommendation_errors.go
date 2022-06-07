@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,33 +17,15 @@
 package service
 
 import (
-	"time"
-
-	"github.com/ercole-io/ercole/v2/logger"
 	"github.com/ercole-io/ercole/v2/model"
-	"github.com/ercole-io/ercole/v2/thunder-service/job"
 )
 
-func (as *ThunderService) GetOciRecommendations(profiles []string) ([]model.OciRecommendation, error) {
-	ociRecommendations, err := as.Database.GetOciRecommendations(profiles)
+func (as *ThunderService) GetOciRecommendationErrors(profiles []string) ([]model.OciRecommendationError, error) {
+	oci_recommendation_errors, err := as.Database.GetOciRecommendationErrors(profiles)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return ociRecommendations, err
-}
-
-func (as *ThunderService) ForceGetOciRecommendations() error {
-	log := logger.NewLogger("THUN", logger.LogVerbosely(true))
-
-	j := &job.OciDataRetrieveJob{
-		Database: as.Database,
-		TimeNow:  time.Now,
-		Config:   as.Config,
-		Log:      log,
-	}
-	j.Run()
-
-	return nil
+	return oci_recommendation_errors, nil
 }

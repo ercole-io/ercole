@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Package service is a package that provides methods for querying data
-package service
+package job
 
 import (
 	"context"
@@ -28,29 +28,44 @@ import (
 	"github.com/ercole-io/ercole/v2/model"
 )
 
-func (as *ThunderService) GetOciUnusedStorage(profiles []string) ([]model.OciErcoleRecommendation, error) {
-	var merr, err error
+func (job *OciDataRetrieveJob) GetOciUnusedStorage(profiles []string, seqValue uint64) {
+	var ore model.OciRecommendationError
 
 	var volumeList map[string]model.OciVolume
 
 	var attachedVolumeList []model.OciVolume
 
-	var listRec []model.OciErcoleRecommendation
+	var listRec []model.OciRecommendation
 
-	var recommendation model.OciErcoleRecommendation
+	var recommendation model.OciRecommendation
 
-	listRec = make([]model.OciErcoleRecommendation, 0)
+	listRec = make([]model.OciRecommendation, 0)
+	errors := make([]model.OciRecommendationError, 0)
 
-	volumeList, err = as.GetOciVolumeList(profiles)
+	volumeList, err := job.getOciVolumeList(profiles)
 	if err != nil {
-		merr = multierror.Append(merr, err)
-		return listRec, merr
+		recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+		errors = append(errors, recError)
+		errDb := job.Database.AddOciRecommendationErrors(errors)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
+
+		return
 	}
 
-	attachedVolumeList, err = as.GetOciAttachedVolumeList(profiles)
+	attachedVolumeList, err = job.getOciAttachedVolumeList(profiles)
 	if err != nil {
-		merr = multierror.Append(merr, err)
-		return listRec, merr
+		recError := ore.SetOciRecommendationError(seqValue, "", model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+		errors = append(errors, recError)
+		errDb := job.Database.AddOciRecommendationErrors(errors)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
+
+		return
 	}
 
 	for _, avl := range attachedVolumeList {
@@ -61,6 +76,8 @@ func (as *ThunderService) GetOciUnusedStorage(profiles []string) ([]model.OciErc
 
 	for _, vl := range volumeList {
 		recommendation.Details = make([]model.RecDetail, 0)
+		recommendation.SeqValue = seqValue
+		recommendation.ProfileID = vl.ProfileID
 		recommendation.Category = model.UnusedStorage
 		recommendation.Suggestion = model.DeleteBlockStorageNotUsed
 		recommendation.CompartmentID = vl.CompartmentID
@@ -74,14 +91,20 @@ func (as *ThunderService) GetOciUnusedStorage(profiles []string) ([]model.OciErc
 		detail4 := model.RecDetail{Name: "Attached", Value: "No"}
 
 		recommendation.Details = append(recommendation.Details, detail1, detail2, detail3, detail4)
-
+		recommendation.CreatedAt = time.Now().UTC()
 		listRec = append(listRec, recommendation)
 	}
 
-	return listRec, merr
+	if len(listRec) > 0 {
+		errDb := job.Database.AddOciRecommendations(listRec)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
+	}
 }
 
-func (as *ThunderService) GetOciVolumeList(profiles []string) (map[string]model.OciVolume, error) {
+func (job *OciDataRetrieveJob) getOciVolumeList(profiles []string) (map[string]model.OciVolume, error) {
 	var merr error
 
 	var listCompartments []model.OciCompartment
@@ -91,13 +114,13 @@ func (as *ThunderService) GetOciVolumeList(profiles []string) (map[string]model.
 	var vols = make(map[string]model.OciVolume)
 
 	for _, profileId := range profiles {
-		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
+		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
 			merr = multierror.Append(merr, err)
 			continue
 		}
 
-		listCompartments, err = as.getOciProfileCompartments(tenancyOCID, customConfigProvider)
+		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 		if err != nil {
 			merr = multierror.Append(merr, err)
 			continue
@@ -125,6 +148,7 @@ func (as *ThunderService) GetOciVolumeList(profiles []string) (map[string]model.
 				vol = model.OciVolume{
 					CompartmentID:      compartment.CompartmentID,
 					CompartmentName:    compartment.Name,
+					ProfileID:          profileId,
 					ResourceID:         *r.Id,
 					Name:               *r.DisplayName,
 					Size:               fmt.Sprintf("%d", *r.SizeInGBs),
@@ -140,7 +164,7 @@ func (as *ThunderService) GetOciVolumeList(profiles []string) (map[string]model.
 	return vols, merr
 }
 
-func (as *ThunderService) GetOciAttachedVolumeList(profiles []string) ([]model.OciVolume, error) {
+func (job *OciDataRetrieveJob) getOciAttachedVolumeList(profiles []string) ([]model.OciVolume, error) {
 	var merr error
 
 	var listCompartments []model.OciCompartment
@@ -150,13 +174,13 @@ func (as *ThunderService) GetOciAttachedVolumeList(profiles []string) ([]model.O
 	var vols []model.OciVolume
 
 	for _, profileId := range profiles {
-		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
+		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
 			merr = multierror.Append(merr, err)
 			continue
 		}
 
-		listCompartments, err = as.getOciProfileCompartments(tenancyOCID, customConfigProvider)
+		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 		if err != nil {
 			merr = multierror.Append(merr, err)
 			continue
@@ -186,6 +210,7 @@ func (as *ThunderService) GetOciAttachedVolumeList(profiles []string) ([]model.O
 					vol = model.OciVolume{
 						CompartmentID:      compartment.CompartmentID,
 						CompartmentName:    compartment.Name,
+						ProfileID:          profileId,
 						ResourceID:         *r.GetVolumeId(),
 						Name:               *r.GetDisplayName(),
 						Size:               "",
@@ -202,33 +227,40 @@ func (as *ThunderService) GetOciAttachedVolumeList(profiles []string) ([]model.O
 	return vols, merr
 }
 
-func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([]model.OciErcoleRecommendation, error) {
-	var merr error
+func (job *OciDataRetrieveJob) GetOciOldSnapshotDecommissioning(profiles []string, seqValue uint64) {
+	var ore model.OciRecommendationError
 
 	var listCompartments []model.OciCompartment
 
-	var recommendation model.OciErcoleRecommendation
+	var recommendation model.OciRecommendation
 
-	var listRec []model.OciErcoleRecommendation
+	var listRec []model.OciRecommendation
 
-	listRec = make([]model.OciErcoleRecommendation, 0)
+	listRec = make([]model.OciRecommendation, 0)
+	errors := make([]model.OciRecommendationError, 0)
 
 	for _, profileId := range profiles {
-		customConfigProvider, tenancyOCID, err := as.getOciCustomConfigProviderAndTenancy(profileId)
+		customConfigProvider, tenancyOCID, err := job.getOciCustomConfigProviderAndTenancy(profileId)
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
+
 			continue
 		}
 
 		coreClient, err := core.NewBlockstorageClientWithConfigurationProvider(customConfigProvider)
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
+
 			continue
 		}
 
-		listCompartments, err = as.getOciProfileCompartments(tenancyOCID, customConfigProvider)
+		listCompartments, err = job.getOciProfileCompartments(tenancyOCID, customConfigProvider)
 		if err != nil {
-			merr = multierror.Append(merr, err)
+			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+			errors = append(errors, recError)
+
 			continue
 		}
 
@@ -242,7 +274,9 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 			resp, err := coreClient.ListVolumeBackups(context.Background(), req)
 
 			if err != nil {
-				merr = multierror.Append(merr, err)
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				errors = append(errors, recError)
+
 				continue
 			}
 
@@ -252,6 +286,8 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 				tDiff := int(nowt.Sub(s.TimeCreated.Time).Hours() / 24)
 				if s.SourceType == "MANUAL" && tDiff > 30 {
 					recommendation.Details = make([]model.RecDetail, 0)
+					recommendation.SeqValue = seqValue
+					recommendation.ProfileID = profileId
 					recommendation.Category = model.OldSnapshot
 					recommendation.Suggestion = model.DeleteSnapshotOlder
 					recommendation.CompartmentID = compartment.CompartmentID
@@ -261,12 +297,12 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 					recommendation.ObjectType = model.ObjectTypeSnapshot
 					detail1 := model.RecDetail{Name: "Snapshot Name", Value: *s.DisplayName}
 					detail2 := model.RecDetail{Name: "Compartment Name", Value: compartment.Name}
-					detail3 := model.RecDetail{Name: "Size", Value: fmt.Sprintf("%d", *s.SizeInGBs)}
+					detail3 := model.RecDetail{Name: "Size", Value: fmt.Sprintf("%d GB", *s.SizeInGBs)}
 					detail4 := model.RecDetail{Name: "Creation Date", Value: s.TimeCreated.String()}
 					detail5 := model.RecDetail{Name: "Source Type", Value: "Manual"}
 
 					recommendation.Details = append(recommendation.Details, detail1, detail2, detail3, detail4, detail5)
-
+					recommendation.CreatedAt = time.Now().UTC()
 					listRec = append(listRec, recommendation)
 				}
 			}
@@ -280,7 +316,9 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 			resp1, err := coreClient.ListBootVolumeBackups(context.Background(), req1)
 
 			if err != nil {
-				merr = multierror.Append(merr, err)
+				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
+				errors = append(errors, recError)
+
 				continue
 			}
 
@@ -288,6 +326,8 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 				tDiff := int(nowt.Sub(s.TimeCreated.Time).Hours() / 24)
 				if s.SourceType == "MANUAL" && tDiff > 30 {
 					recommendation.Details = make([]model.RecDetail, 0)
+					recommendation.SeqValue = seqValue
+					recommendation.ProfileID = profileId
 					recommendation.Category = model.OldSnapshot
 					recommendation.Suggestion = model.DeleteSnapshotOlder
 					recommendation.CompartmentID = compartment.CompartmentID
@@ -297,17 +337,31 @@ func (as *ThunderService) GetOciOldSnapshotDecommissioning(profiles []string) ([
 					recommendation.ObjectType = model.ObjectTypeSnapshot
 					detail1 := model.RecDetail{Name: "Snapshot Name", Value: *s.DisplayName}
 					detail2 := model.RecDetail{Name: "Compartment Name", Value: compartment.Name}
-					detail3 := model.RecDetail{Name: "Size", Value: fmt.Sprintf("%d", *s.SizeInGBs)}
+					detail3 := model.RecDetail{Name: "Size", Value: fmt.Sprintf("%d GB", *s.SizeInGBs)}
 					detail4 := model.RecDetail{Name: "Creation Date", Value: s.TimeCreated.String()}
 					detail5 := model.RecDetail{Name: "Source Type", Value: "Manual"}
 
 					recommendation.Details = append(recommendation.Details, detail1, detail2, detail3, detail4, detail5)
-
+					recommendation.CreatedAt = time.Now().UTC()
 					listRec = append(listRec, recommendation)
 				}
 			}
 		}
 	}
 
-	return listRec, merr
+	if len(listRec) > 0 {
+		errDb := job.Database.AddOciRecommendations(listRec)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
+	}
+
+	if len(errors) > 0 {
+		errDb := job.Database.AddOciRecommendationErrors(errors)
+
+		if errDb != nil {
+			job.Log.Error(errDb)
+		}
+	}
 }

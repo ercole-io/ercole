@@ -25,7 +25,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-//GetOciRecommendations get recommendation from Oracle Cloud
+//GetOciRecommendations get recommendation related to cloud from Ercole
 func (ctrl *ThunderController) GetOciRecommendations(w http.ResponseWriter, r *http.Request) {
 	profileList := mux.Vars(r)["ids"]
 	if profileList == "" {
@@ -68,4 +68,18 @@ func (ctrl *ThunderController) GetOciRecommendations(w http.ResponseWriter, r *h
 	}
 
 	utils.WriteJSONResponse(w, http.StatusPartialContent, response)
+}
+
+func (ctrl *ThunderController) ForceGetOciRecommendations(w http.ResponseWriter, r *http.Request) {
+	err := ctrl.Service.ForceGetOciRecommendations()
+
+	if errors.Is(err, utils.ErrClusterNotFound) {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusNotFound, err)
+		return
+	} else if err != nil {
+		utils.WriteAndLogError(ctrl.Log, w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, nil)
 }
