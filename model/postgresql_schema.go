@@ -16,14 +16,14 @@
 package model
 
 type PostgreSQLSchema struct {
-	SchemaName string `json:"schemaName" bson:"schemaName"`
-	SchemaOwner string `json:"schemaOwner" bson:"schemaOwner"`
-	SchemaSize string `json:"schemaSize" bson:"schemaSize"`
-	TablesCount string `json:"tablesCount" bson:"tablesCount"`
-	TablesSize string `json:"tablesSize" bson:"tablesSize"`
-	IndexesCount string `json:"indexesCount" bson:"indexesCount"`
-	IndexesSize string `json:"indexesSize" bson:"indexesSize"`
-	MatviewsCount string `json:"matviewsCount" bson:"matviewsCount"`
-	MatviewsSize string `json:"matviewsSize" bson:"matviewsSize"`
-	ViewsCount string `json:"viewsCount" bson:"viewsCount"`
+	SchemaName    string `json:"schemaName" bson:"schemaName"`
+	SchemaOwner   string `json:"schemaOwner" bson:"schemaOwner"`
+	SchemaSize    int    `json:"schemaSize" bson:"schemaSize"`
+	TablesCount   int    `json:"tablesCount" bson:"tablesCount"`
+	TablesSize    int    `json:"tablesSize" bson:"tablesSize"`
+	IndexesCount  int    `json:"indexesCount" bson:"indexesCount"`
+	IndexesSize   int    `json:"indexesSize" bson:"indexesSize"`
+	MatviewsCount int    `json:"matviewsCount" bson:"matviewsCount"`
+	MatviewsSize  int    `json:"matviewsSize" bson:"matviewsSize"`
+	ViewsCount    int    `json:"viewsCount" bson:"viewsCount"`
 }
