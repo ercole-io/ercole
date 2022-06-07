@@ -366,6 +366,8 @@ func (m *MongodbSuite) TestGetHost() {
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_14.json"))
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_15.json"))
 	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_16.json"))
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_20.json"))
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_30.json"))
 	m.InsertAlert(model.Alert{
 		ID:                      utils.Str2oid("5e96ade270c184faca93fe1b"),
 		AlertCategory:           model.AlertCategoryEngine,
@@ -474,13 +476,6 @@ func (m *MongodbSuite) TestGetHost() {
 					UsedSpace:      3.758096384e+09,
 				},
 			},
-			History: []model.History{
-				{
-					CreatedAt:          utils.P("2020-05-04T14:09:46.608Z"),
-					TotalDailyCPUUsage: 0,
-					ID:                 utils.Str2oid("5eb0222a45d85f4193704944"),
-				},
-			},
 			Info: model.Host{
 				CPUCores:                      1,
 				CPUFrequency:                  "2.50GHz",
@@ -511,7 +506,466 @@ func (m *MongodbSuite) TestGetHost() {
 		assert.JSONEq(t, utils.ToJSON(expectedResult), utils.ToJSON(out))
 	})
 
-	m.T().Run("should_detect_history", func(t *testing.T) {
+	m.T().Run("should_detect_mysql_history", func(t *testing.T) {
+		out, err := m.db.GetHost("erc-mysql", utils.MAX_TIME, false)
+		require.NoError(t, err)
+
+		expectedResult := dto.HostData{
+			AgentVersion: "latest",
+			Alerts:       []model.Alert{},
+			Archived:     false,
+			Cluster:      "",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				HACMP:                false,
+				OracleClusterware:    false,
+				SunCluster:           false,
+				VeritasClusterServer: false,
+			},
+			CreatedAt:   utils.P("2021-03-05T09:00:32Z"),
+			Environment: "TST",
+			History: []model.History{
+				{
+					CreatedAt:          utils.P("2021-03-05T09:00:32Z"),
+					TotalDailyCPUUsage: 0.0,
+					ID:                 utils.Str2oid("5ec64ac640c089c5aff44e9c"),
+				},
+				{
+					CreatedAt:          utils.P("2021-02-04T08:00:31Z"),
+					TotalDailyCPUUsage: 0.0,
+					ID:                 utils.Str2oid("5ec64ac640c089c5aff4444c"),
+				},
+			},
+			Features: model.Features{
+				MySQL: &model.MySQLFeature{
+					Instances: []model.MySQLInstance{
+						{
+							Changes: []model.MySqlChanges{
+								{
+									Updated:    utils.P("2021-03-05T09:00:32Z"),
+									Allocation: 68.078,
+								},
+								{
+									Updated:    utils.P("2021-02-04T08:00:31Z"),
+									Allocation: 56.078,
+								},
+							},
+							Databases: []model.MySQLDatabase{
+								{
+									Name:      "mysql",
+									Charset:   "utf8mb4",
+									Collation: "utf8mb4_0900_ai_ci",
+									Encrypted: false},
+								{
+									Name:      "information_schema",
+									Charset:   "utf8",
+									Collation: "utf8_general_ci",
+									Encrypted: false},
+								{
+									Name:      "performance_schema",
+									Charset:   "utf8mb4",
+									Collation: "utf8mb4_0900_ai_ci",
+									Encrypted: false},
+								{
+									Name:      "sys",
+									Charset:   "utf8mb4",
+									Collation: "utf8mb4_0900_ai_ci",
+									Encrypted: false},
+							},
+							SegmentAdvisors: []model.MySQLSegmentAdvisor{
+								{
+									TableSchema: "innodb_temporary",
+									TableName:   "innodb_temporary",
+									Engine:      "InnoDB",
+									Allocation:  12,
+									Data:        12,
+									Index:       0,
+									Free:        0},
+								{
+									TableSchema: "innodb_undo_001",
+									TableName:   "innodb_undo_001",
+									Engine:      "InnoDB",
+									Allocation:  16,
+									Data:        16,
+									Index:       0,
+									Free:        0},
+								{
+									TableSchema: "innodb_undo_002",
+									TableName:   "innodb_undo_002",
+									Engine:      "InnoDB",
+									Allocation:  16,
+									Data:        16,
+									Index:       0,
+									Free:        0},
+								{
+									TableSchema: "mysql",
+									TableName:   "mysql",
+									Engine:      "InnoDB",
+									Allocation:  24,
+									Data:        24,
+									Index:       0,
+									Free:        0},
+								{
+									TableSchema: "sys",
+									TableName:   "sys_config",
+									Engine:      "InnoDB",
+									Allocation:  0.078,
+									Data:        0.062,
+									Index:       0.016,
+									Free:        0,
+								},
+							},
+							Name:               "mysql:3306",
+							PageSize:           16,
+							Engine:             "InnoDB",
+							CharsetServer:      "utf8mb4",
+							ThreadsConcurrency: 0,
+							BufferPoolSize:     128,
+							ReadOnly:           false,
+							Platform:           "Linux",
+							Architecture:       "x86_64",
+							RedoLogEnabled:     "ON",
+							CharsetSystem:      "utf8",
+							LogBufferSize:      16,
+							SortBufferSize:     1,
+							Version:            "8.0.23",
+							Edition:            "COMMUNITY",
+							TableSchemas: []model.MySQLTableSchema{
+								{
+									Name:       "innodb_temporary",
+									Engine:     "InnoDB",
+									Allocation: 12},
+								{
+									Name:       "innodb_undo_001",
+									Engine:     "InnoDB",
+									Allocation: 16},
+								{
+									Name:       "innodb_undo_002",
+									Engine:     "InnoDB",
+									Allocation: 16},
+								{
+									Name:       "mysql",
+									Engine:     "InnoDB",
+									Allocation: 24},
+								{
+									Name:       "sys",
+									Engine:     "InnoDB",
+									Allocation: 0.078}},
+						},
+					},
+				},
+			},
+			Filesystems: []model.Filesystem{
+				{
+					Filesystem:     "/dev/mapper/centos-root",
+					Type:           "xfs",
+					Size:           1.3092864e+07,
+					UsedSpace:      4.338680e+06,
+					AvailableSpace: 8.754184e+06,
+					MountedOn:      "/",
+				},
+				{
+					Filesystem:     "/dev/vda1",
+					Type:           "xfs",
+					Size:           1.038336e+06,
+					UsedSpace:      139948,
+					AvailableSpace: 898388,
+					MountedOn:      "/boot",
+				},
+				{
+					Filesystem:     "devtmpfs",
+					Type:           "devtmpfs",
+					Size:           461268,
+					UsedSpace:      0,
+					AvailableSpace: 461268,
+					MountedOn:      "/dev",
+				},
+				{
+					Filesystem:     "tmpfs",
+					Type:           "tmpfs",
+					Size:           473212,
+					UsedSpace:      0,
+					AvailableSpace: 473212,
+					MountedOn:      "/dev/shm",
+				},
+				{
+					Filesystem:     "tmpfs",
+					Type:           "tmpfs",
+					Size:           473212,
+					UsedSpace:      6576,
+					AvailableSpace: 466636,
+					MountedOn:      "/run",
+				},
+				{
+					Filesystem:     "tmpfs",
+					Type:           "tmpfs",
+					Size:           94644,
+					UsedSpace:      0,
+					AvailableSpace: 94644,
+					MountedOn:      "/run/user/0",
+				},
+				{
+					Filesystem:     "tmpfs",
+					Type:           "tmpfs",
+					Size:           473212,
+					UsedSpace:      0,
+					AvailableSpace: 473212,
+					MountedOn:      "/sys/fs/cgroup",
+				},
+			},
+			Hostname: "erc-mysql",
+			Info: model.Host{
+				Hostname:                      "erc-mysql",
+				CPUModel:                      "Intel Core Processor (Broadwell)",
+				CPUFrequency:                  "1698.033Mhz",
+				CPUSockets:                    1,
+				CPUCores:                      1,
+				CPUThreads:                    1,
+				ThreadsPerCore:                1,
+				CoresPerSocket:                1,
+				HardwareAbstraction:           "VIRT",
+				HardwareAbstractionTechnology: "VMWARE",
+				Kernel:                        "Linux",
+				KernelVersion:                 "3.10.0-1127.el7.x86_64",
+				OS:                            "Red Hat Enterprise Linux",
+				OSVersion:                     "7",
+				MemoryTotal:                   0,
+				SwapTotal:                     1,
+			},
+			Location:            "Germany",
+			SchemaVersion:       1,
+			ServerSchemaVersion: 1,
+			ServerVersion:       "latest",
+			Tags:                []string{},
+			ID:                  utils.Str2oid("5ec64ac640c089c5aff44e9c"),
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedResult), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_detect_partial_mysql_history", func(t *testing.T) {
+		out, err := m.db.GetHost("erc-mysql", utils.P("2021-02-04T11:31:00.061+02:00"), false)
+		require.NoError(t, err)
+
+		expectedResult := dto.HostData{
+			AgentVersion: "latest",
+			Alerts:       []model.Alert{},
+			Archived:     true,
+			Cluster:      "",
+			ClusterMembershipStatus: model.ClusterMembershipStatus{
+				HACMP:                false,
+				OracleClusterware:    false,
+				SunCluster:           false,
+				VeritasClusterServer: false,
+			},
+			CreatedAt:   utils.P("2021-02-04T08:00:31Z"),
+			Environment: "TST",
+			History: []model.History{
+				{
+					CreatedAt:          utils.P("2021-02-04T08:00:31Z"),
+					TotalDailyCPUUsage: 0.0,
+					ID:                 utils.Str2oid("5ec64ac640c089c5aff4444c"),
+				},
+			},
+			Features: model.Features{
+				MySQL: &model.MySQLFeature{
+					Instances: []model.MySQLInstance{
+						{
+							Changes: []model.MySqlChanges{
+								{
+									Updated:    utils.P("2021-02-04T08:00:31Z"),
+									Allocation: 56.078,
+								},
+							},
+							Databases: []model.MySQLDatabase{
+								{
+									Name:      "mysql",
+									Charset:   "utf8mb4",
+									Collation: "utf8mb4_0900_ai_ci",
+									Encrypted: false},
+								{
+									Name:      "information_schema",
+									Charset:   "utf8",
+									Collation: "utf8_general_ci",
+									Encrypted: false},
+								{
+									Name:      "performance_schema",
+									Charset:   "utf8mb4",
+									Collation: "utf8mb4_0900_ai_ci",
+									Encrypted: false},
+								{
+									Name:      "sys",
+									Charset:   "utf8mb4",
+									Collation: "utf8mb4_0900_ai_ci",
+									Encrypted: false},
+							},
+							SegmentAdvisors: []model.MySQLSegmentAdvisor{
+								{
+									TableSchema: "innodb_temporary",
+									TableName:   "innodb_temporary",
+									Engine:      "InnoDB",
+									Allocation:  12,
+									Data:        12,
+									Index:       0,
+									Free:        0},
+								{
+									TableSchema: "innodb_undo_001",
+									TableName:   "innodb_undo_001",
+									Engine:      "InnoDB",
+									Allocation:  16,
+									Data:        16,
+									Index:       0,
+									Free:        0},
+								{
+									TableSchema: "innodb_undo_002",
+									TableName:   "innodb_undo_002",
+									Engine:      "InnoDB",
+									Allocation:  16,
+									Data:        16,
+									Index:       0,
+									Free:        0},
+								{
+									TableSchema: "mysql",
+									TableName:   "mysql",
+									Engine:      "InnoDB",
+									Allocation:  24,
+									Data:        24,
+									Index:       0,
+									Free:        0},
+								{
+									TableSchema: "sys",
+									TableName:   "sys_config",
+									Engine:      "InnoDB",
+									Allocation:  0.078,
+									Data:        0.062,
+									Index:       0.016,
+									Free:        0,
+								},
+							},
+							Name:               "mysql:3306",
+							PageSize:           16,
+							Engine:             "InnoDB",
+							CharsetServer:      "utf8mb4",
+							ThreadsConcurrency: 0,
+							BufferPoolSize:     128,
+							ReadOnly:           false,
+							Platform:           "Linux",
+							Architecture:       "x86_64",
+							RedoLogEnabled:     "ON",
+							CharsetSystem:      "utf8",
+							LogBufferSize:      16,
+							SortBufferSize:     1,
+							Version:            "8.0.23",
+							Edition:            "COMMUNITY",
+							TableSchemas: []model.MySQLTableSchema{
+								{
+									Name:       "innodb_undo_001",
+									Engine:     "InnoDB",
+									Allocation: 16},
+								{
+									Name:       "innodb_undo_002",
+									Engine:     "InnoDB",
+									Allocation: 16},
+								{
+									Name:       "mysql",
+									Engine:     "InnoDB",
+									Allocation: 24},
+								{
+									Name:       "sys",
+									Engine:     "InnoDB",
+									Allocation: 0.078}},
+						},
+					},
+				},
+			},
+			Filesystems: []model.Filesystem{
+				{
+					Filesystem:     "/dev/mapper/centos-root",
+					Type:           "xfs",
+					Size:           1.3092864e+07,
+					UsedSpace:      4.338680e+06,
+					AvailableSpace: 8.754184e+06,
+					MountedOn:      "/",
+				},
+				{
+					Filesystem:     "/dev/vda1",
+					Type:           "xfs",
+					Size:           1.038336e+06,
+					UsedSpace:      139948,
+					AvailableSpace: 898388,
+					MountedOn:      "/boot",
+				},
+				{
+					Filesystem:     "devtmpfs",
+					Type:           "devtmpfs",
+					Size:           461268,
+					UsedSpace:      0,
+					AvailableSpace: 461268,
+					MountedOn:      "/dev",
+				},
+				{
+					Filesystem:     "tmpfs",
+					Type:           "tmpfs",
+					Size:           473212,
+					UsedSpace:      0,
+					AvailableSpace: 473212,
+					MountedOn:      "/dev/shm",
+				},
+				{
+					Filesystem:     "tmpfs",
+					Type:           "tmpfs",
+					Size:           473212,
+					UsedSpace:      6576,
+					AvailableSpace: 466636,
+					MountedOn:      "/run",
+				},
+				{
+					Filesystem:     "tmpfs",
+					Type:           "tmpfs",
+					Size:           94644,
+					UsedSpace:      0,
+					AvailableSpace: 94644,
+					MountedOn:      "/run/user/0",
+				},
+				{
+					Filesystem:     "tmpfs",
+					Type:           "tmpfs",
+					Size:           473212,
+					UsedSpace:      0,
+					AvailableSpace: 473212,
+					MountedOn:      "/sys/fs/cgroup",
+				},
+			},
+			Hostname: "erc-mysql",
+			Info: model.Host{
+				Hostname:                      "erc-mysql",
+				CPUModel:                      "Intel Core Processor (Broadwell)",
+				CPUFrequency:                  "1698.033Mhz",
+				CPUSockets:                    1,
+				CPUCores:                      1,
+				CPUThreads:                    1,
+				ThreadsPerCore:                1,
+				CoresPerSocket:                1,
+				HardwareAbstraction:           "VIRT",
+				HardwareAbstractionTechnology: "VMWARE",
+				Kernel:                        "Linux",
+				KernelVersion:                 "3.10.0-1127.el7.x86_64",
+				OS:                            "Red Hat Enterprise Linux",
+				OSVersion:                     "7",
+				MemoryTotal:                   0,
+				SwapTotal:                     1,
+			},
+			Location:            "Germany",
+			SchemaVersion:       1,
+			ServerSchemaVersion: 1,
+			ServerVersion:       "latest",
+			Tags:                []string{},
+			ID:                  utils.Str2oid("5ec64ac640c089c5aff4444c"),
+		}
+
+		assert.JSONEq(t, utils.ToJSON(expectedResult), utils.ToJSON(out))
+	})
+
+	m.T().Run("should_detect_oracle_history", func(t *testing.T) {
 		out, err := m.db.GetHost("newdb", utils.MAX_TIME, false)
 		require.NoError(t, err)
 
@@ -549,7 +1003,7 @@ func (m *MongodbSuite) TestGetHost() {
 								CPUCount:     2,
 								SegmentsSize: 50,
 								DatafileSize: 8,
-								Changes: []model.Changes{
+								Changes: []model.OracleChanges{
 									{
 										DailyCPUUsage: 3.4,
 										SegmentsSize:  50,
@@ -671,7 +1125,7 @@ func (m *MongodbSuite) TestGetHost() {
 		assert.JSONEq(t, utils.ToJSON(expectedResult), utils.ToJSON(out))
 	})
 
-	m.T().Run("should_detect_partial_history", func(t *testing.T) {
+	m.T().Run("should_detect_partial_oracle_history", func(t *testing.T) {
 		out, err := m.db.GetHost("newdb", utils.P("2020-05-21T11:31:00.061+02:00"), false)
 		require.NoError(t, err)
 
@@ -707,7 +1161,7 @@ func (m *MongodbSuite) TestGetHost() {
 								Backups:    []model.OracleDatabaseBackup{},
 								BlockSize:  8192,
 								CPUCount:   2,
-								Changes: []model.Changes{
+								Changes: []model.OracleChanges{
 									{
 										DailyCPUUsage: 0.7,
 										SegmentsSize:  3,
