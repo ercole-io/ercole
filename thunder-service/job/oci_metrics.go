@@ -67,6 +67,7 @@ func (job *OciDataRetrieveJob) GetOciComputeInstancesIdle(profiles []string, seq
 		if err != nil {
 			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
+
 			continue
 		}
 
@@ -74,6 +75,7 @@ func (job *OciDataRetrieveJob) GetOciComputeInstancesIdle(profiles []string, seq
 		if err != nil {
 			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
+
 			continue
 		}
 
@@ -85,6 +87,7 @@ func (job *OciDataRetrieveJob) GetOciComputeInstancesIdle(profiles []string, seq
 			if err != nil {
 				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
+
 				continue
 			}
 
@@ -102,6 +105,7 @@ func (job *OciDataRetrieveJob) GetOciComputeInstancesIdle(profiles []string, seq
 			if err != nil {
 				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
+
 				continue
 			}
 
@@ -119,6 +123,7 @@ func (job *OciDataRetrieveJob) GetOciComputeInstancesIdle(profiles []string, seq
 			if err != nil {
 				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
+
 				continue
 			}
 
@@ -225,6 +230,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 		if err != nil {
 			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
+
 			continue
 		}
 
@@ -232,6 +238,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 		if err != nil {
 			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
+
 			continue
 		}
 
@@ -239,6 +246,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 		if err != nil {
 			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
+
 			continue
 		}
 
@@ -248,6 +256,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 			if err != nil {
 				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
+
 				continue
 			}
 
@@ -255,6 +264,7 @@ func (job *OciDataRetrieveJob) getOciDataForCoumputeInstanceAndServiceDecommisio
 			if err != nil {
 				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
+
 				continue
 			}
 
@@ -619,6 +629,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 		if err != nil {
 			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
+
 			continue
 		}
 
@@ -627,6 +638,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 		if err != nil {
 			recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 			errors = append(errors, recError)
+
 			continue
 		}
 
@@ -657,6 +669,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 			if err != nil {
 				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
+
 				continue
 			}
 
@@ -669,6 +682,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 			if err != nil {
 				recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 				errors = append(errors, recError)
+
 				continue
 			}
 
@@ -691,6 +705,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 				if err != nil {
 					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 					errors = append(errors, recError)
+
 					continue
 				}
 
@@ -712,6 +727,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 				if err != nil {
 					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 					errors = append(errors, recError)
+
 					continue
 				}
 
@@ -733,6 +749,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 				if err != nil {
 					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 					errors = append(errors, recError)
+
 					continue
 				}
 
@@ -754,6 +771,7 @@ func (job *OciDataRetrieveJob) GetOciBlockStorageRightsizing(profiles []string, 
 				if err != nil {
 					recError := ore.SetOciRecommendationError(seqValue, profileId, model.ObjectStorageOptimization, time.Now().UTC(), err.Error())
 					errors = append(errors, recError)
+
 					continue
 				}
 
