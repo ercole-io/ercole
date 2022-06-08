@@ -79,20 +79,22 @@ func (md *MongoDatabase) GetOciRecommendationErrors(profileIDs []string) ([]mode
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	inCondition := bson.M{"$in": profileIDs}
-
-	filter := bson.M{"seqValue": ociRecommendationErrors[0].SeqValue, "profileID": inCondition}
-
-	cur1, err1 := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciRecommendationError_collection).Find(ctx, filter)
-	if err1 != nil {
-		return nil, utils.NewError(err, "DB ERROR")
-	}
-
 	ociRecommendationErrors1 := make([]model.OciRecommendationError, 0)
-	if err := cur1.All(context.TODO(), &ociRecommendationErrors1); err != nil {
-		return nil, utils.NewError(err, "DB ERROR")
-	}
+	if len(ociRecommendationErrors) > 0 {
 
+		inCondition := bson.M{"$in": profileIDs}
+
+		filter := bson.M{"seqValue": ociRecommendationErrors[0].SeqValue, "profileID": inCondition}
+
+		cur1, err1 := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciRecommendationError_collection).Find(ctx, filter)
+		if err1 != nil {
+			return nil, utils.NewError(err, "DB ERROR")
+		}
+
+		if err := cur1.All(context.TODO(), &ociRecommendationErrors1); err != nil {
+			return nil, utils.NewError(err, "DB ERROR")
+		}
+	}
 	return ociRecommendationErrors1, nil
 }
 

@@ -52,6 +52,7 @@ type MongoDatabaseInterface interface {
 	GetOciRecommendationErrors(profileIDs []string) ([]model.OciRecommendationError, error)
 	GetLastOciSeqValue() (uint64, error)
 	DeleteOldOciRecommendations(dateFrom time.Time) error
+	DeleteOldOciRecommendationErrors(dateFrom time.Time) error
 }
 
 // MongoDatabase is a implementation
