@@ -975,7 +975,7 @@ func TestDismissHost_Success(t *testing.T) {
 	asc.EXPECT().ThrowNewAlert(gomock.Any()).Return(nil).Do(func(alert model.Alert) {
 		assert.Equal(t, model.TechnologyOracleDatabasePtr, alert.AlertAffectedTechnology)
 		assert.Equal(t, model.AlertCategoryEngine, alert.AlertCategory)
-		assert.Equal(t, model.AlertCodeUnlistedRunningDatabase, alert.AlertCode)
+		assert.Equal(t, model.AlertCodeDismissHost, alert.AlertCode)
 		assert.Equal(t, model.AlertSeverityInfo, alert.AlertSeverity)
 		assert.Equal(t, model.AlertStatusNew, alert.AlertStatus)
 		assert.Equal(t, as.TimeNow(), alert.Date)
