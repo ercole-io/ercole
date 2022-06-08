@@ -148,9 +148,10 @@ func (md *MongoDatabase) getHosts(mode string, filters dto.SearchHostsFilters, o
 					"virtualizationNode":      true,
 					"cluster":                 true,
 					"databases": bson.M{
-						model.TechnologyOracleDatabase:     "$features.oracle.database.databases.name",
-						model.TechnologyMicrosoftSQLServer: "$features.microsoft.sqlServer.instances.name",
-						model.TechnologyOracleMySQL:        "$features.mysql.instances.name",
+						model.TechnologyOracleDatabase:       "$features.oracle.database.databases.name",
+						model.TechnologyMicrosoftSQLServer:   "$features.microsoft.sqlServer.instances.name",
+						model.TechnologyOracleMySQL:          "$features.mysql.instances.name",
+						model.TechnologyPostgreSQLPostgreSQL: "$features.postgresql.instances.name",
 					},
 				})),
 				mu.APOptionalStage(mode == "lms", mu.MAPipeline(
@@ -460,6 +461,16 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 						"features.mysql": mu.APOCond(mu.APOEqual("$features.mysql.instances", nil), nil, "$features.mysql"),
 					}),
 				)),
+			),
+		)
+		if err != nil {
+			return nil, utils.NewError(err, "DB ERROR")
+		}
+	case model.TechnologyPostgreSQLPostgreSQL:
+		cur, err = md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
+			context.TODO(),
+			mu.MAPipeline(
+				getBaseHost(hostname, olderThan, raw),
 			),
 		)
 		if err != nil {
@@ -838,6 +849,9 @@ func (md *MongoDatabase) getHostTechnology(hostname string, olderThan time.Time)
 				),
 				model.TechnologyMicrosoftSQLServer: mu.APOSum(
 					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.microsoft.sqlServer.instances", bson.A{})), 0), 1, 0),
+				),
+				model.TechnologyPostgreSQLPostgreSQL: mu.APOSum(
+					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.postgresql.instances", bson.A{})), 0), 1, 0),
 				),
 			}),
 			mu.APUnset("_id"),
