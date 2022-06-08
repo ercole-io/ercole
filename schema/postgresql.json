@@ -3,167 +3,254 @@
     "$id": "postgresqlFeature",
     "type": "object",
     "properties": {
-        "postgresql": {
+
+        "instances": {
             "anyOf": [
                 {
                     "type": "null"
                 },
                 {
-                    "type": "object",
-                    "required": [
-                        "workMem",
-                        "archiveMode",
-                        "archivePath",
-                        "minWalSize",
-                        "maxWalSize",
-                        "maxConnections",
-                        "checkpointCompletionTarget",
-                        "defaultStatisticsTarget",
-                        "randomPageCost",
-                        "maintenanceWorkMem",
-                        "sharedBuffers",
-                        "effectiveCacheSize",
-                        "effectiveIOConcurrency",
-                        "maxWorkerProcesses",
-                        "maxParallelWorkers",
-                        "databases"
-                    ],
-                    "properties": {
-                        "workMem": {
-                            "type": "number",
-                            "minimum": 0
-                        },
-                        "archiveMode": {
-                            "type": "boolean"
-                        },
-                        "archivePath": {
-                            "type": "string",
-                            "minLength": 0,
-                            "maxLength": 128
-                        },
-                        "minWalSize": {
-                            "type": "number",
-                            "minimum": 0
-                        },
-                        "maxWalSize": {
-                            "type": "number",
-                            "minimum": 0
-                        },
-                        "maxConnections": {
-                            "type": "integer",
-                            "minimum": 0
-                        },
-                        "checkpointCompletionTarget": {
-                            "type": "number"
-                        },
-                        "defaultStatisticsTarget": {
-                            "type": "number"
-                        },
-                        "randomPageCost": {
-                            "type": "number",
-                            "minimum": 0
-                        },
-                        "maintenanceWorkMem": {
-                            "type": "number",
-                            "minimum": 0
-                        },
-                        "sharedBuffers": {
-                            "type": "integer",
-                            "minimum": 0
-                        },
-                        "effectiveCacheSize": {
-                            "type": "number",
-                            "minimum": 0
-                        },
-                        "effectiveIOConcurrency": {
-                            "type": "integer",
-                            "minimum": 0
-                        },
-                        "maxWorkerProcesses": {
-                            "type": "integer",
-                            "minimum": 0
-                        },
-                        "maxParallelWorkers": {
-                            "type": "integer",
-                            "minimum": 0
-                        },
-                        "databases": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "required": [
-                                    "name",
-                                    "replication",
-                                    "replicationDelay",
-                                    "effectiveCacheSize",
-                                    "version",
-                                    "size",
-                                    "collation",
-                                    "characterSet",
-                                    "schemas"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "minLength": 1,
-                                        "maxLength": 64
+                    "type": "array",
+                    "items": {
+                        "type":"object",
+                        "required": [
+                            "name",
+                            "port"
+                        ],
+                        "properties": {
+                            "maxConnections": {
+                                "type": "integer"
+                            },
+                            "port": {
+                                "type": "integer",
+                                "minimum": 0
+                            },
+                            "name": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "instanceSize": {
+                                "type": "integer"
+                            },
+                            "charset": {
+                                "type": "string"
+                            },
+                            "isinreplica": {
+                                "type": "boolean"
+                            },
+                            "ismaster": {
+                                "type": "boolean"
+                            },
+                            "isslave": {
+                                "type": "boolean"
+                            },
+                            "archiverWorking": {
+                                "type": "boolean"
+                            },
+                            "slavesNum": {
+                                "type": "integer"
+                            },
+                            "usersNum": {
+                                "type": "integer"
+                            },
+                            "dbNum": {
+                                "type": "integer"
+                            },
+                            "tblspNum": {
+                                "type": "integer"
+                            },
+                            "trustHbaEntries": {
+                                "type": "integer"
+                            },
+                            "setting": {
+                                "anyOf": [
+                                    {
+                                        "type": "null"
                                     },
-                                    "replication": {
-                                        "type": "boolean"
+                                    {
+                                        "type": "object",
+                                        "required": [
+                                            "dbVersion"
+                                        ],
+                                        "properties": {
+                                            "dbVersion":{
+                                                "type": "string",
+                                                "minLength": 1
+                                            },
+                                            "dataDirectory":{
+                                                "type": "string"
+                                            },
+                                            "workMem":{
+                                                "type": "integer"
+                                            },
+                                            "archiveMode":{
+                                                "type": "boolean"
+                                            },
+                                            "archiveCommand":{
+                                                "type": "string"
+                                            },
+                                            "minWalSize":{
+                                                "type": "integer"
+                                            },
+                                            "maxWalSize":{
+                                                "type": "integer"
+                                            },
+                                            "maxConnections":{
+                                                "type": "integer"
+                                            },
+                                            "checkpointCompletionTarget":{
+                                                "type": "string"
+                                            },
+                                            "defaultStatisticsTarget":{
+                                                "type": "integer"
+                                            },
+                                            "randomPageCost":{
+                                                "type": "number"
+                                            },
+                                            "maintenanceWorkMem":{
+                                                "type": "integer"
+                                            },
+                                            "sharedBuffers":{
+                                                "type": "integer"
+                                            },
+                                            "effectiveCacheSize":{
+                                                "type": "integer"
+                                            },
+                                            "effectiveIoConcurrency":{
+                                                "type": "integer"
+                                            },
+                                            "maxWorkerProcesses":{
+                                                "type": "integer"
+                                            },
+                                            "maxParallelWorkers":{
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "databases": {
+                                "anyOf": [
+                                    {
+                                        "type": "null"
                                     },
-                                    "replicationDelay": {
-                                        "type": "boolean"
-                                    },
-                                    "effectiveCacheSize": {
-                                        "type": "integer",
-                                        "minimum": 0
-                                    },
-                                    "version": {
-                                        "type": "string",
-                                        "minLength": 1,
-                                        "maxLength": 16
-                                    },
-                                    "size": {
-                                        "type": "number",
-                                        "minimum": 0
-                                    },
-                                    "collation": {
-                                        "type": "string",
-                                        "minLength": 1,
-                                        "maxLength": 16
-                                    },
-                                    "characterSet": {
-                                        "type": "string",
-                                        "minLength": 1,
-                                        "maxLength": 16
-                                    },
-                                    "schemas": {
+                                    {
                                         "type": "array",
                                         "items": {
                                             "type": "object",
                                             "required": [
-                                                "name",
-                                                "size",
-                                                "tableCount"
+                                                "dbName"
                                             ],
                                             "properties": {
-                                                "name": {
+                                                "dbName":{
                                                     "type": "string",
-                                                    "minLength": 1,
-                                                    "maxLength": 64
+                                                    "minLength": 0
                                                 },
-                                                "size": {
-                                                    "type": "number",
-                                                    "minimum": 0
+                                                "dbOwner":{
+                                                    "type": "string",
+                                                    "minLength": 0
                                                 },
-                                                "tableCount": {
-                                                    "type": "integer",
-                                                    "minimum": 0
+                                                "datconnlimit":{
+                                                    "type": "integer"
+                                                },
+                                                "schemasCount":{
+                                                    "type": "integer"
+                                                },
+                                                "dbSize":{
+                                                    "type": "integer"
+                                                },
+                                                "tablesCount":{
+                                                    "type": "integer"
+                                                },
+                                                "tablesSize":{
+                                                    "type": "integer"
+                                                },
+                                                "indexesCount":{
+                                                    "type": "integer"
+                                                },
+                                                "indexesSize":{
+                                                    "type": "integer"
+                                                },
+                                                "matviewsCount":{
+                                                    "type": "integer"
+                                                },
+                                                "matviewsSize":{
+                                                    "type": "integer"
+                                                },
+                                                "extensionsCount":{
+                                                    "type": "integer"
+                                                },
+                                                "lobsCount":{
+                                                    "type": "integer"
+                                                },
+                                                "lobsSize":{
+                                                    "type": "integer"
+                                                },
+                                                "viewsCount":{
+                                                    "type": "integer"
+                                                },
+                                                "logicReplSetup":{
+                                                    "type": "boolean"
+                                                },
+                                                "publicationsCount":{
+                                                    "type": "integer"
+                                                },
+                                                "subscriptionsCount":{
+                                                    "type": "integer"
+                                                },
+                                                "schemas": {
+                                                    "anyOf": [
+                                                        {
+                                                            "type": "null"
+                                                        },
+                                                        {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "required": [
+                                                                    "schemaName"                                               
+                                                                ],
+                                                                "properties": {
+                                                                    "SchemaName":{
+                                                                        "type": "string",
+                                                                            "minLength":1
+                                                                    },
+                                                                    "SchemaOwner":{
+                                                                        "type": "string"
+                                                                    },
+                                                                    "SchemaSize":{
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "TablesCount":{
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "TablesSize":{
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "IndexesCount":{
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "IndexesSize":{
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "MatviewsCount":{
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "MatviewsSize":{
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "ViewsCount":{
+                                                                        "type": "integer"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
                                                 }
                                             }
                                         }
                                     }
-                                }
+                                ]
                             }
                         }
                     }
