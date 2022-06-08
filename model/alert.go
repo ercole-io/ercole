@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Sorint.lab S.p.A.
+// Copyright (c) 2022 Sorint.lab S.p.A.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -53,6 +53,7 @@ const (
 	AlertCodeMissingHostInErcole     string = "MISSING_HOST_IN_ERCOLE"
 	AlertCodeMissingHostInCmdb       string = "MISSING_HOST_IN_CMDB"
 	AlertCodeAgentError              string = "AGENT_ERROR"
+	AlertCodeDismissHost             string = "DISMISSED_HOST"
 
 	// AGENT
 
@@ -71,7 +72,7 @@ func getAlertCodes() []string {
 	return []string{
 		AlertCodeNewServer, AlertCodeUnlistedRunningDatabase, AlertCodeMissingPrimaryDatabase, AlertCodeMissingHostInErcole, AlertCodeMissingHostInCmdb, AlertCodeAgentError,
 		AlertCodeNoData,
-		AlertCodeNewDatabase, AlertCodeNewLicense, AlertCodeNewOption, AlertCodeIncreasedCPUCores, AlertCodeMissingDatabase,
+		AlertCodeNewDatabase, AlertCodeNewLicense, AlertCodeNewOption, AlertCodeIncreasedCPUCores, AlertCodeMissingDatabase, AlertCodeDismissHost,
 	}
 }
 
