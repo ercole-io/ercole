@@ -17,6 +17,7 @@ package model
 
 type PostgreSQLInstance struct {
 	MaxConnections  int                  `json:"maxConnections" bson:"maxConnections"`
+	Port            int                  `json:"port" bson:"port"`
 	InstanceSize    int                  `json:"instanceSize" bson:"instanceSize"`
 	Charset         string               `json:"charset" bson:"charset"`
 	Isinreplica     bool                 `json:"isinreplica" bson:"isinreplica"`
