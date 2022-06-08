@@ -49,4 +49,9 @@ func (job *OciRemoveOldDataObjectsJob) Run() {
 	if err != nil {
 		job.Log.Error(err)
 	}
+
+	err = job.Database.DeleteOldOciRecommendationErrors(dateFrom)
+	if err != nil {
+		job.Log.Error(err)
+	}
 }

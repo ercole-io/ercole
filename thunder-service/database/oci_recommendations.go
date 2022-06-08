@@ -103,18 +103,21 @@ func (md *MongoDatabase) GetOciRecommendations(profileIDs []string) ([]model.Oci
 		return nil, utils.NewError(err, "DB ERROR")
 	}
 
-	inCondition := bson.M{"$in": profileIDs}
-
-	filter := bson.M{"seqValue": ociRecommendations[0].SeqValue, "profileID": inCondition}
-
-	cur1, err1 := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciRecommendation_collection).Find(ctx, filter)
-	if err1 != nil {
-		return nil, utils.NewError(err, "DB ERROR")
-	}
-
 	ociRecommendation1 := make([]model.OciRecommendation, 0)
-	if err := cur1.All(context.TODO(), &ociRecommendation1); err != nil {
-		return nil, utils.NewError(err, "DB ERROR")
+
+	if len(ociRecommendations) > 0 {
+		inCondition := bson.M{"$in": profileIDs}
+
+		filter := bson.M{"seqValue": ociRecommendations[0].SeqValue, "profileID": inCondition}
+
+		cur1, err1 := md.Client.Database(md.Config.Mongodb.DBName).Collection(OciRecommendation_collection).Find(ctx, filter)
+		if err1 != nil {
+			return nil, utils.NewError(err, "DB ERROR")
+		}
+
+		if err := cur1.All(context.TODO(), &ociRecommendation1); err != nil {
+			return nil, utils.NewError(err, "DB ERROR")
+		}
 	}
 
 	return ociRecommendation1, nil
