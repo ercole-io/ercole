@@ -348,7 +348,7 @@ func (as *APIService) DismissHost(hostname string) error {
 		ID:                      primitive.NewObjectIDFromTimestamp(as.TimeNow()),
 		AlertAffectedTechnology: model.TechnologyOracleDatabasePtr,
 		AlertCategory:           model.AlertCategoryEngine,
-		AlertCode:               model.AlertCodeUnlistedRunningDatabase,
+		AlertCode:               model.AlertCodeDismissHost,
 		AlertSeverity:           model.AlertSeverityInfo,
 		AlertStatus:             model.AlertStatusNew,
 		Date:                    as.TimeNow(),
