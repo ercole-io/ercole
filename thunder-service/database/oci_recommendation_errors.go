@@ -80,8 +80,8 @@ func (md *MongoDatabase) GetOciRecommendationErrors(profileIDs []string) ([]mode
 	}
 
 	ociRecommendationErrors1 := make([]model.OciRecommendationError, 0)
-	if len(ociRecommendationErrors) > 0 {
 
+	if len(ociRecommendationErrors) > 0 {
 		inCondition := bson.M{"$in": profileIDs}
 
 		filter := bson.M{"seqValue": ociRecommendationErrors[0].SeqValue, "profileID": inCondition}
@@ -95,6 +95,7 @@ func (md *MongoDatabase) GetOciRecommendationErrors(profileIDs []string) ([]mode
 			return nil, utils.NewError(err, "DB ERROR")
 		}
 	}
+
 	return ociRecommendationErrors1, nil
 }
 

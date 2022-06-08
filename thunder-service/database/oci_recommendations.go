@@ -104,6 +104,7 @@ func (md *MongoDatabase) GetOciRecommendations(profileIDs []string) ([]model.Oci
 	}
 
 	ociRecommendation1 := make([]model.OciRecommendation, 0)
+
 	if len(ociRecommendations) > 0 {
 		inCondition := bson.M{"$in": profileIDs}
 
