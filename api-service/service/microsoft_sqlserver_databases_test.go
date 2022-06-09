@@ -40,7 +40,7 @@ func TestSearchSqlServerInstances_Success(t *testing.T) {
 			Status:        "ONLINE",
 			Edition:       "ENT",
 			CollationName: "Latin1_General_CI_AS",
-			Version:       "15.0.2000.5",
+			Version:       "2019",
 		},
 		{
 			Hostname:      "test-db",
@@ -48,7 +48,7 @@ func TestSearchSqlServerInstances_Success(t *testing.T) {
 			Status:        "ONLINE",
 			Edition:       "ENT",
 			CollationName: "Latin1_General_CI_AS",
-			Version:       "15.0.2000.5",
+			Version:       "2019",
 		},
 	}
 

@@ -19,7 +19,7 @@
                         "feature": "Servizi motore di database",
                         "language": "1033",
                         "product": "Microsoft SQL Server 2019",
-                        "version": "15.0.2000.5"
+                        "version": "2019"
                     },
                     {
                         "clustered": false,
@@ -28,7 +28,7 @@
                         "feature": "Servizi motore di database",
                         "language": "1040",
                         "product": "Microsoft SQL Server 2019",
-                        "version": "15.0.2000.5"
+                        "version": "2019"
                     }
                 ],
                 "instances": [
@@ -364,7 +364,7 @@
                         "serverName": "ERCWIN2019MSSQL\\MSSQLERC2019",
                         "stateDesc": "ONLINE",
                         "status": "Running",
-                        "version": "15.0.2000.5"
+                        "version": "2019"
                     }
                 ],
                 "patches": []

@@ -169,6 +169,10 @@ type APIControllerInterface interface {
 	// SearchSqlServerInstances search instances data using the filters in the request
 	SearchSqlServerInstances(w http.ResponseWriter, r *http.Request)
 
+	// POSTGRESQL
+	// SearchPostgreSqlInstances search instances data using the filters in the request
+	SearchPostgreSqlInstances(w http.ResponseWriter, r *http.Request)
+
 	// MYSQL CONTRACTS
 	AddMySQLContract(w http.ResponseWriter, r *http.Request)
 	UpdateMySQLContract(w http.ResponseWriter, r *http.Request)
