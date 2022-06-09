@@ -33,7 +33,7 @@ import (
 func (as *APIService) SearchDatabases(filter dto.GlobalFilter) ([]dto.Database, error) {
 	type getter func(filter dto.GlobalFilter) ([]dto.Database, error)
 
-	getters := []getter{as.getOracleDatabases, as.getMySQLDatabases, as.getSqlServerDatabases}
+	getters := []getter{as.getOracleDatabases, as.getMySQLDatabases, as.getSqlServerDatabases, as.getPostgreSqlDatabases}
 
 	dbs := make([]dto.Database, 0)
 
@@ -142,6 +142,35 @@ func (as *APIService) getSqlServerDatabases(filter dto.GlobalFilter) ([]dto.Data
 			Hostname:    instance.Hostname,
 			Environment: instance.Environment,
 			Charset:     instance.CollationName,
+		}
+		dbs = append(dbs, db)
+	}
+
+	return dbs, nil
+}
+
+func (as *APIService) getPostgreSqlDatabases(filter dto.GlobalFilter) ([]dto.Database, error) {
+	sodf := dto.SearchPostgreSqlInstancesFilter{
+		GlobalFilter: filter,
+		PageNumber:   -1,
+		PageSize:     -1,
+	}
+
+	postgreSqlInstances, err := as.SearchPostgreSqlInstances(sodf)
+	if err != nil {
+		return nil, err
+	}
+
+	dbs := make([]dto.Database, 0)
+
+	for _, instance := range postgreSqlInstances.Content {
+		db := dto.Database{
+			Name:        instance.Name,
+			Type:        model.TechnologyPostgreSQLPostgreSQL,
+			Version:     instance.Version,
+			Hostname:    instance.Hostname,
+			Environment: instance.Environment,
+			Charset:     instance.Charset,
 		}
 		dbs = append(dbs, db)
 	}

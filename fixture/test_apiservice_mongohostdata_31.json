@@ -15,18 +15,16 @@
     },
     "environment": "TST",
     "features": {
-        "microsoft": {
-            "sqlServer": {
+        "postgresql": {
                 "instances": [
                     {
-                        "name":          "MSSQLSERVER",
-                        "stateDesc":        "ONLINE",
-                        "edition":       "ENT",
-                        "collationName": "Latin1_General_CI_AS",
-                        "version":       "2019"
+                        "name"   : "PostgreSQL-example:1010",
+                        "charset": "UTF8",
+                        "setting": {
+                            "dbVersion" : "PostgreSQL 10.20"
+                        }
                     }
                 ]
-            }
         }
     },
     "filesystems": [
