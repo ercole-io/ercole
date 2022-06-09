@@ -20,10 +20,47 @@ package service
 import (
 	"strings"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/ercole-io/ercole/v2/api-service/dto"
+	"github.com/ercole-io/ercole/v2/utils/exutils"
 )
 
 func (as *APIService) SearchPostgreSqlInstances(f dto.SearchPostgreSqlInstancesFilter) (*dto.PostgreSqlInstanceResponse, error) {
 	return as.Database.SearchPostgreSqlInstances(strings.Split(f.Search, " "), f.SortBy, f.SortDesc,
 		f.PageNumber, f.PageSize, f.Location, f.Environment, f.OlderThan)
+}
+
+func (as *APIService) SearchPostgreSqlInstancesAsXLSX(filter dto.SearchPostgreSqlInstancesFilter) (*excelize.File, error) {
+	instances, err := as.Database.SearchPostgreSqlInstances(strings.Split(filter.Search, " "),
+		filter.SortBy, filter.SortDesc,
+		-1, -1,
+		filter.Location, filter.Environment, filter.OlderThan)
+	if err != nil {
+		return nil, err
+	}
+
+	sheet := "Instances"
+	headers := []string{
+		"Hostname",
+		"Name",
+		"Charset",
+		"Version",
+	}
+
+	file, err := exutils.NewXLSX(as.Config, sheet, headers...)
+	if err != nil {
+		return nil, err
+	}
+
+	axisHelp := exutils.NewAxisHelper(1)
+	for _, val := range instances.Content {
+		nextAxis := axisHelp.NewRow()
+
+		file.SetCellValue(sheet, nextAxis(), val.Hostname)
+		file.SetCellValue(sheet, nextAxis(), val.Name)
+		file.SetCellValue(sheet, nextAxis(), val.Charset)
+		file.SetCellValue(sheet, nextAxis(), val.Version)
+	}
+
+	return file, nil
 }
