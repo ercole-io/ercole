@@ -60,13 +60,13 @@ func TestGetInfoForFrontendDashboard_Success(t *testing.T) {
 				{
 					"compliance": 0,
 					"unpaidDues": 0,
-					"product":    model.TechnologyMariaDBFoundationMariaDB,
+					"product":    model.TechnologyPostgreSQLPostgreSQL,
 					"hostsCount": 0,
 				},
 				{
 					"compliance": 0,
 					"unpaidDues": 0,
-					"product":    model.TechnologyPostgreSQLPostgreSQL,
+					"product":    model.TechnologyMariaDBFoundationMariaDB,
 					"hostsCount": 0,
 				},
 			},

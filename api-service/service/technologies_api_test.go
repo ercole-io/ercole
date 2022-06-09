@@ -296,8 +296,8 @@ func TestListManagedTechnologies_Success(t *testing.T) {
 		{Product: "Oracle/Database", ConsumedByHosts: 32, CoveredByContracts: 18, TotalCost: 0, PaidCost: 0, Compliance: 0.5625, UnpaidDues: 0, HostsCount: 42},
 		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 44},
 		{Product: "Microsoft/SQLServer", ConsumedByHosts: 8, CoveredByContracts: 8, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 42},
-		{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 		{Product: "PostgreSQL/PostgreSQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
+		{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 	}
 
 	assert.Equal(t, expected, actual)
@@ -505,8 +505,8 @@ func TestListManagedTechnologies_Success2(t *testing.T) {
 		{Product: "Oracle/Database", ConsumedByHosts: 100, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 42},
 		{Product: "Oracle/MySQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 44},
 		{Product: "Microsoft/SQLServer", ConsumedByHosts: 8, CoveredByContracts: 8, TotalCost: 0, PaidCost: 0, Compliance: 1, UnpaidDues: 0, HostsCount: 42},
-		{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 		{Product: "PostgreSQL/PostgreSQL", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
+		{Product: "MariaDBFoundation/MariaDB", ConsumedByHosts: 0, CoveredByContracts: 0, TotalCost: 0, PaidCost: 0, Compliance: 0, UnpaidDues: 0, HostsCount: 0},
 	}
 
 	require.NoError(t, err)

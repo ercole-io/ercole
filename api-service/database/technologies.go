@@ -50,6 +50,9 @@ func (md *MongoDatabase) GetHostsCountUsingTechnologies(location string, environ
 				model.TechnologyMicrosoftSQLServer: mu.APOSum(
 					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.microsoft.sqlServer.instances", bson.A{})), 0), 1, 0),
 				),
+				model.TechnologyPostgreSQLPostgreSQL: mu.APOSum(
+					mu.APOCond(mu.APOGreater(mu.APOSize(mu.APOIfNull("$features.postgresql.instances", bson.A{})), 0), 1, 0),
+				),
 			}),
 			mu.APUnset("_id"),
 		),
