@@ -4,29 +4,27 @@
     "clusterMembershipStatus": {
         "hacmp": false,
         "oracleClusterware": false,
-        "sunCluster": false,
+        "sunCluster": true,
         "veritasClusterServer": false
     },
     "clusters": null,
     "createdAt": {
         "$date": {
-            "$numberLong": "1586933218471"
+            "$numberLong": "1588765163259"
         }
     },
-    "environment": "TST",
+    "environment": "PRD",
     "features": {
-        "microsoft": {
-            "sqlServer": {
+        "postgresql": {
                 "instances": [
                     {
-                        "name":          "MSSQLSERVER",
-                        "stateDesc":        "ONLINE",
-                        "edition":       "ENT",
-                        "collationName": "Latin1_General_CI_AS",
-                        "version":       "2019"
+                        "name":          "PostgreSQL-example:1010",
+                        "charset": "UTF8",
+                        "setting": {
+                            "dbVersion" : "PostgreSQL 10.20"
+                        }
                     }
                 ]
-            }
         }
     },
     "filesystems": [
@@ -59,7 +57,7 @@
             }
         }
     ],
-    "hostname": "test-db",
+    "hostname": "test-db2",
     "info": {
         "cpuCores": {
             "$numberInt": "1"
@@ -76,8 +74,8 @@
             "$numberInt": "1"
         },
         "hardwareAbstraction": "VIRT",
-        "hardwareAbstractionTechnology": "VMWARE",
-        "hostname": "test-db",
+        "hardwareAbstractionTechnology": "OVM",
+        "hostname": "test-db2",
         "kernel": "Linux",
         "kernelVersion": "3.10.0-514.el7.x86_64",
         "memoryTotal": {
@@ -102,6 +100,6 @@
     "serverVersion": "latest",
     "tags": [],
     "_id": {
-        "$oid": "5e96ade270c184faca93fe36"
+        "$oid": "5eb2a1eba77f5e4badf8a2cc"
     }
 }

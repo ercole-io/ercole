@@ -194,6 +194,9 @@ type MongoDatabaseInterface interface {
 	ListSqlServerDatabaseContracts() ([]model.SqlServerDatabaseContract, error)
 	RemoveSqlServerDatabaseContract(id primitive.ObjectID) error
 	UpdateSqlServerDatabaseContract(contract model.SqlServerDatabaseContract) error
+
+	// POSTGRESQL
+	SearchPostgreSqlInstances(keywords []string, sortBy string, sortDesc bool, page int, pageSize int, location string, environment string, olderThan time.Time) (*dto.PostgreSqlInstanceResponse, error)
 }
 
 // MongoDatabase is a implementation
