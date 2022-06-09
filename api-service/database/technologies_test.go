@@ -60,10 +60,11 @@ func (m *MongodbSuite) TestGetHostsCountUsingTechnologies() {
 		out, err := m.db.GetHostsCountUsingTechnologies("", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 		var expectedOut interface{} = map[string]interface{}{
-			model.TechnologyOracleExadata:      1,
-			model.TechnologyOracleDatabase:     2,
-			model.TechnologyOracleMySQL:        1,
-			model.TechnologyMicrosoftSQLServer: 0,
+			model.TechnologyOracleExadata:        1,
+			model.TechnologyOracleDatabase:       2,
+			model.TechnologyOracleMySQL:          1,
+			model.TechnologyMicrosoftSQLServer:   0,
+			model.TechnologyPostgreSQLPostgreSQL: 0,
 		}
 
 		assert.JSONEq(t, utils.ToJSON(expectedOut), utils.ToJSON(out))

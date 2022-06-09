@@ -53,21 +53,31 @@ func (as *APIService) ListManagedTechnologies(sortBy string, sortDesc bool, loca
 
 	statuses = append(statuses, *sqlServerStatus)
 
-	for _, technology := range []string{
-		model.TechnologyMariaDBFoundationMariaDB,
-		model.TechnologyPostgreSQLPostgreSQL,
-	} {
-		statuses = append(statuses, model.TechnologyStatus{
-			Product:            technology,
-			ConsumedByHosts:    0,
-			CoveredByContracts: 0,
-			TotalCost:          0.0,
-			PaidCost:           0.0,
-			HostsCount:         0.0,
-			Compliance:         0.0,
-			UnpaidDues:         0.0,
-		})
+	postgreSQLStatus := model.TechnologyStatus{
+		Product:            model.TechnologyPostgreSQLPostgreSQL,
+		ConsumedByHosts:    0,
+		CoveredByContracts: 0,
+		TotalCost:          0,
+		PaidCost:           0,
+		Compliance:         0,
+		UnpaidDues:         0,
+		HostsCount:         int(hostsCountByTechnology[model.TechnologyPostgreSQLPostgreSQL]),
 	}
+
+	statuses = append(statuses, postgreSQLStatus)
+
+	mariaDBStatus := model.TechnologyStatus{
+		Product:            model.TechnologyMariaDBFoundationMariaDB,
+		ConsumedByHosts:    0,
+		CoveredByContracts: 0,
+		TotalCost:          0,
+		PaidCost:           0,
+		Compliance:         0,
+		UnpaidDues:         0,
+		HostsCount:         0,
+	}
+
+	statuses = append(statuses, mariaDBStatus)
 
 	return statuses, nil
 }
