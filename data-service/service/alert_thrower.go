@@ -106,11 +106,19 @@ func (hds *HostDataService) throwNewLicenseAlert(alerts []model.Alert) error {
 		AlertStatus:             model.AlertStatusNew,
 		Date:                    hds.TimeNow(),
 		Description:             alerts[0].Description,
-		OtherInfo: map[string]interface{}{
-			"hostname":      alerts[0].OtherInfo["hostname"],
-			"dbname":        alerts[0].OtherInfo["dbname"],
-			"licenseTypeID": alerts[0].OtherInfo["licenseTypeID"],
-		},
+		OtherInfo: map[string]interface{}{},
+	}
+
+	if val, ok := alerts[0].OtherInfo["hostname"]; ok {
+		alertOutput.OtherInfo["hostname"] = val
+	}
+
+	if val, ok := alerts[0].OtherInfo["dbname"]; ok {
+		alertOutput.OtherInfo["dbname"] = val
+	}
+
+	if val, ok := alerts[0].OtherInfo["licenseTypeID"]; ok {
+		alertOutput.OtherInfo["licenseTypeID"] = val
 	}
 
 	for _, alert := range alerts[1:] {
@@ -119,8 +127,14 @@ func (hds *HostDataService) throwNewLicenseAlert(alerts []model.Alert) error {
 		}
 
 		alertOutput.Description += "\n" + alert.Description
-		alertOutput.OtherInfo["dbname"] = alertOutput.OtherInfo["dbname"].(string) + "," + alert.OtherInfo["dbname"].(string)
-		alertOutput.OtherInfo["licenseTypeID"] = alertOutput.OtherInfo["licenseTypeID"].(string) + "," + alert.OtherInfo["licenseTypeID"].(string)
+
+		if val, ok := alert.OtherInfo["dbname"]; ok {
+			alertOutput.OtherInfo["dbname"] = alertOutput.OtherInfo["dbname"].(string) + "," + val.(string)
+		}
+
+		if val, ok := alert.OtherInfo["licenseTypeID"]; ok {
+			alertOutput.OtherInfo["licenseTypeID"] = alertOutput.OtherInfo["licenseTypeID"].(string) + "," + val.(string)
+		}
 	}
 
 	return hds.AlertSvcClient.ThrowNewAlert(alertOutput)
@@ -174,8 +188,19 @@ func (hds *HostDataService) throwUnlistedRunningDatabasesAlert(alerts []model.Al
 
 	a := alerts[0]
 
+	hostname := ""
+	dbname := ""
+
+	if val, ok := a.OtherInfo["hostname"]; ok {
+		hostname = val.(string)
+	}
+
+	if val, ok := a.OtherInfo["dbname"]; ok {
+		dbname = val.(string)
+	}
+
 	description := fmt.Sprintf("Some databases on the host %s aren't listed in the oratab: %s",
-		a.OtherInfo["hostname"], a.OtherInfo["dbname"])
+		hostname, dbname)
 
 	alert := model.Alert{
 		ID:                      primitive.NewObjectIDFromTimestamp(hds.TimeNow()),
@@ -187,14 +212,16 @@ func (hds *HostDataService) throwUnlistedRunningDatabasesAlert(alerts []model.Al
 		Date:                    hds.TimeNow(),
 		Description:             description,
 		OtherInfo: map[string]interface{}{
-			"hostname": a.OtherInfo["hostname"],
-			"dbname":   a.OtherInfo["dbname"],
+			"hostname": hostname,
+			"dbname":   dbname,
 		},
 	}
 
 	for _, al := range alerts[1:] {
-		alert.Description += ", " + al.OtherInfo["dbname"].(string)
-		alert.OtherInfo["dbname"] = alert.OtherInfo["dbname"].(string) + "," + al.OtherInfo["dbname"].(string)
+		if val, ok := al.OtherInfo["dbname"]; ok {
+			alert.Description += ", " + val.(string)
+			alert.OtherInfo["dbname"] = alert.OtherInfo["dbname"].(string) + "," + val.(string)
+		}
 	}
 
 	return hds.AlertSvcClient.ThrowNewAlert(alert)
