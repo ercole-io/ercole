@@ -210,6 +210,12 @@ type APIServiceInterface interface {
 	GetMySQLContracts() ([]model.MySQLContract, error)
 	GetMySQLContractsAsXLSX() (*excelize.File, error)
 	DeleteMySQLContract(id primitive.ObjectID) error
+
+	// POSTGRESQL
+	// SearchSqlServerInstances search databases
+	SearchPostgreSqlInstances(filter dto.SearchPostgreSqlInstancesFilter) (*dto.PostgreSqlInstanceResponse, error)
+	// SearchOracleDatabases search databases
+	SearchPostgreSqlInstancesAsXLSX(filter dto.SearchPostgreSqlInstancesFilter) (*excelize.File, error)
 }
 
 // APIService is the concrete implementation of APIServiceInterface.

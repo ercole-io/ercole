@@ -30,7 +30,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSearchSqlServerInstances_JSONPaged(t *testing.T) {
+func TestSearchPostgreSqlInstances_JSONPaged(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -41,18 +41,16 @@ func TestSearchSqlServerInstances_JSONPaged(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	resContent := []dto.SqlServerInstance{
+	resContent := []dto.PostgreSqlInstance{
 		{
-			Hostname:      "test-db",
-			Name:          "MSSQLSERVER",
-			Status:        "ONLINE",
-			Edition:       "ENT",
-			CollationName: "Latin1_General_CI_AS",
-			Version:       "2019",
+			Hostname: "test-db",
+			Name:     "PostgreSQL-example:1010",
+			Charset:  "UTF8",
+			Version:  "PostgreSQL 10.20",
 		},
 	}
 
-	var resFromService = dto.SqlServerInstanceResponse{
+	var resFromService = dto.PostgreSqlInstanceResponse{
 		Content: resContent,
 		Metadata: dto.PagingMetadata{
 			Empty:         false,
@@ -66,8 +64,8 @@ func TestSearchSqlServerInstances_JSONPaged(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchSqlServerInstances(
-			dto.SearchSqlServerInstancesFilter{
+		SearchPostgreSqlInstances(
+			dto.SearchPostgreSqlInstancesFilter{
 				dto.GlobalFilter{
 					"Italy", "TST", utils.P("2020-06-10T11:54:59Z"),
 				},
@@ -76,7 +74,7 @@ func TestSearchSqlServerInstances_JSONPaged(t *testing.T) {
 		Return(&resFromService, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchSqlServerInstances)
+	handler := http.HandlerFunc(ac.SearchPostgreSqlInstances)
 	req, err := http.NewRequest("GET", "/databases?full=true&search=foobar&sort-by=Hostname&sort-desc=true&page=2&size=3&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 
@@ -86,7 +84,7 @@ func TestSearchSqlServerInstances_JSONPaged(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(&resFromService), rr.Body.String())
 }
 
-func TestSearchSqlServerInstances_JSONUnpaged(t *testing.T) {
+func TestSearchPostgreSqlInstances_JSONUnpaged(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -97,33 +95,29 @@ func TestSearchSqlServerInstances_JSONUnpaged(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	resContent := []dto.SqlServerInstance{
+	resContent := []dto.PostgreSqlInstance{
 		{
-			Hostname:      "test-db",
-			Name:          "MSSQLSERVER",
-			Status:        "ONLINE",
-			Edition:       "ENT",
-			CollationName: "Latin1_General_CI_AS",
-			Version:       "2019",
+			Hostname: "test-db",
+			Name:     "PostgreSQL-example:1010",
+			Charset:  "UTF8",
+			Version:  "PostgreSQL 10.20",
 		},
 		{
-			Hostname:      "test-db2",
-			Name:          "MSSQLSERVER",
-			Status:        "ONLINE",
-			Edition:       "STD",
-			CollationName: "Latin1_General_CI_AS",
-			Version:       "2019",
+			Hostname: "test-db2",
+			Name:     "PostgreSQL-example:1010",
+			Charset:  "UTF8",
+			Version:  "PostgreSQL 10.20",
 		},
 	}
 
-	var resFromService = dto.SqlServerInstanceResponse{
+	var resFromService = dto.PostgreSqlInstanceResponse{
 		Content:  resContent,
 		Metadata: dto.PagingMetadata{},
 	}
 
 	as.EXPECT().
-		SearchSqlServerInstances(
-			dto.SearchSqlServerInstancesFilter{
+		SearchPostgreSqlInstances(
+			dto.SearchPostgreSqlInstancesFilter{
 				dto.GlobalFilter{
 					"", "", utils.MAX_TIME,
 				},
@@ -133,7 +127,7 @@ func TestSearchSqlServerInstances_JSONUnpaged(t *testing.T) {
 		Return(&resFromService, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchSqlServerInstances)
+	handler := http.HandlerFunc(ac.SearchPostgreSqlInstances)
 	req, err := http.NewRequest("GET", "/databases", nil)
 	require.NoError(t, err)
 
@@ -143,7 +137,7 @@ func TestSearchSqlServerInstances_JSONUnpaged(t *testing.T) {
 	assert.JSONEq(t, utils.ToJSON(&resFromService.Content), rr.Body.String())
 }
 
-func TestSearchSqlServerInstances_JSONUnprocessableEntity1(t *testing.T) {
+func TestSearchPostgreSqlInstances_JSONUnprocessableEntity1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -155,7 +149,7 @@ func TestSearchSqlServerInstances_JSONUnprocessableEntity1(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchSqlServerInstances)
+	handler := http.HandlerFunc(ac.SearchPostgreSqlInstances)
 	req, err := http.NewRequest("GET", "/databases?sort-desc=sasdasd", nil)
 	require.NoError(t, err)
 
@@ -164,7 +158,7 @@ func TestSearchSqlServerInstances_JSONUnprocessableEntity1(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchSqlServerInstances_JSONUnprocessableEntity2(t *testing.T) {
+func TestSearchPostgreSqlInstances_JSONUnprocessableEntity2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -176,7 +170,7 @@ func TestSearchSqlServerInstances_JSONUnprocessableEntity2(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchSqlServerInstances)
+	handler := http.HandlerFunc(ac.SearchPostgreSqlInstances)
 	req, err := http.NewRequest("GET", "/databases?page=sasdasd", nil)
 	require.NoError(t, err)
 
@@ -185,7 +179,7 @@ func TestSearchSqlServerInstances_JSONUnprocessableEntity2(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchSqlServerInstances_JSONUnprocessableEntity3(t *testing.T) {
+func TestSearchPostgreSqlInstances_JSONUnprocessableEntity3(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -197,7 +191,7 @@ func TestSearchSqlServerInstances_JSONUnprocessableEntity3(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchSqlServerInstances)
+	handler := http.HandlerFunc(ac.SearchPostgreSqlInstances)
 	req, err := http.NewRequest("GET", "/databases?size=sasdasd", nil)
 	require.NoError(t, err)
 
@@ -206,7 +200,7 @@ func TestSearchSqlServerInstances_JSONUnprocessableEntity3(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchSqlServerInstances_JSONUnprocessableEntity4(t *testing.T) {
+func TestSearchPostgreSqlInstances_JSONUnprocessableEntity4(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -218,7 +212,7 @@ func TestSearchSqlServerInstances_JSONUnprocessableEntity4(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchSqlServerInstances)
+	handler := http.HandlerFunc(ac.SearchPostgreSqlInstances)
 	req, err := http.NewRequest("GET", "/databases?older-than=sasdasd", nil)
 	require.NoError(t, err)
 
@@ -227,7 +221,7 @@ func TestSearchSqlServerInstances_JSONUnprocessableEntity4(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchSqlServerInstances_JSONInternalServerError1(t *testing.T) {
+func TestSearchPostgreSqlInstances_JSONInternalServerError1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -239,8 +233,8 @@ func TestSearchSqlServerInstances_JSONInternalServerError1(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchSqlServerInstances(
-			dto.SearchSqlServerInstancesFilter{
+		SearchPostgreSqlInstances(
+			dto.SearchPostgreSqlInstancesFilter{
 				dto.GlobalFilter{
 					"", "", utils.MAX_TIME,
 				},
@@ -250,7 +244,7 @@ func TestSearchSqlServerInstances_JSONInternalServerError1(t *testing.T) {
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchSqlServerInstances)
+	handler := http.HandlerFunc(ac.SearchPostgreSqlInstances)
 	req, err := http.NewRequest("GET", "/databases", nil)
 	require.NoError(t, err)
 
@@ -259,7 +253,7 @@ func TestSearchSqlServerInstances_JSONInternalServerError1(t *testing.T) {
 	require.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
-func TestSearchSqlServerInstances_XLSXSuccess(t *testing.T) {
+func TestSearchPostgreSqlInstances_XLSXSuccess(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -275,8 +269,8 @@ func TestSearchSqlServerInstances_XLSXSuccess(t *testing.T) {
 	expectedRes := excelize.NewFile()
 
 	as.EXPECT().
-		SearchSqlServerInstancesAsXLSX(
-			dto.SearchSqlServerInstancesFilter{
+		SearchPostgreSqlInstancesAsXLSX(
+			dto.SearchPostgreSqlInstancesFilter{
 				dto.GlobalFilter{
 					"Italy", "TST", utils.P("2020-06-10T11:54:59Z"),
 				},
@@ -286,7 +280,7 @@ func TestSearchSqlServerInstances_XLSXSuccess(t *testing.T) {
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchSqlServerInstances)
+	handler := http.HandlerFunc(ac.SearchPostgreSqlInstances)
 	req, err := http.NewRequest("GET", "/databases?search=foobar&sort-by=Hostname&sort-desc=true&location=Italy&environment=TST&older-than=2020-06-10T11%3A54%3A59Z", nil)
 	require.NoError(t, err)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
@@ -298,7 +292,7 @@ func TestSearchSqlServerInstances_XLSXSuccess(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestSearchSqlServerInstances_XLSXUnprocessableEntity1(t *testing.T) {
+func TestSearchPostgreSqlInstances_XLSXUnprocessableEntity1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -312,7 +306,7 @@ func TestSearchSqlServerInstances_XLSXUnprocessableEntity1(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchSqlServerInstances)
+	handler := http.HandlerFunc(ac.SearchPostgreSqlInstances)
 	req, err := http.NewRequest("GET", "/databases?sort-desc=sdddaadasd", nil)
 	require.NoError(t, err)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
@@ -322,7 +316,7 @@ func TestSearchSqlServerInstances_XLSXUnprocessableEntity1(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchSqlServerInstances_XLSXUnprocessableEntity2(t *testing.T) {
+func TestSearchPostgreSqlInstances_XLSXUnprocessableEntity2(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -336,7 +330,7 @@ func TestSearchSqlServerInstances_XLSXUnprocessableEntity2(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchSqlServerInstances)
+	handler := http.HandlerFunc(ac.SearchPostgreSqlInstances)
 	req, err := http.NewRequest("GET", "/databases?older-than=sdddaadasd", nil)
 	require.NoError(t, err)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
@@ -346,7 +340,7 @@ func TestSearchSqlServerInstances_XLSXUnprocessableEntity2(t *testing.T) {
 	require.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 }
 
-func TestSearchSqlServerInstances_XLSXInternalServerError1(t *testing.T) {
+func TestSearchPostgreSqlInstances_XLSXInternalServerError1(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	as := NewMockAPIServiceInterface(mockCtrl)
@@ -360,8 +354,8 @@ func TestSearchSqlServerInstances_XLSXInternalServerError1(t *testing.T) {
 	}
 
 	as.EXPECT().
-		SearchSqlServerInstancesAsXLSX(
-			dto.SearchSqlServerInstancesFilter{
+		SearchPostgreSqlInstancesAsXLSX(
+			dto.SearchPostgreSqlInstancesFilter{
 				dto.GlobalFilter{
 					"", "", utils.MAX_TIME,
 				},
@@ -371,7 +365,7 @@ func TestSearchSqlServerInstances_XLSXInternalServerError1(t *testing.T) {
 		Return(nil, aerrMock)
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ac.SearchSqlServerInstances)
+	handler := http.HandlerFunc(ac.SearchPostgreSqlInstances)
 	req, err := http.NewRequest("GET", "/databases", nil)
 	require.NoError(t, err)
 	req.Header.Add("Accept", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
