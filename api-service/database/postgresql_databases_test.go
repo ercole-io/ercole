@@ -26,18 +26,18 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (m *MongodbSuite) TestSearchSqlServerInstances() {
+func (m *MongodbSuite) TestSearchPostgreSqlInstances() {
 	defer m.db.Client.Database(m.dbname).Collection("hosts").DeleteMany(context.TODO(), bson.M{})
 
-	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_27.json"))
-	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_28.json"))
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_31.json"))
+	m.InsertHostData(mongoutils.LoadFixtureMongoHostDataMap(m.T(), "../../fixture/test_apiservice_mongohostdata_32.json"))
 
 	m.T().Run("should_filter_out_by_environment", func(t *testing.T) {
-		out, err := m.db.SearchSqlServerInstances([]string{""}, "", false, -1, -1, "", "PROD", utils.MAX_TIME)
+		out, err := m.db.SearchPostgreSqlInstances([]string{""}, "", false, -1, -1, "", "PROD", utils.MAX_TIME)
 		m.Require().NoError(err)
 
-		expectedOut := dto.SqlServerInstanceResponse{
-			Content: []dto.SqlServerInstance{},
+		expectedOut := dto.PostgreSqlInstanceResponse{
+			Content: []dto.PostgreSqlInstance{},
 			Metadata: dto.PagingMetadata{
 				Empty:         true,
 				First:         true,
@@ -53,11 +53,11 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 	})
 
 	m.T().Run("should_filter_out_by_location", func(t *testing.T) {
-		out, err := m.db.SearchSqlServerInstances([]string{""}, "", false, -1, -1, "France", "", utils.MAX_TIME)
+		out, err := m.db.SearchPostgreSqlInstances([]string{""}, "", false, -1, -1, "France", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
-		expectedOut := dto.SqlServerInstanceResponse{
-			Content: []dto.SqlServerInstance{},
+		expectedOut := dto.PostgreSqlInstanceResponse{
+			Content: []dto.PostgreSqlInstance{},
 			Metadata: dto.PagingMetadata{
 				Empty:         true,
 				First:         true,
@@ -72,11 +72,11 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 	})
 
 	m.T().Run("should_filter_out_by_older_than", func(t *testing.T) {
-		out, err := m.db.SearchSqlServerInstances([]string{""}, "", false, -1, -1, "", "", utils.P("1999-05-04T16:09:46.608+02:00"))
+		out, err := m.db.SearchPostgreSqlInstances([]string{""}, "", false, -1, -1, "", "", utils.P("1999-05-04T16:09:46.608+02:00"))
 		m.Require().NoError(err)
 
-		expectedOut := dto.SqlServerInstanceResponse{
-			Content: []dto.SqlServerInstance{},
+		expectedOut := dto.PostgreSqlInstanceResponse{
+			Content: []dto.PostgreSqlInstance{},
 			Metadata: dto.PagingMetadata{
 				Empty:         true,
 				First:         true,
@@ -92,22 +92,20 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 	})
 
 	m.T().Run("should_be_paging", func(t *testing.T) {
-		out, err := m.db.SearchSqlServerInstances([]string{""}, "", false, 0, 1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchPostgreSqlInstances([]string{""}, "", false, 0, 1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
 
-		var expectedContent []dto.SqlServerInstance = []dto.SqlServerInstance{
+		var expectedContent []dto.PostgreSqlInstance = []dto.PostgreSqlInstance{
 			{
-				Hostname:      "test-db",
-				Environment:   "TST",
-				Name:          "MSSQLSERVER",
-				Status:        "ONLINE",
-				Edition:       "ENT",
-				CollationName: "Latin1_General_CI_AS",
-				Version:       "2019",
+				Hostname:    "test-db",
+				Environment: "TST",
+				Name:        "PostgreSQL-example:1010",
+				Charset:     "UTF8",
+				Version:     "PostgreSQL 10.20",
 			},
 		}
 
-		expectedOut := dto.SqlServerInstanceResponse{
+		expectedOut := dto.PostgreSqlInstanceResponse{
 			Content: expectedContent,
 			Metadata: dto.PagingMetadata{
 				Empty:         false,
@@ -124,21 +122,19 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 	})
 
 	m.T().Run("should_be_sorting", func(t *testing.T) {
-		out, err := m.db.SearchSqlServerInstances([]string{""}, "hostname", true, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchPostgreSqlInstances([]string{""}, "hostname", true, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedContent []dto.SqlServerInstance = []dto.SqlServerInstance{
+		var expectedContent []dto.PostgreSqlInstance = []dto.PostgreSqlInstance{
 			{
-				Hostname:      "test-db2",
-				Environment:   "PRD",
-				Name:          "MSSQLSERVER",
-				Status:        "ONLINE",
-				Edition:       "STD",
-				CollationName: "Latin1_General_CI_AS",
-				Version:       "2019",
+				Hostname:    "test-db2",
+				Environment: "PRD",
+				Name:        "PostgreSQL-example:1010",
+				Charset:     "UTF8",
+				Version:     "PostgreSQL 10.20",
 			},
 		}
 
-		expectedOut := dto.SqlServerInstanceResponse{
+		expectedOut := dto.PostgreSqlInstanceResponse{
 			Content: expectedContent,
 			Metadata: dto.PagingMetadata{
 				Empty:         false,
@@ -155,11 +151,11 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 	})
 
 	m.T().Run("should_search_return_anything", func(t *testing.T) {
-		out, err := m.db.SearchSqlServerInstances([]string{"foobar"}, "", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchPostgreSqlInstances([]string{"foobar"}, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedContent []dto.SqlServerInstance = []dto.SqlServerInstance{}
+		var expectedContent []dto.PostgreSqlInstance = []dto.PostgreSqlInstance{}
 
-		expectedOut := dto.SqlServerInstanceResponse{
+		expectedOut := dto.PostgreSqlInstanceResponse{
 			Content: expectedContent,
 			Metadata: dto.PagingMetadata{
 				Empty:         true,
@@ -176,21 +172,19 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 	})
 
 	m.T().Run("should_search_return_found", func(t *testing.T) {
-		out, err := m.db.SearchSqlServerInstances([]string{"test-db2"}, "", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchPostgreSqlInstances([]string{"test-db2"}, "", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedContent []dto.SqlServerInstance = []dto.SqlServerInstance{
+		var expectedContent []dto.PostgreSqlInstance = []dto.PostgreSqlInstance{
 			{
-				Hostname:      "test-db2",
-				Environment:   "PRD",
-				Name:          "MSSQLSERVER",
-				Status:        "ONLINE",
-				Edition:       "STD",
-				CollationName: "Latin1_General_CI_AS",
-				Version:       "2019",
+				Hostname:    "test-db2",
+				Environment: "PRD",
+				Name:        "PostgreSQL-example:1010",
+				Charset:     "UTF8",
+				Version:     "PostgreSQL 10.20",
 			},
 		}
 
-		expectedOut := dto.SqlServerInstanceResponse{
+		expectedOut := dto.PostgreSqlInstanceResponse{
 			Content: expectedContent,
 			Metadata: dto.PagingMetadata{
 				Empty:         false,
@@ -207,30 +201,26 @@ func (m *MongodbSuite) TestSearchSqlServerInstances() {
 	})
 
 	m.T().Run("fullmode", func(t *testing.T) {
-		out, err := m.db.SearchSqlServerInstances([]string{""}, "hostname", false, -1, -1, "", "", utils.MAX_TIME)
+		out, err := m.db.SearchPostgreSqlInstances([]string{""}, "hostname", false, -1, -1, "", "", utils.MAX_TIME)
 		m.Require().NoError(err)
-		var expectedContent []dto.SqlServerInstance = []dto.SqlServerInstance{
+		var expectedContent []dto.PostgreSqlInstance = []dto.PostgreSqlInstance{
 			{
-				Hostname:      "test-db",
-				Environment:   "TST",
-				Name:          "MSSQLSERVER",
-				Status:        "ONLINE",
-				Edition:       "ENT",
-				CollationName: "Latin1_General_CI_AS",
-				Version:       "2019",
+				Hostname:    "test-db",
+				Environment: "TST",
+				Name:        "PostgreSQL-example:1010",
+				Charset:     "UTF8",
+				Version:     "PostgreSQL 10.20",
 			},
 			{
-				Hostname:      "test-db2",
-				Environment:   "PRD",
-				Name:          "MSSQLSERVER",
-				Status:        "ONLINE",
-				Edition:       "STD",
-				CollationName: "Latin1_General_CI_AS",
-				Version:       "2019",
+				Hostname:    "test-db2",
+				Environment: "PRD",
+				Name:        "PostgreSQL-example:1010",
+				Charset:     "UTF8",
+				Version:     "PostgreSQL 10.20",
 			},
 		}
 
-		expectedOut := dto.SqlServerInstanceResponse{
+		expectedOut := dto.PostgreSqlInstanceResponse{
 			Content: expectedContent,
 			Metadata: dto.PagingMetadata{
 				Empty:         false,
