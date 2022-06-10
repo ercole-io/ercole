@@ -39,6 +39,7 @@ type HostData struct {
 	AgentVersion            string                        `json:"agentVersion" bson:"agentVersion"`
 	Cluster                 string                        `json:"cluster" bson:"cluster"`
 	VirtualizationNode      string                        `json:"virtualizationNode" bson:"virtualizationNode"`
+	Technology              string                        `json:"technology"`
 	Tags                    []string                      `json:"tags" bson:"tags"`
 	Info                    model.Host                    `json:"info" bson:"info"`
 	ClusterMembershipStatus model.ClusterMembershipStatus `json:"clusterMembershipStatus" bson:"clusterMembershipStatus"`

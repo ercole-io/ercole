@@ -340,7 +340,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 		cur, err = md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 			context.TODO(),
 			mu.MAPipeline(
-				getBaseHost(hostname, olderThan, raw),
+				getBaseHost(hostname, technology, olderThan, raw),
 				mu.APOptionalStage(!raw, mu.MAPipeline(
 					mu.APLookupPipeline(
 						"hosts",
@@ -398,7 +398,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 		cur, err = md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 			context.TODO(),
 			mu.MAPipeline(
-				getBaseHost(hostname, olderThan, raw),
+				getBaseHost(hostname, technology, olderThan, raw),
 			),
 		)
 		if err != nil {
@@ -409,7 +409,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 			context.TODO(),
 			mu.MAPipeline(
 				FilterByOldnessSteps(olderThan),
-				getBaseHost(hostname, olderThan, raw),
+				getBaseHost(hostname, technology, olderThan, raw),
 				mu.APOptionalStage(!raw, mu.MAPipeline(
 					mu.APLookupPipeline(
 						"hosts",
@@ -470,7 +470,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 		cur, err = md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 			context.TODO(),
 			mu.MAPipeline(
-				getBaseHost(hostname, olderThan, raw),
+				getBaseHost(hostname, technology, olderThan, raw),
 			),
 		)
 		if err != nil {
@@ -480,7 +480,7 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 		cur, err = md.Client.Database(md.Config.Mongodb.DBName).Collection("hosts").Aggregate(
 			context.TODO(),
 			mu.MAPipeline(
-				getBaseHost(hostname, olderThan, raw),
+				getBaseHost(hostname, technology, olderThan, raw),
 			),
 		)
 		if err != nil {
@@ -503,12 +503,16 @@ func (md *MongoDatabase) GetHost(hostname string, olderThan time.Time, raw bool)
 	return &host, nil
 }
 
-func getBaseHost(hostname string, olderThan time.Time, raw bool) bson.A {
+func getBaseHost(hostname string, technology string, olderThan time.Time, raw bool) bson.A {
 	return mu.MAPipeline(
 		FilterByOldnessSteps(olderThan),
 		mu.APMatch(bson.M{
 			"hostname": hostname,
 		}),
+		mu.APAddFields(
+			bson.M{
+				"technology": technology,
+			}),
 		mu.APOptionalStage(!raw, mu.MAPipeline(
 			mu.APLookupPipeline("alerts", bson.M{"hn": "$hostname"}, "alerts", mu.MAPipeline(
 				mu.APMatch(mu.QOExpr(mu.APOEqual("$otherInfo.hostname", "$$hn"))),
