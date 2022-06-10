@@ -736,6 +736,7 @@ func (m *MongodbSuite) TestGetHost() {
 			ServerSchemaVersion: 1,
 			ServerVersion:       "latest",
 			Tags:                []string{},
+			Technology:          "Oracle/MySQL",
 			ID:                  utils.Str2oid("5ec64ac640c089c5aff44e9c"),
 		}
 
@@ -957,6 +958,7 @@ func (m *MongodbSuite) TestGetHost() {
 			Location:            "Germany",
 			SchemaVersion:       1,
 			ServerSchemaVersion: 1,
+			Technology:          "Oracle/MySQL",
 			ServerVersion:       "latest",
 			Tags:                []string{},
 			ID:                  utils.Str2oid("5ec64ac640c089c5aff4444c"),
@@ -1119,6 +1121,7 @@ func (m *MongodbSuite) TestGetHost() {
 			ServerVersion:       "latest",
 			Tags:                []string{},
 			VirtualizationNode:  "",
+			Technology:          "Oracle/Database",
 			ID:                  utils.Str2oid("5ec64ac640c089c5aff44e9d"),
 		}
 
@@ -1253,6 +1256,7 @@ func (m *MongodbSuite) TestGetHost() {
 			SchemaVersion:       1,
 			ServerSchemaVersion: 1,
 			ServerVersion:       "latest",
+			Technology:          "Oracle/Database",
 			Tags:                []string{},
 			ID:                  utils.Str2oid("5ec64a4f40c089c5aff44e99"),
 		}
@@ -1370,6 +1374,7 @@ func (m *MongodbSuite) TestGetHost() {
 			SchemaVersion:       1,
 			ServerSchemaVersion: 1,
 			ServerVersion:       "latest",
+			Technology:          "Oracle/Database",
 			Tags:                []string{},
 			ID:                  utils.Str2oid("5ec64ac640c089c5aff44e9d"),
 		}
