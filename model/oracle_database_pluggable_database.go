@@ -22,4 +22,5 @@ type OracleDatabasePluggableDatabase struct {
 	Tablespaces []OracleDatabaseTablespace `json:"tablespaces" bson:"tablespaces"`
 	Schemas     []OracleDatabaseSchema     `json:"schemas" bson:"schemas"`
 	Services    []OracleDatabaseService    `json:"services" bson:"services"`
+	GrantDba    []OracleGrantDba           `json:"grantDba" bson:"grantDba"`
 }
