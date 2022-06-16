@@ -51,6 +51,7 @@ type OracleDatabase struct {
 	Work              *float64                          `json:"work" bson:"work"`
 	ASM               bool                              `json:"asm" bson:"asm"`
 	Dataguard         bool                              `json:"dataguard" bson:"dataguard"`
+	IsRAC             bool                              `json:"isRAC" bson:"isRAC"`
 	Patches           []OracleDatabasePatch             `json:"patches" bson:"patches"`
 	Tablespaces       []OracleDatabaseTablespace        `json:"tablespaces" bson:"tablespaces"`
 	Schemas           []OracleDatabaseSchema            `json:"schemas" bson:"schemas"`
