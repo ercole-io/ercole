@@ -438,6 +438,7 @@
                             "$numberDouble": "1.484"
                         },
                         "nCharset": "AL16UTF16",
+                        "isRAC": false,
                         "name": "ERCOLE",
                         "pdbs": [],
                         "pgaTarget": {
