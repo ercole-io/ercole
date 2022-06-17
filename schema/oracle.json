@@ -48,6 +48,7 @@
                                     "work",
                                     "asm",
                                     "dataguard",
+                                    "isRAC",
                                     "patches",
                                     "tablespaces",
                                     "schemas",
@@ -202,6 +203,9 @@
                                         "type": "boolean"
                                     },
                                     "dataguard": {
+                                        "type": "boolean"
+                                    },
+                                    "isRAC": {
                                         "type": "boolean"
                                     },
                                     "patches": {
