@@ -29,6 +29,7 @@ type OciProfile struct {
 	KeyFingerprint string             `json:"keyFingerprint" bson:"keyFingerprint"`
 	Region         string             `json:"region" bson:"region"`
 	PrivateKey     *string            `json:"privateKey" bson:"privateKey"`
+	Selected       bool               `json:"selected" bson:"selected"`
 }
 
 func (pr OciProfile) IsValid() bool {

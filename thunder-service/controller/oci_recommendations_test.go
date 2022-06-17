@@ -45,8 +45,6 @@ func TestGetOciRecommendations_Success(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	var strProfiles = []string{"6140c473413cf9de756f9848"}
-
 	recommendation := model.OciRecommendation{
 		SeqValue:        999,
 		ProfileID:       "ProfileIDTest",
@@ -69,7 +67,7 @@ func TestGetOciRecommendations_Success(t *testing.T) {
 	var expectedRes []model.OciRecommendation
 	expectedRes = append(expectedRes, recommendation)
 
-	as.EXPECT().GetOciRecommendations(strProfiles).
+	as.EXPECT().GetOciRecommendations().
 		Return(expectedRes, nil)
 
 	rr := httptest.NewRecorder()
@@ -96,8 +94,7 @@ func TestGetOciRecommendations_ClusterNotFoundError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	var strProfiles = []string{"6140c473413cf9de756f9848"}
-	as.EXPECT().GetOciRecommendations(strProfiles).Return(nil, utils.ErrClusterNotFound)
+	as.EXPECT().GetOciRecommendations().Return(nil, utils.ErrClusterNotFound)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetOciRecommendations)
@@ -131,8 +128,7 @@ func TestGetOciRecommendations_InternalServerError(t *testing.T) {
 		Log:     logger.NewLogger("TEST"),
 	}
 
-	var strProfiles = []string{"6140c473413cf9de756f9848"}
-	as.EXPECT().GetOciRecommendations(strProfiles).Return(nil, errMock)
+	as.EXPECT().GetOciRecommendations().Return(nil, errMock)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(ac.GetOciRecommendations)
@@ -153,76 +149,4 @@ func TestGetOciRecommendations_InternalServerError(t *testing.T) {
 
 	assert.Equal(t, "MockError", feErr.Error)
 	assert.Equal(t, "Internal Server Error", feErr.Message)
-}
-
-func TestGetOciRecommendations_BadRequest(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-
-	t.Run("BadRequest", func(t *testing.T) {
-		as := NewMockThunderServiceInterface(mockCtrl)
-		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2022-05-30T12:02:03Z")),
-			Service: as,
-			Config:  config.Configuration{},
-			Log:     logger.NewLogger("TEST"),
-		}
-
-		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciRecommendations)
-
-		req, err := http.NewRequest("GET", "/oracle-cloud/oci-recommendations", nil)
-		require.NoError(t, err)
-
-		handler.ServeHTTP(rr, req)
-
-		require.Equal(t, http.StatusBadRequest, rr.Code)
-
-		var feErr utils.ErrorResponseFE
-		decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
-		decoder.DisallowUnknownFields()
-		err = decoder.Decode(&feErr)
-		require.NoError(t, err)
-
-		assert.Equal(t, "Ids not present or malformed", feErr.Error)
-		assert.Equal(t, "Bad Request", feErr.Message)
-	})
-}
-
-func TestGetOciRecommendations_InvalidProfileId(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-
-	t.Run("BadRequest", func(t *testing.T) {
-		as := NewMockThunderServiceInterface(mockCtrl)
-		ac := ThunderController{
-			TimeNow: utils.Btc(utils.P("2022-05-30T12:02:03Z")),
-			Service: as,
-			Config:  config.Configuration{},
-			Log:     logger.NewLogger("TEST"),
-		}
-
-		var strProfiles = []string{"aaa", "bbb", "ccc"}
-		as.EXPECT().GetOciRecommendations(strProfiles).Return(nil, utils.ErrInvalidProfileId)
-
-		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ac.GetOciRecommendations)
-
-		req, err := http.NewRequest("GET", "/oracle-cloud/oci-recommendations", nil)
-		require.NoError(t, err)
-		req = mux.SetURLVars(req, map[string]string{"ids": "aaa,bbb,ccc"})
-
-		handler.ServeHTTP(rr, req)
-
-		require.Equal(t, http.StatusBadRequest, rr.Code)
-
-		var feErr utils.ErrorResponseFE
-		decoder := json.NewDecoder(bytes.NewReader(rr.Body.Bytes()))
-		decoder.DisallowUnknownFields()
-		err = decoder.Decode(&feErr)
-		require.NoError(t, err)
-
-		assert.Equal(t, "invalid profile id", feErr.Error)
-		assert.Equal(t, "Bad Request", feErr.Message)
-	})
 }

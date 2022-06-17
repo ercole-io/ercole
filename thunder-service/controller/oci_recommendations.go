@@ -19,23 +19,13 @@ package controller
 import (
 	"errors"
 	"net/http"
-	"strings"
 
 	"github.com/ercole-io/ercole/v2/utils"
-	"github.com/gorilla/mux"
 )
 
 //GetOciRecommendations get recommendation related to cloud from Ercole
 func (ctrl *ThunderController) GetOciRecommendations(w http.ResponseWriter, r *http.Request) {
-	profileList := mux.Vars(r)["ids"]
-	if profileList == "" {
-		utils.WriteAndLogError(ctrl.Log, w, http.StatusBadRequest, errors.New("Ids not present or malformed"))
-		return
-	}
-
-	var profiles []string = strings.Split(profileList, ",")
-
-	recommendations, err := ctrl.Service.GetOciRecommendations(profiles)
+	recommendations, err := ctrl.Service.GetOciRecommendations()
 
 	if recommendations == nil {
 		if errors.Is(err, utils.ErrInvalidProfileId) {
